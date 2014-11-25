@@ -1,3 +1,5 @@
+from . import basic_io
+
 
 class Atom(object):
 
@@ -36,3 +38,6 @@ class Atom(object):
 
     def __init__(self, name, coords):
         self.name, self.coords = name, coords
+
+    def to_str(self):
+        return self.name + " " + basic_io.point_to_str(self.coords)
