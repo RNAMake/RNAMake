@@ -73,7 +73,9 @@ class Atom(object):
             return ""
         string = "ATOM {:6d}  P   C   A   1 {:11.3f}{:8.3f}{:8.3f}  1.00 62.18           P\n".format(
             acount,
+
             self.coords[0],
             self.coords[1],
             self.coords[2])
         return string
+
