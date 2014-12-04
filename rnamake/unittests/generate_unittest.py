@@ -11,7 +11,7 @@ def make_unittest(name):
     name_cc = to_camel_case(name)
     f = open(name+"_unittest.py","w")
     string =  "import unittest\nimport rnamake."+name+"\n\n"
-    string += "class "+name_cc+"(unittest.TestCase):\n\n"
+    string += "class "+name_cc+"Unittest(unittest.TestCase):\n\n"
     string += "    def test_creation(self):\n        pass\n\n"
     string += "def main():\n    unittest.main()\n\n"
     string += "if __name__ == '__main__':\n    main()"
