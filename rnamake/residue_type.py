@@ -6,8 +6,31 @@ alt_names = {
     "O2P": "OP2"
 }
 
-
 class ResidueType(object):
+    """
+    Simple class to hold the topology of the residue, currrently only holds
+    which atoms are included in the atomtype but might be later expanded to
+    include bonds and charges. This class should not be initiated by itself,
+    initiation occurs in ResidueTypeSet
+
+    :param name: residue name
+    :param atom_map: the position of where each atom should in a residue by
+        name
+
+    :type name: str
+    :type atom_map: dict
+
+    Attributes
+    ----------
+    `name` : str
+        Residue name
+    `atom_map` : dict
+        The position of where each atom should in a residue by name
+    `alt_name` : list
+        Other names the residue can go by, ex. G is also GUA
+    """
+
+    __slots__ = ["name", "atom_map", "alt_names"]
 
     def __init__(self, name, atom_map):
         self.atom_map = atom_map
@@ -16,6 +39,14 @@ class ResidueType(object):
 
 
 class ResidueTypeSet(object):
+    """
+    Holds all the ResidueType objects, for initiation of new residues.
+
+    Attributes
+    ----------
+    `residue_types` : list of ResidueTypes
+        Contains all residue types that are acceptable in rnamake
+    """
 
     __slots__ = ["residue_types"]
 

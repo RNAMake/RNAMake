@@ -8,9 +8,10 @@ class Atom(object):
     lightweight only storing the atom name and coordinates.
 
     :param name: atomic name
-    :type name: str
     :param coords: atomic coordinates
-    :type coords: list
+
+    :type name : str
+    :type coords : list
 
     Attributes
     ----------

@@ -21,6 +21,7 @@ class ResidueType(unittest.TestCase):
 
     def test_get_rtype(self):
         gua_rtype = rnamake.residue_type.get_rtype("GUA")
+        print gua_rtype
         if gua_rtype is None:
             self.fail("cannot get GUA restype in test_get_rtype")
 
