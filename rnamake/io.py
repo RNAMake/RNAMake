@@ -1,5 +1,5 @@
 import numpy as np
-from . import atom
+import atom
 
 
 def str_to_atom(s):

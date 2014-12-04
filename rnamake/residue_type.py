@@ -37,12 +37,20 @@ class ResidueType(object):
         self.name = name
         self.alt_names = [name[0], "r"+name[0], "D"+name[0]]
 
+    def __repr__(self):
+        return "<ResidueType(name='%s')>" % (self.name)
+
 
 class ResidueTypeSet(object):
     """
-    Holds all the ResidueType objects, for initiation of new residues.
+    Holds all the ResidueType objects, for initiation of new residues. Do not
+    initiate a instantance of ResidueTypeSet, if you want a new ResidueType do
 
-    Attributes
+    .. code-block:: python
+        >>>rnamake.residue_type.get_rtype("GUA")
+        <ResidueType(name='GUA')>
+
+   Attributes
     ----------
     `residue_types` : list of ResidueTypes
         Contains all residue types that are acceptable in rnamake
@@ -62,11 +70,22 @@ class ResidueTypeSet(object):
             self.residue_types.append(rtype)
 
     def _get_rtype_name(self, type_file):
+        """
+        extract name from file type_file name.
+        :param type_file: file path of residue type file
+        :type type_file: str
+        """
         name_spl = type_file.split("/")
         type_file_name = name_spl[-1]
         return type_file_name[:-6]
 
     def _get_atom_map_from_file(self, type_file):
+        """
+        extracts the atom position for each atom for the Residue object atom
+        array for easy indexing
+        :param type_file: file path of residue type file
+        :type type_file: str
+        """
         f = open(type_file)
         line = f.readline()
         f.close()
@@ -77,6 +96,19 @@ class ResidueTypeSet(object):
         return atom_map
 
     def get_rtype_by_resname(self, resname):
+        """
+        get the ResidueType object for a given residue by name, this method
+        should not be called directly! Should call
+        rnamake.residue_type.get_rtype for simplicity
+        :param resname: name of residue that you want the ResidueType for
+        :type resname: str
+
+        .. code-block:: python
+            #get guanine residue type
+            >>>rtype =  ResidueTypeSet()
+            >>>rtype.get_rtype_by_resname("GUA")
+            <ResidueType(name='GUA')>
+        """
         for restype in self.residue_types:
             if resname == restype.name:
                 return restype
@@ -85,8 +117,19 @@ class ResidueTypeSet(object):
         return None
 
 
-def get_rtype(name):
-    return rtypes.get_rtype_by_resname(name)
+def get_rtype(resname):
+    """
+    Get a reference to a ResidueType by name. This is the only way you should
+    get a ResidueType reference
+    :param resname: the name of the residue you want the ResidueType
+    :type resname: str
+
+     .. code-block:: python
+        >>>rnamake.residue_type.get_rtype("GUA")
+        <ResidueType(name='GUA')>
+
+    """
+    return rtypes.get_rtype_by_resname(resname)
 
 rtypes = ResidueTypeSet()
 

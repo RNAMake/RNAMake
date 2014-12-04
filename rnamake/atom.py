@@ -1,4 +1,4 @@
-from . import basic_io
+import basic_io
 
 
 class Atom(object):
