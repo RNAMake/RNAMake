@@ -1,7 +1,10 @@
 import uuid
+import logging
 from . import atom
 from . import residue_type
 
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 class BeadType(object):
 
@@ -71,3 +74,38 @@ class Residue(object):
 
         self.atoms = []
         self.beads = []
+
+    def __repr__(self):
+        return "<Residue('%s%d%s chain %s')>" % (
+            self.name, self.num, self.i_code, self.chain_id)
+
+    def setup_atoms(self, atoms):
+        """
+        put atoms in correct positon in internal atom list
+
+        :param atoms: list of atom objects that are to be part of this residue
+        :type atoms: list of Atom objects
+        """
+
+        self.atoms = [None for x in self.rtype.atom_map.keys()]
+        for a in atoms:
+            #self.rtype.fix_common_alt_name(a)
+            if a.name in self.rtype.atom_map:
+                pos = self.rtype.atom_map[a.name]
+                self.atoms[pos] = a
+            else:
+                logger.warning(a.name + " not included in " + repr(self))
+
+        # Warning if an atom is missing
+        for i,a in enumerate(self.atoms):
+            if a is None:
+                correct_name = None
+                for name, pos in self.rtype.atom_map.iteritems():
+                    if pos == i:
+                        correct_name = name
+
+                logger.warning(correct_name + " is undefined in " + repr(self))
+
+
+
+

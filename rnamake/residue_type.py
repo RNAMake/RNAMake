@@ -1,12 +1,19 @@
 import glob
+import logging
 from . import settings
+from . import atom
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 alt_names = {
     "O1P": "OP1",
     "O2P": "OP2"
 }
 
+
 class ResidueType(object):
+
     """
     Simple class to hold the topology of the residue, currrently only holds
     which atoms are included in the atomtype but might be later expanded to
@@ -40,8 +47,15 @@ class ResidueType(object):
     def __repr__(self):
         return "<ResidueType(name='%s')>" % (self.name)
 
+    def get_correct_atom_name(self, a):
+        if a.name in alt_names:
+            return [a.name, alt_names[a.name]]
+        else:
+            return None
+
 
 class ResidueTypeSet(object):
+
     """
     Holds all the ResidueType objects, for initiation of new residues. Do not
     initiate a instantance of ResidueTypeSet, if you want a new ResidueType do
