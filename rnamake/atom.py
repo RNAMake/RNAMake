@@ -23,7 +23,6 @@ class Atom(object):
     Examples
 
     .. code-block:: python
-
         >>>a = Atom("P",[1.0,2.0,3.0])
         >>>a.name
         P
@@ -78,4 +77,3 @@ class Atom(object):
             self.coords[1],
             self.coords[2])
         return string
-

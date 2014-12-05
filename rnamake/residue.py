@@ -2,6 +2,7 @@ import uuid
 import logging
 from . import atom
 from . import residue_type
+from . import util
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -81,7 +82,8 @@ class Residue(object):
 
     def setup_atoms(self, atoms):
         """
-        put atoms in correct positon in internal atom list
+        put atoms in correct positon in internal atom list, warns of extra atoms
+        are included as well if atoms are missing
 
         :param atoms: list of atom objects that are to be part of this residue
         :type atoms: list of Atom objects
@@ -106,6 +108,42 @@ class Residue(object):
 
                 logger.warning(correct_name + " is undefined in " + repr(self))
 
+    def get_atom(self, atom_name):
+        """
+        get atom object by its name
 
+        :param atom_name: name
+        :type atom_name: str
+        .. code-block:: python
+            >>>r.get_atom("P")
+            <Atom(name='P', coords='0 1 2')>
+        """
+        try:
+            index = self.rtype.atom_map[atom_name]
+            return self.atoms[index]
+        except KeyError:
+            logger.critical("cannot find atom " + atom_name + "in " + repr(self))
+            raise KeyError()
+    def conntected_to(self,res,cutoff=3.0):
+        """
+		Determine if another residue is connected to this residue, returns 0
+		if res is not connected to self, returns 1 if connection is going
+		from 5' to 3' and returns -1 if connection is going from 3' to 5'
 
+        :param res: another residue
 
+        """
+        pass
+
+    def to_str(self):
+        """
+        stringifes residue object to string
+        """
+        s = self.rtype.name + "," + self.name + "," + str(self.num) + "," +
+            self.chain_id + "," + self.i_code + ","
+            for a in self.atoms:
+                if a == None:
+                    s += "N,"
+                else:
+                    s += a.to_str() + ","
+        return s
