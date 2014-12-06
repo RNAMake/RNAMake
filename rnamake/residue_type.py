@@ -1,7 +1,7 @@
 import glob
 import logging
-from . import settings
-from . import atom
+import settings
+import atom
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)

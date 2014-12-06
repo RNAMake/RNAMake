@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 import rnamake.atom
 import rnamake.io
-
+import rnamake.util
 
 class AtomUnittest(unittest.TestCase):
 
@@ -28,6 +28,16 @@ class AtomUnittest(unittest.TestCase):
             pass
         except:
             self.fail("did not expect this error")
+
+    def test_copy(self):
+        a = rnamake.atom.Atom("H1", np.array([0, 1, 2]))
+        copy_a = a.copy()
+
+        copy_a.coords += 1
+        diff = rnamake.util.distance(a.coords,copy_a.coords)
+        if diff < 0.1:
+            self.fail()
+
 
     def test_to_str(self):
         """

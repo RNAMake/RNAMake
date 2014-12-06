@@ -1,7 +1,7 @@
 import numpy as np
-import atom
-import residue
-import residue_type
+from . import atom
+from . import residue
+from . import residue_type
 
 
 def str_to_atom(s):

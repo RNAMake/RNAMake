@@ -1,4 +1,5 @@
 import basic_io
+import numpy as np
 
 
 class Atom(object):
@@ -45,6 +46,10 @@ class Atom(object):
     def __repr__(self):
         coords = basic_io.point_to_str(self.coords)
         return "<Atom(name='%s', coords='%s')>" % (self.name, coords)
+
+    def copy(self):
+        coords = np.array(self.coords)
+        return Atom(self.name, coords)
 
     def to_str(self):
         """
