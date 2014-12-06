@@ -239,6 +239,12 @@ class Residue(object):
         copied_r.uuid = self.uuid
         return copied_r
 
+    def new_uuid(self):
+        """
+        give residue a new uuid code, do this with caution
+        """
+        self.uuid = uuid.uuid1()
+
 
 
     def to_str(self):

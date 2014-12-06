@@ -11,6 +11,19 @@ import util
 
 
 class ResidueUnittest(unittest.TestCase):
+    def setUp(self):
+        path = rnamake.settings.UNITTEST_PATH + "resources/res_strs.dat"
+        f = open(path)
+        lines = f.readlines()
+        f.close()
+
+        residues = []
+        logging.disable(60)
+        for l in lines:
+            res = rnamake.io.str_to_residue(l)
+            residues.append(res)
+        logging.disable(0)
+        self.residues = residues
 
     def test_creation(self):
         """
@@ -169,8 +182,24 @@ class ResidueUnittest(unittest.TestCase):
             0)
 
     def test_copy(self):
-         pass
+        res = self.residues[0]
+        copy_res = res.copy()
+        copy_res.name = "test"
+        if res.name == copy_res.name:
+            self.fail("did not copy name correctly")
+        copy_res.num = 1000
+        if res.num == copy_res.num:
+            self.fail("did not copy num correctly")
 
+
+        print copy_res.name,res.name
+
+    def test_new_uuid(self):
+        res = self.residues[0]
+        old_uuid = res.uuid
+        res.new_uuid()
+        if old_uuid == res.uuid:
+            self.fail("did not assign new uuid to res")
 
 def main():
     if len(sys.argv) == 1:
