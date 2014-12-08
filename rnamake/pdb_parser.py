@@ -46,7 +46,9 @@ def parse(pdb_file):
             chid = line[21]
             alt = line[16]
             try:
-                coords = [ line[30:38], line[38:46], line[46:54] ]
+                coords = [ float(line[30:38]),
+                           float(line[38:46]),
+                           float(line[46:54]) ]
             except:
                 raise PDBParserError('invalid or missing coordinate(s) at '
                                          'line {0}.'.format(line))
@@ -69,6 +71,13 @@ def parse(pdb_file):
         key = resnames[i] + " " + resnums[i] + " " + chainids[i] + " " + icodes[i]
         if key not in residue_atoms:
             residue_atoms[key] = []
+        already_has = 0
+        for a in residue_atoms[key]:
+            if a.name == atomnames[i]:
+                already_has = 1
+                break
+        if already_has:
+            continue
         residue_atoms[key].append(atom.Atom(atomnames[i],coordinates[i]))
 
     residues = []
