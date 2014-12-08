@@ -2,6 +2,7 @@ import numpy as np
 from . import atom
 from . import residue
 from . import residue_type
+from . import chain
 
 
 def str_to_atom(s):
@@ -19,6 +20,9 @@ def str_to_atom(s):
 
 
 def str_to_residue(s):
+    """
+    creates an residue from string generated from r.to_str()
+    """
     spl = s.split(",")
     rtype = residue_type.get_rtype(spl[0])
     r = residue.Residue(rtype, spl[1], int(spl[2]), spl[3], spl[4])
@@ -29,3 +33,14 @@ def str_to_residue(s):
         atoms.append(a)
     r.setup_atoms(atoms)
     return r
+
+
+def str_to_chain(s):
+    spl = s.split(";")
+    c = chain.Chain()
+    residues = []
+    for r_str in spl[:-1]:
+        r = str_to_residue(r_str)
+        residues.append(r)
+    c.residues = residues
+    return c

@@ -15,3 +15,10 @@ def get_log_output(func, args):
     func(args)
     output = out.getvalue().strip()
     return output
+
+
+def supress_log_output(func, args):
+    logging.disable(60)
+    result = func(args)
+    logging.disable(0)
+    return result
