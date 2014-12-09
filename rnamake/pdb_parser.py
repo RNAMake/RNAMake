@@ -78,10 +78,13 @@ def parse(pdb_file):
                 break
         if already_has:
             continue
+
         residue_atoms[key].append(atom.Atom(atomnames[i],coordinates[i]))
 
     residues = []
     for key,res_atoms in residue_atoms.iteritems():
+        if len(res_atoms) < 6:
+            continue
         spl = key.split()
         rtype = residue_type.get_rtype(spl[0])
         if rtype is None:
