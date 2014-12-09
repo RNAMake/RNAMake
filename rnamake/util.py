@@ -32,3 +32,12 @@ def center(atoms):
         center += a.coords
 
     return center / float(len(atoms))
+
+
+def base_dir(path):
+    path_spl = path.split("/")
+    return "/".join(path_spl[:-1]) + "/"
+
+def filename(path):
+    path_spl = path.split("/")
+    return path_spl[-1]
