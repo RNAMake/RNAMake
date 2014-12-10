@@ -25,10 +25,10 @@ class X3dnaUnittest(unittest.TestCase):
         # clean up
         os.remove("ref_frames.dat")
 
-    def test_get_basepair_info(self):
+    def test_get_basepairs(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6"
         x3dna = rnamake.x3dna.X3dna()
-        basepairs = x3dna.get_basepair_info(path)
+        basepairs = x3dna.get_basepairs(path)
         if not os.path.isfile("ref_frames.dat"):
             self.fail("ref_frames.dat file should of been generated")
         if not os.path.isfile("p4p6_dssr.out"):
@@ -37,7 +37,7 @@ class X3dnaUnittest(unittest.TestCase):
         os.remove("ref_frames.dat")
         os.remove("p4p6_dssr.out")
 
-    def _test_get_basepair_info_compare(self):
+    def test_get_basepairs_compare(self):
         try:
             import redesign.motif
         except:
@@ -45,7 +45,29 @@ class X3dnaUnittest(unittest.TestCase):
 
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6"
         x3dna = rnamake.x3dna.X3dna()
-        basepairs = x3dna.get_basepair_info(path)
+        basepairs = x3dna.get_basepairs(path)
+        os.remove("ref_frames.dat")
+        os.remove("p4p6_dssr.out")
+
+        try:
+            path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
+            m = redesign.motif.Motif(path)
+        except:
+            self.skipTest("something is wrong cannot load p4p6 with REDESIGN")
+
+        for bp in m.base_pairs:
+            found = 0
+            for xbp in basepairs:
+                if bp.res1.num == xbp.res1.num and bp.res2.num == xbp.res2.num:
+                    found = 1
+                    break
+                if bp.res1.num == xbp.res2.num and bp.res2.num == xbp.res1.num:
+                    found = 1
+                    break
+
+            if not found:
+                print bp.res1,bp.res2
+                self.fail()
 
     def test_generate_dssr_file(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6"
