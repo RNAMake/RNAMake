@@ -18,6 +18,7 @@ def str_to_atom(s):
     coords = [float(x) for x in spl[1:]]
     return atom.Atom(spl[0], np.array(coords))
 
+
 def str_to_residue(s):
     """
     creates an residue from string generated from r.to_str()

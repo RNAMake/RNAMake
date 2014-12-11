@@ -54,3 +54,6 @@ docs/_build/
 target/
 
 #MAC
+.DS_Store
+.ropeproject
+*.swp

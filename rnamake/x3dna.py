@@ -11,6 +11,24 @@ os.environ['X3DNA'] =  settings.RESOURCES_PATH + "x3dna"
 # TODO figure out what operating system is being used
 # TODO create at enum type for basepair types instead of strings
 class X3dna(object):
+    """
+    a simple wrapper for interfacing with the x3dna package for determining the
+    basepairing in a pdb structure. Please support the author of x3dna directory
+    and cite his work and register on his site: http://x3dna.org/
+
+    Data is returned as a list of X3DNA basepair objects which are simplistic
+    containers for storing which residues are contained in a basepair and
+    what the reference frame and type of the basepair is. These are different
+    from basepair.Basepair objects which store the actual atomic information
+    of a basepair
+
+	.. code-block:: python
+        # to get the basepairing information from a pdb, for example test.pdb
+        >>>x3dna = x3dna.X3dna()
+        >>>basepairs = x3dna.get_basepairs("test")
+
+    """
+
     def __init__(self):
         pass
 
@@ -146,7 +164,6 @@ class X3dna(object):
 
         """
         base_dir = util.base_dir(pdb_name)
-
         ref_frames_path = None
         if   os.path.isfile(base_dir + "/ref_frames.dat"):
             ref_frames_path = base_dir + "/ref_frames.dat"

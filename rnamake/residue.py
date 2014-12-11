@@ -3,6 +3,7 @@ import logging
 from . import atom
 from . import residue_type
 from . import util
+from . import basic_io
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -133,7 +134,9 @@ class Residue(object):
 
         self.atoms = [None for x in self.rtype.atom_map.keys()]
         for a in atoms:
-            # self.rtype.fix_common_alt_name(a)
+            name_change = self.rtype.get_correct_atom_name(a)
+            if name_change is not None:
+                a.name = name_change[1]
             if a.name in self.rtype.atom_map:
                 pos = self.rtype.atom_map[a.name]
                 self.atoms[pos] = a
@@ -245,8 +248,6 @@ class Residue(object):
         """
         self.uuid = uuid.uuid1()
 
-
-
     def to_str(self):
         """
         stringifes residue object to string
@@ -259,3 +260,31 @@ class Residue(object):
             else:
                 s += a.to_str() + ","
         return s
+
+    def to_pdb_str(self, acount=1, return_acount=0):
+        """
+        returns pdb formatted of residues coordinate information
+        """
+        s = ""
+        for a in self.atoms:
+            if a is None:
+                continue
+            s += basic_io.PDBLINE_GE100K % \
+                 ('ATOM', acount, a.name, '', self.rtype.name, self.chain_id,
+                  self.num, '', a.coords[0], a.coords[1], a.coords[2], 1.00,
+                  0.00, '', '')
+            acount += 1
+
+        if return_acount:
+            return s,acount
+        else:
+            return s
+
+    def to_pdb(self, fname="residue.pdb"):
+        f = open(fname, "w")
+        s = self.to_pdb_str()
+        f.write(s)
+        f.close()
+
+
+

@@ -11,6 +11,7 @@ import util
 
 
 class ResidueUnittest(unittest.TestCase):
+
     def setUp(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/res_strs.dat"
         f = open(path)
@@ -149,7 +150,7 @@ class ResidueUnittest(unittest.TestCase):
         # check calculations
         phos_atom_names = "P OP2 OP1".split(" ")
         sugar_atom_names = "O5' C5' C4' O4' C3' O3' C1' C2' O2'".split(" ")
-        phos_atoms,sugar_atoms,base_atoms = [],[],[]
+        phos_atoms, sugar_atoms, base_atoms = [], [], []
         for a in residues[1].atoms:
             if a.name in phos_atom_names:
                 phos_atoms.append(a)
@@ -191,8 +192,7 @@ class ResidueUnittest(unittest.TestCase):
         if res.num == copy_res.num:
             self.fail("did not copy num correctly")
 
-
-        print copy_res.name,res.name
+        print copy_res.name, res.name
 
     def test_new_uuid(self):
         res = self.residues[0]
@@ -200,6 +200,11 @@ class ResidueUnittest(unittest.TestCase):
         res.new_uuid()
         if old_uuid == res.uuid:
             self.fail("did not assign new uuid to res")
+
+    def test_to_pdb_str(self):
+        res = self.residues[0]
+        s = res.to_pdb_str()
+
 
 def main():
     if len(sys.argv) == 1:

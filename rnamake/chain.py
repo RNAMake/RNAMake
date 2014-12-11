@@ -1,15 +1,17 @@
-import residue
-
 
 class Chain(object):
+
     """
     Store chain information from pdb file. Stores all residues in chain.
-	Implementation is designed to be extremely lightweight.
+    Implementation is designed to be extremely lightweight.
 
-	Attributes
-	----------
+    :param residues: the residues that are to be included in this chain
+    :type residues: list of residue objects
+
+    Attributes
+    ----------
     `residues` : List of Residue objects
-		The list of residues that belong to this chain will always be in
+        The list of residues that belong to this chain will always be in
         5' to 3' order
 
     """
@@ -59,9 +61,29 @@ class Chain(object):
 
     def copy(self):
         """
-		Returns a deepcopy of the this chain element
-		"""
+        Returns a deepcopy of the this chain element
+        """
         residues = [r.copy() for r in self.residues]
         return Chain(residues)
 
+    def to_str(self):
+        s = ""
+        for r in self.residues:
+            s == r.to_str() + ";"
+        return s
 
+    def to_pdb_str(self, acount=1, return_acount=0):
+        s = ""
+        for r in self.residues:
+            r_str, acount = r.to_pdb_str(acount, 1)
+            s += r_str
+
+        if return_acount:
+            return s, acount
+        else:
+            return s
+
+    def to_pdb(self, fname="chain.pdb"):
+        f = open(fname, "w")
+        f.write(self.to_pdb_str())
+        f.close()

@@ -105,7 +105,22 @@ class StructureUnittest(unittest.TestCase):
         if res is not None:
             self.fail("should not of gotten an error")
 
+    def test_residues(self):
+        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
+        struct = util.supress_log_output(rnamake.structure.Structure,
+                                         path)
 
+        residues = struct.residues()
+        if len(residues) != 157:
+            self.fail()
+
+    def test_atoms(self):
+        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
+        struct = util.supress_log_output(rnamake.structure.Structure,
+                                         path)
+        atoms = struct.atoms()
+        if len(atoms) != 3357:
+            self.fail()
 
 def main():
     unittest.main()

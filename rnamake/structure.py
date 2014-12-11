@@ -1,16 +1,23 @@
-import basic_io
 import pdb_parser
 import chain
 
+
 class Structure(object):
+
     """
     Stores 3D structure information from a pdb file. Stores all chains,
     residues and atoms objects. Implementation is designed to be extremely
     lightweight and capable of performing fast transformations.
 
+    :param pdb: the path of the pdb to load this structure from, optional
+    :type pdb: str
+
+    Attributes
+    ----------
+    `chains` : list of Chain objects that belong to the current structure
     """
 
-    def __init__(self,pdb=None):
+    def __init__(self, pdb=None):
         self.chains = []
 
         if pdb:
@@ -22,24 +29,24 @@ class Structure(object):
 
     def _build_chains(self, residues):
         """
-    	takes all residues and puts into the correct order in chains checking
+        takes all residues and puts into the correct order in chains checking
         for physical connection between O5' and P atoms between residues
 
-    	:param residues: residue objects that belong in this structure
-    	:type residues: List of Residue objects
-    	"""
+        :param residues: residue objects that belong in this structure
+        :type residues: List of Residue objects
+        """
 
         self.chains = []
-        #sort residues so check residues for connection quicker as the next on
-        #in the array will be closest to it by number
+        # sort residues so check residues for connection quicker as the next on
+        # in the array will be closest to it by number
         residues.sort(key=lambda x: x.num)
 
-        while 1:
+        while True:
             current = None
-            #find next 5' end, all chains go from 5' to 3'
-            for i,r in enumerate(residues):
+            # find next 5' end, all chains go from 5' to 3'
+            for i, r in enumerate(residues):
                 five_prime_end = 1
-                for j,r2 in enumerate(residues):
+                for j, r2 in enumerate(residues):
                     if r.connected_to(r2) == -1:
                         five_prime_end = 0
                         break
@@ -50,8 +57,8 @@ class Structure(object):
                 break
             residues.remove(current)
             current_chain_res = []
-            #extend chain until 3' end
-            while current != None:
+            # extend chain until 3' end
+            while current is not None:
                 current_chain_res.append(current)
                 found = 0
                 for r in residues:
@@ -62,7 +69,7 @@ class Structure(object):
                 if found:
                     residues.remove(current)
                 else:
-                    #no more residues to add, make chain object
+                    # no more residues to add, make chain object
                     self.chains.append(chain.Chain(current_chain_res))
                     current = None
 
@@ -70,16 +77,11 @@ class Structure(object):
         """
         Stores the atomic coordinates into an array, so can restore atomic
         cordinates after they have been transformed
-    	"""
-        self.coords = []
-        for c in self.chains:
-            for r in c.residues:
-                for a in r.atoms:
-                    if a is None:
-                        continue
-                    self.coords.append(a.coords)
+        """
+        atoms = self.atoms()
+        self.coords = [a.coords for a in atoms]
 
-    def get_residue(self,num=None,chain_id=None,i_code=None,uuid=None):
+    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
         """
         find a residue based on residue num, chain_id, insert_code and uuid
         will return an error if more then one residue matches search to avoid
@@ -109,10 +111,52 @@ class Structure(object):
                 found.append(r)
 
         if len(found) > 1:
-            raise ValueError("found multiple residues in get_residue(), narrow "+\
-                             "your search")
+            raise ValueError(
+                "found multiple residues in get_residue(), narrow " +
+                "your search")
 
         if len(found) == 0:
             return None
 
         return found[0]
+
+    def residues(self):
+        residues = []
+        for c in self.chains:
+            residues.extend(c.residues)
+        return residues
+
+    def atoms(self):
+        atoms = []
+        for r in self.residues():
+            for a in r.atoms:
+                if a is None:
+                    continue
+                atoms.append(a)
+        return atoms
+
+    def to_str(self):
+        s = ""
+        for c in self.chains:
+            s += c.to_str() + ":"
+        return s
+
+    def to_pdb_str(self):
+        acount = 1
+        s = ""
+        for c in self.chains:
+            c_str, acount = c.to_pdb_str(acount, 1)
+            s += c_str
+        return s
+
+    def to_pdb(self, fname="structure.pdb"):
+        """
+        write structure to pdb file
+
+        :param fname: name of the file of the pdb file you want to write to
+        :type fname: str
+
+        """
+        f = open(fname, "w")
+        f.write(self.to_pdb_str())
+        f.close()
