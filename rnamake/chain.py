@@ -69,7 +69,7 @@ class Chain(object):
     def to_str(self):
         s = ""
         for r in self.residues:
-            s == r.to_str() + ";"
+            s += r.to_str() + ";"
         return s
 
     def to_pdb_str(self, acount=1, return_acount=0):

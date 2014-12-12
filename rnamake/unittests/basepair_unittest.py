@@ -3,6 +3,8 @@ import rnamake.basepair
 import rnamake.structure
 import util
 import numpy as np
+import copy
+
 
 class BasepairUnittest(unittest.TestCase):
 
@@ -58,8 +60,8 @@ class BasepairUnittest(unittest.TestCase):
 
     def test_state_copy(self):
         bpstate = rnamake.basepair.BasepairState(np.eye(3),
-                                                 np.array([1,0,0]),
-                                                 [[1,0,0],[0,1,0]])
+                                                 np.array([1, 0, 0]),
+                                                 [[1, 0, 0], [0, 1, 0]])
 
         cbpstate = bpstate.copy()
         cbpstate.r[0][0] += 1
@@ -69,6 +71,32 @@ class BasepairUnittest(unittest.TestCase):
         cbpstate.sugars[0][0] += 1
         if bpstate.sugars[0][0] == cbpstate.sugars[0][0]:
             self.fail("sugars did not deep copy")
+
+    def test_state(self):
+        bp = self.basepair
+        old_state = bp.bp_state
+        old_d = old_state.d
+        old_sugars = copy.deepcopy(old_state.sugars)
+        bp.res1.get_atom("C1'").coords[0] += 100
+        new_d = old_state.d
+        if old_d[0] != new_d[0]:
+            self.fail("state changed")
+
+        new_state = bp.state()
+        if new_state.d[0] == old_d[0]:
+            self.fail("did not account to change coords")
+
+    def test_copy(self):
+        bp = self.basepair
+        cbp = bp.copy()
+        old_state = cbp.bp_state
+        old_sugars = copy.deepcopy(old_state.sugars)
+        cbp.res1.get_atom("C1'").coords[0] += 100
+
+        if old_sugars[0][0] == old_state.sugars[0][0]:
+            self.fail("failed to update sugars after copy")
+
+
 
 
 def main():

@@ -3,6 +3,7 @@ from . import atom
 from . import residue
 from . import residue_type
 from . import chain
+from . import structure
 
 
 def str_to_atom(s):
@@ -36,6 +37,9 @@ def str_to_residue(s):
 
 
 def str_to_chain(s):
+    """
+    creates a chain from string generated from chain.to_str()
+    """
     spl = s.split(";")
     c = chain.Chain()
     residues = []
@@ -44,3 +48,15 @@ def str_to_chain(s):
         residues.append(r)
     c.residues = residues
     return c
+
+
+def str_to_structure(s):
+    spl = s.split(":")
+    struct = structure.Structure()
+    chains = []
+    for c_str in spl[:-1]:
+        c = str_to_chain(c_str)
+        chains.append(c)
+
+    struct.chains = chains
+    return struct

@@ -81,6 +81,21 @@ class Structure(object):
         atoms = self.atoms()
         self.coords = [a.coords for a in atoms]
 
+    def get_beads(self, excluded_res=[]):
+        """
+        generates 3-bead model residue beads for all residues in current structure.
+
+        :param excluded_res: List of residue objects that are not to be included in clash checks for collisions
+        :type excluded_res: List of Residue objects
+        """
+
+        beads = []
+        for r in self.residues():
+            if r in excluded_res:
+                continue
+            beads.extend(r.get_beads())
+        return beads
+
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
         """
         find a residue based on residue num, chain_id, insert_code and uuid

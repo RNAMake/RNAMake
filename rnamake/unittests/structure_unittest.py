@@ -2,6 +2,7 @@ import unittest
 import os
 import rnamake.structure
 import rnamake.settings
+import rnamake.io
 import util
 
 class StructureUnittest(unittest.TestCase):
@@ -121,6 +122,27 @@ class StructureUnittest(unittest.TestCase):
         atoms = struct.atoms()
         if len(atoms) != 3357:
             self.fail()
+
+    def test_to_str(self):
+        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
+        struct = util.supress_log_output(rnamake.structure.Structure,
+                                         path)
+
+        s = struct.to_str()
+        struct_new = rnamake.io.str_to_structure(s)
+        if len(struct_new.residues()) != len(struct.residues()):
+            self.fail("did not get back all residues")
+
+    def test_get_beads(self):
+        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
+        struct = util.supress_log_output(rnamake.structure.Structure,
+                                         path)
+
+        beads = struct.get_beads()
+        if len(beads) != 470:
+            self.fail("got wrong number of beads")
+
+
 
 def main():
     unittest.main()
