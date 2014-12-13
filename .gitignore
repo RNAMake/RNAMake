@@ -57,3 +57,7 @@ target/
 .DS_Store
 .ropeproject
 *.swp
+
+#Project specific
+rnamake/resources/motifs
+

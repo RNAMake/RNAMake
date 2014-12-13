@@ -57,7 +57,7 @@ def are_points_equal(p1, p2):
 
 def are_matrices_equal(m1, m2):
     for i in range(len(m1)):
-        for j in range(3):
+        for j in range(len(m1[i])):
             if not are_floats_equal(m1[i][j], m2[i][j]):
                 return 0
     return 1

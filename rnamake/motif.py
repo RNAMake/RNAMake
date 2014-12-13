@@ -5,6 +5,10 @@ import basepair
 from . import util
 import io
 import motif_type
+import numpy as np
+
+class MotifException(Exception):
+    pass
 
 class Motif(object):
 
@@ -12,6 +16,28 @@ class Motif(object):
     The basic unit of this project stores the 3D coordinates of a RNA Motif
     as well as the 3DNA parameters such as reference frame and origin for
     each basepair
+
+    .. code-block:: python
+        #creation from motif dir (recommended)
+
+        #creation from a pdb, generates x3dna files at runtime
+        >>> Motif(pdb=test.pdb")
+        <Motif(name='test', ends='0')>
+
+    Attributes
+    ----------
+    `base_pairs` : List of Basepair objects
+        All the basepair info determined from 3DNA
+    `beads` : List of Bead objects
+        All the beads in the 3 bead residue model for all the residues in structure object
+    `dir` : str
+        full path to directory
+    `ends` : List of the Basepair objects
+        that are at the end of Motif this is critical to assemble motifs together its not necessarily the first and last Basepairs
+    `structure` : Structure object
+        holds 3D coordinate data
+    `name` : str
+        the name of the directory without entire path
     """
 
     def __init__(self, mdir=None, pdb=None, mtype=motif_type.UNKNOWN):
@@ -20,15 +46,11 @@ class Motif(object):
             raise ValueError("cannot initiate a Motif with both a mdir and" +
                              "a pdb")
 
-        self.beads = []
-        self.score = 0
-        self.mtype = mtype
+        self.beads, self.score, self.mtype, self.basepairs = [], 0, mtype, []
+        self.mdir, self.name, self.ends = "", "", []
+        #nothing to do
         if mdir is None and pdb is None:
-            self.basepairs = []
-            self.mdir = ""
-            self.name = ""
             return
-
         # supplied a motif directory that already contains ref_frames.dat and
         # dssr output file
         if mdir:
@@ -36,7 +58,6 @@ class Motif(object):
             self.mdir = mdir
             self.name = filename
             self.structure = structure.Structure(mdir + "/" + filename + ".pdb")
-
         # supplied only a pdb, have to create the ref_frames and dssr output
         # locally
         if pdb:
@@ -48,6 +69,13 @@ class Motif(object):
 
         self.basepairs = self._setup_basepairs()
         self.setup_basepair_ends()
+
+    def __repr__(self):
+        """
+        is called when motif is printed
+        """
+        return "<Motif(name='%s', ends='%s')>" % (
+        self.name,len(self.ends))
 
     def _setup_basepairs(self):
         """
@@ -197,7 +225,7 @@ class Motif(object):
         stringifies motif object
         """
         s = self.mdir + "&" + self.name + "&" + str(self.score) + "&" + \
-            self.structure.to_str() + "&"
+            str(self.mtype) + "&" + self.structure.to_str() + "&"
         for bp in self.basepairs:
             s += bp.to_str() + "@"
         s += "&"
@@ -232,24 +260,53 @@ class Motif(object):
         return self.structure.residues()
 
     def copy(self):
+        """
+        performs a deep copy of this motif
+        """
         cmotif = Motif()
         cmotif.name = self.name
         cmotif.mdir = self.mdir
         cmotif.score = self.score
         cmotif.mtype = self.mtype
         cmotif.structure = self.structure.copy()
+        cmotif.beads = [b.copy() for b in self.beads]
+
+        for bp in self.basepairs:
+            new_res1 = cmotif.get_residue(uuid=bp.res1.uuid)
+            new_res2 = cmotif.get_residue(uuid=bp.res2.uuid)
+            # hopefully this doesnt happen anymore
+            if new_res1 is None or new_res2 is None:
+                raise MotifException("could not find a residue during copy")
+            new_r = np.copy(bp.bp_state.r)
+            new_bp = basepair.Basepair(new_res1, new_res2, new_r, bp.bp_type)
+            new_bp.designable = bp.designable
+            new_bp.flipped = bp.flipped
+            cmotif.basepairs.append(new_bp)
+
+        for end in self.ends:
+            index = self.basepairs.index(end)
+            cmotif.ends.append(cmotif.basepairs[index])
+
+        return cmotif
 
 
 def str_to_motif(s):
+    """
+    creates motif from stringified motif, this is created by motif.to_str()
+
+    :param s: stringified motif
+    :type s: str
+    """
     spl = s.split("&")
     m = Motif()
     m.mdir = spl[0]
     m.name = spl[1]
     m.score = float(spl[2])
-    m.structure = io.str_to_structure(spl[3])
+    m.mtype = int(spl[3])
+    m.structure = io.str_to_structure(spl[4])
     m.basepairs = []
 
-    basepair_str = spl[4].split("@")
+    basepair_str = spl[5].split("@")
     for bp_str in basepair_str[:-1]:
         bp_spl = bp_str.split(",")
         res_spl = bp_spl[0].split("-")
@@ -263,7 +320,13 @@ def str_to_motif(s):
         bp.flipped = int(bp_spl[4])
         m.basepairs.append(bp)
 
-    end_indexes = spl[5].split()
+    end_indexes = spl[6].split()
     for index in end_indexes:
         m.ends.append(m.basepairs[int(index)])
     return m
+
+
+def align_motif(ref_bp, motif_end, motif):
+    r1 , r2 = ref_bp.state().r , motif_end.state().r
+    r = r1.T.dot(r2)
+    t = -motif_end.state().d

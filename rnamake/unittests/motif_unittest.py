@@ -11,12 +11,13 @@ class MotifUnittest(unittest.TestCase):
         self.motif = util.supress_log_output(rnamake.motif.Motif, path)
 
     def test_creation(self):
+
         m = rnamake.motif.Motif()
 
     def test_creation_mdir(self):
         try:
             path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
-            m = rnamake.motif.Motif(path)
+            m =  util.supress_log_output(rnamake.motif.Motif, path)
         except:
             self.fail("did not generate motif correctly")
 
@@ -66,6 +67,13 @@ class MotifUnittest(unittest.TestCase):
         m1 = rnamake.motif.str_to_motif(s)
         if len(m1.residues()) != 157:
             self.fail("did not copy all residues correctly")
+
+    def test_copy(self):
+        m = self.motif
+        cm = m.copy()
+
+    def test_align(self):
+        pass
 
 def main():
     unittest.main()

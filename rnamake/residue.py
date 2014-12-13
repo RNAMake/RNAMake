@@ -4,6 +4,7 @@ from . import atom
 from . import residue_type
 from . import util
 from . import basic_io
+import numpy as np
 
 logging.basicConfig()
 logger = logging.getLogger(__name__)
@@ -41,6 +42,8 @@ class Bead(object):
     def __init__(self, center, btype):
         self.center, self.btype = center, btype
 
+    def copy(self):
+        cbead = Bead(np.copy(self.center), self.btype)
 
 class Residue(object):
 
