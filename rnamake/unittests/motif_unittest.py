@@ -60,6 +60,12 @@ class MotifUnittest(unittest.TestCase):
         if diff != 5:
             self.fail("did not exclude ends properly")
 
+    def test_to_str(self):
+        m = self.motif
+        s = m.to_str()
+        m1 = rnamake.motif.str_to_motif(s)
+        if len(m1.residues()) != 157:
+            self.fail("did not copy all residues correctly")
 
 def main():
     unittest.main()

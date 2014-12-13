@@ -96,8 +96,9 @@ class BasepairUnittest(unittest.TestCase):
         if old_sugars[0][0] == old_state.sugars[0][0]:
             self.fail("failed to update sugars after copy")
 
-
-
+    def test_pdb_str(self):
+        bp = self.basepair
+        s = bp.to_pdb_str()
 
 def main():
     unittest.main()

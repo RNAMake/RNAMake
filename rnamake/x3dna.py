@@ -308,7 +308,8 @@ class X3dna(object):
                     break
 
             if not found:
-                basepairs.append(Basepair(res1, res2, None, None))
+                basepairs.append(Basepair(res1, res2, np.eye(3),
+                                          np.array([-1,-1,-1])))
                 basepairs[-1].bp_type = bp_type
         return basepairs
 

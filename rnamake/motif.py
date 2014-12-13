@@ -2,24 +2,27 @@ import itertools
 import x3dna
 import structure
 import basepair
-import util
+from . import util
+import io
+import motif_type
 
 class Motif(object):
+
     """
     The basic unit of this project stores the 3D coordinates of a RNA Motif
     as well as the 3DNA parameters such as reference frame and origin for
     each basepair
     """
 
-    def __init__(self, mdir=None, pdb=None):
+    def __init__(self, mdir=None, pdb=None, mtype=motif_type.UNKNOWN):
         self.structure = structure.Structure()
         if mdir is not None and pdb is not None:
-            raise ValueError("cannot initiate a Motif with both a mdir and" +\
+            raise ValueError("cannot initiate a Motif with both a mdir and" +
                              "a pdb")
 
         self.beads = []
         self.score = 0
-
+        self.mtype = mtype
         if mdir is None and pdb is None:
             self.basepairs = []
             self.mdir = ""
@@ -75,19 +78,19 @@ class Motif(object):
 
     def _assign_bp_primes(self, bp):
         """
-		This is legacy code not sure if I still need it The purpose is to
+                This is legacy code not sure if I still need it The purpose is to
         determine which residue in a Basepair object is going in the 5' and 3'
         direction. How this is calculated is position from a chain end. If
         residue 1 is positioned in the half the chain its called the 5' end and
         if its in the second half its 3'. If its exactly at the 1/2 point then
         the second residue is checked in the same manner.
 
-		:param bp: an end basepair
-		:type bp: Basepair object
-		"""
+                :param bp: an end basepair
+                :type bp: Basepair object
+                """
         res1_pos, res2_pos, res1_total, res2_total = 0, 0, None, None
         for c in self.structure.chains:
-            for i,r in enumerate(c.residues):
+            for i, r in enumerate(c.residues):
                 if bp.res1 == r:
                     res1_pos = i
                     res1_total = len(c.residues)
@@ -95,8 +98,8 @@ class Motif(object):
                     res2_pos = i
                     res2_total = len(c.residues)
 
-        if  res1_pos > res1_total/2 or res2_pos < res2_total/2:
-			bp.res1,bp.res2 = bp.res2,bp.res1
+        if res1_pos > res1_total/2 or res2_pos < res2_total/2:
+            bp.res1, bp.res2 = bp.res2, bp.res1
 
     def setup_basepair_ends(self):
         # TODO revisit this code, is it really necessary?
@@ -108,7 +111,7 @@ class Motif(object):
             if len(c) > 1:
                 chain_ends.append(c.last())
 
-        seen_res_bps = { res : [] for res in chain_ends }
+        seen_res_bps = {res: [] for res in chain_ends}
         for bp in self.basepairs:
             for ce1 in chain_ends:
                 for ce2 in chain_ends:
@@ -138,7 +141,7 @@ class Motif(object):
                     best = bps
 
         # for reproducability
-        best.sort(key = lambda x : x.name())
+        best.sort(key=lambda x: x.name())
         self.ends = best
         return best
 
@@ -190,12 +193,77 @@ class Motif(object):
         return self.beads
 
     def to_str(self):
-        s = self.mdir + "&" + str(self.score) + "&" + \
+        """
+        stringifies motif object
+        """
+        s = self.mdir + "&" + self.name + "&" + str(self.score) + "&" + \
             self.structure.to_str() + "&"
+        for bp in self.basepairs:
+            s += bp.to_str() + "@"
+        s += "&"
+        for end in self.ends:
+            index = self.basepairs.index(end)
+            s += str(index) + " "
+        return s
 
-        #for bp in self.basepairs:
-
+    def to_pdb_str(self):
+        """
+        returns pdb formatted string of motif's structure object
+        """
+        return self.structure.to_pdb_str()
 
     def to_pdb(self, fname="motif.pdb"):
-        pass
+        """
+        writes the current motif's structure to a pdb
+        """
+        return self.structure.to_pdb(frname)
 
+    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
+        """
+        wrapper to self.structure.get_residue()
+        """
+        return self.structure.get_residue(num=num, chain_id=chain_id,
+                                          i_code=i_code, uuid=uuid)
+
+    def residues(self):
+        """
+        wrapper to self.structure.residues()
+        """
+        return self.structure.residues()
+
+    def copy(self):
+        cmotif = Motif()
+        cmotif.name = self.name
+        cmotif.mdir = self.mdir
+        cmotif.score = self.score
+        cmotif.mtype = self.mtype
+        cmotif.structure = self.structure.copy()
+
+
+def str_to_motif(s):
+    spl = s.split("&")
+    m = Motif()
+    m.mdir = spl[0]
+    m.name = spl[1]
+    m.score = float(spl[2])
+    m.structure = io.str_to_structure(spl[3])
+    m.basepairs = []
+
+    basepair_str = spl[4].split("@")
+    for bp_str in basepair_str[:-1]:
+        bp_spl = bp_str.split(",")
+        res_spl = bp_spl[0].split("-")
+        res1_id, res1_num = res_spl[0][0], int(res_spl[0][1:])
+        res2_id, res2_num = res_spl[1][0], int(res_spl[1][1:])
+        res1 = m.get_residue(num=res1_num, chain_id=res1_id)
+        res2 = m.get_residue(num=res2_num, chain_id=res2_id)
+        state = basepair.str_to_basepairstate(bp_spl[1])
+        bp = basepair.Basepair(res1, res2, state.r, bp_spl[1])
+        bp.designable = int(bp_spl[3])
+        bp.flipped = int(bp_spl[4])
+        m.basepairs.append(bp)
+
+    end_indexes = spl[5].split()
+    for index in end_indexes:
+        m.ends.append(m.basepairs[int(index)])
+    return m

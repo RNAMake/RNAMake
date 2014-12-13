@@ -5,7 +5,6 @@ from . import residue_type
 from . import chain
 from . import structure
 
-
 def str_to_atom(s):
     """
     converts string to atom.Atom object format "AtomName X Y Z"
@@ -60,3 +59,4 @@ def str_to_structure(s):
 
     struct.chains = chains
     return struct
+

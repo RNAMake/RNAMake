@@ -85,12 +85,44 @@ class Basepair(object):
         return self.bp_state
 
     def to_str(self):
+        """
+        stringify basepair object
+        """
         s = self.name() + "," + self.bp_state.to_str() + "," + \
             self.bp_type + "," + str(self.designable) + "," + \
             str(self.flipped)
         return s
 
+    def to_pdb_str(self, acount=1, return_acount=0):
+        """
+        writes basepair object to a pdb formmatted string
 
+        :param acount: the atom index start (optional)
+        :param return_acount: whether the final atom index should be returned
+            (optional)
+
+        :type acount: int
+        :type return_acount: int
+        """
+        s = ""
+        for r in self.residues():
+            r_str, acount = r.to_pdb_str(acount, 1)
+            s += r_str
+        if return_acount:
+            return s, acount
+        else:
+            return s
+
+    def to_pdb(self, fname="basepair.pdb"):
+        """
+        write basepair object to pdb file
+
+        :param fname" the file you want to write the basepair too
+        :type fname: str
+        """
+        f = open(fname)
+        f.write ( self.to_pdb_str() )
+        f.close()
 
 class BasepairState(object):
 
@@ -173,3 +205,15 @@ class BasepairState(object):
             basic_io.matrix_to_str(self.r) + ";" +\
             basic_io.matrix_to_str(self.sugars)
         return s
+
+
+def str_to_basepairstate(s):
+    """
+    convert stringified basepair back to a basepair object see
+    basepairstate.to_str()
+    """
+    spl = s.split(";")
+    d = basic_io.str_to_point(spl[0])
+    r = basic_io.str_to_matrix(spl[1])
+    sugars = basic_io.str_to_matrix(spl[2])
+    return BasepairState(r, d, sugars)

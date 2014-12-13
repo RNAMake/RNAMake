@@ -175,3 +175,13 @@ class Structure(object):
         f = open(fname, "w")
         f.write(self.to_pdb_str())
         f.close()
+
+    def copy(self):
+        """
+        creates a deep copy of this structure
+        """
+        cstruct = Structure()
+        for c in self.chains:
+            cc = c.copy()
+            cstruct.chains.append(cc)
+        return cstruct
