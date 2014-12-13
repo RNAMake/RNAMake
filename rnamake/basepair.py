@@ -1,4 +1,5 @@
 from . import util
+from . import basic_io
 import numpy as np
 
 
@@ -83,6 +84,13 @@ class Basepair(object):
         self.bp_state.d = d
         return self.bp_state
 
+    def to_str(self):
+        s = self.name() + "," + self.bp_state.to_str() + "," + \
+            self.bp_type + "," + str(self.designable) + "," + \
+            str(self.flipped)
+        return s
+
+
 
 class BasepairState(object):
 
@@ -156,3 +164,12 @@ class BasepairState(object):
         return BasepairState(np.array(self.r, copy=True),
                              np.array(self.d, copy=True),
                              [coord[:] for coord in self.sugars])
+    def to_str(self):
+        """
+        converts basepairstate into a string
+        """
+
+        s = basic_io.point_to_str(self.d) + ";" + \
+            basic_io.matrix_to_str(self.r) + ";" +\
+            basic_io.matrix_to_str(self.sugars)
+        return s

@@ -6,9 +6,9 @@ import util
 
 class Motif(object):
     """
-	The basic unit of this project stores the 3D coordinates of a RNA Motif
-	as well as the 3DNA parameters such as reference frame and origin for
-	each basepair
+    The basic unit of this project stores the 3D coordinates of a RNA Motif
+    as well as the 3DNA parameters such as reference frame and origin for
+    each basepair
     """
 
     def __init__(self, mdir=None, pdb=None):
@@ -16,6 +16,9 @@ class Motif(object):
         if mdir is not None and pdb is not None:
             raise ValueError("cannot initiate a Motif with both a mdir and" +\
                              "a pdb")
+
+        self.beads = []
+        self.score = 0
 
         if mdir is None and pdb is None:
             self.basepairs = []
@@ -65,9 +68,35 @@ class Motif(object):
                 raise ValueError("cannot find residues in basepair")
 
             bp = basepair.Basepair(res1, res2, xbp.r, xbp.bp_type)
+            self._assign_bp_primes(bp)
             basepairs.append(bp)
 
         return basepairs
+
+    def _assign_bp_primes(self, bp):
+        """
+		This is legacy code not sure if I still need it The purpose is to
+        determine which residue in a Basepair object is going in the 5' and 3'
+        direction. How this is calculated is position from a chain end. If
+        residue 1 is positioned in the half the chain its called the 5' end and
+        if its in the second half its 3'. If its exactly at the 1/2 point then
+        the second residue is checked in the same manner.
+
+		:param bp: an end basepair
+		:type bp: Basepair object
+		"""
+        res1_pos, res2_pos, res1_total, res2_total = 0, 0, None, None
+        for c in self.structure.chains:
+            for i,r in enumerate(c.residues):
+                if bp.res1 == r:
+                    res1_pos = i
+                    res1_total = len(c.residues)
+                elif bp.res2 == r:
+                    res2_pos = i
+                    res2_total = len(c.residues)
+
+        if  res1_pos > res1_total/2 or res2_pos < res2_total/2:
+			bp.res1,bp.res2 = bp.res2,bp.res1
 
     def setup_basepair_ends(self):
         # TODO revisit this code, is it really necessary?
@@ -114,6 +143,25 @@ class Motif(object):
         return best
 
     def get_basepair(self, res1=None, res2=None, uuid1=None, uuid2=None):
+        """
+        locates a Basepair object based on residue objects or uuids if nothing
+        is supplied you will get back all the basepairs in the motif. The way
+        to make sure you will only get one basepair back is to supply BOTH
+        res1 and res2 OR uuid1 and uuid2, I have left it open like this
+        because it is sometimes useful to get all basepairs that a single
+        residue is involved
+
+        :param res1: First residue
+        :param res2: Second residue
+        :param uuid1: First residue uuid
+        :param uuid2: Second residue uuid
+
+        :type res1: Residue object
+        :type res2: Residue object
+        :type uuid1: uuid object
+        :type uuid2: uuid object
+        """
+
         found = []
         for bp in self.basepairs:
             if res1 is not None and (res1 != bp.res1 and res1 != bp.res2):
@@ -129,4 +177,25 @@ class Motif(object):
             found.append(bp)
         return found
 
+    def get_beads(self, excluded_ends=None, excluded_res=None):
+        excluded = []
+        if excluded_ends:
+            for end in excluded_ends:
+                excluded.extend(end.residues())
+
+        if excluded_res:
+            excluded.extend(excluded_res)
+
+        self.beads = self.structure.get_beads(excluded)
+        return self.beads
+
+    def to_str(self):
+        s = self.mdir + "&" + str(self.score) + "&" + \
+            self.structure.to_str() + "&"
+
+        #for bp in self.basepairs:
+
+
+    def to_pdb(self, fname="motif.pdb"):
+        pass
 

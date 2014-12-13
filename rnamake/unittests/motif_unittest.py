@@ -38,7 +38,27 @@ class MotifUnittest(unittest.TestCase):
         bp = m.basepairs[0]
 
         found = m.get_basepair(res1=bp.res1, res2=bp.res2)
-        print len(found)
+        if bp != found[0]:
+            self.fail("did not retreive correct basepair")
+
+        found = m.get_basepair(uuid1=bp.res1.uuid, uuid2=bp.res2.uuid)
+        if bp != found[0]:
+            self.fail("did not retreive correct basepair")
+
+    def test_get_beads(self):
+        m = self.motif
+        beads = m.get_beads()
+        org_count = len(beads)
+
+        beads = m.get_beads(excluded_res=[m.structure.residues()[1]])
+        diff = org_count - len(beads)
+        if diff != 3:
+            self.fail("did not exclude res properly")
+
+        beads = m.get_beads([m.basepairs[0]])
+        diff = org_count - len(beads)
+        if diff != 5:
+            self.fail("did not exclude ends properly")
 
 
 def main():
