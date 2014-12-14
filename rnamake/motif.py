@@ -70,6 +70,7 @@ class Motif(object):
 
         self.basepairs = self._setup_basepairs()
         self.setup_basepair_ends()
+        self._cache_basepair_frames()
 
     def __repr__(self):
         """
@@ -129,6 +130,11 @@ class Motif(object):
 
         if res1_pos > res1_total/2 or res2_pos < res2_total/2:
             bp.res1, bp.res2 = bp.res2, bp.res1
+
+    def _cache_basepair_frames(self):
+        self.cached_rotations = []
+        for bp in self.basepairs:
+            self.cached_rotations.append(np.copy(bp.state().r))
 
     def setup_basepair_ends(self):
         # TODO revisit this code, is it really necessary?
@@ -262,9 +268,14 @@ class Motif(object):
 
     def transform(self, t):
         """
-        wrapper for self.structure.transform
+        perform an transformation of both structure and basepairs
         """
-        return self.structure.transform(t)
+        r_T = t.rotation().T
+        for bp in self.basepairs:
+            transformed = np.dot(bp.state().r, r_T)
+            bp.state().r = transformed
+
+        self.structure.transform(t)
 
     def move(self, p):
         """
@@ -301,6 +312,18 @@ class Motif(object):
             cmotif.ends.append(cmotif.basepairs[index])
 
         return cmotif
+
+    def reset(self):
+        """
+        reset both the structure and basepair rotations, so a new
+        transformation object can be applied
+        """
+
+        for i,bp in enumerate(self.basepairs):
+            bp.state().r = self.cached_rotations[i]
+
+        self.structure.restore_coords()
+
 
 
 def str_to_motif(s):
@@ -351,7 +374,6 @@ def align_motif(ref_bp, motif_end, motif):
     :type ref_bp: Basepair object
     :type motif_end: Basepair object
     :type motif: Motif object
-
     """
 
     r1 , r2 = ref_bp.state().r , motif_end.state().r

@@ -4,7 +4,10 @@ import rnamake.motif
 import rnamake.settings
 import rnamake.motif_library
 import rnamake.motif_type
+import rnamake.transform
 import util
+import numerical
+import numpy as np
 
 class MotifUnittest(unittest.TestCase):
 
@@ -79,11 +82,32 @@ class MotifUnittest(unittest.TestCase):
         mlib = rnamake.motif_library.MotifLibrary(mtype)
         m1 = mlib.get_motif("HELIX.IDEAL")
         m2 = mlib.get_motif("HELIX.IDEAL")
-        print m1.ends[1].state().r
+        #print m1.ends[1].state().r
 
         rnamake.motif.align_motif(m1.ends[1], m2.ends[0], m2)
-        m1.to_pdb("m1.pdb")
-        m2.to_pdb("m2.pdb")
+        #m1.to_pdb("m1.pdb")
+        #m2.to_pdb("m2.pdb")
+
+    def test_transform(self):
+        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
+        m = rnamake.motif.Motif(path)
+        r = np.random.random([3,3])
+        d = np.random.random([3])
+        t = rnamake.transform.Transform(r, d)
+        old_r = m.basepairs[0].state().r
+        m.transform(t)
+        new_r = m.basepairs[0].state().r
+        if numerical.are_matrices_equal(old_r, new_r):
+            self.fail("rotations should be different")
+
+        m.reset()
+        new_r = m.basepairs[0].state().r
+        if not numerical.are_matrices_equal(old_r, new_r):
+            self.fail("rotations should be different")
+
+
+
+
 
 
 
