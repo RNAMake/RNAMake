@@ -35,6 +35,9 @@ class Basepair(object):
         """
         return [self.res1, self.res2]
 
+    def c1_prime_coords(self):
+        return [self.res1.get_atom("C1'").coords,
+                self.res2.get_atom("C1'").coords]
     def partner(self, res):
         """
         get the other basepairing partner of a residue will throw an error

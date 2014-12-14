@@ -340,15 +340,44 @@ def str_to_motif(s):
 
 
 def align_motif(ref_bp, motif_end, motif):
+    """
+    This is the workhorse of the entire suite. Aligns one end of a motif to
+    the reference frame and origin of a Basepair object.
+
+    :param ref_bp: the base pair that the motif end is going to align too
+    :param motif_end: the motif end basepair to overly with the ref_bp
+    :param motif: the motif object that you want to align
+
+    :type ref_bp: Basepair object
+    :type motif_end: Basepair object
+    :type motif: Motif object
+
+    """
+
     r1 , r2 = ref_bp.state().r , motif_end.state().r
     r = r1.T.dot(r2)
     trans = -motif_end.state().d
     t = transform.Transform(r, trans)
 
     motif.transform(t)
-    diff = np.dot(trans, t.rotation().T) + t.translation()
-    #print -motif_end.state().d
-    #print diff
     bp_pos_diff = ref_bp.state().d - motif_end.state().d
     motif.move(bp_pos_diff)
+
+    #alignment is by center of basepair, it can be slightly improved by
+    #aligning the c1' sugars
+    res1_coord, res2_coord = motif_end.c1_prime_coords()
+    ref_res1_coord, ref_res2_coord = ref_bp.c1_prime_coords()
+
+    dist1 = util.distance(res1_coord, ref_res1_coord)
+    dist2 = util.distance(res2_coord, ref_res1_coord)
+
+    if dist1 < dist2:
+        sugar_diff_1 = ref_res1_coord - res1_coord
+        sugar_diff_2 = ref_res2_coord - res2_coord
+    else:
+        sugar_diff_1 = ref_res1_coord - res2_coord
+        sugar_diff_2 = ref_res2_coord - res1_coord
+
+    if dist1 < 5 or dist2 < 5:
+        motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )
 
