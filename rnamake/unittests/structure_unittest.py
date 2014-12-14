@@ -3,7 +3,10 @@ import os
 import rnamake.structure
 import rnamake.settings
 import rnamake.io
+import rnamake.transform
 import util
+import numerical
+import numpy as np
 
 class StructureUnittest(unittest.TestCase):
 
@@ -141,6 +144,73 @@ class StructureUnittest(unittest.TestCase):
         beads = struct.get_beads()
         if len(beads) != 470:
             self.fail("got wrong number of beads")
+
+    def test_transform_compare(self):
+        import redesign.util
+        import redesign.motif
+
+        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
+        m = redesign.motif.Motif(path)
+
+        r = np.random.random([3,3])
+        d = np.random.random([3])
+        old_t = redesign.util.Tf(r,d)
+        old_struct = m.structure
+
+        old_struct.transform(old_t)
+
+        t = rnamake.transform.Transform(r, d)
+        struct = rnamake.structure.Structure(path + "/p4p6.pdb")
+        struct.transform(t)
+
+        atoms = struct.atoms()
+        for i in range(len(old_struct.transformed_coords)):
+            if not numerical.are_points_equal(
+                old_struct.transformed_coords[i],
+                atoms[i].coords):
+                self.fail("coords not the same")
+
+    def test_transform(self):
+        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
+        r = np.random.random([3,3])
+        d = np.random.random([3])
+        t = rnamake.transform.Transform(r, d)
+        struct = rnamake.structure.Structure(path + "/p4p6.pdb")
+        struct.transform(t)
+        if numerical.are_points_equal(struct.coords[0],
+                                      struct.atoms()[0].coords):
+            self.fail("coords did not change")
+
+    def test_restore_coords(self):
+        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
+        r = np.random.random([3,3])
+        d = np.random.random([3])
+        t = rnamake.transform.Transform(r, d)
+        struct = rnamake.structure.Structure(path + "/p4p6.pdb")
+        org_coords = struct.coords[0]
+        struct.transform(t)
+        struct.restore_coords()
+        new_coords = struct.atoms()[0].coords
+        if not numerical.are_points_equal(org_coords, new_coords):
+            self.fail("coords should be the same")
+
+        struct.transform(t)
+        new_coords = struct.atoms()[0].coords
+        if numerical.are_points_equal(org_coords, new_coords):
+            self.fail("coords should not be the same")
+
+    def test_move(self):
+        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
+        d = np.random.random([3])
+        struct = rnamake.structure.Structure(path + "/p4p6.pdb")
+        old_coords = struct.atoms()[0].coords
+        struct.move(d)
+        new_coords = struct.atoms()[0].coords
+        struct.restore_coords()
+        struct.move(d)
+        if numerical.are_points_equal(struct.coords[0], new_coords):
+            self.fail()
+
 
 
 

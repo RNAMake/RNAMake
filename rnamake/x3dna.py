@@ -113,7 +113,6 @@ class X3dna(object):
         """
         f = open(ref_frames_path)
         lines = f.readlines()
-        lines.pop()
         f.close()
 
         p = re.compile('(\w+)\:\.*(\d+)\_\:\[\.*\w+\]\w+ \- (\w+)\:\.*(\d+)')

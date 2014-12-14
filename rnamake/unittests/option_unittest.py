@@ -53,6 +53,13 @@ class OptionUnittest(unittest.TestCase):
         if options.get("test") != 5:
             self.fail("did not retreive value correctly")
 
+    def test_contains(self):
+        options = rnamake.option.Options()
+        options.add("test", 5)
+        result = "test" in options
+        if result != True:
+            self.fail()
+
 def main():
     unittest.main()
 

@@ -7,17 +7,17 @@ class Base(object):
 
     @abc.abstractmethod
     def setup_options_and_constraints(self):
-        self.options = self.set_default_options()
-        self.constraints = {}
+        options = option.Options()
+        options.add('test' , 5)
+        options.add('test2', "test")
 
-    @abc.abstractmethod
-    def set_default_options(self):
-        return { 'test' : None, 'test2' : None }
+        self.options = options
+        self.constraints = {}
 
     def set_options(self, options, error=1):
         for key in options:
             if   key in self.options:
-                self.options[key] = options[keyi]
+                self.options.set(key, options[key])
             elif not error:
                 pass
             else:
@@ -35,9 +35,9 @@ class Base(object):
     def option(self, option, value=None):
         if option in self.options:
             if value is None:
-                return self.options[option]
+                return self.options.get(option)
             else:
-                self.options[option] = value
+                self.options.set(option, value)
         else:
             raise ValueError("invalid option " + option)
 

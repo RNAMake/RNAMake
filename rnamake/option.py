@@ -25,12 +25,25 @@ class Option(object):
         self.value, self.otype = value, otype
 
 class Options(object):
-    def __init__(self):
+    """
+    holds the options for a class derived from Base. Checks for correct type
+    of option values
+
+    Attributes
+    ----------
+    `options` : Dict of Option objects
+        stores all the current options
+    """
+    def __init__(self, options={}):
         self.options = {}
+        self.dict_add(options)
 
     def __repr__(self):
         pass
 
+    def dict_add(self, options):
+        for k,v in options.iteritems():
+            self.add(k, v)
     def add(self, name, value):
         if name in self.options:
             raise ValueError("cannot add option "+ name +", already exists")
@@ -56,3 +69,5 @@ class Options(object):
 
         return self.options[name].value
 
+    def __contains__(self, name):
+        return name in self.options

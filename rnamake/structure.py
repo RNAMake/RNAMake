@@ -1,6 +1,6 @@
 import pdb_parser
 import chain
-
+import numpy as np
 
 class Structure(object):
 
@@ -23,6 +23,8 @@ class Structure(object):
         if pdb:
             residues = pdb_parser.parse(pdb)
             self._build_chains(residues)
+
+        self._cache_coords()
 
     def __repr(self):
         return "<Structure( Chains: %s>" % (len(self.chains))
@@ -184,4 +186,27 @@ class Structure(object):
         for c in self.chains:
             cc = c.copy()
             cstruct.chains.append(cc)
+
+        cstruct._cache_coords()
+
         return cstruct
+
+    def restore_coords(self):
+        self._update_coords(self.coords)
+
+    def _update_coords(self, new_coords):
+        for i,a in enumerate(self.atoms()):
+            a.coords = new_coords[i]
+
+    def transform(self, t):
+        transformed_coords = np.dot(self.coords, t.rotation().T) + \
+                             t.translation()
+
+        self._update_coords(transformed_coords)
+
+    def move(self, p):
+        for a in self.atoms():
+            a.coords += p
+
+
+

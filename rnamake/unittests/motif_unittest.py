@@ -2,6 +2,8 @@ import unittest
 import os
 import rnamake.motif
 import rnamake.settings
+import rnamake.motif_library
+import rnamake.motif_type
 import util
 
 class MotifUnittest(unittest.TestCase):
@@ -73,7 +75,20 @@ class MotifUnittest(unittest.TestCase):
         cm = m.copy()
 
     def test_align(self):
-        pass
+        mtype = rnamake.motif_type.HELIX
+        mlib = rnamake.motif_library.MotifLibrary(mtype)
+        m1 = mlib.get_motif("HELIX.IDEAL")
+        m2 = mlib.get_motif("HELIX.IDEAL")
+        print m1.ends[1].state().r
+
+        rnamake.motif.align_motif(m1.ends[1], m2.ends[0], m2)
+        m1.to_pdb("m1.pdb")
+        m2.to_pdb("m2.pdb")
+
+
+
+
+
 
 def main():
     unittest.main()

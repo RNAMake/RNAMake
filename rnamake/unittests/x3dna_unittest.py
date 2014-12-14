@@ -87,6 +87,14 @@ class X3dnaUnittest(unittest.TestCase):
         if res1 == res3:
             self.fail("residues should not be equal")
 
+    def test_helix(self):
+        path = rnamake.settings.MOTIF_DIRS + "helices/HELIX.IDEAL/HELIX.IDEAL"
+        x3dna = rnamake.x3dna.X3dna()
+        basepairs = x3dna.get_basepairs(path)
+        # for bp in basepairs:
+        #    print bp.res1, bp.res2
+        #    print bp.r
+
 
 def main():
     unittest.main()

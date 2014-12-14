@@ -9,12 +9,20 @@ class BaseUnittest(unittest.TestCase):
         except:
             self.fail("got an error I did not expect")
 
-    def _test_option(self):
+    def test_option(self):
         base = rnamake.base.Base()
         base.option("test", 1)
 
         if base.option("test") != 1:
             self.fail("did not get option back")
+
+    def test_set_options(self):
+        base = rnamake.base.Base()
+        options = {'test' : 10, 'test2' : "test2" }
+        base.set_options(options)
+
+        if base.option('test') != 10:
+            self.fail("did not set option value correctly")
 
 
 def main():

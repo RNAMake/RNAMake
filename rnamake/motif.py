@@ -2,6 +2,7 @@ import itertools
 import x3dna
 import structure
 import basepair
+import transform
 from . import util
 import io
 import motif_type
@@ -41,7 +42,6 @@ class Motif(object):
     """
 
     def __init__(self, mdir=None, pdb=None, mtype=motif_type.UNKNOWN):
-        self.structure = structure.Structure()
         if mdir is not None and pdb is not None:
             raise ValueError("cannot initiate a Motif with both a mdir and" +
                              "a pdb")
@@ -50,6 +50,7 @@ class Motif(object):
         self.mdir, self.name, self.ends = "", "", []
         #nothing to do
         if mdir is None and pdb is None:
+            self.structure = structure.Structure()
             return
         # supplied a motif directory that already contains ref_frames.dat and
         # dssr output file
@@ -163,7 +164,7 @@ class Motif(object):
                     res.append(r)
                 if fail:
                     continue
-                bps.append(bps)
+                bps.append(bp)
                 if len(res) > best_count:
                     best_count = len(res)
                     best = bps
@@ -244,7 +245,7 @@ class Motif(object):
         """
         writes the current motif's structure to a pdb
         """
-        return self.structure.to_pdb(frname)
+        return self.structure.to_pdb(fname)
 
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
         """
@@ -258,6 +259,18 @@ class Motif(object):
         wrapper to self.structure.residues()
         """
         return self.structure.residues()
+
+    def transform(self, t):
+        """
+        wrapper for self.structure.transform
+        """
+        return self.structure.transform(t)
+
+    def move(self, p):
+        """
+        wrapper for self.structure.move
+        """
+        return self.structure.move(p)
 
     def copy(self):
         """
@@ -329,4 +342,13 @@ def str_to_motif(s):
 def align_motif(ref_bp, motif_end, motif):
     r1 , r2 = ref_bp.state().r , motif_end.state().r
     r = r1.T.dot(r2)
-    t = -motif_end.state().d
+    trans = -motif_end.state().d
+    t = transform.Transform(r, trans)
+
+    motif.transform(t)
+    diff = np.dot(trans, t.rotation().T) + t.translation()
+    #print -motif_end.state().d
+    #print diff
+    bp_pos_diff = ref_bp.state().d - motif_end.state().d
+    motif.move(bp_pos_diff)
+
