@@ -108,16 +108,16 @@ class Motif(object):
 
     def _assign_bp_primes(self, bp):
         """
-                This is legacy code not sure if I still need it The purpose is to
+        This is legacy code not sure if I still need it The purpose is to
         determine which residue in a Basepair object is going in the 5' and 3'
         direction. How this is calculated is position from a chain end. If
         residue 1 is positioned in the half the chain its called the 5' end and
         if its in the second half its 3'. If its exactly at the 1/2 point then
         the second residue is checked in the same manner.
 
-                :param bp: an end basepair
-                :type bp: Basepair object
-                """
+        :param bp: an end basepair
+        :type bp: Basepair object
+        """
         res1_pos, res2_pos, res1_total, res2_total = 0, 0, None, None
         for c in self.structure.chains:
             for i, r in enumerate(c.residues):
@@ -180,7 +180,8 @@ class Motif(object):
         self.ends = best
         return best
 
-    def get_basepair(self, res1=None, res2=None, uuid1=None, uuid2=None):
+    def get_basepair(self, bp_uuid=None, res1=None, res2=None, uuid1=None,
+                     uuid2=None):
         """
         locates a Basepair object based on residue objects or uuids if nothing
         is supplied you will get back all the basepairs in the motif. The way
@@ -202,6 +203,8 @@ class Motif(object):
 
         found = []
         for bp in self.basepairs:
+            if bp_uuid is not None and bp_uuid != bp.uuid:
+                continue
             if res1 is not None and (res1 != bp.res1 and res1 != bp.res2):
                 continue
             if res2 is not None and (res2 != bp.res1 and res2 != bp.res2):
@@ -266,6 +269,8 @@ class Motif(object):
         """
         return self.structure.residues()
 
+    def chains(self):
+        return self.structure.chains
     def transform(self, t):
         """
         perform an transformation of both structure and basepairs
@@ -294,6 +299,7 @@ class Motif(object):
         cmotif.mtype = self.mtype
         cmotif.structure = self.structure.copy()
         cmotif.beads = [b.copy() for b in self.beads]
+        cmotif.cached_rotations = self.cached_rotations
 
         for bp in self.basepairs:
             new_res1 = cmotif.get_residue(uuid=bp.res1.uuid)
@@ -305,6 +311,7 @@ class Motif(object):
             new_bp = basepair.Basepair(new_res1, new_res2, new_r, bp.bp_type)
             new_bp.designable = bp.designable
             new_bp.flipped = bp.flipped
+            new_bp.uuid = bp.uuid
             cmotif.basepairs.append(new_bp)
 
         for end in self.ends:
@@ -322,8 +329,11 @@ class Motif(object):
         for i,bp in enumerate(self.basepairs):
             bp.state().r = self.cached_rotations[i]
 
-        self.structure.restore_coords()
+        for end in self.ends:
+            end.flip(0)
 
+        self.structure.restore_coords()
+        self.beads = []
 
 
 def str_to_motif(s):

@@ -38,6 +38,15 @@ class MotifLibraryUnittest(unittest.TestCase):
         except:
             self.fail("did not get the error I expected")
 
+    def test_get_motif_2(self):
+        mtype = rnamake.motif_type.HELIX
+        mlib = rnamake.motif_library.MotifLibrary(mtype)
+        m = mlib.get_motif("HELIX.IDEAL")
+        m1 = mlib.get_motif("HELIX.IDEAL")
+        print m.ends[0].d()
+        print m1.ends[0].d()
+
+
 
 def main():
     unittest.main()

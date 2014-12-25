@@ -8,7 +8,7 @@ class Chain(object):
     :param residues: the residues that are to be included in this chain
     :type residues: list of residue objects
 
-    Attributes
+    Attributes:
     ----------
     `residues` : List of Residue objects
         The list of residues that belong to this chain will always be in
@@ -43,7 +43,7 @@ class Chain(object):
         """
         return self.residues[-1]
 
-    def subchain(self, start, end):
+    def subchain(self, start, end=None):
         """
         Creates a new chain from a subsection of the residues in the current
         chain.
@@ -56,6 +56,9 @@ class Chain(object):
         """
         if start < 0:
             raise ValueError("start cannot be less then 0")
+
+        if end is None:
+            end = len(self.residues)
 
         return Chain(self.residues[start:end])
 

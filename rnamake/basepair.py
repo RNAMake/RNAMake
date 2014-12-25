@@ -1,6 +1,7 @@
 from . import util
 from . import basic_io
 import numpy as np
+import uuid
 
 
 class Basepair(object):
@@ -12,6 +13,7 @@ class Basepair(object):
         self.bp_type = bp_type
         self.flipped = 0
         self.designable = 0
+        self.uuid = uuid.uuid1()
 
     def _get_atoms(self):
         atoms = []
@@ -59,10 +61,10 @@ class Basepair(object):
             "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
 
     def flip(self, flip):
-        if self.flip == flip:
+        if self.flipped == flip:
             return
         else:
-            self.state.flip()
+            self.state().flip()
             self.flipped = flip
 
     def copy(self):
@@ -76,6 +78,7 @@ class Basepair(object):
         cbp.bp_type = self.bp_type
         cbp.flipped = self.flipped
         cbp.designable = self.designable
+        cbp.uuid = self.uuid
         return cbp
 
     def state(self):
@@ -86,6 +89,12 @@ class Basepair(object):
         d = util.center(self.atoms)
         self.bp_state.d = d
         return self.bp_state
+
+    def r(self):
+        return self.bp_state.r
+
+    def d(self):
+        return util.center(self.atoms)
 
     def to_str(self):
         """

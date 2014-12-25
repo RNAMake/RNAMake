@@ -43,7 +43,7 @@ class Bead(object):
         self.center, self.btype = center, btype
 
     def copy(self):
-        cbead = Bead(np.copy(self.center), self.btype)
+        return  Bead(np.copy(self.center), self.btype)
 
 class Residue(object):
 

@@ -44,6 +44,10 @@ class Options(object):
     def dict_add(self, options):
         for k,v in options.iteritems():
             self.add(k, v)
+
+    def dict_set(self, options):
+        for k,v in options.iteritems():
+            self.set(k, v)
     def add(self, name, value):
         if name in self.options:
             raise ValueError("cannot add option "+ name +", already exists")

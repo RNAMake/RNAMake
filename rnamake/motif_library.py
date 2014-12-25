@@ -7,6 +7,7 @@ from . import util
 class MotifLibrary(object):
     def __init__(self, libtype=None, libdir=None, libfile=None):
         self.motif_paths = {}
+        self.mtype = motif_type.UNKNOWN
         self.motifs = {}
         self._parse_args(libtype, libdir, libfile)
 
@@ -16,6 +17,7 @@ class MotifLibrary(object):
 
         if mname not in self.motifs:
             self.motifs[mname] = motif.Motif(self.motif_paths[mname])
+            self.motifs[mname].mtype = self.mtype
 
         return self.motifs[mname].copy()
 
@@ -27,6 +29,7 @@ class MotifLibrary(object):
         if   libtype is not None:
             if libtype not in lib_paths:
                 raise ValueError("libtype " + libtype + "is not recognized")
+            self.mtype = libtype
             type_dir = settings.MOTIF_DIRS + lib_paths[libtype]
             self._get_motifs_from_dir(type_dir)
         elif libdir is not None:
