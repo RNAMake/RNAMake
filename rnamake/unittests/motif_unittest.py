@@ -2,12 +2,13 @@ import unittest
 import os
 import rnamake.motif
 import rnamake.settings
-import rnamake.motif_library
+import rnamake.resource_manager
 import rnamake.motif_type
 import rnamake.transform
 import util
 import numerical
 import numpy as np
+
 
 class MotifUnittest(unittest.TestCase):
 

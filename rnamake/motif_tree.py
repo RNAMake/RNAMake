@@ -46,14 +46,16 @@ class MotifTree(base.Base):
 
     """
 
-    def __init__(self, motif=None, **options):
+    def __init__(self, m=None, **options):
         self.setup_options_and_constraints()
         self.options.dict_set(options)
 
-        if motif is None:
+        if m is None:
             head = self._get_default_head()
         else:
-            head = MotifTreeNode(motif, 0, 0, 0)
+            head = MotifTreeNode(m.copy(), 0, 0, 0)
+            if self.option('sterics') == 1:
+                head.motif.get_beads(head.motif.ends)
 
         self.nodes = [ head ]
         self.clash_radius = 2.5
@@ -226,10 +228,9 @@ class MotifTree(base.Base):
 
 
 class MotifTreeNode(object):
-    def __init__(self, motif, level, index, flip):
-        self.motif, self.level, self.index, self.flip = \
-            motif, level, index, flip
-        self.end_status = { end.uuid : 1 for end in motif.ends }
+    def __init__(self, m, level, index, flip):
+        self.motif, self.level, self.index, self.flip = m, level, index, flip
+        self.end_status = { end.uuid : 1 for end in self.motif.ends }
         self.connections = []
 
     def available_ends(self):
@@ -239,6 +240,7 @@ class MotifTreeNode(object):
                 if end.uuid == uuid:
                     ends.append(end)
                     break
+        ends.sort(key=lambda x : self.motif.ends.index(x), reverse=True)
         return ends
 
     def connected_nodes(self):
@@ -254,6 +256,7 @@ class MotifTreeNode(object):
             return 1
         else:
             return 0
+
 
 class MotifTreeConnection(object):
     """

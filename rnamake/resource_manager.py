@@ -21,4 +21,8 @@ class ResourceManager(object):
 
         raise ValueError("cannot find " + mname)
 
+    def add_lib_path(self, path):
+        self.mlibs[path] = motif_library.MotifLibrary(libdir=path)
+
+
 

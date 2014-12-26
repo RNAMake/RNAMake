@@ -211,7 +211,14 @@ class StructureUnittest(unittest.TestCase):
         if numerical.are_points_equal(struct.coords[0], new_coords):
             self.fail()
 
-
+    def test_build_chains_2(self):
+        path = rnamake.settings.MOTIF_DIRS + \
+               "helices/HELIX.IDEAL/HELIX.IDEAL.pdb"
+        for i in range(1000):
+            struct = rnamake.structure.Structure(path)
+            if struct.chains[0].first().num != 4 or \
+               struct.chains[1].first().num != 7:
+                self.fail()
 
 
 def main():

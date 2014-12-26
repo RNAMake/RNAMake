@@ -47,6 +47,9 @@ class MotifLibrary(object):
                 continue
             self.motif_paths[f] = mdir
 
+        if len(self.motif_paths.keys()) == 0:
+            raise ValueError("no motifs were loaded from " + libdir)
+
     def _get_motifs_from_file(self, libfile):
         try:
             f = open(libfile)

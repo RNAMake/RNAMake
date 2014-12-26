@@ -30,11 +30,13 @@ class Motif(object):
     `base_pairs` : List of Basepair objects
         All the basepair info determined from 3DNA
     `beads` : List of Bead objects
-        All the beads in the 3 bead residue model for all the residues in structure object
+        All the beads in the 3 bead residue model for all the residues in
+        structure object
     `dir` : str
         full path to directory
     `ends` : List of the Basepair objects
-        that are at the end of Motif this is critical to assemble motifs together its not necessarily the first and last Basepairs
+        that are at the end of Motif this is critical to assemble motifs
+        together its not necessarily the first and last Basepairs
     `structure` : Structure object
         holds 3D coordinate data
     `name` : str
@@ -48,6 +50,16 @@ class Motif(object):
 
         self.beads, self.score, self.mtype, self.basepairs = [], 0, mtype, []
         self.mdir, self.name, self.ends = "", "", []
+        self._setup(mdir, pdb)
+
+    def __repr__(self):
+        """
+        is called when motif is printed
+        """
+        return "<Motif(name='%s', ends='%s')>" % (
+        self.name,len(self.ends))
+
+    def _setup(self, mdir=None, pdb=None):
         #nothing to do
         if mdir is None and pdb is None:
             self.structure = structure.Structure()
@@ -72,12 +84,6 @@ class Motif(object):
         self.setup_basepair_ends()
         self._cache_basepair_frames()
 
-    def __repr__(self):
-        """
-        is called when motif is printed
-        """
-        return "<Motif(name='%s', ends='%s')>" % (
-        self.name,len(self.ends))
 
     def _setup_basepairs(self):
         """

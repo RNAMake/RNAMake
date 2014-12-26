@@ -90,3 +90,9 @@ class Chain(object):
         f = open(fname, "w")
         f.write(self.to_pdb_str())
         f.close()
+
+    def list_res(self):
+        s = ""
+        for r in self.residues:
+            s += r.rtype.name[0] + str(r.num) + " "
+        return s

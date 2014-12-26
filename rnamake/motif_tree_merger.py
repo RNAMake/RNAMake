@@ -4,6 +4,7 @@ from . import motif_type
 from . import chain
 from . import structure
 from . import motif
+from . import pose
 
 class ChainEndPairMap(object):
     def __init__(self, chain1, chain2):
@@ -79,18 +80,18 @@ class MotifTreeMerger(base.Base):
 
                     basepairs.append(cbp)
 
-        merged_motif = motif.Motif()
-        merged_motif.name = "assembled"
-        merged_motif.structure = new_structure
-        merged_motif.basepairs = basepairs
-        merged_motif.setup_basepair_ends()
+        new_pose = pose.Pose()
+        new_pose.name = "assembled"
+        new_pose.structure = new_structure
+        new_pose.basepairs = basepairs
+        new_pose.setup_basepair_ends()
 
         # if self.chain_closure:
         #    for i,c in enumerate(merged_motif.chains):
         #        close_chain(c)
         #        chain_to_pdb("chain."+str(i)+".pdb",c)
 
-        return merged_motif
+        return new_pose
 
     def _merge_chains_in_node(self, node):
         for c in node.connections:
@@ -102,7 +103,7 @@ class MotifTreeMerger(base.Base):
                 continue
             node_chains    = self._get_chains_from_connection(node, c)
             partner_chains = self._get_chains_from_connection(partner, c)
-            print node.motif.mtype, node.motif.mtype
+            # TODO maybe figure out which is a better basepair to remove
             if partner.motif.mtype == motif_type.HELIX:
                 merged_chains = self._helix_merge(node_chains, partner_chains)
             else:
@@ -149,8 +150,8 @@ class MotifTreeMerger(base.Base):
             merged_chain_1 = self._get_merged_hairpin(nc.p5_chain, nc.p3_chain,
                                                       p5_chain, 1)
         else:
-            merged_chain_1 = self._get_merged_chain(nc.p5_chain, p3_chain, 1)
-            merged_chain_2 = self._get_merged_chain(nc.p3_chain, p5_chain)
+            merged_chain_1 = self._get_merged_chain(p5_chain, pc.p3_chain, 1)
+            merged_chain_2 = self._get_merged_chain(p3_chain, pc.p5_chain)
         return merged_chain_1, merged_chain_2
 
     def _get_merged_chain(self, c1, c2, join_by_3prime=0, remove_overlap=0):
@@ -181,7 +182,7 @@ class MotifTreeMerger(base.Base):
         chain1_res, chain2_res = c1.residues, c2.residues
         if join_by_3prime:
             chain1_res, chain2_res = chain1_res[::-1], chain2_res[::-1]
-        merged_chain.residues = list(c1.residues)
+        merged_chain.residues = list(chain1_res)
         if remove_overlap:
             chain2_res.pop(0)
         merged_chain.residues.extend(list(chain2_res))

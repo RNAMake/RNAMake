@@ -11,3 +11,16 @@ def simple_mt():
     mt.add_motif(m)
     return mt
 
+def simple_mt_with_head():
+    m = rm.get_motif("HELIX.IDEAL")
+    mt = rnamake.motif_tree.MotifTree(m)
+    mt.add_motif(m)
+    mt.add_motif(m)
+    return mt
+
+def simple_mt_helix(size=10):
+    m = rm.get_motif("HELIX.IDEAL")
+    mt = rnamake.motif_tree.MotifTree()
+    for i in range(0, size):
+        mt.add_motif(m)
+    return mt
