@@ -5,6 +5,7 @@ from . import motif
 from . import util
 from . import residue
 from . import motif_type
+from . import motif_tree_merger
 
 class MotifTree(base.Base):
     """
@@ -61,6 +62,7 @@ class MotifTree(base.Base):
         self.clash_radius = 2.5
         self.level = 1
         self.last_node = head
+        self.merger = motif_tree_merger.MotifTreeMerger()
 
     def setup_options_and_constraints(self):
         options = { 'sterics'              : 1,
@@ -131,6 +133,25 @@ class MotifTree(base.Base):
 
         self.last_node = connected[0]
         self.nodes.remove(node)
+
+    def leafs(self):
+        leafs = []
+        for n in self.nodes:
+            if n.is_leaf():
+                leafs.append(n)
+        return leafs
+
+    def get_pose(self, include_head=0, chain_closure=0):
+        if include_head:
+            self._find_other_connections_to_head()
+
+        return self.merger.merge(self, include_head=include_head,
+                                 chain_closure=chain_closure)
+
+    def to_pdb(self, fname="mt.pdb", include_head=0, chain_closure=0):
+        pose = self.get_pose(include_head=include_head,
+                             chain_closure=chain_closure)
+        pose.to_pdb(fname)
 
     def _parse_ends(self, m, end_index, end_bp, node=None):
         ends = []
@@ -226,6 +247,30 @@ class MotifTree(base.Base):
                         return 1
         return 0
 
+    def _find_other_connections_to_head(self):
+        leafs = self.leafs()
+        for leaf in leafs:
+            result = self._add_connection(self.nodes[0], leaf)
+            if not result:
+                continue
+            head_node_open_ends = self.nodes[0].get_available_ends()
+            if len(head_node_open_ends) == 0:
+                break
+
+    def _add_connection(self, node_1, node_2):
+        if node_1 == node_2:
+            return 0
+
+        avail_ends_1 = node_1.available_ends()
+        avail_ends_2 = node_2.available_ends()
+
+        for end1 in avail_ends_1:
+            for end2 in avail_ends_2:
+                dist = util.distance(end1.d(), end2.d())
+                if dist < 10:
+                    new_connection = MotifTreeConnection(node_1, node_2, end1,
+                                                         end2)
+
 
 class MotifTreeNode(object):
     def __init__(self, m, level, index, flip):
@@ -249,7 +294,7 @@ class MotifTreeNode(object):
     def is_leaf(self):
 
         #the head is not a leaf
-        if index == 0:
+        if self.index == 0:
             return 0
 
         if len(self.connected_nodes()) == 1:

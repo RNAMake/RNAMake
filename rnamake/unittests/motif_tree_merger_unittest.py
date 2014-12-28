@@ -38,6 +38,7 @@ class MotifTreeMergerUnittest(unittest.TestCase):
         pose = merger.merge(mt,include_head=0)
 
     def test_connection(self):
+        #TODO write function to see everything on a chain is in order
         rm = rnamake.resource_manager.ResourceManager()
         path = rnamake.settings.UNITTEST_PATH + "/resources/motifs"
         rm.add_lib_path(path)
@@ -52,12 +53,11 @@ class MotifTreeMergerUnittest(unittest.TestCase):
             mt.add_motif(m, end_index=ne.start_index, end_flip=ne.flip_direction,
                              parent_index=parent_index)
             parent_index = ne.end_index
-            #if i == 1:
-            #    break
-        print len(mt.nodes)
+        # print len(mt.nodes)
         mt.write_pdbs()
+        mt._find_other_connections_to_head()
         merger = rnamake.motif_tree_merger.MotifTreeMerger()
-        pose = merger.merge(mt,include_head=0)
+        pose = merger.merge(mt,include_head=1)
         pose.to_pdb()
 
 

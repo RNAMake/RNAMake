@@ -11,6 +11,7 @@
 
 #include <iostream>
 // C++ headers
+#include <sstream>
 #include <cassert>
 #include <cmath>
 #include <fstream>
@@ -986,6 +987,16 @@ vector_from_str(
 	Vector p(point);
 	return p;
 	
+}
+
+inline
+const
+String
+vector_to_str(
+    Vector const & v) {
+    std::stringstream ss;
+    ss << v.x() << " " << v.y() << " " << v.z();
+    return ss.str();
 }
 
 inline

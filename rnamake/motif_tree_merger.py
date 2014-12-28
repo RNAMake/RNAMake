@@ -101,6 +101,7 @@ class MotifTreeMerger(base.Base):
             partner = c.partner(node)
             if not self.option('include_head') and partner == self.nodes[0]:
                 continue
+            #print node.index, partner.index
             node_chains    = self._get_chains_from_connection(node, c)
             partner_chains = self._get_chains_from_connection(partner, c)
             # TODO maybe figure out which is a better basepair to remove
@@ -117,6 +118,11 @@ class MotifTreeMerger(base.Base):
                 if c is not None:
                     new_chains.append(c)
             self.chains = new_chains
+
+            for i, c in enumerate(self.chains):
+               #print c.list_res()
+                c.to_pdb("chain."+str(i)+".pdb")
+
             self._merge_chains_in_node(partner)
 
     def _helix_merge(self, nc, pc):
@@ -144,8 +150,8 @@ class MotifTreeMerger(base.Base):
         if   nc.is_hairpin() and pc.is_hairpin():
             raise ValueError("cannot merge an hairpin with another hairpin")
         elif nc.is_hairpin():
-            merged_chain_1 = self._get_merged_hairpin(p3_chain, p5_chain,
-                                                      nc.p5_chain)
+            merged_chain_1 = self._get_merged_hairpin(pc.p3_chain, pc.p5_chain,
+                                                      p5_chain)
         elif pc.is_hairpin():
             merged_chain_1 = self._get_merged_hairpin(nc.p5_chain, nc.p3_chain,
                                                       p5_chain, 1)
@@ -194,8 +200,10 @@ class MotifTreeMerger(base.Base):
                             remove_overlap=0):
         merged_chain = self._get_merged_chain(c1, hairpin, join_by_3prime,
                                               remove_overlap)
+        merged_chain.to_pdb("test.pdb")
         merged_chain = self._get_merged_chain(merged_chain, c2, join_by_3prime,
                                               remove_overlap)
+        merged_chain.to_pdb("test2.pdb")
         return merged_chain
 
     def _get_chains_from_connection(self, node, c):

@@ -273,7 +273,7 @@ class Residue(object):
             if a is None:
                 continue
             s += basic_io.PDBLINE_GE100K % \
-                 ('ATOM', acount, a.name, '', self.rtype.name, self.chain_id,
+                 ('ATOM', acount, a.name, '', self.rtype.name[0], self.chain_id,
                   self.num, '', a.coords[0], a.coords[1], a.coords[2], 1.00,
                   0.00, '', '')
             acount += 1

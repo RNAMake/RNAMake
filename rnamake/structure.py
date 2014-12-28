@@ -29,6 +29,7 @@ class Structure(object):
     def renumber(self):
         for i, r in enumerate(self.residues()):
             r.num = i+1
+            r.chain_id = "A"
 
     def __repr(self):
         return "<Structure( Chains: %s>" % (len(self.chains))
