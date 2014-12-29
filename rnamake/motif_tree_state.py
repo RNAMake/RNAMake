@@ -1,3 +1,5 @@
+from . import motif_type
+from . import settings
 
 class NameElements(object):
     def __init__(self, motif_name, helix_direction, start_helix_count,
@@ -6,6 +8,84 @@ class NameElements(object):
             motif_name, int(helix_direction), int(start_helix_count)
         self.start_index, self.end_helix_count, self.end_index, self.flip_direction = \
             int(start_index), int(end_helix_count), int(end_index), int(flip_direction)
+
+
+class MotifTreeState(object):
+    def __init__(self, name, start_index, size, score, beads, end, end_index,
+                 flip, build_string):
+        self.name, self.start_index, self.size = name, start_index, size
+        self.score, self.beads, self.end_index = score, beads, end_index
+        self.flip, self.build_string = flip, build_string
+
+
+class MotifTreeStateContainer(object):
+    def __init__(self,mts,lib_type):
+        self.mts = mts
+        self.lib_type = lib_type
+
+
+class MotifTreeStateLibrary(object):
+    def __init__(self, mtype=None, libpath=None):
+        mtype, path = self._parse_args(mtype, libpath)
+        self.mtype, self.neighbor_libs, self.children = mtype, [], []
+        self.motif_tree_states, self.clashes, self.index = {}, [], 0
+
+    def get_state(self, name):
+        for mts in self.motif_tree_states:
+            if mts.name == name:
+                return mts
+        return None
+
+    def possible_children(self, current_mts):
+        self.children = []
+        clash_key = ""
+        for nlib in self.neighbor_libs:
+            for mts in nlib.motif_tree_states:
+                clash_key = current_mts.name + " " + mts.name
+                if clash_key in self.clashes:
+                    continue
+                self.children.append(MotifTreeStateContainer(mts, nlib.index))
+
+    def add_neighbor(self, neighbor):
+        self.neighbor_libs.append(neighbor)
+        path = settings.RESOURCES_PATH + "/precomputed/motif_tree_states/"
+        path += motif_type.type_to_str(self.mtype) + "_" + \
+                motif_type.type_to_str(neighbor.mtype)
+        self.add_clash_file(path)
+
+    def add_clash_file(self, cfile):
+        try:
+            f = open(cfile)
+            lines = f.readlines()
+            f.close()
+        except IOError:
+            raise IOError("cannot open clash file " + cfile)
+
+        for l in lines:
+            self.clashes[l.rstrip()] = 1
+
+    def _load_states_from_file(self, file_path):
+        f = open(file_path)
+        lines = f.readlines()
+        f.close()
+
+        motif_tree_states = []
+        for l in lines:
+            spl = l.split("|")
+
+    def _parse_args(self, mtype, libpath):
+        if   mtype is None and libpath is None:
+            raise ValueError("must supply motif type or path to the library")
+        elif mtype is not None and libpath is not None:
+            raise ValueError("cannot supply both mtype and libpath")
+        elif mtype is not None:
+            motif_type.is_valid_motiftype(mtype)
+            path = settings.RESOURCES_PATH + "/precomputed/motif_tree_states/" +\
+                   motif_type.type_to_str(mtype)
+            return mtype, path
+        else:
+            return motif_type.UNKNOWN, libpath
+
 
 def parse_db_name(name):
     spl = name.split("-")

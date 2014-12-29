@@ -2,6 +2,7 @@ import unittest
 import rnamake.motif_tree
 import rnamake.resource_manager
 import util
+import instance
 
 class MotifTreeUnittest(unittest.TestCase):
 
@@ -40,6 +41,10 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt.nodes) != 2:
             self.fail("did not remove node correctly")
 
+    def test_to_str_node(self):
+        mt = instance.simple_mt()
+        s = mt.to_str()
+        mt2 = rnamake.motif_tree.str_to_motif_tree(s)
 
 
 

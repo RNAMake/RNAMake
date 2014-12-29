@@ -1,3 +1,5 @@
+import rnamake.atom
+
 def are_floats_equal(f1,f2):
     """
     test whether two floating point values are the same, cannot use ==,
@@ -61,3 +63,7 @@ def are_matrices_equal(m1, m2):
             if not are_floats_equal(m1[i][j], m2[i][j]):
                 return 0
     return 1
+
+
+def are_atom_equal(a1, a2):
+    return are_points_equal(a1.coords, a2.coords) and a1.name == a2.name

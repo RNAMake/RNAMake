@@ -1,6 +1,8 @@
 import math
 import numpy as np
 
+def normalize(v):
+    return v / math.sqrt( v[0] ** 2 + v[1] ** 2 + v[2] ** 2)
 
 def distance(p1, p2):
     """
@@ -37,6 +39,7 @@ def center(atoms):
 def base_dir(path):
     path_spl = path.split("/")
     return "/".join(path_spl[:-1]) + "/"
+
 
 def filename(path):
     path_spl = path.split("/")

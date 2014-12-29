@@ -11,8 +11,8 @@ import numpy as np
 class MotifException(Exception):
     pass
 
-class Motif(object):
 
+class Motif(object):
     """
     The basic unit of this project stores the 3D coordinates of a RNA Motif
     as well as the 3DNA parameters such as reference frame and origin for
@@ -50,6 +50,7 @@ class Motif(object):
 
         self.beads, self.score, self.mtype, self.basepairs = [], 0, mtype, []
         self.mdir, self.name, self.ends = "", "", []
+        self.cached_rotations = []
         self._setup(mdir, pdb)
 
     def __repr__(self):
@@ -83,7 +84,6 @@ class Motif(object):
         self.basepairs = self._setup_basepairs()
         self.setup_basepair_ends()
         self._cache_basepair_frames()
-
 
     def _setup_basepairs(self):
         """
@@ -375,6 +375,7 @@ def str_to_motif(s):
     end_indexes = spl[6].split()
     for index in end_indexes:
         m.ends.append(m.basepairs[int(index)])
+    m._cache_basepair_frames()
     return m
 
 

@@ -95,7 +95,7 @@ class MotifTree(base.Base):
 
         new_node = None
         flip_status = [x for x in range(len(m.ends))]
-        if end_flip:
+        if end_flip is not None:
             flip_status = [end_flip]
         for parent_end in parent_ends:
             for end in ends:
@@ -152,6 +152,12 @@ class MotifTree(base.Base):
         pose = self.get_pose(include_head=include_head,
                              chain_closure=chain_closure)
         pose.to_pdb(fname)
+
+    def to_str(self):
+        s = ""
+        for n in self.nodes:
+            s += n.to_str() + "#"
+        return s
 
     def _parse_ends(self, m, end_index, end_bp, node=None):
         ends = []
@@ -302,6 +308,30 @@ class MotifTreeNode(object):
         else:
             return 0
 
+    def parent(self):
+        for n in self.connected_nodes():
+            if n.index < self.index:
+                return n
+
+    def connection(self, n):
+        for c in self.connections:
+            if c.node_1 == n or c.node_2 == n:
+                return c
+
+    def to_str(self):
+        s = self.motif.to_str() + "!"
+        parent = self.parent()
+        if parent is None:
+            s += "-1!-1!-1!-1"
+            return s
+
+        c = self.connection(parent)
+        parent_end = c.motif_end(parent)
+        node_end = c.motif_end(self)
+        s += str(parent.index) + "!" + str(parent.motif.ends.index(parent_end)) +\
+             "!" + str(self.motif.ends.index(node_end)) + "!" + str(self.flip)
+        return s
+
 
 class MotifTreeConnection(object):
     """
@@ -370,6 +400,28 @@ class MotifTreeConnection(object):
         else:
             raise ValueError("node is not in connection object cannot call \
                              motif_end")
+
+
+def str_to_motif_tree(s):
+    spl = s.split("#")
+    for i, e in enumerate(spl[:-1]):
+        mtn_spl = e.split("!")
+        m = motif.str_to_motif(mtn_spl[0])
+        if i == 0:
+            mt = MotifTree(m)
+            continue
+        mtn = MotifTreeNode(m, mt.level, int(mtn_spl[3]), int(mtn_spl[4]))
+        mtn.index = i
+        parent = mt.nodes[ int(mtn_spl[1]) ]
+        parent_end = parent.motif.ends[ int(mtn_spl[2]) ]
+        node_end = m.ends[ int(mtn_spl[3]) ]
+        MotifTreeConnection(parent, mtn, parent_end, node_end)
+        mt.nodes.append(mtn)
+    return mt
+
+
+
+
 
 
 
