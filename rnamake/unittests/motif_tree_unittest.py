@@ -46,6 +46,18 @@ class MotifTreeUnittest(unittest.TestCase):
         s = mt.to_str()
         mt2 = rnamake.motif_tree.str_to_motif_tree(s)
 
+    def test_avail_ends(self):
+        mt = instance.simple_mt()
+        if len(mt.nodes[0].available_ends()) != 0:
+            self.fail("did not properly get available ends")
+
+        mt.remove_node_level()
+        if len(mt.nodes[0].available_ends()) != 1:
+            self.fail("did not properly get available ends")
+
+        mt = rnamake.motif_tree.MotifTree()
+        if len(mt.nodes[0].available_ends()) != 1:
+            self.fail("did not properly get available ends")
 
 
 def main():

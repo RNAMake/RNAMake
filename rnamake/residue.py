@@ -1,9 +1,9 @@
 import uuid
 import logging
-from . import atom
-from . import residue_type
-from . import util
-from . import basic_io
+import atom
+import residue_type
+import util
+import basic_io
 import numpy as np
 
 logging.basicConfig()

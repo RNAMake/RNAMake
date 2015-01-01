@@ -24,7 +24,6 @@ class MotifLibraryUnittest(unittest.TestCase):
         if (mlib.motif_paths) == 0:
             self.fail("did not load motifs paths properly")
 
-
     def test_get_motif(self):
         mtype = rnamake.motif_type.HELIX
         mlib = rnamake.motif_library.MotifLibrary(mtype)
@@ -43,9 +42,13 @@ class MotifLibraryUnittest(unittest.TestCase):
         mlib = rnamake.motif_library.MotifLibrary(mtype)
         m = mlib.get_motif("HELIX.IDEAL")
         m1 = mlib.get_motif("HELIX.IDEAL")
-        print m.ends[0].d()
-        print m1.ends[0].d()
 
+    def test_score(self):
+        mtype = rnamake.motif_type.HELIX
+        mlib = rnamake.motif_library.MotifLibrary(mtype)
+        m = mlib.get_motif("HELIX.IDEAL")
+        if m.score != -3.8:
+            self.fail("did not get the correct score")
 
 
 def main():

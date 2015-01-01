@@ -1,5 +1,5 @@
-from . import util
-from . import basic_io
+import util
+import basic_io
 import numpy as np
 import uuid
 
@@ -136,6 +136,7 @@ class Basepair(object):
         f.write ( self.to_pdb_str() )
         f.close()
 
+
 class BasepairState(object):
 
     """
@@ -208,6 +209,34 @@ class BasepairState(object):
         return BasepairState(np.array(self.r, copy=True),
                              np.array(self.d, copy=True),
                              [coord[:] for coord in self.sugars])
+
+    def diff(self, state):
+        diff  = util.distance(self.d, state.d)
+        diff += self._rot_diff(state)
+        diff += self._sugar_diff(state)
+        return diff
+
+    def _rot_diff(self, state):
+        r_diff = util.matrix_distance(self.r, state.r)
+        state.flip()
+        r_diff_2 = util.matrix_distance(self.r, state.r)
+        state.flip()
+
+        if r_diff > r_diff_2:
+            r_diff = r_diff_2
+        return r_diff
+
+    def _sugar_diff(self, state):
+        diff_1 = util.distance(self.sugars[0], state.sugars[0]) + \
+                 util.distance(self.sugars[1], state.sugars[1])
+        diff_2 = util.distance(self.sugars[1], state.sugars[0]) + \
+                 util.distance(self.sugars[0], state.sugars[1])
+        if diff_1 > diff_2:
+            diff_1 = diff_2
+        return diff_1
+
+
+
     def to_str(self):
         """
         converts basepairstate into a string

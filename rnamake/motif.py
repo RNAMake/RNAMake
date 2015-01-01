@@ -3,7 +3,7 @@ import x3dna
 import structure
 import basepair
 import transform
-from . import util
+import util
 import io
 import motif_type
 import numpy as np
@@ -340,6 +340,11 @@ class Motif(object):
 
         self.structure.restore_coords()
         self.beads = []
+
+        for i, e in enumerate(self.ends):
+            if e.uuid == end.uuid:
+                return i
+        raise ValueError("end is not a end of this motif")
 
 
 def str_to_motif(s):

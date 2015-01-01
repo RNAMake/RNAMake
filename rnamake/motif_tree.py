@@ -1,11 +1,11 @@
-from . import base
-from . import option
-from . import settings
-from . import motif
-from . import util
-from . import residue
-from . import motif_type
-from . import motif_tree_merger
+import base
+import option
+import settings
+import motif
+import util
+import residue
+import motif_type
+import motif_tree_merger
 
 class MotifTree(base.Base):
     """
@@ -133,6 +133,16 @@ class MotifTree(base.Base):
 
         self.last_node = connected[0]
         self.nodes.remove(node)
+
+    def remove_node_level(self, level=None):
+        if level is None:
+            level = self.level
+
+        r = range(1, len(self.nodes))
+        for i in r[::-1]:
+            if self.nodes[i].level >= level:
+                self.remove_node(self.nodes[i])
+        self.last_node = self.nodes[-1]
 
     def leafs(self):
         leafs = []
@@ -286,11 +296,11 @@ class MotifTreeNode(object):
 
     def available_ends(self):
         ends = []
-        for uuid in self.end_status.iterkeys():
-            for end in self.motif.ends:
-                if end.uuid == uuid:
-                    ends.append(end)
-                    break
+        for end in self.motif.ends:
+            status = self.end_status[end.uuid]
+            if status == 1:
+                ends.append(end)
+                break
         ends.sort(key=lambda x : self.motif.ends.index(x), reverse=True)
         return ends
 
@@ -372,8 +382,8 @@ class MotifTreeConnection(object):
         self.node_1, self.node_2, self.end_1, self.end_2, self.no_overlap = \
             node_1, node_2, end_1.uuid, end_2.uuid, no_overlap
 
-        self.node_1.end_status[end_1] = 0
-        self.node_2.end_status[end_2] = 0
+        self.node_1.end_status[end_1.uuid] = 0
+        self.node_2.end_status[end_2.uuid] = 0
         self.node_1.connections.append(self)
         self.node_2.connections.append(self)
 

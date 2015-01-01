@@ -22,7 +22,7 @@ class X3dna(object):
     from basepair.Basepair objects which store the actual atomic information
     of a basepair
 
-	.. code-block:: python
+    .. code-block:: python
         # to get the basepairing information from a pdb, for example test.pdb
         >>>x3dna = x3dna.X3dna()
         >>>basepairs = x3dna.get_basepairs("test")
@@ -237,36 +237,38 @@ class X3dna(object):
 
         return Residue(int(rnum), chain, i_code)
 
-    def _get_dssr_section(self, dssr_file_path):
+    def _divide_dssr_file_into_sections(self, dssr_file_path):
         """
-        splits up the dssr file and returns only the section that has the
-        basepairing information.
+        splits up the dssr file by the title
 
         :param dssr_file_path: the location of the dssr file
         :type dssr_file_path: str
         """
-
         f = open(dssr_file_path)
         lines = f.readlines()
         f.close()
 
         p = re.compile(r"List of \d+\s*(\S+)")
 
+        sections = {}
         section = []
-        found = 0
+        section_name = ""
         for l in lines:
             if len(section) == 0 and p.match(l):
                 m = p.match(l)
                 section_name = m.group(1)
-                if section_name == 'base':
-                    found = 1
+                if section_name == 'helix':
+                    section_name = 'helices'
+                if section_name[-1] != "s":
+                    section_name = section_name + "s"
+            if l[0] == '*':
+                if len(section) != 0 and section_name not in sections:
+                    sections[section_name] = section
+                section = []
+                continue
+            section.append(l)
 
-            if found:
-                section.append(l)
-                if l[0] == '*':
-                    break
-
-        return section
+        return sections
 
     def get_basepairs(self, pdb_path):
         """
@@ -282,7 +284,7 @@ class X3dna(object):
         dssr_file_path = self._get_dssr_file_path(pdb_path)
 
         basepairs = self._parse_ref_frame_file(ref_frames_path)
-        section = self._get_dssr_section(dssr_file_path)
+        section = self._divide_dssr_file_into_sections(dssr_file_path)['bases']
 
         for l in section:
             spl = re.split("\s+",l)
@@ -292,7 +294,7 @@ class X3dna(object):
                 continue
             res1 = self._parse_dssr_res_str(spl[2])
             res2 = self._parse_dssr_res_str(spl[3])
-            bp_type = spl[7]
+            bp_type = spl[8]
 
             found = 0
             for bp in basepairs:
@@ -311,6 +313,11 @@ class X3dna(object):
                                           np.array([-1,-1,-1])))
                 basepairs[-1].bp_type = bp_type
         return basepairs
+
+    def get_dssr_file_sections(self, pdb_path):
+        dssr_file_path = self._get_dssr_file_path(pdb_path)
+        return self._divide_dssr_file_into_sections(dssr_file_path)
+
 
 class Basepair(object):
 

@@ -73,6 +73,8 @@ class MotifTreeStateLibrary(object):
         for l in lines:
             spl = l.split("|")
 
+
+
     def _parse_args(self, mtype, libpath):
         if   mtype is None and libpath is None:
             raise ValueError("must supply motif type or path to the library")

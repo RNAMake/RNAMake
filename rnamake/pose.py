@@ -1,4 +1,4 @@
-from . import motif
+import motif
 
 class Pose(motif.Motif):
     #TODO finish implementing

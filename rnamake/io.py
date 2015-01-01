@@ -1,9 +1,9 @@
 import numpy as np
-from . import atom
-from . import residue
-from . import residue_type
-from . import chain
-from . import structure
+import atom
+import residue
+import residue_type
+import chain
+import structure
 
 def str_to_atom(s):
     """

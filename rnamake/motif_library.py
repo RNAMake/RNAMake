@@ -1,14 +1,16 @@
 import os
-from . import settings
-from . import motif_type
-from . import motif
-from . import util
+import settings
+import motif_type
+import motif_scorer
+import motif
+import util
 
 class MotifLibrary(object):
     def __init__(self, libtype=None, libdir=None, libfile=None):
         self.motif_paths = {}
         self.mtype = motif_type.UNKNOWN
         self.motifs = {}
+        self.scorer = motif_scorer.MotifScorer()
         self._parse_args(libtype, libdir, libfile)
 
     def get_motif(self, mname):
@@ -18,6 +20,7 @@ class MotifLibrary(object):
         if mname not in self.motifs:
             self.motifs[mname] = motif.Motif(self.motif_paths[mname])
             self.motifs[mname].mtype = self.mtype
+            self.motifs[mname].score = self.scorer.score(self.motifs[mname])
 
         return self.motifs[mname].copy()
 

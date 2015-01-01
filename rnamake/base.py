@@ -1,5 +1,5 @@
 import abc
-from . import option
+import option
 
 class Base(object):
     def __init__(self, **options):

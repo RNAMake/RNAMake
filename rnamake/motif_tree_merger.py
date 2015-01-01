@@ -1,12 +1,12 @@
-from . import base
-from . import option
-from . import motif_type
-from . import chain
-from . import structure
-from . import motif
-from . import pose
-from . import atom
-from . import util
+import base
+import option
+import motif_type
+import chain
+import structure
+import motif
+import pose
+import atom
+import util
 import math
 import numpy as np
 

@@ -18,6 +18,13 @@ def distance(p1, p2):
                      (p2[2] - p1[2]) ** 2)
 
 
+def matrix_distance(r1, r2):
+    dist = 0
+    for i in range(3):
+        for j in range(3):
+            dist += abs(r1[i][j] - r2[i][j])
+    return dist
+
 def center(atoms):
     """
     returns the center of a list of atoms
@@ -44,3 +51,21 @@ def base_dir(path):
 def filename(path):
     path_spl = path.split("/")
     return path_spl[-1]
+
+
+def wc_bp(bp):
+    bp_str = bp.res1.rtype.name[0] + bp.res2.rtype.name[0]
+    wc = "GC,CG,AU,UA".split(",")
+    if bp_str in wc:
+        return 1
+    else:
+        return 0
+
+
+def gu_bp(bp):
+    bp_str = bp.res1.rtype.name[0] + bp.res2.rtype.name[0]
+    if bp_str == "GU" or bp_str == "UC":
+        return 1
+    else:
+        return 0
+
