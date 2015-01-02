@@ -155,8 +155,10 @@ class MotifTree(base.Base):
         if include_head:
             self._find_other_connections_to_head()
 
-        return self.merger.merge(self, include_head=include_head,
+        pose = self.merger.merge(self, include_head=include_head,
                                  chain_closure=chain_closure)
+        self.merger.reset()
+        return pose
 
     def to_pdb(self, fname="mt.pdb", include_head=0, chain_closure=0):
         pose = self.get_pose(include_head=include_head,

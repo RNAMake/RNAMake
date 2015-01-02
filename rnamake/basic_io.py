@@ -54,13 +54,12 @@ def matrix_to_str(m):
     s = ""
     for i in range(len(m)):
         for j in range(3):
-            s += str(m[i][j]) + " "
+            s += str(m[i][j]) + " "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "
     return s
 
 
 def bead_to_str(bead):
     return point_to_str(p) + "," + bead.btype
-
 
 def beads_to_str(beads):
     s = ""
@@ -72,6 +71,15 @@ def beads_to_str(beads):
 def str_to_point(s):
     p = np.array([float(x) for x in s.split()])
     return p
+
+
+def str_to_points(s):
+    floats = [float(x) for x in s.split()]
+    points = []
+    for i in range(0, len(floats), 3):
+        p = np.array(floats[i:i+3])
+        points.append(p)
+    return points
 
 
 def str_to_matrix(s):

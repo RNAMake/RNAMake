@@ -166,11 +166,13 @@ class MotifTreePrecomputer(base.Base):
                 #flip the direction of the end basepair rotation
                 for flip in flip_states:
                     #initial helices to add before motif
-                    for hcount in range(self.option('max_bp_per_end')):
+                    for hcount in range(self.option('max_bps_per_end')):
                         self._precompute(m, end_index, helix_end_index,
                                          flip, hcount)
 
     def _precompute(self, m, end_index, helix_end_index, flip, hcount):
+        if hcount == 0 and helix_end_index == 1:
+            return
         self.mt.remove_node_level()
         if hcount > 0:
             hmotif = self._get_helix_motif(hcount)
@@ -270,5 +272,6 @@ class MotifTreePrecomputer(base.Base):
 
         return " ".join(poss) + " "
 
-if __name__ == __main__:
-    print "made it"
+
+if __name__ == '__main__':
+    pass

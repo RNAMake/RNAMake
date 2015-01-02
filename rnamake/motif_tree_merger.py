@@ -58,6 +58,10 @@ class MotifTreeMerger(base.Base):
         motif = self._build_pose()
         return motif
 
+    def reset(self):
+        self.chains = []
+        self.nodes = []
+        self.seen_connections = {}
     def _build_pose(self):
         new_structure = structure.Structure()
         new_structure.assembled = 1

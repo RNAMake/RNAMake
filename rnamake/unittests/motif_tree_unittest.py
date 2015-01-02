@@ -59,6 +59,17 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt.nodes[0].available_ends()) != 1:
             self.fail("did not properly get available ends")
 
+    def test_merge(self):
+        f = open("test.out")
+        s = f.readline()
+        f.close()
+
+        mt = rnamake.motif_tree.str_to_motif_tree(s)
+        pose = mt.get_pose()
+        if len(pose.ends) != 2:
+            self.fail("did not merge properly")
+
+
 
 def main():
     unittest.main()

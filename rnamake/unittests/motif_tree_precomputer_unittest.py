@@ -28,6 +28,13 @@ class MotifTreePrecomputerUnittest(unittest.TestCase):
         except:
             pass
 
+    def test_precompute_motif(self):
+        rm = rnamake.resource_manager.ResourceManager()
+        m = rm.get_motif("TWOWAY.1GID.2")
+        mtp = rnamake.motif_tree_precomputer.MotifTreePrecomputer()
+        mtp.precompute_motif(m)
+
+
     def test_motif_orientation(self):
         mt = rnamake.motif_tree.MotifTree()
         mt.write_pdbs()

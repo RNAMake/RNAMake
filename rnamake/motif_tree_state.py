@@ -1,5 +1,8 @@
-from . import motif_type
-from . import settings
+import motif_type
+import settings
+import basic_io
+import basepair
+
 
 class NameElements(object):
     def __init__(self, motif_name, helix_direction, start_helix_count,
@@ -15,7 +18,7 @@ class MotifTreeState(object):
                  flip, build_string):
         self.name, self.start_index, self.size = name, start_index, size
         self.score, self.beads, self.end_index = score, beads, end_index
-        self.flip, self.build_string = flip, build_string
+        self.flip, self.build_string, self.end_state = flip, build_string, end
 
 
 class MotifTreeStateContainer(object):
@@ -28,7 +31,8 @@ class MotifTreeStateLibrary(object):
     def __init__(self, mtype=None, libpath=None):
         mtype, path = self._parse_args(mtype, libpath)
         self.mtype, self.neighbor_libs, self.children = mtype, [], []
-        self.motif_tree_states, self.clashes, self.index = {}, [], 0
+        self.clashes, self.index = {}, 0
+        self.motif_tree_states = self._load_states_from_file(path)
 
     def get_state(self, name):
         for mts in self.motif_tree_states:
@@ -72,7 +76,21 @@ class MotifTreeStateLibrary(object):
         motif_tree_states = []
         for l in lines:
             spl = l.split("|")
+            name, score, size = spl[0], float(spl[1]), float(spl[2])
+            flip, build_string = int(spl[3]), spl[4]
+            beads = basic_io.str_to_points(spl[5])
+            end_state = basepair.str_to_basepairstate(spl[6])
+            name_elements = parse_db_name(name)
+            motif_tree_state = MotifTreeState(name, name_elements.start_index,
+                                              size, score, beads, end_state,
+                                              name_elements.end_index, flip,
+                                              build_string)
+            motif_tree_states.append(motif_tree_state)
 
+            if len(spl[7]) > 1:
+                raise ValueError("not implemented yet")
+
+        return motif_tree_states
 
 
     def _parse_args(self, mtype, libpath):
@@ -93,4 +111,3 @@ def parse_db_name(name):
     spl = name.split("-")
     name_elements = NameElements(*spl)
     return NameElements(*spl)
-

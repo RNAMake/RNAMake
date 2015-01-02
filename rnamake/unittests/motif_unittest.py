@@ -108,13 +108,6 @@ class MotifUnittest(unittest.TestCase):
 
 
 
-
-
-
-
-
-
-
 def main():
     unittest.main()
 
