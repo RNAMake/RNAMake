@@ -9,7 +9,7 @@ class MotifLibrary(object):
     def __init__(self, libtype=None, libdir=None, libfile=None):
         self.motif_paths = {}
         self.mtype = motif_type.UNKNOWN
-        self.motifs = {}
+        self.motif_dict = {}
         self.scorer = motif_scorer.MotifScorer()
         self._parse_args(libtype, libdir, libfile)
 
@@ -17,12 +17,19 @@ class MotifLibrary(object):
         if mname not in self.motif_paths:
             raise ValueError("unknown motif: " + mname + "cannot get it")
 
-        if mname not in self.motifs:
-            self.motifs[mname] = motif.Motif(self.motif_paths[mname])
-            self.motifs[mname].mtype = self.mtype
-            self.motifs[mname].score = self.scorer.score(self.motifs[mname])
+        if mname not in self.motif_dict:
+            self.motif_dict[mname] = motif.Motif(self.motif_paths[mname])
+            self.motif_dict[mname].mtype = self.mtype
+            self.motif_dict[mname].score = self.scorer.score(self.motif_dict[mname])
 
-        return self.motifs[mname].copy()
+        return self.motif_dict[mname].copy()
+
+    def load_all(self):
+        for mname in self.motif_paths:
+            self.get_motif(mname)
+
+    def motifs(self):
+        return self.motif_dict.values()
 
     def _parse_args(self, libtype, libdir, libfile):
         if libtype is None and libdir is None and libfile is None:

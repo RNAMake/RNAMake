@@ -25,6 +25,7 @@ def matrix_distance(r1, r2):
             dist += abs(r1[i][j] - r2[i][j])
     return dist
 
+
 def center(atoms):
     """
     returns the center of a list of atoms
@@ -68,4 +69,41 @@ def gu_bp(bp):
         return 1
     else:
         return 0
+
+
+def unitarize(R):
+    """
+    Enforce unitarity of the input matrix using Gram-Schmidt process.
+    This function overwrites the input matrix.
+
+    Parameters
+    ----------
+    R : ndarray, shape (N,3,3)
+        (List of) input matrix to be unitarized.
+
+    Returns
+    -------
+    R : ndarray, shape (N,3,3)
+        Unitarized input matrix.
+    """
+    if len(R.shape) == 2:  # 1D case
+        R[0] /= math.sqrt(R[0].dot(R[0]))
+        R[1] -= R[1].dot(R[0]) * R[0]
+        R[1] /= math.sqrt(R[1].dot(R[1]))
+        R[2] -= R[2].dot(R[0]) * R[0]
+        R[2] -= R[2].dot(R[1]) * R[1]
+        R[2] /= math.sqrt(R[2].dot(R[2]))
+    else:  # 2D case
+        R[:, 0] /= np.sqrt(np.sum(R[:, 0] ** 2, axis=1))[:, np.newaxis]
+        R[:, 1] -= (
+            np.einsum('ij,ij->i', R[:, 1], R[:, 0])[:, np.newaxis] * R[:, 0])
+        R[:, 1] /= np.sqrt(np.sum(R[:, 1] ** 2, axis=1))[:, np.newaxis]
+        R[:, 2] -= (
+            np.einsum('ij,ij->i', R[:, 2], R[:, 0])[:, np.newaxis] * R[:, 0])
+        R[:, 2] -= (
+            np.einsum('ij,ij->i', R[:, 2], R[:, 1])[:, np.newaxis] * R[:, 1])
+        R[:, 2] /= np.sqrt(np.sum(R[:, 2] ** 2, axis=1))[:, np.newaxis]
+    return R
+
+
 

@@ -8,6 +8,7 @@ import basic_io
 import util
 import transformations as t
 import sqlite3
+import argparse
 
 class MotifTreePrecomputerSqlite3Output(object):
     def __init__(self, name):
@@ -151,7 +152,7 @@ class MotifTreePrecomputer(base.Base):
 
     def precompute_library(self, mlib):
         for m in mlib.motifs():
-            pass
+            self.precompute_motif(m)
 
     def precompute_motif(self, m):
         flip_states = (0, 1)
@@ -166,7 +167,7 @@ class MotifTreePrecomputer(base.Base):
                 #flip the direction of the end basepair rotation
                 for flip in flip_states:
                     #initial helices to add before motif
-                    for hcount in range(self.option('max_bps_per_end')):
+                    for hcount in range(self.option('max_bps_per_end')+1):
                         self._precompute(m, end_index, helix_end_index,
                                          flip, hcount)
 
@@ -273,5 +274,19 @@ class MotifTreePrecomputer(base.Base):
         return " ".join(poss) + " "
 
 
+def parse_args():
+    parser = argparse.ArgumentParser(description='')
+    parser.add_argument('-t', required=True)
+    parser.add_argument('--options', '-o', action="store",required=False)
+    args = parser.parse_args()
+    return args
+
 if __name__ == '__main__':
-    pass
+    args = parse_args()
+    mtype = motif_type.str_to_type(args.t)
+    mlib = motif_library.MotifLibrary(mtype)
+    mlib.load_all()
+    mtp = MotifTreePrecomputer(name=args.t,max_bps_per_end=0)
+    mtp.precompute_library(mlib)
+
+

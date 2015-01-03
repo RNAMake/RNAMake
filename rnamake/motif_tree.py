@@ -59,7 +59,7 @@ class MotifTree(base.Base):
                 head.motif.get_beads(head.motif.ends)
 
         self.nodes = [ head ]
-        self.clash_radius = 2.5
+        self.clash_radius = settings.CLASH_RADIUS
         self.level = 1
         self.last_node = head
         self.merger = motif_tree_merger.MotifTreeMerger()
@@ -160,7 +160,7 @@ class MotifTree(base.Base):
         self.merger.reset()
         return pose
 
-    def to_pdb(self, fname="mt.pdb", include_head=0, chain_closure=0):
+    def to_pdb(self, fname="mt.pdb", include_head=1, chain_closure=1):
         pose = self.get_pose(include_head=include_head,
                              chain_closure=chain_closure)
         pose.to_pdb(fname)

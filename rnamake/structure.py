@@ -133,6 +133,8 @@ class Structure(object):
                 found.append(r)
 
         if len(found) > 1:
+            self.to_pdb()
+            print num,chain_id,i_code
             raise ValueError(
                 "found multiple residues in get_residue(), narrow " +
                 "your search")

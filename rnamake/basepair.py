@@ -1,5 +1,7 @@
 import util
 import basic_io
+import settings
+import motif
 import numpy as np
 import uuid
 
@@ -171,7 +173,6 @@ class BasepairState(object):
         self.r[2] = -self.r[2]
 
     def get_transforming_r_and_t(self, r, t, sugars):
-
         r1 = self.r
         r2 = r
         r_trans = r1.T.dot(r2)
@@ -187,11 +188,14 @@ class BasepairState(object):
 
         return r_trans, t_trans+diff
 
+    def get_transforming_r_and_t_w_state(self, state):
+		return self.get_transforming_r_and_t(state.r, state.d, state.sugars)
+
     def get_transformed_state(self, r, t):
 
         r_T = r.T
 
-        new_r = unitarize(np.dot(self.r, r_T))
+        new_r = util.unitarize(np.dot(self.r, r_T))
         new_sugars = np.dot(self.sugars, r_T) + t
         new_origin = np.dot(self.d, r_T) + t
 
@@ -235,8 +239,6 @@ class BasepairState(object):
             diff_1 = diff_2
         return diff_1
 
-
-
     def to_str(self):
         """
         converts basepairstate into a string
@@ -258,3 +260,9 @@ def str_to_basepairstate(s):
     r = basic_io.str_to_matrix(spl[1])
     sugars = basic_io.str_to_matrix(spl[2])
     return BasepairState(r, d, sugars)
+
+
+def ref_bp_state():
+    path = settings.RESOURCES_PATH + "/start"
+    m = motif.Motif(path)
+    return m.ends[0].state()

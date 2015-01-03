@@ -58,5 +58,6 @@ def str_to_structure(s):
         chains.append(c)
 
     struct.chains = chains
+    struct._cache_coords()
     return struct
 
