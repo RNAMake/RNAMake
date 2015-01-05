@@ -266,3 +266,8 @@ def ref_bp_state():
     path = settings.RESOURCES_PATH + "/start"
     m = motif.Motif(path)
     return m.ends[0].state()
+
+def ref_bp():
+    path = settings.RESOURCES_PATH + "/start"
+    m = motif.Motif(path)
+    return m.ends[0]

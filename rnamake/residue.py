@@ -144,7 +144,8 @@ class Residue(object):
                 pos = self.rtype.atom_map[a.name]
                 self.atoms[pos] = a
             else:
-                logger.warning(a.name + " not included in " + repr(self))
+                pass
+                #logger.warning(a.name + " not included in " + repr(self))
 
         # Warning if an atom is missing
         for i, a in enumerate(self.atoms):
@@ -154,7 +155,7 @@ class Residue(object):
                     if pos == i:
                         correct_name = name
 
-                logger.warning(correct_name + " is undefined in " + repr(self))
+                #logger.warning(correct_name + " is undefined in " + repr(self))
 
     def get_atom(self, atom_name):
         """
@@ -175,7 +176,7 @@ class Residue(object):
                 atom_name +
                 "in " +
                 repr(self))
-            raise KeyError()
+            raise KeyError("cannot find atom")
 
     def connected_to(self, res, cutoff=3.0):
         """

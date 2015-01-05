@@ -68,7 +68,7 @@ def str_to_type(type_name):
         raise ValueError("mtdb_type name not recognized")
 
 def is_valid_motiftype(mtype):
-    get_motiftype_str(mtype)
+    type_to_str(mtype)
 
 
 

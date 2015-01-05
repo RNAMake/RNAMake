@@ -399,7 +399,7 @@ def align_motif(ref_bp, motif_end, motif):
     """
 
     r1 , r2 = ref_bp.state().r , motif_end.state().r
-    r = r1.T.dot(r2)
+    r = util.unitarize(r1.T.dot(r2))
     trans = -motif_end.state().d
     t = transform.Transform(r, trans)
 

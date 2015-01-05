@@ -7,6 +7,8 @@ import rnamake.basepair
 import util
 import numerical
 import sys
+import random
+import traceback
 
 class MotifTreeStateUnittest(unittest.TestCase):
 
@@ -111,6 +113,70 @@ class MotifTreeStateUnittest(unittest.TestCase):
             mt = mtst.to_motiftree()
             return
 
+    def test_compare_mtst_to_motif_tree(self):
+        if util.UnittestState == util.UnittestType.BASIC:
+            self.skipTest("test_compare_mtst_to_motif_tree is not a basic test")
+
+        mtype = rnamake.motif_type.TWOWAY
+        mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(mtype)
+        mt = None
+        for j in range(100):
+            mtst = rnamake.motif_tree_state.MotifTreeStateTree()
+            for i in range(100):
+                mts = random.choice(mts_lib.motif_tree_states)
+                mtst.add_state(mts)
+            print j, len(mtst.nodes)
+            try:
+                mt = mtst.to_motiftree()
+                mt.to_pose()
+            except:
+                print traceback.format_exc()
+                f = open("mt.out", "w")
+                f.write(mtst.to_str())
+                f.close()
+                exit()
+
+    def test_compare_mtst_to_mt_features(self):
+        mtype = rnamake.motif_type.TWOWAY
+        mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(mtype)
+        mtst = rnamake.motif_tree_state.MotifTreeStateTree()
+        for i in range(100):
+            mts = random.choice(mts_lib.motif_tree_states)
+            mtst.add_state(mts)
+        mt = mtst.to_motiftree()
+        mt_end = mt.last_node.available_ends()[0]
+        # TODO figure out why numbers are slightly off
+
+    def test_mts_to_str(self):
+        path = rnamake.settings.UNITTEST_PATH + "/resources/test.new.me"
+        mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(libpath=path)
+        mts = mts_lib.motif_tree_states[0]
+        s = mts.to_str()
+        mts2 = rnamake.motif_tree_state.str_to_motif_tree_state(s)
+
+    def test_tree_to_str(self):
+        path = rnamake.settings.UNITTEST_PATH + "/resources/test.new.me"
+        mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(libpath=path)
+        mts = mts_lib.motif_tree_states[0]
+        mtst = rnamake.motif_tree_state.MotifTreeStateTree()
+        mtst.add_state(mts)
+        s = mtst.to_str()
+        mtst2 = rnamake.motif_tree_state.str_to_motif_tree_state_tree(s)
+        mtst2.to_pdb()
+
+    def test_compare_output(self):
+        f = open("mt.out")
+        l = f.readline()
+        f.close()
+
+        mtst = rnamake.motif_tree_state.str_to_motif_tree_state_tree(l)
+        mt = mtst.to_motiftree()
+        mt.write_pdbs()
+
+
+
+
+
 
 
 def main():
@@ -121,7 +187,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         try:
             util.UnittestState = int(sys.argv[1])
+            sys.argv.pop()
         except:
             pass
-        sys.argv.pop()
     main()

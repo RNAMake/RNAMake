@@ -19,7 +19,7 @@ def point_to_str(p):
         0 1 2
 
     """
-    return str(p[0]) + " " + str(p[1]) + " " + str(p[2])
+    return " ".join([str(x) for x in p])
 
 
 def points_to_str(points):

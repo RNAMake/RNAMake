@@ -151,7 +151,7 @@ class MotifTree(base.Base):
                 leafs.append(n)
         return leafs
 
-    def get_pose(self, include_head=0, chain_closure=0):
+    def to_pose(self, include_head=0, chain_closure=0):
         if include_head:
             self._find_other_connections_to_head()
 
@@ -161,7 +161,7 @@ class MotifTree(base.Base):
         return pose
 
     def to_pdb(self, fname="mt.pdb", include_head=1, chain_closure=1):
-        pose = self.get_pose(include_head=include_head,
+        pose = self.to_pose(include_head=include_head,
                              chain_closure=chain_closure)
         pose.to_pdb(fname)
 

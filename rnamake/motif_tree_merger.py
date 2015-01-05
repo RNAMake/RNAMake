@@ -361,7 +361,17 @@ def close_chain(chain):
         if res1.connected_to(res2,cutoff=2.0):
             continue
 
+        atoms = []
         res1_atoms = [res1.get_atom(name) for name in [ "C4'", "C3'", "O3'" ]]
+        res2_atoms = [res2.get_atom(name) for name in "C5',O5',OP2,OP1".split(",")]
+        atoms.extend(res1_atoms)
+        atoms.extend(res2_atoms)
+        fail=0
+        for a in atoms:
+            if a is None:
+                fail=1
+        if fail:
+            continue
 
         ovl1 = virtual_atom("OVL1", 1.606497, 60.314519, 0.0,
                             [res1.get_atom("O3'"), res1.get_atom("C3'"),

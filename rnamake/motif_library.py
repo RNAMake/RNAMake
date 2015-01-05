@@ -24,9 +24,11 @@ class MotifLibrary(object):
 
         return self.motif_dict[mname].copy()
 
-    def load_all(self):
-        for mname in self.motif_paths:
+    def load_all(self, limit=999999):
+        for i, mname in enumerate(self.motif_paths):
             self.get_motif(mname)
+            if i > limit:
+                return
 
     def motifs(self):
         return self.motif_dict.values()
