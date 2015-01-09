@@ -4,6 +4,7 @@ import rnamake.motif_type
 import rnamake.settings
 import rnamake.cluster
 import rnamake.basepair
+import rnamake.basic_io
 import util
 import numerical
 import sys
@@ -110,7 +111,7 @@ class MotifTreeStateUnittest(unittest.TestCase):
             node = mtst.add_state(mts)
             if node is None:
                 continue
-            mt = mtst.to_motiftree()
+            mt = mtst.to_motiftree(sterics=0)
             return
 
     def test_compare_mtst_to_motif_tree(self):
@@ -164,14 +165,30 @@ class MotifTreeStateUnittest(unittest.TestCase):
         mtst2 = rnamake.motif_tree_state.str_to_motif_tree_state_tree(s)
         mtst2.to_pdb()
 
+    def test_tree_to_str_2(self):
+        mtype = rnamake.motif_type.TWOWAY
+        mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(mtype)
+        mt = None
+        mtst = rnamake.motif_tree_state.MotifTreeStateTree()
+        for i in range(100):
+            mts = random.choice(mts_lib.motif_tree_states)
+            mtst.add_state(mts)
+
+        s = mtst.to_str()
+        mtst2 = rnamake.motif_tree_state.str_to_motif_tree_state_tree(s)
+
+    def test_motif_to_state(self):
+        pass
     def test_compare_output(self):
         f = open("mt.out")
         l = f.readline()
         f.close()
 
         mtst = rnamake.motif_tree_state.str_to_motif_tree_state_tree(l)
-        mt = mtst.to_motiftree()
-        mt.write_pdbs()
+        #for n in mtst.nodes:
+        #    print n.mts.name
+        mt = mtst.to_motiftree(sterics=0)
+        #mt.write_pdbs()
 
 
 

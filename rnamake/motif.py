@@ -6,6 +6,7 @@ import transform
 import util
 import io
 import motif_type
+import settings
 import numpy as np
 
 class MotifException(Exception):
@@ -305,8 +306,7 @@ class Motif(object):
         cmotif.mtype = self.mtype
         cmotif.structure = self.structure.copy()
         cmotif.beads = [b.copy() for b in self.beads]
-        cmotif.cached_rotations = self.cached_rotations
-
+        # cmotif.cached_rotations = self.cached_rotations
         for bp in self.basepairs:
             new_res1 = cmotif.get_residue(uuid=bp.res1.uuid)
             new_res2 = cmotif.get_residue(uuid=bp.res2.uuid)
@@ -323,6 +323,7 @@ class Motif(object):
         for end in self.ends:
             index = self.basepairs.index(end)
             cmotif.ends.append(cmotif.basepairs[index])
+        cmotif._cache_basepair_frames()
 
         return cmotif
 
@@ -425,3 +426,7 @@ def align_motif(ref_bp, motif_end, motif):
     if dist1 < 5 or dist2 < 5:
         motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )
 
+def ref_motif():
+    path = settings.RESOURCES_PATH + "/start"
+    m = Motif(path)
+    return m

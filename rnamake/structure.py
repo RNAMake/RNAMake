@@ -31,7 +31,7 @@ class Structure(object):
             r.num = i+1
             r.chain_id = "A"
 
-    def __repr(self):
+    def __repr__(self):
         return "<Structure( Chains: %s>" % (len(self.chains))
 
     def _build_chains(self, residues):

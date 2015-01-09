@@ -154,6 +154,10 @@ class MotifTreePrecomputer(base.Base):
         for m in mlib.motifs():
             self.precompute_motif(m)
 
+    def precompute_motifs(self, motifs):
+        for m in motifs:
+            self.precompute_motif(m)
+
     def precompute_motif(self, m):
         flip_states = (0, 1)
         motif_pos = range(len(m.ends))
@@ -212,7 +216,7 @@ class MotifTreePrecomputer(base.Base):
     def _record_state(self, motif_node, end_bp):
         start_bp = self.mt.nodes[1].connections[0].motif_end(self.mt.nodes[1])
 
-        pose = self.mt.get_pose()
+        pose = self.mt.to_pose()
         pose.mtype = motif_node.motif.mtype
         pose_start_bp = pose.get_basepair(bp_uuid=start_bp.uuid)[0]
         pose_end_bp   = pose.get_basepair(bp_uuid=end_bp.uuid)[0]
