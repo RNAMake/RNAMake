@@ -9,7 +9,9 @@ import util
 import transformations as t
 import sqlite3
 import argparse
+import itertools
 
+#TODO reformat class structure get rid of MotifTreeStateData and MotifTreeData
 class MotifTreePrecomputerSqlite3Output(object):
     def __init__(self, name):
         self.state_connection = self._get_state_connection(name)
@@ -74,11 +76,14 @@ class MotifTreePrecomputerSqlite3Output(object):
 
 
 class MotifTreePrecomputerTextOutput(object):
-    def __init__(self,name):
+    def __init__(self, name):
         self.f = open(name + ".new.me","w")
         self.states = []
 
-    def add_data(self,state,data):
+    def add_data(self, state, data):
+        if self._is_repeat_state(state):
+            return
+
         for s in self.states:
             dist = s.end_state.diff(state.end_state)
             if dist < 0.1:
@@ -92,29 +97,44 @@ class MotifTreePrecomputerTextOutput(object):
 
         self.f.write(state.name + "|" + str(state.score) + "|" + str(state.size) + \
                      "|" + str(state.flip) +  "|" + data.build_string + "|" + \
-                     basic_io.points_to_str(centers) + "|" + state.end_state.to_str() + "|")
+                     basic_io.points_to_str(centers) + "|")
 
-        for i, end_state in enumerate(state.other_ends):
-            self.f.write(end_state.to_str() + "|" + \
-                         str(state.other_end_indexes[i]) + "|")
+        for i, end_state in enumerate(state.end_states):
+            if end_state is not None:
+                self.f.write(end_state.to_str())
+            self.f.write("|")
 
         self.f.write("\n")
 
     def finalize(self):
         self.states = []
 
+    def _is_repeat_state(self, state):
+        same=1
+        for s in self.states:
+            same=1
+            if len(state.end_states) != len(s.end_states):
+                continue
+            for i in range(len(end_states)):
+                dist = s.end_states[i].diff(state.end_states[i])
+                if dist > 0.1:
+                    same=0
+                    break
+        if same:
+            return 1
+        else:
+            return 0
+
 
 class MotifTreeStateData(object):
-    def __init__(self,uid,id,name,start_state,end_state,score,size,other_ends,other_end_indexes,flip):
+    def __init__(self,uid,id,name,start_state,end_states,score,size,flip):
         self.uid = uid
         self.id = id
         self.name = name
         self.start_state = start_state
-        self.end_state = end_state
+        self.end_states = end_states
         self.score = score
         self.size = size
-        self.other_ends = other_ends
-        self.other_end_indexes = other_end_indexes
         self.flip = flip
 
 
@@ -236,15 +256,14 @@ class MotifTreePrecomputer(base.Base):
         id  = self._get_id_for_state(pose_end_bp.state(), 6.0, 0.6)
         score = self.scorer.score(pose)
         size = len(pose.residues())
-        other_ends, other_end_indexes = [], []
+        ends = [None for x in pose.ends]
         for i, end in enumerate(pose.ends):
-            if end.uuid == pose_start_bp.uuid or end.uuid == pose_end_bp.uuid:
+            #if end.uuid == pose_start_bp.uuid or end.uuid == pose_end_bp.uuid:
+            if end.uuid == pose_start_bp.uuid:
                 continue
-            other_ends.append(end.state())
-            other_end_indexes.append(i)
+            ends[i] = end.state()
         mt_state = MotifTreeStateData(uid, id, name, pose_start_bp.state(),
-                                      pose_end_bp.state(), score, size, other_ends,
-                                      other_end_indexes, motif_node.flip)
+                                      ends, score, size, motif_node.flip)
         mt_data  = MotifTreeData(name, pose.to_str(),
                                  pose.get_beads([pose_start_bp]))
 

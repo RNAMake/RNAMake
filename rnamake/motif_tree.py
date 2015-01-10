@@ -302,7 +302,6 @@ class MotifTreeNode(object):
             status = self.end_status[end.uuid]
             if status == 1:
                 ends.append(end)
-                break
         ends.sort(key=lambda x : self.motif.ends.index(x), reverse=True)
         return ends
 

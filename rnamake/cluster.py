@@ -11,7 +11,7 @@ class MotifCluster(object):
         self.state = state
         self.motifs = [motif]
 
-
+#TODO dont just use first end_state
 def cluster_mts(mtss, max_distance=1.5):
     clusters = [MTSCluster(mtss[0])]
     for i, mts in enumerate(mtss):

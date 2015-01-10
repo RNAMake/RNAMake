@@ -32,7 +32,7 @@ class MotifEnsembleTree(object):
         mtst = None
         mts_name = self.nodes[0].motif_ensemble.motif_states[0].mts.name
         if mts_name == "start":
-            mtst = motif_tree_state.MotifTreeStateTree()
+            mtst = motif_tree_state.MotifTreeStateTree(sterics=0)
         else:
             mts =  self.nodes[0].motif_ensemble.motif_states[0].mts
             mtst = motif_tree_state.MotifTreeStateTree(mts)
