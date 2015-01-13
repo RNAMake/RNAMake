@@ -63,7 +63,7 @@ def type_to_str(mtype):
 
 def str_to_type(type_name):
     if type_name in str_to_type_dict:
-        return str_to_type_dict[type_name]
+        return str_to_type_dict[type_name.upper()]
     else:
         raise ValueError("mtdb_type name not recognized")
 

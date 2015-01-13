@@ -1,4 +1,5 @@
 import motif_type
+import motif_scorer
 import settings
 import basic_io
 import basepair
@@ -92,11 +93,11 @@ class MotifTreeStateLibrary(object):
             flip, build_string = int(spl[3]), spl[4]
             beads = basic_io.str_to_points(spl[5])
             end_states = []
-            for i in range(6, len(spl)):
+            for i in range(6, len(spl)-1):
                 if len(spl[i]) < 5:
                     end_states.append(None)
                 else:
-                    end_states.append(basepair.str_to_basepairstate(spl[6]))
+                    end_states.append(basepair.str_to_basepairstate(spl[i]))
             name_elements = parse_db_name(name)
             motif_tree_state = MotifTreeState(name, name_elements.start_index,
                                               size, score, beads, end_states,
@@ -165,30 +166,42 @@ class MotifTreeStateNode(object):
                 return c.parent
 
     def parent_end_index(self):
-        for c in self.connections:
-            if c.child == self:
-                return c.pe_index
+        if self.parent is None:
+            return None
+        for i, n in enumerate(self.parent.children):
+            if n == self:
+                return i
+        raise ValueError("cannot find parent_end_index")
 
     def parent_end(self):
-        for c in self.connections:
-            if c.child == self:
-                return c.parent.states[c.pe_index]
+        if self.parent is None:
+            return None
+        for i, n in enumerate(self.parent.children):
+            if n == self:
+                return self.parent.states[i]
+        raise ValueError("cannot find parent_end_index")
 
     def to_str(self):
         parent_index = -1
-        if self.parent() is not None:
+        if self.parent is not None:
             parent_index = self.parent.index
         s = self.mts.to_str() + "!" + str(self.parent_end_index()) + "!" + \
             str(parent_index) + "!" + str(self.lib_type) + "!"
         for state in self.states:
-             s += state.to_str() + "E"
+            if state is not None:
+                s += state.to_str()
+            s += "E"
         s +="!" + basic_io.point_to_str(self.children_lib_types) + "!"
         s +=basic_io.points_to_str(self.beads)
         return s
 
-    def update_mts(self, mts):
+    def replace_mts(self, mts):
         self.mts = mts
-        self.states = [ s.copy() for s in self.mts.end_states ]
+        self.states = [None for s in self.mts.end_states]
+        for i, s in enumerate(self.mts.end_states):
+            if s is None:
+                continue
+            self.states[i] = s.copy()
 
     def add_child(self, node, end):
         i = self.states.index(end)
@@ -240,6 +253,8 @@ class MotifTreeStateTree(base.Base):
         if parent is None:
             parent = self.last_node
         if parent_end is not None:
+            if parent_end == parent.mts.start_index:
+                return None
             parent_ends = [ parent_end ]
         else:
             parent_ends = parent.available_ends()
@@ -272,12 +287,13 @@ class MotifTreeStateTree(base.Base):
                 continue
 
             m =  motif.str_to_motif(n.mts.build_string)
-
-            parent = mt.nodes [ self.nodes.index(n.parent()) ]
-            parent_index = n.parent().mts.end_indexes[n.parent_end_index()]
-            # print parent, n.parent().mts.start_index, parent_index, n.mts.start_index
+            parent = mt.nodes [ self.nodes.index(n.parent) ]
+            parent_index = n.parent_end_index()
+            print n.mts.start_index, n.mts.flip, parent_index
             mt_node = mt.add_motif(m, parent=parent, end_index=n.mts.start_index,
                                    end_flip=n.mts.flip, parent_index=parent_index)
+            #mt_node = mt.add_motif(m, parent=parent, end_index=n.mts.start_index,
+            #                       end_flip=0, parent_index=parent_index)
             if mt_node is None:
                 print i, n.mts.name
                 raise ValueError("could not successfully convert to motiftree")
@@ -289,9 +305,11 @@ class MotifTreeStateTree(base.Base):
         start_node = MotifTreeStateNode(start_mts, 0, None, 0, [0])
         return start_node
 
-    def _steric_clash(self, new_node):
+    def _steric_clash(self, new_node, index=999):
         dist = 0
         for n in self.nodes[::-1]:
+            if n.index > index:
+                continue
             for b1 in new_node.beads:
                 for b2 in n.beads:
                     dist = util.distance(b1, b2)
@@ -318,18 +336,64 @@ class MotifTreeStateTree(base.Base):
         mt = self.to_motiftree(sterics=0)
         mt.write_pdbs()
 
-    def update(self, node, mts):
-        node.update_mts(mts)
+    def replace_state(self, node, mts, check_clash=1):
+        if len(node.mts.end_states) != len(mts.end_states):
+            return 0
+        for i in range(len(node.mts.end_states)):
+            if node.mts.end_states[i] is None and  \
+               mts.end_states[i] is not None:
+                return 0
+            if node.mts.end_states[i] is not None and \
+               mts.end_states[i] is None:
+                return 0
+
+        old_mts = node.mts
+        node.replace_mts(mts)
         open_nodes = [ node ]
+        seen_nodes = []
+        clash = 0
         while len(open_nodes) != 0:
             current = open_nodes.pop(0)
-            parent = current.parent()
+            seen_nodes.append(current)
+            parent = current.parent
             parent_end = current.parent_end()
             if parent is None:
                 continue
             self.aligner.transform_state(parent_end, parent, current)
             self.aligner.transform_beads(current)
-            open_nodes.extend(current.children())
+            if check_clash:
+                if self._steric_clash(current, index=current.index-1):
+                    clash=1
+                    break
+            for c in current.children:
+                if c is not None:
+                    open_nodes.append(c)
+
+        if clash:
+            node.replace_mts(old_mts)
+            for n in seen_nodes:
+                parent = n.parent
+                parent_end = n.parent_end()
+                if parent is None:
+                    continue
+                self.aligner.transform_state(parent_end, parent, n)
+                self.aligner.transform_beads(n)
+            return 0
+        else:
+            return 1
+
+    def remove_node(self, node):
+        parent = node.parent
+        parent_index = node.parent_end_index()
+        parent.children[parent_index] = None
+        self.nodes.remove(node)
+        self.last_node = parent
+
+
+
+
+
+
 
 
 def parse_db_name(name):
@@ -366,15 +430,18 @@ def str_to_motif_tree_state_tree(s):
             else:
                 mtst = MotifTreeStateTree(mts)
             continue
-        print int(node_spl[2])
         parent = mtst.nodes [ int(node_spl[2]) ]
         children_lib_types = [int(x) for x in node_spl[5].split(" ")]
-        new_node = MotifTreeStateNode(mts, len(mtst.nodes), parent.level+1,
+        new_node = MotifTreeStateNode(mts, len(mtst.nodes), parent,
                                       int(node_spl[3]), children_lib_types)
-        new_node.states = [ basepair.str_to_basepairstate(s) for s in node_spl[4].split("E")[:-1]]
+        states = []
+        for bp_str in node_spl[4].split("E")[:-1]:
+            if len(bp_str) < 5:
+                states.append(None)
+            else:
+                states.append(basepair.str_to_basepairstate(bp_str))
         new_node.beads = basic_io.str_to_points(node_spl[6])
-        parent_end = parent.states[ int(node_spl[1]) ]
-        MotifTreeStateConnection(parent, new_node, int(node_spl[1]))
+        parent.children[ int(node_spl[1]) ] = new_node
         mtst.nodes.append(new_node)
     return mtst
 
@@ -387,7 +454,7 @@ def ref_mts():
     for b in start_beads:
         if b.btype != residue.BeadType.PHOS:
             beads.append(b.center)
-    start_mts = MotifTreeState("start", 0, 0, 0, beads, [ref_bp.state()], 0,
+    start_mts = MotifTreeState("start", 1, 0, 0, beads, [ref_bp.state()], 0,
                                ref_motif.to_str())
     return start_mts
 
@@ -398,19 +465,20 @@ def motif_to_state(m, end_index=0, end_flip=0):
     m_copy = mt.nodes[1].motif
     name = m_copy.name+"-"+str(end_index)+"-"+str(end_flip)
     available_ends = mt.nodes[1].available_ends()
-    ends = []
+    ends = [ None for e in m_copy.ends]
     end_indexes = []
-    for e in available_ends:
-        ends.append(e.state())
-        index = m_copy.ends.index(e)
-        end_indexes.append(index)
+    for i, end in enumerate(m_copy.ends):
+        if end_index == i:
+            continue
+        ends[i] = e.state()
 
     beads = []
     for b in m_copy.beads:
         if b.btype != 0:
             beads.append(b.center)
 
-    print len(ends)
-    mts = MotifTreeState(name, end_index, len(m.residues()), 0, beads,
-                         ends, end_indexes, end_flip, m_copy.to_str())
+    ms = motif_scorer.MotifScorer()
+    score = ms.score(m)
+    mts = MotifTreeState(name, end_index, len(m.residues()), score, beads,
+                         ends, end_flip, m_copy.to_str())
     return mts

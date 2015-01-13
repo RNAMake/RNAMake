@@ -81,13 +81,9 @@ class MotifTreePrecomputerTextOutput(object):
         self.states = []
 
     def add_data(self, state, data):
-        if self._is_repeat_state(state):
+        if self._is_repeat_state(state) == 1:
             return
 
-        for s in self.states:
-            dist = s.end_state.diff(state.end_state)
-            if dist < 0.1:
-                return
         self.states.append(state)
 
         centers = []
@@ -110,12 +106,18 @@ class MotifTreePrecomputerTextOutput(object):
         self.states = []
 
     def _is_repeat_state(self, state):
-        same=1
+        same=0
         for s in self.states:
             same=1
             if len(state.end_states) != len(s.end_states):
+                same=0
                 continue
-            for i in range(len(end_states)):
+            for i in range(len(s.end_states)):
+                if s.end_states[i] is None and state.end_states[i] is None:
+                    continue
+                elif s.end_states[i] is None or state.end_states[i] is None:
+                    same=0
+                    break
                 dist = s.end_states[i].diff(state.end_states[i])
                 if dist > 0.1:
                     same=0
@@ -207,7 +209,7 @@ class MotifTreePrecomputer(base.Base):
             return
         avail_ends = motif_node.available_ends()
         for end in avail_ends:
-            self._record_state(motif_node, end)
+            self._record_state(motif_node, end, m)
             self._add_end_helix(motif_node, end)
 
     def _get_helix_motif(self, hcount):
@@ -233,7 +235,7 @@ class MotifTreePrecomputer(base.Base):
             return 1
         return int(name_spl[2])
 
-    def _record_state(self, motif_node, end_bp):
+    def _record_state(self, motif_node, end_bp, m):
         start_bp = self.mt.nodes[1].connections[0].motif_end(self.mt.nodes[1])
 
         pose = self.mt.to_pose()
@@ -243,6 +245,10 @@ class MotifTreePrecomputer(base.Base):
         start_index   = pose.ends.index(pose_start_bp)
         end_index     = pose.ends.index(pose_end_bp)
         helix_direction, start_helix_count, end_helix_count = 0, 0, 0
+        #hack for prediction
+        if motif_node.flip:
+            if pose_end_bp.r()[1][0] < 0:
+                pose_end_bp.flip()
         if len(self.mt.nodes) > 2:
             helix_direction = self.mt.nodes[1].motif.ends.index(start_bp)
             start_helix_count = self._helix_count(self.mt.nodes[1].motif.name)
@@ -311,5 +317,6 @@ if __name__ == '__main__':
     mlib.load_all()
     mtp = MotifTreePrecomputer(name=args.t,max_bps_per_end=0)
     mtp.precompute_library(mlib)
+
 
 

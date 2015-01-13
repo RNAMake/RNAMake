@@ -7,6 +7,7 @@ import rnamake.basepair
 import rnamake.basic_io
 import rnamake.resource_manager
 import rnamake.motif
+import rnamake.util
 import util
 import numerical
 import sys
@@ -108,12 +109,12 @@ class MotifTreeStateUnittest(unittest.TestCase):
         mts = mts_lib.motif_tree_states[0]
         mtst = rnamake.motif_tree_state.MotifTreeStateTree(mts)
         mt = mtst.to_motiftree()
-
         for mts in mts_lib.motif_tree_states:
             node = mtst.add_state(mts)
             if node is None:
                 continue
-            mt = mtst.to_motiftree(sterics=0)
+            mt = mtst.to_motiftree()
+            mt.write_pdbs()
             return
 
     def test_compare_mtst_to_motif_tree(self):
@@ -123,7 +124,7 @@ class MotifTreeStateUnittest(unittest.TestCase):
         mtype = rnamake.motif_type.TWOWAY
         mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(mtype)
         mt = None
-        for j in range(100):
+        for j in range(1000):
             mtst = rnamake.motif_tree_state.MotifTreeStateTree()
             for i in range(100):
                 mts = random.choice(mts_lib.motif_tree_states)
@@ -166,7 +167,6 @@ class MotifTreeStateUnittest(unittest.TestCase):
         mtst.add_state(mts)
         s = mtst.to_str()
         mtst2 = rnamake.motif_tree_state.str_to_motif_tree_state_tree(s)
-        mtst2.to_pdb()
 
     def test_tree_to_str_2(self):
         return
@@ -188,16 +188,71 @@ class MotifTreeStateUnittest(unittest.TestCase):
         m2 = rnamake.motif.str_to_motif(mts.build_string)
 
     def test_compare_output(self):
-        return
         f = open("mt.out")
         l = f.readline()
         f.close()
 
         mtst = rnamake.motif_tree_state.str_to_motif_tree_state_tree(l)
-        #for n in mtst.nodes:
-        #    print n.mts.name
-        mt = mtst.to_motiftree(sterics=0)
-        #mt.write_pdbs()
+        for i, n in enumerate(mtst.nodes):
+            rnamake.basic_io.points_to_pdb("beads."+str(i)+".pdb", n.beads)
+
+        mt = mtst.to_motiftree(sterics=1)
+        for i, n in enumerate(mt.nodes):
+            beads = []
+            for b in n.motif.beads:
+                if b.btype != 0:
+                    beads.append(b.center)
+            rnamake.basic_io.points_to_pdb("mt_beads."+str(i)+".pdb",beads)
+        mt.write_pdbs()
+
+    def test_bead_placement(self):
+        mtype = rnamake.motif_type.TWOWAY
+        mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(mtype)
+        mt = None
+        mtst = rnamake.motif_tree_state.MotifTreeStateTree()
+        for mts1 in mts_lib.motif_tree_states:
+            #print mts1.name
+            mtst.add_state(mts1)
+            for mts2 in mts_lib.motif_tree_states:
+                node = mtst.add_state(mts2)
+                if node is None:
+                    continue
+                mt = mtst.to_motiftree()
+                beads = []
+                for n in mtst.nodes:
+                    beads.extend(n.beads)
+                mt_beads = []
+                for n in mt.nodes:
+                    for b in n.motif.beads:
+                        if b.btype == 0:
+                            continue
+                        mt_beads.append(b.center)
+                for i in range(len(mt_beads)):
+                    dist = rnamake.util.distance(mt_beads[i], beads[i])
+                    if dist > 0.1:
+                        print mtst.nodes[1].mts.name, mtst.nodes[2].mts.name
+                        break
+                mtst.remove_node(mtst.last_node)
+            mtst.remove_node(mtst.last_node)
+
+    def test_replace_state(self):
+        mtype = rnamake.motif_type.TWOWAY
+        mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(mtype)
+        mt = None
+        mtst = rnamake.motif_tree_state.MotifTreeStateTree()
+        for i in range(100):
+            mts = random.choice(mts_lib.motif_tree_states)
+            mtst.add_state(mts)
+        mtst.to_pdb("test.pdb")
+        while 1:
+            mts = random.choice(mts_lib.motif_tree_states)
+            node = random.choice(mtst.nodes)
+            if node == mtst.nodes[0]:
+                continue
+            if mtst.replace_state(node, mts) == 1:
+                mtst.to_pdb("test2.pdb")
+                break
+
 
 
 

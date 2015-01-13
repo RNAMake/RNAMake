@@ -59,7 +59,7 @@ class MotifTree(base.Base):
                 head.motif.get_beads(head.motif.ends)
 
         self.nodes = [ head ]
-        self.clash_radius = settings.CLASH_RADIUS
+        self.clash_radius = settings.CLASH_RADIUS - 0.1
         self.level = 1
         self.last_node = head
         self.merger = motif_tree_merger.MotifTreeMerger()
@@ -133,6 +133,8 @@ class MotifTree(base.Base):
 
         self.last_node = connected[0]
         self.nodes.remove(node)
+        if len(self.nodes) == 1:
+            self.nodes[0].motif.beads = []
 
     def remove_node_level(self, level=None):
         if level is None:
@@ -180,7 +182,7 @@ class MotifTree(base.Base):
             try:
                 ends = [ m.ends[end_index] ]
             except:
-                raise ValueError("end index: " + end_index + " is out of \
+                raise ValueError("end index: " + str(end_index) + " is out of \
                                  out of bounds in add_motif")
         elif end_bp is not None:
             if end_bp not in m.ends:
@@ -194,7 +196,7 @@ class MotifTree(base.Base):
 
         return ends
 
-    def _add_motif(self, parent, m, parent_end, end, flip_status=[0,1]):
+    def _add_motif(self, parent, m, parent_end, end, flip_status):
         for flip in flip_status:
             end.flip(flip)
             motif.align_motif(parent_end, end, m)
@@ -203,6 +205,8 @@ class MotifTree(base.Base):
                 if self._steric_clash(m, end):
                     m.reset()
                     continue
+            else:
+                m.get_beads([end])
 
             new_node = MotifTreeNode(m.copy(), self.level, len(self.nodes),
                                      flip)
@@ -216,9 +220,8 @@ class MotifTree(base.Base):
             for res in new_node.motif.residues():
                 res.new_uuid()
 
-            if len(self.nodes) == 1 and self.option('full_beads_first_res') and\
-               self.option('sterics'):
-                new_node.motif.get_beads()
+            if len(self.nodes) == 1 and self.option('full_beads_first_res'):
+                self.nodes[0].motif.get_beads()
 
             self._update_beads(parent, new_node)
             return new_node
@@ -249,6 +252,7 @@ class MotifTree(base.Base):
     def _get_default_head(self):
         mdir = settings.RESOURCES_PATH + "/start"
         m = motif.Motif(mdir)
+        # m.get_beads()
         return MotifTreeNode(m, 0, 0, 0)
 
     def _steric_clash(self, m, end):

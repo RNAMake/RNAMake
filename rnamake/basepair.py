@@ -62,7 +62,15 @@ class Basepair(object):
         return self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
             "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
 
-    def flip(self, flip):
+    def flip(self, flip=None):
+        if flip is None:
+            if self.flipped == 0:
+                flip = 1
+            else:
+                flip = 0
+            self.state().flip()
+            self.flipped = flip
+
         if self.flipped == flip:
             return
         else:

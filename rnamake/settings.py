@@ -8,4 +8,4 @@ LIB_PATH = base_dir
 RESOURCES_PATH = LIB_PATH + "/resources/"
 UNITTEST_PATH = LIB_PATH + "/unittests/"
 MOTIF_DIRS = RESOURCES_PATH + "motifs/"
-CLASH_RADIUS = 2.7
+CLASH_RADIUS = 3.0

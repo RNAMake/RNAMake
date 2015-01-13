@@ -6,6 +6,7 @@ class MotifState(object):
     def __init__(self, mts, population):
         self.mts, self.population = mts, population
 
+
 class MotifEnsemble(object):
     def __init__(self, lib_path=None, start_index=None, flip_direction=None,
                  limit=9999):
@@ -14,6 +15,10 @@ class MotifEnsemble(object):
             return
         self._setup(lib_path, start_index, flip_direction)
 
+    def get_state(self, name):
+        for ms in self.motif_states:
+            if ms.mts.name == name:
+                return ms
     def _get_populations(self, pop_path):
         try:
             f = open(pop_path)

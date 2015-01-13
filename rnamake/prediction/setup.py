@@ -6,6 +6,7 @@ import rnamake.motif_tree_precomputer as motif_tree_precomputer
 import rnamake.settings as settings
 import rnamake.motif_library as motif_library
 import rnamake.motif_type as motif_type
+import copy
 
 def bp_match_target(bp, target):
     bpstr = bp.res1.rtype.name[0]+bp.res2.rtype.name[0]
@@ -22,16 +23,17 @@ def residue_in_matched_bp(m, r, target):
 
 
 def motif_from_bps(bps):
-   m = motif.Motif()
-   res = []
-   for bp in bps:
-       res.extend(bp.residues())
-   m.structure._build_chains(res)
-   m.basepairs = bps
-   m.structure._cache_coords()
-   m._cache_basepair_frames()
-   m.ends = [bps[0], bps[-1]]
-   return m
+    # bps = [copy.deepcopy(bp) for bp in bps]
+    m = motif.Motif()
+    res = []
+    for bp in bps:
+        res.extend(bp.residues())
+    m.structure._build_chains(res)
+    m.basepairs = bps
+    m.structure._cache_coords()
+    m._cache_basepair_frames()
+    m.ends = [bps[0], bps[-1]]
+    return m
 
 
 def target_end_origin(hmotif):
@@ -76,15 +78,25 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
     for i, c in enumerate(clusters):
         mt.add_motif(c.motifs[0])
         node = mt.add_motif(test_helix, end_index=0, end_flip=0)
-        if node is None:
-            mt.nodes[1].motif.ends[1].flip(1)
-            mt.nodes[1].motif.ends[1].flipped = 0
+        #if node is None:
+        #    mt.nodes[1].motif.ends[1].flip(1)
+        #    mt.nodes[1].motif.ends[1].flipped = 0
+        if mt.nodes[1].motif.ends[1].r()[1][0] > 0:
+            mt.nodes[1].motif.ends[1].flip()
+            mt.nodes[1].motif.ends[1].flipped=0
+        #print name+"."+str(i)
+        #print mt.nodes[1].motif.ends[1].r()
+
         mt.nodes[1].motif.name = name+"."+str(i)
         f.write(name+"."+str(i) + " " + str(len(c.motifs)) + " " + \
                 str(float(len(c.motifs))/float(nmotifs))+ "\n")
         motifs.append(mt.nodes[1].motif)
         mt.remove_node_level()
     f.close()
+    #for i, m in enumerate(motifs):
+    #    mt.add_motif(m, end_index=1)
+    #    mt.nodes[1].motif.to_pdb("motif."+str(i)+".pdb")
+    #    mt.remove_node(mt.last_node)
     mtp = motif_tree_precomputer.MotifTreePrecomputer(name=base_dir+"/"+name,
             max_bps_per_end=0)
     mtp.precompute_motifs(motifs)
@@ -96,6 +108,8 @@ if __name__ == '__main__':
     all_targets = []
     bps = ["AU","UA","CG","GC","GU","UG"]
     seen = []
+    #get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
+    #exit()
     for i,bp1 in enumerate(bps):
         for j,bp2 in enumerate(bps):
             if bp1 + "=" + bp2 in seen:

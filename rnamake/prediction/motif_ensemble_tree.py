@@ -39,13 +39,12 @@ class MotifEnsembleTree(object):
         open_nodes = [ self.nodes[0] ]
         while len(open_nodes) != 0:
             current = open_nodes.pop(0)
-            for i, n in current.connected_nodes.iteritems():
+            for i, n in enumerate(current.children):
                 if n is None:
                     continue
                 mts = n.motif_ensemble.motif_states[0].mts
                 parent = mtst.nodes [ current.index ]
-                index = parent.mts.end_indexes.index(i)
-                parent_end = parent.states[ index ]
+                parent_end = parent.states[ i ]
                 mstn = mtst.add_state(mts, parent, parent_end)
                 if mstn is None:
                     raise ValueError("cannot build mstn based on motif ensemble \
@@ -58,17 +57,16 @@ class MotifEnsembleTreeNode(object):
     def __init__(self, motif_ensemble, parent, index):
         self.motif_ensemble, self.parent = motif_ensemble, parent
         self.index = index
-        self.ends = self.motif_ensemble.motif_states[0].mts.end_indexes
-        self.connected_nodes = {e : None for e in self.ends}
+        self.children = [None for e in self.motif_ensemble.motif_states[0].mts.end_states]
 
     def available_ends(self):
         ends = []
-        for k, v in self.connected_nodes.iteritems():
-            if v is None:
-                ends.append(k)
+        for i, c in enumerate(self.children):
+            if c is None:
+                ends.append(i)
         return ends
 
     def add_child(self, node, end_direction):
-        if self.connected_nodes[end_direction] is not None:
+        if self.children[end_direction] is not None:
             raise ValueError("cannot add child already is using this end")
-        self.connected_nodes[end_direction] = node
+        self.children[end_direction] = node
