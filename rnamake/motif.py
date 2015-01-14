@@ -237,6 +237,59 @@ class Motif(object):
         self.beads = self.structure.get_beads(excluded)
         return self.beads
 
+    def sequence(self):
+        seq = ""
+        for c in self.chains():
+            for r in c.residues:
+                seq += r.rtype.name[0]
+            seq += "+"
+        return seq[:-1]
+
+    def secondary_structure(self):
+        structure = ""
+        seen_res = {}
+        seen_bp = {}
+        saved_bp = None
+        for c in self.chains():
+            for r in c.residues:
+                ss = ""
+                bps = self.get_basepair(res1=r)
+                is_bp = 0
+                for bp in bps:
+                    partner_res = bp.partner(r)
+                    is_bp = 1
+                    passes = 0
+                    saved_bp = None
+                    if util.wc_bp(bp) and bp.bp_type == "cW-W":
+                        passes = 1
+                    if util.gu_bp(bp) and bp.bp_type == "cW-W":
+                        passes = 1
+
+                    if passes:
+                        saved_bp = bp
+                        if   bp not in seen_bp and r not in seen_res and \
+                             partner_res not in seen_res:
+                            seen_res[r] = 1
+                            ss = "("
+                        elif partner_res in seen_res:
+                            if seen_res[partner_res] > 1:
+                                ss = "."
+                            else:
+                                ss = ")"
+                                seen_res[r] = 1
+                                seen_res[partner_res] += 1
+                                break
+                    elif r not in seen_res:
+                        ss = "."
+
+                if not is_bp:
+                    ss = "."
+                if saved_bp is not None:
+                    seen_bp[saved_bp] = 1
+                structure += ss
+            structure += "&"
+        return structure[:-1]
+
     def to_str(self):
         """
         stringifies motif object

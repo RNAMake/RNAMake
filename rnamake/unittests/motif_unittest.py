@@ -14,7 +14,7 @@ class MotifUnittest(unittest.TestCase):
 
     def setUp(self):
         path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
-        self.motif = util.supress_log_output(rnamake.motif.Motif, path)
+        self.motif = rnamake.motif.Motif(path)
 
     def test_creation(self):
 
@@ -105,6 +105,12 @@ class MotifUnittest(unittest.TestCase):
         new_r = m.basepairs[0].state().r
         if not numerical.are_matrices_equal(old_r, new_r):
             self.fail("rotations should be different")
+
+    def test_secondary_structure(self):
+        mtype = rnamake.motif_type.HELIX
+        mlib = rnamake.motif_library.MotifLibrary(mtype)
+        m1 = mlib.get_motif("HELIX.IDEAL")
+        print m1.secondary_structure()
 
 
 

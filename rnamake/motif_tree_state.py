@@ -289,11 +289,8 @@ class MotifTreeStateTree(base.Base):
             m =  motif.str_to_motif(n.mts.build_string)
             parent = mt.nodes [ self.nodes.index(n.parent) ]
             parent_index = n.parent_end_index()
-            print n.mts.start_index, n.mts.flip, parent_index
             mt_node = mt.add_motif(m, parent=parent, end_index=n.mts.start_index,
                                    end_flip=n.mts.flip, parent_index=parent_index)
-            #mt_node = mt.add_motif(m, parent=parent, end_index=n.mts.start_index,
-            #                       end_flip=0, parent_index=parent_index)
             if mt_node is None:
                 print i, n.mts.name
                 raise ValueError("could not successfully convert to motiftree")

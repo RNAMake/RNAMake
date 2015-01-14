@@ -1,5 +1,6 @@
 import rnamake.motif_tree_state as motif_tree_state
 import motif_ensemble
+import random
 
 class MotifEnsembleTree(object):
     def __init__(self, ensemble=None):
@@ -70,3 +71,7 @@ class MotifEnsembleTreeNode(object):
         if self.children[end_direction] is not None:
             raise ValueError("cannot add child already is using this end")
         self.children[end_direction] = node
+
+    def get_random_state(self):
+        return random.choice(self.motif_ensemble.motif_states)
+

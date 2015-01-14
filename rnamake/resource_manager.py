@@ -1,5 +1,6 @@
-from . import motif_library
-from . import motif_type
+import motif_library
+import motif_type
+import motif_tree_state
 
 class ResourceManager(object):
     def __init__(self):
@@ -11,6 +12,14 @@ class ResourceManager(object):
             try:
                 mlib = motif_library.MotifLibrary(mtype)
                 self.mlibs[motif_type.type_to_str(mtype)] = mlib
+            except:
+                pass
+
+        for mtype in motif_library.lib_paths.iterkeys():
+            #catch unimplemented mts libraries
+            try:
+                mts_lib = motif_tree_state.MotifTreeStateLibrary(mtype)
+                self.mts_libs[motif_type.type_to_str(mtype)] = mts_lib
             except:
                 pass
 
