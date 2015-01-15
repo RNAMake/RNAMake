@@ -441,7 +441,10 @@ def fill_energy(elements,sequence,pairmap):
 
 def get_dotplot(sequence):
     #os.system("echo " + sequence + " | ./vienna_windows_binaries/RNAfold.exe -p > rnafold_dump")
-    os.system("echo " + sequence + " | RNAfold -p > rnafold_dump")
+    if sequence.find("&") != -1:
+        os.system("echo \"" + sequence + "\" | RNAcofold -p > rnafold_dump")
+    else:
+        os.system("echo \"" + sequence + "\" | RNAfold -p > rnafold_dump")
 
     # get info from output file
     try:
