@@ -8,4 +8,5 @@ LIB_PATH = base_dir
 RESOURCES_PATH = LIB_PATH + "/resources/"
 UNITTEST_PATH = LIB_PATH + "/unittests/"
 MOTIF_DIRS = RESOURCES_PATH + "motifs/"
+ETERNABOT_PATH = LIB_PATH + "/eternabot/"
 CLASH_RADIUS = 3.0

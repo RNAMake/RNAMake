@@ -41,6 +41,16 @@ class Base(object):
         else:
             raise ValueError("invalid option " + option)
 
+    def constraint(self, constraint, value=None):
+        if constraint in self.constraints:
+            if value is None:
+                return self.constraints.get(constraint)
+            else:
+                self.constaints.set(constraint, value)
+        else:
+            raise ValueError("invalid constraint" + constraint)
+
+
 
 
 

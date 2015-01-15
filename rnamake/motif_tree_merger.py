@@ -76,6 +76,7 @@ class MotifTreeMerger(base.Base):
         for res in residues:
             uuids[res.uuid] = res
 
+        new_pose = pose.Pose()
         for node in self.nodes:
             for bp in node.motif.basepairs:
                 if bp.res1.uuid in uuids and bp.res2.uuid in uuids:
@@ -84,11 +85,10 @@ class MotifTreeMerger(base.Base):
                     cbp.res2 = uuids[bp.res2.uuid]
 
                     if node.motif.mtype == motif_type.HELIX:
-                        cbp.designable = 1
+                        new_pose.designable[cbp.uuid] = 1
 
                     basepairs.append(cbp)
 
-        new_pose = pose.Pose()
         new_pose.name = "assembled"
         new_pose.structure = new_structure
         new_pose.basepairs = basepairs

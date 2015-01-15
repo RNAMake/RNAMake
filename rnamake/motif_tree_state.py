@@ -122,6 +122,10 @@ class MotifTreeStateLibrary(object):
 
 class MotifTreeStateNode(object):
     def __init__(self, mts, index, parent, lib_type, children_lib_types):
+        if parent is None:
+            self.level = 0
+        else:
+            self.level = parent.level+1
         self.mts, self.parent = mts, parent
         self.lib_type, self.children_lib_types = lib_type, children_lib_types
         self.beads, self.score, self.size, self.ss_score = mts.beads, 1000, 0, 0
@@ -139,6 +143,7 @@ class MotifTreeStateNode(object):
         c.beads = np.copy(self.beads)
         c.score, c.size, c.ss_score = self.score, self.size, c.ss_score
         c.states = [None for s in self.states]
+        c.level = self.level
         for i, s in enumerate(self.states):
             if s is None:
                 continue
@@ -207,6 +212,12 @@ class MotifTreeStateNode(object):
         i = self.states.index(end)
         self.children[i] = node
 
+    def active_states(self):
+        states = []
+        for s in self.states:
+            if s is not None:
+                states.append(s)
+        return states
 
 class MotifTreeStateNodeAligner(object):
     def __init__(self):
