@@ -27,6 +27,7 @@ class BuildTaskAstarUnittest(unittest.TestCase):
         mtss = build_task_astar.MotifTreeStateSearch()
 
     def test_search_search(self):
+        return
         mtss = build_task_astar.MotifTreeStateSearch(max_node_level=2,
                                                      max_solutions=1,
                                                      accept_score=1)
@@ -34,7 +35,18 @@ class BuildTaskAstarUnittest(unittest.TestCase):
         start = mtst.nodes[0].active_states()[0]
         end = mtst.nodes[-1].active_states()[0]
         solutions = mtss.search(start, end)
-        print len(solutions)
+        for i in range(len(mtst.nodes)):
+            if mtst.nodes[i].mts.name != solutions[0].path[i].mts.name:
+                self.fail("did not get correct path back")
+
+
+    def test_search_solutions(self):
+        mtss =  build_task_astar.MotifTreeStateSearch(max_solutions=1)
+        mtst = get_twoway_mts_tree(size=10)
+        start = mtst.nodes[0].active_states()[0]
+        end = mtst.nodes[-1].active_states()[0]
+        solutions
+
 
 
 

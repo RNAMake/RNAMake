@@ -7,6 +7,7 @@ import rnamake.settings as settings
 import rnamake.motif_library as motif_library
 import rnamake.motif_type as motif_type
 import copy
+import math
 
 def bp_match_target(bp, target):
     bpstr = bp.res1.rtype.name[0]+bp.res2.rtype.name[0]
@@ -70,6 +71,8 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
                 aligned_motifs.append(mt.nodes[1].motif)
                 mt.remove_node(mt.last_node)
 
+    kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+    kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
     clusters = cluster.cluster_motifs(aligned_motifs)
     motifs = []
     nmotifs = len(aligned_motifs)
@@ -87,9 +90,11 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
         #print name+"."+str(i)
         #print mt.nodes[1].motif.ends[1].r()
 
+        pop = float(len(c.motifs)) / float(nmotifs)
+        energy = -kBT*math.log(pop)
         mt.nodes[1].motif.name = name+"."+str(i)
         f.write(name+"."+str(i) + " " + str(len(c.motifs)) + " " + \
-                str(float(len(c.motifs))/float(nmotifs))+ "\n")
+                str(pop) + " " + str(energy) + "\n")
         motifs.append(mt.nodes[1].motif)
         mt.remove_node_level()
     f.close()

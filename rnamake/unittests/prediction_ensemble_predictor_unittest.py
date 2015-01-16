@@ -28,7 +28,7 @@ class EnsemblePredictorUnittest(unittest.TestCase):
         #print seq
         #print ss
         ep = ensemble_predictor.EnsemblePredictor(seq, ss)
-        ep.sample(output_pdbs=0)
+        ep.sample(output_pdbs=0, steps=50)
 
     def _generate_helix(self, size=100):
         seq = ""
@@ -43,6 +43,7 @@ class EnsemblePredictorUnittest(unittest.TestCase):
 
 
     def test_tecto_rnas(self):
+        return
         seq1 = "GGACUAGGAUAUGGAAGAUCCUCGGGAACGAGGAUCUUCCUAAGUCCUAG"
         ss1  = "...(((((((..((((((((((((....))))))))))))...)))))))"
         seq2 = "CUAGGAAUCUGGAAGAUCCUCGGAAACGAGGAUCUUCCUGUGUCCUAG"

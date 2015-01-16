@@ -20,6 +20,7 @@ class PriorityQueue(object):
     def get(self):
         return heapq.heappop(self.elements)[1]
 
+
 class MotifTreeStateSelector(object):
     def __init__(self, motif_types, mode="helix_flank"):
         self.mts_libs = []
@@ -29,6 +30,7 @@ class MotifTreeStateSelector(object):
 
     def get_children_mts(self, node):
         return self.mts_libs[0].motif_tree_states
+
 
 class MotifTreeStateSearchScorer(object):
     def __init__(self, target):
@@ -82,13 +84,14 @@ class MotifTreeStateSearch(base.Base):
         children = []
         current = None
         score = 0
-        accept_score = 5
-        sterics = self.option('sterics')
+        accept_score   = self.constraint('accept_score')
         max_node_level = self.constraint('max_node_level')
+        sterics        = self.option('sterics')
         while not self.queue.empty():
             current = self.queue.get()
             if current.level > max_node_level:
                 continue
+
 
             score = self.scorer.accept_score(current)
             if score < accept_score:
@@ -97,10 +100,13 @@ class MotifTreeStateSearch(base.Base):
                 if len(self.solutions) == self.constraint('max_solutions'):
                     return self.solutions
 
+            if current.level == max_node_level:
+                continue
 
             children = self.node_selector.get_children_mts(current)
             test_node.parent = current
             parent_ends = current.active_states()
+            test_node.level = current.level+1
 
             for c in children:
                 test_node.replace_mts(c)
@@ -108,6 +114,9 @@ class MotifTreeStateSearch(base.Base):
                 score = self.scorer.score(test_node)
                 if score > current.score:
                     continue
+                if sterics:
+                   self.aligner.transform_beads(test_node)
+
                 child = test_node.copy()
                 self.queue.put(child, score)
 
@@ -170,6 +179,8 @@ def new_score_function(current, end, endflip):
     if r_diff > r_diff_flip:
         r_diff = r_diff_flip
 
+    if d_diff < 0.0001:
+        d_diff = 0.00001
     scale = (math.log(150/d_diff) - 1)
     if scale > 2:
         scale = 2

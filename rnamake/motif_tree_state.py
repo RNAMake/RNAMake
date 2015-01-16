@@ -219,6 +219,12 @@ class MotifTreeStateNode(object):
                 states.append(s)
         return states
 
+    def steric_clash(self):
+        current = self.parent
+        while curent is not None:
+            pass
+
+
 class MotifTreeStateNodeAligner(object):
     def __init__(self):
         self.r, self.t, self.ref_bp_state = None, None, basepair.ref_bp_state()
@@ -478,7 +484,7 @@ def motif_to_state(m, end_index=0, end_flip=0):
     for i, end in enumerate(m_copy.ends):
         if end_index == i:
             continue
-        ends[i] = e.state()
+        ends[i] = end.state()
 
     beads = []
     for b in m_copy.beads:

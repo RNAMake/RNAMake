@@ -15,11 +15,14 @@ def find_all(a_str, sub):
 
 
 class EnsemblePredictor(object):
-    def __init__(self, sequence, structure, motifs=None):
+    def __init__(self, sequence, structure, met=None, motifs=None):
+        if met is not None:
+            self.met = met
+            return
         self.ss_tree = secondary_structure_tree.SecondaryStructureTree(structure,
                                                                        sequence)
 
-        seq = motifs[0].sequence()
+        """seq = motifs[0].sequence()
         seq_chains = seq.split("+")
         saved = []
         pos = 0
@@ -28,7 +31,7 @@ class EnsemblePredictor(object):
         print sequence.find(seq_chains[0])
         print sequence.find(seq_chains[1])
         print sequence.find(seq_chains[2])
-        return
+        return"""
         self.met = motif_ensemble_tree.MotifEnsembleTree()
         helical_steps = []
         for n in self.ss_tree.nodes:
@@ -59,20 +62,24 @@ class EnsemblePredictor(object):
     def sample(self, steps=100, output_pdbs=0):
         mtst = self.met.get_mtst()
         temp = 0.04
+        kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+        kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
         for i in range(steps):
             node_num = random.randint(1, len(self.met.nodes)-1)
             met_node = self.met.nodes[node_num]
             mts_node = mtst.nodes[node_num]
             cpop = met_node.motif_ensemble.get_state(mts_node.mts.name).population
             ms = met_node.get_random_state()
-            if ms.population > cpop:
+            if ms.population < cpop:
                 mtst.replace_state(mts_node, ms.mts, 0)
+                accept_count += 1
                 if output_pdbs:
                     mtst.to_pdb("step."+str(i)+".pdb")
                 continue
-            score = math.exp(-(cpop - ms.population)/temp)
+            score = math.exp((cpop - ms.population)/kBT)
             dice_roll = random.random()
             if dice_roll < score:
+                accept_count += 1
                 mtst.replace_state(mts_node, ms.mts, 0)
                 if output_pdbs:
                     mtst.to_pdb("step."+str(i)+".pdb")

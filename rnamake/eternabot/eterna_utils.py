@@ -1,5 +1,4 @@
 import csv
-import httplib2
 import sys
 import random
 import math

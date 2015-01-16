@@ -6,6 +6,7 @@ import motif_type
 import motif_scorer
 import basic_io
 import util
+import settings
 import transformations as t
 import sqlite3
 import argparse
@@ -310,10 +311,20 @@ def parse_args():
     args = parser.parse_args()
     return args
 
+
+def mlib_for_type(mtype):
+    mlib = None
+    if mtype == motif_type.TWOWAY:
+        path = settings.MOTIF_DIRS + "two_ways/unique_7.dat"
+        mlib = motif_library.MotifLibrary(libfile=path)
+        mlib.load_all()
+    return mlib
+
+
 if __name__ == '__main__':
     args = parse_args()
     mtype = motif_type.str_to_type(args.t)
-    mlib = motif_library.MotifLibrary(mtype)
+    mlib = mlib_for_type(mtype)
     mlib.load_all()
     mtp = MotifTreePrecomputer(name=args.t,max_bps_per_end=0)
     mtp.precompute_library(mlib)
