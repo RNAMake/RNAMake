@@ -4,6 +4,7 @@ import motif_type
 import motif_scorer
 import motif
 import util
+import settings
 
 class MotifLibrary(object):
     def __init__(self, libtype=None, libdir=None, libfile=None):
@@ -78,6 +79,20 @@ class MotifLibrary(object):
 
     def __contains__(self, mname):
         return mname in self.motif_paths
+
+
+def unique_twoway_lib():
+    path = settings.MOTIF_DIRS + "two_ways/unique_7.dat"
+    mlib = MotifLibrary(libfile=path)
+    mlib.load_all()
+    return mlib
+
+def ideal_helix_lib():
+    mlib = MotifLibrary(motif_type.HELIX)
+    for i in range(1,21):
+        mlib.get_motif("HELIX.LE."+str(i))
+    return mlib
+
 
 
 lib_paths = {

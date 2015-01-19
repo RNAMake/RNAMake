@@ -155,8 +155,8 @@ class MotifTreeMerger(base.Base):
             merged_chain_1 = self._get_merged_hairpin(pc.p3_chain, pc.p5_chain,
                                                       p5_chain)
         elif pc.is_hairpin():
-            merged_chain_1 = self._get_merged_hairpin(nc.p5_chain, nc.p3_chain,
-                                                      p5_chain, 1)
+            merged_chain_1 = self._get_merged_hairpin(p5_chain, p3_chain,
+                                                      pc.p5_chain, 1)
         else:
             merged_chain_1 = self._get_merged_chain(p5_chain, pc.p3_chain, 1)
             merged_chain_2 = self._get_merged_chain(p3_chain, pc.p5_chain)
@@ -200,12 +200,11 @@ class MotifTreeMerger(base.Base):
 
     def _get_merged_hairpin(self, c1, c2, hairpin, join_by_3prime=0,
                             remove_overlap=0):
+        hairpin.to_pdb("hairpin.pdb")
         merged_chain = self._get_merged_chain(c1, hairpin, join_by_3prime,
                                               remove_overlap)
-        merged_chain.to_pdb("test.pdb")
         merged_chain = self._get_merged_chain(merged_chain, c2, join_by_3prime,
                                               remove_overlap)
-        merged_chain.to_pdb("test2.pdb")
         return merged_chain
 
     def _get_chains_from_connection(self, node, c):

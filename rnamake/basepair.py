@@ -142,7 +142,7 @@ class Basepair(object):
         :param fname" the file you want to write the basepair too
         :type fname: str
         """
-        f = open(fname)
+        f = open(fname, "w")
         f.write ( self.to_pdb_str() )
         f.close()
 

@@ -24,12 +24,33 @@ class PriorityQueue(object):
 class MotifTreeStateSelector(object):
     def __init__(self, motif_types, mode="helix_flank"):
         self.mts_libs = []
+        self.lib_map = []
         for mtype in motif_types:
             mts_lib = motif_tree_state.MotifTreeStateLibrary(mtype)
             self.mts_libs.append(mts_lib)
 
+        if mode == "all":
+            for i in range(len(motif_types)):
+                self.lib_map.append(range(len(motif_types)))
+
+        elif mode == "helix_flank":
+            mts_lib = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX)
+            self.mts_libs.insert(0, mts_lib)
+            self.lib_map.append( range(1, len(self.mts_libs)))
+            for i in range(1, len(self.mts_libs)):
+                self.lib_map.append([0])
+
     def get_children_mts(self, node):
-        return self.mts_libs[0].motif_tree_states
+        libtype = node.lib_type
+        lib_poss = self.lib_map[libtype]
+        if node.level == 0 :
+            lib_poss = [0]
+        children = []
+        types = []
+        for lib_pos in lib_poss:
+            children.extend(self.mts_libs[lib_pos].motif_tree_states)
+            types.extend((lib_pos for mts in self.mts_libs[lib_pos].motif_tree_states))
+        return children, types
 
 
 class MotifTreeStateSearchScorer(object):
@@ -77,6 +98,8 @@ class MotifTreeStateSearch(base.Base):
         self._set_option_or_constraint(options)
 
     def search(self, start, end, node_selector=None, **options):
+        if node_selector is not None:
+            self.node_selector = node_selector
         self.scorer = MTSS_GreedyBestFirstSearch(end)
         start_node = self._get_start_node(start)
         test_node = start_node.copy()
@@ -92,7 +115,6 @@ class MotifTreeStateSearch(base.Base):
             if current.level > max_node_level:
                 continue
 
-
             score = self.scorer.accept_score(current)
             if score < accept_score:
                 solution = MotifTreeStateSearchSolution(current, score)
@@ -103,12 +125,12 @@ class MotifTreeStateSearch(base.Base):
             if current.level == max_node_level:
                 continue
 
-            children = self.node_selector.get_children_mts(current)
+            children, types = self.node_selector.get_children_mts(current)
             test_node.parent = current
             parent_ends = current.active_states()
             test_node.level = current.level+1
 
-            for c in children:
+            for i, c in enumerate(children):
                 test_node.replace_mts(c)
                 self.aligner.transform_state(parent_ends[0], current, test_node)
                 score = self.scorer.score(test_node)
@@ -118,6 +140,7 @@ class MotifTreeStateSearch(base.Base):
                    self.aligner.transform_beads(test_node)
 
                 child = test_node.copy()
+                child.lib_type = types[i]
                 self.queue.put(child, score)
 
         return self.solutions
@@ -164,6 +187,43 @@ class MotifTreeStateSearchSolution(object):
             path.append(node)
             node = node.parent
         return path[::-1]
+
+    def to_mtst(self):
+        mtst = motif_tree_state.MotifTreeStateTree(self.path[0].mts, sterics=0)
+        for i, n in enumerate(self.path):
+            if i == 0:
+                continue
+            success = 0
+            for s in mtst.last_node.active_states():
+                node = mtst.add_state(n.mts, parent_end=s)
+                if node is None:
+                    continue
+                same=1
+                for j in range(len(node.states)):
+                    if n.states[j] is None and node.states[j] is None:
+                        continue
+                    if n.states[j] is None and node.states[j] is not None:
+                        same=0
+                        break
+                    if n.states[j] is not None and node.states[j] is None:
+                        same=0
+                        break
+                    diff = n.states[j].diff(node.states[j])
+                    if diff > 0.1:
+                        same=0
+                        break
+                if same:
+                    success=1
+                    break
+                else:
+                    mtst.remove_node(node)
+            if not success:
+                print "fail"
+                exit()
+
+        print len(self.path), len(mtst.nodes)
+        return mtst
+
 
 
 

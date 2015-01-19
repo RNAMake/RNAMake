@@ -332,7 +332,7 @@ class MotifTreeStateTree(base.Base):
         return 0
 
     def _get_head_node(self, mts):
-        start_node = MotifTreeStateNode(mts, 0, 0, 0, [0])
+        start_node = MotifTreeStateNode(mts, 0, None, 0, [0])
         start_node.index = 0
         return start_node
 

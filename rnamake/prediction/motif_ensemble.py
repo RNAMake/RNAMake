@@ -57,7 +57,7 @@ class MotifEnsemble(object):
                 raise ValueError("cannot find "+mname+" in populations")
             motif_state = MotifState(mts, m_pop)
             self.motif_states.append(motif_state)
-        self.motif_states.sort(key = lambda x : x.population, reverse=True)
+        self.motif_states.sort(key = lambda x : x.population, reverse=False)
 
 
 
