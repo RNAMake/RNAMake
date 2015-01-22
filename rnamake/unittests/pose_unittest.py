@@ -67,8 +67,6 @@ class PoseUnittest(unittest.TestCase):
     def test_motifs(self):
         path = settings.UNITTEST_PATH + "/resources/motifs/p4p6"
         p = rnamake.pose.Pose(path)
-        for i, nway in enumerate(p.twoways()):
-            nway.to_pdb("nway."+str(i)+".pdb")
 
 
 

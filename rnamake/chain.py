@@ -43,7 +43,7 @@ class Chain(object):
         """
         return self.residues[-1]
 
-    def subchain(self, start, end=None):
+    def subchain(self, start=None, end=None, start_res=None, end_res=None):
         """
         Creates a new chain from a subsection of the residues in the current
         chain.
@@ -54,6 +54,17 @@ class Chain(object):
         :param end: end position in residues object list
         :type end: int
         """
+        if start_res:
+            try:
+                start = self.residues.index(start_res)
+                end = self.residues.index(end_res)
+            except:
+                return None
+
+            if start > end:
+                start, end = end, start
+            end += 1
+
         if start < 0:
             raise ValueError("start cannot be less then 0")
 

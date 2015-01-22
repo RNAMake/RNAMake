@@ -3,21 +3,32 @@ import motif_type
 import x3dna
 import eternabot.sequence_designer as sequence_designer
 
-
+#TODO implement finding tertiary contacts
 class Pose(motif.Motif):
-    #TODO finish implementing
     def __init__(self, mdir=None, pdb=None):
         self.structure = None
         self.mdir, self.name, self.ends = "", "", []
         self.beads, self.score, self.basepairs = [], 0, []
         self.designable = {}
         self._setup(mdir, pdb)
-        self._setup_motifs()
+        if pdb is not None or mdir is not None:
+            self._setup_motifs()
 
     def _setup_motifs(self):
         x = x3dna.X3dna()
         motifs = x.get_motifs(self.mdir+"/"+self.name)
         self.motifs = Motifs(motifs, self)
+        basepairs = []
+        for helix in self.helices():
+            basepairs.extend(helix.basepairs)
+        for bp in basepairs:
+            for m in self.all_motifs():
+                if m.mtype == motif_type.HELIX:
+                    continue
+                found = m.get_basepair(bp_uuid=bp.uuid)
+                if len(found) > 0:
+                    continue
+                self.designable[bp.uuid]=1
 
     def twoways(self):
         return self.motifs.twoways
@@ -33,6 +44,9 @@ class Pose(motif.Motif):
 
     def single_strands(self):
         return self.motifs.single_strands
+
+    def all_motifs(self):
+        return self.motifs.all_motifs
 
     def designable_sequence(self):
         seq = ""
@@ -60,12 +74,18 @@ class Pose(motif.Motif):
         results = designer.design(ss, seq)
         return results[0]['end'][0]
 
+
 class Motifs(object):
-    def __init__(self, x3dna_motifs, p):
+    def __init__(self, x3dna_motifs=None, p=None):
         self.twoways, self.nways, self.hairpins, self.helices = [], [], [], []
-        self.single_strands = []
+        self.single_strands, self.all_motifs = [], []
+        if x3dna_motifs is not None:
+            self._setup_from_x3dna_motif(x3dna_motifs, p)
+
+    def _setup_from_x3dna_motif(self, x3dna_motifs, p):
         for xm in x3dna_motifs:
             m = self._convert_x3dna_to_motif(xm, p)
+            self.all_motifs.append(m)
             self._assign_motif_by_type(m)
 
     def _assign_motif_by_type(self, m):
@@ -96,6 +116,7 @@ class Motifs(object):
         m.structure._cache_coords()
         m.basepairs = basepairs
         m._cache_basepair_frames()
+        m.setup_basepair_ends()
         return m
 
 
