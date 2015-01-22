@@ -4,6 +4,7 @@ import os
 import re
 import numpy as np
 import util
+import motif_type
 
 X3DNA_BIN_PATH = settings.RESOURCES_PATH + "x3dna/bin/"
 os.environ['X3DNA'] =  settings.RESOURCES_PATH + "x3dna"
@@ -318,6 +319,83 @@ class X3dna(object):
         dssr_file_path = self._get_dssr_file_path(pdb_path)
         return self._divide_dssr_file_into_sections(dssr_file_path)
 
+    def get_motifs(self, pdb_path):
+        dssr_file_path = self._get_dssr_file_path(pdb_path)
+        types = { 'hairpins'  : motif_type.HAIRPIN,
+                  'bulges'    : motif_type.TWOWAY,
+                  'internals' : motif_type.TWOWAY,
+                  'junctions' : motif_type.NWAY,
+                  'non-loops' : motif_type.SSTRAND}
+
+        file_sections = self._divide_dssr_file_into_sections(dssr_file_path)
+        all_motifs = []
+        for section, t in types.iteritems():
+            if section in file_sections:
+                motifs = self._parse_dssr_section(file_sections[section], t)
+                all_motifs.extend(motifs)
+        if 'stems' in file_sections:
+            motifs = self._parse_dssr_helix_section(file_sections['stems'])
+            all_motifs.extend(motifs)
+
+        return all_motifs
+
+    def _parse_dssr_section(self, section, mtype):
+        motifs = []
+        seen_res = []
+        for l in section:
+            spl = l.split()
+            try:
+                if spl[0][:3] != 'nts':
+                    continue
+            except:
+                continue
+
+            if len(spl) < 3:
+                continue
+            res = []
+            for res_str in spl[2].split(","):
+                res_obj = self._parse_dssr_res_str(res_str)
+                res.append(res_obj)
+
+            count = 0
+            for r in res:
+                if r in seen_res:
+                    count += 1
+            if count == len(res):
+                continue
+            seen_res.extend(res)
+            motifs.append(Motif(res, mtype))
+
+        return motifs
+
+    def _parse_dssr_helix_section(self, section):
+        p = re.compile("\d+")
+        res = []
+        motifs = []
+        for l in section:
+            spl = l.split()
+            try:
+                if not p.match(spl[0]):
+                    continue
+            except:
+                continue
+            if int(spl[0]) == 1 and len(res) > 0:
+                motifs.append(Motif(res, motif_type.HELIX))
+                res = []
+            res.append(self._parse_dssr_res_str(spl[1]))
+            res.append(self._parse_dssr_res_str(spl[2]))
+
+        if len(res) > 0:
+            motifs.append(Motif(res, motif_type.HELIX))
+
+        return motifs
+
+class Motif(object):
+    __slots__ = ["residues", "mtype"]
+
+    def __init__(self, residues, mtype):
+        self.residues, self.mtype = residues, mtype
+
 
 class Basepair(object):
 
@@ -326,6 +404,7 @@ class Basepair(object):
     def __init__(self, res1, res2, r, d):
         self.res1, self.res2, self.r, self.d = res1, res2, r, d
         self.bp_type = "c..."
+
 
 class Residue(object):
 
@@ -345,5 +424,3 @@ class Residue(object):
     def __ne__(self, res):
          return not (self.num == res.num and self.chain_id == res.chain_id \
                      and self.i_code == res.i_code)
-
-

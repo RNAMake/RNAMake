@@ -2,10 +2,15 @@ import sys
 import heapq
 import motif_tree_state
 import motif_type
+import motif
 import base
 import option
 import util
 import math
+import transform
+import settings
+import logger
+
 
 class PriorityQueue(object):
     def __init__(self):
@@ -25,6 +30,7 @@ class MotifTreeStateSelector(object):
     def __init__(self, motif_types, mode="helix_flank"):
         self.mts_libs = []
         self.lib_map = []
+        self.clash_lists = {}
         for mtype in motif_types:
             mts_lib = motif_tree_state.MotifTreeStateLibrary(mtype)
             self.mts_libs.append(mts_lib)
@@ -40,6 +46,31 @@ class MotifTreeStateSelector(object):
             for i in range(1, len(self.mts_libs)):
                 self.lib_map.append([0])
 
+        self._setup_clash_lists()
+
+    def _setup_clash_lists(self):
+        for i, lmap in enumerate(self.lib_map):
+            mtype1 = self.mts_libs[i].mtype
+            for j in lmap:
+                if str(i)+"-"+str(j) in self.clash_lists:
+                    continue
+                mtype2 = self.mts_libs[j].mtype
+                clist_path =  settings.PRECOMPUTED_PATH + "motif_tree_states/"
+                clist_path += motif_type.type_to_str(mtype1) + "_"
+                clist_path += motif_type.type_to_str(mtype2) + ".clist"
+                try:
+                    f = open(clist_path)
+                    lines = f.readlines()
+                    f.close()
+                    clist = {}
+                    for l in lines:
+                        clist[l.rstrip()] = 1
+                    self.clash_lists[ str(i)+"-"+str(j) ] = clist
+                except:
+                    print "warning no clist file loaded for ",
+                    motif_type.type_to_str(mtype1), " and ",
+                    motif_type.type_to_str(mtype2)
+
     def get_children_mts(self, node):
         libtype = node.lib_type
         lib_poss = self.lib_map[libtype]
@@ -47,9 +78,20 @@ class MotifTreeStateSelector(object):
             lib_poss = [0]
         children = []
         types = []
+        if node.level == 0:
+            for lib_pos in lib_poss:
+                children.extend(self.mts_libs[lib_pos].motif_tree_states)
+                types.extend((lib_pos for mts in self.mts_libs[lib_pos].motif_tree_states))
+            return children, types
+
         for lib_pos in lib_poss:
-            children.extend(self.mts_libs[lib_pos].motif_tree_states)
-            types.extend((lib_pos for mts in self.mts_libs[lib_pos].motif_tree_states))
+            clist = self.clash_lists[ str(libtype)+"-"+str(lib_pos) ]
+            for mts in self.mts_libs[lib_pos].motif_tree_states:
+                key = node.mts.name + " " + mts.name
+                if key in clist:
+                    continue
+                children.append(mts)
+                types.append(lib_pos)
         return children, types
 
 
@@ -92,14 +134,19 @@ class MotifTreeStateSearch(base.Base):
         self.scorer = None
         self.node_selector = MotifTreeStateSelector([motif_type.TWOWAY])
         self.lookup = None
+        self.using_lookup = 0
         self.steps = 0
         self.solutions = []
         self.setup_options_and_constraints()
         self._set_option_or_constraint(options)
+        self.clogger = logger.get_logger("MotifTreeStateSearch:search")
 
-    def search(self, start, end, node_selector=None, **options):
+    def search(self, start, end, node_selector=None, lookup=None, **options):
         if node_selector is not None:
             self.node_selector = node_selector
+        if lookup is not None:
+            self.lookup = lookup
+            self.using_lookup = 1
         self.scorer = MTSS_GreedyBestFirstSearch(end)
         start_node = self._get_start_node(start)
         test_node = start_node.copy()
@@ -110,17 +157,26 @@ class MotifTreeStateSearch(base.Base):
         accept_score   = self.constraint('accept_score')
         max_node_level = self.constraint('max_node_level')
         sterics        = self.option('sterics')
+        verbose        = self.option('verbose')
         while not self.queue.empty():
             current = self.queue.get()
             if current.level > max_node_level:
                 continue
+            self.steps += 1
+            if verbose and self.steps % 10 == 0:
+                self._print_status()
 
             score = self.scorer.accept_score(current)
             if score < accept_score:
-                solution = MotifTreeStateSearchSolution(current, score)
-                self.solutions.append(solution)
-                if len(self.solutions) == self.constraint('max_solutions'):
-                    return self.solutions
+                fail=0
+                if sterics:
+                    if current.steric_clash():
+                        fail = 1
+                if not fail:
+                    solution = MotifTreeStateSearchSolution(current, score)
+                    self.solutions.append(solution)
+                    if len(self.solutions) == self.constraint('max_solutions'):
+                        return self.solutions
 
             if current.level == max_node_level:
                 continue
@@ -138,6 +194,12 @@ class MotifTreeStateSearch(base.Base):
                     continue
                 if sterics:
                    self.aligner.transform_beads(test_node)
+                   if test_node.steric_clash(2):
+                       continue
+                   if self.using_lookup:
+                       if self.lookup.clash(test_node.beads):
+                           continue
+
 
                 child = test_node.copy()
                 child.lib_type = types[i]
@@ -147,7 +209,8 @@ class MotifTreeStateSearch(base.Base):
 
     def setup_options_and_constraints(self):
         options =     { 'sterics'        :  1,
-                        'vebose'         :  0 }
+                        'verbose'        :  0,
+                        'frequency'      : 10 }
 
         constraints = { 'max_node_level'  : 999,
                         'max_steps'       : 100000000,
@@ -161,13 +224,14 @@ class MotifTreeStateSearch(base.Base):
         for k, v in options.iteritems():
             try:
                 self.options.set(k, v)
+                continue
             except:
                 pass
 
             try:
                 self.constraints.set(k, v)
             except:
-                raise ValueError("cannot set "+k+" with value "+v+" it is " \
+                raise ValueError("cannot set "+k+" with value "+str(v)+ \
                                  "it is neither an option nor a constraint")
 
     def _get_start_node(self, start):
@@ -175,6 +239,9 @@ class MotifTreeStateSearch(base.Base):
                                               [start], 0, "")
         start_node = motif_tree_state.MotifTreeStateNode(mts, 0, None, 0, [0])
         return start_node
+
+    def _print_status(self):
+        self.clogger.info(self.steps)
 
 
 class MotifTreeStateSearchSolution(object):
@@ -189,7 +256,17 @@ class MotifTreeStateSearchSolution(object):
         return path[::-1]
 
     def to_mtst(self):
-        mtst = motif_tree_state.MotifTreeStateTree(self.path[0].mts, sterics=0)
+        start_mts = self.path[0].mts
+        ref_motif = motif.ref_motif()
+        r = util.unitarize(start_mts.end_states[0].r.T.dot(ref_motif.ends[0].r()))
+        trans = -ref_motif.ends[0].d()
+        t = transform.Transform(r, trans)
+        ref_motif.transform(t)
+        bp_pos_diff = start_mts.end_states[0].d - ref_motif.ends[0].d()
+        ref_motif.move(bp_pos_diff)
+        start_mts.build_string = ref_motif.to_str()
+        start_mts.name = "mtss_start"
+        mtst = motif_tree_state.MotifTreeStateTree(start_mts, sterics=0)
         for i, n in enumerate(self.path):
             if i == 0:
                 continue
@@ -221,7 +298,6 @@ class MotifTreeStateSearchSolution(object):
                 print "fail"
                 exit()
 
-        print len(self.path), len(mtst.nodes)
         return mtst
 
 

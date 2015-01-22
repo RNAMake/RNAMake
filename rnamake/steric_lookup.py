@@ -2,13 +2,14 @@ import util
 import settings
 
 class StericLookup(object):
-    def __init__(self, motif=None):
+    def __init__(self, m=None):
         self.bhash = {}
-        self.grid_size = 0.5
-        self._setup_additions(self.grid_size, 4.0)
-        if motif:
-            if len(motif.beads) == 0:
-                motif.get_beads(motif.ends)
+        self.grid_size = 0.50
+        self._setup_additions(self.grid_size, 5)
+        if m is not None:
+            if len(m.beads) == 0:
+                m.get_beads(m.ends)
+            self.add_beads(m.beads)
 
     def _setup_additions(self, grid_size, search_radius):
         self.additions = []
@@ -22,8 +23,8 @@ class StericLookup(object):
         for x in add:
             for y in add:
                 for z in add:
-                    util.distance([x, y, z], [0, 0, 0])
-                    if dist > settings.CLASH_RADIUS:
+                    dist = util.distance([x, y, z], [0, 0, 0])
+                    if dist > 3.5:
                         continue
                     self.additions.append([x, y, z])
 
@@ -62,7 +63,7 @@ class StericLookup(object):
     def clash(self, centers):
         poss = ["", "", ""]
         for j, c in enumerate(centers):
-            for i, d in enumerate(center):
+            for i, d in enumerate(c):
                 pos = round(d / self.grid_size)*self.grid_size
                 spos = str(pos)
                 if spos == "-0.0":

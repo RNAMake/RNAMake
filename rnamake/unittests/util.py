@@ -19,6 +19,6 @@ def get_log_output(func, args):
 
 def supress_log_output(func, args):
     logging.disable(60)
-    result = func(*args)
+    result = func(args)
     logging.disable(0)
     return result

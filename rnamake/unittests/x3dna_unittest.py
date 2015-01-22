@@ -95,6 +95,11 @@ class X3dnaUnittest(unittest.TestCase):
         #    print bp.res1, bp.res2
         #    print bp.r
 
+    def test_get_motifs(self):
+        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6"
+        x3dna = rnamake.x3dna.X3dna()
+        motifs = x3dna.get_motifs(path)
+
 
 def main():
     unittest.main()

@@ -5,7 +5,6 @@ import motif
 import numpy as np
 import uuid
 
-
 class Basepair(object):
 
     def __init__(self, res1, res2, r, bp_type="c..."):
@@ -145,7 +144,6 @@ class Basepair(object):
         f = open(fname, "w")
         f.write ( self.to_pdb_str() )
         f.close()
-
 
 class BasepairState(object):
 

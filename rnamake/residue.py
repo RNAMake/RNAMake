@@ -6,8 +6,8 @@ import util
 import basic_io
 import numpy as np
 
-logging.basicConfig()
-logger = logging.getLogger(__name__)
+#logging.basicConfig()
+#logger = logging.getLogger(__name__)
 
 
 class BeadType(object):

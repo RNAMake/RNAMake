@@ -219,10 +219,20 @@ class MotifTreeStateNode(object):
                 states.append(s)
         return states
 
-    def steric_clash(self):
+    def steric_clash(self,count=9999):
         current = self.parent
-        while curent is not None:
-            pass
+        c = 0
+        while current is not None:
+            for b1 in self.beads:
+                for b2 in current.beads:
+                    dist = util.distance(b1, b2)
+                    if dist < settings.CLASH_RADIUS:
+                        return 1
+            current = current.parent
+            c += 1
+            if c > count:
+                break
+        return 0
 
 
 class MotifTreeStateNodeAligner(object):
@@ -342,6 +352,8 @@ class MotifTreeStateTree(base.Base):
             s += n.to_str() + "#"
         return s
 
+    def to_pose(self):
+        return self.to_motiftree().to_pose()
     def to_pdb(self, fname="mtst.pdb"):
         mt = self.to_motiftree(sterics=0)
         mt.to_pdb(fname)
@@ -396,17 +408,14 @@ class MotifTreeStateTree(base.Base):
         else:
             return 1
 
-    def remove_node(self, node):
+    def remove_node(self, node=None):
+        if node is None:
+            node = self.last_node
         parent = node.parent
         parent_index = node.parent_end_index()
         parent.children[parent_index] = None
         self.nodes.remove(node)
         self.last_node = parent
-
-
-
-
-
 
 
 
@@ -473,6 +482,10 @@ def ref_mts():
     return start_mts
 
 
+
+    pass
+
+
 def motif_to_state(m, end_index=0, end_flip=0):
     mt = motif_tree.MotifTree()
     mt.add_motif(m, end_index=end_index, end_flip=end_flip)
@@ -496,3 +509,37 @@ def motif_to_state(m, end_index=0, end_flip=0):
     mts = MotifTreeState(name, end_index, len(m.residues()), score, beads,
                          ends, end_flip, m_copy.to_str())
     return mts
+
+def generate_clash_files(mtype1, mtype2):
+    data_path = settings.PRECOMPUTED_PATH + "motif_tree_states/"
+    data_path += motif_type.type_to_str(mtype1) + "_"
+    data_path += motif_type.type_to_str(mtype2) + ".clist"
+    lib1 = MotifTreeStateLibrary(mtype1)
+    lib2 = MotifTreeStateLibrary(mtype2)
+    mtst = MotifTreeStateTree()
+
+    f = open(data_path,'w')
+    mtst = MotifTreeStateTree()
+    for mts1 in lib1.motif_tree_states:
+        #if mts1.name != "HELIX.LE.20-0-0-1-20-0-1":
+        #    continue
+        node = mtst.add_state(mts1)
+        if node is None:
+            print mts1.name
+            print "made it"
+        for mts2 in lib2.motif_tree_states:
+            node = mtst.add_state(mts2)
+            if node is not None:
+                mtst.remove_node()
+                continue
+            f.write(mts1.name + " " + mts2.name + "\n")
+        #print len(mtst.nodes)
+        mtst.remove_node()
+
+    f.close()
+
+
+if __name__ == '__main__':
+    #generate_clash_files(motif_type.HELIX, motif_type.TWOWAY)
+    generate_clash_files(motif_type.TWOWAY, motif_type.HELIX)
+

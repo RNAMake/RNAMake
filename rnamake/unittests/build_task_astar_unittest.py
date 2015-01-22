@@ -3,6 +3,7 @@ import rnamake.build_task_astar as build_task_astar
 import rnamake.motif_type as motif_type
 import rnamake.motif_tree_state as motif_tree_state
 import rnamake.resource_manager as resource_manger
+import rnamake.steric_lookup as steric_lookup
 import random
 
 def get_twoway_mts_tree(size=2):
@@ -13,6 +14,7 @@ def get_twoway_mts_tree(size=2):
         mtst.add_state(mts)
 
     return mtst
+
 
 def get_twoway_helix_mts_tree(size=2):
     twoways = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
@@ -35,6 +37,7 @@ def get_twoway_helix_mts_tree(size=2):
         if count > 1000:
             break
     return mtst
+
 
 class BuildTaskAstarUnittest(unittest.TestCase):
 
@@ -75,6 +78,7 @@ class BuildTaskAstarUnittest(unittest.TestCase):
                 self.fail("did not get correct path back")
 
     def test_search_solutions(self):
+        return
         mtss =  build_task_astar.MotifTreeStateSearch(max_solutions=1)
         mtst = get_twoway_mts_tree(size=10)
         mtst.to_pdb()
@@ -83,6 +87,37 @@ class BuildTaskAstarUnittest(unittest.TestCase):
         solutions = mtss.search(start, end)
         mtst = solutions[0].to_mtst()
         mtst.nodes_to_pdbs()
+
+    def test_lookup(self):
+        mtss =  build_task_astar.MotifTreeStateSearch(max_solutions=1,
+                                                      accept_score=10)
+        mtst = get_twoway_mts_tree(size=10)
+        p = mtst.to_pose()
+        p.to_pdb()
+        start = mtst.nodes[0].active_states()[0]
+        end = mtst.nodes[-1].active_states()[0]
+        sl = steric_lookup.StericLookup(p)
+        solutions = mtss.search(start, end, lookup=sl)
+        mtst = solutions[0].to_mtst()
+        mtst.nodes_to_pdbs()
+
+    def test_search_solutions_non_ideal(self):
+        return
+        mtss =  build_task_astar.MotifTreeStateSearch(max_solutions=1,
+                                                      accept_score=10)
+        mtst = get_twoway_mts_tree(size=4)
+        mtst.to_pdb()
+        s = None
+        for state in mtst.nodes[2].states:
+            if state is not None:
+                s = state
+                break
+        end = mtst.nodes[-1].active_states()[0]
+        solutions = mtss.search(s, end)
+        mtst = solutions[0].to_mtst()
+        mtst.nodes_to_pdbs()
+
+
 
 
 

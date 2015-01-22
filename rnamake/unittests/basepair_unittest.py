@@ -100,6 +100,8 @@ class BasepairUnittest(unittest.TestCase):
         bp = self.basepair
         s = bp.to_pdb_str()
 
+    def test_to_mts(self):
+        pass`
 def main():
     unittest.main()
 
