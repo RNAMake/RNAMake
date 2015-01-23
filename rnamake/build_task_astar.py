@@ -325,9 +325,12 @@ class MotifTreeStateSearchSolution(object):
 
     def nodes_to_pdbs(self):
         self.to_mtst().nodes_to_pdbs()
+
     def to_pdb(self, fname="mtss_solution.pdb"):
         self.to_mtst().to_pdb(fname)
 
+    def to_pose(self):
+        return self.to_mtst().to_pose()
 
 def new_score_function(current, end, endflip):
     d_diff = util.distance(current.d,end.d)

@@ -45,6 +45,7 @@ class Pose(motif.Motif):
         self.mdir, self.name, self.ends = "", "", []
         self.beads, self.score, self.basepairs = [], 0, []
         self.designable = {}
+        self.mtype = motif_type.UNKNOWN
         self._setup(mdir, pdb)
         if pdb is not None or mdir is not None:
             self._setup_motifs()

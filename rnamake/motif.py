@@ -466,7 +466,6 @@ def align_motif(ref_bp, motif_end, motif):
     r = util.unitarize(r1.T.dot(r2))
     trans = -motif_end.state().d
     t = transform.Transform(r, trans)
-
     motif.transform(t)
     bp_pos_diff = ref_bp.state().d - motif_end.state().d
     motif.move(bp_pos_diff)

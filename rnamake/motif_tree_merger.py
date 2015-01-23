@@ -68,6 +68,7 @@ class MotifTreeMerger(base.Base):
         for c in self.chains:
             new_structure.chains.append(c.copy())
         new_structure.renumber()
+        new_structure._cache_coords()
 
         residues = new_structure.residues()
         basepairs = []
@@ -93,6 +94,7 @@ class MotifTreeMerger(base.Base):
         new_pose.structure = new_structure
         new_pose.basepairs = basepairs
         new_pose.setup_basepair_ends()
+        new_pose._cache_basepair_frames()
 
         if self.option('chain_closure'):
             for i,c in enumerate(new_pose.chains()):
