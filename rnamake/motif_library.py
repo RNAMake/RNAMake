@@ -27,6 +27,7 @@ class MotifLibrary(object):
 
     def load_all(self, limit=999999):
         for i, mname in enumerate(self.motif_paths):
+            print mname
             self.get_motif(mname)
             if i > limit:
                 return
@@ -98,5 +99,6 @@ lib_paths = {
     motif_type.TWOWAY   : "two_ways",
     motif_type.HAIRPIN  : "hairpins",
     motif_type.HELIX    : "helices",
-    motif_type.NWAY     : "junctions"
+    motif_type.NWAY     : "junctions",
+    motif_type.TCONTACT : "tertiary_contacts"
 }

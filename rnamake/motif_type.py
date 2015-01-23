@@ -22,6 +22,7 @@ T_T_T             = 7
 TWOWAY_SEGMENTS   = 8
 HELIX             = 9
 SSTRAND           = 10
+TCONTACT          = 11
 UNKNOWN           = 99
 ALL               = 999
 
