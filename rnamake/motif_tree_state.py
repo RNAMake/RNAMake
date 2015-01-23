@@ -14,6 +14,16 @@ import numpy as np
 
 
 class NameElements(object):
+    """
+    Stores the results of parsing a databae name for storing a MotifTree
+
+    Attributes
+    ----------
+    `motif_name` : Str
+        The non helix motif stored in the MotifTree
+    `helix_direction` : Int
+
+    """
     def __init__(self, motif_name, helix_direction, start_helix_count,
                  start_index, end_helix_count, end_index, flip_direction):
         self.motif_name, self.helix_direction, self.start_helix_count = \
@@ -510,6 +520,7 @@ def motif_to_state(m, end_index=0, end_flip=0):
                          ends, end_flip, m_copy.to_str())
     return mts
 
+
 def generate_clash_files(mtype1, mtype2):
     data_path = settings.PRECOMPUTED_PATH + "motif_tree_states/"
     data_path += motif_type.type_to_str(mtype1) + "_"
@@ -521,12 +532,9 @@ def generate_clash_files(mtype1, mtype2):
     f = open(data_path,'w')
     mtst = MotifTreeStateTree()
     for mts1 in lib1.motif_tree_states:
-        #if mts1.name != "HELIX.LE.20-0-0-1-20-0-1":
-        #    continue
         node = mtst.add_state(mts1)
         if node is None:
-            print mts1.name
-            print "made it"
+            continue
         for mts2 in lib2.motif_tree_states:
             node = mtst.add_state(mts2)
             if node is not None:
@@ -540,6 +548,6 @@ def generate_clash_files(mtype1, mtype2):
 
 
 if __name__ == '__main__':
-    #generate_clash_files(motif_type.HELIX, motif_type.TWOWAY)
-    generate_clash_files(motif_type.TWOWAY, motif_type.HELIX)
+    generate_clash_files(motif_type.TWOWAY, motif_type.TWOWAY)
+    #generate_clash_files(motif_type.NWAY, motif_type.TWOWAY)
 

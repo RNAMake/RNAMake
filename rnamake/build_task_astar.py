@@ -11,22 +11,40 @@ import transform
 import settings
 import logger
 
+clogger =  logger.get_logger("MotifTreeStateSearch:search")
 
 class PriorityQueue(object):
+    """
+    Helper class for deciding which nodes to visit first during
+    MotifTreeStateSearch. Organizes nodes by score using heapq modulue
+    """
+
     def __init__(self):
         self.elements = []
 
     def empty(self):
+        """
+        return true if there are no elements false if there is
+        """
         return len(self.elements) == 0
 
     def put(self, item, priority):
+        """
+        adds new element with a given score to the queue
+        """
         heapq.heappush(self.elements, (priority, item))
 
     def get(self):
+        """
+        gets next best element
+        """
         return heapq.heappop(self.elements)[1]
 
 
 class MotifTreeStateSelector(object):
+    """
+
+    """
     def __init__(self, motif_types, mode="helix_flank"):
         self.mts_libs = []
         self.lib_map = []
@@ -139,7 +157,6 @@ class MotifTreeStateSearch(base.Base):
         self.solutions = []
         self.setup_options_and_constraints()
         self._set_option_or_constraint(options)
-        self.clogger = logger.get_logger("MotifTreeStateSearch:search")
 
     def search(self, start, end, node_selector=None, lookup=None, **options):
         if node_selector is not None:
@@ -158,12 +175,13 @@ class MotifTreeStateSearch(base.Base):
         max_node_level = self.constraint('max_node_level')
         sterics        = self.option('sterics')
         verbose        = self.option('verbose')
+        frequency      = self.option('frequency')
         while not self.queue.empty():
             current = self.queue.get()
             if current.level > max_node_level:
                 continue
             self.steps += 1
-            if verbose and self.steps % 10 == 0:
+            if verbose and self.steps % frequency == 0:
                 self._print_status()
 
             score = self.scorer.accept_score(current)
@@ -187,23 +205,24 @@ class MotifTreeStateSearch(base.Base):
             test_node.level = current.level+1
 
             for i, c in enumerate(children):
-                test_node.replace_mts(c)
-                self.aligner.transform_state(parent_ends[0], current, test_node)
-                score = self.scorer.score(test_node)
-                if score > current.score:
-                    continue
-                if sterics:
-                   self.aligner.transform_beads(test_node)
-                   if test_node.steric_clash(2):
-                       continue
-                   if self.using_lookup:
-                       if self.lookup.clash(test_node.beads):
-                           continue
+                for end in parent_ends:
+                    test_node.replace_mts(c)
+                    self.aligner.transform_state(end, current, test_node)
+                    score = self.scorer.score(test_node)
+                    if score > current.score:
+                        continue
+                    if sterics:
+                        self.aligner.transform_beads(test_node)
+                        if test_node.steric_clash(2):
+                            continue
+                        if self.using_lookup:
+                            if self.lookup.clash(test_node.beads):
+                                continue
 
 
-                child = test_node.copy()
-                child.lib_type = types[i]
-                self.queue.put(child, score)
+                    child = test_node.copy()
+                    child.lib_type = types[i]
+                    self.queue.put(child, score)
 
         return self.solutions
 
@@ -241,7 +260,11 @@ class MotifTreeStateSearch(base.Base):
         return start_node
 
     def _print_status(self):
-        self.clogger.info(self.steps)
+        clogger.info("steps: "+ str(self.steps))
+    def reset(self):
+        self.queue = PriorityQueue()
+        self.solutions = []
+        self.steps = 0
 
 
 class MotifTreeStateSearchSolution(object):
@@ -300,7 +323,10 @@ class MotifTreeStateSearchSolution(object):
 
         return mtst
 
-
+    def nodes_to_pdbs(self):
+        self.to_mtst().nodes_to_pdbs()
+    def to_pdb(self, fname="mtss_solution.pdb"):
+        self.to_mtst().to_pdb(fname)
 
 
 def new_score_function(current, end, endflip):

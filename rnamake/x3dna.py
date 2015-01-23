@@ -6,8 +6,8 @@ import numpy as np
 import util
 import motif_type
 
-X3DNA_BIN_PATH = settings.RESOURCES_PATH + "x3dna/bin/"
-os.environ['X3DNA'] =  settings.RESOURCES_PATH + "x3dna"
+X3DNA_BIN_PATH = settings.X3DNA_PATH + "/bin/"
+os.environ['X3DNA'] =  settings.X3DNA_PATH
 
 # TODO figure out what operating system is being used
 # TODO create at enum type for basepair types instead of strings

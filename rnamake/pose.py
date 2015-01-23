@@ -3,8 +3,43 @@ import motif_type
 import x3dna
 import eternabot.sequence_designer as sequence_designer
 
-#TODO implement finding tertiary contacts
 class Pose(motif.Motif):
+    """
+    Poses are for loading for RNA structures that have multiple motifs.
+    Like motifs poses store 3D coordinates as well as 3DNA parameters but
+    in addition also contains information about what types of motifs are
+    contained in the structure as well as the ability to generate newly
+    designed sequences.
+
+    :param mdir: the path to a pose directory that contains required files
+    :type mdir: str
+
+    :param pdb: the path to a pdb file to create this pose object, will also
+        creates ref_frames.dat file and dssr out file in current directory
+    :type pdb: str
+
+    Attributes
+    ----------
+    `base_pairs` : List of Basepair objects
+        All the basepair info determined from 3DNA
+    `beads` : List of Bead objects
+        All the beads in the 3 bead residue model for all the residues in
+        structure object
+    `dir` : str
+        full path to directory
+    `ends` : List of the Basepair objects
+        that are at the end of Pose together its not necessarily the
+        first and last Basepairs
+    `structure` : Structure object
+        holds 3D coordinate data
+    `name` : str
+        the name of the directory without entire path
+    `motifs` : Motifs object
+        contains all the motifs found in this RNA Pose
+    `designable` : Dict object
+        stores whether a given basepair can be optimized in design or not
+
+    """
     def __init__(self, mdir=None, pdb=None):
         self.structure = None
         self.mdir, self.name, self.ends = "", "", []
@@ -15,6 +50,11 @@ class Pose(motif.Motif):
             self._setup_motifs()
 
     def _setup_motifs(self):
+        """
+        parses x3dna output to find all motifs and characterizes them in a
+        Motifs object, also goes through all helical motifs and checks to see
+        if their basepairs can be designed in sequence optimization
+        """
         x = x3dna.X3dna()
         motifs = x.get_motifs(self.mdir+"/"+self.name)
         self.motifs = Motifs(motifs, self)
@@ -22,33 +62,64 @@ class Pose(motif.Motif):
         for helix in self.helices():
             basepairs.extend(helix.basepairs)
         for bp in basepairs:
+            found_bp = 0
             for m in self.all_motifs():
                 if m.mtype == motif_type.HELIX:
                     continue
                 found = m.get_basepair(bp_uuid=bp.uuid)
                 if len(found) > 0:
-                    continue
+                    found_bp = 1
+            if not found_bp:
                 self.designable[bp.uuid]=1
 
     def twoways(self):
+        """
+        wrapper for motifs.twoway, returns all twoway junctions motif object
+        found in this pose
+        """
         return self.motifs.twoways
 
     def nways(self):
+        """
+        wrapper for motifs.nway, returns all nway junctions motif object
+        found in this pose
+        """
         return self.motifs.nways
 
     def hairpins(self):
+        """
+        wrapper for motifs.hairpins, returns all hairpin motif object
+        found in this pose
+        """
         return self.motifs.hairpins
 
     def helices(self):
+        """
+        wrapper for motifs.helices, returns all helix motif objects
+        found in this pose
+        """
         return self.motifs.helices
 
     def single_strands(self):
+        """
+        wrapper for motifs.single_strands, returns all single stranded motif object
+        found in this pose
+        """
         return self.motifs.single_strands
 
     def all_motifs(self):
+        """
+        wrapper for motifs.all_motifs, returns all motif objects
+        found in this pose
+        """
         return self.motifs.all_motifs
 
     def designable_sequence(self):
+        """
+        returns sequence containing Ns for locations that can be changed,
+        these spots correspond with helix areas that most likely will not
+        affect the overall fold
+        """
         seq = ""
         for c in self.chains():
             for r in c.residues:
@@ -63,6 +134,9 @@ class Pose(motif.Motif):
         return seq[:-1]
 
     def optimized_sequence(self):
+        """
+        returns the eternabot optimized sequence for the pose
+        """
         if len(self.chains()) > 2:
             raise ValueError("cannot get optimized sequence with more then 2 "\
                              "chains cannot call RNAFold or RNAcoFold")
@@ -75,6 +149,7 @@ class Pose(motif.Motif):
         return results[0]['end'][0]
 
 
+#TODO implement finding tertiary contacts
 class Motifs(object):
     def __init__(self, x3dna_motifs=None, p=None):
         self.twoways, self.nways, self.hairpins, self.helices = [], [], [], []

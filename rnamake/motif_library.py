@@ -27,7 +27,6 @@ class MotifLibrary(object):
 
     def load_all(self, limit=999999):
         for i, mname in enumerate(self.motif_paths):
-            print mname
             self.get_motif(mname)
             if i > limit:
                 return

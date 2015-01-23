@@ -1,4 +1,5 @@
 import motif_library
+import motif_library_sqlite
 import motif_type
 import motif_tree_state
 
@@ -10,7 +11,7 @@ class ResourceManager(object):
         for mtype in motif_library.lib_paths.iterkeys():
             #catch uninmplemented libraries
             try:
-                mlib = motif_library.MotifLibrary(mtype)
+                mlib = motif_library_sqlite.MotifLibrarySqlite(mtype)
                 self.mlibs[motif_type.type_to_str(mtype)] = mlib
             except:
                 pass

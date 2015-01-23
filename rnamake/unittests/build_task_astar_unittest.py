@@ -39,6 +39,29 @@ def get_twoway_helix_mts_tree(size=2):
     return mtst
 
 
+def get_nway_helix_mts_tree(size=2):
+    nways = motif_tree_state.MotifTreeStateLibrary(motif_type.NWAY)
+    helixs = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX)
+    me_libs = [helixs, nways]
+    mtst = motif_tree_state.MotifTreeStateTree()
+    pos = 0
+    i = 0
+    count = 0
+    while i < size:
+        if i % 2 == 0:
+            pos = 0
+        else:
+            pos = 1
+        mts = random.choice(me_libs[pos].motif_tree_states)
+        node = mtst.add_state(mts)
+        if node is not None:
+            i += 1
+        count += 1
+        if count > 1000:
+            break
+    return mtst
+
+
 class BuildTaskAstarUnittest(unittest.TestCase):
 
     def test_creation(self):
@@ -77,6 +100,31 @@ class BuildTaskAstarUnittest(unittest.TestCase):
             if mtst.nodes[i].mts.name != solutions[0].path[i].mts.name:
                 self.fail("did not get correct path back")
 
+    def test_search_search_3(self):
+        """nways = motif_tree_state.MotifTreeStateLibrary(motif_type.NWAY)
+        helixs = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX)
+        me_libs = [helixs, nways]
+        mtst = motif_tree_state.MotifTreeStateTree()
+        mtst.add_state(helixs.get_state('HELIX.LE.4-0-0-1-4-0-1'))
+        mtst.add_state(nways.get_state('NWAY.2VQE.5-0-0-1-0-2-1'))
+        mtst.nodes_to_pdbs()"""
+        mtst = get_nway_helix_mts_tree(size=4)
+        mtst.to_pdb()
+        start = mtst.nodes[0].active_states()[0]
+        end = mtst.nodes[-1].active_states()[0]
+        mtss = build_task_astar.MotifTreeStateSearch(max_solutions=1,
+                                                     accept_score=14,
+                                                     verbose=1,
+                                                     frequency=10)
+
+        ns = build_task_astar.MotifTreeStateSelector([motif_type.NWAY])
+        solutions = mtss.search(start, end, ns)
+        solutions[0].nodes_to_pdbs()
+        for n in solutions[0].path:
+            print n.mts.name
+
+
+
     def test_search_solutions(self):
         return
         mtss =  build_task_astar.MotifTreeStateSearch(max_solutions=1)
@@ -89,6 +137,7 @@ class BuildTaskAstarUnittest(unittest.TestCase):
         mtst.nodes_to_pdbs()
 
     def test_lookup(self):
+        return
         mtss =  build_task_astar.MotifTreeStateSearch(max_solutions=1,
                                                       accept_score=10)
         mtst = get_twoway_mts_tree(size=10)

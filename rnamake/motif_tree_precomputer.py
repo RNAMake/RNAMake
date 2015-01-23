@@ -206,6 +206,11 @@ class MotifTreePrecomputer(base.Base):
             hmotif = self._get_helix_motif(hcount)
             self.mt.add_motif(hmotif,end_index=helix_end_index)
         motif_node = self.mt.add_motif(m, end_index=end_index, end_flip=flip)
+        dist = util.distance(motif_node.motif.ends[end_index].d(),
+                             self.mt.nodes[0].motif.ends[0].d())
+        # weird bug with NWAYS investigate
+        if dist > 1:
+            return
         if motif_node is None:
             return
         avail_ends = motif_node.available_ends()
@@ -322,6 +327,9 @@ def mlib_for_type(mtype):
         mlib = motif_library.MotifLibrary(mtype)
         for i in range(1, 21):
             mlib.get_motif("HELIX.LE."+str(i))
+    elif mtype == motif_type.NWAY:
+        mlib = motif_library.MotifLibrary(mtype)
+        mlib.load_all()
     return mlib
 
 

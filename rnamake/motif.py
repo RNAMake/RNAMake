@@ -19,6 +19,16 @@ class Motif(object):
     as well as the 3DNA parameters such as reference frame and origin for
     each basepair
 
+    :param mdir: the path to a motif directory that contains required files
+    :type mdir: str
+
+    :param pdb: the path to a pdb file to create this motif object, will also
+        creates ref_frames.dat file and dssr out file in current directory
+    :type pdb: str
+
+    :param mtype: the enum motif type that this motif is, default UNKNOWN
+    :type mtype: motif_type enum
+
     .. code-block:: python
         #creation from motif dir (recommended)
 

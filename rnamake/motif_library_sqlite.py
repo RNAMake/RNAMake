@@ -6,6 +6,7 @@ import os
 
 class MotifLibrarySqlite(object):
     def __init__(self, libtype):
+        self.motif_paths = {}
         self.connection = self._setup_sqlite3_connection(libtype)
         self.mdict = {}
         self.mtype = libtype
@@ -26,11 +27,10 @@ class MotifLibrarySqlite(object):
         return m.copy()
 
     def load_all(self, limit=9999):
-        rows = self.connection.execute('SELECT * from motifs').fetchall()
-        for i, r in enumerate(rows):
-            m = motif.str_to_motif(r[0])
-            m.mtype = self.mtype
-            self.mdict[r[1]] = m
+        i = 0
+        for name in self.motif_paths.iterkeys():
+            i += 1
+            self.get_motif(name)
             if i > limit:
                 break
 
@@ -42,7 +42,14 @@ class MotifLibrarySqlite(object):
         path = settings.RESOURCES_PATH +"/motif_libraries/"+name+".db"
 
         connection = sqlite3.connect(path)
+        rows = connection.execute('SELECT name from motifs').fetchall()
+        for r in rows:
+            self.motif_paths[r[0]] = r[0]
+
         return connection
+
+    def __contains__(self, mname):
+        return mname in self.motif_paths
 
 
 def build_sqlite_libraries():
