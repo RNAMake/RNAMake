@@ -94,7 +94,6 @@ def ideal_helix_lib():
     return mlib
 
 
-
 lib_paths = {
     motif_type.TWOWAY   : "two_ways",
     motif_type.HAIRPIN  : "hairpins",
