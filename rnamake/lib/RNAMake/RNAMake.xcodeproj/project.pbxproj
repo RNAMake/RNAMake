@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		1C427D981A4F128B0012A72B /* numerical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C427D971A4F128B0012A72B /* numerical.cpp */; };
 		1C427D991A4F128B0012A72B /* numerical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C427D971A4F128B0012A72B /* numerical.cpp */; };
+		1C4F56011A7441CB00C7E6D7 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
+		1C4F56021A7441CB00C7E6D7 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
+		1C4F56051A74548400C7E6D7 /* residue_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56031A74548400C7E6D7 /* residue_type.cc */; };
 		1CE55A2A1A4A552F00F300F3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A291A4A552F00F300F3 /* main.cpp */; };
 		1CE55A321A4A558400F300F3 /* atom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A301A4A558400F300F3 /* atom.cpp */; };
 		1CE55A3D1A4A59C100F300F3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A3C1A4A59C100F300F3 /* main.cpp */; };
@@ -41,6 +44,9 @@
 		1C427D961A4F128B0012A72B /* numerical.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = numerical.h; sourceTree = "<group>"; };
 		1C427D971A4F128B0012A72B /* numerical.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = numerical.cpp; sourceTree = "<group>"; };
 		1C427D9A1A4F13100012A72B /* xyzMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xyzMatrix.h; sourceTree = "<group>"; };
+		1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileIO.cpp; sourceTree = "<group>"; };
+		1C4F56031A74548400C7E6D7 /* residue_type.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = residue_type.cc; sourceTree = "<group>"; };
+		1C4F56041A74548400C7E6D7 /* residue_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = residue_type.h; sourceTree = "<group>"; };
 		1CE55A261A4A552F00F300F3 /* RNAMake */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RNAMake; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CE55A291A4A552F00F300F3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1CE55A301A4A558400F300F3 /* atom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = atom.cpp; sourceTree = "<group>"; };
@@ -91,6 +97,7 @@
 		1CE55A281A4A552F00F300F3 /* RNAMake */ = {
 			isa = PBXGroup;
 			children = (
+				1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */,
 				1C427D9A1A4F13100012A72B /* xyzMatrix.h */,
 				1C427D961A4F128B0012A72B /* numerical.h */,
 				1C427D971A4F128B0012A72B /* numerical.cpp */,
@@ -100,6 +107,8 @@
 				1CE55A301A4A558400F300F3 /* atom.cpp */,
 				1CE55A351A4A594B00F300F3 /* FileIO.h */,
 				1CE55A311A4A558400F300F3 /* atom.h */,
+				1C4F56031A74548400C7E6D7 /* residue_type.cc */,
+				1C4F56041A74548400C7E6D7 /* residue_type.h */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
@@ -192,6 +201,8 @@
 				1CE55A321A4A558400F300F3 /* atom.cpp in Sources */,
 				1CE55A2A1A4A552F00F300F3 /* main.cpp in Sources */,
 				1C427D981A4F128B0012A72B /* numerical.cpp in Sources */,
+				1C4F56011A7441CB00C7E6D7 /* FileIO.cpp in Sources */,
+				1C4F56051A74548400C7E6D7 /* residue_type.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -202,6 +213,7 @@
 				1CE55A411A4A5B0F00F300F3 /* atom.cpp in Sources */,
 				1CE55A3D1A4A59C100F300F3 /* main.cpp in Sources */,
 				1C427D991A4F128B0012A72B /* numerical.cpp in Sources */,
+				1C4F56021A7441CB00C7E6D7 /* FileIO.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

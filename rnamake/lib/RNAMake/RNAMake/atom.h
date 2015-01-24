@@ -46,4 +46,8 @@ private:
     
 };
 
+Atom
+str_to_atom(
+    String const &);
+
 #endif /* defined(__RNAMake__atom__) */

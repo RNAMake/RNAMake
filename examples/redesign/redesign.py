@@ -29,6 +29,7 @@ mtss = rnamake.build_task_astar.MotifTreeStateSearch(verbose=1,
 
 solutions = mtss.search(start, end, lookup=sl)
 s_pose = solutions[0].to_pose()
+s_pose.to_pdb("design.pdb")
 
 #put everthing back together
 mt = rnamake.motif_tree.MotifTree(segments.remaining, sterics=0)
