@@ -10,6 +10,7 @@
 #define __RNAMake__residue_type__
 
 #include <stdio.h>
+#include <vector>
 #include "types.h"
 #include "atom.h"
 
@@ -23,16 +24,38 @@ public:
     ~ResidueType() {}
 
 public:
-    StringOP
+    String
     get_correct_atom_name(
-        Atom const &);
-
+        Atom const &) const;
+    
+    int
+    match_name(
+        String const &) const;
+    
+    inline
+    String
+    const &
+    name() const { return name_; }
+    
+    inline
+    String
+    const &
+    short_name() const { return alt_names_[0]; }
+    
+private:
+    
+    void
+    extend_res_specific_altnames();
+    
 private:
     String name_;
     StringIntMap atom_map_;
     Strings alt_names_;
+    StringStringMap atom_alt_names_;
 
 };
+
+typedef std::vector<ResidueType> ResidueTypes;
 
 
 #endif /* defined(__RNAMake__residue_type__) */

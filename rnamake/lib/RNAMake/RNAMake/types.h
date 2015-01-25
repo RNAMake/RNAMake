@@ -17,5 +17,6 @@ typedef std::string String;
 typedef std::vector<String> Strings;
 typedef std::shared_ptr<String> StringOP;
 
-typedef std::map<String,int> StringIntMap;
+typedef std::map<String, int> StringIntMap;
+typedef std::map<String, String> StringStringMap;
 #endif
