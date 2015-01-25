@@ -14,7 +14,7 @@
 
 ResidueTypeSet::ResidueTypeSet() {
     residue_types_ = ResidueTypes();
-    String path = resources_path() + "/residue_types";
+    String path = resources_path() + "/residue_types/";
     DIR *pDIR;
     struct dirent *entry;
     pDIR=opendir(path.c_str());
@@ -22,8 +22,8 @@ ResidueTypeSet::ResidueTypeSet() {
         String fname ( entry->d_name );
         if(fname.length() < 4) { continue; }
         
-        String name = _get_rtype_name(fname);
-        StringIntMap atom_map = _get_atom_map_from_file(fname);
+        String name = _get_rtype_name(path + fname);
+        StringIntMap atom_map = _get_atom_map_from_file(path + fname);
         ResidueType rtype ( name, atom_map);
         residue_types_.push_back(rtype);
     }
@@ -62,7 +62,7 @@ ResidueTypeSet::_get_atom_map_from_file(
 ResidueType
 const &
 ResidueTypeSet::get_rtype_by_resname(
-    String const & resname) {
+    String const & resname) const {
     
     for (auto const & restype : residue_types_) {
         if(restype.match_name(resname)) { return restype; }

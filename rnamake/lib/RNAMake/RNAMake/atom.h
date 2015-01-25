@@ -16,29 +16,56 @@
 class Atom {
 public:
     Atom() {}
-    Atom(String const &, Point const &);
-public:
-    Atom copy();
+    
+    inline
+    Atom(
+        String const & name,
+        Point const & coords):
+        name_ ( name ),
+        coords_ ( coords )
+    {}
+    
+    inline
+    Atom
+    copy() {
+        return Atom(name_, coords_);
+    }
+    
     String to_str();
     String to_pdb_str(int);
 public: //accessors
+    
+    inline
     String const &
     name() { return name_; }
     
+    inline
     String const &
     name() const { return name_; }
     
+    inline
     Point const &
     coords() { return coords_; }
     
+    inline
     Point const
     coords() const { return coords_; }
 public: // setters
+    
+    inline
     void
     coords(
         Point const & ncoords) {
         coords_ = ncoords;
     }
+    
+    inline
+    void
+    name(
+        String const & nname) {
+        name_ = nname;
+    }
+    
     
 private:
     String name_;
@@ -49,5 +76,9 @@ private:
 Atom
 str_to_atom(
     String const &);
+
+typedef std::vector<Atom> Atoms;
+typedef std::shared_ptr<Atom> AtomOP;
+typedef std::vector<AtomOP> AtomOPs;
 
 #endif /* defined(__RNAMake__atom__) */

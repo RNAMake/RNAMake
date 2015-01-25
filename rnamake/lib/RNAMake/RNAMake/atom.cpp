@@ -10,18 +10,6 @@
 #include "FileIO.h"
 #include "xyzVector.h"
 
-Atom::Atom(
-    String const & name,
-    Point const & coords):
-    name_ ( name ),
-    coords_ ( coords )
-{}
-
-Atom
-Atom::copy() {
-    return Atom(name_, coords_);
-}
-
 String
 Atom::to_str() {
     return name_ + " " + vector_to_str(coords_);

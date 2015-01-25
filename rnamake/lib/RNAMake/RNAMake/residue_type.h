@@ -42,6 +42,20 @@ public:
     const &
     short_name() const { return alt_names_[0]; }
     
+    inline
+    int
+    atom_pos_by_name(
+        String const & aname) const {
+        
+        StringIntMap::const_iterator iter( atom_map_.find(aname));
+        if(iter != atom_map_.end()) {
+            return iter->second;
+        }
+        else {
+            return -1;
+        }
+    }
+    
 private:
     
     void

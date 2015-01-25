@@ -19,7 +19,7 @@ public:
 
     ResidueType const &
     get_rtype_by_resname(
-        String const &);
+        String const &) const;
     
 private:
     String

@@ -63,12 +63,22 @@ test_get_rtype_by_resname() {
     return 1;
 }
 
+int
+test_atom_pos_by_name() {
+    ResidueTypeSet rts;
+    ResidueType rtype = rts.get_rtype_by_resname("GUA");
+    String name = "P";
+    int pos = rtype.atom_pos_by_name(name);
+    return 1;
+}
+
 
 int main(int argc, const char * argv[]) {
     if (test_creation_residue_type() == 0) { std::cout << "test_creation_residue_type failed" << std::endl;  }
     if (test_creation() == 0 )             { std::cout << "test_creation failed" << std::endl; }
     if (test_match_name() == 0 )           { std::cout << "test_match_name failed" << std::endl; }
     if (test_get_rtype_by_resname() == 0 ) { std::cout << "test_get_rtype_by_resname failed" << std::endl; }
-    
+    if (test_atom_pos_by_name() == 0 )     { std::cout << "test_atom_pos_by_name failed" << std::endl; }
+ 
     return 0;
 }
