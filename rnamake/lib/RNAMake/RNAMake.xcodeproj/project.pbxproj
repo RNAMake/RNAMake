@@ -30,6 +30,8 @@
 		1C4F56351A75852800C7E6D7 /* settings.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56211A74631000C7E6D7 /* settings.cc */; };
 		1C4F56381A7585BB00C7E6D7 /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56361A7585BB00C7E6D7 /* residue.cc */; };
 		1C4F56391A7585BB00C7E6D7 /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56361A7585BB00C7E6D7 /* residue.cc */; };
+		1C4F563C1A75B34200C7E6D7 /* util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F563A1A75B34200C7E6D7 /* util.cc */; };
+		1C4F563D1A75B34200C7E6D7 /* util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F563A1A75B34200C7E6D7 /* util.cc */; };
 		1CE55A2A1A4A552F00F300F3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A291A4A552F00F300F3 /* main.cpp */; };
 		1CE55A321A4A558400F300F3 /* atom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A301A4A558400F300F3 /* atom.cpp */; };
 		1CE55A3D1A4A59C100F300F3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A3C1A4A59C100F300F3 /* main.cpp */; };
@@ -93,6 +95,8 @@
 		1C4F562B1A75850E00C7E6D7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C4F56361A7585BB00C7E6D7 /* residue.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = residue.cc; sourceTree = "<group>"; };
 		1C4F56371A7585BB00C7E6D7 /* residue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = residue.h; sourceTree = "<group>"; };
+		1C4F563A1A75B34200C7E6D7 /* util.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cc; sourceTree = "<group>"; };
+		1C4F563B1A75B34200C7E6D7 /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
 		1CE55A261A4A552F00F300F3 /* RNAMake */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RNAMake; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CE55A291A4A552F00F300F3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1CE55A301A4A558400F300F3 /* atom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = atom.cpp; sourceTree = "<group>"; };
@@ -195,6 +199,8 @@
 				1C4F56221A74631000C7E6D7 /* settings.h */,
 				1C4F56361A7585BB00C7E6D7 /* residue.cc */,
 				1C4F56371A7585BB00C7E6D7 /* residue.h */,
+				1C4F563A1A75B34200C7E6D7 /* util.cc */,
+				1C4F563B1A75B34200C7E6D7 /* util.h */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
@@ -346,6 +352,7 @@
 				1C4F56331A75852800C7E6D7 /* residue_type.cc in Sources */,
 				1C4F56341A75852800C7E6D7 /* residue_type_set.cc in Sources */,
 				1C4F56351A75852800C7E6D7 /* settings.cc in Sources */,
+				1C4F563D1A75B34200C7E6D7 /* util.cc in Sources */,
 				1C4F562C1A75850E00C7E6D7 /* main.cpp in Sources */,
 				1C4F56391A7585BB00C7E6D7 /* residue.cc in Sources */,
 			);
@@ -361,6 +368,7 @@
 				1C4F56231A74631000C7E6D7 /* settings.cc in Sources */,
 				1C4F56011A7441CB00C7E6D7 /* FileIO.cpp in Sources */,
 				1C4F561B1A74614D00C7E6D7 /* residue_type_set.cc in Sources */,
+				1C4F563C1A75B34200C7E6D7 /* util.cc in Sources */,
 				1C4F56051A74548400C7E6D7 /* residue_type.cc in Sources */,
 				1C4F56381A7585BB00C7E6D7 /* residue.cc in Sources */,
 			);

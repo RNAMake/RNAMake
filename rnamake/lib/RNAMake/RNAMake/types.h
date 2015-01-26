@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <uuid/uuid.h>
 
 typedef std::string String;
 typedef std::vector<String> Strings;

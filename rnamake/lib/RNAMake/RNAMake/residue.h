@@ -52,6 +52,8 @@ private:
     
 };
 
+typedef std::vector<Bead> Beads;
+
 class Residue {
 public:
     Residue() {}
@@ -71,6 +73,9 @@ public:
         atoms_ ( AtomOPs() )
     {  uuid_generate_random(uuid_); }
     
+    Residue
+    copy();
+    
     ~Residue() {}
 
 public:
@@ -84,8 +89,8 @@ public:
     inline
     AtomOP
     const &
-    get_atom(
-        String const & name) {
+    get_atom (
+        String const & name) const {
         int index = rtype_.atom_pos_by_name(name);
         if( index == -1) {
             throw("cannot find atom name " + name);
@@ -93,7 +98,85 @@ public:
         return atoms_[index];
     }
     
+    inline
+    int
+    connected_to(
+        Residue const & res,
+        float cutoff) const {
+        String o3 = "O3'", p = "P";
+        
+        // 5' to 3'
+        AtomOP o3_atom = get_atom(o3), p_atom = res.get_atom(p);
+        if(o3_atom != NULL && p_atom != NULL) {
+            if( o3_atom->coords().distance(p_atom->coords()) < cutoff) {
+                return 1;
+            }
+        }
+        
+        // 3' to 5'
+        o3_atom = res.get_atom(o3); p_atom = get_atom(p);
+        if(o3_atom != NULL && p_atom != NULL) {
+            if( o3_atom->coords().distance(p_atom->coords()) < cutoff) {
+                return -1;
+            }
+        }
+        
+        return 0;
+    }
     
+    void
+    new_uuid() { uuid_generate_random(uuid_); }
+
+    inline
+    int
+    acount() {
+        int count = 0;
+        for (auto const & a : atoms_) {
+            if (a != NULL) { count++; }
+        }
+        return count;
+    }
+    
+    Beads
+    get_beads();
+
+    String
+    to_str();
+    
+    String
+    to_pdb_str(int &);
+    
+    void
+    to_pdb(String const);
+    
+public: // setters
+    inline
+    void
+    uuid(uuid_t const & nuuid) { uuid_copy(uuid_, nuuid); }
+    
+public: // getters
+    
+    inline
+    String const &
+    name() { return name_; }
+    
+    inline
+    String const &
+    chain_id() { return chain_id_; }
+    
+    inline
+    String const &
+    i_code() { return i_code_; }
+    
+    inline
+    int const &
+    num() { return num_; }
+    
+    inline
+    String const &
+    short_name() const { return rtype_.short_name(); }
+    
+
 private:
     ResidueType rtype_;
     String name_, chain_id_, i_code_;
@@ -113,7 +196,7 @@ str_to_residue(
     Residue r(rtype, spl[1], std::stoi(spl[2].c_str()), spl[3], spl[4]);
     AtomOPs atoms;
     int i = 5;
-    while ( i < spl.size()-1 ) {
+    while ( i < spl.size() ) {
         if( spl[i].length() == 1) {
             atoms.push_back( NULL );
         }
