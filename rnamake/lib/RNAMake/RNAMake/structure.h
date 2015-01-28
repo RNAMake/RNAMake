@@ -29,12 +29,15 @@ public:
     //Structure
 
 public:
+    
     inline
     void
     _cache_coords() {
         coords_ = Points();
+        org_coords_ = Points();
         for(auto const & a : atoms()) {
             coords_.push_back(a->coords());
+            org_coords_.push_back(a->coords());
         }
         
     }
@@ -43,6 +46,7 @@ public:
     _build_chains(
         Residues &);
     
+    inline
     void
     _update_coords(
         Points const & ncoords) {
@@ -51,6 +55,12 @@ public:
             a->coords(ncoords[i]);
             i++;
         }
+    }
+    
+    inline
+    void
+    _restore_coords() {
+        _update_coords(org_coords_);
     }
     
     inline
@@ -115,6 +125,34 @@ public: // getters
         }
         return atoms;
     }
+    
+    inline
+    Residue const &
+    get_residue(
+        int const & num,
+        String const & chain_id,
+        String const & i_code) {
+        for( auto const & c : chains_) {
+            for (auto const & r : c.residues() ){
+                if (num == r.num() && chain_id.compare(r.chain_id()) && i_code.compare(r.i_code()) ) {
+                    return r;
+                }
+            }
+        }
+        throw "could not find residue";
+    }
+    
+    inline
+    Residue const &
+    get_residue(
+        Uuid const & uuid) {
+        for( auto const & c : chains_) {
+            for (auto const & r : c.residues() ){
+                if ( r.uuid() == uuid) { return r; }
+            }
+        }
+        throw "could not find residue";
+    }
 
 public: // setters
     
@@ -126,6 +164,7 @@ private:
     Chains chains_;
     Point dummy_; // resuable place in memory
     Points coords_;
+    Points org_coords_;
     
 };
 

@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include "uuid.h"
 #include "residue.h"
 #include "residue_type_set.h"
 
@@ -117,9 +118,33 @@ test_to_str() {
     return 1;
 }
 
+int
+test_uuid() {
+    Uuid uuid1, uuid2;
+    if (uuid1 == uuid2) { return 0; }
+    if (!(uuid1 == uuid1)) { return 0; }
+    return 1;
+}
+
+int
+test_equals() {
+    String file = "test_str_to_residue.dat";
+    String line;
+    std::ifstream input;
+    input.open(file);
+    ResidueTypeSet rts;
+    getline(input, line);
+    Residue r1 = str_to_residue(line, rts);
+    getline(input, line);
+    Residue r2 = str_to_residue(line, rts);
+    std::cout << (r1 == r1) << std::endl;
+    std::cout << (r1 == r2) << std::endl;
+    return 1;
+}
 
 
 int main(int argc, const char * argv[]) {
+    if (test_uuid() == 0)            { std::cout << "test_uuid failed" << std::endl; }
     if (test_bead_creation() == 0)   { std::cout << "test_bead_creation failed" << std::endl; }
     if (test_str_to_residue() == 0)  { std::cout << "test_str_to_residue failed" << std::endl; }
     if (test_get_atom() == 0)        { std::cout << "test_get_atom failed" << std::endl; }
@@ -127,6 +152,7 @@ int main(int argc, const char * argv[]) {
     if (test_get_beads() == 0)       { std::cout << "test_get_beads failed" << std::endl; }
     if (test_copy() == 0)            { std::cout << "test_copy failed" << std::endl; }
     if (test_to_str() == 0)          { std::cout << "test_to_str failed" << std::endl; }
+    if (test_equals() == 0)          { std::cout << "test_equals failed" << std::endl; }
 
     return 0;
 }

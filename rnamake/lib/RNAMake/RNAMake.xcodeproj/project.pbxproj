@@ -44,6 +44,9 @@
 		1C4F56551A7622C900C7E6D7 /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F563E1A760AFB00C7E6D7 /* chain.cc */; };
 		1C4F56561A7622C900C7E6D7 /* structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56411A76227900C7E6D7 /* structure.cc */; };
 		1C4F56571A7625F500C7E6D7 /* util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F563A1A75B34200C7E6D7 /* util.cc */; };
+		1C8C91A01A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
+		1C8C91A11A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
+		1C8C91A21A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
 		1CE55A2A1A4A552F00F300F3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A291A4A552F00F300F3 /* main.cpp */; };
 		1CE55A321A4A558400F300F3 /* atom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A301A4A558400F300F3 /* atom.cpp */; };
 		1CE55A3D1A4A59C100F300F3 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A3C1A4A59C100F300F3 /* main.cpp */; };
@@ -125,6 +128,8 @@
 		1C4F56481A76229800C7E6D7 /* Structure_unittest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = Structure_unittest; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C4F564A1A76229800C7E6D7 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C8C919D1A7757ED005840D0 /* transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = transform.h; sourceTree = "<group>"; };
+		1C8C919E1A797E67005840D0 /* uuid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uuid.h; sourceTree = "<group>"; };
+		1C8C919F1A7990BE005840D0 /* uuid.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uuid.cc; sourceTree = "<group>"; };
 		1CE55A261A4A552F00F300F3 /* RNAMake */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RNAMake; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CE55A291A4A552F00F300F3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1CE55A301A4A558400F300F3 /* atom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = atom.cpp; sourceTree = "<group>"; };
@@ -251,6 +256,8 @@
 				1C4F563F1A760AFB00C7E6D7 /* chain.h */,
 				1C4F56411A76227900C7E6D7 /* structure.cc */,
 				1C4F56421A76227900C7E6D7 /* structure.h */,
+				1C8C919E1A797E67005840D0 /* uuid.h */,
+				1C8C919F1A7990BE005840D0 /* uuid.cc */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
@@ -419,6 +426,7 @@
 			files = (
 				1C4F56301A75852800C7E6D7 /* FileIO.cpp in Sources */,
 				1C4F56311A75852800C7E6D7 /* numerical.cpp in Sources */,
+				1C8C91A11A7990BE005840D0 /* uuid.cc in Sources */,
 				1C4F56321A75852800C7E6D7 /* atom.cpp in Sources */,
 				1C4F56331A75852800C7E6D7 /* residue_type.cc in Sources */,
 				1C4F56341A75852800C7E6D7 /* residue_type_set.cc in Sources */,
@@ -439,6 +447,7 @@
 				1C4F56521A7622C900C7E6D7 /* residue_type_set.cc in Sources */,
 				1C4F56531A7622C900C7E6D7 /* settings.cc in Sources */,
 				1C4F56571A7625F500C7E6D7 /* util.cc in Sources */,
+				1C8C91A21A7990BE005840D0 /* uuid.cc in Sources */,
 				1C4F56541A7622C900C7E6D7 /* residue.cc in Sources */,
 				1C4F56551A7622C900C7E6D7 /* chain.cc in Sources */,
 				1C4F56561A7622C900C7E6D7 /* structure.cc in Sources */,
@@ -456,6 +465,7 @@
 				1C4F56231A74631000C7E6D7 /* settings.cc in Sources */,
 				1C4F56011A7441CB00C7E6D7 /* FileIO.cpp in Sources */,
 				1C4F56401A760AFB00C7E6D7 /* chain.cc in Sources */,
+				1C8C91A01A7990BE005840D0 /* uuid.cc in Sources */,
 				1C4F561B1A74614D00C7E6D7 /* residue_type_set.cc in Sources */,
 				1C4F563C1A75B34200C7E6D7 /* util.cc in Sources */,
 				1C4F56051A74548400C7E6D7 /* residue_type.cc in Sources */,

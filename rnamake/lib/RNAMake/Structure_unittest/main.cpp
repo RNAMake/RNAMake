@@ -138,8 +138,6 @@ test_transform() {
     Structure s2 = str_to_structure(line, rts);
     Transform t(r, trans);
     s.transform(t);
-    
-    
     return 1;
 }
 

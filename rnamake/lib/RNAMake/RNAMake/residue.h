@@ -10,7 +10,7 @@
 #define __RNAMake__residue__
 
 #include <stdio.h>
-#include <uuid/uuid.h>
+#include "uuid.h"
 #include "residue_type.h"
 #include "residue_type_set.h"
 #include "types.h"
@@ -58,7 +58,6 @@ class Residue {
 public:
     Residue() {}
     
-    inline
     Residue(
         ResidueType const & rtype,
         String const & name,
@@ -70,8 +69,9 @@ public:
         num_ ( num ),
         chain_id_ ( chain_id ),
         i_code_ ( i_code ),
-        atoms_ ( AtomOPs() )
-    {  uuid_generate_random(uuid_); }
+        atoms_ ( AtomOPs() ),
+        uuid_ ( Uuid() )
+    {}
     
     Residue
     copy() const;
@@ -125,7 +125,7 @@ public:
     }
     
     void
-    new_uuid() { uuid_generate_random(uuid_); }
+    new_uuid() { uuid_ = Uuid(); }
 
     inline
     int
@@ -148,17 +148,18 @@ public:
     
     void
     to_pdb(String const);
-    
+ 
     bool
     operator ==(const Residue& r) {
-        return uuid_compare(uuid_, r.uuid_) == 0;
+        return uuid_ == r.uuid_;
     }
 
     
 public: // setters
     inline
     void
-    uuid(uuid_t const & nuuid) { uuid_copy(uuid_, nuuid); }
+    uuid(Uuid const & nuuid) { uuid_ = nuuid; }
+    
     
 public: // getters
     
@@ -186,38 +187,24 @@ public: // getters
     AtomOPs const &
     atoms() const { return atoms_; }
     
+    inline
+    Uuid const &
+    uuid() const { return uuid_; }
+    
 private:
     ResidueType rtype_;
     String name_, chain_id_, i_code_;
     int num_;
     AtomOPs atoms_;
-    uuid_t uuid_;
+    Uuid uuid_;
     
 };
 
-inline
+
 Residue
 str_to_residue(
     String const & s,
-    ResidueTypeSet const & rts) {
-    Strings spl = split_str_by_delimiter(s, ",");
-    ResidueType rtype = rts.get_rtype_by_resname(spl[0]);
-    Residue r(rtype, spl[1], std::stoi(spl[2].c_str()), spl[3], spl[4]);
-    AtomOPs atoms;
-    int i = 5;
-    while ( i < spl.size() ) {
-        if( spl[i].length() == 1) {
-            atoms.push_back( NULL );
-        }
-        else {
-            AtomOP aop ( new Atom ( str_to_atom(spl[i]) ));
-            atoms.push_back(aop);
-        }
-        i++;
-    }
-    r.setup_atoms(atoms);
-    return r;
-}
+    ResidueTypeSet const & rts);
 
 typedef std::vector<Residue> Residues;
 

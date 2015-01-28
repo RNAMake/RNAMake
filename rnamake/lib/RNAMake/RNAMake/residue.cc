@@ -96,6 +96,28 @@ Residue::to_pdb(
 }
 
 
+Residue
+str_to_residue(
+    String const & s,
+    ResidueTypeSet const & rts) {
+    Strings spl = split_str_by_delimiter(s, ",");
+    ResidueType rtype = rts.get_rtype_by_resname(spl[0]);
+    Residue r(rtype, spl[1], std::stoi(spl[2].c_str()), spl[3], spl[4]);
+    AtomOPs atoms;
+    int i = 5;
+    while ( i < spl.size() ) {
+        if( spl[i].length() == 1) {
+            atoms.push_back( NULL );
+        }
+        else {
+            AtomOP aop ( new Atom ( str_to_atom(spl[i]) ));
+            atoms.push_back(aop);
+        }
+        i++;
+    }
+    r.setup_atoms(atoms);
+    return r;
+}
 
 
 
