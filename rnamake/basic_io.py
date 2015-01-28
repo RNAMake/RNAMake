@@ -54,7 +54,8 @@ def matrix_to_str(m):
     s = ""
     for i in range(len(m)):
         for j in range(3):
-            s += str(m[i][j]) + " "" "" "" "" "" "" "" "" "" "" "" "" "" "" "" "
+            s += str(m[i][j]) + " "
+
     return s
 
 

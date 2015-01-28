@@ -27,7 +27,7 @@ public:
     
     inline
     Atom
-    copy() {
+    copy() const {
         return Atom(name_, coords_);
     }
     

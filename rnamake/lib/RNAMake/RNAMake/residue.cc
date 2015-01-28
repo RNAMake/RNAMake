@@ -45,7 +45,7 @@ Residue::get_beads() {
 }
 
 Residue
-Residue::copy() {
+Residue::copy() const {
     Residue copied_r (rtype_, name_, num_, chain_id_, i_code_);
     AtomOPs copied_atoms(atoms_.size());
     int i = -1;
@@ -59,7 +59,7 @@ Residue::copy() {
 }
 
 String
-Residue::to_str() {
+Residue::to_str() const {
     std::stringstream ss;
     ss << rtype_.name() << "," << name_ << "," << num_ << "," << chain_id_ << "," << i_code_ << ",";
     for( auto const & a : atoms_) {
@@ -71,7 +71,7 @@ Residue::to_str() {
 
 String
 Residue::to_pdb_str(
-    int & acount) {
+    int & acount) const {
 
     String s;
     for(auto const & a : atoms_) {

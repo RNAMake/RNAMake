@@ -74,7 +74,7 @@ public:
     {  uuid_generate_random(uuid_); }
     
     Residue
-    copy();
+    copy() const;
     
     ~Residue() {}
 
@@ -102,7 +102,7 @@ public:
     int
     connected_to(
         Residue const & res,
-        float cutoff) const {
+        float cutoff = 3.0) const {
         String o3 = "O3'", p = "P";
         
         // 5' to 3'
@@ -141,13 +141,19 @@ public:
     get_beads();
 
     String
-    to_str();
+    to_str() const;
     
     String
-    to_pdb_str(int &);
+    to_pdb_str(int &) const;
     
     void
     to_pdb(String const);
+    
+    bool
+    operator ==(const Residue& r) {
+        return uuid_compare(uuid_, r.uuid_) == 0;
+    }
+
     
 public: // setters
     inline
@@ -158,31 +164,34 @@ public: // getters
     
     inline
     String const &
-    name() { return name_; }
+    name() const { return name_; }
     
     inline
     String const &
-    chain_id() { return chain_id_; }
+    chain_id() const { return chain_id_; }
     
     inline
     String const &
-    i_code() { return i_code_; }
+    i_code() const { return i_code_; }
     
     inline
     int const &
-    num() { return num_; }
+    num() const { return num_; }
     
     inline
     String const &
     short_name() const { return rtype_.short_name(); }
     
-
+    inline
+    AtomOPs const &
+    atoms() const { return atoms_; }
+    
 private:
     ResidueType rtype_;
     String name_, chain_id_, i_code_;
     int num_;
-    uuid_t uuid_;
     AtomOPs atoms_;
+    uuid_t uuid_;
     
 };
 
