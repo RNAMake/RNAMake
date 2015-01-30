@@ -138,5 +138,6 @@ private:
     
 };
 
+typedef std::vector<Basepair> Basepairs;
 
 #endif /* defined(__RNAMake__basepair__) */

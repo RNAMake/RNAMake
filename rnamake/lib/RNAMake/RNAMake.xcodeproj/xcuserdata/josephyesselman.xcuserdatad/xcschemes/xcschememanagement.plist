@@ -34,6 +34,11 @@
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
+		<key>motif.unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>6</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -53,6 +58,11 @@
 			<true/>
 		</dict>
 		<key>1C855B231A79F0AB00EED04D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C855B3B1A7C339600EED04D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
