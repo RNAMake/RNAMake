@@ -12,4 +12,5 @@ import logger
 import resource_manager
 import pose
 import segmenter
+import motif_outputer
 import util

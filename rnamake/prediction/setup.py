@@ -6,6 +6,7 @@ import rnamake.motif_tree_precomputer as motif_tree_precomputer
 import rnamake.settings as settings
 import rnamake.motif_library as motif_library
 import rnamake.motif_type as motif_type
+import rnamake.motif_outputer as motif_outputer
 import copy
 import math
 
@@ -81,15 +82,9 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
     for i, c in enumerate(clusters):
         mt.add_motif(c.motifs[0])
         node = mt.add_motif(test_helix, end_index=0, end_flip=0)
-        #if node is None:
-        #    mt.nodes[1].motif.ends[1].flip(1)
-        #    mt.nodes[1].motif.ends[1].flipped = 0
         if mt.nodes[1].motif.ends[1].r()[1][0] > 0:
             mt.nodes[1].motif.ends[1].flip()
             mt.nodes[1].motif.ends[1].flipped=0
-        #print name+"."+str(i)
-        #print mt.nodes[1].motif.ends[1].r()
-
         pop = float(len(c.motifs)) / float(nmotifs)
         energy = -kBT*math.log(pop)
         mt.nodes[1].motif.name = name+"."+str(i)
@@ -98,6 +93,11 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
         motifs.append(mt.nodes[1].motif)
         mt.remove_node_level()
     f.close()
+    mo = motif_outputer.MotifOutputer()
+    for m in motifs:
+        mo.add_motif(m,0)
+    mo.to_pdb()
+    exit()
     #for i, m in enumerate(motifs):
     #    mt.add_motif(m, end_index=1)
     #    mt.nodes[1].motif.to_pdb("motif."+str(i)+".pdb")

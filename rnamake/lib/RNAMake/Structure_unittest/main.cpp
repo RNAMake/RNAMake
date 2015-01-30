@@ -141,6 +141,15 @@ test_transform() {
     return 1;
 }
 
+int
+test_get_residue() {
+    Structure s = get_test_structure();
+    Residue r = s.get_residue(107, "A", "");
+    Uuid uuid = r.uuid();
+    Residue r2 = s.get_residue(uuid);
+    return 1;
+}
+
 
 int main(int argc, const char * argv[]) {
     if (test_str_to_chain() == 0)       { std::cout << "test_str_to_chain failed" << std::endl; }
@@ -151,6 +160,7 @@ int main(int argc, const char * argv[]) {
     if (test_build_chains() == 0)       { std::cout << "test_build_chains failed" << std::endl; }
     if (test_move() == 0)               { std::cout << "test_move failed" << std::endl; }
     if (test_transform() == 0)          { std::cout << "test_transform failed" << std::endl; }
+    if (test_get_residue() == 0)        { std::cout << "test_get_residue failed" << std::endl; }
 
     return 0;
 }

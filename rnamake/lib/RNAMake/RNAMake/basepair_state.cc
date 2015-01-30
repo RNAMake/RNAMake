@@ -1,0 +1,87 @@
+//
+//  BasepairState.cpp
+//  REDESIGNC
+//
+//  Created by Joseph Yesselman on 9/28/14.
+//  Copyright (c) 2014 Joseph Yesselman. All rights reserved.
+//
+
+#include "basepair_state.h"
+#include "xyzVector.h"
+#include "xyzMatrix.h"
+#include "FileIO.h"
+
+BasepairState
+str_to_basepairstate(
+	String const & s) {
+	
+	//always d,r,sugars order most be kept!!
+	
+	Strings strs = split_str_by_delimiter(s, ";");
+	if(strs.size() < 3) {
+		std::cout << "cannot load BasepairState from String, not the right number of elements\n";
+		exit(EXIT_FAILURE);
+	}
+	
+	Vector d = vector_from_str(strs[0]);
+	Matrix r = matrix_from_str(strs[1]);
+	Vectors sug = vectors_from_str(strs[2]);
+	
+	BasepairState bp(d,r,sug);
+	return bp;
+}
+
+std::ostream&
+operator <<(
+	std::ostream& stream,
+	const BasepairState& bpstate) {
+	
+	stream << "<BasepairState Object(\n";
+	stream << "\tOrigin\n";
+	stream << bpstate.d() << "\n";
+	stream << "\tRotation\n";
+	stream << bpstate.r() << "\n";
+	stream << "\tSugars\n";
+	stream << bpstate.sugars()[0] << "\n";
+	stream << bpstate.sugars()[1] << "\n";
+	return stream;
+	
+}
+
+BasepairState
+get_ref_bp_state() {
+	std::string base_path = get_base_dir();
+	std::string path = base_path + "/resources/ref_bp_state.dat";
+	std::ifstream input;
+	std::string line;
+	
+	input.open(path);
+	getline(input,line);
+	input.close();
+	
+	return str_to_basepairstate(line);
+	
+}
+
+float
+get_bpstate_rotation_diff(
+	BasepairState const & bp1,
+	BasepairState const & bp2) {
+	
+	float r_diff   = bp1.r().difference(bp2.r());
+	Matrix flipped = bp2.r().get_flip_orientation();
+	float r_diff_2 = bp1.r().difference(flipped);
+
+	if(r_diff > r_diff_2) {
+		r_diff = r_diff_2;
+	}
+	
+	return r_diff;
+	
+}
+
+
+
+
+
+

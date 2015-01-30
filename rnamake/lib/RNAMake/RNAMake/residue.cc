@@ -27,7 +27,7 @@ Residue::setup_atoms(
 }
 
 Beads
-Residue::get_beads() {
+Residue::get_beads() const {
     AtomOPs phos_atoms, sugar_atoms, base_atoms;
     int i = -1;
     for( auto const & a : atoms_) {

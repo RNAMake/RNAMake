@@ -12,7 +12,7 @@
 #include <iostream>
 #include "xyzVector.h"
 #include "xyzMatrix.h"
-//#include "BasepairState.h"
+#include "basepair_state.h"
 
 int
 are_floats_equal(
@@ -35,10 +35,10 @@ are_xyzMatrix_equal(
 	Matrix const &,
 	Matrix const &);
 
-/*
+
 int
 are_BasepairStates_equal(
 	BasepairState const &,
 	BasepairState const &);
-*/
+
 #endif /* defined(__REDESIGNC__Numeric_Test__) */

@@ -363,7 +363,7 @@ class MotifTreeStateTree(base.Base):
         return s
 
     def to_pose(self):
-        return self.to_motiftree().to_pose()
+        return self.to_motiftree(sterics=0).to_pose()
     def to_pdb(self, fname="mtst.pdb"):
         mt = self.to_motiftree(sterics=0)
         mt.to_pdb(fname)

@@ -9,6 +9,7 @@
 #include "numerical.h"
 #include "xyzVector.h"
 #include "xyzMatrix.h"
+#include "basepair_state.h"
 
 int
 are_floats_equal(
@@ -69,7 +70,7 @@ are_xyzMatrix_equal(
 	
 }
 
-/*
+
 int
 are_BasepairStates_equal(
 	BasepairState const & a,
@@ -85,4 +86,4 @@ are_BasepairStates_equal(
 	}
 	
 	return 1;
-}*/
+}

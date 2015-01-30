@@ -86,6 +86,25 @@ public:
         _update_coords(coords_);
     }
     
+    inline
+    Beads
+    get_beads(
+        Residues const & excluded_res) {
+        Beads beads;
+        int found = 0;
+        for ( auto const & r : residues()) {
+            found = 0;
+            for (auto const & er : excluded_res) {
+                if( r == er) {found = 1; break;}
+            }
+            if (found) { continue; }
+            for (auto const & b : r.get_beads()) {
+                beads.push_back(b);
+            }
+        }
+        return beads;
+    }
+    
     String
     to_pdb_str();
     
@@ -127,14 +146,14 @@ public: // getters
     }
     
     inline
-    Residue const &
+    Residue const
     get_residue(
         int const & num,
         String const & chain_id,
         String const & i_code) {
         for( auto const & c : chains_) {
             for (auto const & r : c.residues() ){
-                if (num == r.num() && chain_id.compare(r.chain_id()) && i_code.compare(r.i_code()) ) {
+                if (num == r.num() && chain_id.compare(r.chain_id()) == 0 && i_code.compare(r.i_code()) == 0) {
                     return r;
                 }
             }
@@ -143,7 +162,7 @@ public: // getters
     }
     
     inline
-    Residue const &
+    Residue const
     get_residue(
         Uuid const & uuid) {
         for( auto const & c : chains_) {

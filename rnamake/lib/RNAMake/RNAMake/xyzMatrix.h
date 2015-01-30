@@ -11,9 +11,11 @@
 
 #include <vector>
 #include <math.h>
+#include <sstream>
 
 #include "xyzVector.h"
 #include "FileIO.h"
+#include "types.h"
 
 
 template< typename T >
@@ -787,6 +789,15 @@ operator <<( std::ostream & stream, xyzMatrix< T > const & v ) {
 	return stream;
 }
 
+inline
+String
+matrix_to_str(Matrix const & m) {
+    std::stringstream ss;
+    ss << m.xx() << " " << m.xy() << " " << m.xz() << " ";
+    ss << m.yx() << " " << m.yy() << " " << m.yz() << " ";
+    ss << m.zx() << " " << m.zy() << " " << m.zz() << " ";
+    return ss.str();
+}
 
 
 

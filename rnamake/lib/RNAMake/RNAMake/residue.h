@@ -138,7 +138,7 @@ public:
     }
     
     Beads
-    get_beads();
+    get_beads() const;
 
     String
     to_str() const;
@@ -150,7 +150,7 @@ public:
     to_pdb(String const);
  
     bool
-    operator ==(const Residue& r) {
+    operator ==(const Residue& r) const {
         return uuid_ == r.uuid_;
     }
 
