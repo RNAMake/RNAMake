@@ -18,14 +18,14 @@ Basepair::copy() {
 }
 
 String const
-Basepair::to_str() {
+Basepair::to_str() const {
     std::stringstream ss;
     ss << name() << "," << bp_state_.to_str() << "," << bp_type_ << ",0," << flipped_;
     return ss.str();
 }
 
 String const
-Basepair::to_pdb_str() {
+Basepair::to_pdb_str() const {
     String s;
     int acount = 1;
     for (auto const & r : residues()) {
@@ -35,7 +35,7 @@ Basepair::to_pdb_str() {
 }
 
 void
-Basepair::to_pdb(String const fname) {
+Basepair::to_pdb(String const fname) const {
     std::ofstream out;
     out.open(fname.c_str());
     String s = to_pdb_str();

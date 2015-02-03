@@ -312,6 +312,7 @@ class Motif(object):
         for end in self.ends:
             index = self.basepairs.index(end)
             s += str(index) + " "
+        s += "&"
         return s
 
     def to_pdb_str(self):

@@ -32,7 +32,7 @@ public:
     
     inline
     Bead
-    copy() {
+    copy() const {
         return Bead(center_, btype_);
     }
 

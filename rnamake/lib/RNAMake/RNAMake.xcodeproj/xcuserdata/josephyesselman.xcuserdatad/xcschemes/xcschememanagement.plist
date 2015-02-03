@@ -14,7 +14,7 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>ResidueTypeSet_unittest.xcscheme_^#shared#^_</key>
+		<key>ResidueTypeSet_unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>2</integer>
@@ -38,6 +38,11 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>6</integer>
+		</dict>
+		<key>motif_library_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -63,6 +68,26 @@
 			<true/>
 		</dict>
 		<key>1C855B3B1A7C339600EED04D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C855B5B1A7FD9BC00EED04D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C855B631A7FD9DC00EED04D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C855B7E1A7FDA5C00EED04D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C855B9B1A7FDB4300EED04D</key>
 		<dict>
 			<key>primary</key>
 			<true/>

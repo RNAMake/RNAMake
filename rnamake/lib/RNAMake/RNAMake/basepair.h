@@ -54,6 +54,10 @@ public:
     
     Basepair
     copy();
+    
+    inline
+    bool
+    operator == (Basepair const & bp ) { return uuid_ == bp.uuid_; }
 
 public: // getters
     
@@ -66,7 +70,7 @@ public: // getters
 
     inline
     Residues const
-    residues() {
+    residues() const {
         Residues res(2);
         res[0] = res1_;
         res[1] = res2_;
@@ -83,10 +87,11 @@ public: // getters
     
     inline
     String const
-    name() {
+    name() const {
         std::stringstream ss;
-        ss << res1_.short_name() << res1_.num() << res1_.i_code();
-        ss << res2_.short_name() << res2_.num() << res2_.i_code();
+        ss << res1_.chain_id() << res1_.num() << res1_.i_code();
+        ss << "-";
+        ss << res2_.chain_id() << res2_.num() << res2_.i_code();
         return ss.str();
     }
     
@@ -116,16 +121,47 @@ public: // getters
     Point const &
     d()  { return state().d(); }
     
+    inline
+    Uuid const &
+    uuid() const { return uuid_; }
+    
+    inline
+    Residue const &
+    res1() const { return res1_; }
+    
+    inline
+    Residue const &
+    res2() const { return res2_; }
+    
+    inline
+    String const &
+    bp_type() const { return bp_type_; }
+    
+    inline
+    int const
+    flipped() const { return flipped_; }
+
+public: // setters
+    
+    inline
+    void
+    r(Matrix const & nr) { bp_state_.r(nr); }
+    
+    inline
+    void
+    uuid(Uuid const & nuuid) { uuid_ = nuuid; } 
+    
+    
 public:
     
     String const
-    to_str();
+    to_str() const;
     
     String const
-    to_pdb_str();
+    to_pdb_str() const;
     
     void
-    to_pdb(String const);
+    to_pdb(String const) const;
     
     
 private:

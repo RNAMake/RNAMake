@@ -47,12 +47,12 @@ Residue::get_beads() const {
 Residue
 Residue::copy() const {
     Residue copied_r (rtype_, name_, num_, chain_id_, i_code_);
-    AtomOPs copied_atoms(atoms_.size());
+    copied_r.atoms_ = AtomOPs(atoms_.size());
     int i = -1;
     for(auto const & a : atoms_) {
         i++;
         if(a == NULL) { continue; }
-        copied_atoms[i] = AtomOP( new Atom( a->copy()));
+        copied_r.atoms_[i] = AtomOP( new Atom( a->copy()));
     }
     copied_r.uuid(uuid_);    
     return copied_r;

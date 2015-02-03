@@ -78,6 +78,24 @@
 		1C855B531A7C341900EED04D /* motif.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855B501A7C341900EED04D /* motif.cc */; };
 		1C855B561A7C347800EED04D /* motif_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C855B541A7C347800EED04D /* motif_type.cpp */; };
 		1C855B571A7C347800EED04D /* motif_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C855B541A7C347800EED04D /* motif_type.cpp */; };
+		1C855B9F1A7FDB4400EED04D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C855B9E1A7FDB4400EED04D /* main.cpp */; };
+		1C855BA31A7FDB7C00EED04D /* basepair_state.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C6F6B7A1A79A9BA0060F2A8 /* basepair_state.cc */; };
+		1C855BA41A7FDB7C00EED04D /* numerical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C427D971A4F128B0012A72B /* numerical.cpp */; };
+		1C855BA51A7FDB7C00EED04D /* atom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A301A4A558400F300F3 /* atom.cpp */; };
+		1C855BA61A7FDB7C00EED04D /* residue_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56031A74548400C7E6D7 /* residue_type.cc */; };
+		1C855BA71A7FDB7C00EED04D /* residue_type_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56191A74614D00C7E6D7 /* residue_type_set.cc */; };
+		1C855BA81A7FDB7C00EED04D /* settings.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56211A74631000C7E6D7 /* settings.cc */; };
+		1C855BA91A7FDB7C00EED04D /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56361A7585BB00C7E6D7 /* residue.cc */; };
+		1C855BAA1A7FDB7C00EED04D /* util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F563A1A75B34200C7E6D7 /* util.cc */; };
+		1C855BAB1A7FDB7C00EED04D /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F563E1A760AFB00C7E6D7 /* chain.cc */; };
+		1C855BAC1A7FDB7C00EED04D /* structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56411A76227900C7E6D7 /* structure.cc */; };
+		1C855BAD1A7FDB7C00EED04D /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
+		1C855BAE1A7FDB7C00EED04D /* basepair.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C6F6B7C1A79AE290060F2A8 /* basepair.cc */; };
+		1C855BAF1A7FDB7C00EED04D /* motif.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855B501A7C341900EED04D /* motif.cc */; };
+		1C855BB21A7FDBEC00EED04D /* sqlite3_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855BB01A7FDBEC00EED04D /* sqlite3_connection.cc */; };
+		1C855BB31A7FDBEC00EED04D /* sqlite3_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855BB01A7FDBEC00EED04D /* sqlite3_connection.cc */; };
+		1C855BB41A7FDD8000EED04D /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
+		1C855BB61A7FDE3300EED04D /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
 		1C8C91A01A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
 		1C8C91A11A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
 		1C8C91A21A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
@@ -125,6 +143,15 @@
 			runOnlyForDeploymentPostprocessing = 1;
 		};
 		1C855B3A1A7C339600EED04D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+		1C855B9A1A7FDB4300EED04D /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = /usr/share/man/man1/;
@@ -191,6 +218,11 @@
 		1C855B511A7C341900EED04D /* motif.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif.h; sourceTree = "<group>"; };
 		1C855B541A7C347800EED04D /* motif_type.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_type.cpp; sourceTree = "<group>"; };
 		1C855B551A7C347800EED04D /* motif_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_type.h; sourceTree = "<group>"; };
+		1C855B9C1A7FDB4300EED04D /* motif_library_unittest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = motif_library_unittest; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C855B9E1A7FDB4400EED04D /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		1C855BB01A7FDBEC00EED04D /* sqlite3_connection.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sqlite3_connection.cc; sourceTree = "<group>"; };
+		1C855BB11A7FDBEC00EED04D /* sqlite3_connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3_connection.h; sourceTree = "<group>"; };
+		1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		1C8C919D1A7757ED005840D0 /* transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = transform.h; sourceTree = "<group>"; };
 		1C8C919E1A797E67005840D0 /* uuid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uuid.h; sourceTree = "<group>"; };
 		1C8C919F1A7990BE005840D0 /* uuid.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uuid.cc; sourceTree = "<group>"; };
@@ -238,6 +270,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1C855B991A7FDB4300EED04D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C855BB61A7FDE3300EED04D /* libsqlite3.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,9 +338,18 @@
 			path = motif.unittest;
 			sourceTree = "<group>";
 		};
+		1C855B9D1A7FDB4400EED04D /* motif_library_unittest */ = {
+			isa = PBXGroup;
+			children = (
+				1C855B9E1A7FDB4400EED04D /* main.cpp */,
+			);
+			path = motif_library_unittest;
+			sourceTree = "<group>";
+		};
 		1CE55A1D1A4A552F00F300F3 = {
 			isa = PBXGroup;
 			children = (
+				1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */,
 				1CE55A281A4A552F00F300F3 /* RNAMake */,
 				1CE55A3B1A4A59C100F300F3 /* Atom.unittest */,
 				1C4F560B1A74596400C7E6D7 /* ResidueTypeSet_unittest */,
@@ -308,6 +357,7 @@
 				1C4F56491A76229800C7E6D7 /* Structure_unittest */,
 				1C855B251A79F0AB00EED04D /* basepair.unittest */,
 				1C855B3D1A7C339700EED04D /* motif.unittest */,
+				1C855B9D1A7FDB4400EED04D /* motif_library_unittest */,
 				1CE55A271A4A552F00F300F3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -322,6 +372,7 @@
 				1C4F56481A76229800C7E6D7 /* Structure_unittest */,
 				1C855B241A79F0AB00EED04D /* basepair.unittest */,
 				1C855B3C1A7C339600EED04D /* motif.unittest */,
+				1C855B9C1A7FDB4300EED04D /* motif_library_unittest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -364,6 +415,8 @@
 				1C855B511A7C341900EED04D /* motif.h */,
 				1C855B541A7C347800EED04D /* motif_type.cpp */,
 				1C855B551A7C347800EED04D /* motif_type.h */,
+				1C855BB01A7FDBEC00EED04D /* sqlite3_connection.cc */,
+				1C855BB11A7FDBEC00EED04D /* sqlite3_connection.h */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
@@ -464,6 +517,23 @@
 			productReference = 1C855B3C1A7C339600EED04D /* motif.unittest */;
 			productType = "com.apple.product-type.tool";
 		};
+		1C855B9B1A7FDB4300EED04D /* motif_library_unittest */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C855BA01A7FDB4400EED04D /* Build configuration list for PBXNativeTarget "motif_library_unittest" */;
+			buildPhases = (
+				1C855B981A7FDB4300EED04D /* Sources */,
+				1C855B991A7FDB4300EED04D /* Frameworks */,
+				1C855B9A1A7FDB4300EED04D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = motif_library_unittest;
+			productName = motif_library_unittest;
+			productReference = 1C855B9C1A7FDB4300EED04D /* motif_library_unittest */;
+			productType = "com.apple.product-type.tool";
+		};
 		1CE55A251A4A552F00F300F3 /* RNAMake */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1CE55A2D1A4A552F00F300F3 /* Build configuration list for PBXNativeTarget "RNAMake" */;
@@ -522,6 +592,9 @@
 					1C855B3B1A7C339600EED04D = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
+					1C855B9B1A7FDB4300EED04D = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
 					1CE55A251A4A552F00F300F3 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
@@ -549,6 +622,7 @@
 				1C4F56471A76229800C7E6D7 /* Structure_unittest */,
 				1C855B231A79F0AB00EED04D /* basepair.unittest */,
 				1C855B3B1A7C339600EED04D /* motif.unittest */,
+				1C855B9B1A7FDB4300EED04D /* motif_library_unittest */,
 			);
 		};
 /* End PBXProject section */
@@ -647,6 +721,29 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		1C855B981A7FDB4300EED04D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C855BB41A7FDD8000EED04D /* FileIO.cpp in Sources */,
+				1C855BA31A7FDB7C00EED04D /* basepair_state.cc in Sources */,
+				1C855BA41A7FDB7C00EED04D /* numerical.cpp in Sources */,
+				1C855BA51A7FDB7C00EED04D /* atom.cpp in Sources */,
+				1C855BA61A7FDB7C00EED04D /* residue_type.cc in Sources */,
+				1C855BA71A7FDB7C00EED04D /* residue_type_set.cc in Sources */,
+				1C855BA81A7FDB7C00EED04D /* settings.cc in Sources */,
+				1C855BA91A7FDB7C00EED04D /* residue.cc in Sources */,
+				1C855BAA1A7FDB7C00EED04D /* util.cc in Sources */,
+				1C855BAB1A7FDB7C00EED04D /* chain.cc in Sources */,
+				1C855BAC1A7FDB7C00EED04D /* structure.cc in Sources */,
+				1C855BAD1A7FDB7C00EED04D /* uuid.cc in Sources */,
+				1C855BAE1A7FDB7C00EED04D /* basepair.cc in Sources */,
+				1C855BAF1A7FDB7C00EED04D /* motif.cc in Sources */,
+				1C855B9F1A7FDB4400EED04D /* main.cpp in Sources */,
+				1C855BB31A7FDBEC00EED04D /* sqlite3_connection.cc in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1CE55A221A4A552F00F300F3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -659,6 +756,7 @@
 				1C4F56401A760AFB00C7E6D7 /* chain.cc in Sources */,
 				1C8C91A01A7990BE005840D0 /* uuid.cc in Sources */,
 				1C4F561B1A74614D00C7E6D7 /* residue_type_set.cc in Sources */,
+				1C855BB21A7FDBEC00EED04D /* sqlite3_connection.cc in Sources */,
 				1C4F563C1A75B34200C7E6D7 /* util.cc in Sources */,
 				1C4F56051A74548400C7E6D7 /* residue_type.cc in Sources */,
 				1C4F56431A76227900C7E6D7 /* structure.cc in Sources */,
@@ -768,6 +866,24 @@
 			name = Debug;
 		};
 		1C855B421A7C339700EED04D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		1C855BA11A7FDB4400EED04D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1C855BA21A7FDB4400EED04D /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -934,6 +1050,14 @@
 			buildConfigurations = (
 				1C855B411A7C339700EED04D /* Debug */,
 				1C855B421A7C339700EED04D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		1C855BA01A7FDB4400EED04D /* Build configuration list for PBXNativeTarget "motif_library_unittest" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C855BA11A7FDB4400EED04D /* Debug */,
+				1C855BA21A7FDB4400EED04D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};

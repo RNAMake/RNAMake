@@ -42,6 +42,7 @@ Chain::copy() const {
     int i = 0;
     for (auto const & r : residues_) {
         residues[i] = r.copy();
+        i++;
     }
     return Chain(residues);
 }

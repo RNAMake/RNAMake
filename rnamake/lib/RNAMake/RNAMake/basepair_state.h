@@ -115,7 +115,7 @@ public:
 public:
     
     String const
-    to_str() {
+    to_str() const{
         String s = vector_to_str(d_) + ";" + matrix_to_str(r_) + ";" + vector_to_str(sugars_[0]) + vector_to_str(sugars_[1]);
         return s;
     }
