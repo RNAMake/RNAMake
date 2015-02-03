@@ -20,20 +20,22 @@
 
 class Basepair {
 public:
-    Basepair() {}
+    Basepair()
+    {}
     
     Basepair(
-        Residue const & res1,
-        Residue const & res2,
+        Residue & res1,
+        Residue & res2,
         Matrix const & r,
         String const & bp_type):
-        res1_(res1),
-        res2_(res2),
         bp_type_(bp_type),
         uuid_( Uuid() ),
         flipped_ ( 0 )
     {
         
+        res1_ = &res1;
+        res2_ = &res2;
+
         atoms_ = AtomOPs();
         for( auto const & a : res1.atoms() ) {
             if(a != NULL) { atoms_.push_back(a); }
@@ -44,20 +46,25 @@ public:
         
         Point d = center(atoms_);
         Points sugars(2);
-        sugars[0] = res1_.get_atom("C1'")->coords();
-        sugars[1] = res2_.get_atom("C1'")->coords();
+        sugars[0] = res1_->get_atom("C1'")->coords();
+        sugars[1] = res2_->get_atom("C1'")->coords();
         bp_state_ = BasepairState(d, r, sugars);
         
     }
     
-    ~Basepair() {}
+    ~Basepair() {
+        res1_ = NULL;
+        res2_ = NULL;
+        delete res1_;
+        delete res2_;
+    }
     
     Basepair
     copy();
     
     inline
     bool
-    operator == (Basepair const & bp ) { return uuid_ == bp.uuid_; }
+    operator == (Basepair const & bp ) const { return uuid_ == bp.uuid_; }
 
 public: // getters
     
@@ -67,21 +74,21 @@ public: // getters
         bp_state_.d(center(atoms_));
         return bp_state_;
     }
-
+    
     inline
     Residues const
     residues() const {
         Residues res(2);
-        res[0] = res1_;
-        res[1] = res2_;
+        res[0] = *res1_;
+        res[1] = *res2_;
         return res;
     }
     
     inline
     Residue const &
     partner(Residue const & res) {
-        if     ( res == res1_) {  return res2_;  }
-        else if( res == res2_) {  return res1_;  }
+        if     ( res == *res1_) {  return *res2_;  }
+        else if( res == *res2_) {  return *res1_;  }
         else { throw "called partner with resiude not in this basepair"; }
     }
     
@@ -89,9 +96,9 @@ public: // getters
     String const
     name() const {
         std::stringstream ss;
-        ss << res1_.chain_id() << res1_.num() << res1_.i_code();
+        ss << res1_->chain_id() << res1_->num() << res1_->i_code();
         ss << "-";
-        ss << res2_.chain_id() << res2_.num() << res2_.i_code();
+        ss << res2_->chain_id() << res2_->num() << res2_->i_code();
         return ss.str();
     }
     
@@ -118,8 +125,8 @@ public: // getters
     r() const { return bp_state_.r(); }
     
     inline
-    Point const &
-    d()  { return state().d(); }
+    Point const
+    d()  const { return center(atoms_); }
     
     inline
     Uuid const &
@@ -127,11 +134,11 @@ public: // getters
     
     inline
     Residue const &
-    res1() const { return res1_; }
+    res1() const { return *res1_; }
     
     inline
     Residue const &
-    res2() const { return res2_; }
+    res2() const { return *res2_; }
     
     inline
     String const &
@@ -165,7 +172,7 @@ public:
     
     
 private:
-    Residue res1_, res2_;
+    Residue *res1_, *res2_;
     AtomOPs atoms_;
     BasepairState bp_state_;
     String bp_type_;

@@ -31,6 +31,8 @@ test_str_to_motif() {
     ResidueTypeSet rts;
     getline(input, line);
     Motif m(line, rts);
+    std:: cout << m.basepairs()[10].res2().num() << std::endl;
+    exit(0);
     
     return 1;
 }

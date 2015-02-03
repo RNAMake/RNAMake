@@ -11,7 +11,7 @@
 
 Basepair
 Basepair::copy() {
-    Basepair cbp ( res1_, res2_, bp_state_.r(), bp_type_);
+    Basepair cbp ( *res1_, *res2_, bp_state_.r(), bp_type_);
     cbp.flipped_ = flipped_;
     cbp.uuid_ = uuid_;
     return cbp;

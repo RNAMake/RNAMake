@@ -41,14 +41,11 @@ public:
     void
     query(String const);
     
-    int
+    Strings const &
     next();
     
 public: //getters
     
-    inline
-    Strings const &
-    values() { return values_; }
     
 private:
     int rc_;

@@ -7,6 +7,8 @@
 //
 
 #include "motif.h"
+#include "xyzMatrix.h"
+#include "transform.h"
 
 Motif::Motif(
     String const & s,
@@ -34,10 +36,12 @@ Motif::Motif(
         String res2_id = res_spl[1].substr(0,1);
         int res1_num = std::stoi(res_spl[0].substr(1));
         int res2_num = std::stoi(res_spl[1].substr(1));
-        Residue res1 = structure_.get_residue(res1_num, res1_id, "");
-        Residue res2 = structure_.get_residue(res2_num, res2_id, "");
+        //Residue res1 = structure_.get_residue(res1_num, res1_id, "");
+        //Residue res2 = structure_.get_residue(res2_num, res2_id, "");
         BasepairState bpstate = str_to_basepairstate(bp_spl[1]);
-        Basepair bp ( res1, res2, bpstate.r(), bp_spl[1] );
+        Basepair bp ( structure_.get_residue(res1_num, res1_id, ""),
+                      structure_.get_residue(res2_num, res2_id, ""),
+                     bpstate.r(), bp_spl[1] );
         bp.flip( std::stoi(bp_spl[4]));
         basepairs_.push_back(bp);
     }
@@ -58,8 +62,8 @@ Motif::copy() {
     cmotif.mtype_ = mtype_;
     cmotif.structure_ = structure_.copy();
     cmotif.beads_ = Beads(beads_.size());
-    cmotif.basepairs_ = Basepairs(basepairs_.size());
-    cmotif.ends_ = Basepairs(ends_.size());
+    cmotif.basepairs_ = Basepairs();
+    cmotif.ends_ = Basepairs();
     int i = 0;
     for (auto const & b : beads_) {
         cmotif.beads_[i] = b.copy();
@@ -67,20 +71,25 @@ Motif::copy() {
     }
     i = 0;
     Residue res1, res2;
+    std::cout << cmotif.residues().size() << std::endl;
+    for (auto const & r : residues()) {
+        std::cout << r.num() << " " << r.uuid().s_uuid() << std::endl;
+    }
+    
+    std::cout << basepairs_[0].res1().num() << std::endl;
+    exit(0);
     for (auto const & bp : basepairs_) {
         res1 = cmotif.get_residue(bp.res1().uuid());
         res2 = cmotif.get_residue(bp.res2().uuid());
         Basepair new_bp ( res1, res2, bp.r(), bp.bp_type() );
         new_bp.flip(bp.flipped());
         new_bp.uuid(bp.uuid());
-        cmotif.basepairs_[i] = new_bp;
-        i++;
+        cmotif.basepairs_.push_back(new_bp);
     }
     i = 0;
     for (auto const & end: ends_) {
         Basepairs bps = get_basepair(end.res1(), end.res2());
-        cmotif.ends_[i] = bps[0];
-        i++;
+        cmotif.ends_.push_back(bps[0]);
     }
     
     cmotif._cache_basepair_frames();
@@ -96,7 +105,13 @@ Motif::to_str() {
     }
     ss << "&";
     for ( auto const & end : ends_) {
-        int pos = (int)(std::find(basepairs_.begin(), basepairs_.end(), end) - basepairs_.begin());
+        int pos = 0;
+        int i = 0;
+        for (auto const & bp : basepairs_) {
+            if( end == bp) { pos = i; break; }
+            i ++;
+        }
+        //(int)(std::find(basepairs_.begin(), basepairs_.end(), end) - basepairs_.begin());
         ss << pos << " ";
     }
     ss << "&";
@@ -147,6 +162,24 @@ Motif::get_basepair(Uuid const & uuid1,
 
 
 
+void
+align_motif(Basepair const & ref_bp,
+            Basepair const & motif_end,
+            Motif & motif) {
+    
+    Matrix ref_T;
+    transpose(ref_bp.r(), ref_T);
+    Matrix r;
+    dot(ref_T, motif_end.r(), r);
+    Point trans = -motif_end.d();
+    Transform t(r, trans);
+    motif.transform(t);
+    Point bp_pos_diff = ref_bp.d() - motif.ends()[1].d();
+    std::cout << bp_pos_diff << std::endl;
+    motif.move(bp_pos_diff);
+    bp_pos_diff = ref_bp.d() - motif_end.d();
+    std::cout << bp_pos_diff << std::endl;
 
+}
 
 

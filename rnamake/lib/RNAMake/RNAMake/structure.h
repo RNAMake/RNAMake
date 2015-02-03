@@ -146,13 +146,13 @@ public: // getters
     }
     
     inline
-    Residue const
+    Residue &
     get_residue(
         int const & num,
         String const & chain_id,
         String const & i_code) {
         for( auto const & c : chains_) {
-            for (auto const & r : c.residues() ){
+            for (auto & r : c.residues() ){
                 if (num == r.num() && chain_id.compare(r.chain_id()) == 0 && i_code.compare(r.i_code()) == 0) {
                     return r;
                 }
@@ -162,11 +162,11 @@ public: // getters
     }
     
     inline
-    Residue const
+    Residue &
     get_residue(
         Uuid const & uuid) {
         for( auto const & c : chains_) {
-            for (auto const & r : c.residues() ){
+            for (auto & r : c.residues() ){
                 if ( r.uuid() == uuid) { return r; }
             }
         }

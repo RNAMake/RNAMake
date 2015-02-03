@@ -92,6 +92,10 @@ public:
     String const &
     name() const { return name_; }
     
+    inline
+    Basepairs const &
+    basepairs() const { return basepairs_; }
+    
     
 public:
     
@@ -132,5 +136,10 @@ private:
     Matrices cached_rotations_;
     Structure structure_;
 };
+
+void
+align_motif(Basepair const &,
+            Basepair const &,
+            Motif &);
 
 #endif /* defined(__RNAMake__motif__) */

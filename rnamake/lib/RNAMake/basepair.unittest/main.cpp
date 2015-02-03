@@ -47,6 +47,8 @@ test_creation() {
     Residue res2 = s.get_residue(104, "A", "");
     Matrix r(0.0);
     Basepair bp (res1, res2, r, "c...");
+    //std::cout << res1.get_atom("C1'")->coords() << std::endl;
+    //std::cout << bp.res1().get_atom("C1'")->coords() << std::endl;
     BasepairState bpstate = bp.state();
     return 1;
 }

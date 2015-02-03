@@ -34,16 +34,19 @@ Sqlite3Connection::get_db_path(MotifType const & mtype) {
     
 }
 
-int
+Strings const &
 Sqlite3Connection::next() {
     if(rc_ != SQLITE_ROW) {
         sqlite3_finalize(stmt_);
-        return 0;
+        values_[0] = "";
+        values_[1] = "";
+        return values_;
     }
     values_[0] = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,0)));
     values_[1] = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,1)));
-
-    return 1;
+    rc_ = sqlite3_step(stmt_);
+    
+    return values_;
 }
 
 void

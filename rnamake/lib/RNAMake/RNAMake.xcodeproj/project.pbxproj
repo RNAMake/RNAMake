@@ -96,6 +96,8 @@
 		1C855BB31A7FDBEC00EED04D /* sqlite3_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855BB01A7FDBEC00EED04D /* sqlite3_connection.cc */; };
 		1C855BB41A7FDD8000EED04D /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
 		1C855BB61A7FDE3300EED04D /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
+		1C855BB91A80540800EED04D /* motif_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855BB71A80540800EED04D /* motif_library.cc */; };
+		1C855BBA1A80540800EED04D /* motif_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855BB71A80540800EED04D /* motif_library.cc */; };
 		1C8C91A01A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
 		1C8C91A11A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
 		1C8C91A21A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
@@ -223,6 +225,8 @@
 		1C855BB01A7FDBEC00EED04D /* sqlite3_connection.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sqlite3_connection.cc; sourceTree = "<group>"; };
 		1C855BB11A7FDBEC00EED04D /* sqlite3_connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sqlite3_connection.h; sourceTree = "<group>"; };
 		1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		1C855BB71A80540800EED04D /* motif_library.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_library.cc; sourceTree = "<group>"; };
+		1C855BB81A80540800EED04D /* motif_library.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_library.h; sourceTree = "<group>"; };
 		1C8C919D1A7757ED005840D0 /* transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = transform.h; sourceTree = "<group>"; };
 		1C8C919E1A797E67005840D0 /* uuid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uuid.h; sourceTree = "<group>"; };
 		1C8C919F1A7990BE005840D0 /* uuid.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uuid.cc; sourceTree = "<group>"; };
@@ -417,6 +421,8 @@
 				1C855B551A7C347800EED04D /* motif_type.h */,
 				1C855BB01A7FDBEC00EED04D /* sqlite3_connection.cc */,
 				1C855BB11A7FDBEC00EED04D /* sqlite3_connection.h */,
+				1C855BB71A80540800EED04D /* motif_library.cc */,
+				1C855BB81A80540800EED04D /* motif_library.h */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
@@ -736,6 +742,7 @@
 				1C855BAA1A7FDB7C00EED04D /* util.cc in Sources */,
 				1C855BAB1A7FDB7C00EED04D /* chain.cc in Sources */,
 				1C855BAC1A7FDB7C00EED04D /* structure.cc in Sources */,
+				1C855BBA1A80540800EED04D /* motif_library.cc in Sources */,
 				1C855BAD1A7FDB7C00EED04D /* uuid.cc in Sources */,
 				1C855BAE1A7FDB7C00EED04D /* basepair.cc in Sources */,
 				1C855BAF1A7FDB7C00EED04D /* motif.cc in Sources */,
@@ -751,6 +758,7 @@
 				1CE55A321A4A558400F300F3 /* atom.cpp in Sources */,
 				1CE55A2A1A4A552F00F300F3 /* main.cpp in Sources */,
 				1C427D981A4F128B0012A72B /* numerical.cpp in Sources */,
+				1C855BB91A80540800EED04D /* motif_library.cc in Sources */,
 				1C4F56231A74631000C7E6D7 /* settings.cc in Sources */,
 				1C4F56011A7441CB00C7E6D7 /* FileIO.cpp in Sources */,
 				1C4F56401A760AFB00C7E6D7 /* chain.cc in Sources */,
