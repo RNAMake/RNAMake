@@ -10,7 +10,8 @@
 #define __RNAMake__structure__
 
 #include <stdio.h>
-#include "chain.h"
+#include "chain.fwd.h"
+#include "residue.h"
 #include "types.h"
 #include "transform.h"
 #include "xyzMatrix.h"
@@ -18,7 +19,7 @@
 class Structure {
 public:
     Structure():
-    chains_ ( Chains() ),
+    chains_ ( ChainOPs() ),
     dummy_ ( Point (0, 0, 0))
     {}
     
@@ -116,20 +117,11 @@ public:
     
 public: // getters
     inline
-    Chains const &
+    ChainOPs const &
     chains() { return chains_; }
     
-    inline
     ResidueOPs const
-    residues() {
-        ResidueOPs residues;
-        for (auto const & c : chains_) {
-            for (auto const & r : c.residues()) {
-                residues.push_back(r);
-            }
-        }
-        return residues;
-    }
+    residues();
     
     inline
     AtomOPs const
@@ -145,42 +137,25 @@ public: // getters
         return atoms;
     }
     
-    inline
-    ResidueOP const
-    get_residue(
-        int const & num,
-        String const & chain_id,
-        String const & i_code) {
-        for( auto const & c : chains_) {
-            for (auto & r : c.residues() ){
-                if (num == r->num() && chain_id.compare(r->chain_id()) == 0 && i_code.compare(r->i_code()) == 0) {
-                    return r;
-                }
-            }
-        }
-        throw "could not find residue";
-    }
     
-    inline
     ResidueOP const
     get_residue(
-        Uuid const & uuid) {
-        for( auto const & c : chains_) {
-            for (auto & r : c.residues() ){
-                if ( r->uuid() == uuid) { return r; }
-            }
-        }
-        throw "could not find residue";
-    }
-
+        int const & ,
+        String const & ,
+        String const & );
+    
+    ResidueOP const
+    get_residue(
+        Uuid const &);
+    
 public: // setters
     
     inline
     void
-    chains(Chains const & nchains) { chains_ = nchains; }
+    chains(ChainOPs const & nchains) { chains_ = nchains; }
     
 private:
-    Chains chains_;
+    ChainOPs chains_;
     Point dummy_; // resuable place in memory
     Points coords_;
     Points org_coords_;
@@ -191,6 +166,8 @@ Structure
 str_to_structure(
     String const &,
     ResidueTypeSet const & rts);
+
+typedef std::shared_ptr<Structure> StructureOP;
 
 
 #endif /* defined(__RNAMake__structure__) */

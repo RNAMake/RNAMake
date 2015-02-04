@@ -28,7 +28,8 @@ public:
     ends_(BasepairOPs()),
     mdir_(String()),
     name_(String()),
-    cached_rotations_(Matrices())
+    cached_rotations_(Matrices()),
+    structure_ ( StructureOP() )
     {}
     
     Motif(String const &,
@@ -67,26 +68,26 @@ public:
     get_residue(int num,
                 String const & chain_id,
                 String const & i_code) {
-        return structure_.get_residue(num, chain_id, i_code);
+        return structure_->get_residue(num, chain_id, i_code);
     }
     
     inline
     ResidueOP const
     get_residue(Uuid const & uuid) {
-        return structure_.get_residue(uuid);
+        return structure_->get_residue(uuid);
     }
     
     inline
     AtomOPs const
-    atoms() { return structure_.atoms(); }
+    atoms() { return structure_->atoms(); }
     
     inline
     ResidueOPs const
-    residues() { return structure_.residues(); }
+    residues() { return structure_->residues(); }
     
     inline
-    Chains const
-    chains() { return structure_.chains(); }
+    ChainOPs const &
+    chains() { return structure_->chains(); }
     
     inline
     BasepairOPs const &
@@ -113,12 +114,12 @@ public:
             dot(bp->r(), r_T, transformed);
             bp->r(transformed);
         }
-        structure_.transform(t);
+        structure_->transform(t);
     }
     
     inline
     void
-    move(Point const & p) { structure_.move(p); }
+    move(Point const & p) { structure_->move(p); }
 
     String const
     to_str();
@@ -138,12 +139,15 @@ private:
     BasepairOPs basepairs_, ends_;
     String mdir_, name_;
     Matrices cached_rotations_;
-    Structure structure_;
+    StructureOP structure_;
 };
 
+
+typedef std::shared_ptr<Motif> MotifOP;
+
 void
-align_motif(BasepairOP,
-            BasepairOP,
-            Motif &);
+align_motif(BasepairOP const &,
+            BasepairOP const &,
+            MotifOP const &);
 
 #endif /* defined(__RNAMake__motif__) */

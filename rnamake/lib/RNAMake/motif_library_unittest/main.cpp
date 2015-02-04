@@ -35,42 +35,30 @@ test_load_all() {
 int
 test_get_motif() {
     MotifLibrary mlib(HELIX);
-    Motif m = mlib.get_motif("HELIX.IDEAL");
-    m.to_pdb("test2.pdb");
+    MotifOP m = mlib.get_motif("HELIX.IDEAL");
+    m->to_pdb("test2.pdb");
     return 1;
 }
 
 int
 test_align_motif() {
     MotifLibrary mlib(HELIX);
-    Motif m = mlib.get_motif("HELIX.IDEAL");
-    Motif m2 = m.copy();
-    align_motif(m.ends()[0], m2.ends()[1], m2);
-    m.to_pdb("node.0.pdb");
-    m2.to_pdb("node.1.pdb");
+    MotifOP m = mlib.get_motif("HELIX.IDEAL");
+    MotifOP m2 ( new Motif( m->copy()));
+    align_motif(m->ends()[0], m2->ends()[1], m2);
+    m->to_pdb("node.0.pdb");
+    m2->to_pdb("node.1.pdb");
     return 1;
-    
 }
 
 int
 test_update() {
     MotifLibrary mlib(HELIX);
-    Motif m = mlib.get_motif("HELIX.IDEAL");
-    BasepairOP motif_end = m.basepairs()[0];
-    BasepairOP motif_end2 = m.get_basepair(motif_end->uuid())[0];
-    std::cout << motif_end->res1()->get_atom("P")->coords() << std::endl;
-    //std::cout << res1->atoms()[0]->coords() << std::endl;
-    //std::cout << m.atoms()[0]->coords() << std::endl;
-    //std::cout << m.residues()[0]->atoms()[0]->coords() << std::endl;
-    m.move(Point(10,0,0));
-    ResidueOP res1 = m.get_residue(4, "A", "");
-    std::cout << res1->atoms()[0]->coords() << std::endl;
-    std::cout << m.ends()[0]->res1()->get_atom("P")->coords() << std::endl;
-    std::cout << motif_end2->res1()->get_atom("P")->coords() << std::endl;
-    //motif_end = m.ends()[0];
-    //std::cout << motif_end.res1()->get_atom("C1'")->coords() << std::endl;
-    //std::cout << m.atoms()[0]->coords() << std::endl;
-    //std::cout << m.residues()[0]->atoms()[0]->coords() << std::endl;
+    MotifOP m = mlib.get_motif("HELIX.IDEAL");
+    BasepairOP motif_end = m->basepairs()[0];
+    BasepairOP motif_end2 = m->get_basepair(motif_end->uuid())[0];
+    m->move(Point(10,0,0));
+    ResidueOP res1 = m->get_residue(4, "A", "");
 
     return 1;
     

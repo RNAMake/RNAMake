@@ -230,6 +230,7 @@
 		1C8C919D1A7757ED005840D0 /* transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = transform.h; sourceTree = "<group>"; };
 		1C8C919E1A797E67005840D0 /* uuid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uuid.h; sourceTree = "<group>"; };
 		1C8C919F1A7990BE005840D0 /* uuid.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uuid.cc; sourceTree = "<group>"; };
+		1CA7AB711A81B3320063C8A8 /* chain.fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chain.fwd.h; sourceTree = "<group>"; };
 		1CE55A261A4A552F00F300F3 /* RNAMake */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = RNAMake; sourceTree = BUILT_PRODUCTS_DIR; };
 		1CE55A291A4A552F00F300F3 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1CE55A301A4A558400F300F3 /* atom.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = atom.cpp; sourceTree = "<group>"; };
@@ -423,6 +424,7 @@
 				1C855BB11A7FDBEC00EED04D /* sqlite3_connection.h */,
 				1C855BB71A80540800EED04D /* motif_library.cc */,
 				1C855BB81A80540800EED04D /* motif_library.h */,
+				1CA7AB711A81B3320063C8A8 /* chain.fwd.h */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
@@ -1052,6 +1054,7 @@
 				1C855B291A79F0AB00EED04D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1C855B401A7C339700EED04D /* Build configuration list for PBXNativeTarget "motif.unittest" */ = {
 			isa = XCConfigurationList;
@@ -1060,6 +1063,7 @@
 				1C855B421A7C339700EED04D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1C855BA01A7FDB4400EED04D /* Build configuration list for PBXNativeTarget "motif_library_unittest" */ = {
 			isa = XCConfigurationList;
@@ -1068,6 +1072,7 @@
 				1C855BA21A7FDB4400EED04D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1CE55A211A4A552F00F300F3 /* Build configuration list for PBXProject "RNAMake" */ = {
 			isa = XCConfigurationList;

@@ -10,6 +10,7 @@
 #define __RNAMake__chain__
 
 #include <stdio.h>
+#include "chain.fwd.h"
 #include "residue.h"
 #include "residue_type_set.h"
 #include "types.h"
@@ -38,14 +39,14 @@ public:
     last() { return residues_.back(); }
     
     inline
-    Chain
+    ChainOP
     subchain(int start, int end) {
         if(start < 0) { throw "start cannot be less then 0"; }
-        return Chain(ResidueOPs(residues_.begin() + start, residues_.begin() + end));
+        return ChainOP(new Chain(ResidueOPs(residues_.begin() + start, residues_.begin() + end)));
     }
     
     inline
-    Chain
+    ChainOP
     subchain(
         ResidueOP const & r1,
         ResidueOP const & r2) {
@@ -80,9 +81,9 @@ public: //getters
     ResidueOPs &
     residues() { return residues_; }
     
-    inline
+    /*inline
     const ResidueOPs &  
-    residues() const { return residues_; }
+    residues() const { return residues_; }*/ 
     
 private:
     ResidueOPs residues_;
@@ -93,6 +94,6 @@ str_to_chain(
     String const &,
     ResidueTypeSet const & );
 
-typedef std::vector<Chain> Chains;
+
 
 #endif /* defined(__RNAMake__chain__) */

@@ -17,7 +17,7 @@
 #include "sqlite3_connection.h"
 #include "residue_type_set.h"
 
-typedef std::map<String, Motif> StringMotifMap;
+typedef std::map<String, MotifOP> StringMotifMap;
 
 class MotifLibrary {
 public:
@@ -32,7 +32,7 @@ public:
 
 public:
     
-    Motif const
+    MotifOP const
     get_motif(String const &);
     
     void

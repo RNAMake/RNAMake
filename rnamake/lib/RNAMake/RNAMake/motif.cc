@@ -27,7 +27,7 @@ Motif::Motif(
     name_ = spl[1];
     score_ = std::stof(spl[2]);
     mtype_ = static_cast<MotifType>(std::stoi(spl[3]));
-    structure_ = str_to_structure(spl[4], rts);
+    structure_ = StructureOP( new Structure(str_to_structure(spl[4], rts)));
     Strings basepair_str = split_str_by_delimiter(spl[5], "@");
     for (auto const & bp_str : basepair_str) {
         Strings bp_spl = split_str_by_delimiter(bp_str, ",");
@@ -36,8 +36,8 @@ Motif::Motif(
         String res2_id = res_spl[1].substr(0,1);
         int res1_num = std::stoi(res_spl[0].substr(1));
         int res2_num = std::stoi(res_spl[1].substr(1));
-        ResidueOP res1 = structure_.get_residue(res1_num, res1_id, "");
-        ResidueOP res2 = structure_.get_residue(res2_num, res2_id, "");
+        ResidueOP res1 = structure_->get_residue(res1_num, res1_id, "");
+        ResidueOP res2 = structure_->get_residue(res2_num, res2_id, "");
         BasepairState bpstate = str_to_basepairstate(bp_spl[1]);
         BasepairOP bp ( new Basepair(res1, res2, bpstate.r(), bp_spl[1] ));
         bp->flip( std::stoi(bp_spl[4]));
@@ -58,7 +58,7 @@ Motif::copy() {
     cmotif.mdir_ = mdir_;
     cmotif.score_ = score_;
     cmotif.mtype_ = mtype_;
-    cmotif.structure_ = structure_.copy();
+    cmotif.structure_ = StructureOP (new Structure(structure_->copy()));
     cmotif.beads_ = Beads(beads_.size());
     cmotif.basepairs_ = BasepairOPs();
     cmotif.ends_ = BasepairOPs();
@@ -97,7 +97,7 @@ Motif::copy() {
 String const
 Motif::to_str() {
     std::stringstream ss;
-    ss << mdir_ << "&" << name_ << "&" << score_ << "&" << mtype_ << "&" << structure_.to_str() << "&";
+    ss << mdir_ << "&" << name_ << "&" << score_ << "&" << mtype_ << "&" << structure_->to_str() << "&";
     for ( auto const & bp : basepairs_ ) {
         ss << bp->to_str() << "@";
     }
@@ -109,7 +109,6 @@ Motif::to_str() {
             if( end == bp) { pos = i; break; }
             i ++;
         }
-        //(int)(std::find(basepairs_.begin(), basepairs_.end(), end) - basepairs_.begin());
         ss << pos << " ";
     }
     ss << "&";
@@ -118,14 +117,13 @@ Motif::to_str() {
 
 String const
 Motif::to_pdb_str() {
-    return structure_.to_pdb_str();
+    return structure_->to_pdb_str();
 }
 
 void
 Motif::to_pdb(String const fname) {
-    return structure_.to_pdb(fname);
+    return structure_->to_pdb(fname);
 }
-
 
 BasepairOPs
 Motif::get_basepair(Uuid const & bp_uuid) {
@@ -160,9 +158,9 @@ Motif::get_basepair(Uuid const & uuid1,
 
 
 void
-align_motif(BasepairOP ref_bp,
-            BasepairOP motif_end,
-            Motif & motif) {
+align_motif(BasepairOP const & ref_bp,
+            BasepairOP const & motif_end,
+            MotifOP const & motif) {
     
     Matrix ref_T;
     transpose(ref_bp->r(), ref_T);
@@ -170,13 +168,28 @@ align_motif(BasepairOP ref_bp,
     dot(ref_T, motif_end->r(), r);
     Point trans = -motif_end->d();
     Transform t(r, trans);
-    motif.transform(t);
+    motif->transform(t);
     Point bp_pos_diff = ref_bp->d() - motif_end->d();
-    std::cout << bp_pos_diff << std::endl;
-    motif.move(bp_pos_diff);
+    motif->move(bp_pos_diff);
     bp_pos_diff = ref_bp->d() - motif_end->d();
-    std::cout << bp_pos_diff << std::endl;
-
+    
+    //align sugars for better overlap
+    float dist1 = motif_end->res1()->get_atom("C1'")->coords().distance(ref_bp->res1()->get_atom("C1'")->coords());
+    float dist2 = motif_end->res2()->get_atom("C1'")->coords().distance(ref_bp->res1()->get_atom("C1'")->coords());
+    
+    if (dist1 > 5 && dist2 > 5) { return; }
+    
+    Point sugar_diff_1, sugar_diff_2;
+    if( dist1 < dist2 ) {
+        sugar_diff_1 = ref_bp->res1()->get_atom("C1'")->coords() - motif_end->res1()->get_atom("C1'")->coords();
+        sugar_diff_2 = ref_bp->res2()->get_atom("C1'")->coords() - motif_end->res2()->get_atom("C1'")->coords();
+    }
+    else {
+        sugar_diff_1 = ref_bp->res1()->get_atom("C1'")->coords() - motif_end->res2()->get_atom("C1'")->coords();
+        sugar_diff_2 = ref_bp->res2()->get_atom("C1'")->coords() - motif_end->res1()->get_atom("C1'")->coords();
+    }
+    
+    motif->move( (sugar_diff_1 + sugar_diff_2) / 2);
 }
 
 

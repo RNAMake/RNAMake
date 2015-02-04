@@ -8,12 +8,14 @@
 
 #include <fstream>
 #include "structure.h"
+#include "residue.h"
 #include "chain.h"
+#include "chain.fwd.h"
 
 void
 Structure::_build_chains(
     ResidueOPs & residues) {
-    chains_ = Chains();
+    chains_ = ChainOPs();
     ResidueOP current;
     ResidueOPs current_chain_res;
     int five_prime_end = 1;
@@ -47,7 +49,7 @@ Structure::_build_chains(
                 residues.erase(std::remove(residues.begin(), residues.end(), current), residues.end());
             }
             else {
-                chains_.push_back(Chain(current_chain_res));
+                chains_.push_back(ChainOP(new Chain(current_chain_res)));
             }
         }
         if(residues.size() == 0) {
@@ -60,21 +62,59 @@ Structure::_build_chains(
 Structure
 Structure::copy() {
     Structure cstruct;
-    Chains chains;
     for (auto const & c : chains_) {
-        chains.push_back(c.copy());
+        cstruct.chains_.push_back(ChainOP(new Chain(c->copy())));
     }
-    cstruct.chains(chains);
     cstruct._cache_coords();
     return cstruct;
 }
+
+ResidueOPs const
+Structure::residues() {
+    ResidueOPs residues;
+    for (auto & c : chains_) {
+        for (auto r : c->residues()) {
+            residues.push_back(r);
+        }
+    }
+    return residues;
+}
+
+ResidueOP const
+Structure::get_residue(
+            int const & num,
+            String const & chain_id,
+            String const & i_code) {
+    for( auto & c : chains_) {
+        for (auto & r : c->residues() ){
+            if (num == r->num() && chain_id.compare(r->chain_id()) == 0 && i_code.compare(r->i_code()) == 0) {
+                return r;
+            }
+        }
+    }
+    throw "could not find residue";
+}
+
+ResidueOP const
+Structure::get_residue(
+            Uuid const & uuid) {
+    for( auto & c : chains_) {
+        for (auto & r : c->residues() ){
+            if ( r->uuid() == uuid) { return r; }
+        }
+    }
+    throw "could not find residue";
+}
+
+
+
 
 String
 Structure::to_pdb_str() {
     int acount = 1;
     String s;
     for (auto const & c : chains_) {
-        s += c.to_pdb_str(acount);
+        s += c->to_pdb_str(acount);
     }
     return s;
 }
@@ -83,7 +123,7 @@ String
 Structure::to_str() {
     String s;
     for (auto const & c : chains_) {
-        s += c.to_str() + ":";
+        s += c->to_str() + ":";
     }
     return s;
 }
@@ -104,11 +144,11 @@ str_to_structure(
     String const & s,
     ResidueTypeSet const & rts) {
     Structure structure;
-    Chains chains;
+    ChainOPs chains;
     Strings spl = split_str_by_delimiter(s, ":");
     for( auto const & c_str : spl) {
         Chain c = str_to_chain(c_str, rts);
-        chains.push_back(c);
+        chains.push_back(ChainOP(new Chain(c)));
     }
     structure.chains(chains);
     structure._cache_coords();
