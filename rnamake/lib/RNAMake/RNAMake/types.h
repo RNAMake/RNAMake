@@ -14,6 +14,7 @@
 #include <map>
 #include <uuid/uuid.h>
 
+typedef std::vector<int> Ints;
 typedef std::string String;
 typedef std::vector<String> Strings;
 typedef std::shared_ptr<String> StringOP;

@@ -42,6 +42,11 @@
 		<key>motif_library_unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
+			<integer>7</integer>
+		</dict>
+		<key>motif_tree.unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
 			<integer>8</integer>
 		</dict>
 	</dict>
@@ -88,6 +93,11 @@
 			<true/>
 		</dict>
 		<key>1C855B9B1A7FDB4300EED04D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1CA7AB781A82AD7C0063C8A8</key>
 		<dict>
 			<key>primary</key>
 			<true/>

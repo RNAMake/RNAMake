@@ -24,9 +24,15 @@ public:
     s_uuid() const { return s_uuid_; }
     
     inline
-    bool
+    bool 
     operator ==(Uuid const & uuid) const {
         return s_uuid_.compare(uuid.s_uuid_) == 0;
+    }
+ 
+    inline
+    bool
+    operator <(Uuid const & uuid) const {
+        return s_uuid_.compare(uuid.s_uuid());
     }
     
 private:

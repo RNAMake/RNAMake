@@ -121,6 +121,20 @@ public:
     void
     move(Point const & p) { structure_->move(p); }
 
+    inline
+    void
+    reset() {
+        int i = 0;
+        for (auto const & bp : basepairs_) {
+            bp->r(cached_rotations_[i]);
+            i++;
+        }
+        
+        for (auto const & end : ends_) { end->flip(0); }
+
+        structure_->_restore_coords();
+    }
+    
     String const
     to_str();
     
