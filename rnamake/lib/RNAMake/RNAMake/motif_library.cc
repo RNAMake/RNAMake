@@ -42,6 +42,8 @@ MotifLibrary::get_motif(String const & name) {
     Motif m ( values[0], rts_);
     mdict_[ values[1] ] = m;
     return m.copy();
+    //return m;
+
 }
 
 

@@ -24,8 +24,8 @@ public:
     Motif():
     beads_(Beads()),
     score_(0),
-    basepairs_(Basepairs()),
-    ends_(Basepairs()),
+    basepairs_(BasepairOPs()),
+    ends_(BasepairOPs()),
     mdir_(String()),
     name_(String()),
     cached_rotations_(Matrices())
@@ -45,25 +45,25 @@ public:
     _cache_basepair_frames() {
         cached_rotations_ = Matrices(basepairs_.size());
         int i = 0;
-        for (auto const & bp : basepairs_ ) {
-            cached_rotations_[i] = bp.r();
+        for (auto & bp : basepairs_ ) {
+            cached_rotations_[i] = bp->r();
             i++;
         }
     }
     
-    Basepairs
+    BasepairOPs
     get_basepair(Uuid const &);
     
-    Basepairs
-    get_basepair(Residue const &,
-                 Residue const &);
+    BasepairOPs
+    get_basepair(ResidueOP,
+                 ResidueOP);
     
-    Basepairs
+    BasepairOPs
     get_basepair(Uuid const &,
                  Uuid const &);
     
     inline
-    Residue const
+    ResidueOP const
     get_residue(int num,
                 String const & chain_id,
                 String const & i_code) {
@@ -71,13 +71,17 @@ public:
     }
     
     inline
-    Residue const
+    ResidueOP const
     get_residue(Uuid const & uuid) {
         return structure_.get_residue(uuid);
     }
     
     inline
-    Residues const
+    AtomOPs const
+    atoms() { return structure_.atoms(); }
+    
+    inline
+    ResidueOPs const
     residues() { return structure_.residues(); }
     
     inline
@@ -85,7 +89,7 @@ public:
     chains() { return structure_.chains(); }
     
     inline
-    Basepairs const &
+    BasepairOPs const &
     ends() const { return ends_; }
     
     inline
@@ -93,7 +97,7 @@ public:
     name() const { return name_; }
     
     inline
-    Basepairs const &
+    BasepairOPs const &
     basepairs() const { return basepairs_; }
     
     
@@ -106,8 +110,8 @@ public:
         Matrix transformed;
         r_T.transpose();
         for (auto & bp : basepairs_) {
-            dot(bp.r(), r_T, transformed);
-            bp.r(transformed);
+            dot(bp->r(), r_T, transformed);
+            bp->r(transformed);
         }
         structure_.transform(t);
     }
@@ -131,15 +135,15 @@ private:
     Beads beads_;
     float score_;
     MotifType mtype_;
-    Basepairs basepairs_, ends_;
+    BasepairOPs basepairs_, ends_;
     String mdir_, name_;
     Matrices cached_rotations_;
     Structure structure_;
 };
 
 void
-align_motif(Basepair const &,
-            Basepair const &,
+align_motif(BasepairOP,
+            BasepairOP,
             Motif &);
 
 #endif /* defined(__RNAMake__motif__) */

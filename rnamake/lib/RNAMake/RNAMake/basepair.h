@@ -24,23 +24,22 @@ public:
     {}
     
     Basepair(
-        Residue & res1,
-        Residue & res2,
+        ResidueOP & res1,
+        ResidueOP & res2,
         Matrix const & r,
         String const & bp_type):
         bp_type_(bp_type),
         uuid_( Uuid() ),
+        res1_( res1 ),
+        res2_( res2 ),
         flipped_ ( 0 )
     {
-        
-        res1_ = &res1;
-        res2_ = &res2;
-
+    
         atoms_ = AtomOPs();
-        for( auto const & a : res1.atoms() ) {
+        for( auto const & a : res1->atoms() ) {
             if(a != NULL) { atoms_.push_back(a); }
         }
-        for( auto const & a : res2.atoms() ) {
+        for( auto const & a : res2->atoms() ) {
             if(a != NULL) { atoms_.push_back(a); }
         }
         
@@ -52,12 +51,7 @@ public:
         
     }
     
-    ~Basepair() {
-        res1_ = NULL;
-        res2_ = NULL;
-        delete res1_;
-        delete res2_;
-    }
+    ~Basepair() {}
     
     Basepair
     copy();
@@ -76,19 +70,19 @@ public: // getters
     }
     
     inline
-    Residues const
+    ResidueOPs const
     residues() const {
-        Residues res(2);
-        res[0] = *res1_;
-        res[1] = *res2_;
+        ResidueOPs res(2);
+        res[0] = res1_;
+        res[1] = res2_;
         return res;
     }
     
     inline
-    Residue const &
-    partner(Residue const & res) {
-        if     ( res == *res1_) {  return *res2_;  }
-        else if( res == *res2_) {  return *res1_;  }
+    ResidueOP const &
+    partner(ResidueOP const & res) {
+        if     ( res == res1_) {  return res2_;  }
+        else if( res == res2_) {  return res1_;  }
         else { throw "called partner with resiude not in this basepair"; }
     }
     
@@ -133,12 +127,12 @@ public: // getters
     uuid() const { return uuid_; }
     
     inline
-    Residue const &
-    res1() const { return *res1_; }
+    ResidueOP
+    res1() const { return res1_; }
     
     inline
-    Residue const &
-    res2() const { return *res2_; }
+    ResidueOP 
+    res2() const { return res2_; }
     
     inline
     String const &
@@ -172,7 +166,7 @@ public:
     
     
 private:
-    Residue *res1_, *res2_;
+    ResidueOP res1_, res2_;
     AtomOPs atoms_;
     BasepairState bp_state_;
     String bp_type_;
@@ -182,5 +176,7 @@ private:
 };
 
 typedef std::vector<Basepair> Basepairs;
+typedef std::shared_ptr<Basepair> BasepairOP;
+typedef std::vector<BasepairOP> BasepairOPs;
 
 #endif /* defined(__RNAMake__basepair__) */

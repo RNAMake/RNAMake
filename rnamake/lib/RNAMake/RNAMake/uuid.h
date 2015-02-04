@@ -29,18 +29,12 @@ public:
         return s_uuid_.compare(uuid.s_uuid_) == 0;
     }
     
-    /*inline
-    void
-    operator =(Uuid const & uuid) {
-        s_uuid_ = uuid.s_uuid_;
-    }*/
-    
 private:
     String s_uuid_;
     
 };
 
-//std::ostream &
-//operator <<( std::ostream &, Uuid const &);
+std::ostream &
+operator <<( std::ostream &, Uuid const &);
 
 #endif

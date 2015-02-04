@@ -207,7 +207,8 @@ str_to_residue(
     ResidueTypeSet const & rts);
 
 typedef std::vector<Residue> Residues;
-
+typedef std::shared_ptr<Residue> ResidueOP;
+typedef std::vector<ResidueOP> ResidueOPs;
 
 
 

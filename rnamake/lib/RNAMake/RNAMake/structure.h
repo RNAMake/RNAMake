@@ -44,7 +44,7 @@ public:
     
     void
     _build_chains(
-        Residues &);
+        ResidueOPs &);
     
     inline
     void
@@ -89,16 +89,16 @@ public:
     inline
     Beads
     get_beads(
-        Residues const & excluded_res) {
+        ResidueOPs const & excluded_res) {
         Beads beads;
         int found = 0;
         for ( auto const & r : residues()) {
             found = 0;
             for (auto const & er : excluded_res) {
-                if( r == er) {found = 1; break;}
+                if( r->uuid() == er->uuid()) {found = 1; break;}
             }
             if (found) { continue; }
-            for (auto const & b : r.get_beads()) {
+            for (auto const & b : r->get_beads()) {
                 beads.push_back(b);
             }
         }
@@ -120,9 +120,9 @@ public: // getters
     chains() { return chains_; }
     
     inline
-    Residues const
+    ResidueOPs const
     residues() {
-        Residues residues;
+        ResidueOPs residues;
         for (auto const & c : chains_) {
             for (auto const & r : c.residues()) {
                 residues.push_back(r);
@@ -136,7 +136,7 @@ public: // getters
     atoms() {
         AtomOPs atoms;
         for (auto const & r : residues()) {
-            for (auto const & a : r.atoms()) {
+            for (auto const & a : r->atoms()) {
                 if(a != NULL) {
                     atoms.push_back(a);
                 }
@@ -146,14 +146,14 @@ public: // getters
     }
     
     inline
-    Residue &
+    ResidueOP const
     get_residue(
         int const & num,
         String const & chain_id,
         String const & i_code) {
         for( auto const & c : chains_) {
             for (auto & r : c.residues() ){
-                if (num == r.num() && chain_id.compare(r.chain_id()) == 0 && i_code.compare(r.i_code()) == 0) {
+                if (num == r->num() && chain_id.compare(r->chain_id()) == 0 && i_code.compare(r->i_code()) == 0) {
                     return r;
                 }
             }
@@ -162,12 +162,12 @@ public: // getters
     }
     
     inline
-    Residue &
+    ResidueOP const
     get_residue(
         Uuid const & uuid) {
         for( auto const & c : chains_) {
             for (auto & r : c.residues() ){
-                if ( r.uuid() == uuid) { return r; }
+                if ( r->uuid() == uuid) { return r; }
             }
         }
         throw "could not find residue";

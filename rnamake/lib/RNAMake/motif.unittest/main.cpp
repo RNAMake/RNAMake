@@ -31,9 +31,6 @@ test_str_to_motif() {
     ResidueTypeSet rts;
     getline(input, line);
     Motif m(line, rts);
-    std:: cout << m.basepairs()[10].res2().num() << std::endl;
-    exit(0);
-    
     return 1;
 }
 
@@ -56,9 +53,31 @@ test_to_str() {
     return 1;
 }
 
+int
+test_update() {
+    Motif m = get_test_motif();
+    BasepairOP motif_end = m.basepairs()[0];
+    std::cout << motif_end->res1()->get_atom("C1'")->coords() << std::endl;
+    //std::cout << res1->atoms()[0]->coords() << std::endl;
+    //std::cout << m.atoms()[0]->coords() << std::endl;
+    //std::cout << m.residues()[0]->atoms()[0]->coords() << std::endl;
+    m.move(Point(10,0,0));
+    //ResidueOP res1 = m.get_residue(103, "A", "");
+    //std::cout << res1->atoms()[0]->coords() << std::endl;
+    std::cout << m.basepairs()[0]->res1()->get_atom("C1'")->coords() << std::endl;
+    //motif_end = m.ends()[0];
+    //std::cout << motif_end.res1()->get_atom("C1'")->coords() << std::endl;
+    //std::cout << m.atoms()[0]->coords() << std::endl;
+    //std::cout << m.residues()[0]->atoms()[0]->coords() << std::endl;
+    
+    return 1;
+    
+}
+
 int main(int argc, const char * argv[]) {
     if (test_str_to_motif() == 0)     { std::cout << "test_str_to_motif failed" << std::endl; }
     if (test_copy() == 0)             { std::cout << "test_copy failed" << std::endl; }
     if (test_to_str() == 0)           { std::cout << "test_to_str failed" << std::endl; }
+    if (test_update() == 0)           { std::cout << "test_update failed" << std::endl; }
     return 0;
 }

@@ -24,8 +24,8 @@ Uuid::Uuid() {
     
 }
 
-/*std::ostream &
+std::ostream &
 operator <<( std::ostream & stream, Uuid const & uuid) {
     stream << uuid.s_uuid();
     return stream;
-}*/
+}

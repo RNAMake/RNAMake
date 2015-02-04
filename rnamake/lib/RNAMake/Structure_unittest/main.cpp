@@ -66,6 +66,7 @@ test_to_str() {
     return 1;
 }
 
+
 int
 test_subchain() {
     Chain c = get_test_chain();
@@ -73,8 +74,8 @@ test_subchain() {
     c.to_pdb("original.pdb");
     sc.to_pdb("subchain.pdb");
     
-    Residue r1 = c.residues()[1];
-    Residue r2 = c.residues()[5];
+    ResidueOP r1 = c.residues()[1];
+    ResidueOP r2 = c.residues()[5];
     Chain sc2 = c.subchain(r1, r2);
     sc2.to_pdb("subchain2.pdb");
 
@@ -104,10 +105,10 @@ int
 test_build_chains() {
     Structure s = get_test_structure();
     Structure s2 = get_test_structure();
-    Residues res = s.residues();
+    ResidueOPs res = s.residues();
     s._build_chains(res);
     for(int i = 0; i < s.residues().size(); i++ ){
-        if(s.residues()[i].num() != s2.residues()[i].num()) { return 0; }
+        if(s.residues()[i]->num() != s2.residues()[i]->num()) { return 0; }
     }
     
     return 1;
@@ -144,9 +145,9 @@ test_transform() {
 int
 test_get_residue() {
     Structure s = get_test_structure();
-    Residue r = s.get_residue(107, "A", "");
-    Uuid uuid = r.uuid();
-    Residue r2 = s.get_residue(uuid);
+    ResidueOP r = s.get_residue(107, "A", "");
+    Uuid uuid = r->uuid();
+    ResidueOP r2 = s.get_residue(uuid);
     return 1;
 }
 
@@ -161,7 +162,6 @@ int main(int argc, const char * argv[]) {
     if (test_move() == 0)               { std::cout << "test_move failed" << std::endl; }
     if (test_transform() == 0)          { std::cout << "test_transform failed" << std::endl; }
     if (test_get_residue() == 0)        { std::cout << "test_get_residue failed" << std::endl; }
-
     return 0;
 }
 

@@ -43,8 +43,8 @@ get_lines_from_file(String const fname) {
 int
 test_creation() {
     Structure s = get_test_structure();
-    Residue res1 = s.get_residue(103, "A", "");
-    Residue res2 = s.get_residue(104, "A", "");
+    ResidueOP res1 = s.get_residue(103, "A", "");
+    ResidueOP res2 = s.get_residue(104, "A", "");
     Matrix r(0.0);
     Basepair bp (res1, res2, r, "c...");
     //std::cout << res1.get_atom("C1'")->coords() << std::endl;
@@ -105,12 +105,30 @@ test_get_transforming_r_and_t_test() {
     return 1;
 }
 
+int
+test_move() {
+    Structure s = get_test_structure();
+    ResidueOP res1 = s.get_residue(103, "A", "");
+    ResidueOP res2 = s.get_residue(104, "A", "");
+    Matrix r(0.0);
+    Basepair bp (res1, res2, r, "c...");
+    std::cout << bp.d() << std::endl;
+    s.move(Point(10,10,10));
+    std::cout << bp.d() << std::endl;
+    //std::cout << res1.get_atom("C1'")->coords() << std::endl;
+    //std::cout << bp.res1().get_atom("C1'")->coords() << std::endl;
+    BasepairState bpstate = bp.state();
+    return 1;
+}
+
 
 int main(int argc, const char * argv[]) {
     if (test_creation() == 0)                            { std::cout << "test_creation failed" << std::endl; }
     if (test_str_to_basepair_state() == 0)               { std::cout << "test_str_to_basepair_state failed" << std::endl; }
     if (test_basepair_state_to_str() == 0)               { std::cout << "test_basepair_state_to_str failed" << std::endl; }
     if (test_get_transforming_r_and_t_test() == 0)       { std::cout << "test_get_transforming_r_and_t_test failed" << std::endl; }
+    if (test_move() == 0)                                { std::cout << "test_move failed" << std::endl; }
+
 
     return 0;
 }

@@ -18,7 +18,7 @@ class Chain {
 public:
     Chain() {}
     Chain(
-        Residues const & residues):
+        ResidueOPs const & residues):
         residues_ ( residues )
     {}
     
@@ -30,25 +30,25 @@ public:
 public:
     
     inline
-    Residue const &
+    ResidueOP const &
     first() { return residues_[0]; }
     
     inline
-    Residue const &
+    ResidueOP const &
     last() { return residues_.back(); }
     
     inline
     Chain
     subchain(int start, int end) {
         if(start < 0) { throw "start cannot be less then 0"; }
-        return Chain(Residues(residues_.begin() + start, residues_.begin() + end));
+        return Chain(ResidueOPs(residues_.begin() + start, residues_.begin() + end));
     }
     
     inline
     Chain
     subchain(
-        Residue const & r1,
-        Residue const & r2) {
+        ResidueOP const & r1,
+        ResidueOP const & r2) {
         int start = (int)(std::find(residues_.begin(), residues_.end(), r1) - residues_.begin());
         int end   = (int)(std::find(residues_.begin(), residues_.end(), r2) - residues_.begin());
         if( start > end) {
@@ -72,16 +72,20 @@ public: //setters
     
     inline
     void
-    residues(Residues const & nresidues) { residues_ = nresidues; }
+    residues(ResidueOPs const & nresidues) { residues_ = nresidues; }
     
 public: //getters
     
     inline
-    Residues
+    ResidueOPs &
+    residues() { return residues_; }
+    
+    inline
+    const ResidueOPs &  
     residues() const { return residues_; }
     
 private:
-    Residues residues_;
+    ResidueOPs residues_;
 };
 
 Chain

@@ -15,8 +15,8 @@ Motif::Motif(
     ResidueTypeSet const & rts):
     beads_(Beads()),
     score_(0),
-    basepairs_(Basepairs()),
-    ends_(Basepairs()),
+    basepairs_(BasepairOPs()),
+    ends_(BasepairOPs()),
     mdir_(String()),
     name_(String()),
     cached_rotations_(Matrices())
@@ -36,13 +36,11 @@ Motif::Motif(
         String res2_id = res_spl[1].substr(0,1);
         int res1_num = std::stoi(res_spl[0].substr(1));
         int res2_num = std::stoi(res_spl[1].substr(1));
-        //Residue res1 = structure_.get_residue(res1_num, res1_id, "");
-        //Residue res2 = structure_.get_residue(res2_num, res2_id, "");
+        ResidueOP res1 = structure_.get_residue(res1_num, res1_id, "");
+        ResidueOP res2 = structure_.get_residue(res2_num, res2_id, "");
         BasepairState bpstate = str_to_basepairstate(bp_spl[1]);
-        Basepair bp ( structure_.get_residue(res1_num, res1_id, ""),
-                      structure_.get_residue(res2_num, res2_id, ""),
-                     bpstate.r(), bp_spl[1] );
-        bp.flip( std::stoi(bp_spl[4]));
+        BasepairOP bp ( new Basepair(res1, res2, bpstate.r(), bp_spl[1] ));
+        bp->flip( std::stoi(bp_spl[4]));
         basepairs_.push_back(bp);
     }
     
@@ -62,33 +60,33 @@ Motif::copy() {
     cmotif.mtype_ = mtype_;
     cmotif.structure_ = structure_.copy();
     cmotif.beads_ = Beads(beads_.size());
-    cmotif.basepairs_ = Basepairs();
-    cmotif.ends_ = Basepairs();
+    cmotif.basepairs_ = BasepairOPs();
+    cmotif.ends_ = BasepairOPs();
     int i = 0;
     for (auto const & b : beads_) {
         cmotif.beads_[i] = b.copy();
         i++;
     }
     i = 0;
-    Residue res1, res2;
-    std::cout << cmotif.residues().size() << std::endl;
+    //ResidueOP res1, res2;
+    /*std::cout << cmotif.residues().size() << std::endl;
     for (auto const & r : residues()) {
-        std::cout << r.num() << " " << r.uuid().s_uuid() << std::endl;
-    }
+        std::cout << r->num() << " " << r->uuid().s_uuid() << std::endl;
+    }*/
     
-    std::cout << basepairs_[0].res1().num() << std::endl;
-    exit(0);
+    //std::cout << basepairs_[0].res1().num() << std::endl;
+    //exit(0);
     for (auto const & bp : basepairs_) {
-        res1 = cmotif.get_residue(bp.res1().uuid());
-        res2 = cmotif.get_residue(bp.res2().uuid());
-        Basepair new_bp ( res1, res2, bp.r(), bp.bp_type() );
-        new_bp.flip(bp.flipped());
-        new_bp.uuid(bp.uuid());
+        ResidueOP res1 = cmotif.get_residue(bp->res1()->uuid());
+        ResidueOP res2 = cmotif.get_residue(bp->res2()->uuid());
+        BasepairOP new_bp ( new Basepair ( res1, res2, bp->r(), bp->bp_type() )) ;
+        new_bp->flip(bp->flipped());
+        new_bp->uuid(bp->uuid());
         cmotif.basepairs_.push_back(new_bp);
     }
     i = 0;
-    for (auto const & end: ends_) {
-        Basepairs bps = get_basepair(end.res1(), end.res2());
+    for (auto & end: ends_) {
+        BasepairOPs bps = cmotif.get_basepair(end->uuid());
         cmotif.ends_.push_back(bps[0]);
     }
     
@@ -101,7 +99,7 @@ Motif::to_str() {
     std::stringstream ss;
     ss << mdir_ << "&" << name_ << "&" << score_ << "&" << mtype_ << "&" << structure_.to_str() << "&";
     for ( auto const & bp : basepairs_ ) {
-        ss << bp.to_str() << "@";
+        ss << bp->to_str() << "@";
     }
     ss << "&";
     for ( auto const & end : ends_) {
@@ -129,55 +127,54 @@ Motif::to_pdb(String const fname) {
 }
 
 
-Basepairs
+BasepairOPs
 Motif::get_basepair(Uuid const & bp_uuid) {
-    Basepairs bps;
+    BasepairOPs bps;
     for( auto const & bp : basepairs_) {
-        if(bp.uuid() == bp_uuid) { bps.push_back(bp); }
+        if(bp->uuid() == bp_uuid) { bps.push_back(bp); }
     }
     return bps;
 }
 
-Basepairs
-Motif::get_basepair(Residue const & res1,
-                    Residue const & res2) {
-    Basepairs bps;
-    for( auto const & bp : basepairs_) {
-        if(bp.res1() == res1 && bp.res2() == res2) { bps.push_back(bp); }
-        if(bp.res1() == res2 && bp.res2() == res1) { bps.push_back(bp); }
+BasepairOPs
+Motif::get_basepair(ResidueOP res1,
+                    ResidueOP res2) {
+    BasepairOPs bps;
+    for(auto & bp : basepairs_) {
+        if(bp->res1()->uuid() == res1->uuid() && bp->res2()->uuid() == res2->uuid()) { bps.push_back(bp); }
+        if(bp->res1()->uuid() == res2->uuid() && bp->res2()->uuid() == res1->uuid()) { bps.push_back(bp); }
     }
     return bps;
 }
 
-Basepairs
+BasepairOPs
 Motif::get_basepair(Uuid const & uuid1,
                     Uuid const & uuid2) {
-    Basepairs bps;
+    BasepairOPs bps;
     for( auto const & bp : basepairs_) {
-        if(bp.res1().uuid() == uuid1 && bp.res2().uuid() == uuid2) { bps.push_back(bp); }
-        if(bp.res1().uuid() == uuid2 && bp.res2().uuid() == uuid1) { bps.push_back(bp); }
+        if(bp->res1()->uuid() == uuid1 && bp->res2()->uuid() == uuid2) { bps.push_back(bp); }
+        if(bp->res1()->uuid() == uuid2 && bp->res2()->uuid() == uuid1) { bps.push_back(bp); }
     }
     return bps;
 }
-
 
 
 void
-align_motif(Basepair const & ref_bp,
-            Basepair const & motif_end,
+align_motif(BasepairOP ref_bp,
+            BasepairOP motif_end,
             Motif & motif) {
     
     Matrix ref_T;
-    transpose(ref_bp.r(), ref_T);
+    transpose(ref_bp->r(), ref_T);
     Matrix r;
-    dot(ref_T, motif_end.r(), r);
-    Point trans = -motif_end.d();
+    dot(ref_T, motif_end->r(), r);
+    Point trans = -motif_end->d();
     Transform t(r, trans);
     motif.transform(t);
-    Point bp_pos_diff = ref_bp.d() - motif.ends()[1].d();
+    Point bp_pos_diff = ref_bp->d() - motif_end->d();
     std::cout << bp_pos_diff << std::endl;
     motif.move(bp_pos_diff);
-    bp_pos_diff = ref_bp.d() - motif_end.d();
+    bp_pos_diff = ref_bp->d() - motif_end->d();
     std::cout << bp_pos_diff << std::endl;
 
 }

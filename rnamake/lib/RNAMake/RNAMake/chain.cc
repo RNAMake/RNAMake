@@ -12,7 +12,7 @@ String
 Chain::to_str() const {
     String s;
     for ( auto const & r : residues_ ) {
-        s += r.to_str() + ";";
+        s += r->to_str() + ";";
     }
     return s;
 }
@@ -21,7 +21,7 @@ String
 Chain::to_pdb_str(int & acount) const {
     String s;
     for (auto const & r : residues_ ) {
-        s += r.to_pdb_str(acount);
+        s += r->to_pdb_str(acount);
     }
     return s;
 }
@@ -38,10 +38,10 @@ Chain::to_pdb(String const fname) const {
 
 Chain
 Chain::copy() const {
-    Residues residues(residues_.size());
+    ResidueOPs residues(residues_.size());
     int i = 0;
     for (auto const & r : residues_) {
-        residues[i] = r.copy();
+        residues[i] = ResidueOP( new Residue( r->copy()));
         i++;
     }
     return Chain(residues);
@@ -53,10 +53,10 @@ str_to_chain(
     String const & s,
     ResidueTypeSet const & rts) {
     Chain c;
-    Residues residues;
+    ResidueOPs residues;
     Strings spl = split_str_by_delimiter(s, ";");
     for(auto const & r_str : spl) {
-        Residue r = str_to_residue(r_str, rts);
+        ResidueOP r (new Residue (str_to_residue(r_str, rts)));
         residues.push_back(r);
     }
     c.residues(residues);

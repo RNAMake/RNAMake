@@ -12,17 +12,17 @@
 
 void
 Structure::_build_chains(
-    Residues & residues) {
+    ResidueOPs & residues) {
     chains_ = Chains();
-    Residue current;
-    Residues current_chain_res;
+    ResidueOP current;
+    ResidueOPs current_chain_res;
     int five_prime_end = 1;
     int found = 1;
     while (true) {
         five_prime_end = 1;
-        for (auto const & r1 : residues) {
-            for (auto const & r2 : residues) {
-                if(r1.connected_to(r2) == -1) {
+        for (auto & r1 : residues) {
+            for (auto & r2 : residues) {
+                if(r1->connected_to(*r2) == -1) {
                     five_prime_end = 0;
                     break;
                 }
@@ -31,13 +31,13 @@ Structure::_build_chains(
         }
         if(!five_prime_end) { break; }
         residues.erase(std::remove(residues.begin(), residues.end(), current), residues.end());
-        current_chain_res = Residues();
+        current_chain_res = ResidueOPs();
         found = 1;
         while ( found ) {
             current_chain_res.push_back(current);
             found = 0;
-            for (auto const & r : residues) {
-                if ( current.connected_to(r) == 1) {
+            for (auto & r : residues) {
+                if ( current->connected_to(*r) == 1) {
                     current = r;
                     found = 1;
                     break;
