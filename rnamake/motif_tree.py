@@ -242,7 +242,7 @@ class MotifTree(base.Base):
 
         not_used = parent.available_ends()
         exclude = []
-        for end in child.motif.ends:
+        for end in parent.motif.ends:
             if end not in not_used:
                 exclude.append(end)
 

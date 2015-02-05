@@ -15,25 +15,26 @@
 #include "motif_tree.fwd.h"
 #include "motif.h"
 #include "uuid.h"
+#include "residue_type_set.h"
 
 typedef std::map<Uuid, int> UuidIntMap;
-
-
 
 class MotifTree {
 public:
     MotifTree();
-    MotifTree(MotifOP);
+    MotifTree(MotifOP const &);
+    MotifTree(String const &, ResidueTypeSet const &);
     ~MotifTree() {}
     
 public:
     
     MotifTreeNodeOP
     add_motif(
-        MotifOP const &,
-        MotifTreeNodeOP,
-        int,
-        int);
+        MotifOP const & m,
+        MotifTreeNodeOP parent = NULL,
+        int end_index = -1,
+        int parent_end = -1,
+        int end_flip = -1);
     
     void
     write_pdbs();
@@ -44,6 +45,12 @@ public: //getters
     MotifTreeNodeOPs const &
     nodes() { return nodes_; }
     
+public: //setters
+    
+    inline
+    void
+    sterics(int nsterics) { sterics_ = nsterics; }
+    
 private:
     
     MotifTreeNodeOP
@@ -53,10 +60,23 @@ private:
         BasepairOP const &,
         BasepairOP const &,
         Ints const &);
+    
+    int
+    _steric_clash(
+        MotifOP const &,
+        BasepairOP const &);
+    
+    void
+    _update_beads(
+        MotifTreeNodeOP const &,
+        MotifTreeNodeOP const &);
 
 private:
     MotifTreeNodeOPs nodes_;
     MotifTreeNodeOP last_node_;
+    float clash_radius_;
+    //options ... need a better way
+    int sterics_, full_beads_first_res_;
     
     
 };
@@ -91,6 +111,18 @@ public: //getters:
     inline
     MotifOP const &
     motif() const { return motif_; }
+    
+    inline
+    int const &
+    level() const { return level_; }
+
+    inline
+    int const &
+    index() const { return index_; }
+    
+    inline
+    int const &
+    flip() const { return flip_; }
     
 private:
     int level_, index_, flip_;
@@ -130,6 +162,12 @@ private:
     int no_overlap_;
 
 };
+
+
+MotifTree
+str_to_motif_tree(
+    String const &,
+    ResidueTypeSet const &);
 
 
 

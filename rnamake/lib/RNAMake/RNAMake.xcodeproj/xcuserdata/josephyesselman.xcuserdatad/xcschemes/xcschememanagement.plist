@@ -49,6 +49,11 @@
 			<key>orderHint</key>
 			<integer>8</integer>
 		</dict>
+		<key>motif_tree_state.unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>9</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -98,6 +103,11 @@
 			<true/>
 		</dict>
 		<key>1CA7AB781A82AD7C0063C8A8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1CA7AB981A83F0910063C8A8</key>
 		<dict>
 			<key>primary</key>
 			<true/>

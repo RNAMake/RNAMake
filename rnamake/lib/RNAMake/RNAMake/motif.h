@@ -77,6 +77,19 @@ public:
         return structure_->get_residue(uuid);
     }
     
+    Beads const &
+    get_beads(BasepairOPs const &);
+    
+    Beads const &
+    get_beads(BasepairOP const &);
+    
+    Beads const &
+    get_beads() {
+        ResidueOPs res;
+        beads_ = structure_->get_beads(res);
+        return beads_;
+    }
+    
     inline
     AtomOPs const
     atoms() { return structure_->atoms(); }
@@ -100,6 +113,14 @@ public:
     inline
     BasepairOPs const &
     basepairs() const { return basepairs_; }
+    
+    inline
+    Beads const &
+    beads() const { return beads_; }
+    
+    inline
+    MotifType const &
+    mtype() { return mtype_; }
     
     
 public:

@@ -40,11 +40,11 @@ public:
     
     inline
     Point
-    center() { return center_; }
+    center() const { return center_; }
     
     inline
     BeadType
-    btype() { return btype_; }
+    btype() const { return btype_; }
 
 private:
     Point center_;

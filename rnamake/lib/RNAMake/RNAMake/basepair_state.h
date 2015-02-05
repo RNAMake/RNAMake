@@ -242,6 +242,8 @@ operator <<(
 	const BasepairState&);
 
 typedef std::vector<BasepairState> BasepairStates;
+typedef std::shared_ptr<BasepairState> BasepairStateOP;
+typedef std::vector<BasepairStateOP> BasepairStateOPs;
 
 inline
 const

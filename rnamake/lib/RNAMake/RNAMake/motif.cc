@@ -148,6 +148,25 @@ Motif::get_basepair(Uuid const & uuid1,
     return bps;
 }
 
+Beads const &
+Motif::get_beads(BasepairOPs const & excluded_ends) {
+    ResidueOPs excluded_res;
+    for (auto const & end : excluded_ends) {
+        excluded_res.push_back(end->res1());
+        excluded_res.push_back(end->res2());
+    }
+    beads_ = structure_->get_beads(excluded_res);
+    return beads_;
+}
+
+Beads const &
+Motif::get_beads(BasepairOP const & excluded_end) {
+    ResidueOPs excluded_res;
+    excluded_res.push_back(excluded_end->res1());
+    excluded_res.push_back(excluded_end->res2());
+    beads_ = structure_->get_beads(excluded_res);
+    return beads_;
+}
 
 void
 align_motif(BasepairOP const & ref_bp,
