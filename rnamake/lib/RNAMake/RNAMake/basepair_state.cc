@@ -10,6 +10,8 @@
 #include "xyzVector.h"
 #include "xyzMatrix.h"
 #include "FileIO.h"
+#include "settings.h"
+#include "types.h"
 
 BasepairState
 str_to_basepairstate(
@@ -50,10 +52,9 @@ operator <<(
 
 BasepairState
 get_ref_bp_state() {
-	std::string base_path = get_base_dir();
-	std::string path = base_path + "/resources/ref_bp_state.dat";
+	String path = resources_path() + "/ref_bp_state.dat";
 	std::ifstream input;
-	std::string line;
+	String line;
 	
 	input.open(path);
 	getline(input,line);

@@ -169,17 +169,6 @@ class MotifTreeStateNode(object):
                 states.append(state)
         return states
 
-    def children(self):
-        children = []
-        for c in self.connections:
-            if c.child != self:
-                children.append(c.child)
-        return children
-
-        for c in self.connections:
-            if c.child == self:
-                return c.parent
-
     def parent_end_index(self):
         if self.parent is None:
             return None

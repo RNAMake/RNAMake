@@ -19,7 +19,11 @@ public:
     ~MotifTreeStateLibrary() {}
 
 public: //getters:
-    
+    inline
+    MotifTreeStates const &
+    motif_tree_states() const {
+        return motif_tree_states_;
+    }
     
 private:
     void
