@@ -40,9 +40,28 @@ MotifTree::add_motif(
     
     if(parent == NULL) { parent = last_node_; }
     
-    BasepairOPs parent_ends = parent->available_ends();
-    BasepairOPs motif_ends = m->ends();
+    BasepairOPs parent_ends, motif_ends;
     
+    if (parent_index == -1) {  parent_ends = parent->available_ends(); }
+    else                    {
+        if(parent_index >= parent->motif()->ends().size()) {
+            throw "cannot use this parent index, it is out of range";
+        }
+        int status = parent->get_end_status(parent->motif()->ends()[parent_index]);
+        if(status == 0) {
+            throw "cannot ue this parent index, it is currently being used";
+        }
+        parent_ends.push_back(parent->motif()->ends()[parent_index]);
+    }
+    
+    if (end_index == -1) {  motif_ends = m->ends(); }
+    else                 {
+        if(end_index >= m->ends().size()) {
+            throw "cannot use this end index, it is out of range";
+        }
+        motif_ends.push_back(m->ends()[end_index]);
+    }
+
     MotifTreeNodeOP new_node = NULL;
     Ints flips(1);
     flips[0] = 0;
@@ -79,6 +98,7 @@ MotifTree::_add_motif(
         m->reset();
         BasepairOP new_end = m_copy->get_basepair(end->uuid())[0];
         for ( auto const & r : m_copy->residues() ) {  r->new_uuid(); }
+        MotifTreeConnection(parent, new_node, parent_end, new_end, 0);
         return new_node;
     }
     
@@ -98,7 +118,9 @@ MotifTree::write_pdbs() {
     }
 }
 
-
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// MotifTreeNode
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MotifTreeNode::MotifTreeNode(
     MotifOP const & m,
@@ -119,7 +141,6 @@ MotifTreeNode::MotifTreeNode(
 }
 
 
-
 BasepairOPs
 MotifTreeNode::available_ends() {
     BasepairOPs ends;
@@ -131,5 +152,22 @@ MotifTreeNode::available_ends() {
     return ends;
 }
 
+void
+MotifTreeNode::set_end_status(BasepairOP const & end, int status) {
+    end_status_[end->uuid()] = status;
+}
+
+int
+MotifTreeNode::get_end_status(BasepairOP const & end) {
+    /*if(end_status_.find(end->uuid()) == end_status_.end()) {
+        throw "cannot find end in get_end_status";
+    }*/
+    return end_status_[end->uuid()];
+}
+
+void
+MotifTreeNode::add_connection(MotifTreeConnection const & mtc) {
+    connections_.push_back(mtc);
+}
 
 

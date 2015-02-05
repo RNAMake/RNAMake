@@ -62,6 +62,7 @@ public:
     void
     _restore_coords() {
         _update_coords(org_coords_);
+        _cache_coords();
     }
     
     inline

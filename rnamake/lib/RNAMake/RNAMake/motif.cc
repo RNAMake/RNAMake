@@ -68,14 +68,6 @@ Motif::copy() {
         i++;
     }
     i = 0;
-    //ResidueOP res1, res2;
-    /*std::cout << cmotif.residues().size() << std::endl;
-    for (auto const & r : residues()) {
-        std::cout << r->num() << " " << r->uuid().s_uuid() << std::endl;
-    }*/
-    
-    //std::cout << basepairs_[0].res1().num() << std::endl;
-    //exit(0);
     for (auto const & bp : basepairs_) {
         ResidueOP res1 = cmotif.get_residue(bp->res1()->uuid());
         ResidueOP res2 = cmotif.get_residue(bp->res2()->uuid());
