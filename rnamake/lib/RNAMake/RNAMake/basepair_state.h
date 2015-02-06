@@ -196,7 +196,7 @@ public: //setters
 	
     inline
 	void
-	set (BasepairState const nstate_) {
+	set (BasepairState const & nstate_) {
 		d_ = nstate_.d_;
 		r_ = nstate_.r_;
 		sugars_ = nstate_.sugars_;

@@ -55,7 +55,7 @@ MotifTreeStateLibrary::_load_states_from_file(String const & path) {
     in.close();
 }
 
-MotifTreeStateOP
+MotifTreeStateOP const &
 MotifTreeStateLibrary::get_state(String const & name) {
     for(auto const & mts : motif_tree_states_) {
         if(mts->name().compare(name) == 0) { return mts; }

@@ -19,7 +19,7 @@ public:
     ~MotifTreeStateLibrary() {}
 
 public:
-    MotifTreeStateOP
+    MotifTreeStateOP const &
     get_state(String const &);
     
 public: //getters:

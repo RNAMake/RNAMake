@@ -29,9 +29,9 @@ public:
     
     void
     transform_state(
-        BasepairStateOP,
-        MotifTreeStateNodeOP ,
-        MotifTreeStateNodeOP);
+        BasepairStateOP const &,
+        MotifTreeStateNodeOP const & ,
+        MotifTreeStateNodeOP const &);
 
     
     void

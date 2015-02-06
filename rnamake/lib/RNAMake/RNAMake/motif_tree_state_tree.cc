@@ -36,13 +36,12 @@ MotifTreeStateTree::add_state(
     for (auto const & i : indices) {
         BasepairStateOP state = parent->states()[i];
         aligner_.transform_state(state, parent, new_node);
-        //aligner_.transform_beads(new_node);
+        aligner_.transform_beads(new_node);
         if(sterics_ == 1) {
-        //    if(_steric_clash(new_node)) {
-        //        continue;
-        //    }
+            if(_steric_clash(new_node)) {
+                continue;
+            }
         }
-        //std::cout << parent->states().size() << std::endl;
         parent->add_child(new_node, i);
         success=1;
         break;

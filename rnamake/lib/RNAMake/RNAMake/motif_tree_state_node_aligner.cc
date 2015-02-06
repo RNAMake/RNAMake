@@ -10,9 +10,9 @@
 
 void
 MotifTreeStateNodeAligner::transform_state(
-    BasepairStateOP parent_end,
-    MotifTreeStateNodeOP parent,
-    MotifTreeStateNodeOP child) {
+    BasepairStateOP const & parent_end,
+    MotifTreeStateNodeOP const &parent,
+    MotifTreeStateNodeOP const & child) {
     
     parent_end->get_transforming_r_and_t(ref_bp_state_, r_state_);
     for (auto const & s : child->states()) {

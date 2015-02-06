@@ -27,6 +27,11 @@ public:
               MotifTreeStateNodeOP const & cparent,
               BasepairStateOP const & parent_end);
 
+public:
+    inline
+    MotifTreeStateNodeOPs const &
+    nodes() { return nodes_; }
+    
 private:
     int
     _steric_clash(

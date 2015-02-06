@@ -81,9 +81,15 @@ test_add_state() {
             MotifTreeStateOP mts = mts_lib.get_state(spl[i]);
             mtst.add_state(mts, NULL, NULL);
         }
+        
+        if (spl.size() != mtst.nodes().size()) {
+            std::cout << spl.size() << " " << mtst.nodes().size() << " " << std::endl;
+        }
     }
     return 1;
 }
+
+
 
 
 int main(int argc, const char * argv[]) {
