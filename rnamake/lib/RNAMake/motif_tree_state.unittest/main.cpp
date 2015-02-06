@@ -11,6 +11,23 @@
 #include "motif_tree_state_library.h"
 #include "motif_tree_state_node.h"
 #include "motif_tree_state_node_aligner.h"
+#include "motif_tree_state_tree.h"
+
+Strings
+get_lines_from_file(String const fname) {
+    String line;
+    Strings lines;
+    std::ifstream input;
+    input.open(fname);
+    while ( input.good() ) {
+        getline(input, line);
+        if( line.length() < 10 ) { break; }
+        lines.push_back(line);
+        
+    }
+    return lines;
+    
+}
 
 int
 test_creation() {
@@ -47,12 +64,36 @@ test_replace_mts() {
     return 1;
 }
 
+int
+test_creation_mtst() {
+    MotifTreeStateTree mtst;
+    return 1;
+}
+
+int
+test_add_state() {
+    Strings lines = get_lines_from_file("test_add_state.dat");
+    MotifTreeStateLibrary mts_lib ( TWOWAY );
+    for(auto const & l : lines) {
+        Strings spl = split_str_by_delimiter(l, " ");
+        MotifTreeStateTree mtst;
+        for (int i = 1; i < spl.size(); i++) {
+            MotifTreeState mts = mts_lib.get_state(spl[i]);
+            mtst.add_state(mts, NULL, NULL);
+        }
+        break;
+    }
+    return 1;
+}
+
 
 int main(int argc, const char * argv[]) {
     if (test_creation() == 0)      { std::cout << "test_creation failed" << std::endl;  }
     if (test_creation_node() == 0) { std::cout << "test_creation_node failed" << std::endl;  }
     if (test_add_child() == 0)     { std::cout << "test_add_child failed" << std::endl;  }
-    if (test_replace_mts() == 0)   { std::cout << "test_add_child failed" << std::endl;  }
+    if (test_replace_mts() == 0)   { std::cout << "test_replace_mts failed" << std::endl;  }
+    if (test_creation_mtst() == 0) { std::cout << "test_creation_mtst failed" << std::endl;  }
+    if (test_add_state() == 0)     { std::cout << "test_add_state failed" << std::endl;  }
 
     return 0;
 }

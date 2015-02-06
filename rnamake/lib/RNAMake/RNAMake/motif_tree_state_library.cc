@@ -54,3 +54,11 @@ MotifTreeStateLibrary::_load_states_from_file(String const & path) {
         motif_tree_states_.push_back(motif_tree_state);
     }
 }
+
+MotifTreeState const &
+MotifTreeStateLibrary::get_state(String const & name) {
+    for(auto const & mts : motif_tree_states_) {
+        if(mts.name().compare(name) == 0) { return mts; }
+    }
+    throw "could not find mts in library";
+}

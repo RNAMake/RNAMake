@@ -84,6 +84,10 @@ public: //getters
     inline
     MotifTreeState const &
     mts() const { return mts_; }
+    
+    inline
+    Points const &
+    beads() const { return beads_; } 
 
 public: //setters
     

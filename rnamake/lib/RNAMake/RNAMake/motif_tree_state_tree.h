@@ -10,5 +10,40 @@
 #define __RNAMake__motif_tree_state_tree__
 
 #include <stdio.h>
+#include "motif_tree_state.h"
+#include "motif_tree_state_node.h"
+#include "motif_tree_state_node_aligner.h"
+
+
+class MotifTreeStateTree {
+public:
+    MotifTreeStateTree();
+    MotifTreeStateTree(MotifTreeState const &);
+    ~MotifTreeStateTree() {}
+
+public:
+    MotifTreeStateNodeOP
+    add_state(MotifTreeState const & mts,
+              MotifTreeStateNodeOP const & cparent,
+              BasepairStateOP const & parent_end);
+
+private:
+    int
+    _steric_clash(
+        MotifTreeStateNodeOP const &);
+
+private:
+    MotifTreeStateNodeOPs nodes_;
+    MotifTreeStateNodeOP last_node_;
+    MotifTreeStateNodeAligner aligner_;
+    float clash_radius_;
+    int sterics_;
+    
+    
+};
+
+MotifTreeState
+ref_mts();
+
 
 #endif /* defined(__RNAMake__motif_tree_state_tree__) */

@@ -185,4 +185,8 @@ align_motif(BasepairOP const &,
             BasepairOP const &,
             MotifOP const &);
 
+Motif
+ref_motif();
+
+
 #endif /* defined(__RNAMake__motif__) */

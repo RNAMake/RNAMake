@@ -9,6 +9,7 @@
 #include "motif.h"
 #include "xyzMatrix.h"
 #include "transform.h"
+#include "settings.h"
 
 Motif::Motif(
     String const & s,
@@ -201,6 +202,19 @@ align_motif(BasepairOP const & ref_bp,
     }
     
     motif->move( (sugar_diff_1 + sugar_diff_2) / 2);
+}
+
+Motif
+ref_motif() {
+    ResidueTypeSet rts;
+    String path = resources_path() + "start.motif";
+    String line;
+    std::ifstream in;
+    in.open(path);
+    getline(in, line);
+    in.close();
+    Motif m ( line, rts);
+    return m;
 }
 
 

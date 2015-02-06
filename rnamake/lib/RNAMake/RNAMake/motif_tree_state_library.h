@@ -18,6 +18,10 @@ public:
     MotifTreeStateLibrary(MotifType const &);
     ~MotifTreeStateLibrary() {}
 
+public:
+    MotifTreeState const &
+    get_state(String const &);
+    
 public: //getters:
     inline
     MotifTreeStates const &
