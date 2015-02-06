@@ -18,12 +18,12 @@
 class MotifTreeStateTree {
 public:
     MotifTreeStateTree();
-    MotifTreeStateTree(MotifTreeState const &);
+    MotifTreeStateTree(MotifTreeStateOP const &);
     ~MotifTreeStateTree() {}
 
 public:
     MotifTreeStateNodeOP
-    add_state(MotifTreeState const & mts,
+    add_state(MotifTreeStateOP const & mts,
               MotifTreeStateNodeOP const & cparent,
               BasepairStateOP const & parent_end);
 

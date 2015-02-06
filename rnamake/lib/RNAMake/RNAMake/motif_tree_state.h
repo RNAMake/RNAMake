@@ -16,7 +16,6 @@
 
 struct NameElements {
 public:
-    inline
     NameElements(
         String const & nmotif_name,
         int const & nhelix_direction,
@@ -45,7 +44,6 @@ public:
 
 class MotifTreeState {
 public:
-    inline
     MotifTreeState(
         String const & name,
         int const & start_index,
@@ -115,6 +113,8 @@ parse_db_name(
     String const &);
 
 typedef std::vector<MotifTreeState> MotifTreeStates;
+typedef std::shared_ptr<MotifTreeState> MotifTreeStateOP;
+typedef std::vector<MotifTreeStateOP> MotifTreeStateOPs;
 
 
 #endif /* defined(__RNAMake__motif_tree_state__) */

@@ -735,11 +735,10 @@ Matrix
 matrix_from_str(
 	std::string const & s) {
 	
-	std::vector<std::string> values = split_str_by_delimiter(s," ");
+    std::vector<std::string> values = split_str_by_delimiter(s," ");
 	std::vector<float> point;
 	Matrix m(0);
 	int j = 0;
-	
 	for (std::vector<std::string>::iterator i = values.begin();
 		 i != values.end(); ++i) {
 		

@@ -26,18 +26,18 @@ MotifTreeStateNode::copy() {
     return cmtn;
 }
 
-BasepairStateOPs const
+Ints const
 MotifTreeStateNode::available_ends() {
-    BasepairStateOPs states;
+    Ints indices;
     int i = -1;
     for( auto const & state : states_) {
         i++;
         if(state == NULL) { continue; }
         if(children_[i] == NULL) {
-            states.push_back(state);
+            indices.push_back(i);
         }
     }
-    return states;
+    return indices;
 }
 
 int
@@ -67,10 +67,10 @@ MotifTreeStateNode::parent_end() {
 }
 
 void
-MotifTreeStateNode::replace_mts(MotifTreeState const & nmts) {
+MotifTreeStateNode::replace_mts(MotifTreeStateOP const & nmts) {
     mts_ = nmts;
     int i = -1;
-    for (auto const & s : mts_.end_states()) {
+    for (auto const & s : mts_->end_states()) {
         i++;
         if(s == NULL) { states_[i] = NULL; }
         else {
@@ -82,8 +82,7 @@ MotifTreeStateNode::replace_mts(MotifTreeState const & nmts) {
 void
 MotifTreeStateNode::add_child(
     MotifTreeStateNodeOP const & node,
-    BasepairStateOP const & end) {
-    int i = (int)(std::find(states_.begin(), states_.end(), end) - states_.begin());
+    int const & i) {
     children_[i] = node;
 }
 

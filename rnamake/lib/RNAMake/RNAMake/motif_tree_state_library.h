@@ -19,12 +19,12 @@ public:
     ~MotifTreeStateLibrary() {}
 
 public:
-    MotifTreeState const &
+    MotifTreeStateOP
     get_state(String const &);
     
 public: //getters:
     inline
-    MotifTreeStates const &
+    MotifTreeStateOPs const &
     motif_tree_states() const {
         return motif_tree_states_;
     }
@@ -35,7 +35,7 @@ private:
 
 private:
     MotifType mtype_;
-    MotifTreeStates motif_tree_states_;
+    MotifTreeStateOPs motif_tree_states_;
 };
 
 #endif /* defined(__RNAMake__motif_tree_state_library__) */

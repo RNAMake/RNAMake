@@ -87,7 +87,7 @@ public:
 		
 	}
 	
-	inline
+    inline
 	void
 	get_transformed_state(
 		BasepairState const & o_state,
@@ -194,9 +194,9 @@ public: //setters
 	void
 	sugars( Points const & newsug) { sugars_ = newsug; }
 	
-	inline
+    inline
 	void
-	set (BasepairState const & nstate_) {
+	set (BasepairState const nstate_) {
 		d_ = nstate_.d_;
 		r_ = nstate_.r_;
 		sugars_ = nstate_.sugars_;

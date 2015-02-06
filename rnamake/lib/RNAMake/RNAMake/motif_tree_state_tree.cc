@@ -15,38 +15,35 @@ MotifTreeStateTree::MotifTreeStateTree() {
     sterics_ = 1;
     nodes_ = MotifTreeStateNodeOPs();
     aligner_ = MotifTreeStateNodeAligner();
-    MotifTreeStateNodeOP head ( new MotifTreeStateNode(ref_mts(), 0, NULL, 0));
+    MotifTreeStateNodeOP head ( new MotifTreeStateNode(MotifTreeStateOP(new MotifTreeState(ref_mts())), 0, NULL, 0));
     nodes_.push_back(head);
     last_node_ = head;
 }
 
 MotifTreeStateNodeOP
 MotifTreeStateTree::add_state(
-    MotifTreeState const & mts,
+    MotifTreeStateOP const & mts,
     MotifTreeStateNodeOP const & cparent,
     BasepairStateOP const & parent_end) {
     
     MotifTreeStateNodeOP parent = cparent;
-    BasepairStateOPs parent_ends;
+    Ints indices;
     if(parent == NULL) { parent = last_node_; }
-    if(parent_end != NULL) {
-        parent_ends.push_back(parent_end);
-    }
-    else {
-        parent_ends = parent->available_ends();
-    }
+    indices = parent->available_ends();
     
     MotifTreeStateNodeOP new_node ( new MotifTreeStateNode(mts, (int)nodes_.size(), parent, 0));
     int success = 0;
-    for (auto const & pe : parent_ends) {
-        aligner_.transform_state(pe, parent, new_node);
-        aligner_.transform_beads(new_node);
+    for (auto const & i : indices) {
+        BasepairStateOP state = parent->states()[i];
+        aligner_.transform_state(state, parent, new_node);
+        //aligner_.transform_beads(new_node);
         if(sterics_ == 1) {
-            if(_steric_clash(new_node)) {
-                continue;
-            }
+        //    if(_steric_clash(new_node)) {
+        //        continue;
+        //    }
         }
-        parent->add_child(new_node, pe);
+        //std::cout << parent->states().size() << std::endl;
+        parent->add_child(new_node, i);
         success=1;
         break;
     }

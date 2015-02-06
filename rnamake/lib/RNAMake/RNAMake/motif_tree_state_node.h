@@ -15,9 +15,8 @@
 
 class MotifTreeStateNode {
 public:
-    inline
     MotifTreeStateNode(
-        MotifTreeState const & mts,
+        MotifTreeStateOP const & mts,
         int const & index,
         MotifTreeStateNodeOP const & parent,
         int const & lib_type):
@@ -34,9 +33,9 @@ public:
         size_ = 0;
         ss_score_ = 0;
         beads_ = Points();
-        states_ = BasepairStateOPs(mts.end_states());
+        states_ = BasepairStateOPs(mts->end_states());
         int i = 0;
-        for (auto const & s : mts_.end_states()) {
+        for (auto const & s : mts_->end_states()) {
             if( s == NULL) { states_[i] = NULL; }
             else           {
                 states_[i] = BasepairStateOP(new BasepairState(s->copy()));
@@ -54,13 +53,13 @@ public:
     
 public:
     
-    BasepairStateOPs const
+    Ints const
     available_ends();
     
     void
     add_child(
         MotifTreeStateNodeOP const &,
-        BasepairStateOP const &);
+        int const &);
     
     int
     parent_end_index();
@@ -69,7 +68,7 @@ public:
     parent_end();
     
     void
-    replace_mts(MotifTreeState const &);
+    replace_mts(MotifTreeStateOP const &);
     
 public: //getters
     
@@ -82,7 +81,7 @@ public: //getters
     states() const { return states_; }
     
     inline
-    MotifTreeState const &
+    MotifTreeStateOP const &
     mts() const { return mts_; }
     
     inline
@@ -97,7 +96,7 @@ public: //setters
     
 
 private:
-    MotifTreeState mts_;
+    MotifTreeStateOP mts_;
     MotifTreeStateNodeOP parent_;
     MotifTreeStateNodeOPs children_;
     int index_, lib_type_, level_, size_;

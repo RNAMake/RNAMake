@@ -19,7 +19,7 @@ def point_to_str(p):
         0 1 2
 
     """
-    return " ".join([str(x) for x in p])
+    return " ".join([str(float(x)) for x in p])
 
 
 def points_to_str(points):
@@ -54,7 +54,7 @@ def matrix_to_str(m):
     s = ""
     for i in range(len(m)):
         for j in range(3):
-            s += str(m[i][j]) + " "
+            s += str(float(m[i][j])) + " "
 
     return s
 

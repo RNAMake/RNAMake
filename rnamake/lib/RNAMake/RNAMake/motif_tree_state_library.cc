@@ -24,7 +24,7 @@ void
 MotifTreeStateLibrary::_load_states_from_file(String const & path) {
     String line;
     std::ifstream in;
-    motif_tree_states_ = MotifTreeStates();
+    motif_tree_states_ = MotifTreeStateOPs();
     in.open(path.c_str());
     String name, build_string;
     float score;
@@ -49,16 +49,16 @@ MotifTreeStateLibrary::_load_states_from_file(String const & path) {
             }
         }
         NameElements name_elements = parse_db_name(name);
-        MotifTreeState motif_tree_state ( name, name_elements.start_index, size, score, beads, end_states, flip,
-                                         build_string);
+        MotifTreeStateOP motif_tree_state (new MotifTreeState ( name, name_elements.start_index, size, score, beads, end_states, flip, build_string));
         motif_tree_states_.push_back(motif_tree_state);
     }
+    in.close();
 }
 
-MotifTreeState const &
+MotifTreeStateOP
 MotifTreeStateLibrary::get_state(String const & name) {
     for(auto const & mts : motif_tree_states_) {
-        if(mts.name().compare(name) == 0) { return mts; }
+        if(mts->name().compare(name) == 0) { return mts; }
     }
     throw "could not find mts in library";
 }
