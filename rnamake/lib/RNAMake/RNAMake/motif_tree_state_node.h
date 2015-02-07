@@ -67,6 +67,9 @@ public:
     BasepairStateOP const &
     parent_end();
     
+    MotifTreeStateNodeOPs
+    children();
+    
     void
     replace_mts(MotifTreeStateOP const &);
     
@@ -86,7 +89,11 @@ public: //getters
     
     inline
     Points const &
-    beads() const { return beads_; } 
+    beads() const { return beads_; }
+    
+    inline
+    MotifTreeStateNodeOP const &
+    parent() { return parent_; }
 
 public: //setters
     

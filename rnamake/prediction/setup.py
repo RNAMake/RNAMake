@@ -93,11 +93,11 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
         motifs.append(mt.nodes[1].motif)
         mt.remove_node_level()
     f.close()
-    mo = motif_outputer.MotifOutputer()
-    for m in motifs:
-        mo.add_motif(m,0)
-    mo.to_pdb()
-    exit()
+    #mo = motif_outputer.MotifOutputer()
+    #for m in motifs:
+    #    mo.add_motif(m,0)
+    #mo.to_pdb()
+    #exit()
     #for i, m in enumerate(motifs):
     #    mt.add_motif(m, end_index=1)
     #    mt.nodes[1].motif.to_pdb("motif."+str(i)+".pdb")

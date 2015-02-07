@@ -89,16 +89,88 @@ test_add_state() {
     return 1;
 }
 
+int
+test_compare_last_node() {
+    Strings lines = get_lines_from_file("test_compare_last_node.dat");
+    MotifTreeStateLibrary mts_lib ( TWOWAY );
+    for(auto const & l : lines) {
+        Strings spl = split_str_by_delimiter(l, "|");
+        Strings names = split_str_by_delimiter(spl[0], " ");
+        BasepairState target = str_to_basepairstate(spl[1]);
+        MotifTreeStateTree mtst;
+        for (int i = 1; i < names.size(); i++) {
+            MotifTreeStateOP mts = mts_lib.get_state(names[i]);
+            mtst.add_state(mts, NULL, NULL);
+        }
+        int last_index = mtst.nodes().back()->available_ends()[0];
+        BasepairStateOP state = mtst.nodes().back()->states()[last_index];
+        float dist = state->d().distance(target.d());
+        if(dist > 0.1) {
+            std::cout << dist << std::endl;
+        }
+        float matrix_dist = state->r().difference(target.r());
+        if (matrix_dist > 0.1) {
+            std::cout << matrix_dist << std::endl;
+        }
+    }
+
+    return 1;
+}
+
+int
+test_to_motiftree() {
+    Strings lines = get_lines_from_file("test_add_state.dat");
+    MotifTreeStateLibrary mts_lib ( TWOWAY );
+    for(auto const & l : lines) {
+        Strings spl = split_str_by_delimiter(l, " ");
+        MotifTreeStateTree mtst;
+        for (int i = 1; i < spl.size(); i++) {
+            MotifTreeStateOP mts = mts_lib.get_state(spl[i]);
+            mtst.add_state(mts, NULL, NULL);
+        }
+        MotifTree mt = mtst.to_motiftree();
+        //mt.write_pdbs();
+        //break;
+
+    }
+    return 1;
+}
+
+int
+test_replace_state() {
+    Strings lines = get_lines_from_file("test_add_state.dat");
+    MotifTreeStateLibrary mts_lib ( TWOWAY );
+    Strings spl = split_str_by_delimiter(lines[0], " ");
+    MotifTreeStateTree mtst;
+    for (int i = 1; i < spl.size(); i++) {
+        MotifTreeStateOP mts = mts_lib.get_state(spl[i]);
+        mtst.add_state(mts, NULL, NULL);
+    }
+    MotifTree mt = mtst.to_motiftree();
+    //mt.write_pdbs("org");
+    int result = 0;
+    for (auto const & mts : mts_lib.motif_tree_states()) {
+        result = mtst.replace_state(mtst.nodes()[10], mts);
+        if(result == 1) { break; }
+    }
+    mt = mtst.to_motiftree();
+    //mt.write_pdbs();
+
+    return 1;
+}
 
 
 
 int main(int argc, const char * argv[]) {
-    if (test_creation() == 0)      { std::cout << "test_creation failed" << std::endl;  }
-    if (test_creation_node() == 0) { std::cout << "test_creation_node failed" << std::endl;  }
-    if (test_add_child() == 0)     { std::cout << "test_add_child failed" << std::endl;  }
-    if (test_replace_mts() == 0)   { std::cout << "test_replace_mts failed" << std::endl;  }
-    if (test_creation_mtst() == 0) { std::cout << "test_creation_mtst failed" << std::endl;  }
-    if (test_add_state() == 0)     { std::cout << "test_add_state failed" << std::endl;  }
+    if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
+    if (test_creation_node() == 0)     { std::cout << "test_creation_node failed" << std::endl;  }
+    if (test_add_child() == 0)         { std::cout << "test_add_child failed" << std::endl;  }
+    if (test_replace_mts() == 0)       { std::cout << "test_replace_mts failed" << std::endl;  }
+    if (test_creation_mtst() == 0)     { std::cout << "test_creation_mtst failed" << std::endl;  }
+    //if (test_add_state() == 0)        { std::cout << "test_add_state failed" << std::endl;  }
+    if (test_compare_last_node() == 0) { std::cout << "test_compare_last_node failed" << std::endl;  }
+    if (test_to_motiftree() == 0)      { std::cout << "test_to_motiftree failed" << std::endl;  }
+    if (test_replace_state() == 0)     { std::cout << "test_replace_state failed" << std::endl;  }
 
     return 0;
 }

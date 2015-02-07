@@ -16,6 +16,7 @@
 class MotifTreeStateLibrary {
 public:
     MotifTreeStateLibrary(MotifType const &);
+    MotifTreeStateLibrary(String const &);
     ~MotifTreeStateLibrary() {}
 
 public:

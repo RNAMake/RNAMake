@@ -20,6 +20,7 @@ typedef std::vector<String> Strings;
 typedef std::shared_ptr<String> StringOP;
 
 typedef std::map<String, int> StringIntMap;
+typedef std::map<String, float> StringFloatMap;
 typedef std::map<String, String> StringStringMap;
 
 typedef std::shared_ptr<uuid_t> uuid_tOP;

@@ -20,6 +20,12 @@ MotifTreeStateLibrary::MotifTreeStateLibrary(MotifType const & mtype) {
     
 }
 
+MotifTreeStateLibrary::MotifTreeStateLibrary(String const & libpath) {
+    mtype_ = UNKNOWN;
+    _load_states_from_file(libpath);
+}
+
+
 void
 MotifTreeStateLibrary::_load_states_from_file(String const & path) {
     String line;

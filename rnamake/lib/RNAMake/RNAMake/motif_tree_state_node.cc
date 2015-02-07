@@ -86,6 +86,14 @@ MotifTreeStateNode::add_child(
     children_[i] = node;
 }
 
+MotifTreeStateNodeOPs
+MotifTreeStateNode::children() {
+    MotifTreeStateNodeOPs children;
+    for(auto const & c : children_) {
+        if(c != NULL) { children.push_back(c); }
+    }
+    return children;
+}
 
 
 

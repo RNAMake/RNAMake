@@ -13,6 +13,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include <sys/stat.h>
 
 #include "types.h"
 
@@ -24,6 +25,13 @@ split_str_by_delimiter(
 
 String
 get_base_dir();
+
+inline
+bool
+file_exists (const std::string& name) {
+    struct stat buffer;
+    return (stat (name.c_str(), &buffer) == 0);
+}
 
 
 

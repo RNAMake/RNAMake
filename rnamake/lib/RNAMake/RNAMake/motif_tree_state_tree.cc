@@ -6,7 +6,9 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <queue>
 #include "motif_tree_state_tree.h"
+#include "motif_tree.h"
 #include "motif.h"
 #include "basepair.h"
 
@@ -20,19 +22,36 @@ MotifTreeStateTree::MotifTreeStateTree() {
     last_node_ = head;
 }
 
+MotifTreeStateTree::MotifTreeStateTree(MotifTreeStateOP const & mts) {
+    clash_radius_ = 2.9;
+    sterics_ = 1;
+    nodes_ = MotifTreeStateNodeOPs();
+    aligner_ = MotifTreeStateNodeAligner();
+    MotifTreeStateNodeOP head ( new MotifTreeStateNode(mts, 0, NULL, 0));
+    nodes_.push_back(head);
+    last_node_ = head;
+
+}
+
 MotifTreeStateNodeOP
 MotifTreeStateTree::add_state(
     MotifTreeStateOP const & mts,
     MotifTreeStateNodeOP const & cparent,
-    BasepairStateOP const & parent_end) {
+    int const cparent_end) {
     
     MotifTreeStateNodeOP parent = cparent;
     Ints indices;
     if(parent == NULL) { parent = last_node_; }
-    indices = parent->available_ends();
+    if(cparent_end == -1) {
+        indices = parent->available_ends();
+    }
+    else {
+        indices.push_back(cparent_end);
+    }
     
     MotifTreeStateNodeOP new_node ( new MotifTreeStateNode(mts, (int)nodes_.size(), parent, 0));
     int success = 0;
+
     for (auto const & i : indices) {
         BasepairStateOP state = parent->states()[i];
         aligner_.transform_state(state, parent, new_node);
@@ -71,6 +90,108 @@ MotifTreeStateTree::_steric_clash(
     
     
 }
+
+MotifTree
+MotifTreeStateTree::to_motiftree() {
+    int i = -1;
+    MotifTree mt;
+    ResidueTypeSet rts;
+    for (auto const & n : nodes_) {
+        i++;
+        if(i == 0) {
+            if(n->mts()->name().compare("start") == 0) {
+                mt = MotifTree();
+                //mt.sterics(0);
+            }
+            else {
+                MotifOP m ( new Motif( n->mts()->build_string(), rts ));
+                mt = MotifTree(m);
+                //mt.sterics(0);
+            }
+            continue;
+        }
+        MotifOP m ( new Motif( n->mts()->build_string(), rts ));
+        int pos = (int)(std::find(nodes_.begin(), nodes_.end(), n->parent()) - nodes_.begin());
+        MotifTreeNodeOP parent = mt.nodes()[pos];
+        int parent_index = n->parent_end_index();
+        //TODO: not sure why including flip screws stuff up?
+        //MotifTreeNodeOP mt_node = mt.add_motif(m, parent, n->mts()->start_index(), parent_index, n->mts()->flip());
+        MotifTreeNodeOP mt_node = mt.add_motif(m, parent, n->mts()->start_index(), parent_index);
+        if(mt_node == NULL) {
+            std::cout << i << " " << n->mts()->name() << " " << n->mts()->flip() << std::endl;
+            mt.sterics(0);
+            MotifTreeNodeOP mt_node = mt.add_motif(m, parent, n->mts()->start_index(), parent_index, n->mts()->flip());
+            mt.write_pdbs();
+            exit(0);
+        }
+    }
+    return mt;
+}
+
+int
+MotifTreeStateTree::replace_state(
+    MotifTreeStateNodeOP const & node,
+    MotifTreeStateOP const & mts) {
+    
+    //check node topology bad things happen if it changes
+    if( node->mts()->end_states().size() != mts->end_states().size()) { return 0; }
+    for (int i = 0; i < node->mts()->end_states().size(); i++) {
+        if(node->mts()->end_states()[i] == NULL && mts->end_states()[i] != NULL ) { return 0; }
+        if(node->mts()->end_states()[i] != NULL && mts->end_states()[i] == NULL ) { return 0; }
+    }
+    
+    MotifTreeStateOP old_mts = node->mts();
+    node->replace_mts(mts);
+    std::queue<MotifTreeStateNodeOP> open_nodes;
+    MotifTreeStateNodeOPs seen_nodes;
+    MotifTreeStateNodeOP current, parent;
+    BasepairStateOP parent_end;
+    open_nodes.push(node);
+    while (! open_nodes.empty() ) {
+        current = open_nodes.front();
+        open_nodes.pop();
+        seen_nodes.push_back(current);
+        parent = current->parent();
+        if(parent == NULL) { continue; }
+        parent_end = current->parent_end();
+        aligner_.transform_state(parent_end, parent, current);
+        aligner_.transform_beads(current);
+        for (auto const & c : current->children()) {
+            open_nodes.push(c);
+        }
+    }
+    
+    return 0;
+    
+    int clash = 0;
+    float dist = 0;
+    for(int i = 0; i < nodes_.size(); i++) {
+        for(int j = i+1; j < nodes_.size(); j++) {
+            for( auto const & b1: nodes_[i]->beads()) {
+                for (auto const & b2 : nodes_[j]->beads()) {
+                    dist = b1.distance(b2);
+                    if(dist < clash_radius_) { clash = 1; }
+                }
+            }
+        }
+    }
+    
+    if(!clash) { return 1; }
+    
+    node->replace_mts(old_mts);
+    
+    for (auto const & n : seen_nodes) {
+        parent = n->parent();
+        parent_end = n->parent_end();
+        if(parent == NULL) { continue; }
+        aligner_.transform_state(parent_end, parent, current);
+        aligner_.transform_beads(current);
+    }
+    
+    return 0;
+}
+
+
 
 MotifTreeState
 ref_mts() {

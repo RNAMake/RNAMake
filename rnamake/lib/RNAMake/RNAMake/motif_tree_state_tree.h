@@ -10,6 +10,7 @@
 #define __RNAMake__motif_tree_state_tree__
 
 #include <stdio.h>
+#include "motif_tree.h"
 #include "motif_tree_state.h"
 #include "motif_tree_state_node.h"
 #include "motif_tree_state_node_aligner.h"
@@ -25,12 +26,24 @@ public:
     MotifTreeStateNodeOP
     add_state(MotifTreeStateOP const & mts,
               MotifTreeStateNodeOP const & cparent,
-              BasepairStateOP const & parent_end);
+              int const cparent_end = -1);
 
+    MotifTree
+    to_motiftree();
+    
+    int
+    replace_state(MotifTreeStateNodeOP const &,
+                  MotifTreeStateOP const &);
+    
 public:
     inline
     MotifTreeStateNodeOPs const &
     nodes() { return nodes_; }
+    
+public:
+    inline
+    void
+    sterics(int nsterics) { sterics_ = nsterics; }
     
 private:
     int

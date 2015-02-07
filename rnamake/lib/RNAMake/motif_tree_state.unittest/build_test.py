@@ -13,12 +13,15 @@ def test_add_state():
         for n in mtst.nodes:
             f.write(n.mts.name + " ")
         f.write("\n")
+        mt = mtst.to_motiftree()
+        mt.write_pdbs("org")
+        break;
     f.close()
 
 def test_compare_last_node():
     mtype = rnamake.motif_type.TWOWAY
     mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(mtype)
-    f = open("test_add_state.dat", "w")
+    f = open("test_compare_last_node.dat", "w")
     for j in range(100):
         mtst = rnamake.motif_tree_state.MotifTreeStateTree()
         for i in range(10):
@@ -27,12 +30,12 @@ def test_compare_last_node():
         for n in mtst.nodes:
             f.write(n.mts.name + " ")
         avail_end = mtst.last_node.active_states()[0]
-        f.write("|" + avail_ends.to_str() )
+        f.write("|" + avail_end.to_str() )
         f.write("\n")
     f.close()
 
 
-#test_add_state()
-test_compare_last_node()
+test_add_state()
+#test_compare_last_node()
 
 

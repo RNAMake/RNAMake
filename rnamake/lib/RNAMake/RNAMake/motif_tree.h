@@ -37,7 +37,7 @@ public:
         int end_flip = -1);
     
     void
-    write_pdbs();
+    write_pdbs(String const & fname = "nodes");
 
 public: //getters
     

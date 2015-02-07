@@ -15,10 +15,12 @@ MotifTreeStateNodeAligner::transform_state(
     MotifTreeStateNodeOP const & child) {
     
     parent_end->get_transforming_r_and_t(ref_bp_state_, r_state_);
-    for (auto const & s : child->states()) {
+    int i = -1;
+    for (auto const & s : child->mts()->end_states()) {
+        i++;
         if(s == NULL) { continue; }
         s->get_transformed_state(r_state_, t_state_);
-        s->set(t_state_);
+        child->states()[i]->set(t_state_);
     }
     
 }

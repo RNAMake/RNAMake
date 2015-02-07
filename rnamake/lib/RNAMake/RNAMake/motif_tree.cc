@@ -88,7 +88,7 @@ MotifTree::add_motif(
         }
         int status = parent->get_end_status(parent->motif()->ends()[parent_index]);
         if(status == 0) {
-            throw "cannot ue this parent index, it is currently being used";
+        //    throw "cannot ue this parent index, it is currently being used";
         }
         parent_ends.push_back(parent->motif()->ends()[parent_index]);
     }
@@ -211,11 +211,11 @@ MotifTree::_update_beads(
 
 
 void
-MotifTree::write_pdbs() {
+MotifTree::write_pdbs(String const & fname) {
     int i = 0;
     std::stringstream ss;
     for( auto const & n : nodes_) {
-        ss << "nodes." << i << ".pdb";
+        ss << fname << "." << i << ".pdb";
         n->motif()->to_pdb(ss.str());
         ss.str("");
         i++;

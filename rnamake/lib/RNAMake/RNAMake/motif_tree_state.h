@@ -13,6 +13,7 @@
 #include "types.h"
 #include "xyzVector.h"
 #include "basepair_state.h"
+#include "motif_tree.h"
 
 struct NameElements {
 public:
@@ -112,9 +113,15 @@ NameElements
 parse_db_name(
     String const &);
 
+
 typedef std::vector<MotifTreeState> MotifTreeStates;
 typedef std::shared_ptr<MotifTreeState> MotifTreeStateOP;
 typedef std::vector<MotifTreeStateOP> MotifTreeStateOPs;
+
+MotifTreeStateOP
+motif_to_state(MotifOP const &,
+               int end_index = 0,
+               int end_flip = 0);
 
 
 #endif /* defined(__RNAMake__motif_tree_state__) */
