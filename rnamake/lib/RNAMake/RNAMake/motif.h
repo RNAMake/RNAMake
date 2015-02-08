@@ -154,6 +154,7 @@ public:
         for (auto const & end : ends_) { end->flip(0); }
 
         structure_->_restore_coords();
+        beads_ = Beads();
     }
     
     String const

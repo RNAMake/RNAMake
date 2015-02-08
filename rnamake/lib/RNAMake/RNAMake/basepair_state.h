@@ -48,7 +48,7 @@ public:
 	{}
     
     BasepairState
-    copy() {
+    copy() const {
         return BasepairState(d_, r_, sugars_);
     }
 
@@ -249,20 +249,20 @@ inline
 const
 float
 frame_distance(
-	BasepairState const & current,
-	BasepairState const & end,
-	BasepairState const & endflip) {
+	BasepairStateOP const & current,
+	BasepairStateOP const & end,
+	BasepairStateOP const & endflip) {
 	
-	float score = current.d().distance(end.d());
+	float score = current->d().distance(end->d());
 	
-	float r_diff      = end.r().difference(current.r());
-	float r_diff_flip = endflip.r().difference(current.r());
+	float r_diff      = end->r().difference(current->r());
+	float r_diff_flip = endflip->r().difference(current->r());
 	
 	if(r_diff > r_diff_flip) {
 		r_diff = r_diff_flip;
 	}
 	
-	score += 2*r_diff;
+	score += r_diff;
 	
 	return score;
 	

@@ -41,7 +41,8 @@ Motif::Motif(
         ResidueOP res2 = structure_->get_residue(res2_num, res2_id, "");
         BasepairState bpstate = str_to_basepairstate(bp_spl[1]);
         BasepairOP bp ( new Basepair(res1, res2, bpstate.r(), bp_spl[1] ));
-        bp->flip( std::stoi(bp_spl[4]));
+        bp->flipped(std::stoi(bp_spl[4]));
+
         basepairs_.push_back(bp);
     }
     
@@ -73,7 +74,7 @@ Motif::copy() {
         ResidueOP res1 = cmotif.get_residue(bp->res1()->uuid());
         ResidueOP res2 = cmotif.get_residue(bp->res2()->uuid());
         BasepairOP new_bp ( new Basepair ( res1, res2, bp->r(), bp->bp_type() )) ;
-        new_bp->flip(bp->flipped());
+        new_bp->flipped(bp->flipped());
         new_bp->uuid(bp->uuid());
         cmotif.basepairs_.push_back(new_bp);
     }

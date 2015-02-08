@@ -25,7 +25,7 @@ motif_to_state(
     int end_flip) {
     
     MotifTree mt;
-    mt.add_motif(m);
+    mt.add_motif(m, NULL, end_index, -1, end_flip);
     MotifOP m_copy = mt.nodes()[1]->motif();
     std::stringstream ss;
     ss << m_copy->name() << "-" << end_index << "-" << end_flip;
@@ -34,7 +34,7 @@ motif_to_state(
     for (auto const & end : m_copy->ends()) {
         i++;
         if(i == end_index) { continue; }
-        ends[i] = BasepairStateOP(new BasepairState(end->state()));
+        ends[i] = BasepairStateOP(new BasepairState(end->state().copy()));
     }
     Points beads;
     for(auto const & b : m_copy->beads()) {

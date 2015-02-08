@@ -8,10 +8,23 @@
 
 #include <iostream>
 #include <time.h>
+#include <random>
+
 #include "motif_ensemble.h"
 #include "motif_ensemble_tree.h"
 #include "motif_tree_state.h"
 #include "motif_tree_state_tree.h"
+
+inline float GenXORShift32(void)
+{
+    static unsigned seed = 2463534242U;
+    
+    seed ^= (seed << 5);
+    seed ^= (seed >> 13);
+    seed ^= (seed << 6);
+    
+    return seed * (1.0f / 4294967295.0f);
+}
 
 Strings
 get_lines_from_file(String const fname) {
@@ -60,11 +73,18 @@ test_add_ensemble() {
 int
 test_sample() {
     MotifEnsembleTree met;
-    Strings steps = split_str_by_delimiter("GC=GC,GC=UA,UA=AU,AU=AU,AU=GC,GC=GC,GC=GU,GU=CG,CG=AU,AU=GC,GC=AU,AU=GC,GC=GC", ",");
+    Strings steps = split_str_by_delimiter("GC=GC,GC=UA,UA=AU,AU=AU,AU=GC,GC=GU,GU=GC,GC=CG,CG=AU,AU=GC,GC=AU,AU=GC,GC=GC", ",");
+    //Strings steps = split_str_by_delimiter("GC=GC,GC=UA,UA=AU,AU=AU,AU=GC,GC=GC,GC=GC,GC=CG,CG=AU,AU=GC,GC=AU,AU=GC,GC=GC", ",");
     for(auto const & step : steps) {
         MotifEnsemble me( step, 0, 0);
         met.add_ensemble(me);
     }
+    
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<float> rdist(0,1);
+
+    
     MotifTreeStateTree mtst = met.get_mtst();
     MotifEnsembleTreeNodeOP met_node;
     MotifTreeStateNodeOP mts_node;
@@ -73,41 +93,51 @@ test_sample() {
     float kBT =  kB * 298.15 ;
     float score;
     int node_num = 0;
-    int i = 0, nsteps =100000, result = 0;
+    int i = 0, nsteps =10000000, result = 0;
     float cpop;
     float dist;
     std::ofstream out;
-    out.open("test_gu.dat");
+    std::vector<float> bins(120);
+    float bin_size = 0.25;
+    float min_dist = 20;
+    float max_dist = 50;
+    float bin_pos;
+    int pos;
     srand(time(NULL));
     while (i < nsteps) {
         if( i % 10000 == 0 ) { std::cout << i << std::endl; }
-        node_num = 1 + rand() % mtst.nodes().size()-1;
+        node_num = 1 + (mtst.nodes().size()-1)*rdist(mt);
         if(node_num == 0 ) { continue; }
         met_node = met.nodes()[ node_num ];
         mts_node = mtst.nodes()[ node_num ];
         cpop = met_node->motif_ensemble().get_state(mts_node->mts()->name()).population;
-        ms = met_node->motif_ensemble().get_random_state();
+        pos = (int)((met_node->motif_ensemble().motif_states().size()-1)*rdist(mt));
+        ms = met_node->motif_ensemble().get_state(pos);
         if ( ms.population < cpop) {
             result = mtst.replace_state(mts_node, ms.mts);
-            if( i % 100 == 0) {
-                dist =  mtst.nodes()[0]->states()[0]->sugars()[1].distance(mtst.nodes().back()->states()[1]->sugars()[1]);
-                out << dist << std::endl;
-            }
+            dist =  mtst.nodes()[0]->states()[0]->sugars()[0].distance(mtst.nodes().back()->states()[1]->sugars()[1]);
+            bin_pos = (int)((dist - min_dist) / bin_size);
+            bins[bin_pos] += 1;
+            i++;
+            
         }
         
         score = exp((cpop - ms.population)/kBT);
-        if( rand() % 1 < score) {
+        if( rdist(mt) < score) {
             result = mtst.replace_state(mts_node, ms.mts);
-            if (i % 100) {
-                dist =  mtst.nodes()[0]->states()[0]->sugars()[1].distance(mtst.nodes().back()->states()[1]->sugars()[1]);
-                out << dist << std::endl;
-            }
+            dist =  mtst.nodes()[0]->states()[0]->sugars()[0].distance(mtst.nodes().back()->states()[1]->sugars()[1]);
+            bin_pos = (int)((dist - min_dist) / bin_size);
+            bins[bin_pos] += 1;
+            i++;
         }
-        i++;
     }
-    out.close();
     
     //MotifTree mt = mtst.to_motiftree();
+    i = 0;
+    for (auto const & b : bins) {
+        std::cout << min_dist + i*bin_size << " " << b << std::endl;
+        i++;
+    }
     
     
     return 1;
@@ -130,23 +160,82 @@ test_tecto() {
     MotifTreeStateOP ggaa_state = motif_to_state(ggaa_motif, 1, 1);
     MotifTreeStateOP gaaa_state = motif_to_state(gaaa_motif, 0, 1);
     Strings flow_steps = split_str_by_delimiter("GC=AU AU=AU AU=GC GC=UA UA=AU AU=CG CG=CG CG=GC GC=AU AU=GC", " ");
-    Strings chip_steps = split_str_by_delimiter("GC=AU AU=AU AU=GC GC=AU AU=UA UA=CG CG=CG CG=UA UA=CG CG=GC", " ");
+    //Strings chip_steps = split_str_by_delimiter("GC=AU AU=AU AU=GC GC=AU AU=UA UA=CG CG=CG CG=UA UA=CG CG=GC", " ");
+    //Strings flow_steps = split_str_by_delimiter("GC=AU AU=AU AU=GC GC=UA UA=AU AU=CG CG=CG CG=GC GC=GU GU=GC", " ");
+    Strings chip_steps = split_str_by_delimiter("GC=AU AU=AU AU=GC GC=AU AU=UA UA=CG CG=CG CG=UG UG=GU GU=GC", " ");
+
     MotifEnsembleTree met;
     met.add_ensemble(MotifEnsemble("AU=GC", 0, 0));
     met.add_ensemble(mts_to_me(ggaa_state));
-    met.add_ensemble(MotifEnsemble(flow_steps[0], 0, 0), NULL, 2);
+    met.add_ensemble(MotifEnsemble(flow_steps[0], 0, 1), NULL, 2);
     for (int i = 1; i < flow_steps.size(); i++) {
-        met.add_ensemble(MotifEnsemble(flow_steps[i], 0, 0));
+        met.add_ensemble(MotifEnsemble(flow_steps[i], 0, 1));
     }
     met.add_ensemble(mts_to_me(gaaa_state));
-    met.add_ensemble(MotifEnsemble(chip_steps[0], 0, 0), NULL, 1);
+    met.add_ensemble(MotifEnsemble(chip_steps[0], 0, 1), NULL, 1);
     for (int i = 1; i < chip_steps.size(); i++) {
-        met.add_ensemble(MotifEnsemble(chip_steps[i], 0, 0));
+        met.add_ensemble(MotifEnsemble(chip_steps[i], 0, 1));
     }
-    
+
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<float> dist(0,1);
+
     MotifTreeStateTree mtst = met.get_mtst();
-    MotifTree mt = mtst.to_motiftree();
-    mt.write_pdbs();
+    MotifEnsembleTreeNodeOP met_node;
+    MotifTreeStateNodeOP mts_node;
+    MotifState ms = met.nodes()[0]->motif_ensemble().motif_states()[0];
+    float kB =  1.3806488e-1 ;
+    float kBT =  kB * 298.15 ;
+    float score;
+    int node_num = 0;
+    int i = 0, nsteps =10000000, result = 0;
+    float cpop;
+    float frame_score;
+    BasepairStateOP target = mtst.nodes()[2]->states()[0];
+    BasepairStateOP target_flip (new BasepairState(target->copy()));
+    target_flip->flip();
+    int under_cutoff = 0;
+    float cutoff = 5.0f;
+    float diceroll = 0.0f;
+    int pos = 0;
+    
+    srand(unsigned(time(NULL)));
+    while (i < nsteps) {
+        //if( i % 10000 == 0 ) { std::cout << under_cutoff <<" " << i << std::endl; }
+        node_num = (int)((met.nodes().size()-1)*dist(mt));
+        if(node_num == 0) { continue; }
+        //node_num = 1 + (int)((met.nodes().size()-2)*GenXORShift32());
+        met_node = met.nodes()[ node_num ];
+        mts_node = mtst.nodes()[ node_num ];
+        cpop = met_node->motif_ensemble().get_state(mts_node->mts()->name()).population;
+        pos = (int)((met_node->motif_ensemble().motif_states().size()-1)*dist(mt));
+        ms = met_node->motif_ensemble().get_state(pos);
+        if ( ms.population < cpop) {
+            result = mtst.replace_state(mts_node, ms.mts);
+            frame_score = frame_distance(mtst.last_node()->states()[1], target, target_flip);
+            if(frame_score < cutoff) { under_cutoff++; }
+            i++;
+            continue;
+
+        }
+        
+        score = exp((cpop - ms.population)/kBT);
+        diceroll = dist(mt);
+        if( diceroll < score) {
+            result = mtst.replace_state(mts_node, ms.mts);
+            frame_score = frame_distance(mtst.last_node()->states()[1], target, target_flip);
+            if(frame_score < cutoff) { under_cutoff++; }
+            i++;
+        }
+    }
+
+    std::cout << under_cutoff << " " << nsteps << std::endl;
+    
+    
+    //MotifTreeStateTree mtst = met.get_mtst();
+    //MotifTree mt = mtst.to_motiftree();
+    //mt.write_pdbs();
     
     return 1;
 }

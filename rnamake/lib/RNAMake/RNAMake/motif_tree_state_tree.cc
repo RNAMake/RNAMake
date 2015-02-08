@@ -101,7 +101,7 @@ MotifTreeStateTree::to_motiftree() {
         if(i == 0) {
             if(n->mts()->name().compare("start") == 0) {
                 mt = MotifTree();
-                //mt.sterics(0);
+                mt.sterics(0);
             }
             else {
                 MotifOP m ( new Motif( n->mts()->build_string(), rts ));
@@ -115,8 +115,8 @@ MotifTreeStateTree::to_motiftree() {
         MotifTreeNodeOP parent = mt.nodes()[pos];
         int parent_index = n->parent_end_index();
         //TODO: not sure why including flip screws stuff up?
-        //MotifTreeNodeOP mt_node = mt.add_motif(m, parent, n->mts()->start_index(), parent_index, n->mts()->flip());
-        MotifTreeNodeOP mt_node = mt.add_motif(m, parent, n->mts()->start_index(), parent_index);
+        MotifTreeNodeOP mt_node = mt.add_motif(m, parent, n->mts()->start_index(), parent_index, n->mts()->flip());
+        //MotifTreeNodeOP mt_node = mt.add_motif(m, parent, n->mts()->start_index(), parent_index);
         if(mt_node == NULL) {
             std::cout << i << " " << n->mts()->name() << " " << n->mts()->flip() << std::endl;
             mt.sterics(0);
@@ -161,7 +161,7 @@ MotifTreeStateTree::replace_state(
         }
     }
     
-    return 0;
+    return 1;
     
     int clash = 0;
     float dist = 0;

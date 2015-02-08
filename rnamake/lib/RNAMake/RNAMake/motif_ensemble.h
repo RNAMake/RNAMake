@@ -11,6 +11,7 @@
 
 #include <map>
 #include <fstream>
+#include <random>
 #include <stdio.h>
 #include <vector>
 #include "types.h"
@@ -19,6 +20,7 @@
 #include "motif_tree_state.h"
 #include "motif_tree_state_library.h"
 
+
 struct MotifState {
 public:
     MotifState(
@@ -26,13 +28,22 @@ public:
         float const & npopulation):
         mts(nmts),
         population(npopulation){
-    }
+        }
     
     ~MotifState() {}
     
 public:
     MotifTreeStateOP mts;
     float population;
+
+};
+
+struct less_than_key
+{
+    inline bool operator() (MotifState const & struct1, MotifState const & struct2)
+    {
+        return (struct1.population < struct2.population);
+    }
 };
 
 typedef std::vector<MotifState> MotifStates;
@@ -44,6 +55,7 @@ public:
         int const start_index = -1,
         int const flip_direction = -1
     ) {
+        
         motif_states_ = MotifStates();
         if(lib_path.length() < 2) { return; }
         
@@ -72,6 +84,7 @@ public:
             MotifState motif_state ( mts, m_pop);
             motif_states_.push_back(motif_state);
         }
+        std::sort(motif_states_.begin(),motif_states_.end(),less_than_key());
         
     }
     
@@ -89,6 +102,9 @@ public:
     MotifState const &
     get_random_state() const;
     
+    MotifState const &
+    get_state(int const & pos) const { return motif_states_[pos]; }
+    
 public: // getters
     
     inline
@@ -97,6 +113,8 @@ public: // getters
     
 private:
     MotifStates motif_states_;
+
+    
     
 };
 

@@ -150,7 +150,11 @@ public: // setters
     
     inline
     void
-    uuid(Uuid const & nuuid) { uuid_ = nuuid; } 
+    uuid(Uuid const & nuuid) { uuid_ = nuuid; }
+    
+    inline
+    void
+    flipped(int const & nflipped) { flipped_ = nflipped; } 
     
     
 public:

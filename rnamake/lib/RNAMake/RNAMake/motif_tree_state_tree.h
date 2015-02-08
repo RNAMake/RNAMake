@@ -40,6 +40,10 @@ public:
     MotifTreeStateNodeOPs const &
     nodes() { return nodes_; }
     
+    inline
+    MotifTreeStateNodeOP const &
+    last_node() { return last_node_; }
+    
 public:
     inline
     void
