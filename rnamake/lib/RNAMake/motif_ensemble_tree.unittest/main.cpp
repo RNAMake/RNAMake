@@ -245,6 +245,11 @@ int main(int argc, const char * argv[]) {
     //if (test_creation_me_tree() == 0)     { std::cout << "test_creation_me_tree failed" << std::endl;  }
     //if (test_add_ensemble() == 0)         { std::cout << "test_add_ensemble failed" << std::endl;  }
     //if (test_sample() == 0)               { std::cout << "test_sample failed" << std::endl;  }
+    String flow_string = "GC=AU,AU=AU,AU=GC,GC=UA,UA=AU,AU=CG,CG=CG,CG=GC,GC=AU,AU=GC";
+    String chip_string = "GC=AU,AU=AU,AU=GC,GC=AU,AU=UA,UA=CG,CG=CG,CG=UG,UG=GU,GU=GC";
+    
+    
+    
     test_tecto();
     
     return 0;
