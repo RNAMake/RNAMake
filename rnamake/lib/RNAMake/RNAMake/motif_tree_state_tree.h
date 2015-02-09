@@ -43,11 +43,16 @@ public:
     inline
     MotifTreeStateNodeOP const &
     last_node() { return last_node_; }
+
     
 public:
     inline
     void
     sterics(int nsterics) { sterics_ = nsterics; }
+    
+    inline
+    void
+    clash_radius(float nclash_radius) { clash_radius_ = nclash_radius; }
     
 private:
     int

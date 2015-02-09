@@ -1,0 +1,5 @@
+21736 CTAGGATATGGAAGCCTGGGGAACTGGGCTTCCTAAGTCCTAG (((((((..((((((((((....))))))))))...)))))))
+0 CTAGGATATGGAAGATCCTGGGGAACTGGGATCTTCCTAAGTCCTAG (((((((..((((((((((((....))))))))))))...)))))))
+1 CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG (((((((..((((((((((((....))))))))))))...)))))))
+21745 CTAGGATATGGAAGATCCCTGGGGAACTGGGGATCTTCCTAAGTCCTAG (((((((..(((((((((((((....)))))))))))))...)))))))
+21740 CTAGGATATGGAAGATCTGGGGAACTGGATCTTCCTAAGTCCTAG (((((((..(((((((((((....)))))))))))...)))))))

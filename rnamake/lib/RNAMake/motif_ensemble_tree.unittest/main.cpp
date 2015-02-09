@@ -15,16 +15,6 @@
 #include "motif_tree_state.h"
 #include "motif_tree_state_tree.h"
 
-inline float GenXORShift32(void)
-{
-    static unsigned seed = 2463534242U;
-    
-    seed ^= (seed << 5);
-    seed ^= (seed >> 13);
-    seed ^= (seed << 6);
-    
-    return seed * (1.0f / 4294967295.0f);
-}
 
 Strings
 get_lines_from_file(String const fname) {
@@ -152,17 +142,18 @@ mts_to_me(MotifTreeStateOP const & mts) {
 }
 
 int
-test_tecto() {
+test_tecto(String const & flow_str,
+           String const & chip_str) {
     Strings lines = get_lines_from_file("tetraloop.str");
     ResidueTypeSet rts;
     MotifOP ggaa_motif ( new Motif(lines[0], rts));
     MotifOP gaaa_motif ( new Motif(lines[1], rts));
     MotifTreeStateOP ggaa_state = motif_to_state(ggaa_motif, 1, 1);
     MotifTreeStateOP gaaa_state = motif_to_state(gaaa_motif, 0, 1);
-    Strings flow_steps = split_str_by_delimiter("GC=AU AU=AU AU=GC GC=UA UA=AU AU=CG CG=CG CG=GC GC=AU AU=GC", " ");
+    Strings flow_steps = split_str_by_delimiter(flow_str, ",");
     //Strings chip_steps = split_str_by_delimiter("GC=AU AU=AU AU=GC GC=AU AU=UA UA=CG CG=CG CG=UA UA=CG CG=GC", " ");
     //Strings flow_steps = split_str_by_delimiter("GC=AU AU=AU AU=GC GC=UA UA=AU AU=CG CG=CG CG=GC GC=GU GU=GC", " ");
-    Strings chip_steps = split_str_by_delimiter("GC=AU AU=AU AU=GC GC=AU AU=UA UA=CG CG=CG CG=UG UG=GU GU=GC", " ");
+    Strings chip_steps = split_str_by_delimiter(chip_str, ",");
 
     MotifEnsembleTree met;
     met.add_ensemble(MotifEnsemble("AU=GC", 0, 0));
@@ -182,6 +173,7 @@ test_tecto() {
     std::uniform_real_distribution<float> dist(0,1);
 
     MotifTreeStateTree mtst = met.get_mtst();
+    mtst.clash_radius(2.5);
     MotifEnsembleTreeNodeOP met_node;
     MotifTreeStateNodeOP mts_node;
     MotifState ms = met.nodes()[0]->motif_ensemble().motif_states()[0];
@@ -189,7 +181,7 @@ test_tecto() {
     float kBT =  kB * 298.15 ;
     float score;
     int node_num = 0;
-    int i = 0, nsteps =10000000, result = 0;
+    int i = 0, nsteps =100000000, result = 0;
     float cpop;
     float frame_score;
     BasepairStateOP target = mtst.nodes()[2]->states()[0];
@@ -199,7 +191,7 @@ test_tecto() {
     float cutoff = 5.0f;
     float diceroll = 0.0f;
     int pos = 0;
-    
+    //nsteps =1000000;
     srand(unsigned(time(NULL)));
     while (i < nsteps) {
         //if( i % 10000 == 0 ) { std::cout << under_cutoff <<" " << i << std::endl; }
@@ -213,7 +205,8 @@ test_tecto() {
         ms = met_node->motif_ensemble().get_state(pos);
         if ( ms.population < cpop) {
             result = mtst.replace_state(mts_node, ms.mts);
-            frame_score = frame_distance(mtst.last_node()->states()[1], target, target_flip);
+            if(result == 0) { continue;}
+            frame_score =  frame_distance(mtst.last_node()->states()[1], target, target_flip);
             if(frame_score < cutoff) { under_cutoff++; }
             i++;
             continue;
@@ -224,6 +217,7 @@ test_tecto() {
         diceroll = dist(mt);
         if( diceroll < score) {
             result = mtst.replace_state(mts_node, ms.mts);
+            if(result == 0) { continue;}
             frame_score = frame_distance(mtst.last_node()->states()[1], target, target_flip);
             if(frame_score < cutoff) { under_cutoff++; }
             i++;
@@ -247,10 +241,10 @@ int main(int argc, const char * argv[]) {
     //if (test_sample() == 0)               { std::cout << "test_sample failed" << std::endl;  }
     String flow_string = "GC=AU,AU=AU,AU=GC,GC=UA,UA=AU,AU=CG,CG=CG,CG=GC,GC=AU,AU=GC";
     String chip_string = "GC=AU,AU=AU,AU=GC,GC=AU,AU=UA,UA=CG,CG=CG,CG=UG,UG=GU,GU=GC";
-    
-    
-    
-    test_tecto();
+    if(argc > 1 ){
+        chip_string = String(argv[1]);
+    }
+    test_tecto(flow_string, chip_string);
     
     return 0;
 }

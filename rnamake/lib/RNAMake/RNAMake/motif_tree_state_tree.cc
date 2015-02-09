@@ -161,7 +161,8 @@ MotifTreeStateTree::replace_state(
         }
     }
     
-    return 1;
+    //To not check sterics
+    //return 1;
     
     int clash = 0;
     float dist = 0;
