@@ -15,6 +15,7 @@
 #include <uuid/uuid.h>
 
 typedef std::vector<int> Ints;
+typedef std::vector<char> Chars;
 typedef std::string String;
 typedef std::vector<String> Strings;
 typedef std::shared_ptr<String> StringOP;

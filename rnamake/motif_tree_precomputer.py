@@ -209,8 +209,9 @@ class MotifTreePrecomputer(base.Base):
         dist = util.distance(motif_node.motif.ends[end_index].d(),
                              self.mt.nodes[0].motif.ends[0].d())
         # weird bug with NWAYS investigate
-        if dist > 1:
-            return
+        # interferes with other stuff unforunately
+        #if dist > 1:
+        #    return
         if motif_node is None:
             return
         avail_ends = motif_node.available_ends()

@@ -281,8 +281,8 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
 
     for m in helix_mlib.motifs():
         spl = m.name.split(".")
-        if spl[1] not in include:
-            continue
+        #if spl[1] not in include:
+        #    continue
         if spl[1] == "IDEAL" or spl[1] == "LE":
             continue
         for c in m.chains():

@@ -14,6 +14,7 @@
 #include "motif_ensemble_tree.h"
 #include "motif_tree_state.h"
 #include "motif_tree_state_tree.h"
+#include "secondary_structure_tree.h"
 
 
 Strings
@@ -143,7 +144,8 @@ mts_to_me(MotifTreeStateOP const & mts) {
 
 int
 test_tecto(String const & flow_str,
-           String const & chip_str) {
+           String const & chip_str,
+           int nsteps = 10000000) {
     Strings lines = get_lines_from_file("tetraloop.str");
     ResidueTypeSet rts;
     MotifOP ggaa_motif ( new Motif(lines[0], rts));
@@ -181,7 +183,7 @@ test_tecto(String const & flow_str,
     float kBT =  kB * 298.15 ;
     float score;
     int node_num = 0;
-    int i = 0, nsteps =100000000, result = 0;
+    int i = 0,result = 0;
     float cpop;
     float frame_score;
     BasepairStateOP target = mtst.nodes()[2]->states()[0];
@@ -207,7 +209,11 @@ test_tecto(String const & flow_str,
             result = mtst.replace_state(mts_node, ms.mts);
             if(result == 0) { continue;}
             frame_score =  frame_distance(mtst.last_node()->states()[1], target, target_flip);
-            if(frame_score < cutoff) { under_cutoff++; }
+            if(frame_score < cutoff) {
+                under_cutoff++;
+                std::cout << mtst.nodes()[18]->mts()->name() << std::endl;
+
+            }
             i++;
             continue;
 
@@ -219,7 +225,11 @@ test_tecto(String const & flow_str,
             result = mtst.replace_state(mts_node, ms.mts);
             if(result == 0) { continue;}
             frame_score = frame_distance(mtst.last_node()->states()[1], target, target_flip);
-            if(frame_score < cutoff) { under_cutoff++; }
+            if(frame_score < cutoff) {
+                under_cutoff++;
+                std::cout << mtst.nodes()[18]->mts()->name() << std::endl;
+                
+            }
             i++;
         }
     }
@@ -234,17 +244,32 @@ test_tecto(String const & flow_str,
     return 1;
 }
 
+int
+test_sstree() {
+    SecondaryStructureTree sstree("((()))", "GGGCCC");
+    SSandSeqOP ss_and_seq = sstree.get_ss_and_seq();
+    std::cout << ss_and_seq->ss << std::endl;
+    
+    return 1;
+}
+
 int main(int argc, const char * argv[]) {
     //if (test_creation_me() == 0)          { std::cout << "test_creation_me failed" << std::endl;  }
     //if (test_creation_me_tree() == 0)     { std::cout << "test_creation_me_tree failed" << std::endl;  }
     //if (test_add_ensemble() == 0)         { std::cout << "test_add_ensemble failed" << std::endl;  }
     //if (test_sample() == 0)               { std::cout << "test_sample failed" << std::endl;  }
+    test_sstree();
     String flow_string = "GC=AU,AU=AU,AU=GC,GC=UA,UA=AU,AU=CG,CG=CG,CG=GC,GC=AU,AU=GC";
     String chip_string = "GC=AU,AU=AU,AU=GC,GC=AU,AU=UA,UA=CG,CG=CG,CG=UG,UG=GU,GU=GC";
+    int nsteps = 10000000;
     if(argc > 1 ){
         chip_string = String(argv[1]);
     }
-    test_tecto(flow_string, chip_string);
+    
+    if(argc > 2) {
+        nsteps = std::stoi(argv[2]);
+    }
+    //test_tecto(flow_string, chip_string, nsteps);
     
     return 0;
 }

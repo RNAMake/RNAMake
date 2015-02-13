@@ -44,7 +44,7 @@ for l in lines:
     chip_steps = extract_steps_from_ss_tree(chip_ss_tree)
     motif_names = get_step_motifs(chip_steps[1:])
     chip_str = ",".join(motif_names)
-    for i in range (0, 2):
+    for i in range (0, 10):
         subprocess.call("./a.out "+chip_str+"> out",shell=True)
         f = open("out")
         result = f.readline()

@@ -15,4 +15,5 @@ class MotifEnsembleTreeNode;
 typedef std::shared_ptr<MotifEnsembleTreeNode> MotifEnsembleTreeNodeOP;
 typedef std::vector<MotifEnsembleTreeNodeOP> MotifEnsembleTreeNodeOPs;
 
+
 #endif

@@ -103,7 +103,10 @@ class Motif(object):
         retreival of data
         """
         x3dna_parser = x3dna.X3dna()
-        x_basepairs = x3dna_parser.get_basepairs(self.mdir + "/" + self.name)
+        mdir = self.mdir + "/"
+        if mdir == "//":
+            mdir = ""
+        x_basepairs = x3dna_parser.get_basepairs(mdir + self.name)
         basepairs = []
         for xbp in x_basepairs:
             res1 = self.structure.get_residue(num=xbp.res1.num,

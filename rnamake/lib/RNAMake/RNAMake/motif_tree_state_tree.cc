@@ -147,6 +147,8 @@ MotifTreeStateTree::replace_state(
     MotifTreeStateNodeOP current, parent;
     BasepairStateOP parent_end;
     open_nodes.push(node);
+    int clash = 0;
+    float dist = 0;
     while (! open_nodes.empty() ) {
         current = open_nodes.front();
         open_nodes.pop();
@@ -156,6 +158,15 @@ MotifTreeStateTree::replace_state(
         parent_end = current->parent_end();
         aligner_.transform_state(parent_end, parent, current);
         aligner_.transform_beads(current);
+        if (current->index() > 19) {
+            for( auto const & b1: nodes_[2]->beads()) {
+                for (auto const & b2 : current->beads()) {
+                    dist = b1.distance(b2);
+                    if(dist < clash_radius_) { clash = 1; break; }
+                }
+            }
+        }
+        if(clash) { break; }
         for (auto const & c : current->children()) {
             open_nodes.push(c);
         }
@@ -163,19 +174,6 @@ MotifTreeStateTree::replace_state(
     
     //To not check sterics
     //return 1;
-    
-    int clash = 0;
-    float dist = 0;
-    for(int i = 0; i < nodes_.size(); i++) {
-        for(int j = i+1; j < nodes_.size(); j++) {
-            for( auto const & b1: nodes_[i]->beads()) {
-                for (auto const & b2 : nodes_[j]->beads()) {
-                    dist = b1.distance(b2);
-                    if(dist < clash_radius_) { clash = 1; }
-                }
-            }
-        }
-    }
     
     if(!clash) { return 1; }
     

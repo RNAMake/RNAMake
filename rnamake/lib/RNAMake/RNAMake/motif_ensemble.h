@@ -62,6 +62,10 @@ public:
         String prediction_path = resources_path()+"/prediction/";
         String mts_lib_path = prediction_path+lib_path+".new.me";
         String pop_path = prediction_path+lib_path+".pop";
+        if (!file_exists(mts_lib_path)) {
+            mts_lib_path = lib_path+".new.me";
+            pop_path = lib_path+".pop";
+        }
         String line;
         StringFloatMap pop;
         

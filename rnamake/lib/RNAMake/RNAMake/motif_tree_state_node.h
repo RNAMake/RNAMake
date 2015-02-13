@@ -94,6 +94,10 @@ public: //getters
     inline
     MotifTreeStateNodeOP const &
     parent() { return parent_; }
+    
+    inline
+    int const &
+    index() const { return index_; }
 
 public: //setters
     

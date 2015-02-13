@@ -39,7 +39,12 @@ class MotifEnsemble(object):
             mts_lib_path = prediction_dir + "/" + lib_path + ".new.me"
             pop_path = prediction_dir + "/" + lib_path + ".pop"
         elif os.path.isfile(lib_path + ".new.me"):
-            raise ValueError("not implemented")
+            mts_lib_path = lib_path + ".new.me"
+            pop_path = lib_path + ".pop"
+        else:
+            print "path"
+            print lib_path
+            exit()
 
         pops = self._get_populations(pop_path)
         mts_lib = motif_tree_state.MotifTreeStateLibrary(libpath=mts_lib_path)
@@ -57,6 +62,8 @@ class MotifEnsemble(object):
                 raise ValueError("cannot find "+mname+" in populations")
             motif_state = MotifState(mts, m_pop)
             self.motif_states.append(motif_state)
+        #print lib_path, len(self.motif_states)
+        #print len(mts_lib.motif_tree_states)
         self.motif_states.sort(key = lambda x : x.population, reverse=False)
 
 
