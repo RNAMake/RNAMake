@@ -1,13 +1,13 @@
 //
-//  secondary_structure_tree.fwd.h
+//  secondary_structure_node.fwd.h
 //  RNAMake
 //
-//  Created by Joseph Yesselman on 2/11/15.
+//  Created by Joseph Yesselman on 2/14/15.
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef RNAMake_secondary_structure_tree_fwd_h
-#define RNAMake_secondary_structure_tree_fwd_h
+#ifndef RNAMake_secondary_structure_node_fwd_h
+#define RNAMake_secondary_structure_node_fwd_h
 #include <vector>
 
 class SecondaryStructureNode;

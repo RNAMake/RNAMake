@@ -59,6 +59,11 @@
 			<key>orderHint</key>
 			<integer>9</integer>
 		</dict>
+		<key>secondary_structure_tree.unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>11</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -118,6 +123,11 @@
 			<true/>
 		</dict>
 		<key>1CA7AC021A853E340063C8A8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1CA7AC3D1A8FFBDD0063C8A8</key>
 		<dict>
 			<key>primary</key>
 			<true/>

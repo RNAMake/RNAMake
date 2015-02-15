@@ -244,21 +244,13 @@ test_tecto(String const & flow_str,
     return 1;
 }
 
-int
-test_sstree() {
-    SecondaryStructureTree sstree("((()))", "GGGCCC");
-    SSandSeqOP ss_and_seq = sstree.get_ss_and_seq();
-    std::cout << ss_and_seq->ss << std::endl;
-    
-    return 1;
-}
+
 
 int main(int argc, const char * argv[]) {
     //if (test_creation_me() == 0)          { std::cout << "test_creation_me failed" << std::endl;  }
     //if (test_creation_me_tree() == 0)     { std::cout << "test_creation_me_tree failed" << std::endl;  }
     //if (test_add_ensemble() == 0)         { std::cout << "test_add_ensemble failed" << std::endl;  }
     //if (test_sample() == 0)               { std::cout << "test_sample failed" << std::endl;  }
-    test_sstree();
     String flow_string = "GC=AU,AU=AU,AU=GC,GC=UA,UA=AU,AU=CG,CG=CG,CG=GC,GC=AU,AU=GC";
     String chip_string = "GC=AU,AU=AU,AU=GC,GC=AU,AU=UA,UA=CG,CG=CG,CG=UG,UG=GU,GU=GC";
     int nsteps = 10000000;

@@ -11,84 +11,8 @@
 #include <stdio.h>
 #include <iostream>
 #include "types.h"
-#include "secondary_structure_tree.fwd.h"
-
-struct SSandSeq {
-public:
-    SSandSeq(
-        String const & nss,
-        String const & nseq):
-        ss ( nss ),
-        seq ( nseq ) {}
-    
-public:
-    String ss, seq;
-};
-
-typedef std::shared_ptr<SSandSeq> SSandSeqOP;
-
-int
-get_brack_pair(int, String const &);
-
-int
-get_dot_bounds(int, String const &, int);
-
-
-class SecondaryStructureNode {
-public:
-    
-    ~SecondaryStructureNode() {
-        delete parent_;
-    }
-    
-    virtual
-    SSandSeqOP
-    get_ss_and_seq();
-
-public:
-    
-    inline
-    SecondaryStructureNodes const &
-    children() { return children_; }
-    
-protected:
-    
-    void
-    _assign_children(
-        String &,
-        String &);
-    
-protected:
-    SecondaryStructureNode* parent_;
-    SecondaryStructureNodes children_;
-    
-};
-
-
-class SSN_Basepair : public SecondaryStructureNode {
-public:
-    SSN_Basepair(
-        String &,
-        String &,
-        SecondaryStructureNode* const &);
-    
-    SSandSeqOP
-    get_ss_and_seq();
-
-private:
-    char res1_, res2_;
-    String bp_type_, ss_type_;
-    
-    
-};
-
-class SSN_Bulge : public SecondaryStructureNode {
-    SSN_Bulge(
-        String &,
-        String &,
-        SecondaryStructureNode* const &);
-
-};
+#include "secondary_structure_node.fwd.h"
+#include "secondary_structure_node.h"
 
 
 class SecondaryStructureTree {

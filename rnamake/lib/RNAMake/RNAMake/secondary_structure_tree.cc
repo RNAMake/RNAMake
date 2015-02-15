@@ -27,8 +27,24 @@ get_brack_pair(
 }
 
 int
-get_dot_bounds(int, String const &, int) {
-    return 1;
+get_dot_bounds(
+    int pos,
+    String const & ss,
+    int reverse) {
+    
+    if(!reverse) {
+        for(int i = pos+1; i < ss.length(); i++) {
+            if(ss[i] != '.') { return i-1; }
+        }
+        return (int)ss.length()-1;
+    }
+    else {
+        for(int i = pos-1; i >= 0; i--) {
+            if(ss[i] != '.') { return i+1; }
+        }
+        return 0;
+    }
+    return pos;
 }
 
 
@@ -39,11 +55,12 @@ SecondaryStructureTree::_build_tree(
     
     SecondaryStructureNode* node;
     if     ((ss[0] == '.' || ss.back() == '.') && nodes_.size() == 0) {
-        
+        node = new SSN_Bulge(ss, seq, 0, (int)ss.length()-1 , NULL);
     }
     
     else if(ss[0] == '(') {
-        node = new SSN_Basepair(ss, seq, NULL);
+        int pair = get_brack_pair(0, ss);
+        node = new SSN_Basepair(ss, seq, 0, pair, NULL);
     }
     
     std::queue<SecondaryStructureNode*> open_nodes;
@@ -52,85 +69,36 @@ SecondaryStructureTree::_build_tree(
     while (! open_nodes.empty()) {
         current = open_nodes.front();
         open_nodes.pop();
+        current->assign_all_children(ss, seq);
         for(auto const & c : current->children()) { open_nodes.push(c); }
         nodes_.push_back(current);
+    }
+    
+    int nway = 0;
+    SecondaryStructureNodes nodes_to_erase;
+    for (auto const & n : nodes_) {
+        nway = 0;
+        if(n->ss_type() != SSN_TWOWAY) { continue; }
+        for(auto const & c : n->children()) {
+            if(c->ss_type() != SSN_TWOWAY) { continue; }
+            nodes_to_erase.push_back(c);
+            nway=1;
+        }
+        if(nway) {
+            SecondaryStructureNode* nway_node = new SSN_Junction(n);
+            nodes_to_erase.push_back(n);
+            nodes_.push_back(nway_node);
+        }
+    }
+    
+    for(auto const & n : nodes_to_erase) {
+        int pos = (int)(std::find(nodes_.begin(), nodes_.end(), n) - nodes_.begin());
+        nodes_.erase(nodes_.begin()+pos);
     }
     
     //std::cout << nodes_.size() << std::endl;
     
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// SecondaryStructureNode
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-SSandSeqOP
-SecondaryStructureNode::get_ss_and_seq() {
-    return SSandSeqOP(new SSandSeq("", ""));
-}
-
-void
-SecondaryStructureNode::_assign_children(
-    String & ss,
-    String & seq) {
-    
-    if     (ss.back() == '.') {
-        
-    }
-    
-    else if(ss[0] == '(') {
-        int pair = get_brack_pair(0, ss);
-        String nss = ss.substr(0,pair+1);
-        String nseq = seq.substr(0,pair+1);
-        SecondaryStructureNode* child = new SSN_Basepair(nss, nseq, this);
-        children_.push_back(child);
-    }
-
-}
-
-
-SSN_Basepair::SSN_Basepair(
-    String & ss,
-    String & seq,
-    SecondaryStructureNode* const & parent) {
-    
-    res1_ = seq.back();
-    res2_ = seq[0];
-    seq.pop_back();
-    seq.erase(seq.begin(), seq.begin()+1);
-    ss.pop_back();
-    ss.erase(ss.begin(), ss.begin()+1);
-    bp_type_ = String();
-    bp_type_.push_back(res1_); bp_type_.push_back(res2_);
-    _assign_children(ss, seq);
-
-}
-
-SSandSeqOP
-SSN_Basepair::get_ss_and_seq() {
-    String ss, seq;
-    for( auto const & c : children_) {
-        SSandSeqOP ss_and_seq = c->get_ss_and_seq();
-        ss += ss_and_seq->ss;
-        seq += ss_and_seq->seq;
-    }
-    ss = "(" + ss + ")";
-    seq = res1_ + seq + res2_;
-    SSandSeqOP result ( new SSandSeq(ss, seq));
-    return result;
-}
-
-SSN_Bulge::SSN_Bulge(
-    String & ss,
-    String & seq,
-    SecondaryStructureNode* const & parent) {
-    
-}
-
-
-
-
-
 
 
 
