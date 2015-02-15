@@ -7,9 +7,15 @@
 //
 
 #include <iostream>
+#include <random>
+#include <time.h>
 #include "secondary_structure_tree.h"
 #include "option.h"
 #include "types.h"
+#include "motif_ensemble.h"
+#include "motif_ensemble_tree.h"
+#include "motif_tree_state.h"
+#include "motif_tree_state_tree.h"
 
 Options
 get_options(
@@ -51,6 +57,16 @@ get_construct_seq_and_ss(
     
 }
 
+String
+remove_Ts(String const & step) {
+    String nstep;
+    for(auto const & s : step) {
+        if(s == 'T') { nstep += 'U'; }
+        else         { nstep += s;   }
+    }
+    return nstep;
+}
+
 Strings
 get_steps_from_ss_tree(
     SecondaryStructureTree const & ss_tree) {
@@ -72,22 +88,148 @@ get_steps_from_ss_tree(
             continue;
         }
         step = required_nodes[i-1]->bp_type() + "=" + required_nodes[i]->bp_type();
-        steps.push_back(step);
+        steps.push_back(remove_Ts(step));
         i++;
         
     }
+    //first one is in tetraloop receptor structure
+    steps.erase(steps.begin());
 
     return steps;
 }
+
+Strings
+get_lines_from_file(String const fname) {
+    String line;
+    Strings lines;
+    std::ifstream input;
+    input.open(fname);
+    while ( input.good() ) {
+        getline(input, line);
+        if( line.length() < 10 ) { break; }
+        lines.push_back(line);
+        
+    }
+    return lines;
+}
+
+MotifEnsemble
+mts_to_me(MotifTreeStateOP const & mts) {
+    MotifEnsemble me;
+    MotifState ms (mts, 1.0);
+    me.add_motif_state(ms);
+    return me;
+}
+
+MotifEnsembleTree
+get_met(
+    SecondaryStructureTree const & flow_ss_tree,
+    SecondaryStructureTree const & chip_ss_tree) {
+    
+    Strings lines = get_lines_from_file("tetraloop.str");
+    ResidueTypeSet rts;
+    MotifOP ggaa_motif ( new Motif(lines[0], rts));
+    MotifOP gaaa_motif ( new Motif(lines[1], rts));
+    MotifTreeStateOP ggaa_state = motif_to_state(ggaa_motif, 1, 1);
+    MotifTreeStateOP gaaa_state = motif_to_state(gaaa_motif, 0, 1);
+    Strings flow_steps = get_steps_from_ss_tree(flow_ss_tree);
+    Strings chip_steps = get_steps_from_ss_tree(chip_ss_tree);
+    MotifEnsembleTree met;
+    met.add_ensemble(MotifEnsemble("AU=GC", 0, 0));
+    met.add_ensemble(mts_to_me(ggaa_state));
+    met.add_ensemble(MotifEnsemble(flow_steps[0], 0, 1), NULL, 2);
+    for (int i = 1; i < flow_steps.size(); i++) {
+        met.add_ensemble(MotifEnsemble(flow_steps[i], 0, 1));
+    }
+    met.add_ensemble(mts_to_me(gaaa_state));
+    met.add_ensemble(MotifEnsemble(chip_steps[0], 0, 1), NULL, 1);
+    for (int i = 1; i < chip_steps.size(); i++) {
+        met.add_ensemble(MotifEnsemble(chip_steps[i], 0, 1));
+    }
+    
+    return met;
+}
+
+void
+sample(
+    MotifEnsembleTree & met,
+    int nsteps = 10000000) {
+    
+    //get crazy randomness
+    srand(unsigned(time(NULL)));
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<float> dist(0,1);
+    
+    MotifTreeStateTree mtst = met.get_mtst();
+    mtst.clash_radius(2.5);
+    MotifEnsembleTreeNodeOP met_node;
+    MotifTreeStateNodeOP mts_node;
+    MotifState ms = met.nodes()[0]->motif_ensemble().motif_states()[0];
+    
+    float kB =  1.3806488e-1 ;
+    float kBT =  kB * 298.15 ;
+    float score;
+    int node_num = 0;
+    int i = 0,result = 0;
+    float cpop;
+    float frame_score;
+    BasepairStateOP target = mtst.nodes()[2]->states()[0];
+    BasepairStateOP target_flip (new BasepairState(target->copy()));
+    target_flip->flip();
+    int under_cutoff = 0;
+    float cutoff = 5.0f;
+    float diceroll = 0.0f;
+    int pos = 0;
+    
+    while (i < nsteps) {
+        node_num = (int)((met.nodes().size()-1)*dist(mt));
+        if(node_num == 0) { continue; }
+        met_node = met.nodes()[ node_num ];
+        mts_node = mtst.nodes()[ node_num ];
+        cpop = met_node->motif_ensemble().get_state(mts_node->mts()->name()).population;
+        pos = (int)((met_node->motif_ensemble().motif_states().size()-1)*dist(mt));
+        ms = met_node->motif_ensemble().get_state(pos);
+        if ( ms.population < cpop) {
+            result = mtst.replace_state(mts_node, ms.mts);
+            if(result == 0) { continue;}
+            frame_score =  frame_distance(mtst.last_node()->states()[1], target, target_flip);
+            if(frame_score < cutoff) {
+                under_cutoff++;
+                //std::cout << mtst.nodes()[18]->mts()->name() << std::endl;
+            }
+            i++;
+            continue;
+        }
+        
+        score = exp((cpop - ms.population)/kBT);
+        diceroll = dist(mt);
+        if( diceroll < score) {
+            result = mtst.replace_state(mts_node, ms.mts);
+            if(result == 0) { continue;}
+            frame_score = frame_distance(mtst.last_node()->states()[1], target, target_flip);
+            if(frame_score < cutoff) {
+                under_cutoff++;
+                //std::cout << mtst.nodes()[18]->mts()->name() << std::endl;
+            }
+            i++;
+        }
+    }
+    
+    std::cout << under_cutoff << " " << nsteps << std::endl;
+
+}
+
 
 
 int main(int argc, const char * argv[]) {
     Options options = get_options(argc, argv);
     StringStringMap constructs_seq_and_ss = get_construct_seq_and_ss(options);
     SecondaryStructureTree chip_ss_tree ( constructs_seq_and_ss["css"], constructs_seq_and_ss["cseq"]);
-    Strings chip_steps = get_steps_from_ss_tree(chip_ss_tree);
-    for(auto const & s : chip_steps) { std::cout << s << ","; }
-    std::cout << std::endl;
+    SecondaryStructureTree flow_ss_tree ( constructs_seq_and_ss["fss"], constructs_seq_and_ss["fseq"]);
+    MotifEnsembleTree met = get_met(flow_ss_tree, chip_ss_tree);
+    int nsteps = 10000000;
+    sample(met, nsteps);
     return 0;
 }
 
