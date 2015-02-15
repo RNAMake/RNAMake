@@ -7,6 +7,37 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C3AB1791A906F4000361C7F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1781A906F4000361C7F /* main.cpp */; };
+		1C3AB17F1A906FA100361C7F /* option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB17D1A906FA100361C7F /* option.cc */; };
+		1C3AB1801A906FA100361C7F /* option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB17D1A906FA100361C7F /* option.cc */; };
+		1C3AB1811A906FC300361C7F /* motif_ensemble.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AC221A853EFF0063C8A8 /* motif_ensemble.cc */; };
+		1C3AB1821A906FC300361C7F /* motif_ensemble_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AC261A8545730063C8A8 /* motif_ensemble_tree.cc */; };
+		1C3AB1831A906FE600361C7F /* numerical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C427D971A4F128B0012A72B /* numerical.cpp */; };
+		1C3AB1841A906FE600361C7F /* motif_type.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C855B541A7C347800EED04D /* motif_type.cpp */; };
+		1C3AB1851A906FE600361C7F /* motif_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855BB71A80540800EED04D /* motif_library.cc */; };
+		1C3AB1861A906FE600361C7F /* motif_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AB721A82AD280063C8A8 /* motif_tree.cc */; };
+		1C3AB1871A906FE600361C7F /* motif_tree_state.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7ABB41A83F4580063C8A8 /* motif_tree_state.cc */; };
+		1C3AB1881A906FE600361C7F /* motif_tree_state_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7ABEE1A8400390063C8A8 /* motif_tree_state_library.cc */; };
+		1C3AB1891A906FE600361C7F /* motif_tree_state_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7ABF21A8408FF0063C8A8 /* motif_tree_state_node.cc */; };
+		1C3AB18A1A906FE600361C7F /* motif_tree_state_node_aligner.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7ABF71A842B3C0063C8A8 /* motif_tree_state_node_aligner.cc */; };
+		1C3AB18B1A906FE600361C7F /* motif_tree_state_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7ABFB1A8431AE0063C8A8 /* motif_tree_state_tree.cc */; };
+		1C3AB18C1A906FE600361C7F /* basepair_state.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C6F6B7A1A79A9BA0060F2A8 /* basepair_state.cc */; };
+		1C3AB18D1A906FE600361C7F /* atom.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CE55A301A4A558400F300F3 /* atom.cpp */; };
+		1C3AB18E1A906FE600361C7F /* residue_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56031A74548400C7E6D7 /* residue_type.cc */; };
+		1C3AB18F1A906FE600361C7F /* residue_type_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56191A74614D00C7E6D7 /* residue_type_set.cc */; };
+		1C3AB1901A906FE600361C7F /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56361A7585BB00C7E6D7 /* residue.cc */; };
+		1C3AB1911A906FE600361C7F /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F563E1A760AFB00C7E6D7 /* chain.cc */; };
+		1C3AB1921A906FE600361C7F /* structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56411A76227900C7E6D7 /* structure.cc */; };
+		1C3AB1931A906FE600361C7F /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
+		1C3AB1941A906FE600361C7F /* settings.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56211A74631000C7E6D7 /* settings.cc */; };
+		1C3AB1951A906FE600361C7F /* util.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F563A1A75B34200C7E6D7 /* util.cc */; };
+		1C3AB1961A906FE600361C7F /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
+		1C3AB1971A906FE600361C7F /* sqlite3_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855BB01A7FDBEC00EED04D /* sqlite3_connection.cc */; };
+		1C3AB1981A906FE600361C7F /* secondary_structure_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AC2B1A8C137E0063C8A8 /* secondary_structure_tree.cc */; };
+		1C3AB1991A906FE600361C7F /* secondary_structure_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AC461A8FFCC50063C8A8 /* secondary_structure_node.cc */; };
+		1C3AB19A1A91377D00361C7F /* basepair.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C6F6B7C1A79AE290060F2A8 /* basepair.cc */; };
+		1C3AB19B1A9137AF00361C7F /* motif.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855B501A7C341900EED04D /* motif.cc */; };
+		1C3AB19C1A9137CA00361C7F /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
 		1C427D981A4F128B0012A72B /* numerical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C427D971A4F128B0012A72B /* numerical.cpp */; };
 		1C427D991A4F128B0012A72B /* numerical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C427D971A4F128B0012A72B /* numerical.cpp */; };
 		1C4F56011A7441CB00C7E6D7 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
@@ -204,6 +235,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		1C3AB1741A906F4000361C7F /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		1C4F56081A74596400C7E6D7 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -316,6 +356,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C3AB1761A906F4000361C7F /* simulate_tectos */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulate_tectos; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C3AB1781A906F4000361C7F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
+		1C3AB17D1A906FA100361C7F /* option.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = option.cc; sourceTree = "<group>"; };
+		1C3AB17E1A906FA100361C7F /* option.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = option.h; sourceTree = "<group>"; };
 		1C427D961A4F128B0012A72B /* numerical.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = numerical.h; sourceTree = "<group>"; };
 		1C427D971A4F128B0012A72B /* numerical.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = numerical.cpp; sourceTree = "<group>"; };
 		1C427D9A1A4F13100012A72B /* xyzMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xyzMatrix.h; sourceTree = "<group>"; };
@@ -407,6 +451,14 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1C3AB1731A906F4000361C7F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C3AB19C1A9137CA00361C7F /* libsqlite3.0.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1C4F56071A74596400C7E6D7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -498,6 +550,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C3AB1771A906F4000361C7F /* simulate_tectos */ = {
+			isa = PBXGroup;
+			children = (
+				1C3AB1781A906F4000361C7F /* main.cpp */,
+			);
+			path = simulate_tectos;
+			sourceTree = "<group>";
+		};
 		1C4F560B1A74596400C7E6D7 /* ResidueTypeSet_unittest */ = {
 			isa = PBXGroup;
 			children = (
@@ -613,6 +673,8 @@
 		1CA7AC361A8D58980063C8A8 /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				1C3AB17D1A906FA100361C7F /* option.cc */,
+				1C3AB17E1A906FA100361C7F /* option.h */,
 				1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */,
 				1CE55A341A4A576000F300F3 /* types.h */,
 				1CE55A351A4A594B00F300F3 /* FileIO.h */,
@@ -694,6 +756,7 @@
 				1CA7AB9A1A83F0910063C8A8 /* motif_tree_state.unittest */,
 				1CA7AC041A853E340063C8A8 /* motif_ensemble_tree.unittest */,
 				1CA7AC3F1A8FFBDD0063C8A8 /* secondary_structure_tree.unittest */,
+				1C3AB1771A906F4000361C7F /* simulate_tectos */,
 				1CE55A271A4A552F00F300F3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -713,6 +776,7 @@
 				1CA7AB991A83F0910063C8A8 /* motif_tree_state.unittest */,
 				1CA7AC031A853E340063C8A8 /* motif_ensemble_tree.unittest */,
 				1CA7AC3E1A8FFBDD0063C8A8 /* secondary_structure_tree.unittest */,
+				1C3AB1761A906F4000361C7F /* simulate_tectos */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -747,6 +811,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1C3AB1751A906F4000361C7F /* simulate_tectos */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C3AB17C1A906F4000361C7F /* Build configuration list for PBXNativeTarget "simulate_tectos" */;
+			buildPhases = (
+				1C3AB1721A906F4000361C7F /* Sources */,
+				1C3AB1731A906F4000361C7F /* Frameworks */,
+				1C3AB1741A906F4000361C7F /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = simulate_tectos;
+			productName = simulate_tectos;
+			productReference = 1C3AB1761A906F4000361C7F /* simulate_tectos */;
+			productType = "com.apple.product-type.tool";
+		};
 		1C4F56091A74596400C7E6D7 /* ResidueTypeSet_unittest */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1C4F560E1A74596400C7E6D7 /* Build configuration list for PBXNativeTarget "ResidueTypeSet_unittest" */;
@@ -960,6 +1041,9 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Joseph Yesselman";
 				TargetAttributes = {
+					1C3AB1751A906F4000361C7F = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
 					1C4F56091A74596400C7E6D7 = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
@@ -1022,11 +1106,48 @@
 				1CA7AB981A83F0910063C8A8 /* motif_tree_state.unittest */,
 				1CA7AC021A853E340063C8A8 /* motif_ensemble_tree.unittest */,
 				1CA7AC3D1A8FFBDD0063C8A8 /* secondary_structure_tree.unittest */,
+				1C3AB1751A906F4000361C7F /* simulate_tectos */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1C3AB1721A906F4000361C7F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C3AB19B1A9137AF00361C7F /* motif.cc in Sources */,
+				1C3AB19A1A91377D00361C7F /* basepair.cc in Sources */,
+				1C3AB1831A906FE600361C7F /* numerical.cpp in Sources */,
+				1C3AB1841A906FE600361C7F /* motif_type.cpp in Sources */,
+				1C3AB1851A906FE600361C7F /* motif_library.cc in Sources */,
+				1C3AB1861A906FE600361C7F /* motif_tree.cc in Sources */,
+				1C3AB1871A906FE600361C7F /* motif_tree_state.cc in Sources */,
+				1C3AB1881A906FE600361C7F /* motif_tree_state_library.cc in Sources */,
+				1C3AB1891A906FE600361C7F /* motif_tree_state_node.cc in Sources */,
+				1C3AB18A1A906FE600361C7F /* motif_tree_state_node_aligner.cc in Sources */,
+				1C3AB18B1A906FE600361C7F /* motif_tree_state_tree.cc in Sources */,
+				1C3AB18C1A906FE600361C7F /* basepair_state.cc in Sources */,
+				1C3AB18D1A906FE600361C7F /* atom.cpp in Sources */,
+				1C3AB18E1A906FE600361C7F /* residue_type.cc in Sources */,
+				1C3AB18F1A906FE600361C7F /* residue_type_set.cc in Sources */,
+				1C3AB1901A906FE600361C7F /* residue.cc in Sources */,
+				1C3AB1911A906FE600361C7F /* chain.cc in Sources */,
+				1C3AB1921A906FE600361C7F /* structure.cc in Sources */,
+				1C3AB1931A906FE600361C7F /* FileIO.cpp in Sources */,
+				1C3AB1941A906FE600361C7F /* settings.cc in Sources */,
+				1C3AB1951A906FE600361C7F /* util.cc in Sources */,
+				1C3AB1961A906FE600361C7F /* uuid.cc in Sources */,
+				1C3AB1971A906FE600361C7F /* sqlite3_connection.cc in Sources */,
+				1C3AB1981A906FE600361C7F /* secondary_structure_tree.cc in Sources */,
+				1C3AB1991A906FE600361C7F /* secondary_structure_node.cc in Sources */,
+				1C3AB1811A906FC300361C7F /* motif_ensemble.cc in Sources */,
+				1C3AB1821A906FC300361C7F /* motif_ensemble_tree.cc in Sources */,
+				1C3AB1801A906FA100361C7F /* option.cc in Sources */,
+				1C3AB1791A906F4000361C7F /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1C4F56061A74596400C7E6D7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1280,6 +1401,7 @@
 				1C4F563C1A75B34200C7E6D7 /* util.cc in Sources */,
 				1C4F56051A74548400C7E6D7 /* residue_type.cc in Sources */,
 				1C4F56431A76227900C7E6D7 /* structure.cc in Sources */,
+				1C3AB17F1A906FA100361C7F /* option.cc in Sources */,
 				1C6F6B7B1A79A9BA0060F2A8 /* basepair_state.cc in Sources */,
 				1C855B521A7C341900EED04D /* motif.cc in Sources */,
 				1C6F6B7E1A79AE290060F2A8 /* basepair.cc in Sources */,
@@ -1304,6 +1426,24 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		1C3AB17A1A906F4000361C7F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1C3AB17B1A906F4000361C7F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		1C4F560F1A74596400C7E6D7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1604,6 +1744,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1C3AB17C1A906F4000361C7F /* Build configuration list for PBXNativeTarget "simulate_tectos" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C3AB17A1A906F4000361C7F /* Debug */,
+				1C3AB17B1A906F4000361C7F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		1C4F560E1A74596400C7E6D7 /* Build configuration list for PBXNativeTarget "ResidueTypeSet_unittest" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1683,6 +1831,7 @@
 				1CA7AC091A853E340063C8A8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1CA7AC421A8FFBDD0063C8A8 /* Build configuration list for PBXNativeTarget "secondary_structure_tree.unittest" */ = {
 			isa = XCConfigurationList;
@@ -1691,6 +1840,7 @@
 				1CA7AC441A8FFBDD0063C8A8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1CE55A211A4A552F00F300F3 /* Build configuration list for PBXProject "RNAMake" */ = {
 			isa = XCConfigurationList;

@@ -24,12 +24,20 @@ test_sstree() {
         std::cout << "fail" << std::endl;
     }
     
-
     return 1;
 }
 
 int main(int argc, const char * argv[]) {
-    // insert code here...
-    test_sstree();
+    if (test_sstree() == 0)          { std::cout << "test_sstree failed" << std::endl;  }
     return 0;
 }
+
+
+
+
+
+
+
+
+
+

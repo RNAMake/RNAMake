@@ -110,6 +110,11 @@ public:
     String
     x_seq() { return ""; }
     
+    virtual
+    inline
+    String
+    bp_type() { return ""; }
+    
     
 protected:
     
@@ -140,6 +145,11 @@ public:
     
     SSandSeqOP
     get_ss_and_seq();
+
+public:
+    inline
+    String
+    bp_type() { return bp_type_; }
     
 private:
     char res1_, res2_;

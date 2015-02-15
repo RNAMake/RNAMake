@@ -33,6 +33,17 @@ public:
 public:
     SSandSeqOP
     get_ss_and_seq() { return nodes_[0]->get_ss_and_seq(); }
+   
+    inline
+    SecondaryStructureNodes
+    get_bulges() const {
+        SecondaryStructureNodes bulges;
+        for (auto const & n : nodes_) {
+            if(n->ss_type() == SSN_TWOWAY) { bulges.push_back(n); }
+        }
+        return bulges;
+    }
+    
     
 private:
     
