@@ -122,6 +122,9 @@ public:
     MotifType const &
     mtype() { return mtype_; }
     
+    inline
+    StructureOP const &
+    structure() { return structure_; }
     
 public:
     
@@ -168,7 +171,7 @@ public:
     
     
     
-private:
+protected:
     Beads beads_;
     float score_;
     MotifType mtype_;

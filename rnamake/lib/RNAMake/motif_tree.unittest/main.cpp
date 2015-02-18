@@ -76,11 +76,21 @@ test_motif_tree_to_str() {
     return 1;
 }
 
+int
+test_merger() {
+    MotifLibrary mlib(HELIX);
+    MotifTree mt;
+    mt.add_motif(mlib.get_motif("HELIX.IDEAL"));
+    mt.add_motif(mlib.get_motif("HELIX.IDEAL"));
+    mt.to_pose();
+    return 1;
+}
 
 int main(int argc, const char * argv[]) {
-    if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
-    if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
-    if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
+    //if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
+    //if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
+    //if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
+    if (test_merger() == 0)            { std::cout << "test_merger failed" << std::endl;  }
     return 0;
 }
 

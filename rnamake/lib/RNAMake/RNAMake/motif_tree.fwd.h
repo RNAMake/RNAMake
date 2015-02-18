@@ -13,9 +13,9 @@
 class MotifTreeConnection;
 typedef std::vector<MotifTreeConnection> MotifTreeConnections;
 class MotifTreeNode;
-typedef std::vector<MotifTreeNode> MotifTreeNodes;
 typedef std::shared_ptr<MotifTreeNode> MotifTreeNodeOP;
 typedef std::vector<MotifTreeNodeOP> MotifTreeNodeOPs;
+class MotifTree;
 
 
 #endif

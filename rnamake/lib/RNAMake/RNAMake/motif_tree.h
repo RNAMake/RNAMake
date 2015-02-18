@@ -13,11 +13,13 @@
 #include <map>
 #include "types.h"
 #include "motif_tree.fwd.h"
+#include "motif_tree_node.h"
 #include "motif.h"
 #include "uuid.h"
 #include "residue_type_set.h"
+#include "motif_tree_merger.h"
+#include "pose.h"
 
-typedef std::map<Uuid, int> UuidIntMap;
 
 class MotifTree {
 public:
@@ -38,12 +40,15 @@ public:
     
     void
     write_pdbs(String const & fname = "nodes");
+    
+    PoseOP
+    to_pose();
 
 public: //getters
     
     inline
     MotifTreeNodeOPs const &
-    nodes() { return nodes_; }
+    nodes() const { return nodes_; }
     
 public: //setters
     
@@ -74,6 +79,7 @@ private:
 private:
     MotifTreeNodeOPs nodes_;
     MotifTreeNodeOP last_node_;
+    MotifTreeMerger merger_;
     float clash_radius_;
     //options ... need a better way
     int sterics_, full_beads_first_res_;
@@ -81,87 +87,6 @@ private:
     
 };
 
-class MotifTreeNode {
-public:
-    MotifTreeNode() {}
-    MotifTreeNode(
-        MotifOP const &,
-        int const,
-        int const,
-        int const);
-    
-    ~MotifTreeNode() {}
-
-public:
-    
-    BasepairOPs
-    available_ends();
-    
-    void
-    set_end_status(BasepairOP const &, int);
-    
-    int
-    get_end_status(BasepairOP const &);
-    
-    void
-    add_connection(MotifTreeConnection const &);
-    
-public: //getters:
-    
-    inline
-    MotifOP const &
-    motif() const { return motif_; }
-    
-    inline
-    int const &
-    level() const { return level_; }
-
-    inline
-    int const &
-    index() const { return index_; }
-    
-    inline
-    int const &
-    flip() const { return flip_; }
-    
-private:
-    int level_, index_, flip_;
-    MotifOP motif_;
-    UuidIntMap end_status_;
-    MotifTreeConnections connections_;
-    
-};
-
-
-class MotifTreeConnection {
-public:
-    MotifTreeConnection() {}
-    MotifTreeConnection(
-        MotifTreeNodeOP node_1,
-        MotifTreeNodeOP node_2,
-        BasepairOP end_1,
-        BasepairOP end_2,
-        int no_overlap=0):
-        node_1_( node_1 ),
-        node_2_( node_2 ),
-        end_1_ ( end_1 ),
-        end_2_ ( end_2 ),
-        no_overlap_ ( no_overlap )
-    {
-        node_1_->set_end_status(end_1_, 0);
-        node_2_->set_end_status(end_2_, 0);
-        node_1_->add_connection(*this);
-        node_2_->add_connection(*this);
-    }
-    
-    ~MotifTreeConnection() {}
-   
-private:
-    MotifTreeNodeOP node_1_, node_2_;
-    BasepairOP end_1_, end_2_;
-    int no_overlap_;
-
-};
 
 
 MotifTree
