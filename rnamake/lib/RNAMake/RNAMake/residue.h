@@ -160,6 +160,14 @@ public: // setters
     void
     uuid(Uuid const & nuuid) { uuid_ = nuuid; }
     
+    inline
+    void
+    num(int nnum) { num_ = nnum; }
+    
+    inline
+    void
+    chain_id(String const & nchain_id) { chain_id_ = nchain_id; }
+    
     
 public: // getters
     

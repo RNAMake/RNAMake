@@ -30,7 +30,7 @@ MotifTreeNode::MotifTreeNode(
     for (auto & end : motif_->ends()) {
         end_status_[end->uuid()] = 1;
     }
-    connections_ = MotifTreeConnections();
+    connections_ = MotifTreeConnectionOPs();
     
 }
 
@@ -60,7 +60,7 @@ MotifTreeNode::get_end_status(BasepairOP const & end) {
 }
 
 void
-MotifTreeNode::add_connection(MotifTreeConnection const & mtc) {
+MotifTreeNode::add_connection(MotifTreeConnectionOP const & mtc) {
     connections_.push_back(mtc);
 }
 

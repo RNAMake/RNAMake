@@ -154,7 +154,7 @@ MotifTree::_add_motif(
         m->reset();
         BasepairOP new_end = m_copy->get_basepair(end->uuid())[0];
         for ( auto const & r : m_copy->residues() ) {  r->new_uuid(); }
-        MotifTreeConnection mtc(parent, new_node, parent_end, new_end, 0);
+        MotifTreeConnectionOP mtc (new MotifTreeConnection(parent, new_node, parent_end, new_end, 0));
         parent->add_connection(mtc);
         new_node->add_connection(mtc);
 

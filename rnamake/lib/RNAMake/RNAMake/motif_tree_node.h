@@ -39,7 +39,7 @@ public:
     get_end_status(BasepairOP const &);
     
     void
-    add_connection(MotifTreeConnection const &);
+    add_connection(MotifTreeConnectionOP const &);
     
 public: //getters:
     
@@ -60,14 +60,14 @@ public: //getters:
     flip() const { return flip_; }
     
     inline
-    MotifTreeConnections const &
+    MotifTreeConnectionOPs const &
     connections() { return connections_; }
     
 private:
     int level_, index_, flip_;
     MotifOP motif_;
     UuidIntMap end_status_;
-    MotifTreeConnections connections_;
+    MotifTreeConnectionOPs connections_;
     
 };
 

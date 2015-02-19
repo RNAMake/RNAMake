@@ -114,7 +114,10 @@ public:
     to_str();
     
     void
-    to_pdb(String const);    
+    to_pdb(String const);
+    
+    void
+    renumber();
     
 public: // getters
     inline

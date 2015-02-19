@@ -35,6 +35,10 @@ public:
     Motif(String const &,
           ResidueTypeSet const &);
     
+    
+    Motif(StructureOP const &,
+          BasepairOPs const &);
+    
     Motif
     copy();
     
@@ -126,7 +130,16 @@ public:
     StructureOP const &
     structure() { return structure_; }
     
+public: // setters
+    
+    inline
+    void
+    structure(StructureOP const & nstructure) { structure_ = nstructure; }
+    
 public:
+    
+    void
+    setup_basepair_ends();
     
     inline
     void

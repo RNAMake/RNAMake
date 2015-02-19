@@ -9,9 +9,12 @@
 #ifndef RNAMake_motif_tree_fwd_h
 #define RNAMake_motif_tree_fwd_h
 #include <vector>
+#include <memory>
 
 class MotifTreeConnection;
 typedef std::vector<MotifTreeConnection> MotifTreeConnections;
+typedef std::shared_ptr<MotifTreeConnection> MotifTreeConnectionOP;
+typedef std::vector<MotifTreeConnectionOP> MotifTreeConnectionOPs;
 class MotifTreeNode;
 typedef std::shared_ptr<MotifTreeNode> MotifTreeNodeOP;
 typedef std::vector<MotifTreeNodeOP> MotifTreeNodeOPs;

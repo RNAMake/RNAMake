@@ -64,7 +64,7 @@ public:
 class MotifTreeMerger {
 public:
     MotifTreeMerger() {
-        seen_connections_ = std::map<MotifTreeConnection, int>();
+        seen_connections_ = std::map<MotifTreeConnectionOP, int>();
         chains_ = ChainOPs();
         nodes_ = MotifTreeNodeOPs();
         include_head_ = 0;
@@ -96,8 +96,11 @@ private:
         int join_by_3prime = 0,
         int remove_overlap = 0);
     
+    PoseOP
+    _build_pose();
+    
 private:
-    std::map<MotifTreeConnection, int> seen_connections_;
+    std::map<MotifTreeConnectionOP, int> seen_connections_;
     ChainOPs chains_;
     MotifTreeNodeOPs nodes_;
     int include_head_;

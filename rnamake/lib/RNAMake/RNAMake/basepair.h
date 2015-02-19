@@ -154,8 +154,15 @@ public: // setters
     
     inline
     void
-    flipped(int const & nflipped) { flipped_ = nflipped; } 
+    flipped(int const & nflipped) { flipped_ = nflipped; }
     
+    inline
+    void
+    res1(ResidueOP const & nres1) { res1_ = nres1;}
+    
+    inline
+    void
+    res2(ResidueOP const & nres2) { res2_ = nres2;}
     
 public:
     

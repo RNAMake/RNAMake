@@ -107,6 +107,16 @@ Structure::get_residue(
 }
 
 
+void
+Structure::renumber() {
+    int i = 1;
+    for( auto & r : residues()) {
+        r->num(i);
+        r->chain_id("A");
+        i++;
+    }
+    
+}
 
 
 String

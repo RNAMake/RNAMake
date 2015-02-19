@@ -7,6 +7,7 @@
 //
 
 #include "motif.h"
+#include "chain.h"
 #include "xyzMatrix.h"
 #include "transform.h"
 #include "settings.h"
@@ -86,6 +87,28 @@ Motif::copy() {
     
     cmotif._cache_basepair_frames();
     return cmotif;
+}
+
+void
+Motif::setup_basepair_ends() {
+    //TODO check to see if this works the same as python, its different
+    
+    ResidueOPs chain_ends;
+    for(auto const & c : chains()) {
+        chain_ends.push_back(c->first());
+        if(c->residues().size() > 1) { chain_ends.push_back(c->last()); }
+    }
+    
+    for( auto const & bp : basepairs_ ) {
+        for (auto const & ce1 : chain_ends) {
+            for(auto const & ce2 : chain_ends) {
+                if(bp->res1() == ce1 && bp->res2() == ce2) {
+                    ends_.push_back(bp);
+                }
+                
+            }
+        }
+    }
 }
 
 String const
