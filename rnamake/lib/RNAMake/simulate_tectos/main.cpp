@@ -17,7 +17,7 @@
 #include "motif_tree_state.h"
 #include "motif_tree_state_tree.h"
 
-String mismatch_path = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/prediction/rosetta_ensembles/1K_struct_100_cycles/2bp_flank/";
+String mismatch_path = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
 
 Options
 get_options(
@@ -100,7 +100,9 @@ get_steps_from_ss_tree(
             seq2.push_back(third_bp[1]); seq2.push_back(forth_bp[1]);
             std::reverse(seq2.begin(), seq2.end());
             String name = seq1 + "-" + seq2;
+            steps.push_back(remove_Ts(first_bp+"="+second_bp));
             steps.push_back(remove_Ts(name));
+            steps.push_back(remove_Ts(third_bp+"="+forth_bp));
             i = i+4;
             continue;
         }

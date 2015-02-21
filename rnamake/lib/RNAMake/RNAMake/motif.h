@@ -45,6 +45,10 @@ public:
     ~Motif() {}
 
 public:
+    
+    void
+    setup_basepair_ends();
+    
     inline
     void
     _cache_basepair_frames() {
@@ -105,6 +109,8 @@ public:
     inline
     ChainOPs const &
     chains() { return structure_->chains(); }
+    
+public:
     
     inline
     BasepairOPs const &

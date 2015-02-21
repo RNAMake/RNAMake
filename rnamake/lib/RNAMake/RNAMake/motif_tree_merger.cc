@@ -42,7 +42,7 @@ MotifTreeMerger::merge(MotifTree const & mt) {
 
 PoseOP
 MotifTreeMerger::_build_pose() {
-    StructureOP new_structure;
+    StructureOP new_structure ( new Structure() );
     ChainOPs new_chains;
     for( auto const & c : chains_) {
         new_chains.push_back( ChainOP( new Chain(c->copy())) );
