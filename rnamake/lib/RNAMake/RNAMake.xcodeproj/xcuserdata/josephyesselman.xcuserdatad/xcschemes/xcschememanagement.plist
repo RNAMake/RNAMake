@@ -59,6 +59,16 @@
 			<key>orderHint</key>
 			<integer>9</integer>
 		</dict>
+		<key>motif_tree_state_search.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>14</integer>
+		</dict>
+		<key>priority_queue.cc.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>13</integer>
+		</dict>
 		<key>secondary_structure_tree.unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -73,6 +83,16 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>1C3AB1751A906F4000361C7F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C3AB1AF1A995B5F00361C7F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C3AB1BA1A995B7B00361C7F</key>
 		<dict>
 			<key>primary</key>
 			<true/>

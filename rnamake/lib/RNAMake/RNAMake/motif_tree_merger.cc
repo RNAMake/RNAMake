@@ -34,10 +34,8 @@ MotifTreeMerger::merge(MotifTree const & mt) {
     MotifTreeNodeOP start_node = nodes_[0];
     if(include_head_ == 0) { start_node = nodes_[1]; }
     _merge_chains_in_node(start_node);
-    _build_pose();
-    
-    return PoseOP( new Pose() );
-    
+    PoseOP new_pose = _build_pose();
+    return new_pose;
 }
 
 PoseOP
@@ -51,17 +49,17 @@ MotifTreeMerger::_build_pose() {
     new_structure->renumber();
     new_structure->_cache_coords();
     ResidueOPs residues = new_structure->residues();
-    std::map<Uuid, ResidueOP> uuids;
-    for(auto const & res : residues) { uuids[res->uuid()] = res; }
+    std::map<String, ResidueOP> uuids;
+    for(auto const & res : residues) { uuids[res->uuid().s_uuid() ] = res; }
     BasepairOPs basepairs;
     std::map<Uuid, int> designable;
     for(auto const & node : nodes_) {
         for(auto const & bp : node->motif()->basepairs()) {
-            if(uuids.find(bp->res1()->uuid()) ==  uuids.end()) { continue; }
-            if(uuids.find(bp->res2()->uuid()) ==  uuids.end()) { continue; }
+            if(uuids.find(bp->res1()->uuid().s_uuid()) ==  uuids.end()) { continue; }
+            if(uuids.find(bp->res2()->uuid().s_uuid()) ==  uuids.end()) { continue; }
             BasepairOP cbp (new Basepair(bp->copy()));
-            cbp->res1( uuids[bp->res1()->uuid()]);
-            cbp->res2( uuids[bp->res2()->uuid()]);
+            cbp->res1( uuids[bp->res1()->uuid().s_uuid()]);
+            cbp->res2( uuids[bp->res2()->uuid().s_uuid()]);
             if(node->motif()->mtype() == HELIX) { designable[cbp->uuid()] = 1; }
             basepairs.push_back(cbp);
         }
@@ -69,7 +67,7 @@ MotifTreeMerger::_build_pose() {
 
     PoseOP new_pose (new Pose(new_structure, basepairs));
     new_pose->designable(designable);
-    //new_pose->_cache_basepair_frames();
+    new_pose->_cache_basepair_frames();
     
     
     return new_pose;
@@ -90,6 +88,7 @@ MotifTreeMerger::_merge_chains_in_node(
         ChainEndPairMap partner_chains = _find_chains_for_end(pend);
         ChainOPs merged_chains;
         if(partner->motif()->mtype() == HELIX) { merged_chains = _helix_merge(node_chains, partner_chains); }
+        else                                   { merged_chains = _non_helix_merge(node_chains, partner_chains);}
         
         std::map<ChainOP, int> used_chains;
         ChainOPs new_chains;
@@ -150,9 +149,12 @@ MotifTreeMerger::_helix_merge(
     ChainOPs merged_chains(2);
     if     ( nc.is_hairpin() && pc.is_hairpin() ) { throw "cannot merge an hairpin with another hairpin"; }
     else if( nc.is_hairpin() ) {
-        
+        ChainOP p3_chain = pc.p3_chain->subchain(0, (int)pc.p5_chain->residues().size()-1);
+        ChainOP p5_chain = pc.p5_chain->subchain(1, (int)pc.p5_chain->residues().size());
+        merged_chains[0] = _get_merged_hairpin(p3_chain, p5_chain, nc.p5_chain);
     }
     else if( pc.is_hairpin() ) {
+        merged_chains[0] = _get_merged_hairpin(nc.p5_chain, nc.p3_chain, pc.p5_chain, 1, 1);
         
     }
     else {
@@ -163,6 +165,33 @@ MotifTreeMerger::_helix_merge(
     return merged_chains;
     
 }
+
+ChainOPs
+MotifTreeMerger::_non_helix_merge(
+    ChainEndPairMap const & nc,
+    ChainEndPairMap const & pc) {
+    
+    ChainOPs merged_chains(2);
+    ChainOP p3_chain = nc.p3_chain->subchain(0, (int)nc.p3_chain->residues().size()-1);
+    ChainOP p5_chain = nc.p5_chain->subchain(1, (int)nc.p5_chain->residues().size());
+    if     ( nc.is_hairpin() && pc.is_hairpin() ) { throw "cannot merge an hairpin with another hairpin"; }
+    else if( nc.is_hairpin() ) {
+        merged_chains[0] = _get_merged_hairpin(pc.p3_chain, pc.p5_chain, p5_chain);
+    }
+    else if( pc.is_hairpin() ) {
+        merged_chains[0] = _get_merged_hairpin(p5_chain, p3_chain, pc.p5_chain, 1);
+        
+    }
+    else {
+        merged_chains[0] = _get_merged_chain(p5_chain, pc.p3_chain, 1);
+        merged_chains[1] = _get_merged_chain(p3_chain, pc.p5_chain);
+    }
+    
+    return merged_chains;
+
+}
+
+
 
 ChainOP
 MotifTreeMerger::_get_merged_chain(
@@ -187,6 +216,17 @@ MotifTreeMerger::_get_merged_chain(
     return merged_chain;
 }
 
-
+ChainOP
+MotifTreeMerger::_get_merged_hairpin(
+    ChainOP const & c1,
+    ChainOP const & c2,
+    ChainOP const & hairpin,
+    int join_by_3prime,
+    int remove_overlap) {
+    
+    ChainOP merged_chain = _get_merged_chain(c1, hairpin, join_by_3prime, remove_overlap);
+    ChainOP merged_chain2 = _get_merged_chain(merged_chain, c2, join_by_3prime, remove_overlap);
+    return merged_chain2;
+}
 
 

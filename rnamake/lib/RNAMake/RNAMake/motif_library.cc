@@ -7,12 +7,13 @@
 //
 
 #include "motif_library.h"
+#include "settings.h"
 
 //Motif const
 //MotifLibrary::get_motif();
 
 void
-MotifLibrary::load_all(int limit=9999) {
+MotifLibrary::load_all(int limit) {
     int i = 0;
     connection_.query("SELECT * from motifs");
     Strings values(2);
@@ -46,7 +47,34 @@ MotifLibrary::get_motif(String const & name) {
 
 }
 
+MotifLibrary
+unique_twoway_lib() {
+    MotifLibrary mlib(TWOWAY);
+    String path = resources_path() + "motifs/two_ways/unique_7.dat";
+    String line;
+    std::ifstream in;
+    in.open(path);
+    while ( in.good() ) {
+        getline(in, line);
+        if(line.length() < 10) { break; }
+        Strings spl = split_str_by_delimiter(line, " ");
+        mlib.get_motif(spl[0]);
+    }
+    return mlib;
+}
 
+
+MotifLibrary
+ideal_helix_lib() {
+    MotifLibrary mlib(HELIX);
+    std::stringstream ss;
+    for(int i = 1; i < 21; i++) {
+        ss << "HELIX.LE." << i;
+        mlib.get_motif(ss.str());
+        ss.str("");
+    }
+    return mlib;
+}
 
 
 

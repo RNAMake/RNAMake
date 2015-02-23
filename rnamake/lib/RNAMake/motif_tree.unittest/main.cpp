@@ -7,6 +7,8 @@
 //
 
 #include <iostream>
+#include <random>
+#include "pose.h"
 #include "motif_type.h"
 #include "motif_library.h"
 #include "motif_tree.h"
@@ -82,15 +84,53 @@ test_merger() {
     MotifTree mt;
     mt.add_motif(mlib.get_motif("HELIX.IDEAL"));
     mt.add_motif(mlib.get_motif("HELIX.IDEAL"));
-    mt.to_pose();
+    for(int i = 0; i < 10; i++) {
+        mt.add_motif(mlib.get_motif("HELIX.IDEAL"));
+    }
+    
+    PoseOP pose = mt.to_pose();
     return 1;
 }
+
+
+int
+test_merger2() {
+    std::vector<MotifLibrary> mlibs;
+    mlibs.push_back(ideal_helix_lib()); mlibs.push_back(unique_twoway_lib());
+    MotifTree mt;
+    int i = 0, pos = 0, count = 0, size = 100;
+    int random = 0;
+    //get crazy randomness
+    srand(unsigned(time(NULL)));
+    std::random_device rd;
+    std::mt19937 mt19(rd());
+    std::uniform_real_distribution<float> dist(0,1);
+    while( i < size)  {
+        if( i % 2 == 0) { pos = 0; }
+        else            { pos = 1; }
+        random = dist(mt19)*mlibs[pos].size();
+        MotifOP m = mlibs[pos].motifs()[random];
+        MotifTreeNodeOP node = mt.add_motif(m);
+        if(node != NULL) { i++; }
+        count++;
+        if(count > 1000) { break; }
+         
+    }
+    
+    std::cout << mt.nodes().size() << std::endl;
+    PoseOP pose = mt.to_pose();
+    pose->to_pdb("merged.pdb");
+    
+    return 1;
+}
+
 
 int main(int argc, const char * argv[]) {
     //if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
     //if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
     //if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
     if (test_merger() == 0)            { std::cout << "test_merger failed" << std::endl;  }
+    if (test_merger2() == 0)            { std::cout << "test_merger2 failed" << std::endl;  }
     return 0;
 }
 

@@ -89,8 +89,21 @@ private:
         ChainEndPairMap const &,
         ChainEndPairMap const &);
     
+    ChainOPs
+    _non_helix_merge(
+        ChainEndPairMap const &,
+        ChainEndPairMap const &);
+    
     ChainOP
     _get_merged_chain(
+        ChainOP const &,
+        ChainOP const &,
+        int join_by_3prime = 0,
+        int remove_overlap = 0);
+    
+    ChainOP
+    _get_merged_hairpin(
+        ChainOP const &,
         ChainOP const &,
         ChainOP const &,
         int join_by_3prime = 0,

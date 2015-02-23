@@ -4,6 +4,7 @@ import rnamake.motif_type as motif_type
 import rnamake.motif_tree_state as motif_tree_state
 import rnamake.resource_manager as resource_manger
 import rnamake.steric_lookup as steric_lookup
+import rnamake.motif_tree_state_selector as motif_tree_state_selector
 import random
 
 def get_twoway_mts_tree(size=2):
@@ -68,14 +69,42 @@ class BuildTaskAstarUnittest(unittest.TestCase):
         pass
 
     def test_selector(self):
-        pass
+        selector = motif_tree_state_selector.default_selector()
 
     def test_search(self):
         mtss = build_task_astar.MotifTreeStateSearch()
 
+    def test_selector_in_search(self):
+        mtss = build_task_astar.MotifTreeStateSearch(max_node_level=20,
+                                                     max_solutions=1,
+                                                     accept_score=20)
+
+        selector = motif_tree_state_selector.default_selector([motif_type.TWOWAY],
+                                                              "all")
+        mtst = get_twoway_helix_mts_tree(10)
+        start = mtst.nodes[0].active_states()[0]
+        end = mtst.nodes[-1].active_states()[0]
+        solutions = mtss.search(start, end, selector)
+        #solutions[0].nodes_to_pdbs()
+
+    def test_selector_in_search_2(self):
+        mtss = build_task_astar.MotifTreeStateSearch(max_node_level=20,
+                                                     max_solutions=1,
+                                                     accept_score=20)
+
+        selector = motif_tree_state_selector.default_selector([motif_type.TWOWAY],
+                                                              "all")
+        mtst = get_twoway_helix_mts_tree(10)
+        start = mtst.nodes[0].active_states()[0]
+        end = mtst.nodes[-1].active_states()[0]
+        solutions = mtss.search(start, end, selector)
+        #solutions[0].nodes_to_pdbs()
+
+
+
     def test_search_search(self):
-        return
-        selector =build_task_astar.MotifTreeStateSelector([motif_type.TWOWAY],"all")
+        selector = motif_tree_state_selector.default_selector([motif_type.TWOWAY],
+                                                              "all")
         mtss = build_task_astar.MotifTreeStateSearch(max_node_level=2,
                                                      max_solutions=1,
                                                      accept_score=1)
@@ -83,12 +112,12 @@ class BuildTaskAstarUnittest(unittest.TestCase):
         start = mtst.nodes[0].active_states()[0]
         end = mtst.nodes[-1].active_states()[0]
         solutions = mtss.search(start, end, selector)
+        print len(solutions)
         for i in range(len(mtst.nodes)):
             if mtst.nodes[i].mts.name != solutions[0].path[i].mts.name:
                 self.fail("did not get correct path back")
 
     def test_search_search_2(self):
-        return
         mtst = get_twoway_helix_mts_tree()
         start = mtst.nodes[0].active_states()[0]
         end = mtst.nodes[-1].active_states()[0]

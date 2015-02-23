@@ -36,13 +36,19 @@ public:
     get_motif(String const &);
     
     void
-    load_all(int);
+    load_all(int limit = 9999);
     
 public:
     
     size_t const
     size() { return mdict_.size(); } 
     
+    MotifOPs
+    motifs() {
+        MotifOPs motifs;
+        for(auto const & kv : mdict_) { motifs.push_back(kv.second); }
+        return motifs;
+    }
     
 private:
     Sqlite3Connection connection_;
@@ -50,5 +56,15 @@ private:
     StringMotifMap mdict_;
     ResidueTypeSet rts_;
 };
+
+typedef std::shared_ptr<MotifLibrary> MotifLibraryOP;
+typedef std::vector<MotifLibraryOP> MotifLibraryOPs;
+
+MotifLibrary
+unique_twoway_lib();
+
+MotifLibrary
+ideal_helix_lib();
+
 
 #endif /* defined(__RNAMake__motif_library__) */

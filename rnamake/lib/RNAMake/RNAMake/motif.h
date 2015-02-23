@@ -46,9 +46,6 @@ public:
 
 public:
     
-    void
-    setup_basepair_ends();
-    
     inline
     void
     _cache_basepair_frames() {
@@ -202,6 +199,7 @@ protected:
 
 
 typedef std::shared_ptr<Motif> MotifOP;
+typedef std::vector<MotifOP>   MotifOPs;
 
 void
 align_motif(BasepairOP const &,

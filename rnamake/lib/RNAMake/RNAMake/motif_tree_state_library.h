@@ -39,4 +39,7 @@ private:
     MotifTreeStateOPs motif_tree_states_;
 };
 
+typedef std::shared_ptr<MotifTreeStateLibrary> MotifTreeStateLibraryOP;
+typedef std::vector<MotifTreeStateLibraryOP>   MotifTreeStateLibraryOPs;
+
 #endif /* defined(__RNAMake__motif_tree_state_library__) */

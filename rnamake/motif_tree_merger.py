@@ -202,7 +202,7 @@ class MotifTreeMerger(base.Base):
 
     def _get_merged_hairpin(self, c1, c2, hairpin, join_by_3prime=0,
                             remove_overlap=0):
-        hairpin.to_pdb("hairpin.pdb")
+        #hairpin.to_pdb("hairpin.pdb")
         merged_chain = self._get_merged_chain(c1, hairpin, join_by_3prime,
                                               remove_overlap)
         merged_chain = self._get_merged_chain(merged_chain, c2, join_by_3prime,

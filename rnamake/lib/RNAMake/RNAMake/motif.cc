@@ -41,7 +41,7 @@ Motif::Motif(
         ResidueOP res1 = structure_->get_residue(res1_num, res1_id, "");
         ResidueOP res2 = structure_->get_residue(res2_num, res2_id, "");
         BasepairState bpstate = str_to_basepairstate(bp_spl[1]);
-        BasepairOP bp ( new Basepair(res1, res2, bpstate.r(), bp_spl[1] ));
+        BasepairOP bp ( new Basepair(res1, res2, bpstate.r(), bp_spl[2] ));
         bp->flipped(std::stoi(bp_spl[4]));
 
         basepairs_.push_back(bp);
@@ -102,7 +102,7 @@ Motif::setup_basepair_ends() {
     for( auto const & bp : basepairs_ ) {
         for (auto const & ce1 : chain_ends) {
             for(auto const & ce2 : chain_ends) {
-                if(bp->res1() == ce1 && bp->res2() == ce2) {
+                if(bp->bp_type().compare("cW-W") == 0 && bp->res1() == ce1 && bp->res2() == ce2) {
                     ends_.push_back(bp);
                 }
                 

@@ -10,8 +10,11 @@ import math
 import transform
 import settings
 import logger
+import motif_tree_state_selector
+
 
 clogger =  logger.get_logger("MotifTreeStateSearch:search")
+
 
 class PriorityQueue(object):
     """
@@ -39,78 +42,6 @@ class PriorityQueue(object):
         gets next best element
         """
         return heapq.heappop(self.elements)[1]
-
-
-class MotifTreeStateSelector(object):
-    """
-
-    """
-    def __init__(self, motif_types, mode="helix_flank"):
-        self.mts_libs = []
-        self.lib_map = []
-        self.clash_lists = {}
-        for mtype in motif_types:
-            mts_lib = motif_tree_state.MotifTreeStateLibrary(mtype)
-            self.mts_libs.append(mts_lib)
-
-        if mode == "all":
-            for i in range(len(motif_types)):
-                self.lib_map.append(range(len(motif_types)))
-
-        elif mode == "helix_flank":
-            mts_lib = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX)
-            self.mts_libs.insert(0, mts_lib)
-            self.lib_map.append( range(1, len(self.mts_libs)))
-            for i in range(1, len(self.mts_libs)):
-                self.lib_map.append([0])
-
-        self._setup_clash_lists()
-
-    def _setup_clash_lists(self):
-        for i, lmap in enumerate(self.lib_map):
-            mtype1 = self.mts_libs[i].mtype
-            for j in lmap:
-                if str(i)+"-"+str(j) in self.clash_lists:
-                    continue
-                mtype2 = self.mts_libs[j].mtype
-                clist_path =  settings.PRECOMPUTED_PATH + "motif_tree_states/"
-                clist_path += motif_type.type_to_str(mtype1) + "_"
-                clist_path += motif_type.type_to_str(mtype2) + ".clist"
-                try:
-                    f = open(clist_path)
-                    lines = f.readlines()
-                    f.close()
-                    clist = {}
-                    for l in lines:
-                        clist[l.rstrip()] = 1
-                    self.clash_lists[ str(i)+"-"+str(j) ] = clist
-                except:
-                    print "warning no clist file loaded for ",
-                    motif_type.type_to_str(mtype1), " and ",
-                    motif_type.type_to_str(mtype2)
-
-    def get_children_mts(self, node):
-        libtype = node.lib_type
-        lib_poss = self.lib_map[libtype]
-        if node.level == 0 :
-            lib_poss = [0]
-        children = []
-        types = []
-        if node.level == 0:
-            for lib_pos in lib_poss:
-                children.extend(self.mts_libs[lib_pos].motif_tree_states)
-                types.extend((lib_pos for mts in self.mts_libs[lib_pos].motif_tree_states))
-            return children, types
-
-        for lib_pos in lib_poss:
-            clist = self.clash_lists[ str(libtype)+"-"+str(lib_pos) ]
-            for mts in self.mts_libs[lib_pos].motif_tree_states:
-                key = node.mts.name + " " + mts.name
-                if key in clist:
-                    continue
-                children.append(mts)
-                types.append(lib_pos)
-        return children, types
 
 
 class MotifTreeStateSearchScorer(object):
@@ -150,7 +81,7 @@ class MotifTreeStateSearch(base.Base):
         self.queue = PriorityQueue()
         self.aligner = motif_tree_state.MotifTreeStateNodeAligner()
         self.scorer = None
-        self.node_selector = MotifTreeStateSelector([motif_type.TWOWAY])
+        self.node_selector = motif_tree_state_selector.default_selector()
         self.lookup = None
         self.using_lookup = 0
         self.steps = 0
@@ -256,7 +187,7 @@ class MotifTreeStateSearch(base.Base):
     def _get_start_node(self, start):
         mts = motif_tree_state.MotifTreeState("start", 1, 0, 0, [],
                                               [start], 0, "")
-        start_node = motif_tree_state.MotifTreeStateNode(mts, 0, None, 0, [0])
+        start_node = motif_tree_state.MotifTreeStateNode(mts, 0, None, -1, [0])
         return start_node
 
     def _print_status(self):
