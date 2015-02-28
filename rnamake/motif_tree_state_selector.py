@@ -1,6 +1,8 @@
 import motif_tree_state
 import motif_type
 import settings
+import motif_tree_precomputer
+import time
 
 class MotifTreeStateSelector(object):
     def __init__(self, mts_libs=None, mode="helix_flank", nodes=None):
@@ -61,7 +63,6 @@ class MotifTreeStateSelector(object):
                     motif_type.type_to_str(n.mts_lib.mtype), " and ",
                     motif_type.type_to_str(n2.mts_lib.mtype)
 
-
     def get_children_mts(self, node):
         lib_type = node.lib_type
         if lib_type != -1:
@@ -70,6 +71,8 @@ class MotifTreeStateSelector(object):
             connections = [self.nodes[0]]
         children, types = [], []
         for c in connections:
+            if c.max_uses <= node.lib_type_usage(c.index):
+                continue
             clist_name = str(node.lib_type) + "-" + str(c.index)
             clist = {}
             if clist_name in self.clash_lists:
@@ -83,13 +86,26 @@ class MotifTreeStateSelector(object):
 
         return children, types
 
+    def is_valid_solution(self, current):
+        for i, n in enumerate(self.nodes):
+            if n.required_uses > current.node_counts[i]:
+                return 0
+        return 1
+
+    def set_node_uses(self, index, max_uses=None, required_uses=None):
+        if max_uses is not None:
+            self.nodes[index].max_uses = max_uses
+        if required_uses is not None:
+            self.nodes[index].required_uses = required_uses
+
 
 class SelectorNode(object):
-    def __init__(self, mts_lib, index, max_uses=1000):
+    def __init__(self, mts_lib, index, max_uses=1000, required_uses=0):
         self.mts_lib = mts_lib
         self.index = index
         self.connections = []
         self.max_uses = max_uses
+        self.required_uses = required_uses
 
     def add_connection(self, node):
         self.connections.append(node)
@@ -99,17 +115,43 @@ def default_selector(types=None, mode=None):
     if mode is None:
         mode = "helix_flank"
 
-    types = [motif_type.TWOWAY]
+    if types is None:
+        types = [motif_type.TWOWAY]
     mts_libs = []
     for t in types:
-        mts_lib = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
+        mts_lib = motif_tree_state.MotifTreeStateLibrary(t)
         mts_libs.append(mts_lib)
-
 
     return MotifTreeStateSelector(mts_libs, mode=mode)
 
 
 def force_include_motif_selector(m, types=None, mode=None):
-    pass
+    if mode is None:
+        mode = "helix_flank"
+
+    if types is None:
+        types = [motif_type.TWOWAY]
+
+    mtp = motif_tree_precomputer.MotifTreePrecomputer(name="temp",
+                                                      max_bps_per_end=0)
+    mtp.precompute_motif(m)
+    mts_libs = []
+    for t in types:
+        mts_lib = motif_tree_state.MotifTreeStateLibrary(t)
+        mts_libs.append(mts_lib)
+    m_mts_lib = motif_tree_state.MotifTreeStateLibrary(libpath="temp.new.me")
+    mts_libs.append(m_mts_lib)
+    selector = MotifTreeStateSelector(mts_libs, mode=mode)
+    selector.set_node_uses(2, 1, 1)
+    return selector
+
+
+
+
+
+
+
+
+
 
 

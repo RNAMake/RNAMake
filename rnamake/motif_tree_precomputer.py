@@ -99,9 +99,12 @@ class MotifTreePrecomputerTextOutput(object):
         for i, end_state in enumerate(state.end_states):
             if end_state is not None:
                 self.f.write(end_state.to_str())
+            else:
+                self.f.write(" ")
             self.f.write("|")
 
         self.f.write("\n")
+        self.f.flush()
 
     def finalize(self):
         self.states = []

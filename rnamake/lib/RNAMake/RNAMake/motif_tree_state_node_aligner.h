@@ -14,6 +14,7 @@
 #include "basepair_state.h"
 #include "motif_tree_state_node.fwd.h"
 #include "motif_tree_state_node.h"
+#include "motif_tree_state_search_node.fwd.h"
 
 class MotifTreeStateNodeAligner {
 public:
@@ -37,6 +38,18 @@ public:
     void
     transform_beads(
         MotifTreeStateNodeOP const &);
+    
+    void
+    transform_state(
+        BasepairStateOP const &,
+        MotifTreeStateSearchNodeOP const & ,
+        MotifTreeStateSearchNodeOP const &);
+    
+    
+    void
+    transform_beads(
+        MotifTreeStateSearchNodeOP const &);
+    
     
     
 private:

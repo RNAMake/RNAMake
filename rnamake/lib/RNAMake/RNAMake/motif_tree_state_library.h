@@ -30,6 +30,10 @@ public: //getters:
         return motif_tree_states_;
     }
     
+    inline
+    MotifType const &
+    mtype() const { return mtype_; }
+    
 private:
     void
     _load_states_from_file(String const &);

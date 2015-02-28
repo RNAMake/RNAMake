@@ -73,6 +73,17 @@ public:
     void
     replace_mts(MotifTreeStateOP const &);
     
+    
+    inline
+    BasepairStateOPs
+    active_states() const {
+        BasepairStateOPs states;
+        for (auto const & s : states_ ) {
+            if(s != NULL) { states.push_back(s); }
+        }
+        return states;
+    }
+    
 public: //getters
     
     inline

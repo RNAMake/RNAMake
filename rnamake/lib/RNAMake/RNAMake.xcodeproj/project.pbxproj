@@ -78,6 +78,14 @@
 		1C3AB1DD1A995BD100361C7F /* sqlite3_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C855BB01A7FDBEC00EED04D /* sqlite3_connection.cc */; };
 		1C3AB1E41A995E5700361C7F /* motif_tree_state_selector.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1E21A995E5700361C7F /* motif_tree_state_selector.cc */; };
 		1C3AB1E51A995E5700361C7F /* motif_tree_state_selector.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1E21A995E5700361C7F /* motif_tree_state_selector.cc */; };
+		1C3AB1EA1A9C0EC800361C7F /* motif_tree_state_search_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1E81A9C0EC800361C7F /* motif_tree_state_search_node.cc */; };
+		1C3AB1EB1A9C0EC800361C7F /* motif_tree_state_search_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1E81A9C0EC800361C7F /* motif_tree_state_search_node.cc */; };
+		1C3AB1F01A9E8A3200361C7F /* motif_tree_state_search_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1EE1A9E8A3200361C7F /* motif_tree_state_search_scorer.cc */; };
+		1C3AB1F11A9E8A3200361C7F /* motif_tree_state_search_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1EE1A9E8A3200361C7F /* motif_tree_state_search_scorer.cc */; };
+		1C3AB1F41A9EB28A00361C7F /* motif_tree_state_search_solution.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1F21A9EB28A00361C7F /* motif_tree_state_search_solution.cc */; };
+		1C3AB1F51A9EB28A00361C7F /* motif_tree_state_search_solution.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1F21A9EB28A00361C7F /* motif_tree_state_search_solution.cc */; };
+		1C3AB1F81A9EB72B00361C7F /* motif_tree_state_search.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1F61A9EB72B00361C7F /* motif_tree_state_search.cc */; };
+		1C3AB1F91A9EB72B00361C7F /* motif_tree_state_search.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1F61A9EB72B00361C7F /* motif_tree_state_search.cc */; };
 		1C427D981A4F128B0012A72B /* numerical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C427D971A4F128B0012A72B /* numerical.cpp */; };
 		1C427D991A4F128B0012A72B /* numerical.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C427D971A4F128B0012A72B /* numerical.cpp */; };
 		1C4F56011A7441CB00C7E6D7 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
@@ -419,6 +427,16 @@
 		1C3AB1BD1A995B7C00361C7F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C3AB1E21A995E5700361C7F /* motif_tree_state_selector.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_tree_state_selector.cc; sourceTree = "<group>"; };
 		1C3AB1E31A995E5700361C7F /* motif_tree_state_selector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_state_selector.h; sourceTree = "<group>"; };
+		1C3AB1E71A9BF2EB00361C7F /* motif_tree_state_selector.fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_state_selector.fwd.h; sourceTree = "<group>"; };
+		1C3AB1E81A9C0EC800361C7F /* motif_tree_state_search_node.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_tree_state_search_node.cc; sourceTree = "<group>"; };
+		1C3AB1E91A9C0EC800361C7F /* motif_tree_state_search_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_state_search_node.h; sourceTree = "<group>"; };
+		1C3AB1ED1A9C1A1400361C7F /* motif_tree_state_search_node.fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_state_search_node.fwd.h; sourceTree = "<group>"; };
+		1C3AB1EE1A9E8A3200361C7F /* motif_tree_state_search_scorer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_tree_state_search_scorer.cc; sourceTree = "<group>"; };
+		1C3AB1EF1A9E8A3200361C7F /* motif_tree_state_search_scorer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_state_search_scorer.h; sourceTree = "<group>"; };
+		1C3AB1F21A9EB28A00361C7F /* motif_tree_state_search_solution.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_tree_state_search_solution.cc; sourceTree = "<group>"; };
+		1C3AB1F31A9EB28A00361C7F /* motif_tree_state_search_solution.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_state_search_solution.h; sourceTree = "<group>"; };
+		1C3AB1F61A9EB72B00361C7F /* motif_tree_state_search.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_tree_state_search.cc; sourceTree = "<group>"; };
+		1C3AB1F71A9EB72B00361C7F /* motif_tree_state_search.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_state_search.h; sourceTree = "<group>"; };
 		1C427D961A4F128B0012A72B /* numerical.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = numerical.h; sourceTree = "<group>"; };
 		1C427D971A4F128B0012A72B /* numerical.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = numerical.cpp; sourceTree = "<group>"; };
 		1C427D9A1A4F13100012A72B /* xyzMatrix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xyzMatrix.h; sourceTree = "<group>"; };
@@ -881,6 +899,16 @@
 				1CA7AC4F1A8FFCFA0063C8A8 /* secondary_structure_node.fwd.h */,
 				1C3AB1E21A995E5700361C7F /* motif_tree_state_selector.cc */,
 				1C3AB1E31A995E5700361C7F /* motif_tree_state_selector.h */,
+				1C3AB1E71A9BF2EB00361C7F /* motif_tree_state_selector.fwd.h */,
+				1C3AB1E81A9C0EC800361C7F /* motif_tree_state_search_node.cc */,
+				1C3AB1E91A9C0EC800361C7F /* motif_tree_state_search_node.h */,
+				1C3AB1ED1A9C1A1400361C7F /* motif_tree_state_search_node.fwd.h */,
+				1C3AB1EE1A9E8A3200361C7F /* motif_tree_state_search_scorer.cc */,
+				1C3AB1EF1A9E8A3200361C7F /* motif_tree_state_search_scorer.h */,
+				1C3AB1F21A9EB28A00361C7F /* motif_tree_state_search_solution.cc */,
+				1C3AB1F31A9EB28A00361C7F /* motif_tree_state_search_solution.h */,
+				1C3AB1F61A9EB72B00361C7F /* motif_tree_state_search.cc */,
+				1C3AB1F71A9EB72B00361C7F /* motif_tree_state_search.h */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
@@ -1262,11 +1290,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C3AB1C31A995BD100361C7F /* numerical.cpp in Sources */,
+				1C3AB1F91A9EB72B00361C7F /* motif_tree_state_search.cc in Sources */,
 				1C3AB1C41A995BD100361C7F /* motif.cc in Sources */,
 				1C3AB1C51A995BD100361C7F /* motif_type.cpp in Sources */,
 				1C3AB1C61A995BD100361C7F /* motif_library.cc in Sources */,
 				1C3AB1C71A995BD100361C7F /* motif_tree.cc in Sources */,
 				1C3AB1C81A995BD100361C7F /* motif_tree_node.cc in Sources */,
+				1C3AB1F51A9EB28A00361C7F /* motif_tree_state_search_solution.cc in Sources */,
 				1C3AB1C91A995BD100361C7F /* motif_tree_merger.cc in Sources */,
 				1C3AB1CA1A995BD100361C7F /* pose.cc in Sources */,
 				1C3AB1CB1A995BD100361C7F /* motif_tree_state.cc in Sources */,
@@ -1274,6 +1304,7 @@
 				1C3AB1CD1A995BD100361C7F /* motif_tree_state_node.cc in Sources */,
 				1C3AB1CE1A995BD100361C7F /* motif_tree_state_node_aligner.cc in Sources */,
 				1C3AB1CF1A995BD100361C7F /* motif_tree_state_tree.cc in Sources */,
+				1C3AB1F11A9E8A3200361C7F /* motif_tree_state_search_scorer.cc in Sources */,
 				1C3AB1D01A995BD100361C7F /* basepair.cc in Sources */,
 				1C3AB1D11A995BD100361C7F /* basepair_state.cc in Sources */,
 				1C3AB1D21A995BD100361C7F /* atom.cpp in Sources */,
@@ -1284,6 +1315,7 @@
 				1C3AB1D61A995BD100361C7F /* chain.cc in Sources */,
 				1C3AB1D71A995BD100361C7F /* structure.cc in Sources */,
 				1C3AB1D81A995BD100361C7F /* option.cc in Sources */,
+				1C3AB1EB1A9C0EC800361C7F /* motif_tree_state_search_node.cc in Sources */,
 				1C3AB1D91A995BD100361C7F /* FileIO.cpp in Sources */,
 				1C3AB1DA1A995BD100361C7F /* settings.cc in Sources */,
 				1C3AB1DB1A995BD100361C7F /* util.cc in Sources */,
@@ -1535,6 +1567,7 @@
 				1CE55A2A1A4A552F00F300F3 /* main.cpp in Sources */,
 				1CA7AC481A8FFCC50063C8A8 /* secondary_structure_node.cc in Sources */,
 				1C3AB19F1A93CF5F00361C7F /* motif_tree_merger.cc in Sources */,
+				1C3AB1EA1A9C0EC800361C7F /* motif_tree_state_search_node.cc in Sources */,
 				1CA7ABF01A8400390063C8A8 /* motif_tree_state_library.cc in Sources */,
 				1C427D981A4F128B0012A72B /* numerical.cpp in Sources */,
 				1C855BB91A80540800EED04D /* motif_library.cc in Sources */,
@@ -1545,10 +1578,13 @@
 				1CA7ABF91A842B3C0063C8A8 /* motif_tree_state_node_aligner.cc in Sources */,
 				1CA7ABFD1A8431AE0063C8A8 /* motif_tree_state_tree.cc in Sources */,
 				1CA7AB741A82AD280063C8A8 /* motif_tree.cc in Sources */,
+				1C3AB1F41A9EB28A00361C7F /* motif_tree_state_search_solution.cc in Sources */,
 				1CA7AC2D1A8C137E0063C8A8 /* secondary_structure_tree.cc in Sources */,
 				1C8C91A01A7990BE005840D0 /* uuid.cc in Sources */,
 				1C4F561B1A74614D00C7E6D7 /* residue_type_set.cc in Sources */,
 				1C855BB21A7FDBEC00EED04D /* sqlite3_connection.cc in Sources */,
+				1C3AB1F01A9E8A3200361C7F /* motif_tree_state_search_scorer.cc in Sources */,
+				1C3AB1F81A9EB72B00361C7F /* motif_tree_state_search.cc in Sources */,
 				1C4F563C1A75B34200C7E6D7 /* util.cc in Sources */,
 				1C4F56051A74548400C7E6D7 /* residue_type.cc in Sources */,
 				1C4F56431A76227900C7E6D7 /* structure.cc in Sources */,
@@ -1930,6 +1966,7 @@
 				1C3AB1C11A995B7C00361C7F /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1C4F560E1A74596400C7E6D7 /* Build configuration list for PBXNativeTarget "ResidueTypeSet_unittest" */ = {
 			isa = XCConfigurationList;

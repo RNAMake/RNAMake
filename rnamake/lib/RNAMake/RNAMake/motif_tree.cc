@@ -232,3 +232,11 @@ PoseOP
 MotifTree::to_pose() {
     return merger_.merge(*this);
 }
+
+void
+MotifTree::to_pdb(String fname) {
+    PoseOP pose = to_pose();
+    pose->to_pdb(fname);
+}
+
+

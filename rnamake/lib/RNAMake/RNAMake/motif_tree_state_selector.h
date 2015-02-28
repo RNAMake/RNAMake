@@ -12,7 +12,56 @@
 #include <stdio.h>
 #include <map>
 #include "types.h"
+#include "motif_type.h"
 #include "motif_tree_state_library.h"
+#include "motif_tree_state_search_node.fwd.h"
+#include "motif_tree_state_selector.fwd.h"
+
+typedef std::pair<MotifTreeStateOP, int> MTSTypePair;
+typedef std::vector<MTSTypePair> MTSTypePairs;
+typedef std::shared_ptr<StringIntMap> StringIntMapOP;
+
+class SelectorNode {
+public:
+    SelectorNode(
+        MotifTreeStateLibraryOP const & mts_lib,
+        int index,
+        int max_uses = 1000000000,
+        int required_uses = 0):
+        mts_lib_ ( mts_lib ),
+        index_ ( index ),
+        connections_ ( SelectorNodeOPs() ) {}
+    
+    ~SelectorNode() {}
+    
+public:
+    
+    void
+    add_connection(SelectorNodeOP const & node) {
+        connections_.push_back(node);
+    }
+    
+public:
+    
+    inline
+    SelectorNodeOPs const &
+    connections() { return connections_; }
+    
+    inline
+    MotifTreeStateLibraryOP const &
+    mts_lib() const { return mts_lib_; }
+    
+    inline
+    int const & index() const { return index_; }
+    
+    inline
+    int const & max_uses() const { return max_uses_; }
+
+private:
+    MotifTreeStateLibraryOP mts_lib_;
+    SelectorNodeOPs connections_;
+    int index_, max_uses_, required_uses_;
+};
 
 class MotifTreeStateSelector {
 public:
@@ -20,13 +69,35 @@ public:
         MotifTreeStateLibraryOPs const &,
         String mode = "helix_flank");
     
+    ~MotifTreeStateSelector() {}
+    
+public:
+    MTSTypePairs const &
+    get_children_mts(MotifTreeStateSearchNodeOP const &);
     
 private:
-    MotifTreeStateLibraryOPs mts_libs_;
-    std::map<MotifTreeStateLibraryOP, int> lib_map_;
-    StringIntMap clash_lists_;
+    
+    void
+    _setup_clash_lists();
+    
+public:
+    inline
+    SelectorNodeOPs const &
+    nodes() { return nodes_; }
+    
+private:
+    SelectorNodeOPs nodes_;
+    std::map<String, StringIntMapOP> clash_lists_;
+    MTSTypePairs mts_type_pairs_;
     
 };
+
+MotifTreeStateSelector
+default_selector(
+    MotifTypes,
+    String mode = "helix_flank");
+
+typedef std::shared_ptr<MotifTreeStateSelector> MotifTreeStateSelectorOP;
 
 
 #endif /* defined(__RNAMake__motif_tree_state_selector__) */

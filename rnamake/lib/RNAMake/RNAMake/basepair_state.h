@@ -272,16 +272,16 @@ inline
 const
 float
 new_score_function(
-	BasepairState const & current,
-	BasepairState const & end,
-	BasepairState const & endflip) {
+	BasepairStateOP const & current,
+	BasepairStateOP const & end,
+	BasepairStateOP const & endflip) {
 	
-	float d_diff = current.d().distance(end.d());
+	float d_diff = current->d().distance(end->d());
 	
 	if(d_diff > 25) { return d_diff; }
 	
-	float r_diff      = current.r().difference(end.r());
-	float r_diff_flip = current.r().difference(endflip.r());
+	float r_diff      = current->r().difference(end->r());
+	float r_diff_flip = current->r().difference(endflip->r());
 	
 	if(r_diff > r_diff_flip) {
 		r_diff = r_diff_flip;

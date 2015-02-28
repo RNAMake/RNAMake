@@ -35,5 +35,7 @@ type_to_str(MotifType const);
 MotifType const
 str_to_type(String const);
 
+typedef std::vector<MotifType> MotifTypes;
+
 
 #endif /* defined(__RNAMake__motif_type__) */

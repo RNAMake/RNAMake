@@ -11,6 +11,7 @@ import transform
 import settings
 import logger
 import motif_tree_state_selector
+import numpy as np
 
 
 clogger =  logger.get_logger("MotifTreeStateSearch:search")
@@ -42,6 +43,42 @@ class PriorityQueue(object):
         gets next best element
         """
         return heapq.heappop(self.elements)[1]
+
+
+class MotifTreeStateSearchNode(motif_tree_state.MotifTreeStateNode):
+    def __init__(self, mts, parent, lib_type):
+        if parent is None:
+            self.level = 0
+            self.node_counts = []
+        else:
+            self.level = parent.level+1
+        self.lib_type = lib_type
+        self.mts, self.parent = mts, parent
+        self.beads, self.score, self.size, self.ss_score = mts.beads, 1000, 0, 0
+        self.states = [None for s in self.mts.end_states]
+        for i, s in enumerate(self.mts.end_states):
+            if s is None:
+                continue
+            self.states[i] = s.copy()
+
+    def copy(self):
+        c = MotifTreeStateSearchNode(self.mts, self.parent, self.lib_type)
+        c.beads = np.copy(self.beads)
+        c.score, c.size, c.ss_score = self.score, self.size, c.ss_score
+        c.states = [None for s in self.states]
+        c.level = self.level
+        for i, s in enumerate(self.states):
+            if s is None:
+                continue
+            c.states[i] = s.copy()
+        return c
+
+    def lib_type_usage(self, lib_type):
+        return self.node_counts[lib_type]
+
+    def update_node_count(self):
+        self.node_counts = [x for x in self.parent.node_counts]
+        self.node_counts[self.lib_type] += 1
 
 
 class MotifTreeStateSearchScorer(object):
@@ -118,7 +155,9 @@ class MotifTreeStateSearch(base.Base):
             score = self.scorer.accept_score(current)
             if score < accept_score:
                 fail=0
-                if sterics:
+                if not self.node_selector.is_valid_solution(current):
+                    fail = 1
+                if sterics and not fail:
                     if current.steric_clash():
                         fail = 1
                 if not fail:
@@ -153,6 +192,7 @@ class MotifTreeStateSearch(base.Base):
 
                     child = test_node.copy()
                     child.lib_type = types[i]
+                    child.update_node_count()
                     self.queue.put(child, score)
 
         return self.solutions
@@ -187,7 +227,9 @@ class MotifTreeStateSearch(base.Base):
     def _get_start_node(self, start):
         mts = motif_tree_state.MotifTreeState("start", 1, 0, 0, [],
                                               [start], 0, "")
-        start_node = motif_tree_state.MotifTreeStateNode(mts, 0, None, -1, [0])
+        start_node = MotifTreeStateSearchNode(mts, None, -1)
+        start_node.node_counts = [0 for x in self.node_selector.nodes]
+
         return start_node
 
     def _print_status(self):

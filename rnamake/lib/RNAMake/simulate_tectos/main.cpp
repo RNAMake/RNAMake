@@ -17,7 +17,9 @@
 #include "motif_tree_state.h"
 #include "motif_tree_state_tree.h"
 
-String mismatch_path = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
+//String mismatch_path = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
+
+String mismatch_path = "/Users/josephyesselman/Downloads/mismatches_training/2Kstruct_2000cycles/results_1bp/";
 
 Options
 get_options(

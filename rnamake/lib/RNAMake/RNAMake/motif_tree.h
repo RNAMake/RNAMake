@@ -43,6 +43,9 @@ public:
     
     PoseOP
     to_pose();
+    
+    void
+    to_pdb(String fname = "mt.pdb");
 
 public: //getters
     

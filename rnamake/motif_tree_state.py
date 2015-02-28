@@ -11,6 +11,7 @@ import motif
 import util
 import residue
 import numpy as np
+import re
 
 
 class NameElements(object):
