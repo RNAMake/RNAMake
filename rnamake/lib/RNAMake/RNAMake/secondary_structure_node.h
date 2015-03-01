@@ -51,7 +51,7 @@ public:
     
     virtual
     SSandSeqOP
-    get_ss_and_seq();
+    get_ss_and_seq() = 0;
     
 public:
     
@@ -71,9 +71,6 @@ public:
         int pos = (int)(std::find(children_.begin(), children_.end(), org_child) - children_.begin());
         children_[pos] = new_child;
     }
-    
-    
-
     
 public:
     
@@ -115,6 +112,11 @@ public:
     String
     bp_type() { return ""; }
     
+public:
+    virtual
+    inline
+    void
+    bp_type(String const & nbp_type) { }
     
 protected:
     
@@ -150,6 +152,16 @@ public:
     inline
     String
     bp_type() { return bp_type_; }
+    
+public:
+    virtual
+    inline
+    void
+    bp_type(String const & nbp_type) {
+        bp_type_ = nbp_type;
+        res1_ = nbp_type[0];
+        res2_ = nbp_type[1];
+    }
     
 private:
     char res1_, res2_;

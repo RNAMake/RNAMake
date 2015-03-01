@@ -12,13 +12,25 @@ String
 SequenceDesigner::design(
     String const & sequence,
     String const & structure) {
-
+    
+    
     ss_tree_ = SecondaryStructureTree(structure, sequence);
     SecondaryStructureNodeOPs designable_bps = ss_tree_.get_designable_bps();
-    std::cout << designable_bps.size() << std::endl;
-    
-    
+        
     return "";
     
 }
+
+
+void
+mutate_basepair(
+    SecondaryStructureNodeOP & bp_node) {
+    
+    
+}
+
+
+
+
+
 

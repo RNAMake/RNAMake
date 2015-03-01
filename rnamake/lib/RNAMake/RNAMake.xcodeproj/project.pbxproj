@@ -464,6 +464,7 @@
 		1C4F14571AA2AD9D003B7895 /* vienna.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vienna.h; sourceTree = "<group>"; };
 		1C4F14591AA2B8ED003B7895 /* sequence_designer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sequence_designer.cc; sourceTree = "<group>"; };
 		1C4F145A1AA2B8ED003B7895 /* sequence_designer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sequence_designer.h; sourceTree = "<group>"; };
+		1C4F14601AA38BCE003B7895 /* random_number_generator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = random_number_generator.h; sourceTree = "<group>"; };
 		1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileIO.cpp; sourceTree = "<group>"; };
 		1C4F56031A74548400C7E6D7 /* residue_type.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = residue_type.cc; sourceTree = "<group>"; };
 		1C4F56041A74548400C7E6D7 /* residue_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = residue_type.h; sourceTree = "<group>"; };
@@ -829,6 +830,7 @@
 		1CA7AC361A8D58980063C8A8 /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				1C4F14601AA38BCE003B7895 /* random_number_generator.h */,
 				1C3AB17D1A906FA100361C7F /* option.cc */,
 				1C3AB17E1A906FA100361C7F /* option.h */,
 				1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */,
