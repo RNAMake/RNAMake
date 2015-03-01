@@ -40,6 +40,10 @@ public:
         mt.to_pdb(fname);
     }
     
+    void
+    remove_node(
+        MotifTreeStateNodeOP node = NULL);
+    
 public:
     inline
     MotifTreeStateNodeOPs const &

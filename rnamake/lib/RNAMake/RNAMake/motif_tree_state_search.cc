@@ -68,10 +68,13 @@ MotifTreeStateSearchSolutionOPs const &
 MotifTreeStateSearch::search(
     BasepairStateOP const & start,
     BasepairStateOP const & end,
-    MotifTreeStateSelectorOP const & node_selector) {
+    MotifTreeStateSelectorOP const & node_selector,
+    MotifTreeStateSearchScorerOP const & scorer) {
     
     if (node_selector != NULL) { node_selector_ = node_selector; }
-    scorer_ = MotifTreeStateSearchScorerOP(new MTSS_GreedyBestFirstSearch ( end ));
+    if (scorer != NULL)        { scorer_ = scorer; }
+    
+    scorer_->setup(end);
     MotifTreeStateSearchNodeOP start_node = _get_start_node(start);
     
     MotifTreeStateSearchNodeOP test_node (new MotifTreeStateSearchNode(start_node));
@@ -126,6 +129,7 @@ MotifTreeStateSearch::search(
                 test_node->lib_type(mts_type_pair.second);
                 test_node->score(score);
                 test_node->update_node_count();
+                test_node->update_stats();
                 queue_.push(MotifTreeStateSearchNodeOP(new MotifTreeStateSearchNode(test_node)));
             }
         }

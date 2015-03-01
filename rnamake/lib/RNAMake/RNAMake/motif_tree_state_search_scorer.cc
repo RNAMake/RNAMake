@@ -8,11 +8,11 @@
 
 #include "motif_tree_state_search_scorer.h"
 
-MotifTreeStateSearchScorer::MotifTreeStateSearchScorer(
-    BasepairStateOP const & target):
-    target_ ( target )
+void
+MotifTreeStateSearchScorer::setup(
+    BasepairStateOP const & target)
 {
-    
+    target_ = target;
     target_flip_ = BasepairStateOP ( new BasepairState ( target_->copy() ));
     target_flip_->flip();
     

@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "motif_tree_state_search_node.h"
+#include "motif_tree_state_tree.h"
 
 class MotifTreeStateSearchSolution {
 public:
@@ -20,9 +21,16 @@ public:
     
 public:
     
+    MotifTreeStateTree
+    to_mtst();
+    
+    
+public:
+    
     inline
     MotifTreeStateSearchNodeOPs const &
     path() const { return path_; }
+    
     
 private:
     MotifTreeStateSearchNodeOPs path_;

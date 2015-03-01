@@ -56,5 +56,5 @@ class SequenceDesigner:
 if __name__ == "__main__":
     designer = SequenceDesigner()
     solutions = designer.design("(((....)))", "NNNNNNNNNN")
-    print solutions
+    #print solutions
 

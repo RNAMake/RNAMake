@@ -61,6 +61,9 @@ public:
         MotifTreeStateNodeOP const &,
         int const &);
     
+    void
+    remove_child(int const &);
+    
     int
     parent_end_index();
     

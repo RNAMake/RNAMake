@@ -42,7 +42,7 @@ int
 get_dot_bounds(int, String const &, int);
 
 
-class SecondaryStructureNode {
+class SecondaryStructureNode : public std::enable_shared_from_this<SecondaryStructureNode>{
 public:
     
     ~SecondaryStructureNode() {
@@ -66,8 +66,8 @@ public:
     seq() { return ""; }
     
     void
-    replace_child(SecondaryStructureNode* & org_child,
-                  SecondaryStructureNode* new_child) {
+    replace_child(SecondaryStructureNodeOP & org_child,
+                  SecondaryStructureNodeOP new_child) {
         int pos = (int)(std::find(children_.begin(), children_.end(), org_child) - children_.begin());
         children_[pos] = new_child;
     }
@@ -78,7 +78,7 @@ public:
 public:
     
     inline
-    SecondaryStructureNodes const &
+    SecondaryStructureNodeOPs const &
     children() { return children_; }
     
     inline
@@ -94,7 +94,7 @@ public:
     ss_type() { return ss_type_; }
     
     inline
-    SecondaryStructureNode*
+    SecondaryStructureNodeOP
     parent() { return parent_; }
     
     inline
@@ -126,8 +126,8 @@ protected:
         int);
     
 protected:
-    SecondaryStructureNode* parent_;
-    SecondaryStructureNodes children_;
+    SecondaryStructureNodeOP parent_;
+    SecondaryStructureNodeOPs children_;
     SSN_Type ss_type_;
     int x_pos_, y_pos_, x_length_, y_length_;
     
@@ -141,7 +141,7 @@ public:
         String const &,
         int x_pos,
         int y_pos,
-        SecondaryStructureNode* const &);
+        SecondaryStructureNodeOP const &);
     
     SSandSeqOP
     get_ss_and_seq();
@@ -165,7 +165,7 @@ public:
         String const &,
         int x_pos,
         int y_pos,
-        SecondaryStructureNode* const &);
+        SecondaryStructureNodeOP const &);
     
     SSandSeqOP
     get_ss_and_seq();
@@ -187,7 +187,7 @@ private:
 class SSN_Junction : public SecondaryStructureNode {
 public:
     SSN_Junction(
-        SecondaryStructureNode*);
+        SecondaryStructureNodeOP);
     
 public:
     

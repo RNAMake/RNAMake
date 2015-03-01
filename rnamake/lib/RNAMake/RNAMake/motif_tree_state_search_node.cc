@@ -44,7 +44,7 @@ MotifTreeStateSearchNode::MotifTreeStateSearchNode(
 
 
 
-MotifTreeStateSearchNodeOP
+/*MotifTreeStateSearchNodeOP
 MotifTreeStateSearchNode::copy() {
     MotifTreeStateSearchNodeOP cmtn( new MotifTreeStateSearchNode(mts_, parent_, lib_type_));
     cmtn->beads_ = beads_;
@@ -66,14 +66,12 @@ MotifTreeStateSearchNode::copy() {
     }
     return cmtn;
 }
-
+*/
 
 void
 MotifTreeStateSearchNode::replace_mts(MotifTreeStateOP const & nmts) {
     mts_ = nmts;
     int i = -1;
-    //states_.resize(mts_->end_states().size());
-    //states_ = BasepairStateOPs(mts_->end_states().size());
     if(states_.size() < mts_->end_states().size()) {
         states_.push_back(BasepairStateOP(new BasepairState()));
         active_.push_back(0);
@@ -82,9 +80,7 @@ MotifTreeStateSearchNode::replace_mts(MotifTreeStateOP const & nmts) {
     for (auto const & s : mts_->end_states()) {
         i++;
         if(s == NULL) { active_[i] = 0; }
-        else {
-            active_[i] = 1;
-        }
+        else          { active_[i] = 1; }
     }
 }
 

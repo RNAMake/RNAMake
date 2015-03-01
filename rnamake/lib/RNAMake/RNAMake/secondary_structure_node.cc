@@ -28,14 +28,14 @@ SecondaryStructureNode::_assign_children(
     int yb) {
     
     if     (ss[yb-1] == '.' || ss[xb+1] == '.') {
-        SecondaryStructureNode* child = new SSN_Bulge(ss, seq, xb+1, yb-1, this);
+        SecondaryStructureNodeOP child (new SSN_Bulge(ss, seq, xb+1, yb-1, shared_from_this()));
         children_.push_back(child);
         return yb;
     }
     
     else if(ss[xb+1] == '(') {
         int pair = get_brack_pair(xb+1, ss);
-        SecondaryStructureNode* child = new SSN_Basepair(ss, seq, xb+1, pair, this);
+        SecondaryStructureNodeOP child (new SSN_Basepair(ss, seq, xb+1, pair, shared_from_this()));
         children_.push_back(child);
         if(yb - child->y_bounds() > 1) {
             return child->y_bounds();
@@ -61,7 +61,6 @@ SecondaryStructureNode::assign_all_children(
     while (current != yb) {
         current = _assign_children(ss, seq, current, yb);
     }
-    
 }
 
 
@@ -70,7 +69,7 @@ SSN_Basepair::SSN_Basepair(
     String const & seq,
     int x_pos,
     int y_pos,
-    SecondaryStructureNode* const & parent) {
+    SecondaryStructureNodeOP const & parent) {
     
     x_pos_ = x_pos;
     y_pos_ = y_pos;
@@ -81,6 +80,7 @@ SSN_Basepair::SSN_Basepair(
     bp_type_ = String();
     bp_type_.push_back(res1_); bp_type_.push_back(res2_);
     ss_type_ = SSN_BP;
+    children_ = SecondaryStructureNodeOPs();
     
 }
 
@@ -103,14 +103,14 @@ SSN_Bulge::SSN_Bulge(
     String const & seq,
     int x_pos,
     int y_pos,
-    SecondaryStructureNode* const & parent) {
+    SecondaryStructureNodeOP const & parent) {
     
     x_pos_ = x_pos;
     y_pos_ = y_pos;
     x_seq_ = String();
     y_seq_ = String();
     parent_ = parent;
-    children_ = SecondaryStructureNodes();
+    children_ = SecondaryStructureNodeOPs();
     ss_type_ = SSN_TWOWAY;
     x_length_ = 0;
     y_length_ = 0;
@@ -146,10 +146,11 @@ SSN_Bulge::get_ss_and_seq() {
 
 
 SSN_Junction::SSN_Junction(
-    SecondaryStructureNode* org) {
+    SecondaryStructureNodeOP org) {
     ss_type_ = SSN_NWAY;
     parent_ = org->parent();
-    parent_->replace_child(org, this);
+    
+    //parent_->replace_child(org, shared_from_this());
     x_pos_ = org->x_pos();
     y_pos_ = org->y_pos();
     Strings end_seqs = split_str_by_delimiter(org->seq(), "+");
@@ -181,7 +182,7 @@ SSN_Junction::get_ss_and_seq() {
         
         for(int i = 0; i < seqs_[j].length(); i++) { ss += '.'; }
         seq += seqs_[j];
-        std::cout << seqs_[j] << std::endl;
+        //std::cout << seqs_[j] << std::endl;
         j++;
     }
     

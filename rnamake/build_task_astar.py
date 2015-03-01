@@ -13,7 +13,6 @@ import logger
 import motif_tree_state_selector
 import numpy as np
 
-
 clogger =  logger.get_logger("MotifTreeStateSearch:search")
 
 

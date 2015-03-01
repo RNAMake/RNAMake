@@ -7,6 +7,7 @@
 //
 
 #include <queue>
+#include <algorithm>
 #include "motif_tree_state_tree.h"
 #include "motif_tree.h"
 #include "motif.h"
@@ -46,6 +47,13 @@ MotifTreeStateTree::add_state(
         indices = parent->available_ends();
     }
     else {
+        Ints org_indices = parent->available_ends();
+        int fail = 1;
+        for(auto const & i : org_indices) {
+            if(i == cparent_end) { fail = 0; break; }
+        }
+        if(fail) { return NULL; }
+        
         indices.push_back(cparent_end);
     }
     
@@ -190,7 +198,18 @@ MotifTreeStateTree::replace_state(
     return 0;
 }
 
-
+void
+MotifTreeStateTree::remove_node(
+    MotifTreeStateNodeOP node) {
+    if( node == NULL) {
+        node = last_node_;
+    }
+    MotifTreeStateNodeOP parent = node->parent();
+    int parent_index = node->parent_end_index();
+    parent->remove_child(parent_index);
+    nodes_.erase(std::remove(nodes_.begin(), nodes_.end(), node), nodes_.end());
+    last_node_ = parent;
+}
 
 MotifTreeState
 ref_mts() {

@@ -80,6 +80,8 @@ public:
     steps_ ( 0 )
     {
         node_selector_ = MotifTreeStateSelectorOP ( new MotifTreeStateSelector ( default_selector(MotifTypes())) );
+        scorer_ = MotifTreeStateSearchScorerOP(new MTSS_GreedyBestFirstSearch ());
+
     }
     
     ~MotifTreeStateSearch() {}
@@ -90,7 +92,8 @@ public:
     search(
         BasepairStateOP const &,
         BasepairStateOP const &,
-        MotifTreeStateSelectorOP const & node_selector = NULL);
+        MotifTreeStateSelectorOP const & node_selector = NULL,
+        MotifTreeStateSearchScorerOP const & scorer = NULL);
     
     void
     reset() {

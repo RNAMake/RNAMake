@@ -33,7 +33,7 @@ public:
     active_ ( n->active_ ),
     node_counts_ ( n->node_counts_ ),
     beads_ ( n->beads_ ),
-    lib_type_ ( n->lib_type_)
+    lib_type_ ( n->lib_type_ )
     
     {
         states_ = BasepairStateOPs(mts_->end_states().size());
@@ -48,10 +48,13 @@ public:
     
 public:
     
-    MotifTreeStateSearchNodeOP
-    copy();
+    //MotifTreeStateSearchNodeOP
+    //copy();
     
 public:
+    
+    inline
+    float ss_score() const { return ss_score_; }
     
     inline
     int size() const { return size_; }
@@ -111,6 +114,10 @@ public:
     
     inline
     Ints const &
+    active() { return active_; }
+    
+    inline
+    Ints const &
     node_counts() { return node_counts_; }
     
     void
@@ -151,6 +158,13 @@ public:
             if (c > count) { break; }
         }
         return 0;
+    }
+    
+    inline
+    void
+    update_stats() {
+        size_ = parent_->size_ + mts_->size();
+        ss_score_ = parent_->ss_score_ + mts_->score();
     }
     
 private:

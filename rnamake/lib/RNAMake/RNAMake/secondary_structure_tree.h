@@ -17,6 +17,11 @@
 
 class SecondaryStructureTree {
 public:
+    
+    SecondaryStructureTree():
+    nodes_( SecondaryStructureNodeOPs() )
+    {}
+    
     SecondaryStructureTree(
         String const & ss,
         String const & seq) {
@@ -26,22 +31,34 @@ public:
 
     }
     
-    ~SecondaryStructureTree() {
-        for(int i = 0; i < nodes_.size(); i++) { delete nodes_[i]; }
-    }
+    ~SecondaryStructureTree() {}
     
 public:
     SSandSeqOP
     get_ss_and_seq() { return nodes_[0]->get_ss_and_seq(); }
    
     inline
-    SecondaryStructureNodes
+    SecondaryStructureNodeOPs
     get_bulges() const {
-        SecondaryStructureNodes bulges;
+        SecondaryStructureNodeOPs bulges;
         for (auto const & n : nodes_) {
             if(n->ss_type() == SSN_TWOWAY) { bulges.push_back(n); }
         }
         return bulges;
+    }
+    
+    inline
+    SecondaryStructureNodeOPs
+    get_designable_bps() const {
+        SecondaryStructureNodeOPs bps;
+        
+        for ( auto const & n : nodes_) {
+            if(n->ss_type() == SSN_BP && n->bp_type().compare("NN") == 0) {
+                bps.push_back(n);
+            }
+        }
+        
+        return bps;
     }
     
     
@@ -51,7 +68,7 @@ private:
     _build_tree(String &, String &);
 
 private:
-    SecondaryStructureNodes nodes_;
+    SecondaryStructureNodeOPs nodes_;
     
 };
 

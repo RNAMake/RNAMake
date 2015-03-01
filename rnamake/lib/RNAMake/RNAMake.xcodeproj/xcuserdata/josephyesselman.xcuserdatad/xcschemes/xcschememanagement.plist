@@ -34,6 +34,11 @@
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
+		<key>eternabot.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>15</integer>
+		</dict>
 		<key>motif.unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -93,6 +98,11 @@
 			<true/>
 		</dict>
 		<key>1C3AB1BA1A995B7B00361C7F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4F144D1AA2A690003B7895</key>
 		<dict>
 			<key>primary</key>
 			<true/>

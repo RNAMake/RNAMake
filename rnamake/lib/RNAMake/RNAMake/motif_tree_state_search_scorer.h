@@ -15,12 +15,14 @@
 
 class MotifTreeStateSearchScorer {
 public:
-    MotifTreeStateSearchScorer(
-        BasepairStateOP const &);
+    MotifTreeStateSearchScorer() {}
     
     ~MotifTreeStateSearchScorer() {}
     
 public:
+    
+    void
+    setup(BasepairStateOP const &);
     
     virtual
     inline
@@ -37,7 +39,7 @@ protected:
 
 class MTSS_GreedyBestFirstSearch : public MotifTreeStateSearchScorer {
 public:
-    MTSS_GreedyBestFirstSearch(BasepairStateOP const & target) : MotifTreeStateSearchScorer(target) {}
+    MTSS_GreedyBestFirstSearch() {}
 
 public:
 
@@ -46,6 +48,30 @@ public:
     score(MotifTreeStateSearchNodeOP const & node) {
         return new_score_function(node->active_states()[0], target_, target_flip_);
     }
+};
+
+class MTSS_Astar: public MotifTreeStateSearchScorer {
+public:
+    MTSS_Astar() {
+        g_ = 0; h_ = 0;
+        ss_score_weight_ = 0.25;
+        level_weight_ = 2.0;
+    }
+    
+    inline
+    float
+    score(MotifTreeStateSearchNodeOP const & node) {
+        g_ = node->ss_score()*ss_score_weight_;
+        if(node->level() > 2) {
+            g_ += node->level()*level_weight_;
+        }
+        h_ = new_score_function(node->active_states()[0], target_, target_flip_);
+        return g_ + h_;
+    }
+
+private:
+    float g_, h_;
+    float ss_score_weight_, level_weight_;
 };
 
 typedef std::shared_ptr<MotifTreeStateSearchScorer> MotifTreeStateSearchScorerOP;

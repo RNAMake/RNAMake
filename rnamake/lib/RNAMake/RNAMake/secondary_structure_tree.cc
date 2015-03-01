@@ -53,18 +53,18 @@ SecondaryStructureTree::_build_tree(
     String & ss,
     String & seq) {
     
-    SecondaryStructureNode* node;
+    SecondaryStructureNodeOP node;
     if     ((ss[0] == '.' || ss.back() == '.') && nodes_.size() == 0) {
-        node = new SSN_Bulge(ss, seq, 0, (int)ss.length()-1 , NULL);
+        node = SecondaryStructureNodeOP(new SSN_Bulge(ss, seq, 0, (int)ss.length()-1 , NULL));
     }
     
     else if(ss[0] == '(') {
         int pair = get_brack_pair(0, ss);
-        node = new SSN_Basepair(ss, seq, 0, pair, NULL);
+        node = SecondaryStructureNodeOP(new SSN_Basepair(ss, seq, 0, pair, NULL));
     }
     
-    std::queue<SecondaryStructureNode*> open_nodes;
-    SecondaryStructureNode* current;
+    std::queue<SecondaryStructureNodeOP> open_nodes;
+    SecondaryStructureNodeOP current;
     open_nodes.push(node);
     while (! open_nodes.empty()) {
         current = open_nodes.front();
@@ -75,8 +75,8 @@ SecondaryStructureTree::_build_tree(
     }
     
     int nway = 0;
-    SecondaryStructureNodes nodes_to_erase;
-    for (auto const & n : nodes_) {
+    SecondaryStructureNodeOPs nodes_to_erase;
+    for (auto & n : nodes_) {
         nway = 0;
         if(n->ss_type() != SSN_TWOWAY) { continue; }
         for(auto const & c : n->children()) {
@@ -85,7 +85,9 @@ SecondaryStructureTree::_build_tree(
             nway=1;
         }
         if(nway) {
-            SecondaryStructureNode* nway_node = new SSN_Junction(n);
+            SecondaryStructureNodeOP nway_node (new SSN_Junction(n));
+            SecondaryStructureNodeOP parent = nway_node->parent();
+            parent->replace_child(n, nway_node);
             nodes_to_erase.push_back(n);
             nodes_.push_back(nway_node);
         }

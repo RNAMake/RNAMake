@@ -21,6 +21,7 @@ typedef std::map<String, MotifOP> StringMotifMap;
 
 class MotifLibrary {
 public:
+    
     MotifLibrary(MotifType const & mtype):
         connection_ ( Sqlite3Connection(mtype) ),
         mtype_ ( mtype ) {

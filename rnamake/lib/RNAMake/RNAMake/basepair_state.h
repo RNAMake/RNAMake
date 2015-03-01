@@ -16,6 +16,7 @@
 #include "xyzVector.h"
 #include "xyzMatrix.h"
 #include "Transform.h"
+#include "basepair_state.fwd.h"
 
 class BasepairState {
 	
@@ -110,6 +111,29 @@ public:
     flip() {
         r_ = transform_1(r_);
         calculate_r_T();
+    }
+    
+    inline
+    float
+    diff(
+        BasepairStateOP const & state) {
+        float diff = d_.distance(state->d());
+        diff += _rot_diff(state);
+        return diff;
+    }
+    
+    inline
+    float
+    _rot_diff(
+        BasepairStateOP const & state) {
+        float r_diff = r_.difference(state->r());
+        state->flip();
+        float r_diff_2 = r_.difference(state->r());
+        state->flip();
+        
+        if( r_diff > r_diff_2) { r_diff = r_diff_2;}
+        
+        return r_diff;
     }
     
 public:
@@ -241,9 +265,6 @@ operator <<(
 	std::ostream&,
 	const BasepairState&);
 
-typedef std::vector<BasepairState> BasepairStates;
-typedef std::shared_ptr<BasepairState> BasepairStateOP;
-typedef std::vector<BasepairStateOP> BasepairStateOPs;
 
 inline
 const

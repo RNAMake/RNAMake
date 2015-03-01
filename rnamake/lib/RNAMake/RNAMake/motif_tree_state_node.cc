@@ -95,6 +95,11 @@ MotifTreeStateNode::children() {
     return children;
 }
 
+void
+MotifTreeStateNode::remove_child(int const & i) {
+    children_[i] = NULL;
+
+}
 
 
 

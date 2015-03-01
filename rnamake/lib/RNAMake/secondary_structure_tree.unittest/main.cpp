@@ -13,7 +13,6 @@ int
 test_sstree() {
     SecondaryStructureTree sstree("((().))", "GGGCACC");
     SSandSeqOP ss_and_seq = sstree.get_ss_and_seq();
-    //std::cout << ss_and_seq->ss << std::endl;
     String seq = "CAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIA";
     String ss =
         "..(((((...(((((...(((((...(((((.....)))))...))))).....(((((...(((((.....)))))...))))).....)))))...)))))..";
