@@ -147,6 +147,8 @@ Motif::get_basepair(Uuid const & bp_uuid) {
     BasepairOPs bps;
     for( auto const & bp : basepairs_) {
         if(bp->uuid() == bp_uuid) { bps.push_back(bp); }
+        if(bp->res1()->uuid() == bp_uuid || bp->res2()->uuid() == bp_uuid ) { bps.push_back(bp); }
+
     }
     return bps;
 }

@@ -100,6 +100,7 @@ class MotifTreeMerger(base.Base):
             for i,c in enumerate(new_pose.chains()):
                 close_chain(c)
 
+        new_pose.nodes = self.nodes
         return new_pose
 
     def _merge_chains_in_node(self, node):

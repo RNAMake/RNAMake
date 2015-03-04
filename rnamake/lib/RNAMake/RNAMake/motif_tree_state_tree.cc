@@ -136,6 +136,13 @@ MotifTreeStateTree::to_motiftree() {
     return mt;
 }
 
+PoseOP
+MotifTreeStateTree::to_pose() {
+    MotifTree mt = to_motiftree();
+    return mt.to_pose();
+}
+
+
 int
 MotifTreeStateTree::replace_state(
     MotifTreeStateNodeOP const & node,

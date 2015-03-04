@@ -19,7 +19,7 @@
 
 //String mismatch_path = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
 
-String mismatch_path = "/Users/josephyesselman/Downloads/mismatches_training/2Kstruct_2000cycles/results_1bp/";
+String mismatch_path = "/Users/josephyesselman/projects/RNAMake.projects/rna.array.modeling/mismatches/2000_cycles_1bp/";
 
 Options
 get_options(
@@ -74,10 +74,10 @@ remove_Ts(String const & step) {
 Strings
 get_steps_from_ss_tree(
     SecondaryStructureTree const & ss_tree) {
-    SecondaryStructureNodes bulges = ss_tree.get_bulges();
-    SecondaryStructureNode* current = bulges[0]->children()[0];
+    SecondaryStructureNodeOPs bulges = ss_tree.get_bulges();
+    SecondaryStructureNodeOP current = bulges[0]->children()[0];
     Strings steps;
-    SecondaryStructureNodes required_nodes;
+    SecondaryStructureNodeOPs required_nodes;
     int bulge_flank_size = 2;
     while (current->ss_type() != SSN_HAIRPIN) {
         required_nodes.push_back(current);
@@ -103,6 +103,7 @@ get_steps_from_ss_tree(
             std::reverse(seq2.begin(), seq2.end());
             String name = seq1 + "-" + seq2;
             steps.push_back(remove_Ts(first_bp+"="+second_bp));
+            //std::cout << name << std::endl;
             steps.push_back(remove_Ts(name));
             steps.push_back(remove_Ts(third_bp+"="+forth_bp));
             i = i+4;
@@ -162,7 +163,7 @@ get_met(
     SecondaryStructureTree const & flow_ss_tree,
     SecondaryStructureTree const & chip_ss_tree) {
     
-    Strings lines = get_lines_from_file("tetraloop.str");
+    Strings lines = get_lines_from_file("/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/simulate_tectos/tetraloop.str");
     ResidueTypeSet rts;
     MotifOP ggaa_motif ( new Motif(lines[0], rts));
     MotifOP gaaa_motif ( new Motif(lines[1], rts));
@@ -296,8 +297,8 @@ sample(
 int main(int argc, const char * argv[]) {
     Options options = get_options(argc, argv);
     StringStringMap constructs_seq_and_ss = get_construct_seq_and_ss(options);
-    //constructs_seq_and_ss["cseq"]= "CTAGGATATGGAAAAGATCCTGGGGAACTGGGATCTATTCCTAAGTCCTAG";
-    //constructs_seq_and_ss["css" ]= "(((((((..((((.(((((((((....))))))))).))))...)))))))";
+    constructs_seq_and_ss["cseq"]= "CTAGGATATGGAAGATACTCGGGAACGAGAATCTTCCTAAGTCCTAG";
+    constructs_seq_and_ss["css" ]= "(((((((..(((((((.((((....)))).)))))))...)))))))";
     SecondaryStructureTree chip_ss_tree ( constructs_seq_and_ss["css"], constructs_seq_and_ss["cseq"]);
     SecondaryStructureTree flow_ss_tree ( constructs_seq_and_ss["fss"], constructs_seq_and_ss["fseq"]);
     MotifEnsembleTree met = get_met(flow_ss_tree, chip_ss_tree);

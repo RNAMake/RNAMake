@@ -49,7 +49,7 @@ class SequenceDesigner:
         for i in range(count):
             res = ensemble_design.inverse_fold_whole(structure, sequence,
                                                      self.ensemble.score,
-                                                     score_cutoff, "conventational")
+                                                     score_cutoff, "sparse")
             solutions.append(res)
         return solutions
 

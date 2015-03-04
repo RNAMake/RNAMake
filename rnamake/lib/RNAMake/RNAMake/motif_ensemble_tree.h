@@ -18,6 +18,7 @@ class MotifEnsembleTree {
 public:
     MotifEnsembleTree();
     MotifEnsembleTree(MotifEnsemble const &);
+    MotifEnsembleTree(MotifTreeStateTree const &);
     ~MotifEnsembleTree() {}
     
 public:
@@ -41,7 +42,6 @@ private:
     MotifEnsembleTreeNodeOPs nodes_;
     MotifEnsembleTreeNodeOP last_node_;
 };
-
 
 class MotifEnsembleTreeNode {
 public:

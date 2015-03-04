@@ -27,6 +27,10 @@ public:
     float
     rand() { return dist_(mt_); }
     
+    inline
+    int
+    randrange(int i) { return (int)(i*rand()); }
+    
 private:
     std::mt19937 mt_;
     std::uniform_real_distribution<float> dist_;

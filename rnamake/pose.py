@@ -3,6 +3,7 @@ import motif_type
 import x3dna
 import eternabot.sequence_designer as sequence_designer
 
+
 class Pose(motif.Motif):
     """
     Poses are for loading for RNA structures that have multiple motifs.
@@ -46,6 +47,7 @@ class Pose(motif.Motif):
         self.beads, self.score, self.basepairs = [], 0, []
         self.designable = {}
         self.mtype = motif_type.UNKNOWN
+        self.nodes = []
         self._setup(mdir, pdb)
         if pdb is not None or mdir is not None:
             self._setup_motifs()
@@ -148,6 +150,7 @@ class Pose(motif.Motif):
         designer = sequence_designer.SequenceDesigner()
         results = designer.design(ss, seq)
         return results[0]['end'][0]
+
 
 
 #TODO implement finding tertiary contacts

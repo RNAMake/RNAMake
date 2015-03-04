@@ -169,7 +169,7 @@ test_search3() {
 int main(int argc, const char * argv[]) {
     if (test_selector() == 0)     { std::cout << "test_selector failed" << std::endl;  }
     if (test_scorer() == 0)       { std::cout << "test_scorer failed" << std::endl;  }
-    if (test_search3() == 0)       { std::cout << "test_search failed" << std::endl;  }
+    //if (test_search3() == 0)       { std::cout << "test_search failed" << std::endl;  }
 
     return 0;
 }

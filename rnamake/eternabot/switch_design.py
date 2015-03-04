@@ -14,12 +14,12 @@ import requests
 def bp_distance_with_constraint(secstruct1, secstruct2, locks):
     """
     calculates distance between two secondary structures
-    
+
     args:
     secstruct1 is the first secondary structure
     secstruct2 is the second secondary structure
     locks specifies the positions that are constrained
-    
+
     returns:
     bp distance between structures
     """
@@ -27,14 +27,14 @@ def bp_distance_with_constraint(secstruct1, secstruct2, locks):
     if(len(secstruct1) != len(secstruct2)):
         print "SS1 and SS2 lengths don't match"
         sys.exit(0)
-    
+
     # generate pair mappings
     pairmap1 = eterna_utils.get_pairmap_from_secstruct(secstruct1)
     pairmap2 = eterna_utils.get_pairmap_from_secstruct(secstruct2)
-    
+
     # +1 for each pair or single that doesn't match
     dist = 0
-    
+
     for ii in range(0,len(pairmap1)):
         if(locks[ii] == "o"):
             continue
@@ -43,7 +43,7 @@ def bp_distance_with_constraint(secstruct1, secstruct2, locks):
                 dist += 1
             if(pairmap2[ii] > ii):
                 dist += 1
-    
+
     return dist
 
 def complement(base):
@@ -94,11 +94,11 @@ class OligoPuzzle:
             self.target_pairmap.append(eterna_utils.get_pairmap_from_secstruct(targets[i]['secstruct']))
 
         self.update_sequence(*self.get_sequence_info(self.sequence))
-        
+
         # maintain sequences
         self.update_best()
         self.all_solutions = []
-        
+
     def get_unconstrained_indices(self):
         """
         get indices for positions that can change)
@@ -149,7 +149,7 @@ class OligoPuzzle:
             sequences.insert(0,sequence)
             return '&'.join(sequences)
         else:
-            return sequence 
+            return sequence
 
     def get_sequence_info(self, sequence):
         """
@@ -211,7 +211,7 @@ class OligoPuzzle:
         calculates sum of bp distances for with and without oligo
 
         returns:
-        sum of bp distances with and without the oligo 
+        sum of bp distances with and without the oligo
         """
         distance = 0
         for i in range(self.n_targets):
@@ -221,7 +221,7 @@ class OligoPuzzle:
     def check_secstructs(self, secstruct):
         """
         checks if current sequence matches target secondary structures
-    
+
         return:
         boolean indicating whether the RNA folds to the targeted structure
         with and without the oligo
@@ -241,7 +241,7 @@ class OligoPuzzle:
         """
         bases = "GAUC"
         pairs = ["GC", "CG", "AU", "UA"]
-    
+
         if len(self.index_array) == 0:
             return
 
@@ -259,30 +259,30 @@ class OligoPuzzle:
             """probability function for design scores"""
             #print score, new_score, math.exp((new_score-score)/T)
             return math.exp((new_score-score)/T)
-    
+
         # loop as long as bp distance too large or design score too small
         for i in range(n_iterations):
             #random.shuffle(index_array)
-            
+
             # pick random nucleotide in sequence
             rindex = self.index_array[int(random.random() * len(self.index_array))]
-                
+
             mut_array = ensemble_design.get_sequence_array(self.sequence)
             mut_array[rindex] = ensemble_design.get_random_base()
-            
+
             mut_sequence = ensemble_design.get_sequence_string(mut_array)
             [mut_sequence, native, native_pairmap, bp_distance, score] = self.get_sequence_info(mut_sequence)
 
             # if current sequence is a solution, save to list
             if bp_distance == 0:
                 self.all_solutions.append([mut_sequence, score])
-            
+
             # if distance or score is better for mutant, update the current sequence
             if(random.random() < p_dist(self.bp_distance, bp_distance) or
                (bp_distance == self.bp_distance and random.random() < p_score(self.design_score, score))):
                 self.update_sequence(mut_sequence, native, native_pairmap, bp_distance, score)
-            
-                # if distance or score is better for mutant than best, update the best sequence    
+
+                # if distance or score is better for mutant than best, update the best sequence
                 if(bp_distance < self.best_bp_distance or
                    (bp_distance == self.bp_distance and score > self.best_design_score)):
                     self.update_best()
@@ -292,7 +292,7 @@ class OligoPuzzle:
                 T -= 0.1
                 if T < 1:
                     T = 1
-        
+
         return
 
 def read_puzzle_json(text):
@@ -312,7 +312,7 @@ def read_puzzle_json(text):
 
     # load in objective secondary structures
     objective = json.loads(p['objective'])
-    secstruct = [] 
+    secstruct = []
     for o in objective:
         n = len(o['secstruct'])
         # if no constrained bases, all are unconstrained
@@ -358,7 +358,7 @@ def optimize_n(puzzle, niter, ncool, n, submit):
     # run puzzle n times
     solutions = []
     scores = []
-    i = 0 
+    i = 0
     attempts = 0
     while i < n:
         puzzle.reset_sequence()
@@ -446,7 +446,7 @@ def main():
     p.add_argument('--nowrite', help="suppress write to file", default=False, action='store_true')
     args = p.parse_args()
 
-    if os.path.isfile("%s.json" % args.puzzleid): 
+    if os.path.isfile("%s.json" % args.puzzleid):
         with open("%s.json" % args.puzzleid, 'r') as f:
             puzzle = read_puzzle_json(f.read())
     else:

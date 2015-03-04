@@ -17,7 +17,7 @@
 class Pose : public Motif {
 public:
     Pose():
-    designable_ (std::map<Uuid, int>()) {}
+    designable_ (std::map<String, int>()) {}
     Pose(MotifOP const &);
     Pose(StructureOP const &, BasepairOPs const &);
 
@@ -25,15 +25,18 @@ public:
     
     void
     set_bp_designable(BasepairOP const &);
+    
+    String
+    designable_sequence();
 
 public:
     
     inline
     void
-    designable(std::map<Uuid, int> const & ndesignable) { designable_ = ndesignable; }
+    designable(std::map<String, int> const & ndesignable) { designable_ = ndesignable; }
     
 private:
-    std::map<Uuid, int> designable_;
+    std::map<String, int> designable_;
 
     
 };

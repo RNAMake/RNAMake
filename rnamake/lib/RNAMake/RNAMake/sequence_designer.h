@@ -10,18 +10,18 @@
 #define __RNAMake__sequence_designer__
 
 #include <stdio.h>
+#include "FileIO.h"
 #include "random_number_generator.h"
 #include "secondary_structure_tree.h"
-#include "vienna.h"
-#include "FileIO.h"
+#include "sequence_design_scorer.h"
 
 class SequenceDesigner {
 public:
-    SequenceDesigner():
-    v_ (Vienna() ) {
-        
+    SequenceDesigner(){
         rng_  = RandomNumberGenerator();
         basepairs_ = split_str_by_delimiter("GC,CG,AU,UA", ",");
+        scorer_ = SequenceDesignScorerOP( new SequenceDesignScorer() );
+        score_ = 10000;
     }
     
     ~SequenceDesigner() {}
@@ -40,9 +40,12 @@ public:
 private:
     RandomNumberGenerator rng_;
     SecondaryStructureTree ss_tree_;
-    Vienna v_;
+    SequenceDesignScorerOP scorer_;
+    SSandSeqOP ss_and_seq_;
     Strings basepairs_;
-    String last_bp_type_;
+    String last_bp_type_, cseq_;
+    float score_;
+    int steps_;
 };
 
 #endif /* defined(__RNAMake__sequence_designer__) */

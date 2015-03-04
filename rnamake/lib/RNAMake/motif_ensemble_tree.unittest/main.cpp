@@ -16,6 +16,38 @@
 #include "motif_tree_state_tree.h"
 #include "secondary_structure_tree.h"
 
+MotifTreeStateTree
+get_two_way_helix_mts_tree(int size=10) {;
+    std::vector<MotifTreeStateLibrary> mts_libs(2);
+    mts_libs[0] = MotifTreeStateLibrary ( HELIX );
+    mts_libs[1] = MotifTreeStateLibrary ( TWOWAY );
+    MotifTreeStateTree mtst;
+    
+    srand(unsigned(time(NULL)));
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<float> dist(0,1);
+    
+    int i = 0;
+    int pos = 0;
+    int count = 0;
+    while (i < size) {
+        if( i % 2 == 0) { pos = 0; }
+        else            { pos = 1; }
+        
+        int mts_pos = dist(mt)*(mts_libs[pos].motif_tree_states().size()-1);
+        MotifTreeStateOP mts = mts_libs[pos].motif_tree_states()[mts_pos];
+        
+        MotifTreeStateNodeOP node = mtst.add_state(mts, NULL);
+        if (node != NULL) { i++; }
+        count++;
+        if(count > 10000) { break; }
+        
+    }
+    
+    return mtst;
+    
+}
 
 Strings
 get_lines_from_file(String const fname) {
@@ -244,6 +276,21 @@ test_tecto(String const & flow_str,
     return 1;
 }
 
+int
+test_from_mtst() {
+    
+    MotifTreeStateTree mtst = get_two_way_helix_mts_tree(2);
+    for(auto const & n : mtst.nodes()) {
+        std::cout << n->mts()->name() << std::endl;
+    }
+    PoseOP p = mtst.to_pose();
+    std::cout << p->designable_sequence() << std::endl;
+    p->to_pdb("test.pdb");
+    
+    //MotifEnsembleTree met (mtst);
+    return 1;
+}
+
 
 
 int main(int argc, const char * argv[]) {
@@ -251,17 +298,9 @@ int main(int argc, const char * argv[]) {
     //if (test_creation_me_tree() == 0)     { std::cout << "test_creation_me_tree failed" << std::endl;  }
     //if (test_add_ensemble() == 0)         { std::cout << "test_add_ensemble failed" << std::endl;  }
     //if (test_sample() == 0)               { std::cout << "test_sample failed" << std::endl;  }
-    String flow_string = "GC=AU,AU=AU,AU=GC,GC=UA,UA=AU,AU=CG,CG=CG,CG=GC,GC=AU,AU=GC";
-    String chip_string = "GC=AU,AU=AU,AU=GC,GC=AU,AU=UA,UA=CG,CG=CG,CG=UG,UG=GU,GU=GC";
-    int nsteps = 10000000;
-    if(argc > 1 ){
-        chip_string = String(argv[1]);
-    }
-    
-    if(argc > 2) {
-        nsteps = std::stoi(argv[2]);
-    }
     //test_tecto(flow_string, chip_string, nsteps);
+    if (test_from_mtst() == 0)              { std::cout << "test_from_mtst failed" << std::endl;  }
+
     
     return 0;
 }

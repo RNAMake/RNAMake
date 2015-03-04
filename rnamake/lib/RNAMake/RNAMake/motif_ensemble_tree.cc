@@ -29,6 +29,28 @@ MotifEnsembleTree::MotifEnsembleTree(MotifEnsemble const & me) {
     last_node_ = head;
 }
 
+MotifEnsembleTree::MotifEnsembleTree(MotifTreeStateTree const & mtst) {
+    
+    MotifEnsemble me;
+    MotifTreeStateOP mts (new MotifTreeState(ref_mts()));
+    MotifState ms ( mts, 1.0);
+    me.add_motif_state(ms);
+    MotifEnsembleTreeNodeOP head ( new MotifEnsembleTreeNode(me, NULL, 0));
+    nodes_ = MotifEnsembleTreeNodeOPs();
+    nodes_.push_back(head);
+    last_node_ = head;
+    
+    int i = -1;
+    for (auto const & n : mtst.nodes() ) {
+        i++;
+        if(i == 0) { continue; }
+        std::cout << n->mts()->name() << std::endl;
+    }
+
+    
+}
+
+
 MotifEnsembleTreeNodeOP
 MotifEnsembleTree::add_ensemble(
     MotifEnsemble const & ensemble,

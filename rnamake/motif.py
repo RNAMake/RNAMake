@@ -440,7 +440,7 @@ def str_to_motif(s):
         res1 = m.get_residue(num=res1_num, chain_id=res1_id)
         res2 = m.get_residue(num=res2_num, chain_id=res2_id)
         state = basepair.str_to_basepairstate(bp_spl[1])
-        bp = basepair.Basepair(res1, res2, state.r, bp_spl[1])
+        bp = basepair.Basepair(res1, res2, state.r, bp_spl[2])
         bp.designable = int(bp_spl[3])
         bp.flipped = int(bp_spl[4])
         m.basepairs.append(bp)

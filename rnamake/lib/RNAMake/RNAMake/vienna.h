@@ -12,6 +12,7 @@
 #include "types.h"
 
 extern "C" float fold(char const*,char*);
+extern "C" float cofold(char const*,char*);
 
 struct FoldResult {
 public:
@@ -48,6 +49,20 @@ public:
         return fold_result_;
     }
 
+    inline
+    FoldResult const &
+    vcofold(
+          String const & seq) {
+        
+        const char * rec_sequence = seq.c_str();
+        char * structure = new char[seq.length()];
+        float min_en = cofold(rec_sequence, structure);
+        fold_result_.structure = String(structure);
+        fold_result_.free_energy = min_en;
+        return fold_result_;
+    }
+
+    
 private:
     FoldResult fold_result_;
     

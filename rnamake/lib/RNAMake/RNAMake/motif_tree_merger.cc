@@ -42,6 +42,7 @@ PoseOP
 MotifTreeMerger::_build_pose() {
     StructureOP new_structure ( new Structure() );
     ChainOPs new_chains;
+        
     for( auto const & c : chains_) {
         new_chains.push_back( ChainOP( new Chain(c->copy())) );
     }
@@ -52,7 +53,7 @@ MotifTreeMerger::_build_pose() {
     std::map<String, ResidueOP> uuids;
     for(auto const & res : residues) { uuids[res->uuid().s_uuid() ] = res; }
     BasepairOPs basepairs;
-    std::map<Uuid, int> designable;
+    std::map<String, int> designable;
     for(auto const & node : nodes_) {
         for(auto const & bp : node->motif()->basepairs()) {
             if(uuids.find(bp->res1()->uuid().s_uuid()) ==  uuids.end()) { continue; }
@@ -60,7 +61,7 @@ MotifTreeMerger::_build_pose() {
             BasepairOP cbp (new Basepair(bp->copy()));
             cbp->res1( uuids[bp->res1()->uuid().s_uuid()]);
             cbp->res2( uuids[bp->res2()->uuid().s_uuid()]);
-            if(node->motif()->mtype() == HELIX) { designable[cbp->uuid()] = 1; }
+            if(node->motif()->mtype() == HELIX) { designable[cbp->uuid().s_uuid()] = 1; }
             basepairs.push_back(cbp);
         }
     }

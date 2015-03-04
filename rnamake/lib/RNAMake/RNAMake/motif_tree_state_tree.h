@@ -31,6 +31,9 @@ public:
     MotifTree
     to_motiftree();
     
+    PoseOP
+    to_pose();
+    
     int
     replace_state(MotifTreeStateNodeOP const &,
                   MotifTreeStateOP const &);
@@ -47,7 +50,7 @@ public:
 public:
     inline
     MotifTreeStateNodeOPs const &
-    nodes() { return nodes_; }
+    nodes() const { return nodes_; }
     
     inline
     MotifTreeStateNodeOP const &

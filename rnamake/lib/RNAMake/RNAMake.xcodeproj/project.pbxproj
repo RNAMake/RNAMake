@@ -96,6 +96,11 @@
 		1C4F145D1AA2BACA003B7895 /* secondary_structure_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AC2B1A8C137E0063C8A8 /* secondary_structure_tree.cc */; };
 		1C4F145E1AA2BACA003B7895 /* secondary_structure_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AC461A8FFCC50063C8A8 /* secondary_structure_node.cc */; };
 		1C4F145F1AA2BAFB003B7895 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
+		1C4F14671AA38FC1003B7895 /* sequence_design_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F14651AA38FC1003B7895 /* sequence_design_scorer.cc */; };
+		1C4F14681AA38FC1003B7895 /* sequence_design_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F14651AA38FC1003B7895 /* sequence_design_scorer.cc */; };
+		1C4F14691AA3C89A003B7895 /* motif_tree_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1A71A9400FD00361C7F /* motif_tree_node.cc */; };
+		1C4F146A1AA3C89A003B7895 /* motif_tree_merger.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB19D1A93CF5F00361C7F /* motif_tree_merger.cc */; };
+		1C4F146B1AA3C8A9003B7895 /* pose.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1A21A93D6CF00361C7F /* pose.cc */; };
 		1C4F56011A7441CB00C7E6D7 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
 		1C4F56021A7441CB00C7E6D7 /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
 		1C4F56051A74548400C7E6D7 /* residue_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56031A74548400C7E6D7 /* residue_type.cc */; };
@@ -465,6 +470,8 @@
 		1C4F14591AA2B8ED003B7895 /* sequence_designer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sequence_designer.cc; sourceTree = "<group>"; };
 		1C4F145A1AA2B8ED003B7895 /* sequence_designer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sequence_designer.h; sourceTree = "<group>"; };
 		1C4F14601AA38BCE003B7895 /* random_number_generator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = random_number_generator.h; sourceTree = "<group>"; };
+		1C4F14651AA38FC1003B7895 /* sequence_design_scorer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sequence_design_scorer.cc; sourceTree = "<group>"; };
+		1C4F14661AA38FC1003B7895 /* sequence_design_scorer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sequence_design_scorer.h; sourceTree = "<group>"; };
 		1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FileIO.cpp; sourceTree = "<group>"; };
 		1C4F56031A74548400C7E6D7 /* residue_type.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = residue_type.cc; sourceTree = "<group>"; };
 		1C4F56041A74548400C7E6D7 /* residue_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = residue_type.h; sourceTree = "<group>"; };
@@ -704,6 +711,8 @@
 				1C4F14571AA2AD9D003B7895 /* vienna.h */,
 				1C4F14591AA2B8ED003B7895 /* sequence_designer.cc */,
 				1C4F145A1AA2B8ED003B7895 /* sequence_designer.h */,
+				1C4F14651AA38FC1003B7895 /* sequence_design_scorer.cc */,
+				1C4F14661AA38FC1003B7895 /* sequence_design_scorer.h */,
 			);
 			name = EternaBot;
 			sourceTree = "<group>";
@@ -1408,6 +1417,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C4F14681AA38FC1003B7895 /* sequence_design_scorer.cc in Sources */,
 				1C4F145F1AA2BAFB003B7895 /* FileIO.cpp in Sources */,
 				1C4F145D1AA2BACA003B7895 /* secondary_structure_tree.cc in Sources */,
 				1C4F145E1AA2BACA003B7895 /* secondary_structure_node.cc in Sources */,
@@ -1605,6 +1615,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C4F146B1AA3C8A9003B7895 /* pose.cc in Sources */,
+				1C4F14691AA3C89A003B7895 /* motif_tree_node.cc in Sources */,
+				1C4F146A1AA3C89A003B7895 /* motif_tree_merger.cc in Sources */,
 				1CA7AC291A8545730063C8A8 /* motif_ensemble_tree.cc in Sources */,
 				1CA7AC0A1A853E5C0063C8A8 /* atom.cpp in Sources */,
 				1CA7AC251A853EFF0063C8A8 /* motif_ensemble.cc in Sources */,
@@ -1669,6 +1682,7 @@
 				1CA7ABF91A842B3C0063C8A8 /* motif_tree_state_node_aligner.cc in Sources */,
 				1CA7ABFD1A8431AE0063C8A8 /* motif_tree_state_tree.cc in Sources */,
 				1CA7AB741A82AD280063C8A8 /* motif_tree.cc in Sources */,
+				1C4F14671AA38FC1003B7895 /* sequence_design_scorer.cc in Sources */,
 				1C3AB1F41A9EB28A00361C7F /* motif_tree_state_search_solution.cc in Sources */,
 				1CA7AC2D1A8C137E0063C8A8 /* secondary_structure_tree.cc in Sources */,
 				1C8C91A01A7990BE005840D0 /* uuid.cc in Sources */,
