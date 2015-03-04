@@ -16,10 +16,12 @@
 #include "motif_ensemble_tree.h"
 #include "motif_tree_state.h"
 #include "motif_tree_state_tree.h"
+#include "settings.h"
 
 //String mismatch_path = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
 
-String mismatch_path = "/Users/josephyesselman/projects/RNAMake.projects/rna.array.modeling/mismatches/2000_cycles_1bp/";
+String mismatch_path = resources_path() + "/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
+//String mismatch_path = "/Users/josephyesselman/projects/RNAMake.projects/rna.array.modeling/mismatches/2000_cycles_1bp/";
 
 Options
 get_options(
@@ -163,7 +165,7 @@ get_met(
     SecondaryStructureTree const & flow_ss_tree,
     SecondaryStructureTree const & chip_ss_tree) {
     
-    Strings lines = get_lines_from_file("/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/simulate_tectos/tetraloop.str");
+    Strings lines = get_lines_from_file(base_dir() + "/rnamake/lib/RNAMake/simulate_tectos/tetraloop.str");
     ResidueTypeSet rts;
     MotifOP ggaa_motif ( new Motif(lines[0], rts));
     MotifOP gaaa_motif ( new Motif(lines[1], rts));
@@ -297,8 +299,8 @@ sample(
 int main(int argc, const char * argv[]) {
     Options options = get_options(argc, argv);
     StringStringMap constructs_seq_and_ss = get_construct_seq_and_ss(options);
-    constructs_seq_and_ss["cseq"]= "CTAGGATATGGAAGATACTCGGGAACGAGAATCTTCCTAAGTCCTAG";
-    constructs_seq_and_ss["css" ]= "(((((((..(((((((.((((....)))).)))))))...)))))))";
+    //constructs_seq_and_ss["cseq"]= "CTAGGATATGGAAGATACTCGGGAACGAGAATCTTCCTAAGTCCTAG";
+    //constructs_seq_and_ss["css" ]= "(((((((..(((((((.((((....)))).)))))))...)))))))";
     SecondaryStructureTree chip_ss_tree ( constructs_seq_and_ss["css"], constructs_seq_and_ss["cseq"]);
     SecondaryStructureTree flow_ss_tree ( constructs_seq_and_ss["fss"], constructs_seq_and_ss["fseq"]);
     MotifEnsembleTree met = get_met(flow_ss_tree, chip_ss_tree);

@@ -258,7 +258,8 @@ class MotifTreePrecomputer(base.Base):
         #hack for prediction
         if motif_node.flip:
             if pose_end_bp.r()[1][0] < 0:
-                pose_end_bp.flip()
+                pass
+                #pose_end_bp.flip()
         if len(self.mt.nodes) > 2:
             helix_direction = self.mt.nodes[1].motif.ends.index(start_bp)
             start_helix_count = self._helix_count(self.mt.nodes[1].motif.name)
