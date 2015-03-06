@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <uuid/uuid.h>
 
 typedef std::vector<int> Ints;
 typedef std::vector<char> Chars;
@@ -24,6 +23,4 @@ typedef std::shared_ptr<String> StringOP;
 typedef std::map<String, int> StringIntMap;
 typedef std::map<String, float> StringFloatMap;
 typedef std::map<String, String> StringStringMap;
-
-typedef std::shared_ptr<uuid_t> uuid_tOP;
 #endif
