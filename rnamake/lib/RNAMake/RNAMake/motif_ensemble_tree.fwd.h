@@ -8,8 +8,8 @@
 
 #ifndef RNAMake_motif_ensemble_tree_fwd_h
 #define RNAMake_motif_ensemble_tree_fwd_h
-
 #include <vector>
+#include <memory>
 
 class MotifEnsembleTreeNode;
 typedef std::shared_ptr<MotifEnsembleTreeNode> MotifEnsembleTreeNodeOP;

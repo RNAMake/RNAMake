@@ -52,11 +52,18 @@ class MotifTreeState(object):
 
 
 class MotifTreeStateLibrary(object):
-    def __init__(self, mtype=None, libpath=None):
+    def __init__(self, mtype=None, libpath=None, exclude=[]):
         mtype, path = self._parse_args(mtype, libpath)
         self.mtype, self.neighbor_libs, self.children = mtype, [], []
         self.clashes, self.index = {}, 0
         self.motif_tree_states = self._load_states_from_file(path)
+        motif_tree_states = []
+        for mts in self.motif_tree_states:
+            s = str(mts.start_index)+str(mts.flip)
+            if s in exclude:
+                continue
+            motif_tree_states.append(mts)
+        self.motif_tree_states = motif_tree_states
 
     def get_state(self, name):
         for mts in self.motif_tree_states:

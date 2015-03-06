@@ -10,6 +10,7 @@
 #define __RNAMake__chain__
 
 #include <stdio.h>
+#include <algorithm>
 #include "chain.fwd.h"
 #include "residue.h"
 #include "residue_type_set.h"

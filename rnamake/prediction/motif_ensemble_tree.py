@@ -134,12 +134,8 @@ def _add_helix(n, p, seq, chain, met, end, flip):
         steps.append(bps_str[i-1]+"="+bps_str[i])
 
 
-    print steps[0]
-    me = motif_ensemble.MotifEnsemble(steps[0], end, flip)
-    met.add_ensemble(me)
-    for s in steps[1:]:
-        break
-        me = motif_ensemble.MotifEnsemble(s, end, 0)
+    for s in steps:
+        me = motif_ensemble.MotifEnsemble(s, end, flip)
         met.add_ensemble(me)
 
     return bps_str[-1]
@@ -153,19 +149,7 @@ def mts_to_me(mts):
 
 
 def mtst_to_met(mtst, start_pos=1):
-    mtst.nodes_to_pdbs()
-    print len(mtst.nodes)
-    exit()
     p = mtst.to_pose()
-    name_elements = motif_tree_state.parse_db_name(mtst.nodes[start_pos].mts.name)
-    flip = 0
-    start_index = 0
-    print name_elements.start_index, name_elements.flip_direction
-    if name_elements.start_index != 0 or name_elements.flip_direction != 0:
-        flip = 1
-    if  name_elements.start_index != 0 and name_elements.flip_direction != 0:
-        flip = 0
-        start_index = 1
     p.to_pdb('test.pdb')
     dseq = p.sequence()
     #dseq = p.optimized_sequence()
@@ -178,9 +162,10 @@ def mtst_to_met(mtst, start_pos=1):
         if i < start_pos:
             continue
         if n.motif.mtype == motif_type.HELIX:
+            name_elements = motif_tree_state.parse_db_name(mtst.nodes[i].mts.name)
             last_bp = _add_helix(n, p, dseq, start_chain, met,
                                  name_elements.start_index, name_elements.flip_direction)
-            bp = n.connection(p.nodes[2]).motif_end(p.nodes[2])
+            bp = n.connection(p.nodes[i+1]).motif_end(p.nodes[i+1])
             first_m_bp = None
             res1 = None
             for r in bp.residues():
@@ -193,10 +178,9 @@ def mtst_to_met(mtst, start_pos=1):
                 first_m_bp = bp.res2.rtype.name[0] +  bp.res1.rtype.name[0]
             last_step = last_bp + "=" + first_m_bp
             print last_step
-            #me = motif_ensemble.MotifEnsemble(last_step,  name_elements.start_index, 0)
-            #me = motif_ensemble.MotifEnsemble(last_step, 0, 0)
-            #met.add_ensemble(me)
-            break
+            #me = motif_ensemble.MotifEnsemble(last_step,  name_elements.start_index, name_elements.flip_direction)
+            me = motif_ensemble.MotifEnsemble(last_step,  name_elements.start_index, name_elements.flip_direction)
+            met.add_ensemble(me)
 
         else:
             me = mts_to_me(mtst.nodes[i].mts)

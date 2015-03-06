@@ -7,6 +7,7 @@
 //
 
 #include <queue>
+#include <algorithm>
 #include "motif_ensemble_tree.h"
 #include "motif_tree_state.h"
 #include "motif_tree_state_tree.h"

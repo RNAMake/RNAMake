@@ -8,6 +8,8 @@
 
 #ifndef RNAMake_motif_tree_state_selector_fwd_h
 #define RNAMake_motif_tree_state_selector_fwd_h
+#include <memory>
+#include <vector>
 
 class SelectorNode;
 typedef std::shared_ptr<SelectorNode> SelectorNodeOP;

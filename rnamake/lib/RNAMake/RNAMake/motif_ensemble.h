@@ -14,6 +14,7 @@
 #include <random>
 #include <stdio.h>
 #include <vector>
+#include <algorithm>
 #include "types.h"
 #include "settings.h"
 #include "FileIO.h"

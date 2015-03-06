@@ -8,6 +8,8 @@
 
 #ifndef RNAMake_motif_tree_state_search_node_fwd_h
 #define RNAMake_motif_tree_state_search_node_fwd_h
+#include <memory>
+#include <vector>
 
 class MotifTreeStateSearchNode;
 typedef std::shared_ptr<MotifTreeStateSearchNode> MotifTreeStateSearchNodeOP;

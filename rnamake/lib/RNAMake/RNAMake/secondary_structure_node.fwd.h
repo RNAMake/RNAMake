@@ -9,6 +9,7 @@
 #ifndef RNAMake_secondary_structure_node_fwd_h
 #define RNAMake_secondary_structure_node_fwd_h
 #include <vector>
+#include <memory>
 
 class SecondaryStructureNode;
 typedef std::shared_ptr<SecondaryStructureNode> SecondaryStructureNodeOP;

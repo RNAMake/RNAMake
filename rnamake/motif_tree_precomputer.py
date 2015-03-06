@@ -82,8 +82,8 @@ class MotifTreePrecomputerTextOutput(object):
         self.states = []
 
     def add_data(self, state, data):
-        if self._is_repeat_state(state) == 1:
-            return
+        #if self._is_repeat_state(state) == 1:
+        #    return
 
         self.states.append(state)
 
@@ -186,6 +186,9 @@ class MotifTreePrecomputer(base.Base):
 
     def precompute_motif(self, m):
         flip_states = (0, 1)
+        #m.ends[1].flip()
+        #m.ends[1].flipped=0
+        #m.ends[0], m.ends[1] = m.ends[1], m.ends[0]
         motif_pos = range(len(m.ends))
         if self.option('flip') is not None:
             flip_states = self.option('flip')
@@ -258,12 +261,11 @@ class MotifTreePrecomputer(base.Base):
         #hack for prediction
         if motif_node.flip:
             if pose_end_bp.r()[1][0] < 0:
-                pass
-                #pose_end_bp.flip()
+                pose_end_bp.flip()
         if len(self.mt.nodes) > 2:
             helix_direction = self.mt.nodes[1].motif.ends.index(start_bp)
             start_helix_count = self._helix_count(self.mt.nodes[1].motif.name)
-        if self.mt.last_node.motif.mtype == motif_type.HELIX:
+        if self.mt.last_node.motif.mtype == motif_type.HELIX and len(self.mt.nodes) > 2:
             end_helix_count =  self._helix_count(self.mt.last_node.motif.name)
         name = motif_node.motif.name + "-" + str(helix_direction) + "-" + \
                str(start_helix_count) + "-" + str(start_index) + "-" + \
@@ -330,7 +332,7 @@ def mlib_for_type(mtype):
         mlib.load_all()
     elif mtype == motif_type.HELIX:
         mlib = motif_library.MotifLibrary(mtype)
-        for i in range(1, 21):
+        for i in range(0, 21):
             mlib.get_motif("HELIX.LE."+str(i))
     elif mtype == motif_type.NWAY:
         mlib = motif_library.MotifLibrary(mtype)
@@ -344,6 +346,7 @@ if __name__ == '__main__':
     mlib = mlib_for_type(mtype)
     mtp = MotifTreePrecomputer(name=args.t,max_bps_per_end=0)
     mtp.precompute_library(mlib)
+
 
 
 

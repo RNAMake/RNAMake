@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <string.h>
 #include "sqlite3_connection.h"
 #include "settings.h"
 

@@ -9,6 +9,7 @@
 #ifndef RNAMake_basepair_state_fwd_h
 #define RNAMake_basepair_state_fwd_h
 #include <memory>
+#include <vector>
 
 class BasepairState;
 typedef std::vector<BasepairState> BasepairStates;

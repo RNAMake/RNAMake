@@ -8,6 +8,7 @@
 
 #include "secondary_structure_node.h"
 #include "FileIO.h"
+#include <algorithm>
 #include <iostream>
 
 

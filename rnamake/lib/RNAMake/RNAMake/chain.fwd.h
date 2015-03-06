@@ -9,6 +9,7 @@
 #ifndef RNAMake_chain_fwd_h
 #define RNAMake_chain_fwd_h
 #include <vector>
+#include <memory>
 
 class Chain;
 

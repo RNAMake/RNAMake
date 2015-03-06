@@ -16,11 +16,12 @@
 
 
 class Transform {
-
-private:
-	template< typename > friend class xyzMatrix;
-	template< typename > friend class xyzVector;
-	
+public:
+    template< typename > friend class xyzMatrix;
+    template< typename > friend class xyzVector;
+    
+public:
+		
 	friend
 	inline
 	void
@@ -30,15 +31,15 @@ private:
 		Transform & c)
 	{
 		
-		c.xx_ = a.xx_*b.xx_ + a.xy_*b.yx_ + a.xz_*b.zx_;
-		c.xy_ = a.xx_*b.xy_ + a.xy_*b.yy_ + a.xz_*b.zy_;
-		c.xz_ = a.xx_*b.xz_ + a.xy_*b.yz_ + a.xz_*b.zz_;
-		c.yx_ = a.yx_*b.xx_ + a.yy_*b.yx_ + a.yz_*b.zx_;
-		c.yy_ = a.yx_*b.xy_ + a.yy_*b.yy_ + a.yz_*b.zy_;
-		c.yz_ = a.yx_*b.xz_ + a.yy_*b.yz_ + a.yz_*b.zz_;
-		c.zx_ = a.zx_*b.xx_ + a.zy_*b.yx_ + a.zz_*b.zx_;
-		c.zy_ = a.zx_*b.xy_ + a.zy_*b.yy_ + a.zz_*b.zy_;
-		c.zz_ = a.zx_*b.xz_ + a.zy_*b.yz_ + a.zz_*b.zz_;
+		c.xx_ = a.xx()*b.xx() + a.xy()*b.yx() + a.xz()*b.zx();
+		c.xy_ = a.xx()*b.xy() + a.xy()*b.yy() + a.xz()*b.zy();
+		c.xz_ = a.xx()*b.xz() + a.xy()*b.yz() + a.xz()*b.zz();
+		c.yx_ = a.yx()*b.xx() + a.yy()*b.yx() + a.yz()*b.zx();
+		c.yy_ = a.yx()*b.xy() + a.yy()*b.yy() + a.yz()*b.zy();
+		c.yz_ = a.yx()*b.xz() + a.yy()*b.yz() + a.yz()*b.zz();
+		c.zx_ = a.zx()*b.xx() + a.zy()*b.yx() + a.zz()*b.zx();
+		c.zy_ = a.zx()*b.xy() + a.zy()*b.yy() + a.zz()*b.zy();
+		c.zz_ = a.zx()*b.xz() + a.zy()*b.yz() + a.zz()*b.zz();
 	}
     
 	

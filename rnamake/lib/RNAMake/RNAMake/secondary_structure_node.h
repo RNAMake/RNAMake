@@ -10,6 +10,7 @@
 #define __RNAMake__secondary_structure_node__
 
 #include <stdio.h>
+#include <algorithm>
 #include "secondary_structure_node.fwd.h"
 #include "types.h"
 

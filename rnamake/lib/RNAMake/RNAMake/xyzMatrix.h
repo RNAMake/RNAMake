@@ -59,9 +59,9 @@ private:
 		xyzVector< T > const & v,
 		xyzVector< T > & vr) {
 		
-		vr.x_ = m.xx_ * v.x_ + m.yx_ * v.y_ + m.zx_ * v.z_;
-		vr.y_ = m.xy_ * v.x_ + m.yy_ * v.y_ + m.zy_ * v.z_;
-		vr.z_ = m.xz_ * v.x_ + m.yz_ * v.y_ + m.zz_ * v.z_;
+		vr.x ( m.xx_ * v.x() + m.yx_ * v.y() + m.zx_ * v.z()) ;
+		vr.y ( m.xy_ * v.x() + m.yy_ * v.y() + m.zy_ * v.z());
+		vr.z ( m.xz_ * v.x() + m.yz_ * v.y() + m.zz_ * v.z());
 		
 	}
 	
