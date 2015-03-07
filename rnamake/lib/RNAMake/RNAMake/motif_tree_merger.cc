@@ -148,7 +148,13 @@ MotifTreeMerger::_helix_merge(
     ChainEndPairMap const & pc) {
     
     ChainOPs merged_chains(2);
-    if     ( nc.is_hairpin() && pc.is_hairpin() ) { throw "cannot merge an hairpin with another hairpin"; }
+    if     ( nc.is_hairpin() && pc.is_hairpin() ) {
+        
+        merged_chains[0] = _get_merged_chain(nc.p5_chain, pc.p3_chain, 1, 1);
+
+        //throw "cannot merge an hairpin with another hairpin";
+    
+    }
     else if( nc.is_hairpin() ) {
         ChainOP p3_chain = pc.p3_chain->subchain(0, (int)pc.p5_chain->residues().size()-1);
         ChainOP p5_chain = pc.p5_chain->subchain(1, (int)pc.p5_chain->residues().size());
@@ -175,7 +181,9 @@ MotifTreeMerger::_non_helix_merge(
     ChainOPs merged_chains(2);
     ChainOP p3_chain = nc.p3_chain->subchain(0, (int)nc.p3_chain->residues().size()-1);
     ChainOP p5_chain = nc.p5_chain->subchain(1, (int)nc.p5_chain->residues().size());
-    if     ( nc.is_hairpin() && pc.is_hairpin() ) { throw "cannot merge an hairpin with another hairpin"; }
+    if     ( nc.is_hairpin() && pc.is_hairpin() ) {
+        merged_chains[0] = _get_merged_chain(nc.p5_chain, pc.p3_chain, 1, 1);
+    }
     else if( nc.is_hairpin() ) {
         merged_chains[0] = _get_merged_hairpin(pc.p3_chain, pc.p5_chain, p5_chain);
     }
