@@ -39,6 +39,11 @@
 			<key>orderHint</key>
 			<integer>15</integer>
 		</dict>
+		<key>find_rings.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>16</integer>
+		</dict>
 		<key>motif.unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -98,6 +103,11 @@
 			<true/>
 		</dict>
 		<key>1C3AB1BA1A995B7B00361C7F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C3C0AA21AAB7B7400891276</key>
 		<dict>
 			<key>primary</key>
 			<true/>

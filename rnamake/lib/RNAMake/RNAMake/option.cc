@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Joseph Yesselman. All rights reserved.
 //
 
-#include "Option.h"
+#include "option.h"
 #include <fstream>
 
 Options

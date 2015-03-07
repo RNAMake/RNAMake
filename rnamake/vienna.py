@@ -17,7 +17,10 @@ class Vienna(object):
         f = open("rnafold_dump")
         lines = f.readlines()
         f.close()
-        last_line = lines.pop()
+        try:
+            last_line = lines.pop()
+        except:
+            return None
         spl = last_line.split()
         ensemble_prob = float(spl[6][:-1])
         ensemble_diversity = float(spl[-1])

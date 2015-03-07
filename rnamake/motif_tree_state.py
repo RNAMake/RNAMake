@@ -424,6 +424,11 @@ class MotifTreeStateTree(base.Base):
         self.nodes.remove(node)
         self.last_node = parent
 
+    def remove_nodes(self, index):
+        for n in self.nodes[::-1]:
+            if n.index > index:
+                self.remove_node(n)
+
 
 
 def parse_db_name(name):
