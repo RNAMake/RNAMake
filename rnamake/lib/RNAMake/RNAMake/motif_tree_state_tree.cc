@@ -164,6 +164,7 @@ MotifTreeStateTree::replace_state(
     open_nodes.push(node);
     int clash = 0;
     float dist = 0;
+    int cutoff = (int)nodes().size()-4;
     while (! open_nodes.empty() ) {
         current = open_nodes.front();
         open_nodes.pop();
@@ -173,7 +174,7 @@ MotifTreeStateTree::replace_state(
         parent_end = current->parent_end();
         aligner_.transform_state(parent_end, parent, current);
         aligner_.transform_beads(current);
-        if (current->index() > 19) {
+        if (current->index() > cutoff) {
             for( auto const & b1: nodes_[2]->beads()) {
                 for (auto const & b2 : current->beads()) {
                     dist = b1.distance(b2);

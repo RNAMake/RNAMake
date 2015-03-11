@@ -20,8 +20,10 @@
 
 //String mismatch_path = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
 
-String mismatch_path = resources_path() + "/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
-//String mismatch_path = "/Users/josephyesselman/projects/RNAMake.projects/rna.array.modeling/mismatches/2000_cycles_1bp/";
+//String mismatch_path = resources_path() + "/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
+//String mismatch_path = "/Users/josephyesselman/Downloads/mismatches_training/2Kstruct_2000cycles/results_1bp/";
+String mismatch_path = "/Users/josephyesselman/Downloads/results_1bp/";
+
 
 Options
 get_options(

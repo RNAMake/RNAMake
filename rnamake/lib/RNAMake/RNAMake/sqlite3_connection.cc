@@ -30,6 +30,7 @@ Sqlite3Connection::get_db_path(MotifType const & mtype) {
     String path = resources_path() + "/motif_libraries/";
     if     ( mtype == TWOWAY) { path += "two_ways"; }
     else if( mtype == HELIX ) { path += "helices";  }
+    else if( mtype == TCONTACT ) { path += "tertiary_contacts";  }
     else { throw "could not find mtype"; }
     return path+".db";
     

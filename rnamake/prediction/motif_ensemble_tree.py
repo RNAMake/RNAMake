@@ -77,6 +77,118 @@ class MotifEnsembleTreeNode(object):
         return random.choice(self.motif_ensemble.motif_states)
 
 
+class MTSTtoMETConverter(object):
+    def __init__(self):
+        pass
+
+    def _get_start_chain(self, n):
+        residues = n.motif.residues()
+        closest_to_5prime = 10000
+        start_chain = None
+        res = None
+
+        for r in residues:
+            r_new = self.p.get_residue(uuid=r.uuid)
+            if r_new is None:
+                continue
+
+            for i, c in enumerate(self.p.chains()):
+                if r_new in c.residues:
+                    index = c.residues.index(r_new)
+                    if index < closest_to_5prime:
+                        closest_to_5prime = index
+                        res = r_new
+                        start_chain = c
+
+        return start_chain
+
+    def _get_chain_pos(self, r):
+        for i, c in enumerate(self.p.chains()):
+            if r in c.residues:
+                return i
+
+    def _add_helix(self, n, chain, start_index, flip):
+        bps_str = []
+        chain_pos = self._get_chain_pos(chain.first())
+
+        start_pos = 10000
+        for r in n.motif.residues():
+            r_new = self.p.get_residue(uuid=r.uuid)
+            if r_new is None:
+                continue
+            if r_new in chain.residues:
+                index = chain.residues.index(r_new)
+                if index < start_pos:
+                    start_pos = index
+
+        for i, r in enumerate(chain.residues):
+            if i < start_pos:
+                continue
+            r_new = n.motif.get_residue(uuid=r.uuid)
+            if r_new is None:
+                break
+            res1 = self.dseq[r.num-1 + chain_pos]
+            bps = self.p.get_basepair(uuid1=r.uuid)
+            for bp in bps:
+                if bp.res1 == r:
+                    res2 =  self.dseq[bp.res2.num-1 + self._get_chain_pos(bp.res2)]
+                else:
+                    res2 =  self.dseq[bp.res1.num-1 + self._get_chain_pos(bp.res1)]
+            bps_str.append(res1+res2)
+
+        steps = []
+        for i in range(1, len(bps_str)):
+            steps.append(bps_str[i-1]+"="+bps_str[i])
+
+        for s in steps:
+            me = motif_ensemble.MotifEnsemble(s, start_index, flip)
+            self.met.add_ensemble(me)
+
+        return bps_str[-1]
+
+    def _get_next_bp(self, n, next_node, chain):
+        bp = n.connection(next_node).motif_end(next_node)
+        first_m_bp = None
+        res1 = None
+        for r in bp.residues():
+            r_new = self.p.get_residue(uuid=r.uuid)
+            if r_new in chain.residues:
+                res1 = r
+        if res1 == bp.res1:
+            first_m_bp = bp.res1.rtype.name[0] +  bp.res2.rtype.name[0]
+        else:
+            first_m_bp = bp.res2.rtype.name[0] +  bp.res1.rtype.name[0]
+        return first_m_bp
+
+
+
+    def convert(self, mtst, start_pos=1, debug=0):
+        self.p = mtst.to_pose()
+        if debug:
+            self.dseq = self.p.sequence()
+        else:
+            self.dseq = self.p.optimized_sequence()
+
+        start_chain = self._get_start_chain(self.p.nodes[start_pos])
+        self.met = MotifEnsembleTree()
+
+        for i, n in enumerate(self.p.nodes):
+            if i < start_pos:
+                continue
+            if n.motif.mtype == motif_type.HELIX:
+                last_bp = self._add_helix(n, start_chain,
+                                          mtst.nodes[i].mts.start_index,
+                                          mtst.nodes[i].mts.flip)
+                print last_bp
+                if i < len(self.p.nodes)-1:
+                    next_bp = self._get_next_bp(n, self.p.nodes[i+1], start_chain)
+                    print next_bp
+                    exit()
+
+
+
+
+
 
 def _get_start_res(n, p):
     residues = n.motif.residues()

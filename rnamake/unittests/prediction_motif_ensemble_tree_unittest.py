@@ -67,11 +67,13 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
 
 
     def test_mtst_to_met(self):
-        mtst = get_twoway_helix_mts_tree(3)
+        mtst = get_twoway_helix_mts_tree(2)
         for n in mtst.nodes:
             print n.mts.name
         #mtst = self._problem_one()
-        motif_ensemble_tree.mtst_to_met(mtst)
+        converter = motif_ensemble_tree.MTSTtoMETConverter()
+        converter.convert(mtst, debug=1)
+        #motif_ensemble_tree.mtst_to_met(mtst)
 
 
 

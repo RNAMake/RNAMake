@@ -279,7 +279,7 @@ class MotifTree(base.Base):
             if len(head_node_open_ends) == 0:
                 break
 
-    def _add_connection(self, node_1, node_2):
+    def _add_connection(self, node_1, node_2, cutoff=10):
         if node_1 == node_2:
             return 0
 
@@ -289,7 +289,7 @@ class MotifTree(base.Base):
         for end1 in avail_ends_1:
             for end2 in avail_ends_2:
                 dist = util.distance(end1.d(), end2.d())
-                if dist < 10:
+                if dist < cutoff:
                     new_connection = MotifTreeConnection(node_1, node_2, end1,
                                                          end2)
 
