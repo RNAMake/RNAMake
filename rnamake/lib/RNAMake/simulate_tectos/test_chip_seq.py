@@ -82,6 +82,15 @@ def extract_steps_from_ss_tree(ss_tree):
         node = c
     return steps
 
+def replace_Ts_with_Us(seq):
+    new_seq = ""
+    for e in seq:
+        if e == "T":
+            new_seq += "U"
+        else:
+            new_seq += e
+    return new_seq
+
 
 def get_all_steps(ss_tree):
     node = None
@@ -106,6 +115,7 @@ def get_all_steps(ss_tree):
             motif_seq2 = ''.join(required_nodes[i+1].y_seq)
 
             seq = bp1[0] + motif_seq1 + bp2[0] + "-" + bp2[1] + motif_seq2[::-1] + bp1[1]
+            seq = replace_Ts_with_Us(seq)
             ss = "("
             for j in range(len(motif_seq1)):
                 ss += "."
@@ -118,15 +128,13 @@ def get_all_steps(ss_tree):
             i += 2
 
         else:
-            steps.append(required_nodes[i].bp_type + "=" + required_nodes[i+1].bp_type)
+            step = required_nodes[i].bp_type + "=" + required_nodes[i+1].bp_type
+            step = replace_Ts_with_Us (step)
+            steps.append(step)
 
             i += 1
 
     return steps
-
-
-
-
 
 
 def get_met(flow_ss_tree, chip_ss_tree):
@@ -198,3 +206,4 @@ if args.s is not None:
 met = get_met(flow_ss_tree, chip_ss_tree)
 mtst = met.get_mtst()
 mtst.nodes_to_pdbs()
+mtst.to_pdb('complex.pdb')
