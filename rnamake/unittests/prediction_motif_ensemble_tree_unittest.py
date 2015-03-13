@@ -4,6 +4,7 @@ import rnamake.prediction.motif_ensemble_tree as motif_ensemble_tree
 import rnamake.prediction.motif_ensemble as motif_ensemble
 import rnamake.motif_tree_state as motif_tree_state
 import rnamake.motif_type as motif_type
+import rnamake.util as util
 
 def get_twoway_helix_mts_tree(size=2):
     twoways = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
@@ -61,16 +62,42 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
         twoways = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
         helixs = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX)
         mtst = motif_tree_state.MotifTreeStateTree()
-        mtst.add_state(helixs.get_state('HELIX.LE.20-0-0-1-0-0-1'))
-        mtst.add_state(twoways.get_state('TWOWAY.3BNO.1-0-0-1-0-0-1'))
+        mtst.add_state(helixs.get_state('HELIX.LE.6-0-0-0-0-1-0'))
+        mtst.add_state(twoways.get_state('TWOWAY.4OO8.0-0-0-0-0-1-1'))
+        #mtst.add_state(helixs.get_state('HELIX.LE.18-0-0-0-0-1-0'))
         return mtst
 
 
+    def test_mtst_to_met_helix(self):
+        helixs = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX, exclude=['11','10'])
+
+        for mts in helixs.motif_tree_states:
+            mtst = motif_tree_state.MotifTreeStateTree()
+            mtst.add_state(mts)
+
+            converter = motif_ensemble_tree.MTSTtoMETConverter()
+            mtst2 = converter.convert(mtst, debug=1)
+
+            d1 =mtst.last_node.active_states()[0].d
+            d2 = mtst2.last_node.active_states()[0].d
+
+            if mts.name == 'HELIX.LE.8-0-0-0-0-1-0':
+                mtst.to_pdb('test.pdb')
+                mtst2.to_pdb('test2.pdb')
+                exit()
+
+            dist = util.distance(d1, d2)
+            if dist > 2:
+                print mts.name, dist
+
+
+
     def test_mtst_to_met(self):
+        return
         mtst = get_twoway_helix_mts_tree(2)
-        for n in mtst.nodes:
-            print n.mts.name
-        #mtst = self._problem_one()
+        #for n in mtst.nodes:
+        #    print n.mts.name
+        mtst = self._problem_one()
         converter = motif_ensemble_tree.MTSTtoMETConverter()
         converter.convert(mtst, debug=1)
         #motif_ensemble_tree.mtst_to_met(mtst)

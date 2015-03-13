@@ -43,233 +43,6 @@ def target_end_origin(hmotif):
     mt.add_motif(hmotif)
     return mt.nodes[1].available_ends()[0].d()
 
-
-include = """157D
-165D
-1CSL
-1D4R
-1DQH
-1EHZ
-1EVV
-1F27
-1FUF
-1G2J
-1I7J
-1IK5
-1J6S
-1J8G
-1J9H
-1JZV
-1KD3
-1KD4
-1KD5
-1KFO
-1L2X
-1LNT
-1MDG
-1MSY
-1NLC
-1NUJ
-1NUV
-1OSU
-1P79
-1Q96
-1Q9A
-1QC0
-1QCU
-1R3O
-1RXB
-1T0E
-1XPE
-1ZCI
-1ZEV
-255D
-259D
-2A0P
-2A43
-2EES
-2EET
-2EEU
-2EEV
-2FCX
-2FD0
-2G32
-2G3S
-2G91
-2G92
-2G9C
-2GPM
-2GQ4
-2GQ5
-2GQ6
-2GQ7
-2GRB
-2OE5
-2OE8
-2OEU
-2OIY
-2PWT
-2Q1O
-2Q1R
-2QEK
-2R1S
-2R20
-2R21
-2R22
-2V6W
-2V7R
-2VAL
-2VUQ
-2W89
-2X2Q
-2XNZ
-2XSL
-2ZY6
-310D
-354D
-377D
-397D
-3BNN
-3BNQ
-3BNS
-3C44
-3CGP
-3CGS
-3CJZ
-3CZW
-3D0M
-3D2V
-3DIL
-3DS7
-3DVV
-3DVZ
-3DW4
-3DW5
-3DW6
-3DW7
-3FO4
-3FO6
-3GAO
-3GER
-3GLP
-3GM7
-3GOT
-3GVN
-3HGA
-3JXQ
-3JXR
-3LA5
-3MEI
-3ND3
-3ND4
-3NJ6
-3NJ7
-3OK2
-3OK4
-3P4A
-3P4B
-3P4C
-3P4D
-3PDR
-3R1D
-3R1E
-3RG5
-3S7C
-3S8U
-3SD3
-3SJ2
-3SYW
-3TD0
-406D
-413D
-420D
-434D
-435D
-437D
-439D
-464D
-466D
-468D
-469D
-470D
-472D
-480D
-483D
-4E58
-4E59
-4E5C
-4E6B
-4F8U
-4FE5
-4FNJ
-479D
-3MXH
-2PN4
-4LVZ
-3GX5
-3RKF
-3NKB
-1YZD
-3CGR
-2QUW
-3BNO
-1QBP
-1RNA
-2P7D
-2Z75
-1Y26
-4KYY
-433D
-438D
-2HOJ
-3B31
-3LOA
-3SSF
-402D
-4P95
-2GDI
-2FQN
-2D2L
-4K27
-405D
-3TD1
-3E5C
-1MWL
-421D
-3ZP8
-3B5S
-3TZR
-1O9M
-1MHK
-1GID
-398D
-3NPQ
-4JF2
-1Z7F
-2AO5
-4JAB
-3SLQ
-280D
-3P59
-4P5J
-3K1V
-4ENB
-4PQV
-3SZX
-1DUQ
-1T0D
-409D
-3P22
-4K31
-353D
-4MSR
-1I9X
-1ZX7""".split("\n")
-
-
-
-
-
 def get_bp_step_prediction_lib(targets, helix_mlib):
     not_seen = {}
     aligned_motifs = []
@@ -336,7 +109,150 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
     mtp.precompute_motifs(motifs)
 
 
+class SSandSeqCluster(object):
+    def __init__(self, motif):
+        self.ss = motif.secondary_structure()
+        self.seq = motif.sequence()
+        self.motifs = [ motif ]
+
+    def same_seq_and_ss(self, m):
+        if len(self.ss) != len(m.secondary_structure()):
+            return 0
+
+        if self.ss == m.secondary_structure() and self.seq == m.sequence():
+            return 1
+
+        ss = m.secondary_structure()
+        seq = m.sequence()
+        ss_spl = ss.split('&')
+        seq_spl = seq.split('&')
+
+        rseq = seq_spl[1]+'&'+seq_spl[0]
+        new_ss = ss_spl[1]+'&'+ss_spl[0]
+        rss = ""
+        for e in new_ss:
+            if   e == '(':
+                rss += ')'
+            elif e == ')':
+                rss += '('
+            else:
+                rss += e
+
+        if self.ss == rss and self.seq == rseq:
+            return 1
+
+        else:
+            return 0
+
+
+def get_ss_name(ss):
+    name = ""
+    for e in ss:
+        if e == '(' or e == ')':
+            name += 'P'
+        elif e == '.':
+            name += 'U'
+        elif e == '&':
+            name += '-'
+    return name
+
+def get_two_way_prediction_lib(c, origin, test_helix):
+    mt = motif_tree.MotifTree()
+
+    i = 0
+    aligned_motifs = []
+    for m in c.motifs:
+        n = mt.add_motif(m, end_flip=0)
+        n_end_origin_1 = n.available_ends()[0].d()
+        mt.remove_node_level()
+        n = mt.add_motif(m, end_flip=1)
+        n_end_origin_2 = n.available_ends()[0].d()
+
+        dist1 = util.distance(origin, n_end_origin_1)
+        dist2 = util.distance(origin, n_end_origin_2)
+        if dist2 > dist1:
+            aligned_motifs.append(mt.nodes[1].motif)
+        else:
+            mt.remove_node_level()
+            mt.add_motif(m, end_flip=0)
+            mt.nodes[1].motif.ends[0].flipped = 0
+            aligned_motifs.append(mt.nodes[1].motif)
+
+        mt.remove_node_level()
+        i += 1
+
+    kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+    kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
+    clusters = cluster.cluster_motifs(aligned_motifs)
+    nmotifs = len(aligned_motifs)
+    motifs = []
+
+    base_dir = settings.RESOURCES_PATH + "prediction/pdb_ensembles/"
+    seq_spl = c.seq.split('&')
+    seq_name = '-'.join(seq_spl)
+    name = seq_name + "_" + get_ss_name(c.ss)
+    f = open(base_dir + "/" + name + ".pop", "w")
+    for i, c in enumerate(clusters):
+        mt.add_motif(c.motifs[0])
+        node = mt.add_motif(test_helix, end_index=0, end_flip=0)
+        if mt.nodes[1].motif.ends[1].r()[1][0] > 0:
+            mt.nodes[1].motif.ends[1].flip()
+            mt.nodes[1].motif.ends[1].flipped=0
+        pop = float(len(c.motifs)) / float(nmotifs)
+        energy = -kBT*math.log(pop)
+        mt.nodes[1].motif.name = "motif."+str(i)
+        f.write("motif."+str(i) + " " + str(len(c.motifs)) + " " + \
+                str(pop) + " " + str(energy) + "\n")
+        motifs.append(mt.nodes[1].motif)
+        mt.remove_node_level()
+    f.close()
+
+    mtp = motif_tree_precomputer.MotifTreePrecomputer(name=base_dir+"/"+name,
+            max_bps_per_end=0)
+    mtp.precompute_motifs(motifs)
+
+
+
+
+def cluster_twoways():
+    twoway_lib = motif_library.MotifLibrary(motif_type.TWOWAY)
+    twoway_lib.load_all()
+
+    motifs = twoway_lib.motifs()
+    start_cluster = SSandSeqCluster(motifs.pop())
+    clusters = [ start_cluster ]
+    for m in motifs:
+        found = 0
+        for c in clusters:
+            if c.same_seq_and_ss(m):
+                c.motifs.append(m)
+                found = 1
+                break
+        if not found:
+            clusters.append( SSandSeqCluster(m) )
+
+
+    mt = motif_tree.MotifTree()
+    helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
+    ideal = helix_mlib.get_motif("HELIX.IDEAL")
+    origin = target_end_origin(ideal)
+
+    for c in clusters:
+        get_two_way_prediction_lib(c, origin, ideal)
+
+
+
+
+
+
+
+
+
 if __name__ == '__main__':
+
+    cluster_twoways()
+    #get_two_way_prediction_lib()
+    exit()
     helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
     helix_mlib.load_all()
     all_targets = []
@@ -344,11 +260,13 @@ if __name__ == '__main__':
     seen = []
     #get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
     #exit()
+    test_helix = helix_mlib.get_motif("HELIX.IDEAL.2")
+
     for i,bp1 in enumerate(bps):
         for j,bp2 in enumerate(bps):
             if bp1 + "=" + bp2 in seen:
                 continue
             target = [bp1,bp2]
             seen.append(bp1 + "=" + bp2)
-            get_bp_step_prediction_lib(target, helix_mlib)
+            get_bp_step_prediction_lib(target, helix_mlib, test_helix)
 

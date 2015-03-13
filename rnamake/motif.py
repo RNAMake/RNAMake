@@ -255,7 +255,7 @@ class Motif(object):
         for c in self.chains():
             for r in c.residues:
                 seq += r.rtype.name[0]
-            seq += "+"
+            seq += "&"
         return seq[:-1]
 
     def secondary_structure(self):

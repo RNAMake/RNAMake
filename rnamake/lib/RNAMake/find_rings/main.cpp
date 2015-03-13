@@ -203,6 +203,7 @@ find_rings(
                     ss << "ring." << i << "." << j << "." << count << ".pdb";
                     count ++;
                     mtst.to_pdb(ss.str());
+                    std::cout << ss.str() << " " << m1->name() << " " << m2->name() << " " << dist << std::endl;
                     ss.str("");
                     return;
                 }
@@ -238,7 +239,7 @@ int main(int argc, const char * argv[]) {
     
     for(auto const & m1 : motifs) {
         i++;
-        std::cout << i << std::endl;
+        //std::cout << i << std::endl;
         find_rings(gaaa_motif, m1, 0, i+0, mts_lib);
     }
     

@@ -32,6 +32,13 @@ class NameElements(object):
         self.start_index, self.end_helix_count, self.end_index, self.flip_direction = \
             int(start_index), int(end_helix_count), int(end_index), int(flip_direction)
 
+    def get_name(self):
+        name = self.motif_name + "-" + str(self.helix_direction) + "-" + \
+               str(self.start_helix_count) + "-" + str(self.start_index) + "-" +\
+               str(self.end_helix_count) + "-" + str(self.end_index) + "-" +\
+               str(self.flip_direction)
+        return name
+
 
 class MotifTreeState(object):
     def __init__(self, name, start_index, size, score, beads, ends, flip, build_string):

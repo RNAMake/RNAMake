@@ -41,7 +41,10 @@ class MotifTreeMerger(base.Base):
 
         # TODO turn motif into pose
         if len(mt.nodes) == 2 and self.option('include_head') == 0:
-            return mt.nodes[1].motif.copy()
+            m = mt.nodes[1].motif.copy()
+            m.nodes = mt.nodes
+            m.structure.renumber()
+            return m
 
         self.seen_constraints, self.chains, self.nodes  = {}, [], mt.nodes
 

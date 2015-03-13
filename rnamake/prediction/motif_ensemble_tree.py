@@ -1,7 +1,9 @@
 import rnamake.motif_tree_state as motif_tree_state
 import rnamake.motif_type as motif_type
+import rnamake.util as util
 import motif_ensemble
 import random
+import copy
 
 class MotifEnsembleTree(object):
     def __init__(self, ensemble=None):
@@ -161,29 +163,108 @@ class MTSTtoMETConverter(object):
         return first_m_bp
 
 
+    def _add_mts(self, mtst, i, mts_lib):
+        parent_index = mtst.nodes[i].parent_end_index()
+
+        me = mts_to_me(mtst.nodes[i].mts)
+        self.met.add_ensemble(me)
+        mtst2 = self.met.get_mtst()
+
+        start_org = mtst.nodes[i].parent.states[parent_index].d
+        start_new = mtst2.nodes[-1].parent.states[parent_index].d
+
+        mtst.to_pdb('test.pdb')
+        mtst2.to_pdb('test2.pdb')
+
+        exit()
+
+        current_index = None
+        for j, state in enumerate(mtst.nodes[i].states):
+            if state is None:
+                continue
+            current_index = j
+            break
+
+        end_org = mtst.nodes[i].states[current_index].d
+        end_new = mtst2.nodes[-1].states[current_index].d
+
+        diff = start_org - end_org
+        diff2 = start_new - end_new
+        dist = util.distance(diff, diff2)
+        if dist < 5:
+            return 0
+
+        ne = motif_tree_state.parse_db_name(mtst.nodes[i].mts.name)
+        if ne.flip_direction == 0:
+            ne.flip_direction = 1
+        else:
+            ne.flip_direction = 0
+        new_mts = mts_lib.get_state(ne.get_name())
+        self.met.last_node.motif_ensemble.motif_states[0].mts = new_mts
+
+        mtst2 = self.met.get_mtst()
+
+        end_org = mtst.nodes[i].states[current_index].d
+        end_new = mtst2.nodes[-1].states[current_index].d
+
+        diff = start_org - end_org
+        diff2 = start_new - end_new
+        dist = util.distance(diff, diff2)
+
+        if dist > 1:
+            raise ValueError("stuck, cant get out")
+
+        return 1
+
 
     def convert(self, mtst, start_pos=1, debug=0):
         self.p = mtst.to_pose()
+        mts_lib = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
         if debug:
             self.dseq = self.p.sequence()
         else:
             self.dseq = self.p.optimized_sequence()
 
         start_chain = self._get_start_chain(self.p.nodes[start_pos])
+        flipped = 0
         self.met = MotifEnsembleTree()
 
         for i, n in enumerate(self.p.nodes):
             if i < start_pos:
                 continue
+            ne = motif_tree_state.parse_db_name(mtst.nodes[i].mts.name)
+
             if n.motif.mtype == motif_type.HELIX:
+                flip = ne.flip_direction
+                start_index = ne.start_index
+                if flipped:
+                    if flip == 0:
+                        flip = 1
+                    else:
+                        flip = 0
                 last_bp = self._add_helix(n, start_chain,
-                                          mtst.nodes[i].mts.start_index,
-                                          mtst.nodes[i].mts.flip)
-                print last_bp
+                                          start_index,
+                                          flip)
+
                 if i < len(self.p.nodes)-1:
                     next_bp = self._get_next_bp(n, self.p.nodes[i+1], start_chain)
-                    print next_bp
-                    exit()
+                    last_step = last_bp + "=" + next_bp
+                    me = motif_ensemble.MotifEnsemble(last_step,
+                                                      start_index,
+                                                      flip)
+                    self.met.add_ensemble(me)
+
+
+            else:
+                flipped = self._add_mts(mtst, i, mts_lib)
+
+        #mtst.to_pdb('test.pdb')
+        mtst2 = self.met.get_mtst()
+        #mtst2.to_pdb('test2.pdb')
+        #mtst2 = self.met.get_mtst()
+        #mtst2.to_pdb("test2.pdb")
+        return mtst2
+
 
 
 
