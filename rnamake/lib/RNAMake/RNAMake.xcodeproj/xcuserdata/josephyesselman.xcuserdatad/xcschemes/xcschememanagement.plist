@@ -84,15 +84,10 @@
 			<key>orderHint</key>
 			<integer>11</integer>
 		</dict>
-		<key>simulate_tectos.xcscheme_^#shared#^_</key>
+		<key>simulate_tectos.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>12</integer>
-		</dict>
-		<key>test_tecto.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>17</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
