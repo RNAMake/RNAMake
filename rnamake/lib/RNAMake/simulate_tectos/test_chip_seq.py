@@ -205,5 +205,21 @@ if args.s is not None:
 
 met = get_met(flow_ss_tree, chip_ss_tree)
 mtst = met.get_mtst()
+
+clash = 0
+for i, n1 in enumerate(mtst.nodes):
+    for j, n2 in enumerate(mtst.nodes):
+        if i >= j:
+            continue
+        for b1 in n1.beads:
+            for b2 in n2.beads:
+                dist = util.distance(b1, b2)
+                if dist < 2:
+                    clash = 1
+                    break
+
+if clash:
+    print "WARNING, clash present!"
+
 mtst.nodes_to_pdbs()
 mtst.to_pdb('complex.pdb')

@@ -44,6 +44,8 @@ for d in os.listdir(path):
     spl = d.split('.')
     if spl[-1] != "pop":
         continue
+    if 'GA-UCC' not in d:
+        continue
 
     name_spl = spl[0].split('_')
     seq_spl = name_spl[0].split('-')

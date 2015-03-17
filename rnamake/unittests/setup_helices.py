@@ -11,6 +11,7 @@ import rnamake.util as util
 import rnamake.motif as motif
 import rnamake.basic_io as basic_io
 import rnamake.motif_scorer as motif_scorer
+import rnamake.util as util
 import rnamake
 import os
 
@@ -136,24 +137,39 @@ for i in range(1, 22):
 me = motif_ensemble.MotifEnsemble("GC=GC", 0, 1)
 mts = me.motif_states[0].mts
 mtst = motif_tree_state.MotifTreeStateTree()
+mt = motif_tree.MotifTree()
 
-for i in range(1, 22):
+
+for i in range(1, 7):
     mtst.add_state(mts)
     m = mtst.to_pose()
     m.name = "HELIX.LE."+str(i)
+    #mt.add_motif(m1,end_flip=0)
+    #m = mt.nodes[1].motif
 
-    new_mts = motif_tree_state.motif_to_state(m, 0, 0)
+    dist = util.matrix_distance(mt.nodes[0].motif.ends[0].r(), m.ends[1].r())
+    if dist < 0.1:
+        m.ends[0], m.ends[1] = m.ends[1], m.ends[0]
+
+    new_mts = motif_tree_state.motif_to_state(m, 0, 1)
     new_mts.flip = 1
+    #new_mts.build_string = m.to_str()
+    #new_mts.beads = beads
     new_mts.name = m.name + "-0-0-0-0-1-1"
 
     last_node = mtst.last_node
+    m.to_pdb('h.'+str(i)+'.pdb')
 
     for j in range(len(new_mts.end_states)):
         if last_node.states[j] is None:
             continue
-        new_mts.end_states[j] = last_node.states[j].copy()
+        print i
+        print new_mts.end_states[j].r
+        print last_node.states[j].r
+        #new_mts.end_states[j] = last_node.states[j].copy()
 
     write_mts_to_file(f, new_mts)
+    mt.remove_node_level()
 
 f.close()
 
