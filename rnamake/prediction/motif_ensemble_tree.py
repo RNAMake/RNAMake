@@ -134,9 +134,10 @@ class MTSTtoMETConverter(object):
             for bp in bps:
                 if bp.res1 == r:
                     res2 =  self.dseq[bp.res2.num-1 + self._get_chain_pos(bp.res2)]
+                    bps_str.append(res1+res2)
                 else:
                     res2 =  self.dseq[bp.res1.num-1 + self._get_chain_pos(bp.res1)]
-            bps_str.append(res1+res2)
+                    bps_str.append(res2+res1)
 
         steps = []
         for i in range(1, len(bps_str)):
@@ -224,24 +225,21 @@ class MTSTtoMETConverter(object):
             self.dseq = self.p.sequence()
         else:
             self.dseq = self.p.optimized_sequence()
+        print self.dseq
 
         start_chain = self._get_start_chain(self.p.nodes[start_pos])
         flipped = 0
         self.met = MotifEnsembleTree()
 
+        self.p.nodes[1].motif.mtype = motif_type.HELIX
         for i, n in enumerate(self.p.nodes):
             if i < start_pos:
                 continue
-            ne = motif_tree_state.parse_db_name(mtst.nodes[i].mts.name)
+            #ne = motif_tree_state.parse_db_name(mtst.nodes[i].mts.name)
 
             if n.motif.mtype == motif_type.HELIX:
-                flip = ne.flip_direction
-                start_index = ne.start_index
-                if flipped:
-                    if flip == 0:
-                        flip = 1
-                    else:
-                        flip = 0
+                flip = mtst.nodes[i].mts.flip
+                start_index = mtst.nodes[i].mts.start_index
                 last_bp = self._add_helix(n, start_chain,
                                           start_index,
                                           flip)
@@ -256,7 +254,9 @@ class MTSTtoMETConverter(object):
 
 
             else:
-                flipped = self._add_mts(mtst, i, mts_lib)
+                me =  mts_to_me(mtst.nodes[i].mts)
+                self.met.add_ensemble(me)
+                #flipped = self._add_mts(mtst, i, mts_lib)
 
         #mtst.to_pdb('test.pdb')
         mtst2 = self.met.get_mtst()

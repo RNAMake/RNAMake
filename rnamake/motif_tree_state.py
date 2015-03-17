@@ -509,7 +509,7 @@ def motif_to_state(m, end_index=0, end_flip=0):
     mt = motif_tree.MotifTree()
     mt.add_motif(m, end_index=end_index, end_flip=end_flip)
     m_copy = mt.nodes[1].motif
-    name = m_copy.name+"-"+str(end_index)+"-"+str(end_flip)
+    name = m_copy.name+"-"+str(end_index)+"-"+str(end_flip)+"-0-0-0-0"
     available_ends = mt.nodes[1].available_ends()
     ends = [ None for e in m_copy.ends]
     end_indexes = []

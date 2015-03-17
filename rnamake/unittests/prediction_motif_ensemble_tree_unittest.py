@@ -8,7 +8,7 @@ import rnamake.util as util
 
 def get_twoway_helix_mts_tree(size=2):
     twoways = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
-    helixs = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX, exclude=['11','10'])
+    helixs = motif_tree_state.MotifTreeStateLibrary(libpath='HELIX_test.new.me', exclude=['11','10'])
     me_libs = [helixs, twoways]
     mtst = motif_tree_state.MotifTreeStateTree()
     pos = 0
@@ -62,13 +62,14 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
         twoways = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
         helixs = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX)
         mtst = motif_tree_state.MotifTreeStateTree()
-        mtst.add_state(helixs.get_state('HELIX.LE.6-0-0-0-0-1-0'))
-        mtst.add_state(twoways.get_state('TWOWAY.4OO8.0-0-0-0-0-1-1'))
+        mtst.add_state(helixs.get_state('HELIX.LE.10-0-0-0-0-1-1'))
+        mtst.add_state(twoways.get_state('TWOWAY.2VQE.26-0-0-0-0-1-0'))
         #mtst.add_state(helixs.get_state('HELIX.LE.18-0-0-0-0-1-0'))
         return mtst
 
 
     def test_mtst_to_met_helix(self):
+        return
         helixs = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX, exclude=['11','10'])
 
         for mts in helixs.motif_tree_states:
@@ -91,15 +92,17 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
                 print mts.name, dist
 
 
-
     def test_mtst_to_met(self):
-        return
+        #TWOWAY.1JBS.0-0-0-0-0-1-1
         mtst = get_twoway_helix_mts_tree(2)
-        #for n in mtst.nodes:
-        #    print n.mts.name
-        mtst = self._problem_one()
+        for n in mtst.nodes:
+            print n.mts.name
+        #mtst = self._problem_one()
         converter = motif_ensemble_tree.MTSTtoMETConverter()
-        converter.convert(mtst, debug=1)
+        mtst2 = converter.convert(mtst, debug=1)
+
+        mtst.to_pdb('test.pdb')
+        mtst2.to_pdb('test2.pdb')
         #motif_ensemble_tree.mtst_to_met(mtst)
 
 
