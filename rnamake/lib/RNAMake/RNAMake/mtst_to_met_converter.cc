@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include "motif_ensemble_tree.h"
+#include "motif_ensemble.h"
 #include "mtst_to_met_converter.h"
 #include "motif_tree_node.h"
 #include "chain.h"
@@ -14,13 +16,27 @@
 
 MotifEnsembleTreeOP
 MTSTtoMETConverter::convert(
-    MotifTreeStateTree const & mtst) {
+    MotifTreeStateTree const & mtst,
+    int start_pos) {
     
     mt_ = mtst.to_motiftree();
     p_ = mt_.to_pose();
     dseq_ = p_->sequence();
-    ChainOP start_chain = _get_start_chain(mt_.nodes()[1]);
+    met_ = MotifEnsembleTreeOP ( new MotifEnsembleTree() );
     
+    ChainOP start_chain = _get_start_chain(mt_.nodes()[1]);
+    String motif_bp = "";
+    
+    int i = -1;
+    for (auto const & n : mt_.nodes()) {
+        i++;
+        if(i < start_pos) { continue; }
+        if(n->motif()->mtype() == HELIX) {
+            if(i > start_pos) {
+                
+            }
+        }
+    }
     
     return NULL;
 }
@@ -52,5 +68,26 @@ MTSTtoMETConverter::_get_start_chain(
     }
     
     return start_chain;
+    
+}
+
+
+String
+MTSTtoMETConverter::_get_next_bp(
+    MotifTreeNodeOP const & n,
+    MotifTreeNodeOP const & next_node,
+    ChainOP const & chain) {
+    
+    MotifTreeConnectionOP conn;
+    for (auto const & c : n->connections() ) {
+        if(c->partner(n) == next_node) { conn = c; break; }
+    }
+    
+    BasepairOP bp = conn->motif_end(next_node);
+    ResidueOP r_new;
+    for (auto const & r : bp->residues()) {
+        r_new = p_->get_residue(r->uuid());
+        
+    }
     
 }

@@ -159,73 +159,27 @@ class MTSTtoMETConverter(object):
 
         return bps_str[-1]
 
-    def _get_next_bp(self, n, next_node, chain):
-        bp = n.connection(next_node).motif_end(next_node)
+    def _get_next_bp(self, n, next_node, chain, flip=0):
+        if not flip:
+            bp = n.connection(next_node).motif_end(next_node)
+        else:
+            bp = n.connection(next_node).motif_end(n)
         first_m_bp = None
         res1 = None
+        best_index = 10000
         for r in bp.residues():
             r_new = self.p.get_residue(uuid=r.uuid)
             if r_new in chain.residues:
-                res1 = r
+                index = chain.residues.index(r_new)
+                if index < best_index:
+                    res1 = r
+                    best_index = index
+
         if res1 == bp.res1:
             first_m_bp = bp.res1.rtype.name[0] +  bp.res2.rtype.name[0]
         else:
             first_m_bp = bp.res2.rtype.name[0] +  bp.res1.rtype.name[0]
         return first_m_bp
-
-
-    def _add_mts(self, mtst, i, mts_lib):
-        parent_index = mtst.nodes[i].parent_end_index()
-
-        me = mts_to_me(mtst.nodes[i].mts)
-        self.met.add_ensemble(me)
-        mtst2 = self.met.get_mtst()
-
-        start_org = mtst.nodes[i].parent.states[parent_index].d
-        start_new = mtst2.nodes[-1].parent.states[parent_index].d
-
-        mtst.to_pdb('test.pdb')
-        mtst2.to_pdb('test2.pdb')
-
-        exit()
-
-        current_index = None
-        for j, state in enumerate(mtst.nodes[i].states):
-            if state is None:
-                continue
-            current_index = j
-            break
-
-        end_org = mtst.nodes[i].states[current_index].d
-        end_new = mtst2.nodes[-1].states[current_index].d
-
-        diff = start_org - end_org
-        diff2 = start_new - end_new
-        dist = util.distance(diff, diff2)
-        if dist < 5:
-            return 0
-
-        ne = motif_tree_state.parse_db_name(mtst.nodes[i].mts.name)
-        if ne.flip_direction == 0:
-            ne.flip_direction = 1
-        else:
-            ne.flip_direction = 0
-        new_mts = mts_lib.get_state(ne.get_name())
-        self.met.last_node.motif_ensemble.motif_states[0].mts = new_mts
-
-        mtst2 = self.met.get_mtst()
-
-        end_org = mtst.nodes[i].states[current_index].d
-        end_new = mtst2.nodes[-1].states[current_index].d
-
-        diff = start_org - end_org
-        diff2 = start_new - end_new
-        dist = util.distance(diff, diff2)
-
-        if dist > 1:
-            raise ValueError("stuck, cant get out")
-
-        return 1
 
 
     def convert(self, mtst, start_pos=1, pose=None, seq=None, ss=None, debug=0):
@@ -239,7 +193,7 @@ class MTSTtoMETConverter(object):
             score = 0
         else:
             self.dseq, score = self.p.optimized_sequence(ss)
-        #print self.dseq
+        print self.dseq
 
         start_chain = self._get_start_chain(self.p.nodes[start_pos])
         flipped = 0
@@ -253,7 +207,7 @@ class MTSTtoMETConverter(object):
             motif_bp = None
             if n.motif.mtype == motif_type.HELIX and "TWOWAY" not in n.motif.name:
                 if i > start_pos:
-                    motif_bp = self._get_next_bp(self.p.nodes[i-1], n, start_chain)
+                    motif_bp = self._get_next_bp(self.p.nodes[i-1], n, start_chain, 1)
 
                 flip = mtst.nodes[i].mts.flip
                 start_index = mtst.nodes[i].mts.start_index

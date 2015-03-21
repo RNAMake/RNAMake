@@ -24,17 +24,25 @@ public:
 public:
     MotifEnsembleTreeOP
     convert(
-        MotifTreeStateTree const &);
+        MotifTreeStateTree const &,
+        int start_pos = 1);
     
 private:
     
     ChainOP
     _get_start_chain(
-        MotifTreeNodeOP const & n);
+        MotifTreeNodeOP const &);
+    
+    String
+    _get_next_bp(
+        MotifTreeNodeOP const &,
+        MotifTreeNodeOP const &,
+        ChainOP const &);
     
 private:
     PoseOP p_;
     MotifTree mt_;
+    MotifEnsembleTreeOP met_;
     String dseq_;
     
     
