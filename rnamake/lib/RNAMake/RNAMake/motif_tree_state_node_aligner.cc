@@ -23,7 +23,8 @@ MotifTreeStateNodeAligner::transform_state(
         s->get_transformed_state(r_state_, t_state_);
         child->states()[i]->set(t_state_);
     }
-    
+    child->ss_score(child->mts()->score() + parent->ss_score());
+    child->size(child->mts()->size() + parent->size());
 }
 
 void
@@ -50,6 +51,10 @@ MotifTreeStateNodeAligner::transform_state(
         s->get_transformed_state(r_state_, t_state_);
         child->states()[i]->set(t_state_);
     }
+    
+    child->ss_score(child->mts()->score() + parent->ss_score());
+    child->size(child->mts()->size() + parent->size());
+
     
 }
 

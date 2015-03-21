@@ -6,6 +6,7 @@ def test_str_to_motif():
     m = rnamake.motif.Motif(path)
     f = open("test_str_to_motif.dat", "w")
     f.write( m.to_str() )
+    print m.secondary_structure()
     f.close()
 
 

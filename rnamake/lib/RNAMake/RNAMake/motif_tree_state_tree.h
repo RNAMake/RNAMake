@@ -29,10 +29,10 @@ public:
               int const cparent_end = -1);
 
     MotifTree
-    to_motiftree();
+    to_motiftree() const;
     
     PoseOP
-    to_pose();
+    to_pose() const;
     
     int
     replace_state(MotifTreeStateNodeOP const &,
@@ -83,6 +83,8 @@ private:
 
 MotifTreeState
 ref_mts();
+
+typedef std::shared_ptr<MotifTreeStateTree> MotifTreeStateTreeOP;
 
 
 #endif /* defined(__RNAMake__motif_tree_state_tree__) */

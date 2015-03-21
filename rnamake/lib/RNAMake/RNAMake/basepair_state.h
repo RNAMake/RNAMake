@@ -45,6 +45,17 @@ public:
 	diff_sugars_( Vectors(2) )
 	{ transpose(r_, r_T_); }
 	
+    inline
+    BasepairState(BasepairState const & b):
+    d_( b.d_ ),
+    r_( b.r_ ),
+    r_T_( Matrix(0) ),
+    sugars_ (b.sugars_),
+    diff_ ( Vector(0.0) ),
+    diff_sugars_( Vectors(2) )
+    { transpose(r_, r_T_); }
+
+    
 	~BasepairState()
 	{}
     

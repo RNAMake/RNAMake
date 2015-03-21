@@ -40,7 +40,7 @@ MotifTreeStateSearchSolution::to_mtst() {
     Point bp_pos_diff = start_mts->end_states()[0]->d() - rmotif.ends()[0]->d();
     rmotif.move(bp_pos_diff);
     MotifTreeStateOP final_start_mts (new MotifTreeState("mtss_start", start_mts->start_index(), start_mts->size(), start_mts->score(), start_mts->beads(), start_mts->end_states(), start_mts->flip(), rmotif.to_str()) );
-    MotifTreeStateTree mtst;
+    MotifTreeStateTree mtst (final_start_mts);
     mtst.sterics(0);
     int i = -1;
     int success = 0, same = 1;
@@ -62,9 +62,9 @@ MotifTreeStateSearchSolution::to_mtst() {
                     same = 0; break;
                 }
                 diff = n->states()[k]->diff(node->states()[k]);
-                if(diff > 0.1) {
+                if(diff > 1) {
                     std::cout << "made it" << std::endl;
-                    same = 0; break;
+                //    same = 0; break;
                 }
             }
             if(same) {

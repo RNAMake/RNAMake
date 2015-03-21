@@ -201,7 +201,7 @@ class MotifTreeStateSearch(base.Base):
                         'verbose'        :  0,
                         'frequency'      : 10 }
 
-        constraints = { 'max_node_level'  : 999,
+        constraints = { 'max_node_level'  : 15,
                         'max_steps'       : 100000000,
                         'max_solutions'   : 10,
                         'accept_score'    : 10}

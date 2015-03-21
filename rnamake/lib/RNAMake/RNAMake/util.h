@@ -16,5 +16,4 @@
 Point
 center(AtomOPs const &);
 
-
 #endif /* defined(__RNAMake__util__) */

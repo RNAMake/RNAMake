@@ -113,11 +113,27 @@ public: //getters
     int const &
     index() const { return index_; }
 
+    inline
+    int const &
+    size() const { return size_; }
+    
+    inline
+    float const &
+    ss_score() const { return ss_score_; }
+    
 public: //setters
     
     inline
     void
     beads(Points const & nbeads) { beads_ = nbeads; }
+    
+    inline
+    void
+    size(int const & nsize) { size_ = nsize; }
+    
+    inline
+    void
+    ss_score(int const & nss_score) { ss_score_ = nss_score; }
     
 
 private:

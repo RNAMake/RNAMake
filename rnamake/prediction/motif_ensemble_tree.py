@@ -109,8 +109,10 @@ class MTSTtoMETConverter(object):
             if r in c.residues:
                 return i
 
-    def _add_helix(self, n, chain, start_index, flip):
+    def _add_helix(self, n, chain, motif_bp, start_index, flip):
         bps_str = []
+        if motif_bp is not None:
+            bps_str.append(motif_bp)
         chain_pos = self._get_chain_pos(chain.first())
 
         start_pos = 10000
@@ -138,12 +140,20 @@ class MTSTtoMETConverter(object):
                 else:
                     res2 =  self.dseq[bp.res1.num-1 + self._get_chain_pos(bp.res1)]
                     bps_str.append(res2+res1)
-
         steps = []
         for i in range(1, len(bps_str)):
             steps.append(bps_str[i-1]+"="+bps_str[i])
 
-        for s in steps:
+        index = 0
+        for c in n.connections:
+            partner = c.partner(n)
+            if partner.index < n.index:
+                index = partner.motif.ends.index(c.motif_end(partner))
+                break
+        me = motif_ensemble.MotifEnsemble(steps[0], start_index, flip)
+        self.met.add_ensemble(me, parent_end_index=index)
+
+        for s in steps[1:]:
             me = motif_ensemble.MotifEnsemble(s, start_index, flip)
             self.met.add_ensemble(me)
 
@@ -218,29 +228,36 @@ class MTSTtoMETConverter(object):
         return 1
 
 
-    def convert(self, mtst, start_pos=1, debug=0):
-        self.p = mtst.to_pose()
+    def convert(self, mtst, start_pos=1, pose=None, seq=None, ss=None, debug=0):
+        if not pose:
+            self.p = mtst.to_pose()
+        else:
+            self.p = pose
         mts_lib = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
         if debug:
             self.dseq = self.p.sequence()
+            score = 0
         else:
-            self.dseq = self.p.optimized_sequence()
+            self.dseq, score = self.p.optimized_sequence(ss)
         #print self.dseq
 
         start_chain = self._get_start_chain(self.p.nodes[start_pos])
         flipped = 0
         self.met = MotifEnsembleTree()
 
-        self.p.nodes[1].motif.mtype = motif_type.HELIX
         for i, n in enumerate(self.p.nodes):
             if i < start_pos:
                 continue
             #ne = motif_tree_state.parse_db_name(mtst.nodes[i].mts.name)
 
-            if n.motif.mtype == motif_type.HELIX:
+            motif_bp = None
+            if n.motif.mtype == motif_type.HELIX and "TWOWAY" not in n.motif.name:
+                if i > start_pos:
+                    motif_bp = self._get_next_bp(self.p.nodes[i-1], n, start_chain)
+
                 flip = mtst.nodes[i].mts.flip
                 start_index = mtst.nodes[i].mts.start_index
-                last_bp = self._add_helix(n, start_chain,
+                last_bp = self._add_helix(n, start_chain, motif_bp,
                                           start_index,
                                           flip)
 
@@ -261,7 +278,7 @@ class MTSTtoMETConverter(object):
         #mtst.to_pdb('test.pdb')
         mtst2 = self.met.get_mtst()
         #mtst2.to_pdb("test2.pdb")
-        return mtst2
+        return mtst2, score
 
 def mts_to_me(mts):
     me = motif_ensemble.MotifEnsemble()

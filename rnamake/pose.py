@@ -136,7 +136,7 @@ class Pose(motif.Motif):
             seq += "&"
         return seq[:-1]
 
-    def optimized_sequence(self):
+    def optimized_sequence(self, ss=None):
         """
         returns the eternabot optimized sequence for the pose
         """
@@ -145,11 +145,13 @@ class Pose(motif.Motif):
                              "chains cannot call RNAFold or RNAcoFold")
 
         seq = self.designable_sequence()
-        ss  = self.secondary_structure()
+        if ss == None:
+            ss  = self.secondary_structure()
 
         designer = sequence_designer.SequenceDesigner()
         results = designer.design(ss, seq)
-        return results[0]['end'][0]
+        score = results[0]['end'][2]['finalscore']
+        return [results[0]['end'][0], score]
 
 
 

@@ -31,6 +31,10 @@ public:
     MotifTreeStateSearchNodeOPs const &
     path() const { return path_; }
     
+    inline
+    float const &
+    score() const { return score_; }
+    
     
 private:
     MotifTreeStateSearchNodeOPs path_;

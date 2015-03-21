@@ -263,8 +263,10 @@ class Motif(object):
         seen_res = {}
         seen_bp = {}
         saved_bp = None
+        count = -1
         for c in self.chains():
             for r in c.residues:
+                count += 1
                 ss = ""
                 bps = self.get_basepair(res1=r)
                 is_bp = 0
@@ -491,6 +493,7 @@ def align_motif(ref_bp, motif_end, motif):
 
     if dist1 < 5 or dist2 < 5:
         motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )
+
 
 def ref_motif():
     path = settings.RESOURCES_PATH + "/start"

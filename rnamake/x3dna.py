@@ -235,6 +235,11 @@ class X3dna(object):
                     num = e + num
                 except:
                     break
+        try:
+            int(rnum)
+        except:
+            return None
+
 
         return Residue(int(rnum), chain, i_code)
 
@@ -295,6 +300,8 @@ class X3dna(object):
                 continue
             res1 = self._parse_dssr_res_str(spl[2])
             res2 = self._parse_dssr_res_str(spl[3])
+            if res1 == None or res2 == None:
+                continue
             bp_type = spl[8]
 
             found = 0
@@ -418,6 +425,9 @@ class Residue(object):
             (self.num, self.i_code, self.chain_id)
 
     def __eq__(self, res):
+        if res == None:
+            return 0
+
         return self.num == res.num and self.chain_id == res.chain_id and \
                self.i_code == res.i_code
 

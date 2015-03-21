@@ -88,7 +88,7 @@ def parse(pdb_file):
         spl = key.split()
         rtype = residue_type.get_rtype(spl[0])
         if rtype is None:
-            logger.warning(spl[0] + " has no residue type, is being skipped")
+            #logger.warning(spl[0] + " has no residue type, is being skipped")
             continue
         icode = ""
         if len(spl) > 3:

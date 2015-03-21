@@ -74,10 +74,26 @@ test_update() {
     
 }
 
+int
+test_secondary_structure() {
+    Motif m = get_test_motif();
+    String org = "....((((((...(((.((.....(((.((((.(((..(((((((((....)))))))))..((.......))....)))......)))))))....)).)))..))))))(....((((..(((((((((.....)))))))).)))))......)";
+    String new_ss = m.secondary_structure();
+    //std::cout << new_ss << std::endl;
+    for(int i = 0; i < org.size(); i++) {
+        if(org[i] != new_ss[i]) { std::cout << i << " " << org[i] << " " << new_ss[i] << std::endl; }
+    }
+    
+    return 1;
+}
+
+
+
 int main(int argc, const char * argv[]) {
-    if (test_str_to_motif() == 0)     { std::cout << "test_str_to_motif failed" << std::endl; }
-    if (test_copy() == 0)             { std::cout << "test_copy failed" << std::endl; }
-    if (test_to_str() == 0)           { std::cout << "test_to_str failed" << std::endl; }
-    if (test_update() == 0)           { std::cout << "test_update failed" << std::endl; }
+    if (test_str_to_motif() == 0)         { std::cout << "test_str_to_motif failed" << std::endl; }
+    if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
+    if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
+    //if (test_update() == 0)               { std::cout << "test_update failed" << std::endl; }
+    if (test_secondary_structure() == 0)  { std::cout << "test_secondary_structure failed" << std::endl; }
     return 0;
 }

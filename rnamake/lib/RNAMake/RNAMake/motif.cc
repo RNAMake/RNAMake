@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <map>
 #include "motif.h"
 #include "chain.h"
 #include "xyzMatrix.h"
@@ -195,6 +196,76 @@ Motif::get_beads(BasepairOP const & excluded_end) {
     return beads_;
 }
 
+String
+Motif::sequence() {
+    String seq;
+    for (auto const & c : chains()) {
+        for (auto const & r : c->residues()) {
+            seq += r->short_name();
+        }
+        seq += "&";
+    }
+    return seq.substr(0, seq.length()-1);
+}
+
+String
+Motif::secondary_structure() {
+    String structure, ss;
+    BasepairOPs bps;
+    BasepairOP saved_bp = NULL;
+    ResidueOP partner_res;
+    std::map<String, int> seen_bp, seen_res;
+    int is_bp = 0, passes = 0, bp_seen = 0, res_seen = 0, partner_res_seen = 0;
+    int count = -1;
+    for (auto const & c : chains()) {
+        for (auto const & r : c->residues()) {
+            count ++;
+            ss = "";
+            is_bp = 0;
+            bps = get_basepair(r->uuid());
+            for(auto const & bp : bps) {
+                partner_res = bp->partner(r);
+                is_bp = 1;
+                passes = 0;
+                saved_bp = NULL;
+                if(wc_bp(bp) && bp->bp_type().compare("cW-W") == 0) { passes = 1; }
+                if(gu_bp(bp) && bp->bp_type().compare("cW-W") == 0) { passes = 1; }
+                
+                if(passes) {
+                    saved_bp = bp;
+                    bp_seen = 0; partner_res_seen = 0; res_seen = 0;
+                    if(seen_bp.find(bp->uuid().s_uuid()) != seen_bp.end())  { bp_seen = 1;  }
+                    if(seen_res.find(partner_res->uuid().s_uuid()) != seen_res.end()) { partner_res_seen = 1; }
+                    if(seen_res.find(r->uuid().s_uuid()) != seen_res.end()) { res_seen = 1; }
+                    if(bp_seen == 0 && res_seen == 0 && partner_res_seen == 0) {
+                        seen_res[r->uuid().s_uuid()] = 1;
+                        ss = "(";
+                    }
+                    else if(partner_res_seen == 1) {
+                        if(seen_res[partner_res->uuid().s_uuid()] > 1) { ss = "."; }
+                        else {
+                            ss = ")";
+                            seen_res[r->uuid().s_uuid()] = 1;
+                            seen_res[partner_res->uuid().s_uuid()] += 1;
+                            break;
+                        }
+                    }
+                }
+                else if(seen_res.find(r->uuid().s_uuid()) == seen_res.end()) {  ss = "."; }
+
+            }
+            if(!is_bp) { ss = "."; }
+            if(saved_bp != NULL) { seen_bp[saved_bp->uuid().s_uuid()] = 1; }
+            structure += ss;
+        }
+        structure += "&";
+    }
+    
+    return structure.substr(0, structure.length()-1);
+
+}
+
+
 void
 align_motif(BasepairOP const & ref_bp,
             BasepairOP const & motif_end,
@@ -242,5 +313,6 @@ ref_motif() {
     Motif m ( line, rts);
     return m;
 }
+
 
 

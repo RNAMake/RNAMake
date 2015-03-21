@@ -115,15 +115,24 @@ helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
 ideal = motif.str_to_motif(mts.build_string)
 origin = target_end_origin(ideal)
 
+mt = motif_tree.MotifTree()
 f = open('HELIX_test.new.me','w')
 for i in range(1, 22):
-    break
     mtst.add_state(mts)
+    if i == 1:
+        continue
     m = mtst.to_pose()
     m.name = "HELIX.LE."+str(i)
+    m.mtype = motif_type.HELIX
+
+    dist = util.matrix_distance(mt.nodes[0].motif.ends[0].r(), m.ends[1].r())
+    if dist < 0.1:
+        m.ends[0], m.ends[1] = m.ends[1], m.ends[0]
+
 
     new_mts = motif_tree_state.motif_to_state(m, 0, 0)
     new_mts.name = m.name + "-0-0-0-0-1-0"
+
 
     last_node = mtst.last_node
 
@@ -137,13 +146,15 @@ for i in range(1, 22):
 me = motif_ensemble.MotifEnsemble("GC=GC", 0, 1)
 mts = me.motif_states[0].mts
 mtst = motif_tree_state.MotifTreeStateTree()
-mt = motif_tree.MotifTree()
 
 
-for i in range(1, 7):
+for i in range(1, 22):
     mtst.add_state(mts)
+    #if i == 1:
+    #    continue
     m = mtst.to_pose()
     m.name = "HELIX.LE."+str(i)
+    m.mtype = motif_type.HELIX
     #mt.add_motif(m1,end_flip=0)
     #m = mt.nodes[1].motif
 
@@ -163,10 +174,11 @@ for i in range(1, 7):
     for j in range(len(new_mts.end_states)):
         if last_node.states[j] is None:
             continue
-        print i
-        print new_mts.end_states[j].r
-        print last_node.states[j].r
+        #print i
+        #print new_mts.end_states[j].r
+        #print last_node.states[j].r
         #new_mts.end_states[j] = last_node.states[j].copy()
+    print new_mts.score
 
     write_mts_to_file(f, new_mts)
     mt.remove_node_level()

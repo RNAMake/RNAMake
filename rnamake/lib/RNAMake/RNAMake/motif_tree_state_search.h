@@ -77,7 +77,8 @@ public:
     solutions_ ( MotifTreeStateSearchSolutionOPs() ),
     aligner_ ( MotifTreeStateNodeAligner() ),
     options_ ( MotifTreeStateSearchOptions() ),
-    steps_ ( 0 )
+    steps_ ( 0 ),
+    base_beads_ ( Points() )
     {
         node_selector_ = MotifTreeStateSelectorOP ( new MotifTreeStateSelector ( default_selector(MotifTypes())) );
         scorer_ = MotifTreeStateSearchScorerOP(new MTSS_GreedyBestFirstSearch ());
@@ -119,6 +120,10 @@ public: //setters
         options_.numerics(noptions);
     }
     
+    inline
+    void
+    base_beads(Points const & nbase_beads) { base_beads_ = nbase_beads; }
+    
 private:
     
     MotifTreeStateSearchNodeOP
@@ -132,6 +137,8 @@ private:
     MotifTreeStateSelectorOP node_selector_;
     MotifTreeStateNodeAligner aligner_;
     MotifTreeStateSearchOptions options_;
+    Points base_beads_;
+    
     int steps_;
 };
 

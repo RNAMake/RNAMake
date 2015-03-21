@@ -32,6 +32,17 @@ public:
     float
     accept_score(MotifTreeStateSearchNodeOP const &);
     
+public:
+    virtual
+    inline
+    void
+    level_weight(float const & nlevel_weight) {}
+    
+    virtual
+    inline
+    void
+    ss_score_weight(float const & nss_score_weight) {}
+    
 protected:
     BasepairStateOP target_, target_flip_;
     
@@ -48,6 +59,9 @@ public:
     score(MotifTreeStateSearchNodeOP const & node) {
         return new_score_function(node->active_states()[0], target_, target_flip_);
     }
+    
+public:
+    
 };
 
 class MTSS_Astar: public MotifTreeStateSearchScorer {
@@ -68,6 +82,16 @@ public:
         h_ = new_score_function(node->active_states()[0], target_, target_flip_);
         return g_ + h_;
     }
+    
+public:
+    
+    inline
+    void
+    level_weight(float const & nlevel_weight) { level_weight_ = nlevel_weight; }
+    
+    inline
+    void
+    ss_score_weight(float const & nss_score_weight) { ss_score_weight_ = nss_score_weight; }
 
 private:
     float g_, h_;

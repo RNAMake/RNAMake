@@ -65,7 +65,7 @@ def wc_bp(bp):
 
 def gu_bp(bp):
     bp_str = bp.res1.rtype.name[0] + bp.res2.rtype.name[0]
-    if bp_str == "GU" or bp_str == "UC":
+    if bp_str == "GU" or bp_str == "UG":
         return 1
     else:
         return 0

@@ -279,7 +279,7 @@ class MotifTree(base.Base):
             if len(head_node_open_ends) == 0:
                 break
 
-    def _add_connection(self, node_1, node_2, cutoff=10):
+    def _add_connection(self, node_1, node_2, cutoff=25):
         if node_1 == node_2:
             return 0
 

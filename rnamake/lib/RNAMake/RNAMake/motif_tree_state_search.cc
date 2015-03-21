@@ -90,8 +90,11 @@ MotifTreeStateSearch::search(
     float max_node_level  = options_.numeric("max_node_level");
     int   sterics         = options_.numeric("sterics");
     int   max_n_solutions = options_.numeric("max_n_solutions");
+    float accept_ss_score = options_.numeric("accept_ss_score");
     float score = 0.0f;
     int fail = 0;
+    int clash = 0;
+    float dist;
 
     while (!queue_.empty() ) {
         current = queue_.top();
@@ -103,6 +106,7 @@ MotifTreeStateSearch::search(
         score = scorer_->accept_score(current);
         if ( score < min_score) {
             fail = 0;
+            if(current->ss_score() > accept_ss_score) { continue;}
             if(!fail) {
                 MotifTreeStateSearchSolutionOP solution ( new MotifTreeStateSearchSolution(current, score) );
                 solutions_.push_back(solution);
@@ -118,12 +122,23 @@ MotifTreeStateSearch::search(
         
         for(auto const & mts_type_pair : mts_type_pairs) {
             for (auto const & end : parent_ends) {
+                clash = 0;
                 test_node->replace_mts(mts_type_pair.first);
                 aligner_.transform_state(end, current, test_node);
                 score = scorer_->score(test_node);
                 if (score > current->score()) { continue; }
                 if (sterics) {
                     aligner_.transform_beads(test_node);
+                    if(base_beads_.size() > 0 ){
+                        for(auto const & b1 : base_beads_) {
+                            for (auto const & b2 : test_node->beads()) {
+                                dist = b1.distance(b2);
+                                if (dist < 2.8) { clash = 1; break; }
+                            }
+                        }
+                    }
+                    if(clash) { continue; }
+                    
                     if(test_node->steric_clash()) { continue; }
                 }
                 test_node->lib_type(mts_type_pair.second);

@@ -64,6 +64,11 @@
 			<key>orderHint</key>
 			<integer>8</integer>
 		</dict>
+		<key>motif_tree_path_refiner.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>17</integer>
+		</dict>
 		<key>motif_tree_state.unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -113,6 +118,11 @@
 			<true/>
 		</dict>
 		<key>1C4B4F171AB2577D00A2F04C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4B4F461AB8F7B300A2F04C</key>
 		<dict>
 			<key>primary</key>
 			<true/>

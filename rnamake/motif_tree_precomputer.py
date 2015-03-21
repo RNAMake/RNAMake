@@ -329,6 +329,7 @@ def mlib_for_type(mtype):
     if   mtype == motif_type.TWOWAY:
         path = settings.MOTIF_DIRS + "two_ways/unique_7.dat"
         mlib = motif_library.MotifLibrary(libfile=path)
+        #mlib = motif_library.MotifLibrary(mtype)
         mlib.load_all()
     elif mtype == motif_type.HELIX:
         mlib = motif_library.MotifLibrary(mtype)
@@ -337,6 +338,7 @@ def mlib_for_type(mtype):
     elif mtype == motif_type.NWAY:
         mlib = motif_library.MotifLibrary(mtype)
         mlib.load_all()
+
     return mlib
 
 

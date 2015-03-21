@@ -103,7 +103,8 @@ Structure::get_residue(
             if ( r->uuid() == uuid) { return r; }
         }
     }
-    throw "could not find residue";
+    
+    return NULL;
 }
 
 

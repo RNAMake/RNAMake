@@ -1,45 +1,74 @@
 //
 //  main.cpp
-//  simulate_tectos
+//  motif_tree_path_refiner
 //
-//  Created by Joseph Yesselman on 2/14/15.
+//  Created by Joseph Yesselman on 3/17/15.
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
 #include <iostream>
 #include <random>
-#include <time.h>
-#include "secondary_structure_tree.h"
-#include "option.h"
-#include "types.h"
-#include "motif_ensemble.h"
-#include "motif_ensemble_tree.h"
-#include "motif_tree_state.h"
+#include "motif_tree_state_selector.h"
+#include "motif_tree_state_search_scorer.h"
+#include "motif_tree_state_search_node.h"
+#include "motif_tree_state_library.h"
 #include "motif_tree_state_tree.h"
-#include "settings.h"
 #include "motif_tree_state_search.h"
+#include "motif_tree_state_path_refiner.h"
+#include "secondary_structure_tree.h"
+#include "motif_ensemble_tree.h"
+#include "option.h"
+#include "mtst_to_met_converter.h"
 
-//String mismatch_path = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
-
-//String mismatch_path = resources_path() + "/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
-//String mismatch_path = "/Users/josephyesselman/Downloads/mismatches_training/2Kstruct_2000cycles/results_1bp/";
 String mismatch_path = "/Users/josephyesselman/Downloads/results_1bp/";
 
+MotifTreeStateTree
+get_two_way_helix_mts_tree(int size=10) {;
+    std::vector<MotifTreeStateLibrary> mts_libs(2);
+    mts_libs[0] = MotifTreeStateLibrary ( HELIX );
+    mts_libs[1] = MotifTreeStateLibrary ( TWOWAY );
+    MotifTreeStateTree mtst;
+    
+    srand(unsigned(time(NULL)));
+    std::random_device rd;
+    std::mt19937 mt(rd());
+    std::uniform_real_distribution<float> dist(0,1);
+    
+    int i = 0;
+    int pos = 0;
+    int count = 0;
+    while (i < size) {
+        if( i % 2 == 0) { pos = 0; }
+        else            { pos = 1; }
+        
+        int mts_pos = dist(mt)*(mts_libs[pos].motif_tree_states().size()-1);
+        MotifTreeStateOP mts = mts_libs[pos].motif_tree_states()[mts_pos];
+        
+        MotifTreeStateNodeOP node = mtst.add_state(mts, NULL);
+        if (node != NULL) { i++; }
+        count++;
+        if(count > 10000) { break; }
+        
+    }
+    
+    return mtst;
+    
+}
 
 Options
 get_options(
-    int argc,
-    char const ** argv) {
+            int argc,
+            char const ** argv) {
     
     Strings allowed = split_str_by_delimiter("cseq,css,fseq,fss,steps", ",");
     return parse_command_into_options(argc, argv, allowed);
-
+    
     
 }
 
 StringStringMap
 get_construct_seq_and_ss(
-    Options const & options) {
+                         Options const & options) {
     
     //defaults are wc flow and wc chip (id: 1)
     StringStringMap defaults;
@@ -121,7 +150,7 @@ get_steps_from_ss_tree(
     }
     //first one is in tetraloop receptor structure
     steps.erase(steps.begin());
-
+    
     return steps;
 }
 
@@ -150,9 +179,9 @@ mts_to_me(MotifTreeStateOP const & mts) {
 
 MotifEnsemble
 get_ensemble(
-    String const & name,
-    int end,
-    int flip) {
+             String const & name,
+             int end,
+             int flip) {
     if (name[2] == '=') {
         return MotifEnsemble(name, end, flip);
     }
@@ -165,8 +194,8 @@ get_ensemble(
 
 MotifEnsembleTree
 get_met(
-    SecondaryStructureTree const & flow_ss_tree,
-    SecondaryStructureTree const & chip_ss_tree) {
+        SecondaryStructureTree const & flow_ss_tree,
+        SecondaryStructureTree const & chip_ss_tree) {
     
     Strings lines = get_lines_from_file(base_dir() + "/rnamake/lib/RNAMake/simulate_tectos/tetraloop.str");
     ResidueTypeSet rts;
@@ -184,122 +213,73 @@ get_met(
         met.add_ensemble(MotifEnsemble(flow_steps[i], 0, 1));
     }
     met.add_ensemble(mts_to_me(gaaa_state));
-    met.add_ensemble(get_ensemble(chip_steps[0], 0, 1), NULL, 1);
-    for (int i = 1; i < chip_steps.size(); i++) {
-        met.add_ensemble(get_ensemble(chip_steps[i], 0, 1));
-    }
-    
     return met;
 }
 
-void
-sample(
-    MotifEnsembleTree & met,
-    int nsteps = 10000000) {
+
+int
+test_path_refiner() {
+    MotifTreeStateTree mtst = get_two_way_helix_mts_tree(10);
+    mtst.to_pdb("test.pdb");
+    MotifTreeStatePathRefiner path_finder;
+    path_finder.set_numeric_option("max_size", mtst.last_node()->size());
+    MotifTreeStateSearchSolutionOPs solutions = path_finder.find_path(mtst.nodes()[0]->states()[0], mtst.nodes().back()->active_states()[0]);
     
-    //get crazy randomness
-    srand(unsigned(time(NULL)));
-    std::random_device rd;
-    std::mt19937 mt(rd());
-    std::uniform_real_distribution<float> dist(0,1);
-    
-    MotifTreeStateTree mtst = met.get_mtst();
-    MotifTree mt2 = mtst.to_motiftree();
-    mt2.write_pdbs();
-    mtst.clash_radius(2.5);
-    MotifEnsembleTreeNodeOP met_node;
-    MotifTreeStateNodeOP mts_node;
-    MotifState ms = met.nodes()[0]->motif_ensemble().motif_states()[0];
-    
-    Ints watch;
-    std::vector<StringIntMap> ensembles;
-    String name;
-    int k = -1;
-    for(auto const & n : met.nodes()) {
-        k++;
-        if(n->motif_ensemble().motif_states().size() == 1) { continue; }
-        String name = n->motif_ensemble().motif_states()[0].mts->name();
-        if(name[2] != '=') {
-            watch.push_back(k);
-            ensembles.push_back(StringIntMap());
-        }
-    }
-    
-    float kB =  1.3806488e-1 ;
-    float kBT =  kB * 298.15 ;
-    float score;
-    int node_num = 0;
-    int i = 0,result = 0;
-    float cpop;
-    float frame_score;
-    BasepairStateOP target = mtst.nodes()[2]->states()[0];
-    BasepairStateOP target_flip (new BasepairState(target->copy()));
-    target_flip->flip();
-    int under_cutoff = 0;
-    float cutoff = 5.0f;
-    float diceroll = 0.0f;
-    int pos = 0;
-    
-    while (i < nsteps) {
-        node_num = (int)((met.nodes().size()-1)*dist(mt));
-        if(node_num == 0) { continue; }
-        met_node = met.nodes()[ node_num ];
-        mts_node = mtst.nodes()[ node_num ];
-        cpop = met_node->motif_ensemble().get_state(mts_node->mts()->name()).population;
-        pos = (int)((met_node->motif_ensemble().motif_states().size()-1)*dist(mt));
-        ms = met_node->motif_ensemble().get_state(pos);
-        if ( ms.population < cpop) {
-            result = mtst.replace_state(mts_node, ms.mts);
-            if(result == 0) { continue;}
-            frame_score =  frame_distance(mtst.last_node()->states()[1], target, target_flip);
-            if(frame_score < cutoff) {
-                under_cutoff++;
-                k = 0;
-                for(auto & ensemble : ensembles) {
-                    pos = watch[k];
-                    name = mtst.nodes()[pos]->mts()->name();
-                    if(ensemble.find(name) == ensemble.end()) { ensemble[name] = 0; }
-                    ensemble[name] = ensemble[name] + 1;
-                    k++;
-                }
-            }
-            i++;
-            continue;
-        }
-        
-        score = exp((cpop - ms.population)/kBT);
-        diceroll = dist(mt);
-        if( diceroll < score) {
-            result = mtst.replace_state(mts_node, ms.mts);
-            if(result == 0) { continue;}
-            frame_score = frame_distance(mtst.last_node()->states()[1], target, target_flip);
-            if(frame_score < cutoff) {
-                under_cutoff++;
-                k = 0;
-                for(auto & ensemble : ensembles) {
-                    pos = watch[k];
-                    name = mtst.nodes()[pos]->mts()->name();
-                    if(ensemble.find(name) == ensemble.end()) { ensemble[name] = 0; }
-                    ensemble[name] = ensemble[name] + 1;
-                    k++;
-                }
-            }
-            i++;
-        }
-    }
-    
-    std::cout << under_cutoff << " " << nsteps << " " <<  std::endl;
-    if(ensembles.size() > 0) {
-        for( auto const & k : ensembles[0]) {
-            std::cout << k.first << " " << k.second << std::endl;
-        }
-    }
-    
+    return 0;
 }
 
+int
+test_path_refiner_ttr() {
+    
+    Strings lines = get_lines_from_file(base_dir() + "/rnamake/lib/RNAMake/simulate_tectos/tetraloop.str");
+    ResidueTypeSet rts;
+    MotifOP gaaa_motif ( new Motif(lines[1], rts));
+    Beads beads = gaaa_motif->get_beads(gaaa_motif->ends());
+    Points centers;
+    for (auto const & b : beads) {
+        if(b.btype() == PHOS) { continue; }
+        centers.push_back(b.center());
+    }
+    
+    gaaa_motif->to_pdb("test.pdb");
+    BasepairStateOP start (new BasepairState(gaaa_motif->ends()[1]->state()));
+    BasepairStateOP end (new BasepairState(gaaa_motif->ends()[0]->state()));
 
+    
+    MotifTreeStateSearch search;
+    search.base_beads(centers);
+    search.set_numeric_option("max_size", 130);
+    //search.set_numeric_option("accept_ss_score", 0);
+    search.set_numeric_option("max_n_solutions", 1000);
+    search.set_numeric_option("max_node_level", 5);
 
-int main(int argc, const char * argv[]) {
+    MotifTreeStateSearchScorerOP scorer ( new MTSS_Astar() );
+    scorer->level_weight(0);
+    scorer->ss_score_weight(0);
+    MotifTreeStateSearchSolutionOPs solutions = search.search(start, end, NULL, scorer);
+    
+    std::stringstream ss;
+    
+    std::cout << solutions.size() << std::endl;
+    
+    int i = 0;
+    for (auto const & s : solutions) {
+        std::cout << i << " " << s->path().back()->ss_score() << std::endl;
+        for (auto const & n : s->path() ) {
+            std::cout << n->mts()->name() << " ";
+        }
+        std::cout << std::endl;
+        ss << "solutions." << i << ".pdb";
+        s->to_mtst().to_pdb(ss.str());
+        ss.str("");
+        i++;
+    }
+    
+    return 1;
+}
+
+int
+test_path_refiner_tecto(int argc, const char * argv[]) {
     Options options = get_options(argc, argv);
     StringStringMap constructs_seq_and_ss = get_construct_seq_and_ss(options);
     //constructs_seq_and_ss["cseq"]= "CTAGGATATGGAAGATACTCGGGAACGAGAATCTTCCTAAGTCCTAG";
@@ -308,39 +288,57 @@ int main(int argc, const char * argv[]) {
     SecondaryStructureTree flow_ss_tree ( constructs_seq_and_ss["fss"], constructs_seq_and_ss["fseq"]);
     MotifEnsembleTree met = get_met(flow_ss_tree, chip_ss_tree);
     
-    /*MotifTreeStateTree mtst = met.get_mtst();
+    MotifTreeStateTree mtst = met.get_mtst();
+    Points beads;
+    int i = -1;
+    for( auto const & n : mtst.nodes()) {
+        i++;
+        if( i == 1) { continue; }
+        if(n == mtst.last_node()) { continue; }
+        for( auto const & b : n->beads() ) {
+            beads.push_back(b);
+        }
+    }
     mtst.to_pdb("start.pdb");
     BasepairStateOP target = mtst.nodes()[2]->states()[0];
     MotifTreeStateSearch search;
-    MotifTreeStateSearchSolutionOPs solutions = search.search(mtst.last_node()->states()[1], target);
+    //search.base_beads(beads);
+    search.set_numeric_option("accept_score", 5.0);
+    search.set_numeric_option("max_n_solutions", 1000);
+    search.set_numeric_option("max_size", 60);
+    MotifTreeStateSearchScorerOP scorer ( new MTSS_Astar() );
+    MotifTreeStateSearchSolutionOPs solutions = search.search(mtst.last_node()->states()[1], target, NULL, scorer);
     std::cout << solutions.size() << std::endl;
-    int i = 0;
+    i = 0;
     std::stringstream ss;
     for(auto const & s : solutions) {
+        std::cout << i << " | ";
+        for(auto const & n : s->path()) { std::cout << n->mts()->name() << " "; }
+        std::cout << " | " << s->score() << std::endl;
         ss << "solution." << i << ".pdb";
         s->to_mtst().to_pdb(ss.str());
         ss.str("");
         i++;
-    }*/
+    }
+    
+    return 1;
+}
 
-    int nsteps = 10000000;
-    sample(met, nsteps);
-    return 0;
+int
+test_converter() {
+    //Strings mts_names = split_str_by_delimiter("HELIX.LE.13-0-0-0-0-1-1 TWOWAY.1S72.42-0-0-0-0-1-1 HELIX.LE.12-0-0-0-0-1-0 TWOWAY.3GX5.0-0-0-1-0-0-1 HELIX.LE.9-0-0-0-0-1-0", " ");
+    MotifTreeStateTree mtst = get_two_way_helix_mts_tree(2);
+    MTSTtoMETConverter converter;
+    converter.convert(mtst);
+    
+    return 1;
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+int main(int argc, const char * argv[]) {
+    // insert code here...
+    //test_path_refiner_ttr();
+    //test_path_refiner_tecto(argc, argv);
+    test_converter();
+    return 0;
+}

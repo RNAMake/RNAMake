@@ -78,9 +78,9 @@ class MotifTreeStateSelector(object):
             if clist_name in self.clash_lists:
                 clist = self.clash_lists[clist_name]
             for mts in c.mts_lib.motif_tree_states:
-                key = node.mts.name + " " + mts.name
-                if key in clist:
-                    continue
+                #key = node.mts.name + " " + mts.name
+                #if key in clist:
+                #    continue
                 children.append(mts)
                 types.append(c.index)
 

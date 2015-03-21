@@ -100,7 +100,7 @@ MotifTreeStateTree::_steric_clash(
 }
 
 MotifTree
-MotifTreeStateTree::to_motiftree() {
+MotifTreeStateTree::to_motiftree() const {
     int i = -1;
     MotifTree mt;
     ResidueTypeSet rts;
@@ -130,6 +130,7 @@ MotifTreeStateTree::to_motiftree() {
             mt.sterics(0);
             MotifTreeNodeOP mt_node = mt.add_motif(m, parent, n->mts()->start_index(), parent_index, n->mts()->flip());
             mt.write_pdbs();
+            return mt;
             exit(0);
         }
     }
@@ -137,7 +138,7 @@ MotifTreeStateTree::to_motiftree() {
 }
 
 PoseOP
-MotifTreeStateTree::to_pose() {
+MotifTreeStateTree::to_pose() const {
     MotifTree mt = to_motiftree();
     return mt.to_pose();
 }

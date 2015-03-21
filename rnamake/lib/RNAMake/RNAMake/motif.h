@@ -57,6 +57,12 @@ public:
         }
     }
     
+    String
+    sequence();
+    
+    String
+    secondary_structure();
+    
     BasepairOPs
     get_basepair(Uuid const &);
     

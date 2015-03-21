@@ -90,7 +90,7 @@ MotifTreeStateSelector::get_children_mts(
     SelectorNodeOPs connections;
     int lib_type = node->lib_type();
     if(lib_type != -1)         { connections = nodes_[node->lib_type()]->connections(); }
-    else                       { connections = nodes_[0]->connections();  lib_type = 0; }
+    else                       { connections.push_back(nodes_[0]);  lib_type = 0; }
     
     String clist_name, key;
     StringIntMapOP clist;

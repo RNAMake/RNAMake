@@ -42,3 +42,22 @@ Basepair::to_pdb(String const fname) const {
     out << s << std::endl;
     out.close();
 }
+
+bool
+wc_bp(BasepairOP const & bp) {
+    String bp_str = bp->res1()->short_name() + bp->res2()->short_name();
+    if(bp_str.compare("GC") == 0) { return true; }
+    if(bp_str.compare("CG") == 0) { return true; }
+    if(bp_str.compare("AU") == 0) { return true; }
+    if(bp_str.compare("UA") == 0) { return true; }
+    return false;
+}
+
+bool
+gu_bp(BasepairOP const & bp) {
+    String bp_str = bp->res1()->short_name() + bp->res2()->short_name();
+    if(bp_str.compare("GU") == 0) { return true; }
+    if(bp_str.compare("UG") == 0) { return true; }
+    return false;
+}
+

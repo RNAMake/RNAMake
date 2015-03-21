@@ -107,6 +107,14 @@ public:
     void
     lib_type(int const & nlib_type) { lib_type_ = nlib_type; }
     
+    inline
+    void
+    ss_score(float const & nss_score) { ss_score_ = nss_score; }
+    
+    inline
+    void
+    size(int const nsize ) { size_ = nsize; }
+    
 public:
     
     inline

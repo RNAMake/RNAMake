@@ -63,7 +63,7 @@ public:
 public: // getters
     
     inline
-    BasepairState const &
+    BasepairState &
     state() {
         bp_state_.d(center(atoms_));
         return bp_state_;
@@ -189,5 +189,12 @@ private:
 typedef std::vector<Basepair> Basepairs;
 typedef std::shared_ptr<Basepair> BasepairOP;
 typedef std::vector<BasepairOP> BasepairOPs;
+
+bool
+wc_bp(BasepairOP const &);
+
+bool
+gu_bp(BasepairOP const &);
+
 
 #endif /* defined(__RNAMake__basepair__) */
