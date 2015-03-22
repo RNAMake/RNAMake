@@ -328,8 +328,14 @@ int
 test_converter() {
     //Strings mts_names = split_str_by_delimiter("HELIX.LE.13-0-0-0-0-1-1 TWOWAY.1S72.42-0-0-0-0-1-1 HELIX.LE.12-0-0-0-0-1-0 TWOWAY.3GX5.0-0-0-1-0-0-1 HELIX.LE.9-0-0-0-0-1-0", " ");
     MotifTreeStateTree mtst = get_two_way_helix_mts_tree(2);
+    for(auto const & n : mtst.nodes()) {
+        std::cout << n->mts()->name() << std::endl;
+    }
+    mtst.to_pdb("test.pdb");
     MTSTtoMETConverter converter;
-    converter.convert(mtst);
+    MotifEnsembleTreeOP met = converter.convert(mtst);
+    MotifTreeStateTree mtst2 = met->get_mtst();
+    mtst2.to_pdb("test2.pdb");
     
     return 1;
 }

@@ -181,7 +181,6 @@ class MTSTtoMETConverter(object):
             first_m_bp = bp.res2.rtype.name[0] +  bp.res1.rtype.name[0]
         return first_m_bp
 
-
     def convert(self, mtst, start_pos=1, pose=None, seq=None, ss=None, debug=0):
         if not pose:
             self.p = mtst.to_pose()
@@ -196,7 +195,6 @@ class MTSTtoMETConverter(object):
         print self.dseq
 
         start_chain = self._get_start_chain(self.p.nodes[start_pos])
-        flipped = 0
         self.met = MotifEnsembleTree()
 
         for i, n in enumerate(self.p.nodes):
@@ -222,6 +220,21 @@ class MTSTtoMETConverter(object):
                                                       start_index,
                                                       flip)
                     self.met.add_ensemble(me)
+
+                elif len(n.connections) > 1:
+                    other_node = None
+                    for c in n.connections:
+                        partner = c.partner(n)
+                        if partner == self.p.nodes[i-1]:
+                            continue
+                        other_node = partner
+                    next_bp = self._get_next_bp(n, other_node, start_chain)
+                    last_step = last_bp + "=" + next_bp
+                    me = motif_ensemble.MotifEnsemble(last_step,
+                                                      start_index,
+                                                      flip)
+                    self.met.add_ensemble(me)
+
 
 
             else:

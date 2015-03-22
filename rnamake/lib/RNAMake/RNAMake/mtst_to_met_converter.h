@@ -12,6 +12,7 @@
 #include "motif_tree_state_tree.h"
 #include "motif_ensemble_tree.fwd.h"
 #include "motif_tree.h"
+#include "types.h"
 #include "pose.h"
 #include <stdio.h>
 
@@ -37,7 +38,20 @@ private:
     _get_next_bp(
         MotifTreeNodeOP const &,
         MotifTreeNodeOP const &,
-        ChainOP const &);
+        ChainOP const &,
+        int flip = 0);
+    
+    String
+    _add_helix(
+        MotifTreeNodeOP const &,
+        ChainOP const &,
+        String const &,
+        int const &,
+        int const &);
+    
+    int
+    _get_chain_pos(
+        ResidueOP const &);
     
 private:
     PoseOP p_;

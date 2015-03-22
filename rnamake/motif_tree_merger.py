@@ -117,7 +117,7 @@ class MotifTreeMerger(base.Base):
             node_chains    = self._get_chains_from_connection(node, c)
             partner_chains = self._get_chains_from_connection(partner, c)
             # TODO maybe figure out which is a better basepair to remove
-            print node.index, partner.index, partner.motif.mtype
+            #print node.index, partner.index, partner.motif.mtype
             if partner.motif.mtype == motif_type.HELIX:
                 merged_chains = self._helix_merge(node_chains, partner_chains)
             else:
@@ -161,7 +161,6 @@ class MotifTreeMerger(base.Base):
             merged_chain_1 = self._get_merged_hairpin(pc.p3_chain, pc.p5_chain,
                                                       p5_chain)
         elif pc.is_hairpin():
-            print len(p5_chain)
             merged_chain_1 = self._get_merged_hairpin(p5_chain, p3_chain,
                                                       pc.p5_chain, 1)
         else:
