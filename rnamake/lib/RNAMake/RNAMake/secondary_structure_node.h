@@ -113,6 +113,11 @@ public:
     String
     bp_type() { return ""; }
     
+    virtual
+    inline
+    int
+    bp_type_num() { return -1; }
+    
 public:
     virtual
     inline
@@ -154,19 +159,29 @@ public:
     String
     bp_type() { return bp_type_; }
     
+    inline
+    int
+    bp_type_num() { return bp_type_num_; }
+    
 public:
     virtual
     inline
     void
     bp_type(String const & nbp_type) {
         bp_type_ = nbp_type;
+        assign_bp_type_num();
         res1_ = nbp_type[0];
         res2_ = nbp_type[1];
     }
     
 private:
+    void
+    assign_bp_type_num();
+    
+private:
     char res1_, res2_;
     String bp_type_;
+    int bp_type_num_;
     
     
 };

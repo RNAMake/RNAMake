@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <algorithm>
+#include <map>
 #include "types.h"
 #include "secondary_structure_node.fwd.h"
 #include "secondary_structure_node.h"
@@ -30,13 +31,25 @@ public:
         String cseq (seq);
         _build_tree(css, cseq);
 
+        helices_ = std::vector<SecondaryStructureNodeOPs>();
+        SecondaryStructureNodeOPs helix;
+        for(auto const & n : nodes_) {
+            if(n->ss_type() == SSN_BP) {
+                helix.push_back(n);
+            }
+            else {
+                helices_.push_back(helix);
+                helix = SecondaryStructureNodeOPs();
+            }
+        }
+        if(helix.size() > 0) { helices_.push_back(helix); }
     }
     
     ~SecondaryStructureTree() {}
     
 public:
     SSandSeqOP
-    get_ss_and_seq() { return nodes_[0]->get_ss_and_seq(); }
+    get_ss_and_seq() const { return nodes_[0]->get_ss_and_seq(); }
    
     inline
     SecondaryStructureNodeOPs
@@ -62,6 +75,58 @@ public:
         return bps;
     }
     
+    int
+    gc_pairs() const {
+        int count = 0;
+        for (auto const & n : nodes_ ) {
+            if(n->ss_type() == SSN_BP && (n->bp_type_num() == 0 || n->bp_type_num() == 1)) {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    int
+    gu_pairs() const {
+        int count = 0;
+        for (auto const & n : nodes_ ) {
+            if(n->ss_type() == SSN_BP && (n->bp_type_num() == 4 || n->bp_type_num() == 5)) {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    int
+    ua_pairs() const {
+        int count = 0;
+        for (auto const & n : nodes_ ) {
+            if(n->ss_type() == SSN_BP && (n->bp_type_num() == 2 || n->bp_type_num() == 3)) {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
+    std::vector<SecondaryStructureNodeOPs> const &
+    helices() const { return helices_; }
+    
+    std::map<int, int>
+    get_pairmap() const {
+        std::map<int, int> pairmap;
+        
+        for(auto const & n : nodes_) {
+            if(n->ss_type() != SSN_BP) { continue; }
+            pairmap[n->x_pos()+1] = n->y_pos()+1;
+            pairmap[n->y_pos()+1] = n->x_pos()+1;
+        }
+        
+        return pairmap;
+    }
+    
     
 private:
     
@@ -70,6 +135,7 @@ private:
 
 private:
     SecondaryStructureNodeOPs nodes_;
+    std::vector<SecondaryStructureNodeOPs> helices_;
     
 };
 

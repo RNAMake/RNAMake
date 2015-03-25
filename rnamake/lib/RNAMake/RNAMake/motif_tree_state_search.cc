@@ -104,7 +104,7 @@ MotifTreeStateSearch::search(
         
         if(current->size() > max_size)         { continue; }
         score = scorer_->accept_score(current);
-        if ( score < min_score) {
+        if ( score < min_score && current->lib_type() == 0) {
             fail = 0;
             if(current->ss_score() > accept_ss_score) { continue;}
             if(!fail) {
@@ -126,7 +126,7 @@ MotifTreeStateSearch::search(
                 test_node->replace_mts(mts_type_pair.first);
                 aligner_.transform_state(end, current, test_node);
                 score = scorer_->score(test_node);
-                if (score > current->score()) { continue; }
+                if (score > current->score() && current->level() > 1) { continue; }
                 if (sterics) {
                     aligner_.transform_beads(test_node);
                     if(base_beads_.size() > 0 ){

@@ -82,6 +82,7 @@ SSN_Basepair::SSN_Basepair(
     bp_type_.push_back(res1_); bp_type_.push_back(res2_);
     ss_type_ = SSN_BP;
     children_ = SecondaryStructureNodeOPs();
+    assign_bp_type_num();
     
 }
 
@@ -98,6 +99,21 @@ SSN_Basepair::get_ss_and_seq() {
     SSandSeqOP result ( new SSandSeq(ss, seq));
     return result;
 }
+
+void
+SSN_Basepair::assign_bp_type_num() {
+    if     (bp_type_.compare("GC") == 0) { bp_type_num_ = 0;}
+    else if(bp_type_.compare("CG") == 0) { bp_type_num_ = 1;}
+    else if(bp_type_.compare("AU") == 0) { bp_type_num_ = 2;}
+    else if(bp_type_.compare("UA") == 0) { bp_type_num_ = 3;}
+    else if(bp_type_.compare("AU") == 0) { bp_type_num_ = 4;}
+    else if(bp_type_.compare("GU") == 0) { bp_type_num_ = 5;}
+    else if(bp_type_.compare("UG") == 0) { bp_type_num_ = 6;}
+    else                                 { bp_type_num_ = 7;}
+
+
+}
+
 
 SSN_Bulge::SSN_Bulge(
     String const & ss,

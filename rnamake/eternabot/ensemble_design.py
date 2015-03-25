@@ -1,6 +1,6 @@
-from . import ensemble_utils
-from . import eterna_utils
-from . import inv_utils
+from rnamake.eternabot import ensemble_utils
+from rnamake.eternabot import eterna_utils
+from rnamake.eternabot import inv_utils
 import sys
 import re
 import random
@@ -193,8 +193,8 @@ def inverse_fold(
         if(secstruct[ii] != "."):
             dotonly = False
 
-    if(dotonly or len(secstruct) < 20):
-        return [start_sequence, 0, 0, {}]
+    #if(dotonly or len(secstruct) < 20):
+    #    return [start_sequence, 0, 0, {}]
 
     bases = "GAUC"
     pairs = ["GC", "CG", "AU", "UA"]

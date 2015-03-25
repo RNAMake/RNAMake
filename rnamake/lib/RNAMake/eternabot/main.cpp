@@ -7,8 +7,10 @@
 //
 
 #include <iostream>
+#include "secondary_structure_tree.h"
 #include "vienna.h"
 #include "sequence_designer.h"
+#include "eternabot_scorer.h"
 
 
 int
@@ -40,19 +42,47 @@ test_design_sequence() {
 int
 test_design_sequence_2() {
     SequenceDesigner designer;
-    designer.design("NNNNNNNNNNNNNNNNNNNNNNNNN&NNNNNNNNNNNNNNNNNNNNNNNNN",
-                    "(((((((((((((((((((((((((&)))))))))))))))))))))))))");
+    String seq = designer.design("NNNNNNNNNNNNNNNNNNNNNNNNN&NNNNNNNNNNNNNNNNNNNNNNNNN",
+                                 "(((((((((((((((((((((((((&)))))))))))))))))))))))))");
+    std::cout << seq << std::endl;
+    return 1;
+}
+
+int
+test_eternabot_scorer() {
+    SecondaryStructureTree sstree("(((....)))", "GUCUUCGGAC");
+    EternabotScorer scorer;
+    scorer.setup("(((....)))");
+    for(int i = 0; i < 100000; i++) {
+        if (i % 1000 == 0 ) { std::cout << i << std::endl; }
+        scorer.score_sstree(sstree);
+        exit(0);
+    }
+    return 1;
+}
+
+int
+test_eternabot_enumerate_bps() {
+    SecondaryStructureTree sstree("(((....)))", "GUCUUCGGAC");
+    EternabotScorer scorer;
+    scorer.setup("(((....)))");
+    
+    
+    
+    
     return 1;
 }
 
 
 int main(int argc, const char * argv[]) {
     
-    if (test_fold() == 0)             { std::cout << "test_fold failed" << std::endl;  }
-    if (test_cofold() == 0)           { std::cout << "test_cofold failed" << std::endl;  }
+    if (test_fold() == 0)               { std::cout << "test_fold failed" << std::endl;  }
+    if (test_cofold() == 0)             { std::cout << "test_cofold failed" << std::endl;  }
     //if (test_design_sequence() == 0)  { std::cout << "test_design_sequence failed" << std::endl;  }
-    if (test_design_sequence_2() == 0)  { std::cout << "test_design_sequence failed" << std::endl;  }
+    //if (test_design_sequence_2() == 0)  { std::cout << "test_design_sequence failed" << std::endl;  }
+    if (test_eternabot_scorer() == 0)   { std::cout << "test_eternabot_scorer failed" << std::endl;  }
 
+    
     
     return 0;
 }

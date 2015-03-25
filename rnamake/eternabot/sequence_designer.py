@@ -35,6 +35,9 @@ class SequenceDesigner:
             for line in weights_f:
                 weights.append(float(line))
 
+        #for i, name in enumerate(strategy_names):
+            #if weights[i] != 0:
+            #    print name, weights[i]
 
         self.ensemble = ensemble_utils.Ensemble("sparse", strategy_names, weights)
 
@@ -55,6 +58,8 @@ class SequenceDesigner:
 
 if __name__ == "__main__":
     designer = SequenceDesigner()
-    solutions = designer.design("(((....)))", "NNNNNNNNNN")
+    #solutions = designer.design("(((....)))", "GGGUUCGCCC")
+    solutions = designer.design("(((....)))", "GUCUUCGGAC")
+    #solutions = designer.design("(((....)))", "NNNUUCGNNN")
     #print solutions
 

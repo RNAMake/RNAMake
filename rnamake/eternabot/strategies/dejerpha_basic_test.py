@@ -23,10 +23,8 @@ class Strategy(strategy_template.Strategy):
         total_pairs = design['gu'] + design['gc'] + design['ua']
 
         score = 100
-
         if(total_pairs > 0):
             score -= abs(float(design['ua'])/total_pairs - params[0]) * params[1]
-
 
         target_fe = params[2] * total_pairs
 

@@ -167,6 +167,10 @@
 		1C4B4F841ABA0B1A00A2F04C /* motif_ensemble_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AC261A8545730063C8A8 /* motif_ensemble_tree.cc */; };
 		1C4B4F871ABCACE600A2F04C /* mtst_to_met_converter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F851ABCACE600A2F04C /* mtst_to_met_converter.cc */; };
 		1C4B4F881ABCACE600A2F04C /* mtst_to_met_converter.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F851ABCACE600A2F04C /* mtst_to_met_converter.cc */; };
+		1C4B4F8B1ABE730800A2F04C /* eternabot_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F891ABE730800A2F04C /* eternabot_scorer.cc */; };
+		1C4B4F8C1ABE730800A2F04C /* eternabot_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F891ABE730800A2F04C /* eternabot_scorer.cc */; };
+		1C4B4F8F1ABF641100A2F04C /* eterna_bot_strategy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F8D1ABF641100A2F04C /* eterna_bot_strategy.cc */; };
+		1C4B4F901ABF641100A2F04C /* eterna_bot_strategy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F8D1ABF641100A2F04C /* eterna_bot_strategy.cc */; };
 		1C4F14491AA2A671003B7895 /* libRNA.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C4F14481AA2A671003B7895 /* libRNA.a */; };
 		1C4F14511AA2A690003B7895 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F14501AA2A690003B7895 /* main.cpp */; };
 		1C4F14551AA2A6C4003B7895 /* libRNA.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C4F14481AA2A671003B7895 /* libRNA.a */; };
@@ -569,6 +573,10 @@
 		1C4B4F531AB8F84A00A2F04C /* motif_tree_state_path_refiner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_state_path_refiner.h; sourceTree = "<group>"; };
 		1C4B4F851ABCACE600A2F04C /* mtst_to_met_converter.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = mtst_to_met_converter.cc; sourceTree = "<group>"; };
 		1C4B4F861ABCACE600A2F04C /* mtst_to_met_converter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mtst_to_met_converter.h; sourceTree = "<group>"; };
+		1C4B4F891ABE730800A2F04C /* eternabot_scorer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eternabot_scorer.cc; sourceTree = "<group>"; };
+		1C4B4F8A1ABE730800A2F04C /* eternabot_scorer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eternabot_scorer.h; sourceTree = "<group>"; };
+		1C4B4F8D1ABF641100A2F04C /* eterna_bot_strategy.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = eterna_bot_strategy.cc; sourceTree = "<group>"; };
+		1C4B4F8E1ABF641100A2F04C /* eterna_bot_strategy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = eterna_bot_strategy.h; sourceTree = "<group>"; };
 		1C4F14471AA24093003B7895 /* basepair_state.fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basepair_state.fwd.h; sourceTree = "<group>"; };
 		1C4F14481AA2A671003B7895 /* libRNA.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libRNA.a; path = "../../../../../Downloads/ViennaRNA-2.1.8/lib/libRNA.a"; sourceTree = "<group>"; };
 		1C4F144E1AA2A690003B7895 /* eternabot */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = eternabot; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -853,6 +861,10 @@
 				1C4F145A1AA2B8ED003B7895 /* sequence_designer.h */,
 				1C4F14651AA38FC1003B7895 /* sequence_design_scorer.cc */,
 				1C4F14661AA38FC1003B7895 /* sequence_design_scorer.h */,
+				1C4B4F891ABE730800A2F04C /* eternabot_scorer.cc */,
+				1C4B4F8A1ABE730800A2F04C /* eternabot_scorer.h */,
+				1C4B4F8D1ABF641100A2F04C /* eterna_bot_strategy.cc */,
+				1C4B4F8E1ABF641100A2F04C /* eterna_bot_strategy.h */,
 			);
 			name = EternaBot;
 			sourceTree = "<group>";
@@ -1698,10 +1710,12 @@
 			files = (
 				1C4F14681AA38FC1003B7895 /* sequence_design_scorer.cc in Sources */,
 				1C4F145F1AA2BAFB003B7895 /* FileIO.cpp in Sources */,
+				1C4B4F8C1ABE730800A2F04C /* eternabot_scorer.cc in Sources */,
 				1C4F145D1AA2BACA003B7895 /* secondary_structure_tree.cc in Sources */,
 				1C4F145E1AA2BACA003B7895 /* secondary_structure_node.cc in Sources */,
 				1C4F14511AA2A690003B7895 /* main.cpp in Sources */,
 				1C4F145C1AA2B8ED003B7895 /* sequence_designer.cc in Sources */,
+				1C4B4F901ABF641100A2F04C /* eterna_bot_strategy.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1970,8 +1984,10 @@
 				1C4F561B1A74614D00C7E6D7 /* residue_type_set.cc in Sources */,
 				1C855BB21A7FDBEC00EED04D /* sqlite3_connection.cc in Sources */,
 				1C3AB1F01A9E8A3200361C7F /* motif_tree_state_search_scorer.cc in Sources */,
+				1C4B4F8F1ABF641100A2F04C /* eterna_bot_strategy.cc in Sources */,
 				1C3AB1F81A9EB72B00361C7F /* motif_tree_state_search.cc in Sources */,
 				1C4F563C1A75B34200C7E6D7 /* util.cc in Sources */,
+				1C4B4F8B1ABE730800A2F04C /* eternabot_scorer.cc in Sources */,
 				1C4F56051A74548400C7E6D7 /* residue_type.cc in Sources */,
 				1C4F56431A76227900C7E6D7 /* structure.cc in Sources */,
 				1C3AB17F1A906FA100361C7F /* option.cc in Sources */,

@@ -98,6 +98,28 @@ private:
     float ss_score_weight_, level_weight_;
 };
 
+class MTSS_Astar2 : public MotifTreeStateSearchScorer {
+public:
+    MTSS_Astar2() {
+        max_size_ = 130;
+        
+    }
+    
+    inline
+    float
+    score(MotifTreeStateSearchNodeOP const & node) {
+     
+        float diff = ((max_size_ - node->size()) / max_size_)*0.8;
+        if(diff < 0) { diff = 0; }
+        return new_score_function(node->active_states()[0], target_, target_flip_)*(1-diff) + node->ss_score()*diff;
+
+    }
+    
+private:
+    int max_size_;
+    
+};
+
 typedef std::shared_ptr<MotifTreeStateSearchScorer> MotifTreeStateSearchScorerOP;
 
 

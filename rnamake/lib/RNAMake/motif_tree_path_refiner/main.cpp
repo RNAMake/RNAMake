@@ -249,13 +249,13 @@ test_path_refiner_ttr() {
     MotifTreeStateSearch search;
     search.base_beads(centers);
     search.set_numeric_option("max_size", 130);
-    //search.set_numeric_option("accept_ss_score", 0);
-    search.set_numeric_option("max_n_solutions", 1000);
-    search.set_numeric_option("max_node_level", 5);
+    search.set_numeric_option("accept_ss_score", -10);
+    search.set_numeric_option("max_n_solutions", 10);
+    //search.set_numeric_option("max_node_level", 5);
 
     MotifTreeStateSearchScorerOP scorer ( new MTSS_Astar() );
-    scorer->level_weight(0);
-    scorer->ss_score_weight(0);
+    //scorer->level_weight(0);
+    //scorer->ss_score_weight(0);
     MotifTreeStateSearchSolutionOPs solutions = search.search(start, end, NULL, scorer);
     
     std::stringstream ss;
@@ -343,8 +343,8 @@ test_converter() {
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    //test_path_refiner_ttr();
+    test_path_refiner_ttr();
     //test_path_refiner_tecto(argc, argv);
-    test_converter();
+    //test_converter();
     return 0;
 }

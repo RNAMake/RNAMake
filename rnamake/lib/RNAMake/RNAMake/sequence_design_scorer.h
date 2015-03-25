@@ -10,6 +10,7 @@
 #define __RNAMake__sequence_design_scorer__
 
 #include <stdio.h>
+#include "secondary_structure_tree.h"
 #include "vienna.h"
 
 class SequenceDesignScorer {
@@ -36,12 +37,18 @@ public:
     score(
         String const &);
     
-private:
+    virtual
+    float
+    score_sstree(
+        SecondaryStructureTree const &) { return 0;}
+
+protected:
     Vienna v_;
     FoldResult fr_;
     String ss_;
     float score_;
     int cofold_;
+       
     
 };
 
