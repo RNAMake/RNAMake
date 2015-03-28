@@ -34,6 +34,11 @@
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
+		<key>design_primers.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>18</integer>
+		</dict>
 		<key>eternabot.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -97,6 +102,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>1C2241411AC62A4100F76233</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>1C3AB1751A906F4000361C7F</key>
 		<dict>
 			<key>primary</key>

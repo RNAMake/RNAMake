@@ -19,6 +19,8 @@
 #include "motif_ensemble_tree.h"
 #include "option.h"
 #include "mtst_to_met_converter.h"
+#include "sequence_designer.h"
+#include "FileIO.h"
 
 String mismatch_path = "/Users/josephyesselman/Downloads/results_1bp/";
 
@@ -57,8 +59,8 @@ get_two_way_helix_mts_tree(int size=10) {;
 
 Options
 get_options(
-            int argc,
-            char const ** argv) {
+    int argc,
+    char const ** argv) {
     
     Strings allowed = split_str_by_delimiter("cseq,css,fseq,fss,steps", ",");
     return parse_command_into_options(argc, argv, allowed);
@@ -68,7 +70,7 @@ get_options(
 
 StringStringMap
 get_construct_seq_and_ss(
-                         Options const & options) {
+    Options const & options) {
     
     //defaults are wc flow and wc chip (id: 1)
     StringStringMap defaults;
@@ -162,7 +164,7 @@ get_lines_from_file(String const fname) {
     input.open(fname);
     while ( input.good() ) {
         getline(input, line);
-        if( line.length() < 10 ) { break; }
+        if( line.length() < 2 ) { break; }
         lines.push_back(line);
         
     }
@@ -179,9 +181,9 @@ mts_to_me(MotifTreeStateOP const & mts) {
 
 MotifEnsemble
 get_ensemble(
-             String const & name,
-             int end,
-             int flip) {
+    String const & name,
+    int end,
+    int flip) {
     if (name[2] == '=') {
         return MotifEnsemble(name, end, flip);
     }
@@ -249,8 +251,8 @@ test_path_refiner_ttr() {
     MotifTreeStateSearch search;
     search.base_beads(centers);
     search.set_numeric_option("max_size", 130);
-    search.set_numeric_option("accept_ss_score", -10);
-    search.set_numeric_option("max_n_solutions", 10);
+    search.set_numeric_option("accept_ss_score", 0);
+    search.set_numeric_option("max_n_solutions", 1000);
     //search.set_numeric_option("max_node_level", 5);
 
     MotifTreeStateSearchScorerOP scorer ( new MTSS_Astar() );
@@ -264,7 +266,6 @@ test_path_refiner_ttr() {
     
     int i = 0;
     for (auto const & s : solutions) {
-        std::cout << i << " " << s->path().back()->ss_score() << std::endl;
         for (auto const & n : s->path() ) {
             std::cout << n->mts()->name() << " ";
         }
@@ -340,11 +341,108 @@ test_converter() {
     return 1;
 }
 
+int
+test_sequence_designer() {
+    Strings lines = get_lines_from_file("out2");
+    Strings names;
+    String ss, dseq, seq;
+    float score;
+    std::vector<MotifTreeStateLibrary> mts_libs(2);
+    mts_libs[0] = MotifTreeStateLibrary(HELIX);
+    mts_libs[1] = MotifTreeStateLibrary(TWOWAY);
+    Strings tetraloops = get_lines_from_file(base_dir() + "/rnamake/lib/RNAMake/simulate_tectos/tetraloop.str");
+    ResidueTypeSet rts;
+    MotifOP gaaa_tetraloop ( new Motif(tetraloops[1], rts));
+    MotifTreeStateOP gaaa_mts = motif_to_state(gaaa_tetraloop, 2);
+    MotifTreeStateTree mtst;
+    SequenceDesigner designer;
+    mtst.sterics(0);
+    mtst.add_state(mts_libs[0].get_state("HELIX.LE.3-0-0-0-0-1-1"), NULL);
+    mtst.add_state(gaaa_mts, NULL);
+    int i = 0, pos = 0;
+    for( auto const & l : lines) {
+        i = -1;
+        names = split_str_by_delimiter(l, " ");
+        for(auto const & name : names) {
+            i++;
+            if ( i == 0 ) { continue; }
+            if ( i % 2 == 0)  { pos = 1; }
+            else              { pos = 0; }
+            
+            if(i == 1) {
+                mtst.add_state(mts_libs[pos].get_state(name), NULL, 1);
+            }
+            else {
+                mtst.add_state(mts_libs[pos].get_state(name), NULL);
+            }
+            
+        }
+        //mtst.to_pdb("test.pdb");
+        MotifTree mt = mtst.to_motiftree();
+        mt._add_connection(mt.nodes()[2], mt.nodes().back(), 1000);
+        PoseOP p = mt.to_pose();
+        ss   = p->secondary_structure();
+        dseq = p->designable_sequence();
+        seq = designer.design(dseq, ss);
+        std::cout << ss << std::endl;
+        std::cout << dseq << std::endl; 
+        score = designer.score();
+        std::cout << seq << std::endl;
+        std::cout << score << std::endl;
+        
+        
+        
+        exit(0);
+    }
+    
+    return 0;
+}
+
+
 
 int main(int argc, const char * argv[]) {
     // insert code here...
-    test_path_refiner_ttr();
+    //test_path_refiner_ttr();
     //test_path_refiner_tecto(argc, argv);
     //test_converter();
+    test_sequence_designer();
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

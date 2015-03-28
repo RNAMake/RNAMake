@@ -72,7 +72,7 @@ public:
     
 public:
     PoseOP
-    merge(MotifTree const &);
+    merge(MotifTree const &, int include_head = 0);
     
 private:
     

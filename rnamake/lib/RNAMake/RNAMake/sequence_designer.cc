@@ -16,24 +16,26 @@ SequenceDesigner::design(
     scorer_->setup(structure);
     ss_tree_ = SecondaryStructureTree(structure, sequence);
     SecondaryStructureNodeOPs designable_bps = ss_tree_.get_designable_bps();
-    
     for(auto & bp_node : designable_bps) { mutate_basepair(bp_node); }
-
-    ss_and_seq_ = ss_tree_.get_ss_and_seq();
     
     int bps_pos = 0, bps_size = (int)designable_bps.size();
     float new_score;
-    score_ = scorer_->score(ss_and_seq_->seq);
+    score_ = scorer_->score_sstree(ss_tree_);
+    while(isnan(score_)) {
+        for(auto & bp_node : designable_bps) { mutate_basepair(bp_node); }
+        score_ = scorer_->score_sstree(ss_tree_);
+        std::cout << score_ << std::endl;
+    }
+    ss_and_seq_ = ss_tree_.get_ss_and_seq();
     cseq_ = ss_and_seq_->seq;
-    steps_ = 10000;
+    steps_ = 1000;
     
     for(int i = 0; i < steps_; i++) {
         bps_pos = rng_.randrange(bps_size);
         mutate_basepair(designable_bps[bps_pos]);
         ss_and_seq_ = ss_tree_.get_ss_and_seq();
-        new_score = scorer_->score(ss_and_seq_->seq);
-        
-        if(new_score < score_) {
+        new_score = scorer_->score_sstree(ss_tree_);
+        if(new_score > score_) {
             score_ = new_score;
             cseq_ = ss_and_seq_->seq;
         }

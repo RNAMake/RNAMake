@@ -12,7 +12,8 @@
 #include "structure.h"
 
 PoseOP
-MotifTreeMerger::merge(MotifTree const & mt) {
+MotifTreeMerger::merge(MotifTree const & mt, int include_head) {
+    include_head_ = include_head;
     if(mt.nodes().size() == 2 && include_head_ == 0) {
         MotifOP m (new Motif( mt.nodes()[1]->motif()->copy() ));
         return PoseOP ( new Pose(m) );

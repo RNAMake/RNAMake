@@ -35,6 +35,7 @@ EternabotScorer::score_sstree(
         total_score += ((s->score(design_data_) - s->mean()) / (s->stdev())) * weights_[i];
         i++;
     }
-    return total_score;
+        
+    return  (total_score * stdev_) + mean_ ;
     
 }

@@ -24,8 +24,13 @@
 class MotifTree {
 public:
     MotifTree();
-    MotifTree(MotifOP const &);
-    MotifTree(String const &, ResidueTypeSet const &);
+    MotifTree(
+        MotifOP const &);
+    
+    MotifTree(
+        String const &,
+        ResidueTypeSet const &);
+    
     ~MotifTree() {}
     
 public:
@@ -39,13 +44,23 @@ public:
         int end_flip = -1);
     
     void
-    write_pdbs(String const & fname = "nodes");
+    write_pdbs(
+        String const & fname = "nodes");
     
     PoseOP
-    to_pose();
+    to_pose(
+        int include_head = 0);
     
     void
-    to_pdb(String fname = "mt.pdb");
+    to_pdb(
+        String fname = "mt.pdb",
+        int include_head = 0);
+    
+    void
+    _add_connection(
+        MotifTreeNodeOP const &,
+        MotifTreeNodeOP const &,
+        float cutoff = 25);
 
 public: //getters
     

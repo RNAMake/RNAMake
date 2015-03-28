@@ -14,7 +14,7 @@
 #include "motif.h"
 #include "basepair.h"
 
-typedef std::map<Uuid, int> UuidIntMap;
+typedef std::map<String, int> UuidIntMap;
 
 class MotifTreeNode {
 public:

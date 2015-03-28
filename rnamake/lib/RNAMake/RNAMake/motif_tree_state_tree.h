@@ -38,9 +38,10 @@ public:
     replace_state(MotifTreeStateNodeOP const &,
                   MotifTreeStateOP const &);
     void
-    to_pdb(String fname="mtst.pdb") {
+    to_pdb(String fname="mtst.pdb",
+           int include_head = 0) {
         MotifTree mt = to_motiftree();
-        mt.to_pdb(fname);
+        mt.to_pdb(fname, include_head);
     }
     
     void

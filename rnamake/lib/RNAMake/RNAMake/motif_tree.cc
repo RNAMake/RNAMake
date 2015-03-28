@@ -217,6 +217,30 @@ MotifTree::_update_beads(
 
 
 void
+MotifTree::_add_connection(
+    MotifTreeNodeOP const & node_1,
+    MotifTreeNodeOP const & node_2,
+    float cutoff) {
+    
+    BasepairOPs avail_ends_1 = node_1->available_ends();
+    BasepairOPs avail_ends_2 = node_2->available_ends();
+    float dist;
+
+    for(auto const & end1 : avail_ends_1) {
+        for(auto const & end2 : avail_ends_2) {
+            dist = end1->d().distance(end2->d());
+            if(dist < cutoff) {
+                MotifTreeConnectionOP mtc (new MotifTreeConnection(node_1, node_2, end1, end2));
+                node_1->add_connection(mtc);
+                node_2->add_connection(mtc);
+            }
+        }
+    }
+    
+}
+
+
+void
 MotifTree::write_pdbs(String const & fname) {
     int i = 0;
     std::stringstream ss;
@@ -229,12 +253,12 @@ MotifTree::write_pdbs(String const & fname) {
 }
 
 PoseOP
-MotifTree::to_pose() {
+MotifTree::to_pose(int include_head) {
     return merger_.merge(*this);
 }
 
 void
-MotifTree::to_pdb(String fname) {
+MotifTree::to_pdb(String fname, int include_head) {
     PoseOP pose = to_pose();
     pose->to_pdb(fname);
 }

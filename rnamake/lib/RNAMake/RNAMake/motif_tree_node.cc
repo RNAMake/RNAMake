@@ -28,7 +28,7 @@ MotifTreeNode::MotifTreeNode(
 {
     end_status_ = UuidIntMap();
     for (auto & end : motif_->ends()) {
-        end_status_[end->uuid()] = 1;
+        end_status_[end->uuid().s_uuid()] = 1;
     }
     connections_ = MotifTreeConnectionOPs();
     
@@ -40,7 +40,7 @@ MotifTreeNode::available_ends() {
     BasepairOPs ends;
     int status;
     for( auto const & end : motif_->ends() ) {
-        status = end_status_[end->uuid()];
+        status = end_status_[end->uuid().s_uuid()];
         if (status == 1) { ends.push_back(end); }
     }
     return ends;
@@ -48,7 +48,7 @@ MotifTreeNode::available_ends() {
 
 void
 MotifTreeNode::set_end_status(BasepairOP const & end, int status) {
-    end_status_[end->uuid()] = status;
+    end_status_[end->uuid().s_uuid()] = status;
 }
 
 int
@@ -56,7 +56,7 @@ MotifTreeNode::get_end_status(BasepairOP const & end) {
     /*if(end_status_.find(end->uuid()) == end_status_.end()) {
      throw "cannot find end in get_end_status";
      }*/
-    return end_status_[end->uuid()];
+    return end_status_[end->uuid().s_uuid()];
 }
 
 void

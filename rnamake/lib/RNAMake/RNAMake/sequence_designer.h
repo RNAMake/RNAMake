@@ -14,13 +14,14 @@
 #include "random_number_generator.h"
 #include "secondary_structure_tree.h"
 #include "sequence_design_scorer.h"
+#include "eternabot_scorer.h"
 
 class SequenceDesigner {
 public:
     SequenceDesigner(){
         rng_  = RandomNumberGenerator();
         basepairs_ = split_str_by_delimiter("GC,CG,AU,UA", ",");
-        scorer_ = SequenceDesignScorerOP( new SequenceDesignScorer() );
+        scorer_ = SequenceDesignScorerOP( new EternabotScorer() );
         score_ = 10000;
     }
     
@@ -36,6 +37,12 @@ public:
     void
     mutate_basepair(
         SecondaryStructureNodeOP & bp_node);
+    
+public: //getters
+    
+    inline
+    float
+    score() { return score_; }
     
 private:
     RandomNumberGenerator rng_;

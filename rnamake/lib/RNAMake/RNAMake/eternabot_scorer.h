@@ -16,7 +16,6 @@
 #include "sequence_design_scorer.h"
 #include "eterna_bot_strategy.h"
 
-#endif /* defined(__RNAMake__eternabot_scorer__) */
 
 class EternabotScorer : public SequenceDesignScorer {
 public:
@@ -57,6 +56,9 @@ private:
     float mean_, stdev_;
     
 };
+
+#endif /* defined(__RNAMake__eternabot_scorer__) */
+
 
 
 

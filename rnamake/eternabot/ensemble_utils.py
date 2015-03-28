@@ -194,18 +194,13 @@ class Ensemble:
                 scores = strategies[ss].normalized_score(design,strategies[ss].default_params_)
                 score = scores['normalized']
                 scoresum += score * my_weights[ss]
-                print strategies[ss].title_, my_weights[ss]
 
                 #scoremap[strategies[ss].title_] = score * my_weights[ss];
                 scoremap[strategies[ss].title_] =  scores['unnormalized']
 
         scoresum += my_weights[len(strategies)]
-        print scoresum
-        print scores_stdev, scores_mean
         scoremap['finalscore'] = scoresum * scores_stdev + scores_mean
         scoremap['finalscore_normalized'] = scoresum
-        print scoremap['finalscore']
-        exit()
         return scoremap
 
     def printtest(self,str):

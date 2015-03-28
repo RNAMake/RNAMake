@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C22413C1AC6266400F76233 /* eternabot_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F891ABE730800A2F04C /* eternabot_scorer.cc */; };
+		1C22413D1AC6266400F76233 /* eterna_bot_strategy.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F8D1ABF641100A2F04C /* eterna_bot_strategy.cc */; };
+		1C2241451AC62A4100F76233 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C2241441AC62A4100F76233 /* main.cpp */; };
 		1C3AB1791A906F4000361C7F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1781A906F4000361C7F /* main.cpp */; };
 		1C3AB17F1A906FA100361C7F /* option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB17D1A906FA100361C7F /* option.cc */; };
 		1C3AB1801A906FA100361C7F /* option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB17D1A906FA100361C7F /* option.cc */; };
@@ -379,6 +382,15 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		1C2241401AC62A4100F76233 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		1C3AB1741A906F4000361C7F /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -536,6 +548,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C2241421AC62A4100F76233 /* design_primers */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = design_primers; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C2241441AC62A4100F76233 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C3AB1761A906F4000361C7F /* simulate_tectos */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulate_tectos; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C3AB1781A906F4000361C7F /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C3AB17D1A906FA100361C7F /* option.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = option.cc; sourceTree = "<group>"; };
@@ -675,6 +689,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1C22413F1AC62A4100F76233 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1C3AB1731A906F4000361C7F /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -808,6 +829,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C2241431AC62A4100F76233 /* design_primers */ = {
+			isa = PBXGroup;
+			children = (
+				1C2241441AC62A4100F76233 /* main.cpp */,
+			);
+			path = design_primers;
+			sourceTree = "<group>";
+		};
 		1C3AB1771A906F4000361C7F /* simulate_tectos */ = {
 			isa = PBXGroup;
 			children = (
@@ -1085,6 +1114,7 @@
 				1C4F144F1AA2A690003B7895 /* eternabot */,
 				1C3C0AA41AAB7B7400891276 /* find_rings */,
 				1C4B4F481AB8F7B300A2F04C /* motif_tree_path_refiner */,
+				1C2241431AC62A4100F76233 /* design_primers */,
 				1CE55A271A4A552F00F300F3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -1109,6 +1139,7 @@
 				1C4F144E1AA2A690003B7895 /* eternabot */,
 				1C3C0AA31AAB7B7400891276 /* find_rings */,
 				1C4B4F471AB8F7B300A2F04C /* motif_tree_path_refiner */,
+				1C2241421AC62A4100F76233 /* design_primers */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1153,6 +1184,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		1C2241411AC62A4100F76233 /* design_primers */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C2241461AC62A4100F76233 /* Build configuration list for PBXNativeTarget "design_primers" */;
+			buildPhases = (
+				1C22413E1AC62A4100F76233 /* Sources */,
+				1C22413F1AC62A4100F76233 /* Frameworks */,
+				1C2241401AC62A4100F76233 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = design_primers;
+			productName = design_primers;
+			productReference = 1C2241421AC62A4100F76233 /* design_primers */;
+			productType = "com.apple.product-type.tool";
+		};
 		1C3AB1751A906F4000361C7F /* simulate_tectos */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1C3AB17C1A906F4000361C7F /* Build configuration list for PBXNativeTarget "simulate_tectos" */;
@@ -1451,6 +1499,9 @@
 				LastUpgradeCheck = 0610;
 				ORGANIZATIONNAME = "Joseph Yesselman";
 				TargetAttributes = {
+					1C2241411AC62A4100F76233 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
 					1C3AB1751A906F4000361C7F = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
@@ -1533,11 +1584,20 @@
 				1C4F144D1AA2A690003B7895 /* eternabot */,
 				1C3C0AA21AAB7B7400891276 /* find_rings */,
 				1C4B4F461AB8F7B300A2F04C /* motif_tree_path_refiner */,
+				1C2241411AC62A4100F76233 /* design_primers */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1C22413E1AC62A4100F76233 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C2241451AC62A4100F76233 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		1C3AB1721A906F4000361C7F /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1660,6 +1720,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C22413C1AC6266400F76233 /* eternabot_scorer.cc in Sources */,
+				1C22413D1AC6266400F76233 /* eterna_bot_strategy.cc in Sources */,
 				1C4B4F831ABA0B1A00A2F04C /* motif_ensemble.cc in Sources */,
 				1C4B4F841ABA0B1A00A2F04C /* motif_ensemble_tree.cc in Sources */,
 				1C4B4F571AB8F91400A2F04C /* numerical.cpp in Sources */,
@@ -2018,6 +2080,24 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		1C2241471AC62A4100F76233 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		1C2241481AC62A4100F76233 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		1C3AB17A1A906F4000361C7F /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -2432,6 +2512,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		1C2241461AC62A4100F76233 /* Build configuration list for PBXNativeTarget "design_primers" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C2241471AC62A4100F76233 /* Debug */,
+				1C2241481AC62A4100F76233 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		1C3AB17C1A906F4000361C7F /* Build configuration list for PBXNativeTarget "simulate_tectos" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -2466,6 +2554,7 @@
 				1C4B4F4D1AB8F7B300A2F04C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1C4F14521AA2A690003B7895 /* Build configuration list for PBXNativeTarget "eternabot" */ = {
 			isa = XCConfigurationList;
