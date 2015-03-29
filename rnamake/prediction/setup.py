@@ -41,6 +41,7 @@ def motif_from_bps(bps):
 def target_end_origin(hmotif):
     mt = motif_tree.MotifTree()
     mt.add_motif(hmotif)
+    mt.nodes[1].motif.to_pdb('ideal.pdb')
     return mt.nodes[1].available_ends()[0].d()
 
 def get_bp_step_prediction_lib(targets, helix_mlib):
@@ -93,6 +94,7 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
         f.write(name+"."+str(i) + " " + str(len(c.motifs)) + " " + \
                 str(pop) + " " + str(energy) + "\n")
         motifs.append(mt.nodes[1].motif)
+        motifs[-1].to_pdb('cluster.'+str(i)+'.pdb')
         mt.remove_node_level()
     f.close()
     #mo = motif_outputer.MotifOutputer()
@@ -104,9 +106,9 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
     #    mt.add_motif(m, end_index=1)
     #    mt.nodes[1].motif.to_pdb("motif."+str(i)+".pdb")
     #    mt.remove_node(mt.last_node)
-    mtp = motif_tree_precomputer.MotifTreePrecomputer(name=base_dir+"/"+name,
-            max_bps_per_end=0)
-    mtp.precompute_motifs(motifs)
+    #mtp = motif_tree_precomputer.MotifTreePrecomputer(name=base_dir+"/"+name,
+    #        max_bps_per_end=0)
+    #mtp.precompute_motifs(motifs)
 
 
 class SSandSeqCluster(object):
@@ -250,16 +252,16 @@ def cluster_twoways():
 
 if __name__ == '__main__':
 
-    cluster_twoways()
+    #cluster_twoways()
     #get_two_way_prediction_lib()
-    exit()
+    #exit()
     helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
     helix_mlib.load_all()
     all_targets = []
     bps = ["AU","UA","CG","GC","GU","UG"]
     seen = []
-    #get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
-    #exit()
+    get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
+    exit()
     test_helix = helix_mlib.get_motif("HELIX.IDEAL.2")
 
     for i,bp1 in enumerate(bps):
@@ -268,5 +270,5 @@ if __name__ == '__main__':
                 continue
             target = [bp1,bp2]
             seen.append(bp1 + "=" + bp2)
-            get_bp_step_prediction_lib(target, helix_mlib, test_helix)
+            get_bp_step_prediction_lib(target, helix_mlib)
 

@@ -24,25 +24,53 @@ SequenceDesigner::design(
     while(isnan(score_)) {
         for(auto & bp_node : designable_bps) { mutate_basepair(bp_node); }
         score_ = scorer_->score_sstree(ss_tree_);
-        std::cout << score_ << std::endl;
     }
     ss_and_seq_ = ss_tree_.get_ss_and_seq();
     cseq_ = ss_and_seq_->seq;
+    best_score_ = -1000;
     steps_ = 1000;
-    
-    for(int i = 0; i < steps_; i++) {
+    float T = 2;
+    float diceroll;
+    float prob;
+    int i = 0;
+    int count = 0;
+    while(i < steps_) {
         bps_pos = rng_.randrange(bps_size);
         mutate_basepair(designable_bps[bps_pos]);
-        ss_and_seq_ = ss_tree_.get_ss_and_seq();
         new_score = scorer_->score_sstree(ss_tree_);
+        if(isnan(new_score) || new_score < -100000) {
+            count++;
+            if(count > 100) {
+                break;
+            }
+            designable_bps[bps_pos]->bp_type(last_bp_type_);
+            continue;
+        }
+        count = 0;
+        i++;
         if(new_score > score_) {
             score_ = new_score;
-            cseq_ = ss_and_seq_->seq;
+            if(best_score_ < score_) {
+                ss_and_seq_ = ss_tree_.get_ss_and_seq();
+                cseq_ = ss_and_seq_->seq;
+                best_score_ = score_;
+            }
+            continue;
         }
-        else {
-            designable_bps[bps_pos]->bp_type(last_bp_type_);
+        
+        prob = expf((new_score - score_) / T);
+        diceroll = rng_.rand();
+        if(diceroll < prob) {
+            score_ = new_score;
+            continue;
         }
+        
+        if(i % 100) { T = T*0.8; }
+        
+        designable_bps[bps_pos]->bp_type(last_bp_type_);
     }
+    
+    score_ = best_score_;
     
     return cseq_;
     

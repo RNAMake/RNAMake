@@ -353,16 +353,22 @@ test_sequence_designer() {
     Strings tetraloops = get_lines_from_file(base_dir() + "/rnamake/lib/RNAMake/simulate_tectos/tetraloop.str");
     ResidueTypeSet rts;
     MotifOP gaaa_tetraloop ( new Motif(tetraloops[1], rts));
-    MotifTreeStateOP gaaa_mts = motif_to_state(gaaa_tetraloop, 2);
-    MotifTreeStateTree mtst;
-    SequenceDesigner designer;
-    mtst.sterics(0);
-    mtst.add_state(mts_libs[0].get_state("HELIX.LE.3-0-0-0-0-1-1"), NULL);
-    mtst.add_state(gaaa_mts, NULL);
-    int i = 0, pos = 0;
+    int j = -1;
+    
     for( auto const & l : lines) {
+        j++;
+        if(j < 13) { continue; }
+        MotifTreeStateOP gaaa_mts = motif_to_state(gaaa_tetraloop, 2);
+        MotifTreeStateTree mtst;
+        SequenceDesigner designer;
+        mtst.sterics(0);
+        mtst.add_state(mts_libs[0].get_state("HELIX.LE.3-0-0-0-0-1-1"), NULL);
+        mtst.add_state(gaaa_mts, NULL);
+        int i = 0, pos = 0;
+
         i = -1;
         names = split_str_by_delimiter(l, " ");
+        if(names.size() < 4) { continue; }
         for(auto const & name : names) {
             i++;
             if ( i == 0 ) { continue; }
@@ -381,18 +387,12 @@ test_sequence_designer() {
         MotifTree mt = mtst.to_motiftree();
         mt._add_connection(mt.nodes()[2], mt.nodes().back(), 1000);
         PoseOP p = mt.to_pose();
+        if(p->chains().size() > 1) { continue;}
         ss   = p->secondary_structure();
         dseq = p->designable_sequence();
         seq = designer.design(dseq, ss);
-        std::cout << ss << std::endl;
-        std::cout << dseq << std::endl; 
         score = designer.score();
-        std::cout << seq << std::endl;
-        std::cout << score << std::endl;
-        
-        
-        
-        exit(0);
+        std::cout << j << " " << score << " " << seq << " " << ss << std::endl;
     }
     
     return 0;

@@ -51,7 +51,7 @@ private:
     SSandSeqOP ss_and_seq_;
     Strings basepairs_;
     String last_bp_type_, cseq_;
-    float score_;
+    float score_, best_score_;
     int steps_;
 };
 
