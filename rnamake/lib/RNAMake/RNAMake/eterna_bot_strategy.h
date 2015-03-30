@@ -34,7 +34,7 @@ public:
 public:
     float gu, gc, ua;
     float meltpoint, fe;
-    plist** dotplot;
+    plist* dotplot;
     int length;
     std::map<int, int> pairmap;
     SecondaryStructureTree sstree;
@@ -128,10 +128,10 @@ public:
         int i_index, j_index;
         int fail = 0;
         for(int i = 0; i < n*n; i++) {
-            if(data.dotplot[i]->p < 0.0001) { continue; }
+            if(data.dotplot[i].p < 0.0001) { continue; }
             fail = 0;
-            i_index = data.dotplot[i]->i;
-            j_index = data.dotplot[i]->j;
+            i_index = data.dotplot[i].i;
+            j_index = data.dotplot[i].j;
             
             if     (data.pairmap.find(i_index) == data.pairmap.end()) {
                 fail = 1;
@@ -141,7 +141,7 @@ public:
             }
             
             if(fail) {
-                penalty += data.dotplot[i]->p;
+                penalty += data.dotplot[i].p;
             }
             
         }

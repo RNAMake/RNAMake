@@ -1,4 +1,4 @@
-//
+
 //  secondary_structure_node.h
 //  RNAMake
 //

@@ -20,7 +20,7 @@ typedef struct plist {
 
 extern "C" float fold(char const*,char*);
 extern "C" float cofold(char const*,char*);
-extern "C" plist** get_finished_plist(const char *);
+extern "C" plist* get_finished_plist(const char *);
 
 struct FoldResult {
 public:
@@ -52,8 +52,10 @@ public:
         const char * rec_sequence = seq.c_str();
         char * structure = new char[seq.length()];
         float min_en = fold(rec_sequence, structure);
+        std::cout << rec_sequence << std::endl;
         fold_result_.structure = String(structure);
         fold_result_.free_energy = min_en;
+        //delete rec_sequence;
         return fold_result_;
     }
 
@@ -61,7 +63,6 @@ public:
     FoldResult const &
     vcofold(
         String const & seq) {
-        
         const char * rec_sequence = seq.c_str();
         char * structure = new char[seq.length()];
         float min_en = cofold(rec_sequence, structure);
@@ -71,7 +72,7 @@ public:
     }
     
     inline
-    plist** const &
+    plist* const &
     dotplot(
         String const & seq) {
         
@@ -83,10 +84,12 @@ public:
         used_ = 1;
         //std::cout << "start" << std::endl;
         
-        for(int i = 0; i < seq.length()*seq.length(); i++) {
+        for(int i = 0; i < 15; i++) {
             //if(pl1_[i]->p < 0.0001) { continue; }
-            //std::cout << pl1_[i]->i << " " << pl1_[i]->j << " " << pl1_[i]->p << std::endl;
+            //std::cout << pl1_[i].i << " " << pl1_[i].j << " " << pl1_[i].p << std::endl;
         }
+        
+        //exit(0);
         
         //delete pl1;
         //std::cout << test << std::endl;
@@ -96,7 +99,7 @@ public:
     
 private:
     FoldResult fold_result_;
-    plist** pl1_;
+    plist* pl1_;
     int used_;
     
 };

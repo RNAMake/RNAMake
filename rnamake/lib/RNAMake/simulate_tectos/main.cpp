@@ -192,6 +192,33 @@ get_met(
     return met;
 }
 
+MotifEnsembleTree
+get_met_only_helix(
+        SecondaryStructureTree const & flow_ss_tree,
+        SecondaryStructureTree const & chip_ss_tree) {
+ 
+    Strings lines = get_lines_from_file(base_dir() + "/rnamake/lib/RNAMake/simulate_tectos/tetraloop.str");
+    ResidueTypeSet rts;
+    MotifOP ggaa_motif ( new Motif(lines[0], rts));
+    MotifTreeStateOP ggaa_state = motif_to_state(ggaa_motif, 1, 1);
+    Strings flow_steps = get_steps_from_ss_tree(flow_ss_tree);
+    Strings chip_steps = get_steps_from_ss_tree(chip_ss_tree);
+    MotifEnsembleTree met;
+    met.add_ensemble(MotifEnsemble("AU=GC", 0, 0));
+    MotifEnsembleTreeNodeOP node =  met.add_ensemble(mts_to_me(ggaa_state));
+    met.add_ensemble(MotifEnsemble(flow_steps[0], 0, 1), NULL, 2);
+    for (int i = 1; i < flow_steps.size(); i++) {
+        met.add_ensemble(MotifEnsemble(flow_steps[i], 0, 1));
+    }
+    met.add_ensemble(MotifEnsemble(chip_steps[0], 0, 1), node, 0);
+    for (int i = 1; i < chip_steps.size(); i++) {
+        met.add_ensemble(MotifEnsemble(chip_steps[i], 0, 1));
+    }
+    return met;
+
+    
+}
+
 void
 sample(
     MotifEnsembleTree & met,
@@ -306,8 +333,10 @@ int main(int argc, const char * argv[]) {
     //constructs_seq_and_ss["css" ]= "(((((((..(((((((.((((....)))).)))))))...)))))))";
     SecondaryStructureTree chip_ss_tree ( constructs_seq_and_ss["css"], constructs_seq_and_ss["cseq"]);
     SecondaryStructureTree flow_ss_tree ( constructs_seq_and_ss["fss"], constructs_seq_and_ss["fseq"]);
-    MotifEnsembleTree met = get_met(flow_ss_tree, chip_ss_tree);
-    
+    MotifEnsembleTree met = get_met_only_helix(flow_ss_tree, chip_ss_tree);
+    MotifTreeStateTree mtst = met.get_mtst();
+    MotifTree mt = mtst.to_motiftree();
+    mt.write_pdbs();
     /*MotifTreeStateTree mtst = met.get_mtst();
     mtst.to_pdb("start.pdb");
     BasepairStateOP target = mtst.nodes()[2]->states()[0];
@@ -322,6 +351,7 @@ int main(int argc, const char * argv[]) {
         ss.str("");
         i++;
     }*/
+    exit(0);
 
     int nsteps = 10000000;
     sample(met, nsteps);

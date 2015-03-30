@@ -80,18 +80,11 @@ MotifEnsembleTree::get_mtst() {
     std::queue<MotifEnsembleTreeNodeOP> open_nodes;
     open_nodes.push(nodes_[0]);
     int i = 0;
-    while (! open_nodes.empty()) {
-        MotifEnsembleTreeNodeOP current = open_nodes.front();
-        open_nodes.pop();
-        i = -1;
-        for( auto const & n : current->children() ) {
-            i++;
-            if (n == NULL) { continue; }
-            MotifTreeStateOP mts = n->motif_ensemble().motif_states()[0].mts;
-            MotifTreeStateNodeOP parent = mtst.nodes() [ current->index() ];
-            MotifTreeStateNodeOP mstn = mtst.add_state(mts, parent, i);
-            open_nodes.push(n);
-        }
+    for(int i = 1; i < nodes_.size(); i++) {
+        MotifTreeStateOP mts = nodes_[i]->motif_ensemble().motif_states()[0].mts;
+        MotifTreeStateNodeOP parent = mtst.nodes() [ nodes_[i]->parent()->index() ];
+        int parent_index = nodes_[i]->parent_index();
+        MotifTreeStateNodeOP mstn = mtst.add_state(mts, parent, parent_index);
     }
     
     return mtst;

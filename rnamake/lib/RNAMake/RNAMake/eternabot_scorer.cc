@@ -21,13 +21,16 @@ EternabotScorer::score_sstree(
     design_data_.gc = sstree.gc_pairs();
     design_data_.gu = sstree.gu_pairs();
     design_data_.ua = sstree.ua_pairs();
-    design_data_.dotplot = v_.dotplot(ss_and_seq_->seq);
+    //design_data_.dotplot = v_.dotplot(ss_and_seq_->seq);
     if(design_data_.pairmap.size() == 0) {
         design_data_.pairmap = sstree.get_pairmap();
         design_data_.length = (int)ss_and_seq_->seq.length();
     }
     design_data_.sstree = sstree;
     design_data_.seq = ss_and_seq_->seq;
+    
+    return 100;
+    //return strategies_[0]->score(design_data_);
     
     float total_score = 0;
     int i = 0;

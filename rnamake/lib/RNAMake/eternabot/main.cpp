@@ -51,13 +51,13 @@ test_design_sequence_2() {
 
 int
 test_eternabot_scorer() {
-    SecondaryStructureTree sstree("(((....)))", "GUCUUCGGAC");
+    SecondaryStructureTree sstree("(((....)))", "GGGUUCGCCC");
     EternabotScorer scorer;
     scorer.setup("(((....)))");
     for(int i = 0; i < 100000; i++) {
         if (i % 1000 == 0 ) { std::cout << i << std::endl; }
-        std::cout << scorer.score_sstree(sstree) << std::endl;
-        exit(0);
+        //std::cout << scorer.score_sstree(sstree) << std::endl;
+        scorer.score_sstree(sstree);
     }
     return 1;
 }
@@ -125,7 +125,8 @@ int main(int argc, const char * argv[]) {
     //if (test_eternabot_scorer() == 0)   { std::cout << "test_eternabot_scorer failed" << std::endl;  }
     //test_eternabot_scorer();
     //test_eternabot_enumerate_bps();
-    test_sequencer_designer_2();
+    test_eternabot_scorer();
+    //test_sequencer_designer_2();
     
     return 0;
 }

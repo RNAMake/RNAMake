@@ -80,7 +80,24 @@ public: // getters
     inline
     MotifEnsembleTreeNodeOPs const &
     children() { return children_; }
+    
+    inline
+    MotifEnsembleTreeNodeOP const &
+    parent() { return parent_; }
 
+    inline
+    int const
+    parent_index() {
+        MotifEnsembleTreeNodeOPs children = parent_->children();
+        int i = -1;
+        for(auto const & n : children) {
+            i++;
+            if(n == NULL) { continue; }
+            if(n->index() == index_) { return i; }
+        }
+        return -1;
+    }
+    
 private:
     MotifEnsemble motif_ensemble_;
     MotifEnsembleTreeNodeOP parent_;

@@ -357,7 +357,7 @@ test_sequence_designer() {
     
     for( auto const & l : lines) {
         j++;
-        if(j < 13) { continue; }
+        if(j < 46) { continue; }
         MotifTreeStateOP gaaa_mts = motif_to_state(gaaa_tetraloop, 2);
         MotifTreeStateTree mtst;
         SequenceDesigner designer;
@@ -384,15 +384,17 @@ test_sequence_designer() {
             
         }
         //mtst.to_pdb("test.pdb");
+        std::cout << "START " << j << std::endl;
         MotifTree mt = mtst.to_motiftree();
         mt._add_connection(mt.nodes()[2], mt.nodes().back(), 1000);
         PoseOP p = mt.to_pose();
         if(p->chains().size() > 1) { continue;}
         ss   = p->secondary_structure();
         dseq = p->designable_sequence();
+        //std::cout << dseq << std::endl;
         seq = designer.design(dseq, ss);
         score = designer.score();
-        std::cout << j << " " << score << " " << seq << " " << ss << std::endl;
+        //std::cout << j << " " << score << " " << seq << " " << ss << std::endl;
     }
     
     return 0;

@@ -37,6 +37,7 @@ public:
         
         mean_ = 84.8005952381;
         stdev_ = 16.4725276237;
+        ss_and_seq_ = SSandSeqOP ( new SSandSeq("", ""));
 
     }
     

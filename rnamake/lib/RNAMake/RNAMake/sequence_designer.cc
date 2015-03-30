@@ -28,7 +28,7 @@ SequenceDesigner::design(
     ss_and_seq_ = ss_tree_.get_ss_and_seq();
     cseq_ = ss_and_seq_->seq;
     best_score_ = -1000;
-    steps_ = 1000;
+    steps_ = 10;
     float T = 2;
     float diceroll;
     float prob;
@@ -36,6 +36,7 @@ SequenceDesigner::design(
     int count = 0;
     while(i < steps_) {
         bps_pos = rng_.randrange(bps_size);
+        std::cout << bps_size << " " << bps_pos << std::endl;
         mutate_basepair(designable_bps[bps_pos]);
         new_score = scorer_->score_sstree(ss_tree_);
         if(isnan(new_score) || new_score < -100000) {
