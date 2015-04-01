@@ -18,8 +18,12 @@ class Pose : public Motif {
 public:
     Pose():
     designable_ (std::map<String, int>()) {}
+    
     Pose(MotifOP const &);
+    
     Pose(StructureOP const &, BasepairOPs const &);
+    
+    ~Pose() { }
 
 public:
     

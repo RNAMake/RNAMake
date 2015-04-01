@@ -13,7 +13,13 @@ SequenceDesigner::design(
     String const & sequence,
     String const & structure) {
     
-    scorer_->setup(structure);
+    
+    char * struc = new char[sequence.length()];
+    float min_en = fold(sequence.c_str(), struc);
+    //delete struc;
+    return "";
+    
+    /*scorer_->setup(structure);
     ss_tree_ = SecondaryStructureTree(structure, sequence);
     SecondaryStructureNodeOPs designable_bps = ss_tree_.get_designable_bps();
     for(auto & bp_node : designable_bps) { mutate_basepair(bp_node); }
@@ -25,8 +31,7 @@ SequenceDesigner::design(
         for(auto & bp_node : designable_bps) { mutate_basepair(bp_node); }
         score_ = scorer_->score_sstree(ss_tree_);
     }
-    ss_and_seq_ = ss_tree_.get_ss_and_seq();
-    cseq_ = ss_and_seq_->seq;
+    cseq_ = ss_tree_.seq();
     best_score_ = -1000;
     steps_ = 10;
     float T = 2;
@@ -36,7 +41,6 @@ SequenceDesigner::design(
     int count = 0;
     while(i < steps_) {
         bps_pos = rng_.randrange(bps_size);
-        std::cout << bps_size << " " << bps_pos << std::endl;
         mutate_basepair(designable_bps[bps_pos]);
         new_score = scorer_->score_sstree(ss_tree_);
         if(isnan(new_score) || new_score < -100000) {
@@ -52,8 +56,7 @@ SequenceDesigner::design(
         if(new_score > score_) {
             score_ = new_score;
             if(best_score_ < score_) {
-                ss_and_seq_ = ss_tree_.get_ss_and_seq();
-                cseq_ = ss_and_seq_->seq;
+                cseq_ = ss_tree_.seq();
                 best_score_ = score_;
             }
             continue;
@@ -72,8 +75,7 @@ SequenceDesigner::design(
     }
     
     score_ = best_score_;
-    
-    return cseq_;
+    return cseq_;*/
     
 }
 
@@ -82,9 +84,9 @@ void
 SequenceDesigner::mutate_basepair(
     SecondaryStructureNodeOP & bp_node) {
     
-    int pos = rng_.randrange(4);
+    /*int pos = rng_.randrange(4);
     last_bp_type_ = bp_node->bp_type();
-    bp_node->bp_type(basepairs_[pos]);
+    bp_node->bp_type(basepairs_[pos]);*/
     
 }
 

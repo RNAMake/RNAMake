@@ -118,6 +118,21 @@ public:
     int
     bp_type_num() { return -1; }
     
+    virtual
+    inline
+    int
+    updated() { return 0; }
+    
+    virtual
+    inline
+    char const
+    res1() { return ' ';}
+    
+    virtual
+    inline
+    char const
+    res2() { return ' ';}
+    
 public:
     virtual
     inline
@@ -163,6 +178,22 @@ public:
     int
     bp_type_num() { return bp_type_num_; }
     
+    inline
+    int
+    updated() {
+        int updated = updated_;
+        if(updated_ == 1) { updated_ = 0; }
+        return updated;
+    }
+    
+    inline
+    char const
+    res1() { return res1_;}
+    
+    inline
+    char const
+    res2() { return res2_;}
+    
 public:
     virtual
     inline
@@ -172,6 +203,7 @@ public:
         assign_bp_type_num();
         res1_ = nbp_type[0];
         res2_ = nbp_type[1];
+        updated_ = 1;
     }
     
 private:
@@ -182,7 +214,7 @@ private:
     char res1_, res2_;
     String bp_type_;
     int bp_type_num_;
-    
+    int updated_;
     
 };
 

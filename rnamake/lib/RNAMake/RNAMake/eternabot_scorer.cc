@@ -12,9 +12,16 @@ float
 EternabotScorer::score_sstree(
     SecondaryStructureTree const & sstree) {
     
-    ss_and_seq_ = sstree.get_ss_and_seq();
-    if (cofold_) { fr_ = v_.vcofold(ss_and_seq_->seq); }
-    else         { fr_ = v_.vfold(ss_and_seq_->seq);   }
+
+    String seq = sstree.seq();
+
+
+    return 100;
+    
+    if (cofold_) { fr_ = v_.vcofold(seq); }
+    else         { fr_ = v_.vfold(seq);   }
+    return 100;
+
 
     //repopulate data for strategies
     design_data_.fe = fr_.free_energy;
@@ -22,14 +29,16 @@ EternabotScorer::score_sstree(
     design_data_.gu = sstree.gu_pairs();
     design_data_.ua = sstree.ua_pairs();
     //design_data_.dotplot = v_.dotplot(ss_and_seq_->seq);
+
+
     if(design_data_.pairmap.size() == 0) {
-        design_data_.pairmap = sstree.get_pairmap();
-        design_data_.length = (int)ss_and_seq_->seq.length();
+     //   design_data_.pairmap = sstree.get_pairmap();
+      //  design_data_.length = (int)seq.length();
     }
-    design_data_.sstree = sstree;
-    design_data_.seq = ss_and_seq_->seq;
     
-    return 100;
+    design_data_.sstree = sstree;
+    design_data_.seq = seq;
+
     //return strategies_[0]->score(design_data_);
     
     float total_score = 0;

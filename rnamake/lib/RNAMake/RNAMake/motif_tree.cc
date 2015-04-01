@@ -10,7 +10,7 @@
 #include "motif.h"
 #include "types.h"
 #include "settings.h"
-#include "residue_type_set.h"
+#include "resource_manager.h"
 
 MotifTree::MotifTree() {
     String path = resources_path() + "/start.motif";
@@ -19,8 +19,7 @@ MotifTree::MotifTree() {
     in.open(path.c_str());
     getline(in, line);
     in.close();
-    ResidueTypeSet rts;
-    MotifOP m ( new Motif ( line, rts) );
+    MotifOP m ( new Motif ( line, ResourceManager::getInstance().residue_type_set()) );
     MotifTreeNodeOP head ( new MotifTreeNode (m, 0, 0, 0));
     last_node_ = head;
     nodes_ = MotifTreeNodeOPs();

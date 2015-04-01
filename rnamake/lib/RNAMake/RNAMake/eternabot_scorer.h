@@ -37,7 +37,6 @@ public:
         
         mean_ = 84.8005952381;
         stdev_ = 16.4725276237;
-        ss_and_seq_ = SSandSeqOP ( new SSandSeq("", ""));
 
     }
     
@@ -50,7 +49,6 @@ public:
         SecondaryStructureTree const &);
 
 private:
-    SSandSeqOP ss_and_seq_;
     EternabotScorerData design_data_;
     EternabotStrategyOPs strategies_;
     std::vector<float> weights_;

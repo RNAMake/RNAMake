@@ -27,6 +27,8 @@ ResidueTypeSet::ResidueTypeSet() {
         ResidueType rtype ( name, atom_map);
         residue_types_.push_back(rtype);
     }
+    delete pDIR;
+    delete entry;
     
 }
 

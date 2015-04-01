@@ -30,6 +30,8 @@ public:
         String css (ss);
         String cseq (seq);
         _build_tree(css, cseq);
+        ss_ = ss;
+        seq_ = seq;
 
         helices_ = std::vector<SecondaryStructureNodeOPs>();
         SecondaryStructureNodeOPs helix;
@@ -127,6 +129,23 @@ public:
         return pairmap;
     }
     
+    inline
+    String const &
+    ss() const {
+        return ss_;
+    }
+    
+    String const
+    seq() const {
+        String seq = seq_;
+        for(auto const & n : nodes_) {
+            if(n->ss_type() != SSN_BP) { continue;}
+            seq[ n->x_pos() ] = n->res1();
+            seq[ n->y_pos() ] = n->res2();
+        }
+        return seq;
+    }
+    
     
 private:
     
@@ -136,6 +155,7 @@ private:
 private:
     SecondaryStructureNodeOPs nodes_;
     std::vector<SecondaryStructureNodeOPs> helices_;
+    String ss_, seq_;
     
 };
 

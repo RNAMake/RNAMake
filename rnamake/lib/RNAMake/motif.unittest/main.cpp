@@ -7,8 +7,10 @@
 //
 
 #include <iostream>
+#include "settings.h"
 #include "motif.h"
 #include "residue_type_set.h"
+#include "resource_manager.h"
 
 Motif
 get_test_motif() {
@@ -87,13 +89,24 @@ test_secondary_structure() {
     return 1;
 }
 
+int
+test_ref_motif() {
+        
+    for(int i = 0; i < 100000; i++) {
+        Motif ref_m = ref_motif();
+        std::cout << i << std::endl;
+    }
+    return 1;
+}
+
 
 
 int main(int argc, const char * argv[]) {
-    if (test_str_to_motif() == 0)         { std::cout << "test_str_to_motif failed" << std::endl; }
-    if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
-    if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
+    //if (test_str_to_motif() == 0)         { std::cout << "test_str_to_motif failed" << std::endl; }
+    //if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
+    //if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
     //if (test_update() == 0)               { std::cout << "test_update failed" << std::endl; }
-    if (test_secondary_structure() == 0)  { std::cout << "test_secondary_structure failed" << std::endl; }
+    //if (test_secondary_structure() == 0)  { std::cout << "test_secondary_structure failed" << std::endl; }
+    test_ref_motif();
     return 0;
 }

@@ -121,6 +121,7 @@ int
 test_to_motiftree() {
     Strings lines = get_lines_from_file("test_add_state.dat");
     MotifTreeStateLibrary mts_lib ( TWOWAY );
+    for(int k = 0; k < 10000; k++) {
     for(auto const & l : lines) {
         Strings spl = split_str_by_delimiter(l, " ");
         MotifTreeStateTree mtst;
@@ -129,9 +130,11 @@ test_to_motiftree() {
             mtst.add_state(mts, NULL, NULL);
         }
         MotifTree mt = mtst.to_motiftree();
+        std::cout << k << std::endl;
         //mt.write_pdbs();
         //break;
 
+    }
     }
     return 1;
 }
@@ -162,15 +165,15 @@ test_replace_state() {
 
 
 int main(int argc, const char * argv[]) {
-    if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
-    if (test_creation_node() == 0)     { std::cout << "test_creation_node failed" << std::endl;  }
-    if (test_add_child() == 0)         { std::cout << "test_add_child failed" << std::endl;  }
-    if (test_replace_mts() == 0)       { std::cout << "test_replace_mts failed" << std::endl;  }
-    if (test_creation_mtst() == 0)     { std::cout << "test_creation_mtst failed" << std::endl;  }
+    //if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
+    //if (test_creation_node() == 0)     { std::cout << "test_creation_node failed" << std::endl;  }
+    //if (test_add_child() == 0)         { std::cout << "test_add_child failed" << std::endl;  }
+    //if (test_replace_mts() == 0)       { std::cout << "test_replace_mts failed" << std::endl;  }
+    //if (test_creation_mtst() == 0)     { std::cout << "test_creation_mtst failed" << std::endl;  }
     //if (test_add_state() == 0)        { std::cout << "test_add_state failed" << std::endl;  }
-    if (test_compare_last_node() == 0) { std::cout << "test_compare_last_node failed" << std::endl;  }
+    //if (test_compare_last_node() == 0) { std::cout << "test_compare_last_node failed" << std::endl;  }
     if (test_to_motiftree() == 0)      { std::cout << "test_to_motiftree failed" << std::endl;  }
-    if (test_replace_state() == 0)     { std::cout << "test_replace_state failed" << std::endl;  }
+    //if (test_replace_state() == 0)     { std::cout << "test_replace_state failed" << std::endl;  }
 
     return 0;
 }

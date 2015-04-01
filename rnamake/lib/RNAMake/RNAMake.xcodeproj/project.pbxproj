@@ -279,6 +279,12 @@
 		1C8C91A01A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
 		1C8C91A11A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
 		1C8C91A21A7990BE005840D0 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8C919F1A7990BE005840D0 /* uuid.cc */; };
+		1C8FA1021ACB8C510001B29C /* motif_tree_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1A71A9400FD00361C7F /* motif_tree_node.cc */; };
+		1C8FA1031ACB8C510001B29C /* motif_tree_merger.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB19D1A93CF5F00361C7F /* motif_tree_merger.cc */; };
+		1C8FA1041ACB8C660001B29C /* pose.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1A21A93D6CF00361C7F /* pose.cc */; };
+		1C8FA1071ACBC04D0001B29C /* resource_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1051ACBC04D0001B29C /* resource_manager.cc */; };
+		1C8FA1081ACBC04D0001B29C /* resource_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1051ACBC04D0001B29C /* resource_manager.cc */; };
+		1C8FA1091ACBC4C30001B29C /* resource_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1051ACBC04D0001B29C /* resource_manager.cc */; };
 		1CA7AB741A82AD280063C8A8 /* motif_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AB721A82AD280063C8A8 /* motif_tree.cc */; };
 		1CA7AB7C1A82AD7C0063C8A8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AB7B1A82AD7C0063C8A8 /* main.cpp */; };
 		1CA7AB801A82AD9B0063C8A8 /* basepair_state.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C6F6B7A1A79A9BA0060F2A8 /* basepair_state.cc */; };
@@ -644,6 +650,8 @@
 		1C8C919D1A7757ED005840D0 /* transform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = transform.h; sourceTree = "<group>"; };
 		1C8C919E1A797E67005840D0 /* uuid.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = uuid.h; sourceTree = "<group>"; };
 		1C8C919F1A7990BE005840D0 /* uuid.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = uuid.cc; sourceTree = "<group>"; };
+		1C8FA1051ACBC04D0001B29C /* resource_manager.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = resource_manager.cc; sourceTree = "<group>"; };
+		1C8FA1061ACBC04D0001B29C /* resource_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resource_manager.h; sourceTree = "<group>"; };
 		1CA7AB711A81B3320063C8A8 /* chain.fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chain.fwd.h; sourceTree = "<group>"; };
 		1CA7AB721A82AD280063C8A8 /* motif_tree.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_tree.cc; sourceTree = "<group>"; };
 		1CA7AB731A82AD280063C8A8 /* motif_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree.h; sourceTree = "<group>"; };
@@ -1036,6 +1044,8 @@
 				1C855BB11A7FDBEC00EED04D /* sqlite3_connection.h */,
 				1C3C0A9C1AAB7A5200891276 /* cartesian_product.cc */,
 				1C3C0A9D1AAB7A5200891276 /* cartesian_product.h */,
+				1C8FA1051ACBC04D0001B29C /* resource_manager.cc */,
+				1C8FA1061ACBC04D0001B29C /* resource_manager.h */,
 			);
 			name = Util;
 			sourceTree = "<group>";
@@ -1862,6 +1872,7 @@
 				1CA7AC2E1A8C137E0063C8A8 /* secondary_structure_tree.cc in Sources */,
 				1C855B471A7C33BE00EED04D /* residue_type.cc in Sources */,
 				1C855B481A7C33BE00EED04D /* residue_type_set.cc in Sources */,
+				1C8FA1081ACBC04D0001B29C /* resource_manager.cc in Sources */,
 				1C855B491A7C33BE00EED04D /* settings.cc in Sources */,
 				1C855B4A1A7C33BE00EED04D /* residue.cc in Sources */,
 				1C855B4B1A7C33BE00EED04D /* util.cc in Sources */,
@@ -1937,6 +1948,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C8FA1091ACBC4C30001B29C /* resource_manager.cc in Sources */,
+				1C8FA1041ACB8C660001B29C /* pose.cc in Sources */,
+				1C8FA1021ACB8C510001B29C /* motif_tree_node.cc in Sources */,
+				1C8FA1031ACB8C510001B29C /* motif_tree_merger.cc in Sources */,
 				1CA7ABA01A83F38E0063C8A8 /* atom.cpp in Sources */,
 				1CA7ABA11A83F38E0063C8A8 /* residue_type.cc in Sources */,
 				1CA7ABF11A8400390063C8A8 /* motif_tree_state_library.cc in Sources */,
@@ -2033,6 +2048,7 @@
 				1C4F56231A74631000C7E6D7 /* settings.cc in Sources */,
 				1C4F56011A7441CB00C7E6D7 /* FileIO.cpp in Sources */,
 				1C4F56401A760AFB00C7E6D7 /* chain.cc in Sources */,
+				1C8FA1071ACBC04D0001B29C /* resource_manager.cc in Sources */,
 				1C3AB1A41A93D6CF00361C7F /* pose.cc in Sources */,
 				1CA7ABF91A842B3C0063C8A8 /* motif_tree_state_node_aligner.cc in Sources */,
 				1C4B4F871ABCACE600A2F04C /* mtst_to_met_converter.cc in Sources */,
@@ -2519,6 +2535,7 @@
 				1C2241481AC62A4100F76233 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1C3AB17C1A906F4000361C7F /* Build configuration list for PBXNativeTarget "simulate_tectos" */ = {
 			isa = XCConfigurationList;

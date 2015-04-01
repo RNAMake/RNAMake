@@ -21,6 +21,7 @@
 #include "mtst_to_met_converter.h"
 #include "sequence_designer.h"
 #include "FileIO.h"
+#include "vienna.h"
 
 String mismatch_path = "/Users/josephyesselman/Downloads/results_1bp/";
 
@@ -355,16 +356,17 @@ test_sequence_designer() {
     MotifOP gaaa_tetraloop ( new Motif(tetraloops[1], rts));
     int j = -1;
     
+    MotifTreeStateOP gaaa_mts = motif_to_state(gaaa_tetraloop, 2);
+    MotifTreeStateTree mtst;
+    mtst.add_state(mts_libs[0].get_state("HELIX.LE.3-0-0-0-0-1-1"), NULL);
+    mtst.add_state(gaaa_mts, NULL);
+    for(int k = 0; k < 10; k++) {
     for( auto const & l : lines) {
         j++;
-        if(j < 46) { continue; }
-        MotifTreeStateOP gaaa_mts = motif_to_state(gaaa_tetraloop, 2);
-        MotifTreeStateTree mtst;
         SequenceDesigner designer;
+        std::cout << "START " << k << " " << j << std::endl;
         mtst.sterics(0);
-        mtst.add_state(mts_libs[0].get_state("HELIX.LE.3-0-0-0-0-1-1"), NULL);
-        mtst.add_state(gaaa_mts, NULL);
-        int i = 0, pos = 0;
+              int i = 0, pos = 0;
 
         i = -1;
         names = split_str_by_delimiter(l, " ");
@@ -384,17 +386,24 @@ test_sequence_designer() {
             
         }
         //mtst.to_pdb("test.pdb");
-        std::cout << "START " << j << std::endl;
         MotifTree mt = mtst.to_motiftree();
         mt._add_connection(mt.nodes()[2], mt.nodes().back(), 1000);
         PoseOP p = mt.to_pose();
-        if(p->chains().size() > 1) { continue;}
+        if(p->chains().size() > 1) {
+            while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
+            continue;
+        }
         ss   = p->secondary_structure();
         dseq = p->designable_sequence();
         //std::cout << dseq << std::endl;
-        seq = designer.design(dseq, ss);
-        score = designer.score();
+        while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
+        //seq = designer.design(dseq, ss);
+        //String seq = p->sequence();
+        //char * structure = new char[seq.length()];
+        //float min_en = fold(seq.c_str(), structure);
+        //score = designer.score();
         //std::cout << j << " " << score << " " << seq << " " << ss << std::endl;
+    }
     }
     
     return 0;

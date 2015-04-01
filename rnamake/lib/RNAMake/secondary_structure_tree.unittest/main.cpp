@@ -26,8 +26,23 @@ test_sstree() {
     return 1;
 }
 
+int
+test_sstree_2() {
+    String seq = "GGGUUCGCCC";
+    String ss  = "(((....)))";
+    SecondaryStructureTree sstree(ss, seq);
+    std::vector<SecondaryStructureNodeOPs> helices = sstree.helices();
+    helices[0][0]->bp_type("AU");
+    helices[0][1]->bp_type("UU");
+
+    //std::cout << sstree.seq() << std::endl;
+    
+    return 1;
+}
+
 int main(int argc, const char * argv[]) {
-    if (test_sstree() == 0)          { std::cout << "test_sstree failed" << std::endl;  }
+    //if (test_sstree() == 0)          { std::cout << "test_sstree failed" << std::endl;  }
+    test_sstree_2();
     return 0;
 }
 

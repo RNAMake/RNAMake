@@ -83,6 +83,7 @@ SSN_Basepair::SSN_Basepair(
     ss_type_ = SSN_BP;
     children_ = SecondaryStructureNodeOPs();
     assign_bp_type_num();
+    updated_ = 0;
     
 }
 

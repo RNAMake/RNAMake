@@ -7,11 +7,14 @@
 //
 
 #include <map>
+#include <assert.h>
+#include <unistd.h>
 #include "motif.h"
 #include "chain.h"
 #include "xyzMatrix.h"
 #include "transform.h"
 #include "settings.h"
+#include "resource_manager.h"
 
 Motif::Motif(
     String const & s,
@@ -24,7 +27,8 @@ Motif::Motif(
     name_(String()),
     cached_rotations_(Matrices())
 {
-    
+ 
+    assert(s.size() > 0);
     Strings spl = split_str_by_delimiter(s, "&");
     mdir_ = spl[0];
     name_ = spl[1];
@@ -303,16 +307,37 @@ align_motif(BasepairOP const & ref_bp,
 
 Motif
 ref_motif() {
-    ResidueTypeSet rts;
     String path = resources_path() + "start.motif";
     String line;
     std::ifstream in;
     in.open(path);
     getline(in, line);
     in.close();
-    Motif m ( line, rts);
+    if(line.size() == 0) {
+        std::fstream infile;
+        infile.open(path);
+        infile >> line;
+        std::cout << line << std::endl;
+        exit(0);
+    }
+    Motif m ( line, ResourceManager::getInstance().residue_type_set());
     return m;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

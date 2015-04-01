@@ -13,6 +13,7 @@
 Point
 center(
     AtomOPs const & atoms) {
+    assert(atoms.size() > 0);
     Point center(0, 0, 0);
     for(auto const & a : atoms) {
         if(a == NULL) {
@@ -20,6 +21,5 @@ center(
         }
         center += a->coords();
     }
-    
     return center / float(atoms.size());
 }

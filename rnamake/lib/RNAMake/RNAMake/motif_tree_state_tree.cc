@@ -12,6 +12,7 @@
 #include "motif_tree.h"
 #include "motif.h"
 #include "basepair.h"
+#include "resource_manager.h"
 
 MotifTreeStateTree::MotifTreeStateTree() {
     clash_radius_ = 2.9;
@@ -103,7 +104,7 @@ MotifTree
 MotifTreeStateTree::to_motiftree() const {
     int i = -1;
     MotifTree mt;
-    ResidueTypeSet rts;
+    ResidueTypeSet rts = ResourceManager::getInstance().residue_type_set();
     for (auto const & n : nodes_) {
         i++;
         if(i == 0) {
