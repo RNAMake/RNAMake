@@ -87,6 +87,15 @@ public:
         return states;
     }
     
+    inline
+    void
+    disconnect() {
+        parent_ = NULL;
+        for(int i = 0; i < children_.size(); i++) {
+            children_[i] = NULL;
+        }
+    }
+    
 public: //getters
     
     inline

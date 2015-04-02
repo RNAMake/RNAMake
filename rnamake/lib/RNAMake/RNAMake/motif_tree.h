@@ -31,7 +31,12 @@ public:
         String const &,
         ResidueTypeSet const &);
     
-    ~MotifTree() {}
+    ~MotifTree() {
+        last_node_ = NULL;
+        for(auto const & n : nodes_) {
+            for(auto & c : n->connections()) { c->disconnect(); }
+        }
+     }
     
 public:
     

@@ -20,7 +20,9 @@ class MotifTreeStateTree {
 public:
     MotifTreeStateTree();
     MotifTreeStateTree(MotifTreeStateOP const &);
-    ~MotifTreeStateTree() {}
+    ~MotifTreeStateTree() {
+        for(auto const & n : nodes_) { n->disconnect(); }
+    }
 
 public:
     MotifTreeStateNodeOP

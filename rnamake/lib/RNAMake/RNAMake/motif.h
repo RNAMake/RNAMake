@@ -42,7 +42,9 @@ public:
     Motif
     copy();
     
-    ~Motif() {}
+    ~Motif() {
+
+    }
 
 public:
     

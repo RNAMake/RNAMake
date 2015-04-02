@@ -34,6 +34,9 @@ MotifTreeNode::MotifTreeNode(
     
 }
 
+MotifTreeNode::~MotifTreeNode() {
+}
+
 
 BasepairOPs
 MotifTreeNode::available_ends() {

@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include "motif_tree.fwd.h"
+#include "motif_tree_node.h"
 #include "motif.h"
 #include "basepair.h"
 
@@ -25,8 +26,7 @@ public:
         int const,
         int const);
     
-    ~MotifTreeNode() {}
-    
+    ~MotifTreeNode();
 public:
     
     BasepairOPs
@@ -91,7 +91,13 @@ public:
         node_2_->set_end_status(end_2_, 0);
     }
     
-    ~MotifTreeConnection() {}
+    ~MotifTreeConnection() {
+        node_1_ = NULL;
+        node_2_ = NULL;
+        end_1_ = NULL;
+        end_2_ = NULL;
+    
+    }
     
 public:
     
@@ -106,6 +112,20 @@ public:
     }
     
 public:
+    inline
+    void
+    disconnect() {
+        if(node_1_ != NULL) {
+            node_1_->set_end_status(end_1_, 1);
+            node_2_->set_end_status(end_2_, 1);
+        }
+        node_1_ = NULL;
+        node_2_ = NULL;
+        end_1_ = NULL;
+        end_2_ = NULL;
+
+    }
+    
     inline
      MotifTreeNodeOP const &
      partner(MotifTreeNodeOP const & node) const {

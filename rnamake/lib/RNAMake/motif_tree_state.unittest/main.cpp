@@ -132,7 +132,7 @@ test_to_motiftree() {
         MotifTree mt = mtst.to_motiftree();
         std::cout << k << std::endl;
         //mt.write_pdbs();
-        //break;
+        break;
 
     }
     }

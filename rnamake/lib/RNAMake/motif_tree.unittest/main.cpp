@@ -124,13 +124,29 @@ test_merger2() {
     return 1;
 }
 
+int
+test_memory_mangement() {
+    MotifLibrary mlib (HELIX);
+    for(int i = 0; i < 10000; i++) {
+        MotifTree mt;
+        mt.sterics(0);
+        //MotifOP m = mlib.get_motif("HELIX.IDEAL");
+        MotifOP m (new Motif(ref_motif()));
+        for (int i = 0; i < 1; i ++) { mt.add_motif(m); }
+        std::cout << i << std::endl;
+        //break;
+    }
+    return 1;
+}
+
 
 int main(int argc, const char * argv[]) {
     //if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
     //if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
     //if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
-    if (test_merger() == 0)            { std::cout << "test_merger failed" << std::endl;  }
-    if (test_merger2() == 0)            { std::cout << "test_merger2 failed" << std::endl;  }
+    //if (test_merger() == 0)            { std::cout << "test_merger failed" << std::endl;  }
+    //if (test_merger2() == 0)            { std::cout << "test_merger2 failed" << std::endl;  }
+    test_memory_mangement();
     return 0;
 }
 

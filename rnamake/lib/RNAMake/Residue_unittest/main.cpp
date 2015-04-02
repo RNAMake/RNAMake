@@ -143,8 +143,24 @@ test_equals() {
 }
 
 
+int
+test_memory_management() {
+    String file = "test_str_to_residue.dat";
+    String line;
+    std::ifstream input;
+    input.open(file);
+    ResidueTypeSet rts;
+    getline(input, line);
+    input.close();
+    for(int i = 0; i < 100000; i++) {
+        Residue r = str_to_residue(line, rts);
+    }
+    return 1;
+}
+
+
 int main(int argc, const char * argv[]) {
-    if (test_uuid() == 0)            { std::cout << "test_uuid failed" << std::endl; }
+    /*if (test_uuid() == 0)            { std::cout << "test_uuid failed" << std::endl; }
     if (test_bead_creation() == 0)   { std::cout << "test_bead_creation failed" << std::endl; }
     if (test_str_to_residue() == 0)  { std::cout << "test_str_to_residue failed" << std::endl; }
     if (test_get_atom() == 0)        { std::cout << "test_get_atom failed" << std::endl; }
@@ -153,6 +169,10 @@ int main(int argc, const char * argv[]) {
     if (test_copy() == 0)            { std::cout << "test_copy failed" << std::endl; }
     if (test_to_str() == 0)          { std::cout << "test_to_str failed" << std::endl; }
     if (test_equals() == 0)          { std::cout << "test_equals failed" << std::endl; }
-
+    */
+    test_memory_management();
+    
+    
+    
     return 0;
 }

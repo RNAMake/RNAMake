@@ -70,14 +70,14 @@ test_to_str() {
 int
 test_subchain() {
     Chain c = get_test_chain();
-    Chain sc = c.subchain(1, 5);
+    ChainOP sc = c.subchain(1, 5);
     c.to_pdb("original.pdb");
-    sc.to_pdb("subchain.pdb");
+    sc->to_pdb("subchain.pdb");
     
     ResidueOP r1 = c.residues()[1];
     ResidueOP r2 = c.residues()[5];
-    Chain sc2 = c.subchain(r1, r2);
-    sc2.to_pdb("subchain2.pdb");
+    ChainOP sc2 = c.subchain(r1, r2);
+    sc2->to_pdb("subchain2.pdb");
 
     return 1;
 }
@@ -119,7 +119,7 @@ test_move() {
     Structure s = get_test_structure();
     Point p (10.0, 0 ,0);
     s.move(p);
-    s.chains()[0].to_pdb("moved.pdb");
+    s.chains()[0]->to_pdb("moved.pdb");
     return 1;
 }
 
@@ -151,9 +151,25 @@ test_get_residue() {
     return 1;
 }
 
+int
+test_memory_management() {
+    String file = "test_str_to_structure.dat";
+    String line;
+    std::ifstream input;
+    input.open(file);
+    ResidueTypeSet rts;
+    getline(input, line);
+    for(int i = 0; i < 10000; i++) {
+        Structure s = str_to_structure(line, rts);
+    }
+    
+    return 1;
+}
+
+
 
 int main(int argc, const char * argv[]) {
-    if (test_str_to_chain() == 0)       { std::cout << "test_str_to_chain failed" << std::endl; }
+    /*if (test_str_to_chain() == 0)       { std::cout << "test_str_to_chain failed" << std::endl; }
     if (test_to_str() == 0)             { std::cout << "test_to_str failed" << std::endl; }
     if (test_subchain() == 0)           { std::cout << "test_subchain failed" << std::endl; }
     if (test_to_pdb() == 0)             { std::cout << "test_to_pdb failed" << std::endl; }
@@ -162,6 +178,8 @@ int main(int argc, const char * argv[]) {
     if (test_move() == 0)               { std::cout << "test_move failed" << std::endl; }
     if (test_transform() == 0)          { std::cout << "test_transform failed" << std::endl; }
     if (test_get_residue() == 0)        { std::cout << "test_get_residue failed" << std::endl; }
+    */
+    test_memory_management();
     return 0;
 }
 

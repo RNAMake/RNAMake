@@ -156,7 +156,6 @@ MotifTree::_add_motif(
         MotifTreeConnectionOP mtc (new MotifTreeConnection(parent, new_node, parent_end, new_end, 0));
         parent->add_connection(mtc);
         new_node->add_connection(mtc);
-
         
         if(nodes_.size() == 1 && full_beads_first_res_ == 1) {
             nodes_[0]->motif()->get_beads();

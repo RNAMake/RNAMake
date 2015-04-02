@@ -40,9 +40,10 @@ MotifLibrary::get_motif(String const & name) {
         throw "cannot find motif with name "+name;
     }
     
-    MotifOP m ( new Motif( values[0], rts_));
-    mdict_[ values[1] ] = m;
-    return MotifOP( new Motif(m->copy()));
+    if(mdict_.find(values[0]) == mdict_.end()) {
+        mdict_[ values[1] ] = MotifOP(new Motif( values[0], rts_));
+    }
+    return MotifOP( new Motif(mdict_[ values[1] ]->copy()));
     //return m;
 
 }

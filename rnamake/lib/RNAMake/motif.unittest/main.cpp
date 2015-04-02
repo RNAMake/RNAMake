@@ -99,6 +99,15 @@ test_ref_motif() {
     return 1;
 }
 
+int
+test_memory_management() {
+    Motif ref_m = ref_motif();
+    for(int i = 0; i < 100000; i++) {
+        Motif copy = ref_m.copy();
+    }
+    return 1;
+    
+}
 
 
 int main(int argc, const char * argv[]) {
@@ -107,6 +116,7 @@ int main(int argc, const char * argv[]) {
     //if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
     //if (test_update() == 0)               { std::cout << "test_update failed" << std::endl; }
     //if (test_secondary_structure() == 0)  { std::cout << "test_secondary_structure failed" << std::endl; }
-    test_ref_motif();
+    //test_ref_motif();
+    test_memory_management();
     return 0;
 }
