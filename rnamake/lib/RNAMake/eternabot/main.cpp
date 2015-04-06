@@ -7,6 +7,7 @@
 //
 
 #include <iostream>
+#include <fstream>
 #include "secondary_structure_tree.h"
 #include "vienna.h"
 #include "sequence_designer.h"
@@ -113,20 +114,46 @@ test_sequencer_designer_2() {
     return 1;
 }
 
+int
+test_memory_issue() {
+    std::ifstream in;
+    in.open("sequences.txt");
+    String line;
+    Strings sequences;
+    while(in.good()) {
+        getline(in, line);
+        sequences.push_back(line);
+    }
+    in.close();
+ 
+    int count = 0;
+    for(int i = 0; i < 10; i++) {
+        for(auto const & seq : sequences) {
+            char * struc = new char[seq.length()];
+            float min_en = fold(seq.c_str(), struc);
+            delete struc;
+            std::cout << count << std::endl;
+            count++;
+        }
+    }
+
+    
+    return 1;
+}
 
 
 
 int main(int argc, const char * argv[]) {
     
-    if (test_fold() == 0)               { std::cout << "test_fold failed" << std::endl;  }
-    if (test_cofold() == 0)             { std::cout << "test_cofold failed" << std::endl;  }
+    //if (test_fold() == 0)               { std::cout << "test_fold failed" << std::endl;  }
+    //if (test_cofold() == 0)             { std::cout << "test_cofold failed" << std::endl;  }
     //if (test_design_sequence() == 0)  { std::cout << "test_design_sequence failed" << std::endl;  }
     //if (test_design_sequence_2() == 0)  { std::cout << "test_design_sequence failed" << std::endl;  }
     //if (test_eternabot_scorer() == 0)   { std::cout << "test_eternabot_scorer failed" << std::endl;  }
     //test_eternabot_scorer();
     //test_eternabot_enumerate_bps();
-    test_eternabot_scorer();
+    //test_eternabot_scorer();
     //test_sequencer_designer_2();
-    
+    test_memory_issue();
     return 0;
 }

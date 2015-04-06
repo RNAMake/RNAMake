@@ -74,11 +74,12 @@ MotifTreeStateTree::add_state(
         success=1;
         break;
     }
-    
+
     if(!success) { return NULL; }
     
     nodes_.push_back(new_node);
     last_node_ = new_node;
+    
     return new_node;
     
 }
@@ -109,7 +110,6 @@ MotifTreeStateTree::to_motiftree() const {
         i++;
         if(i == 0) {
             if(n->mts()->name().compare("start") == 0) {
-                mt = MotifTree();
                 mt.sterics(0);
             }
             else {
@@ -214,11 +214,16 @@ MotifTreeStateTree::remove_node(
     if( node == NULL) {
         node = last_node_;
     }
+    
+    
     MotifTreeStateNodeOP parent = node->parent();
     int parent_index = node->parent_end_index();
+    
     parent->remove_child(parent_index);
+    node->disconnect();
     nodes_.erase(std::remove(nodes_.begin(), nodes_.end(), node), nodes_.end());
     last_node_ = parent;
+    
 }
 
 MotifTreeState

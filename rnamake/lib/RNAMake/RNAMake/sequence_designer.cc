@@ -16,7 +16,7 @@ SequenceDesigner::design(
     
     char * struc = new char[sequence.length()];
     float min_en = fold(sequence.c_str(), struc);
-    //delete struc;
+    delete struc;
     return "";
     
     /*scorer_->setup(structure);

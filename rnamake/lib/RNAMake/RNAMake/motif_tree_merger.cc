@@ -18,10 +18,8 @@ MotifTreeMerger::merge(MotifTree const & mt, int include_head) {
         MotifOP m (new Motif( mt.nodes()[1]->motif()->copy() ));
         return PoseOP ( new Pose(m) );
     }
-    
-    seen_connections_ =  std::map<MotifTreeConnectionOP, int>();
-    chains_ = ChainOPs();
-    nodes_ = mt.nodes();
+
+    for(auto const & n : mt.nodes())  { nodes_.push_back(n); }
     
     int i = -1;
     for( auto const & n : nodes_) {
@@ -36,6 +34,11 @@ MotifTreeMerger::merge(MotifTree const & mt, int include_head) {
     if(include_head_ == 0) { start_node = nodes_[1]; }
     _merge_chains_in_node(start_node);
     PoseOP new_pose = _build_pose();
+    
+    seen_connections_.clear(); //= std::map<MotifTreeConnectionOP, int>();
+    chains_.resize(0);
+    nodes_.resize(0);
+    
     return new_pose;
 }
 

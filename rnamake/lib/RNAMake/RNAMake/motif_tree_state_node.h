@@ -46,7 +46,9 @@ public:
  
     }
     
-    ~MotifTreeStateNode() {}
+    ~MotifTreeStateNode() {
+     //   std::cout << "made it" << std::endl;
+    }
     
     MotifTreeStateNode
     copy();
@@ -93,6 +95,9 @@ public:
         parent_ = NULL;
         for(int i = 0; i < children_.size(); i++) {
             children_[i] = NULL;
+        }
+        for(auto & state : states_) {
+            state = NULL;
         }
     }
     

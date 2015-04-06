@@ -19,8 +19,8 @@
 class SequenceDesigner {
 public:
     SequenceDesigner(){
-        rng_  = RandomNumberGenerator();
-        basepairs_ = split_str_by_delimiter("GC,CG,AU,UA", ",");
+        //rng_  = RandomNumberGenerator();
+        //basepairs_ = split_str_by_delimiter("GC,CG,AU,UA", ",");
         //scorer_ = SequenceDesignScorerOP( new EternabotScorer() );
         //scorer_ = SequenceDesignScorerOP( new SequenceDesignScorer() );
 
@@ -48,10 +48,10 @@ public: //getters
     */
      
 private:
-    RandomNumberGenerator rng_;
+    //RandomNumberGenerator rng_;
     //SecondaryStructureTree ss_tree_;
     //SequenceDesignScorerOP scorer_;
-    Strings basepairs_;
+    //Strings basepairs_;
     //String last_bp_type_, cseq_;
     //float score_, best_score_;
     //int steps_;

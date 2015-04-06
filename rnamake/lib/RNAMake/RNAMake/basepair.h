@@ -51,7 +51,10 @@ public:
         
     }
     
-    ~Basepair() {}
+    ~Basepair() {
+        res1_ = NULL;
+        res2_ = NULL;
+    }
     
     Basepair
     copy();

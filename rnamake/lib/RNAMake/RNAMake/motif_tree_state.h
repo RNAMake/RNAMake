@@ -64,7 +64,9 @@ public:
         build_string_(build_string)
     {}
     
-    ~MotifTreeState() {}
+    ~MotifTreeState() {
+        //ends_.resize(0);
+    }
     
 public: //getters
     

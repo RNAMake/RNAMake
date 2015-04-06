@@ -8,6 +8,7 @@
 
 #include <iostream>
 #include <random>
+#include <fstream>
 #include "motif_tree_state_selector.h"
 #include "motif_tree_state_search_scorer.h"
 #include "motif_tree_state_search_node.h"
@@ -360,16 +361,95 @@ test_sequence_designer() {
     MotifTreeStateTree mtst;
     mtst.add_state(mts_libs[0].get_state("HELIX.LE.3-0-0-0-0-1-1"), NULL);
     mtst.add_state(gaaa_mts, NULL);
-    for(int k = 0; k < 10; k++) {
-    for( auto const & l : lines) {
-        j++;
-        SequenceDesigner designer;
-        std::cout << "START " << k << " " << j << std::endl;
-        mtst.sterics(0);
-              int i = 0, pos = 0;
+    mtst.sterics(0);
 
+    char const * c_seq;
+    for(int k = 0; k < 10; k++) {
+        for( auto const & l : lines) {
+            j++;
+            //SequenceDesigner designer;
+            std::cout << "START " << k << " " << j << std::endl;
+            int i = 0, pos = 0;
+            
+            i = -1;
+            names = split_str_by_delimiter(l, " ");
+            if(names.size() < 4) { continue; }
+            for(auto const & name : names) {
+                i++;
+                if ( i == 0 ) { continue; }
+                if ( i % 2 == 0)  { pos = 1; }
+                else              { pos = 0; }
+                
+                if(i == 1) {
+                    mtst.add_state(mts_libs[pos].get_state(name), NULL, 1);
+                }
+                else {
+                    mtst.add_state(mts_libs[pos].get_state(name), NULL);
+                }
+                
+            }
+            
+            
+            //mtst.to_pdb("test.pdb");
+            MotifTree mt = mtst.to_motiftree();
+            
+            //mt._add_connection(mt.nodes()[2], mt.nodes().back(), 1000);
+            //PoseOP p = mt.to_pose();
+            //if(p->chains().size() > 1) { continue; }
+            //ss   = p->secondary_structure();
+            //dseq = p->designable_sequence();
+            //std::cout << dseq << std::endl;
+            //seq = designer.design(dseq, ss);
+            //String seq = p->sequence();
+            //c_seq = seq.c_str();
+            c_seq = "GGGGAUAUGGGGGGGGGGUGGAGGGGGGGGGGGGCGAAGAACGGGGUCGUGACGGGAAACCGUACCCCCGGGAGCCCCCCCCCCCCGACGAAACCCCCCCCCCUAAGUCCCC";
+            //std::cout << c_seq << std::endl;
+            //char * structure = new char[seq.length()];
+            //float min_en = fold(seq.c_str(), structure);
+            //score = designer.score();
+            char * struc = new char[112];
+            float min_en = fold(c_seq, struc);
+            delete struc;
+            
+            while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
+
+            //sequences.push_back(seq);
+        }
+    }
+ 
+    
+    return 0;
+}
+
+int
+test_sequence_designer_test() {
+    Strings lines = get_lines_from_file("out2");
+    Strings names;
+    String ss, dseq, seq;
+    std::vector<MotifTreeStateLibrary> mts_libs(2);
+    mts_libs[0] = MotifTreeStateLibrary(HELIX);
+    mts_libs[1] = MotifTreeStateLibrary(TWOWAY);
+    Strings tetraloops = get_lines_from_file(base_dir() + "/rnamake/lib/RNAMake/simulate_tectos/tetraloop.str");
+    ResidueTypeSet rts;
+    MotifOP gaaa_tetraloop ( new Motif(tetraloops[1], rts));
+    
+    MotifTreeStateOP gaaa_mts = motif_to_state(gaaa_tetraloop, 2);
+    MotifTreeStateTree mtst;
+    mtst.add_state(mts_libs[0].get_state("HELIX.LE.3-0-0-0-0-1-1"), NULL);
+    mtst.add_state(gaaa_mts, NULL);
+    mtst.sterics(0);
+    
+    String line = lines[118];
+    
+    char const * c_seq;
+    for(int k = 0; k < 10000; k++) {
+    
+        SequenceDesigner designer;
+        std::cout << "START " << k << std::endl;
+        int i = 0, pos = 0;
+            
         i = -1;
-        names = split_str_by_delimiter(l, " ");
+        names = split_str_by_delimiter(line, " ");
         if(names.size() < 4) { continue; }
         for(auto const & name : names) {
             i++;
@@ -381,33 +461,48 @@ test_sequence_designer() {
                 mtst.add_state(mts_libs[pos].get_state(name), NULL, 1);
             }
             else {
+                //if(i < 8) {
                 mtst.add_state(mts_libs[pos].get_state(name), NULL);
+                //}
+                if(i > 5) {
+                    //  std::cout << name << std::endl;
+                }
             }
-            
+                
         }
-        //mtst.to_pdb("test.pdb");
+            
+            //mtst.to_pdb("test.pdb");
         MotifTree mt = mtst.to_motiftree();
+        
         mt._add_connection(mt.nodes()[2], mt.nodes().back(), 1000);
         PoseOP p = mt.to_pose();
-        if(p->chains().size() > 1) {
-            while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
-            continue;
-        }
-        ss   = p->secondary_structure();
-        dseq = p->designable_sequence();
+        /*if(p->chains().size() > 1) {
+         while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
+         continue;
+         }*/
+        //ss   = p->secondary_structure();
+        //dseq = p->designable_sequence();
         //std::cout << dseq << std::endl;
-        while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
+        //while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
         //seq = designer.design(dseq, ss);
-        //String seq = p->sequence();
+        //String seq = p->sequence().substr(7,p->sequence().length()-1);
+        String seq = p->sequence();
+        c_seq = seq.c_str();
+        //c_seq = "AAAAAAAAAUUUUUUUUUAAAAAAA";
+        //std::cout << c_seq << std::endl;
         //char * structure = new char[seq.length()];
         //float min_en = fold(seq.c_str(), structure);
         //score = designer.score();
-        //std::cout << j << " " << score << " " << seq << " " << ss << std::endl;
+        char * struc = new char[seq.length()];
+        float min_en = fold(c_seq, struc);
+        delete struc;
+
     }
-    }
+    
     
     return 0;
 }
+
 
 
 
