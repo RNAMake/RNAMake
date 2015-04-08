@@ -12,6 +12,7 @@
 int main(int argc, const char * argv[]) {
     ViennaClone vc;
     vc.init_fold(100);
+    vc.fold("AUGC");
     
     return 0;
 }

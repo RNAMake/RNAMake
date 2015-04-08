@@ -14,6 +14,10 @@
 #define INF       1000000
 #define NBPAIRS   7
 #define MAXLOOP   30
+#define K0  273.15
+#define EMAX (INF/10)
+#define BONUS 10000
+#define TURN 3
 
 extern double lxc37;   /* parameter for logarithmic loop
                         energy extrapolation            */
@@ -84,4 +88,16 @@ extern int TerminalAUdH;
 /* penalty for forming bi-molecular duplex */
 extern int DuplexInit37;
 extern int DuplexInitdH;
+
+extern char Tetraloops[281];  /* string containing the special tetraloops */
+extern int  Tetraloop37[40];  /* Bonus energy for special tetraloops */
+extern int  TetraloopdH[40];
+extern char Triloops[241];    /* string containing the special triloops */
+extern int  Triloop37[40]; /* Bonus energy for special Triloops */
+extern int  TriloopdH[40]; /* Bonus energy for special Triloops */
+extern char Hexaloops[361];    /* string containing the special triloops */
+extern int  Hexaloop37[40]; /* Bonus energy for special Triloops */
+extern int  HexaloopdH[40]; /* Bonus energy for special Triloops */
+
+extern double Tmeasure;
 #endif /* defined(__RNAMake__energy_par__) */

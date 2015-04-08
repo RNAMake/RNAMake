@@ -565,6 +565,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C147FD41AD4CF8E00F01A6D /* pair_mat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pair_mat.h; path = ../pair_mat.h; sourceTree = "<group>"; };
 		1C21D3AB1AD2D712005AD48A /* energy_par.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = energy_par.cc; sourceTree = "<group>"; };
 		1C21D3AC1AD2D712005AD48A /* energy_par.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = energy_par.h; sourceTree = "<group>"; };
 		1C2241421AC62A4100F76233 /* design_primers */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = design_primers; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1212,6 +1213,7 @@
 				1C8FA1161AD1A3820001B29C /* vienna_clone.h */,
 				1C21D3AB1AD2D712005AD48A /* energy_par.cc */,
 				1C21D3AC1AD2D712005AD48A /* energy_par.h */,
+				1C147FD41AD4CF8E00F01A6D /* pair_mat.h */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
