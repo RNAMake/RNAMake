@@ -9,6 +9,7 @@
 #ifndef __RNAMake__vienna_clone__
 #define __RNAMake__vienna_clone__
 #define TURN 3
+#define MAXSECTORS        500
 #define MIN2(A, B)      ((A) < (B) ? (A) : (B))
 #define MIN3(A, B, C)   (MIN2(  (MIN2((A),(B))) ,(C)))
 
@@ -82,7 +83,15 @@ struct paramT {
     
 };
 
+struct sect {
+    int  i;
+    int  j;
+    int ml;
+};
+
+
 typedef std::vector<bondT> bondTs;
+typedef std::vector<sect> sects;
 
 
 class ViennaClone {
@@ -109,7 +118,7 @@ public:
         DMLi2_o = Ints(size_);
         temp = 37.0;
         ptype   = Chars((size_*(size_+1)/2+2));
-        base_pair2 = bondTs(size_);
+        base_pair2 = bondTs(4*(1+size_/2));
         indx = Ints(size_);
         S = Shorts(size_);
         S1 = Shorts(size_);
@@ -117,6 +126,8 @@ public:
         params = paramT();
         setup_part_func();
         uniq_ML = 0;
+        sector = sects(MAXSECTORS);
+        backtrack_type = 'F';
     }
     
     inline
@@ -169,7 +180,7 @@ public:
             DMLi2_a.resize(size);
             DMLi2_o.resize(size);
             ptype.resize((size*(size+1)/2+2));
-            base_pair2.resize(size);
+            base_pair2.resize(4*(1+size/2));
             indx.resize(size);
             S.resize(size+2);
             S1.resize(size+2);
@@ -383,6 +394,14 @@ public:
     fill_arrays(
         String const &);
     
+    void
+    backtrack(
+        String const &,
+        int);
+    
+    void
+    parenthesis_structure (int);
+    
 private:
     
     void
@@ -570,6 +589,8 @@ private:
     double temp;
     int uniq_ML;
     int size_;
+    sects sector;
+    char backtrack_type;
     //varibles from part_func
     Floats q, qb, qm, probs, q1k, qln, qq, qq1, qqm, qqm1, prml, prm_l, prm_l1;
     Floats expMLbase, scale, Gj, Gj1;

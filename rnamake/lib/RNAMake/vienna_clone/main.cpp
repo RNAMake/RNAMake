@@ -9,6 +9,14 @@
 #include <iostream>
 #include "vienna_clone.h"
 
+
+int test_folding() {
+    
+    return 0;
+}
+
+
+
 int main(int argc, const char * argv[]) {
     ViennaClone vc;
     vc.init_fold(100);

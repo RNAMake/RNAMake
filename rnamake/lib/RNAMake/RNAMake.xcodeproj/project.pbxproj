@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C147FD81AD7254300F01A6D /* vienna_clone.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C147FD61AD7254300F01A6D /* vienna_clone.cc */; };
 		1C21D3AD1AD2D712005AD48A /* energy_par.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C21D3AB1AD2D712005AD48A /* energy_par.cc */; };
 		1C21D3AE1AD2D712005AD48A /* energy_par.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C21D3AB1AD2D712005AD48A /* energy_par.cc */; };
 		1C22413C1AC6266400F76233 /* eternabot_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F891ABE730800A2F04C /* eternabot_scorer.cc */; };
@@ -285,8 +286,6 @@
 		1C8FA1081ACBC04D0001B29C /* resource_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1051ACBC04D0001B29C /* resource_manager.cc */; };
 		1C8FA1091ACBC4C30001B29C /* resource_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1051ACBC04D0001B29C /* resource_manager.cc */; };
 		1C8FA1111AD1A2E20001B29C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1101AD1A2E20001B29C /* main.cpp */; };
-		1C8FA1171AD1A3820001B29C /* vienna_clone.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1151AD1A3820001B29C /* vienna_clone.cc */; };
-		1C8FA1181AD1A3820001B29C /* vienna_clone.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1151AD1A3820001B29C /* vienna_clone.cc */; };
 		1CA7AB741A82AD280063C8A8 /* motif_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AB721A82AD280063C8A8 /* motif_tree.cc */; };
 		1CA7AB7C1A82AD7C0063C8A8 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CA7AB7B1A82AD7C0063C8A8 /* main.cpp */; };
 		1CA7AB801A82AD9B0063C8A8 /* basepair_state.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C6F6B7A1A79A9BA0060F2A8 /* basepair_state.cc */; };
@@ -565,7 +564,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1C147FD41AD4CF8E00F01A6D /* pair_mat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pair_mat.h; path = ../pair_mat.h; sourceTree = "<group>"; };
+		1C147FD51AD7254300F01A6D /* pair_mat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pair_mat.h; sourceTree = "<group>"; };
+		1C147FD61AD7254300F01A6D /* vienna_clone.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vienna_clone.cc; sourceTree = "<group>"; };
+		1C147FD71AD7254300F01A6D /* vienna_clone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vienna_clone.h; sourceTree = "<group>"; };
 		1C21D3AB1AD2D712005AD48A /* energy_par.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = energy_par.cc; sourceTree = "<group>"; };
 		1C21D3AC1AD2D712005AD48A /* energy_par.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = energy_par.h; sourceTree = "<group>"; };
 		1C2241421AC62A4100F76233 /* design_primers */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = design_primers; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -667,8 +668,6 @@
 		1C8FA1061ACBC04D0001B29C /* resource_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = resource_manager.h; sourceTree = "<group>"; };
 		1C8FA10E1AD1A2E20001B29C /* vienna_clone */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = vienna_clone; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C8FA1101AD1A2E20001B29C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		1C8FA1151AD1A3820001B29C /* vienna_clone.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = vienna_clone.cc; path = ../vienna_clone.cc; sourceTree = "<group>"; };
-		1C8FA1161AD1A3820001B29C /* vienna_clone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = vienna_clone.h; path = ../vienna_clone.h; sourceTree = "<group>"; };
 		1CA7AB711A81B3320063C8A8 /* chain.fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chain.fwd.h; sourceTree = "<group>"; };
 		1CA7AB721A82AD280063C8A8 /* motif_tree.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_tree.cc; sourceTree = "<group>"; };
 		1CA7AB731A82AD280063C8A8 /* motif_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree.h; sourceTree = "<group>"; };
@@ -1209,11 +1208,11 @@
 				1C3AB1F71A9EB72B00361C7F /* motif_tree_state_search.h */,
 				1C4B4F521AB8F84A00A2F04C /* motif_tree_state_path_refiner.cc */,
 				1C4B4F531AB8F84A00A2F04C /* motif_tree_state_path_refiner.h */,
-				1C8FA1151AD1A3820001B29C /* vienna_clone.cc */,
-				1C8FA1161AD1A3820001B29C /* vienna_clone.h */,
 				1C21D3AB1AD2D712005AD48A /* energy_par.cc */,
 				1C21D3AC1AD2D712005AD48A /* energy_par.h */,
-				1C147FD41AD4CF8E00F01A6D /* pair_mat.h */,
+				1C147FD51AD7254300F01A6D /* pair_mat.h */,
+				1C147FD61AD7254300F01A6D /* vienna_clone.cc */,
+				1C147FD71AD7254300F01A6D /* vienna_clone.h */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
@@ -1974,7 +1973,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C21D3AE1AD2D712005AD48A /* energy_par.cc in Sources */,
-				1C8FA1181AD1A3820001B29C /* vienna_clone.cc in Sources */,
 				1C8FA1111AD1A2E20001B29C /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2129,7 +2127,6 @@
 				1C4F561B1A74614D00C7E6D7 /* residue_type_set.cc in Sources */,
 				1C855BB21A7FDBEC00EED04D /* sqlite3_connection.cc in Sources */,
 				1C3AB1F01A9E8A3200361C7F /* motif_tree_state_search_scorer.cc in Sources */,
-				1C8FA1171AD1A3820001B29C /* vienna_clone.cc in Sources */,
 				1C4B4F8F1ABF641100A2F04C /* eterna_bot_strategy.cc in Sources */,
 				1C3AB1F81A9EB72B00361C7F /* motif_tree_state_search.cc in Sources */,
 				1C4F563C1A75B34200C7E6D7 /* util.cc in Sources */,
@@ -2146,6 +2143,7 @@
 				1C4F145B1AA2B8ED003B7895 /* sequence_designer.cc in Sources */,
 				1C4B4F541AB8F84A00A2F04C /* motif_tree_state_path_refiner.cc in Sources */,
 				1C4F56381A7585BB00C7E6D7 /* residue.cc in Sources */,
+				1C147FD81AD7254300F01A6D /* vienna_clone.cc in Sources */,
 				1C855B561A7C347800EED04D /* motif_type.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
