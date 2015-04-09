@@ -12,7 +12,7 @@
 int main(int argc, const char * argv[]) {
     ViennaClone vc;
     vc.init_fold(100);
-    vc.fold("AAAAAAAAAAUUUUUUUUUU");
+    vc.fold("CAAAAAAAAAAUUUUUUUUUUG");
     
     return 0;
 }

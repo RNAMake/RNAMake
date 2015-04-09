@@ -529,6 +529,30 @@ private: //Energy calculations
         return energy;
     }
 
+    inline
+    int
+    E_ExtLoop(
+        int type,
+        int si1,
+        int sj1) {
+        
+        int energy = 0;
+        if(si1 >= 0 && sj1 >= 0){
+            energy += params.mismatchExt[type][si1][sj1];
+        }
+        else if (si1 >= 0){
+            energy += params.dangle5[type][si1];
+        }
+        else if (sj1 >= 0){
+            energy += params.dangle3[type][sj1];
+        }
+        
+        if(type > 2)
+            energy += params.TerminalAU;
+        
+        return energy;
+        
+    }
     
 
     

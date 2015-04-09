@@ -22,7 +22,8 @@ ViennaClone::fold(
     encode_sequence(string, S1, 1);
     make_ptypes(S, structure);
     
-    fill_arrays(string);
+    int energy = fill_arrays(string);
+    std::cout << energy << std::endl;
     
     return 1;
 }
@@ -63,13 +64,13 @@ ViennaClone::fill_arrays(
     int   decomp, new_fML;
     int   no_close, type, type_2, tt, max_separation;
     int   bonus=0;
-    int   dangle_model, noGUclosure, with_gquads;
+    int   dangle_model, noGUclosure;
     int   noLonelyPairs=0;
     int   circular=0;
 
     dangle_model  = params.model_details.dangles;
     noGUclosure   = params.model_details.noGUclosure;
-    length = string.length();
+    length = (int)string.length();
     
     max_separation = (int) ((1.-LOCALITY)*(double)(length-2)); /* not in use */
     
@@ -130,14 +131,14 @@ ViennaClone::fill_arrays(
                                            S1[i+1], S1[j-1], S1[p-1], S1[q+1]);
                         
                         ee = energy+c[indx[q]+p];
-                        std::cout << ij << " " << ee << " " << energy << std::endl;
                         new_c = MIN2(new_c, ee);
                         if ((p==i+1)&&(j==q+1)) stackEnergy = energy; /* remember stack energy */
                         
                     } /* end q-loop */
                 } /* end p-loop */
                 /* multi-loop decomposition ------------------------*/
-
+                
+                
                 if (!no_close) {
                     decomp = DMLi1[j-1];
                     tt = rtype[type];
@@ -158,12 +159,14 @@ ViennaClone::fill_arrays(
                             break;
                     }
                     MLenergy = decomp + params.MLclosing;
+                    
+
                     new_c = MIN2(new_c, MLenergy);
                 }
                 
+
                 new_c = MIN2(new_c, cc1[j-1]+stackEnergy);
                 cc[j] = new_c + bonus;
-                //std::cout << ij << " " << cc[j] << " " << cc1[j-1] << " " << stackEnergy << std::endl;
                 if (noLonelyPairs)
                     c[ij] = cc1[j-1]+stackEnergy+bonus;
                 else
@@ -182,7 +185,6 @@ ViennaClone::fill_arrays(
                 switch(dangle_model){
                     case 2:
                         new_fML += E_MLstem(type, (i==1) ? S1[length] : S1[i-1], S1[j+1]);
-                        //std::cout << type << " " << ((i==1) ? S1[length] : S1[i-1]) << " " << S1[j+1] << " " << i << " " << j << " " << ij << " " << new_fML <<  " " << c[ij] << std::endl;
                         break;
                     default:
                         new_fML += E_MLstem(type, -1, -1);
@@ -208,7 +210,6 @@ ViennaClone::fill_arrays(
                     
                     /* double dangles */
                 case 2:
-                    //std::cout << ij << " " << fML[ij+1]+params.MLbase << " " << fML[indx[j-1]+i]+params.MLbase << std::endl;
                     new_fML = MIN2(new_fML, fML[ij+1]+params.MLbase);
                     new_fML = MIN2(fML[indx[j-1]+i]+params.MLbase, new_fML);
                     break;
@@ -227,7 +228,6 @@ ViennaClone::fill_arrays(
                     if(tt) new_fML = MIN2(new_fML, c[indx[j-1]+i+1] + E_MLstem(tt, mm5, mm3) + 2*params.MLbase);
                     break;
             }
-            
             
             /* modular decomposition -------------------------------*/
             for (decomp = INF, k = i + 1 + TURN; k <= j - 2 - TURN; k++)
@@ -250,18 +250,99 @@ ViennaClone::fill_arrays(
                 new_fML = MIN2(new_fML, decomp);
             }
             fML[ij] = Fmi[j] = new_fML;     /* substring energy */
-            
-            Ints FF;
-            FF = DMLi2; DMLi2 = DMLi1; DMLi1 = DMLi; DMLi = FF;
-            FF = cc1; cc1=cc; cc=FF;
-            for (int k=1; k<=length; k++) { cc[k]=Fmi[k]=DMLi[k]=INF; }
-
+        
         }
+        
+        Ints FF;
+        FF = DMLi2; DMLi2 = DMLi1; DMLi1 = DMLi; DMLi = FF;
+        FF = cc1; cc1=cc; cc=FF;
+        for (int k=1; k<=length; k++) { cc[k]=Fmi[k]=DMLi[k]=INF; }
         
     }
     
+    /* calculate energies of 5' and 3' fragments */
+    f5[TURN+1]= 0;
     
-    return 0;
+    switch(dangle_model){
+            /* dont use dangling end and mismatch contributions at all */
+        case 0:   for(j=TURN+2; j<=length; j++){
+            f5[j] = f5[j-1];
+            for (i=j-TURN-1; i>1; i--){
+  
+                type = ptype[indx[j]+i];
+                if(!type) continue;
+                en = c[indx[j]+i];
+                f5[j] = MIN2(f5[j], f5[i-1] + en + E_ExtLoop(type, -1, -1));
+            }
+            
+            type=ptype[indx[j]+1];
+            if(!type) continue;
+            en = c[indx[j]+1];
+            f5[j] = MIN2(f5[j], en + E_ExtLoop(type, -1, -1));
+        }
+            break;
+            
+            /* always use dangles on both sides */
+        case 2:   for(j=TURN+2; j<length; j++){
+            f5[j] = f5[j-1];
+            for (i=j-TURN-1; i>1; i--){
+                
+                type = ptype[indx[j]+i];
+                if(!type) continue;
+                en = c[indx[j]+i];
+                f5[j] = MIN2(f5[j], f5[i-1] + en + E_ExtLoop(type, S1[i-1], S1[j+1]));
+            }
+            
+            type=ptype[indx[j]+1];
+            if(!type) continue;
+            en = c[indx[j]+1];
+            f5[j] = MIN2(f5[j], en + E_ExtLoop(type, -1, S1[j+1]));
+        }
+            f5[length] = f5[length-1];
+            for (i=length-TURN-1; i>1; i--){
+                
+                type = ptype[indx[length]+i];
+                if(!type) continue;
+                en = c[indx[length]+i];
+                f5[length] = MIN2(f5[length], f5[i-1] + en + E_ExtLoop(type, S1[i-1], -1));
+            }
+
+            type=ptype[indx[length]+1];
+            if(!type) break;
+            en = c[indx[length]+1];
+            f5[length] = MIN2(f5[length], en + E_ExtLoop(type, -1, -1));
+            
+            
+            break;
+            
+            /* normal dangles, aka dangle_model = 1 || 3 */
+        default:  for(j=TURN+2; j<=length; j++){
+            f5[j] = f5[j-1];
+            for (i=j-TURN-1; i>1; i--){
+          
+                type = ptype[indx[j]+i];
+                if(type){
+                    en = c[indx[j]+i];
+                    f5[j] = MIN2(f5[j], f5[i-1] + en + E_ExtLoop(type, -1, -1));
+                    f5[j] = MIN2(f5[j], f5[i-2] + en + E_ExtLoop(type, S1[i-1], -1));
+                }
+                type = ptype[indx[j-1]+i];
+                if(type){
+                    en = c[indx[j-1]+i];
+                    f5[j] = MIN2(f5[j], f5[i-1] + en + E_ExtLoop(type, -1, S1[j]));
+                    f5[j] = MIN2(f5[j], f5[i-2] + en + E_ExtLoop(type, S1[i-1], S1[j]));
+                }
+            }
+            
+            type = ptype[indx[j]+1];
+            if(type) f5[j] = MIN2(f5[j], c[indx[j]+1] + E_ExtLoop(type, -1, -1));
+            type = ptype[indx[j-1]+1];
+            if(type) f5[j] = MIN2(f5[j], c[indx[j-1]+1] + E_ExtLoop(type, -1, S1[j]));
+        }
+    }
+    
+    return f5[length];
+
 }
 
 

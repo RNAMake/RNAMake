@@ -11,7 +11,7 @@
 
 #include <stdio.h>
 
-#define INF       1000000
+#define INF       10000000
 #define NBPAIRS   7
 #define MAXLOOP   30
 #define K0  273.15
