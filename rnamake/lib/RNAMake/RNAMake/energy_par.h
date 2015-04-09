@@ -18,6 +18,7 @@
 #define EMAX (INF/10)
 #define BONUS 10000
 #define TURN 3
+#define FORBIDDEN 9999
 
 extern double lxc37;   /* parameter for logarithmic loop
                         energy extrapolation            */

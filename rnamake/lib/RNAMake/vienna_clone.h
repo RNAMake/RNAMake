@@ -9,12 +9,16 @@
 #ifndef __RNAMake__vienna_clone__
 #define __RNAMake__vienna_clone__
 #define TURN 3
+#define MIN2(A, B)      ((A) < (B) ? (A) : (B))
+#define MIN3(A, B, C)   (MIN2(  (MIN2((A),(B))) ,(C)))
 
 #include <stdio.h>
 #include <math.h>
 #include "types.h"
 #include "energy_par.h"
 #include "pair_mat.h"
+
+
 
 
 struct bondT {
@@ -86,9 +90,9 @@ public:
     
     inline
     ViennaClone() {
-        size_ = 1;
-        c       = Ints(size_);
-        fML     = Ints(size_);
+        size_ = 10;
+        c       = Ints((size_*(size_+1)/2+2));
+        fML     = Ints((size_*(size_+1)/2+2));
         f5      = Ints(size_);
         f53     = Ints(size_);
         cc      = Ints(size_);
@@ -104,30 +108,53 @@ public:
         DMLi2_a = Ints(size_);
         DMLi2_o = Ints(size_);
         temp = 37.0;
-        ptype   = String();
-        ptype.resize(size_);
+        ptype   = Chars((size_*(size_+1)/2+2));
         base_pair2 = bondTs(size_);
-        idx = Ints(size_);
+        indx = Ints(size_);
         S = Shorts(size_);
         S1 = Shorts(size_);
         BP = Ints(size_);
         params = paramT();
         setup_part_func();
+        uniq_ML = 0;
     }
     
     inline
     void
     setup_part_func() {
-        q = Floats(size_);
+        q         = Floats(size_);
+        qb        = Floats(size_);
+        qm        = Floats(size_);
+        probs     = Floats(size_);
+        q1k       = Floats(size_+1);
+        qln       = Floats(size_+2);
+        qq        = Floats(size_+2);
+        qq1       = Floats(size_+2);
+        qqm       = Floats(size_+2);
+        qqm1      = Floats(size_+2);
+        prm_l     = Floats(size_+2);
+        prm_l1    = Floats(size_+2);
+        prml      = Floats(size_+2);
+        expMLbase = Floats(size_+1);
+        scale     = Floats(size_+1);
+        Gj        = Floats(size_+2);
+        Gj1       = Floats(size_+2);
         
+        my_iindx  = Ints(size_);
+        iindx     = Ints(size_);
+        jindx     = Ints(size_);
+        
+        get_iindx(my_iindx);
+        get_iindx(iindx);
+        get_indx(jindx);
     }
     
     inline
     void
     get_arrays(int size) {
         if(size > size_) {
-            c.resize(size);
-            fML.resize(size);
+            c.resize((size*(size+1)/2+2));
+            fML.resize((size*(size+1)/2+2));
             f5.resize(size);
             cc.resize(size);
             cc1.resize(size);
@@ -141,21 +168,53 @@ public:
             DMLi1_o.resize(size);
             DMLi2_a.resize(size);
             DMLi2_o.resize(size);
-            ptype.resize(size);
+            ptype.resize((size*(size+1)/2+2));
             base_pair2.resize(size);
-            idx.resize(size);
+            indx.resize(size);
             S.resize(size+2);
             S1.resize(size+2);
             BP.resize(size+2);
+            get_indx(indx);
+            get_arrays_part_func(size);
         }
         
         size_ = size;
     }
     
+    inline
+    void
+    get_arrays_part_func(int size) {
+        q.resize(size);
+        qb.resize(size);
+        qm.resize(size);
+        probs.resize(size);
+        q1k.resize(size+1);
+        qln.resize(size+2);
+        qq.resize(size+2);
+        qq1.resize(size+2);
+        qqm.resize(size+2);
+        qqm1.resize(size+2);
+        prm_l.resize(size+2);
+        prm_l1.resize(size+2);
+        prml.resize(size+2);
+        expMLbase.resize(size+1);
+        scale.resize(size+1);
+        
+        my_iindx.resize(size);
+        iindx.resize(size);
+        jindx.resize(size);
+        
+        get_iindx(my_iindx);
+        get_iindx(iindx);
+        get_indx(jindx);
+    }
+    
     void
     init_fold(int length) {
+        params.model_details.dangles = 2;
+        params.model_details.special_hp = 1;
         get_arrays(length);
-        get_indx();
+        get_indx(indx);
         update_fold_params_par();
         make_pair_matrix();
     }
@@ -165,11 +224,21 @@ public:
     
     inline
     void
-    get_indx() {
-        idx[0] = 0;
+    get_indx(Ints & c_idx) {
+        c_idx[0] = 0;
         for (int i = 1; i <= size_; i++) {
-            idx[i] = (i*(i-1)) >> 1;
+            c_idx[i] = (i*(i-1)) >> 1;
         }
+    }
+    
+    inline
+    void
+    get_iindx(Ints & c_idx) {
+        unsigned int i;
+        for (i = 1; i <= size_; i++) {
+            c_idx[i] = (i*(i-1)) >> 1;        /* i(i-1)/2 */
+        }
+        
     }
     
     void
@@ -184,13 +253,13 @@ public:
             params.hairpin[i]  = hairpindH[i] - (hairpindH[i] - hairpin37[i])*tempf;
         }
         
-        for (i=0; i<=MAXLOOP; i++) {
+        for (i=0; i<=MIN2(30,MAXLOOP); i++) {
             params.bulge[i]          = bulgedH[i] - (bulgedH[i] - bulge37[i]) * tempf;
             params.internal_loop[i]  = internal_loopdH[i] - (internal_loopdH[i] - internal_loop37[i]) * tempf;
         }
         
         params.lxc = lxc37*tempf;
-        for (i=0; i<=MAXLOOP; i++) {
+        for (; i<=MAXLOOP; i++) {
             params.bulge[i] = params.bulge[30]+(int)(params.lxc*log((double)(i)/30.));
             params.internal_loop[i] = params.internal_loop[30]+(int)(params.lxc*log((double)(i)/30.));
         }
@@ -310,6 +379,10 @@ public:
         
     }
     
+    int
+    fill_arrays(
+        String const &);
+    
 private:
     
     void
@@ -318,19 +391,163 @@ private:
         String const &);
     
     
+private: //Energy calculations
+    
+    inline
+    int
+    E_Hairpin(
+        int size,
+        int type,
+        int si1,
+        int sj1,
+        const char *string) {
+        
+        int energy = (size <= 30) ? params.hairpin[size] : params.hairpin[30]+(int)(params.lxc*log((size)/30.));
+        if (params.model_details.special_hp){
+            if (size == 4) { /* check for tetraloop bonus */
+                char tl[7]={0}, *ts;
+                strncpy(tl, string, 6);
+                if ((ts=strstr(params.Tetraloops, tl)))
+                    return (params.Tetraloop_E[(ts - params.Tetraloops)/7]);
+            }
+            else if (size == 6) {
+                char tl[9]={0}, *ts;
+                strncpy(tl, string, 8);
+                if ((ts=strstr(params.Hexaloops, tl)))
+                    return (energy = params.Hexaloop_E[(ts - params.Hexaloops)/9]);
+            }
+            else if (size == 3) {
+                char tl[6]={0,0,0,0,0,0}, *ts;
+                strncpy(tl, string, 5);
+                if ((ts=strstr(params.Triloops, tl))) {
+                    return (params.Triloop_E[(ts - params.Triloops)/6]);
+                }
+                return (energy + (type>2 ? params.TerminalAU : 0));
+            }
+        }
+        energy += params.mismatchH[type][si1][sj1];
+
+        return energy;
+        
+    }
+    
+    inline
+    int
+    E_IntLoop(
+        int n1,
+        int n2,
+        int type,
+        int type_2,
+        int si1,
+        int sj1,
+        int sp1,
+        int sq1) {
+        /* compute energy of degree 2 loop (stack bulge or interior) */
+        int nl, ns, energy;
+        energy = INF;
+        
+        if (n1>n2) { nl=n1; ns=n2;}
+        else {nl=n2; ns=n1;}
+        
+        if (nl == 0) {
+            return params.stack[type][type_2];  /* stack */
+        }
+            
+        if (ns==0) {                      /* bulge */
+            energy = (nl<=MAXLOOP) ? params.bulge[nl]:
+            (params.bulge[30]+(int)(params.lxc*log(nl/30.)));
+            if (nl==1) energy += params.stack[type][type_2];
+            else {
+                if (type>2) energy += params.TerminalAU;
+                if (type_2>2) energy += params.TerminalAU;
+            }
+
+            return energy;
+        }
+        else {                            /* interior loop */
+            if (ns==1) {
+                if (nl==1)                    /* 1x1 loop */
+                    return params.int11[type][type_2][si1][sj1];
+                if (nl==2) {                  /* 2x1 loop */
+                    if (n1==1)
+                        energy = params.int21[type][type_2][si1][sq1][sj1];
+                    else
+                        energy = params.int21[type_2][type][sq1][si1][sp1];
+                    return energy;
+                }
+                else {  /* 1xn loop */
+                    energy = (nl+1<=MAXLOOP)?(params.internal_loop[nl+1]) : (params.internal_loop[30]+(int)(params.lxc*log((nl+1)/30.)));
+                    energy += MIN2(MAX_NINIO, (nl-ns)*params.ninio[2]);
+                    energy += params.mismatch1nI[type][si1][sj1] + params.mismatch1nI[type_2][sq1][sp1];
+                    return energy;
+                }
+            }
+            else if (ns==2) {
+                if(nl==2)      {              /* 2x2 loop */
+                    return params.int22[type][type_2][si1][sp1][sq1][sj1];}
+                else if (nl==3){              /* 2x3 loop */
+                    energy = params.internal_loop[5]+params.ninio[2];
+                    energy += params.mismatch23I[type][si1][sj1] + params.mismatch23I[type_2][sq1][sp1];
+                    return energy;
+                }
+                
+            }
+            { /* generic interior loop (no else here!)*/
+                energy = (n1+n2<=MAXLOOP)?(params.internal_loop[n1+n2]) : (params.internal_loop[30]+(int)(params.lxc*log((n1+n2)/30.)));
+                
+                energy += MIN2(MAX_NINIO, (nl-ns)*params.ninio[2]);
+                
+                energy += params.mismatchI[type][si1][sj1] + params.mismatchI[type_2][sq1][sp1];
+            }
+        }
+        return energy;
+    }
+    
+    inline
+    int
+    E_MLstem(
+        int type,
+        int si1,
+        int sj1) {
+        
+        int energy = 0;
+        if(si1 >= 0 && sj1 >= 0){
+            energy += params.mismatchM[type][si1][sj1];
+        }
+        else if (si1 >= 0){
+            energy += params.dangle5[type][si1];
+        }
+        else if (sj1 >= 0){
+            energy += params.dangle3[type][sj1];
+        }
+        
+        if(type > 2)
+            energy += params.TerminalAU;
+        
+        energy += params.MLintern[type];
+        
+        return energy;
+    }
+
+    
+
+    
+    
 private:
     //variables from fold
     Ints c, fML, fM1, f5, f53, cc, cc1, Fmi, DMLi, DMLi1, DMLi2, DMLi_a, DMLi_o, DMLi1_a;
     Ints DMLi1_o, DMLi2_a, DMLi2_o;
-    Ints idx, BP;
-    String ptype, structure;
+    Ints indx, BP;
+    String structure;
+    Chars ptype;
     bondTs base_pair2;
     paramT params;
     Shorts S, S1;
     double temp;
+    int uniq_ML;
     int size_;
     //varibles from part_func
-    Floats q, qb, qm, qm1, qm2, probs, q1k, qln, qq, qq1, qqm, qqm1, prm_l, prm_l1;
+    Floats q, qb, qm, probs, q1k, qln, qq, qq1, qqm, qqm1, prml, prm_l, prm_l1;
     Floats expMLbase, scale, Gj, Gj1;
     Ints my_iindx, iindx, jindx;
     
