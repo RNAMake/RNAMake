@@ -12,6 +12,7 @@
 #define MAXSECTORS        500
 #define MIN2(A, B)      ((A) < (B) ? (A) : (B))
 #define MIN3(A, B, C)   (MIN2(  (MIN2((A),(B))) ,(C)))
+#define GASCONST 1.98717  /* in [cal/K] */
 
 #include <stdio.h>
 #include <math.h>
@@ -83,6 +84,55 @@ struct paramT {
     
 };
 
+struct pf_paramT {
+    int     id;
+    double  expstack[NBPAIRS+1][NBPAIRS+1];
+    double  exphairpin[31];
+    double  expbulge[MAXLOOP+1];
+    double  expinternal[MAXLOOP+1];
+    double  expmismatchExt[NBPAIRS+1][5][5];
+    double  expmismatchI[NBPAIRS+1][5][5];
+    double  expmismatch23I[NBPAIRS+1][5][5];
+    double  expmismatch1nI[NBPAIRS+1][5][5];
+    double  expmismatchH[NBPAIRS+1][5][5];
+    double  expmismatchM[NBPAIRS+1][5][5];
+    double  expdangle5[NBPAIRS+1][5];
+    double  expdangle3[NBPAIRS+1][5];
+    double  expint11[NBPAIRS+1][NBPAIRS+1][5][5];
+    double  expint21[NBPAIRS+1][NBPAIRS+1][5][5][5];
+    double  expint22[NBPAIRS+1][NBPAIRS+1][5][5][5][5];
+    double  expninio[5][MAXLOOP+1];
+    double  lxc;
+    double  expMLbase;
+    double  expMLintern[NBPAIRS+1];
+    double  expMLclosing;
+    double  expTermAU;
+    double  expDuplexInit;
+    double  exptetra[40];
+    double  exptri[40];
+    double  exphex[40];
+    char    Tetraloops[1401];
+    double  expTriloop[40];
+    char    Triloops[241];
+    char    Hexaloops[1801];
+    double  expTripleC;
+    double  expMultipleCA;
+    double  expMultipleCB;
+    double  kT;
+    double  pf_scale;     /**<  \brief    Scaling factor to avoid over-/underflows */
+    
+    double  temperature;  /**<  \brief    Temperature used for loop contribution scaling */
+    double  alpha;        /**<  \brief    Scaling factor for the thermodynamic temperature
+                           \details  This allows for temperature scaling in Boltzmann
+                           factors independently from the energy contributions.
+                           The resulting Boltzmann factors are then computed by
+                           \f$ e^{-E/(\alpha \cdot K \cdot T)} \f$
+                           */
+    
+    model_detailsT model_details; /**<  \brief  Model details to be used in the recursions */
+    
+};
+
 struct sect {
     int  i;
     int  j;
@@ -99,9 +149,10 @@ public:
     
     inline
     ViennaClone() {
-        size_ = 10;
+        size_ = 1000;
         c       = Ints((size_*(size_+1)/2+2));
         fML     = Ints((size_*(size_+1)/2+2));
+        fM1     = Ints(size_);
         f5      = Ints(size_);
         f53     = Ints(size_);
         cc      = Ints(size_);
@@ -110,12 +161,6 @@ public:
         DMLi    = Ints(size_);
         DMLi1   = Ints(size_);
         DMLi2   = Ints(size_);
-        DMLi_a  = Ints(size_);
-        DMLi_o  = Ints(size_);
-        DMLi1_a = Ints(size_);
-        DMLi1_o = Ints(size_);
-        DMLi2_a = Ints(size_);
-        DMLi2_o = Ints(size_);
         temp = 37.0;
         ptype   = Chars((size_*(size_+1)/2+2));
         base_pair2 = bondTs(4*(1+size_/2));
@@ -127,8 +172,50 @@ public:
         setup_part_func();
         uniq_ML = 0;
         sector = sects(MAXSECTORS);
+        structure = String();
+        structure.resize(1000);
         backtrack_type = 'F';
+        
+        params.model_details.dangles = 2;
+        params.model_details.special_hp = 1;
+        
+        //for dotplot
+        double temperature = 37;
+        double betaScale   = 1.;
+        double sfact       = 1.07;
+        double kT = (betaScale*((temperature+K0)*GASCONST))/1000.; /* in Kcal */
+        double pf_scale = exp(-(sfact*1)/kT/size_);
+        pf_params = pf_paramT();
+        get_boltzmann_factors(temp, betaScale, params.model_details, pf_scale);
+        init_fold(1000);
     }
+    
+    
+    void
+    init_fold(int length) {
+      
+        //get_arrays(length);
+        get_indx(indx);
+        update_fold_params_par();
+        make_pair_matrix();
+    }
+    
+    float
+    fold(String const &);
+    
+    void
+    dotplot(String const &);
+    
+
+public:
+    
+    inline
+    String const &
+    get_structure() { return structure; }
+
+    
+private:
+    
     
     inline
     void
@@ -170,15 +257,10 @@ public:
             cc.resize(size);
             cc1.resize(size);
             Fmi.resize(size);
+            fM1.resize(size);
             DMLi.resize(size);
             DMLi1.resize(size);
             DMLi2.resize(size);
-            DMLi_a.resize(size);
-            DMLi_o.resize(size);
-            DMLi1_a.resize(size);
-            DMLi1_o.resize(size);
-            DMLi2_a.resize(size);
-            DMLi2_o.resize(size);
             ptype.resize((size*(size+1)/2+2));
             base_pair2.resize(4*(1+size/2));
             indx.resize(size);
@@ -219,19 +301,7 @@ public:
         get_iindx(iindx);
         get_indx(jindx);
     }
-    
-    void
-    init_fold(int length) {
-        params.model_details.dangles = 2;
-        params.model_details.special_hp = 1;
-        get_arrays(length);
-        get_indx(indx);
-        update_fold_params_par();
-        make_pair_matrix();
-    }
-    
-    float
-    fold(String const &);
+
     
     inline
     void
@@ -259,7 +329,7 @@ public:
         model_detailsT md = params.model_details;
         params.temperature = temp;
         tempf                 = ((temp+K0)/Tmeasure);
-
+        
         for (i=0; i<31; i++) {
             params.hairpin[i]  = hairpindH[i] - (hairpindH[i] - hairpin37[i])*tempf;
         }
@@ -281,7 +351,7 @@ public:
         params.MultipleCA = MultipleCAdH - (MultipleCAdH - MultipleCA37) * tempf;
         params.MultipleCB = MultipleCBdH - (MultipleCBdH - MultipleCB37) * tempf;
         
-
+        
         
         for (i=0; (i*7)<strlen(Tetraloops); i++) {
             params.Tetraloop_E[i] = TetraloopdH[i] - (TetraloopdH[i]-Tetraloop37[i])*tempf;
@@ -296,7 +366,7 @@ public:
         params.TerminalAU = TerminalAUdH - (TerminalAUdH - TerminalAU37) * tempf;
         params.DuplexInit = DuplexInitdH - (DuplexInitdH - DuplexInit37) *tempf;
         params.MLbase = ML_BASEdH - (ML_BASEdH - ML_BASE37) * tempf;
-
+        
         for (i=0; i<=NBPAIRS; i++)
             params.MLintern[i] = ML_interndH - (ML_interndH - ML_intern37) * tempf;
         
@@ -341,7 +411,7 @@ public:
                 params.dangle3[i][j] = (dd>0) ? 0 : dd;  /* must be <= 0 */
             }
         }
-    
+        
         /* interior 1x1 loops */
         for (i=0; i<=NBPAIRS; i++) {
             for (j=0; j<=NBPAIRS; j++) {
@@ -389,6 +459,14 @@ public:
         params.id++;
         
     }
+
+    void
+    get_boltzmann_factors(
+        float temperature,
+        float betaScale,
+        model_detailsT const & md,
+        float pf_scale);
+    
     
     int
     fill_arrays(
@@ -401,8 +479,6 @@ public:
     
     void
     parenthesis_structure (int);
-    
-private:
     
     void
     make_ptypes(
@@ -578,17 +654,17 @@ private: //Energy calculations
     
 private:
     //variables from fold
-    Ints c, fML, fM1, f5, f53, cc, cc1, Fmi, DMLi, DMLi1, DMLi2, DMLi_a, DMLi_o, DMLi1_a;
-    Ints DMLi1_o, DMLi2_a, DMLi2_o;
+    Ints c, fML, fM1, f5, f53, cc, cc1, Fmi, DMLi, DMLi1, DMLi2;
     Ints indx, BP;
     String structure;
     Chars ptype;
     bondTs base_pair2;
     paramT params;
+    pf_paramT pf_params;
     Shorts S, S1;
     double temp;
     int uniq_ML;
-    int size_;
+    int size_, actual_size_;
     sects sector;
     char backtrack_type;
     //varibles from part_func

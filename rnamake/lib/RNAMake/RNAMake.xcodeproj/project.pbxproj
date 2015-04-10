@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1C147FD81AD7254300F01A6D /* vienna_clone.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C147FD61AD7254300F01A6D /* vienna_clone.cc */; };
+		1C147FD91AD7256900F01A6D /* vienna_clone.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C147FD61AD7254300F01A6D /* vienna_clone.cc */; };
+		1C147FDA1AD7279700F01A6D /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
 		1C21D3AD1AD2D712005AD48A /* energy_par.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C21D3AB1AD2D712005AD48A /* energy_par.cc */; };
 		1C21D3AE1AD2D712005AD48A /* energy_par.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C21D3AB1AD2D712005AD48A /* energy_par.cc */; };
 		1C22413C1AC6266400F76233 /* eternabot_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F891ABE730800A2F04C /* eternabot_scorer.cc */; };
@@ -1972,6 +1974,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C147FDA1AD7279700F01A6D /* FileIO.cpp in Sources */,
+				1C147FD91AD7256900F01A6D /* vienna_clone.cc in Sources */,
 				1C21D3AE1AD2D712005AD48A /* energy_par.cc in Sources */,
 				1C8FA1111AD1A2E20001B29C /* main.cpp in Sources */,
 			);

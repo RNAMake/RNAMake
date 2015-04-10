@@ -16,19 +16,41 @@ float
 ViennaClone::fold(
     String const & string) {
     
+    actual_size_ = string.length();
+    
     //update length of data arrays if size is greater then previous
-    get_arrays((int)string.length());
+    //get_arrays((int)string.length());
     encode_sequence(string, S, 0);
     encode_sequence(string, S1, 1);
     make_ptypes(S, structure);
     
+    //sector = sects(MAXSECTORS);
+    //base_pair2 = bondTs(4*(1+size_/2));
+    
     int energy = fill_arrays(string);
+    
     backtrack(string, 0);
     parenthesis_structure((int)string.length());
     
-    
     return (float) energy/100.;
 }
+
+void
+ViennaClone::dotplot(
+    String const & string) {
+    
+    
+}
+
+void
+ViennaClone::get_boltzmann_factors(
+    float temperature,
+    float betaScale,
+    model_detailsT const & md,
+    float pf_scale) {
+    
+}
+
 
 void
 ViennaClone::backtrack(
@@ -391,31 +413,8 @@ ViennaClone::backtrack(
             sector[++s].i = k+1;
             sector[s].j   = j1;
         } else {
-#if 0
-            /* Y shaped ML loops fon't work yet */
-            if (dangle_model==3) {
-                d5 = P->dangle5[tt][S1[j-1]];
-                d3 = P->dangle3[tt][S1[i+1]];
-                /* (i,j) must close a Y shaped ML loop with coax stacking */
-                if (cij ==  fML[indx[j-2]+i+2] + mm + d3 + d5 + P->MLbase + P->MLbase) {
-                    i1 = i+2;
-                    j1 = j-2;
-                } else if (cij ==  fML[indx[j-2]+i+1] + mm + d5 + P->MLbase)
-                    j1 = j-2;
-                else if (cij ==  fML[indx[j-1]+i+2] + mm + d3 + P->MLbase)
-                    i1 = i+2;
-                else /* last chance */
-                    if (cij != fML[indx[j-1]+i+1] + mm + P->MLbase)
-                        fprintf(stderr,  "backtracking failed in repeat");
-                /* if we arrive here we can express cij via fML[i1,j1]+dangles */
-                sector[++s].i = i1;
-                sector[s].j   = j1;
-            }
-            else
-#endif
-                std::cout << "backtracking failed in repeat" << std::endl;
-                exit(1);
-
+            std::cout << "backtracking failed in repeat" << std::endl;
+            exit(1);
         }
         
         continue; /* this is a workarround to not accidentally proceed in the following block */
@@ -465,7 +464,7 @@ ViennaClone::make_ptypes(
     int n,i,j,k,l, noLP;
     noLP = params.model_details.noLP;
     n = S[0];
-    
+        
     n=S[0];
     for (k=1; k<n-TURN; k++) {
         for (l=1; l<=2; l++) {
@@ -505,12 +504,13 @@ ViennaClone::fill_arrays(
     
     for (j=1; j<=length; j++) {
         Fmi[j]=DMLi[j]=DMLi1[j]=DMLi2[j]=INF;
+        cc[j]=cc1[j]=0;
+        //f5[j]=f53[j]=0;
     }
     
-    for (j = 1; j<=length; j++) {
+    for (j=1; j<=length; j++) {
         for (i=(j>TURN?(j-TURN):1); i<j; i++) {
-            c[indx[j]+i] = fML[indx[j]+i] = INF;
-            if (uniq_ML) fM1[indx[j]+i] = INF;
+            c[indx[j]+i] = fML[indx[j]+i] = Fmi[indx[j]+i] =INF;
         }
     }
     
@@ -778,16 +778,17 @@ ViennaClone::fill_arrays(
 void
 ViennaClone::parenthesis_structure(
     int length) {
-    
-    structure.resize(length);
-    
+
     int n, k;
     
-    for (n = 0; n < length; structure[n++] = '.');
+    for (n = 0; n < length; n++) {
+        structure[n] = '.';
+    }
     structure[length] = '\0';
     
     for (k = 1; k <= base_pair2[0].i; k++){
         
+        //std::cout << "BP i" << base_pair2[k].i << " " << base_pair2[k].j << std::endl;
         if(base_pair2[k].i == base_pair2[k].j){ /* Gquad bonds are marked as bp[i].i == bp[i].j */
             structure[base_pair2[k].i-1] = '+';
         } else { /* the following ones are regular base pairs */

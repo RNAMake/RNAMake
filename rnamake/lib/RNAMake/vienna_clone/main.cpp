@@ -7,20 +7,66 @@
 //
 
 #include <iostream>
+#include <fstream>
+#include "types.h"
 #include "vienna_clone.h"
+#include "FileIO.h"
 
+Strings
+get_lines_from_file(String const fname) {
+    String line;
+    Strings lines;
+    std::ifstream input;
+    input.open(fname);
+    while ( input.good() ) {
+        getline(input, line);
+        if( line.length() < 2 ) { break; }
+        lines.push_back(line);
+        
+    }
+    return lines;
+}
 
 int test_folding() {
-    
+    Strings lines = get_lines_from_file("test_folding.dat");
+    for(auto const & l : lines) {
+        Strings spl = split_str_by_delimiter(l, " ");
+        ViennaClone vc;
+        vc.init_fold(1000);
+        float energy = vc.fold(spl[0]);
+        String structure = vc.get_structure();
+        //std::cout << energy << " " << spl[1] << std::endl;
+        //std::cout << structure << " " << spl[2] << std::endl;
+    }
+    return 0;
+}
+
+int test_folding_no_reset() {
+    Strings lines = get_lines_from_file("test_folding.dat");
+    ViennaClone vc;
+    vc.init_fold(1000);
+    //for(int i = 0; i < 10000; i++) {
+    for(auto const & l : lines) {
+        Strings spl = split_str_by_delimiter(l, " ");
+        
+        float energy = vc.fold(spl[0]);
+        String structure = vc.get_structure();
+        //std::cout << energy << " " << spl[1] << std::endl;
+        //std::cout << structure << " " << spl[2] << std::endl;
+    }
+    //}
+
     return 0;
 }
 
 
 
 int main(int argc, const char * argv[]) {
+    //test_folding();
+    //test_folding_no_reset();
+    
     ViennaClone vc;
-    vc.init_fold(100);
-    vc.fold("CAAAAAAAAAAUUUUUUUUUUG");
+    vc.dotplot("AAAAAAAAAAUUUUUUUUUU");
     
     return 0;
 }
