@@ -12,6 +12,8 @@
 #define MAXSECTORS        500
 #define MIN2(A, B)      ((A) < (B) ? (A) : (B))
 #define MIN3(A, B, C)   (MIN2(  (MIN2((A),(B))) ,(C)))
+#define MAX2(A, B)      ((A) > (B) ? (A) : (B))
+#define MAX3(A, B, C)   (MAX2(  (MAX2((A),(B))) ,(C)))
 #define GASCONST 1.98717  /* in [cal/K] */
 
 #include <stdio.h>
@@ -180,16 +182,16 @@ public:
         params.model_details.special_hp = 1;
         
         //for dotplot
+        pf = pf_paramT();
+        
         double temperature = 37;
         double betaScale   = 1.;
         double sfact       = 1.07;
         double kT = (betaScale*((temperature+K0)*GASCONST))/1000.; /* in Kcal */
-        double pf_scale = exp(-(sfact*1)/kT/size_);
-        pf_params = pf_paramT();
-        get_boltzmann_factors(temp, betaScale, params.model_details, pf_scale);
+        
+        get_boltzmann_factors(temp, 1, params.model_details, 0);
         init_fold(1000);
     }
-    
     
     void
     init_fold(int length) {
@@ -220,10 +222,12 @@ private:
     inline
     void
     setup_part_func() {
-        q         = Floats(size_);
-        qb        = Floats(size_);
-        qm        = Floats(size_);
-        probs     = Floats(size_);
+        int size  =((size_+1)*(size_+2)/2);
+
+        q         = Floats(size);
+        qb        = Floats(size);
+        qm        = Floats(size);
+        probs     = Floats(size);
         q1k       = Floats(size_+1);
         qln       = Floats(size_+2);
         qq        = Floats(size_+2);
@@ -242,8 +246,8 @@ private:
         iindx     = Ints(size_);
         jindx     = Ints(size_);
         
-        get_iindx(my_iindx);
-        get_iindx(iindx);
+        get_iindx(my_iindx, size_);
+        get_iindx(iindx, size_);
         get_indx(jindx);
     }
     
@@ -277,10 +281,11 @@ private:
     inline
     void
     get_arrays_part_func(int size) {
-        q.resize(size);
-        qb.resize(size);
-        qm.resize(size);
-        probs.resize(size);
+        int fsize  =((size+1)*(size+2)/2);
+        q.resize(fsize);
+        qb.resize(fsize);
+        qm.resize(fsize);
+        probs.resize(fsize);
         q1k.resize(size+1);
         qln.resize(size+2);
         qq.resize(size+2);
@@ -297,8 +302,8 @@ private:
         iindx.resize(size);
         jindx.resize(size);
         
-        get_iindx(my_iindx);
-        get_iindx(iindx);
+        get_iindx(my_iindx, size_);
+        get_iindx(iindx, size_);
         get_indx(jindx);
     }
 
@@ -314,10 +319,10 @@ private:
     
     inline
     void
-    get_iindx(Ints & c_idx) {
+    get_iindx(Ints & c_idx, int length) {
         unsigned int i;
         for (i = 1; i <= size_; i++) {
-            c_idx[i] = (i*(i-1)) >> 1;        /* i(i-1)/2 */
+            c_idx[i] = (((length + 1 - i) * (length - i))>>1) + length + 1;
         }
         
     }
@@ -485,6 +490,20 @@ private:
         Shorts const &,
         String const &);
     
+    void
+    make_ptypes_2(
+        Shorts const &,
+        String const &);
+    
+    void
+    pf_linear(
+        String const &);
+    
+    void
+    scale_pf_params(
+        int length);
+    
+    
     
 private: //Energy calculations
     
@@ -649,7 +668,182 @@ private: //Energy calculations
         
     }
     
+    inline
+    double
+    exp_E_Hairpin(
+        int u,
+        int type,
+        short si1,
+        short sj1,
+        const char *string) {
+        
+        double q, kT;
+        kT = pf.kT;   /* kT in cal/mol  */
+        
+        if(u <= 30) {
+            q = pf.exphairpin[u];
+        }
+        else {
+            q = pf.exphairpin[30] * exp( -(pf.lxc*log( u/30.))*10./kT);
+        }
+        
+        if(u < 3) return q; /* should only be the case when folding alignments */
+        
+        if(pf.model_details.special_hp){
+            if(u==4) {
+                char tl[7]={0,0,0,0,0,0,0}, *ts;
+                strncpy(tl, string, 6);
+                if ((ts=strstr(pf.Tetraloops, tl))){
+                    if(type != 7) {
+                        return (pf.exptetra[(ts-pf.Tetraloops)/7]);
+                    }
+                    else {
+                        q *= pf.exptetra[(ts-pf.Tetraloops)/7];
+                    }
+                }
+            }
+            if (u==6) {
+                char tl[9]={0,0,0,0,0,0,0,0,0}, *ts;
+                strncpy(tl, string, 8);
+                if ((ts=strstr(pf.Hexaloops, tl))) {
+                    return  (pf.exphex[(ts-pf.Hexaloops)/9]);
+                }
+            }
+            if (u==3) {
+                char tl[6]={0,0,0,0,0,0}, *ts;
+                strncpy(tl, string, 5);
+                if ((ts=strstr(pf.Triloops, tl))) {
+                    return (pf.exptri[(ts-pf.Triloops)/6]);
+                }
+                if (type>2) {
+                    return q * pf.expTermAU;
+                }
+                return q;
+            }
+        }
+        /* no mismatches for tri-loops */
+        q *= pf.expmismatchH[type][si1][sj1];
+        
+        
+        return q;
+    }
+    
+    inline
+    double
+    exp_E_IntLoop(
+        int u1,
+        int u2,
+        int type,
+        int type2,
+        short si1,
+        short sj1,
+        short sp1,
+        short sq1) {
+        
+        int ul, us, no_close = 0;
+        double z = 0.;
+        int no_closingGU = 0;
+        
+        if ((no_closingGU) && ((type2==3)||(type2==4)||(type==3)||(type==4)))
+            no_close = 1;
+        
+        if (u1>u2) { ul=u1; us=u2;}
+        else {ul=u2; us=u1;}
+        
+        if (ul==0) { /* stack */
+            z = pf.expstack[type][type2];
+        }
+        
+        else if(!no_close){
 
+            if (us==0) {                      /* bulge */
+                z = pf.expbulge[ul];
+                if (ul==1) z *= pf.expstack[type][type2];
+                else {
+                    if (type>2) z *= pf.expTermAU;
+                    if (type2>2) z *= pf.expTermAU;
+                }
+                return z;
+            }
+            else if (us==1) {
+                if (ul==1){                    /* 1x1 loop */
+                    return pf.expint11[type][type2][si1][sj1];
+                }
+                if (ul==2) {                  /* 2x1 loop */
+                    if (u1==1)
+                        return pf.expint21[type][type2][si1][sq1][sj1];
+                    else
+                        return pf.expint21[type2][type][sq1][si1][sp1];
+                }
+                else {  /* 1xn loop */
+                    z = pf.expinternal[ul+us] * pf.expmismatch1nI[type][si1][sj1] * pf.expmismatch1nI[type2][sq1][sp1];
+                    return z * pf.expninio[2][ul-us];
+                }
+            }
+            else if (us==2) {
+                if(ul==2) /* 2x2 loop */
+                    return pf.expint22[type][type2][si1][sp1][sq1][sj1];
+                else if(ul==3){              /* 2x3 loop */
+                    z = pf.expinternal[5]*pf.expmismatch23I[type][si1][sj1]*pf.expmismatch23I[type2][sq1][sp1];
+                    return z * pf.expninio[2][1];
+                }
+            }
+            /* generic interior loop (no else here!)*/
+            z = pf.expinternal[ul+us] * pf.expmismatchI[type][si1][sj1] * pf.expmismatchI[type2][sq1][sp1];
+            return z * pf.expninio[2][ul-us];
+        }
+
+        return z;
+        
+    }
+
+    inline
+    double
+    exp_E_MLstem(
+        int type,
+        int si1,
+        int sj1){
+        double energy = 1.0;
+        if(si1 >= 0 && sj1 >= 0){
+            energy *= pf.expmismatchM[type][si1][sj1];
+        }
+        else if(si1 >= 0){
+            energy *= pf.expdangle5[type][si1];
+        }
+        else if(sj1 >= 0){
+            energy *= pf.expdangle3[type][sj1];
+        }
+        
+        if(type > 2)
+            energy *= pf.expTermAU;
+        
+        energy *= pf.expMLintern[type];
+        return energy;
+    }
+
+    inline
+    double
+    exp_E_ExtLoop(
+        int type,
+        int si1,
+        int sj1){
+        double energy = 1.0;
+        if(si1 >= 0 && sj1 >= 0){
+            energy *= pf.expmismatchExt[type][si1][sj1];
+        }
+        else if(si1 >= 0){
+            energy *= pf.expdangle5[type][si1];
+        }
+        else if(sj1 >= 0){
+            energy *= pf.expdangle3[type][sj1];
+        }
+        
+        if(type > 2)
+            energy *= pf.expTermAU;
+        
+        return energy;
+    }
+    
     
     
 private:
@@ -660,7 +854,7 @@ private:
     Chars ptype;
     bondTs base_pair2;
     paramT params;
-    pf_paramT pf_params;
+    pf_paramT pf;
     Shorts S, S1;
     double temp;
     int uniq_ML;
