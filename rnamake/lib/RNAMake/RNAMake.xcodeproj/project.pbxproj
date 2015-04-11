@@ -7,9 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1C147FD81AD7254300F01A6D /* vienna_clone.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C147FD61AD7254300F01A6D /* vienna_clone.cc */; };
-		1C147FD91AD7256900F01A6D /* vienna_clone.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C147FD61AD7254300F01A6D /* vienna_clone.cc */; };
 		1C147FDA1AD7279700F01A6D /* FileIO.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F56001A7441CB00C7E6D7 /* FileIO.cpp */; };
+		1C147FDD1AD9963200F01A6D /* vienna.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C147FDC1AD9963200F01A6D /* vienna.cc */; };
+		1C147FDE1AD9963200F01A6D /* vienna.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C147FDC1AD9963200F01A6D /* vienna.cc */; };
 		1C21D3AD1AD2D712005AD48A /* energy_par.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C21D3AB1AD2D712005AD48A /* energy_par.cc */; };
 		1C21D3AE1AD2D712005AD48A /* energy_par.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C21D3AB1AD2D712005AD48A /* energy_par.cc */; };
 		1C22413C1AC6266400F76233 /* eternabot_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F891ABE730800A2F04C /* eternabot_scorer.cc */; };
@@ -567,8 +567,8 @@
 
 /* Begin PBXFileReference section */
 		1C147FD51AD7254300F01A6D /* pair_mat.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pair_mat.h; sourceTree = "<group>"; };
-		1C147FD61AD7254300F01A6D /* vienna_clone.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vienna_clone.cc; sourceTree = "<group>"; };
-		1C147FD71AD7254300F01A6D /* vienna_clone.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vienna_clone.h; sourceTree = "<group>"; };
+		1C147FDB1AD9963200F01A6D /* vienna.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vienna.h; sourceTree = "<group>"; };
+		1C147FDC1AD9963200F01A6D /* vienna.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = vienna.cc; sourceTree = "<group>"; };
 		1C21D3AB1AD2D712005AD48A /* energy_par.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = energy_par.cc; sourceTree = "<group>"; };
 		1C21D3AC1AD2D712005AD48A /* energy_par.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = energy_par.h; sourceTree = "<group>"; };
 		1C2241421AC62A4100F76233 /* design_primers */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = design_primers; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -617,7 +617,6 @@
 		1C4F14471AA24093003B7895 /* basepair_state.fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = basepair_state.fwd.h; sourceTree = "<group>"; };
 		1C4F144E1AA2A690003B7895 /* eternabot */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = eternabot; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C4F14501AA2A690003B7895 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		1C4F14571AA2AD9D003B7895 /* vienna.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = vienna.h; sourceTree = "<group>"; };
 		1C4F14591AA2B8ED003B7895 /* sequence_designer.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sequence_designer.cc; sourceTree = "<group>"; };
 		1C4F145A1AA2B8ED003B7895 /* sequence_designer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sequence_designer.h; sourceTree = "<group>"; };
 		1C4F14601AA38BCE003B7895 /* random_number_generator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = random_number_generator.h; sourceTree = "<group>"; };
@@ -859,6 +858,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		1C147FDF1AD9965800F01A6D /* Vienna */ = {
+			isa = PBXGroup;
+			children = (
+				1C147FDB1AD9963200F01A6D /* vienna.h */,
+				1C21D3AB1AD2D712005AD48A /* energy_par.cc */,
+				1C21D3AC1AD2D712005AD48A /* energy_par.h */,
+				1C147FD51AD7254300F01A6D /* pair_mat.h */,
+				1C147FDC1AD9963200F01A6D /* vienna.cc */,
+			);
+			name = Vienna;
+			sourceTree = "<group>";
+		};
 		1C2241431AC62A4100F76233 /* design_primers */ = {
 			isa = PBXGroup;
 			children = (
@@ -915,7 +926,6 @@
 				1CA7AC461A8FFCC50063C8A8 /* secondary_structure_node.cc */,
 				1CA7AC471A8FFCC50063C8A8 /* secondary_structure_node.h */,
 				1CA7AC4F1A8FFCFA0063C8A8 /* secondary_structure_node.fwd.h */,
-				1C4F14571AA2AD9D003B7895 /* vienna.h */,
 				1C4F14591AA2B8ED003B7895 /* sequence_designer.cc */,
 				1C4F145A1AA2B8ED003B7895 /* sequence_designer.h */,
 				1C4F14651AA38FC1003B7895 /* sequence_design_scorer.cc */,
@@ -1188,33 +1198,29 @@
 		1CE55A281A4A552F00F300F3 /* RNAMake */ = {
 			isa = PBXGroup;
 			children = (
-				1CA7AC391A8D590C0063C8A8 /* Prediction */,
+				1C4B4F521AB8F84A00A2F04C /* motif_tree_state_path_refiner.cc */,
+				1C3AB1E81A9C0EC800361C7F /* motif_tree_state_search_node.cc */,
+				1C3AB1EE1A9E8A3200361C7F /* motif_tree_state_search_scorer.cc */,
+				1C3AB1F21A9EB28A00361C7F /* motif_tree_state_search_solution.cc */,
+				1C3AB1F61A9EB72B00361C7F /* motif_tree_state_search.cc */,
+				1C3AB1E21A995E5700361C7F /* motif_tree_state_selector.cc */,
+				1CE55A291A4A552F00F300F3 /* main.cpp */,
+				1C4B4F531AB8F84A00A2F04C /* motif_tree_state_path_refiner.h */,
+				1C3AB1ED1A9C1A1400361C7F /* motif_tree_state_search_node.fwd.h */,
+				1C3AB1E91A9C0EC800361C7F /* motif_tree_state_search_node.h */,
+				1C3AB1EF1A9E8A3200361C7F /* motif_tree_state_search_scorer.h */,
+				1C3AB1F31A9EB28A00361C7F /* motif_tree_state_search_solution.h */,
+				1C3AB1F71A9EB72B00361C7F /* motif_tree_state_search.h */,
+				1C3AB1E71A9BF2EB00361C7F /* motif_tree_state_selector.fwd.h */,
+				1C3AB1E31A995E5700361C7F /* motif_tree_state_selector.h */,
+				1C4F14561AA2AD60003B7895 /* EternaBot */,
 				1CA7AC371A8D58B60063C8A8 /* Math */,
 				1CA7AC351A8D58700063C8A8 /* Motif */,
 				1CA7AC381A8D58ED0063C8A8 /* MotifTreeState */,
+				1CA7AC391A8D590C0063C8A8 /* Prediction */,
 				1CA7AB931A82AE090063C8A8 /* Structure */,
 				1CA7AC361A8D58980063C8A8 /* Util */,
-				1C4F14561AA2AD60003B7895 /* EternaBot */,
-				1CE55A291A4A552F00F300F3 /* main.cpp */,
-				1C3AB1E21A995E5700361C7F /* motif_tree_state_selector.cc */,
-				1C3AB1E31A995E5700361C7F /* motif_tree_state_selector.h */,
-				1C3AB1E71A9BF2EB00361C7F /* motif_tree_state_selector.fwd.h */,
-				1C3AB1E81A9C0EC800361C7F /* motif_tree_state_search_node.cc */,
-				1C3AB1E91A9C0EC800361C7F /* motif_tree_state_search_node.h */,
-				1C3AB1ED1A9C1A1400361C7F /* motif_tree_state_search_node.fwd.h */,
-				1C3AB1EE1A9E8A3200361C7F /* motif_tree_state_search_scorer.cc */,
-				1C3AB1EF1A9E8A3200361C7F /* motif_tree_state_search_scorer.h */,
-				1C3AB1F21A9EB28A00361C7F /* motif_tree_state_search_solution.cc */,
-				1C3AB1F31A9EB28A00361C7F /* motif_tree_state_search_solution.h */,
-				1C3AB1F61A9EB72B00361C7F /* motif_tree_state_search.cc */,
-				1C3AB1F71A9EB72B00361C7F /* motif_tree_state_search.h */,
-				1C4B4F521AB8F84A00A2F04C /* motif_tree_state_path_refiner.cc */,
-				1C4B4F531AB8F84A00A2F04C /* motif_tree_state_path_refiner.h */,
-				1C21D3AB1AD2D712005AD48A /* energy_par.cc */,
-				1C21D3AC1AD2D712005AD48A /* energy_par.h */,
-				1C147FD51AD7254300F01A6D /* pair_mat.h */,
-				1C147FD61AD7254300F01A6D /* vienna_clone.cc */,
-				1C147FD71AD7254300F01A6D /* vienna_clone.h */,
+				1C147FDF1AD9965800F01A6D /* Vienna */,
 			);
 			path = RNAMake;
 			sourceTree = "<group>";
@@ -1975,8 +1981,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C147FDA1AD7279700F01A6D /* FileIO.cpp in Sources */,
-				1C147FD91AD7256900F01A6D /* vienna_clone.cc in Sources */,
 				1C21D3AE1AD2D712005AD48A /* energy_par.cc in Sources */,
+				1C147FDE1AD9963200F01A6D /* vienna.cc in Sources */,
 				1C8FA1111AD1A2E20001B29C /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2104,6 +2110,7 @@
 			files = (
 				1CA7AC281A8545730063C8A8 /* motif_ensemble_tree.cc in Sources */,
 				1C3AB1E41A995E5700361C7F /* motif_tree_state_selector.cc in Sources */,
+				1C147FDD1AD9963200F01A6D /* vienna.cc in Sources */,
 				1CE55A321A4A558400F300F3 /* atom.cpp in Sources */,
 				1CA7AC241A853EFF0063C8A8 /* motif_ensemble.cc in Sources */,
 				1CE55A2A1A4A552F00F300F3 /* main.cpp in Sources */,
@@ -2147,7 +2154,6 @@
 				1C4F145B1AA2B8ED003B7895 /* sequence_designer.cc in Sources */,
 				1C4B4F541AB8F84A00A2F04C /* motif_tree_state_path_refiner.cc in Sources */,
 				1C4F56381A7585BB00C7E6D7 /* residue.cc in Sources */,
-				1C147FD81AD7254300F01A6D /* vienna_clone.cc in Sources */,
 				1C855B561A7C347800EED04D /* motif_type.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

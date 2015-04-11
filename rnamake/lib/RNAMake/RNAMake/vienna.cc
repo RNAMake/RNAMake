@@ -8,7 +8,7 @@
 
 #include <iostream>
 #include <float.h>
-#include "vienna_clone.h"
+#include "vienna.h"
 #include "pair_mat.h"
 
 #define LOCALITY          0.      /* locality parameter for base-pairs */
@@ -25,7 +25,7 @@ SCALE*0.38490018*(sin((X)/SCALE-0.34242663)+1)*(sin((X)/SCALE-0.34242663)+1))
 
 
 float
-ViennaClone::fold(
+Vienna::fold(
     String const & string) {
     
     actual_size_ = string.length();
@@ -48,7 +48,7 @@ ViennaClone::fold(
 }
 
 void
-ViennaClone::dotplot(
+Vienna::dotplot(
     String const & sequence) {
     
     get_iindx(my_iindx, (int)sequence.size());
@@ -80,7 +80,7 @@ ViennaClone::dotplot(
 }
 
 void
-ViennaClone::assign_plist_from_pr(
+Vienna::assign_plist_from_pr(
     int length,
     double cut_off) {
     
@@ -102,7 +102,7 @@ ViennaClone::assign_plist_from_pr(
 }
 
 void
-ViennaClone::pf_create_bppm(
+Vienna::pf_create_bppm(
     String const & sequence) {
 
     int n, i,j,k,l, ij, kl, ii, i1, ll, type, type_2, tt, u1, ov=0;
@@ -364,7 +364,7 @@ ViennaClone::pf_create_bppm(
 }
 
 char
-ViennaClone::bppm_symbol(
+Vienna::bppm_symbol(
     const float *x) {
     if( x[0] > 0.667 )  return '.';
     if( x[1] > 0.667 )  return '(';
@@ -380,7 +380,7 @@ ViennaClone::bppm_symbol(
 
 
 void
-ViennaClone::bppm_to_structure(
+Vienna::bppm_to_structure(
     String & structure,
     Floats & p,
     unsigned int length) {
@@ -408,7 +408,7 @@ ViennaClone::bppm_to_structure(
 
 
 void
-ViennaClone::get_boltzmann_factors(
+Vienna::get_boltzmann_factors(
     float temp,
     float betaScale,
     model_detailsT const & md,
@@ -587,7 +587,7 @@ ViennaClone::get_boltzmann_factors(
 
 
 void
-ViennaClone::scale_pf_params(
+Vienna::scale_pf_params(
     int length) {
     
     unsigned int  i;
@@ -614,7 +614,7 @@ ViennaClone::scale_pf_params(
 }
 
 void
-ViennaClone::pf_linear(
+Vienna::pf_linear(
     String const & sequence) {
     
     const char * s = sequence.c_str();
@@ -733,7 +733,7 @@ ViennaClone::pf_linear(
 
 
 void
-ViennaClone::backtrack(
+Vienna::backtrack(
     String const & string,
     int s) {
     
@@ -1137,7 +1137,7 @@ ViennaClone::backtrack(
 
 
 void
-ViennaClone::make_ptypes(
+Vienna::make_ptypes(
     Shorts const & S,
     String const & structure) {
     
@@ -1162,7 +1162,7 @@ ViennaClone::make_ptypes(
 }
 
 void
-ViennaClone::make_ptypes_2(
+Vienna::make_ptypes_2(
     Shorts const & S,
     String const & structure) {
     
@@ -1191,7 +1191,7 @@ ViennaClone::make_ptypes_2(
 
 
 int
-ViennaClone::fill_arrays(
+Vienna::fill_arrays(
     String const & string)  {
     
     const char * s = string.c_str();
@@ -1484,7 +1484,7 @@ ViennaClone::fill_arrays(
 
 
 void
-ViennaClone::parenthesis_structure(
+Vienna::parenthesis_structure(
     int length) {
 
     int n, k;
