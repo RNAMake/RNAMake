@@ -51,8 +51,8 @@ void
 ViennaClone::dotplot(
     String const & sequence) {
     
-    get_iindx(my_iindx, sequence.size());
-    get_iindx(iindx, sequence.size());
+    get_iindx(my_iindx, (int)sequence.size());
+    get_iindx(iindx, (int)sequence.size());
     
     float min_en = fold(sequence);
     int n = (int)sequence.length();
@@ -61,6 +61,8 @@ ViennaClone::dotplot(
     double betaScale   = 1.;
     double sfact       = 1.07;
     double kT = (betaScale*((temperature+K0)*GASCONST))/1000.; /* in Kcal */
+    double bppmThreshold = 1e-5;
+
     
     pf.pf_scale = exp(-(sfact*min_en)/kT/n);
     scale_pf_params(n);
@@ -71,12 +73,339 @@ ViennaClone::dotplot(
     pf_linear(sequence);
     
     double Q = q[my_iindx[1]-n];
+    double free_energy = (-log(Q)-n*log(pf.pf_scale))*pf.kT/1000.0;
+    pf_create_bppm(sequence);
+    assign_plist_from_pr(n, bppmThreshold);
     
-    for(int i =0 ; i < 100; i++) {
-        //std::cout << i << " " << q[i] << std::endl;
-    }
-    std::cout << Q << std::endl;
 }
+
+void
+ViennaClone::assign_plist_from_pr(
+    int length,
+    double cut_off) {
+    
+    int i, j, n, count;
+    count = 0;
+    n     = 2;
+    
+    get_iindx(diindx,length);
+    
+    for (i=1; i<length; i++) {
+        for (j=i+1; j<=length; j++) {
+            pl[count].i = i;
+            pl[count].j = j;
+            pl[count].p  = sqrt(probs[diindx[i] - j]); //added sqrt to match dot.ps
+            pl[count].type = 0;
+            count++;
+        }
+    }
+}
+
+void
+ViennaClone::pf_create_bppm(
+    String const & sequence) {
+
+    int n, i,j,k,l, ij, kl, ii, i1, ll, type, type_2, tt, u1, ov=0;
+    double  temp, Qmax=0, prm_MLb;
+    double  prmt,prmt1;
+    Floats tmp;
+    double  tmp2;
+    double  expMLclosing = pf.expMLclosing;
+    double      max_real;
+    double  expMLstem = 0;
+    max_real = DBL_MAX;
+    const char * s = sequence.c_str();
+    int circular = 0;
+    
+    
+    if((S.size() > 0) && (S1.size() > 0)){
+        n = S[0];
+        Qmax=0;
+        
+        for (k=1; k<=n; k++) {
+            q1k[k] = q[my_iindx[1] - k];
+            qln[k] = q[my_iindx[k] -n];
+        }
+        q1k[0] = 1.0;
+        qln[n+1] = 1.0;
+        
+        /* 1. exterior pair i,j and initialization of pr array */
+        if(circular){
+            for (i=1; i<=n; i++) {
+                for (j=i; j<=MIN2(i+TURN,n); j++) {
+                    probs[my_iindx[i]-j] = 0;
+                }
+                for (j=i+TURN+1; j<=n; j++) {
+                    ij = my_iindx[i]-j;
+                    type = ptype[ij];
+                    if (type&&(qb[ij]>0.)) {
+                        probs[ij] = 1./1;
+                        int rt = rtype[type];
+                        
+                        /* 1.1. Exterior Hairpin Contribution */
+                        int u = i + n - j -1;
+                        /* get the loop sequence */
+                        char loopseq[10];
+                        if (u<7){
+                            strcpy(loopseq , s+j-1);
+                            strncat(loopseq, s, i);
+                        }
+                        tmp2 = exp_E_Hairpin(u, rt, S1[j+1], S1[i-1], loopseq) * scale[u];
+                        
+                        /* 1.2. Exterior Interior Loop Contribution                    */
+                        /* 1.2.1. i,j  delimtis the "left" part of the interior loop    */
+                        /* (j,i) is "outer pair"                                                */
+                        for(k=1; k < i-TURN-1; k++){
+                            int ln1, lstart;
+                            ln1 = k + n - j - 1;
+                            if(ln1>MAXLOOP) break;
+                            lstart = ln1+i-1-MAXLOOP;
+                            if(lstart<k+TURN+1) lstart = k + TURN + 1;
+                            for(l=lstart; l < i; l++){
+                                int ln2, type_2;
+                                type_2 = ptype[my_iindx[k]-l];
+                                if (type_2==0) continue;
+                                ln2 = i - l - 1;
+                                if(ln1+ln2>MAXLOOP) continue;
+                                tmp2 += qb[my_iindx[k] - l]
+                                * exp_E_IntLoop(ln1,
+                                                ln2,
+                                                rt,
+                                                rtype[type_2],
+                                                S1[j+1],
+                                                S1[i-1],
+                                                S1[k-1],
+                                                S1[l+1])
+                                * scale[ln1 + ln2];
+                            }
+                        }
+                        /* 1.2.2. i,j  delimtis the "right" part of the interior loop  */
+                        for(k=j+1; k < n-TURN; k++){
+                            int ln1, lstart;
+                            ln1 = k - j - 1;
+                            if((ln1 + i - 1)>MAXLOOP) break;
+                            lstart = ln1+i-1+n-MAXLOOP;
+                            if(lstart<k+TURN+1) lstart = k + TURN + 1;
+                            for(l=lstart; l <= n; l++){
+                                int ln2, type_2;
+                                type_2 = ptype[my_iindx[k]-l];
+                                if (type_2==0) continue;
+                                ln2 = i - 1 + n - l;
+                                if(ln1+ln2>MAXLOOP) continue;
+                                tmp2 += qb[my_iindx[k] - l]
+                                * exp_E_IntLoop(ln2,
+                                                ln1,
+                                                rtype[type_2],
+                                                rt,
+                                                S1[l+1],
+                                                S1[k-1],
+                                                S1[i-1],
+                                                S1[j+1])
+                                * scale[ln1 + ln2];
+                            }
+                        }
+                        /* 1.3 Exterior multiloop decomposition */
+                        /* 1.3.1 Middle part                    */
+                        if((i>TURN+2) && (j<n-TURN-1))
+                            tmp2 += qm[my_iindx[1]-i+1]
+                            * qm[my_iindx[j+1]-n]
+                            * expMLclosing
+                            * exp_E_MLstem(type, S1[i-1], S1[j+1]);
+                        
+                        /* 1.3.2 Left part                      */
+                        for(k=TURN+2; k < i-TURN-2; k++)
+                            tmp2 += qm[my_iindx[1]-k]
+                            * qm1[jindx[i-1]+k+1]
+                            * expMLbase[n-j]
+                            * expMLclosing
+                            * exp_E_MLstem(type, S1[i-1], S1[j+1]);
+                        
+                        /* 1.3.3 Right part                      */
+                        for(k=j+TURN+2; k < n-TURN-1;k++)
+                            tmp2 += qm[my_iindx[j+1]-k]
+                            * qm1[jindx[n]+k+1]
+                            * expMLbase[i-1]
+                            * expMLclosing
+                            * exp_E_MLstem(type, S1[i-1], S1[j+1]);
+                        
+                        /* all exterior loop decompositions for pair i,j done  */
+                        probs[ij] *= tmp2;
+                        
+                    }
+                    else probs[ij] = 0;
+                }
+            }
+        } /* end if(circular)  */
+        else {
+            for (i=1; i<=n; i++) {
+                for (j=i; j<=MIN2(i+TURN,n); j++) probs[my_iindx[i]-j] = 0;
+                for (j=i+TURN+1; j<=n; j++) {
+                    ij = my_iindx[i]-j;
+                    type = ptype[ij];
+                    if (type&&(qb[ij]>0.)) {
+                        probs[ij] = q1k[i-1]*qln[j+1]/q1k[n];
+                        probs[ij] *= exp_E_ExtLoop(type, (i>1) ? S1[i-1] : -1, (j<n) ? S1[j+1] : -1);
+                    }
+                    else
+                        probs[ij] = 0.;
+                }
+            }
+        } /* end if(!circular)  */
+        
+        for (l=n; l>TURN+1; l--) {
+            
+            /* 2. bonding k,l as substem of 2:loop enclosed by i,j */
+            for (k=1; k<l-TURN; k++) {
+                kl = my_iindx[k]-l;
+                type_2 = ptype[kl];
+                if (type_2==0) continue;
+                type_2 = rtype[type_2];
+                if (qb[kl]==0.) continue;
+                
+                tmp2 = 0.;
+                for (i=MAX2(1,k-MAXLOOP-1); i<=k-1; i++)
+                    for (j=l+1; j<=MIN2(l+ MAXLOOP -k+i+2,n); j++) {
+                        ij = my_iindx[i] - j;
+                        type = ptype[ij];
+                        if (type && (probs[ij]>0.)) {
+                            /* add *scale[u1+u2+2] */
+                            tmp2 +=  probs[ij]
+                            * (scale[k-i+j-l]
+                               * exp_E_IntLoop(k - i - 1,
+                                               j - l - 1,
+                                               type,
+                                               type_2,
+                                               S1[i + 1],
+                                               S1[j - 1],
+                                               S1[k - 1],
+                                               S1[l + 1]));
+                        }
+                    }
+                probs[kl] += tmp2;
+            }
+        
+            /* 3. bonding k,l as substem of multi-loop enclosed by i,j */
+            prm_MLb = 0.;
+            if (l<n) for (k=2; k<l-TURN; k++) {
+                i = k-1;
+                prmt = prmt1 = 0.0;
+                
+                ii = my_iindx[i];     /* ii-j=[i,j]     */
+                ll = my_iindx[l+1];   /* ll-j=[l+1,j-1] */
+                tt = ptype[ii-(l+1)]; tt=rtype[tt];
+                /* (i, l+1) closes the ML with substem (k,l) */
+                if(tt)
+                    prmt1 = probs[ii-(l+1)] * expMLclosing * exp_E_MLstem(tt, S1[l], S1[i+1]);
+                
+                /* (i,j) with j>l+1 closes the ML with substem (k,l) */
+                for (j=l+2; j<=n; j++) {
+                    tt = ptype[ii-j]; tt = rtype[tt];
+                    if(tt)
+                        prmt += probs[ii-j] * exp_E_MLstem(tt, S1[j-1], S1[i+1]) * qm[ll-(j-1)];
+                }
+                kl = my_iindx[k]-l;
+                tt = ptype[kl];
+                prmt *= expMLclosing;
+                prml[ i] = prmt;
+                prm_l[i] = prm_l1[i]*expMLbase[1]+prmt1;
+                
+                prm_MLb = prm_MLb*expMLbase[1] + prml[i];
+                /* same as:    prm_MLb = 0;
+                 for (i=1; i<=k-1; i++) prm_MLb += prml[i]*expMLbase[k-i-1]; */
+                
+                prml[i] = prml[ i] + prm_l[i];
+                
+          
+                if (qb[kl] == 0.) continue;
+                
+                temp = prm_MLb;
+                
+                for (i=1;i<=k-2; i++)
+                    temp += prml[i]*qm[my_iindx[i+1] - (k-1)];
+                
+                probs[kl]  += temp;
+                
+                if (probs[kl]>Qmax) {
+                    Qmax = probs[kl];
+                    if (Qmax>max_real/10.)
+                        fprintf(stderr, "P close to overflow: %d %d %g %g\n",
+                                i, j, probs[kl], qb[kl]);
+                }
+                if (probs[kl]>=max_real) {
+                    ov++;
+                    probs[kl]=FLT_MAX;
+                }
+                
+            } /* end for (k=..) */
+            tmp = prm_l1; prm_l1=prm_l; prm_l=tmp;
+            
+        }  /* end for (l=..)   */
+        
+        for (i=1; i<=n; i++)
+            for (j=i+TURN+1; j<=n; j++) {
+                ij = my_iindx[i]-j;
+                
+                if (qb[ij] > 0.)
+                    probs[ij] *= qb[ij];
+            }
+        
+        if (structure.size() > 0) {
+            bppm_to_structure(structure, probs, n);
+        }
+        if (ov>0) fprintf(stderr, "%d overflows occurred while backtracking;\n"
+                          "you might try a smaller pf_scale than %g\n",
+                          ov, pf.pf_scale);
+    } /* end if((S != NULL) && (S1 != NULL))  */
+    else {
+         printf("bppm calculations have to be done after calling forward recursion\n");
+         exit(0);
+    }
+    return;
+}
+
+char
+ViennaClone::bppm_symbol(
+    const float *x) {
+    if( x[0] > 0.667 )  return '.';
+    if( x[1] > 0.667 )  return '(';
+    if( x[2] > 0.667 )  return ')';
+    if( (x[1]+x[2]) > x[0] ) {
+        if( (x[1]/(x[1]+x[2])) > 0.667) return '{';
+        if( (x[2]/(x[1]+x[2])) > 0.667) return '}';
+        else return '|';
+    }
+    if( x[0] > (x[1]+x[2]) ) return ',';
+    return ':';
+}
+
+
+void
+ViennaClone::bppm_to_structure(
+    String & structure,
+    Floats & p,
+    unsigned int length) {
+    
+    int    i, j;
+    get_iindx(diindx,length);
+    float  P[3];   /* P[][0] unpaired, P[][1] upstream p, P[][2] downstream p */
+    
+    for( j=1; j<=length; j++ ) {
+        P[0] = 1.0;
+        P[1] = P[2] = 0.0;
+        for( i=1; i<j; i++) {
+            P[2] += p[diindx[i]-j];    /* j is paired downstream */
+            P[0] -= p[diindx[i]-j];    /* j is unpaired */
+        }
+        for( i=j+1; i<=length; i++ ) {
+            P[1] += p[diindx[j]-i];    /* j is paired upstream */
+            P[0] -= p[diindx[j]-i];    /* j is unpaired */
+        }
+        structure[j-1] = bppm_symbol(P);
+    }
+    structure[length] = '\0';
+
+}
+
 
 void
 ViennaClone::get_boltzmann_factors(

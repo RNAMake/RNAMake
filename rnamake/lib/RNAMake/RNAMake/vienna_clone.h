@@ -141,9 +141,16 @@ struct sect {
     int ml;
 };
 
+struct plist {
+    int i;
+    int j;
+    float p;
+    int type;
+};
 
 typedef std::vector<bondT> bondTs;
 typedef std::vector<sect> sects;
+typedef std::vector<plist> plists;
 
 
 class ViennaClone {
@@ -177,12 +184,14 @@ public:
         structure = String();
         structure.resize(1000);
         backtrack_type = 'F';
+        diindx = Ints(size_);
         
         params.model_details.dangles = 2;
         params.model_details.special_hp = 1;
         
         //for dotplot
         pf = pf_paramT();
+        pl = plists(size_);
         
         double temperature = 37;
         double betaScale   = 1.;
@@ -207,7 +216,6 @@ public:
     
     void
     dotplot(String const &);
-    
 
 public:
     
@@ -228,6 +236,7 @@ private:
         qb        = Floats(size);
         qm        = Floats(size);
         probs     = Floats(size);
+        qm1       = Floats(size_+1);
         q1k       = Floats(size_+1);
         qln       = Floats(size_+2);
         qq        = Floats(size_+2);
@@ -286,6 +295,7 @@ private:
         qb.resize(fsize);
         qm.resize(fsize);
         probs.resize(fsize);
+        qm1.resize(size+1);
         q1k.resize(size+1);
         qln.resize(size+2);
         qq.resize(size+2);
@@ -503,6 +513,24 @@ private:
     scale_pf_params(
         int length);
     
+    void
+    pf_create_bppm(
+        String const &);
+    
+    void
+    bppm_to_structure(
+        String &,
+        Floats &,
+        unsigned int);
+    
+    char
+    bppm_symbol(
+        const float *x);
+    
+    void
+    assign_plist_from_pr(
+        int,
+        double);
     
     
 private: //Energy calculations
@@ -862,9 +890,10 @@ private:
     sects sector;
     char backtrack_type;
     //varibles from part_func
-    Floats q, qb, qm, probs, q1k, qln, qq, qq1, qqm, qqm1, prml, prm_l, prm_l1;
+    Floats q, qb, qm, probs, q1k, qln, qq, qq1, qqm, qqm1, prml, prm_l, prm_l1, qm1;
     Floats expMLbase, scale, Gj, Gj1;
-    Ints my_iindx, iindx, jindx;
+    Ints my_iindx, iindx, jindx, diindx;
+    plists pl;
     
     
 };
