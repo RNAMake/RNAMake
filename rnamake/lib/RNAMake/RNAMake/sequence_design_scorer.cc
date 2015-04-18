@@ -13,7 +13,7 @@ float
 SequenceDesignScorer::score(
     String const & seq) {
     
-    if (cofold_) { fr_ = v_.vcofold(seq); }
+    /*if (cofold_) { fr_ = v_.vcofold(seq); }
     else         { fr_ = v_.vfold(seq);   }
         
     int diff = 0;
@@ -22,6 +22,7 @@ SequenceDesignScorer::score(
     }
     
     score_ = diff*10 + fr_.free_energy;
-    return score_;
+    */
+     return 0;
     
 }

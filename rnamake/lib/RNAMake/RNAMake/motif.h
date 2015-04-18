@@ -120,7 +120,6 @@ public:
     ResidueOPs const
     residues() { return structure_->residues(); }
     
-    inline
     ChainOPs const &
     chains() { return structure_->chains(); }
     

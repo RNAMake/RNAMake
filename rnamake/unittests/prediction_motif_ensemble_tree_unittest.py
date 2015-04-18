@@ -74,6 +74,32 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
 
         return mtst
 
+    def _problem_test(self):
+        twoways = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
+        helixs = motif_tree_state.MotifTreeStateLibrary(libpath='HELIX_test.new.me', exclude=['11','10'])
+        mtst = motif_tree_state.MotifTreeStateTree()
+        mts_libs = [ helixs, twoways ]
+
+        f = open("test")
+        lines = f.readlines()
+        f.close()
+        pos = 0
+
+        for i, l in enumerate(lines):
+            name = l.rstrip()
+            if i % 2 == 0 :
+                pos = 0
+            else:
+                pos = 1
+
+            node = mtst.add_state(mts_libs[pos].get_state(name))
+            if node is None:
+                print "cannot add", name
+                exit()
+        return mtst
+
+
+
 
     def test_mtst_to_met_helix(self):
         return
@@ -100,12 +126,12 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
 
 
     def test_mtst_to_met(self):
-        mtst = get_twoway_helix_mts_tree(10)
-        for i, n in enumerate(mtst.nodes):
-            print i, n.mts.name
-        #mtst = self._problem_one()
+        #mtst = get_twoway_helix_mts_tree(50)
+        #for i, n in enumerate(mtst.nodes):
+        #    print i, n.mts.name
+        mtst = self._problem_test()
         converter = motif_ensemble_tree.MTSTtoMETConverter()
-        mtst2 = converter.convert(mtst, debug=1)
+        mtst2, score = converter.convert(mtst, debug=1)
         print len(mtst2.nodes)
 
         state_1 = mtst.last_node.active_states()[0]

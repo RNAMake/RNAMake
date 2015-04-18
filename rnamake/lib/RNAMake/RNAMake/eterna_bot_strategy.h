@@ -34,7 +34,7 @@ public:
 public:
     float gu, gc, ua;
     float meltpoint, fe;
-    plist* dotplot;
+    plists dotplot;
     int length;
     std::map<int, int> pairmap;
     SecondaryStructureTree sstree;

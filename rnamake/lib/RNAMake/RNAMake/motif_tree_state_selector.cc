@@ -34,6 +34,21 @@ MotifTreeStateSelector::MotifTreeStateSelector(
         }
     }
     
+    else if(mode.compare("round_robin") == 0) {
+        int i = -1;
+        for(auto const & mts_lib : mts_libs) {
+            i++;
+            SelectorNodeOP node (new SelectorNode(mts_lib, i));
+            nodes_.push_back(node);
+        }
+        for (auto const & n1 : nodes_) {
+            for (auto const & n2 : nodes_) {
+                if(n1 == n2) { continue; }
+                n1->add_connection(n2);
+            }
+        }
+    }
+    
     else if(mode.compare("helix_flank") == 0) {
         MotifTreeStateLibraryOP hlib ( new MotifTreeStateLibrary (HELIX));
         SelectorNodeOP node (new SelectorNode(hlib, 0));

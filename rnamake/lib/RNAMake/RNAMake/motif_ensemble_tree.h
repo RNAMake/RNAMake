@@ -98,6 +98,13 @@ public: // getters
         return -1;
     }
     
+    inline
+    int
+    occupied(int const pos) {
+        if(children_[pos] == NULL) { return 0; }
+        else                       { return 1; }
+    }
+    
 private:
     MotifEnsemble motif_ensemble_;
     MotifEnsembleTreeNodeOP parent_;

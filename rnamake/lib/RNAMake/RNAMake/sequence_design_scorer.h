@@ -41,10 +41,14 @@ public:
     float
     score_sstree(
         SecondaryStructureTree const &) { return 0;}
+    
+    virtual
+    inline
+    std::vector<float> const &
+    scores() { return std::vector<float>(); }
 
 protected:
     Vienna v_;
-    FoldResult fr_;
     String ss_;
     float score_;
     int cofold_;

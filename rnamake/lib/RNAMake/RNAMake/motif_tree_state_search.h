@@ -93,7 +93,7 @@ public:
     search(
         BasepairStateOP const &,
         BasepairStateOP const &,
-        MotifTreeStateSelectorOP const & node_selector = NULL,
+        MotifTreeStateSelectorOP const &node_selector = NULL,
         MotifTreeStateSearchScorerOP const & scorer = NULL);
     
     void

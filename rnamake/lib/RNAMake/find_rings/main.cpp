@@ -172,6 +172,7 @@ find_rings(
     float dist, dist2;
     int count = 0;
     std::stringstream ss;
+    PoseOP p;
     
     while(!topology_iterator.end()) {
         c = topology_iterator.next();
@@ -202,8 +203,11 @@ find_rings(
                 if( dist < 10) {
                     ss << "ring." << i << "." << j << "." << count << ".pdb";
                     count ++;
+                    p = mtst.to_pose();
                     mtst.to_pdb(ss.str());
+                    std::cout << p->secondary_structure() << std::endl;
                     std::cout << ss.str() << " " << m1->name() << " " << m2->name() << " " << dist << std::endl;
+                    
                     ss.str("");
                     return;
                 }
@@ -234,8 +238,16 @@ int main(int argc, const char * argv[]) {
     MotifOPs motifs = mlib.motifs();
     //motifs.push_back(gaaa_motif);
     
+    Strings lines2 = get_lines_from_file("mc_mcr.dat");
+    MotifOP mc_mcr ( new Motif(lines2[1], rts));
+    
+    
     MotifTreeStateLibrary mts_lib (HELIX);
     int i = -1, j = -1;
+    
+    find_rings(gaaa_motif, mc_mcr, 0, 0, mts_lib);
+
+    exit(0);
     
     for(auto const & m1 : motifs) {
         i++;

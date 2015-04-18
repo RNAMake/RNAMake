@@ -19,30 +19,72 @@ MTSTtoMETConverter::convert(
     MotifTreeStateTree const & mtst,
     int start_pos) {
     
-    mt_ = mtst.to_motiftree();
-    p_ = mt_.to_pose();
+    MotifTree mt = mtst.to_motiftree();
+    mt_ = mt;
+    p_ = mt.to_pose();
     dseq_ = p_->sequence();
     met_ = MotifEnsembleTreeOP ( new MotifEnsembleTree() );
+    node_num_map_.clear();
     
-    ChainOP start_chain = _get_start_chain(mt_.nodes()[1]);
+    ChainOP start_chain = _get_start_chain(mt_.nodes()[start_pos]);
     String motif_bp, last_bp, next_bp, last_step;
     MotifTreeNodeOP other_node, partner;
     int i = -1;
     int flip, start_index;
+    MotifEnsembleTreeNodeOP parent;
+    int end_index, size;
+    
+    //figure out the correct parent node indices since met_ will have different
+    //numbering using single basepairs instead of whole helices
+    int n_count = -1;
+    for( auto const & n : mt_.nodes()) {
+        i++;
+        if(i < start_pos) {
+            n_count++;
+            node_num_map_[i] = n_count;
+            continue;
+        }
+        
+        if(n->motif()->mtype() == HELIX) {
+            size = (int)n->motif()->residues().size();
+            size /= 2;
+            size -= 1;
+            n_count += size;
+            node_num_map_[i] = n_count;
+        }
+        
+        else {
+            n_count++;
+            node_num_map_[i] = n_count;
+        }
+    }
+    
+    i = -1;
+    
     for (auto const & n : mt_.nodes()) {
         i++;
-        if(i < start_pos) { continue; }
+        if(i == 0) { continue; }
+        parent = met_->nodes()[ node_num_map_ [mtst.nodes()[i]->parent()->index() ] ] ;
+        end_index = mtst.nodes()[i]->parent_end_index();
+        if(i < start_pos) {
+            MotifState ms (mtst.nodes()[i]->mts(), 1.0);
+            MotifEnsemble me;
+            me.add_motif_state(ms);
+            met_->add_ensemble(me, parent, end_index);
+            continue;
+        }
         if(n->motif()->mtype() == HELIX) {
             if(i > start_pos) {
                 motif_bp = _get_next_bp(mt_.nodes()[i-1], n, start_chain, 1);
             }
             flip = mtst.nodes()[i]->mts()->flip();
             start_index = mtst.nodes()[i]->mts()->start_index();
-            last_bp = _add_helix(n, start_chain, motif_bp, flip, start_index);
+            last_bp = _add_helix(n, start_chain, motif_bp, start_index, flip, parent, end_index);
+            
             if (i < mt_.nodes().size()-1) {
                 next_bp = _get_next_bp(n, mt_.nodes()[i+1], start_chain);
                 last_step = last_bp + "=" + next_bp;
-                MotifEnsemble me (last_step, flip, start_index);
+                MotifEnsemble me (last_step, start_index, flip);
                 met_->add_ensemble(me);
             }
             
@@ -56,7 +98,7 @@ MTSTtoMETConverter::convert(
                 }
                 next_bp = _get_next_bp(n, other_node, start_chain);
                 last_step = last_bp + "=" + next_bp;
-                MotifEnsemble me (last_step, flip, start_index);
+                MotifEnsemble me (last_step, start_index, flip);
                 met_->add_ensemble(me);
             }
             
@@ -66,7 +108,7 @@ MTSTtoMETConverter::convert(
             MotifEnsemble me;
             MotifState ms (mtst.nodes()[i]->mts(), 1.0);
             me.add_motif_state(ms);
-            met_->add_ensemble(me);
+            met_->add_ensemble(me, parent, end_index);
         }
     }
     
@@ -92,7 +134,9 @@ MTSTtoMETConverter::_add_helix(
     ChainOP const & chain,
     String const & motif_bp,
     int const & start_index,
-    int const & flip) {
+    int const & flip,
+    MotifEnsembleTreeNodeOP const & parent,
+    int const & end_index) {
     
     Strings bps_str;
     if(motif_bp.size() > 0) { bps_str.push_back(motif_bp); }
@@ -137,22 +181,8 @@ MTSTtoMETConverter::_add_helix(
         steps.push_back(bps_str[i-1]+"="+bps_str[i]);
     }
     
-    int index = 0;
-    int j = -1;
-    MotifTreeNodeOP partner;
-    BasepairOP bp;
-    for (auto const & c : n->connections()) {
-        partner = c->partner(n);
-        if ( partner->index() > n->index() ) { continue; }
-        bp = c->motif_end(partner);
-        for (auto const & end : partner->motif()->ends()) {
-            j++;
-            if(bp == end) { index = j; break; }
-        }
-    }
-    
     MotifEnsemble me (steps[0], start_index, flip);
-    met_->add_ensemble(me, NULL, index);
+    met_->add_ensemble(me, parent, end_index);
     for (i = 1; i < steps.size(); i++) {
         MotifEnsemble me (steps[i], start_index, flip);
         met_->add_ensemble(me);

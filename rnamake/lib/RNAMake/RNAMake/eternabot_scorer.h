@@ -37,6 +37,7 @@ public:
         
         mean_ = 84.8005952381;
         stdev_ = 16.4725276237;
+        scores_ = std::vector<float>( strategies_.size());
 
     }
     
@@ -47,11 +48,15 @@ public:
     float
     score_sstree(
         SecondaryStructureTree const &);
+    
+    std::vector<float> const &
+    scores() { return scores_; }
 
 private:
     EternabotScorerData design_data_;
     EternabotStrategyOPs strategies_;
     std::vector<float> weights_;
+    std::vector<float> scores_;
     float mean_, stdev_;
     
 };

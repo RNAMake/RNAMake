@@ -115,7 +115,7 @@ MotifTreeStateTree::to_motiftree() const {
             else {
                 MotifOP m ( new Motif( n->mts()->build_string(), rts ));
                 mt = MotifTree(m);
-                //mt.sterics(0);
+                mt.sterics(0);
             }
             continue;
         }

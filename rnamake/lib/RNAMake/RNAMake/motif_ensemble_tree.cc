@@ -59,7 +59,18 @@ MotifEnsembleTree::add_ensemble(
     int parent_end_index) {
     
     if (parent == NULL) { parent = last_node_; }
+    
+    
+    if (parent->available_ends().size() == 0) {
+        throw "cannot add to parent it has no available ends";
+    }
+    
     if (parent_end_index == -1) { parent_end_index = parent->available_ends()[0]; }
+    
+    
+    if(parent->occupied(parent_end_index)) {
+        throw "cannot add to parent at this location its occupied";
+    }
     
     MotifEnsembleTreeNodeOP new_node ( new MotifEnsembleTreeNode(ensemble, parent, (int)nodes_.size()));
     parent->add_child(new_node, parent_end_index);

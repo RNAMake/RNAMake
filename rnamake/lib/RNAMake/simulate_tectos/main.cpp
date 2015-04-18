@@ -23,7 +23,7 @@
 
 //String mismatch_path = resources_path() + "/prediction/rosetta_ensembles/1K_struct_100_cycles/1bp_flank/";
 //String mismatch_path = "/Users/josephyesselman/Downloads/mismatches_training/2Kstruct_2000cycles/results_1bp/";
-String mismatch_path = "/Users/josephyesselman/Downloads/results_1bp/";
+String mismatch_path = "/Users/josephyesselman/Downloads/results_bp_double/";
 
 
 Options
@@ -81,6 +81,7 @@ get_steps_from_ss_tree(
     SecondaryStructureTree const & ss_tree) {
     SecondaryStructureNodeOPs bulges = ss_tree.get_bulges();
     SecondaryStructureNodeOP current = bulges[0]->children()[0];
+    
     Strings steps;
     SecondaryStructureNodeOPs required_nodes;
     int bulge_flank_size = 2;
@@ -108,7 +109,6 @@ get_steps_from_ss_tree(
             std::reverse(seq2.begin(), seq2.end());
             String name = seq1 + "-" + seq2;
             steps.push_back(remove_Ts(first_bp+"="+second_bp));
-            //std::cout << name << std::endl;
             steps.push_back(remove_Ts(name));
             steps.push_back(remove_Ts(third_bp+"="+forth_bp));
             i = i+4;
@@ -329,30 +329,13 @@ sample(
 int main(int argc, const char * argv[]) {
     Options options = get_options(argc, argv);
     StringStringMap constructs_seq_and_ss = get_construct_seq_and_ss(options);
-    //constructs_seq_and_ss["cseq"]= "CTAGGATATGGAAGATACTCGGGAACGAGAATCTTCCTAAGTCCTAG";
-    //constructs_seq_and_ss["css" ]= "(((((((..(((((((.((((....)))).)))))))...)))))))";
+    //constructs_seq_and_ss["cseq"]= "CUAGGAUAUGGAAGAACCUGGGGAACUGGAAUCUUCCUAAGUCCUAG";
+    //constructs_seq_and_ss["css" ]= "(((((((..((((((..((((....))))..))))))...)))))))";
     SecondaryStructureTree chip_ss_tree ( constructs_seq_and_ss["css"], constructs_seq_and_ss["cseq"]);
     SecondaryStructureTree flow_ss_tree ( constructs_seq_and_ss["fss"], constructs_seq_and_ss["fseq"]);
-    MotifEnsembleTree met = get_met_only_helix(flow_ss_tree, chip_ss_tree);
+    MotifEnsembleTree met = get_met(flow_ss_tree, chip_ss_tree);
     MotifTreeStateTree mtst = met.get_mtst();
     MotifTree mt = mtst.to_motiftree();
-    mt.write_pdbs();
-    /*MotifTreeStateTree mtst = met.get_mtst();
-    mtst.to_pdb("start.pdb");
-    BasepairStateOP target = mtst.nodes()[2]->states()[0];
-    MotifTreeStateSearch search;
-    MotifTreeStateSearchSolutionOPs solutions = search.search(mtst.last_node()->states()[1], target);
-    std::cout << solutions.size() << std::endl;
-    int i = 0;
-    std::stringstream ss;
-    for(auto const & s : solutions) {
-        ss << "solution." << i << ".pdb";
-        s->to_mtst().to_pdb(ss.str());
-        ss.str("");
-        i++;
-    }*/
-    exit(0);
-
     int nsteps = 10000000;
     sample(met, nsteps);
     return 0;

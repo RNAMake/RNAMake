@@ -161,12 +161,12 @@ public:
         size_ = 1000;
         c       = Ints((size_*(size_+1)/2+2));
         fML     = Ints((size_*(size_+1)/2+2));
+        Fmi     = Ints((size_*(size_+1)/2+2));
         fM1     = Ints(size_);
         f5      = Ints(size_);
         f53     = Ints(size_);
         cc      = Ints(size_);
         cc1     = Ints(size_);
-        Fmi     = Ints(size_);
         DMLi    = Ints(size_);
         DMLi1   = Ints(size_);
         DMLi2   = Ints(size_);
@@ -190,8 +190,10 @@ public:
         params.model_details.special_hp = 1;
         
         //for dotplot
+        pf_structure = String();
+        pf_structure.resize(1000);
         pf = pf_paramT();
-        pl = plists(size_);
+        pl = plists(size_*size_);
         
         double temperature = 37;
         double betaScale   = 1.;
@@ -214,14 +216,18 @@ public:
     float
     fold(String const &);
     
-    void
-    dotplot(String const &);
+    plists const &
+    bp_probabilities(String const &);
 
 public:
     
     inline
-    String const &
-    get_structure() { return structure; }
+    String
+    get_structure() { return structure.substr(0,actual_size_); }
+    
+    inline
+    float const &
+    free_energy() { return free_energy_;}
 
     
 private:
@@ -321,7 +327,6 @@ private:
     inline
     void
     get_indx(Ints & c_idx) {
-        c_idx[0] = 0;
         for (int i = 1; i <= size_; i++) {
             c_idx[i] = (i*(i-1)) >> 1;
         }
@@ -331,7 +336,7 @@ private:
     void
     get_iindx(Ints & c_idx, int length) {
         unsigned int i;
-        for (i = 1; i <= size_; i++) {
+        for (i = 1; i <= length; i++) {
             c_idx[i] = (((length + 1 - i) * (length - i))>>1) + length + 1;
         }
         
@@ -878,12 +883,13 @@ private:
     //variables from fold
     Ints c, fML, fM1, f5, f53, cc, cc1, Fmi, DMLi, DMLi1, DMLi2;
     Ints indx, BP;
-    String structure;
+    String structure, pf_structure;
     Chars ptype;
     bondTs base_pair2;
     paramT params;
     pf_paramT pf;
     Shorts S, S1;
+    float free_energy_;
     double temp;
     int uniq_ML;
     int size_, actual_size_;

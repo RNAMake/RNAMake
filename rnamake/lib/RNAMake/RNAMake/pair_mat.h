@@ -145,10 +145,14 @@ encode_sequence(
             S[0] = (short) l;
             break;
             /* encoding for mismatches of nostandard bases (normally used for S1) */
-        case 1:   for(i=1; i<=l; i++)
-            S[i] = alias[(short) encode_char(toupper(sequence[i-1]))];
+        case 1:
+            for(i=1; i<=l; i++)
+                S[i] = alias[(short) encode_char(toupper(sequence[i-1]))];
+
             S[l+1] = S[1];
             S[0] = S[l];
+            //for(i=0;i<S.size();i++) { S[i]=0; }
+            
             break;
     }
     

@@ -25,6 +25,8 @@ MotifTreeStateSearchOptions::set_defaults() {
     numeric_options_["accept_ss_score"] = 1000;
     numeric_options_["max_size"       ] = 1000;
     numeric_options_["scorer"         ] = 0;
+    numeric_options_["log"            ] = 0;
+    numeric_options_["save_solutions" ] = 1;
 }
 
 void
@@ -95,6 +97,9 @@ MotifTreeStateSearch::search(
     int fail = 0;
     int clash = 0;
     float dist;
+    int sol_count = 0;
+    std::ofstream log;
+    if(options_.numeric("log") == 1) { log.open("mtss.log"); }
 
     while (!queue_.empty() ) {
         current = queue_.top();
@@ -109,12 +114,37 @@ MotifTreeStateSearch::search(
             if(current->ss_score() > accept_ss_score) { continue;}
             if(!fail) {
                 MotifTreeStateSearchSolutionOP solution ( new MotifTreeStateSearchSolution(current, score) );
-                solutions_.push_back(solution);
+                
+                if(options_.numeric("save_solutions") == 1) {
+                    solutions_.push_back(solution);
+                }
+                exit(0);
+                
+                sol_count ++;
+                if(options_.numeric("log") == 1) {
+                    std::cout << sol_count << " ";
+                    for(auto const & n : solution->path()) {
+                        log << n->mts()->name() << " ";
+                        std::cout << n->mts()->name() << " ";
+                    }
+                    log << std::endl;
+                    std::cout << std::endl;
+                    
+                }
                 if(solutions_.size() == max_n_solutions) { return solutions_; }
             }
         }
         
         if(current->level() == max_node_level) { continue; }
+        
+        MotifTreeStateSearchSolutionOP solution ( new MotifTreeStateSearchSolution(current, score) );
+        for(auto const & n : solution->path()) {
+            log << n->mts()->name() << " ";
+            std::cout << n->mts()->name() << " ";
+        }
+        std::cout << std::endl;
+        
+        
         test_node->parent(current);
         test_node->level(current->level() + 1);
         parent_ends = current->active_states();
@@ -146,10 +176,15 @@ MotifTreeStateSearch::search(
                 test_node->update_node_count();
                 test_node->update_stats();
                 queue_.push(MotifTreeStateSearchNodeOP(new MotifTreeStateSearchNode(test_node)));
+                
             }
         }
         
         //if(steps_ > 10) { break; }
+    }
+    
+    if(options_.numeric("log") == 1) {
+        log.close();
     }
     
     return solutions_;

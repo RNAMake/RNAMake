@@ -28,27 +28,27 @@ float
 Vienna::fold(
     String const & string) {
     
-    actual_size_ = string.length();
+    actual_size_ = (int)string.length();
     
-    //update length of data arrays if size is greater then previous
-    //get_arrays((int)string.length());
+    for(int i = 0; i < S1.size(); i++) {
+        S1[i] = 0;
+    }
+
     encode_sequence(string, S, 0);
     encode_sequence(string, S1, 1);
     make_ptypes(S, structure);
-    
-    //sector = sects(MAXSECTORS);
-    //base_pair2 = bondTs(4*(1+size_/2));
     
     int energy = fill_arrays(string);
     
     backtrack(string, 0);
     parenthesis_structure((int)string.length());
-    
-    return (float) energy/100.;
+    free_energy_ = (float) energy/100.;
+
+    return free_energy_;
 }
 
-void
-Vienna::dotplot(
+plists const &
+Vienna::bp_probabilities(
     String const & sequence) {
     
     get_iindx(my_iindx, (int)sequence.size());
@@ -72,10 +72,17 @@ Vienna::dotplot(
     make_ptypes_2(S, structure);
     pf_linear(sequence);
     
+    //reset basepair probabilities
+    for(int i =0; i < n*n; i++) {
+        pl[i].p = 0; pl[i].i = 0; pl[i].j = 0;
+    }
+    
     double Q = q[my_iindx[1]-n];
     double free_energy = (-log(Q)-n*log(pf.pf_scale))*pf.kT/1000.0;
     pf_create_bppm(sequence);
     assign_plist_from_pr(n, bppmThreshold);
+    
+    return pl;
     
 }
 
@@ -92,6 +99,7 @@ Vienna::assign_plist_from_pr(
     
     for (i=1; i<length; i++) {
         for (j=i+1; j<=length; j++) {
+            if(probs[diindx[i] - j] < cut_off) { continue; }
             pl[count].i = i;
             pl[count].j = j;
             pl[count].p  = sqrt(probs[diindx[i] - j]); //added sqrt to match dot.ps
@@ -101,14 +109,15 @@ Vienna::assign_plist_from_pr(
     }
 }
 
+
 void
 Vienna::pf_create_bppm(
     String const & sequence) {
-
-    int n, i,j,k,l, ij, kl, ii, i1, ll, type, type_2, tt, u1, ov=0;
+    
+    int n, i,j,k,l, ij, kl, ii, i1, ll, type, type_2, tt, u1, ov=0, qo=0.;
     double  temp, Qmax=0, prm_MLb;
     double  prmt,prmt1;
-    Floats tmp;
+    Floats tmp, G;
     double  tmp2;
     double  expMLclosing = pf.expMLclosing;
     double      max_real;
@@ -116,30 +125,39 @@ Vienna::pf_create_bppm(
     max_real = DBL_MAX;
     const char * s = sequence.c_str();
     int circular = 0;
+    int with_gquad = 0;
+    int VRNA_GQUAD_MIN_BOX_SIZE =0;
     
-    
-    if((S.size() > 0) && (S1.size() > 0)){
+    if((S.size() != 0) && (S1.size() != 0)){
         n = S[0];
         Qmax=0;
+        
+        for (k=0; k<=n*n; k++) {
+            probs[k] = 0;
+        }
         
         for (k=1; k<=n; k++) {
             q1k[k] = q[my_iindx[1] - k];
             qln[k] = q[my_iindx[k] -n];
+            prml[k] = 0;
+            prm_l[k] = prm_l1[k] = 0;
         }
         q1k[0] = 1.0;
         qln[n+1] = 1.0;
         
+        /*  pr = q; */     /* recycling */
+        
+        
         /* 1. exterior pair i,j and initialization of pr array */
         if(circular){
             for (i=1; i<=n; i++) {
-                for (j=i; j<=MIN2(i+TURN,n); j++) {
+                for (j=i; j<=MIN2(i+TURN,n); j++)
                     probs[my_iindx[i]-j] = 0;
-                }
                 for (j=i+TURN+1; j<=n; j++) {
                     ij = my_iindx[i]-j;
                     type = ptype[ij];
                     if (type&&(qb[ij]>0.)) {
-                        probs[ij] = 1./1;
+                        probs[ij] = 1./qo;
                         int rt = rtype[type];
                         
                         /* 1.1. Exterior Hairpin Contribution */
@@ -283,7 +301,66 @@ Vienna::pf_create_bppm(
                     }
                 probs[kl] += tmp2;
             }
-        
+            
+            if(with_gquad){
+                /* 2.5. bonding k,l as gquad enclosed by i,j */
+                Floats expintern;
+                double qe;
+                
+                if(l < n - 3){
+                    for(k = 2; k <= l - VRNA_GQUAD_MIN_BOX_SIZE; k++){
+                        kl = my_iindx[k]-l;
+                        if (G[kl]==0.) continue;
+                        tmp2 = 0.;
+                        i = k - 1;
+                        for(j = MIN2(l + MAXLOOP + 1, n); j > l + 3; j--){
+                            ij = my_iindx[i] - j;
+                            type = ptype[ij];
+                            if(!type) continue;
+                            qe = (type > 2) ? pf.expTermAU : 1.;
+                            tmp2 += probs[ij] * qe * expintern[j-l-1] * pf.expmismatchI[type][S1[i+1]][S1[j-1]] * scale[2];
+                        }
+                        probs[kl] += tmp2 * G[kl];
+                    }
+                }
+                
+                if (l < n - 1){
+                    for (k=3; k<=l-VRNA_GQUAD_MIN_BOX_SIZE; k++) {
+                        kl = my_iindx[k]-l;
+                        if (G[kl]==0.) continue;
+                        tmp2 = 0.;
+                        for (i=MAX2(1,k-MAXLOOP-1); i<=k-2; i++){
+                            u1 = k - i - 1;
+                            for (j=l+2; j<=MIN2(l + MAXLOOP - u1 + 1,n); j++) {
+                                ij = my_iindx[i] - j;
+                                type = ptype[ij];
+                                if(!type) continue;
+                                qe = (type > 2) ? pf.expTermAU : 1.;
+                                tmp2 += probs[ij] * qe * expintern[u1+j-l-1] * pf.expmismatchI[type][S1[i+1]][S1[j-1]] * scale[2];
+                            }
+                        }
+                        probs[kl] += tmp2 * G[kl];
+                    }
+                }
+                
+                if(l < n){
+                    for(k = 4; k <= l - VRNA_GQUAD_MIN_BOX_SIZE; k++){
+                        kl = my_iindx[k]-l;
+                        if (G[kl]==0.) continue;
+                        tmp2 = 0.;
+                        j = l + 1;
+                        for (i=MAX2(1,k-MAXLOOP-1); i < k - 3; i++){
+                            ij = my_iindx[i] - j;
+                            type = ptype[ij];
+                            if(!type) continue;
+                            qe = (type > 2) ? pf.expTermAU : 1.;
+                            tmp2 += probs[ij] * qe * expintern[k - i - 1] * pf.expmismatchI[type][S1[i+1]][S1[j-1]] * scale[2];
+                        }
+                        probs[kl] += tmp2 * G[kl];
+                    }
+                }
+            }
+            
             /* 3. bonding k,l as substem of multi-loop enclosed by i,j */
             prm_MLb = 0.;
             if (l<n) for (k=2; k<l-TURN; k++) {
@@ -315,13 +392,25 @@ Vienna::pf_create_bppm(
                 
                 prml[i] = prml[ i] + prm_l[i];
                 
-          
-                if (qb[kl] == 0.) continue;
+                if(with_gquad){
+                    if ((!tt) && (G[kl] == 0.)) continue;
+                } else {
+                    if (qb[kl] == 0.) continue;
+                }
                 
                 temp = prm_MLb;
                 
                 for (i=1;i<=k-2; i++)
                     temp += prml[i]*qm[my_iindx[i+1] - (k-1)];
+                
+                if(with_gquad){
+                    if(tt)
+                        temp    *= exp_E_MLstem(tt, (k>1) ? S1[k-1] : -1, (l<n) ? S1[l+1] : -1) * scale[2];
+                    else
+                        temp    *= G[kl] * expMLstem * scale[2];
+                } else {
+                    temp    *= exp_E_MLstem(tt, (k>1) ? S1[k-1] : -1, (l<n) ? S1[l+1] : -1) * scale[2];
+                }
                 
                 probs[kl]  += temp;
                 
@@ -345,23 +434,30 @@ Vienna::pf_create_bppm(
             for (j=i+TURN+1; j<=n; j++) {
                 ij = my_iindx[i]-j;
                 
-                if (qb[ij] > 0.)
-                    probs[ij] *= qb[ij];
+                if(with_gquad){
+                    if (qb[ij] > 0.)
+                        probs[ij] *= qb[ij];
+                    if (G[ij] > 0.){
+                        probs[ij] += q1k[i-1] * G[ij] * qln[j+1]/q1k[n];
+                    }
+                } else {
+                    if (qb[ij] > 0.)
+                        probs[ij] *= qb[ij];
+                }
             }
         
-        if (structure.size() > 0) {
+        if (pf_structure.size() == 0)
             bppm_to_structure(structure, probs, n);
-        }
         if (ov>0) fprintf(stderr, "%d overflows occurred while backtracking;\n"
                           "you might try a smaller pf_scale than %g\n",
                           ov, pf.pf_scale);
     } /* end if((S != NULL) && (S1 != NULL))  */
-    else {
-         printf("bppm calculations have to be done after calling forward recursion\n");
-         exit(0);
-    }
+    else
+        printf("bppm calculations have to be done after calling forward recursion\n");
     return;
+
 }
+
 
 char
 Vienna::bppm_symbol(
@@ -1195,7 +1291,7 @@ Vienna::fill_arrays(
     String const & string)  {
     
     const char * s = string.c_str();
-    
+
     int   i, j, k, length, energy, en, mm5, mm3;
     int   decomp, new_fML;
     int   no_close, type, type_2, tt, max_separation;
@@ -1203,16 +1299,21 @@ Vienna::fill_arrays(
     int   dangle_model, noGUclosure;
     int   noLonelyPairs=0;
     int   circular=0;
+    get_indx(indx);
 
     dangle_model  = params.model_details.dangles;
     noGUclosure   = params.model_details.noGUclosure;
     length = (int)string.length();
     
-    max_separation = (int) ((1.-LOCALITY)*(double)(length-2)); /* not in use */
+    for(j=1;j < S1.size(); j++) {
+        if(S1[j] < 0) { S1[j] = 0; }
+    }
     
     for (j=1; j<=length; j++) {
         Fmi[j]=DMLi[j]=DMLi1[j]=DMLi2[j]=INF;
         cc[j]=cc1[j]=0;
+        
+        
         //f5[j]=f53[j]=0;
     }
     
@@ -1237,8 +1338,6 @@ Vienna::fill_arrays(
             energy = INF;
             no_close = (((type==3)||(type==4))&&noGUclosure&&(bonus==0));
             
-            if (j-i-1 > max_separation) type = 0;  /* forces locality degree */
-
             if (type) {   /* we have a pair */
                 int new_c=0, stackEnergy=INF;
                 /* hairpin ----------------------------------------------*/
@@ -1477,6 +1576,8 @@ Vienna::fill_arrays(
             if(type) f5[j] = MIN2(f5[j], c[indx[j-1]+1] + E_ExtLoop(type, -1, S1[j]));
         }
     }
+    
+    s = NULL;
     
     return f5[length];
 

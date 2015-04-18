@@ -17,12 +17,16 @@ class MotifTreeStateLibrary {
 public:
     MotifTreeStateLibrary() {}
     MotifTreeStateLibrary(MotifType const &);
+    MotifTreeStateLibrary(MotifType const &, int);
     MotifTreeStateLibrary(String const &);
     ~MotifTreeStateLibrary() {}
 
 public:
     MotifTreeStateOP const &
     get_state(String const &);
+    
+    MotifTreeStateOP const &
+    get_state_no_error(String const &);
     
 public: //getters:
     inline
@@ -37,11 +41,12 @@ public: //getters:
     
 private:
     void
-    _load_states_from_file(String const &);
+    _load_states_from_file(String const &, int);
 
 private:
     MotifType mtype_;
     MotifTreeStateOPs motif_tree_states_;
+    MotifTreeStateOP null_;
 };
 
 typedef std::shared_ptr<MotifTreeStateLibrary> MotifTreeStateLibraryOP;

@@ -16,18 +16,29 @@
 MotifTreeStateLibrary::MotifTreeStateLibrary(MotifType const & mtype) {
     mtype_ = mtype;
     String path = resources_path() + "/precomputed/motif_tree_states/" + type_to_str(mtype_) + ".new.me";
-    _load_states_from_file(path);
+    _load_states_from_file(path, 0);
+    null_ = NULL;
+    
+}
+
+MotifTreeStateLibrary::MotifTreeStateLibrary(MotifType const & mtype, int size_limit) {
+    mtype_ = mtype;
+    String path = resources_path() + "/precomputed/motif_tree_states/" + type_to_str(mtype_) + ".new.me";
+    _load_states_from_file(path, size_limit);
+    null_ = NULL;
     
 }
 
 MotifTreeStateLibrary::MotifTreeStateLibrary(String const & libpath) {
     mtype_ = UNKNOWN;
-    _load_states_from_file(libpath);
+    _load_states_from_file(libpath, 0);
+    null_ = NULL;
+
 }
 
 
 void
-MotifTreeStateLibrary::_load_states_from_file(String const & path) {
+MotifTreeStateLibrary::_load_states_from_file(String const & path, int size_limit) {
     String line;
     std::ifstream in;
     motif_tree_states_ = MotifTreeStateOPs();
@@ -43,6 +54,7 @@ MotifTreeStateLibrary::_load_states_from_file(String const & path) {
         name = spl[0];
         score = std::stof(spl[1]);
         size = std::stoi(spl[2]);
+        if(size_limit > size) { continue; }
         flip = std::stoi(spl[3]);
         build_string = spl[4];
         beads = vectors_from_str(spl[5]);
@@ -68,3 +80,14 @@ MotifTreeStateLibrary::get_state(String const & name) {
     }
     throw "could not find mts in library";
 }
+
+MotifTreeStateOP const &
+MotifTreeStateLibrary::get_state_no_error(String const & name) {
+    for(auto const & mts : motif_tree_states_) {
+        if(mts->name().compare(name) == 0) { return mts; }
+    }
+    return null_;
+}
+
+
+

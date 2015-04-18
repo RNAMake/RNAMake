@@ -89,6 +89,12 @@ public:
             MotifState motif_state ( mts, m_pop);
             motif_states_.push_back(motif_state);
         }
+        
+        if(motif_states_.size() == 0) {
+            std::cout << "ERROR: no motif states in file: " << mts_lib_path << std::endl;
+            exit(0);
+        }
+        
         std::sort(motif_states_.begin(),motif_states_.end(),less_than_key());
         
     }

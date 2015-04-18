@@ -203,13 +203,18 @@ Motif::get_beads(BasepairOP const & excluded_end) {
 String
 Motif::sequence() {
     String seq;
-    for (auto const & c : chains()) {
+    ChainOPs const cs = chains();
+    int i = -1;
+    for (auto const & c : cs) {
+        i++;
         for (auto const & r : c->residues()) {
             seq += r->short_name();
         }
-        seq += "&";
+        if(i+1 != cs.size()) {
+            seq += "&";
+        }
     }
-    return seq.substr(0, seq.length()-1);
+    return seq;
 }
 
 String

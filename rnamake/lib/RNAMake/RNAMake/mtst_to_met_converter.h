@@ -15,10 +15,13 @@
 #include "types.h"
 #include "pose.h"
 #include <stdio.h>
+#include <map>
 
 class MTSTtoMETConverter {
 public:
-    MTSTtoMETConverter() {}
+    MTSTtoMETConverter() {
+        node_num_map_ = std::map<int, int>();
+    }
     
     ~MTSTtoMETConverter() {}
 
@@ -47,6 +50,8 @@ private:
         ChainOP const &,
         String const &,
         int const &,
+        int const &,
+        MotifEnsembleTreeNodeOP const &,
         int const &);
     
     int
@@ -58,6 +63,7 @@ private:
     MotifTree mt_;
     MotifEnsembleTreeOP met_;
     String dseq_;
+    std::map<int, int> node_num_map_;
     
     
 };
