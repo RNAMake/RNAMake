@@ -107,24 +107,28 @@ MotifTreeStateSelector::get_children_mts(
     if(lib_type != -1)         { connections = nodes_[node->lib_type()]->connections(); }
     else                       { connections.push_back(nodes_[0]);  lib_type = 0; }
     
-    String clist_name, key;
-    StringIntMapOP clist;
     mts_type_pairs_.resize(0);
     for( auto const & c : connections) {
         //if( node->lib_type() != -1 && c->max_uses() <= node->lib_type_usage(c->index()) ) { continue; }
-        clist_name = type_to_str(nodes_[lib_type]->mts_lib()->mtype()) + "-" +
-                     type_to_str(c->mts_lib()->mtype());
-        clist = NULL;
-        if(clash_lists_.find(clist_name) != clash_lists_.end() ) {
-            clist = clash_lists_[clist_name];
-        }
+   
         for (auto const & mts : c->mts_lib()->motif_tree_states()) {
-            //key = node->mts()->name() + " " + mts->name();
-            //if( clist != NULL && clist->find(key) != clist->end()) { continue; }
             mts_type_pairs_.push_back(MTSTypePair(mts, c->index()));
         }
     }
     return mts_type_pairs_;
+}
+
+int
+MotifTreeStateSelector::is_valid_solution(
+    MotifTreeStateSearchNodeOP const & node) {
+    
+    int i = 0;
+    for(auto const & n : nodes_) {
+        if(n->required_uses() > node->node_counts()[i]) { return 0; }
+        i++;
+    }
+    return 1;
+    
 }
 
 

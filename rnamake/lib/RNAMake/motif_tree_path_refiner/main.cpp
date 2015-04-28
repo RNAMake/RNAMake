@@ -9,6 +9,7 @@
 #include <iostream>
 #include <random>
 #include <fstream>
+#include "motif_library.h"
 #include "motif_tree_state_selector.h"
 #include "motif_tree_state_search_scorer.h"
 #include "motif_tree_state_search_node.h"
@@ -365,11 +366,11 @@ test_converter() {
     }
     //MotifTreeStateTree mtst = get_set_problem(mts_names);
     //mtst.to_pdb("test.pdb");
-    MTSTtoMETConverter converter;
-    MotifEnsembleTreeOP met = converter.convert(mtst, 4);
+    /*MTSTtoMETConverter converter;
+    MotifEnsembleTreeOP met = converter.convert(mtst);
     MotifTreeStateTree mtst2 = met->get_mtst();
     MotifTree mt = mtst2.to_motiftree();
-    
+    */
     /*for(auto const & n : mtst.nodes()) {
         std::cout << n->index() << " " << n->mts()->name() << std::endl;
     }
@@ -458,7 +459,9 @@ test_sequence_designer() {
 }
 
 
-int optimize() {
+
+
+int optimize(int j_pos) {
     
     Strings lines = get_lines_from_file("mtss_ttr.log");
     Strings names;
@@ -483,6 +486,30 @@ int optimize() {
     MotifTreeStateAltPather alt_pather;
     std::vector<MotifTreeStateTree> all_trees;
     SeqandScores top_seqs;
+    
+    String prime5_seq = "GGAACAGCUCGAGUAGAGCUGAAA";
+    String prime5_ss  = "....((((((.....))))))...";
+    
+    String prime3_seq = "AAACGCAUCGAGUAGAUGCGAACAAAGAAACAACAACAACAAC";
+    String prime3_ss  = "...((((((.....)))))).......................";
+    
+    String common_seq_1 = "GGGAAAAGAGGAAAGGCGAAGGAAG";
+    String common_seq_2 = "GGGAAUAGGGCAAGGGAAUAGGAGG";
+    String common_ss    = ".........................";
+    
+    String submission_seq, submission_ss;
+    String full_seq, full_ss;
+    String designed_seq;
+
+    int size_diff;
+    int common_seq_size;
+    int actual_start;
+    
+    MTSTtoMETConverter converter;
+    MotifTreeStateNodeOP last;
+    float dist;
+    int count = 0;
+
     
     for( auto const & l : lines) {
         j++;
@@ -512,36 +539,217 @@ int optimize() {
         
         mt._add_connection(mt.nodes()[2], mt.nodes().back(), 1000);
         PoseOP p = mt.to_pose();
-        if(p->chains().size() > 1) { continue; }
+        if(p->chains().size() > 1) {
+            while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
+            continue;
         
-        /*all_trees = alt_pather.get_alt_paths(mtst);
+        }
+        
+        //all_trees = alt_pather.get_alt_paths(mtst);
         
         ss   = p->secondary_structure();
         dseq = p->designable_sequence();
         
-        designer.design(dseq, ss);
-        top_seqs = designer.top_seqs();*/
+        if(dseq.size() > 120) {
+            while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
+            continue;
+        }
         
-        MTSTtoMETConverter converter;
-        MotifEnsembleTreeOP met = converter.convert(mtst);
-        MotifTreeStateTree mtst2 = met->get_mtst();
-        p->to_pdb("org.pdb");
-        mtst2.to_pdb("convert.pdb");
-        exit(0);
+        size_diff = 150 - (int)dseq.length();
+        common_seq_size = size_diff / 2;
+        submission_seq = common_seq_1.substr(0, common_seq_size) + dseq;
+        submission_ss = common_ss.substr(0, common_seq_size) + ss;
+        size_diff = 150 - (int)submission_seq.length();
+        submission_seq = submission_seq + common_seq_2.substr(common_seq_2.size() - size_diff);
+        submission_ss = submission_ss + common_ss.substr(0, size_diff);
+
+        actual_start = common_seq_size + (int)prime5_seq.length();
         
+        full_seq = prime5_seq + submission_seq + prime3_seq;
+        full_ss  = prime5_ss  + submission_ss  + prime3_ss;
+        
+        designer.design(full_seq, full_ss);
+        top_seqs = designer.top_seqs();
+     
+        
+        //std::cout << ss << std::endl;
+        //std::cout << top_seqs[0].seq << std::endl;
+        //std::cout << top_seqs[0].score << std::endl;
+   
+        for( int k = 0; k < 10; k++) {
+        
+            designed_seq = top_seqs[k].seq.substr(actual_start, dseq.length());
+            MotifEnsembleTreeOP met = converter.convert(mtst,mt,designed_seq);
+            MotifTreeStateTree mtst2 = met->get_mtst();
+            dist = mtst2.nodes()[4]->active_states()[0]->d().distance(mtst2.last_node()->active_states()[0]->d());
+            std::cout << j << " " << top_seqs[k].seq.substr(24, 150) << " " << designed_seq << " " << top_seqs[k].score << " " <<  dist << std::endl;
+        
+        //mtst.to_pdb("org.pdb");
+        //mtst2.to_pdb("converted.pdb");
+        }
         
         while(mtst.last_node()->index() > 2) { mtst.remove_node(); }
         
-        /*ss   = p->secondary_structure();
-        dseq = p->designable_sequence();
-        
-        seq = designer.design(dseq, ss);
-        scores = designer.scores();*/
+        exit(0);
 
         
     }
     
 
+    
+    return 1;
+}
+
+MotifTreeStateSelectorOP
+custom_selector(
+    String lib1) {
+    
+    MotifTreeStateLibraryOPs mts_libs(2);
+    mts_libs[0] = MotifTreeStateLibraryOP ( new MotifTreeStateLibrary(TWOWAY));
+    mts_libs[1] = MotifTreeStateLibraryOP ( new MotifTreeStateLibrary(lib1));
+    MotifTreeStateLibraryOP hlib ( new MotifTreeStateLibrary (HELIX, 5));
+    
+    SelectorNodeOPs nodes;
+    SelectorNodeOP node (new SelectorNode(hlib, 0));
+    nodes.push_back(node);
+    int i = 1;
+    for( auto const & mts_lib : mts_libs) {
+        SelectorNodeOP n (new SelectorNode(mts_lib, i));
+        nodes[0]->add_connection(n);
+        n->add_connection(nodes[0]);
+        nodes.push_back(n);
+        i++;
+    }
+    
+    nodes[2]->max_uses(1);
+    nodes[2]->required_uses(1);
+
+    MotifTreeStateSelectorOP selector ( new MotifTreeStateSelector(nodes));
+    return selector;
+
+    
+}
+
+
+int build_ribozyme() {
+    
+    Strings motifs = get_lines_from_file(base_dir() + "/rnamake/lib/RNAMake/motif_tree_path_refiner/hammerhead_motifs.str");
+    ResidueTypeSet rts;
+    MotifOP hammerhead_tc ( new Motif(motifs[0], rts));
+    MotifOP hammerhead_core ( new Motif(motifs[1], rts));
+    MotifOP fmn (new Motif(motifs[2], rts));
+
+    MotifTreeStateLibraryOPs mts_libs(2);
+    mts_libs[0] = MotifTreeStateLibraryOP ( new MotifTreeStateLibrary(HELIX, 5));
+    mts_libs[1] = MotifTreeStateLibraryOP ( new MotifTreeStateLibrary(TWOWAY));
+    
+    MotifTree mt;
+    MotifLibrary mlib ( HELIX );
+    MotifTreeNodeOP node = mt.add_motif(hammerhead_core, NULL, 2);
+    mt.add_motif(mlib.get_motif("HELIX.LE.20"));
+    mt.add_motif(hammerhead_tc, NULL, 1);
+    mt.add_motif(fmn, node);
+
+    PoseOP start_conf = mt.to_pose();
+
+    start_conf->to_pdb("test.pdb");
+    Beads beads = start_conf->get_beads(start_conf->ends());
+    Points centers;
+    for (auto const & b : beads) {
+        if(b.btype() == PHOS) { continue; }
+        centers.push_back(b.center());
+    }
+
+    int i = 0;
+    for (auto const & end : start_conf->ends()) {
+        std::cout << i << " " << end->name() << std::endl;
+        i++;
+    }
+    BasepairStateOP start (new BasepairState(start_conf->ends()[1]->state()));
+    BasepairStateOP end (new BasepairState(start_conf->ends()[2]->state()));
+    
+    MotifTreeStateSearch search;
+      MotifTreeStateSelectorOP selector ( new MotifTreeStateSelector(mts_libs, "round_robin"));
+    //MotifTreeStateSelectorOP selector = custom_selector("fmn");
+    search.base_beads(centers);
+    search.set_numeric_option("max_size", 130);
+    search.set_numeric_option("accept_ss_score", 0);
+    search.set_numeric_option("max_n_solutions", 1);
+    search.set_numeric_option("save_solutions", 1);
+    search.set_numeric_option("accept_score", 10);
+
+    MotifTreeStateSearchScorerOP scorer ( new MTSS_Astar() );
+    MotifTreeStateSearchSolutionOPs solutions = search.search(start, end, selector, scorer);
+    std::cout << solutions.size() << std::endl;
+
+    
+    i = 0;
+    std::stringstream ss;
+    for (auto const & s : solutions) {
+        for (auto const & n : s->path() ) {
+            std::cout << n->mts()->name() << " ";
+        }
+        std::cout << std::endl;
+        ss << "solutions." << i << ".pdb";
+        //s->to_mtst().to_pdb(ss.str());
+        PoseOP sol = s->to_mtst().to_pose();
+        mt.add_motif(sol);
+        mt.write_pdbs();
+        ss.str("");
+        i++;
+    }
+
+    
+    
+    return 1;
+}
+
+int build_ribozyme_final_model() {
+    
+    Strings motifs = get_lines_from_file(base_dir() + "/rnamake/lib/RNAMake/motif_tree_path_refiner/hammerhead_motifs.str");
+    ResidueTypeSet rts;
+    MotifOP hammerhead_tc ( new Motif(motifs[0], rts));
+    MotifOP hammerhead_core ( new Motif(motifs[1], rts));
+    MotifOP fmn (new Motif(motifs[2], rts));
+    
+    MotifTree mt;
+    MotifLibrary mlib ( HELIX );
+    MotifTreeNodeOP node = mt.add_motif(hammerhead_core, NULL, 2);
+    mt.add_motif(mlib.get_motif("HELIX.LE.20"));
+    mt.add_motif(hammerhead_tc, NULL, 1);
+    mt.add_motif(fmn, node);
+    
+    PoseOP start_conf = mt.to_pose();
+    MotifTreeStateOP start_mts = motif_to_state(start_conf, 0);
+    
+    MotifTreeStateLibraryOPs mts_libs(2);
+    mts_libs[0] = MotifTreeStateLibraryOP ( new MotifTreeStateLibrary(HELIX, 5));
+    mts_libs[1] = MotifTreeStateLibraryOP ( new MotifTreeStateLibrary(TWOWAY));
+    
+    Strings names = split_str_by_delimiter("HELIX.LE.4-0-0-0-0-1-1 TWOWAY.2PXV.1-0-0-1-0-0-0 HELIX.LE.5-0-0-0-0-1-1 TWOWAY.1S72.49-0-0-0-0-1-1 HELIX.LE.8-0-0-0-0-1-1 TWOWAY.3P59.1-0-0-0-0-1-1 HELIX.LE.2-0-0-0-0-1-0 TWOWAY.2ZY6.0-0-0-0-0-1-1 HELIX.LE.4-0-0-0-0-1-1", " ");
+    
+    MotifTreeStateTree mtst;
+    mtst.add_state(start_mts, NULL);
+    mtst.sterics(0);
+    
+    int pos = 0;
+    int i = -1;
+    
+    for(auto const & name : names) {
+        i++;
+        if ( i % 2 == 0)  { pos = 0; }
+        else              { pos = 1; }
+        
+        if(i == 1) {
+            mtst.add_state(mts_libs[pos]->get_state(name), NULL, 1);
+        }
+        else {
+            mtst.add_state(mts_libs[pos]->get_state(name), NULL);
+        }
+        
+    }
+
+    mtst.to_pdb("test_2.pdb");
     
     return 1;
 }
@@ -553,8 +761,9 @@ int main(int argc, const char * argv[]) {
     //test_path_refiner_tecto(argc, argv);
     //test_converter();
     //test_sequence_designer();
-    optimize();
-    
+    optimize(std::stoi(argv[1]));
+    //build_ribozyme();
+    //build_ribozyme_final_model();
     return 0;
 }
 

@@ -40,7 +40,7 @@ public:
                 helix.push_back(n);
             }
             else {
-                helices_.push_back(helix);
+                if(helix.size() > 0) {helices_.push_back(helix); }
                 helix = SecondaryStructureNodeOPs();
             }
         }
@@ -77,6 +77,25 @@ public:
         return bps;
     }
     
+    inline
+    SecondaryStructureNodeOPs
+    get_designable_bulges() const  {
+        SecondaryStructureNodeOPs bulges;
+        int success = 0;
+        
+        for ( auto const & n : nodes_) {
+            if(n->ss_type() != SSN_BP) {
+                success = 0;
+                String seq = n->seq();
+                for(auto const & s : seq) {
+                    if(s == 'N') {  success = 1; break; }
+                }
+                if(success) { bulges.push_back(n); }
+            }
+        }
+        return bulges;
+    }
+
     int
     gc_pairs() const {
         int count = 0;

@@ -111,14 +111,14 @@ MotifTreeStateSearch::search(
         score = scorer_->accept_score(current);
         if ( score < min_score && current->lib_type() == 0) {
             fail = 0;
-            if(current->ss_score() > accept_ss_score) { continue;}
+            if(current->ss_score() > accept_ss_score) { continue; }
+            if(!node_selector_->is_valid_solution(current)) { continue; }
             if(!fail) {
                 MotifTreeStateSearchSolutionOP solution ( new MotifTreeStateSearchSolution(current, score) );
                 
                 if(options_.numeric("save_solutions") == 1) {
                     solutions_.push_back(solution);
                 }
-                exit(0);
                 
                 sol_count ++;
                 if(options_.numeric("log") == 1) {
@@ -138,12 +138,6 @@ MotifTreeStateSearch::search(
         if(current->level() == max_node_level) { continue; }
         
         MotifTreeStateSearchSolutionOP solution ( new MotifTreeStateSearchSolution(current, score) );
-        for(auto const & n : solution->path()) {
-            log << n->mts()->name() << " ";
-            std::cout << n->mts()->name() << " ";
-        }
-        std::cout << std::endl;
-        
         
         test_node->parent(current);
         test_node->level(current->level() + 1);
@@ -163,7 +157,7 @@ MotifTreeStateSearch::search(
                         for(auto const & b1 : base_beads_) {
                             for (auto const & b2 : test_node->beads()) {
                                 dist = b1.distance(b2);
-                                if (dist < 2.8) { clash = 1; break; }
+                                if (dist < 3.5) { clash = 1; break; }
                             }
                         }
                     }
@@ -199,9 +193,7 @@ MotifTreeStateSearch::_get_start_node(
     states[0] = start;
     MotifTreeStateOP mts (new MotifTreeState("start", 1, 0, 0, Points(), states, 0, ""));
     MotifTreeStateSearchNodeOP start_node ( new MotifTreeStateSearchNode(mts, NULL, -1));
-    //start_node->setup_node_count((int)node_selector_->nodes().size());
-    start_node->setup_node_count(1);
-
+    start_node->setup_node_count((int)node_selector_->nodes().size());
     return start_node;
 }
 

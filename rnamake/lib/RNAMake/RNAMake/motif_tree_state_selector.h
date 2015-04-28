@@ -30,7 +30,9 @@ public:
         int required_uses = 0):
         mts_lib_ ( mts_lib ),
         index_ ( index ),
-        connections_ ( SelectorNodeOPs() ) {}
+        connections_ ( SelectorNodeOPs() ),
+        required_uses_(required_uses),
+        max_uses_(max_uses) {}
     
     ~SelectorNode() {}
     
@@ -56,6 +58,18 @@ public:
     
     inline
     int const & max_uses() const { return max_uses_; }
+    
+    inline
+    int const & required_uses() const { return required_uses_; }
+    
+public:
+    
+    inline
+    void max_uses(int nmax_uses) { max_uses_ = nmax_uses; }
+    
+    inline
+    void required_uses(int nrequired_uses) { required_uses_ = nrequired_uses; }
+    
 
 private:
     MotifTreeStateLibraryOP mts_lib_;
@@ -69,11 +83,22 @@ public:
         MotifTreeStateLibraryOPs const &,
         String mode = "helix_flank");
     
+    MotifTreeStateSelector(
+        SelectorNodeOPs const & nodes):
+    clash_lists_ ( std::map<String, StringIntMapOP>() ),
+    mts_type_pairs_ ( MTSTypePairs() ) {
+        nodes_ = nodes;
+        _setup_clash_lists();
+    }
+    
     ~MotifTreeStateSelector() {}
     
 public:
     MTSTypePairs const &
     get_children_mts(MotifTreeStateSearchNodeOP const &);
+    
+    int
+    is_valid_solution(MotifTreeStateSearchNodeOP const &);
     
 private:
     

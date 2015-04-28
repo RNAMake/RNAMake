@@ -74,6 +74,8 @@ SecondaryStructureTree::_build_tree(
         nodes_.push_back(current);
     }
     
+    return;
+    
     int nway = 0;
     SecondaryStructureNodeOPs nodes_to_erase;
     for (auto & n : nodes_) {

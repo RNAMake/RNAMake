@@ -17,12 +17,19 @@
 MotifEnsembleTreeOP
 MTSTtoMETConverter::convert(
     MotifTreeStateTree const & mtst,
+    MotifTree & mt,
+    String const & seq,
     int start_pos) {
     
-    MotifTree mt = mtst.to_motiftree();
     mt_ = mt;
     p_ = mt.to_pose();
-    dseq_ = p_->sequence();
+    
+    if(seq.length() == 0) {
+        dseq_ = p_->sequence();
+    }
+    else {
+        dseq_ = seq;
+    }
     met_ = MotifEnsembleTreeOP ( new MotifEnsembleTree() );
     node_num_map_.clear();
     

@@ -29,6 +29,8 @@ public:
     MotifEnsembleTreeOP
     convert(
         MotifTreeStateTree const &,
+        MotifTree &,
+        String const & seq = "",
         int start_pos = 1);
     
 private:

@@ -16,7 +16,9 @@ SequenceDesigner::design(
 
     ss_tree_ = SecondaryStructureTree(structure, sequence);
     SecondaryStructureNodeOPs designable_bps = ss_tree_.get_designable_bps();
+    //SecondaryStructureNodeOPs designable_bulges = ss_tree_.get_designable_bulges();
     for(auto & bp_node : designable_bps) { mutate_basepair(bp_node); }
+    
     
     int bps_pos = 0, bps_size = (int)designable_bps.size();
     float new_score;
