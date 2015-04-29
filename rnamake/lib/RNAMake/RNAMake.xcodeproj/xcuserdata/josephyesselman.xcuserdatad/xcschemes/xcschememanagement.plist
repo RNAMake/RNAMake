@@ -49,6 +49,11 @@
 			<key>orderHint</key>
 			<integer>16</integer>
 		</dict>
+		<key>math.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>20</integer>
+		</dict>
 		<key>motif.unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -99,6 +104,11 @@
 			<key>orderHint</key>
 			<integer>12</integer>
 		</dict>
+		<key>unittests.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>21</integer>
+		</dict>
 		<key>vienna_clone.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -107,6 +117,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>1C147FF11AF02B3F00F01A6D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>1C2241411AC62A4100F76233</key>
 		<dict>
 			<key>primary</key>
@@ -213,6 +228,11 @@
 			<true/>
 		</dict>
 		<key>1CA7AC3D1A8FFBDD0063C8A8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1CBEFE631AF0496E00C03772</key>
 		<dict>
 			<key>primary</key>
 			<true/>
