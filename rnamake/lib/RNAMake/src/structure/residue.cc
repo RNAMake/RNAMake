@@ -8,15 +8,31 @@
 
 #include <sstream>
 #include <fstream>
-#include "residue.h"
-#include "util.h"
+
+//RNAMake Headers
+#include "structure/residue.h"
+
+Point
+center(
+       AtomOPs const & atoms) {
+    assert(atoms.size() > 0);
+    Point center(0, 0, 0);
+    for(auto const & a : atoms) {
+        if(a.get() == NULL) {
+            continue;
+        }
+        center += a->coords();
+    }
+    return center / float(atoms.size());
+}
+
 
 void
 Residue::setup_atoms(
     AtomOPs & atoms) {
-    atoms_ = AtomOPs(atoms.size(), NULL);
+    atoms_ = AtomOPs(atoms.size());
     for(auto & a : atoms) {
-        if(a == NULL) { continue; }
+        if(a.get() == NULL) { continue; }
         String name_change = rtype_.get_correct_atom_name(*a);
         //check for misnamed atoms
         if(name_change.length() != 0) { a->name(name_change); }
@@ -32,7 +48,7 @@ Residue::get_beads() const {
     int i = -1;
     for( auto const & a : atoms_) {
         i++;
-        if(a == NULL) { continue; }
+        if(a.get() == NULL) { continue; }
         if     ( i < 3 ) { phos_atoms.push_back(a);  }
         else if( i < 12) { sugar_atoms.push_back(a); }
         else             { base_atoms.push_back(a);  }
@@ -51,10 +67,10 @@ Residue::copy() const {
     int i = -1;
     for(auto const & a : atoms_) {
         i++;
-        if(a == NULL) { continue; }
+        if(a.get() == NULL) { continue; }
         copied_r.atoms_[i] = AtomOP( new Atom( a->copy()));
     }
-    copied_r.uuid(uuid_);    
+    copied_r.uuid_ = uuid_;
     return copied_r;
 }
 
@@ -63,7 +79,7 @@ Residue::to_str() const {
     std::stringstream ss;
     ss << rtype_.name() << "," << name_ << "," << num_ << "," << chain_id_ << "," << i_code_ << ",";
     for( auto const & a : atoms_) {
-        if( a == NULL) { ss << "N,"; }
+        if( a.get() == NULL) { ss << "N,"; }
         else           { ss << a->to_str() + ","; }
     }
     return ss.str();
@@ -75,7 +91,7 @@ Residue::to_pdb_str(
 
     String s;
     for(auto const & a : atoms_) {
-        if( a == NULL) { continue; }
+        if( a.get() == NULL) { continue; }
         char buffer [200];
         std::sprintf(buffer, "%-6s%5d %-4s%1s%-4s%1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s\n", "ATOM", acount, a->name().c_str(), "", short_name().c_str(), chain_id_.c_str(), num_, "",  a->coords()[0], a->coords()[1], a->coords()[2], 1.00, 0.00, "", "");
         s += String(buffer);
@@ -107,7 +123,7 @@ str_to_residue(
     int i = 5;
     while ( i < spl.size() ) {
         if( spl[i].length() == 1) {
-            atoms.push_back( NULL );
+            atoms.push_back( AtomOP(NULL) );
         }
         else {
             AtomOP aop ( new Atom ( str_to_atom(spl[i]) ));

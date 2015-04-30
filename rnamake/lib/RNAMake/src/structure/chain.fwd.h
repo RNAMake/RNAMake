@@ -13,7 +13,6 @@
 
 class Chain;
 
-typedef std::vector<Chain> Chains;
 typedef std::shared_ptr<Chain> ChainOP;
 typedef std::vector<ChainOP> ChainOPs;
 

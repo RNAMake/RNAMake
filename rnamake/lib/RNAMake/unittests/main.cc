@@ -6,27 +6,18 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <vector>
+#include "util_unittests/uuid_unittest.h"
 
 #include "structure_unittests/atom_unittest.h"
 #include "structure_unittests/residue_type_set_unittest.h"
-
-int run_structure_unittests() {
-    
-    std::vector<Unittest*> unittests(2);
-    unittests[0] = new AtomUnittest();
-    unittests[1] = new ResidueTypeSetUnittest();
-    
-    for(auto & test : unittests) { test->run(); }
-    
-    return 1;
-}
-
+#include "structure_unittests/residue_unittest.h"
+#include "structure_unittests/chain_unittest.h"
 
 
 int main(int argc, const char * argv[]) {
 
-    run_structure_unittests();
-
+    ChainUnittest test;
+    test.run();
+    
 
 }

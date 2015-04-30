@@ -11,10 +11,12 @@
 
 #include <stdio.h>
 #include <algorithm>
-#include "chain.fwd.h"
-#include "residue.h"
-#include "residue_type_set.h"
-#include "types.h"
+
+//RNAMake Headers
+#include "base/types.h"
+#include "structure/chain.fwd.h"
+#include "structure/residue.h"
+#include "structure/residue_type_set.h"
 
 class Chain {
 public:
@@ -43,6 +45,8 @@ public:
     ChainOP
     subchain(int start, int end) {
         if(start < 0) { throw "start cannot be less then 0"; }
+        if(start == end) { throw "start and end cannot be the same value"; }
+        if(end > residues().size()) { throw "end is greater then chain length"; }
         return ChainOP(new Chain(ResidueOPs(residues_.begin() + start, residues_.begin() + end)));
     }
     
@@ -69,22 +73,12 @@ public:
     
     void
     to_pdb(String const) const;
-        
-public: //setters
-    
-    inline
-    void
-    residues(ResidueOPs const & nresidues) { residues_ = nresidues; }
     
 public: //getters
     
     inline
     ResidueOPs &
     residues() { return residues_; }
-    
-    /*inline
-    const ResidueOPs &  
-    residues() const { return residues_; }*/ 
     
 private:
     ResidueOPs residues_;

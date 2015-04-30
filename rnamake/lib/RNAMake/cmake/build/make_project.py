@@ -14,9 +14,13 @@ for p in lib_paths:
     f.write(")\n")
 
 matches = []
+progs = "main.cc all_tests.cc".split()
 for root, dirnames, filenames in os.walk('../../unittests'):
     for filename in fnmatch.filter(filenames, '*.cc'):
+        if filename in progs:
+            continue
         matches.append(os.path.join(root, filename))
+
 
 f = open("unittests.cmake", "w")
 f.write("set(unittests_files\n")

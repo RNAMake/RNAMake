@@ -11,11 +11,15 @@
 
 #include <fstream>
 #include <iostream>
-#include "types.h"
+
+//RNAMake Headers
+#include "base/types.h"
+
 
 class Uuid {
 public:
     Uuid();
+    
     ~Uuid() {}
     
 public:
@@ -42,5 +46,13 @@ private:
 
 std::ostream &
 operator <<( std::ostream &, Uuid const &);
+
+struct UuidCompare {
+    bool operator() (
+        Uuid const & u1,
+        Uuid const & u2) const {
+        return u1 < u2;
+    }
+};
 
 #endif

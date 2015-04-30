@@ -7,3 +7,10 @@
 //
 
 #include "unittest.h"
+
+
+String
+unittest_resource_dir() {
+    return base_dir() + "/rnamake/lib/RNAMake/unittests/resources/";
+}
+

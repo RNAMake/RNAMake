@@ -8,7 +8,9 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "uuid.h"
+
+//RNAMake Headers
+#include "util/uuid.h"
 
 const char alphanum[] =
 "0123456789"

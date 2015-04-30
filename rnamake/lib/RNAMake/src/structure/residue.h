@@ -10,11 +10,16 @@
 #define __RNAMake__residue__
 
 #include <stdio.h>
-#include "uuid.h"
-#include "residue_type.h"
-#include "residue_type_set.h"
-#include "types.h"
-#include "atom.h"
+
+//RNAMake Headers
+#include "base/types.h"
+#include "util/uuid.h"
+#include "structure/atom.h"
+#include "structure/residue_type.h"
+#include "structure/residue_type_set.h"
+
+Point
+center(AtomOPs const &);
 
 enum BeadType { PHOS = 0, SUGAR = 1, BASE = 2 };
 
@@ -107,7 +112,7 @@ public:
         
         // 5' to 3'
         AtomOP o3_atom = get_atom(o3), p_atom = res.get_atom(p);
-        if(o3_atom != NULL && p_atom != NULL) {
+        if(o3_atom.get() != NULL && p_atom.get() != NULL) {
             if( o3_atom->coords().distance(p_atom->coords()) < cutoff) {
                 return 1;
             }
@@ -115,7 +120,7 @@ public:
         
         // 3' to 5'
         o3_atom = res.get_atom(o3); p_atom = get_atom(p);
-        if(o3_atom != NULL && p_atom != NULL) {
+        if(o3_atom.get() != NULL && p_atom.get() != NULL) {
             if( o3_atom->coords().distance(p_atom->coords()) < cutoff) {
                 return -1;
             }
@@ -132,7 +137,7 @@ public:
     acount() {
         int count = 0;
         for (auto const & a : atoms_) {
-            if (a != NULL) { count++; }
+            if (a.get() != NULL) { count++; }
         }
         return count;
     }
@@ -156,10 +161,6 @@ public:
 
     
 public: // setters
-    inline
-    void
-    uuid(Uuid const & nuuid) { uuid_ = nuuid; }
-    
     inline
     void
     num(int nnum) { num_ = nnum; }
@@ -214,7 +215,6 @@ str_to_residue(
     String const & s,
     ResidueTypeSet const & rts);
 
-typedef std::vector<Residue> Residues;
 typedef std::shared_ptr<Residue> ResidueOP;
 typedef std::vector<ResidueOP> ResidueOPs;
 

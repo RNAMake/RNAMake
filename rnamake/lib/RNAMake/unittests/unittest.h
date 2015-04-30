@@ -12,6 +12,12 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "util/settings.h"
+
+String
+unittest_resource_dir();
+
+
 class Unittest {
 public:
     

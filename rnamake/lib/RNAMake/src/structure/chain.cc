@@ -52,13 +52,12 @@ Chain
 str_to_chain(
     String const & s,
     ResidueTypeSet const & rts) {
-    Chain c;
     ResidueOPs residues;
     Strings spl = split_str_by_delimiter(s, ";");
     for(auto const & r_str : spl) {
         ResidueOP r (new Residue (str_to_residue(r_str, rts)));
         residues.push_back(r);
     }
-    c.residues(residues);
+    Chain c (residues);
     return c;
 }
