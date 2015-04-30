@@ -9,8 +9,8 @@
 #include <iostream>
 
 //RNAMake Headers
+#include "base/types.h"
 #include "util/settings.h"
-#include "util/types.h" 
 
 String
 base_dir() {

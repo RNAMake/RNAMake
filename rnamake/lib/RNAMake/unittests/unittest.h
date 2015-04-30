@@ -10,12 +10,13 @@
 #define __RNAMake__unittest__
 
 #include <stdio.h>
+#include <iostream>
 
 class Unittest {
 public:
     
     virtual
-    int run() = 0;
+    int run() { return  0; }
     
     
 };

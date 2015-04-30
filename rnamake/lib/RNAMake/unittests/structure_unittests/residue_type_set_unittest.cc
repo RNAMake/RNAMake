@@ -1,18 +1,16 @@
 //
-//  main.cpp
-//  ResidueTypeSet_unittest
+//  residue_type_set_unittest.cc
+//  RNAMake
 //
-//  Created by Joseph Yesselman on 1/24/15.
+//  Created by Joseph Yesselman on 4/29/15.
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <iostream>
-#include "residue_type_set.h"
-#include "residue_type.h"
-#include "types.h"
+#include "residue_type_set_unittest.h"
+
 
 int
-test_creation_residue_type() {
+ResidueTypeSetUnittest::test_creation_residue_type() {
     String name("GUA");
     StringIntMap atom_map;
     atom_map["P"] = 0;
@@ -22,7 +20,7 @@ test_creation_residue_type() {
 }
 
 int
-test_match_name() {
+ResidueTypeSetUnittest::test_match_name() {
     String name("GUA");
     StringIntMap atom_map;
     atom_map["P"] = 0;
@@ -41,13 +39,13 @@ test_match_name() {
 }
 
 int
-test_creation() {
+ResidueTypeSetUnittest::test_creation() {
     ResidueTypeSet rts;
     return 1;
 }
 
 int
-test_get_rtype_by_resname() {
+ResidueTypeSetUnittest::test_get_rtype_by_resname() {
     ResidueTypeSet rts;
     String name1 = "GUA", name2 = "@%$";
     ResidueType rt = rts.get_rtype_by_resname(name1);
@@ -64,21 +62,11 @@ test_get_rtype_by_resname() {
 }
 
 int
-test_atom_pos_by_name() {
+ResidueTypeSetUnittest::test_atom_pos_by_name() {
     ResidueTypeSet rts;
     ResidueType rtype = rts.get_rtype_by_resname("GUA");
     String name = "P";
-    int pos = rtype.atom_pos_by_name(name);
+    rtype.atom_pos_by_name(name);
     return 1;
 }
 
-
-int main(int argc, const char * argv[]) {
-    if (test_creation_residue_type() == 0) { std::cout << "test_creation_residue_type failed" << std::endl;  }
-    if (test_creation() == 0 )             { std::cout << "test_creation failed" << std::endl; }
-    if (test_match_name() == 0 )           { std::cout << "test_match_name failed" << std::endl; }
-    if (test_get_rtype_by_resname() == 0 ) { std::cout << "test_get_rtype_by_resname failed" << std::endl; }
-    if (test_atom_pos_by_name() == 0 )     { std::cout << "test_atom_pos_by_name failed" << std::endl; }
- 
-    return 0;
-}

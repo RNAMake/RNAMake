@@ -41,14 +41,7 @@ public:
 public:
     
     int
-    run() {
-        if (test_creation() == 0)    {  std::cout << "test_creation failed" << std::endl; }
-        if (test_to_pdb_str() == 0)  {  std::cout << "test_to_pdb_str failed" << std::endl; }
-        if (test_str_to_atom() == 0) {  std::cout << "test_str_to_atom failed" << std::endl; }
-        if (test_copy() == 0)        {  std::cout << "test_copy failed" << std::endl; }
-        
-        return 1;
-    }
+    run();
     
     
 };

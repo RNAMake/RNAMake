@@ -14,6 +14,7 @@
 #include <string>
 #include <map>
 #include <sys/stat.h>
+#include <fstream>
 
 //RNAMake Headers
 #include "base/types.h"

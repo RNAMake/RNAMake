@@ -8,9 +8,11 @@
 
 #include <dirent.h>
 #include <fstream>
-#include "residue_type_set.h"
-#include "settings.h"
-#include "types.h"
+
+//RNAMake Headers
+#include "structure/residue_type_set.h"
+#include "util/settings.h"
+#include "base/types.h"
 
 ResidueTypeSet::ResidueTypeSet() {
     residue_types_ = ResidueTypes();

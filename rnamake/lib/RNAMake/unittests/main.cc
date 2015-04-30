@@ -6,12 +6,18 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "atom_unittest.h"
+#include <vector>
+
+#include "structure_unittests/atom_unittest.h"
+#include "structure_unittests/residue_type_set_unittest.h"
 
 int run_structure_unittests() {
     
-    AtomUnittest atom_unittest;
-    atom_unittest.run();
+    std::vector<Unittest*> unittests(2);
+    unittests[0] = new AtomUnittest();
+    unittests[1] = new ResidueTypeSetUnittest();
+    
+    for(auto & test : unittests) { test->run(); }
     
     return 1;
 }
