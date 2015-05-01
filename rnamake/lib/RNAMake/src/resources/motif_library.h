@@ -11,11 +11,13 @@
 
 #include <stdio.h>
 #include <map>
-#include "types.h"
-#include "motif.h"
-#include "motif_type.h"
-#include "sqlite3_connection.h"
-#include "residue_type_set.h"
+
+//RNAMAke Headers
+#include "base/types.h"
+#include "structure/residue_type_set.h"
+#include "motif/motif.h"
+#include "motif/motif_type.h"
+#include "resources/sqlite3_connection.h"
 
 typedef std::map<String, MotifOP> StringMotifMap;
 
@@ -38,6 +40,9 @@ public:
     
     void
     load_all(int limit = 9999);
+    
+    bool
+    contains_motif(String const &);
     
 public:
     

@@ -19,6 +19,9 @@
 #include "structure_unittests/chain_unittest.h"
 #include "structure_unittests/structure_unittest.h"
 
+#include "resources_unittests/motif_library_unittest.h"
+#include "resources_unittests/library_manager_unittest.h"
+
 int run_util_unittests() {
     
     UuidUnittest uuid_test;
@@ -43,12 +46,21 @@ int run_structure_unittests() {
     return 1;
 }
 
+int run_resource_unittests() {
+    
+    std::vector<Unittest*> unittests(2);
+    unittests[0] = new MotifLibraryUnittest();
+    unittests[1] = new LibraryManagerUnittest();
+    
+
+}
+
 
 
 int main(int argc, const char * argv[]) {
     
     run_util_unittests();
     run_structure_unittests();
-    
-    
+    run_resource_unittests();
+    return 0;
 }

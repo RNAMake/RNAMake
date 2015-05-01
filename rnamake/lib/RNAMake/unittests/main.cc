@@ -10,10 +10,13 @@
 
 #include "motif_unittests/motif_unittest.h"
 
+#include "resources_unittests/motif_library_unittest.h"
+#include "resources_unittests/library_manager_unittest.h"
+
 
 int main(int argc, const char * argv[]) {
 
-    MotifUnittest test;
+    LibraryManagerUnittest test;
     test.run();
     
 

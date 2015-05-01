@@ -12,8 +12,9 @@
 #include <stdio.h>
 #include <vector>
 
-#include "types.h"
-#include "FileIO.h"
+//RNAMake Headers
+#include "base/types.h"
+#include "util/file_io.h"
 
 struct Option {
 	Option() {}

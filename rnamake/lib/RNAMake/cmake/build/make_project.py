@@ -2,7 +2,7 @@ import os
 import glob
 import fnmatch
 
-libs = "base math util structure motif"
+libs = "base math util structure motif resources"
 lib_paths = libs.split()
 
 for p in lib_paths:

@@ -6,11 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "motif_library.h"
-#include "settings.h"
-
-//Motif const
-//MotifLibrary::get_motif();
+#include "util/settings.h"
+#include "resources/motif_library.h"
 
 void
 MotifLibrary::load_all(int limit) {
@@ -19,6 +16,9 @@ MotifLibrary::load_all(int limit) {
     Strings values(2);
     while( true) {
         values = connection_.next();
+        if (values[0].length() == 0) {
+            break;
+        }
         MotifOP m (new Motif ( values[0], rts_));
         mdict_[ values[1] ] = m;
         i++;
@@ -47,6 +47,20 @@ MotifLibrary::get_motif(String const & name) {
     //return m;
 
 }
+
+bool
+MotifLibrary::contains_motif(String const & name) {
+    if (mdict_.find(name) != mdict_.end()) { return true; }
+    
+    connection_.query("SELECT * from motifs WHERE name= \'"+name+"\' LIMIT 1");
+    Strings values = connection_.next();
+    
+    if( values[0].length() < 1) { return false; }
+    else { return true; }
+    
+    
+}
+
 
 MotifLibrary
 unique_twoway_lib() {

@@ -11,7 +11,9 @@
 
 #include <stdio.h>
 #include <iostream>
-#include "types.h"
+
+//RNAMake Headers
+#include "base/types.h"
 
 template< typename T >
 class CartesianProduct {

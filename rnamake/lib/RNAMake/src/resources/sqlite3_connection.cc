@@ -7,8 +7,9 @@
 //
 
 #include <string.h>
-#include "sqlite3_connection.h"
-#include "settings.h"
+#include "util/settings.h"
+#include "resources/sqlite3_connection.h"
+
 
 Sqlite3Connection::Sqlite3Connection(
     MotifType const & mtype) {
@@ -28,9 +29,11 @@ Sqlite3Connection::Sqlite3Connection(
 String
 Sqlite3Connection::get_db_path(MotifType const & mtype) {
     String path = resources_path() + "/motif_libraries/";
-    if     ( mtype == TWOWAY) { path += "two_ways"; }
-    else if( mtype == HELIX ) { path += "helices";  }
+    if     ( mtype == TWOWAY)    { path += "two_ways"; }
+    else if( mtype == HELIX )    { path += "helices";  }
     else if( mtype == TCONTACT ) { path += "tertiary_contacts";  }
+    else if( mtype == NWAY)      { path += "junctions"; }
+    else if( mtype == HAIRPIN)   { path += "hairpins"; }
     else { throw "could not find mtype"; }
     return path+".db";
     
@@ -55,7 +58,7 @@ void
 Sqlite3Connection::query(String const query_statement) {
     rc_ = sqlite3_prepare_v2(db_,
                              query_statement.c_str(),
-                             strlen(query_statement.c_str())+1,
+                             (int)strlen(query_statement.c_str())+1,
                              &stmt_,
                              NULL);
     rc_ = sqlite3_step(stmt_);

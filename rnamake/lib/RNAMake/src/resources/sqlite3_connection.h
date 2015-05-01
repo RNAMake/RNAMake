@@ -12,10 +12,13 @@
 #include <stdio.h>
 #include <iostream>
 #include <sqlite3.h>
-#include "motif_type.h"
-#include "types.h"
 
-static
+
+//RNAMake Libraries
+#include "base/types.h"
+#include "motif/motif_type.h"
+
+/*static
 int
 callback(void *NotUsed, int argc, char **argv, char **azColName){
     int i;
@@ -24,7 +27,7 @@ callback(void *NotUsed, int argc, char **argv, char **azColName){
     }
     printf("\n");
     return 0;
-}
+}*/
 
 class Sqlite3Connection {
 public:
