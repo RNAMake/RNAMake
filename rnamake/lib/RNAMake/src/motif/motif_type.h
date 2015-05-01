@@ -10,7 +10,9 @@
 #define __RNAMake__motif_type__
 
 #include <stdio.h>
-#include "types.h"
+
+
+#include "base/types.h"
 
 enum MotifType {
     TWOWAY            = 0,

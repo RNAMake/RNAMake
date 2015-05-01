@@ -14,7 +14,7 @@
 
 Point
 center(
-       AtomOPs const & atoms) {
+    AtomOPs const & atoms) {
     assert(atoms.size() > 0);
     Point center(0, 0, 0);
     for(auto const & a : atoms) {
@@ -31,6 +31,7 @@ void
 Residue::setup_atoms(
     AtomOPs & atoms) {
     atoms_ = AtomOPs(atoms.size());
+    int count = 0;
     for(auto & a : atoms) {
         if(a.get() == NULL) { continue; }
         String name_change = rtype_.get_correct_atom_name(*a);
@@ -39,7 +40,10 @@ Residue::setup_atoms(
         int pos = rtype_.atom_pos_by_name(a->name());
         if(pos == -1) { continue; }
         atoms_[pos] = a;
+        count++;
     }
+    
+    if(count == 0) { throw "Residue has zero atoms something wrong"; }
 }
 
 Beads

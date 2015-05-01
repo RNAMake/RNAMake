@@ -10,13 +10,14 @@
 #define __RNAMake__basepair__
 
 #include <stdio.h>
-#include "basepair_state.h"
-#include "residue.h"
-#include "atom.h"
-#include "uuid.h"
-#include "xyzMatrix.h"
-#include "types.h"
-#include "util.h"
+
+//RNAMake Headers
+#include "base/types.h"
+#include "util/uuid.h"
+#include "math/xyz_matrix.h"
+#include "structure/atom.h"
+#include "structure/residue.h"
+#include "structure/basepair_state.h"
 
 class Basepair {
 public:
@@ -37,10 +38,10 @@ public:
     
         atoms_ = AtomOPs();
         for( auto const & a : res1->atoms() ) {
-            if(a != NULL) { atoms_.push_back(a); }
+            if(a.get() != NULL) { atoms_.push_back(a); }
         }
         for( auto const & a : res2->atoms() ) {
-            if(a != NULL) { atoms_.push_back(a); }
+            if(a.get() != NULL) { atoms_.push_back(a); }
         }
         
         Point d = center(atoms_);
@@ -52,8 +53,8 @@ public:
     }
     
     ~Basepair() {
-        res1_ = NULL;
-        res2_ = NULL;
+        res1_.reset();
+        res2_.reset();
     }
     
     Basepair

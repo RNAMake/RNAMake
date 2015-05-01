@@ -8,15 +8,12 @@
 
 #include "util_unittests/uuid_unittest.h"
 
-#include "structure_unittests/atom_unittest.h"
-#include "structure_unittests/residue_type_set_unittest.h"
-#include "structure_unittests/residue_unittest.h"
-#include "structure_unittests/chain_unittest.h"
+#include "motif_unittests/motif_unittest.h"
 
 
 int main(int argc, const char * argv[]) {
 
-    ChainUnittest test;
+    MotifUnittest test;
     test.run();
     
 

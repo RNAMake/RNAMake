@@ -10,13 +10,18 @@
 #define __RNAMake__structure__
 
 #include <stdio.h>
-#include "chain.fwd.h"
-#include "residue.h"
-#include "types.h"
-#include "transform.h"
-#include "xyzMatrix.h"
+
+//RNAMake Headers
+#include "base/types.h"
+#include "math/transform.h"
+#include "math/xyz_matrix.h"
+#include "structure/chain.fwd.h"
+#include "structure/residue.h"
 
 class Structure {
+public:
+    
+    
 public:
     Structure():
     chains_ ( ChainOPs() ),
@@ -27,8 +32,7 @@ public:
     copy();
     
     ~Structure() {}
-    //Structure
-
+    
 public:
     
     inline
@@ -133,7 +137,7 @@ public: // getters
         AtomOPs atoms;
         for (auto const & r : residues()) {
             for (auto const & a : r->atoms()) {
-                if(a != NULL) {
+                if(a.get() != NULL) {
                     atoms.push_back(a);
                 }
             }

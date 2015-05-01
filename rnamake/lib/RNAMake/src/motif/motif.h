@@ -10,14 +10,16 @@
 #define __RNAMake__motif__
 
 #include <stdio.h>
-#include "types.h"
-#include "motif_type.h"
-#include "residue.h"
-#include "basepair.h"
-#include "structure.h"
-#include "residue_type_set.h"
-#include "transform.h"
-#include "xyzMatrix.h"
+
+//RNAMake Headers
+#include "base/types.h"
+#include "math/xyz_matrix.h"
+#include "math/transform.h"
+#include "structure/residue_type_set.h"
+#include "structure/residue.h"
+#include "structure/basepair.h"
+#include "structure/structure.h"
+#include "motif/motif_type.h"
 
 class Motif {
 public:

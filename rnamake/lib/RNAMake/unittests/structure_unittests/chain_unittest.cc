@@ -73,11 +73,6 @@ ChainUnittest::test_subchain() {
     ChainOP sc = c_->subchain(1, 5);
     if(sc->residues().size() != 4) { return 0; }
     
-    ResidueOP r1 = c_->residues()[1];
-    ResidueOP r2 = c_->residues()[5];
-    ChainOP sc2 = c_->subchain(r1, r2);
-    if(sc2->residues().size() != 4) { return 0; }
-    
     return 1;
 }
 

@@ -6,12 +6,9 @@
 //  Copyright (c) 2014 Joseph Yesselman. All rights reserved.
 //
 
-#include "basepair_state.h"
-#include "xyzVector.h"
-#include "xyzMatrix.h"
-#include "FileIO.h"
-#include "settings.h"
-#include "types.h"
+#include "util/settings.h"
+#include "util/file_iO.h"
+#include "structure/basepair_state.h"
 
 BasepairState
 str_to_basepairstate(
@@ -87,8 +84,8 @@ get_bpstate_rotation_diff(
 
 int
 are_BasepairStates_equal(
-                         BasepairState const & a,
-                         BasepairState const & b) {
+    BasepairState const & a,
+    BasepairState const & b) {
     
     if(!are_xyzVector_equal(a.d(),b.d()) ||
        !are_xyzMatrix_equal(a.r(),b.r())) {

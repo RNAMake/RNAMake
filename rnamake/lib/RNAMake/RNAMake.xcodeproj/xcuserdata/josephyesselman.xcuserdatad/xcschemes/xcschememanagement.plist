@@ -9,16 +9,6 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>Structure_unittest.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>4</integer>
-		</dict>
-		<key>basepair.unittest.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>5</integer>
-		</dict>
 		<key>design_primers.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -68,11 +58,6 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>14</integer>
-		</dict>
-		<key>priority_queue.cc.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>13</integer>
 		</dict>
 		<key>secondary_structure_tree.unittest.xcscheme</key>
 		<dict>

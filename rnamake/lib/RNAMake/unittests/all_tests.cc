@@ -17,7 +17,7 @@
 #include "structure_unittests/residue_type_set_unittest.h"
 #include "structure_unittests/residue_unittest.h"
 #include "structure_unittests/chain_unittest.h"
-
+#include "structure_unittests/structure_unittest.h"
 
 int run_util_unittests() {
     
@@ -31,11 +31,12 @@ int run_util_unittests() {
 
 int run_structure_unittests() {
     
-    std::vector<Unittest*> unittests(4);
+    std::vector<Unittest*> unittests(5);
     unittests[0] = new AtomUnittest();
     unittests[1] = new ResidueTypeSetUnittest();
     unittests[2] = new ResidueUnittest();
     unittests[3] = new ChainUnittest();
+    unittests[4] = new StructureUnittest();
     
     for(auto & test : unittests) { test->run(); }
     

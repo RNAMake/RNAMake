@@ -7,10 +7,12 @@
 //
 
 #include <fstream>
-#include "structure.h"
-#include "residue.h"
-#include "chain.h"
-#include "chain.fwd.h"
+
+//RNAMake Headers
+#include "structure/structure.h"
+#include "structure/residue.h"
+#include "structure/chain.h"
+#include "structure/chain.fwd.h"
 
 void
 Structure::_build_chains(
@@ -92,7 +94,7 @@ Structure::get_residue(
             }
         }
     }
-    throw "could not find residue";
+    return ResidueOP(NULL);
 }
 
 ResidueOP const
@@ -104,7 +106,7 @@ Structure::get_residue(
         }
     }
     
-    return NULL;
+    return ResidueOP(NULL);
 }
 
 

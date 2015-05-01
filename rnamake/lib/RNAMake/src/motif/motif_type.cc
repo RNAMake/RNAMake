@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "motif_type.h"
+#include "motif/motif_type.h"
 
 String const
 type_to_str(MotifType const mtype) {

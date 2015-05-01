@@ -10,7 +10,9 @@
 #define __RNAMake__resource_manager__
 
 #include <stdio.h>
-#include "residue_type_set.h"
+
+//RNAMake Headers
+#include "structure/residue_type_set.h"
 
 class ResourceManager {
 public:

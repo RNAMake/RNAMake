@@ -12,12 +12,12 @@
 #include <iostream>
 #include <vector>
 
-//custom 
-#include "xyzVector.h"
-#include "xyzMatrix.h"
-#include "transform.h"
-#include "numerical.h"
-#include "basepair_state.fwd.h"
+//RNAMake Headers
+#include "math/xyz_vector.h"
+#include "math/xyz_matrix.h"
+#include "math/transform.h"
+#include "math/numerical.h"
+#include "structure/basepair_state.fwd.h"
 
 class BasepairState {
 	
@@ -330,8 +330,8 @@ new_score_function(
 
 int
 are_BasepairStates_equal(
-                         BasepairState const,
-                         BasepairState const);
+    BasepairState const,
+    BasepairState const);
 
 
 

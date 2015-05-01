@@ -17,6 +17,8 @@
 
 class Atom {
 public:
+    friend class Structure;
+    
     Atom() {}
     
     inline
@@ -46,12 +48,13 @@ public: //accessors
     name() const { return name_; }
     
     inline
-    Point const &
-    coords() { return coords_; }
-    
-    inline
     Point const
     coords() const { return coords_; }
+
+    inline
+    Point const &
+    coords() { return coords_; }
+
 public: // setters
     
     inline
@@ -68,7 +71,6 @@ public: // setters
         name_ = nname;
     }
     
-    
 private:
     String name_;
     Point coords_;
@@ -79,8 +81,13 @@ Atom
 str_to_atom(
     String const &);
 
-typedef std::vector<Atom> Atoms;
 typedef std::shared_ptr<Atom> AtomOP;
 typedef std::vector<AtomOP> AtomOPs;
+
+typedef std::shared_ptr<const Atom> AtomCOP;
+typedef std::vector<AtomCOP>  AtomCOPs;
+
+
+
 
 #endif /* defined(__RNAMake__atom__) */

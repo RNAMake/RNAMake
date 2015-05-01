@@ -9,12 +9,12 @@
 #include <map>
 #include <assert.h>
 #include <unistd.h>
-#include "motif.h"
-#include "chain.h"
-#include "xyzMatrix.h"
-#include "transform.h"
-#include "settings.h"
-#include "resource_manager.h"
+
+//RNAMake Headers
+#include "util/settings.h"
+#include "util/resource_manager.h"
+#include "structure/chain.h"
+#include "motif/motif.h"
 
 Motif::Motif(
     String const & s,
@@ -221,7 +221,7 @@ String
 Motif::secondary_structure() {
     String structure, ss;
     BasepairOPs bps;
-    BasepairOP saved_bp = NULL;
+    BasepairOP saved_bp(NULL);
     ResidueOP partner_res;
     std::map<String, int> seen_bp, seen_res;
     int is_bp = 0, passes = 0, bp_seen = 0, res_seen = 0, partner_res_seen = 0;
@@ -236,7 +236,7 @@ Motif::secondary_structure() {
                 partner_res = bp->partner(r);
                 is_bp = 1;
                 passes = 0;
-                saved_bp = NULL;
+                saved_bp.reset();
                 if(wc_bp(bp) && bp->bp_type().compare("cW-W") == 0) { passes = 1; }
                 if(gu_bp(bp) && bp->bp_type().compare("cW-W") == 0) { passes = 1; }
                 
@@ -264,7 +264,7 @@ Motif::secondary_structure() {
 
             }
             if(!is_bp) { ss = "."; }
-            if(saved_bp != NULL) { seen_bp[saved_bp->uuid().s_uuid()] = 1; }
+            if(saved_bp.get() != NULL) { seen_bp[saved_bp->uuid().s_uuid()] = 1; }
             structure += ss;
         }
         structure += "&";

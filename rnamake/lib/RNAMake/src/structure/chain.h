@@ -47,6 +47,7 @@ public:
         if(start < 0) { throw "start cannot be less then 0"; }
         if(start == end) { throw "start and end cannot be the same value"; }
         if(end > residues().size()) { throw "end is greater then chain length"; }
+        if(start > end) { throw "start is greater then end"; }
         return ChainOP(new Chain(ResidueOPs(residues_.begin() + start, residues_.begin() + end)));
     }
     
@@ -57,6 +58,7 @@ public:
         ResidueOP const & r2) {
         int start = (int)(std::find(residues_.begin(), residues_.end(), r1) - residues_.begin());
         int end   = (int)(std::find(residues_.begin(), residues_.end(), r2) - residues_.begin());
+        
         if( start > end) {
             int temp = start;
             start = end;

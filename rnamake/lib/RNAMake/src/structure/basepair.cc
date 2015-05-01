@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "basepair.h"
+#include "structure/basepair.h"
 
 
 Basepair
