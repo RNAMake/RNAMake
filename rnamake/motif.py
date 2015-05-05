@@ -62,6 +62,7 @@ class Motif(object):
         self.beads, self.score, self.mtype, self.basepairs = [], 0, mtype, []
         self.mdir, self.name, self.ends = "", "", []
         self.cached_rotations = []
+        self.end_to_add = 0
         self._setup(mdir, pdb)
 
     def __repr__(self):
@@ -318,6 +319,7 @@ class Motif(object):
             index = self.basepairs.index(end)
             s += str(index) + " "
         s += "&"
+        s += str(self.end_to_add) + "&"
         return s
 
     def to_pdb_str(self):
@@ -375,6 +377,7 @@ class Motif(object):
         cmotif.mtype = self.mtype
         cmotif.structure = self.structure.copy()
         cmotif.beads = [b.copy() for b in self.beads]
+        cmotif.end_to_add = self.end_to_add
         # cmotif.cached_rotations = self.cached_rotations
         for bp in self.basepairs:
             new_res1 = cmotif.get_residue(uuid=bp.res1.uuid)
@@ -451,6 +454,11 @@ def str_to_motif(s):
     for index in end_indexes:
         m.ends.append(m.basepairs[int(index)])
     m._cache_basepair_frames()
+    if len(spl) > 6:
+        try:
+            m.end_to_add = int(spl[7])
+        except:
+            pass
     return m
 
 

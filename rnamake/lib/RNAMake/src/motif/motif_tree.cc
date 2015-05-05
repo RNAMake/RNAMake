@@ -6,11 +6,10 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "motif_tree.h"
-#include "motif.h"
-#include "types.h"
-#include "settings.h"
-#include "resource_manager.h"
+#include "util/settings.h"
+#include "util/resource_manager.h"
+#include "motif/motif_tree.h"
+#include "motif/motif.h"
 
 MotifTree::MotifTree() {
     String path = resources_path() + "/start.motif";
@@ -79,49 +78,64 @@ MotifTree::add_motif(
     int parent_index,
     int end_flip) {
     
-    if(parent == NULL) { parent = last_node_; }
+    if(parent == nullptr) { parent = last_node_; }
     
     BasepairOPs parent_ends, motif_ends;
     
-    if (parent_index == -1) {  parent_ends = parent->available_ends(); }
+    if (parent_index == -1) {
+        parent_ends = parent->available_ends();
+        if(parent_ends.size() == 0) {
+            throw "cannot use this parent it has not available ends\n";
+        }
+    
+    }
     else                    {
         if(parent_index >= parent->motif()->ends().size()) {
-            throw "cannot use this parent index, it is out of range";
+            throw "cannot use this parent index, it is out of range\n";
         }
         int status = parent->get_end_status(parent->motif()->ends()[parent_index]);
         if(status == 0) {
-        //    throw "cannot ue this parent index, it is currently being used";
+            throw "cannot ue this parent index, it is currently being used";
         }
         parent_ends.push_back(parent->motif()->ends()[parent_index]);
     }
     
-    if (end_index == -1) {  motif_ends = m->ends(); }
+    if (end_index == -1) {
+        
+        motif_ends = m->ends();
+        if(motif_ends.size() == 0) {
+            throw "cannot add this motif to the tree it has no ends\n";
+        }
+    }
     else                 {
         if(end_index >= m->ends().size()) {
-            throw "cannot use this end index, it is out of range";
+            throw "cannot use this end index, it is out of range\n";
         }
         motif_ends.push_back(m->ends()[end_index]);
     }
 
-    MotifTreeNodeOP new_node = NULL;
+    MotifTreeNodeOP new_node(NULL);
     Ints flips;
     if ( end_flip == -1) {
         flips.push_back(0);
         flips.push_back(1);
     }
     else {
+        if(end_flip != 0 || end_flip != 1) {
+            throw "supplied an end_flip that is not 1 or 0\n";
+        }
         flips.push_back(end_flip);
     }
 
     for (auto const & parent_end : parent_ends) {
         for (auto const & end : motif_ends) {
             new_node = _add_motif(parent, m, parent_end, end, flips);
-            if( new_node != NULL) { break; }
+            if( new_node.get() != NULL) { break; }
         }
-        if ( new_node != NULL ) { break; }
+        if ( new_node.get() != NULL ) { break; }
     }
     
-    if ( new_node != NULL ) {
+    if ( new_node.get() != NULL ) {
         nodes_.push_back(new_node);
         last_node_ = new_node;
     }
@@ -165,7 +179,7 @@ MotifTree::_add_motif(
         return new_node;
     }
     
-    return NULL;
+    return MotifTreeNodeOP(NULL);
     
 }
 

@@ -38,9 +38,9 @@ ChainUnittest::test_to_str() {
         AtomOPs atoms_2 = new_res[i]->atoms();
         
         for(int j = 0; j < atoms_1.size(); j++) {
-            if(atoms_1[j].get() == NULL && atoms_2[j].get() != NULL) { return 0; }
-            if(atoms_1[j].get() != NULL && atoms_2[j].get() == NULL) { return 0; }
-            if(atoms_1[j].get() == NULL && atoms_2[j].get() == NULL) { continue; }
+            if(atoms_1[j] == nullptr && atoms_2[j] != nullptr) { return 0; }
+            if(atoms_1[j] != nullptr && atoms_2[j] == nullptr) { return 0; }
+            if(atoms_1[j] == nullptr && atoms_2[j] == nullptr) { continue; }
             
             if(!are_xyzVector_equal(atoms_1[j]->coords(), atoms_2[j]->coords())) { return 0; }
         }

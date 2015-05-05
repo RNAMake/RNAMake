@@ -10,10 +10,12 @@
 #define __RNAMake__motif_tree_node__
 
 #include <stdio.h>
-#include "motif_tree.fwd.h"
-#include "motif_tree_node.h"
-#include "motif.h"
-#include "basepair.h"
+
+//RNAMake Headers
+#include "structure/basepair.h"
+#include "motif/motif_tree.fwd.h"
+#include "motif/motif_tree_node.h"
+#include "motif/motif.h"
 
 typedef std::map<String, int> UuidIntMap;
 
@@ -92,10 +94,10 @@ public:
     }
     
     ~MotifTreeConnection() {
-        node_1_ = NULL;
-        node_2_ = NULL;
-        end_1_ = NULL;
-        end_2_ = NULL;
+        node_1_ = nullptr;
+        node_2_ = nullptr;
+        end_1_  = nullptr;
+        end_2_  = nullptr;
     
     }
     
@@ -115,14 +117,14 @@ public:
     inline
     void
     disconnect() {
-        if(node_1_ != NULL) {
+        if(node_1_.get() != NULL) {
             node_1_->set_end_status(end_1_, 1);
             node_2_->set_end_status(end_2_, 1);
         }
-        node_1_ = NULL;
-        node_2_ = NULL;
-        end_1_ = NULL;
-        end_2_ = NULL;
+        node_1_ = nullptr;
+        node_2_ = nullptr;
+        end_1_ = nullptr;
+        end_2_ = nullptr;
 
     }
     

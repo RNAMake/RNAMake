@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "pose.h"
-#include "chain.h"
+#include "structure/chain.h"
+#include "motif/pose.h"
 
 Pose::Pose(MotifOP const & m) {
     structure_ = m->structure();

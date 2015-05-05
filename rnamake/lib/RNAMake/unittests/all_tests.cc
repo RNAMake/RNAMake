@@ -51,6 +51,7 @@ int run_resource_unittests() {
     std::vector<Unittest*> unittests(2);
     unittests[0] = new MotifLibraryUnittest();
     unittests[1] = new LibraryManagerUnittest();
+    return 1;
     
 
 }

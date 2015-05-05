@@ -57,12 +57,27 @@ class MotifTreeState(object):
         s += "|" + str(self.flip) + "|" + self.build_string
         return s
 
+    def to_f_str(self):
+        s = self.name + "|" + str(self.score) + "|" + str(self.size) + \
+            "|" + str(self.flip) +  "|" + self.build_string + "|" + \
+             basic_io.points_to_str(self.beads) + "|"
+
+        for end in self.end_states:
+            if end is not None:
+                s += end.to_str()
+            else:
+                s += " "
+            s += "|"
+        s += "\n"
+        return s
+
 
 class MotifTreeStateLibrary(object):
-    def __init__(self, mtype=None, libpath=None, exclude=[]):
+    def __init__(self, mtype=None, libpath=None, exclude=[], new=0):
         mtype, path = self._parse_args(mtype, libpath)
         self.mtype, self.neighbor_libs, self.children = mtype, [], []
         self.clashes, self.index = {}, 0
+        self.new = new
         self.motif_tree_states = self._load_states_from_file(path)
         motif_tree_states = []
         for mts in self.motif_tree_states:
@@ -123,10 +138,20 @@ class MotifTreeStateLibrary(object):
                     end_states.append(None)
                 else:
                     end_states.append(basepair.str_to_basepairstate(spl[i]))
-            name_elements = parse_db_name(name)
-            motif_tree_state = MotifTreeState(name, name_elements.start_index,
-                                              size, score, beads, end_states,
-                                              flip, build_string)
+            if not self.new:
+                name_elements = parse_db_name(name)
+                motif_tree_state = MotifTreeState(name, name_elements.start_index,
+                                                size, score, beads, end_states,
+                                                flip, build_string)
+
+            else:
+                spl = name.split("-")
+                start_index = int(spl[1])
+                motif_tree_state = MotifTreeState(name, start_index,
+                                                 size, score, beads, end_states,
+                                                 flip, build_string)
+
+
             motif_tree_states.append(motif_tree_state)
 
         return motif_tree_states
@@ -528,6 +553,30 @@ def motif_to_state(m, end_index=0, end_flip=0):
     mts = MotifTreeState(name, end_index, len(m.residues()), score, beads,
                          ends, end_flip, m_copy.to_str())
     return mts
+
+
+def motif_to_state_simple(m, end_index=0, end_flip=0):
+    mt = motif_tree.MotifTree()
+    mt.add_motif(m, end_index=end_index, end_flip=0)
+    m_copy = mt.nodes[1].motif
+    ends = [ None for e in m_copy.ends ]
+    for i, end in enumerate(m_copy.ends):
+        if m_copy.end_to_add == i:
+            continue
+        ends[i] = end.state()
+
+        beads = []
+        for b in m_copy.beads:
+            if b.btype != 0:
+                beads.append(b.center)
+
+        ms = motif_scorer.MotifScorer()
+        score = ms.score(m)
+
+        mts = MotifTreeState(m_copy.name, end_index,
+                            len(m.residues()), score, beads,
+                            ends, end_flip, m_copy.to_str())
+        return mts
 
 
 def generate_clash_files(mtype1, mtype2):

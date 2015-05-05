@@ -6,10 +6,10 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "motif_tree_merger.h"
-#include "motif_tree.h"
-#include "chain.h"
-#include "structure.h"
+#include "structure/chain.h"
+#include "structure/structure.h"
+#include "motif/motif_tree_merger.h"
+#include "motif/motif_tree.h"
 
 PoseOP
 MotifTreeMerger::merge(MotifTree const & mt, int include_head) {
@@ -35,7 +35,7 @@ MotifTreeMerger::merge(MotifTree const & mt, int include_head) {
     _merge_chains_in_node(start_node);
     PoseOP new_pose = _build_pose();
     
-    seen_connections_.clear(); //= std::map<MotifTreeConnectionOP, int>();
+    seen_connections_.clear();
     chains_.resize(0);
     nodes_.resize(0);
     
@@ -103,7 +103,7 @@ MotifTreeMerger::_merge_chains_in_node(
             if (used_chains.find(chain) == used_chains.end()) { new_chains.push_back(chain); }
         }
         for (auto const & chain : merged_chains) {
-            if (chain != NULL) { new_chains.push_back(chain); }
+            if (chain.get() != NULL) { new_chains.push_back(chain); }
         }
         chains_ = new_chains;
         _merge_chains_in_node(partner);
@@ -213,7 +213,6 @@ MotifTreeMerger::_get_merged_chain(
     int join_by_3prime,
     int remove_overlap) {
     
-    ChainOP merged_chain (new Chain());
     ResidueOPs chain1_res = c1->residues();
     ResidueOPs chain2_res = c2->residues();
     if(join_by_3prime) {
@@ -225,7 +224,7 @@ MotifTreeMerger::_get_merged_chain(
     if(join_by_3prime) {
         std::reverse(chain1_res.begin(), chain1_res.end());
     }
-    merged_chain->residues(chain1_res);
+    ChainOP merged_chain (new Chain(chain1_res));
     return merged_chain;
 }
 

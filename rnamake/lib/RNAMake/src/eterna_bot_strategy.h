@@ -24,7 +24,6 @@ public:
     EternabotScorerData():
     gu(0), gc(0), ua(0),
     meltpoint(97), fe(0),
-    dotplot(NULL),
     length ( 0 ),
     pairmap ( std::map<int, int>() ),
     seq ( String() )

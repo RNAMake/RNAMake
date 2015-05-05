@@ -112,7 +112,7 @@ public:
         
         // 5' to 3'
         AtomOP o3_atom = get_atom(o3), p_atom = res.get_atom(p);
-        if(o3_atom.get() != NULL && p_atom.get() != NULL) {
+        if(o3_atom != nullptr && p_atom != nullptr) {
             if( o3_atom->coords().distance(p_atom->coords()) < cutoff) {
                 return 1;
             }
@@ -120,7 +120,7 @@ public:
         
         // 3' to 5'
         o3_atom = res.get_atom(o3); p_atom = get_atom(p);
-        if(o3_atom.get() != NULL && p_atom.get() != NULL) {
+        if(o3_atom != nullptr && p_atom != nullptr) {
             if( o3_atom->coords().distance(p_atom->coords()) < cutoff) {
                 return -1;
             }

@@ -117,6 +117,77 @@ class MotifTreeStateUnittest(unittest.TestCase):
             mt.write_pdbs()
             return
 
+    def build_tree_to_motiftree_new(self):
+        mtype = rnamake.motif_type.HELIX
+        h_lib = rnamake.motif_library_sqlite.MotifLibrarySqlite(mtype)
+        twoways = rnamake.motif_library.unique_twoway_lib()
+        path = "../resources/motif_libraries/twoway_aligned.db"
+        twoways_new = rnamake.motif_library_sqlite.MotifLibrarySqlite(libpath=path)
+        twoways_new.mtype = rnamake.motif_type.TWOWAY
+        twoways_new.load_all()
+
+        f = open("test_twoway.new.me", "w")
+        for m in twoways_new.motifs():
+            mts = rnamake.motif_tree_state.motif_to_state_simple(m, m.end_to_add)
+            f.write(mts.to_f_str())
+        f.close()
+
+        f = open("test_helix.new.me", "w")
+        for i in range(1, 22):
+            m = h_lib.get_motif("HELIX.IDEAL."+str(i))
+            m.name = "HELIX.IDEAL."+str(i) + "-1"
+            m.end_to_add =1
+            mts = rnamake.motif_tree_state.motif_to_state_simple(m, 1, 0)
+            f.write(mts.to_f_str())
+        f.close()
+
+    def test_tree_to_motiftree_new(self):
+        #self.build_tree_to_motiftree_new()
+        #exit()
+        twoway_mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(libpath="test_twoway.new.me",
+                                                                        new=1)
+
+        h_mts_lib = rnamake.motif_tree_state.MotifTreeStateLibrary(libpath="test_helix.new.me",
+                                                                        new=1)
+
+
+        path = "../resources/motif_libraries/twoway_aligned.db"
+        twoways_new = rnamake.motif_library_sqlite.MotifLibrarySqlite(libpath=path)
+        twoways_new.mtype = rnamake.motif_type.TWOWAY
+        twoways_new.load_all()
+
+        mtype = rnamake.motif_type.HELIX
+        h_lib = rnamake.motif_library_sqlite.MotifLibrarySqlite(mtype)
+
+        for i in range(100):
+            mtst = rnamake.motif_tree_state.MotifTreeStateTree()
+            mt = rnamake.motif_tree.MotifTree()
+            for j in range(10):
+                if j % 2 == 0:
+                    num = random.randint(1,20)
+                    m = h_lib.get_motif("HELIX.IDEAL."+str(num))
+                    mt.add_motif(m, end_index=1, end_flip=0)
+
+                    mtst.add_state(h_mts_lib.get_state("HELIX.IDEAL."+str(num)+"-1"))
+
+                else:
+                    m = twoways_new.random_motif()
+
+                    mt.add_motif(m, end_index=m.end_to_add, end_flip=0)
+                    mtst.add_state(twoway_mts_lib.get_state(m.name))
+
+            print len(mt.nodes)
+            print len(mtst.nodes)
+
+            mt.write_pdbs("org")
+            mtst.nodes_to_pdbs()
+            exit()
+
+
+
+
+
+
     def test_compare_mtst_to_motif_tree(self):
         if util.UnittestState == util.UnittestType.BASIC:
             self.skipTest("test_compare_mtst_to_motif_tree is not a basic test")

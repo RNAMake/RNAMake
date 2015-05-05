@@ -38,10 +38,10 @@ public:
     
         atoms_ = AtomOPs();
         for( auto const & a : res1->atoms() ) {
-            if(a.get() != NULL) { atoms_.push_back(a); }
+            if(a != nullptr) { atoms_.push_back(a); }
         }
         for( auto const & a : res2->atoms() ) {
-            if(a.get() != NULL) { atoms_.push_back(a); }
+            if(a != nullptr) { atoms_.push_back(a); }
         }
         
         Point d = center(atoms_);

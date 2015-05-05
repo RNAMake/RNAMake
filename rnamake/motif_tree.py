@@ -73,6 +73,20 @@ class MotifTree(base.Base):
         self.options = option.Options(options)
         self.constraints = {}
 
+    def add_motif_new(self, m, parent=None, parent_end=None, parent_index=None):
+        # if parent is not specified use the last node added
+        if parent is None:
+            parent = self.last_node
+
+        # get which ends are available to align
+        parent_ends = self._parse_ends(parent.motif, parent_index, parent_end,
+                                       parent)
+
+        if len(parent_ends) == 0:
+            raise ValueError("cannot add to this parent node, it has no \
+                             available ends")
+
+
     def add_motif(self, m, end_index=None, end=None, end_flip=None,
                   parent=None, parent_index=None, parent_end=None):
 

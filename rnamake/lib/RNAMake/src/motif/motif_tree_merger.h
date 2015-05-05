@@ -11,10 +11,12 @@
 
 #include <stdio.h>
 #include <map>
-#include "chain.fwd.h"
-#include "motif_tree.fwd.h"
-#include "motif_tree_node.h"
-#include "pose.h"
+
+//RNAMake Headers
+#include "structure/chain.fwd.h"
+#include "motif/motif_tree.fwd.h"
+#include "motif/motif_tree_node.h"
+#include "motif/pose.h"
 
 struct ChainEndPairMap {
 public:

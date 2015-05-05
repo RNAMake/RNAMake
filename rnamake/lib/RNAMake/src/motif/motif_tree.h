@@ -11,14 +11,15 @@
 
 #include <stdio.h>
 #include <map>
-#include "types.h"
-#include "motif_tree.fwd.h"
-#include "motif_tree_node.h"
-#include "motif.h"
-#include "uuid.h"
-#include "residue_type_set.h"
-#include "motif_tree_merger.h"
-#include "pose.h"
+
+//RNAMake Headers
+#include "base/types.h"
+#include "structure/residue_type_set.h"
+#include "motif/motif_tree.fwd.h"
+#include "motif/motif_tree_node.h"
+#include "motif/motif.h"
+#include "motif/motif_tree_merger.h"
+#include "motif/pose.h"
 
 
 class MotifTree {
@@ -32,7 +33,7 @@ public:
         ResidueTypeSet const &);
     
     ~MotifTree() {
-        last_node_ = NULL;
+        last_node_ = nullptr;
         for(auto const & n : nodes_) {
             for(auto & c : n->connections()) { c->disconnect(); }
         }
@@ -43,7 +44,7 @@ public:
     MotifTreeNodeOP
     add_motif(
         MotifOP const & m,
-        MotifTreeNodeOP parent = NULL,
+        MotifTreeNodeOP parent = nullptr,
         int end_index = -1,
         int parent_end = -1,
         int end_flip = -1);

@@ -6,11 +6,12 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "motif_tree_node.h"
-#include "motif.h"
-#include "types.h"
-#include "settings.h"
-#include "residue_type_set.h"
+#include "base/types.h"
+#include "util/settings.h"
+#include "structure/residue_type_set.h"
+#include "motif/motif.h"
+#include "motif/motif_tree_node.h"
+
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MotifTreeNode

@@ -12,7 +12,9 @@
 #include <map>
 #include <stdio.h>
 #include <memory>
-#include "motif.h"
+
+//RNAMake Headers
+#include "motif/motif.h"
 
 class Pose : public Motif {
 public:
