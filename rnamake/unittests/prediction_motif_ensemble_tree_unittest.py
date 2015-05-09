@@ -6,6 +6,11 @@ import rnamake.motif_tree_state as motif_tree_state
 import rnamake.motif_type as motif_type
 import rnamake.util as util
 import rnamake.basic_io as basic_io
+import rnamake.settings as settings
+import rnamake.motif as motif
+import rnamake.motif_tree as motif_tree
+import rnamake.motif_library as motif_library
+import rnamake.motif_type as motif_type
 
 def get_twoway_helix_mts_tree(size=2):
     twoways = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
@@ -34,7 +39,7 @@ def get_twoway_helix_mts_tree(size=2):
 
 class MotifEnsembleTreeUnittest(unittest.TestCase):
 
-    def test_creation(self):
+    def _test_creation(self):
         met = motif_ensemble_tree.MotifEnsembleTree()
 
     def test_add(self):
@@ -42,16 +47,68 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
         met = motif_ensemble_tree.MotifEnsembleTree()
         met.add_ensemble(me)
 
-    def test_get_mtst(self):
-        return
+    def _test_get_mtst(self):
         me = motif_ensemble.MotifEnsemble("GC=GC", 0, 0)
         me2 = motif_ensemble.MotifEnsemble("GC=GC", 0, 0)
+        me3 = motif_ensemble.MotifEnsemble("GC=AU", 0, 0)
+        me4 = motif_ensemble.MotifEnsemble("AU=AU", 0, 0)
         met = motif_ensemble_tree.MotifEnsembleTree()
         met.add_ensemble(me)
         met.add_ensemble(me2)
+        met.add_ensemble(me3)
+        met.add_ensemble(me4)
         mtst = met.get_mtst()
         print len(mtst.nodes)
         mtst.nodes_to_pdbs()
+
+        h_lib = motif_library.MotifLibrary(motif_type.HELIX)
+        mt = motif_tree.MotifTree()
+        mt.add_motif(h_lib.get_motif("HELIX.IDEAL.12"), end_index=1)
+        mt.write_pdbs("h")
+
+    def test_get_mtst_2(self):
+        pos_bps = ["GC", "CG", "AU", "AU"]
+        size = random.randint(10,20)
+        bps = []
+        for i in range(size):
+            bps.append(random.choice(pos_bps))
+
+        names = []
+        for i in range(1,size):
+            names.append(bps[i-1] + "=" + bps[i])
+
+        met = motif_ensemble_tree.MotifEnsembleTree()
+        for n in names:
+            me = motif_ensemble.MotifEnsemble(n, 0, 0)
+            met.add_ensemble(me)
+
+        mtst = met.get_mtst()
+        print len(mtst.nodes)
+        mtst.nodes_to_pdbs()
+
+
+
+
+
+
+    def _test_mts(self):
+        path = settings.RESOURCES_PATH + "prediction/GC=GC.new.me"
+        mts_lib = motif_tree_state.MotifTreeStateLibrary(libpath=path, new=1)
+        mtst = motif_tree_state.MotifTreeStateTree(sterics=1)
+        mtst.add_state(mts_lib.get_state("GC=GC.2-0"))
+        mtst.add_state(mts_lib.get_state("GC=GC.2-0"))
+        mtst.add_state(mts_lib.get_state("GC=GC.2-0"))
+        mtst.add_state(mts_lib.get_state("GC=GC.2-0"))
+        mtst.add_state(mts_lib.get_state("GC=GC.2-0"))
+        print len(mtst.nodes)
+        mtst.nodes_to_pdbs()
+        return
+        m = motif.str_to_motif(mts_lib.get_state("GC=GC.4-0").build_string)
+        mt = motif_tree.MotifTree()
+        mt.add_motif(m, end_index=0, end_flip=0)
+        mt.add_motif(m, end_index=0, end_flip=0)
+        mt.write_pdbs()
+        print len(mt.nodes)
 
     def get_chain_pos(self, p, r):
         for i, c in enumerate(p.chains()):
@@ -101,7 +158,7 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
 
 
 
-    def test_mtst_to_met_helix(self):
+    def _test_mtst_to_met_helix(self):
         return
         helixs = motif_tree_state.MotifTreeStateLibrary(motif_type.HELIX, exclude=['11','10'])
 
@@ -125,7 +182,7 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
                 print mts.name, dist
 
 
-    def test_mtst_to_met(self):
+    def _test_mtst_to_met(self):
         #mtst = get_twoway_helix_mts_tree(50)
         #for i, n in enumerate(mtst.nodes):
         #    print i, n.mts.name

@@ -239,6 +239,16 @@ class Motif(object):
             found.append(bp)
         return found
 
+    def get_basepair_by_name(self, name):
+        #hacky fix later
+        alt_name = ""
+        name_spl = name.split("-")
+        alt_name = name_spl[1] + "-" + name_spl[0]
+        for bp in self.basepairs:
+            if name == bp.name() or alt_name == bp.name():
+                return bp
+        raise ValueError("could not find basepair with name " + name)
+
     def get_beads(self, excluded_ends=None, excluded_res=None):
         excluded = []
         if excluded_ends:

@@ -7,6 +7,8 @@ import rnamake.settings as settings
 import rnamake.motif_library as motif_library
 import rnamake.motif_type as motif_type
 import rnamake.motif_outputer as motif_outputer
+import rnamake.motif_tree_state as motif_tree_state
+import rnamake.motif_library_sqlite as motif_library_sqlite
 import copy
 import math
 
@@ -80,35 +82,54 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
     clusters = cluster.cluster_motifs(aligned_motifs)
     motifs = []
     nmotifs = len(aligned_motifs)
-    test_helix = helix_mlib.get_motif("HELIX.IDEAL.2")
+    test_helix = helix_mlib.get_motif("HELIX.IDEAL.12")
+    mt.remove_node_level()
+    mt.add_motif(test_helix, end_index=1, end_flip=0)
+    mt.level += 1
     f = open(base_dir + "/" + name + ".pop", "w")
+    lowest = 10000
+    lowest_m = None
     for i, c in enumerate(clusters):
-        mt.add_motif(c.motifs[0])
-        node = mt.add_motif(test_helix, end_index=0, end_flip=0)
-        if mt.nodes[1].motif.ends[1].r()[1][0] > 0:
-            mt.nodes[1].motif.ends[1].flip()
-            mt.nodes[1].motif.ends[1].flipped=0
+        node = mt.add_motif(c.motifs[0], end_index=0)
+        if node is None:
+            print "made it"
+            mt.remove_node_level()
+            continue
+
+        node = mt.add_motif(test_helix, end_index=1,  end_flip=0)
+        mt.nodes[2].motif.ends[0].flipped=0
+        if node is None:
+            mt.nodes[2].motif.ends[1].flip()
+            mt.nodes[2].motif.ends[1].flipped=0
+            print name+"."+str(i)
+            node = mt.add_motif(test_helix, end_index=1,  end_flip=0)
         pop = float(len(c.motifs)) / float(nmotifs)
         energy = -kBT*math.log(pop)
-        mt.nodes[1].motif.name = name+"."+str(i)
+        mt.nodes[2].motif.name = name+"."+str(i)
         f.write(name+"."+str(i) + " " + str(len(c.motifs)) + " " + \
                 str(pop) + " " + str(energy) + "\n")
-        motifs.append(mt.nodes[1].motif)
-        motifs[-1].to_pdb('cluster.'+str(i)+'.pdb')
+        motifs.append(mt.nodes[2].motif)
+        motifs[-1]._cache_basepair_frames()
+        motifs[-1].structure._cache_coords()
+        if lowest > energy:
+            lowest = energy
+            lowest_m = motifs[-1]
+        #motifs[-1].to_pdb('cluster.'+str(i)+'.pdb')
         mt.remove_node_level()
     f.close()
-    #mo = motif_outputer.MotifOutputer()
-    #for m in motifs:
-    #    mo.add_motif(m,0)
-    #mo.to_pdb()
-    #exit()
-    #for i, m in enumerate(motifs):
-    #    mt.add_motif(m, end_index=1)
-    #    mt.nodes[1].motif.to_pdb("motif."+str(i)+".pdb")
-    #    mt.remove_node(mt.last_node)
-    #mtp = motif_tree_precomputer.MotifTreePrecomputer(name=base_dir+"/"+name,
-    #        max_bps_per_end=0)
-    #mtp.precompute_motifs(motifs)
+
+    f = open(base_dir+"/"+name+".new.me", "w")
+    i = 0
+    for m in motifs:
+        m.end_to_add = 0
+        m.name += "-0"
+        mts = motif_tree_state.motif_to_state_simple(m, 0, 0)
+        m2 = motif.str_to_motif(mts.build_string)
+        i += 1
+        f.write(mts.to_f_str())
+    f.close()
+
+    return lowest_m
 
 
 class SSandSeqCluster(object):
@@ -209,9 +230,19 @@ def get_two_way_prediction_lib(c, origin, test_helix):
         mt.remove_node_level()
     f.close()
 
-    mtp = motif_tree_precomputer.MotifTreePrecomputer(name=base_dir+"/"+name,
-            max_bps_per_end=0)
-    mtp.precompute_motifs(motifs)
+    #mtp = motif_tree_precomputer.MotifTreePrecomputer(name=base_dir+"/"+name,
+    #        max_bps_per_end=0)
+    #mtp.precompute_motifs(motifs)
+
+    f = open(base_dir+"/"+name+".new.me", "w")
+    for m in motifs:
+        m.end_to_add = 0
+        m.name += "-1"
+        mts = motif_tree_state.motif_to_state_simple(m, 0, 0)
+        f.write(mts.to_f_str())
+    f.close()
+
+
 
 
 
@@ -260,15 +291,19 @@ if __name__ == '__main__':
     all_targets = []
     bps = ["AU","UA","CG","GC","GU","UG"]
     seen = []
-    get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
-    exit()
     test_helix = helix_mlib.get_motif("HELIX.IDEAL.2")
+    #get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
 
+    ideal_motifs = []
     for i,bp1 in enumerate(bps):
         for j,bp2 in enumerate(bps):
             if bp1 + "=" + bp2 in seen:
                 continue
             target = [bp1,bp2]
             seen.append(bp1 + "=" + bp2)
-            get_bp_step_prediction_lib(target, helix_mlib)
+            m = get_bp_step_prediction_lib(target, helix_mlib)
+            m.name = bp1 + "=" + bp2
+            ideal_motifs.append(m)
+    motif_library_sqlite.build_sqlite_library("bp_steps.db", ideal_motifs)
+
 

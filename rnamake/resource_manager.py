@@ -1,38 +1,116 @@
+import motif
 import motif_library
 import motif_library_sqlite
 import motif_type
+import motif_tree
 import motif_tree_state
+import motif_scorer
+import settings
+import util
 
 class ResourceManager(object):
     def __init__(self):
         self.mlibs = {}
+        self.extra_motifs = {}
+
         self.mts_libs = {}
 
         for mtype in motif_library.lib_paths.iterkeys():
-            #catch uninmplemented libraries
+            # catch unimplemented libraries
             try:
                 mlib = motif_library_sqlite.MotifLibrarySqlite(mtype)
                 self.mlibs[motif_type.type_to_str(mtype)] = mlib
             except:
                 pass
 
+        path = settings.RESOURCES_PATH + "motif_libraries/bp_steps.db"
+
+        mlib = motif_library_sqlite.MotifLibrarySqlite(libpath=path)
+        mlib.mtype = motif_type.HELIX
+        self.mlibs[99] = mlib
+
         for mtype in motif_library.lib_paths.iterkeys():
-            #catch unimplemented mts libraries
+            # catch unimplemented mts libraries
             try:
                 mts_lib = motif_tree_state.MotifTreeStateLibrary(mtype)
                 self.mts_libs[motif_type.type_to_str(mtype)] = mts_lib
             except:
                 pass
 
-    def get_motif(self, mname):
+        self.mt = motif_tree.MotifTree()
+        self.mt.add_motif(self.get_motif("HELIX.IDEAL.6"), end_index=1, end_flip=0)
+        self.mt.level +=1
+
+
+    def get_motif(self, mname, end_index=None, end_name=None):
         for mlib in self.mlibs.itervalues():
             if mname in mlib:
                 return mlib.get_motif(mname)
+
+        if mname in self.extra_motifs:
+            if end_index is None and end_name is None:
+                return self.extra_motifs[mname]
+
+            m = self.extra_motifs[mname]
+            return self._prep_extra_motif_for_asssembly(m, end_index, end_name)
+
 
         raise ValueError("cannot find " + mname)
 
     def add_lib_path(self, path):
         self.mlibs[path] = motif_library.MotifLibrary(libdir=path)
 
+    def add_motif(self, path):
+        name = util.filename(path)
+        self.extra_motifs[name] = motif.Motif(path)
 
+    def _prep_extra_motif_for_asssembly(self, m, end_index=None, end_name=None):
+        if end_name is None and end_index is None:
+            raise ValueError("cannot call _prep_extra_motif_for_asssembly without end_name" +\
+                             "or end_index" )
+
+        if end_name is not None:
+            end = m.get_basepair_by_name(end_name)
+            end_index = m.ends.index(end)
+
+        node = self.mt.add_motif(m, end_index=end_index)
+        if node.flip:
+            node.motif.ends[end_index].flipped=0
+
+        if node is None:
+            raise ValueError("cannot prep motif for assembly motif:" + m.name + \
+                             " end_index: " + str(end_index))
+
+        h_m = self.get_motif("HELIX.IDEAL.3")
+        for e in node.available_ends():
+            n = self.mt.add_motif(h_m, end_index=1, end_flip=0, parent=node)
+            if n is None:
+                e.flip()
+            else:
+                self.mt.remove_node(self.mt.last_node)
+
+        m_copy = self.mt.nodes[2].motif
+        ends = [ None for e in m_copy.ends ]
+        for i, end in enumerate(m_copy.ends):
+            if end_index == i:
+                continue
+            ends[i] = end.state()
+
+        beads = []
+        for b in m_copy.beads:
+            if b.btype != 0:
+                beads.append(b.center)
+
+        ms = motif_scorer.MotifScorer()
+        score = ms.score(m)
+
+        #mts = MotifTreeState(m_copy.name, end_index,
+        #                    len(m.residues()), score, beads,
+        #                    ends, end_flip, m_copy.to_str())
+
+        self.mt.remove_node_level()
+
+        return m_copy
+
+manager = ResourceManager()
 

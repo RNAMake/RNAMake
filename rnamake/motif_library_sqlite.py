@@ -83,6 +83,19 @@ def build_sqlite_libraries():
         connection.executemany("INSERT INTO motifs(str,name) VALUES (?,?) ", data)
         connection.commit()
 
+def build_sqlite_library(path, motifs):
+    if os.path.isfile(path):
+        os.remove(path)
+    connection = sqlite3.connect(path)
+    connection.execute("CREATE TABLE motifs(str TEXT, name TEXT, PRIMARY KEY (name))")
+    data = []
+    for m in motifs:
+        s = m.to_str()
+        data.append([s,m.name])
+    connection.executemany("INSERT INTO motifs(str,name) VALUES (?,?) ", data)
+    connection.commit()
+
+
 def build_sqlite_libraries_2():
     mt = motif_tree.MotifTree()
     h_lib = motif_library.MotifLibrary(motif_type.HELIX)
@@ -139,21 +152,6 @@ def build_sqlite_libraries_2():
         data.append([s,m.name])
     connection.executemany("INSERT INTO motifs(str,name) VALUES (?,?) ", data)
     connection.commit()
-
-def build_sqlite_libraries_3():
-    mt = motif_tree.MotifTree()
-    h_lib = motif_library.MotifLibrary(motif_type.HELIX)
-    mlib = motif_library.unique_twoway_lib()
-    m = mlib.get_motif("TWOWAY.1S72.30")
-    print m.name
-
-    for i in range(1,13):
-        mt.add_motif(h_lib.get_motif("HELIX.IDEAL."+str(i)), end_flip=0, end_index=1)
-        node = mt.add_motif(m, end_index=0)
-        if node:
-            print i, node, mt.nodes[2].flip
-        else:
-            print i, node
 
 
 if __name__ == '__main__':

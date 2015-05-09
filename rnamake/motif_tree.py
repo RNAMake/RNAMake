@@ -67,28 +67,15 @@ class MotifTree(base.Base):
     def setup_options_and_constraints(self):
         options = { 'sterics'              : 1,
                     'full_beads_first_res' : 1,
-                    'ideal_bp_score'       : -2 # TODO fix
+                    'ideal_bp_score'       : -2, # TODO fix
                     }
 
         self.options = option.Options(options)
         self.constraints = {}
 
-    def add_motif_new(self, m, parent=None, parent_end=None, parent_index=None):
-        # if parent is not specified use the last node added
-        if parent is None:
-            parent = self.last_node
-
-        # get which ends are available to align
-        parent_ends = self._parse_ends(parent.motif, parent_index, parent_end,
-                                       parent)
-
-        if len(parent_ends) == 0:
-            raise ValueError("cannot add to this parent node, it has no \
-                             available ends")
-
-
-    def add_motif(self, m, end_index=None, end=None, end_flip=None,
-                  parent=None, parent_index=None, parent_end=None):
+    def add_motif(self, m=None, end_index=None, end=None, end_flip=None,
+                  parent=None, parent_index=None, parent_end=None,
+                  end_name=None, parent_end_name=None):
 
         # if parent is not specified use the last node added
         if parent is None:
@@ -96,8 +83,8 @@ class MotifTree(base.Base):
 
         # get which ends are available to align
         parent_ends = self._parse_ends(parent.motif, parent_index, parent_end,
-                                       parent)
-        ends = self._parse_ends(m, end_index, end)
+                                       parent_end_name, parent)
+        ends = self._parse_ends(m, end_index, end, end_name)
 
         if len(parent_ends) == 0:
             raise ValueError("cannot add to this parent node, it has no \
@@ -120,7 +107,18 @@ class MotifTree(base.Base):
         if new_node is not None:
             self.nodes.append(new_node)
             self.last_node = new_node
+
         return new_node
+
+    """def _prep_node_motif(self, n):
+        avail_ends = n.available_ends()
+        m = self.rm.get_motif("HELIX.IDEAL.3")
+        for e in avail_ends:
+            node = self.add_motif(m, end_index=1, end_flip=0, parent=n, prep=0)
+            if node is None:
+                e.flip()
+            else:
+                self.remove_node(self.last_node)"""
 
     def write_pdbs(self,name="node"):
         for i,n in enumerate(self.nodes):
@@ -187,7 +185,7 @@ class MotifTree(base.Base):
             s += n.to_str() + "#"
         return s
 
-    def _parse_ends(self, m, end_index, end_bp, node=None):
+    def _parse_ends(self, m, end_index, end_bp, end_name, node=None):
         ends = []
         if   end_index is not None and end_bp is not None:
             raise ValueError("MotifTree: Cannot supply both end_index and \
@@ -202,11 +200,20 @@ class MotifTree(base.Base):
             if end_bp not in m.ends:
                 raise ValueError("end_bp is not an end of motif in add_motif")
             ends = [ end_bp ]
+
+        elif end_name is not None:
+            ends = [ m.get_basepair_by_name(end_name) ]
         else:
             if node:
                 ends = node.available_ends()
             else:
                 ends = m.ends
+
+        if node:
+            avail_nodes = node.available_ends()
+            for e in ends:
+                if e not in avail_nodes:
+                    raise ValueError("end is not in available ends cannot add")
 
         return ends
 
@@ -341,6 +348,12 @@ class MotifTreeNode(object):
         for n in self.connected_nodes():
             if n.index < self.index:
                 return n
+
+    def parent_end_index(self):
+        parent = self.parent()
+        c = self.connection(parent)
+        end = c.motif_end(parent)
+        return parent.motif.ends.index(end)
 
     def connection(self, n):
         for c in self.connections:

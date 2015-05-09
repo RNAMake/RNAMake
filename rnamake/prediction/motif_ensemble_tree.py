@@ -247,6 +247,29 @@ class MTSTtoMETConverter(object):
         #mtst2.to_pdb("test2.pdb")
         return mtst2, score
 
+
+def convert_mt_to_met(mt):
+    met = MotifEnsembleTree()
+
+    for i, n in enumerate(mt.nodes):
+        if i == 0:
+            continue
+
+        parent_index = n.parent().index
+        parent_end_index = n.parent_end_index()
+
+        if n.motif.name[2] == "=":
+            me = motif_ensemble.MotifEnsemble(n.motif.name)
+            met.add_ensemble(me, parent=met.nodes[parent_index],
+                             parent_end_index=parent_end_index)
+
+        else:
+            pass
+
+    return met
+
+
+
 def mts_to_me(mts):
     me = motif_ensemble.MotifEnsemble()
     ms = motif_ensemble.MotifState(mts, 1.0)

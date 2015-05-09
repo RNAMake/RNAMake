@@ -18,6 +18,12 @@ class ResourceManagerUnittest(unittest.TestCase):
         except:
             self.fail("unexpected error")
 
+    def test_get_motif_step(self):
+        rm = rnamake.resource_manager.ResourceManager()
+        m = rm.get_motif("GC=GC")
+
+
+
 def main():
     unittest.main()
 

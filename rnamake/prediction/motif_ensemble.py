@@ -47,15 +47,19 @@ class MotifEnsemble(object):
             exit()
 
         pops = self._get_populations(pop_path)
-        mts_lib = motif_tree_state.MotifTreeStateLibrary(libpath=mts_lib_path)
+        mts_lib = motif_tree_state.MotifTreeStateLibrary(libpath=mts_lib_path,new=1)
         self.motif_states = []
         for mts in mts_lib.motif_tree_states:
-            if start_index is not None and start_index != mts.start_index:
-                continue
-            if flip_direction is not None and flip_direction != mts.flip:
-                continue
-            name_elements = motif_tree_state.parse_db_name(mts.name)
-            mname = name_elements.motif_name
+            #if start_index is not None and start_index != mts.start_index:
+            #    continue
+            #if flip_direction is not None and flip_direction != mts.flip:
+            #    continue
+            if not mts_lib.new:
+                name_elements = motif_tree_state.parse_db_name(mts.name)
+                mname = name_elements.motif_name
+            else:
+                spl = mts.name.split("-")
+                mname = spl[0]
             try:
                 m_pop = pops[mname]
             except:
