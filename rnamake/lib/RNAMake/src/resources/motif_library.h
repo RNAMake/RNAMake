@@ -17,7 +17,7 @@
 #include "structure/residue_type_set.h"
 #include "motif/motif.h"
 #include "motif/motif_type.h"
-#include "resources/sqlite3_connection.h"
+#include "resources/motif_sqlite_connection.h"
 
 typedef std::map<String, MotifOP> StringMotifMap;
 
@@ -25,7 +25,7 @@ class MotifLibrary {
 public:
     
     MotifLibrary(MotifType const & mtype):
-        connection_ ( Sqlite3Connection(mtype) ),
+        connection_ ( MotifSqliteConnection(get_db_path(mtype))),
         mtype_ ( mtype ) {
         mdict_ = StringMotifMap();
         rts_ = ResidueTypeSet();
@@ -57,7 +57,12 @@ public:
     }
     
 private:
-    Sqlite3Connection connection_;
+    
+    String
+    get_db_path(MotifType const & mtype);
+    
+private:
+    MotifSqliteConnection connection_;
     MotifType mtype_;
     StringMotifMap mdict_;
     ResidueTypeSet rts_;

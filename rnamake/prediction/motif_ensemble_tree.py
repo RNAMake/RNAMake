@@ -1,18 +1,46 @@
 import rnamake.motif_tree_state as motif_tree_state
+import rnamake.motif_tree_state_tree as motif_tree_state_tree
 import rnamake.motif_type as motif_type
 import rnamake.util as util
+import rnamake.resource_manager as resource_manager
 import motif_ensemble
 import random
 import copy
 
 class MotifEnsembleTree(object):
-    def __init__(self, ensemble=None):
+    def __init__(self, mt=None, ensemble=None):
         if ensemble is None:
             head = self._default_head()
         else:
             head = MotifEnsembleTreeNode(ensemble, None, 0)
         self.nodes = [ head ]
         self.last_node = head
+
+        if mt is not None:
+            self._setup_from_mt(mt)
+
+    def _setup_from_mt(self, mt):
+        for i, n in enumerate(mt.nodes):
+            if i == 0:
+                continue
+
+            parent_index = n.parent().index
+            parent_end_index = n.parent_end_index()
+            end_index = n.motif_end_index(n.parent())
+
+            if n.motif.name[3] == "=":
+                me = motif_ensemble.MotifEnsemble(n.motif.name)
+            else:
+                mts_name = n.motif.name + "-" + str(end_index)
+                mts = resource_manager.manager.get_state(mts_name)
+                me = mts_to_me(mts)
+
+            node = self.add_ensemble(me, self.nodes[parent_index],
+                                     parent_end_index)
+
+            if node is None:
+                raise ValueError("could not translate motiftree to motifensembletree")
+
 
     def add_ensemble(self, ensemble, parent=None, parent_end_index=None):
         if parent is None:
@@ -36,7 +64,7 @@ class MotifEnsembleTree(object):
         mtst = None
         mts_name = self.nodes[0].motif_ensemble.motif_states[0].mts.name
         if mts_name == "start":
-            mtst = motif_tree_state.MotifTreeStateTree(sterics=0)
+            mtst = motif_tree_state_tree.MotifTreeStateTree()
         else:
             mts =  self.nodes[0].motif_ensemble.motif_states[0].mts
             mtst = motif_tree_state.MotifTreeStateTree(mts)
@@ -246,29 +274,6 @@ class MTSTtoMETConverter(object):
         mtst2 = self.met.get_mtst()
         #mtst2.to_pdb("test2.pdb")
         return mtst2, score
-
-
-def convert_mt_to_met(mt):
-    met = MotifEnsembleTree()
-
-    for i, n in enumerate(mt.nodes):
-        if i == 0:
-            continue
-
-        parent_index = n.parent().index
-        parent_end_index = n.parent_end_index()
-
-        if n.motif.name[2] == "=":
-            me = motif_ensemble.MotifEnsemble(n.motif.name)
-            met.add_ensemble(me, parent=met.nodes[parent_index],
-                             parent_end_index=parent_end_index)
-
-        else:
-            pass
-
-    return met
-
-
 
 def mts_to_me(mts):
     me = motif_ensemble.MotifEnsemble()

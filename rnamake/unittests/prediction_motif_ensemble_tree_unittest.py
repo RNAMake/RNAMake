@@ -66,7 +66,7 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
         mt.add_motif(h_lib.get_motif("HELIX.IDEAL.12"), end_index=1)
         mt.write_pdbs("h")
 
-    def test_get_mtst_2(self):
+    def _test_get_mtst_2(self):
         pos_bps = ["GC", "CG", "AU", "AU"]
         size = random.randint(10,20)
         bps = []
@@ -86,15 +86,12 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
         print len(mtst.nodes)
         mtst.nodes_to_pdbs()
 
-
-
-
-
-
-    def _test_mts(self):
+    def test_mts(self):
         path = settings.RESOURCES_PATH + "prediction/GC=GC.new.me"
         mts_lib = motif_tree_state.MotifTreeStateLibrary(libpath=path, new=1)
         mtst = motif_tree_state.MotifTreeStateTree(sterics=1)
+
+        mts = mts_lib.get_state("GC=GC.2-0")
         mtst.add_state(mts_lib.get_state("GC=GC.2-0"))
         mtst.add_state(mts_lib.get_state("GC=GC.2-0"))
         mtst.add_state(mts_lib.get_state("GC=GC.2-0"))

@@ -12,7 +12,7 @@
 
 //RNAMake Headers
 #include "util/settings.h"
-#include "util/resource_manager.h"
+#include "structure/resource_manager.h"
 #include "structure/chain.h"
 #include "motif/motif.h"
 

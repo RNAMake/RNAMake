@@ -101,7 +101,6 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
         if node is None:
             mt.nodes[2].motif.ends[1].flip()
             mt.nodes[2].motif.ends[1].flipped=0
-            print name+"."+str(i)
             node = mt.add_motif(test_helix, end_index=1,  end_flip=0)
         pop = float(len(c.motifs)) / float(nmotifs)
         energy = -kBT*math.log(pop)
@@ -243,10 +242,6 @@ def get_two_way_prediction_lib(c, origin, test_helix):
     f.close()
 
 
-
-
-
-
 def cluster_twoways():
     twoway_lib = motif_library.MotifLibrary(motif_type.TWOWAY)
     twoway_lib.load_all()
@@ -275,12 +270,6 @@ def cluster_twoways():
 
 
 
-
-
-
-
-
-
 if __name__ == '__main__':
 
     #cluster_twoways()
@@ -295,15 +284,29 @@ if __name__ == '__main__':
     #get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
 
     ideal_motifs = []
+
+    base_dir = settings.RESOURCES_PATH + "prediction/"
+
     for i,bp1 in enumerate(bps):
         for j,bp2 in enumerate(bps):
             if bp1 + "=" + bp2 in seen:
                 continue
             target = [bp1,bp2]
-            seen.append(bp1 + "=" + bp2)
+            name = bp1 + "=" + bp2
+            seen.append(name)
             m = get_bp_step_prediction_lib(target, helix_mlib)
-            m.name = bp1 + "=" + bp2
+            m.name = name
             ideal_motifs.append(m)
     motif_library_sqlite.build_sqlite_library("bp_steps.db", ideal_motifs)
+
+    f = open(base_dir+"all.new.me", "w")
+    for m in ideal_motifs:
+        m.end_to_add = 0
+        m.name += "-0"
+        mts = motif_tree_state.motif_to_state_simple(m, 0, 0)
+        m2 = motif.str_to_motif(mts.build_string)
+        f.write(mts.to_f_str())
+    f.close()
+
 
 

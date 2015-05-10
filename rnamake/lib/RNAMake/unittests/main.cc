@@ -8,6 +8,8 @@
 
 #include "util_unittests/uuid_unittest.h"
 
+#include "structure_unittests/resource_manager_unittest.h"
+
 #include "motif_unittests/motif_unittest.h"
 #include "motif_unittests/motif_tree_unittest.h"
 #include "motif_unittests/motif_tree_merger_unittest.h"
@@ -19,7 +21,7 @@
 
 int main(int argc, const char * argv[]) {
 
-    MotifTreeMergerUnittest test;
+    MotifLibraryUnittest test;
     test.run();
     
 

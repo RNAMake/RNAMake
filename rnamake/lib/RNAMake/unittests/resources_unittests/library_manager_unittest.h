@@ -12,7 +12,6 @@
 #include <stdio.h>
 
 #include "unittest.h"
-#include "resources/library_manager.h"
 
 class LibraryManagerUnittest : public Unittest {
 public:
@@ -32,7 +31,6 @@ public:
     
     
 private:
-    LibraryManager lm_;
     
 };
     

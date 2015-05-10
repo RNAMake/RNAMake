@@ -61,6 +61,18 @@ MotifLibrary::contains_motif(String const & name) {
     
 }
 
+String
+MotifLibrary::get_db_path(MotifType const & mtype) {
+    String path = resources_path() + "/motif_libraries/";
+    if     ( mtype == TWOWAY)    { path += "two_ways"; }
+    else if( mtype == HELIX )    { path += "helices";  }
+    else if( mtype == TCONTACT ) { path += "tertiary_contacts";  }
+    else if( mtype == NWAY)      { path += "junctions"; }
+    else if( mtype == HAIRPIN)   { path += "hairpins"; }
+    else { throw "could not find mtype"; }
+    return path+".db";
+}
+
 
 MotifLibrary
 unique_twoway_lib() {

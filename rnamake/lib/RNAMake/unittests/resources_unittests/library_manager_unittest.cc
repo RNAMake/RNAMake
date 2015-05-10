@@ -7,21 +7,18 @@
 //
 
 #include "library_manager_unittest.h"
-
+#include "resources/library_manager.h"
 
 LibraryManagerUnittest::LibraryManagerUnittest() {
-    lm_ = LibraryManager();
-    
 }
 
 int
 LibraryManagerUnittest::test_get_motif() {
    
-    MotifOP m  = lm_.get_motif("HELIX.IDEAL");
-    MotifOP m1 = lm_.get_motif("TWOWAY.1GID.0");
-    
+    MotifOP m  = LibraryManager::getInstance().get_motif("HELIX.IDEAL");
+    MotifOP m1 = LibraryManager::getInstance().get_motif("TWOWAY.1GID.0");
     try {
-        MotifOP m2 = lm_.get_motif("TWOWAY.1GID.1110");
+        MotifOP m2 = LibraryManager::getInstance().get_motif("TWOWAY.1GID.1110");
         std::cout << "did not catch exception" << std::endl;
         exit(0);
     } catch(String const & e) {}

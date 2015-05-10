@@ -110,16 +110,6 @@ class MotifTree(base.Base):
 
         return new_node
 
-    """def _prep_node_motif(self, n):
-        avail_ends = n.available_ends()
-        m = self.rm.get_motif("HELIX.IDEAL.3")
-        for e in avail_ends:
-            node = self.add_motif(m, end_index=1, end_flip=0, parent=n, prep=0)
-            if node is None:
-                e.flip()
-            else:
-                self.remove_node(self.last_node)"""
-
     def write_pdbs(self,name="node"):
         for i,n in enumerate(self.nodes):
             n.motif.to_pdb(name+"."+str(i)+".pdb")
@@ -355,10 +345,16 @@ class MotifTreeNode(object):
         end = c.motif_end(parent)
         return parent.motif.ends.index(end)
 
+    def motif_end_index(self, other_node):
+        c = self.connection(other_node)
+        end = c.motif_end(self)
+        return self.motif.ends.index(end)
+
     def connection(self, n):
         for c in self.connections:
             if c.node_1 == n or c.node_2 == n:
                 return c
+        raise ValueError("connection called with node that is not connected to current node")
 
     def to_str(self):
         s = self.motif.to_str() + "!"

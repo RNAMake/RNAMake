@@ -17,19 +17,27 @@
 
 class LibraryManager {
 public:
-    LibraryManager();
-    
-    ~LibraryManager() {}
+    static LibraryManager & getInstance() {
+        static LibraryManager instance;
+        return instance;
+    }
     
 public:
     
     MotifOP
     get_motif(String const &);
+
+protected:
+    LibraryManager();
+    
+    LibraryManager(LibraryManager const &);
+    void operator=(LibraryManager const &);
     
 private:
-    
+    ~LibraryManager() {}
+
+private:
     std::map<String, MotifLibraryOP> mlibs_;
-    
     
 };
 

@@ -16,7 +16,6 @@
 
 //RNAMake Libraries
 #include "base/types.h"
-#include "motif/motif_type.h"
 
 /*static
 int
@@ -31,26 +30,26 @@ callback(void *NotUsed, int argc, char **argv, char **azColName){
 
 class Sqlite3Connection {
 public:
-    Sqlite3Connection(MotifType const &);
+    Sqlite3Connection(String const &);
+    
     ~Sqlite3Connection() {
         delete zErrMsg_;
         sqlite3_close(db_);
     }
     
 public:
-    String
-    get_db_path(MotifType const &);
     
     void
     query(String const);
     
+    virtual
     Strings const &
-    next();
+    next() { return values_; }
     
 public: //getters
     
     
-private:
+protected:
     int rc_;
     int ic_;
     String query_statement_;

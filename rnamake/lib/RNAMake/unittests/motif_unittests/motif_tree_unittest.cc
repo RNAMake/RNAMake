@@ -65,8 +65,8 @@ MotifTreeUnittest::test_motif_tree_to_str() {
             j++;
             if (j == 0) { continue; }
             MotifOP m = mlib.get_motif(n->motif()->name());
-            MotifTreeNodeOP node = mt2.add_motif(m, NULL, 0);
-            if(node == NULL) {
+            MotifTreeNodeOP node = mt2.add_motif(m, nullptr, 0);
+            if(node == nullptr) {
                 std::cout << m->name() << std::endl;
             }
         }

@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include "util/settings.h"
 #include "motif/motif_type.h"
 #include "resources/motif_library.h"
 #include "resources/library_manager.h"
@@ -17,6 +18,9 @@ LibraryManager::LibraryManager() {
     mlibs_["NWAY"    ] = MotifLibraryOP(new MotifLibrary(NWAY));
     mlibs_["TWOWAY"  ] = MotifLibraryOP(new MotifLibrary(TWOWAY));
     mlibs_["TCONTACT"] = MotifLibraryOP(new MotifLibrary(TCONTACT));
+    
+    String path = resources_path() + "motif_libraries/bp_steps.db";
+    //MotifLibraryOP mlib (new MotifLibrary());
 }
 
 

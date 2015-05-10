@@ -1,6 +1,7 @@
 import sys
 import heapq
 import motif_tree_state
+import motif_tree_state_tree
 import motif_type
 import motif
 import base
@@ -44,7 +45,7 @@ class PriorityQueue(object):
         return heapq.heappop(self.elements)[1]
 
 
-class MotifTreeStateSearchNode(motif_tree_state.MotifTreeStateNode):
+class MotifTreeStateSearchNode(motif_tree_state_tree.MotifTreeStateNode):
     def __init__(self, mts, parent, lib_type):
         if parent is None:
             self.level = 0

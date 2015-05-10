@@ -184,10 +184,6 @@ class MotifTreeStateUnittest(unittest.TestCase):
             exit()
 
 
-
-
-
-
     def test_compare_mtst_to_motif_tree(self):
         if util.UnittestState == util.UnittestType.BASIC:
             self.skipTest("test_compare_mtst_to_motif_tree is not a basic test")

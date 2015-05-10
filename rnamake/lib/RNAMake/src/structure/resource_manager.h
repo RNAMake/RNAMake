@@ -20,7 +20,8 @@ public:
         static ResourceManager instance;
         return instance;
     }
-    
+   
+public:
     
     inline
     ResidueTypeSet const &
@@ -29,14 +30,17 @@ public:
     }
     
     
-private:
-    ResourceManager() {
+protected:
+    ResourceManager() { //Prevent construction
         rts_ = ResidueTypeSet();
-    };
+        //std::cout << "created\n"; should only see this once!!!
+    }
     
-    
-    ResourceManager(ResourceManager const &);
+    ResourceManager(ResourceManager const &); //Prevent construction
     void operator= (ResourceManager const &);
+    
+private:
+    ~ResourceManager() {}
 
 private:
     ResidueTypeSet rts_;

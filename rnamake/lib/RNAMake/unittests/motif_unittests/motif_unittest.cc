@@ -60,7 +60,6 @@ MotifUnittest::test_secondary_structure() {
     return 1;
 }
 
-
 int
 MotifUnittest::run() {
     if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }

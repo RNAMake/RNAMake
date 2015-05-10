@@ -4,6 +4,7 @@ import motif_library_sqlite
 import motif_type
 import motif_tree
 import motif_tree_state
+import motif_tree_state_library
 import motif_scorer
 import settings
 import util
@@ -14,6 +15,7 @@ class ResourceManager(object):
         self.extra_motifs = {}
 
         self.mts_libs = {}
+        self.extra_mts = {}
 
         for mtype in motif_library.lib_paths.iterkeys():
             # catch unimplemented libraries
@@ -27,20 +29,19 @@ class ResourceManager(object):
 
         mlib = motif_library_sqlite.MotifLibrarySqlite(libpath=path)
         mlib.mtype = motif_type.HELIX
-        self.mlibs[99] = mlib
+        self.mlibs['UNKNOWN'] = mlib
 
-        for mtype in motif_library.lib_paths.iterkeys():
-            # catch unimplemented mts libraries
-            try:
-                mts_lib = motif_tree_state.MotifTreeStateLibrary(mtype)
-                self.mts_libs[motif_type.type_to_str(mtype)] = mts_lib
-            except:
-                pass
-
+        self._setup_mts_libs()
         self.mt = motif_tree.MotifTree()
+        self.mt2 = motif_tree.MotifTree()
         self.mt.add_motif(self.get_motif("HELIX.IDEAL.6"), end_index=1, end_flip=0)
         self.mt.level +=1
 
+    def _setup_mts_libs(self):
+        path = settings.UNITTEST_PATH
+        self.mts_libs['TWOWAY']   = motif_tree_state_library.MotifTreeStateLibrary(libpath=path+"test_twoway.new.me",new=1)
+        self.mts_libs['HELIX' ]   = motif_tree_state_library.MotifTreeStateLibrary(libpath=path+"test_helix.new.me",new=1)
+        self.mts_libs['BP_STEPS'] = motif_tree_state_library.MotifTreeStateLibrary(libpath=settings.RESOURCES_PATH+"prediction/all.new.me",new=1)
 
     def get_motif(self, mname, end_index=None, end_name=None):
         for mlib in self.mlibs.itervalues():
@@ -56,6 +57,17 @@ class ResourceManager(object):
 
 
         raise ValueError("cannot find " + mname)
+
+    def get_state(self, mts_name):
+        for mts_lib in self.mts_libs.itervalues():
+            mts = mts_lib.get_state(mts_name)
+            if mts is not None:
+                return mts
+
+        if mts_name in self.extra_mts:
+            return self.extra_mts[mts_name]
+
+        raise ValueError("cannot find mts: "+ mts_name)
 
     def add_lib_path(self, path):
         self.mlibs[path] = motif_library.MotifLibrary(libdir=path)
@@ -90,6 +102,16 @@ class ResourceManager(object):
                 self.mt.remove_node(self.mt.last_node)
 
         m_copy = self.mt.nodes[2].motif
+        self.mt.remove_node_level()
+        self._build_extra_mts(m_copy, end_index)
+
+        return m_copy
+
+    def _build_extra_mts(self, m, end_index):
+        self.mt2.add_motif(m, end_index=end_index, end_flip=0)
+        m_copy = self.mt2.nodes[1].motif
+        self.mt2.remove_node_level()
+
         ends = [ None for e in m_copy.ends ]
         for i, end in enumerate(m_copy.ends):
             if end_index == i:
@@ -104,13 +126,14 @@ class ResourceManager(object):
         ms = motif_scorer.MotifScorer()
         score = ms.score(m)
 
-        #mts = MotifTreeState(m_copy.name, end_index,
-        #                    len(m.residues()), score, beads,
-        #                    ends, end_flip, m_copy.to_str())
+        name = m_copy.name + "-" + str(end_index)
+        mts = motif_tree_state.MotifTreeState(name, end_index,
+                                              len(m.residues()), score, beads,
+                                              ends, 0, m_copy.to_str())
 
-        self.mt.remove_node_level()
+        self.extra_mts[name] = mts
 
-        return m_copy
+
 
 manager = ResourceManager()
 
