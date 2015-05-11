@@ -28,3 +28,23 @@ split_str_by_delimiter(
     return tokens;
     
 }
+
+String
+filename(
+    String const & path) {
+    Strings path_spl = split_str_by_delimiter(path, "/");
+    return path_spl.back();
+}
+
+
+String
+base_dir(
+    String const & path) {
+    Strings path_spl = split_str_by_delimiter(path, "/");
+    String base_path;
+    for(int i = 0; i < path_spl.size()-1; i++) {
+        base_path += path_spl[i] + "/";
+    }
+    return base_path;
+    
+}

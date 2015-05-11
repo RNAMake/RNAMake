@@ -31,6 +31,13 @@ public:
         rts_ = ResidueTypeSet();
     }
     
+    MotifLibrary(String const & path, MotifType const & mtype = UNKNOWN):
+        connection_(MotifSqliteConnection(path)),
+        mtype_(mtype) {
+        mdict_ = StringMotifMap();
+        rts_ = ResidueTypeSet();
+    }
+    
     ~MotifLibrary() {}
 
 public:

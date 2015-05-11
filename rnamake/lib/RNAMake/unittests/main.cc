@@ -7,6 +7,7 @@
 //
 
 #include "util_unittests/uuid_unittest.h"
+#include "util_unittests/x3dna_unittest.h"
 
 #include "structure_unittests/resource_manager_unittest.h"
 
@@ -21,7 +22,7 @@
 
 int main(int argc, const char * argv[]) {
 
-    MotifLibraryUnittest test;
+    X3dnaUnittest test;
     test.run();
     
 

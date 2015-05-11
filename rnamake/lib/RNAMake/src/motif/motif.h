@@ -34,6 +34,8 @@ public:
     structure_ ( StructureOP() )
     {}
     
+    Motif(String const &);
+    
     Motif(String const &,
           ResidueTypeSet const &);
     
@@ -44,18 +46,7 @@ public:
     Motif
     copy();
     
-    ~Motif() {
-        /*for(auto & bp : basepairs_) {
-            bp = NULL;
-        }
-        for(auto & end : ends_) {
-            end = NULL;
-        }
-        structure_ = NULL;*/
-        //basepairs_.resize(0);
-        //ends_.resize(0);
-
-    }
+    ~Motif() {}
 
 public:
     

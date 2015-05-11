@@ -19,5 +19,13 @@ split_str_by_delimiter(
     String,
     String);
 
+String
+filename(
+    String const &);
+
+String
+base_dir(
+    String const &);
+
 
 #endif /* defined(__RNAMake__string__) */

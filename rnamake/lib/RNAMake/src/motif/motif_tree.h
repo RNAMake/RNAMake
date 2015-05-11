@@ -67,6 +67,10 @@ public:
         MotifTreeNodeOP const &,
         MotifTreeNodeOP const &,
         float cutoff = 25);
+    
+    inline
+    void
+    increase_level() { level_ += 1; }
 
 public: //getters
     
@@ -105,6 +109,7 @@ private:
     MotifTreeNodeOP last_node_;
     MotifTreeMerger merger_;
     float clash_radius_;
+    int level_;
     //options ... need a better way
     int sterics_, full_beads_first_res_;
     

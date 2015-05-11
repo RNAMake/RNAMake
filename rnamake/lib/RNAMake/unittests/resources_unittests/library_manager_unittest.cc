@@ -23,6 +23,8 @@ LibraryManagerUnittest::test_get_motif() {
         exit(0);
     } catch(String const & e) {}
 
+    MotifOP bp = LibraryManager::getInstance().get_motif("GC=GC");
+    
     
     return 1;
 }

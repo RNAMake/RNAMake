@@ -27,6 +27,7 @@ MotifTree::MotifTree() {
     sterics_ = 1;
     full_beads_first_res_ = 1;
     merger_ = MotifTreeMerger();
+    level_ = 1;
 }
 
 MotifTree::MotifTree(MotifOP const & m) {
@@ -38,6 +39,8 @@ MotifTree::MotifTree(MotifOP const & m) {
     sterics_ = 1;
     full_beads_first_res_ = 1;
     merger_ = MotifTreeMerger();
+    level_ = 1;
+
 }
 
 MotifTree::MotifTree(
@@ -67,6 +70,7 @@ MotifTree::MotifTree(
     }
     last_node_ = nodes_.back();
     merger_ = MotifTreeMerger();
+    level_ = 1;
 }
 
 
@@ -121,7 +125,7 @@ MotifTree::add_motif(
         flips.push_back(1);
     }
     else {
-        if(end_flip != 0 || end_flip != 1) {
+        if(end_flip != 0 && end_flip != 1) {
             throw "supplied an end_flip that is not 1 or 0\n";
         }
         flips.push_back(end_flip);
@@ -163,7 +167,7 @@ MotifTree::_add_motif(
         }
         
         MotifOP m_copy ( new Motif ( m->copy() ));
-        MotifTreeNodeOP new_node ( new MotifTreeNode(m_copy, parent->level()+1, (int)nodes_.size(), flip) );
+        MotifTreeNodeOP new_node ( new MotifTreeNode(m_copy, level_, (int)nodes_.size(), flip) );
         m->reset();
         BasepairOP new_end = m_copy->get_basepair(end->uuid())[0];
         for ( auto const & r : m_copy->residues() ) {  r->new_uuid(); }

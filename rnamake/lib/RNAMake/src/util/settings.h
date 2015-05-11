@@ -20,4 +20,8 @@ base_dir();
 String
 resources_path();
 
+String
+x3dna_path();
+
+
 #endif /* defined(__RNAMake__settings__) */

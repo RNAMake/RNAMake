@@ -33,6 +33,8 @@
 		1C4E3CBF1B0001120076284E /* resource_manager_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CBD1B0001120076284E /* resource_manager_unittest.cc */; };
 		1C4E3CC21B0013F20076284E /* sqlite3_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CC11B0013F20076284E /* sqlite3_connection.cc */; };
 		1C4E3CC51B0014BF0076284E /* motif_sqlite_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CC41B0014BF0076284E /* motif_sqlite_connection.cc */; };
+		1C4E3CDC1B014EE90076284E /* x3dna.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CDA1B014EE90076284E /* x3dna.cc */; };
+		1C4E3CDF1B01530B0076284E /* x3dna_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CDD1B01530B0076284E /* x3dna_unittest.cc */; };
 		1C4F14511AA2A690003B7895 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F14501AA2A690003B7895 /* main.cpp */; };
 		1C855BB61A7FDE3300EED04D /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
 		1C8FA1111AD1A2E20001B29C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1101AD1A2E20001B29C /* main.cpp */; };
@@ -284,6 +286,10 @@
 		1C4E3CC11B0013F20076284E /* sqlite3_connection.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = sqlite3_connection.cc; sourceTree = "<group>"; };
 		1C4E3CC31B0014BF0076284E /* motif_sqlite_connection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_sqlite_connection.h; sourceTree = "<group>"; };
 		1C4E3CC41B0014BF0076284E /* motif_sqlite_connection.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_sqlite_connection.cc; sourceTree = "<group>"; };
+		1C4E3CDA1B014EE90076284E /* x3dna.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = x3dna.cc; sourceTree = "<group>"; };
+		1C4E3CDB1B014EE90076284E /* x3dna.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x3dna.h; sourceTree = "<group>"; };
+		1C4E3CDD1B01530B0076284E /* x3dna_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = x3dna_unittest.cc; sourceTree = "<group>"; };
+		1C4E3CDE1B01530B0076284E /* x3dna_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x3dna_unittest.h; sourceTree = "<group>"; };
 		1C4F144E1AA2A690003B7895 /* eternabot */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = eternabot; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C4F14501AA2A690003B7895 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C855B9C1A7FDB4300EED04D /* motif_library_unittest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = motif_library_unittest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -792,6 +798,8 @@
 				1CBEFF221AF066E400C03772 /* settings.cc */,
 				1CBEFF1E1AF0658B00C03772 /* file_io.cc */,
 				1CBEFF1F1AF0658B00C03772 /* file_io.h */,
+				1C4E3CDA1B014EE90076284E /* x3dna.cc */,
+				1C4E3CDB1B014EE90076284E /* x3dna.h */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -848,6 +856,8 @@
 			children = (
 				1CBEFF4A1AF1AE1000C03772 /* uuid_unittest.cc */,
 				1CBEFF4B1AF1AE1000C03772 /* uuid_unittest.h */,
+				1C4E3CDD1B01530B0076284E /* x3dna_unittest.cc */,
+				1C4E3CDE1B01530B0076284E /* x3dna_unittest.h */,
 			);
 			path = util_unittests;
 			sourceTree = "<group>";
@@ -1355,7 +1365,9 @@
 				1CBEFF441AF1AB1700C03772 /* residue.cc in Sources */,
 				1CBEFF6B1AF1B7DE00C03772 /* residue_unittest.cc in Sources */,
 				1CAACE8E1AF2DE120098AA49 /* basepair.cc in Sources */,
+				1C4E3CDF1B01530B0076284E /* x3dna_unittest.cc in Sources */,
 				1C4E3CC21B0013F20076284E /* sqlite3_connection.cc in Sources */,
+				1C4E3CDC1B014EE90076284E /* x3dna.cc in Sources */,
 				1C4E3CBB1AF455510076284E /* motif_tree_merger_unittest.cc in Sources */,
 				1CAACE981AF2E2300098AA49 /* basepair_unittest.cc in Sources */,
 				1CBEFF6F1AF1BEB600C03772 /* chain.cc in Sources */,

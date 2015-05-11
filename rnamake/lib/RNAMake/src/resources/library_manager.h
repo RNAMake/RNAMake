@@ -12,7 +12,9 @@
 #include <stdio.h>
 #include <map>
 
+//RNAMake Headers
 #include "base/string.h"
+#include "motif/motif_tree.h"
 #include "resources/motif_library.h"
 
 class LibraryManager {
@@ -25,7 +27,13 @@ public:
 public:
     
     MotifOP
-    get_motif(String const &);
+    get_motif(
+        String const &,
+        int const & end_index = -1,
+        String const & end_name = "");
+    
+    void
+    add_motif(String const & path);
 
 protected:
     LibraryManager();
@@ -35,9 +43,15 @@ protected:
     
 private:
     ~LibraryManager() {}
+    
+    void
+    _setup_mts_libs();
 
 private:
     std::map<String, MotifLibraryOP> mlibs_;
+    std::map<String, MotifOP> extra_motifs_;
+    MotifTree mt_, mt2_;
+    
     
 };
 

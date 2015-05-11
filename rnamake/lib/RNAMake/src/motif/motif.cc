@@ -59,6 +59,12 @@ Motif::Motif(
     _cache_basepair_frames();
 }
 
+Motif::Motif(String const & path) {
+    
+}
+
+
+
 Motif
 Motif::copy() {
     Motif cmotif;

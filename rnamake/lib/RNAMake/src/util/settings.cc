@@ -29,3 +29,11 @@ resources_path() {
     String base_path = base_dir();
     return base_path + "/rnamake/resources/";
 }
+
+
+String
+x3dna_path() {
+    String path = resources_path() + "x3dna/osx/";
+    return path;
+    
+}
