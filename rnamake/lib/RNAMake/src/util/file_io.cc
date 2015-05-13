@@ -21,9 +21,10 @@ get_lines_from_file(String const fname) {
     input.open(fname);
     while ( input.good() ) {
         getline(input, line);
-        if( line.length() < 2 ) { break; }
         lines.push_back(line);
         
     }
+    input.close();
+    
     return lines;
 }

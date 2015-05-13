@@ -37,6 +37,8 @@ public:
     int
     test_get_residue();
     
+    int
+    test_creation_from_pdb();
     
 public:
     

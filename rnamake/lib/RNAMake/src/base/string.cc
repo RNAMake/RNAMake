@@ -5,7 +5,10 @@
 //  Created by Joseph Yesselman on 4/28/15.
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
+#include <algorithm>
+#include <functional>
 
+//RNAMake Headers
 #include "base/string.h"
 
 
@@ -14,10 +17,10 @@ split_str_by_delimiter(
     String s,
     String delimiter) {
     
-    std::string token;
-    std::vector<std::string> tokens;
+    String token;
+    std::vector<String> tokens;
     size_t pos = 0;
-    while ((pos = s.find(delimiter)) != std::string::npos) {
+    while ((pos = s.find(delimiter)) != String::npos) {
         token = s.substr(0, pos);
         tokens.push_back(token);
         s.erase(0, pos + delimiter.length());
@@ -48,3 +51,61 @@ base_dir(
     return base_path;
     
 }
+
+
+bool
+is_number(
+    String const & s) {
+    
+    return !s.empty() && std::find_if(s.begin(),
+                                      s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+    
+}
+
+/**
+ * @brief Left Trim
+ *
+ * Trims whitespace from the left end of the provided String
+ *
+ * @param[out] s The String to trim
+ *
+ * @return The modified String&
+ */
+String& ltrim(String& s) {
+    s.erase(s.begin(), std::find_if(s.begin(), s.end(),
+                                    std::ptr_fun<int, int>(std::isgraph)));
+    return s;
+}
+
+/**
+ * @brief Right Trim
+ *
+ * Trims whitespace from the right end of the provided String
+ *
+ * @param[out] s The String to trim
+ *
+ * @return The modified String&
+ */
+String& rtrim(String& s) {
+    s.erase(std::find_if(s.rbegin(), s.rend(),
+                         std::ptr_fun<int, int>(std::isgraph)).base(), s.end());
+    return s;
+}
+
+/**
+ * @brief Trim
+ *
+ * Trims whitespace from both ends of the provided String
+ *
+ * @param[out] s The String to trim
+ *
+ * @return The modified String&
+ */
+String& trim(String& s) {
+    return ltrim(rtrim(s));
+}
+
+
+
+
+

@@ -17,7 +17,8 @@
 
 class X3dnaUnittest : public Unittest {
 public:
-    X3dnaUnittest() {  x_ = X3dna(); }
+    X3dnaUnittest() {  x_ = X3dna();
+    }
     
     ~X3dnaUnittest() {} 
 
@@ -34,6 +35,12 @@ public:
     
     int
     test_generate_dssr_file();
+    
+    int
+    test_res_compare();
+    
+    int
+    test_get_basepairs();
     
 public:
     

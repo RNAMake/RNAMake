@@ -23,8 +23,8 @@ Structure::_build_chains(
     int five_prime_end = 1;
     int found = 1;
     while (true) {
-        five_prime_end = 1;
         for (auto & r1 : residues) {
+            five_prime_end = 1;
             for (auto & r2 : residues) {
                 if(r1->connected_to(*r2) == -1) {
                     five_prime_end = 0;

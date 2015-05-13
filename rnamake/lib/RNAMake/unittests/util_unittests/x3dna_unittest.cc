@@ -53,6 +53,31 @@ X3dnaUnittest::test_generate_dssr_file() {
     return 1;
 }
 
+int
+X3dnaUnittest::test_res_compare() {
+    X3Residue res1(1, "A", "");
+    X3Residue res2(1, "A", "");
+    X3Residue res3(2, "A", "");
+    X3Residue res4(1, "B", "");
+
+    if(!(res1 == res2)) { return 0; }
+    if(res1 == res3)    { return 0; }
+    if(res1 == res4)    { return 0; }
+
+    return 1;
+}
+
+int
+X3dnaUnittest::test_get_basepairs() {
+    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6";
+    x_.get_basepairs(m_path);
+    
+    //Strings lines = get_lines_from_file(m_path+"/ref_frames.dat");
+    //Strings lines = get_lines_from_file("all_tests.cc");
+
+    return 1;
+}
+
 
 
 int
@@ -60,6 +85,8 @@ X3dnaUnittest::run() {
     //if (test_get_ref_frame() == 0)    {  std::cout << "test_get_ref_frame failed" << std::endl; }
     if (test_generate_ref_frame() == 0)    {  std::cout << "test_generate_ref_frame failed" << std::endl; }
     if (test_generate_dssr_file() == 0)    {  std::cout << "test_generate_ref_frame failed" << std::endl; }
+    if (test_res_compare() == 0)           {  std::cout << "test_res_compare failed" << std::endl;}
+    if (test_get_basepairs() == 0)         {  std::cout << "test_get_basepairs failed" << std::endl;}
 
     return 1;
     

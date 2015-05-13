@@ -1,0 +1,51 @@
+//
+//  pdb_parser_unittest.cc
+//  RNAMake
+//
+//  Created by Joseph Yesselman on 5/12/15.
+//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+//
+
+#include "pdb_parser_unittest.h"
+#include "util/file_io.h"
+#include "structure/structure.h"
+
+
+int
+PDBParserUnittest::test_parse() {
+    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+    
+    PDBParser parser;
+    ResidueOPs new_res = parser.parse(m_path);
+    Structure s2;
+    s2._build_chains(new_res);
+    
+    String path = unittest_resource_dir() + "/structure/test_str_to_structure.dat";
+    Strings lines = get_lines_from_file(path);
+    
+    ResidueTypeSet rts;
+    Structure s = str_to_structure(lines[0], rts);
+    AtomOPs org_atoms = s.atoms();
+    AtomOPs new_atoms = s2.atoms();
+    
+    ResidueOPs org_res = s.residues();
+    new_res = s2.residues();
+    
+    float dist;
+    for(int i = 0; i < org_atoms.size(); i++) {
+        if(org_atoms[i] == nullptr || new_atoms[i] == nullptr) { continue; }
+        dist = org_atoms[i]->coords().distance(new_atoms[i]->coords());
+        if(dist > 0.1) { return 0; }
+    }
+    
+    return 1;
+}
+
+int
+PDBParserUnittest::run() {
+    
+    if (test_parse() == 0)       { std::cout << "test_parse failed" << std::endl; }
+    return 0;
+    
+    
+}

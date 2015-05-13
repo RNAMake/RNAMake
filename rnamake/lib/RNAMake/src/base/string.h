@@ -27,5 +27,17 @@ String
 base_dir(
     String const &);
 
+bool
+is_number(
+    String const &);
+
+String & ltrim(
+    String & s);
+
+String& rtrim(
+    String & s);
+
+String& trim(
+    String & s);
 
 #endif /* defined(__RNAMake__string__) */

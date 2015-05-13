@@ -12,10 +12,67 @@
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <cstring>
 
 //RNAMake Headers
 #include "base/string.h"
+#include "math/xyz_vector.h"
+#include "math/xyz_matrix.h"
 #include "util/settings.h"
+
+struct X3Residue {
+public:
+    X3Residue(
+        int nnum,
+        String const & nchain_id,
+        String const & ni_code):
+    num(nnum),
+    chain_id(nchain_id),
+    i_code(ni_code)
+    {}
+    
+    ~X3Residue() {}
+    
+    bool
+    operator == (X3Residue const & r) const {
+        if(num == r.num && chain_id.compare(r.chain_id) == 0 && i_code.compare(r.i_code) == 0) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
+    
+public:
+    int num;
+    String chain_id, i_code;
+};
+
+struct X3Basepair {
+public:
+    X3Basepair(
+        X3Residue const & nres1,
+        X3Residue const & nres2,
+        Matrix const & nr,
+        Point const & nd):
+    res1(nres1),
+    res2(nres2),
+    r(nr),
+    d(nd),
+    bp_type("c...")
+    {}
+    
+    ~X3Basepair() {}
+
+public:
+    X3Residue res1, res2;
+    Point d;
+    Matrix r;
+    String bp_type;
+    
+};
+
+typedef std::vector<X3Basepair> X3Basepairs;
 
 class X3dna {
 public:
@@ -31,6 +88,9 @@ public:
     void
     generate_dssr_file(String const &);
     
+    X3Basepairs const &
+    get_basepairs(String const &);
+    
 private:
     
     String
@@ -39,10 +99,26 @@ private:
     String
     _get_dssr_file_path(String const &);
     
+    Point
+    _convert_strings_to_point(Strings const &);
+    
+    void
+    _parse_ref_frame_file(String const &);
+    
+    std::map<String, Strings>
+    _divide_dssr_file_into_sections(String const &);
+    
+    Strings
+    _split_over_white_space(String const &);
+    
+    X3Residue
+    _parse_dssr_res_str(String const &);
+    
     
     
 private:
     String bin_path_;
+    X3Basepairs basepairs_;
     
 };
 

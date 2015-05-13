@@ -30,7 +30,7 @@ center(
 void
 Residue::setup_atoms(
     AtomOPs & atoms) {
-    atoms_ = AtomOPs(atoms.size());
+    atoms_ = AtomOPs(rtype_.size());
     int count = 0;
     for(auto & a : atoms) {
         if(a == nullptr) { continue; }

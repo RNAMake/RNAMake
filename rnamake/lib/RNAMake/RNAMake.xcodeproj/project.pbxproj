@@ -35,6 +35,8 @@
 		1C4E3CC51B0014BF0076284E /* motif_sqlite_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CC41B0014BF0076284E /* motif_sqlite_connection.cc */; };
 		1C4E3CDC1B014EE90076284E /* x3dna.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CDA1B014EE90076284E /* x3dna.cc */; };
 		1C4E3CDF1B01530B0076284E /* x3dna_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CDD1B01530B0076284E /* x3dna_unittest.cc */; };
+		1C4E3CE21B02E89F0076284E /* pdb_parser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CE01B02E89F0076284E /* pdb_parser.cc */; };
+		1C4E3CE51B02E9890076284E /* pdb_parser_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CE31B02E9890076284E /* pdb_parser_unittest.cc */; };
 		1C4F14511AA2A690003B7895 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4F14501AA2A690003B7895 /* main.cpp */; };
 		1C855BB61A7FDE3300EED04D /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
 		1C8FA1111AD1A2E20001B29C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1101AD1A2E20001B29C /* main.cpp */; };
@@ -290,6 +292,10 @@
 		1C4E3CDB1B014EE90076284E /* x3dna.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x3dna.h; sourceTree = "<group>"; };
 		1C4E3CDD1B01530B0076284E /* x3dna_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = x3dna_unittest.cc; sourceTree = "<group>"; };
 		1C4E3CDE1B01530B0076284E /* x3dna_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x3dna_unittest.h; sourceTree = "<group>"; };
+		1C4E3CE01B02E89F0076284E /* pdb_parser.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pdb_parser.cc; sourceTree = "<group>"; };
+		1C4E3CE11B02E89F0076284E /* pdb_parser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pdb_parser.h; sourceTree = "<group>"; };
+		1C4E3CE31B02E9890076284E /* pdb_parser_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pdb_parser_unittest.cc; sourceTree = "<group>"; };
+		1C4E3CE41B02E9890076284E /* pdb_parser_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pdb_parser_unittest.h; sourceTree = "<group>"; };
 		1C4F144E1AA2A690003B7895 /* eternabot */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = eternabot; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C4F14501AA2A690003B7895 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C855B9C1A7FDB4300EED04D /* motif_library_unittest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = motif_library_unittest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -826,6 +832,8 @@
 				1CBEFF2C1AF0680A00C03772 /* residue_type.h */,
 				1CBEFF281AF0676B00C03772 /* atom.cc */,
 				1CBEFF251AF0675500C03772 /* atom.h */,
+				1C4E3CE01B02E89F0076284E /* pdb_parser.cc */,
+				1C4E3CE11B02E89F0076284E /* pdb_parser.h */,
 			);
 			path = structure;
 			sourceTree = "<group>";
@@ -847,6 +855,8 @@
 				1CAACE961AF2E2300098AA49 /* basepair_unittest.h */,
 				1C4E3CBD1B0001120076284E /* resource_manager_unittest.cc */,
 				1C4E3CBE1B0001120076284E /* resource_manager_unittest.h */,
+				1C4E3CE31B02E9890076284E /* pdb_parser_unittest.cc */,
+				1C4E3CE41B02E9890076284E /* pdb_parser_unittest.h */,
 			);
 			path = structure_unittests;
 			sourceTree = "<group>";
@@ -1341,12 +1351,14 @@
 				1CBEFF3C1AF164E700C03772 /* residue_type.cc in Sources */,
 				1CAACE9D1AF2E9AC0098AA49 /* motif.cc in Sources */,
 				1CBEFF4D1AF1AE1000C03772 /* uuid_unittest.cc in Sources */,
+				1C4E3CE21B02E89F0076284E /* pdb_parser.cc in Sources */,
 				1CBEFE6E1AF0499800C03772 /* main.cc in Sources */,
 				1CBEFF1C1AF0642E00C03772 /* string.cc in Sources */,
 				1CBEFF4E1AF1AF2E00C03772 /* numerical.cc in Sources */,
 				1C4E3C9F1AF312FD0076284E /* library_manager.cc in Sources */,
 				1CAACEA51AF2EC0F0098AA49 /* motif_type.cc in Sources */,
 				1CBEFF3B1AF163C800C03772 /* residue_type_set.cc in Sources */,
+				1C4E3CE51B02E9890076284E /* pdb_parser_unittest.cc in Sources */,
 				1CBEFF3D1AF1651600C03772 /* settings.cc in Sources */,
 				1CAACE901AF2DE120098AA49 /* basepair_state.cc in Sources */,
 				1CAACE871AF2C2510098AA49 /* structure_unittest.cc in Sources */,

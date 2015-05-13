@@ -17,6 +17,7 @@
 #include "math/xyz_matrix.h"
 #include "structure/chain.fwd.h"
 #include "structure/residue.h"
+#include "structure/pdb_parser.h"
 
 class Structure {
 public:
@@ -27,6 +28,18 @@ public:
     chains_ ( ChainOPs() ),
     dummy_ ( Point (0, 0, 0))
     {}
+    
+    Structure(
+        String const & pdb):
+    chains_ ( ChainOPs() ),
+    dummy_ ( Point (0, 0, 0)) {
+        
+        PDBParser pdb_parser;
+        ResidueOPs residues = pdb_parser.parse(pdb);
+        _build_chains(residues);
+        _cache_coords();
+        
+    }
     
     Structure
     copy();

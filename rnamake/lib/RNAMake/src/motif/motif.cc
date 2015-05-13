@@ -9,6 +9,8 @@
 #include <map>
 #include <assert.h>
 #include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
 
 //RNAMake Headers
 #include "util/settings.h"
@@ -59,7 +61,29 @@ Motif::Motif(
     _cache_basepair_frames();
 }
 
-Motif::Motif(String const & path) {
+Motif::Motif(
+    String const & path):
+    beads_(Beads()),
+    score_(0),
+    basepairs_(BasepairOPs()),
+    ends_(BasepairOPs()),
+    mdir_(String()),
+    name_(String()),
+    cached_rotations_(Matrices()) {
+        
+    struct stat s;
+    /*if( stat(path,&s) == 0 ) {
+        //it's a directory
+        if( s.st_mode & S_IFDIR ) {
+            String fname = filename(path);
+            mdir_ = path;
+            name_ = fname;
+            //sstructure_ = Str
+        }
+
+    }*/
+
+    
     
 }
 

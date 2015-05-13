@@ -58,6 +58,10 @@ public:
         }
     }
     
+    inline
+    int
+    size() { return (int)atom_map_.size(); }
+    
 private:
     
     void

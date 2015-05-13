@@ -76,4 +76,31 @@ ResidueTypeSet::get_rtype_by_resname(
 }
 
 
+bool
+ResidueTypeSet::contains_rtype(
+    String const & resname) const {
+    
+    int found = 0;
+    for (auto const & restype : residue_types_) {
+        if(restype.match_name(resname)) { return true; }
+    }
+    
+    return false;
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -9,6 +9,7 @@
 #include "structure_unittest.h"
 #include "unittest.h"
 #include "util/file_io.h"
+#include "util/settings.h"
 
 StructureUnittest::StructureUnittest() {
     
@@ -96,6 +97,17 @@ StructureUnittest::test_get_residue() {
     return 1;
 }
 
+int
+StructureUnittest::test_creation_from_pdb() {
+    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+    Structure s(m_path);
+    
+    if(s.residues().size() != 157) { return 0; }
+    
+    return 1;
+}
+
+
 
 int
 StructureUnittest::run() {
@@ -103,6 +115,7 @@ StructureUnittest::run() {
     if (test_move() == 0)               { std::cout << "test_move failed" << std::endl; }
     if (test_transform() == 0)          { std::cout << "test_transform failed" << std::endl; }
     if (test_get_residue() == 0)        { std::cout << "test_get_residue failed" << std::endl; }
+    if (test_creation_from_pdb() == 0)  { std::cout << "test_creation_from_pdb failed" << std::endl; }
 
     return 0;
 }

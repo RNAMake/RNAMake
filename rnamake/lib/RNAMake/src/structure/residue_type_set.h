@@ -21,6 +21,10 @@ public:
     get_rtype_by_resname(
         String const &) const;
     
+    bool
+    contains_rtype(
+        String const &) const;
+    
 private:
     String
     _get_rtype_name(
@@ -29,6 +33,8 @@ private:
     StringIntMap
     _get_atom_map_from_file(
         String const &);
+    
+    
     
 private:
     ResidueTypes residue_types_;
