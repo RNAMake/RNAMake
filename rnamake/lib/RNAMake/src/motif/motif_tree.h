@@ -71,12 +71,20 @@ public:
     inline
     void
     increase_level() { level_ += 1; }
+    
+    void
+    remove_node(
+        MotifTreeNodeOP const &);
 
 public: //getters
     
     inline
     MotifTreeNodeOPs const &
     nodes() const { return nodes_; }
+    
+    inline
+    MotifTreeNodeOP const &
+    last_node() { return last_node_; }
     
 public: //setters
     

@@ -11,9 +11,11 @@
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <algorithm>
 
 //RNAMake Headers
 #include "util/settings.h"
+#include "util/x3dna.h"
 #include "structure/resource_manager.h"
 #include "structure/chain.h"
 #include "motif/motif.h"
@@ -30,7 +32,10 @@ Motif::Motif(
     cached_rotations_(Matrices())
 {
  
-    assert(s.size() > 0);
+    if(s.length() < 10) {
+        throw "tried to construct Motif object from string, with a string too short";
+    }
+    
     Strings spl = split_str_by_delimiter(s, "&");
     mdir_ = spl[0];
     name_ = spl[1];
@@ -72,18 +77,26 @@ Motif::Motif(
     cached_rotations_(Matrices()) {
         
     struct stat s;
-    /*if( stat(path,&s) == 0 ) {
+    if( stat(path.c_str(),&s) == 0 ) {
         //it's a directory
         if( s.st_mode & S_IFDIR ) {
             String fname = filename(path);
             mdir_ = path;
             name_ = fname;
-            //sstructure_ = Str
+            structure_ = StructureOP(new Structure(mdir_ + "/" + fname + ".pdb"));
+        }
+        //it's a file
+        else if( s.st_mode & S_IFREG )
+        {
+            mdir_ = base_dir(path);
+            String fname = filename(path);
+            name_ = fname.substr(0, fname.length()-4);
+            structure_ = StructureOP(new Structure(path));
         }
 
-    }*/
+    }
 
-    
+    _setup_basepairs();
     
 }
 
@@ -302,6 +315,77 @@ Motif::secondary_structure() {
     
     return structure.substr(0, structure.length()-1);
 
+}
+
+void
+Motif::_setup_basepairs() {
+    
+    X3dna x3dna_parser;
+    String mdir = mdir_;
+    if(mdir.length() < 3) { mdir = ""; }
+    
+    X3Basepairs x_basepairs = x3dna_parser.get_basepairs(mdir + "/" + name_);
+    ResidueOP res1, res2;
+    BasepairOP bp;
+    for(auto const & xbp : x_basepairs) {
+        res1 = structure_->get_residue(xbp.res1.num, xbp.res1.chain_id, xbp.res1.i_code);
+        res2 = structure_->get_residue(xbp.res2.num, xbp.res2.chain_id, xbp.res2.i_code);
+        if (res1 == nullptr || res2 == nullptr) {
+            throw "cannot find residues in basepair during setup";
+        }
+        
+        bp = BasepairOP(new Basepair(res1, res2, xbp.r, xbp.bp_type));
+        _assign_bp_primes(bp);
+        basepairs_.push_back(bp);
+    }
+}
+
+void
+Motif::_assign_bp_primes(BasepairOP & bp) {
+    int res1_pos = 0, res2_pos = 0, res1_total = 0, res2_total = 0;
+    int i = 0;
+    for(auto const & c : chains()) {
+        i = 0;
+        for(auto const & r : c->residues()) {
+            if(bp->res1() == r) {
+                res1_pos = i;
+                res1_total = (int)c->residues().size();
+            }
+            else if(bp->res2() == r) {
+                res2_pos = i;
+                res2_total = (int)c->residues().size();
+            }
+            i++;
+        }
+    }
+    
+    if(res1_pos > res1_total/2 || res2_pos < res2_total/2) {
+        ResidueOP temp = bp->res1();
+        bp->res1(bp->res2());
+        bp->res2(temp);
+    }
+    
+}
+
+BasepairOP const &
+Motif::get_basepair_by_name(
+    String const & name) {
+    Strings name_spl = split_str_by_delimiter(name, "-");
+    String alt_name = name_spl[1] + "-" + name_spl[0];
+    for(auto const & bp : basepairs_) {
+        if(name.compare(bp->name()) == 0 || alt_name.compare(bp->name()) == 0) {
+            return bp;
+        }
+    }
+    
+    throw "could not find basepair with name " + name;
+
+}
+
+int
+Motif::end_index(BasepairOP const & end) {
+    int pos = (int)(std::find(ends_.begin(), ends_.end(), end) - ends_.begin());
+    return pos;
 }
 
 

@@ -6,9 +6,12 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+
+//RNAMake Headers
 #include "util/settings.h"
 #include "motif/motif_type.h"
 #include "motif/motif_tree.h"
+#include "motif/motif.h"
 #include "resources/motif_library.h"
 #include "resources/library_manager.h"
 
@@ -43,6 +46,13 @@ LibraryManager::get_motif(
             return kv.second->get_motif(name);
         }
     }
+    
+    if(extra_motifs_.find(name) != extra_motifs_.end()) {
+        if(end_index == -1 && end_name.length() == 0) {
+            return extra_motifs_[name];
+        }
+    }
+    
     throw "cannot find motif " + name + "\n";
     
 }
@@ -50,6 +60,42 @@ LibraryManager::get_motif(
 void
 LibraryManager::add_motif(String const & path) {
     String name = filename(path);
-    //extra_motifs_[name] =
+    extra_motifs_[name] = MotifOP(new Motif(path));
+    
+}
+
+MotifOP
+LibraryManager::_prep_extra_motif_for_asssembly(
+    MotifOP const & m,
+    int end_index,
+    String const & end_name) {
+    
+    if(end_index == -1 && end_name.length() == 0) {
+        throw "cannot call _prep_extra_motif_for_asssembly without end_name or end_index";
+    }
+    
+    if(end_name.length() != 0) {
+        BasepairOP end = m->get_basepair_by_name(end_name);
+        end_index = m->end_index(end);
+    }
+    
+    MotifTreeNodeOP node = mt_.add_motif(m, nullptr, end_index);
+    if(node == nullptr) {
+        throw "cannot prep motif for assembly, motif: " + m->name();
+    }
+    
+    MotifOP h_m = get_motif("HELIX.IDEAL.3");
+    for(auto const & e : node->available_ends()) {
+        MotifTreeNodeOP n = mt_.add_motif(h_m, node, 1, -1, 0);
+        if(n == nullptr) {
+            e->flip();
+        }
+        else {
+           // mt_.remove_node(mt_.last_node());
+        }
+    }
+     
+    return m;
+    
     
 }

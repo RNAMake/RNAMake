@@ -43,11 +43,30 @@ public:
     void
     add_connection(MotifTreeConnectionOP const &);
     
+    void
+    remove_connection(MotifTreeConnectionOP const &);
+    
+    MotifTreeNodeOP
+    parent();
+    
+    MotifTreeConnectionOP const &
+    connection(MotifTreeNodeOP const &);
+    
+    int
+    parent_end_index();
+    
+    int
+    motif_end_index(MotifTreeNodeOP const &);
+    
 public: //getters:
     
     inline
     MotifOP const &
     motif() const { return motif_; }
+    
+    inline
+    MotifOP &
+    motif() { return motif_; }
     
     inline
     int const &
@@ -129,21 +148,33 @@ public:
     }
     
     inline
-     MotifTreeNodeOP const &
-     partner(MotifTreeNodeOP const & node) const {
+    MotifTreeNodeOP const &
+    partner(MotifTreeNodeOP const & node) const {
          if     (node == node_1_)  { return node_2_; }
          else if(node == node_2_)  { return node_1_; }
          else { throw "node is not in connection object cannot call partner"; }
      }
      
-     inline
-     BasepairOP const &
-     motif_end(MotifTreeNodeOP const & node) const {
+    inline
+    BasepairOP const &
+    motif_end(MotifTreeNodeOP const & node) const {
          if     (node == node_1_)  { return end_1_; }
          else if(node == node_2_)  { return end_2_; }
          else { throw "node is not in connection object cannot call motif_end"; }
      
      }
+    
+public:
+    
+    inline
+    MotifTreeNodeOP const &
+    node_1() { return node_1_; }
+    
+    inline
+    MotifTreeNodeOP const &
+    node_2() { return node_2_; }
+
+    
     
 private:
     MotifTreeNodeOP node_1_, node_2_;

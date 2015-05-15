@@ -34,6 +34,7 @@ public:
     
     void
     add_motif(String const & path);
+    
 
 protected:
     LibraryManager();
@@ -46,6 +47,12 @@ private:
     
     void
     _setup_mts_libs();
+    
+    MotifOP
+    _prep_extra_motif_for_asssembly(
+        MotifOP const &,
+        int end_index = -1,
+        String const & end_name = "");
 
 private:
     std::map<String, MotifLibraryOP> mlibs_;

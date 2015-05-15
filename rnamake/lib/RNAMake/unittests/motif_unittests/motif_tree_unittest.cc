@@ -18,7 +18,6 @@ MotifTreeUnittest::test_creation() {
     return 1;
 }
 
-
 int
 MotifTreeUnittest::test_add_motif() {
     MotifLibrary mlib (HELIX);
@@ -58,6 +57,7 @@ MotifTreeUnittest::test_motif_tree_to_str() {
     MotifLibrary mlib ( TWOWAY );
     int i = 0;
     for (auto const & line : lines) {
+        if(line.length() < 5) { break; }
         MotifTree mt ( line, rts );
         MotifTree mt2;
         int j = -1;
@@ -82,12 +82,24 @@ MotifTreeUnittest::test_motif_tree_to_str() {
     return 1;
 }
 
+int
+MotifTreeUnittest::test_remove_node() {
+    MotifLibrary mlib (HELIX);
+    MotifTree mt;
+    MotifOP m = mlib.get_motif("HELIX.IDEAL");
+    mt.add_motif(m);
+    mt.remove_node(mt.last_node());
+    
+    return 1;
+}
+
 
 int
 MotifTreeUnittest::run() {
-    if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
-    if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
-    if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
+    //if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
+    //if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
+    //if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
+    if (test_remove_node() == 0)       { std::cout << "test_remove_node failed" << std::endl; }
 
     return 0;
 }

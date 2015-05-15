@@ -9,6 +9,7 @@
 #include "unittest.h"
 #include "motif_unittest.h"
 #include "util/file_io.h"
+#include "resources/motif_library.h"
 
 
 MotifUnittest::MotifUnittest() {
@@ -60,10 +61,57 @@ MotifUnittest::test_secondary_structure() {
     return 1;
 }
 
+
+int
+MotifUnittest::test_creation_from_dir() {
+    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/";
+    Motif m(m_path);
+    
+    return 1;
+}
+
+
+int
+MotifUnittest::test_get_basepair_by_name() {
+    MotifLibrary mlib(HELIX);
+    MotifOP m = mlib.get_motif("HELIX.IDEAL");
+    BasepairOP bp = m->get_basepair_by_name("A5-B7");
+    
+    return 1;
+}
+
+
+
 int
 MotifUnittest::run() {
     if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
     if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
     if (test_secondary_structure() == 0)  { std::cout << "test_secondary_structure failed" << std::endl; }
+    if (test_creation_from_dir() == 0)    { std::cout << "test_copy failed" << std::endl; }
+    if (test_get_basepair_by_name() == 0) { std::cout << "test_get_basepair_by_name failed" << std::endl; }
+
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

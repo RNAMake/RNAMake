@@ -25,6 +25,7 @@ ResidueUnittest::test_str_to_residue() {
     Strings lines = get_lines_from_file(path);
     ResidueTypeSet rts;
     for(auto const & line : lines) {
+        if(line.size() < 10) { break; }
         Residue r = str_to_residue(line, rts);
     }
     

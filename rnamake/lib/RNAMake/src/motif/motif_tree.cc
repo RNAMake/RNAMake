@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <algorithm>
+
+//RNAMake Headers
 #include "util/settings.h"
 #include "structure/resource_manager.h"
 #include "motif/motif_tree.h"
@@ -255,6 +258,35 @@ MotifTree::_add_connection(
     
 }
 
+
+void
+MotifTree::remove_node(
+    MotifTreeNodeOP const & node) {
+        
+    if(node->index() == 0) {
+        throw "cannot remove head node from tree";
+    }
+    
+    MotifTreeNodeOP parent = node->parent();
+    
+    for(auto & c : node->connections()) {
+        MotifTreeNodeOP partner = c->partner(node);
+        partner->remove_connection(c);
+        c->disconnect();
+    }
+    
+    try {
+        nodes_.erase(std::remove(nodes_.begin(), nodes_.end(), node), nodes_.end());
+    }
+    catch(...) {
+        throw "could not remove motif_tree_node from motif_tree";
+    }
+    
+    last_node_ = parent;
+    if(nodes_.size() == 1) {
+        nodes_[0]->motif()->remove_beads();
+    }
+}
 
 void
 MotifTree::write_pdbs(String const & fname) {

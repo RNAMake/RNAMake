@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 
+
 //RNAMake Headers
 #include "base/types.h"
 #include "math/xyz_matrix.h"
@@ -49,6 +50,17 @@ public:
     ~Motif() {}
 
 public:
+
+    inline
+    void
+    remove_beads() { beads_.resize(0); }
+    
+    int
+    end_index(BasepairOP const &);
+    
+    BasepairOP const &
+    get_basepair_by_name(
+        String const &);
     
     inline
     void
@@ -68,35 +80,42 @@ public:
     secondary_structure();
     
     BasepairOPs
-    get_basepair(Uuid const &);
+    get_basepair(
+        Uuid const &);
     
     BasepairOPs
-    get_basepair(ResidueOP,
-                 ResidueOP);
+    get_basepair(
+        ResidueOP,
+        ResidueOP);
     
     BasepairOPs
-    get_basepair(Uuid const &,
-                 Uuid const &);
+    get_basepair(
+        Uuid const &,
+        Uuid const &);
     
     inline
     ResidueOP const
-    get_residue(int num,
-                String const & chain_id,
-                String const & i_code) {
+    get_residue(
+        int num,
+        String const & chain_id,
+        String const & i_code) {
         return structure_->get_residue(num, chain_id, i_code);
     }
     
     inline
     ResidueOP const
-    get_residue(Uuid const & uuid) {
+    get_residue(
+        Uuid const & uuid) {
         return structure_->get_residue(uuid);
     }
     
     Beads const &
-    get_beads(BasepairOPs const &);
+    get_beads(
+        BasepairOPs const &);
     
     Beads const &
-    get_beads(BasepairOP const &);
+    get_beads(
+        BasepairOP const &);
     
     Beads const &
     get_beads() {
@@ -116,7 +135,7 @@ public:
     ChainOPs const &
     chains() { return structure_->chains(); }
     
-public:
+public: //getters
     
     inline
     BasepairOPs const &
@@ -194,6 +213,12 @@ public:
     void
     to_pdb(String const);
     
+private:
+    void
+    _setup_basepairs();
+    
+    void
+    _assign_bp_primes(BasepairOP &);
     
     
 protected:

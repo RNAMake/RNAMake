@@ -84,9 +84,9 @@ Structure::residues() {
 
 ResidueOP const
 Structure::get_residue(
-            int const & num,
-            String const & chain_id,
-            String const & i_code) {
+    int const & num,
+    String const & chain_id,
+    String const & i_code) {
     for( auto & c : chains_) {
         for (auto & r : c->residues() ){
             if (num == r->num() && chain_id.compare(r->chain_id()) == 0 && i_code.compare(r->i_code()) == 0) {
@@ -99,7 +99,7 @@ Structure::get_residue(
 
 ResidueOP const
 Structure::get_residue(
-            Uuid const & uuid) {
+    Uuid const & uuid) {
     for( auto & c : chains_) {
         for (auto & r : c->residues() ){
             if ( r->uuid() == uuid) { return r; }

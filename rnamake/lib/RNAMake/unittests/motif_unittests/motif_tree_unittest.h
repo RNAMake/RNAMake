@@ -32,6 +32,9 @@ public:
     int
     test_motif_tree_to_str();
     
+    int
+    test_remove_node();
+    
 public:
     
     int

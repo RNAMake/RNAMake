@@ -24,6 +24,9 @@ public:
     int
     test_get_motif();
     
+    int
+    test_add_motif();
+    
 public:
     
     int

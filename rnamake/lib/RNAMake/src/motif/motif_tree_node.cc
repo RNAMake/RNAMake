@@ -6,16 +6,15 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <algorithm>
+
+//RNAMake Headers
 #include "base/types.h"
 #include "util/settings.h"
 #include "structure/residue_type_set.h"
 #include "motif/motif.h"
 #include "motif/motif_tree_node.h"
 
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// MotifTreeNode
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 MotifTreeNode::MotifTreeNode(
     MotifOP const & m,
@@ -37,7 +36,6 @@ MotifTreeNode::MotifTreeNode(
 
 MotifTreeNode::~MotifTreeNode() {
 }
-
 
 BasepairOPs
 MotifTreeNode::available_ends() {
@@ -67,4 +65,76 @@ void
 MotifTreeNode::add_connection(MotifTreeConnectionOP const & mtc) {
     connections_.push_back(mtc);
 }
+
+void
+MotifTreeNode::remove_connection(MotifTreeConnectionOP const & c) {
+
+    try {
+        connections_.erase(std::remove(connections_.begin(), connections_.end(), c), connections_.end());
+    }
+    catch(...) {
+        throw "could not remove connection in motif_tree_node"; 
+    }
+}
+
+MotifTreeNodeOP
+MotifTreeNode::parent() {
+    MotifTreeNodeOP partner;
+    for(auto const & c : connections_) {
+        if (c->node_1().get() == this ) {
+            partner = c->node_2();
+        }
+        else {
+            partner = c->node_1();
+        }
+        
+        if(partner->index() < index_) { return partner; }
+    }
+    
+    throw "something crazy happened, couldnt find the parent of motif tree node";
+}
+
+MotifTreeConnectionOP const &
+MotifTreeNode::connection(
+    MotifTreeNodeOP const & node) {
+    for(auto const &  c : connections_) {
+        if(c->node_1() == node || c->node_2() == node) {
+            return c;
+        }
+    }
+    throw "connection called with node that is not connected to current node";
+}
+
+int
+MotifTreeNode::motif_end_index(
+    MotifTreeNodeOP const & node) {
+    
+    MotifTreeConnectionOP c = connection(node);
+    BasepairOP end = c->motif_end(node);
+    return motif_->end_index(end);
+}
+
+int
+MotifTreeNode::parent_end_index() {
+    return motif_end_index(parent());
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -31,6 +31,7 @@ public:
     
     int
     test_contains_motif();
+
     
 public:
     

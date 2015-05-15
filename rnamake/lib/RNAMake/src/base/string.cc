@@ -57,8 +57,13 @@ bool
 is_number(
     String const & s) {
     
-    return !s.empty() && std::find_if(s.begin(),
-                                      s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
+    for(auto const & c : s) {
+        if(!std::isdigit(c)) { return false; }
+    }
+    return true;
+    
+    //return !s.empty() && std::find_if(s.begin(),
+    //                                  s.end(), [](char c) { return !std::isdigit(c); }) == s.end();
     
 }
 

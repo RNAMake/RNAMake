@@ -32,6 +32,12 @@ public:
     int
     test_secondary_structure();
     
+    int
+    test_creation_from_dir();
+    
+    int
+    test_get_basepair_by_name();
+    
 public:
     
     int

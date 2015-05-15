@@ -30,9 +30,22 @@ LibraryManagerUnittest::test_get_motif() {
 }
 
 int
+LibraryManagerUnittest::test_add_motif() {
+    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/fmn_min";
+    LibraryManager::getInstance().add_motif(m_path);
+    
+    MotifOP m  = LibraryManager::getInstance().get_motif("fmn_min");
+    
+    return 1;
+}
+
+
+
+int
 LibraryManagerUnittest::run() {
     
     if (test_get_motif() == 0)             { std::cout << "test_get_motif failed" << std::endl; }
-
+    if (test_add_motif() == 0)             { std::cout << "test_add_motif failed" << std::endl; }
+    
     return 0;
 }

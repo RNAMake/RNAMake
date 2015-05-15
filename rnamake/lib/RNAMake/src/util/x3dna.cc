@@ -231,10 +231,13 @@ Strings
 X3dna::_split_over_white_space(String const & str) {
     Strings spl = split_str_by_delimiter(str, " ");
     Strings non_white_space;
-    for(auto const & s : spl) {
-        if(s.length() > 1) {
-            non_white_space.push_back(s);
-        }
+    String temp;
+    for(auto & s : spl) {
+        //if(!(s.len) {
+        temp = trim(s);
+        if(temp.size() == 0) { continue; }
+        non_white_space.push_back(temp);
+        //}
     }
     return non_white_space;
 }
@@ -249,6 +252,7 @@ X3dna::_parse_dssr_res_str(String const & res_str) {
     try{
         num = std::stoi(rnum);
     } catch(...) {
+        std::cout << res_str << std::endl;
         throw "could not parse " + res_str + " into a residue\n";
     }
 
@@ -267,12 +271,14 @@ X3dna::get_basepairs(String const & pdb_path) {
     int found = 0;
     
     for(auto const & l : section) {
-        if(l.length() < 2) { continue; }
+        if(l.length() < 3) { continue; }
         Strings spl = _split_over_white_space(l);
-        if(is_number(spl[0])) { continue; }
-        X3Residue res1 = _parse_dssr_res_str(spl[2]);
-        X3Residue res2 = _parse_dssr_res_str(spl[3]);
-        String bp_type = spl[8];
+        Strings spl2 = split_str_by_delimiter(spl[1], ".");
+        if(spl2.size() == 1) {continue; }
+        if(spl.size() < 6) { continue; }
+        X3Residue res1 = _parse_dssr_res_str(spl[1]);
+        X3Residue res2 = _parse_dssr_res_str(spl[2]);
+        String bp_type = spl[7];
         found = 0;
         for(auto & bp : basepairs_) {
             if(bp.res1 == res1 && bp.res2 == res2) {
