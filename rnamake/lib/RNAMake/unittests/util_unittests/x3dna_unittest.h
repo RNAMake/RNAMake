@@ -47,6 +47,9 @@ public:
     int
     run();
     
+    void
+    run_all();
+    
 private:
     X3dna x_;
     

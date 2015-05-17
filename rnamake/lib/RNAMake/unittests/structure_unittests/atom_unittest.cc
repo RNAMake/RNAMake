@@ -6,7 +6,12 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <functional>
+#include <map>
+
+#include "base/types.h"
 #include "atom_unittest.h"
+
 
 int
 AtomUnittest::test_creation() {
@@ -62,9 +67,9 @@ AtomUnittest::test_copy() {
     return 1;
 }
 
-
 int
 AtomUnittest::run() {
+    
     if (test_creation() == 0)    {  std::cout << "test_creation failed" << std::endl; }
     if (test_to_pdb_str() == 0)  {  std::cout << "test_to_pdb_str failed" << std::endl; }
     if (test_str_to_atom() == 0) {  std::cout << "test_str_to_atom failed" << std::endl; }
@@ -73,8 +78,29 @@ AtomUnittest::run() {
     return 1;
 }
 
-
-
+void
+AtomUnittest::run_all() {
+    String name = "AtomUnittest";
+    typedef int (AtomUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_creation"   ] = &AtomUnittest::test_creation;
+    func_map["test_to_pdb_str" ] = &AtomUnittest::test_to_pdb_str;
+    func_map["test_str_to_atom"] = &AtomUnittest::test_str_to_atom;
+    func_map["test_copy"       ] = &AtomUnittest::test_copy;
+    
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}
 
 
 

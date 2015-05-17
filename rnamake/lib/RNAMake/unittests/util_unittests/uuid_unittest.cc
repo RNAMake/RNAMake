@@ -53,3 +53,25 @@ UuidUnittest::run() {
     return 1;
 
 }
+
+void
+UuidUnittest::run_all() {
+    String name = "UuidUnittest";
+    typedef int (UuidUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_compare"   ] = &UuidUnittest::test_compare;
+    func_map["test_map" ]       = &UuidUnittest::test_map;
+
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}

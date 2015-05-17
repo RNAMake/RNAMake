@@ -9,15 +9,29 @@
 
 //RNAMake Headers
 #include "util/settings.h"
+#include "structure/basepair_state.h"
 #include "motif/motif_type.h"
 #include "motif/motif_tree.h"
 #include "motif/motif.h"
+#include "motif_tree_state/motif_tree_state.h"
 #include "resources/motif_library.h"
 #include "resources/library_manager.h"
 
+void
+LibraryManager::_setup_mts_libs() {
+    String path = base_dir() + "/rnamake/unittests/";
+    String path1 = resources_path() + "prediction/";
+    
+    mts_libs_["TWOWAY"  ] = MotifTreeStateLibraryOP(new MotifTreeStateLibrary(path+"test_twoway.new.me",1));
+    mts_libs_["HELIX"   ] = MotifTreeStateLibraryOP(new MotifTreeStateLibrary(path+"test_helix.new.me",1));
+    mts_libs_["BP_STEPS"] = MotifTreeStateLibraryOP(new MotifTreeStateLibrary(path1+"all.new.me",1));
+    
+}
 
 LibraryManager::LibraryManager() {
     mlibs_ = std::map<String, MotifLibraryOP>();
+    mts_libs_ = std::map<String, MotifTreeStateLibraryOP>();
+
     extra_motifs_ = std::map<String, MotifOP>();
     mlibs_["HELIX"   ] = MotifLibraryOP(new MotifLibrary(HELIX));
     mlibs_["NWAY"    ] = MotifLibraryOP(new MotifLibrary(NWAY));
@@ -28,13 +42,13 @@ LibraryManager::LibraryManager() {
     MotifLibraryOP mlib (new MotifLibrary(path, HELIX));
     mlibs_["BP_STEPS"] = mlib;
     
+    _setup_mts_libs();
     mt_  = MotifTree();
     mt2_ = MotifTree();
     mt_.add_motif(get_motif("HELIX.IDEAL.6"), nullptr, 1, -1, 0);
     mt_.increase_level();
     
 }
-
 
 MotifOP
 LibraryManager::get_motif(
@@ -51,6 +65,9 @@ LibraryManager::get_motif(
         if(end_index == -1 && end_name.length() == 0) {
             return extra_motifs_[name];
         }
+        
+        MotifOP m = extra_motifs_[name];
+        return _prep_extra_motif_for_asssembly(m);
     }
     
     throw "cannot find motif " + name + "\n";
@@ -91,11 +108,57 @@ LibraryManager::_prep_extra_motif_for_asssembly(
             e->flip();
         }
         else {
-           // mt_.remove_node(mt_.last_node());
+            mt_.remove_last_node();
         }
     }
-     
+    
+    MotifOP m_copy = mt_.nodes()[2]->motif();
+    mt_.remove_node_level();
+    
     return m;
     
     
 }
+
+void
+LibraryManager::_build_extra_mts(
+    MotifOP const & m,
+    int end_index) {
+    
+    mt2_.add_motif(m, nullptr, end_index, -1, 0);
+    MotifOP m_copy = mt2_.nodes()[1]->motif();
+    mt2_.remove_node_level();
+    
+    BasepairStateOPs ends(m_copy->ends().size());
+    int i = 0;
+    for(auto const & end : m_copy->ends()) {
+        if(end_index == i) { continue; }
+        ends[i] = BasepairStateOP(new BasepairState(end->state()));
+        i++;
+    }
+    
+    Points beads;
+    for(auto const & b : m_copy->beads()) {
+        if (b.btype() != PHOS) { beads.push_back(b.center()); }
+    }
+    String build_str = m_copy->to_str();
+    
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

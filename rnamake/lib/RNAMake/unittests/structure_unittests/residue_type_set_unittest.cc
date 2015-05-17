@@ -70,3 +70,56 @@ ResidueTypeSetUnittest::test_atom_pos_by_name() {
     return 1;
 }
 
+int
+ResidueTypeSetUnittest::run() {
+    if (test_creation_residue_type() == 0) { std::cout << "test_creation_residue_type failed" << std::endl;  }
+    if (test_creation() == 0 )             { std::cout << "test_creation failed" << std::endl; }
+    if (test_match_name() == 0 )           { std::cout << "test_match_name failed" << std::endl; }
+    if (test_get_rtype_by_resname() == 0 ) { std::cout << "test_get_rtype_by_resname failed" << std::endl; }
+    if (test_atom_pos_by_name() == 0 )     { std::cout << "test_atom_pos_by_name failed" << std::endl; }
+    
+    return 1;
+}
+
+void
+ResidueTypeSetUnittest::run_all() {
+    String name = "ResidueTypeSetUnittest";
+    typedef int (ResidueTypeSetUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_creation_residue_type" ] = &ResidueTypeSetUnittest::test_creation_residue_type;
+    func_map["test_match_name"            ] = &ResidueTypeSetUnittest::test_match_name;
+    func_map["test_creation"              ] = &ResidueTypeSetUnittest::test_creation;
+    func_map["test_get_rtype_by_resname"  ] = &ResidueTypeSetUnittest::test_get_rtype_by_resname;
+    func_map["test_atom_pos_by_name"      ] = &ResidueTypeSetUnittest::test_atom_pos_by_name;
+
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

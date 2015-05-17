@@ -46,6 +46,9 @@ public:
     int
     run();
     
+    void
+    run_all();
+    
 private:
     
     Structure s_;

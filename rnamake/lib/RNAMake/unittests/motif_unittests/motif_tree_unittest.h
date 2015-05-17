@@ -35,6 +35,9 @@ public:
     int
     test_remove_node();
     
+    int
+    test_remove_node_level();
+    
 public:
     
     int

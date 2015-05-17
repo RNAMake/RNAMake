@@ -145,7 +145,50 @@ ResidueUnittest::run() {
     if (test_equals() == 0)          { std::cout << "test_equals failed" << std::endl; }
     //test_memory_management();
     
-    
-    
     return 0;
 }
+
+void
+ResidueUnittest::run_all() {
+    String name = "ResidueUnittest";
+    typedef int (ResidueUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_bead_creation"  ] = &ResidueUnittest::test_bead_creation;
+    func_map["test_str_to_residue" ] = &ResidueUnittest::test_str_to_residue;
+    func_map["test_get_atom"       ] = &ResidueUnittest::test_get_atom;
+    func_map["test_connected_to"   ] = &ResidueUnittest::test_connected_to;
+    func_map["test_get_beads"      ] = &ResidueUnittest::test_get_beads;
+    func_map["test_copy"           ] = &ResidueUnittest::test_copy;
+    func_map["test_to_str"         ] = &ResidueUnittest::test_to_str;
+    func_map["test_equals"         ] = &ResidueUnittest::test_equals;
+    
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

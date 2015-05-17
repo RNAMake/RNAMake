@@ -38,6 +38,9 @@ public:
     int
     run();
     
+    void
+    run_all();
+    
 private:
     ChainOP c_;
     

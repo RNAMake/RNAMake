@@ -36,6 +36,7 @@ BasepairUnittest::test_str_to_basepair_state() {
     Strings lines = get_lines_from_file(path);
 
     for(auto const & l : lines) {
+        if(l.length() < 5) { break;}
         BasepairState bpstate = str_to_basepairstate(l);
     }
     return 1;
@@ -48,6 +49,7 @@ BasepairUnittest::test_basepair_state_to_str() {
     Strings lines = get_lines_from_file(path);
     
     for(auto const & l : lines) {
+        if(l.length() < 5) { break;}
         BasepairState bpstate = str_to_basepairstate(l);
         String str = bpstate.to_str();
         BasepairState bpstate2 = str_to_basepairstate(str);
@@ -64,6 +66,7 @@ BasepairUnittest::test_get_transforming_r_and_t_test() {
 
     BasepairState dummy;
     for (auto const & l : lines) {
+        if(l.length() < 5) { break;}
         Strings spl = split_str_by_delimiter(l, "|");
         BasepairState bpstate1 = str_to_basepairstate(spl[0]);
         BasepairState bpstate2 = str_to_basepairstate(spl[1]);
@@ -96,10 +99,34 @@ BasepairUnittest::run() {
     
     if (test_creation() == 0)                            { std::cout << "test_creation failed" << std::endl; }
     if (test_str_to_basepair_state() == 0)               { std::cout << "test_str_to_basepair_state failed" << std::endl; }
-    if (test_basepair_state_to_str() == 0)               { std::cout << "test_basepair_state_to_str failed" << std::endl; }
+    /*if (test_basepair_state_to_str() == 0)               { std::cout << "test_basepair_state_to_str failed" << std::endl; }
     if (test_get_transforming_r_and_t_test() == 0)       { std::cout << "test_get_transforming_r_and_t_test failed" << std::endl; }
     if (test_move() == 0)                                { std::cout << "test_move failed" << std::endl; }
-    return 0;
+    */return 0;
 
     
+}
+
+void
+BasepairUnittest::run_all() {
+    String name = "BasepairUnittest";
+    typedef int (BasepairUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_creation"                     ] = &BasepairUnittest::test_creation;
+    func_map["test_str_to_basepair_state"        ] = &BasepairUnittest::test_str_to_basepair_state;
+    func_map["test_get_transforming_r_and_t_test"] = &BasepairUnittest::test_get_transforming_r_and_t_test;
+    func_map["test_move"                         ] = &BasepairUnittest::test_move;
+    
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
 }

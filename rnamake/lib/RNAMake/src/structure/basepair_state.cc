@@ -18,8 +18,7 @@ str_to_basepairstate(
 	
 	Strings strs = split_str_by_delimiter(s, ";");
 	if(strs.size() < 3) {
-		std::cout << "cannot load BasepairState from String, not the right number of elements\n";
-		exit(EXIT_FAILURE);
+		throw "cannot load BasepairState from String, not the right number of elements\n";
 	}
 	
 	Vector d = vector_from_str(strs[0]);

@@ -11,19 +11,23 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <map>
 
 #include "util/settings.h"
 
 String
 unittest_resource_dir();
 
-
 class Unittest {
+public:
+
 public:
     
     virtual
     int run() { return  0; }
     
+    virtual
+    void run_all() { }
     
 };
 

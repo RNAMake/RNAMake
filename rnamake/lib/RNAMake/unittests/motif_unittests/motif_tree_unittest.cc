@@ -93,13 +93,27 @@ MotifTreeUnittest::test_remove_node() {
     return 1;
 }
 
+int
+MotifTreeUnittest::test_remove_node_level() {
+    MotifLibrary mlib (HELIX);
+    MotifTree mt;
+    MotifOP m = mlib.get_motif("HELIX.IDEAL");
+    for(int i = 0; i < 10; i++) {
+        mt.add_motif(m);
+    }
+    mt.remove_node_level();
+    if(mt.nodes().size() != 1) { return 0; }
+    return 1;
+}
+
 
 int
 MotifTreeUnittest::run() {
-    //if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
-    //if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
-    //if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
+    if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
+    if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
+    if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
     if (test_remove_node() == 0)       { std::cout << "test_remove_node failed" << std::endl; }
+    if (test_remove_node_level() == 0) { std::cout << "test_remove_node_level failed" << std::endl; }
 
     return 0;
 }

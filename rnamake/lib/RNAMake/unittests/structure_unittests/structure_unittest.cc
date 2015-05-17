@@ -121,6 +121,33 @@ StructureUnittest::run() {
 }
 
 
+void
+StructureUnittest::run_all() {
+    String name = "StructureUnittest";
+    typedef int (StructureUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_build_chains"      ] = &StructureUnittest::test_build_chains;
+    func_map["test_move"              ] = &StructureUnittest::test_move;
+    func_map["test_transform"         ] = &StructureUnittest::test_transform;
+    func_map["test_get_residue"       ] = &StructureUnittest::test_get_residue;
+    func_map["test_creation_from_pdb" ] = &StructureUnittest::test_creation_from_pdb;
+
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}
+
+
+
 
 
 

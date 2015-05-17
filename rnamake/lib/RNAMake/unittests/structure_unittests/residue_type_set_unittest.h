@@ -46,15 +46,10 @@ public:
 public:
     
     int
-    run() {
-        if (test_creation_residue_type() == 0) { std::cout << "test_creation_residue_type failed" << std::endl;  }
-        if (test_creation() == 0 )             { std::cout << "test_creation failed" << std::endl; }
-        if (test_match_name() == 0 )           { std::cout << "test_match_name failed" << std::endl; }
-        if (test_get_rtype_by_resname() == 0 ) { std::cout << "test_get_rtype_by_resname failed" << std::endl; }
-        if (test_atom_pos_by_name() == 0 )     { std::cout << "test_atom_pos_by_name failed" << std::endl; }
-        
-        return 1;
-    }
+    run();
+
+    void
+    run_all();
     
     
 };

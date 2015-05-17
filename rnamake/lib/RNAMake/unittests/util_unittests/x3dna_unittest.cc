@@ -91,3 +91,33 @@ X3dnaUnittest::run() {
     return 1;
     
 }
+
+
+void
+X3dnaUnittest::run_all() {
+    String name = "X3dnaUnittest";
+    typedef int (X3dnaUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_generate_ref_frame" ] = &X3dnaUnittest::test_generate_ref_frame;
+    func_map["test_generate_dssr_file" ] = &X3dnaUnittest::test_generate_dssr_file;
+    func_map["test_res_compare"        ] = &X3dnaUnittest::test_res_compare;
+    func_map["test_get_basepairs"      ] = &X3dnaUnittest::test_get_basepairs;
+    
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}
+
+
+
+
+

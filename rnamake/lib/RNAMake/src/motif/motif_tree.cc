@@ -288,6 +288,17 @@ MotifTree::remove_node(
     }
 }
 
+
+void
+MotifTree::remove_node_level(int level) {
+    if(level == -1) { level = level_; }
+    for(int i = (int)nodes_.size()-1; i >= 0; i--) {
+        if(nodes_[i]->level() >= level) { remove_node(nodes_[i]); }
+    }
+    last_node_ = nodes_.back();
+}
+
+
 void
 MotifTree::write_pdbs(String const & fname) {
     int i = 0;
@@ -310,5 +321,23 @@ MotifTree::to_pdb(String fname, int include_head) {
     PoseOP pose = to_pose();
     pose->to_pdb(fname);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

@@ -15,6 +15,7 @@
 //RNAMake Headers
 #include "base/string.h"
 #include "motif/motif_tree.h"
+#include "motif_tree_state/motif_tree_state_library.h"
 #include "resources/motif_library.h"
 
 class LibraryManager {
@@ -53,10 +54,17 @@ private:
         MotifOP const &,
         int end_index = -1,
         String const & end_name = "");
+    
+    void
+    _build_extra_mts(
+        MotifOP const &,
+        int);
 
 private:
     std::map<String, MotifLibraryOP> mlibs_;
+    std::map<String, MotifTreeStateLibraryOP> mts_libs_;
     std::map<String, MotifOP> extra_motifs_;
+    std::map<String, MotifTreeStateLibraryOP> extra_mts_;
     MotifTree mt_, mt2_;
     
     

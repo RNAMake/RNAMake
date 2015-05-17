@@ -75,6 +75,13 @@ public:
     void
     remove_node(
         MotifTreeNodeOP const &);
+    
+    void
+    inline
+    remove_last_node() { remove_node(last_node_); }
+    
+    void
+    remove_node_level(int level=-1);
 
 public: //getters
     

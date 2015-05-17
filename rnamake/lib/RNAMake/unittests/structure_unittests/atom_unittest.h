@@ -20,6 +20,7 @@
 
 class AtomUnittest : public Unittest {
 public:
+
     AtomUnittest() {}
     
     ~AtomUnittest() {}
@@ -37,11 +38,15 @@ public:
     
     int
     test_copy();
+    
         
 public:
     
     int
     run();
+    
+    void
+    run_all();
     
     
 };

@@ -84,8 +84,6 @@ ChainUnittest::test_to_pdb() {
     return 1;
 }
 
-
-
 int
 ChainUnittest::run() {
     
@@ -94,4 +92,27 @@ ChainUnittest::run() {
     if (test_to_pdb() == 0)             { std::cout << "test_to_pdb failed" << std::endl; }
     
     return 1;
+}
+
+void
+ChainUnittest::run_all() {
+    String name = "ChainUnittest";
+    typedef int (ChainUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_to_str"   ] = &ChainUnittest::test_to_str;
+    func_map["test_subchain" ] = &ChainUnittest::test_subchain;
+    func_map["test_to_pdb"   ] = &ChainUnittest::test_to_pdb;
+    
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
 }
