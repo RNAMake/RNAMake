@@ -107,13 +107,30 @@ MotifTreeUnittest::test_remove_node_level() {
 }
 
 int
-MotifTreeUnittest::run() {
-    if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
-    if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
-    if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
-    if (test_remove_node() == 0)       { std::cout << "test_remove_node failed" << std::endl; }
-    if (test_remove_node_level() == 0) { std::cout << "test_remove_node_level failed" << std::endl; }
+MotifTreeUnittest::test_options() {
+    MotifLibrary mlib (HELIX);
+    MotifTree mt;
+    MotifOP m = mlib.get_motif("HELIX.IDEAL");
+    
+    if(mt.option<float>("clash_radius") != 2.8f) { return 0; }
+    
+    mt.option("clash_radius", 3.0f);
+    
+    if(mt.option<float>("clash_radius") != 3.0f) { return 0; }
 
+    
+    return 1;
+}
+
+int
+MotifTreeUnittest::run() {
+    //if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
+    //if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
+    //if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
+    //if (test_remove_node() == 0)       { std::cout << "test_remove_node failed" << std::endl; }
+    //if (test_remove_node_level() == 0) { std::cout << "test_remove_node_level failed" << std::endl; }
+    if (test_options() == 0) { std::cout << "test_options failed" << std::endl; }
+    
     return 0;
 }
 
@@ -127,7 +144,8 @@ MotifTreeUnittest::run_all() {
     func_map["test_motif_tree_to_str" ] = &MotifTreeUnittest::test_motif_tree_to_str;
     func_map["test_remove_node"       ] = &MotifTreeUnittest::test_remove_node;
     func_map["test_remove_node_level" ] = &MotifTreeUnittest::test_remove_node_level;
-
+    func_map["test_options"           ] = &MotifTreeUnittest::test_options;
+    
     for(auto const & kv : func_map) {
         try {
             int result = (this->*kv.second)();

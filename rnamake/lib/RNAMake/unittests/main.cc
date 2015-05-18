@@ -6,9 +6,11 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include "base_unittests/option_unittest.h"
+#include "base_unittests/cl_option_unittest.h"
+
 #include "util_unittests/uuid_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
-#include "util_unittests/option_unittest.h"
 
 #include "structure_unittests/atom_unittest.h"
 #include "structure_unittests/residue_unittest.h"
@@ -27,11 +29,12 @@
 #include "resources_unittests/motif_library_unittest.h"
 #include "resources_unittests/library_manager_unittest.h"
 
+#include "motif_assembly_unittests/motif_assembly_unittest.h"
+
 
 int main(int argc, const char * argv[]) {
 
-    OptionUnittest test;
+    MotifAssemblyUnittest test;
     test.run();
     
-
 }

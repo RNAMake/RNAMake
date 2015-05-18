@@ -14,6 +14,7 @@
 
 //RNAMake Headers
 #include "base/types.h"
+#include "base/base.h"
 #include "structure/residue_type_set.h"
 #include "motif/motif_tree.fwd.h"
 #include "motif/motif_tree_node.h"
@@ -22,7 +23,7 @@
 #include "motif/pose.h"
 
 
-class MotifTree {
+class MotifTree : public Base {
 public:
     MotifTree();
     MotifTree(
@@ -92,14 +93,18 @@ public: //getters
     inline
     MotifTreeNodeOP const &
     last_node() { return last_node_; }
+        
     
-public: //setters
+protected:
     
-    inline
     void
-    sterics(int nsterics) { sterics_ = nsterics; }
+    setup_options();
     
 private:
+    
+    void
+    update_var_options();
+    
     
     MotifTreeNodeOP
     _add_motif(

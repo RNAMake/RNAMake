@@ -38,6 +38,10 @@ public:
     int
     test_remove_node_level();
     
+    int
+    test_options();
+    
+    
 public:
     
     int

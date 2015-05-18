@@ -10,6 +10,8 @@
 #include <vector>
 
 //RNAMake Headers
+#include "base_unittests/option_unittest.h"
+
 #include "util_unittests/uuid_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
 
@@ -34,6 +36,7 @@
 
 int main(int argc, const char * argv[]) {
     std::vector<Unittest*> units;
+    units.push_back(new OptionUnittest());
     units.push_back(new UuidUnittest());
     units.push_back(new X3dnaUnittest());
     units.push_back(new AtomUnittest());

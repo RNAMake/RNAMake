@@ -14,74 +14,42 @@
 #include <map>
 #include <typeinfo>
 #include <iostream>
+#include <memory>
 
 //RNAMake Headers
 #include "base/types.h"
 #include "base/variant.h"
 
-/*union Values {
-    String asString;
-    char asChar;
-    unsigned char asUChar;
-    short asShort;
-    unsigned short asUShort;
-    int asInt;
-    unsigned int asUInt;
-    long asLong;
-    unsigned long asULong;
-    float asFloat;
-    double asDouble;
-
-    Values() { asULong = 0; }
-    Values(char in) { asUChar = in; }
-    Values(unsigned char in) { asChar = in; }
-    Values(short in) { asShort = in; }
-    Values(unsigned short in) { asUShort = in; }
-    Values(int in) { asInt = in; }
-    Values(unsigned int in) { asUInt = in; }
-    Values(long in) { asLong = in; }
-    Values(unsigned long in) { asULong = in; }
-    Values(float in) { asFloat = in; }
-    Values(double in) { asDouble = in; }
-    Values(String in) { asString = in; }
-    ~Values() {}
-
-    operator char() { return asChar; }
-    operator unsigned char() { return asUChar; }
-    operator short() { return asShort; }
-    operator unsigned short() { return asUShort; }
-    operator int() { return asInt; }
-    operator unsigned int() { return asUInt; }
-    operator long() { return asLong; }
-    operator unsigned long() { return asULong; }
-    operator float() { return asFloat; }
-    operator double() { return asDouble; }
-};*/
 
 class Option {
 public:
-    using Values = variant<String, float, int>;
-    //Option() {}
+    using Values = variant<String, float, int, bool>;
+    Option() {}
     
     Option(
         String const & name,
         float const & value):
-    name_(name)
-    {
-        //v_.set<T>(value);
-
+    name_(name) {
         v_.set<float>(value);
-
+        type_name_ = String(typeid(float).name());
     }
     
     Option(
         String const & name,
         String const & value):
-    name_(name)
-    {
+    name_(name) {
         v_.set<String>(value);
-        
+        type_name_ = String(typeid(String).name());
     }
+    
+    Option(
+        String const & name,
+        int const & value):
+    name_(name) {
+        v_.set<int>(value);
+        type_name_ = String(typeid(int).name());
+    }
+    
 public:
     
     template<typename T>
@@ -90,81 +58,33 @@ public:
         return v_.get<T>();
     }
     
+    template<typename T>
+    void
+    value(T const & v) {
+        call_type_ = String(typeid(T).name());
+        if(call_type_.compare(type_name_) != 0) {
+            throw "wrong call type in option\n";
+        }
+        
+        v_.set<T>(v);
+    }
+    
+public: //getters
+    
+    inline
+    String const &
+    name() const { return name_; }
+    
+    
 private:
     String name_;
     Values v_;
-    
+    String type_name_;
+    String call_type_;
 };
 
 
-/*class Option {
-public:
-    Option() {}
-    
-    Option(
-        String const & name,
-        float const & value):
-    name_(name),
-    f_value_(value),
-    s_value_(""),
-    i_value_(-99),
-    data_type_(0)
-    {}
-    
-    Option(
-        String const & name,
-        String const & value):
-    name_(name),
-    s_value_(value),
-    f_value_(-99),
-    i_value_(-99),
-    data_type_(1)
-    {}
-    
-    Option(
-        String const & name,
-        int const & value):
-    name_(name),
-    i_value_(value),
-    data_type_(2)
-    {}
-    
-    template <typename T>
-    T
-    value() {
-        if(data_type_ == 0) { return f_value_; }
-        if(data_type_ == 1) { return s_value_; }
-        if(data_type_ == 2) { return i_value_; }
-        throw "invalid data_type_";
-    }
-    
-    inline
-    value(float value) {
-        if(data_type_ == 0) { return f_value_; }
-        if(data_type_ == 1) { return s_value_; }
-        if(data_type_ == 2) { return i_value_; }
-        throw "invalid data_type_";
-    }
-    
-public:
-    inline
-    String const &
-    name() { return name_; }
-
-    
-    
-private:
-    String name_;
-    int data_type_;
-    float f_value_; String s_value_; int i_value_;
-    
-
-};*/
-
-
-
-
-/*class Options {
+class Options {
 public:
     Options():
     option_map_(std::map<String, Option>())
@@ -176,24 +96,61 @@ public:
     
     void
     add_option(
-        Option opt) {
+        Option const & opt) {
+        
+        /*if(option_map_.find(opt.name()) != option_map_.end()) {
+            throw "trying to overide option in options. not permitted\n";
+        }*/
+         
         option_map_[opt.name()] = opt;
     }
- 
-    void
-    set_option(
-        String const & name,
-        float const & value) {
+    
+    bool
+    contains_option(
+        String const & name) {
         
-        option_map_[name].value = value;
+        if(option_map_.find(name) != option_map_.end()) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    template <typename T>
+    T
+    option(
+        String const & name) {
+        
+        if(option_map_.find(name) == option_map_.end()) {
+            throw "trying to access option that does not exist\n";
+        }
+        
+        return option_map_[name].value<T>();
         
     }
+           
+           
+    template <typename T>
+    void
+    option(
+        String const & name,
+        T const & v) {
+        
+        if(option_map_.find(name) == option_map_.end()) {
+            throw "trying to access option that does not exist\n";
+        }
+        
+        option_map_[name].value(v);
+        
+    }
+    
 
 private:
     bool locked_;
     std::map<String, Option> option_map_;
     
-};*/
+};
 
 
 #endif /* defined(__REDESIGNC__Option__) */

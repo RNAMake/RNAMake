@@ -26,11 +26,9 @@ MotifTree::MotifTree() {
     last_node_ = head;
     nodes_ = MotifTreeNodeOPs();
     nodes_.push_back(head);
-    clash_radius_ = 2.8;
-    sterics_ = 1;
-    full_beads_first_res_ = 1;
     merger_ = MotifTreeMerger();
     level_ = 1;
+    setup_options(); update_var_options();
 }
 
 MotifTree::MotifTree(MotifOP const & m) {
@@ -38,11 +36,9 @@ MotifTree::MotifTree(MotifOP const & m) {
     last_node_ = head;
     nodes_ = MotifTreeNodeOPs();
     nodes_.push_back(head);
-    clash_radius_ = 2.8;
-    sterics_ = 1;
-    full_beads_first_res_ = 1;
     merger_ = MotifTreeMerger();
     level_ = 1;
+    setup_options(); update_var_options();
 
 }
 
@@ -50,9 +46,7 @@ MotifTree::MotifTree(
     String const & s,
     ResidueTypeSet const & rts) {
     nodes_ = MotifTreeNodeOPs();
-    clash_radius_ = 2.8;
-    sterics_ = 1;
-    full_beads_first_res_ = 1;
+    setup_options(); update_var_options();
     Strings spl = split_str_by_delimiter(s, "#");
     int i = -1;
     for (auto const & e : spl) {
@@ -74,6 +68,21 @@ MotifTree::MotifTree(
     last_node_ = nodes_.back();
     merger_ = MotifTreeMerger();
     level_ = 1;
+}
+
+void
+MotifTree::setup_options() {
+    options_ = Options();
+    options_.add_option(Option("sterics", 1));
+    options_.add_option(Option("full_beads_first_res_", 1));
+    options_.add_option(Option("clash_radius", 2.8f));
+}
+
+void
+MotifTree::update_var_options() {
+    sterics_              = options_.option<int>("sterics");
+    full_beads_first_res_ = options_.option<int>("full_beads_first_res_");
+    clash_radius_         = options_.option<float>("clash_radius");
 }
 
 

@@ -23,15 +23,20 @@ public:
     
     int
     test_creation();
-
+    
+    int
+    test_add_option();
+    
+    int
+    test_option();
     
 public:
     
     int
     run();
     
-    //void
-    //run_all();
+    void
+    run_all();
     
 };
 

@@ -11,6 +11,7 @@ MESSAGE( ">>  current settings: CXX='$ENV{CXX}' CC='$ENV{CC}'" )
 if( ${COMPILER} STREQUAL clang )
 	set(compile_flags 
 		-Wno-c++11-extensions
+        -std=gnu++11
 	)
 endif()
 

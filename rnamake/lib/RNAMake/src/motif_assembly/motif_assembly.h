@@ -12,11 +12,12 @@
 #include <stdio.h>
 
 //RNAMake Headers
+#include "base/base.h"
 #include "motif/motif.h"
 #include "motif/motif_tree.h"
 #include "motif/motif_tree_node.h"
 
-class MotifAssembly {
+class MotifAssembly : public Base {
 public:
     MotifAssembly():
     mt_ (MotifTree())
@@ -39,6 +40,12 @@ public:
         MotifTreeNodeOP parent = nullptr,
         String end_name = "",
         String parent_name = "");
+    
+protected:
+    
+    void
+    setup_options();
+    
     
 private:
     MotifTree mt_;
