@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <sstream>
 
 //RNAMake Headers
 #include "util/settings.h"
@@ -31,8 +32,10 @@ LibraryManager::_setup_mts_libs() {
 LibraryManager::LibraryManager() {
     mlibs_ = std::map<String, MotifLibraryOP>();
     mts_libs_ = std::map<String, MotifTreeStateLibraryOP>();
-
+    ms_ = MotifScorer();
+    
     extra_motifs_ = std::map<String, MotifOP>();
+    extra_mts_    = std::map<String, MotifTreeStateOP>();
     mlibs_["HELIX"   ] = MotifLibraryOP(new MotifLibrary(HELIX));
     mlibs_["NWAY"    ] = MotifLibraryOP(new MotifLibrary(NWAY));
     mlibs_["TWOWAY"  ] = MotifLibraryOP(new MotifLibrary(TWOWAY));
@@ -141,8 +144,15 @@ LibraryManager::_build_extra_mts(
     for(auto const & b : m_copy->beads()) {
         if (b.btype() != PHOS) { beads.push_back(b.center()); }
     }
-    String build_str = m_copy->to_str();
     
+    std::stringstream ss;
+    ss << m_copy->name() << "-" << end_index;
+    String build_str = m_copy->to_str();
+    float score = ms_.score(m);
+    MotifTreeStateOP mts(new MotifTreeState(ss.str(), end_index, (int)m->residues().size(), score,
+                                            beads, ends, 0, m_copy->to_str()));
+    
+    extra_mts_[ss.str()] = mts;
 }
 
 

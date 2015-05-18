@@ -43,6 +43,9 @@ public:
     int
     run();
     
+    void
+    run_all();
+    
 private:
     
     Motif m_;

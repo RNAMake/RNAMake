@@ -49,3 +49,27 @@ PDBParserUnittest::run() {
     
     
 }
+
+
+void
+PDBParserUnittest::run_all() {
+    String name = "PDBParserUnittest";
+    typedef int (PDBParserUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_parse"   ] = &PDBParserUnittest::test_parse;
+  
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}
+
+

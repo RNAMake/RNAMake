@@ -15,6 +15,7 @@
 //RNAMake Headers
 #include "base/string.h"
 #include "motif/motif_tree.h"
+#include "motif/motif_scorer.h"
 #include "motif_tree_state/motif_tree_state_library.h"
 #include "resources/motif_library.h"
 
@@ -64,9 +65,9 @@ private:
     std::map<String, MotifLibraryOP> mlibs_;
     std::map<String, MotifTreeStateLibraryOP> mts_libs_;
     std::map<String, MotifOP> extra_motifs_;
-    std::map<String, MotifTreeStateLibraryOP> extra_mts_;
+    std::map<String, MotifTreeStateOP> extra_mts_;
     MotifTree mt_, mt2_;
-    
+    MotifScorer ms_;
     
 };
 

@@ -23,3 +23,24 @@ MotifTreeStateLibraryUnittest::run() {
     if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
     return 1;
 }
+
+void
+MotifTreeStateLibraryUnittest::run_all() {
+    String name = "MotifTreeStateLibraryUnittest";
+    typedef int (MotifTreeStateLibraryUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_creation"   ] = &MotifTreeStateLibraryUnittest::test_creation;
+    
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}

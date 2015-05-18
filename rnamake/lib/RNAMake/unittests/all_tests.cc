@@ -19,19 +19,18 @@
 #include "structure_unittests/chain_unittest.h"
 #include "structure_unittests/structure_unittest.h"
 #include "structure_unittests/basepair_unittest.h"
+#include "structure_unittests/pdb_parser_unittest.h"
+
+#include "motif_unittests/motif_unittest.h"
+#include "motif_unittests/motif_tree_unittest.h"
+#include "motif_unittests/motif_tree_merger_unittest.h"
+#include "motif_unittests/motif_scorer_unittest.h"
+
+#include "motif_tree_state_unittests/motif_tree_state_library_unittest.h"
 
 #include "resources_unittests/motif_library_unittest.h"
 #include "resources_unittests/library_manager_unittest.h"
 
-int run_resource_unittests() {
-    
-    std::vector<Unittest*> unittests(2);
-    unittests[0] = new MotifLibraryUnittest();
-    unittests[1] = new LibraryManagerUnittest();
-    return 1;
-    
-
-}
 
 int main(int argc, const char * argv[]) {
     std::vector<Unittest*> units;
@@ -43,7 +42,15 @@ int main(int argc, const char * argv[]) {
     units.push_back(new ChainUnittest());
     units.push_back(new StructureUnittest());
     units.push_back(new BasepairUnittest());
-
+    units.push_back(new PDBParserUnittest());
+    units.push_back(new MotifUnittest());
+    units.push_back(new MotifTreeUnittest());
+    units.push_back(new MotifTreeMergerUnittest());
+    units.push_back(new MotifScorerUnittest());
+    units.push_back(new MotifTreeStateLibraryUnittest());
+    units.push_back(new MotifLibraryUnittest());
+    units.push_back(new LibraryManagerUnittest());
+    
     for(auto const & test : units) {
         if(test == nullptr) { continue; }
         test->run_all();

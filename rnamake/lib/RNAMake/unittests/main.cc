@@ -8,6 +8,7 @@
 
 #include "util_unittests/uuid_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
+#include "util_unittests/option_unittest.h"
 
 #include "structure_unittests/atom_unittest.h"
 #include "structure_unittests/residue_unittest.h"
@@ -19,6 +20,7 @@
 #include "motif_unittests/motif_unittest.h"
 #include "motif_unittests/motif_tree_unittest.h"
 #include "motif_unittests/motif_tree_merger_unittest.h"
+#include "motif_unittests/motif_scorer_unittest.h"
 
 #include "motif_tree_state_unittests/motif_tree_state_library_unittest.h"
 
@@ -28,8 +30,8 @@
 
 int main(int argc, const char * argv[]) {
 
-    BasepairUnittest test;
-    test.run_all();
+    OptionUnittest test;
+    test.run();
     
 
 }

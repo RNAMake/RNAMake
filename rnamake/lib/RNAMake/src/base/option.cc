@@ -10,9 +10,9 @@
 
 //RNAMake Headers
 #include "base/string.h"
-#include "util/option.h"
+#include "base/option.h"
 
-Options
+/*Options
 parse_command_into_options(
 	int const argc,
 	char const ** argv,
@@ -33,42 +33,7 @@ parse_command_into_options(
 	}
 	return opts;
 }
-
-StringStringMap
-parse_option_str(
-	String opt_string) {
-	StringStringMap options;
-	
-	Strings spl = split_str_by_delimiter(opt_string,",");
-	for(auto opt_and_value : spl) {
-		Strings opt_strs = split_str_by_delimiter(opt_and_value,"=");
-		if(opt_strs.size() == 2) {
-			options[opt_strs[0]] = opt_strs[1];
-		}
-	}
-	
-	return options;
-}
-
-
-StringStringMap
-parse_file_options(
-	String file_path) {
-	StringStringMap options;
-	String line;
-	std::ifstream in;
-	in.open(file_path);
-	while(in.good()) {
-		getline(in,line);
-		StringStringMap new_options = parse_option_str(line);
-		for(auto const & kv : new_options) {
-			options[kv.first] = kv.second;
-		}
-		
-	}
-	in.close();
-	return options;
-}
+}*/
 
 
 

@@ -62,3 +62,26 @@ MotifLibraryUnittest::run() {
     
     return 0;
 }
+
+void
+MotifLibraryUnittest::run_all() {
+    String name = "MotifLibraryUnittest";
+    typedef int (MotifLibraryUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_load_all"      ] = &MotifLibraryUnittest::test_load_all;
+    func_map["test_get_motif"     ] = &MotifLibraryUnittest::test_get_motif;
+    func_map["test_contains_motif"] = &MotifLibraryUnittest::test_contains_motif;
+    
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}

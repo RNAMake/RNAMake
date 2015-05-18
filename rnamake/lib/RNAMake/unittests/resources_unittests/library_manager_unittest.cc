@@ -39,8 +39,6 @@ LibraryManagerUnittest::test_add_motif() {
     return 1;
 }
 
-
-
 int
 LibraryManagerUnittest::run() {
     
@@ -48,4 +46,26 @@ LibraryManagerUnittest::run() {
     if (test_add_motif() == 0)             { std::cout << "test_add_motif failed" << std::endl; }
     
     return 0;
+}
+
+void
+LibraryManagerUnittest::run_all() {
+    String name = "LibraryManagerUnittest";
+    typedef int (LibraryManagerUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_get_motif" ] = &LibraryManagerUnittest::test_get_motif;
+    func_map["test_add_motif" ] = &LibraryManagerUnittest::test_add_motif;
+
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
 }

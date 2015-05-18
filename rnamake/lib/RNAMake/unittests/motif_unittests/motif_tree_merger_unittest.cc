@@ -30,3 +30,24 @@ MotifTreeMergerUnittest::run() {
     if (test_merger() == 0)            { std::cout << "test_merger failed" << std::endl;  }
     return 0;
 }
+
+void
+MotifTreeMergerUnittest::run_all() {
+    String name = "MotifTreeMergerUnittest";
+    typedef int (MotifTreeMergerUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_merger"   ] = &MotifTreeMergerUnittest::test_merger;
+
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}

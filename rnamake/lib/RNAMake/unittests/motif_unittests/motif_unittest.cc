@@ -61,7 +61,6 @@ MotifUnittest::test_secondary_structure() {
     return 1;
 }
 
-
 int
 MotifUnittest::test_creation_from_dir() {
     String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/";
@@ -69,7 +68,6 @@ MotifUnittest::test_creation_from_dir() {
     
     return 1;
 }
-
 
 int
 MotifUnittest::test_get_basepair_by_name() {
@@ -79,8 +77,6 @@ MotifUnittest::test_get_basepair_by_name() {
     
     return 1;
 }
-
-
 
 int
 MotifUnittest::run() {
@@ -92,6 +88,32 @@ MotifUnittest::run() {
 
     return 0;
 }
+
+void
+MotifUnittest::run_all() {
+    String name = "MotifUnittest";
+    typedef int (MotifUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_copy"   ] = &MotifUnittest::test_copy;
+    func_map["test_to_str" ] = &MotifUnittest::test_to_str;
+    func_map["test_secondary_structure"] = &MotifUnittest::test_secondary_structure;
+    func_map["test_creation_from_dir"       ] = &MotifUnittest::test_creation_from_dir;
+    func_map["test_get_basepair_by_name"       ] = &MotifUnittest::test_get_basepair_by_name;
+
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
+}
+
 
 
 

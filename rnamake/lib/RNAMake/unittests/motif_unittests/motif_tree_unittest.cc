@@ -106,7 +106,6 @@ MotifTreeUnittest::test_remove_node_level() {
     return 1;
 }
 
-
 int
 MotifTreeUnittest::run() {
     if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
@@ -116,4 +115,29 @@ MotifTreeUnittest::run() {
     if (test_remove_node_level() == 0) { std::cout << "test_remove_node_level failed" << std::endl; }
 
     return 0;
+}
+
+void
+MotifTreeUnittest::run_all() {
+    String name = "MotifTreeUnittest";
+    typedef int (MotifTreeUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_creation"          ] = &MotifTreeUnittest::test_creation;
+    func_map["test_add_motif"         ] = &MotifTreeUnittest::test_add_motif;
+    func_map["test_motif_tree_to_str" ] = &MotifTreeUnittest::test_motif_tree_to_str;
+    func_map["test_remove_node"       ] = &MotifTreeUnittest::test_remove_node;
+    func_map["test_remove_node_level" ] = &MotifTreeUnittest::test_remove_node_level;
+
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        
+    }
 }
