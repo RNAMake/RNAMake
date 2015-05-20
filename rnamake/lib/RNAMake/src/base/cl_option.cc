@@ -69,19 +69,21 @@ CL_Options::parse_command_line(
             //
             key = String(argv[i]);
             key = key.substr(1);
+
             if(argv[i][1] == '-') {
                 if(l_cl_opts_.find(key) == l_cl_opts_.end()) {
-                    throw "unknown command line argument: " + key;
+                    throw std::runtime_error("unknown command line argument: " + key);
                 }
                 cl_opt = l_cl_opts_[key];
             }
             else {
                 if(s_cl_opts_.find(key) == s_cl_opts_.end()) {
-                    throw "unknown command line argument: " + key;
+                    throw std::runtime_error("unknown command line argument: " + key);
                 }
                 cl_opt = s_cl_opts_[key];
                 
             }
+        
           
             Option opt;
             if(argv[i+1][0] != '-') {

@@ -1,0 +1,11 @@
+set(structure_files
+	../../src/structure/atom.cc
+	../../src/structure/basepair.cc
+	../../src/structure/basepair_state.cc
+	../../src/structure/chain.cc
+	../../src/structure/pdb_parser.cc
+	../../src/structure/residue.cc
+	../../src/structure/residue_type.cc
+	../../src/structure/residue_type_set.cc
+	../../src/structure/structure.cc
+)

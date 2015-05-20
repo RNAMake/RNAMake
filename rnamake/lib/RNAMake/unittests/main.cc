@@ -12,6 +12,8 @@
 #include "util_unittests/uuid_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
 
+#include "secondary_structure_unittests/ss_tree_unittest.h"
+
 #include "structure_unittests/atom_unittest.h"
 #include "structure_unittests/residue_unittest.h"
 #include "structure_unittests/resource_manager_unittest.h"
@@ -34,7 +36,7 @@
 
 int main(int argc, const char * argv[]) {
 
-    MotifAssemblyUnittest test;
+    SS_TreeUnittest test;
     test.run();
     
 }

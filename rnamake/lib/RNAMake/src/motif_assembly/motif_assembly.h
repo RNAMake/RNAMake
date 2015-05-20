@@ -17,6 +17,7 @@
 #include "motif/motif_tree.h"
 #include "motif/motif_tree_node.h"
 
+
 class MotifAssembly : public Base {
 public:
     MotifAssembly():
@@ -32,14 +33,23 @@ public:
         MotifOP const &,
         MotifTreeNodeOP parent = nullptr,
         String end_name = "",
-        String parent_name = "");
+        String parent_name = "",
+        int end_index = -1);
     
     MotifTreeNodeOP
     add_motif(
         String const &,
         MotifTreeNodeOP parent = nullptr,
         String end_name = "",
-        String parent_name = "");
+        String parent_name = "",
+        int end_index = -1);
+
+public: //getters
+    
+    inline
+    MotifTreeNodeOPs const &
+    nodes() { return mt_.nodes(); }
+    
     
 protected:
     

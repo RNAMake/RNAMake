@@ -22,6 +22,9 @@ foreach( library ${libraries} )
 	set( previous_library ${library} )
 endforeach()
 
+include(simulate_tectos.cmake )
+include(design_primers.cmake)
+
 add_executable(all_tests ../../unittests/all_tests.cc)
 target_link_libraries(all_tests ${link_libraries})
 #set_target_properties(all_tests PROPERTIES COMPILE_FLAGS “${COMPILE_FLAGS}”)

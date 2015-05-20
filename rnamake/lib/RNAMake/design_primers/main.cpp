@@ -10,7 +10,7 @@
 #include <iostream>
 #include <math.h>
 #include <algorithm>
-#include "types.h"
+#include "base/types.h"
 typedef std::vector<float> Array;
 typedef std::vector<Array> Array2d;
 typedef std::vector<Array2d> Array3d;

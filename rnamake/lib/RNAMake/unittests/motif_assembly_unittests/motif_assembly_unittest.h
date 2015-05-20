@@ -24,6 +24,9 @@ public:
     int
     test_add_motif();
     
+    int
+    test_motif_end_indentity();
+    
 public:
     
     int

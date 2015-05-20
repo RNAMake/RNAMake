@@ -97,7 +97,9 @@ Motif::Motif(
     }
 
     _setup_basepairs();
-    
+    setup_basepair_ends();
+    _cache_basepair_frames();
+
 }
 
 
