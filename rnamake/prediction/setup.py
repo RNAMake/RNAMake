@@ -124,6 +124,7 @@ def get_bp_step_prediction_lib(targets, helix_mlib):
         m.name += "-0"
         mts = motif_tree_state.motif_to_state_simple(m, 0, 0)
         m2 = motif.str_to_motif(mts.build_string)
+        m.to_pdb('cluster.'+str(i)+'.pdb')
         i += 1
         f.write(mts.to_f_str())
     f.close()
@@ -281,7 +282,8 @@ if __name__ == '__main__':
     bps = ["AU","UA","CG","GC","GU","UG"]
     seen = []
     test_helix = helix_mlib.get_motif("HELIX.IDEAL.2")
-    #get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
+    get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
+    exit()
 
     ideal_motifs = []
 

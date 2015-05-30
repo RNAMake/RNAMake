@@ -33,3 +33,34 @@ f = open("libraries.cmake", "w")
 f.write("set(libraries ")
 f.write(libs + " unittests)\n")
 f.close()
+
+fsum = open("apps.cmake", "w")
+
+f = open("apps.txt")
+for l in f.readlines():
+    spl = l.split()
+    symlink = spl[0]+"_symlink"
+    fsum.write("add_executable("+l.rstrip()+")\n")
+    fsum.write("target_link_libraries("+spl[0]+" ${link_libraries})\n")
+    fsum.write("add_custom_target("+symlink+" ALL)\n")
+    fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink ../../bin/"+spl[0]+" "+ spl[0]+")\n")
+    fsum.write("\n\n")
+
+fsum.close()
+f.close()
+
+fsum = open("unittest_apps.cmake", "w")
+
+f = open("unittests.txt")
+for l in f.readlines():
+    spl = l.split()
+    symlink = spl[0]+"_symlink"
+    fsum.write("add_executable("+l.rstrip()+")\n")
+    fsum.write("target_link_libraries("+spl[0]+" ${link_libraries})\n")
+    fsum.write("add_custom_target("+symlink+" ALL)\n")
+    fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
+    fsum.write("\n\n")
+
+fsum.close()
+f.close()
+

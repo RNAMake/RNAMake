@@ -13,6 +13,8 @@
 
 //RNAMake Headers
 #include "base/types.h"
+#include "data_structure/tree/tree.h"
+#include "secondary_structure/ss_tree_node.h"
 #include "secondary_structure/ss_tree_node.fwd.h"
 
 class SS_Tree {
@@ -24,15 +26,31 @@ public:
 public:
     inline
     int
-    size() { return (int)nodes_.size(); }
+    size() { return (int)tree_.size(); }
+    
+    inline
+    Node<SS_TreeNode*>*
+    get_node(int pos) { return tree_.get_node(pos); }
+    
+    inline
+    SS_TreeNode*
+    get_data(int pos) { return tree_.get_data(pos); }
+    
+    inline
+    std::vector<Node<SS_TreeNode*>*> const &
+    nodes() { return tree_.nodes(); }
     
 private:
     void
     _build_tree();
     
-    SS_TreeNodeProtoOPs
+    std::vector<SS_TreeNode*>
     _build_tree_level(
-        SS_TreeNodeProtoOP const &,
+        int,
+        int);
+    
+    SS_TreeNode*
+    _assign_new_node(
         int,
         int);
     
@@ -47,7 +65,7 @@ private:
 
 private:
     String ss_, seq_;
-    SS_TreeNodeOPs nodes_;
+    Tree<SS_TreeNode*> tree_;
     
 };
 

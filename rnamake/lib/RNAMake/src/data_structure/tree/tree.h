@@ -1,0 +1,170 @@
+//
+//  graph.h
+//  RNAMake
+//
+//  Created by Joseph Yesselman on 5/24/15.
+//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+//
+
+#ifndef __RNAMake__graph__
+#define __RNAMake__graph__
+
+#include <stdio.h>
+#include <list>
+#include <memory>
+
+//RNAMAke Headers
+#include "base/types.h"
+#include "data_structure/tree/node.fwd.h"
+#include "data_structure/tree/node.h"
+
+
+template <class DataType>
+class Tree {
+public:
+    
+    Tree(
+         NodeChildType const & node_type):
+    nodes_ (std::vector<Node<DataType>*>() ),
+    last_node_(nullptr),
+    level_(0),
+    index_(0),
+    node_type_(node_type){
+    }
+    
+    Tree():
+    nodes_ (std::vector<Node<DataType>*>()),
+    last_node_(nullptr),
+    level_(0),
+    index_(0),
+    node_type_(NodeTypeDynamic) {
+    }
+    
+    virtual
+    ~Tree() {
+        for(auto & n : nodes_) {
+            delete n;
+        }
+    }
+    
+public:
+    
+    inline
+    int
+    add_data(
+        DataType const & data,
+        int n_children=0,
+        int parent_index=-1,
+        int parent_child_pos=-1) {
+        Node<DataType> *n = new Node<DataType>(data, index_, level_, node_type_, n_children);
+        Node<DataType> *parent;
+        if(parent_index == -1) { parent = last_node_; }
+        else                   { parent = get_node(parent_index); }
+        if(parent == nullptr) {
+            nodes_.push_back(n);
+            index_++;
+            last_node_ = n;
+            return 0;
+        }
+        else if (parent_child_pos == -1 && node_type_ == NodeTypeStatic) {
+            Ints avail_child_pos = parent->available_children_pos();
+            if(avail_child_pos.size() == 0) {
+                throw "cannot use node as parent as it has not spots for children\n";
+            }
+            parent_child_pos = avail_child_pos[0];
+        }
+     
+        parent->add_child(n, parent_child_pos);
+        n->set_parent(parent);
+        
+        nodes_.push_back(n);
+        index_++;
+        last_node_ = n;
+    
+        return n->index();
+        
+    }
+    
+    inline
+    Node<DataType>* const &
+    get_node(
+        int index) {
+        
+        for(auto const & n : nodes_) {
+            if(n->index() == index) { return n; }
+        }
+        
+        throw std::runtime_error("cannot find node with index");
+    }
+    
+    inline
+    int
+    get_index(
+        DataType const & data) {
+        int index = -1;
+        int found = 0;
+        for(auto const & n : nodes_) {
+            if(n->data() == data) {
+                index = n->index();
+                found++;
+            }
+        }
+        
+        if(index == -1) {
+            throw std::runtime_error("cannot find index of given data in Tree");
+        }
+        if(found > 1) {
+            throw std::runtime_error("cannot get index since there is duplicate data in Tree");
+        }
+        
+        return index;
+    }
+    
+    inline
+    DataType const &
+    get_data(
+        int index) {
+        return get_node(index)->data();
+    }
+    
+    inline
+    void
+    remove_node(int pos) {
+        auto node = get_node(pos);
+        for(auto & c : node->children()) {
+            if(c == nullptr) { continue; }
+            c->set_parent(nullptr);
+            remove_node(c->index());
+            node->unset_child(c);
+        }
+        
+       
+        last_node_ = node->parent();
+        node->set_parent(nullptr);
+        nodes_.erase(std::remove(nodes_.begin(), nodes_.end(), node), nodes_.end());
+    
+    }
+    
+public: //getters
+    
+    inline
+    size_t
+    size() { return nodes_.size(); }
+    
+    inline
+    std::vector<Node<DataType>*> const &
+    nodes() {
+        return nodes_;
+    }
+    
+    
+protected:
+    std::vector<Node<DataType>*> nodes_;
+    Node<DataType>* last_node_;
+    int level_, index_;
+    NodeChildType node_type_;
+    
+};
+
+
+#endif /* defined(__RNAMake__graph__) */

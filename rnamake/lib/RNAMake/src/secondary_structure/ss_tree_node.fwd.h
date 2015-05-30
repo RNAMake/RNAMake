@@ -11,12 +11,4 @@
 #include <vector>
 #include <memory>
 
-class SS_TreeNode;
-typedef std::shared_ptr<SS_TreeNode> SS_TreeNodeOP;
-typedef std::vector<SS_TreeNodeOP>   SS_TreeNodeOPs;
-
-struct SS_TreeNodeProto;
-typedef std::shared_ptr<SS_TreeNodeProto> SS_TreeNodeProtoOP;
-typedef std::vector<SS_TreeNodeProtoOP>   SS_TreeNodeProtoOPs;
-
 #endif

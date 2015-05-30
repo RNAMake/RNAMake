@@ -9,6 +9,8 @@
 #include "base_unittests/option_unittest.h"
 #include "base_unittests/cl_option_unittest.h"
 
+#include "data_structure_unittests/tree_unittest.h"
+
 #include "util_unittests/uuid_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
 
@@ -35,8 +37,7 @@
 
 
 int main(int argc, const char * argv[]) {
-
+    
     SS_TreeUnittest test;
     test.run();
-    
 }

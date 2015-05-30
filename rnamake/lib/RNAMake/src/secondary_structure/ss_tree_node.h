@@ -11,53 +11,79 @@
 
 #include <stdio.h>
 #include "base/string.h"
-
-struct SS_TreeNodeProto {
-    SS_TreeNodeProto(
-        SS_TreeNodeProtoOP const & nparent,
-        int const nxb,
-        int const nyb):
-    
-    parent(nparent),
-    xb(nxb),
-    yb(nyb),
-    children(SS_TreeNodeProtoOPs())
-    {}
-
-    
-    SS_TreeNodeProtoOP parent;
-    SS_TreeNodeProtoOPs children;
-    int xb, yb;
-    
-};
+#include "secondary_structure/ss_tree_node.fwd.h"
 
 
 class SS_TreeNode {
+public:
+    enum SS_Type { SS_BP, SS_BULGE, SS_HAIRPIN, SS_NWAY, SS_PSEUDO_BP };
+    enum Bound_Side { LEFT, RIGHT };
+    
+    inline
+    SS_TreeNode(
+        Strings const & seq,
+        SS_Type type,
+        std::vector<Ints> bounds):
+    seq_(seq),
+    type_(type),
+    bounds_(bounds)
+    {}
+        
 public: //getters
     
+    Ints const &
+    bounds(
+        int pos) {
+        if(pos >= bounds_.size()) {
+            throw std::runtime_error("cannot call bounds in SS_TreeNode, with this pos");
+        }
+        
+        return bounds_[pos];
+    }
+
+    int const &
+    bound_side(
+        int pos,
+        Bound_Side side) {
+        
+        Ints bound = bounds(pos);
+        return bound[(int)side];
+    }
+    
     inline
-    int
-    xb() { return xb_; }
+    SS_Type const &
+    type() { return type_; }
     
     inline
     int
-    yb() { return yb_; }
+    nstrands() { return (int)seq_.size(); }
     
-    
-public: //only bp getters
     inline
-    virtual
     String
-    bp_type() { throw "cannot call bp_type"; }
+    what() {
+        if     (type_ == SS_BP)       { return "SS_BP";       }
+        else if(type_ == SS_BULGE)    { return "SS_BULGE";    }
+        else if(type_ == SS_HAIRPIN)  { return "SS_HAIRPIN";  }
+        else if(type_ == SS_NWAY)     { return "SS_NWAY";     }
+        else if(type_ == SS_PSEUDO_BP){ return "SS_PSEUDO_BP";}
+        else { throw std::runtime_error("unknown SS_TYPE"); }
+    }
     
     inline
+    Strings
+    seqs() { return seq_; }
+    
+public: //virtual getters
+    
     virtual
-    int
-    bp_type_num() { throw "cannot call bp_type_num"; }
+    inline
+    String
+    seq() { return ""; }
     
 protected:
     Strings seq_;
-    int xb_, yb_;
+    std::vector<Ints> bounds_;
+    SS_Type type_;
 };
 
 
@@ -65,23 +91,18 @@ class SS_TreeNodeBasepair : public SS_TreeNode {
 public:
     SS_TreeNodeBasepair(
         Strings const & s,
-        int xb,
-        int yb) {
-        
-        seq_ = s;
-        xb_ = xb;
-        yb_ = yb;
-    }
+        SS_Type ntype,
+        std::vector<Ints> bounds):
+    SS_TreeNode(s, ntype, bounds)
+    { }
     
     
 public:
-    inline
-    virtual
-    String
-    bp_type() { return bp_type_; }
     
-private:
-    String bp_type_;
+    inline
+    String
+    seq() { return seq_[0]+seq_[1]; }
+    
 };
 
 
