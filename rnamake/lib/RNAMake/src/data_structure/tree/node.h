@@ -106,15 +106,7 @@ public:
         return pos;
     }
 
-    inline
-    int
-    parent_index() {
-        if(parent_ == nullptr) {
-            return -1;
-        }
-        return parent_->index_;
-    }
-    
+
 
 public:
     
@@ -127,6 +119,15 @@ public:
     }
     
 public: //getters
+    
+    inline
+    int
+    parent_index() const {
+        if(parent_ == nullptr) {
+            return -1;
+        }
+        return parent_->index_;
+    }
     
     inline
     NodeOP<DataType> const &

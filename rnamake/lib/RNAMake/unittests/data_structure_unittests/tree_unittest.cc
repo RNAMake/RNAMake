@@ -83,9 +83,9 @@ TreeUnittest::test_iter() {
     t.add_data(3.0f);
     t.add_data(4.0f);
 
-    //for(auto const & n : t) {
-    //    std::cout << n.data() << std::endl;
-    //}
+    for(auto const & n : t) {
+        std::cout << n->data() << std::endl;
+    }
      
     return 1;
 }

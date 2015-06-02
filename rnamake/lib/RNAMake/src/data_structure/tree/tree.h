@@ -53,8 +53,8 @@ public:
 public:
     typedef TreeIterator<DataType> iterator;
     friend class TreeIterator<DataType>;
-    iterator begin();
-    iterator end();
+    iterator begin() const;
+    iterator end() const;
     
 public:
     
@@ -187,13 +187,11 @@ public:
     
     bool operator== (const TreeIterator& rhs) const;
     bool operator!= (const TreeIterator& rhs) const;
-    Node<DataType>& operator* () const;
-
+    NodeOP<DataType>& operator* ();
     
 private:
     NodeOP<DataType>node_ptr_;
     std::queue<NodeOP<DataType>> queue_;
-    
     
     TreeIterator(
         NodeOP<DataType> const & node):
@@ -205,20 +203,20 @@ private:
 
 template <typename DataType>
 typename Tree<DataType>::iterator
-Tree<DataType>::begin() {
+Tree<DataType>::begin() const {
     return iterator(nodes_[0]);
 }
 
 template <typename DataType>
 typename Tree<DataType>::iterator
-Tree<DataType>::end() {
+Tree<DataType>::end() const {
     return iterator(nullptr);
 }
 
 template <typename DataType>
-Node<DataType>&
-TreeIterator<DataType>::operator* () const {
-    return *node_ptr_;
+NodeOP<DataType>&
+TreeIterator<DataType>::operator* () {
+    return node_ptr_;
 }
 
 template <typename DataType>
@@ -244,14 +242,14 @@ TreeIterator<DataType>::operator++() {
 template <typename DataType>
 bool
 TreeIterator<DataType>::operator== (
-                                    TreeIterator<DataType> const& rhs) const {
+    TreeIterator<DataType> const& rhs) const {
     return node_ptr_ == rhs.node_ptr_;
 }
 
 template <typename DataType>
 bool
 TreeIterator<DataType>::operator!= (
-                                    TreeIterator<DataType> const& rhs) const {
+    TreeIterator<DataType> const& rhs) const {
     return node_ptr_ != rhs.node_ptr_;
 }
 

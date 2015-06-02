@@ -40,10 +40,10 @@ public:
     get_data(int pos) { return tree_.get_data(pos); }
     
     TreeIterator<SS_NodeDataOP>
-    begin() { return tree_.begin(); }
+    begin() const { return tree_.begin(); }
 
     TreeIterator<SS_NodeDataOP>
-    end() { return tree_.end(); }
+    end() const { return tree_.end(); }
 
     
 private:

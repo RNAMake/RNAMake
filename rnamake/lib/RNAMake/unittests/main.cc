@@ -38,6 +38,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    SS_TreeUnittest test;
+    TreeUnittest test;
     test.run();
 }

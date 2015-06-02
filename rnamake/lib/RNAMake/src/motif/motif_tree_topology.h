@@ -14,7 +14,7 @@
 #include "secondary_structure/ss_tree.h"
 #include "data_structure/tree/tree.h"
 
-/*
+
 struct MotifTopology {
 public:
     enum class MotifType { BASEPAIR, TWOWAY, NWAY, HAIRPIN, TCONTACT};
@@ -44,6 +44,6 @@ private:
     Tree<MotifTopology*> tree_;
     
 };
- */
+ 
 
 #endif /* defined(__RNAMake__motif_tree_topology__) */
