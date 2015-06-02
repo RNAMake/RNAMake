@@ -11,4 +11,8 @@
 #include <vector>
 #include <memory>
 
+class SS_NodeData;
+typedef std::shared_ptr<SS_NodeData> SS_NodeDataOP;
+
+
 #endif

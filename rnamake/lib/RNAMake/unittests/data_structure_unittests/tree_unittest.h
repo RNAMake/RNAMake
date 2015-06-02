@@ -33,6 +33,9 @@ public:
     int
     test_get_index();
     
+    int
+    test_iter();
+    
 public:
     
     int

@@ -17,7 +17,7 @@ SS_Tree::SS_Tree(
     String const & seq):
     ss_(ss),
     seq_(seq),
-    tree_(Tree<SS_TreeNode*>()) {
+    tree_(Tree<SS_NodeDataOP>()) {
         
     _build_tree();
 }
@@ -25,10 +25,10 @@ SS_Tree::SS_Tree(
 void
 SS_Tree::_build_tree() {
     int xb = 0, yb = (int)seq_.size()-1;
-    SS_TreeNode* current = _assign_new_node(xb, yb);
+    SS_NodeDataOP current = _assign_new_node(xb, yb);
     int index;
     
-    using NodeandIndex = std::pair<SS_TreeNode*, int>;
+    using NodeandIndex = std::pair<SS_NodeDataOP, int>;
     std::queue<NodeandIndex> open_nodes;
     open_nodes.push(NodeandIndex(current, -1));
     
@@ -36,24 +36,24 @@ SS_Tree::_build_tree() {
         NodeandIndex current_pair = open_nodes.front();
         current = current_pair.first;
         
-        if(current->type() == SS_TreeNode::SS_Type::SS_HAIRPIN) {
+        if(current->type() == SS_NodeData::SS_Type::SS_HAIRPIN) {
             index = tree_.add_data(current, 0, current_pair.second);
             open_nodes.pop();
             continue;
         }
         
-        int xb = current->bound_side(0, SS_TreeNode::Bound_Side::RIGHT)+1;
-        int yb = current->bound_side(1, SS_TreeNode::Bound_Side::LEFT) -1;
+        int xb = current->bound_side(0, SS_NodeData::Bound_Side::RIGHT)+1;
+        int yb = current->bound_side(1, SS_NodeData::Bound_Side::LEFT) -1;
         
-        std::vector<SS_TreeNode*> next_level = _build_tree_level(xb, yb);
+        std::vector<SS_NodeDataOP> next_level = _build_tree_level(xb, yb);
         
         // Check for multi way junctions will be defined as a bulge as a child of another bulge
-        if(current->type() == SS_TreeNode::SS_Type::SS_BULGE) {
-            std::vector<SS_TreeNode*> part_of_nway;
-            std::vector<SS_TreeNode*> not_part_of_nway;
+        if(current->type() == SS_NodeData::SS_Type::SS_BULGE) {
+            std::vector<SS_NodeDataOP> part_of_nway;
+            std::vector<SS_NodeDataOP> not_part_of_nway;
             for(auto const & n : next_level) {
-                if(n->type() == SS_TreeNode::SS_Type::SS_BULGE ||
-                   n->type() == SS_TreeNode::SS_Type::SS_HAIRPIN) { part_of_nway.push_back(n); }
+                if(n->type() == SS_NodeData::SS_Type::SS_BULGE ||
+                   n->type() == SS_NodeData::SS_Type::SS_HAIRPIN) { part_of_nway.push_back(n); }
                 else { not_part_of_nway.push_back(n); }
             }
             next_level = not_part_of_nway;
@@ -74,10 +74,10 @@ SS_Tree::_build_tree() {
                         }
                     }
                     
-                    if(n->type() == SS_TreeNode::SS_Type::SS_BULGE) {
-                        int nxb = n->bound_side(0, SS_TreeNode::Bound_Side::RIGHT)+1;
-                        int nyb = n->bound_side(1, SS_TreeNode::Bound_Side::LEFT) -1;
-                        std::vector<SS_TreeNode*> next_level_2 = _build_tree_level(nxb, nyb);
+                    if(n->type() == SS_NodeData::SS_Type::SS_BULGE) {
+                        int nxb = n->bound_side(0, SS_NodeData::Bound_Side::RIGHT)+1;
+                        int nyb = n->bound_side(1, SS_NodeData::Bound_Side::LEFT) -1;
+                        std::vector<SS_NodeDataOP> next_level_2 = _build_tree_level(nxb, nyb);
                         for(auto const & n2 : next_level_2) { next_level.push_back(n2); }
                     }
                 }
@@ -85,8 +85,7 @@ SS_Tree::_build_tree() {
                 seq.push_back(current->seqs()[1]);
                 bounds.push_back(current->bounds(1));
                 
-                delete current;
-                current = new SS_TreeNode(seq, SS_TreeNode::SS_Type::SS_NWAY, bounds);
+                current = std::make_shared<SS_NodeData>(seq, SS_NodeData::SS_Type::SS_NWAY, bounds);
             }
             
         }
@@ -101,16 +100,15 @@ SS_Tree::_build_tree() {
     
 }
 
-std::vector<SS_TreeNode*>
+std::vector<SS_NodeDataOP>
 SS_Tree::_build_tree_level(
     int xb,
     int yb) {
     
-    std::vector<SS_TreeNode*> next_level;
-    
+    std::vector<SS_NodeDataOP> next_level;
     while(xb <= yb) {
-        SS_TreeNode* child = _assign_new_node(xb, yb);
-        xb = child->bound_side(1, SS_TreeNode::Bound_Side::RIGHT)+1;
+        SS_NodeDataOP child = _assign_new_node(xb, yb);
+        xb = child->bound_side(1, SS_NodeData::Bound_Side::RIGHT)+1;
         next_level.push_back(child);
     }
     
@@ -119,7 +117,7 @@ SS_Tree::_build_tree_level(
 }
 
 
-SS_TreeNode*
+SS_NodeDataOP
 SS_Tree::_assign_new_node(
     int xb,
     int yb) {
@@ -129,22 +127,26 @@ SS_Tree::_assign_new_node(
     bounds[0] = Ints({xb-1, xb-1});
     bounds[1] = Ints({yb+1, yb+1});
     int hairpin = 0;
-    SS_TreeNode* current;
+    SS_NodeDataOP current;
     if(ss_[xb] == '.') {
         int end_x = _get_dot_bounds(xb, 0);
         for(int i = xb; i <= end_x; i++) { seq[0] += seq_[i]; }
         if(end_x == yb) { hairpin = 1; }
         bounds[0] = Ints({xb, end_x});
-        //std::cout << "x" << " " << xb << " " << end_x << std::endl;
     }
 
     if(ss_[yb] == '.' && hairpin == 0) {
         int end_y = _get_dot_bounds(yb, 1);
         for(int i = end_y; i <= yb; i++) { seq[1] += seq_[i]; }
         bounds[1] = Ints({end_y, yb});
-        //std::cout << end_y << " " << yb << std::endl;
-
     }
+    
+    if(ss_[xb] == '&' || ss_[xb] == '+') {
+        bounds[0] = Ints({xb, xb});
+        current = std::make_shared<SS_NodeData>(seq, SS_NodeData::SS_Type::SS_SEQ_BREAK, bounds);
+        return current;
+    }
+    
     if(seq[0].length() == 0 && seq[1].length() == 0) {
         int pair = _get_brack_pair(xb);
         seq[0] = seq_[xb];
@@ -152,15 +154,19 @@ SS_Tree::_assign_new_node(
         bounds[0] = Ints({xb, xb});
         bounds[1] = Ints({pair, pair});
         
-        if(ss_[xb] == '(') { current = new SS_TreeNodeBasepair(seq, SS_TreeNode::SS_Type::SS_BP, bounds); }
-        else                { current = new SS_TreeNodeBasepair(seq, SS_TreeNode::SS_Type::SS_PSEUDO_BP, bounds); }
+        if(ss_[xb] == '(') {
+            current = std::make_shared<SS_NodeDataBP>(seq, SS_NodeData::SS_Type::SS_BP, bounds);
+        }
+        else               {
+            current = std::make_shared<SS_NodeDataBP>(seq, SS_NodeData::SS_Type::SS_PSEUDO_BP, bounds);
+        }
     }
     else if(hairpin) {
-        current = new SS_TreeNode(seq, SS_TreeNode::SS_Type::SS_HAIRPIN, bounds);
+        current = std::make_shared<SS_NodeData>(seq, SS_NodeData::SS_Type::SS_HAIRPIN, bounds);
     }
 
     else {
-        current = new SS_TreeNode(seq, SS_TreeNode::SS_Type::SS_BULGE, bounds);
+        current = std::make_shared<SS_NodeData>(seq, SS_NodeData::SS_Type::SS_BULGE, bounds);
     }
     
     return current;

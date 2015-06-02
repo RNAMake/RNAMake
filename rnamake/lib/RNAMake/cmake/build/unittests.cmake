@@ -12,7 +12,6 @@ set(unittests_files
 	../../unittests/resources_unittests/library_manager_unittest.cc
 	../../unittests/resources_unittests/motif_library_unittest.cc
 	../../unittests/secondary_structure_unittests/ss_tree_unittest.cc
-	../../unittests/speed_tests/shared_vs_raw.cc
 	../../unittests/structure_unittests/atom_unittest.cc
 	../../unittests/structure_unittests/basepair_unittest.cc
 	../../unittests/structure_unittests/chain_unittest.cc

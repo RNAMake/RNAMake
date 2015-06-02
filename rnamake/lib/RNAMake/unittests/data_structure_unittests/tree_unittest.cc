@@ -14,17 +14,14 @@
 int
 TreeUnittest::test_node() {
     
-    auto n1 = new Node<int>(1,0,0);
-    auto n2 = new Node<int>(1,0,0);
+    auto n1 = std::make_shared<Node<int>>(1,0,0);
+    auto n2 = std::make_shared<Node<int>>(1,0,0);
     n1->add_child(n2);
     n2->set_parent(n1);
 
     if(n2->parent()->data() != 1) {
         return 0;
     }
-    
-    delete n1;
-    delete n2;
     
     return 1;
 }
@@ -80,11 +77,27 @@ TreeUnittest::test_get_index() {
 }
 
 int
+TreeUnittest::test_iter() {
+    Tree<float> t;
+    t.add_data(2.0f);
+    t.add_data(3.0f);
+    t.add_data(4.0f);
+
+    //for(auto const & n : t) {
+    //    std::cout << n.data() << std::endl;
+    //}
+     
+    return 1;
+}
+
+int
 TreeUnittest::run() {
     if (test_node() == 0)          {  std::cout << "test_node failed" << std::endl; }
     if (test_creation() == 0)      {  std::cout << "test_creation failed" << std::endl; }
     if (test_remove_node() == 0)   {  std::cout << "test_remove_node failed" << std::endl; }
     if (test_get_index() == 0)     {  std::cout << "test_get_index failed" << std::endl; }
+    if (test_iter() == 0)          {  std::cout << "test_iter failed" << std::endl; }
 
     return 1;
 }
+

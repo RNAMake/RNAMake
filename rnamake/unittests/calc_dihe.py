@@ -41,7 +41,7 @@ dihedral_lists = [
 path = '/Users/josephyesselman/projects/REDESIGN/resources/non-redundant-rnas/'
 files = glob.glob(path+"/*")
 
-prime2 = rnamake.structure.Structure(pdb='/Users/josephyesselman/Downloads/2prime.pdb')
+prime2 = rnamake.structure.Structure(pdb='/Users/josephyesselman/Downloads/1y0q_g.pdb')
 
 r = prime2.residues()[0]
 cdihes = []

@@ -17,6 +17,9 @@
 #include "secondary_structure/ss_tree_node.h"
 #include "secondary_structure/ss_tree_node.fwd.h"
 
+using SS_Node  = NodeOP<SS_NodeDataOP>;
+using SS_Nodes = std::vector<SS_Node>;
+
 class SS_Tree {
 public:
     SS_Tree(
@@ -29,27 +32,30 @@ public:
     size() { return (int)tree_.size(); }
     
     inline
-    Node<SS_TreeNode*>*
+    SS_Node
     get_node(int pos) { return tree_.get_node(pos); }
     
     inline
-    SS_TreeNode*
+    SS_NodeDataOP
     get_data(int pos) { return tree_.get_data(pos); }
     
-    inline
-    std::vector<Node<SS_TreeNode*>*> const &
-    nodes() { return tree_.nodes(); }
+    TreeIterator<SS_NodeDataOP>
+    begin() { return tree_.begin(); }
+
+    TreeIterator<SS_NodeDataOP>
+    end() { return tree_.end(); }
+
     
 private:
     void
     _build_tree();
     
-    std::vector<SS_TreeNode*>
+    std::vector<SS_NodeDataOP>
     _build_tree_level(
         int,
         int);
     
-    SS_TreeNode*
+    SS_NodeDataOP
     _assign_new_node(
         int,
         int);
@@ -65,7 +71,7 @@ private:
 
 private:
     String ss_, seq_;
-    Tree<SS_TreeNode*> tree_;
+    Tree<SS_NodeDataOP> tree_;
     
 };
 

@@ -28,11 +28,10 @@ SS_TreeUnittest::test_creation() {
     //SS_Tree ss_tree4("..(.)..", "AACGGAA");
     
     SS_Tree ss_tree5("((...(.).(.)...))", "GGAAAGACAGACAAACC");
-    for(auto const & n : ss_tree5.nodes()) {
-        std::cout << n->data()->what() << " " << n->parent_index() << std::endl;
-    }
-    
-    
+    //for(auto const & n : ss_tree5) {
+    //    std::cout << n.index() << " " << n.data()->what() << " " << n.data()->seq() << std::endl;
+    //}
+
     
     //std::cout << ss_tree.get_node(0)->data()->yb() << std::endl;
     

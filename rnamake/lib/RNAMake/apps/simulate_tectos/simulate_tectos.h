@@ -14,7 +14,18 @@
 //RNAMake Headers
 #include "base/base.h"
 
-class SimulateTectos : Base {
+class SimulateTectos {
+public:
+    SimulateTectos(
+        String const &,
+        String const &,
+        String const &,
+        String const &);
+    
+public:
+    
+    void
+    run();
     
 };
 

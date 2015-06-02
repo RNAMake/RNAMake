@@ -4,6 +4,7 @@ set(motif_files
 	../../src/motif/motif_tree.cc
 	../../src/motif/motif_tree_merger.cc
 	../../src/motif/motif_tree_node.cc
+	../../src/motif/motif_tree_topology.cc
 	../../src/motif/motif_type.cc
 	../../src/motif/pose.cc
 )

@@ -17,15 +17,27 @@
 class Node {
 public:
     Node(int i) {
-        i = i_;
+        i_ = i;
     }
 public:
     int i_;
+    
+public:
+    virtual
+    int
+    print_fancy() {
+        return i_;
+    }
 };
 
 class DerivedNode : public Node {
 public:
-    DerivedNode(int i) : Node(i) {}
+    DerivedNode(int i) : Node(i) { b_ = i; }
+    
+    
+public:
+    int print_fancy() { return i_+10; }
+    int b_;
 };
 
 template <class T>
@@ -50,11 +62,6 @@ public:
     node_shared(int i)  {
         node_ = std::static_pointer_cast<T, Node>(nodes_2_[i]);
         return node_;
-    }
-    
-    std::unique_ptr<T> const &
-    node_unique(int i)  {
-        return std::static_pointer_cast<T, Node>(nodes_2_[i]);
     }
     
 private:

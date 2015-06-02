@@ -20,7 +20,6 @@
 
 enum NodeChildType { NodeTypeStatic, NodeTypeDynamic };
 
-
 template <class DataType>
 class Node {
 public:
@@ -34,20 +33,30 @@ public:
         size_t const n_children=0):
     index_(index),
     level_(level),
-    children_(std::vector<Node<DataType>*>(n_children)),
+    children_(NodeOPs<DataType>(n_children)),
     parent_(nullptr),
     type_(type),
     data_(data)
     {}
     
-    virtual ~Node() {}
+    ~Node() {
+        for(auto & c : children_) { c = nullptr; }
+    }
     
 public:
+    inline
+    void
+    unset_children() {
+        for(auto & c : children_) {
+            c = nullptr;
+        }
+    }
+    
     
     inline
     void
     add_child(
-        Node<DataType>* const & child,
+        NodeOP<DataType> const & child,
         int pos=-1) {
         
         if(pos == -1 && type_ == NodeTypeStatic) {
@@ -73,7 +82,7 @@ public:
     inline
     void
     unset_child(
-        Node<DataType>* const & child) {
+        NodeOP<DataType> const & child) {
         
         for(auto & c : children_) {
             if(c == child) {
@@ -113,41 +122,41 @@ public:
     inline
     void
     set_parent(
-        Node<DataType>* const & nparent) {
+        NodeOP<DataType> const & nparent) {
         parent_ = nparent;
     }
     
 public: //getters
     
     inline
-    Node<DataType>* const &
-    parent() { return parent_; }
+    NodeOP<DataType> const &
+    parent() const { return parent_; }
     
     inline
     DataType const &
-    data() { return data_; }
+    data() const { return data_; }
     
     inline
-    std::vector<Node<DataType>*> const &
-    children() {
+    NodeOPs<DataType> const &
+    children() const {
         return children_;
     }
     
     inline
     int
-    index() { return index_; }
+    index() const { return index_; }
     
     inline
     int
-    level() { return level_; }
+    level() const { return level_; }
 
     
     
     
 protected:
     int index_, level_;
-    Node<DataType>* parent_;
-    std::vector<Node<DataType>*> children_;
+    NodeOP<DataType> parent_;
+    NodeOPs<DataType> children_;
     DataType data_;
     NodeChildType type_;
 

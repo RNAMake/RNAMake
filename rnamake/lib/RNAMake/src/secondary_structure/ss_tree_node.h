@@ -14,13 +14,13 @@
 #include "secondary_structure/ss_tree_node.fwd.h"
 
 
-class SS_TreeNode {
+class SS_NodeData {
 public:
-    enum SS_Type { SS_BP, SS_BULGE, SS_HAIRPIN, SS_NWAY, SS_PSEUDO_BP };
+    enum SS_Type { SS_BP, SS_BULGE, SS_HAIRPIN, SS_NWAY, SS_PSEUDO_BP, SS_SEQ_BREAK };
     enum Bound_Side { LEFT, RIGHT };
     
     inline
-    SS_TreeNode(
+    SS_NodeData(
         Strings const & seq,
         SS_Type type,
         std::vector<Ints> bounds):
@@ -66,6 +66,7 @@ public: //getters
         else if(type_ == SS_HAIRPIN)  { return "SS_HAIRPIN";  }
         else if(type_ == SS_NWAY)     { return "SS_NWAY";     }
         else if(type_ == SS_PSEUDO_BP){ return "SS_PSEUDO_BP";}
+        else if(type_ == SS_SEQ_BREAK){ return "SS_SEQ_BREAK";}
         else { throw std::runtime_error("unknown SS_TYPE"); }
     }
     
@@ -78,7 +79,16 @@ public: //virtual getters
     virtual
     inline
     String
-    seq() { return ""; }
+    seq() {
+        String seq;
+        int i =-1;
+        for(auto const & s : seq_) {
+            i++;
+            seq += s;
+            if(i < seq_.size()-1) { seq += "+"; }
+        }
+        return seq;
+    }
     
 protected:
     Strings seq_;
@@ -86,14 +96,13 @@ protected:
     SS_Type type_;
 };
 
-
-class SS_TreeNodeBasepair : public SS_TreeNode {
+class SS_NodeDataBP : public SS_NodeData {
 public:
-    SS_TreeNodeBasepair(
+    SS_NodeDataBP(
         Strings const & s,
         SS_Type ntype,
         std::vector<Ints> bounds):
-    SS_TreeNode(s, ntype, bounds)
+    SS_NodeData(s, ntype, bounds)
     { }
     
     

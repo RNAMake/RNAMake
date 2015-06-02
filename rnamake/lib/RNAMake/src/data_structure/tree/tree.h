@@ -10,8 +10,8 @@
 #define __RNAMake__graph__
 
 #include <stdio.h>
-#include <list>
 #include <memory>
+#include <queue>
 
 //RNAMAke Headers
 #include "base/types.h"
@@ -19,13 +19,16 @@
 #include "data_structure/tree/node.h"
 
 
-template <class DataType>
+template <typename DataType>
+class TreeIterator;
+
+template <typename DataType>
 class Tree {
 public:
     
     Tree(
          NodeChildType const & node_type):
-    nodes_ (std::vector<Node<DataType>*>() ),
+    nodes_ (NodeOPs<DataType>() ),
     last_node_(nullptr),
     level_(0),
     index_(0),
@@ -33,19 +36,25 @@ public:
     }
     
     Tree():
-    nodes_ (std::vector<Node<DataType>*>()),
+    nodes_ (NodeOPs<DataType>()),
     last_node_(nullptr),
     level_(0),
     index_(0),
     node_type_(NodeTypeDynamic) {
     }
     
-    virtual
+    
     ~Tree() {
-        for(auto & n : nodes_) {
-            delete n;
+        for(int i = 0; i < nodes_.size(); i++){
+            nodes_[i]->unset_children();
         }
     }
+    
+public:
+    typedef TreeIterator<DataType> iterator;
+    friend class TreeIterator<DataType>;
+    iterator begin();
+    iterator end();
     
 public:
     
@@ -56,10 +65,9 @@ public:
         int n_children=0,
         int parent_index=-1,
         int parent_child_pos=-1) {
-        Node<DataType> *n = new Node<DataType>(data, index_, level_, node_type_, n_children);
-        Node<DataType> *parent;
-        if(parent_index == -1) { parent = last_node_; }
-        else                   { parent = get_node(parent_index); }
+        auto n = std::make_shared<Node<DataType>>(data, index_, level_, node_type_, n_children);
+        NodeOP<DataType> parent = last_node_;
+        if(parent_index != -1) { parent = get_node(parent_index);}
         if(parent == nullptr) {
             nodes_.push_back(n);
             index_++;
@@ -69,7 +77,7 @@ public:
         else if (parent_child_pos == -1 && node_type_ == NodeTypeStatic) {
             Ints avail_child_pos = parent->available_children_pos();
             if(avail_child_pos.size() == 0) {
-                throw "cannot use node as parent as it has not spots for children\n";
+                throw std::runtime_error("cannot use node as parent as it has not spots for children\n");
             }
             parent_child_pos = avail_child_pos[0];
         }
@@ -86,7 +94,7 @@ public:
     }
     
     inline
-    Node<DataType>* const &
+    NodeOP<DataType> const &
     get_node(
         int index) {
         
@@ -152,19 +160,131 @@ public: //getters
     size() { return nodes_.size(); }
     
     inline
-    std::vector<Node<DataType>*> const &
-    nodes() {
+    NodeOPs<DataType> const &
+    nodes() const {
         return nodes_;
     }
     
     
 protected:
-    std::vector<Node<DataType>*> nodes_;
-    Node<DataType>* last_node_;
+    NodeOPs<DataType> nodes_;
+    NodeOP<DataType> last_node_;
     int level_, index_;
     NodeChildType node_type_;
     
 };
 
+template <typename DataType>
+class TreeIterator {
+public:
+    friend class Tree<DataType>;
+    
+    TreeIterator() {}
+    
+public:
+    TreeIterator & operator++ ();
+    TreeIterator operator++ (int);
+    
+    bool operator== (const TreeIterator& rhs) const;
+    bool operator!= (const TreeIterator& rhs) const;
+    Node<DataType>& operator* () const;
+
+    
+private:
+    NodeOP<DataType>node_ptr_;
+    std::queue<NodeOP<DataType>> queue_;
+    
+    
+    TreeIterator(
+        NodeOP<DataType> const & node):
+        node_ptr_(node),
+        queue_(std::queue<NodeOP<DataType>>())
+    {}
+};
+
+
+template <typename DataType>
+typename Tree<DataType>::iterator
+Tree<DataType>::begin() {
+    return iterator(nodes_[0]);
+}
+
+template <typename DataType>
+typename Tree<DataType>::iterator
+Tree<DataType>::end() {
+    return iterator(nullptr);
+}
+
+template <typename DataType>
+Node<DataType>&
+TreeIterator<DataType>::operator* () const {
+    return *node_ptr_;
+}
+
+template <typename DataType>
+TreeIterator<DataType>&
+TreeIterator<DataType>::operator++() {
+    auto children = node_ptr_->children();
+    for(auto const & c : children) {
+        if(c != nullptr) { queue_.push(c); }
+    }
+    
+    if(!queue_.empty()) {
+        node_ptr_ = queue_.front();
+        queue_.pop();
+    }
+    else {
+        node_ptr_ = nullptr;
+    }
+    
+    
+    return *this;
+}
+
+template <typename DataType>
+bool
+TreeIterator<DataType>::operator== (
+                                    TreeIterator<DataType> const& rhs) const {
+    return node_ptr_ == rhs.node_ptr_;
+}
+
+template <typename DataType>
+bool
+TreeIterator<DataType>::operator!= (
+                                    TreeIterator<DataType> const& rhs) const {
+    return node_ptr_ != rhs.node_ptr_;
+}
+
+
+
 
 #endif /* defined(__RNAMake__graph__) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

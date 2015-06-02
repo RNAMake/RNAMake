@@ -14,7 +14,7 @@ for p in lib_paths:
     f.write(")\n")
 
 matches = []
-progs = "main.cc all_tests.cc".split()
+progs = "main.cc all_tests.cc shared_vs_raw.cc tree_memory_test.cc".split()
 for root, dirnames, filenames in os.walk('../../unittests'):
     for filename in fnmatch.filter(filenames, '*.cc'):
         if filename in progs:

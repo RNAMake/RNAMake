@@ -22,7 +22,7 @@ void shared_test(Tree<DerivedNode> & t) {
     std::vector<int> data(1000);
     for(int i = 0; i < 100000; i++) {
         for(int j = 0; j < 1000; j++) {
-            data[j] = t.node_unique(j)->i_ + t.node_unique(j)->i_;
+            data[j] = t.node_shared(j)->i_ + t.node_shared(j)->i_;
         }
     }
 }
@@ -34,7 +34,12 @@ int main(int argc, const char * argv[]) {
         t.add_data(rng.randrange(1000));
     }
     
-    raw_test(t);
-    shared_test(t);
+    std::vector<std::shared_ptr<Node>> nodes;
+    auto n = std::make_shared<DerivedNode>(10);
+    nodes.push_back(n);
+    std::cout << nodes.back()->print_fancy() << std::endl;
+    
+    //raw_test(t);
+    //shared_test(t);
     return 0;
 }
