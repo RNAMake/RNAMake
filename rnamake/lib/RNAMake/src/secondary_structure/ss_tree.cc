@@ -64,6 +64,9 @@ SS_Tree::_build_tree() {
                 
                 seq.push_back(current->seqs()[0]);
                 bounds.push_back(current->bounds(0));
+
+                seq.push_back(current->seqs()[1]);
+                bounds.push_back(current->bounds(1));
                 
                 for(auto const & n : part_of_nway) {
                     Strings child_seq = n->seqs();
@@ -82,8 +85,6 @@ SS_Tree::_build_tree() {
                     }
                 }
                 
-                seq.push_back(current->seqs()[1]);
-                bounds.push_back(current->bounds(1));
                 
                 current = std::make_shared<SS_NodeData>(seq, SS_NodeData::SS_Type::SS_NWAY, bounds);
             }
@@ -153,6 +154,7 @@ SS_Tree::_assign_new_node(
         seq[1] = seq_[pair];
         bounds[0] = Ints({xb, xb});
         bounds[1] = Ints({pair, pair});
+
         
         if(ss_[xb] == '(') {
             current = std::make_shared<SS_NodeDataBP>(seq, SS_NodeData::SS_Type::SS_BP, bounds);
@@ -160,6 +162,7 @@ SS_Tree::_assign_new_node(
         else               {
             current = std::make_shared<SS_NodeDataBP>(seq, SS_NodeData::SS_Type::SS_PSEUDO_BP, bounds);
         }
+
     }
     else if(hairpin) {
         current = std::make_shared<SS_NodeData>(seq, SS_NodeData::SS_Type::SS_HAIRPIN, bounds);
@@ -173,6 +176,56 @@ SS_Tree::_assign_new_node(
 
 }
 
+
+SeqSS
+SS_Tree::seq_from_nodes(
+    SS_Nodes const & nodes) const {
+    
+    std::map<int, int> seen;
+    for(auto const & n : nodes) {
+        for(auto const & bound : n->data()->bounds()) {
+            for(int i = bound[0]; i <= bound[1]; i++) {
+                seen[i] = 1;
+            }
+        }
+    }
+    
+    int start = -1;
+    int range = 0;
+    int found = 0;
+    Strings seqs, sss;
+    for(int i = 0; i < seq_.length(); i++) {
+        if(seen.find(i) != seen.end()) {
+            if(found == 0) {
+                found = 1;
+                start = i;
+                range = 1;
+            }
+            else {
+                range += 1;
+            }
+        }
+        
+        else {
+            found = 0;
+            String seq = seq_.substr(start, range);
+            String ss  = ss_.substr(start, range);
+            seqs.push_back(seq);
+            sss.push_back(ss);
+            
+        }
+    }
+    
+    if(found == 1) {
+        String seq = seq_.substr(start, range);
+        String ss  = ss_.substr(start, range);
+        seqs.push_back(seq);
+        sss.push_back(ss);
+    }
+    
+    return SeqSS(seqs, sss);
+    
+}
 
 int
 SS_Tree::_get_brack_pair(

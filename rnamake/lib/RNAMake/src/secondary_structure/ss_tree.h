@@ -20,6 +20,17 @@
 using SS_Node  = NodeOP<SS_NodeDataOP>;
 using SS_Nodes = std::vector<SS_Node>;
 
+struct SeqSS {
+    SeqSS(
+        Strings const & nseq,
+        Strings const & nss):
+    seq(nseq),
+    ss(nss)
+    {}
+
+    Strings seq, ss;
+};
+
 class SS_Tree {
 public:
     SS_Tree(
@@ -44,11 +55,16 @@ public:
 
     TreeIterator<SS_NodeDataOP>
     end() const { return tree_.end(); }
+    
+    SeqSS 
+    seq_from_nodes(
+        SS_Nodes const &) const;
 
     
 private:
     void
     _build_tree();
+    
     
     std::vector<SS_NodeDataOP>
     _build_tree_level(

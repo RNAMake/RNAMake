@@ -40,6 +40,9 @@ public: //getters
         
         return bounds_[pos];
     }
+    
+    std::vector<Ints> const &
+    bounds() { return bounds_; }
 
     int const &
     bound_side(
@@ -73,6 +76,7 @@ public: //getters
     inline
     Strings
     seqs() { return seq_; }
+    
     
 public: //virtual getters
     

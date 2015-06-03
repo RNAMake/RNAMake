@@ -7,6 +7,7 @@
 //
 
 #include <map>
+#include <queue>
 #include "motif/motif_tree_topology.h"
 
 
@@ -23,28 +24,15 @@ MotifTreeTopology::MotifTreeTopology(SS_Tree const & ss_tree) {
         if(parent->data()->type() == SS_NodeData::SS_Type::SS_BP &&
            n->data()->type()      == SS_NodeData::SS_Type::SS_BP) {
             nodes = SS_Nodes({parent, n});
-            String seq = combine_seq(nodes);
-            auto mt = new MotifTopology(MotifTopology::MotifType::BASEPAIR, seq, "((+))");
+            //String seq = combine_seq(nodes);
+            SeqSS seq_ss = ss_tree.seq_from_nodes(nodes);
+            for(int i = 0; i < seq_ss.ss.size(); i++) {
+                std::cout << seq_ss.seq[i] << " " << seq_ss.ss[i] << std::endl;
+            }
+            
             exit(0);
+            //auto mt = new MotifTopology(MotifTopology::MotifType::BASEPAIR, seq, "((+))");
+            //exit(0);
         }
     }
-}
-
-String
-MotifTreeTopology::combine_seq(
-    SS_Nodes const & nodes) {
-    
-    String s1, s2;
-    
-    for(auto const & n : nodes) {
-        Strings seqs = n->data()->seqs();
-        s1 += seqs[0];
-        s2 += seqs[1];
-        if(seqs.size() != 2) {
-            throw std::runtime_error("not implmented: cannot combine nodes with 3 strands");
-        }
-    }
-    
-    return s1 + "+" + s2;
-    
 }

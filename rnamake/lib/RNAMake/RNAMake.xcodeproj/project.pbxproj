@@ -23,6 +23,10 @@
 		1C41F5071B1CE868000D1B6A /* tree_memory_test.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F5061B1CE868000D1B6A /* tree_memory_test.cc */; };
 		1C41F5081B1D3E9B000D1B6A /* ss_tree_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3E371B0AE77C0076284E /* ss_tree_unittest.cc */; };
 		1C41F5091B1D411B000D1B6A /* motif_tree_topology.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F4FD1B1B6955000D1B6A /* motif_tree_topology.cc */; };
+		1C41F50C1B1E32A8000D1B6A /* motif_tree_topology_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F50A1B1E32A8000D1B6A /* motif_tree_topology_unittest.cc */; };
+		1C41F5101B1E6756000D1B6A /* graph.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F50E1B1E6756000D1B6A /* graph.cc */; };
+		1C41F5131B1E6765000D1B6A /* graph_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F5111B1E6765000D1B6A /* graph_node.cc */; };
+		1C41F5171B1E689D000D1B6A /* graph_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F5151B1E689D000D1B6A /* graph_unittest.cc */; };
 		1C4B4F4A1AB8F7B300A2F04C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4B4F491AB8F7B300A2F04C /* main.cpp */; };
 		1C4B4F7C1AB8F92700A2F04C /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
 		1C4E3C8E1AF30AE40076284E /* motif_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3C8C1AF30AE40076284E /* motif_library.cc */; };
@@ -319,6 +323,15 @@
 		1C41F4FD1B1B6955000D1B6A /* motif_tree_topology.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_tree_topology.cc; sourceTree = "<group>"; };
 		1C41F4FE1B1B6955000D1B6A /* motif_tree_topology.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_topology.h; sourceTree = "<group>"; };
 		1C41F5061B1CE868000D1B6A /* tree_memory_test.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tree_memory_test.cc; sourceTree = "<group>"; };
+		1C41F50A1B1E32A8000D1B6A /* motif_tree_topology_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_tree_topology_unittest.cc; sourceTree = "<group>"; };
+		1C41F50B1B1E32A8000D1B6A /* motif_tree_topology_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree_topology_unittest.h; sourceTree = "<group>"; };
+		1C41F50E1B1E6756000D1B6A /* graph.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graph.cc; sourceTree = "<group>"; };
+		1C41F50F1B1E6756000D1B6A /* graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph.h; sourceTree = "<group>"; };
+		1C41F5111B1E6765000D1B6A /* graph_node.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graph_node.cc; sourceTree = "<group>"; };
+		1C41F5121B1E6765000D1B6A /* graph_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_node.h; sourceTree = "<group>"; };
+		1C41F5141B1E6775000D1B6A /* graph_node.fwd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = graph_node.fwd.h; sourceTree = "<group>"; };
+		1C41F5151B1E689D000D1B6A /* graph_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = graph_unittest.cc; sourceTree = "<group>"; };
+		1C41F5161B1E689D000D1B6A /* graph_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = graph_unittest.h; sourceTree = "<group>"; };
 		1C4B4F471AB8F7B300A2F04C /* motif_tree_path_refiner */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = motif_tree_path_refiner; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C4B4F491AB8F7B300A2F04C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C4E3C8C1AF30AE40076284E /* motif_library.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_library.cc; sourceTree = "<group>"; };
@@ -642,6 +655,8 @@
 			children = (
 				1C41F4E41B15151D000D1B6A /* tree_unittest.cc */,
 				1C41F4E51B15151D000D1B6A /* tree_unittest.h */,
+				1C41F5151B1E689D000D1B6A /* graph_unittest.cc */,
+				1C41F5161B1E689D000D1B6A /* graph_unittest.h */,
 			);
 			path = data_structure_unittests;
 			sourceTree = "<group>";
@@ -673,6 +688,18 @@
 				1C41F5061B1CE868000D1B6A /* tree_memory_test.cc */,
 			);
 			path = memory_tests;
+			sourceTree = "<group>";
+		};
+		1C41F50D1B1E6742000D1B6A /* graph */ = {
+			isa = PBXGroup;
+			children = (
+				1C41F50E1B1E6756000D1B6A /* graph.cc */,
+				1C41F50F1B1E6756000D1B6A /* graph.h */,
+				1C41F5111B1E6765000D1B6A /* graph_node.cc */,
+				1C41F5121B1E6765000D1B6A /* graph_node.h */,
+				1C41F5141B1E6775000D1B6A /* graph_node.fwd.h */,
+			);
+			path = graph;
 			sourceTree = "<group>";
 		};
 		1C4B4F481AB8F7B300A2F04C /* motif_tree_path_refiner */ = {
@@ -789,6 +816,7 @@
 		1C4E3E3A1B1274B00076284E /* data_structure */ = {
 			isa = PBXGroup;
 			children = (
+				1C41F50D1B1E6742000D1B6A /* graph */,
 				1C41F4EC1B17FF9F000D1B6A /* tree */,
 			);
 			path = data_structure;
@@ -869,6 +897,8 @@
 				1C4E3CBA1AF455510076284E /* motif_tree_merger_unittest.h */,
 				1C4E3DA31B0936FA0076284E /* motif_scorer_unittest.cc */,
 				1C4E3DA41B0936FA0076284E /* motif_scorer_unittest.h */,
+				1C41F50A1B1E32A8000D1B6A /* motif_tree_topology_unittest.cc */,
+				1C41F50B1B1E32A8000D1B6A /* motif_tree_topology_unittest.h */,
 			);
 			path = motif_unittests;
 			sourceTree = "<group>";
@@ -1543,6 +1573,7 @@
 				1C41F5081B1D3E9B000D1B6A /* ss_tree_unittest.cc in Sources */,
 				1C4E3D9D1B06A04C0076284E /* motif_tree_state_library_unittest.cc in Sources */,
 				1C4E3CB11AF422F60076284E /* motif_tree_node.cc in Sources */,
+				1C41F5131B1E6765000D1B6A /* graph_node.cc in Sources */,
 				1C4E3C9C1AF30E920076284E /* motif_library.cc in Sources */,
 				1CBEFF6C1AF1BB3700C03772 /* file_io.cc in Sources */,
 				1CAACEAA1AF2ED570098AA49 /* motif_unittest.cc in Sources */,
@@ -1583,6 +1614,8 @@
 				1C4E3DBA1B09B43F0076284E /* cl_option.cc in Sources */,
 				1CBEFF351AF1630F00C03772 /* atom_unittest.cc in Sources */,
 				1C4E3CBF1B0001120076284E /* resource_manager_unittest.cc in Sources */,
+				1C41F5171B1E689D000D1B6A /* graph_unittest.cc in Sources */,
+				1C41F5101B1E6756000D1B6A /* graph.cc in Sources */,
 				1CBEFF731AF1C07600C03772 /* chain_unittest.cc in Sources */,
 				1CBEFE6B1AF0498700C03772 /* unittest.cc in Sources */,
 				1C4E3C991AF30D130076284E /* motif_library_unittest.cc in Sources */,
@@ -1599,6 +1632,7 @@
 				1C4E3E311B0AE57C0076284E /* ss_tree.cc in Sources */,
 				1C4E3CBB1AF455510076284E /* motif_tree_merger_unittest.cc in Sources */,
 				1CAACE981AF2E2300098AA49 /* basepair_unittest.cc in Sources */,
+				1C41F50C1B1E32A8000D1B6A /* motif_tree_topology_unittest.cc in Sources */,
 				1CBEFF6F1AF1BEB600C03772 /* chain.cc in Sources */,
 				1C4E3DA21B07C92F0076284E /* motif_scorer.cc in Sources */,
 				1C4E3DC11B0A63340076284E /* cl_option_unittest.cc in Sources */,

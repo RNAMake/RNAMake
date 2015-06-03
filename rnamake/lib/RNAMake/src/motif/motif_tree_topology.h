@@ -14,10 +14,14 @@
 #include "secondary_structure/ss_tree.h"
 #include "data_structure/tree/tree.h"
 
+struct MotifTopologyBP {
+    String name;
+    Strings chains;
+};
 
 struct MotifTopology {
 public:
-    enum class MotifType { BASEPAIR, TWOWAY, NWAY, HAIRPIN, TCONTACT};
+    enum class MotifType { BP_STEP, TWOWAY, NWAY, HAIRPIN, TCONTACT};
     MotifTopology(
         MotifType const & ntype,
         String const & nseq,
@@ -30,15 +34,13 @@ public:
     MotifType type;
     String seq;
     String ss;
+    std::vector<MotifTopologyBP> bps;
 };
+
 
 class MotifTreeTopology {
 public:
     MotifTreeTopology(SS_Tree const &);
-    
-private:
-    String
-    combine_seq(SS_Nodes const &);
    
 private:
     Tree<MotifTopology*> tree_;
