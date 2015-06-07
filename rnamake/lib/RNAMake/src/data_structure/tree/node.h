@@ -102,6 +102,7 @@ public:
         int i = 0;
         for(auto const & c : children_) {
             if(c == nullptr) { pos.push_back(i); }
+            i++;
         }
         return pos;
     }

@@ -12,40 +12,81 @@
 #include <stdio.h>
 #include "base/types.h"
 #include "secondary_structure/ss_tree.h"
-#include "data_structure/tree/tree.h"
+#include "data_structure/graph/graph.h"
+
+enum class MotifTopologyType { BP_STEP, TWOWAY, NWAY, HAIRPIN, TCONTACT, START};
 
 struct MotifTopologyBP {
+    MotifTopologyBP(
+        String nname,
+        Strings nchains):
+    name(nname),
+    chains(nchains)
+    {}
+    
     String name;
     Strings chains;
 };
 
 struct MotifTopology {
-public:
-    enum class MotifType { BP_STEP, TWOWAY, NWAY, HAIRPIN, TCONTACT};
     MotifTopology(
-        MotifType const & ntype,
-        String const & nseq,
-        String const & nss):
+        MotifTopologyType const & ntype,
+        Strings const & nseq,
+        Strings const & nss,
+        std::vector<MotifTopologyBP> nbps):
     type(ntype),
     seq(nseq),
-    ss(nss)
+    ss(nss),
+    bps(nbps)
     {}
 
-    MotifType type;
-    String seq;
-    String ss;
+    MotifTopologyType type;
+    Strings seq;
+    Strings ss;
     std::vector<MotifTopologyBP> bps;
 };
 
+using MotifTopologyOP = std::shared_ptr<MotifTopology>;
 
 class MotifTreeTopology {
 public:
     MotifTreeTopology(SS_Tree const &);
+    
+private:
+    VectorUP<SS_Node>
+    get_bp_nodes(
+        SS_Node const &,
+        std::map<int, int> const & );
+    
+    MotifTopologyOP
+    build_motif_topology_node(
+        VectorUP<SS_Node> const &,
+        SS_Tree const &,
+        MotifTopologyType const &);
+    
+    
    
 private:
-    Tree<MotifTopology*> tree_;
+    Graph<MotifTopologyOP> graph_;
+    int bp_step_size_;
     
 };
  
 
 #endif /* defined(__RNAMake__motif_tree_topology__) */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

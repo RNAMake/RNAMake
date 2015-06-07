@@ -12,6 +12,8 @@
 #include <vector>
 #include <memory>
 
+enum class GraphNodeType { GraphNodeTypeStatic, GraphNodeTypeDynamic };
+
 template <typename DataType>
 class GraphNode;
 

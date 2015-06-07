@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__graph__
-#define __RNAMake__graph__
+#ifndef __RNAMake__tree__
+#define __RNAMake__tree__
 
 #include <stdio.h>
 #include <memory>
@@ -256,7 +256,7 @@ TreeIterator<DataType>::operator!= (
 
 
 
-#endif /* defined(__RNAMake__graph__) */
+#endif /* defined(__RNAMake__tree__) */
 
 
 

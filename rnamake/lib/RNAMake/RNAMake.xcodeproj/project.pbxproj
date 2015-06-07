@@ -22,8 +22,6 @@
 		1C41F5001B1B6955000D1B6A /* motif_tree_topology.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F4FD1B1B6955000D1B6A /* motif_tree_topology.cc */; };
 		1C41F5071B1CE868000D1B6A /* tree_memory_test.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F5061B1CE868000D1B6A /* tree_memory_test.cc */; };
 		1C41F5081B1D3E9B000D1B6A /* ss_tree_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3E371B0AE77C0076284E /* ss_tree_unittest.cc */; };
-		1C41F5091B1D411B000D1B6A /* motif_tree_topology.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F4FD1B1B6955000D1B6A /* motif_tree_topology.cc */; };
-		1C41F50C1B1E32A8000D1B6A /* motif_tree_topology_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F50A1B1E32A8000D1B6A /* motif_tree_topology_unittest.cc */; };
 		1C41F5101B1E6756000D1B6A /* graph.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F50E1B1E6756000D1B6A /* graph.cc */; };
 		1C41F5131B1E6765000D1B6A /* graph_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F5111B1E6765000D1B6A /* graph_node.cc */; };
 		1C41F5171B1E689D000D1B6A /* graph_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F5151B1E689D000D1B6A /* graph_unittest.cc */; };
@@ -1569,7 +1567,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1C41F5091B1D411B000D1B6A /* motif_tree_topology.cc in Sources */,
 				1C41F5081B1D3E9B000D1B6A /* ss_tree_unittest.cc in Sources */,
 				1C4E3D9D1B06A04C0076284E /* motif_tree_state_library_unittest.cc in Sources */,
 				1C4E3CB11AF422F60076284E /* motif_tree_node.cc in Sources */,
@@ -1632,7 +1629,6 @@
 				1C4E3E311B0AE57C0076284E /* ss_tree.cc in Sources */,
 				1C4E3CBB1AF455510076284E /* motif_tree_merger_unittest.cc in Sources */,
 				1CAACE981AF2E2300098AA49 /* basepair_unittest.cc in Sources */,
-				1C41F50C1B1E32A8000D1B6A /* motif_tree_topology_unittest.cc in Sources */,
 				1CBEFF6F1AF1BEB600C03772 /* chain.cc in Sources */,
 				1C4E3DA21B07C92F0076284E /* motif_scorer.cc in Sources */,
 				1C4E3DC11B0A63340076284E /* cl_option_unittest.cc in Sources */,

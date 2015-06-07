@@ -25,4 +25,8 @@ typedef std::shared_ptr<String> StringOP;
 typedef std::map<String, int> StringIntMap;
 typedef std::map<String, float> StringFloatMap;
 typedef std::map<String, String> StringStringMap;
+
+template<typename T>
+using   VectorUP = std::unique_ptr<std::vector<T>>;
+
 #endif

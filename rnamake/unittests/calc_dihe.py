@@ -3,6 +3,18 @@ import rnamake.util as util
 import rnamake.structure
 import math
 import glob
+import numpy as np
+
+def arc_cos(num):
+    return math.atan2(math.sqrt(1-num*num), num)
+
+def diff(p1, p2):
+    return np.array([p1[0]-p2[0], p1[1]-p2[1], p1[2]-p2[2]])
+
+def normalize(v):
+    mag = util.distance(v, [0,0,0])
+    v_norm = [ x / mag for x in v ]
+    return v_norm
 
 def calc_dihe(atoms):
     d12 =util.distance(atoms[0].coords, atoms[1].coords)
@@ -11,9 +23,9 @@ def calc_dihe(atoms):
     d24 =util.distance(atoms[1].coords, atoms[3].coords)
     d34 =util.distance(atoms[2].coords, atoms[3].coords)
     d14 =util.distance(atoms[0].coords, atoms[3].coords)
-    p = d12**2 * ( d23**2+ d34**2-d24**2) + \
-	            d23**2 * (-d23**2+d34**2+d24**2) + \
-	            d13**2 * ( d23**2-d34**2+d24**2) - \
+    p = d12**2 * ( d23**2 + d34**2 - (d24**2)) + \
+	            d23**2 * (-(d23**2) + d34**2 + d24**2) + \
+	            d13**2 * ( d23**2 - d34**2 + d24**2) - \
 	            2 * d23**2 * d14**2
 
     q = (d12 + d23 + d13) * ( d12 + d23 - d13) * \
@@ -21,14 +33,39 @@ def calc_dihe(atoms):
 		(d23 + d34 + d24) * ( d23 + d34 - d24 ) * \
 		(d23 - d34 + d24) * (-d23 + d34 + d24 )
 
-    phi = math.acos(p/math.sqrt(q))
+    phi = arc_cos(p/math.sqrt(q))
     return phi*180 / math.pi
+
+def calc_dihe_2(atoms):
+    ba = diff(atoms[1].coords, atoms[0].coords)
+    cb = diff(atoms[2].coords, atoms[1].coords)
+    dc = diff(atoms[3].coords, atoms[2].coords)
+
+    cross_ba_cb = np.cross(ba,cb)
+    cross_cb_dc = np.cross(cb,dc)
+    phi = arc_cos(cross_ba_cb.dot(cross_cb_dc) / (util.distance(cross_ba_cb, [0,0,0])*util.distance(cross_cb_dc, [0,0,0])))
+    return phi*180 / math.pi
+
+def calc_dihe_3(atoms):
+    b_a = diff(atoms[1].coords, atoms[0].coords)
+    b_c = diff(atoms[1].coords, atoms[2].coords)
+    c_d = diff(atoms[3].coords, atoms[2].coords)
+    b_a = normalize(b_a)
+    b_c = normalize(b_c)
+    c_d = normalize(c_d)
+
+    n1 = np.cross(b_a, b_c)
+    n2 = np.cross(b_c, c_d)
+    m  = np.cross(n1, b_c)
+    x = np.dot(n1, n2)
+    y = np.dot(m, n2)
+
+    return (180 / math.pi) * math.atan2(y, x)
+
 
 mlib = rnamake.motif_library.MotifLibrary(rnamake.motif_type.HELIX)
 m = mlib.get_motif('HELIX.IDEAL')
 #m.to_pdb('test.pdb')
-
-atom_names = "C1' O4' C4' C3'".split()
 
 dihedral_lists = [
     "C4' O4' C1' C2'".split(),
@@ -41,7 +78,7 @@ dihedral_lists = [
 path = '/Users/josephyesselman/projects/REDESIGN/resources/non-redundant-rnas/'
 files = glob.glob(path+"/*")
 
-prime2 = rnamake.structure.Structure(pdb='/Users/josephyesselman/Downloads/1y0q_g.pdb')
+prime2 = rnamake.structure.Structure(pdb='/Users/josephyesselman/Downloads/3prime.pdb')
 
 r = prime2.residues()[0]
 cdihes = []
@@ -49,7 +86,7 @@ for dl in dihedral_lists:
     atoms = []
     for name in dl:
         atoms.append(r.get_atom(name))
-    cdihes.append(calc_dihe(atoms))
+    cdihes.append(calc_dihe_3(atoms))
 
 print cdihes
 
@@ -69,7 +106,9 @@ for l in lines:
     spl[8] = float(spl[8])
     all_dihes.append(spl)
 
-cutoff = 15
+cutoff = 25
+closest_distance = 100000
+closest_hit = 0
 for dihe in all_dihes:
     diff = 0
     if dihe[2] != 'G':
@@ -77,12 +116,16 @@ for dihe in all_dihes:
     for i in range(4,9):
         diff += abs(cdihes[i-4] - dihe[i])
 
-    if diff < cutoff:
-        print dihe
+    if diff < closest_distance:
+        closest_distance = diff
+        closest_hit = dihe
 
+    #if diff < cutoff:
+    #    print dihe
 
-exit()
+print closest_hit, closest_distance
 
+exit(0)
 fsum = open('all_sugar_dihedrals.txt', 'w')
 
 for f in files:
@@ -101,12 +144,14 @@ for f in files:
             for name in dl:
                 atoms.append(r.get_atom(name))
             try:
-                dihe = calc_dihe(atoms)
+                dihe = calc_dihe_3(atoms)
                 fsum.write(str(dihe) + " " )
             except:
                 break
         fsum.write("\n")
 
+
+exit(0)
 for dl in dihedral_lists:
     atoms = []
     for name in dl:

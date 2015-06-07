@@ -22,6 +22,9 @@ public:
 public:
     
     int
+    test_nodes();
+    
+    int
     test_creation();
     
     

@@ -20,16 +20,21 @@
 using SS_Node  = NodeOP<SS_NodeDataOP>;
 using SS_Nodes = std::vector<SS_Node>;
 
-struct SeqSS {
-    SeqSS(
+struct SubSSTree {
+    SubSSTree(
         Strings const & nseq,
-        Strings const & nss):
+        Strings const & nss,
+        std::vector<Ints> const & nbounds):
     seq(nseq),
-    ss(nss)
+    ss(nss),
+    bounds(nbounds)
     {}
 
     Strings seq, ss;
+    std::vector<Ints> bounds;
 };
+
+using SubSSTreeUP = std::unique_ptr<SubSSTree>;
 
 class SS_Tree {
 public:
@@ -56,7 +61,7 @@ public:
     TreeIterator<SS_NodeDataOP>
     end() const { return tree_.end(); }
     
-    SeqSS 
+    SubSSTreeUP 
     seq_from_nodes(
         SS_Nodes const &) const;
 

@@ -177,7 +177,7 @@ SS_Tree::_assign_new_node(
 }
 
 
-SeqSS
+SubSSTreeUP
 SS_Tree::seq_from_nodes(
     SS_Nodes const & nodes) const {
     
@@ -194,6 +194,7 @@ SS_Tree::seq_from_nodes(
     int range = 0;
     int found = 0;
     Strings seqs, sss;
+    std::vector<Ints> bounds;
     for(int i = 0; i < seq_.length(); i++) {
         if(seen.find(i) != seen.end()) {
             if(found == 0) {
@@ -212,6 +213,7 @@ SS_Tree::seq_from_nodes(
             String ss  = ss_.substr(start, range);
             seqs.push_back(seq);
             sss.push_back(ss);
+            bounds.push_back({start, start+range-1});
             
         }
     }
@@ -219,11 +221,12 @@ SS_Tree::seq_from_nodes(
     if(found == 1) {
         String seq = seq_.substr(start, range);
         String ss  = ss_.substr(start, range);
+        bounds.push_back({start, start+range-1});
         seqs.push_back(seq);
         sss.push_back(ss);
     }
     
-    return SeqSS(seqs, sss);
+    return std::make_unique<SubSSTree>(seqs, sss, bounds);
     
 }
 

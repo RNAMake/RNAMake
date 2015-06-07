@@ -12,11 +12,23 @@
 #include <stdio.h>
 
 #include "data_structure/graph/graph_node.h"
+#include "data_structure/graph/graph_node.fwd.h"
+
 
 template <typename DataType>
 class Graph {
 public:
-    Graph() {}
+    Graph():
+    index_(0),
+    level_(0),
+    node_type_( GraphNodeType::GraphNodeTypeDynamic ){}
+    
+    Graph(
+        GraphNodeType const & type):
+    node_type_(type),
+    index_(0),
+    level_(0)
+    {}
     
     ~Graph() {}
     
@@ -29,7 +41,7 @@ public:
         int n_children=0,
         int parent_index=-1,
         int parent_pos=-1,
-        int child_pos=0) {
+        int child_pos=-1) {
         auto n = std::make_shared<GraphNode<DataType>>(data, index_, level_, node_type_, n_children);
         GraphNodeOP<DataType> parent = last_node_;
         if(parent_index != -1) { parent = get_node(parent_index);}
@@ -42,7 +54,7 @@ public:
         else if (parent_pos == -1 && node_type_ == GraphNodeType::GraphNodeTypeStatic) {
             Ints avail_child_pos = parent->available_children_pos();
             if(avail_child_pos.size() == 0) {
-                throw std::runtime_error("cannot use node as parent as it has not spots for children\n");
+                throw GraphException("cannot use node as parent as it has not spots for children\n");
             }
             parent_pos = avail_child_pos[0];
         }
@@ -69,10 +81,10 @@ public:
             if(n->index() == index) { return n; }
         }
         
-        throw std::runtime_error("cannot find node with index");
+        throw GraphException("cannot find node with index");
     }
     
-
+     
 
     
 private:
@@ -82,6 +94,9 @@ private:
     int index_, level_;
     GraphNodeType node_type_;
 };
+
+template <typename DataType>
+
 
 
 #endif /* defined(__RNAMake__graph__) */

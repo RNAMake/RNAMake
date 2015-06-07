@@ -11,7 +11,7 @@
 
 int
 MotifTreeTopologyUnittest::test_creation() {
-    SS_Tree ss_t("((+))", "GG+CC");
+    SS_Tree ss_t("(((+)))", "GAG+CUC");
     MotifTreeTopology mtt(ss_t);
     
     return 1;
