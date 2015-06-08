@@ -18,6 +18,16 @@
 String
 unittest_resource_dir();
 
+class UnittestException : public std::runtime_error {
+public:
+    UnittestException(
+        String const & message) :
+    std::runtime_error("Unittest Exception: " + message)
+    {}
+
+};
+
+
 class Unittest {
 public:
 

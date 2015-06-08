@@ -20,57 +20,12 @@ class Graph {
 public:
     Graph():
     index_(0),
-    level_(0),
-    node_type_( GraphNodeType::GraphNodeTypeDynamic ){}
-    
-    Graph(
-        GraphNodeType const & type):
-    node_type_(type),
-    index_(0),
-    level_(0)
-    {}
+    level_(0) {}
     
     ~Graph() {}
     
 public:
     
-    inline
-    int
-    add_data(
-        DataType const & data,
-        int n_children=0,
-        int parent_index=-1,
-        int parent_pos=-1,
-        int child_pos=-1) {
-        auto n = std::make_shared<GraphNode<DataType>>(data, index_, level_, node_type_, n_children);
-        GraphNodeOP<DataType> parent = last_node_;
-        if(parent_index != -1) { parent = get_node(parent_index);}
-        if(parent == nullptr) {
-            nodes_.push_back(n);
-            index_++;
-            last_node_ = n;
-            return 0;
-        }
-        else if (parent_pos == -1 && node_type_ == GraphNodeType::GraphNodeTypeStatic) {
-            Ints avail_child_pos = parent->available_children_pos();
-            if(avail_child_pos.size() == 0) {
-                throw GraphException("cannot use node as parent as it has not spots for children\n");
-            }
-            parent_pos = avail_child_pos[0];
-        }
-        
-        auto connection = std::make_shared<GraphConnection<DataType>>(parent, n, parent_pos, child_pos);
-        parent->add_connection(connection, parent_pos);
-        n->add_connection(connection, child_pos);
-        
-        nodes_.push_back(n);
-        connections_.push_back(connection);
-        index_++;
-        last_node_ = n;
-        
-        return n->index();
-        
-    }
     
     inline
     GraphNodeOP<DataType> const &
@@ -87,15 +42,110 @@ public:
      
 
     
-private:
+protected:
     GraphNodeOP<DataType> last_node_;
     GraphNodeOPs<DataType> nodes_;
     GraphConnectionOPs<DataType> connections_;
     int index_, level_;
-    GraphNodeType node_type_;
 };
 
 template <typename DataType>
+class GraphDynamic : public Graph<DataType> {
+public:
+    GraphDynamic(): Graph<DataType>() {}
+   
+public:
+    
+    inline
+    int
+    add_data(
+        DataType const & data,
+        int parent_index = -1) {
+        
+        GraphNodeOP<DataType> parent = this->last_node_;
+        if(parent_index != -1) { parent = this->get_node(parent_index);}
+        
+        auto n = std::make_shared<GraphNodeDynamic<DataType>>(data, this->index_, this->level_);
+        
+        if(parent != nullptr) {
+            auto c = std::make_shared<GraphConnection<DataType>>(parent, n, 0, 0);
+            parent->add_connection(c);
+            n->add_connection(c);
+        }
+        
+    
+        this->nodes_.push_back(n);
+        this->index_++;
+        this->last_node_ = n;
+        return this->index_-1;
+    }
+    
+    
+};
+
+template <typename DataType>
+class GraphStatic : public Graph<DataType> {
+public:
+    GraphStatic(): Graph<DataType>() {}
+    
+public:
+    
+    inline
+    int
+    add_data(
+        DataType const & data,
+        int parent_index = -1,
+        int parent_pos = -1,
+        int child_pos = -1,
+        int n_children = 0) {
+        
+        GraphNodeOP<DataType> parent = this->last_node_;
+        auto n = std::make_shared<GraphNodeStatic<DataType>>(data, this->index_, this->level_,
+                                                             n_children);
+
+        if(parent_index != -1) { parent = this->get_node(parent_index); }
+        if(parent != nullptr) {
+            check_pos_is_valid(parent, parent_pos);
+            check_pos_is_valid(n, child_pos);
+            auto c = std::make_shared<GraphConnection<DataType>>(parent, n, parent_pos, child_pos);
+            parent->add_connection(c, parent_pos);
+            n->add_connection(c, child_pos);
+        }
+        
+        this->nodes_.push_back(n);
+        this->index_++;
+        this->last_node_ = n;
+        return this->index_-1;
+        
+        
+    }
+    
+    inline
+    void
+    check_pos_is_valid(
+        GraphNodeOP<DataType> const & n,
+        int & pos) {
+        
+        if(pos == -1) {
+            Ints avail_pos = n->available_children_pos();
+            if(avail_pos.size() == 0) {
+                throw GraphException("cannot add connection to node, has not available ends");
+            }
+            pos = avail_pos[0];
+            return;
+        }
+        
+        else {
+            if(n->available_pos(pos) == 0) {
+                throw GraphException("graph pos is not availabe");
+            }
+        }
+        
+    }
+    
+};
+
+
 
 
 

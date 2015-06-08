@@ -1,4 +1,4 @@
-//
+
 //  graph_node.h
 //  RNAMake
 //
@@ -42,14 +42,18 @@ public:
     
 public:
     
+    virtual
     inline
     void
-    virtual
     add_connection(
-        GraphConnectionOP<DataType> const & connection,
-        int pos=-1) {
-        throw GraphException("calling abstract add_connection");
-    }
+        GraphConnectionOP<DataType> const &,
+        int pos=-1) = 0;
+    
+    virtual
+    inline
+    void
+    remove_connection(
+        GraphConnectionOP<DataType> const & connection) = 0;
     
     inline
     Ints
@@ -61,6 +65,14 @@ public:
             i++;
         }
         return pos;
+    }
+    
+    inline
+    int
+    available_pos(int pos) {
+        if(connections_.size() <= pos) { return 0; }
+        if(connections_[pos] != nullptr) { return 0; }
+        return 1;
     }
 
     
@@ -91,7 +103,6 @@ public:
 protected:
     DataType data_;
     GraphConnectionOPs<DataType> connections_;
-    GraphNodeType type_;
     int level_, index_;
     
 };
@@ -116,6 +127,28 @@ public:
         int pos=-1) {
         
         this->connections_.push_back(connection);
+    }
+    
+    inline
+    void
+    remove_connection(
+        GraphConnectionOP<DataType> const & connection)  {
+        
+        int found = 0;
+        for(auto & c : this->connections_) {
+            if(c == connection) {
+                found = 1;
+                break;
+            }
+        }
+        
+        if(!found) {
+            throw GraphException("tried to remove connection but is not present in node");
+        }
+        
+        this->connections_.erase(std::remove(this->connections_.begin(), this->connections_.end(),
+                                connection), this->connections_.end());
+
     }
 
     
@@ -156,11 +189,25 @@ public:
         this->connections_[pos] = connection;
     }
     
+    inline
+    void
+    remove_connection(
+        GraphConnectionOP<DataType> const & connection)  {
+        
+        for(auto & c : this->connections_) {
+            if(c == connection) {
+                c = nullptr;
+                return;
+            }
+        }
+        
+        throw GraphException("tried to remove connection but is not present in node");
+        
+    }
+
+    
     
 };
-
-
-
 
 
 template <typename DataType>

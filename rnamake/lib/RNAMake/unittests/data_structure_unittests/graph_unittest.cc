@@ -7,8 +7,7 @@
 //
 
 #include "graph_unittest.h"
-//#include "data_structure/graph/graph.h"
-#include "data_structure/graph/graph_node.h"
+#include "data_structure/graph/graph.h"
 
 
 int
@@ -22,15 +21,19 @@ GraphUnittest::test_nodes() {
     auto n3 = std::make_shared<GraphNodeStatic<int>>(0, 0, 0, 2);
     auto n4 = std::make_shared<GraphNodeStatic<int>>(1, 1, 0, 2);
     auto c2 = std::make_shared<GraphConnection<int>>(n1, n2, 1, 1);
-    n3->add_connection(c2, 0);
-    n4->add_connection(c2, 0);
+    n3->add_connection(c2, 1);
+    n4->add_connection(c2, 1);
 
-    /*try {
-
-    } catch (GraphException & e) { }
-    */
+    try {
+        n3->add_connection(c2, 2);
+        throw UnittestException("did not catch GraphException");
+    } catch (GraphException & e) {}
     
+    Ints avail_pos = n3->available_children_pos();
     
+    if(avail_pos.size() != 1 || avail_pos[0] != 0) {
+        return 0;
+    }
     
     return 1;
     
@@ -38,18 +41,16 @@ GraphUnittest::test_nodes() {
 
 int
 GraphUnittest::test_creation() {
-    /*Graph<int> g;
+    
+    GraphDynamic<int> g;
     g.add_data(0);
     g.add_data(1);
-    g.add_data(2, 0, 0);
+    g.add_data(2, 0);
+    int index = g.add_data(3, 0);
     
-    auto n = g.get_node(2);
-    
-    if(n->parent()->data() != 0) { return 0; }
-    
-    Graph<int> g2(GraphNodeType::GraphNodeTypeStatic);
-    g2.add_data(0, 2);
-    */
+    GraphStatic<int> g1;
+    g1.add_data(0, -1, -1, -1, 2);
+    g1.add_data(1, -1, -1, -1, 2);
     
     
     return 1;
