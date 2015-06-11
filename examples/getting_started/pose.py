@@ -5,7 +5,8 @@ import rnamake.motif_type as motif_type
 #rigidly enforced, but does allow for more functionality for larger structures
 #like a motif, a pose can be loaded from a preformed directory or from a pdb
 
-p = rnamake.pose.Pose("resources/p4p6")
+p = rnamake.pose.Pose(pdb="twoways.1.pdb")
+exit()
 
 print "this structure contains", len(p.twoways()), "twoway junctions"
 print "visualize them with pymol twoways.*"
