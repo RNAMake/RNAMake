@@ -26,6 +26,9 @@ public:
     int
     test_creation();
     
+    int
+    test_simple_build();
+    
 public:
     
     int

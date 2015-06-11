@@ -14,6 +14,9 @@
 #include "data_structure/graph/graph_node.h"
 #include "data_structure/graph/graph_node.fwd.h"
 
+template <typename DataType>
+class GraphIterator;
+
 
 template <typename DataType>
 class Graph {
@@ -26,6 +29,16 @@ public:
     
 public:
     
+    typedef GraphIterator<DataType> iterator;
+    friend class GraphIterator<DataType>;
+    iterator begin() const;
+    iterator end() const;
+    
+public:
+    
+    inline
+    size_t
+    size() { return nodes_.size(); }
     
     inline
     GraphNodeOP<DataType> const &
@@ -39,8 +52,13 @@ public:
         throw GraphException("cannot find node with index");
     }
     
-     
 
+    inline
+    GraphNodeOPs<DataType> const &
+    nodes() {
+        return nodes_;
+    }
+    
     
 protected:
     GraphNodeOP<DataType> last_node_;
@@ -55,6 +73,7 @@ public:
     GraphDynamic(): Graph<DataType>() {}
    
 public:
+
     
     inline
     int
@@ -145,6 +164,90 @@ public:
     
 };
 
+template <typename DataType>
+class GraphIterator {
+public:
+    friend class Graph<DataType>;
+    
+    GraphIterator() {}
+    
+public:
+    GraphIterator & operator++ ();
+    GraphIterator operator++ (int);
+    
+    bool operator== (const GraphIterator& rhs) const;
+    bool operator!= (const GraphIterator& rhs) const;
+    GraphNodeOP<DataType>& operator* ();
+    
+private:
+    GraphNodeOP<DataType> node_ptr_;
+    std::map<int, int> seen_;
+    std::queue<GraphNodeOP<DataType>> queue_;
+    
+    GraphIterator(
+        GraphNodeOP<DataType> const & node):
+    node_ptr_(node),
+    queue_(std::queue<GraphNodeOP<DataType>>())
+    {}
+};
+
+template <typename DataType>
+typename Graph<DataType>::iterator
+Graph<DataType>::begin() const {
+    return iterator(nodes_[0]);
+}
+
+template <typename DataType>
+typename Graph<DataType>::iterator
+Graph<DataType>::end() const {
+    return iterator(nullptr);
+}
+
+template <typename DataType>
+GraphNodeOP<DataType> &
+GraphIterator<DataType>::operator* () {
+    return node_ptr_;
+}
+
+template <typename DataType>
+GraphIterator<DataType> &
+GraphIterator<DataType>::operator++() {
+    GraphConnectionOPs<DataType> connections = node_ptr_->connections();
+    seen_[node_ptr_->index()] = 1;
+    for(auto const & c : connections) {
+        if(c != nullptr) {
+            GraphNodeOP<DataType> other_node = c->partner(node_ptr_->index());
+            if(seen_.find(other_node->index()) != seen_.end()) { continue; }
+            queue_.push(other_node);
+               
+        }
+    }
+    
+    if(!queue_.empty()) {
+        node_ptr_ = queue_.front();
+        queue_.pop();
+    }
+    else {
+        node_ptr_ = nullptr;
+    }
+    
+    
+    return *this;
+}
+
+template <typename DataType>
+bool
+GraphIterator<DataType>::operator== (
+    GraphIterator<DataType> const& rhs) const {
+    return node_ptr_ == rhs.node_ptr_;
+}
+
+template <typename DataType>
+bool
+GraphIterator<DataType>::operator!= (
+    GraphIterator<DataType> const& rhs) const {
+    return node_ptr_ != rhs.node_ptr_;
+}
 
 
 

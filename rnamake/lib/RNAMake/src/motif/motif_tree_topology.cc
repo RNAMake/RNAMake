@@ -16,13 +16,10 @@
 MotifTreeTopology::MotifTreeTopology(SS_Tree const & ss_tree) {
     
     bp_step_size_ = 2;
-    graph_ = Graph<MotifTopologyOP>();
-
-    auto mt = std::make_shared<MotifTopology>(MotifTopologyType::START, Strings(),
-                                              Strings(), std::vector<MotifTopologyBP>());
+    graph_ = GraphStatic<MotifTopologyOP>();
     
     std::map<int, int> index_map_;
-    int index = graph_.add_data(mt);
+    int index = 0;
     
     for(auto const & n : ss_tree) {
         
@@ -32,35 +29,48 @@ MotifTreeTopology::MotifTreeTopology(SS_Tree const & ss_tree) {
             auto mt_node = build_motif_topology_node(nodes, ss_tree, MotifTopologyType::BP_STEP);
             
             index += 1;
-            int parent = -1;
-            for(auto const & node : *nodes) {
-                index_map_[index] = node->index();
-                int parent_index = node->parent_index();
-                if(index_map_.find(parent_index) != index_map_.end()) {
-                    if(index_map_[parent_index] > parent) {
-                        parent = index_map_[parent_index];
-                    }
-                }
-                
+            for(auto const & node : *nodes) { index_map_[index] = node->index(); }
+
+            if(graph_.size() == 0) {
+                graph_.add_data(mt_node, -1, -1, -1, (int)mt_node->ends.size());
+                continue;
             }
             
-            if(parent == -1) {
-                parent = 0;
-            }
+            auto ci = get_connectivity_info(mt_node);
+            graph_.add_data(mt_node, ci.n_index, ci.i, ci.j, (int)mt_node->ends.size());
             
-            //graph_.add_data(mt_node, parent);
-            
-            break;
         }
-        
-        
-        
-        //std::cout << n->index() << " " << n->data()->what() << " " << bp_count << std::endl;
-        
         continue;
-        
     }
 }
+
+
+ConnectivityInfo
+MotifTreeTopology::get_connectivity_info(
+    MotifTopologyOP const & mt_node) {
+
+    ConnectivityInfo ci;
+    
+    int i = 0, j = 0;
+    for(auto const & n : graph_) {
+        i = 0;
+        for(auto const & end_1 : n->data()->ends) {
+            j = 0;
+            for(auto const & end_2 : mt_node->ends) {
+                if(end_1 == end_2) {
+                    ci.i = i; ci.j = j; ci.n_index = n->index();
+                    break;
+                }
+                j++;
+            }
+            i++;
+        }
+    }
+    
+    return ci;
+    
+}
+
 
 
 VectorUP<SS_Node>
@@ -80,6 +90,7 @@ MotifTreeTopology::get_bp_nodes(
         
     }
     
+    std::reverse(nodes->begin(), nodes->end());
     return nodes;
     
 }
@@ -122,7 +133,7 @@ MotifTreeTopology::build_motif_topology_node(
             throw std::runtime_error("did not find the correct number of chains for basepair");
         }
         
-        auto bp = MotifTopologyBP(n->data()->seq(), chains);
+        auto bp = MotifTopologyBP(n->data()->seq(), chains, Ints({n->data()->bounds(0)[0], n->data()->bounds(1)[1]}));
         bps.push_back(bp);
     }
     

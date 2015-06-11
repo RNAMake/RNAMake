@@ -99,6 +99,10 @@ public:
     DataType const &
     data() const { return data_; }
     
+    inline
+    GraphConnectionOPs<DataType> const &
+    connections() { return connections_; }
+    
     
 protected:
     DataType data_;

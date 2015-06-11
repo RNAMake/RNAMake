@@ -43,7 +43,11 @@ LibraryManager::LibraryManager() {
     
     String path = resources_path() + "motif_libraries/bp_steps.db";
     MotifLibraryOP mlib (new MotifLibrary(path, HELIX));
+    String path2 = resources_path() + "motif_libraries/seq_and_ss";
+    MotifLibraryOP mlib2 (new MotifLibrary(path, HELIX));
+
     mlibs_["BP_STEPS"] = mlib;
+    mlibs_["SEQ_AND_SS"] = mlib2;
     
     _setup_mts_libs();
     mt_  = MotifTree();

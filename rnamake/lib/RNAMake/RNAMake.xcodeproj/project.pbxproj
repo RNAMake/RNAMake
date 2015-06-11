@@ -188,6 +188,8 @@
 		1CBEFF6C1AF1BB3700C03772 /* file_io.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF1E1AF0658B00C03772 /* file_io.cc */; };
 		1CBEFF6F1AF1BEB600C03772 /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF6D1AF1BEB600C03772 /* chain.cc */; };
 		1CBEFF731AF1C07600C03772 /* chain_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF711AF1C07600C03772 /* chain_unittest.cc */; };
+		1CDCCB9B1B25F348009E2C76 /* motif_tree_topology.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F4FD1B1B6955000D1B6A /* motif_tree_topology.cc */; };
+		1CDCCB9C1B25F348009E2C76 /* motif_tree_topology_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F50A1B1E32A8000D1B6A /* motif_tree_topology_unittest.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -1567,6 +1569,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CDCCB9B1B25F348009E2C76 /* motif_tree_topology.cc in Sources */,
+				1CDCCB9C1B25F348009E2C76 /* motif_tree_topology_unittest.cc in Sources */,
 				1C41F5081B1D3E9B000D1B6A /* ss_tree_unittest.cc in Sources */,
 				1C4E3D9D1B06A04C0076284E /* motif_tree_state_library_unittest.cc in Sources */,
 				1C4E3CB11AF422F60076284E /* motif_tree_node.cc in Sources */,

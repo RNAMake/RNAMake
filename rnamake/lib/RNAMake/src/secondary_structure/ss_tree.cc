@@ -207,7 +207,7 @@ SS_Tree::seq_from_nodes(
             }
         }
         
-        else {
+        else if(start != -1 && found == 1) {
             found = 0;
             String seq = seq_.substr(start, range);
             String ss  = ss_.substr(start, range);

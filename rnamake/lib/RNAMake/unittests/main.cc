@@ -28,7 +28,7 @@
 #include "motif_unittests/motif_tree_unittest.h"
 #include "motif_unittests/motif_tree_merger_unittest.h"
 #include "motif_unittests/motif_scorer_unittest.h"
-//#include "motif_unittests/motif_tree_topology_unittest.h"
+#include "motif_unittests/motif_tree_topology_unittest.h"
 
 #include "motif_tree_state_unittests/motif_tree_state_library_unittest.h"
 
@@ -40,6 +40,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    GraphUnittest test;
+    MotifTreeTopologyUnittest test;
     test.run();
 }

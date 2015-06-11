@@ -83,17 +83,24 @@ def build_sqlite_libraries():
         connection.executemany("INSERT INTO motifs(str,name) VALUES (?,?) ", data)
         connection.commit()
 
-def build_sqlite_library(path, motifs):
+def build_sqlite_library(path, motifs, names=None):
     if os.path.isfile(path):
         os.remove(path)
     connection = sqlite3.connect(path)
     connection.execute("CREATE TABLE motifs(str TEXT, name TEXT, PRIMARY KEY (name))")
     data = []
+    i=0
     for m in motifs:
         s = m.to_str()
-        data.append([s,m.name])
+        if names is None:
+            data.append([s,m.name])
+        else:
+            data.append([s,names[i]])
+            i += 1
     connection.executemany("INSERT INTO motifs(str,name) VALUES (?,?) ", data)
     connection.commit()
+
+
 
 
 def build_sqlite_libraries_2():
