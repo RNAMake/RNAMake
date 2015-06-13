@@ -26,9 +26,13 @@ class ResourceManager(object):
                 pass
 
         path = settings.RESOURCES_PATH + "motif_libraries/bp_steps.db"
-
         mlib = motif_library_sqlite.MotifLibrarySqlite(libpath=path)
         mlib.mtype = motif_type.HELIX
+
+        path = settings.RESOURCES_PATH + "motif_libraries/seq_and_ss.db"
+        mlib = motif_library_sqlite.MotifLibrarySqlite(libpath=path)
+        mlib.mtype = motif_type.HELIX
+
         self.mlibs['UNKNOWN'] = mlib
 
         self._setup_mts_libs()

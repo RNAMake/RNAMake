@@ -18,6 +18,35 @@ class SS_Tree(object):
     def next(self):
         return self.tree.next()
 
+    def seq_from_nodes(self, nodes):
+        seen = {}
+        for n in nodes:
+            for ss_d in n.data.ss_data:
+                for i in range(ss_d.bounds[0], ss_d.bounds[1]+1):
+                    seen[i] = 1
+
+        start, size, found = -1, 0, 0
+        ss_data = []
+
+        for i in range(len(self.seq)):
+            if i in seen:
+                if found == 0:
+                    found, start, size = 1, i, 1
+                else:
+                    size += 1
+            elif(start != -1 and found == 1):
+                found = 0
+                seq = self.seq[start:start+size]
+                ss  = self.ss [start:start+size]
+                ss_data.append(SS_Data(seq, ss, [start,start+size-1]))
+
+        if found == 1:
+            seq = self.seq[start:start+size]
+            ss  = self.ss [start:start+size]
+            ss_data.append(SS_Data(seq, ss, [start,start+size-1]))
+
+        return ss_data
+
     def _build_tree(self):
         xb, yb = 0, len(self.seq)-1
         current = self._assign_new_node(xb, yb)
@@ -47,21 +76,12 @@ class SS_Tree(object):
                 next_level = not_part_of_nway
 
                 if len(part_of_nway) > 0:
-                    seqs = []
-                    bounds = []
-
-                    seqs.append(current_pair.node.seqs[0])
-                    bounds.append(current_pair.node.bounds[0])
-
-                    seqs.append(current_pair.node.seqs[1])
-                    bounds.append(current_pair.node.bounds[1])
+                    ss_data = current_pair.node.ss_data[::]
 
                     for n in part_of_nway:
-                        child_seq = n.seqs
-                        for i in range(len(child_seq)):
-                            if len(child_seq[i]) > 0:
-                                seqs.append(child_seq[i])
-                                bounds.append(n.bounds[i])
+                        for i in range(len(n.ss_data)):
+                            if len(n.ss_data[i].seq) > 0:
+                                ss_data.append(n.ss_data[i])
 
                         if n.type == SS_Type.SS_BULGE:
                             nxb = n.bound_side(0, Bound_Side.RIGHT)+1
@@ -70,14 +90,13 @@ class SS_Tree(object):
                             for n2 in next_level_2:
                                 next_level.append(n2)
 
-                    new_node = SS_NodeData(seqs, SS_Type.SS_NWAY, bounds)
+                    new_node = SS_NodeData(SS_Type.SS_NWAY, ss_data)
                     index = current_pair.index
                     current_pair = NodeandIndex(new_node, index)
 
             index = self.tree.add_data(current_pair.node, current_pair.index)
             for n in next_level:
                 open_nodes.put(NodeandIndex(n, index))
-
 
     def _build_tree_level(self, xb, yb):
         next_level = []
@@ -89,49 +108,50 @@ class SS_Tree(object):
         return next_level
 
     def _assign_new_node(self, xb, yb):
-        seq = ["", ""]
-        bounds = [[xb-1,xb-1], [yb+1,yb+1]]
+        ss_data = [ SS_Data("", "", [xb-1,xb-1]), SS_Data("", "", [yb+1,yb+1]) ]
         hairpin = 0
         current = None
-
-        print xb, yb
 
         if self.ss[xb] == '.':
             end_x = self._get_dot_bounds(xb, 0)
             for i in range(xb, end_x+1):
-                seq[0] += self.seq[i]
+                ss_data[0].seq += self.seq[i]
+                ss_data[0].ss += self.ss[i]
             if end_x == yb:
                 hairpin = 1
-            bounds[0] = [xb, end_x]
+            ss_data[0].bounds = [xb, end_x]
 
         if self.ss[yb] == '.' and hairpin == 0:
             end_y = self._get_dot_bounds(yb, 1)
             for i in range(end_y, yb+1):
-                seq[1] += self.seq[i]
-            bounds[1] = [end_y, yb]
+                ss_data[1].seq += self.seq[i]
+                ss_data[1].ss += self.ss[i]
+            ss_data[1].bounds = [end_y, yb]
 
         if self.ss[xb] =='&' or self.ss[xb] == '+':
-            bounds[0] = [xb, xb]
-            seq = ['+', '']
-            return SS_NodeData(seq, SS_Type.SS_SEQ_BREAK, bounds)
+            ss_data[0].bounds = [xb, xb]
+            ss_data[0].seq = '+'
+            return SS_NodeData(SS_Type.SS_SEQ_BREAK, ss_data)
 
-        if len(seq[0]) == 0 and len(seq[1]) == 0:
+        if len(ss_data[0].seq) == 0 and len(ss_data[1].seq) == 0:
             pair = self._get_bracket_pair(xb)
-            seq[0] = self.seq[xb]
-            seq[1] = self.seq[pair]
-            bounds[0] = [xb, xb]
-            bounds[1] = [pair, pair]
+            ss_data[0].seq = self.seq[xb]
+            ss_data[1].seq = self.seq[pair]
+            ss_data[0].bounds = [xb, xb]
+            ss_data[1].bounds = [pair, pair]
+            ss_data[0].ss = "("
+            ss_data[1].ss = ")"
 
             if(self.ss[xb] == '('):
-                current = SS_NodeData(seq, SS_Type.SS_BP, bounds)
+                current = SS_NodeData(SS_Type.SS_BP, ss_data)
             else:
-                current = SS_NodeData(seq, SS_Type.SS_PSEUDO_BP, bounds)
+                current = SS_NodeData(SS_Type.SS_PSEUDO_BP, ss_data)
 
         elif hairpin:
-            current = SS_NodeData(seq, SS_Type.SS_HAIRPIN, bounds)
+            current = SS_NodeData(SS_Type.SS_HAIRPIN, ss_data)
 
         else:
-            current = SS_NodeData(seq, SS_Type.SS_BULGE, bounds)
+            current = SS_NodeData(SS_Type.SS_BULGE, ss_data)
 
         return current
 
@@ -198,8 +218,6 @@ class SS_Tree(object):
 
         return pos
 
-
-
 class SS_Type(object):
    SS_BP        = 0
    SS_BULGE     = 1
@@ -212,12 +230,19 @@ class Bound_Side(object):
     LEFT  = 0
     RIGHT = 1
 
+class SS_Data(object):
+    def __init__(self, seq, ss, bounds=[-1,-1]):
+        self.seq, self.ss, self.bounds = seq, ss, bounds
+
+    def __repr__(self):
+        return "(" + self.seq + ", " +  self.ss + ", " + str(self.bounds) + ")"
+
 class SS_NodeData(object):
-    def __init__(self, seqs, type, bounds):
-        self.seqs, self.type, self.bounds = seqs, type, bounds
+    def __init__(self, type, ss_data):
+        self.ss_data, self.type = ss_data, type
 
     def bound_side(self, pos, side):
-        bound = self.bounds[pos]
+        bound = self.ss_data[pos].bounds
         return bound[side]
 
     def what(self):
