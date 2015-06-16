@@ -320,6 +320,13 @@ class MotifTreeNode(object):
         ends.sort(key=lambda x : self.motif.ends.index(x), reverse=True)
         return ends
 
+    def available_indexes(self):
+        ends = []
+        for i, end in enumerate(self.motif.ends):
+            status = self.end_status[end.uuid]
+            if status == 1:
+                ends.append(i)
+        return ends
     def connected_nodes(self):
         return [c.partner(self) for c in self.connections]
 

@@ -5,6 +5,7 @@ import rnamake.settings
 import rnamake.resource_manager
 import rnamake.motif_type
 import rnamake.transform
+import rnamake.resource_manager
 import util
 import numerical
 import numpy as np
@@ -111,6 +112,11 @@ class MotifUnittest(unittest.TestCase):
         mlib = rnamake.motif_library.MotifLibrary(mtype)
         m1 = mlib.get_motif("HELIX.IDEAL")
         print m1.secondary_structure()
+
+    def test_get_end_id(self):
+        m = rnamake.resource_manager.manager.get_motif("HELIX.IDEAL")
+        end_id = m.get_end_id(0)
+
 
 
 

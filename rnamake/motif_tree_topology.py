@@ -1,5 +1,6 @@
 import graph
 import ss_tree
+import copy
 
 class MotifTreeTopology(object):
     def __init__(self, sstree):
@@ -18,21 +19,20 @@ class MotifTreeTopology(object):
                 mtt_data = self._build_motif_topology_node(nodes, sstree,
                                                            MotifTopologyType.BP_STEP)
 
-            else:
-                continue
-            """else:
+            elif n.data.type != ss_tree.SS_Type.SS_SEQ_BREAK:
                 nodes = [ n.parent, n ]
                 for n in n.children:
                     nodes.append(n)
                 mtt_data = self._build_motif_topology_node(nodes, sstree,
                                                            MotifTopologyType.NWAY)
 
-            """
+            else:
+                continue
+
             if len(self.graph) == 0:
                 self.graph.add_data(mtt_data, -1, -1, -1, len(mtt_data.ends))
             else:
                 self._add_mtt_node(mtt_data)
-
 
     def _add_mtt_node(self, mtt_data):
         for n in self.graph:
@@ -66,7 +66,6 @@ class MotifTreeTopology(object):
 
     def _build_motif_topology_node(self, nodes, sstree, type):
         ss_data = sstree.seq_from_nodes(nodes)
-        print ss_data
 
         mtt_node = MotifTopology(type)
         for n in nodes:
@@ -74,20 +73,32 @@ class MotifTreeTopology(object):
             if n.data.type != ss_tree.SS_Type.SS_BP:
                 continue
             node_ss_data = [ None, None]
-            print n.data.ss_data
             for i, ss_d1 in enumerate(n.data.ss_data):
                 for j, ss_d2 in enumerate(ss_data):
                     if   ss_d1.bounds[0] == ss_d2.bounds[0]:
-                        node_ss_data[0] = ss_d2
+                        node_ss_data[0] = copy.deepcopy(ss_d2)
+                        correct_ss = ""
+                        for e in node_ss_data[0].ss:
+                            if e == ")":
+                                correct_ss += "("
+                            else:
+                                correct_ss += e
+                        node_ss_data[0].ss = correct_ss
                         break
                     elif ss_d1.bounds[0] == ss_d2.bounds[1]:
-                        node_ss_data[1] = ss_d2
+                        node_ss_data[1] = copy.deepcopy(ss_d2)
+                        correct_ss = ""
+                        for e in node_ss_data[1].ss:
+                            if e == "(":
+                                correct_ss += ")"
+                            else:
+                                correct_ss += e
+                        node_ss_data[1].ss = correct_ss
                         break
             if len(node_ss_data) != 2:
                 return ValueError("did not find the correct number of chains for basepair")
 
             bounds = [n.data.ss_data[0].bounds[0], n.data.ss_data[1].bounds[1]]
-            print "finished", node_ss_data
             end = MotifTopologyEnd(node_ss_data, bounds)
             mtt_node.add_end(end)
         return mtt_node
@@ -101,6 +112,9 @@ class MotifTreeTopology(object):
 
     def next(self):
         return self.graph.next()
+
+    def starting_nodes(self):
+        pass
 
 
 class MotifTopologyType(object):

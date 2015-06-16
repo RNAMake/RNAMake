@@ -117,6 +117,10 @@ def build_sqlite_libraries_2():
             if node1 is None:
                 continue
 
+            other_ei = 0
+            if ei == 0:
+                other_ei = 1
+
             node = mt.add_motif(h_lib.get_motif("HELIX.IDEAL.12"), end_flip=0, end_index=1)
             if node is not None:
                 if m.name + "-" + str(ei) == "TWOWAY.1S72.30-1":
@@ -126,14 +130,13 @@ def build_sqlite_libraries_2():
                 aligned_motifs[-1].name = m.name + "-" + str(ei)
                 aligned_motifs[-1].ends[0].flipped=0
                 aligned_motifs[-1].ends[1].flipped=0
-                aligned_motifs[-1].end_to_add = ei
+                aligned_motifs[-1].end_to_add = 0
+                aligned_motifs[-1].ends = [ aligned_motifs[-1].ends[ei],
+                                            aligned_motifs[-1].ends[other_ei]]
                 aligned_motifs[-1].mtype = motif_type.TWOWAY
                 mt.remove_node_level()
                 continue
 
-            other_ei = 0
-            if ei == 0:
-                other_ei = 1
             mt.nodes[2].motif.ends[other_ei].flip()
             node = mt.add_motif(h_lib.get_motif("HELIX.IDEAL.12"), end_flip=0, end_index=1)
 
@@ -142,7 +145,9 @@ def build_sqlite_libraries_2():
                 aligned_motifs[-1].ends[0].flipped=0
                 aligned_motifs[-1].ends[1].flipped=0
                 aligned_motifs[-1].name = m.name + "-" + str(ei)
-                aligned_motifs[-1].end_to_add = ei
+                aligned_motifs[-1].end_to_add = 0
+                aligned_motifs[-1].ends = [ aligned_motifs[-1].ends[ei],
+                                            aligned_motifs[-1].ends[other_ei]]
                 aligned_motifs[-1].mtype = motif_type.TWOWAY
 
             mt.remove_node_level()

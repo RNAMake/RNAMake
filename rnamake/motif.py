@@ -62,8 +62,10 @@ class Motif(object):
         self.beads, self.score, self.mtype, self.basepairs = [], 0, mtype, []
         self.mdir, self.name, self.ends = "", "", []
         self.cached_rotations = []
+        self.ss_chains = []
         self.end_to_add = 0
         self._setup(mdir, pdb)
+        self._assign_secondary_structure()
 
     def __repr__(self):
         """
@@ -270,11 +272,17 @@ class Motif(object):
         return seq[:-1]
 
     def secondary_structure(self):
+        self._assign_secondary_structure()
+        structure = "&".join(self.ss_chains)
+        return structure
+
+    def _assign_secondary_structure(self):
         structure = ""
         seen_res = {}
         seen_bp = {}
         saved_bp = None
         count = -1
+        self.ss_chains = []
         for c in self.chains():
             for r in c.residues:
                 count += 1
@@ -313,7 +321,8 @@ class Motif(object):
                 if saved_bp is not None:
                     seen_bp[saved_bp] = 1
                 structure += ss
-            structure += "&"
+            self.ss_chains.append(structure)
+            structure = ""
         return structure[:-1]
 
     def to_str(self):
@@ -359,6 +368,7 @@ class Motif(object):
 
     def chains(self):
         return self.structure.chains
+
     def transform(self, t):
         """
         perform an transformation of both structure and basepairs
@@ -428,6 +438,62 @@ class Motif(object):
             if e.uuid == end.uuid:
                 return i
         raise ValueError("end is not a end of this motif")
+
+    def get_end_id(self, i):
+        self._assign_secondary_structure()
+        end = self.ends[i]
+        chains = [None, None]
+        ss_chains = [None, None]
+        for i, c in enumerate(self.chains()):
+            if end.res1 == c.first() or end.res2 == c.first():
+                chains[0] = c
+                ss_chains[0] = self.ss_chains[i]
+            elif end.res1 == c.last() or end.res2 == c.last():
+                chains[1] = c
+                ss_chains[1] = self.ss_chains[i]
+
+        correct_ss = ""
+        for e in ss_chains[0]:
+            if e == ")":
+                correct_ss += "("
+            else:
+                correct_ss += e
+
+        ss_chains[0] = correct_ss
+        correct_ss = ""
+        for e in ss_chains[1]:
+            if e == "(":
+                correct_ss += ")"
+            else:
+                correct_ss += e
+        ss_chains[1] = correct_ss
+
+        seq_chains = []
+        for c in chains:
+            seq = ""
+            for r in c.residues:
+                seq += r.rtype.name[0]
+            seq_chains.append(seq)
+
+        name = ""
+        for i, seq in enumerate(seq_chains):
+            name += seq + "_"
+            for e in ss_chains[i]:
+                if e == "(":
+                    name += "L"
+                elif e == ")":
+                    name += "R"
+                else:
+                    name += "U"
+
+            if i != len(seq_chains)-1:
+                name += "_"
+        return name
+
+
+
+
+
 
 
 def str_to_motif(s):
@@ -517,3 +583,18 @@ def ref_motif():
     path = settings.RESOURCES_PATH + "/start"
     m = Motif(path)
     return m
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

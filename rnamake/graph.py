@@ -1,5 +1,15 @@
 import Queue
 
+def transverse_graph(graph, i):
+    graph.__iter__()
+    graph.current_node = graph.get_node(i)
+    while 1:
+        try:
+            next = graph.next()
+        except:
+            raise StopIteration
+        yield next
+
 class Graph(object):
     def __init__(self):
         self.nodes, self.connections, self.level, self.index = [], [], 0, 0
@@ -24,12 +34,13 @@ class Graph(object):
         while not self.queue.empty():
             self.queue.get()
         self.seen = {}
-        self.seen[self.current_node] = 1
+        #self.seen[self.current_node] = 1
         return self
 
     def next(self):
         if self.current_node is None:
             raise StopIteration
+        self.seen[self.current_node] = 1
 
         for c in self.current_node.connections:
             if c is None:
@@ -38,7 +49,6 @@ class Graph(object):
             if partner in self.seen:
                 continue
 
-            self.seen[partner] = 1
             self.queue.put(partner)
 
         node = self.current_node
@@ -171,6 +181,26 @@ class GraphNode(object):
                 count += 1
         return count
 
+    def connection_with_node(self, n_index):
+        for c in self.connections:
+            if c is None:
+                continue
+            if n_index == c.partner(self.index).index:
+                return c
+
+        raise ValueError("cannot find connection with node in connection_with_node")
+
+    def end_indexes_with_node(self, n_index):
+        c = self.connection_with_node(n_index)
+        return c.end_index(self.index), c.end_index(n_index)
+
+    def is_connected(self, n_index):
+        for c in self.connections:
+            if c is None:
+                continue
+            if c.partner(self.index).index == n_index:
+                return 1
+        return 0
 
 class GraphNodeDynamic(GraphNode):
     def __init__(self, data, index, level):
@@ -218,7 +248,15 @@ class GraphConnection(object):
         elif n_index == self.node_2.index:
             return self.node_1
         else:
-            raise ValueError("cannot call partner with not not in connection")
+            raise ValueError("cannot call partner with node not in connection")
+
+    def end_index(self, n_index):
+        if   n_index == self.node_1.index:
+            return self.end_index_1
+        elif n_index == self.node_2.index:
+            return self.end_index_2
+        else:
+            raise ValueError("cannot call end_index with node not in connection")
 
     def disconnect(self):
         self.node_1.remove_connection(self)
