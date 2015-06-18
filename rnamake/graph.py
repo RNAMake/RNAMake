@@ -102,8 +102,8 @@ class GraphStatic(Graph):
         n = GraphNodeStatic(data, self.index, self.level, n_children)
 
         if parent is not None:
-            parent_pos = self._check_pos_is_value(parent, parent_pos)
-            child_pos  = self._check_pos_is_value(n, child_pos)
+            parent_pos = self.check_pos_is_value(parent, parent_pos)
+            child_pos  = self.check_pos_is_value(n, child_pos)
             c = GraphConnection(parent, n, parent_pos, child_pos)
             parent.add_connection(c, parent_pos)
             n.add_connection(c, child_pos)
@@ -131,8 +131,7 @@ class GraphStatic(Graph):
             self.connections.remove(c)
         self.nodes.remove(n)
 
-
-    def _check_pos_is_value(self, n, pos):
+    def check_pos_is_value(self, n, pos):
         if pos == -1:
             avail_pos = n.available_children_pos()
             if len(avail_pos) == 0:
@@ -143,6 +142,17 @@ class GraphStatic(Graph):
             if n.available_pos(pos) == 0:
                 raise ValueError("graph pos is not available")
             return pos
+
+    def get_availiable_pos(self, n, pos):
+        if pos == -1:
+            avail_pos = n.available_children_pos()
+            return avail_pos
+        else:
+            if n.available_pos(pos) == 0:
+                raise ValueError("graph pos is not available")
+            return [pos]
+
+
 
 
 class GraphNode(object):

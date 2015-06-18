@@ -2,7 +2,6 @@ import motif
 import motif_library
 import motif_library_sqlite
 import motif_type
-import motif_tree
 import motif_tree_state
 import motif_tree_state_library
 import motif_scorer
@@ -17,13 +16,10 @@ class ResourceManager(object):
         self.mts_libs = {}
         self.extra_mts = {}
 
-        for mtype in motif_library.lib_paths.iterkeys():
+        for libname in motif_library_sqlite.libnames.keys():
             # catch unimplemented libraries
-            try:
-                mlib = motif_library_sqlite.MotifLibrarySqlite(mtype)
-                self.mlibs[motif_type.type_to_str(mtype)] = mlib
-            except:
-                pass
+            mlib = motif_library_sqlite.MotifLibrarySqlite(libname=libname)
+            self.mlibs[libname] = mlib
 
         path = settings.RESOURCES_PATH + "motif_libraries/bp_steps.db"
         mlib = motif_library_sqlite.MotifLibrarySqlite(libpath=path)
@@ -36,10 +32,10 @@ class ResourceManager(object):
         self.mlibs['UNKNOWN'] = mlib
 
         self._setup_mts_libs()
-        self.mt = motif_tree.MotifTree()
-        self.mt2 = motif_tree.MotifTree()
-        self.mt.add_motif(self.get_motif("HELIX.IDEAL.6"), end_index=1, end_flip=0)
-        self.mt.level +=1
+        #self.mt = motif_tree.MotifTree()
+        #self.mt2 = motif_tree.MotifTree()
+        #self.mt.add_motif(self.get_motif("HELIX.IDEAL.6"), end_index=1, end_flip=0)
+        #self.mt.level +=1
 
     def _setup_mts_libs(self):
         path = settings.UNITTEST_PATH
@@ -52,12 +48,12 @@ class ResourceManager(object):
             if mname in mlib:
                 return mlib.get_motif(mname)
 
-        if mname in self.extra_motifs:
+        """if mname in self.extra_motifs:
             if end_index is None and end_name is None:
                 return self.extra_motifs[mname]
 
             m = self.extra_motifs[mname]
-            return self._prep_extra_motif_for_asssembly(m, end_index, end_name)
+            return self._prep_extra_motif_for_asssembly(m, end_index, end_name)"""
 
 
         raise ValueError("cannot find " + mname)

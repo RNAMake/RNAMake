@@ -5,7 +5,7 @@ import motif
 import util
 import residue
 import motif_type
-import motif_tree_merger
+import graph
 
 class MotifTree(base.Base):
     """
@@ -50,69 +50,59 @@ class MotifTree(base.Base):
     def __init__(self, m=None, **options):
         self.setup_options_and_constraints()
         self.options.dict_set(options)
-
-        if m is None:
-            head = self._get_default_head()
-        else:
-            head = MotifTreeNode(m.copy(), 0, 0, 0)
-            if self.option('sterics') == 1:
-                head.motif.get_beads(head.motif.ends)
-
-        self.nodes = [ head ]
         self.clash_radius = settings.CLASH_RADIUS - 0.1
-        self.level = 1
-        self.last_node = head
-        self.merger = motif_tree_merger.MotifTreeMerger()
+
+        self.graph = graph.GraphStatic()
+        if m is not None:
+            self.add_motif(m)
+
+        #self.merger = motif_tree_merger.MotifTreeMerger()
+
+    def __len__(self):
+        return len(self.graph)
+
+    def __iter__(self):
+        self.graph.__iter__()
+
+    def next(self):
+        return self.graph.next()
 
     def setup_options_and_constraints(self):
         options = { 'sterics'              : 1,
-                    'full_beads_first_res' : 1,
-                    'ideal_bp_score'       : -2, # TODO fix
-                    }
+                    'full_beads_first_res' : 1}
 
         self.options = option.Options(options)
         self.constraints = {}
 
-    def add_motif(self, m=None, end_index=None, end=None, end_flip=None,
-                  parent=None, parent_index=None, parent_end=None,
-                  end_name=None, parent_end_name=None):
+    def add_motif(self, m=None, parent_index=-1, parent_end_index=-1):
+        parent = self.graph.last_node
+        if parent_index != -1:
+            parent = self.graph.get_node(parent_index)
 
-        # if parent is not specified use the last node added
         if parent is None:
-            parent = self.last_node
+            m_copy = m.copy()
+            m_copy.get_beads(m_copy.ends)
+            return self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends))
 
-        # get which ends are available to align
-        parent_ends = self._parse_ends(parent.motif, parent_index, parent_end,
-                                       parent_end_name, parent)
-        ends = self._parse_ends(m, end_index, end, end_name)
+        avail_pos = self.graph.get_availiable_pos(parent, parent_end_index)
 
-        if len(parent_ends) == 0:
-            raise ValueError("cannot add to this parent node, it has no \
-                             available ends")
+        for p in avail_pos:
+            m_added = motif.get_aligned_motif(parent.data.ends[p], m.ends[0], m)
+            if self.option('sterics'):
+                if self._steric_clash(m_added):
+                    continue
 
-        if len(ends) == 0:
-            raise ValueError("cannot add this node to the tree, it has no \
-                             available ends")
+            for r in m_added.residues():
+                r.new_uuid()
 
-        new_node = None
-        flip_status = [x for x in range(len(m.ends))]
-        if end_flip is not None:
-            flip_status = [end_flip]
-        for parent_end in parent_ends:
-            for end in ends:
-                if new_node is not None:
-                    break
-                new_node = self._add_motif(parent, m, parent_end, end,
-                                           flip_status)
-        if new_node is not None:
-            self.nodes.append(new_node)
-            self.last_node = new_node
+            return self.graph.add_data(m_added, parent.index, p, 0, len(m_added.ends))
+        #self._update_beads(parent, new_node)
 
-        return new_node
+        return -1
 
     def write_pdbs(self,name="node"):
-        for i,n in enumerate(self.nodes):
-            n.motif.to_pdb(name+"."+str(i)+".pdb")
+        for n in self.graph:
+            n.data.to_pdb(name+"."+str(n.index)+".pdb")
 
     def remove_node(self, node):
         """
@@ -175,69 +165,6 @@ class MotifTree(base.Base):
             s += n.to_str() + "#"
         return s
 
-    def _parse_ends(self, m, end_index, end_bp, end_name, node=None):
-        ends = []
-        if   end_index is not None and end_bp is not None:
-            raise ValueError("MotifTree: Cannot supply both end_index and \
-                             end_bp to add_motif")
-        elif end_index is not None:
-            try:
-                ends = [ m.ends[end_index] ]
-            except:
-                raise ValueError("end index: " + str(end_index) + " is out of \
-                                 out of bounds in add_motif")
-        elif end_bp is not None:
-            if end_bp not in m.ends:
-                raise ValueError("end_bp is not an end of motif in add_motif")
-            ends = [ end_bp ]
-
-        elif end_name is not None:
-            ends = [ m.get_basepair_by_name(end_name) ]
-        else:
-            if node:
-                ends = node.available_ends()
-            else:
-                ends = m.ends
-
-        if node:
-            avail_nodes = node.available_ends()
-            for e in ends:
-                if e not in avail_nodes:
-                    raise ValueError("end is not in available ends cannot add")
-
-        return ends
-
-    def _add_motif(self, parent, m, parent_end, end, flip_status):
-        for flip in flip_status:
-            end.flip(flip)
-            motif.align_motif(parent_end, end, m)
-
-            if self.option('sterics') == 1:
-                if self._steric_clash(m, end):
-                    m.reset()
-                    continue
-            else:
-                m.get_beads([end])
-
-            new_node = MotifTreeNode(m.copy(), self.level, len(self.nodes),
-                                     flip)
-
-            m.reset()
-            new_end = new_node.motif.get_basepair(uuid1=end.res1.uuid,
-                                                  uuid2=end.res2.uuid)[0]
-            MotifTreeConnection(parent, new_node, parent_end, new_end)
-            #if new uuids are not assigned there will be duplicate
-            #uuid after adding multiple bp steps
-            for res in new_node.motif.residues():
-                res.new_uuid()
-
-            if len(self.nodes) == 1 and self.option('full_beads_first_res'):
-                self.nodes[0].motif.get_beads()
-
-            self._update_beads(parent, new_node)
-            return new_node
-        return None
-
     def _update_beads(self, parent, child):
         """
         This may seem strange but it correct the small differences that can
@@ -260,17 +187,10 @@ class MotifTree(base.Base):
         parent.motif.get_beads(exclude)
         child.motif.get_beads()
 
-    def _get_default_head(self):
-        mdir = settings.RESOURCES_PATH + "/start"
-        m = motif.Motif(mdir)
-        # m.get_beads()
-        return MotifTreeNode(m, 0, 0, 0)
-
-    def _steric_clash(self, m, end):
-        beads = m.get_beads([end])
-
-        for n in self.nodes[::-1]:
-            for c1 in n.motif.beads:
+    def _steric_clash(self, m):
+        beads = m.beads
+        for n in self.graph:
+            for c1 in n.data.beads:
                 for c2 in beads:
                     if c1.btype == residue.BeadType.PHOS or \
                        c2.btype == residue.BeadType.PHOS:
@@ -303,148 +223,6 @@ class MotifTree(base.Base):
                 if dist < cutoff:
                     new_connection = MotifTreeConnection(node_1, node_2, end1,
                                                          end2)
-
-
-class MotifTreeNode(object):
-    def __init__(self, m, level, index, flip):
-        self.motif, self.level, self.index, self.flip = m, level, index, flip
-        self.end_status = { end.uuid : 1 for end in self.motif.ends }
-        self.connections = []
-
-    def available_ends(self):
-        ends = []
-        for end in self.motif.ends:
-            status = self.end_status[end.uuid]
-            if status == 1:
-                ends.append(end)
-        ends.sort(key=lambda x : self.motif.ends.index(x), reverse=True)
-        return ends
-
-    def available_indexes(self):
-        ends = []
-        for i, end in enumerate(self.motif.ends):
-            status = self.end_status[end.uuid]
-            if status == 1:
-                ends.append(i)
-        return ends
-    def connected_nodes(self):
-        return [c.partner(self) for c in self.connections]
-
-    def is_leaf(self):
-
-        #the head is not a leaf
-        if self.index == 0:
-            return 0
-
-        if len(self.connected_nodes()) == 1:
-            return 1
-        else:
-            return 0
-
-    def parent(self):
-        for n in self.connected_nodes():
-            if n.index < self.index:
-                return n
-
-    def parent_end_index(self):
-        parent = self.parent()
-        c = self.connection(parent)
-        end = c.motif_end(parent)
-        return parent.motif.ends.index(end)
-
-    def motif_end_index(self, other_node):
-        c = self.connection(other_node)
-        end = c.motif_end(self)
-        return self.motif.ends.index(end)
-
-    def connection(self, n):
-        for c in self.connections:
-            if c.node_1 == n or c.node_2 == n:
-                return c
-        raise ValueError("connection called with node that is not connected to current node")
-
-    def to_str(self):
-        s = self.motif.to_str() + "!"
-        parent = self.parent()
-        if parent is None:
-            s += "-1!-1!-1!-1"
-            return s
-
-        c = self.connection(parent)
-        parent_end = c.motif_end(parent)
-        node_end = c.motif_end(self)
-        s += str(parent.index) + "!" + str(parent.motif.ends.index(parent_end)) +\
-             "!" + str(self.motif.ends.index(node_end)) + "!" + str(self.flip)
-        return s
-
-
-class MotifTreeConnection(object):
-    """
-    A connection between two MotifTreeNodes in MotifTree class. Connections
-    represent basepair alignment overlap.
-
-    :param node_1: First node to be connected
-    :param node_2: Second node to be connected
-    :param end_1: Basepair end from node_1 that is aligned with the end_2 from
-        node_2
-    :param end_2: Basepair end from node_2 that is aligned with the end_1 from
-        node_1
-    :param no_overlap: controls whether both end_1 and end_2 should be kept
-        instead of keeping of only one
-
-    :type node_1: MotifTreeNode object
-    :type node_2: MotifTreeNode object
-    :type end_1: Basepair object
-    :type end_2: Basepair object
-    :type no_overlap: Int
-
-    Attributes
-    ----------
-    `node_1` : MotifTreeNode object
-        First node to be connected
-    `node_2` : MotifTreeNode object
-        Second node to be connected
-    `end_1` : Basepair object
-        Basepair end from node_1 that is aligned with the end_2 from node_2
-    `end_2` : Basepair object
-        Basepair end from node_2 that is aligned with the end_1 from node_1
-    `no_overlap` : Bool
-        Controls whether both end_1 and end_2 should be kept instead of keeping
-        of only one
-    """
-
-    def __init__(self, node_1, node_2, end_1, end_2, no_overlap=0):
-        self.node_1, self.node_2, self.end_1, self.end_2, self.no_overlap = \
-            node_1, node_2, end_1.uuid, end_2.uuid, no_overlap
-
-        self.node_1.end_status[end_1.uuid] = 0
-        self.node_2.end_status[end_2.uuid] = 0
-        self.node_1.connections.append(self)
-        self.node_2.connections.append(self)
-
-    def disconnect(self):
-        self.node_1.end_status[self.end_1] = 1
-        self.node_2.end_status[self.end_2] = 1
-        self.node_1.connections.remove(self)
-        self.node_2.connections.remove(self)
-
-    def partner(self, node):
-        if   node == self.node_1:
-            return self.node_2
-        elif node == self.node_2:
-            return self.node_1
-        else:
-            raise ValueError("node is not in connection object cannot call \
-                             pair")
-
-    def motif_end(self, node):
-        if   node == self.node_1:
-            return self.node_1.motif.get_basepair(self.end_1)[0]
-        elif node == self.node_2:
-            return self.node_2.motif.get_basepair(self.end_2)[0]
-        else:
-            raise ValueError("node is not in connection object cannot call \
-                             motif_end")
 
 
 def str_to_motif_tree(s):

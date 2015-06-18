@@ -1,21 +1,12 @@
 import unittest
 import rnamake.motif_tree
-import rnamake.resource_manager
+import rnamake.resource_manager as rm
 import util
-import instance
 
 class MotifTreeUnittest(unittest.TestCase):
 
     def test_creation(self):
         mt = rnamake.motif_tree.MotifTree()
-        sterics = mt.option('sterics')
-        if sterics != 1:
-            self.fail("cannot retreive correct value")
-
-        mt = rnamake.motif_tree.MotifTree(sterics=0)
-        sterics = mt.option('sterics')
-        if sterics != 0:
-            self.fail("cannot retreive correct value")
 
     def test_add_motif(self):
         mt = rnamake.motif_tree.MotifTree()
@@ -29,6 +20,13 @@ class MotifTreeUnittest(unittest.TestCase):
         node = mt.add_motif(m, end_index=1, end_flip=0)
         if node is not None:
             self.fail("did not perform sterics correctly")
+
+
+        m = rm.manager.get_motif("HELIX.IDEAL.2")
+        mt.add_motif(m)
+        mt.add_motif(m)
+        mt.write_pdbs()
+        print len(mt)
 
     def test_remove_node(self):
         mt = rnamake.motif_tree.MotifTree()
