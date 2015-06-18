@@ -2,10 +2,9 @@ import unittest
 import os
 import rnamake.motif
 import rnamake.settings
-import rnamake.resource_manager
 import rnamake.motif_type
 import rnamake.transform
-import rnamake.resource_manager
+import rnamake.motif_factory
 import util
 import numerical
 import numpy as np
@@ -15,11 +14,14 @@ class MotifUnittest(unittest.TestCase):
 
     def setUp(self):
         path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
-        self.motif = rnamake.motif.Motif(path)
+        self.motif_1 = rnamake.motif_factory.factory.get_motif(path)
+        path = rnamake.settings.RESOURCES_PATH + "/motifs/helices/HELIX.IDEAL"
+        self.motif_2 = rnamake.motif_factory.factory.get_motif(path)
+
 
     def test_creation(self):
-
-        m = rnamake.motif.Motif()
+        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
+        m = rnamake.motif_factory.factory.get_motif(path)
 
     def test_creation_mdir(self):
         try:

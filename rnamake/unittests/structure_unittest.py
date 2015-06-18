@@ -1,22 +1,22 @@
 import unittest
 import os
 import rnamake.structure
-import rnamake.settings
-import rnamake.io
 import rnamake.transform
+import rnamake.motif_factory
+import rnamake.io
 import util
 import numerical
 import numpy as np
 
 class StructureUnittest(unittest.TestCase):
 
-    def test_build_chains(self):
+    def setUp(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        struct = util.supress_log_output(rnamake.structure.Structure,
-                                         path)
+        self.structure = rnamake.motif_factory.factory.get_structure(path)
 
-        if len(struct.chains) != 1:
-            self.fail("did not get the expected number of chains")
+    def test_creation(self):
+        print self.structure
+        exit()
 
     def _generate_build_chains_test(self, f_path):
         try:
@@ -90,9 +90,8 @@ class StructureUnittest(unittest.TestCase):
                     self.fail()
 
     def test_get_residue(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        struct = util.supress_log_output(rnamake.structure.Structure,
-                                         path)
+        struct = self.structure
+
         try:
             struct.get_residue()
             self.fail()
@@ -110,26 +109,19 @@ class StructureUnittest(unittest.TestCase):
             self.fail("should not of gotten an error")
 
     def test_residues(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        struct = util.supress_log_output(rnamake.structure.Structure,
-                                         path)
-
+        struct = self.structure
         residues = struct.residues()
         if len(residues) != 157:
             self.fail()
 
     def test_atoms(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        struct = util.supress_log_output(rnamake.structure.Structure,
-                                         path)
+        struct = self.structure
         atoms = struct.atoms()
         if len(atoms) != 3357:
             self.fail()
 
     def test_to_str(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        struct = util.supress_log_output(rnamake.structure.Structure,
-                                         path)
+        struct = self.structure
 
         s = struct.to_str()
         struct_new = rnamake.io.str_to_structure(s)
@@ -137,10 +129,7 @@ class StructureUnittest(unittest.TestCase):
             self.fail("did not get back all residues")
 
     def test_get_beads(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        struct = util.supress_log_output(rnamake.structure.Structure,
-                                         path)
-
+        struct = self.structure
         beads = struct.get_beads()
         if len(beads) != 470:
             self.fail("got wrong number of beads")
@@ -160,7 +149,7 @@ class StructureUnittest(unittest.TestCase):
         old_struct.transform(old_t)
 
         t = rnamake.transform.Transform(r, d)
-        struct = rnamake.structure.Structure(path + "/p4p6.pdb")
+        struct = self.structure
         struct.transform(t)
 
         atoms = struct.atoms()
@@ -181,24 +170,6 @@ class StructureUnittest(unittest.TestCase):
                                       struct.atoms()[0].coords):
             self.fail("coords did not change")
 
-    def test_restore_coords(self):
-        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
-        r = np.random.random([3,3])
-        d = np.random.random([3])
-        t = rnamake.transform.Transform(r, d)
-        struct = rnamake.structure.Structure(path + "/p4p6.pdb")
-        org_coords = struct.coords[0]
-        struct.transform(t)
-        struct.restore_coords()
-        new_coords = struct.atoms()[0].coords
-        if not numerical.are_points_equal(org_coords, new_coords):
-            self.fail("coords should be the same")
-
-        struct.transform(t)
-        new_coords = struct.atoms()[0].coords
-        if numerical.are_points_equal(org_coords, new_coords):
-            self.fail("coords should not be the same")
-
     def test_move(self):
         path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
         d = np.random.random([3])
@@ -210,15 +181,6 @@ class StructureUnittest(unittest.TestCase):
         struct.move(d)
         if numerical.are_points_equal(struct.coords[0], new_coords):
             self.fail()
-
-    def test_build_chains_2(self):
-        path = rnamake.settings.MOTIF_DIRS + \
-               "helices/HELIX.IDEAL/HELIX.IDEAL.pdb"
-        for i in range(1000):
-            struct = rnamake.structure.Structure(path)
-            if struct.chains[0].first().num != 4 or \
-               struct.chains[1].first().num != 7:
-                self.fail()
 
 
 def main():

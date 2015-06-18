@@ -7,10 +7,15 @@ import sqlite3
 import os
 import random
 
+libnames = {
+    "ideal_helices" :  "/motif_libraries_new/ideal_helices.db"
+}
+
+
 class MotifLibrarySqlite(object):
-    def __init__(self, libtype=None, libpath=None):
+    def __init__(self, libtype=None, libpath=None, libname=None):
         self.motif_paths = {}
-        self.connection = self._setup_sqlite3_connection(libtype, libpath)
+        self.connection = self._setup_sqlite3_connection(libtype, libpath, libname)
         self.mdict = {}
         self.mtype = libtype
 
@@ -25,7 +30,6 @@ class MotifLibrarySqlite(object):
             raise ValueError("unknown motif: " + name + "cannot get it")
 
         m = motif.str_to_motif(data[0])
-        m.mtype = self.mtype
         self.mdict[name] = m
         return m.copy()
 
@@ -37,13 +41,20 @@ class MotifLibrarySqlite(object):
             if i > limit:
                 break
 
-    def _setup_sqlite3_connection(self, libtype, libpath):
-        if libtype is not None:
+    def _setup_sqlite3_connection(self, libtype, libpath, libname):
+        if   libname is not None:
+            try:
+                path = settings.RESOURCES_PATH + libnames[libname]
+            except:
+                raise ValueError("not a valid lib name")
+
+        elif libtype is not None and libname is None:
             try:
                 name = motif_library.lib_paths[libtype]
             except:
                 raise ValueError("not a valid type")
             path = settings.RESOURCES_PATH +"/motif_libraries/"+name+".db"
+
         else:
             path = libpath
 
@@ -99,8 +110,6 @@ def build_sqlite_library(path, motifs, names=None):
             i += 1
     connection.executemany("INSERT INTO motifs(str,name) VALUES (?,?) ", data)
     connection.commit()
-
-
 
 
 def build_sqlite_libraries_2():

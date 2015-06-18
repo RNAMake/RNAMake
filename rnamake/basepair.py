@@ -12,9 +12,11 @@ class Basepair(object):
         self.atoms = self._get_atoms()
         self.bp_state = self._get_state(r)
         self.bp_type = bp_type
-        self.flipped = 0
-        self.designable = 0
         self.uuid = uuid.uuid1()
+
+    def __repr__(self):
+          return "<Basepair("+self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
+            "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code) + ")>"
 
     def _get_atoms(self):
         atoms = []
@@ -61,20 +63,8 @@ class Basepair(object):
         return self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
             "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
 
-    def flip(self, flip=None):
-        if flip is None:
-            if self.flipped == 0:
-                flip = 1
-            else:
-                flip = 0
-            self.state().flip()
-            self.flipped = flip
-
-        if self.flipped == flip:
-            return
-        else:
-            self.state().flip()
-            self.flipped = flip
+    def flip(self):
+        self.bp_state.flip()
 
     def copy(self):
         """
@@ -110,8 +100,7 @@ class Basepair(object):
         stringify basepair object
         """
         s = self.name() + "," + self.bp_state.to_str() + "," + \
-            self.bp_type + "," + str(self.designable) + "," + \
-            str(self.flipped)
+            self.bp_type
         return s
 
     def to_pdb_str(self, acount=1, return_acount=0):

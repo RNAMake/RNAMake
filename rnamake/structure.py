@@ -2,8 +2,10 @@ import pdb_parser
 import chain
 import numpy as np
 
-class Structure(object):
+class StructureException(Exception):
+    pass
 
+class Structure(object):
     """
     Stores 3D structure information from a pdb file. Stores all chains,
     residues and atoms objects. Implementation is designed to be extremely
@@ -17,82 +19,25 @@ class Structure(object):
     `chains` : list of Chain objects that belong to the current structure
     """
 
-    def __init__(self, pdb=None):
-        self.chains = []
+    def __init__(self, chains=[]):
+        self.chains = chains
+        self.name = "N/A"
 
-        if pdb:
-            residues = pdb_parser.parse(pdb)
-            self._build_chains(residues)
-
-        self._cache_coords()
+    def __repr__(self):
+        return """<Structure(name: %s, #chains: %s, #residues: %s, #atoms: %s)>""" %\
+               (self.name, len(self.chains), len(self.residues()), len(self.atoms()))
 
     def renumber(self):
         for i, r in enumerate(self.residues()):
             r.num = i+1
             r.chain_id = "A"
 
-    def __repr__(self):
-        return "<Structure( Chains: %s>" % (len(self.chains))
-
-    def _build_chains(self, residues):
-        """
-        takes all residues and puts into the correct order in chains checking
-        for physical connection between O5' and P atoms between residues
-
-        :param residues: residue objects that belong in this structure
-        :type residues: List of Residue objects
-        """
-
-        self.chains = []
-        # sort residues so check residues for connection quicker as the next on
-        # in the array will be closest to it by number
-        residues.sort(key=lambda x: x.num)
-
-        while True:
-            current = None
-            # find next 5' end, all chains go from 5' to 3'
-            for i, r in enumerate(residues):
-                five_prime_end = 1
-                for j, r2 in enumerate(residues):
-                    if r.connected_to(r2) == -1:
-                        five_prime_end = 0
-                        break
-                if five_prime_end:
-                    current = r
-                    break
-            if not current:
-                break
-            residues.remove(current)
-            current_chain_res = []
-            # extend chain until 3' end
-            while current is not None:
-                current_chain_res.append(current)
-                found = 0
-                for r in residues:
-                    if current.connected_to(r) == 1:
-                        current = r
-                        found = 1
-                        break
-                if found:
-                    residues.remove(current)
-                else:
-                    # no more residues to add, make chain object
-                    self.chains.append(chain.Chain(current_chain_res))
-                    current = None
-
-    def _cache_coords(self):
-        """
-        Stores the atomic coordinates into an array, so can restore atomic
-        cordinates after they have been transformed
-        """
-        atoms = self.atoms()
-        self.coords = [a.coords for a in atoms]
-
     def get_beads(self, excluded_res=[]):
         """
         generates 3-bead model residue beads for all residues in current structure.
 
-        :param excluded_res: List of residue objects that are not to be included in clash checks for collisions
+        :param excluded_res: List of residue objects that are not to be included in clash
+         checks for collisions
         :type excluded_res: List of Residue objects
         """
 
@@ -119,6 +64,7 @@ class Structure(object):
         :type i_code: str
         :type uuid: uuid
         """
+
         found = []
         for c in self.chains:
             for r in c.residues:
@@ -134,7 +80,9 @@ class Structure(object):
 
         if len(found) > 1:
             self.to_pdb()
-            print num,chain_id,i_code
+            for f in found:
+                print f.name, f.num
+            print "num,chain_id,icode,uuid=",num,chain_id,i_code,uuid
             raise ValueError(
                 "found multiple residues in get_residue(), narrow " +
                 "your search")
@@ -189,27 +137,20 @@ class Structure(object):
         """
         creates a deep copy of this structure
         """
-        cstruct = Structure()
+        chains = []
         for c in self.chains:
             cc = c.copy()
-            cstruct.chains.append(cc)
+            chains.append(cc)
 
-        cstruct._cache_coords()
-
-        return cstruct
-
-    def restore_coords(self):
-        self._update_coords(self.coords)
-
-    def _update_coords(self, new_coords):
-        for i,a in enumerate(self.atoms()):
-            a.coords = new_coords[i]
+        return Structure(chains)
 
     def transform(self, t):
-        transformed_coords = np.dot(self.coords, t.rotation().T) + \
-                             t.translation()
+        r_T = t.rotation().T
+        for a in self.atoms():
+            a.coords = np.dot(a.coords, r_T) + t.translation()
 
-        self._update_coords(transformed_coords)
+        #transformed_coords = np.dot(self.coords, t.rotation().T) + \
+        #                     t.translation()
 
     def move(self, p):
         for a in self.atoms():
