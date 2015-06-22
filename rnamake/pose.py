@@ -48,7 +48,7 @@ class Pose(motif.Motif):
         self.designable = {}
         self.mtype = motif_type.UNKNOWN
         self.nodes = []
-        self._setup(mdir, pdb)
+        #self._setup(mdir, pdb)
         if pdb is not None or mdir is not None:
             self._setup_motifs()
 

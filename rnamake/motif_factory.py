@@ -18,10 +18,11 @@ class MotifFactory(object):
         self.ref_motif = motif.file_to_motif(path)
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
         self.base_motif = motif.file_to_motif(path)
+        self.base_motif.get_beads([self.base_motif.ends[1]])
         self.added_helix = self.base_motif.copy()
         self.clash_radius = settings.CLASH_RADIUS
 
-    def _build_chains(self, pdb_path):
+    def build_chains(self, residues):
         """
         takes all residues and puts into the correct order in chains checking
         for physical connection between O5' and P atoms between residues
@@ -29,7 +30,6 @@ class MotifFactory(object):
         :param residues: residue objects that belong in this structure
         :type residues: List of Residue objects
         """
-        residues = pdb_parser.parse(pdb_path)
 
         chains = []
         # sort residues so check residues for connection quicker as the next on
@@ -71,22 +71,20 @@ class MotifFactory(object):
         return chains
 
     def get_structure(self, pdb_path):
-        chains = self._build_chains(pdb_path)
+        residues = pdb_parser.parse(pdb_path)
+        chains = self.build_chains(residues)
         s = structure.Structure(chains)
         s.name = util.filename(pdb_path[:-4])
         return s
 
-    def _setup_basepairs(self, mdir, name, structure):
+    def _setup_basepairs(self, path, name, structure):
         """
         gets x3dna data on basepairing information and then interwines it
         with the structural information stored in structure for simpler
         retreival of data
         """
         x3dna_parser = x3dna.X3dna()
-        mdir = mdir + "/"
-        if mdir == "//":
-            mdir = ""
-        x_basepairs = x3dna_parser.get_basepairs(mdir + name)
+        x_basepairs = x3dna_parser.get_basepairs(path)
         basepairs = []
         for xbp in x_basepairs:
             res1 = structure.get_residue(num=xbp.res1.num,
@@ -103,6 +101,12 @@ class MotifFactory(object):
             bp = basepair.Basepair(res1, res2, xbp.r, xbp.bp_type)
             #self._assign_bp_primes(bp)
             basepairs.append(bp)
+
+        if os.path.isfile("ref_frames.dat"):
+            os.remove("ref_frames.dat")
+
+        if os.path.isfile(name + "_dssr.out"):
+            os.remove(name + "_dssr.out")
 
         return basepairs
 
@@ -203,7 +207,7 @@ class MotifFactory(object):
         m.ends = updated_ends
         m.end_ids = updated_end_ids
 
-    def get_motif(self, path):
+    def motif_from_file(self, path):
         filename = util.filename(path)
 
         # is a motif directory
@@ -269,6 +273,19 @@ class MotifFactory(object):
         self._align_chains(m_added)
         self._align_ends(m_added)
         return m_added
+
+    def motif_from_bps(self, bps):
+        m = motif.Motif()
+        res = []
+        for bp in bps:
+            res.extend(bp.residues())
+        chains = self.build_chains(res)
+        m.structure.chains = chains
+        m.basepairs = bps
+        m.ends = [bps[0], bps[-1]]
+        m.ss_chains  = secondary_structure.assign_secondary_structure(m)
+        m.end_ids   = self._setup_end_ids(m.ends, m)
+        return m
 
 
 def ref_motif():

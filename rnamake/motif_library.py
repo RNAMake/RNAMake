@@ -20,7 +20,7 @@ class MotifLibrary(object):
             raise ValueError("unknown motif: " + mname + "cannot get it")
 
         if mname not in self.motif_dict:
-            self.motif_dict[mname] = motif_factory.factory.get_motif(self.motif_paths[mname])
+            self.motif_dict[mname] = motif_factory.factory.motif_from_file(self.motif_paths[mname])
             self.motif_dict[mname].mtype = self.mtype
             self.motif_dict[mname].score = self.scorer.score(self.motif_dict[mname])
 
@@ -90,6 +90,7 @@ def unique_twoway_lib():
 
 def ideal_helix_lib():
     mlib = MotifLibrary(motif_type.HELIX)
+    mlib.get_motif("HELIX.IDEAL")
     for i in range(1,21):
         mlib.get_motif("HELIX.IDEAL."+str(i))
     return mlib

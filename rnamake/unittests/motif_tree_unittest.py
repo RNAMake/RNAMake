@@ -10,55 +10,31 @@ class MotifTreeUnittest(unittest.TestCase):
 
     def test_add_motif(self):
         mt = rnamake.motif_tree.MotifTree()
-        rm = rnamake.resource_manager.ResourceManager()
-        m = rm.get_motif("HELIX.IDEAL")
-        mt.add_motif(m)
-        mt.add_motif(m)
-        if len(mt.nodes) != 3:
-            self.fail("did not add motifs properly")
-
-        node = mt.add_motif(m, end_index=1, end_flip=0)
-        if node is not None:
-            self.fail("did not perform sterics correctly")
-
-
         m = rm.manager.get_motif("HELIX.IDEAL.2")
         mt.add_motif(m)
         mt.add_motif(m)
-        mt.write_pdbs()
-        print len(mt)
+        if len(mt) != 2:
+            self.fail("did not add motifs properly")
 
     def test_remove_node(self):
         mt = rnamake.motif_tree.MotifTree()
-        rm = rnamake.resource_manager.ResourceManager()
-        m = rm.get_motif("HELIX.IDEAL")
+        m = rm.manager.get_motif("HELIX.IDEAL.2")
         mt.add_motif(m)
         mt.add_motif(m)
 
-        mt.remove_node(mt.last_node)
-        if len(mt.nodes) != 2:
+        mt.remove_node()
+        if len(mt) != 1:
             self.fail("did not remove node correctly")
 
-    def test_to_str_node(self):
-        mt = instance.simple_mt()
-        s = mt.to_str()
-        mt2 = rnamake.motif_tree.str_to_motif_tree(s)
-
-    def test_avail_ends(self):
-        mt = instance.simple_mt()
-        if len(mt.nodes[0].available_ends()) != 0:
-            self.fail("did not properly get available ends")
-
-        mt.remove_node_level()
-        if len(mt.nodes[0].available_ends()) != 1:
-            self.fail("did not properly get available ends")
-
-        mt = rnamake.motif_tree.MotifTree()
-        if len(mt.nodes[0].available_ends()) != 1:
-            self.fail("did not properly get available ends")
-
     def test_merge(self):
-        return
+        mt = rnamake.motif_tree.MotifTree()
+        m = rm.manager.get_motif("HELIX.IDEAL.2")
+        mt.add_motif(m)
+        mt.add_motif(m)
+        p = mt.to_pose(chain_closure=0)
+
+
+        """return
         f = open("test.out")
         s = f.readline()
         f.close()
@@ -66,7 +42,7 @@ class MotifTreeUnittest(unittest.TestCase):
         mt = rnamake.motif_tree.str_to_motif_tree(s)
         pose = mt.get_pose()
         if len(pose.ends) != 2:
-            self.fail("did not merge properly")
+            self.fail("did not merge properly")"""
 
     def test_readd(self):
         mt = rnamake.motif_tree.MotifTree()

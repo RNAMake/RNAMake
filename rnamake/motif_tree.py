@@ -5,6 +5,7 @@ import motif
 import util
 import residue
 import motif_type
+import motif_tree_merger
 import graph
 
 class MotifTree(base.Base):
@@ -56,13 +57,14 @@ class MotifTree(base.Base):
         if m is not None:
             self.add_motif(m)
 
-        #self.merger = motif_tree_merger.MotifTreeMerger()
+        self.merger = motif_tree_merger.MotifTreeMerger()
 
     def __len__(self):
         return len(self.graph)
 
     def __iter__(self):
         self.graph.__iter__()
+        return self
 
     def next(self):
         return self.graph.next()
@@ -100,33 +102,24 @@ class MotifTree(base.Base):
 
         return -1
 
+    def get_node(self, i):
+        return self.graph.get_node(i)
+
     def write_pdbs(self,name="node"):
         for n in self.graph:
             n.data.to_pdb(name+"."+str(n.index)+".pdb")
 
-    def remove_node(self, node):
+    def remove_node(self, i=-1):
         """
         remove a node from the current motif tree. Note there is no checks
         to see whether the node you are removing is a leaf. Thus you could
         be removing a section of the tree. call node.is_leaf() if you would
         like to check this
-
-        :param node: node object that you would like to remove from the tree
-        :type node: MotifTreeNode object
-
         """
-        if node.index == 0:
-            raise ValueError("cannot remove head node from tree")
+        if i == -1:
+            i = len(self.graph)-1
 
-        connected = node.connected_nodes()
-
-        while 0 < len(node.connections):
-            node.connections[-1].disconnect()
-
-        self.last_node = connected[0]
-        self.nodes.remove(node)
-        if len(self.nodes) == 1:
-            self.nodes[0].motif.beads = []
+        self.graph.remove_node(i)
 
     def remove_node_level(self, level=None):
         if level is None:
@@ -140,30 +133,20 @@ class MotifTree(base.Base):
 
     def leafs(self):
         leafs = []
-        for n in self.nodes:
-            if n.is_leaf():
+        for n in self.graph:
+            if len(n.available_children_pos()) > 0:
                 leafs.append(n)
         return leafs
 
-    def to_pose(self, include_head=0, chain_closure=0):
-        if include_head:
-            self._find_other_connections_to_head()
+    def to_pose(self, chain_closure=0):
 
-        pose = self.merger.merge(self, include_head=include_head,
-                                 chain_closure=chain_closure)
+        pose = self.merger.merge(self.graph)
         self.merger.reset()
         return pose
 
     def to_pdb(self, fname="mt.pdb", include_head=1, chain_closure=1):
-        pose = self.to_pose(include_head=include_head,
-                             chain_closure=chain_closure)
+        pose = self.to_pose()
         pose.to_pdb(fname)
-
-    def to_str(self):
-        s = ""
-        for n in self.nodes:
-            s += n.to_str() + "#"
-        return s
 
     def _update_beads(self, parent, child):
         """
@@ -223,24 +206,6 @@ class MotifTree(base.Base):
                 if dist < cutoff:
                     new_connection = MotifTreeConnection(node_1, node_2, end1,
                                                          end2)
-
-
-def str_to_motif_tree(s):
-    spl = s.split("#")
-    for i, e in enumerate(spl[:-1]):
-        mtn_spl = e.split("!")
-        m = motif.str_to_motif(mtn_spl[0])
-        if i == 0:
-            mt = MotifTree(m)
-            continue
-        mtn = MotifTreeNode(m, mt.level, int(mtn_spl[3]), int(mtn_spl[4]))
-        mtn.index = i
-        parent = mt.nodes[ int(mtn_spl[1]) ]
-        parent_end = parent.motif.ends[ int(mtn_spl[2]) ]
-        node_end = m.ends[ int(mtn_spl[3]) ]
-        MotifTreeConnection(parent, mtn, parent_end, node_end)
-        mt.nodes.append(mtn)
-    return mt
 
 
 

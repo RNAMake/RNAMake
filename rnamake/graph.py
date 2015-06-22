@@ -127,9 +127,11 @@ class GraphStatic(Graph):
     def remove_node(self, pos):
         n = self.get_node(pos)
         for c in n.connections:
-            c.disconnect()
-            self.connections.remove(c)
+            if c is not None:
+                c.disconnect()
+                self.connections.remove(c)
         self.nodes.remove(n)
+        self.index -= 1
 
     def check_pos_is_value(self, n, pos):
         if pos == -1:

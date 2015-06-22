@@ -30,6 +30,7 @@ class Tree(object):
         self.nodes.remove(node)
         node.parent = None
         self.last_node = node.parent
+        self.index -= 1
 
     def __len__(self):
         return len(self.nodes)
@@ -102,7 +103,14 @@ class TreeStatic(Tree):
         self.index += 1
         return self.index-1
 
-
+    def get_available_pos(self, n, pos):
+        if pos == -1:
+            avail_pos = n.available_children_pos()
+            return avail_pos
+        else:
+            if n.available_pos(pos) == 0:
+                raise ValueError("tree pos is not available")
+            return [pos]
 
 
 class TreeNode(object):
@@ -125,7 +133,17 @@ class TreeNode(object):
             return -1
 
         else:
-            return self.parent_index
+            return self.parent.index
+
+    def available_pos(self, pos):
+        if len(self.children) <= pos:
+            return 0
+        if self.children[pos] is not None:
+            return 0
+        return 1
+
+    def parent_end_index(self):
+        return self.parent.children.index(self)
 
 class TreeNodeDynamic(TreeNode):
     def __init__(self, data, index, level):

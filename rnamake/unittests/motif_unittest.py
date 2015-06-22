@@ -1,11 +1,12 @@
 import unittest
 import os
-import rnamake.motif
+import rnamake.motif as motif
 import rnamake.settings
 import rnamake.motif_type
 import rnamake.transform
 import rnamake.motif_factory
-import util
+import rnamake.sqlite_library as sqlite_library
+import rnamake.util as util
 import numerical
 import numpy as np
 
@@ -14,30 +15,44 @@ class MotifUnittest(unittest.TestCase):
 
     def setUp(self):
         path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
-        self.motif_1 = rnamake.motif_factory.factory.get_motif(path)
-        path = rnamake.settings.RESOURCES_PATH + "/motifs/helices/HELIX.IDEAL"
-        self.motif_2 = rnamake.motif_factory.factory.get_motif(path)
-
+        self.motif_1 = rnamake.motif_factory.factory.motif_from_file(path)
+        #path = rnamake.settings.RESOURCES_PATH + "/motifs/helices/HELIX.IDEAL"
+        #self.motif_2 = rnamake.motif_factory.factory.motif_from_file(path)
 
     def test_creation(self):
         path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
         m = rnamake.motif_factory.factory.get_motif(path)
 
-    def test_creation_mdir(self):
-        try:
-            path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
-            m =  util.supress_log_output(rnamake.motif.Motif, path)
-        except:
-            self.fail("did not generate motif correctly")
-
     def test_create_pdb(self):
         try:
             path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-            m = rnamake.motif.Motif(pdb=path)
-            os.remove("p4p6_dssr.out")
-            os.remove("ref_frames.dat")
+            m = rnamake.motif_factory.factory.motif_from_file(path)
         except:
             self.fail("did not generate motif correctly")
+
+    def test_state(self):
+        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+        ms_lib = sqlite_library.MotifStateSqliteLibrary("ideal_helices")
+        ms1 = ms_lib.get("HELIX.IDEAL.2")
+        ms2 = ms_lib.get("HELIX.IDEAL.2")
+
+        motif.align_motif_state(ms1.end_states[1], ms2)
+
+        m1 = mlib.get("HELIX.IDEAL.2")
+        m2 = mlib.get("HELIX.IDEAL.2")
+
+        motif.align_motif(m1.ends[1], m2.ends[0], m2)
+
+        if util.distance(ms2.end_states[1].d, m2.ends[1].d()) > 0.01:
+            print ms2.end_states[1].d
+            print m2.ends[1].d()
+            self.fail("motif state did not act like a motif for origin")
+
+        if util.matrix_distance(ms2.end_states[1].r, m2.ends[1].r()) > 0.01:
+            print ms2.end_states[1].r
+            print m2.ends[1].r()
+            self.fail("motif state did not act like a motif for rotation")
+
 
     def test_get_basepair_ends(self):
          m = self.motif

@@ -4,7 +4,7 @@ import rnamake.resource_manager
 class ResourceManagerUnittest(unittest.TestCase):
 
     def test_creation(self):
-        rm = rnamake.resource_manager.ResourceManager()
+        m = rnamake.resource_manager.manager.get_motif("HELIX.IDEAL")
 
     def test_get_motif(self):
         rm = rnamake.resource_manager.ResourceManager()

@@ -75,8 +75,6 @@ class Basepair(object):
         cbp.bp_state.sugars =  [self.res1.get_atom("C1'").coords,
                                 self.res2.get_atom("C1'").coords]
         cbp.bp_type = self.bp_type
-        cbp.flipped = self.flipped
-        cbp.designable = self.designable
         cbp.uuid = self.uuid
         return cbp
 

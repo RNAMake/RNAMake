@@ -30,32 +30,26 @@ class MotifTreeMerger(base.Base):
         self.setup_options_and_constraints()
 
     def setup_options_and_constraints(self):
-        options = { 'include_head'         : 0,
-                    'chain_closure'        : 1,
+        options = { 'chain_closure'        : 1,
                     }
         self.options = option.Options(options)
         self.constraints = {}
 
-    def merge(self, mt, **options):
+    def merge(self, graph, **options):
         self.options.dict_set(options)
 
         # TODO turn motif into pose
-        if len(mt.nodes) == 2 and self.option('include_head') == 0:
-            m = mt.nodes[1].motif.copy()
-            m.nodes = mt.nodes
+        if len(graph) == 1:
+            m = graph.last_node.data.copy()
             m.structure.renumber()
             return m
 
-        self.seen_constraints, self.chains, self.nodes  = {}, [], mt.nodes
+        self.seen_constraints, self.chains, self.graph = {}, [], graph
 
-        for i, n in enumerate(self.nodes):
-            if i == 0 and self.option('include_head') == 0:
-                continue
-            self.chains.extend([c.subchain(0) for c in n.motif.chains()])
+        for n in graph:
+            self.chains.extend([c.subchain(0) for c in n.data.chains()])
 
-        start_node = self.nodes[0]
-        if self.option('include_head') == 0:
-            start_node = self.nodes[1]
+        start_node = graph.get_node(0)
 
         self._merge_chains_in_node(start_node)
         motif = self._build_pose()
@@ -65,13 +59,13 @@ class MotifTreeMerger(base.Base):
         self.chains = []
         self.nodes = []
         self.seen_connections = {}
+
     def _build_pose(self):
-        new_structure = structure.Structure()
-        new_structure.assembled = 1
+        chains = []
         for c in self.chains:
-            new_structure.chains.append(c.copy())
+            chains.append(c.copy())
+        new_structure = structure.Structure(chains)
         new_structure.renumber()
-        new_structure._cache_coords()
 
         residues = new_structure.residues()
         basepairs = []
@@ -81,14 +75,14 @@ class MotifTreeMerger(base.Base):
             uuids[res.uuid] = res
 
         new_pose = pose.Pose()
-        for node in self.nodes:
-            for bp in node.motif.basepairs:
+        for node in self.graph:
+            for bp in node.data.basepairs:
                 if bp.res1.uuid in uuids and bp.res2.uuid in uuids:
                     cbp = bp.copy()
                     cbp.res1 = uuids[bp.res1.uuid]
                     cbp.res2 = uuids[bp.res2.uuid]
 
-                    if node.motif.mtype == motif_type.HELIX:
+                    if node.data.mtype == motif_type.HELIX:
                         new_pose.designable[cbp.uuid] = 1
 
                     basepairs.append(cbp)
@@ -96,29 +90,29 @@ class MotifTreeMerger(base.Base):
         new_pose.name = "assembled"
         new_pose.structure = new_structure
         new_pose.basepairs = basepairs
-        new_pose.setup_basepair_ends()
-        new_pose._cache_basepair_frames()
 
         if self.option('chain_closure'):
             for i,c in enumerate(new_pose.chains()):
                 close_chain(c)
 
-        new_pose.nodes = self.nodes
+        new_pose.nodes = self.graph.nodes
         return new_pose
 
     def _merge_chains_in_node(self, node):
         for c in node.connections:
+            if c is None:
+                continue
             if c in self.seen_connections:
                 continue
             self.seen_connections[c] = 1
-            partner = c.partner(node)
-            if not self.option('include_head') and partner == self.nodes[0]:
-                continue
+            partner = c.partner(node.index)
+
             node_chains    = self._get_chains_from_connection(node, c)
             partner_chains = self._get_chains_from_connection(partner, c)
+
             # TODO maybe figure out which is a better basepair to remove
             #print node.index, partner.index, partner.motif.mtype
-            if partner.motif.mtype == motif_type.HELIX:
+            if partner.data.mtype == motif_type.HELIX:
                 merged_chains = self._helix_merge(node_chains, partner_chains)
             else:
                 merged_chains = self._non_helix_merge(node_chains, partner_chains)
@@ -214,7 +208,8 @@ class MotifTreeMerger(base.Base):
         return merged_chain
 
     def _get_chains_from_connection(self, node, c):
-        end = c.motif_end(node)
+        end_index = c.end_index(node.index)
+        end = node.data.ends[end_index]
         return self._find_chains_for_end(end)
 
     def _find_chains_for_end(self,end):
@@ -250,8 +245,6 @@ class MotifTreeMerger(base.Base):
 
         if len(chain_info) != 2:
             print len(chain_info),end.res1,end.res2,end.res1.uuid
-            #for i,c in enumerate(self.chains):
-            #    chain_to_pdb("chain."+str(i)+".pdb",c)" " " "" " " " " " " "" " " " " " " "" " "" " " " " " " "" " " " " " " "" " " " " " " "" " "" " " " " " " "" " " " " " " "" " " " " " " "" " "" " " " " " " "" " " " " " " "" " " " " " " "" " " " " " " "
             for ci in chain_info:
                 print ci[0],ci[0].first(),ci[0].last()
             raise ValueError("Could not find chain for end")

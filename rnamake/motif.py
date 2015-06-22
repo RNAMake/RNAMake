@@ -7,6 +7,7 @@ import util
 import io
 import motif_type
 import settings
+import basic_io
 import numpy as np
 
 class Motif(object):
@@ -220,6 +221,36 @@ class Motif(object):
 
         return cmotif
 
+    def get_state(self):
+        beads = self.get_beads([self.ends[0]])
+        bead_centers = []
+        for b in beads:
+            bead_centers.append(b.center)
+        ends = [None for x in self.ends]
+        for i, end in enumerate(self.ends):
+            ends[i] = end.state()
+        return MotifState(self.name, ends, bead_centers, self.score, len(self.residues()))
+
+
+class MotifState(object):
+    __slots__ = ['name', 'end_states', 'beads', 'score', 'size']
+
+    def __init__(self, name, end_states, beads, score, size):
+        self.name, self.end_states, self.beads = name, end_states, beads
+        self.score, self.size = score, size
+
+    def to_str(self):
+        s = self.name + "|" + str(self.score) + "|" + str(self.size) + "|"
+        s += basic_io.points_to_str(self.beads) + "|"
+        for state in self.end_states:
+            s += state.to_str() + "|"
+        return s
+
+    def copy(self):
+        end_states = [end.copy() for end in self.end_states]
+        beads = np.copy(self.beads)
+
+        return MotifState(self.name, end_states, beads, self.score, self.size)
 
 def file_to_motif(path):
     try:
@@ -264,6 +295,16 @@ def str_to_motif(s):
         m.ends.append(m.basepairs[int(index)])
 
     return m
+
+def str_to_motif_state(s):
+    spl = s.split("|")
+    name, score, size = spl[0], float(spl[1]), float(spl[2])
+    beads = basic_io.str_to_points(spl[3])
+    end_states = []
+    for i in range(4, len(spl)-1):
+            end_states.append(basepair.str_to_basepairstate(spl[i]))
+
+    return MotifState(name, end_states, beads, score, size)
 
 
 def align_motif(ref_bp, motif_end, motif, sterics=1):
@@ -320,6 +361,23 @@ def get_aligned_motif(ref_bp, motif_end, motif, sterics=1):
 
     return m_copy
 
+
+def align_motif_state(ref_bp_state, org_state):
+    r, t = ref_bp_state.get_transforming_r_and_t_w_state(org_state.end_states[0])
+    t += ref_bp_state.d
+
+    for i, s in enumerate(org_state.end_states):
+        new_r, new_d, new_sug = s.get_transformed_state(r, t)
+        org_state.end_states[i].set(new_r,new_d,new_sug)
+
+
+def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
+    r, t = ref_bp_state.get_transforming_r_and_t_w_state(org_state.end_states[0])
+    t += ref_bp_state.d
+
+    for i, s in enumerate(org_state.end_states):
+        new_r, new_d, new_sug = s.get_transformed_state(r, t)
+        cur_state.end_states[i].set(new_r,new_d,new_sug)
 
 
 
