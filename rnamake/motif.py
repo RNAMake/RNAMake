@@ -143,6 +143,9 @@ class Motif(object):
             index = self.basepairs.index(end)
             s += str(index) + " "
         s += "&"
+        for end_id in self.end_ids:
+            s += end_id + " "
+        s += "&"
         return s
 
     def to_pdb_str(self):
@@ -225,6 +228,8 @@ class Motif(object):
         beads = self.get_beads([self.ends[0]])
         bead_centers = []
         for b in beads:
+            if b.btype == 0:
+                continue
             bead_centers.append(b.center)
         ends = [None for x in self.ends]
         for i, end in enumerate(self.ends):
@@ -252,6 +257,23 @@ class MotifState(object):
 
         return MotifState(self.name, end_states, beads, self.score, self.size)
 
+
+class MotifArray(object):
+    __slots__ = ['motifs']
+
+    def __init__(self, motifs=[]):
+        self.motifs = motifs
+
+    def add(self, m):
+        self.motifs.append(m)
+
+    def to_str(self):
+        s = ""
+        for m in self.motifs:
+            s += m.to_str() + "$"
+        return s
+
+
 def file_to_motif(path):
     try:
         f = open(path)
@@ -261,6 +283,7 @@ def file_to_motif(path):
         raise IOError("cannot find path to open motif from")
 
     return str_to_motif(l)
+
 
 def str_to_motif(s):
     """
@@ -293,8 +316,11 @@ def str_to_motif(s):
     end_indexes = spl[6].split()
     for index in end_indexes:
         m.ends.append(m.basepairs[int(index)])
+    end_ids = spl[7].split()
+    m.end_ids = end_ids
 
     return m
+
 
 def str_to_motif_state(s):
     spl = s.split("|")
@@ -305,6 +331,14 @@ def str_to_motif_state(s):
             end_states.append(basepair.str_to_basepairstate(spl[i]))
 
     return MotifState(name, end_states, beads, score, size)
+
+
+def str_to_motif_array(str):
+    spl = str.split("$")
+    motifs = []
+    for s in spl:
+        motifs.append(str_to_motif(s))
+    return MotifArray(motifs)
 
 
 def align_motif(ref_bp, motif_end, motif, sterics=1):
@@ -378,6 +412,8 @@ def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
     for i, s in enumerate(org_state.end_states):
         new_r, new_d, new_sug = s.get_transformed_state(r, t)
         cur_state.end_states[i].set(new_r,new_d,new_sug)
+
+    cur_state.beads = np.dot(cur_state.beads, r.T) + t
 
 
 

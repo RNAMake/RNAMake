@@ -4,6 +4,8 @@ import os
 import settings
 import motif
 import motif_ensemble
+import secondary_structure
+import ss_tree
 
 class SqliteLibrary(object):
     def __init__(self):
@@ -64,6 +66,7 @@ class SqliteLibrary(object):
         else:
             return 0
 
+
 class MotifSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
         super(MotifSqliteLibrary, self).__init__()
@@ -77,16 +80,99 @@ class MotifSqliteLibrary(SqliteLibrary):
     @staticmethod
     def get_libnames():
         libnames = {
-            "ideal_helices" :  "/motif_libraries_new/ideal_helices.db",
-            "twoways"       :  "/motif_libraries_new/twoways.db"
+            "ideal_helices"   : "/motif_libraries_new/ideal_helices.db",
+            "twoway"          : "/motif_libraries_new/twoway.db",
+            "tcontact"        : "/motif_libraries_new/tcontact.db",
+            "hairpin"         : "/motif_libraries_new/hairpin.db",
+            "nway"            : "/motif_libraries_new/nway.db",
+            "unique_twoways"  : "/motif_libraries_new/unique_twoways.db"
         }
 
         return libnames
 
+
+class MotifSSIDSqliteLibrary(SqliteLibrary):
+    def __init__(self, libname):
+        super(MotifSSIDSqliteLibrary, self).__init__()
+        self.libnames = self.get_libnames()
+        self.libname = libname
+        self.ss_trees = {}
+        path = self._get_path(libname)
+        self._setup(path)
+
+    def _generate_data(self, s):
+        return motif.str_to_motif(s)
+
+    @staticmethod
+    def get_libnames():
+        libnames = {
+            "bp_steps"     : "/motif_libraries_new/bp_steps.db",
+            "twoway"       : "/motif_libraries_new/ss_twoway.db",
+            "tcontact"     : "/motif_libraries_new/ss_tcontact.db",
+            "hairpin"      : "/motif_libraries_new/ss_hairpin.db",
+            "nway"         : "/motif_libraries_new/ss_nway.db",
+        }
+
+        return libnames
+
+    def get_best_match(self, new_id):
+        if self.contains(new_id):
+            return self.get(new_id)
+
+        if len(self.ss_trees) == 0:
+            for id in self.data_path:
+                sstree = secondary_structure.ss_id_to_ss_tree(id)
+                self.ss_trees[id] = sstree
+
+        new_ss_tree = secondary_structure.ss_id_to_ss_tree(new_id)
+        best_score = 10000
+        best_id = None
+        for id, sstree in self.ss_trees.iteritems():
+            score = ss_tree.compare_ss_tree(new_ss_tree, sstree)
+            if score < best_score:
+                best_score = score
+                best_id = id
+
+        if best_score == 10000:
+            raise  ValueError("get_best_match failed in MotifSSIDSqliteLibrary")
+
+        print best_score
+        return self.get(best_id)
+
+
+
+
+        #check end basepairs
+
+    def get_by_topology(self, top):
+        scaled_top = []
+        motifs = []
+        for t in top:
+            scaled_top.append(t + 2)
+
+        for id in self.data_path:
+            spl = id.split("_")
+            sizes = []
+            for i in range(0, len(spl)-1, 2):
+                sizes.append(len(spl[i+1]))
+
+            mismatch = 0
+            for i in range(len(sizes)):
+                if sizes[i] != scaled_top[i]:
+                    mismatch = 1
+                    continue
+
+            if not mismatch:
+                motifs.append(self.get(id))
+
+        return motifs
+
+
+
 class MotifEnsembleSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
         super(MotifEnsembleSqliteLibrary, self).__init__()
-        self.libnames = self._get_libnames()
+        self.libnames = self.get_libnames()
         path = self._get_path(libname)
         self._setup(path)
 
@@ -97,9 +183,14 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
     def get_libnames():
         libnames = {
             "bp_steps" :  "/motif_ensemble_libraries/bp_steps.db",
+            "twoway"   :  "/motif_ensemble_libraries/twoway.db",
+            "nway"     :  "/motif_ensemble_libraries/nway.db",
+            "tcontact" :  "/motif_ensemble_libraries/tcontact.db",
+            "hairpin"  :  "/motif_ensemble_libraries/hairpin.db",
         }
 
         return libnames
+
 
 class MotifStateSqliteLibrary(SqliteLibrary):
 
@@ -120,6 +211,49 @@ class MotifStateSqliteLibrary(SqliteLibrary):
 
     def _generate_data(self, s):
         return motif.str_to_motif_state(s)
+
+
+class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
+    def __init__(self, libname):
+        super(MotifStateEnsembleSqliteLibrary, self).__init__()
+        self.libnames = self.get_libnames()
+        path = self._get_path(libname)
+        self._setup(path)
+
+    def _generate_data(self, s):
+        return motif_ensemble.str_to_motif_state_ensemble(s)
+
+    @staticmethod
+    def get_libnames():
+        libnames = {
+            "bp_steps" :  "/motif_state_ensemble_libraries/bp_steps.db",
+            "twoway"   :  "/motif_state_ensemble_libraries/twoway.db",
+            "nway"     :  "/motif_state_ensemble_libraries/nway.db",
+            "tcontact" :  "/motif_state_ensemble_libraries/tcontact.db",
+            "hairpin"  :  "/motif_state_ensemble_libraries/hairpin.db",
+
+        }
+
+        return libnames
+
+
+class MotifClusterSqliteLibrary(SqliteLibrary):
+
+    def __init__(self, libname):
+        super(MotifClusterSqliteLibrary, self).__init__()
+        self.libnames = self.get_libnames()
+        path = self._get_path(libname)
+        self._setup(path)
+
+    @staticmethod
+    def get_libnames():
+        libnames = {
+            "twoways"      :  "/motif_state_libraries/twoways_clusters.db"
+        }
+        return libnames
+
+    def _generate_data(self, s):
+        return motif.str_to_motif_array(s)
 
 
 def build_sqlite_library(path, data_values, ids):

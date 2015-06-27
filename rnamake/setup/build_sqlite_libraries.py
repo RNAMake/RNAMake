@@ -1,4 +1,4 @@
-import rnamake.motif_library as motif_library
+import motif_library
 import rnamake.motif_factory as motif_factory
 import rnamake.motif_ensemble as motif_ensemble
 import rnamake.motif as motif
@@ -8,6 +8,7 @@ import rnamake.cluster as cluster
 import rnamake.settings as settings
 import rnamake.sqlite_library as sqlite_library
 import math
+import subprocess
 
 def test_align(self):
     mlib = sqlite_library.MotifLibrarySqlite(libname="ideal_helices")
@@ -26,21 +27,26 @@ class SSandSeqCluster(object):
         self.end_id = end_id
         self.motif_and_ends = []
 
-    def motif_matches(self, m):
+    def motif_matches_end(self, m, ei):
         class MotifandEnd(object):
             def __init__(self, m, ei):
                 self.motif, self.end_index = m, ei
 
+        if self.end_id == m.end_ids[ei]:
+            self.motif_and_ends.append(MotifandEnd(m, ei))
+            return 1
+        else:
+            return 0
+
+    def motif_matches(self, m):
         for i, end_id in enumerate(m.end_ids):
-            if self.end_id == end_id:
-                self.motif_and_ends.append(MotifandEnd(m, i))
+            r = self.motif_matches_end(m, i)
+            if r == 0:
                 return 1
         return 0
 
 
 class BuildSqliteLibraries(object):
-    def __init__(self):
-        pass
 
     def build_ideal_helices(self):
         mlib = motif_library.ideal_helix_lib()
@@ -61,35 +67,44 @@ class BuildSqliteLibraries(object):
         f.write(s)
         f.close()
 
-    def build_twoways(self):
-        mlib = motif_library.unique_twoway_lib()
-        h_mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+    def build_basic_libraries(self):
 
-        succeses = []
-        for m in mlib.motifs():
-            if len(m.ends) == 1:
-                continue
+        types = [motif_type.TWOWAY, motif_type.NWAY, motif_type.HAIRPIN,
+                 motif_type.TCONTACT]
 
-            for ei in range(len(m.ends)):
-                m_added = motif_factory.factory.can_align_motif_to_end(m, ei)
-                if m_added is None:
+        for t in types:
+            mlib = motif_library.MotifLibrary(t)
+            mlib.load_all()
+
+            succeses = []
+            for m in mlib.motifs():
+                if t != motif_type.HAIRPIN and len(m.ends) == 1:
                     continue
-                else:
-                    succeses.append([m_added, ei])
+                elif len(m.ends) == 0:
+                    continue
 
-        aligned_motifs = []
-        names = []
-
-        for s in succeses:
-            m, ei = s
-            m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
-            m_added.name = m_added.name + "-" + m_added.ends[0].name()
-            aligned_motifs.append(m_added)
-            names.append(m_added.name)
+                for ei in range(len(m.ends)):
+                    m_added = motif_factory.factory.can_align_motif_to_end(m, ei)
+                    if m_added is None:
+                        continue
+                    else:
+                        succeses.append([m_added, ei])
 
 
-        path = settings.RESOURCES_PATH +"/motif_libraries_new/twoways.db"
-        sqlite_library.build_sqlite_library(path, aligned_motifs, names)
+            aligned_motifs = []
+            names = []
+
+            for s in succeses:
+                m, ei = s
+                m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
+                org_name = m_added.name
+                m_added.name = m_added.name + "-" + m_added.ends[0].name()
+                aligned_motifs.append(m_added)
+                names.append(m_added.name)
+
+            path = settings.RESOURCES_PATH +"/motif_libraries_new/"+\
+                   motif_type.type_to_str(t).lower()+".db"
+            sqlite_library.build_sqlite_library(path, aligned_motifs, names)
 
     def build_helix_ensembles(self):
         helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
@@ -170,9 +185,114 @@ class BuildSqliteLibraries(object):
             path = settings.RESOURCES_PATH + "/motif_state_libraries/" + libname + ".db"
             sqlite_library.build_sqlite_library(path, motif_states, names)
 
+    def build_unique_twoway_library(self):
+        mlib = sqlite_library.MotifSqliteLibrary("twoways")
+        mlib.load_all()
+        clusters = cluster.cluster_motifs(mlib.all(), 9.0)
+        motif_arrays = []
+        motif_array_names = []
 
+        uniques = []
+        unique_names = []
+        for c in clusters:
+            lowest = c.motifs[0]
+            for m in c.motifs:
+                if lowest.score > m.score:
+                    lowest = m
 
+            motif_arrays.append(motif.MotifArray(c.motifs))
+            motif_array_names.append(lowest.name)
 
+            uniques.append(lowest)
+            unique_names.append(lowest.name)
+
+        path = settings.RESOURCES_PATH +"/motif_libraries_new/unique_twoways.db"
+        sqlite_library.build_sqlite_library(path, uniques, unique_names)
+
+        path = settings.RESOURCES_PATH +"/motif_libraries_new/twoways_clusters.db"
+        sqlite_library.build_sqlite_library(path, motif_arrays, motif_array_names)
+
+    def build_ss_and_seq_libraries(self):
+        libnames = ["twoway", "tcontact", "hairpin", "nway"]
+
+        for libname in libnames:
+            mlib = sqlite_library.MotifSqliteLibrary(libname)
+            mlib.load_all()
+
+            clusters = []
+
+            mes = []
+            mes_names = []
+
+            motifs = []
+
+            kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+            kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
+
+            for m in mlib.all():
+                matched = 0
+                for c in clusters:
+                    if c.motif_matches_end(m, 0):
+                        matched = 1
+
+                if not matched:
+                    clusters.append(SSandSeqCluster(m.end_ids[0]))
+                    clusters[-1].motif_matches_end(m, 0)
+
+            for c in clusters:
+
+                all_motifs = []
+                for m_e in c.motif_and_ends:
+                    all_motifs.append(m_e.motif)
+                if libname != "twoway":
+                    energies = [1 for x in all_motifs]
+                    me = motif_ensemble.MotifEnsemble()
+                    me.setup(c.end_id, all_motifs, energies)
+                    mes.append(me)
+                    motifs.append(me.members[0].motif)
+                    motifs[-1].name = me.id
+                    mes_names.append(me.id)
+                    continue
+                m_clusters = cluster.cluster_motifs(all_motifs)
+                clustered_motifs = []
+                energies = []
+                for j, c_motifs in enumerate(m_clusters):
+                    clustered_motifs.append(c_motifs.motifs[0])
+                    pop = float(len(c_motifs.motifs)) / float(len(all_motifs))
+                    energy = -kBT*math.log(pop)
+                    energies.append(energy)
+
+                me = motif_ensemble.MotifEnsemble()
+                me.setup(c.end_id, clustered_motifs, energies)
+                mes.append(me)
+                motifs.append(me.members[0].motif)
+                motifs[-1].name = me.id
+                mes_names.append(me.id)
+
+            print libname, len(mlib.all()), len(clusters)
+
+            path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/"+libname+".db"
+            sqlite_library.build_sqlite_library(path, mes, mes_names)
+
+            path = settings.RESOURCES_PATH +"/motif_libraries_new/ss_"+libname+".db"
+            sqlite_library.build_sqlite_library(path, motifs, mes_names)
+
+    def build_motif_ensemble_state_libraries(self):
+
+        for libname in sqlite_library.MotifEnsembleSqliteLibrary.get_libnames().keys():
+
+            me_lib = sqlite_library.MotifEnsembleSqliteLibrary(libname)
+            me_lib.load_all()
+
+            mses = []
+            names = []
+            for me in me_lib.all():
+                mse = me.get_state()
+                mses.append(mse)
+                names.append(mse.id)
+
+            path = settings.RESOURCES_PATH +"/motif_state_ensemble_libraries/"+libname+".db"
+            sqlite_library.build_sqlite_library(path, mses, names)
 
 
 
@@ -180,10 +300,11 @@ class BuildSqliteLibraries(object):
 
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
-#builder.build_twoways()
+#builder.build_basic_libraries()
 #builder.build_helix_ensembles()
-builder.build_motif_state_libraries()
-
+#builder.build_motif_state_libraries()
+#builder.build_unique_twoway_library()
+builder.build_motif_ensemble_state_libraries()
 
 
 

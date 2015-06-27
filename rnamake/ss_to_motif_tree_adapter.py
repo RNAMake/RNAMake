@@ -24,8 +24,8 @@ class SStoMotifTreeAdapter(object):
                 if len(avail_pos) == 0:
                     raise ValueError("cannot start build mt from mtt from this node")
                 m = resource_manager.manager.get_motif(n.data.ends[ avail_pos[0] ].get_id())
-                mt_n = mt.add_motif(m, end_index=0, end_flip=0)
-                seen_nodes[n.index] = mt_n.index
+                index = mt.add_motif(m)
+                seen_nodes[n.index] = index
 
 
             else:

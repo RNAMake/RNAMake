@@ -1,12 +1,91 @@
 import tree
 import Queue
+import math
 from collections import namedtuple
+
+def compare_ss_tree(ss_tree1, ss_tree2):
+
+    bp_score = {
+        "G+C-A+U" : 0.25,
+        "A+U-G+C" : 0.25,
+        "G+C-U+A" : 0.50,
+        "U+A-G+C" : 0.50,
+        "C+G-A+U" : 0.50,
+        "A+U-C+G" : 0.50,
+        "C+G-U+A" : 0.25,
+        "U+A-C+G" : 0.25
+    }
+
+    n_score = {
+        "G-A" : 1,
+        "G-U" : 2,
+        "G-C" : 3,
+        "A-G" : 1,
+        "A-C" : 2,
+        "A-U" : 3,
+        "C-U" : 1,
+        "C-A" : 2,
+        "C-G" : 3,
+        "U-C" : 1,
+        "U-A" : 3,
+        "U-G" : 2
+    }
+
+    score = 0
+
+    for n1 in ss_tree1:
+        n2 = ss_tree2.get_node(n1.index)
+
+        if n1.data.type == SS_Type.SS_BP:
+            if n1.data.seq() ==  n2.data.seq():
+                continue
+            else:
+                str_id = n1.data.seq() + "-" + n2.data.seq()
+                if str_id not in bp_score:
+                    score += 0.75
+                else:
+                    score += bp_score[str_id]
+
+        else:
+            spl1 = n1.data.seq().split("+")
+            spl2 = n2.data.seq().split("+")
+
+            if len(spl1) != len(spl2):
+                return 1000
+
+            for i in range(len(spl1)):
+                if spl1[i] == spl2[i]:
+                    continue
+
+                min = len(spl1[i])
+                if len(spl2[i]) < min:
+                    min = len(spl2[i])
+                score += (math.fabs(len(spl1[i]) - len(spl2[i])))*2
+
+                for j in range(min):
+                    if spl1[i][j] == spl2[i][j]:
+                        continue
+                    c_n_score = n_score[ spl1[i][j] + "-" + spl2[i][j]]
+                    score += c_n_score
+
+    return score
+
 
 class SS_Tree(object):
     def __init__(self, ss, seq):
         self.tree = tree.TreeDynamic()
         self.seq, self.ss = seq, ss
+
+        if len(ss) != len(seq):
+            raise ValueError("sequence and secondary structure are not the same length")
+
+        if ss[0] != '(' and ss[0] != '.':
+            raise ValueError("secondary structure is not valid did you flip seq and ss?")
+
         self._build_tree()
+
+    def get_node(self, i):
+        return self.tree.get_node(i)
 
     def __len__(self):
         return len(self.tree)
@@ -218,6 +297,7 @@ class SS_Tree(object):
 
         return pos
 
+
 class SS_Type(object):
    SS_BP        = 0
    SS_BULGE     = 1
@@ -254,4 +334,11 @@ class SS_NodeData(object):
         elif self.type == SS_Type.SS_SEQ_BREAK: return "SS_SEQ_BREAK"
         else: raise ValueError("unknown SS_TYPE")
 
+    def seq(self):
+        seq = ""
+        for i, ss_data in enumerate(self.ss_data):
+            seq += ss_data.seq
+            if i != len(self.ss_data)-1:
+                seq += '+'
+        return seq
 

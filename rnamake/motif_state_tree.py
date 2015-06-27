@@ -2,11 +2,15 @@ import motif
 import motif_tree
 import tree
 import resource_manager
+import util
+import settings
+import basic_io
 
 
 class MotifStateTree(object):
     def __init__(self, mt=None):
         self.tree = tree.TreeStatic()
+        self.clash_radius = settings.CLASH_RADIUS
 
         if mt is not None:
             self._setup_from_mt(mt)
@@ -27,8 +31,10 @@ class MotifStateTree(object):
 
                 if parent_index == 1000:
                     raise ValueError("did not convert motif tree to motif state tree properly")
-                self.add_state(resource_manager.manager.get_state(n.data.name),
+                j = self.add_state(resource_manager.manager.get_state(n.data.name),
                                parent_index, parent_end_index)
+                if j == -1:
+                    raise ValueError("could not convert motif tree to motif state tree")
 
     def add_state(self, state, parent_index=-1, parent_end_index=-1):
         parent = self.tree.last_node
@@ -50,7 +56,12 @@ class MotifStateTree(object):
                                           n_data.cur_state,
                                           n_data.ref_state)
 
+            if self._steric_clash(n_data):
+                continue
+
             return self.tree.add_data(n_data, len(state.end_states), parent.index, p)
+
+        return -1
 
     def to_motif_tree(self):
 
@@ -73,8 +84,31 @@ class MotifStateTree(object):
     def get_node(self, i):
         return self.tree.get_node(i)
 
-    def _steric_clash(self):
-        pass
+    def replace_state(self, i, new_state):
+        n = self.get_node(i)
+        if len(new_state.end_states) !=  len(n.data.ref_state.end_states):
+            raise ValueError("attempted to replace a state with a different number of ends")
+
+        old_state = n.data.ref_state
+
+        n.data.ref_state = new_state
+        n.data.cur_state = new_state
+        for n in tree.transverse_tree(self.tree, i):
+            parent = n.parent
+            pei = n.parent_end_index()
+
+            motif.get_aligned_motif_state(parent.data.cur_state.end_states[pei],
+                                          n.data.cur_state,
+                                          n.data.ref_state)
+
+    def _steric_clash(self, new_data):
+        for n in self.tree.nodes[::-1]:
+            for b1 in n.data.cur_state.beads:
+                for b2 in new_data.cur_state.beads:
+                    dist = util.distance(b1, b2)
+                    if dist < self.clash_radius:
+                        return 1
+        return 0
 
     def __len__(self):
         return len(self.tree)

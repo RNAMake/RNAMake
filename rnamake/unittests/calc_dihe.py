@@ -1,4 +1,6 @@
 import rnamake
+import rnamake.sqlite_library as sqlite_library
+import rnamake.motif_factory as mf
 import rnamake.util as util
 import rnamake.structure
 import math
@@ -63,8 +65,8 @@ def calc_dihe_3(atoms):
     return (180 / math.pi) * math.atan2(y, x)
 
 
-mlib = rnamake.motif_library.MotifLibrary(rnamake.motif_type.HELIX)
-m = mlib.get_motif('HELIX.IDEAL')
+mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+m = mlib.get('HELIX.IDEAL')
 #m.to_pdb('test.pdb')
 
 dihedral_lists = [
@@ -78,7 +80,7 @@ dihedral_lists = [
 path = '/Users/josephyesselman/projects/REDESIGN/resources/non-redundant-rnas/'
 files = glob.glob(path+"/*")
 
-prime2 = rnamake.structure.Structure(pdb='/Users/josephyesselman/Downloads/3prime.pdb')
+prime2 = mf.factory.get_structure('/Users/josephyesselman/Downloads/1u6b_g.pdb')
 
 r = prime2.residues()[0]
 cdihes = []
@@ -88,7 +90,6 @@ for dl in dihedral_lists:
         atoms.append(r.get_atom(name))
     cdihes.append(calc_dihe_3(atoms))
 
-print cdihes
 
 f = open('all_sugar_dihedrals.txt')
 lines = f.readlines()
@@ -109,6 +110,9 @@ for l in lines:
 cutoff = 25
 closest_distance = 100000
 closest_hit = 0
+
+worst_distance = 0
+
 for dihe in all_dihes:
     diff = 0
     if dihe[2] != 'G':
@@ -120,10 +124,14 @@ for dihe in all_dihes:
         closest_distance = diff
         closest_hit = dihe
 
+    if diff > worst_distance:
+        worst_distance = diff
+
     #if diff < cutoff:
     #    print dihe
 
-print closest_hit, closest_distance
+print cdihes
+#print closest_hit, closest_distance, worst_distance
 
 exit(0)
 fsum = open('all_sugar_dihedrals.txt', 'w')

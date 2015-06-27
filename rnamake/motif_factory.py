@@ -1,4 +1,5 @@
 import os
+import motif_scorer
 import motif
 import structure
 import chain
@@ -10,7 +11,6 @@ import basepair
 import secondary_structure
 import settings
 
-#self.ref_motif = motif.str_to_motif(path)
 
 class MotifFactory(object):
     def __init__(self):
@@ -21,6 +21,7 @@ class MotifFactory(object):
         self.base_motif.get_beads([self.base_motif.ends[1]])
         self.added_helix = self.base_motif.copy()
         self.clash_radius = settings.CLASH_RADIUS
+        self.scorer = motif_scorer.MotifScorer()
 
     def build_chains(self, residues):
         """
@@ -231,6 +232,7 @@ class MotifFactory(object):
         ss_chains   = secondary_structure.assign_secondary_structure(m)
         m.ss_chains = ss_chains
         m.end_ids   = self._setup_end_ids(ends, m)
+        m.score     = self.scorer.score(m)
 
         return m
 
@@ -290,7 +292,7 @@ class MotifFactory(object):
 
 def ref_motif():
     path = settings.RESOURCES_PATH + "/start"
-    m = factory.get_motif(path)
+    m = factory.motif_from_file(path)
     return m
 
 factory = MotifFactory()

@@ -1,4 +1,5 @@
 import util
+import ss_tree
 
 class SS_Chain(object):
     def __init__(self, seq, ss, bounds=[-1,-1]):
@@ -41,6 +42,30 @@ def ss_id(ss_data):
         if i != len(ss_data)-1:
             id += "_"
     return id
+
+def ss_id_to_ss_tree(ss_id):
+    ss = ""
+    seq = ""
+    spl = ss_id.split("_")
+
+    for i in range(0, len(spl)-1, 2):
+        seq += spl[i]
+        for e in spl[i+1]:
+            if   e == "L":
+                ss += "("
+            elif e == "R":
+                ss += ")"
+            elif e == "U":
+                ss += "."
+            else:
+                raise ValueError("unexpected symbol in ss_id")
+
+        if i != len(spl)-2:
+            seq += "+"
+            ss += "+"
+
+    return ss_tree.SS_Tree(ss, seq)
+
 
 def assign_secondary_structure(motif):
     structure = ""

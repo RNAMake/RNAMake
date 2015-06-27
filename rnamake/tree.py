@@ -1,5 +1,15 @@
 import Queue
 
+def transverse_tree(tree, i):
+    tree.__iter__()
+    tree.current_node = tree.get_node(i)
+    while 1:
+        try:
+            next = tree.next()
+        except:
+            raise StopIteration
+        yield next
+
 
 class Tree(object):
 

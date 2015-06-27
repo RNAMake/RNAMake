@@ -30,6 +30,7 @@ type_to_str_dict = {
     TWOWAY           : 'TWOWAY',
     NWAY             : 'NWAY',
     HAIRPIN          : 'HAIRPIN',
+    TCONTACT         : 'TCONTACT',
     TCONTACT_HP_HP   : 'TCONTACT_HP_HP',
     TCONTACT_H_HP    : 'TCONTACT_H_HP',
     TCONTACT_H_H     : 'TCONTACT_H_H',

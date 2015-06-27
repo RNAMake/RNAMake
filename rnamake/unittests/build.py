@@ -1,5 +1,9 @@
+import random
 import rnamake.resource_manager as rm
 import rnamake.motif_tree as motif_tree
+import rnamake.ss_tree as ss_tree
+
+
 
 class BuildMotifTree(object):
     def __init__(self, lib_names = ["ideal_helices", "twoways"]):
@@ -24,3 +28,23 @@ class BuildMotifTree(object):
 
 
         return mt
+
+class BuildSSTree(object):
+    def __init__(self):
+        pass
+
+    def build_helix(self, size=10):
+        pairs = "AU,UA,GC,CG".split(",")
+        s1, s2, ss1, ss2 = "", "", "", ""
+        for i in range(size):
+            pair = random.choice(pairs)
+            s1 += pair[0]
+            s2 = pair[1] + s2
+            ss1 += "("
+            ss2 += ")"
+
+        seq = s1  + "+" + s2
+        ss  = ss1 + "+" + ss2
+
+        return ss_tree.SS_Tree(ss, seq)
+

@@ -5,10 +5,10 @@ import rnamake.ss_tree as ss_tree
 import rnamake.motif_tree_topology as motif_tree_topology
 import rnamake.motif_tree as motif_tree
 import rnamake.resource_manager as resource_manager
-import rnamake.motif_library_sqlite
 import rnamake.motif_type
 import rnamake.settings as settings
 import rnamake.ss_to_motif_tree_adapter as ss_to_motif_tree_adapter
+import build
 
 class MotifTreeTopologyUnittest(unittest.TestCase):
 
@@ -43,7 +43,7 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
         return mt
 
 
-    def test_creation(self):
+    def _test_creation(self):
         #sstree = ss_tree.SS_Tree("(((+)))", "GAG+UUC")
         sstree = ss_tree.SS_Tree("((.((+)).((+)).))", "GGAGG+CCAGG+CCACC")
 
@@ -64,6 +64,13 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
 
         adapter = ss_to_motif_tree_adapter.SStoMotifTreeAdapter()
         mt = adapter.convert(sstree)
+
+    def test_creation(self):
+        builder = build.BuildSSTree()
+        ss_tree = builder.build_helix()
+        mtt = motif_tree_topology.MotifTreeTopology(ss_tree)
+
+
 
 
 

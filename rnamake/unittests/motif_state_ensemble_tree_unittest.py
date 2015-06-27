@@ -1,15 +1,13 @@
 import unittest
 import random
-import rnamake.prediction.motif_ensemble_tree as motif_ensemble_tree
-import rnamake.prediction.motif_ensemble as motif_ensemble
-import rnamake.motif_tree_state as motif_tree_state
+import rnamake.motif_state_ensemble_tree as motif_state_ensemble_tree
+import rnamake.resource_manager as rm
 import rnamake.motif_type as motif_type
 import rnamake.util as util
 import rnamake.basic_io as basic_io
 import rnamake.settings as settings
 import rnamake.motif as motif
 import rnamake.motif_tree as motif_tree
-import rnamake.motif_library as motif_library
 import rnamake.motif_type as motif_type
 
 def get_twoway_helix_mts_tree(size=2):
@@ -37,15 +35,20 @@ def get_twoway_helix_mts_tree(size=2):
 
 
 
-class MotifEnsembleTreeUnittest(unittest.TestCase):
+class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
     def _test_creation(self):
-        met = motif_ensemble_tree.MotifEnsembleTree()
+        mset = motif_state_ensemble_tree.MotifStateEnsembleTree()
 
     def test_add(self):
-        me = motif_ensemble.MotifEnsemble("GC=GC", 0, 0)
-        met = motif_ensemble_tree.MotifEnsembleTree()
-        met.add_ensemble(me)
+        mset = motif_state_ensemble_tree.MotifStateEnsembleTree()
+        mse = rm.manager.get_motif_state_ensemble("GG_LL_CC_RR")
+        mset.add_ensemble(mse)
+        mset.add_ensemble(mse)
+        mst = mset.to_mst()
+        mt = mst.to_motif_tree()
+        mt.write_pdbs()
+
 
     def _test_get_mtst(self):
         me = motif_ensemble.MotifEnsemble("GC=GC", 0, 0)
@@ -86,7 +89,7 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
         print len(mtst.nodes)
         mtst.nodes_to_pdbs()
 
-    def test_mts(self):
+    def _test_mts(self):
         path = settings.RESOURCES_PATH + "prediction/GC=GC.new.me"
         mts_lib = motif_tree_state.MotifTreeStateLibrary(libpath=path, new=1)
         mtst = motif_tree_state.MotifTreeStateTree(sterics=1)
@@ -107,7 +110,7 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
         mt.write_pdbs()
         print len(mt.nodes)
 
-    def get_chain_pos(self, p, r):
+    def _get_chain_pos(self, p, r):
         for i, c in enumerate(p.chains()):
             if r in c.residues:
                 return i
@@ -202,7 +205,7 @@ class MotifEnsembleTreeUnittest(unittest.TestCase):
         mtst2.to_pdb('test2.pdb')
         #motif_ensemble_tree.mtst_to_met(mtst)
 
-    def test_mtst_to_met_exhustive(self):
+    def _test_mtst_to_met_exhustive(self):
         return
         twoways = motif_tree_state.MotifTreeStateLibrary(motif_type.TWOWAY)
         helixs = motif_tree_state.MotifTreeStateLibrary(libpath='HELIX_test.new.me', exclude=['11','10'])
