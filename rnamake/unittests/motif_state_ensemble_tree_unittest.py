@@ -37,7 +37,7 @@ def get_twoway_helix_mts_tree(size=2):
 
 class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
-    def _test_creation(self):
+    def test_creation(self):
         mset = motif_state_ensemble_tree.MotifStateEnsembleTree()
 
     def test_add(self):
@@ -47,7 +47,6 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mset.add_ensemble(mse)
         mst = mset.to_mst()
         mt = mst.to_motif_tree()
-        mt.write_pdbs()
 
 
     def _test_get_mtst(self):

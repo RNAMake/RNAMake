@@ -247,21 +247,26 @@ class MotifFactory(object):
                 return None
 
         fail = 0
-        for e in m_added.ends:
-            if e == m_added.ends[ei]:
+        for i in range(len(m_added.ends)):
+            if i == ei:
                 continue
-            m2_added = motif.get_aligned_motif(e, self.added_helix.ends[0],
+            m2_added = motif.get_aligned_motif(m_added.ends[i],
+                                               self.added_helix.ends[0],
                                                self.added_helix)
 
-            if not self._steric_clash(m_added, m2_added):
+            if not self._steric_clash(m_added, m2_added) and \
+               not self._steric_clash(self.base_motif, m2_added):
                 continue
 
-            e.flip()
 
-            m2_added = motif.get_aligned_motif(e, self.added_helix.ends[0],
+            m_added.ends[i].flip()
+
+            m2_added = motif.get_aligned_motif(m_added.ends[i],
+                                               self.added_helix.ends[0],
                                                self.added_helix)
 
-            if self._steric_clash(m_added, m2_added):
+            if self._steric_clash(m_added, m2_added) or \
+               self._steric_clash(self.base_motif, m2_added):
                 fail = 1
                 break
 
@@ -272,6 +277,7 @@ class MotifFactory(object):
 
     def align_motif_to_common_frame(self, m, ei):
         m_added = motif.get_aligned_motif(self.ref_motif.ends[0], m.ends[ei], m)
+
         self._align_chains(m_added)
         self._align_ends(m_added)
         return m_added

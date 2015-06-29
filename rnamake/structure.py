@@ -28,9 +28,14 @@ class Structure(object):
                (self.name, len(self.chains), len(self.residues()), len(self.atoms()))
 
     def renumber(self):
-        for i, r in enumerate(self.residues()):
-            r.num = i+1
-            r.chain_id = "A"
+        chains = "A B C D E F G H I J K L M".split()
+        j = 1
+        for i, c in enumerate(self.chains):
+            for r in c.residues:
+                r.num = j
+                r.chain_id = chains[i]
+                j += 1
+
 
     def get_beads(self, excluded_res=[]):
         """
@@ -119,6 +124,7 @@ class Structure(object):
         for c in self.chains:
             c_str, acount = c.to_pdb_str(acount, 1)
             s += c_str
+            s += "TER\n"
         return s
 
     def to_pdb(self, fname="structure.pdb"):

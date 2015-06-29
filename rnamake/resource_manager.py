@@ -11,6 +11,7 @@ class ResourceManager(object):
         self.ms_libs,  self.extra_ms = {}, {}
         self.me_libs,  self.extra_me = {}, {}
         self.mse_libs, self.extra_mse = {}, {}
+        self.ss_libs,  self.extra_ss = {}, {}
 
         for k in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
             self.mlibs[k] = sqlite_library.MotifSqliteLibrary(k)
@@ -24,12 +25,20 @@ class ResourceManager(object):
         for k in sqlite_library.MotifStateEnsembleSqliteLibrary.get_libnames().keys():
             self.mse_libs[k] = sqlite_library.MotifStateEnsembleSqliteLibrary(k)
 
-    def get_motif(self, mname=None, ss_id=None):
+        for k in sqlite_library.MotifSSIDSqliteLibrary.get_libnames().keys():
+            self.ss_libs[k] = sqlite_library.MotifSSIDSqliteLibrary(k)
 
-        if mname is not None:
-            for mlib in self.mlibs.itervalues():
-                if mlib.contains(mname):
-                    return mlib.get(mname)
+    def get_motif(self, mname):
+
+        for mlib in self.mlibs.itervalues():
+            if mlib.contains(mname):
+                return mlib.get(mname)
+
+
+        for mlib in self.ss_libs.itervalues():
+             if mlib.contains(mname):
+                 return mlib.get(mname)
+
 
         raise ValueError("cannot find " + mname)
 

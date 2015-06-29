@@ -1,7 +1,7 @@
 import motif_tree_topology
 import motif_tree
 import graph
-import resource_manager
+import resource_manager as rm
 
 class SStoMotifTreeAdapter(object):
     def __init__(self):
@@ -10,8 +10,8 @@ class SStoMotifTreeAdapter(object):
     def convert(self, sstree):
         mtt = motif_tree_topology.MotifTreeTopology(sstree)
 
-        for n in mtt:
-            print n.data.ends[0].ss_data
+        #for n in mtt:
+        #    print n.data.ends[0].get_id()
 
         mt = motif_tree.MotifTree()
 
@@ -23,10 +23,10 @@ class SStoMotifTreeAdapter(object):
                 avail_pos = n.available_children_pos()
                 if len(avail_pos) == 0:
                     raise ValueError("cannot start build mt from mtt from this node")
-                m = resource_manager.manager.get_motif(n.data.ends[ avail_pos[0] ].get_id())
+                end_id = n.data.ends [ avail_pos[0] ].get_id()
+                m = rm.manager.get_motif(ss_id=end_id)
                 index = mt.add_motif(m)
                 seen_nodes[n.index] = index
-
 
             else:
                 parent_index = -1
@@ -42,17 +42,17 @@ class SStoMotifTreeAdapter(object):
                 correct_id = parent.data.ends[ parent_end_index ].get_id()
 
                 mt_parent_index = -1
-                avail_pos = mt.nodes[mt_index].available_indexes()
-                for i in range(len(mt.nodes[mt_index].motif.ends)):
-                    if mt.nodes[mt_index].motif.get_end_id(i) == correct_id and i in avail_pos:
-                        mt_parent_index = i
+                avail_pos = mt.get_node(mt_index).available_children_pos()
+                for p in avail_pos:
+                    if mt.get_node(mt_index).data.end_ids[p] == correct_id:
+                        mt_parent_index = p
                         break
 
-                m = resource_manager.manager.get_motif(n.data.ends[ end_index ].get_id())
-                print m.name, mt_parent_index, parent_end_index, 0
-                parent = mt.nodes[mt_index]
-                mt_n = mt.add_motif(m, parent=parent, parent_index=mt_parent_index, end_index=0, end_flip=0)
-                seen_nodes[n.index] = mt_n.index
-                mt.write_pdbs()
+                m = rm.manager.get_motif(ss_id=n.data.ends[ end_index ].get_id())
+                mt_n = mt.add_motif(m, mt_index, parent_end_index)
+
+                seen_nodes[n.index] = mt_n
+
+        return mt
 
 

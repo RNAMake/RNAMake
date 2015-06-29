@@ -8,6 +8,7 @@ import io
 import motif_type
 import settings
 import basic_io
+import secondary_structure
 import numpy as np
 
 class Motif(object):
@@ -146,6 +147,9 @@ class Motif(object):
         for end_id in self.end_ids:
             s += end_id + " "
         s += "&"
+        for ss_chain in self.ss_chains:
+            s += ss_chain.to_str() + "@"
+        s += "&"
         return s
 
     def to_pdb_str(self):
@@ -236,6 +240,12 @@ class Motif(object):
             ends[i] = end.state()
         return MotifState(self.name, ends, bead_centers, self.score, len(self.residues()))
 
+    def end_index_with_id(self, id):
+        for i, end_id in enumerate(self.end_ids):
+            if id == end_id:
+                return i
+
+        raise ValueError("no matching end id in motif")
 
 class MotifState(object):
     __slots__ = ['name', 'end_states', 'beads', 'score', 'size']
@@ -318,7 +328,11 @@ def str_to_motif(s):
         m.ends.append(m.basepairs[int(index)])
     end_ids = spl[7].split()
     m.end_ids = end_ids
-
+    try:
+        ss_chain_strs = spl[8].split("@")
+        m.ss_chains = [secondary_structure.str_to_ss_chain(s) for s in ss_chain_strs[:-1]]
+    except:
+        pass
     return m
 
 
@@ -416,13 +430,11 @@ def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
     cur_state.beads = np.dot(cur_state.beads, r.T) + t
 
 
+#UC&GG&CG&CG
+#((&)(&)(&))
 
-
-
-
-
-
-
+#CG&UC&GG&CG
+#((&)(&)(&))
 
 
 

@@ -10,7 +10,6 @@ def transverse_tree(tree, i):
             raise StopIteration
         yield next
 
-
 class Tree(object):
 
     def __init__(self):

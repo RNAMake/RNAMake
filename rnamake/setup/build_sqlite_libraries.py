@@ -41,7 +41,7 @@ class SSandSeqCluster(object):
     def motif_matches(self, m):
         for i, end_id in enumerate(m.end_ids):
             r = self.motif_matches_end(m, i)
-            if r == 0:
+            if r == 1:
                 return 1
         return 0
 
@@ -55,11 +55,12 @@ class BuildSqliteLibraries(object):
         path = settings.RESOURCES_PATH +"/motif_libraries_new/ideal_helices.db"
         for m in mlib.motifs():
             aligned_motif = motif_factory.factory.align_motif_to_common_frame(m, 1)
-            aligned_motifs.append(m)
-            names.append(m.name)
+            aligned_motifs.append(aligned_motif)
+            names.append(aligned_motif.name)
+
         sqlite_library.build_sqlite_library(path, aligned_motifs, names)
 
-        mlib = sqlite_library.MotifSqliteLibrary(libname="ideal_helices")
+        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
         m = mlib.get("HELIX.IDEAL.6")
         s = m.to_str()
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
@@ -143,16 +144,20 @@ class BuildSqliteLibraries(object):
         mes_names = []
         motifs = []
         for c in clusters:
+            #if c.end_id != "AG_LL_UU_RR" and  c.end_id != "CU_LL_AG_RR":
+            #    continue
             aligned_motifs = []
             for i, m_and_e in enumerate(c.motif_and_ends):
                 m, ei = m_and_e.motif, m_and_e.end_index
                 m_a = motif_factory.factory.can_align_motif_to_end(m, ei)
+                if m_a is None:
+                    continue
                 m_a = motif_factory.factory.align_motif_to_common_frame(m_a, ei)
                 aligned_motifs.append(m_a)
-            clusters = cluster.cluster_motifs(aligned_motifs)
+            m_clusters = cluster.cluster_motifs(aligned_motifs)
             clustered_motifs = []
             energies = []
-            for j, c_motifs in enumerate(clusters):
+            for j, c_motifs in enumerate(m_clusters):
                 clustered_motifs.append(c_motifs.motifs[0])
                 pop = float(len(c_motifs.motifs)) / float(len(aligned_motifs))
                 energy = -kBT*math.log(pop)
@@ -171,8 +176,7 @@ class BuildSqliteLibraries(object):
         sqlite_library.build_sqlite_library(path, motifs, mes_names)
 
     def build_motif_state_libraries(self):
-        libnames = ["ideal_helices", "twoways"]
-        for libname in libnames:
+        for libname in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
             mlib = sqlite_library.MotifSqliteLibrary(libname)
             mlib.load_all()
             motif_states = []
@@ -186,7 +190,7 @@ class BuildSqliteLibraries(object):
             sqlite_library.build_sqlite_library(path, motif_states, names)
 
     def build_unique_twoway_library(self):
-        mlib = sqlite_library.MotifSqliteLibrary("twoways")
+        mlib = sqlite_library.MotifSqliteLibrary("twoway")
         mlib.load_all()
         clusters = cluster.cluster_motifs(mlib.all(), 9.0)
         motif_arrays = []
@@ -295,18 +299,18 @@ class BuildSqliteLibraries(object):
             sqlite_library.build_sqlite_library(path, mses, names)
 
 
-
-
-
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
-#builder.build_basic_libraries()
+builder.build_basic_libraries()
 #builder.build_helix_ensembles()
-#builder.build_motif_state_libraries()
 #builder.build_unique_twoway_library()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_motif_state_libraries()
+#builder.build_ss_and_seq_libraries()
+#builder.build_motif_ensemble_state_libraries()
 
 
+#mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+#m = mlib.get("HELIX.IDEAL")
 
 #me_lib = sqlite_library.MotifEnsembleSqliteLibrary("bp_steps")
 #me = me_lib.get_motif_ensemble("GG_LL_CC_RR")

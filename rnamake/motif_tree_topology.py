@@ -116,6 +116,47 @@ class MotifTreeTopology(object):
     def starting_nodes(self):
         pass
 
+    def get_connectivity_from(self, pos):
+
+        class connection(object):
+            def __init__(self, parent_index, parent_ss_id, ss_id):
+                self.parent_index, self.parent_ss_id = parent_index, parent_ss_id
+                self.ss_id = ss_id
+
+        connectivity = []
+        seen_nodes = {}
+        for i, n in enumerate(graph.transverse_graph(self.graph, pos)):
+            if i == 0:
+                avail_pos = n.available_children_pos()
+                if len(avail_pos) == 0:
+                    raise ValueError("not a suitiable starting pos to transverse")
+                end_id = n.data.ends [ avail_pos[0] ].get_id()
+                connectivity.append(connection(-1, "", end_id))
+                seen_nodes[n] = i
+            else:
+                parent_index = -1
+                parent_ss_id = ""
+                ss_id = ""
+                for connected in n.connected_nodes():
+                    if connected in seen_nodes:
+                        parent_index = seen_nodes[connected]
+                        c = n.connection_with_node(connected.index)
+                        parent_end_index = c.end_index(connected.index)
+                        end_index = c.end_index(n.index)
+                        parent_ss_id = connected.data.ends [ parent_end_index ].get_id()
+                        ss_id = n.data.ends [ end_index ].get_id()
+                        break
+
+                if parent_index == -1:
+                    raise ValueError("could not find seen_node for current node")
+
+                seen_nodes[n] = i
+                connectivity.append(connection(parent_index ,parent_ss_id, ss_id))
+
+        return connectivity
+
+
+
 
 class MotifTopologyType(object):
     BP_STEP  = 0

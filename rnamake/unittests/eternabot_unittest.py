@@ -7,8 +7,8 @@ class EternaBotUnittest(unittest.TestCase):
         designer = sequence_designer.SequenceDesigner()
         solutions = designer.design("(((....)))", "NNNNNNNNNN")
 
-        solutions = designer.design("(((....)&..))", "NNNNNNNN&NNNN")
-        #print solutions[0]
+        #solutions = designer.design("(((....)&..))", "NNNNNNNN&NNNN")
+        print solutions[0]['end'][0]
 
 
 def main():

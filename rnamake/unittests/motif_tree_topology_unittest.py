@@ -1,6 +1,6 @@
 import unittest
 import random
-import rnamake.graph as graph
+import rnamake.sqlite_library as sqlite_library
 import rnamake.ss_tree as ss_tree
 import rnamake.motif_tree_topology as motif_tree_topology
 import rnamake.motif_tree as motif_tree
@@ -8,40 +8,12 @@ import rnamake.resource_manager as resource_manager
 import rnamake.motif_type
 import rnamake.settings as settings
 import rnamake.ss_to_motif_tree_adapter as ss_to_motif_tree_adapter
+import rnamake.motif_factory as motif_factory
+import rnamake.secondary_structure as secondary_structure
+import rnamake.ss_tree as ss_tree
 import build
 
 class MotifTreeTopologyUnittest(unittest.TestCase):
-
-    def _build_random_mt(self):
-        h_lib = rnamake.motif_library_sqlite.MotifLibrarySqlite(rnamake.motif_type.HELIX)
-        path = settings.RESOURCES_PATH + "motif_libraries/twoway_aligned.db"
-        twoways = rnamake.motif_library_sqlite.MotifLibrarySqlite(libpath=path)
-        twoways.mtype = rnamake.motif_type.TWOWAY
-        twoways.load_all()
-
-        mt = motif_tree.MotifTree()
-        for i in range(2):
-            if i % 2 == 0:
-                num = random.randint(1,20)
-                m = h_lib.get_motif("HELIX.IDEAL."+str(num))
-                mt.add_motif(m, end_index=1, end_flip=0)
-            else:
-                m = twoways.random_motif()
-                mt.add_motif(m, end_index=m.end_to_add, end_flip=0)
-
-        return mt
-
-    def _specific_mt_build(self):
-        mt = motif_tree.MotifTree()
-        m = resource_manager.manager.get_motif("HELIX.IDEAL.2")
-        mt.add_motif(m, end_index=1, end_flip=0)
-        path = settings.RESOURCES_PATH + "motif_libraries/twoway_aligned.db"
-        twoways = rnamake.motif_library_sqlite.MotifLibrarySqlite(libpath=path)
-        twoways.mtype = rnamake.motif_type.TWOWAY
-        m = twoways.get_motif("TWOWAY.2ZY6.0-0")
-        mt.add_motif(m, end_index=m.end_to_add, end_flip=0)
-        return mt
-
 
     def _test_creation(self):
         #sstree = ss_tree.SS_Tree("(((+)))", "GAG+UUC")
@@ -69,10 +41,45 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
         builder = build.BuildSSTree()
         ss_tree = builder.build_helix()
         mtt = motif_tree_topology.MotifTreeTopology(ss_tree)
+        connectivity = mtt.get_connectivity_from(0)
+        #for c in connectivity:
+        #    print c.parent_index, c.parent_ss_id, c.ss_id
+        #adapter = ss_to_motif_tree_adapter.SStoMotifTreeAdapter()
+        #mt = adapter.convert(ss_tree)
+        #mt.write_pdbs()
+
+    def test_nway(self):
+        mlib2 = sqlite_library.MotifSqliteLibrary("nway")
+        mlib1 = sqlite_library.MotifSqliteLibrary("ideal_helices")
+        builder = build.BuildMotifTree(libs=[mlib1, mlib2])
+        #mt = builder.build(3)
+        mt = builder.build_specific(["HELIX.IDEAL.2",
+                                     "NWAY.1S72.18-01551-01634",
+                                     "HELIX.IDEAL.2"])
+
+        m = resource_manager.manager.get_motif("NWAY.1S72.18-01551-01634")
+        ss = m.secondary_structure()
+        seq = m.sequence()
+
+        print ss
+        print seq
+        #p = mt.to_pose()
+        #print p.secondary_structure()
+        #print  p.sequence()
+        #exit()
+
+        sstree = ss_tree.SS_Tree(ss, seq)
+
+        for n in sstree:
+            print n.index, n.data.ss_data, n.data.what(),
+            print n.parent_index(),
+            for c in n.children:
+                print c.index,
+            print
 
 
 
-
+        #p.to_pdb("test.pdb")
 
 
     def _test_build_mt(self):

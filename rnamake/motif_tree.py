@@ -8,6 +8,9 @@ import motif_type
 import motif_tree_merger
 import graph
 
+def motif_tree_from_topology(self, mtt, pos):
+    pass
+
 class MotifTree(base.Base):
     """
     MotifTree class orchestrates the connection of motifs to both other motifs and full structure and is a core feature of this package
@@ -20,8 +23,8 @@ class MotifTree(base.Base):
     .. code-block:: python
         >>>mt = MotifTree()
         >>>mlib = MotifLibrary()
-        >>>mt.add_motif(mlib.get_motif("HELIX.IDEAL))
-        >>>mt.add_motif(mlib.get_motif("HELIX.IDEAL))
+        >>>mt.add_motif(mlib.get_motif("HELIX.IDEAL"))
+        >>>mt.add_motif(mlib.get_motif("HELIX.IDEAL"))
 
         #number of nodes added
         >>>mt.nodes
@@ -29,7 +32,7 @@ class MotifTree(base.Base):
 
         #merge motifs together and get a single motif and you can print that a pdb
         >>>mm = mt.get_merged_motif()
-        >>>mm.to_pdb("test.pdb)
+        >>>mm.to_pdb("test.pdb")
 
     Attributes
     ----------
@@ -89,6 +92,9 @@ class MotifTree(base.Base):
         avail_pos = self.graph.get_availiable_pos(parent, parent_end_index)
 
         for p in avail_pos:
+            if p == 0:
+                continue
+
             m_added = motif.get_aligned_motif(parent.data.ends[p], m.ends[0], m)
             if self.option('sterics'):
                 if self._steric_clash(m_added):

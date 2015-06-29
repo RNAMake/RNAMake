@@ -131,6 +131,7 @@ class GraphStatic(Graph):
                 c.disconnect()
                 self.connections.remove(c)
         self.nodes.remove(n)
+        self.last_node = self.nodes[-1]
         self.index -= 1
 
     def check_pos_is_value(self, n, pos):
@@ -213,6 +214,13 @@ class GraphNode(object):
             if c.partner(self.index).index == n_index:
                 return 1
         return 0
+
+    def connected_nodes(self):
+        nodes = []
+        for c in self.connections:
+            if c is not None:
+                nodes.append(c.partner(self.index))
+        return nodes
 
 class GraphNodeDynamic(GraphNode):
     def __init__(self, data, index, level):

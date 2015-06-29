@@ -108,9 +108,9 @@ class MotifSSIDSqliteLibrary(SqliteLibrary):
         libnames = {
             "bp_steps"     : "/motif_libraries_new/bp_steps.db",
             "twoway"       : "/motif_libraries_new/ss_twoway.db",
-            "tcontact"     : "/motif_libraries_new/ss_tcontact.db",
+            #"tcontact"     : "/motif_libraries_new/ss_tcontact.db",
             "hairpin"      : "/motif_libraries_new/ss_hairpin.db",
-            "nway"         : "/motif_libraries_new/ss_nway.db",
+            #"nway"         : "/motif_libraries_new/ss_nway.db",
         }
 
         return libnames
@@ -166,7 +166,6 @@ class MotifSSIDSqliteLibrary(SqliteLibrary):
                 motifs.append(self.get(id))
 
         return motifs
-
 
 
 class MotifEnsembleSqliteLibrary(SqliteLibrary):

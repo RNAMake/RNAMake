@@ -7,10 +7,10 @@ class SSTreeUnittest(unittest.TestCase):
         sstree = ss_tree.SS_Tree("((..(+)))", "GGUUC+GCC")
         #sstree = ss_tree.SS_Tree("(.(+).)", "GUG+CUC")
 
-        seq = "CAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIA"
-        ss  = "..(((((...(((((...(((((...(((((.....)))))...))))).....(((((...(((((.....)))))...))))).....)))))...))))).."
+        #seq = "CAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIA"
+        #ss  = "..(((((...(((((...(((((...(((((.....)))))...))))).....(((((...(((((.....)))))...))))).....)))))...))))).."
         #sstree = ss_tree.SS_Tree("((...(.).(.)...))", "GGAAAGACAGACAAACC")
-        sstree = ss_tree.SS_Tree(ss, seq)
+        #sstree = ss_tree.SS_Tree(ss, seq)
         #for n in sstree:
         #    print n.data.ss_data
 
