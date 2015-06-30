@@ -132,5 +132,10 @@ for i, file in enumerate(filenames):
     plt.plot(x, y, color=colornames[i], marker=markers[i], label=name, markersize=9)
 
 #plt.legend(loc='top right')
-plt.xlim([0, 30])
+plt.rc("font", size=16)
+plt.rcParams['font.sans-serif']='Arial'
+
+plt.xlim([0,30])
+plt.xlabel("Dihedral RMSD Cutoff",fontsize=20)
+plt.ylabel("% G Residues Within Cutoff",fontsize=20)
 plt.show()

@@ -1,6 +1,7 @@
 import tree
 import Queue
 import math
+import secondary_structure
 from collections import namedtuple
 
 def compare_ss_tree(ss_tree1, ss_tree2):
@@ -72,14 +73,25 @@ def compare_ss_tree(ss_tree1, ss_tree2):
 
 
 class SS_Tree(object):
-    def __init__(self, ss, seq):
+    def __init__(self, sequence=None, dot_bracket=None, ss=None):
         self.tree = tree.TreeDynamic()
-        self.seq, self.ss = seq, ss
 
-        if len(ss) != len(seq):
-            raise ValueError("sequence and secondary structure are not the same length")
+        if sequence is None and dot_bracket is None and ss is None:
+            raise ValueError("must supply either sequence and dot_bracket or " +\
+                             "secondary structure object")
 
-        if ss[0] != '(' and ss[0] != '.':
+        if   sequence is not None and dot_bracket is not None:
+            self.sequence, self.dot_bracket = sequence, dot_bracket
+        elif ss is not None:
+            self.sequence, self.dot_bracket = ss.sequence(), ss.dot_bracket()
+        else:
+            raise ValueError("must supply either sequence and dot_bracket or " +\
+                             "secondary structure object")
+
+        if len(self.dot_bracket) != len(self.sequence):
+            raise ValueError("sequence and dot bracket are not the same length")
+
+        if self.dot_bracket[0] != '(' and self.dot_bracket[0] != '.':
             raise ValueError("secondary structure is not valid did you flip seq and ss?")
 
         self._build_tree()
@@ -127,7 +139,7 @@ class SS_Tree(object):
         return ss_data
 
     def _build_tree(self):
-        xb, yb = 0, len(self.seq)-1
+        xb, yb = 0, len(self.sequence)-1
         current = self._assign_new_node(xb, yb)
         index = 0
         NodeandIndex = namedtuple('NodeandIndex', 'node index')
@@ -155,12 +167,14 @@ class SS_Tree(object):
                 next_level = not_part_of_nway
 
                 if len(part_of_nway) > 0:
-                    ss_data = current_pair.node.ss_data[::]
+                    ss = current_pair.node.ss
+                    bounds = current_pair.node.bounds
 
                     for n in part_of_nway:
-                        for i in range(len(n.ss_data)):
-                            if len(n.ss_data[i].seq) > 0:
-                                ss_data.append(n.ss_data[i])
+                        for i in range(len(n.ss.chains)):
+                            if len(n.ss.chains[i].sequence) > 0:
+                                ss.chains.append(n.ss.chains[i])
+                                bounds.append(n.bounds[i])
 
                         if n.type == SS_Type.SS_BULGE:
                             nxb = n.bound_side(0, Bound_Side.RIGHT)+1
@@ -169,7 +183,7 @@ class SS_Tree(object):
                             for n2 in next_level_2:
                                 next_level.append(n2)
 
-                    new_node = SS_NodeData(SS_Type.SS_NWAY, ss_data)
+                    new_node = SS_NodeData(SS_Type.SS_NWAY, ss, bounds)
                     index = current_pair.index
                     current_pair = NodeandIndex(new_node, index)
 
@@ -187,50 +201,57 @@ class SS_Tree(object):
         return next_level
 
     def _assign_new_node(self, xb, yb):
-        ss_data = [ SS_Data("", "", [xb-1,xb-1]), SS_Data("", "", [yb+1,yb+1]) ]
+        bounds = [[xb-1,xb-1], [yb+1,yb+1]]
+        ss_chains = [secondary_structure.SecondaryStructureChain(),
+                     secondary_structure.SecondaryStructureChain()]
         hairpin = 0
         current = None
 
-        if self.ss[xb] == '.':
+        if self.dot_bracket[xb] == '.':
             end_x = self._get_dot_bounds(xb, 0)
             for i in range(xb, end_x+1):
-                ss_data[0].seq += self.seq[i]
-                ss_data[0].ss += self.ss[i]
+                ss_chains[0].sequence    += self.sequence[i]
+                ss_chains[0].dot_bracket += self.dot_bracket[i]
             if end_x == yb:
                 hairpin = 1
-            ss_data[0].bounds = [xb, end_x]
+            bounds[0] = [xb, end_x]
 
-        if self.ss[yb] == '.' and hairpin == 0:
+        if self.dot_bracket[yb] == '.' and hairpin == 0:
             end_y = self._get_dot_bounds(yb, 1)
             for i in range(end_y, yb+1):
-                ss_data[1].seq += self.seq[i]
-                ss_data[1].ss += self.ss[i]
-            ss_data[1].bounds = [end_y, yb]
+                ss_chains[1].sequence    += self.sequence[i]
+                ss_chains[1].dot_bracket += self.dot_bracket[i]
+            bounds[1] = [end_y, yb]
 
-        if self.ss[xb] =='&' or self.ss[xb] == '+':
-            ss_data[0].bounds = [xb, xb]
-            ss_data[0].seq = '+'
-            return SS_NodeData(SS_Type.SS_SEQ_BREAK, ss_data)
+        if self.dot_bracket[xb] =='&' or self.dot_bracket[xb] == '+':
+            bounds[0] = [xb, xb]
+            ss_chains[0].sequences   = '&'
+            ss_chains[0].dot_bracket = '&'
+            return SS_NodeData(SS_Type.SS_SEQ_BREAK,
+                               secondary_structure.SecondaryStructure(ss_chains),
+                               bounds)
 
-        if len(ss_data[0].seq) == 0 and len(ss_data[1].seq) == 0:
+        type = None
+        if len(ss_chains[0].sequence) == 0 and len(ss_chains[1].sequence) == 0:
             pair = self._get_bracket_pair(xb)
-            ss_data[0].seq = self.seq[xb]
-            ss_data[1].seq = self.seq[pair]
-            ss_data[0].bounds = [xb, xb]
-            ss_data[1].bounds = [pair, pair]
-            ss_data[0].ss = "("
-            ss_data[1].ss = ")"
-
-            if(self.ss[xb] == '('):
-                current = SS_NodeData(SS_Type.SS_BP, ss_data)
-            else:
-                current = SS_NodeData(SS_Type.SS_PSEUDO_BP, ss_data)
+            ss_chains[0].sequence = self.sequence[xb]
+            ss_chains[0].dot_bracket = "("
+            ss_chains[1].sequence = self.sequence[pair]
+            ss_chains[1].dot_bracket = ")"
+            bounds = [[xb, xb], [pair, pair]]
+            type = SS_Type.SS_BP
+            if(self.dot_bracket[xb] == '['):
+               type = SS_Type.SS_PSEUDO_BP
 
         elif hairpin:
-            current = SS_NodeData(SS_Type.SS_HAIRPIN, ss_data)
+            type = SS_Type.SS_HAIRPIN
 
         else:
-            current = SS_NodeData(SS_Type.SS_BULGE, ss_data)
+            type = SS_Type.SS_BULGE
+
+        current = SS_NodeData(type,
+                              secondary_structure.SecondaryStructure(ss_chains),
+                              bounds)
 
         return current
 
@@ -250,7 +271,7 @@ class SS_Tree(object):
         4
         """
         bracket_count = 0
-        for i, e in enumerate(self.ss):
+        for i, e in enumerate(self.dot_bracket):
             if i < pos:
                 continue
             if e == "(":
@@ -285,13 +306,13 @@ class SS_Tree(object):
         """
 
         if not reverse:
-            for i in range(pos+1,len(self.ss)):
-                if self.ss[i] != ".":
+            for i in range(pos+1,len(self.dot_bracket)):
+                if self.dot_bracket[i] != ".":
                     return i-1
-            return len(self.ss)-1
+            return len(self.dot_bracket)-1
         else:
             for i in range(pos-1,0,-1):
-                if self.ss[i] != ".":
+                if self.dot_bracket[i] != ".":
                     return i+1
             return 0
 
@@ -310,19 +331,12 @@ class Bound_Side(object):
     LEFT  = 0
     RIGHT = 1
 
-class SS_Data(object):
-    def __init__(self, seq, ss, bounds=[-1,-1]):
-        self.seq, self.ss, self.bounds = seq, ss, bounds
-
-    def __repr__(self):
-        return "(" + self.seq + ", " +  self.ss + ", " + str(self.bounds) + ")"
-
 class SS_NodeData(object):
-    def __init__(self, type, ss_data):
-        self.ss_data, self.type = ss_data, type
+    def __init__(self, type, ss, bounds):
+        self.ss, self.type, self.bounds = ss, type, bounds
 
     def bound_side(self, pos, side):
-        bound = self.ss_data[pos].bounds
+        bound = self.bounds[pos]
         return bound[side]
 
     def what(self):
@@ -334,11 +348,6 @@ class SS_NodeData(object):
         elif self.type == SS_Type.SS_SEQ_BREAK: return "SS_SEQ_BREAK"
         else: raise ValueError("unknown SS_TYPE")
 
-    def seq(self):
-        seq = ""
-        for i, ss_data in enumerate(self.ss_data):
-            seq += ss_data.seq
-            if i != len(self.ss_data)-1:
-                seq += '+'
-        return seq
+    def sequence(self):
+        return self.ss.sequence()
 

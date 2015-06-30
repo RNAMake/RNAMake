@@ -1,5 +1,6 @@
 import graph
 import ss_tree
+import secondary_structure
 import copy
 
 class MotifTreeTopology(object):
@@ -68,6 +69,10 @@ class MotifTreeTopology(object):
         ss_data = sstree.seq_from_nodes(nodes)
 
         mtt_node = MotifTopology(type)
+        #struct = secondary_structure.factory.get_structure()
+
+        exit()
+
         for n in nodes:
             self.seen[n.index] = 1
             if n.data.type != ss_tree.SS_Type.SS_BP:

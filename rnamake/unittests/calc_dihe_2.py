@@ -68,6 +68,8 @@ def get_all_dihes():
         spl = l.split()
         if len(spl) < 8:
             continue
+        if spl[2] != 'G':
+            continue
         spl[4] = float(spl[4])
         spl[5] = float(spl[5])
         spl[6] = float(spl[6])
@@ -90,26 +92,23 @@ def frac_within_cutoff(cdihe, all_dihes, cutoff):
 
         diff = math.sqrt(diff / 5)
         if diff < cutoff:
-            print dihe
             count += 1
 
     return float(count) / float(total)
 
 
 
-pdb_path = '/Users/josephyesselman/Downloads/3bo4_g.pdb'
+pdb_path = '/Users/josephyesselman/Downloads/3bo3_g.pdb'
 cdihes = get_new_dihe_from_pdb(pdb_path)
 all_dihes = get_all_dihes()
 
 x = []
 y = []
 
-print cdihes
-f = open("calc_dihe_data/data_3bo4.dat", "w")
+f = open("calc_dihe_data/data_3bo3.dat", "w")
 
 for i in range(0, 100, 1):
-    frac = frac_within_cutoff(cdihes, all_dihes, 1)
-    exit()
+    frac = frac_within_cutoff(cdihes, all_dihes, i)
     x.append(i)
     y.append(frac*100)
     f.write(str(i) + " " + str(frac*100) + "\n")

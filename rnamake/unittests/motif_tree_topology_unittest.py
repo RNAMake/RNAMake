@@ -15,33 +15,12 @@ import build
 
 class MotifTreeTopologyUnittest(unittest.TestCase):
 
-    def _test_creation(self):
-        #sstree = ss_tree.SS_Tree("(((+)))", "GAG+UUC")
-        sstree = ss_tree.SS_Tree("((.((+)).((+)).))", "GGAGG+CCAGG+CCACC")
-
-        mtt = motif_tree_topology.MotifTreeTopology(sstree)
-        if len(mtt) != 4:
-            raise ValueError("did not get the correct number of nodes")
-
-        mt = self._specific_mt_build()
-        for n in mt.nodes:
-            print n.motif.name
-
-        p = mt.to_pose()
-
-        print p.secondary_structure()
-        print p.sequence()
-
-        sstree = ss_tree.SS_Tree(p.secondary_structure(), p.sequence())
-
-        adapter = ss_to_motif_tree_adapter.SStoMotifTreeAdapter()
-        mt = adapter.convert(sstree)
-
     def test_creation(self):
         builder = build.BuildSSTree()
         ss_tree = builder.build_helix()
         mtt = motif_tree_topology.MotifTreeTopology(ss_tree)
-        connectivity = mtt.get_connectivity_from(0)
+
+        #connectivity = mtt.get_connectivity_from(0)
         #for c in connectivity:
         #    print c.parent_index, c.parent_ss_id, c.ss_id
         #adapter = ss_to_motif_tree_adapter.SStoMotifTreeAdapter()
