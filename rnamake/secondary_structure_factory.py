@@ -1,37 +1,7 @@
+import ss_tree
+import secondary_structure
 
 
-class Residue(object):
-    def __init__(self, name, num):
-        self.name, self.num = name, num
-
-class Chain(object):
-    def __init__(self, residues):
-        self.residues = residues
-
-    def __repr__(self):
-        seq = ""
-        for r in self.residues:
-            seq += r.name
-
-        return "<Chain: " + seq
-
-    def first(self):
-        return self.residues[0]
-
-    def last(self):
-        return self.residues[-1]
-
-class Basepair(object):
-    def __init__(self, res1, res2):
-        self.res1, self.res2 = res1, res2
-
-    def partner(self, r):
-        if   r == self.res1:
-            return self.res2
-        elif r == self.res2:
-            return self.res1
-        else:
-            raise ValueError("call partner with a residue not in basepair")
 
 class Structure(object):
     def __init__(self, chains, basepairs):
@@ -44,14 +14,6 @@ class Structure(object):
             if bp.res1 == res or bp.res2 == res:
                 return bp
         return None
-
-    def sequence(self):
-        seqs = [x.seq for x in self.ss_chains]
-        return "&".join(seqs)
-
-    def secondary_structure(self):
-        sss = [x.ss for x in self.ss_chains]
-        return "&".join(sss)
 
     def reorient_ss_and_seq(self, pos1, pos2):
         end = None
@@ -89,7 +51,6 @@ class Structure(object):
         count = 0
         while len(open_chains) > 0:
             c = open_chains.pop(0)
-            bounds = [count+1, count+1]
             for r in c.residues:
                 count += 1
                 ss = "."
@@ -117,7 +78,8 @@ class Structure(object):
                     seen_bp[saved_bp] = 1
 
             bounds[1] = count
-            ss_chains.append(SS_Chain(seq, structure, bounds))
+            ss_chains.append(secondary_structure.SecondaryStructureChain(structure,
+                                                                         seq))
             structure = ""
             seq = ""
 
@@ -161,10 +123,10 @@ class Structure(object):
             all_chains.remove(best_chain)
             open_chains.append(best_chain)
 
-        self.ss_chains = ss_chains
-        return ss_chains
+        return secondary_structure.SecondaryStructure(ss_chains)
 
-class StructureFactory(object):
+
+class StructureSecondaryFactory(object):
     def __init__(self):
         pass
 
@@ -213,8 +175,8 @@ class StructureFactory(object):
                         ends.append(bp)
         return basepairs, ends
 
-    def get_structure(self, ss, seq):
-        sstree = ss_tree.SS_Tree(ss, seq)
+    def get_structure(self, seq, ss, pos1, pos2):
+        sstree = ss_tree.SS_Tree(seq, ss)
 
         chains = self._get_chains(seq)
         all_res = []
@@ -223,9 +185,10 @@ class StructureFactory(object):
         basepairs, ends = self._get_basepairs(sstree, all_res)
         struct = Structure(chains, basepairs)
         struct.ends = ends
-        return struct
+        ss = struct.reorient_ss_and_seq(pos1, pos2)
+        return ss
 
-factory = StructureFactory()
+factory = StructureSecondaryFactory()
 
 
 def ss_id(ss_data):

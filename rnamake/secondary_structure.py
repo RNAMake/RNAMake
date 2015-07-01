@@ -1,26 +1,129 @@
 import util
 import ss_tree
 
-class SecondaryStructureChain(object):
-    def __init__(self, dot_bracket="", sequence=""):
-        self.dot_bracket, self.sequence = dot_bracket, sequence
+class Residue(object):
+    def __init__(self, name, dot_bracket, num):
+        self.name, self.dot_bracket, self.num = name, dot_bracket, num
+
+
+class Chain(object):
+    def __init__(self, residues=None):
+        self.residues = residues
+        if self.residues is None:
+            self.residues = []
+
+    def __repr__(self):
+        seq = ""
+        for r in self.residues:
+            seq += r.name
+
+        return "<Chain: " + seq
+
+    def first(self):
+        return self.residues[0]
+
+    def last(self):
+        return self.residues[-1]
+
+    def sequence(self):
+        seq = ""
+        for r in self.residues:
+            seq += r.name
+        return seq
+
+    def dot_bracket(self):
+        db = ""
+        for r in self.residues:
+            db += r.dot_bracket
+        return db
+
+class Basepair(object):
+    def __init__(self, res1, res2):
+        self.res1, self.res2 = res1, res2
+
+    def partner(self, r):
+        if   r == self.res1:
+            return self.res2
+        elif r == self.res2:
+            return self.res1
+        else:
+            raise ValueError("call partner with a residue not in basepair")
+
 
 class SecondaryStructure(object):
-    def __init__(self, chains=[]):
-        self.chains = chains
+    def __init__(self, sequence=None, dot_bracket=None, chains=None):
+        if sequence is not None and dot_bracket is not None:
+            self.chains = self._setup_chains(sequence, dot_bracket)
+        else:
+            self.chains = chains
+            if self.chains is None:
+                self.chains = []
 
     def __repr__(self):
         return "<SecondaryStructure( " + self.sequence() + " " + self.dot_bracket() + ")"
 
+    def _setup_chains(self, sequence, dot_bracket):
+        chains = []
+        residues = []
+
+        if len(dot_bracket) != len(sequence):
+            raise ValueError("sequence and dot bracket are not the same length")
+
+        if dot_bracket[0] != '(' and dot_bracket[0] != '.' and dot_bracket != '&':
+            raise ValueError("secondary structure is not valid did you flip seq and ss?")
+
+        count = 0
+        for i in range(len(sequence)):
+            if sequence[i] != "&" and sequence[i] != "+":
+                r = Residue(sequence[i], dot_bracket[i], count)
+                residues.append(r)
+                count += 1
+            else:
+                chains.append(Chain(residues))
+                residues = []
+
+        if len(residues) > 0:
+            chains.append(Chain(residues))
+
+
+        return chains
+
+    def get_residue(self, num):
+        for r in self.residues():
+            if r.num == num:
+                return r
+        raise ValueError("cannot find residue with num " + str(num))
+
+    def residues(self):
+        res = []
+        for c in self.chains:
+            res.extend(c.residues)
+        return res
+
     def sequence(self):
-        sequences = [x.sequence for x in self.chains]
+        sequences = [x.sequence() for x in self.chains]
         return "&".join(sequences)
 
     def dot_bracket(self):
-        dot_brackets = [x.dot_bracket for x in self.chains]
+        dot_brackets = [x.dot_bracket() for x in self.chains]
         return "&".join(dot_brackets)
 
-
+    def id(self):
+        id = ""
+        for i, chain in enumerate(self.chains):
+            id += chain.sequence + "_"
+            for e in chain.dot_bracket:
+                if   e == "(":
+                    id += "L"
+                elif e == ")":
+                    id += "R"
+                elif e == ".":
+                    id += "U"
+                else:
+                    raise ValueError("unexpected symbol in dot bracket notation: " + e)
+            if i != len(self.chains)-1:
+                id += "_"
+        return id
 
 
 def str_to_ss_chain(s):

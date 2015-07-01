@@ -66,9 +66,11 @@ class MotifTreeTopology(object):
         return nodes
 
     def _build_motif_topology_node(self, nodes, sstree, type):
-        ss_data = sstree.seq_from_nodes(nodes)
+        ss_data = sstree.sub_ss_from_nodes(nodes)
+        print ss_data.bounds
 
-        mtt_node = MotifTopology(type)
+
+
         #struct = secondary_structure.factory.get_structure()
 
         exit()

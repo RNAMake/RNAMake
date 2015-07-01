@@ -75,5 +75,5 @@ class BuildSSTree(object):
         seq = s1  + "+" + s2
         ss  = ss1 + "+" + ss2
 
-        return ss_tree.SS_Tree(ss, seq)
+        return ss_tree.SS_Tree(seq, ss)
 
