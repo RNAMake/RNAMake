@@ -31,7 +31,7 @@ class Motif(object):
         #creation from motif dir (recommended)
 
         #creation from a pdb, generates x3dna files at runtime
-        >>> Motif(pdb=test.pdb")
+        >>> Motif(pdb="test.pdb")
         <Motif(name='test', ends='0')>
 
     Attributes
@@ -55,9 +55,9 @@ class Motif(object):
     def __init__(self):
         self.beads, self.score, self.mtype, self.basepairs = [], 0, motif_type.UNKNOWN, []
         self.path, self.name, self.ends = "", "", []
-        self.ss_chains = []
         self.end_ids = []
         self.structure = structure.Structure()
+        self.secondary_structure = secondary_structure.SecondaryStructure()
 
     def __repr__(self):
         """
@@ -147,8 +147,7 @@ class Motif(object):
         for end_id in self.end_ids:
             s += end_id + " "
         s += "&"
-        for ss_chain in self.ss_chains:
-            s += ss_chain.to_str() + "@"
+        s += self.secondary_structure.to_str()
         s += "&"
         return s
 
@@ -328,11 +327,7 @@ def str_to_motif(s):
         m.ends.append(m.basepairs[int(index)])
     end_ids = spl[7].split()
     m.end_ids = end_ids
-    try:
-        ss_chain_strs = spl[8].split("@")
-        m.ss_chains = [secondary_structure.str_to_ss_chain(s) for s in ss_chain_strs[:-1]]
-    except:
-        pass
+    m.secondary_structure = secondary_structure.str_to_secondary_structure(spl[8])
     return m
 
 
@@ -428,16 +423,6 @@ def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
         cur_state.end_states[i].set(new_r,new_d,new_sug)
 
     cur_state.beads = np.dot(cur_state.beads, r.T) + t
-
-
-#UC&GG&CG&CG
-#((&)(&)(&))
-
-#CG&UC&GG&CG
-#((&)(&)(&))
-
-
-
 
 
 

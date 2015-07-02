@@ -103,45 +103,6 @@ class SS_Tree(object):
     def next(self):
         return self.tree.next()
 
-    def sub_ss_from_nodes(self, nodes):
-        ss_chains = []
-        bounds = []
-        seen = {}
-        for n in nodes:
-            for b in n.data.bounds:
-                for i in range(b[0], b[1]+1):
-                    seen[i] = 1
-
-        start, size, found = -1, 0, 0
-
-        for i in range(len(self.sequence)):
-            if i in seen:
-                '[;'
-                if found == 0:
-                    found, start, size = 1, i, 1
-                else:
-                    size += 1
-            elif(start != -1 and found == 1):
-                found = 0
-                sequence = self.sequence[start:start+size]
-                dot_bracket  = self.dot_bracket[start:start+size]
-                bounds.append([start,start+size-1])
-                ss_chains.append(secondary_structure.SecondaryStructureChain(sequence,
-                                                                             dot_bracket))
-
-        if found == 1:
-            sequence = self.sequence[start:start+size]
-            dot_bracket  = self.dot_bracket[start:start+size]
-            bounds.append([start,start+size-1])
-            ss_chains.append(secondary_structure.SecondaryStructureChain(sequence,
-                                                                         dot_bracket))
-
-        ss_data = SS_NodeData(SS_Type.SS_MULTI,
-                              secondary_structure.SecondaryStructure(ss_chains),
-                              bounds)
-
-        return ss_data
-
     def _check_from_chain_ends(self, xb, yb):
         if self._is_res_end_of_chain(xb) or self._is_res_end_of_chain(yb):
             ss_chains = [secondary_structure.Chain(),

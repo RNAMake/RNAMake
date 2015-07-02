@@ -1,166 +1,18 @@
 import ss_tree
 import secondary_structure
 
-
-
-class Structure(object):
-    def __init__(self, chains, basepairs):
-        self.chains = chains
-        self.basepairs = basepairs
-        self.ends = []
-
-    def bp_for_res(self, res):
-        for bp in self.basepairs:
-            if bp.res1 == res or bp.res2 == res:
-                return bp
-        return None
-
-    def reorient_ss_and_seq(self, pos1, pos2):
-        end = None
-        for e in self.ends:
-            if e.res1.num == pos1 and e.res2.num == pos2:
-                end = e
-                break
-            if e.res1.num == pos2 and e.res2.num == pos1:
-                end = e
-                break
-
-        if end is None:
-            raise ValueError("there is no ends with that include: " \
-                             + str(pos1) + "," + str(pos2))
-
-        all_chains = self.chains[::]
-        open_chains = []
-        for c in all_chains:
-            if c.first() == end.res1 or c.first() == end.res2:
-                open_chains.append(c)
-                break
-
-        all_chains.remove(open_chains[0])
-
-        if len(open_chains) == 0:
-            raise ValueError("could not find chain to start with")
-
-        seen_res = {}
-        seen_bp = {}
-        saved_bp = None
-        structure = ""
-        seq = ""
-        bounds = [0, 0]
-        ss_chains = []
-        count = 0
-        while len(open_chains) > 0:
-            c = open_chains.pop(0)
-            for r in c.residues:
-                count += 1
-                ss = "."
-                bp = self.bp_for_res(r)
-                saved_bp = None
-                if bp is not None:
-                    saved_bp = bp
-                    partner_res = bp.partner(r)
-                    if   bp not in seen_bp and r not in seen_res and \
-                         partner_res not in seen_res:
-                        seen_res[r] = 1
-                        ss = "("
-                    elif partner_res in seen_res:
-                        if seen_res[partner_res] > 1:
-                            ss = "."
-                        else:
-                            ss = ")"
-                            seen_res[r] = 1
-                            seen_res[partner_res] += 1
-
-                structure += ss
-                seq += r.name
-
-                if saved_bp is not None:
-                    seen_bp[saved_bp] = 1
-
-            bounds[1] = count
-            ss_chains.append(secondary_structure.SecondaryStructureChain(structure,
-                                                                         seq))
-            structure = ""
-            seq = ""
-
-
-            best_score = 0
-
-            for c in all_chains:
-                score = 0
-                for r in c.residues:
-                    bp = self.bp_for_res(r)
-                    if bp in seen_bp:
-                        score += 1
-                if score > best_score:
-                    best_score = score
-
-            best_chains = []
-            for c in all_chains:
-                score = 0
-                for r in c.residues:
-                    bp = self.bp_for_res(r)
-                    if bp in seen_bp:
-                        score += 1
-                if score == best_score:
-                    best_chains.append(c)
-
-            best_chain = None
-            best_score = 10000
-            for c in best_chains:
-                pos = 1000
-                for i, r in enumerate(c.residues):
-                    bp = self.bp_for_res(r)
-                    if bp in seen_bp:
-                        pos = i
-                        break
-                if pos < best_score:
-                    best_score = pos
-                    best_chain = c
-
-            if best_chain is None:
-                break
-            all_chains.remove(best_chain)
-            open_chains.append(best_chain)
-
-        return secondary_structure.SecondaryStructure(ss_chains)
-
-
 class StructureSecondaryFactory(object):
     def __init__(self):
         pass
 
-    def _get_chains(self, seq):
-        chains = []
-        residues = []
-
-        for i in range(len(seq)):
-            if seq[i] != "&":
-                r = Residue(seq[i], i)
-                residues.append(r)
-            else:
-                chains.append(Chain(residues))
-                residues = []
-
-        if len(residues) > 0:
-            chains.append(Chain(residues))
-
-        return chains
-
-    def _get_basepairs(self, sstree, all_res):
+    def _get_basepairs(self, sstree, ss):
         basepairs, ends = [], []
         for n in sstree:
             if n.data.type == ss_tree.SS_Type.SS_BP:
-                res1_i = n.data.ss_data[0].bounds[0]
-                res2_i = n.data.ss_data[1].bounds[1]
-                bp_res = []
-                for r in all_res:
-                    if r.num == res1_i or r.num == res2_i:
-                        bp_res.append(r)
-                if len(bp_res) != 2:
-                    raise ValueError("incorrect number of resiudes in ss_bp")
+                res1 = n.data.ss_chains[0].residues[0]
+                res2 = n.data.ss_chains[1].residues[0]
 
-                bp = Basepair(bp_res[0], bp_res[1])
+                bp = secondary_structure.Basepair(res1, res2)
                 basepairs.append(bp)
                 if n.parent is None:
                     ends.append(bp)
@@ -175,38 +27,103 @@ class StructureSecondaryFactory(object):
                         ends.append(bp)
         return basepairs, ends
 
-    def get_structure(self, seq, ss, pos1, pos2):
-        sstree = ss_tree.SS_Tree(seq, ss)
+    def _get_elements(self, sstree, ss):
+        elements = {}
 
-        chains = self._get_chains(seq)
-        all_res = []
-        for c in chains:
-            all_res.extend(c.residues)
-        basepairs, ends = self._get_basepairs(sstree, all_res)
-        struct = Structure(chains, basepairs)
-        struct.ends = ends
-        ss = struct.reorient_ss_and_seq(pos1, pos2)
+        for n in sstree:
+            if n.parent_index() == -1 or n.parent.data.type == ss_tree.SS_Type.SS_SEQ_BREAK:
+                continue
+
+            if n.data.type == ss_tree.SS_Type.SS_BP and \
+               n.parent.data.type == ss_tree.SS_Type.SS_BP:
+                nodes = [n,n.parent]
+                bp_nodes = [n,n.parent]
+                type_name = "BP_STEP"
+
+            elif n.data.type != ss_tree.SS_Type.SS_SEQ_BREAK and \
+                n.parent.data.type == ss_tree.SS_Type.SS_BP:
+                nodes = [n.parent, n]
+                bp_nodes = [n.parent]
+                type_name = n.data.what()[3:]
+                for c in n.children:
+                    if c is None:
+                        continue
+                    if c.data.type == ss_tree.SS_Type.SS_BP or \
+                       c.data.type == ss_tree.SS_Type.SS_PSEUDO_BP:
+                        nodes.append(c)
+                        bp_nodes.append(c)
+                    else:
+                        print n.data.what(), c.data.what()
+                        raise ValueError("unexpected connectivity in ss_tree")
+            else:
+                continue
+
+
+            chains = self._get_chains(ss, nodes)
+            ends = []
+            for bp_n in bp_nodes:
+                bp = ss.get_bp(bp_n.data.ss_chains[0].residues[0],
+                               bp_n.data.ss_chains[1].residues[0])
+                ends.append(bp)
+            e = secondary_structure.SecondaryStructureMotif(type_name, ends, chains)
+            bps = []
+            res = {r : 1 for r in e.residues() }
+            for bp in ss.basepairs:
+                if bp.res1 in res and bp.res2 in res:
+                    bps.append(bp)
+
+            e.basepairs = bps
+            if type_name not in elements:
+                elements[type_name] = []
+
+            elements[type_name].append(e)
+        return elements
+
+    def _get_chains(self, ss, nodes):
+        res = []
+        for n in nodes:
+            for c in n.data.ss_chains:
+                res.extend(c.residues)
+        res.sort(key=lambda x: x.num)
+        chains = []
+        c_res = []
+        last = -1
+        for r in res:
+            is_chain_start = 0
+            for c in ss.chains:
+                if c.first() == r:
+                    is_chain_start = 1
+                    break
+
+            if last == -1:
+                pass
+            elif last+1 != r.num or is_chain_start:
+                chains.append(secondary_structure.Chain(c_res))
+                c_res = []
+            c_res.append(r)
+            last = r.num
+        if len(c_res) > 0:
+            chains.append(secondary_structure.Chain(c_res))
+        return chains
+
+    def get_structure(self, sequence=None, dot_bracket=None, base_ss=None):
+        if   sequence is not None and dot_bracket is not None:
+            sstree = ss_tree.SS_Tree(sequence, dot_bracket)
+        elif base_ss is not None:
+            sstree = ss_tree.SS_Tree(ss=base_ss)
+        else:
+            raise ValueError("supply sequence and dot_bracket strings or a" + \
+                             " SecondaryStructure object")
+        ss = sstree.ss
+
+        basepairs, ends = self._get_basepairs(sstree, ss)
+        ss.ends = ends
+        ss.basepairs = basepairs
+        ss.elements = self._get_elements(sstree, ss)
+
         return ss
 
 factory = StructureSecondaryFactory()
-
-
-def ss_id(ss_data):
-    id = ""
-    for i, ss_d in enumerate(ss_data):
-        id += ss_d.seq + "_"
-        for e in ss_d.ss:
-            if   e == "(":
-                id += "L"
-            elif e == ")":
-                id += "R"
-            elif e == ".":
-                id += "U"
-            else:
-                raise ValueError("unexpected symbol in dot bracket notation: " + e)
-        if i != len(ss_data)-1:
-            id += "_"
-    return id
 
 def ss_id_to_ss_tree(ss_id):
     ss = ""

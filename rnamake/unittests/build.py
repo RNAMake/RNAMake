@@ -1,7 +1,7 @@
 import random
 import rnamake.resource_manager as rm
 import rnamake.motif_tree as motif_tree
-import rnamake.ss_tree as ss_tree
+import rnamake.secondary_structure_factory as ssfactory
 
 
 
@@ -58,7 +58,7 @@ class BuildMotifTree(object):
 
         return mt
 
-class BuildSSTree(object):
+class BuildSecondaryStructure(object):
     def __init__(self):
         pass
 
@@ -75,5 +75,5 @@ class BuildSSTree(object):
         seq = s1  + "+" + s2
         ss  = ss1 + "+" + ss2
 
-        return ss_tree.SS_Tree(seq, ss)
+        return ssfactory.factory.get_structure(seq, ss)
 

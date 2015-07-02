@@ -10,7 +10,7 @@ import rnamake.sqlite_library as sqlite_library
 import math
 import subprocess
 
-def test_align(self):
+def test_align():
     mlib = sqlite_library.MotifLibrarySqlite(libname="ideal_helices")
     m1 = mlib.get_motif("HELIX.IDEAL.12")
     m2 = m1.copy()
@@ -20,6 +20,14 @@ def test_align(self):
     m1.to_pdb("test_1.pdb")
     aligned.to_pdb("test_2.pdb")
 
+def setup_start_motif():
+    start_path = settings.RESOURCES_PATH + "start"
+    m = motif_factory.factory.motif_from_file(start_path)
+    s = m.to_str()
+    m_path = settings.MOTIF_DIRS + "ref.motif"
+    f = open(m_path, "w")
+    f.write(s)
+    f.close()
 
 class SSandSeqCluster(object):
 
@@ -300,8 +308,8 @@ class BuildSqliteLibraries(object):
 
 
 builder = BuildSqliteLibraries()
-#builder.build_ideal_helices()
-builder.build_basic_libraries()
+builder.build_ideal_helices()
+#builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()

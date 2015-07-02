@@ -9,7 +9,7 @@ import rnamake.ss_tree as ss_tree
 
 class SecondaryStructureUnittest(unittest.TestCase):
 
-    def test_assign_secondary_structure(self):
+    def _test_assign_secondary_structure(self):
         builder = build.BuildMotifTree()
         mt = builder.build()
         #for n in mt:
@@ -20,7 +20,19 @@ class SecondaryStructureUnittest(unittest.TestCase):
         #print p.sequence()
         #mt.write_pdbs()
 
-    def test_parse(self):
+    def test_to_str(self):
+        builder = build.BuildSecondaryStructure()
+        ss = builder.build_helix(10)
+        s = ss.to_str()
+        ss1 = secondary_structure.str_to_secondary_structure(s)
+
+        if len(ss.residues()) != len(ss1.residues()):
+            self.fail("did not recover all residues from str_to_secondary_structure")
+
+        if len(ss.elements["BP_STEP"]) != len(ss1.elements["BP_STEP"]):
+            self.fail("did not get all basepair steps again")
+
+    def _test_parse(self):
         m = rm.manager.get_motif("NWAY.1S72.18-01551-01634")
         ss = m.secondary_structure()
         seq = m.sequence()
@@ -29,8 +41,8 @@ class SecondaryStructureUnittest(unittest.TestCase):
         struct = secondary_structure.factory.get_structure(ss, seq)
         ss_chains = struct.reorient_ss_and_seq(0, 10)
 
-        print struct.sequence()
-        print struct.secondary_structure()
+        #print struct.sequence()
+        #print struct.secondary_structure()
 
 
 

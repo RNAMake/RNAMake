@@ -9,17 +9,21 @@ import x3dna
 import residue
 import basepair
 import secondary_structure
+import secondary_structure_factory
 import settings
 
 
 class MotifFactory(object):
     def __init__(self):
-        path = settings.RESOURCES_PATH + "/motifs/ref.motif"
-        self.ref_motif = motif.file_to_motif(path)
-        path = settings.RESOURCES_PATH + "/motifs/base.motif"
-        self.base_motif = motif.file_to_motif(path)
-        self.base_motif.get_beads([self.base_motif.ends[1]])
-        self.added_helix = self.base_motif.copy()
+        try:
+            path = settings.RESOURCES_PATH + "/motifs/ref.motif"
+            self.ref_motif = motif.file_to_motif(path)
+            path = settings.RESOURCES_PATH + "/motifs/base.motif"
+            self.base_motif = motif.file_to_motif(path)
+            self.base_motif.get_beads([self.base_motif.ends[1]])
+            self.added_helix = self.base_motif.copy()
+        except:
+            pass
         self.clash_radius = settings.CLASH_RADIUS
         self.scorer = motif_scorer.MotifScorer()
 
@@ -229,10 +233,20 @@ class MotifFactory(object):
         m.basepairs = basepairs
         m.ends      = ends
 
-        ss_chains   = secondary_structure.assign_secondary_structure(m)
-        m.ss_chains = ss_chains
-        m.end_ids   = self._setup_end_ids(ends, m)
         m.score     = self.scorer.score(m)
+        ss = secondary_structure.assign_secondary_structure(m)
+        for r in ss.residues():
+            print r.name, r.num
+        exit()
+        ss = secondary_structure_factory.factory.get_structure(base_ss=ss)
+
+        for end in m.ends:
+            res1 = ss.get_residue(end.res1.num)
+            res2 = ss.get_residue(end.res2.num)
+            ss_end = ss.get_bp(res1, res2)
+            m.end_ids.append(secondary_structure.assign_end_id(ss, ss_end))
+
+        m.secondary_structure = ss
 
         return m
 
