@@ -5,10 +5,12 @@ class EternaBotUnittest(unittest.TestCase):
 
     def test_creation(self):
         designer = sequence_designer.SequenceDesigner()
-        solutions = designer.design("(((....)))", "NNNNNNNNNN")
+        solutions = designer.design("(((....)))", "NNNNNNNNNN", 10)
 
         #solutions = designer.design("(((....)&..))", "NNNNNNNN&NNNN")
-        print solutions[0]['end'][0]
+        for s in solutions:
+            print s.sequence, s.score
+
 
 
 def main():

@@ -46,9 +46,9 @@ class MotifEnsemble(object):
         pass
 
     def to_str(self):
-        s = self.id + "$"
+        s = self.id + "{"
         for ms in self.members:
-            s += ms.to_str() + "$"
+            s += ms.to_str() + "{"
         return s
 
     def get_state(self):
@@ -101,15 +101,15 @@ class MotifStateEnsemble(object):
         return mes_copy
 
     def to_str(self):
-        s = self.id + "$"
+        s = self.id + "{"
         for ms in self.members:
-            s += ms.to_str() + "$"
+            s += ms.to_str() + "{"
         return s
 
 
 def str_to_motif_ensemble(s):
     me = MotifEnsemble()
-    spl = s.split("$")
+    spl = s.split("{")
     members = []
     me.id = spl.pop(0)
     for s in spl[:-1]:
@@ -123,7 +123,7 @@ def str_to_motif_ensemble(s):
 
 def str_to_motif_state_ensemble(s):
     mes = MotifStateEnsemble()
-    spl = s.split("$")
+    spl = s.split("{")
     members = []
     mes.id = spl.pop(0)
     for s in spl[:-1]:

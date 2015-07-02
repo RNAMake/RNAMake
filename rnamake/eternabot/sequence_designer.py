@@ -2,6 +2,10 @@ import ensemble_utils
 import ensemble_design
 import settings
 
+class SequenceDesignerData(object):
+    def __init__(self, sequence, score):
+        self.sequence, self.score = sequence, score
+
 class SequenceDesigner:
 
     def __init__(self, op="sparse"):
@@ -53,7 +57,10 @@ class SequenceDesigner:
             res = ensemble_design.inverse_fold_whole(structure, sequence,
                                                      self.ensemble.score,
                                                      score_cutoff, "sparse")
-            solutions.append(res)
+            score = res['end'][2]['finalscore']
+            seq   = res['end'][0]
+
+            solutions.append(SequenceDesignerData(seq, score))
         return solutions
 
 if __name__ == "__main__":

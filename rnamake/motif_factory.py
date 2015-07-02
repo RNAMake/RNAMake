@@ -14,16 +14,14 @@ import settings
 
 
 class MotifFactory(object):
+
     def __init__(self):
-        try:
-            path = settings.RESOURCES_PATH + "/motifs/ref.motif"
-            self.ref_motif = motif.file_to_motif(path)
-            path = settings.RESOURCES_PATH + "/motifs/base.motif"
-            self.base_motif = motif.file_to_motif(path)
-            self.base_motif.get_beads([self.base_motif.ends[1]])
-            self.added_helix = self.base_motif.copy()
-        except:
-            pass
+        path = settings.MOTIF_DIRS + "ref.motif"
+        self.ref_motif = motif.file_to_motif(path)
+        path = settings.MOTIF_DIRS + "base.motif"
+        self.base_motif = motif.file_to_motif(path)
+        self.base_motif.get_beads([self.base_motif.ends[1]])
+        self.added_helix = self.base_motif.copy()
         self.clash_radius = settings.CLASH_RADIUS
         self.scorer = motif_scorer.MotifScorer()
 
@@ -132,28 +130,6 @@ class MotifFactory(object):
 
         return ends
 
-    def _setup_end_ids(self, ends, m):
-
-        end_ids = []
-
-        for end in ends:
-            ss_chains = [None]
-            for i, c in enumerate(m.chains()):
-                if   end.res1 == c.first() or end.res2 == c.first():
-                    ss_chains[0] = m.ss_chains[i]
-                elif end.res1 == c.last() or end.res2 == c.last():
-                    ss_chains.append(None)
-                    ss_chains[1] = m.ss_chains[i]
-
-            #if ss_chains[0] is None or ss_chains[1] is None:
-            #    raise ValueError("something went wrong doing end_id generation")
-
-            for i in range(len(ss_chains)):
-                ss_chains[i].flip_ss(i)
-            end_id = secondary_structure.ss_id(ss_chains)
-            end_ids.append(end_id)
-        return end_ids
-
     def _steric_clash(self, m1, m2):
         for c1 in m1.beads:
             for c2 in m2.beads:
@@ -180,14 +156,11 @@ class MotifFactory(object):
                 best_i = i
 
             updated_chains = [closest]
-            updated_ss_chains = [m.ss_chains[best_i]]
             for i, c in enumerate(chains):
                 if c != closest:
                     updated_chains.append(c)
-                    updated_ss_chains.append(m.ss_chains[i])
 
             m.structure.chains = updated_chains
-            m.ss_chains = updated_ss_chains
 
     def _align_ends(self, m):
         c2 = util.center(self.ref_motif.ends[0].atoms)
@@ -212,9 +185,28 @@ class MotifFactory(object):
         m.ends = updated_ends
         m.end_ids = updated_end_ids
 
+    def _setup_secondary_structure(self, m):
+        ss = secondary_structure.assign_secondary_structure(m)
+        ss = secondary_structure_factory.factory.get_structure(base_ss=ss)
+        #for r in ss.residues():
+        #    print r.num, r.chain_id, r.dot_bracket
+        #print
+        #for bp in ss.basepairs:
+        #    print bp.res1.num, bp.res2.num
+
+        #print ss
+        for end in m.ends:
+            res1 = ss.get_residue(end.res1.num, end.res1.chain_id)
+            res2 = ss.get_residue(end.res2.num, end.res2.chain_id)
+            ss_end = ss.get_bp(res1, res2)
+            #print res1.num, res1.chain_id, res2.num, res2.chain_id
+            #print ss_end
+            m.end_ids.append(secondary_structure.assign_end_id(ss, ss_end))
+
+        m.secondary_structure = ss
+
     def motif_from_file(self, path):
         filename = util.filename(path)
-
         # is a motif directory
         if os.path.isdir(path):
             structure = self.get_structure(path + "/" + filename + ".pdb")
@@ -232,21 +224,13 @@ class MotifFactory(object):
         m.structure = structure
         m.basepairs = basepairs
         m.ends      = ends
-
         m.score     = self.scorer.score(m)
-        ss = secondary_structure.assign_secondary_structure(m)
-        for r in ss.residues():
-            print r.name, r.num
-        exit()
-        ss = secondary_structure_factory.factory.get_structure(base_ss=ss)
 
-        for end in m.ends:
-            res1 = ss.get_residue(end.res1.num)
-            res2 = ss.get_residue(end.res2.num)
-            ss_end = ss.get_bp(res1, res2)
-            m.end_ids.append(secondary_structure.assign_end_id(ss, ss_end))
-
-        m.secondary_structure = ss
+        try:
+            self._setup_secondary_structure(m)
+        except:
+            print m.name
+            return None
 
         return m
 
@@ -294,6 +278,11 @@ class MotifFactory(object):
 
         self._align_chains(m_added)
         self._align_ends(m_added)
+        try:
+            self._setup_secondary_structure(m)
+        except:
+            print m.name
+            return None
         return m_added
 
     def motif_from_bps(self, bps):
@@ -305,8 +294,7 @@ class MotifFactory(object):
         m.structure.chains = chains
         m.basepairs = bps
         m.ends = [bps[0], bps[-1]]
-        m.ss_chains  = secondary_structure.assign_secondary_structure(m)
-        m.end_ids   = self._setup_end_ids(m.ends, m)
+        self._setup_secondary_structure(m)
         return m
 
 

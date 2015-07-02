@@ -207,8 +207,8 @@ class Motif(object):
         cmotif.mtype     = self.mtype
         cmotif.structure = self.structure.copy()
         cmotif.beads     = [b.copy() for b in self.beads]
-        cmotif.ss_chains = list(self.ss_chains)
         cmotif.end_ids   = list(self.end_ids)
+        cmotif.secondary_structure = self.secondary_structure.copy()
 
         for bp in self.basepairs:
             new_res1 = cmotif.get_residue(uuid=bp.res1.uuid)

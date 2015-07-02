@@ -17,6 +17,8 @@ class MotifLibrary(object):
 
         if mname not in self.motif_dict:
             self.motif_dict[mname] = motif_factory.factory.motif_from_file(self.motif_paths[mname])
+            if self.motif_dict[mname] is None:
+                return None
             self.motif_dict[mname].mtype = self.mtype
 
         return self.motif_dict[mname].copy()

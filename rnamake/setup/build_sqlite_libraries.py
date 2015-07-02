@@ -25,9 +25,12 @@ def setup_start_motif():
     m = motif_factory.factory.motif_from_file(start_path)
     s = m.to_str()
     m_path = settings.MOTIF_DIRS + "ref.motif"
+    print m_path
     f = open(m_path, "w")
     f.write(s)
     f.close()
+
+    m2 = motif.file_to_motif(m_path)
 
 class SSandSeqCluster(object):
 
@@ -82,11 +85,17 @@ class BuildSqliteLibraries(object):
                  motif_type.TCONTACT]
 
         for t in types:
+            count = 0
+            #if t != motif_type.TCONTACT:
+            #    continue
             mlib = motif_library.MotifLibrary(t)
             mlib.load_all()
 
             succeses = []
             for m in mlib.motifs():
+                if m is None:
+                    continue
+
                 if t != motif_type.HAIRPIN and len(m.ends) == 1:
                     continue
                 elif len(m.ends) == 0:
@@ -99,7 +108,6 @@ class BuildSqliteLibraries(object):
                     else:
                         succeses.append([m_added, ei])
 
-
             aligned_motifs = []
             names = []
 
@@ -110,6 +118,8 @@ class BuildSqliteLibraries(object):
                 m_added.name = m_added.name + "-" + m_added.ends[0].name()
                 aligned_motifs.append(m_added)
                 names.append(m_added.name)
+
+            print motif_type.type_to_str(t), len(succeses)
 
             path = settings.RESOURCES_PATH +"/motif_libraries_new/"+\
                    motif_type.type_to_str(t).lower()+".db"
@@ -133,6 +143,13 @@ class BuildSqliteLibraries(object):
                 if m.basepairs[i].bp_type != "cW-W" or m.basepairs[i+1].bp_type != "cW-W":
                     continue
                 bps = [m.basepairs[i], m.basepairs[i+1]]
+                res = []
+                for bp in bps:
+                    for r in bp.residues():
+                        if r not in res:
+                            res.append(r)
+                if len(res) != 4:
+                    continue
                 m_bps = motif_factory.factory.motif_from_bps(bps)
                 if len(m_bps.end_ids[0]) != 11:
                     continue
@@ -306,9 +323,10 @@ class BuildSqliteLibraries(object):
             path = settings.RESOURCES_PATH +"/motif_state_ensemble_libraries/"+libname+".db"
             sqlite_library.build_sqlite_library(path, mses, names)
 
+#setup_start_motif()
 
 builder = BuildSqliteLibraries()
-builder.build_ideal_helices()
+#builder.build_ideal_helices()
 #builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_unique_twoway_library()
@@ -320,9 +338,9 @@ builder.build_ideal_helices()
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
 #m = mlib.get("HELIX.IDEAL")
 
-#me_lib = sqlite_library.MotifEnsembleSqliteLibrary("bp_steps")
-#me = me_lib.get_motif_ensemble("GG_LL_CC_RR")
-#print me.id
+#me_lib = sqlite_library.MotifStateEnsembleSqliteLibrary("bp_steps")
+#me = me_lib.get("GG_LL_CC_RR")
+#print len(me.members)
 
 #print ref_motif.name
 

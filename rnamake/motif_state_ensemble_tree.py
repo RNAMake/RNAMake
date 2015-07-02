@@ -47,7 +47,6 @@ class MotifStateEnsembleTree(object):
 
 
 
-
     def _setup_from_mt(self, mt):
         for i, n in enumerate(mt.nodes):
             if i == 0:

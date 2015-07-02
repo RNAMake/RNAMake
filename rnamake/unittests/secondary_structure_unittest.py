@@ -6,6 +6,7 @@ import rnamake.resource_manager as rm
 import rnamake.motif_tree as motif_tree
 import rnamake.motif_factory as motif_factory
 import rnamake.ss_tree as ss_tree
+import rnamake.secondary_structure_factory as ssfactory
 
 class SecondaryStructureUnittest(unittest.TestCase):
 
@@ -20,6 +21,15 @@ class SecondaryStructureUnittest(unittest.TestCase):
         #print p.sequence()
         #mt.write_pdbs()
 
+    def test_creation(self):
+        ss = secondary_structure.SecondaryStructure("AGCU+AGCU","((((+))))")
+
+    def test_find_residue(self):
+        ss = secondary_structure.SecondaryStructure("AGCU+AGCU","((((+))))")
+        r = ss.get_residue(0, "A")
+        if r is None:
+            self.fail("did not find a known residue, finde_residue not working")
+
     def test_to_str(self):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(10)
@@ -32,17 +42,22 @@ class SecondaryStructureUnittest(unittest.TestCase):
         if len(ss.elements["BP_STEP"]) != len(ss1.elements["BP_STEP"]):
             self.fail("did not get all basepair steps again")
 
-    def _test_parse(self):
-        m = rm.manager.get_motif("NWAY.1S72.18-01551-01634")
-        ss = m.secondary_structure()
-        seq = m.sequence()
+    def test_copy(self):
+        builder = build.BuildSecondaryStructure()
+        ss = builder.build_helix(2)
+
+        ss_copy = ss.copy()
+        ss_copy = ss_copy.copy()
 
 
-        struct = secondary_structure.factory.get_structure(ss, seq)
-        ss_chains = struct.reorient_ss_and_seq(0, 10)
+    def test_parse(self):
+        seq = "UG&CA&CGACACAG"
+        db  = "((&))&(......)"
+        ss = ssfactory.factory.get_structure(seq, db)
+        for bp in ss.basepairs:
+            print bp.res1.num, bp.res2.num
 
-        #print struct.sequence()
-        #print struct.secondary_structure()
+
 
 
 

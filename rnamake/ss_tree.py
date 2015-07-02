@@ -88,6 +88,10 @@ class SS_Tree(object):
             raise ValueError("must supply either sequence and dot_bracket or " +\
                              "secondary structure object")
 
+        self.residues = self.ss.residues()
+        pad_residue = secondary_structure.Residue("N", ".", -1, "N")
+        self.residues.append(pad_residue)
+        self.residues.insert(0, pad_residue)
         self._build_tree()
 
     def get_node(self, i):
@@ -104,19 +108,21 @@ class SS_Tree(object):
         return self.tree.next()
 
     def _check_from_chain_ends(self, xb, yb):
-        if self._is_res_end_of_chain(xb) or self._is_res_end_of_chain(yb):
+        if self._is_res_end_of_chain(self.residues[xb].num) or \
+           self._is_res_end_of_chain(self.residues[yb].num):
             ss_chains = [secondary_structure.Chain(),
                          secondary_structure.Chain()]
-            fake_res1 = secondary_structure.Residue('&', '&', xb)
-            fake_res2 = secondary_structure.Residue('&', '&', yb)
+            fake_res1 = secondary_structure.Residue('&', '&', self.residues[xb].num, "N")
+            fake_res2 = secondary_structure.Residue('&', '&', self.residues[yb].num, "N")
             ss_chains[0].residues.append(fake_res1)
             ss_chains[1].residues.append(fake_res2)
-            current = SS_NodeData(SS_Type.SS_SEQ_BREAK, ss_chains, [xb-1, yb+1])
+            current = SS_NodeData(SS_Type.SS_SEQ_BREAK, ss_chains,
+                                  [ self.residues[xb-1], self.residues[yb+1]])
             return current
         return None
 
     def _build_tree(self):
-        xb, yb = self.ss.residues()[0].num, self.ss.residues()[-1].num
+        xb, yb = 1, len(self.residues)-2
         current = self._assign_new_node(xb, yb)
         index = 0
         NodeandIndex = namedtuple('NodeandIndex', 'node index')
@@ -129,8 +135,8 @@ class SS_Tree(object):
                 index = self.tree.add_data(current_pair.node, current_pair.index)
                 continue
 
-            xb = current_pair.node.bound_side(0, Bound_Side.RIGHT)+1
-            yb = current_pair.node.bound_side(1, Bound_Side.LEFT) -1
+            xb =  self._map_back_to_index(current_pair.node.bound_side(0, Bound_Side.RIGHT))+1
+            yb =  self._map_back_to_index(current_pair.node.bound_side(1, Bound_Side.LEFT)) -1
 
 
             if xb > yb:
@@ -167,8 +173,8 @@ class SS_Tree(object):
                                 ss_chains.append(n.ss_chains[i])
 
                         if n.type == SS_Type.SS_BULGE:
-                            nxb = n.bound_side(0, Bound_Side.RIGHT)+1
-                            nyb = n.bound_side(1, Bound_Side.LEFT) -1
+                            nxb = self._map_back_to_index(n.bound_side(0, Bound_Side.RIGHT))+1
+                            nyb = self._map_back_to_index(n.bound_side(1, Bound_Side.LEFT)) -1
                             next_level_2 = self._build_tree_level(nxb, nyb)
                             for n2 in next_level_2:
                                 next_level.append(n2)
@@ -181,14 +187,17 @@ class SS_Tree(object):
             for n in next_level:
                 open_nodes.put(NodeandIndex(n, index))
 
+    def _build_tree_sub(self, xb, yb):
+        pass
+
     def _build_tree_level(self, xb, yb):
         next_level = []
 
         while xb <= yb:
-            if xb == yb and self.ss.get_residue(xb).dot_bracket != ".":
+            if xb == yb and self.residues[xb].dot_bracket != ".":
                 break
             child = self._assign_new_node(xb, yb)
-            xb = child.bound_side(1, Bound_Side.RIGHT)+1
+            xb =  self._map_back_to_index(child.bound_side(1, Bound_Side.RIGHT))+1
             next_level.append(child)
 
         return next_level
@@ -196,29 +205,29 @@ class SS_Tree(object):
     def _assign_new_node(self, xb, yb):
         ss_chains = [secondary_structure.Chain(),
                      secondary_structure.Chain()]
-        bounds = [xb-1, yb+1]
+        bounds = [self.residues[xb-1], self.residues[yb+1]]
         hairpin = 0
         current = None
 
-        if self.ss.get_residue(xb).dot_bracket == '.':
+        if self.residues[xb].dot_bracket == '.':
             end_x = self._get_dot_bounds(xb, 0)
             for i in range(xb, end_x+1):
-                ss_chains[0].residues.append(self.ss.get_residue(i))
+                ss_chains[0].residues.append(self.residues[i])
             if end_x == yb:
                 hairpin = 1
 
-        if self.ss.get_residue(yb).dot_bracket == '.' and hairpin == 0:
+        if self.residues[yb].dot_bracket == '.' and hairpin == 0:
             end_y = self._get_dot_bounds(yb, 1)
             for i in range(end_y, yb+1):
-                ss_chains[1].residues.append(self.ss.get_residue(i))
+                ss_chains[1].residues.append(self.residues[i])
 
         type = None
         if len(ss_chains[0].residues) == 0 and len(ss_chains[1].residues) == 0:
             pair = self._get_bracket_pair(xb)
-            ss_chains[0].residues.append(self.ss.get_residue(xb))
-            ss_chains[1].residues.append(self.ss.get_residue(pair))
+            ss_chains[0].residues.append(self.residues[xb])
+            ss_chains[1].residues.append(self.residues[pair])
             type = SS_Type.SS_BP
-            if(self.ss.get_residue(xb).dot_bracket == '['):
+            if(self.residues[xb].dot_bracket == '['):
                type = SS_Type.SS_PSEUDO_BP
 
         elif hairpin:
@@ -247,15 +256,15 @@ class SS_Tree(object):
         4
         """
         bracket_count = 0
-        for i, r in enumerate(self.ss.residues()):
-            if r.num < num:
+        for i, r in enumerate(self.residues):
+            if i < num:
                 continue
             if r.dot_bracket == "(":
                 bracket_count += 1
             if r.dot_bracket == ")":
                 bracket_count -= 1
                 if bracket_count == 0:
-                    return r.num
+                    return i
 
         raise ValueError("cannot find pair")
 
@@ -286,10 +295,10 @@ class SS_Tree(object):
             incr = -1
 
         while 1:
-            if pos == 0 or self.ss.get_residue(pos) == self.ss.residues()[-1]:
+            if pos == 0 or pos == len(self.residues):
                 break
 
-            if self.ss.get_residue(pos).dot_bracket == ".":
+            if self.residues[pos].dot_bracket == ".":
                 pos += incr
             else:
                 pos -= incr
@@ -304,6 +313,13 @@ class SS_Tree(object):
             if c.last().num == num:
                 return 1
         return 0
+
+    def _map_back_to_index(self, r):
+        try:
+            i = self.residues.index(r)
+            return i
+        except:
+            raise ValueError("cannot find residue " + r )
 
 class SS_Type(object):
    SS_BP        = 0
@@ -328,9 +344,9 @@ class SS_NodeData(object):
             return self.bounds[pos]
 
         if side == Bound_Side.LEFT:
-            return ss_chain.residues[0].num
+            return ss_chain.residues[0]
         else:
-            return ss_chain.residues[-1].num
+            return ss_chain.residues[-1]
 
     def what(self):
         if   self.type == SS_Type.SS_BP:        return "SS_BP"
