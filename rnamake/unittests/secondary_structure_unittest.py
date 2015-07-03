@@ -7,6 +7,7 @@ import rnamake.motif_tree as motif_tree
 import rnamake.motif_factory as motif_factory
 import rnamake.ss_tree as ss_tree
 import rnamake.secondary_structure_factory as ssfactory
+import rnamake.motif_tree as motif_tree
 
 class SecondaryStructureUnittest(unittest.TestCase):
 
@@ -49,7 +50,6 @@ class SecondaryStructureUnittest(unittest.TestCase):
         ss_copy = ss.copy()
         ss_copy = ss_copy.copy()
 
-
     def test_parse(self):
         seq = "UG&CA&CGACACAG"
         db  = "((&))&(......)"
@@ -57,9 +57,12 @@ class SecondaryStructureUnittest(unittest.TestCase):
         for bp in ss.basepairs:
             print bp.res1.num, bp.res2.num
 
-
-
-
+    def test_motif_topology_from_end(self):
+        builder = build.BuildSecondaryStructure()
+        ss = builder.build_helix(10)
+        connectivity = ss.motif_topology_from_end(ss.ends[1])
+        for c in connectivity:
+            print c
 
 def main():
     unittest.main()

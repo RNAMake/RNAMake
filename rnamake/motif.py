@@ -246,6 +246,7 @@ class Motif(object):
 
         raise ValueError("no matching end id in motif")
 
+
 class MotifState(object):
     __slots__ = ['name', 'end_states', 'beads', 'score', 'size']
 

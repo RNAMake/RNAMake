@@ -229,10 +229,11 @@ class SecondaryStructure(SecondaryStructureMotif):
         pos = 0
         indexed_e = {}
         while not queue.empty():
-            seen_e[current_e] = pos
-            indexed_e[pos] = current_e
+
             current_e, current_end, parent_pos = queue.get()
             ss_id = assign_end_id(current_e, current_end)
+            seen_e[current_e] = pos
+            indexed_e[pos] = current_e
 
             parent_id = ""
             if pos != 0:
