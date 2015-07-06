@@ -1,6 +1,8 @@
 import unittest
+import build
 import rnamake.motif_tree
 import rnamake.resource_manager as rm
+import rnamake.secondary_structure_factory as ssfactory
 import util
 
 class MotifTreeUnittest(unittest.TestCase):
@@ -54,6 +56,22 @@ class MotifTreeUnittest(unittest.TestCase):
         node = mt.add_motif(m)
         print node
         mt.write_pdbs()
+
+    def test_replace_ideal_helices(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build()
+        mt.write_pdbs()
+        p = mt.to_pose()
+        seq = p.optimized_sequence()
+        db = p.dot_bracket()
+
+        ss = ssfactory.factory.get_structure(seq, db)
+        connectivity = ss.motif_topology_from_end(ss.ends[0])
+        mt1 = rnamake.motif_tree.motif_tree_from_topology(connectivity)
+
+
+
+
 
 
 

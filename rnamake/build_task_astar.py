@@ -234,6 +234,7 @@ class MotifTreeStateSearch(base.Base):
 
     def _print_status(self):
         clogger.info("steps: "+ str(self.steps))
+
     def reset(self):
         self.queue = PriorityQueue()
         self.solutions = []

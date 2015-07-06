@@ -124,12 +124,10 @@ class Motif(object):
         return self.beads
 
     def sequence(self):
-        seqs = [x.seq for x in self.ss_chains]
-        return "&".join(seqs)
+        return self.secondary_structure.sequence()
 
-    def secondary_structure(self):
-        sss = [x.ss for x in self.ss_chains]
-        return "&".join(sss)
+    def dot_bracket(self):
+        return self.secondary_structure.dot_bracket()
 
     def to_str(self):
         """
@@ -241,6 +239,8 @@ class Motif(object):
 
     def end_index_with_id(self, id):
         for i, end_id in enumerate(self.end_ids):
+            if i == 0:
+                continue
             if id == end_id:
                 return i
 

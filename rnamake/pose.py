@@ -2,7 +2,7 @@ import motif
 import motif_type
 import x3dna
 import eternabot.sequence_designer as sequence_designer
-
+import secondary_structure
 
 class Pose(motif.Motif):
     """
@@ -47,7 +47,8 @@ class Pose(motif.Motif):
         self.beads, self.score, self.basepairs = [], 0, []
         self.designable = {}
         self.mtype = motif_type.UNKNOWN
-        self.nodes = []
+        self.end_ids = []
+        self.secondary_structure = secondary_structure.SecondaryStructure()
         #self._setup(mdir, pdb)
         if pdb is not None or mdir is not None:
             self._setup_motifs()
@@ -146,12 +147,12 @@ class Pose(motif.Motif):
 
         seq = self.designable_sequence()
         if ss == None:
-            ss  = self.secondary_structure()
+            ss  = self.dot_bracket()
 
         designer = sequence_designer.SequenceDesigner()
         results = designer.design(ss, seq)
-        score = results[0]['end'][2]['finalscore']
-        return [results[0]['end'][0], score]
+        score = results[0].score
+        return results[0].sequence
 
 
 

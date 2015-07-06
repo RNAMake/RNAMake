@@ -176,14 +176,11 @@ class MotifFactory(object):
                 best_i = i
 
         updated_ends = [ closest ]
-        updated_end_ids = [ m.end_ids[best_i] ]
         for i, end in enumerate(m.ends):
             if end != closest:
                 updated_ends.append(end)
-                updated_end_ids.append(m.end_ids[i])
 
         m.ends = updated_ends
-        m.end_ids = updated_end_ids
 
     def _setup_secondary_structure(self, m):
         ss = secondary_structure.assign_secondary_structure(m)
@@ -275,15 +272,18 @@ class MotifFactory(object):
 
     def align_motif_to_common_frame(self, m, ei):
         m_added = motif.get_aligned_motif(self.ref_motif.ends[0], m.ends[ei], m)
+        self.standardize_motif(m_added)
+        return m_added
 
-        self._align_chains(m_added)
-        self._align_ends(m_added)
+    def standardize_motif(self, m):
+        self._align_chains(m)
+        self._align_ends(m)
         try:
             self._setup_secondary_structure(m)
         except:
             print m.name
             return None
-        return m_added
+
 
     def motif_from_bps(self, bps):
         m = motif.Motif()

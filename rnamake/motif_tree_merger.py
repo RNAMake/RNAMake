@@ -90,24 +90,17 @@ class MotifTreeMerger(base.Base):
                     basepairs.append(cbp)
 
         new_pose.name = "assembled"
+        new_pose.path = "assembled"
         new_pose.structure = new_structure
         new_pose.basepairs = basepairs
-
-        new_pose.ss_chains = secondary_structure.assign_secondary_structure(new_pose)
-        ends = motif_factory.factory._setup_basepair_ends(new_structure, basepairs)
-        new_pose.ends = ends
-        end_ids = motif_factory.factory._setup_end_ids(ends, new_pose)
-        new_pose.end_ids = end_ids
-        motif_factory.factory._align_chains(new_pose)
-        motif_factory.factory._align_ends(new_pose)
-        new_pose.ss_chains = secondary_structure.assign_secondary_structure(new_pose)
-
+        new_pose.ends = motif_factory.factory._setup_basepair_ends(new_structure, basepairs)
+        motif_factory.factory.standardize_motif(new_pose)
 
         if self.option('chain_closure'):
             for i,c in enumerate(new_pose.chains()):
                 close_chain(c)
 
-        new_pose.nodes = self.graph.nodes
+        #new_pose.nodes = self.graph.nodes
         return new_pose
 
     def _merge_chains_in_node(self, node):

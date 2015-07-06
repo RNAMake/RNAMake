@@ -7,9 +7,22 @@ import residue
 import motif_type
 import motif_tree_merger
 import graph
+import resource_manager
 
-def motif_tree_from_topology(self, mtt, pos):
-    pass
+def motif_tree_from_topology(connectivty):
+    mt = MotifTree()
+    for c in connectivty:
+        m = resource_manager.manager.get_motif(c[0])
+        if c[2] == -1:
+            mt.add_motif(m)
+        else:
+            n = mt.get_node(c[2])
+            parent_end_index = n.data.end_index_with_id(c[1])
+            i = mt.add_motif(m, c[2], parent_end_index)
+            if i == -1:
+                raise ValueError("could not build motif tree from topology")
+    return mt
+
 
 class MotifTree(base.Base):
     """
@@ -68,6 +81,19 @@ class MotifTree(base.Base):
     def __iter__(self):
         self.graph.__iter__()
         return self
+
+    def __repr__(self):
+        s = "<(MotifTree: #nodes: %d\n" % (len(self.graph))
+        for n in self.graph:
+            c_str = ""
+            for c in n.connections:
+
+                if c is not None:
+                    c_str += str(c.partner(n.index).index) + ", "
+            s += "\t index: %d name: %s connections %s\n" % (n.index, n.data.name, c_str)
+        s += ")"
+
+        return s
 
     def next(self):
         return self.graph.next()

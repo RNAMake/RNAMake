@@ -202,7 +202,10 @@ class SecondaryStructure(SecondaryStructureMotif):
                 id += "_"
         return id
 
-    def motif_topology_from_end(self, end):
+    def motif_topology_from_end(self, end=None):
+        if end is None:
+            end = ss.ends[0]
+
         elements = []
         for eles in self.elements.itervalues():
             elements.extend(eles)
