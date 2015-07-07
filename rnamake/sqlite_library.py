@@ -20,6 +20,7 @@ class SqliteLibrary(object):
             self.data_path[r[0]] = r[0]
 
     def _get_path(self, libname):
+        self.name = libname
         try:
             libpath = settings.RESOURCES_PATH  + self.libnames[libname]
         except:
@@ -85,7 +86,7 @@ class MotifSqliteLibrary(SqliteLibrary):
             "tcontact"        : "/motif_libraries_new/tcontact.db",
             "hairpin"         : "/motif_libraries_new/hairpin.db",
             "nway"            : "/motif_libraries_new/nway.db",
-            "unique_twoways"  : "/motif_libraries_new/unique_twoways.db"
+            "unique_twoway"  : "/motif_libraries_new/unique_twoway.db"
         }
 
         return libnames
@@ -203,7 +204,9 @@ class MotifStateSqliteLibrary(SqliteLibrary):
     def get_libnames():
         libnames = {
             "ideal_helices" :  "/motif_state_libraries/ideal_helices.db",
-            "twoways"       :  "/motif_state_libraries/twoways.db"
+            "twoway"        :  "/motif_state_libraries/twoway.db",
+            "unique_twoway" :  "/motif_state_libraries/unique_twoway.db"
+
         }
 
         return libnames

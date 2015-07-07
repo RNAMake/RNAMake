@@ -1,3 +1,5 @@
+import base
+import option
 import motif
 import motif_tree
 import tree
@@ -7,15 +9,24 @@ import settings
 import basic_io
 
 
-class MotifStateTree(object):
+class MotifStateTree(base.Base):
     def __init__(self, mt=None):
+        self.setup_options_and_constraints()
         self.tree = tree.TreeStatic()
         self.clash_radius = settings.CLASH_RADIUS
 
         if mt is not None:
             self._setup_from_mt(mt)
 
+    def setup_options_and_constraints(self):
+        options = { 'sterics'              : 1}
+
+        self.options = option.Options(options)
+        self.constraints = {}
+
+
     def _setup_from_mt(self, mt):
+        self.option('sterics', 0)
         for i, n in enumerate(mt):
             if i == 0:
                 self.add_state(resource_manager.manager.get_state(n.data.name))
@@ -32,7 +43,7 @@ class MotifStateTree(object):
                 if parent_index == 1000:
                     raise ValueError("did not convert motif tree to motif state tree properly")
                 j = self.add_state(resource_manager.manager.get_state(n.data.name),
-                               parent_index, parent_end_index)
+                                   parent_index, parent_end_index)
                 if j == -1:
                     raise ValueError("could not convert motif tree to motif state tree")
 
@@ -56,7 +67,7 @@ class MotifStateTree(object):
                                           n_data.cur_state,
                                           n_data.ref_state)
 
-            if self._steric_clash(n_data):
+            if self.option('sterics') and self._steric_clash(n_data):
                 continue
 
             return self.tree.add_data(n_data, len(state.end_states), parent.index, p)
@@ -80,6 +91,9 @@ class MotifStateTree(object):
                 raise ValueError("cannot convert mst to mt in to_motif_tree")
 
         return mt
+
+    def write_pdbs(self, name="nodes"):
+        self.to_motif_tree().write_pdbs(name)
 
     def get_node(self, i):
         return self.tree.get_node(i)

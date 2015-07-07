@@ -423,7 +423,7 @@ def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
         new_r, new_d, new_sug = s.get_transformed_state(r, t)
         cur_state.end_states[i].set(new_r,new_d,new_sug)
 
-    cur_state.beads = np.dot(cur_state.beads, r.T) + t
+    cur_state.beads = np.dot(org_state.beads, r.T) + t
 
 
 

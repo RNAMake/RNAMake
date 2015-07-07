@@ -31,10 +31,13 @@ class MotifStateTreeUnittest(unittest.TestCase):
                     raise ValueError("did not convert motif tree to motif state tree properly")
                 mst.add_state(rm.manager.get_state(n.data.name), parent_index, parent_end_index)
 
-    def _test_creation_from_mt(self):
+    def test_creation_from_mt(self):
         builder = build.BuildMotifTree()
         mt = builder.build(10)
+        mt.write_pdbs()
         mst = motif_state_tree.MotifStateTree(mt)
+        if len(mst) != 10:
+            self.fail("did not build mst properly")
 
     def _test_to_mt(self):
         builder = build.BuildMotifTree()
@@ -49,7 +52,7 @@ class MotifStateTreeUnittest(unittest.TestCase):
         mt2 = mst.to_motif_tree()
         mt2.to_pdb("test2.pdb")
 
-    def test_replace_state(self):
+    def _test_replace_state(self):
         builder = build.BuildMotifTree()
         mt = builder.build(10)
         mst = motif_state_tree.MotifStateTree(mt)
@@ -69,7 +72,7 @@ class MotifStateTreeUnittest(unittest.TestCase):
             self.fail("did not properly replace state")
 
 
-    def test_specific(self):
+    def _test_specific(self):
         str = """HELIX.IDEAL.11
 TWOWAY.2VQE.7-A416-A427
 HELIX.IDEAL.16

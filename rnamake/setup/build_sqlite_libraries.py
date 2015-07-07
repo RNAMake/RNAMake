@@ -235,10 +235,10 @@ class BuildSqliteLibraries(object):
             uniques.append(lowest)
             unique_names.append(lowest.name)
 
-        path = settings.RESOURCES_PATH +"/motif_libraries_new/unique_twoways.db"
+        path = settings.RESOURCES_PATH +"/motif_libraries_new/unique_twoway.db"
         sqlite_library.build_sqlite_library(path, uniques, unique_names)
 
-        path = settings.RESOURCES_PATH +"/motif_libraries_new/twoways_clusters.db"
+        path = settings.RESOURCES_PATH +"/motif_libraries_new/twoway_clusters.db"
         sqlite_library.build_sqlite_library(path, motif_arrays, motif_array_names)
 
     def build_ss_and_seq_libraries(self):
@@ -329,8 +329,8 @@ builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
 #builder.build_basic_libraries()
 #builder.build_helix_ensembles()
-#builder.build_unique_twoway_library()
-#builder.build_motif_state_libraries()
+builder.build_unique_twoway_library()
+builder.build_motif_state_libraries()
 #builder.build_ss_and_seq_libraries()
 #builder.build_motif_ensemble_state_libraries()
 

@@ -65,7 +65,7 @@ class GraphDynamic(Graph):
         super(GraphDynamic, self).__init__()
 
     def add_data(self, data, parent_index=-1):
-        parent = self.last_node
+        parent = None
         if parent_index != -1:
             parent = self.get_node(parent_index)
 
@@ -87,7 +87,8 @@ class GraphDynamic(Graph):
         n2 = self.get_node(j)
         c = GraphConnection(n1, n2, 0, 0)
         n1.add_connection(c)
-        n2.add_connection(c)
+        if n1 != n2:
+            n2.add_connection(c)
         self.connections.append(c)
 
 
@@ -268,7 +269,8 @@ class GraphConnection(object):
         elif n_index == self.node_2.index:
             return self.node_1
         else:
-            raise ValueError("cannot call partner with node not in connection")
+            raise ValueError("cannot call partner with node not in connection, index: " + \
+                              n_index + " if this is not a number you messed up")
 
     def end_index(self, n_index):
         if   n_index == self.node_1.index:

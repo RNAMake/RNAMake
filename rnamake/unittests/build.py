@@ -12,7 +12,7 @@ class BuildMotifTree(object):
         else:
             self.libs = libs
 
-    def build(self, size = 2):
+    def build(self, size=2):
         mt = motif_tree.MotifTree()
         pos = 0
         count = 0

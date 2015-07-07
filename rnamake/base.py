@@ -46,7 +46,7 @@ class Base(object):
             if value is None:
                 return self.constraints.get(constraint)
             else:
-                self.constaints.set(constraint, value)
+                self.constraints.set(constraint, value)
         else:
             raise ValueError("invalid constraint" + constraint)
 
