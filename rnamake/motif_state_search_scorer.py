@@ -43,7 +43,6 @@ class MTSS_GreedyBestFirstSearch(MotifTreeStateSearchScorer):
 
     def score(self, node):
         best_score = 1000
-
         for i, bp_state in enumerate(node.cur_state.end_states):
             if i == 0:
                 continue
@@ -56,7 +55,29 @@ class MTSS_GreedyBestFirstSearch(MotifTreeStateSearchScorer):
 
         return best_score
 
+class MTSS_Astar(MotifTreeStateSearchScorer):
+    def __init__(self, target=None):
+        super(self.__class__, self).__init__(target)
+        self.ss_score_weight = 0.25
+        self.level_weight = 2.0
 
+    def score(self, node):
+        best_score = 1000
+        for i, bp_state in enumerate(node.cur_state.end_states):
+            if i == 0:
+                continue
+
+            g = node.ss_score*self.ss_score_weight
+            if node.level > 2:
+                g += node.level*self.level_weight
+            h = new_score_function(bp_state, self.target,
+                                   self.target_flip)
+
+            score = g + h
+            if score < best_score:
+                best_score = score
+
+        return best_score
 
 
 def new_score_function(current, end, endflip):
