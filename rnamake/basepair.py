@@ -43,6 +43,7 @@ class Basepair(object):
     def c1_prime_coords(self):
         return [self.res1.get_atom("C1'").coords,
                 self.res2.get_atom("C1'").coords]
+
     def partner(self, res):
         """
         get the other basepairing partner of a residue will throw an error
@@ -60,8 +61,14 @@ class Basepair(object):
                              "not in this basepair")
 
     def name(self):
-        return self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
-            "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
+        str1 = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
+        str2 = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
+
+        if str1 < str2:
+            return str1+"-"+str2
+        else:
+            return str2+"-"+str1
+
 
     def flip(self):
         self.bp_state.flip()
@@ -85,6 +92,7 @@ class Basepair(object):
         """
         d = util.center(self.atoms)
         self.bp_state.d = d
+        self.bp_state.sugars = self.c1_prime_coords()
         return self.bp_state
 
     def r(self):
@@ -178,7 +186,6 @@ class BasepairState(object):
                      (self.sugars[1] - new_sugars_2[1]))/2)
         else:
             diff = 0
-
         return r_trans, t_trans+diff
 
     def get_transforming_r_and_t_w_state(self, state):

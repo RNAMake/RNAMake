@@ -24,7 +24,6 @@ class MotifStateTree(base.Base):
         self.options = option.Options(options)
         self.constraints = {}
 
-
     def _setup_from_mt(self, mt):
         self.option('sterics', 0)
         for i, n in enumerate(mt):
@@ -47,7 +46,8 @@ class MotifStateTree(base.Base):
                 if j == -1:
                     raise ValueError("could not convert motif tree to motif state tree")
 
-    def add_state(self, state, parent_index=-1, parent_end_index=-1):
+    def add_state(self, state, parent_index=-1, parent_end_index=-1,
+                  parent_end_name=None):
         parent = self.tree.last_node
         if parent_index != -1:
             parent = self.tree.get_node(parent_index)
@@ -80,6 +80,9 @@ class MotifStateTree(base.Base):
         for i, n in enumerate(self.tree):
             m = resource_manager.manager.get_motif(n.data.ref_state.name)
             if i == 0:
+                motif.align_motif(n.data.cur_state.end_states[0],
+                                  m.ends[0],
+                                  m)
                 mt.add_motif(m)
                 continue
 
@@ -124,6 +127,9 @@ class MotifStateTree(base.Base):
                         return 1
         return 0
 
+    def last_node(self):
+        return self.tree.last_node
+
     def __len__(self):
         return len(self.tree)
 
@@ -139,4 +145,7 @@ class NodeData(object):
     def __init__(self, ref_state):
         self.ref_state = ref_state
         self.cur_state = ref_state.copy()
+
+    def get_end_state(self, name):
+        return self.cur_state.get_end_state(name)
 

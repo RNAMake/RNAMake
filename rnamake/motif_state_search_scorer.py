@@ -59,7 +59,6 @@ class MTSS_GreedyBestFirstSearch(MotifTreeStateSearchScorer):
 
 
 
-
 def new_score_function(current, end, endflip):
     d_diff = util.distance(current.d,end.d)
 

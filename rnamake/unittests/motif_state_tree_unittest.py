@@ -1,9 +1,11 @@
 import unittest
+import rnamake.motif as motif
 import rnamake.motif_tree as motif_tree
 import rnamake.motif_factory as motif_factory
 import rnamake.motif_state_tree as motif_state_tree
 import rnamake.resource_manager as rm
 import rnamake.util as util
+import rnamake.settings as settings
 import build
 
 class MotifStateTreeUnittest(unittest.TestCase):
@@ -38,6 +40,20 @@ class MotifStateTreeUnittest(unittest.TestCase):
         mst = motif_state_tree.MotifStateTree(mt)
         if len(mst) != 10:
             self.fail("did not build mst properly")
+        mst.write_pdbs("new")
+
+    def test_align(self):
+        path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
+        rm.manager.add_motif(path)
+        m  = rm.manager.get_motif("tetraloop_receptor_min", "A228-A246")
+        m.to_pdb("test.pdb")
+        bp_state = m.ends[1].state()
+        test_state = rm.manager.ms_libs["ideal_helices"].get('HELIX.IDEAL.3')
+        print bp_state.d
+        motif.align_motif_state(bp_state, test_state)
+        print test_state.end_states[0].d
+
+
 
     def _test_to_mt(self):
         builder = build.BuildMotifTree()

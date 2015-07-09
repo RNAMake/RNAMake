@@ -28,7 +28,7 @@ class MotifStateSearch(base.Base):
         self.constraints = option.Options(constraints)
 
     def _start_node(self, start_bp):
-        ms = motif.MotifState('start', [start_bp, start_bp], [], 0, 0)
+        ms = motif.MotifState('start', ['start', 'start'], [start_bp, start_bp], [], 0, 0)
         n = MotifStateSearchNode(ms, None, -1, -1)
         return n
 
@@ -65,7 +65,17 @@ class MotifStateSearch(base.Base):
                 test_node.parent_end_index = parent_end_index
                 for i, ms in enumerate(motif_states):
                     test_node.ref_state = ms
-                    motif.get_aligned_motif_state(end, test_node.cur_state, test_node.ref_state)
+                    motif.get_aligned_motif_state(start,
+                                                  test_node.cur_state, test_node.ref_state)
+                    print start.d
+                    #print end.r
+                    motif.align_motif_state(start, ms)
+                    print ms.end_states[0].d
+                    exit()
+                    #print test_node.cur_state.end_states[0].r
+
+                    #print test_node.cur_state.end_states[1].d
+
                     score = self.scorer.score(test_node)
                     if score > current.score:
                         continue
@@ -74,6 +84,7 @@ class MotifStateSearch(base.Base):
                     child = test_node.copy()
                     child.ntype = types[i]
                     self.queue.put(child, score)
+                    exit()
 
         return self.solutions
 
@@ -116,10 +127,11 @@ class MotifStateSearchSolution(object):
     def to_mst(self):
         mst = motif_state_tree.MotifStateTree()
         for i, n in enumerate(self.path):
+            n.cur_state.name = n.ref_state.name
             if i == 0:
-                mst.add_state(n.ref_state)
+                mst.add_state(n.cur_state)
             else:
-                j = mst.add_state(n.ref_state, -1, n.parent_end_index)
+                j = mst.add_state(n.cur_state, -1, n.parent_end_index)
                 if j == -1:
                     raise ValueError("something went horribly wrong, cannot build solution")
         return mst

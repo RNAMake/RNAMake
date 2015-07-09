@@ -226,8 +226,7 @@ class MotifFactory(object):
         try:
             self._setup_secondary_structure(m)
         except:
-            print m.name
-            return None
+            print "did not parse secondary_structure", m.name
 
         return m
 

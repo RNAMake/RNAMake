@@ -163,12 +163,8 @@ class MotifTree(base.Base):
                 self.remove_node(self.nodes[i])
         self.last_node = self.nodes[-1]
 
-    def leafs(self):
-        leafs = []
-        for n in self.graph:
-            if len(n.available_children_pos()) > 0:
-                leafs.append(n)
-        return leafs
+    def last_node(self):
+        return self.graph.last_node
 
     def to_pose(self, chain_closure=0):
 
