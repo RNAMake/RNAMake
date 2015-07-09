@@ -92,8 +92,11 @@ class X3dna(object):
 
         pdb_name = util.filename(pdb_path)[:-4]
         dssr_path = X3DNA_BIN_PATH + "x3dna-dssr "
-        subprocess.call(dssr_path + "-i="+pdb_path+" -o="+pdb_name+ \
-                        "_dssr.out --non-pair >& /dev/null", shell=True)
+        result = subprocess.call(dssr_path + "-i="+pdb_path+" -o="+pdb_name+ \
+                                "_dssr.out --non-pair >& /dev/null", shell=True)
+
+        if result != 0:
+            raise SystemError("dssr did not run correctly")
         files = ("dssr-2ndstrs.ct,dssr-2ndstrs.dbn,dssr-helices.pdb,"+ \
                 "dssr-pairs.pdb,dssr-stems.pdb,hel_regions.pdb,hstacking.pdb,"+ \
                 "poc_haxis.r3d,stacking.pdb,dssr-torsions.dat,dssr-Kturns.pdb,"+ \
