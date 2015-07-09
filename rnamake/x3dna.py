@@ -57,8 +57,7 @@ class X3dna(object):
         find_pair_path = X3DNA_BIN_PATH + "find_pair "
         analyze_path = X3DNA_BIN_PATH + "analyze "
 
-        result = \
-        subprocess.call(find_pair_path + pdb_path + " 2> /dev/null "+
+        result = subprocess.call(find_pair_path + pdb_path + " 2> /dev/null "+
                         "stdout | " + analyze_path + "stdin >& /dev/null",
                         shell=True)
 
