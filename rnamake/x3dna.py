@@ -199,7 +199,7 @@ class X3dna(object):
 
         if not os.path.isfile(dssr_file_path):
             dssr_file_path = filename + "_dssr.out"
-            self.generate_dssr_file(dssr_file_path)
+            self.generate_dssr_file(path)
 
         return dssr_file_path
 
