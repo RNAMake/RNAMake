@@ -14,8 +14,9 @@ import numpy as np
 class MotifUnittest(unittest.TestCase):
 
     def setUp(self):
-        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
-        self.motif_1 = rnamake.motif_factory.factory.motif_from_file(path)
+        pass
+        #path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
+        #self.motif_1 = rnamake.motif_factory.factory.motif_from_file(path)
         #path = rnamake.settings.RESOURCES_PATH + "/motifs/helices/HELIX.IDEAL"
         #self.motif_2 = rnamake.motif_factory.factory.motif_from_file(path)
 
@@ -24,6 +25,8 @@ class MotifUnittest(unittest.TestCase):
         m = rnamake.motif_factory.factory.get_motif(path)
 
     def test_create_pdb(self):
+        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
+        m = rnamake.motif_factory.factory.motif_from_file(path)
         try:
             path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
             m = rnamake.motif_factory.factory.motif_from_file(path)
