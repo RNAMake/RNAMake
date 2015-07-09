@@ -10,10 +10,12 @@ import basic_io
 
 
 class MotifStateTree(base.Base):
-    def __init__(self, mt=None):
+    def __init__(self, mt=None, **options):
         self.setup_options_and_constraints()
+        self.options.dict_set(options)
         self.tree = tree.TreeStatic()
         self.clash_radius = settings.CLASH_RADIUS
+        self.connections = []
 
         if mt is not None:
             self._setup_from_mt(mt)
@@ -56,6 +58,9 @@ class MotifStateTree(base.Base):
             n_data = NodeData(state)
             return self.tree.add_data(n_data, len(state.end_states), -1, -1)
 
+        if parent_end_name is not None:
+            parent_end = parent.data.cur_state.get_end_state(parent_end_name)
+            parent_end_index = parent.data.cur_state.end_states.index(parent_end)
         avail_pos = self.tree.get_available_pos(parent, parent_end_index)
 
         for p in avail_pos:
@@ -74,9 +79,27 @@ class MotifStateTree(base.Base):
 
         return -1
 
+    def add_mst(self, mst,  parent_index=-1, parent_end_index=-1,
+                  parent_end_name=None):
+        index_dict = {}
+        for i, n in enumerate(mst):
+            if i == 0:
+                j = self.add_state(n.data.ref_state, parent_index=parent_index,
+                                   parent_end_index=parent_end_index,
+                                   parent_end_name=parent_end_name)
+            else:
+                ind = index_dict[n.parent_index()]
+                pei = n.parent_end_index()
+                j = self.add_state(n.data.ref_state, parent_index=ind, parent_end_index=pei)
+
+            index_dict[n.index] = j
+
+    def add_connection(self, i, j):
+        pass
+
     def to_motif_tree(self):
 
-        mt = motif_tree.MotifTree()
+        mt = motif_tree.MotifTree(sterics=self.option('sterics'))
         for i, n in enumerate(self.tree):
             m = resource_manager.manager.get_motif(n.data.ref_state.name)
             if i == 0:

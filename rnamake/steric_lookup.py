@@ -57,7 +57,11 @@ class StericLookup(object):
                     self.bhash[key] += 1
 
     def add_beads(self, beads):
-        centers = [ b.center for b in beads]
+        centers = []
+        for b in beads:
+            if b.btype == 0:
+                continue
+            centers.append(b.center)
         self.add_centers(centers)
 
     def clash(self, centers):

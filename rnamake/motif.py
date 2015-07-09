@@ -364,7 +364,7 @@ def str_to_motif_array(str):
     return MotifArray(motifs)
 
 
-def align_motif(ref_bp, motif_end, motif, sterics=1):
+def align_motif(ref_bp_state, motif_end, motif, sterics=1):
     """
     This is the workhorse of the entire suite. Aligns one end of a motif to
     the reference frame and origin of a Basepair object.
@@ -378,18 +378,18 @@ def align_motif(ref_bp, motif_end, motif, sterics=1):
     :type motif: Motif object
     """
 
-    r1 , r2 = ref_bp.state().r , motif_end.state().r
+    r1 , r2 = ref_bp_state.r , motif_end.state().r
     r = util.unitarize(r1.T.dot(r2))
     trans = -motif_end.state().d
     t = transform.Transform(r, trans)
     motif.transform(t)
-    bp_pos_diff = ref_bp.state().d - motif_end.state().d
+    bp_pos_diff = ref_bp_state.d - motif_end.state().d
     motif.move(bp_pos_diff)
 
     #alignment is by center of basepair, it can be slightly improved by
     #aligning the c1' sugars
     res1_coord, res2_coord = motif_end.c1_prime_coords()
-    ref_res1_coord, ref_res2_coord = ref_bp.c1_prime_coords()
+    ref_res1_coord, ref_res2_coord = ref_bp_state.sugars
 
     dist1 = util.distance(res1_coord, ref_res1_coord)
     dist2 = util.distance(res2_coord, ref_res1_coord)
@@ -414,7 +414,7 @@ def get_aligned_motif(ref_bp, motif_end, motif, sterics=1):
     m_copy = motif.copy()
     motif_end = m_copy.ends[motif_end_index]
 
-    align_motif(ref_bp, motif_end, m_copy)
+    align_motif(ref_bp.state(), motif_end, m_copy)
 
     return m_copy
 
