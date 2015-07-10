@@ -7,6 +7,7 @@ import resource_manager
 import util
 import settings
 import basic_io
+from collections import namedtuple
 
 
 class MotifStateTree(base.Base):

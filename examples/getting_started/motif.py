@@ -1,19 +1,20 @@
-import rnamake
+import rnamake.motif_factory as mf
+import rnamake.resource_manager as rm
+import rnamake.motif_type as motif_type
+import rnamake.motif as motif
 
 ##############################################################################
 # LOADING MOTIFS                                                             #
 ##############################################################################
 # motifs are the main objects of rnamake. They can be loaded in multiple ways
 # from a preformated motif directory
-m1 = rnamake.motif.Motif("resources/TWOWAY.1GID.4")
+m1 = mf.factory.motif_from_file("resources/TWOWAY.1GID.4")
 
 #from a pdb
-m2 = rnamake.motif.Motif(pdb="resources/motif.pdb")
+m2 = mf.factory.motif_from_file("resources/motif.pdb")
 
 #from the resource manager
-rm  = rnamake.resource_manager.ResourceManager()
-m3 = rm.get_motif("HELIX.IDEAL")
-m4 = rm.get_motif("TWOWAY.1GID.4")
+m3 = rm.manager.get_motif("HELIX.IDEAL")
 
 #the resource manager can load any motif that is the libraries that rnamake
 #contains. It can also get other resources that we will dicuss later.
@@ -29,7 +30,7 @@ m1.to_pdb("test_output.pdb")
 # a text string. This allows for storage of motifs in text files and also
 # in sqlite databases
 s = m1.to_str()
-mnew = rnamake.motif.str_to_motif(s)
+mnew = motif.str_to_motif(s)
 
 #take a look at the format if your are curious
 f = open("motif.txt", "w")
@@ -58,5 +59,5 @@ print "#########################################################################
 
 
 print "m.sequence() => ", m1.sequence()
-print "m.secondary_structure() => ", m1.secondary_structure()
-print "m.mtype => ", rnamake.motif_type.type_to_str(m4.mtype)
+print "m.secondary_structure() => ", m1.dot_bracket()
+print "m.mtype => ", motif_type.type_to_str(m3.mtype)
