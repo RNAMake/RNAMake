@@ -59,7 +59,7 @@ class X3dna(object):
 
         result = subprocess.call(find_pair_path + pdb_path + " 2> /dev/null "+
                         "stdout | " + analyze_path + "stdin >& /dev/null",
-                        shell=True)
+                        executable="/bin/bash", shell=True)
 
         if result != 0:
             raise SystemError("find_pair did not run correctly")
@@ -89,11 +89,11 @@ class X3dna(object):
         if not os.path.isfile(pdb_path):
             raise IOError(pdb_path + " is not found cannot generate "+ \
                           "dssr file")
-
         pdb_name = util.filename(pdb_path)[:-4]
         dssr_path = X3DNA_BIN_PATH + "x3dna-dssr "
         result = subprocess.call(dssr_path + "-i="+pdb_path+" -o="+pdb_name+ \
-                                "_dssr.out --non-pair >& /dev/null", shell=True)
+                                "_dssr.out --non-pair >& /dev/null", shell=True,
+                                executable="/bin/bash")
 
         if result != 0:
             raise SystemError("dssr did not run correctly")
