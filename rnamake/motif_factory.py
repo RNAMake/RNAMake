@@ -217,7 +217,7 @@ class MotifFactory(object):
 
         m           = motif.Motif()
         m.name      = filename
-        m.path      = util.base_dir(path)
+        m.path      = path
         m.structure = structure
         m.basepairs = basepairs
         m.ends      = ends
@@ -283,7 +283,6 @@ class MotifFactory(object):
             print m.name
             return None
 
-
     def motif_from_bps(self, bps):
         m = motif.Motif()
         res = []
@@ -295,6 +294,17 @@ class MotifFactory(object):
         m.ends = [bps[0], bps[-1]]
         self._setup_secondary_structure(m)
         return m
+
+    def motif_from_res(self, res, bps):
+        m = motif.Motif()
+        chains = self.build_chains(res)
+        m.structure.chains = chains
+        m.basepairs = bps
+        ends = self._setup_basepair_ends(m.structure, bps)
+        m.ends = ends
+        self._setup_secondary_structure(m)
+        return m
+
 
 
 def ref_motif():
