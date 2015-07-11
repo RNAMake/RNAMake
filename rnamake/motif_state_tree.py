@@ -9,6 +9,7 @@ import settings
 import basic_io
 from collections import namedtuple
 
+MotifStateConnection = namedtuple('MotifSTateConnection', 'i j end_name')
 
 class MotifStateTree(base.Base):
     def __init__(self, mt=None, **options):

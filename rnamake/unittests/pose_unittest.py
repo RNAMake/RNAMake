@@ -6,6 +6,8 @@ import rnamake.motif_type as motif_type
 import rnamake.motif_tree as motif_tree
 import random
 import rnamake.eternabot.sequence_designer as sequence_designer
+import rnamake.pose_factory as pf
+
 
 def get_unique_twoway_mlib():
     path = settings.MOTIF_DIRS + "two_ways/unique_7.dat"
@@ -46,7 +48,7 @@ def get_twoway_helix_motiftree(size=10):
 class PoseUnittest(unittest.TestCase):
 
     def test_creation(self):
-        pass
+        p = pf.factory.pose_from_file("resources/motifs/p4p6")
 
     def test_designable_sequence(self):
         mt = get_twoway_helix_motiftree()
@@ -65,8 +67,12 @@ class PoseUnittest(unittest.TestCase):
         seq = p.optimized_sequence()
 
     def test_motifs(self):
-        path = settings.UNITTEST_PATH + "/resources/motifs/p4p6"
-        p = rnamake.pose.Pose(path)
+        p = pf.factory.pose_from_file("resources/motifs/p4p6")
+        twoways = p.motifs(motif_type.TWOWAY)
+        for i, m in enumerate(twoways):
+            m.to_pdb("motif."+str(i)+".pdb")
+
+
 
 
 
