@@ -69,8 +69,11 @@ class MotifTreeUnittest(unittest.TestCase):
         connectivity = ss.motif_topology_from_end(ss.ends[0])
         mt1 = rnamake.motif_tree.motif_tree_from_topology(connectivity)
 
-
-
+    def test_secondary_structure(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build()
+        p = mt.to_pose()
+        print p.secondary_structure.copy().ends
 
 
 

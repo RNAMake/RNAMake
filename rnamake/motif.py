@@ -237,7 +237,7 @@ class Motif(object):
         for i, end in enumerate(self.ends):
             ends[i] = end.state()
             end_names.append(end.name())
-        return MotifState(self.name, end_names, ends, bead_centers,
+        return MotifState(self.name, end_names, self.end_ids, ends, bead_centers,
                           self.score, len(self.residues()))
 
     def end_index_with_id(self, id):
@@ -251,32 +251,45 @@ class Motif(object):
 
 
 class MotifState(object):
-    __slots__ = ['name', 'end_names', 'end_states', 'beads', 'score', 'size']
+    __slots__ = ['name', 'end_names', 'end_ids', 'end_states', 'beads', 'score', 'size']
 
-    def __init__(self, name, end_names, end_states, beads, score, size):
+    def __init__(self, name, end_names, end_ids, end_states,
+                 beads, score, size):
         self.name, self.end_states, self.beads = name, end_states, beads
         self.score, self.size = score, size
-        self.end_names = end_names
+        self.end_names, self.end_ids = end_names, end_ids
 
     def to_str(self):
         s = self.name + "|" + str(self.score) + "|" + str(self.size) + "|"
         s += basic_io.points_to_str(self.beads) + "|"
         s += ",".join(self.end_names) + "|"
+        s += ",".join(self.end_ids) + "|"
         for state in self.end_states:
             s += state.to_str() + "|"
         return s
 
     def get_end_state(self, name):
         for i, n in enumerate(self.end_names):
+            if i == 0:
+                continue
             if n == name:
                 return self.end_states[i]
         raise ValueError("cannot get end state of name: " + name)
+
+    def end_index_with_id(self, id):
+        for i, end_id in enumerate(self.end_ids):
+            if i == 0:
+                continue
+            if id == end_id:
+                return i
+
+        raise ValueError("no matching end id in motif")
 
     def copy(self):
         end_states = [end.copy() for end in self.end_states]
         beads = np.copy(self.beads)
 
-        return MotifState(self.name, self.end_names, end_states,
+        return MotifState(self.name, self.end_names, self.end_ids, end_states,
                           beads, self.score, self.size)
 
 
@@ -349,11 +362,12 @@ def str_to_motif_state(s):
     name, score, size = spl[0], float(spl[1]), float(spl[2])
     beads = basic_io.str_to_points(spl[3])
     end_names = spl[4].split(",")
+    end_ids = spl[5].split(",")
     end_states = []
-    for i in range(5, len(spl)-1):
+    for i in range(6, len(spl)-1):
             end_states.append(basepair.str_to_basepairstate(spl[i]))
 
-    return MotifState(name, end_names, end_states, beads, score, size)
+    return MotifState(name, end_names, end_ids, end_states, beads, score, size)
 
 
 def str_to_motif_array(str):

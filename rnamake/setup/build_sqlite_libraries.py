@@ -214,6 +214,19 @@ class BuildSqliteLibraries(object):
             path = settings.RESOURCES_PATH + "/motif_state_libraries/" + libname + ".db"
             sqlite_library.build_sqlite_library(path, motif_states, names)
 
+        for libname in sqlite_library.MotifSSIDSqliteLibrary.get_libnames().keys():
+            mlib = sqlite_library.MotifSSIDSqliteLibrary(libname)
+            mlib.load_all()
+            motif_states = []
+            names = []
+            for m in mlib.all():
+                ms = m.get_state()
+                motif_states.append(ms)
+                names.append(ms.name)
+
+            path = settings.RESOURCES_PATH + "/motif_state_libraries/ss_" + libname + ".db"
+            sqlite_library.build_sqlite_library(path, motif_states, names)
+
     def build_unique_twoway_library(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
         mlib.load_all()
@@ -242,7 +255,9 @@ class BuildSqliteLibraries(object):
         sqlite_library.build_sqlite_library(path, motif_arrays, motif_array_names)
 
     def build_ss_and_seq_libraries(self):
-        libnames = ["twoway", "tcontact", "hairpin", "nway"]
+        #libnames = ["twoway", "tcontact", "hairpin", "nway"]
+        libnames = ["twoway"]
+
 
         for libname in libnames:
             mlib = sqlite_library.MotifSqliteLibrary(libname)
@@ -326,12 +341,12 @@ class BuildSqliteLibraries(object):
 #setup_start_motif()
 
 builder = BuildSqliteLibraries()
-builder.build_ideal_helices()
-builder.build_basic_libraries()
-builder.build_helix_ensembles()
-builder.build_unique_twoway_library()
-builder.build_motif_state_libraries()
+#builder.build_ideal_helices()
+#builder.build_basic_libraries()
+#builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
+#builder.build_unique_twoway_library()
+builder.build_motif_state_libraries()
 #builder.build_motif_ensemble_state_libraries()
 
 

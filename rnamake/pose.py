@@ -64,24 +64,24 @@ class Pose(motif.Motif):
     def motifs(self, mtype):
         return self.motif_dict[mtype]
 
-    def designable_sequence(self):
+    def designable_secondary_structure(self):
         """
         returns sequence containing Ns for locations that can be changed,
         these spots correspond with helix areas that most likely will not
         affect the overall fold
         """
-        seq = ""
-        for c in self.chains():
-            for r in c.residues:
-                bps = self.get_basepair(res1=r)
-                s = r.rtype.name[0]
-                for bp in bps:
-                    if bp.uuid in self.designable:
-                        s = "N"
-                        break
-                seq += s
-            seq += "&"
-        return seq[:-1]
+        ss_copy = self.secondary_structure.copy()
+        for ss_r in ss_copy.residues():
+            r = self.get_residue(num=ss_r.num, chain_id=ss_r.chain_id)
+            bps = self.get_basepair(res1=r)
+            s = ss_r.name
+            for bp in bps:
+                if bp.uuid in self.designable:
+                    s = "N"
+                    break
+            ss_r.name = s
+
+        return ss_copy
 
     def optimized_sequence(self, ss=None):
         """

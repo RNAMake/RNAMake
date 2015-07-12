@@ -11,6 +11,20 @@ from collections import namedtuple
 
 MotifStateConnection = namedtuple('MotifSTateConnection', 'i j end_name')
 
+def motif_state_tree_from_topology(connectivty):
+    mst = MotifStateTree()
+    for c in connectivty:
+        state = resource_manager.manager.get_state(c[0])
+        if c[2] == -1:
+            mst.add_state(state)
+        else:
+            n = mst.get_node(c[2])
+            parent_end_index = n.data.cur_state.end_index_with_id(c[1])
+            i = mst.add_state(state, c[2], parent_end_index)
+            if i == -1:
+                raise ValueError("could not build motif state tree from topology")
+    return mst
+
 class MotifStateTree(base.Base):
     def __init__(self, mt=None, **options):
         self.setup_options_and_constraints()
@@ -96,8 +110,8 @@ class MotifStateTree(base.Base):
 
             index_dict[n.index] = j
 
-    def add_connection(self, i, j):
-        pass
+    def add_connection(self, i, j, end_name):
+        self.connections.append(MotifStateConnection(i, j, end_name))
 
     def to_motif_tree(self):
 
@@ -118,7 +132,21 @@ class MotifStateTree(base.Base):
             if j == -1:
                 raise ValueError("cannot convert mst to mt in to_motif_tree")
 
+        for c in self.connections:
+            mt.add_connection(c.i, c.j, c.end_name)
+
         return mt
+
+    def secondary_structure(self):
+        mt = self.to_motif_tree()
+        return mt.secondary_structure()
+
+    def designable_secondary_structure(self):
+        mt = self.to_motif_tree()
+        return mt.designable_secondary_structure()
+
+    def to_pose(self):
+        return self.to_motif_tree().to_pose()
 
     def write_pdbs(self, name="nodes"):
         self.to_motif_tree().write_pdbs(name)

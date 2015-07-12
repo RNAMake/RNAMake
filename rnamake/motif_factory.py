@@ -192,13 +192,14 @@ class MotifFactory(object):
         #    print bp.res1.num, bp.res2.num
 
         #print ss
-        for end in m.ends:
+        m.end_ids = ["" for x in m.ends]
+        for i, end in enumerate(m.ends):
             res1 = ss.get_residue(end.res1.num, end.res1.chain_id)
             res2 = ss.get_residue(end.res2.num, end.res2.chain_id)
             ss_end = ss.get_bp(res1, res2)
             #print res1.num, res1.chain_id, res2.num, res2.chain_id
             #print ss_end
-            m.end_ids.append(secondary_structure.assign_end_id(ss, ss_end))
+            m.end_ids[i] = secondary_structure.assign_end_id(ss, ss_end)
 
         m.secondary_structure = ss
 

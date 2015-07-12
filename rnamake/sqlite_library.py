@@ -205,7 +205,9 @@ class MotifStateSqliteLibrary(SqliteLibrary):
         libnames = {
             "ideal_helices" :  "/motif_state_libraries/ideal_helices.db",
             "twoway"        :  "/motif_state_libraries/twoway.db",
-            "unique_twoway" :  "/motif_state_libraries/unique_twoway.db"
+            "unique_twoway" :  "/motif_state_libraries/unique_twoway.db",
+            "ss_bp_steps"   :  "/motif_state_libraries/ss_bp_steps.db",
+            "ss_twoway"     :  "/motif_state_libraries/ss_twoway.db"
 
         }
 

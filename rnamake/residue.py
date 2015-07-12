@@ -179,6 +179,9 @@ class Residue(object):
                 repr(self))
             raise KeyError("cannot find atom")
 
+    def short_name(self):
+        return self.rtype.name[0]
+
     def connected_to(self, res, cutoff=3.0):
         """
 		Determine if another residue is connected to this residue, returns 0

@@ -206,9 +206,7 @@ class SecondaryStructure(SecondaryStructureMotif):
         if end is None:
             end = ss.ends[0]
 
-        elements = []
-        for eles in self.elements.itervalues():
-            elements.extend(eles)
+        elements = self.motifs('ALL')
 
         seen_e = {}
         seen_ends = {}
@@ -276,13 +274,24 @@ class SecondaryStructure(SecondaryStructureMotif):
             s += str(bp.res1.num) + "|" + bp.res1.chain_id + "|" + bp.res1.i_code + "_" + \
                  str(bp.res2.num) + "|" + bp.res2.chain_id + "|" + bp.res2.i_code + ","
         s += "@"
-        for eles in self.elements.itervalues():
+        for name, eles in self.elements.iteritems():
+            if name == 'ALL':
+                continue
             for e in eles:
                 s += e.to_str() +  "$"
         return s
 
     def copy(self):
         return str_to_secondary_structure(self.to_str())
+
+    def replace_sequence(self, seq):
+        spl = seq.split("&")
+        seq2 = "".join(spl)
+        for i, r in enumerate(self.residues()):
+            r.name = seq2[i]
+
+    def motifs(self, motif_type):
+        return self.elements[motif_type]
 
 
 def str_to_residue(s):
@@ -312,6 +321,7 @@ def get_res_from_bp_str(ss, bp_str):
         raise ValueError("failed to find both res in bp")
     return res1, res2
 
+
 def get_res_from_res_str(ss, res_str):
     res_str = res_str.split("|")
     res = ss.get_residue(int(res_str[0]), res_str[1], res_str[2])
@@ -339,7 +349,8 @@ def str_to_secondary_structure(s):
         res1, res2 = get_res_from_bp_str(ss, end_str)
         bp = ss.get_bp(res1, res2)
         ends.append(bp)
-
+    ss.ends = ends
+    ss.elements['ALL'] = []
     motif_spl = spl[3].split("$")
     for motif_str in motif_spl[:-1]:
         motif_info = motif_str.split(";")
@@ -371,7 +382,9 @@ def str_to_secondary_structure(s):
             ends.append(bp)
         if type not in ss.elements:
             ss.elements[type] = []
+        motif.ends = ends
         ss.elements[type].append(motif)
+        ss.elements['ALL'].append(motif)
 
     return ss
 
@@ -590,3 +603,4 @@ def assign_end_id(ss, end):
         if i != len(ss_chains)-1:
             ss_id += "_"
     return ss_id
+

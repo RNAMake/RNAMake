@@ -5,6 +5,7 @@ import rnamake.secondary_structure
 import rnamake.motif_factory as motif_factory
 import rnamake.motif_tree as motif_tree
 import rnamake.ss_tree as ss_tree
+import rnamake.resource_manager as rm
 
 class SqliteLibraryUnittest(unittest.TestCase):
 
@@ -76,10 +77,21 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
     def test_get_best(self):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
-        ss_id1 = "AC_LL_GGGU_RUUR"
+        #ss_id1 = "AC_LL_GGGU_RUUR"
+        ss_id1 = "AGG_LLL_CGU_RRR"
 
-        m = mlib.get_best_match(ss_id1)
-        m.to_pdb("test.pdb")
+        mlib.load_all()
+        for i, m in enumerate(mlib.all()):
+            if len(m.residues()) != 6:
+                continue
+            m.to_pdb("motif."+str(i)+".pdb")
+
+        #m = mlib.get(ss_id1)
+        #m.to_pdb("test.pdb")
+
+    def test_end_id(self):
+        ms = rm.manager.get_state("GG_LL_CC_RR")
+        print ms.end_names
 
     def _test_specific(self):
         ss_tree_1 = rnamake.secondary_structure.ss_id_to_ss_tree("AC_LL_GGU_RUR")
@@ -90,11 +102,9 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         print ss_tree.compare_ss_tree(ss_tree_1, ss_tree_2)
 
-
     def test_get_by_topology(self):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
         motifs = mlib.get_by_topology([1,0])
-
 
 
 

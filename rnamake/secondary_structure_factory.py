@@ -28,7 +28,7 @@ class StructureSecondaryFactory(object):
         return basepairs, ends
 
     def _get_elements(self, sstree, ss):
-        elements = {}
+        elements = { 'ALL' : [] }
 
         for n in sstree:
             if n.parent_index() == -1 or n.parent.data.type == ss_tree.SS_Type.SS_SEQ_BREAK:
@@ -77,6 +77,7 @@ class StructureSecondaryFactory(object):
                 elements[type_name] = []
 
             elements[type_name].append(e)
+            elements['ALL'].append(e)
         return elements
 
     def _get_chains(self, ss, nodes):
