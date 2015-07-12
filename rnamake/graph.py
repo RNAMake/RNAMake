@@ -118,8 +118,8 @@ class GraphStatic(Graph):
     def connect(self, i, j, i_pos, j_pos):
         n1 = self.get_node(i)
         n2 = self.get_node(j)
-        i_pos = self._check_pos_is_value(n1, i_pos)
-        j_pos = self._check_pos_is_value(n2, j_pos)
+        i_pos = self.check_pos_is_value(n1, i_pos)
+        j_pos = self.check_pos_is_value(n2, j_pos)
         c = GraphConnection(n1, n2, i_pos, j_pos)
         n1.add_connection(c, i_pos)
         n2.add_connection(c, j_pos)

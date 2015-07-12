@@ -41,7 +41,6 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mss = rnamake.motif_state_search.MotifStateSearch()
         mss.constraint('max_node_level', 6)
         mss.constraint('max_solutions', 1)
-        mss.constraint('accept_score', 10)
         mss.scorer = motif_state_search_scorer.MTSS_Astar()
 
         sl = steric_lookup.StericLookup()
@@ -53,6 +52,9 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mst_sol = solutions[0].to_mst()
         mst.add_mst(mst_sol, parent_end_name="A221-A252")
         mst.add_connection(0, mst.last_node().index, "A146-A157")
+        p = mst.to_pose()
+
+
 
 
 

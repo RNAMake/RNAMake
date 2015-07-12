@@ -6,6 +6,7 @@ import rnamake.motif_state_tree as motif_state_tree
 import rnamake.resource_manager as rm
 import rnamake.util as util
 import rnamake.settings as settings
+import rnamake.eternabot.sequence_designer as sequence_designer
 import build
 
 class MotifStateTreeUnittest(unittest.TestCase):
@@ -53,6 +54,19 @@ class MotifStateTreeUnittest(unittest.TestCase):
         motif.align_motif_state(bp_state, test_state)
         print test_state.end_states[0].d
 
+    def test_change_sequence(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(10)
+        mst = motif_state_tree.MotifStateTree(mt)
+        mst.write_pdbs("org")
+        ss = mst.designable_secondary_structure()
+        designer = sequence_designer.SequenceDesigner()
+        results = designer.design(ss.dot_bracket(), ss.sequence())
+        ss.replace_sequence(results[0].sequence)
+        connectivity = ss.motif_topology_from_end(ss.ends[0])
+        mst_2 = motif_state_tree.motif_state_tree_from_topology(connectivity)
+        mst_2.write_pdbs()
+        #print results[0].sequence, results[0].score
 
 
     def _test_to_mt(self):

@@ -18,6 +18,7 @@ def motif_tree_from_topology(connectivty):
         else:
             n = mt.get_node(c[2])
             parent_end_index = n.data.end_index_with_id(c[1])
+            print m, c[2], parent_end_index, len(n.data.end_ids)
             i = mt.add_motif(m, c[2], parent_end_index)
             if i == -1:
                 raise ValueError("could not build motif tree from topology")
@@ -172,6 +173,14 @@ class MotifTree(base.Base):
         self.merger.reset()
         return pose
 
+    def secondary_structure(self):
+        p = self.to_pose()
+        return p.secondary_structure
+
+    def designable_secondary_structure(self):
+        p = self.to_pose()
+        return p.designable_secondary_structure()
+
     def to_pdb(self, fname="mt.pdb", include_head=1, chain_closure=1):
         pose = self.to_pose()
         pose.to_pdb(fname)
@@ -221,20 +230,23 @@ class MotifTree(base.Base):
             if len(head_node_open_ends) == 0:
                 break
 
-    def _add_connection(self, node_1, node_2, cutoff=25):
-        if node_1 == node_2:
+    def add_connection(self, i, j, i_name=None):
+        node_1 = self.get_node(i)
+        node_2 = self.get_node(j)
+
+        if i == j:
             return 0
 
-        avail_ends_1 = node_1.available_ends()
-        avail_ends_2 = node_2.available_ends()
+        avail_ends_1 = node_1.available_children_pos()
+        avail_ends_2 = node_2.available_children_pos()
 
-        for end1 in avail_ends_1:
-            for end2 in avail_ends_2:
-                dist = util.distance(end1.d(), end2.d())
-                if dist < cutoff:
-                    new_connection = MotifTreeConnection(node_1, node_2, end1,
-                                                         end2)
-
+        for end_index_1 in avail_ends_1:
+            if i_name != node_1.data.ends[end_index_1].name():
+                continue
+            for end_index_2 in avail_ends_2:
+                print node_1.data.ends[end_index_1].name(), node_2.data.ends[end_index_2].name()
+                self.graph.connect(i, j, end_index_1, end_index_2)
+                return 1
 
 
 

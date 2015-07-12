@@ -48,7 +48,7 @@ class MotifTreeMerger(base.Base):
 
         self.seen_constraints, self.chains, self.graph = {}, [], graph
 
-        for n in graph:
+        for n in self.graph.nodes:
             self.chains.extend([c.subchain(0) for c in n.data.chains()])
 
         start_node = graph.get_node(0)
@@ -105,6 +105,7 @@ class MotifTreeMerger(base.Base):
 
     def _merge_chains_in_node(self, node):
         for c in node.connections:
+
             if c is None:
                 continue
             if c in self.seen_connections:
@@ -116,7 +117,6 @@ class MotifTreeMerger(base.Base):
             partner_chains = self._get_chains_from_connection(partner, c)
 
             # TODO maybe figure out which is a better basepair to remove
-            #print node.index, partner.index, partner.motif.mtype
             if partner.data.mtype == motif_type.HELIX:
                 merged_chains = self._helix_merge(node_chains, partner_chains)
             else:
@@ -126,6 +126,7 @@ class MotifTreeMerger(base.Base):
             for c in self.chains:
                 if c not in used_chains:
                     new_chains.append(c)
+
             for c in merged_chains:
                 if c is not None:
                     new_chains.append(c)

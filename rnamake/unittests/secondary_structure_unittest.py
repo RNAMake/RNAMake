@@ -61,6 +61,8 @@ class SecondaryStructureUnittest(unittest.TestCase):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(10)
         connectivity = ss.motif_topology_from_end(ss.ends[0])
+        for c in connectivity:
+            print c
         mt = motif_tree.motif_tree_from_topology(connectivity)
         mt.write_pdbs()
 
