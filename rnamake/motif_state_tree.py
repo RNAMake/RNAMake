@@ -116,7 +116,7 @@ class MotifStateTree(base.Base):
     def to_motif_tree(self):
 
         mt = motif_tree.MotifTree(sterics=self.option('sterics'))
-        for i, n in enumerate(self.tree):
+        for i, n in enumerate(self.tree.nodes):
             m = resource_manager.manager.get_motif(n.data.ref_state.name)
             if i == 0:
                 motif.align_motif(n.data.cur_state.end_states[0],

@@ -1,5 +1,9 @@
 import unittest
+import rnamake.settings as settings
 import rnamake.ss_tree as ss_tree
+import rnamake.secondary_structure as secondary_structure
+import rnamake.motif_factory as motif_factory
+import rnamake.secondary_structure_factory as sf
 
 class SSTreeUnittest(unittest.TestCase):
 
@@ -25,6 +29,14 @@ class SSTreeUnittest(unittest.TestCase):
         for n in sstree:
             print n.data.what(), n.data.sequence()
 
+    def test_parse_tc(self):
+        path = settings.MOTIF_DIRS + "/tertiary_contacts/TC.1DUQ.0"
+        tc = motif_factory.factory.motif_from_file(path)
+        #ss = secondary_structure.assign_secondary_structure(tc)
+        #motif_factory.factory._setup_secondary_structure(tc)
+        print tc.secondary_structure
+        ss = sf.factory.get_structure(base_ss=tc.secondary_structure)
+        print ss.ends
 
 
 def main():

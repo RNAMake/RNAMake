@@ -1,9 +1,141 @@
 import ss_tree
 import secondary_structure
+import util
+
+
+class MotiftoSecondaryStructure(object):
+    def __init__(self):
+        self.reset()
+
+    def reset(self):
+        self.chains = []
+        self.open_chains = []
+        self.seen_res = {}
+        self.seen_bp = {}
+
+    def _get_next_chain(self, motif):
+        best_score = -1
+
+        for c in self.chains:
+            score = 0
+            for r in c.residues:
+                bps = motif.get_basepair(res1=r)
+                for bp in bps:
+                    if bp in self.seen_bp:
+                        score += 1
+            if score > best_score:
+                best_score = score
+
+        best_chains = []
+        for c in self.chains:
+            score = 0
+            for r in c.residues:
+                bps = motif.get_basepair(res1=r)
+                for bp in bps:
+                    if bp in self.seen_bp:
+                        score += 1
+            if score == best_score:
+                best_chains.append(c)
+
+        best_chain = None
+        best_score = 10000
+        for c in best_chains:
+            pos = 1000
+            for i, r in enumerate(c.residues):
+                bps = motif.get_basepair(res1=r)
+                for bp in bps:
+                    if bp in self.seen_bp:
+                        pos = i
+                        break
+            if pos < best_score:
+                best_score = pos
+                best_chain = c
+
+        return best_chain
+
+    def _setup_basepairs_and_ends(self, ss, motif):
+        ss_bps = []
+        for bp in self.seen_bp.keys():
+            res1 = ss.get_residue(uuid=bp.res1.uuid)
+            res2 = ss.get_residue(uuid=bp.res2.uuid)
+            ss_bps.append(secondary_structure.Basepair(res1, res2))
+        ss.basepairs = ss_bps
+        ss_ends = []
+
+        for end in motif.ends:
+            res1 = ss.get_residue(uuid=end.res1.uuid)
+            res2 = ss.get_residue(uuid=end.res2.uuid)
+            print end
+            bp = ss.get_bp(res1, res2)
+            if bp is None:
+                raise ValueError("did not properly find end in generating ss")
+            ss_ends.append(bp)
+        ss.ends = ss_ends
+
+    def to_secondary_structure(self, motif):
+        saved_bp = None
+        ss_chains = []
+
+        self.chains = motif.chains()[::]
+        self.open_chains = [self.chains.pop(0)]
+
+        while len(self.open_chains) > 0:
+            c = self.open_chains.pop(0)
+            ss_res = []
+
+            for r in c.residues:
+                ss = "."
+                bps = motif.get_basepair(res1=r)
+                is_bp = 0
+                for bp in bps:
+                    partner_res = bp.partner(r)
+                    passes = 0
+                    saved_bp = None
+                    if util.wc_bp(bp) and bp.bp_type == "cW-W":
+                        passes = 1
+                    if util.gu_bp(bp) and bp.bp_type == "cW-W":
+                        passes = 1
+
+                    if passes:
+                        saved_bp = bp
+                        if   bp not in self.seen_bp and \
+                              r not in self.seen_res and \
+                              partner_res not in self.seen_res:
+                            self.seen_res[r] = 1
+                            ss = "("
+                        elif partner_res in self.seen_res:
+                            if self.seen_res[partner_res] > 1:
+                                ss = "."
+                            else:
+                                ss = ")"
+                                self.seen_res[r] = 1
+                                self.seen_res[partner_res] += 1
+                                break
+                    elif r not in self.seen_res:
+                        ss = "."
+
+                if saved_bp is not None:
+                    self.seen_bp[saved_bp] = 1
+
+                ss_res.append(secondary_structure.Residue(r.name, ss, r.num,
+                                                          r.chain_id, r.uuid, r.i_code))
+            ss_chains.append(secondary_structure.Chain(ss_res))
+            best_chain = self._get_next_chain(motif)
+
+            if best_chain is None:
+                break
+            self.chains.remove(best_chain)
+            self.open_chains.append(best_chain)
+
+        ss = secondary_structure.SecondaryStructure(chains=ss_chains)
+        self._setup_basepairs_and_ends(ss, motif)
+
+        return ss
+
 
 class StructureSecondaryFactory(object):
     def __init__(self):
-        pass
+        self.parser = MotiftoSecondaryStructure()
 
     def _get_basepairs(self, sstree, ss):
         basepairs, ends = [], []
@@ -25,6 +157,9 @@ class StructureSecondaryFactory(object):
                 if len(children) == 1:
                     if children[0].data.type == ss_tree.SS_Type.SS_SEQ_BREAK:
                         ends.append(bp)
+                if n.parent.data.type == ss_tree.SS_Type.SS_SEQ_BREAK:
+                    ends.append(bp)
+
         return basepairs, ends
 
     def _get_elements(self, sstree, ss):
@@ -117,12 +252,17 @@ class StructureSecondaryFactory(object):
                              " SecondaryStructure object")
         ss = sstree.ss
 
-        basepairs, ends = self._get_basepairs(sstree, ss)
-        ss.ends = ends
-        ss.basepairs = basepairs
+        ss.basepairs, ss.ends = self._get_basepairs(sstree, ss)
         ss.elements = self._get_elements(sstree, ss)
 
         return ss
+
+    def secondary_structure_from_motif(self, m):
+        ss = self.parser.to_secondary_structure(m)
+        self.parser.reset()
+        return ss
+
+
 
 factory = StructureSecondaryFactory()
 

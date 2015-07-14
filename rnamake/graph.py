@@ -153,7 +153,7 @@ class GraphStatic(Graph):
             return avail_pos
         else:
             if n.available_pos(pos) == 0:
-                raise ValueError("graph pos is not available")
+                raise ValueError("graph pos is not available: " + str(pos) + " " + n.data.name)
             return [pos]
 
 

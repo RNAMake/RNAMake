@@ -124,6 +124,8 @@ class MotifFactory(object):
         for bp in basepairs:
             if bp.bp_type != "cW-W":
                 continue
+            if not (util.gu_bp(bp) or util.wc_bp(bp)):
+                continue
 
             if bp.res1 in chain_ends and bp.res2 in chain_ends:
                 ends.append(bp)
@@ -183,22 +185,12 @@ class MotifFactory(object):
         m.ends = updated_ends
 
     def _setup_secondary_structure(self, m):
-        ss = secondary_structure.assign_secondary_structure(m)
-        ss = secondary_structure_factory.factory.get_structure(base_ss=ss)
-        #for r in ss.residues():
-        #    print r.num, r.chain_id, r.dot_bracket
-        #print
-        #for bp in ss.basepairs:
-        #    print bp.res1.num, bp.res2.num
-
-        #print ss
+        ss = secondary_structure_factory.factory.secondary_structure_from_motif(m)
         m.end_ids = ["" for x in m.ends]
         for i, end in enumerate(m.ends):
-            res1 = ss.get_residue(end.res1.num, end.res1.chain_id)
-            res2 = ss.get_residue(end.res2.num, end.res2.chain_id)
+            res1 = ss.get_residue(uuid=end.res1.uuid)
+            res2 = ss.get_residue(uuid=end.res2.uuid)
             ss_end = ss.get_bp(res1, res2)
-            #print res1.num, res1.chain_id, res2.num, res2.chain_id
-            #print ss_end
             m.end_ids[i] = secondary_structure.assign_end_id(ss, ss_end)
 
         m.secondary_structure = ss
@@ -224,10 +216,10 @@ class MotifFactory(object):
         m.ends      = ends
         m.score     = self.scorer.score(m)
 
-        try:
-            self._setup_secondary_structure(m)
-        except:
-            print "did not parse secondary_structure", m.name
+        #try:
+        self._setup_secondary_structure(m)
+        #except:
+        #    print "did not parse secondary_structure", m.name
 
         return m
 

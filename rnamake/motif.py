@@ -249,6 +249,11 @@ class Motif(object):
 
         raise ValueError("no matching end id in motif")
 
+    def new_res_uuids(self):
+        for r in self.residues():
+            ss_r = self.secondary_structure.get_residue(uuid=r.uuid)
+            r.new_uuid()
+            ss_r.uuid = r.uuid
 
 class MotifState(object):
     __slots__ = ['name', 'end_names', 'end_ids', 'end_states', 'beads', 'score', 'size']

@@ -7,12 +7,18 @@ class MotifStateSelector(object):
     def __init__(self):
         self.graph = graph.GraphDynamic()
 
-    def add(self, lib=None, mse=None, max_uses=1000, required_uses=0):
+    def add(self, lib=None, mse=None, m=None, max_uses=1000, required_uses=0):
         if lib is not None:
             ms_lib = resource_manager.manager.ms_libs[lib]
             ms_lib.load_all()
             motif_states = ms_lib.all()
             d = MotifStateSelectorNodeData(ms_lib.name, motif_states,
+                                           max_uses, required_uses)
+            self.graph.add_data(d)
+
+        if m is not None:
+            motif_states = [m.get_state()]
+            d = MotifStateSelectorNodeData(m.name, motif_states,
                                            max_uses, required_uses)
             self.graph.add_data(d)
 
@@ -50,11 +56,17 @@ class MotifStateSelector(object):
         return children, types
 
     def is_valid_solution(self, current):
-        for i, n in enumerate(self.nodes):
-            if n.required_uses > current.node_counts[i]:
+        for i, n in enumerate(self.graph):
+            if n.data.required_uses > current.node_type_usages[i]:
                 return 0
         return 1
 
+    def score(self, current):
+        diff = 0
+        for i, n in enumerate(self.graph):
+            if n.data.required_uses > current.node_type_usages[i]:
+                diff += (n.data.required_uses - current.node_type_usages[i])
+        return diff
 
 class MSS_RoundRobin(MotifStateSelector):
     def __init__(self):
@@ -73,8 +85,8 @@ class MSS_HelixFlank(MotifStateSelector):
         self.graph = graph.GraphDynamic()
         self.add("ideal_helices")
 
-    def add(self, lib=None, mse=None, max_uses=1000, required_uses=0):
-        super(self.__class__, self).add(lib, mse, max_uses, required_uses)
+    def add(self, lib=None, mse=None, m=None, max_uses=1000, required_uses=0):
+        super(self.__class__, self).add(lib, mse, m, max_uses, required_uses)
         i = len(self.graph)-1
         if i != 0:
             self.graph.connect(0, i)

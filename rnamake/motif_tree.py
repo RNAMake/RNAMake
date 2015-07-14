@@ -106,7 +106,8 @@ class MotifTree(base.Base):
         self.options = option.Options(options)
         self.constraints = {}
 
-    def add_motif(self, m=None, parent_index=-1, parent_end_index=-1):
+    def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
+                  parent_end_name=None):
         parent = self.graph.last_node
         if parent_index != -1:
             parent = self.graph.get_node(parent_index)
@@ -115,6 +116,10 @@ class MotifTree(base.Base):
             m_copy = m.copy()
             m_copy.get_beads(m_copy.ends)
             return self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends))
+
+        if parent_end_name is not None:
+            parent_end = parent.data.get_basepair(name=parent_end_name)[0]
+            parent_end_index = parent.data.ends.index(parent_end)
 
         avail_pos = self.graph.get_availiable_pos(parent, parent_end_index)
 
@@ -127,8 +132,7 @@ class MotifTree(base.Base):
                 if self._steric_clash(m_added):
                     continue
 
-            for r in m_added.residues():
-                r.new_uuid()
+            m_added.new_res_uuids()
 
             return self.graph.add_data(m_added, parent.index, p, 0, len(m_added.ends))
         #self._update_beads(parent, new_node)
