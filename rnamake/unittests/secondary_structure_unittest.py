@@ -8,6 +8,8 @@ import rnamake.motif_factory as motif_factory
 import rnamake.ss_tree as ss_tree
 import rnamake.secondary_structure_factory as ssfactory
 import rnamake.motif_tree as motif_tree
+import rnamake.setup.motif_library as motif_library
+import rnamake.motif_type as motif_type
 
 class SecondaryStructureUnittest(unittest.TestCase):
 
@@ -31,6 +33,10 @@ class SecondaryStructureUnittest(unittest.TestCase):
         if r is None:
             self.fail("did not find a known residue, finde_residue not working")
 
+        r2 = ss.get_residue(uuid=r.uuid)
+        if r2 is None:
+            self.fail("did not find a known residue, finde_residue not working")
+
     def test_to_str(self):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(10)
@@ -48,7 +54,9 @@ class SecondaryStructureUnittest(unittest.TestCase):
         ss = builder.build_helix(2)
 
         ss_copy = ss.copy()
-        ss_copy = ss_copy.copy()
+
+        if len(ss.basepairs) != len(ss_copy.basepairs):
+            self.fail("did not get the right number of basepairs")
 
     def test_parse(self):
         seq = "UG&CA&CGACACAG"
@@ -56,6 +64,12 @@ class SecondaryStructureUnittest(unittest.TestCase):
         ss = ssfactory.factory.get_structure(seq, db)
         for bp in ss.basepairs:
             print bp.res1.num, bp.res2.num
+
+    def test_parse_nway(self):
+        mlib = motif_library.MotifLibrary(motif_type.NWAY)
+        m = mlib.get_motif("NWAY.1XPE.0")
+        parser = ssfactory.MotiftoSecondaryStructure()
+        ss = parser.to_secondary_structure(m)
 
     def test_motif_topology_from_end(self):
         builder = build.BuildSecondaryStructure()

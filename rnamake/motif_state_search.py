@@ -5,6 +5,7 @@ import option
 import priority_queue
 import motif_state_selector
 import motif_state_search_scorer
+import copy
 
 class MotifStateSearch(base.Base):
     def __init__(self):
@@ -29,8 +30,10 @@ class MotifStateSearch(base.Base):
         self.constraints = option.Options(constraints)
 
     def _start_node(self, start_bp):
-        ms = motif.MotifState('start', ['start', 'start'], [start_bp, start_bp], [], 0, 0)
+        ms = motif.MotifState('start', ['start', 'start'], ['', ''],
+                              [start_bp, start_bp], [], 0, 0)
         n = MotifStateSearchNode(ms, None, -1, -1)
+        n.node_type_usages = [0 for i in range(len(self.selector.graph))]
         return n
 
     def _get_local_variables(self):
@@ -47,6 +50,8 @@ class MotifStateSearch(base.Base):
             current = self.queue.get()
             score = self.scorer.accept_score(current)
             if score < accept_score:
+                if not self.selector.is_valid_solution(current):
+                    continue
                 self.solutions.append(MotifStateSearchSolution(current, score))
                 return self.solutions
 
@@ -65,10 +70,12 @@ class MotifStateSearch(base.Base):
                 parent_end_index = current.cur_state.end_states.index(end)
                 test_node.parent_end_index = parent_end_index
                 for i, ms in enumerate(motif_states):
-                    test_node.ref_state = ms
+                    test_node.update_ms(ms)
+                    test_node.ntype = types[i]
                     motif.get_aligned_motif_state(end, test_node.cur_state, test_node.ref_state)
 
                     score = self.scorer.score(test_node)
+                    score += self.selector.score(test_node)*test_node.level*10
                     if score > current.score:
                         continue
                     if sterics:
@@ -76,6 +83,7 @@ class MotifStateSearch(base.Base):
                             if self.lookup.clash(test_node.cur_state.beads):
                                 continue
                     child = test_node.copy()
+                    child.update()
                     child.ntype = types[i]
                     self.queue.put(child, score)
 
@@ -87,6 +95,7 @@ class MotifStateSearchNode(object):
         self.parent = parent
         self.parent_end_index = parent_end_index
         self.ss_score = ref_state.score
+        self.node_type_usages = []
         if parent is None:
             self.level = 1
         else:
@@ -103,16 +112,27 @@ class MotifStateSearchNode(object):
         new_n.score = self.score
         new_n.ss_score = self.ss_score
         new_n.level = self.level
+        new_n.node_type_usages = self.node_type_usages[::]
         return new_n
 
     def node_type_usage(self, i):
-        return 0
+        if i == -1:
+            return 0
+        return self.node_type_usages[i]
 
     def update(self):
         if self.parent is None:
             return
         self.level = self.parent.level + 1
         self.ss_score += self.parent.ss_score
+        if self.ntype == -1:
+            return
+        self.node_type_usages = self.parent.node_type_usages[::]
+        self.node_type_usages[self.ntype] +=1
+
+    def update_ms(self, ms):
+        self.ref_state = ms
+        self.cur_state.end_states = [e.copy() for e in ms.end_states]
 
 
 class MotifStateSearchSolution(object):

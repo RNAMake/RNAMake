@@ -56,18 +56,14 @@ class MotifStateTreeUnittest(unittest.TestCase):
 
     def test_change_sequence(self):
         builder = build.BuildMotifTree()
-        mt = builder.build(10)
+        mt = builder.build()
         mst = motif_state_tree.MotifStateTree(mt)
-        mst.write_pdbs("org")
         ss = mst.designable_secondary_structure()
         designer = sequence_designer.SequenceDesigner()
         results = designer.design(ss.dot_bracket(), ss.sequence())
         ss.replace_sequence(results[0].sequence)
         connectivity = ss.motif_topology_from_end(ss.ends[0])
         mst_2 = motif_state_tree.motif_state_tree_from_topology(connectivity)
-        mst_2.write_pdbs()
-        #print results[0].sequence, results[0].score
-
 
     def _test_to_mt(self):
         builder = build.BuildMotifTree()
@@ -100,7 +96,6 @@ class MotifStateTreeUnittest(unittest.TestCase):
 
         if util.distance(d1, d2) > 0.1:
             self.fail("did not properly replace state")
-
 
     def _test_specific(self):
         str = """HELIX.IDEAL.11

@@ -2,6 +2,7 @@ import tree
 import Queue
 import math
 import secondary_structure
+import uuid
 from collections import namedtuple
 
 def compare_ss_tree(ss_tree1, ss_tree2):
@@ -89,9 +90,11 @@ class SS_Tree(object):
                              "secondary structure object")
 
         self.residues = self.ss.residues()
-        pad_residue = secondary_structure.Residue("N", ".", -1, "N")
-        self.residues.append(pad_residue)
-        self.residues.insert(0, pad_residue)
+        pad_residue1 = secondary_structure.Residue("N", ".", 0, "N", uuid.uuid1())
+        self.residues.insert(0, pad_residue1)
+        pad_residue2 = secondary_structure.Residue("N", ".", len(self.residues),
+                                                   "N", uuid.uuid1())
+        self.residues.append(pad_residue2)
         self._build_tree()
 
     def get_node(self, i):
@@ -112,8 +115,10 @@ class SS_Tree(object):
            self._is_res_end_of_chain(self.residues[yb].num):
             ss_chains = [secondary_structure.Chain(),
                          secondary_structure.Chain()]
-            fake_res1 = secondary_structure.Residue('&', '&', self.residues[xb].num, "N")
-            fake_res2 = secondary_structure.Residue('&', '&', self.residues[yb].num, "N")
+            fake_res1 = secondary_structure.Residue('&', '&', self.residues[xb].num,
+                                                    "N", uuid.uuid1())
+            fake_res2 = secondary_structure.Residue('&', '&', self.residues[yb].num,
+                                                    "N", uuid.uuid1())
             ss_chains[0].residues.append(fake_res1)
             ss_chains[1].residues.append(fake_res2)
             current = SS_NodeData(SS_Type.SS_SEQ_BREAK, ss_chains,
@@ -123,8 +128,10 @@ class SS_Tree(object):
 
     def _build_tree(self):
         xb, yb = 1, len(self.residues)-2
-        current = self._assign_new_node(xb, yb)
-        index = 0
+        ss_chains = [secondary_structure.Chain(),
+                    secondary_structure.Chain()]
+        current = SS_NodeData(SS_Type.SS_SEQ_BREAK, ss_chains,
+                              [ self.residues[xb-1], self.residues[yb+1]])
         NodeandIndex = namedtuple('NodeandIndex', 'node index')
         open_nodes = Queue.Queue()
         open_nodes.put(NodeandIndex(current, -1))
@@ -199,7 +206,6 @@ class SS_Tree(object):
             child = self._assign_new_node(xb, yb)
             xb =  self._map_back_to_index(child.bound_side(1, Bound_Side.RIGHT))+1
             next_level.append(child)
-
         return next_level
 
     def _assign_new_node(self, xb, yb):

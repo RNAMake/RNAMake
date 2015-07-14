@@ -86,13 +86,11 @@ class BuildSqliteLibraries(object):
 
         for t in types:
             count = 0
-            #if t != motif_type.TCONTACT:
-            #    continue
             mlib = motif_library.MotifLibrary(t)
             mlib.load_all()
 
             succeses = []
-            for m in mlib.motifs():
+            for k, m in enumerate(mlib.motifs()):
                 if m is None:
                     continue
 
@@ -258,7 +256,6 @@ class BuildSqliteLibraries(object):
         #libnames = ["twoway", "tcontact", "hairpin", "nway"]
         libnames = ["twoway"]
 
-
         for libname in libnames:
             mlib = sqlite_library.MotifSqliteLibrary(libname)
             mlib.load_all()
@@ -342,11 +339,11 @@ class BuildSqliteLibraries(object):
 
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
-#builder.build_basic_libraries()
+builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
-builder.build_motif_state_libraries()
+#builder.build_motif_state_libraries()
 #builder.build_motif_ensemble_state_libraries()
 
 
