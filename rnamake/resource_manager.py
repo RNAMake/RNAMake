@@ -5,13 +5,49 @@ import motif_type
 import settings
 import util
 
+class MotifLibrary(object):
+    def __init__(self):
+        self.motifs = []
+
+    def add_motif(self, m):
+        self.motifs.append(m)
+
+    def _find_motifs(self, **options):
+        motifs = []
+        for m in self.motifs:
+            if 'name' in options:
+                if options['name'] != m.name:
+                    continue
+            if 'end_name' in options:
+                if options['end_name'] != m.ends[0].name():
+                    continue
+            if 'end_id' in options:
+                if options['end_id'] != m.end_ids[0]:
+                    continue
+            if m not in motifs:
+                motifs.append(m)
+        return motifs
+
+    def contains(self, **options):
+        motifs = self._find_motifs(**options)
+        if len(motifs) > 0:
+            return 1
+        else:
+            return 0
+
+    def get(self, **options):
+        motifs = self._find_motifs(**options)
+        return motifs[0]
+
+    def get_multi(self, **options):
+        return self._find_motifs(**options)
+
 class ResourceManager(object):
     def __init__(self):
-        self.mlibs,    self.extra_motifs = {}, {}
+        self.mlibs,    self.added_motifs = {}, MotifLibrary()
         self.ms_libs,  self.extra_ms = {}, {}
         self.me_libs,  self.extra_me = {}, {}
         self.mse_libs, self.extra_mse = {}, {}
-        self.ss_libs,  self.extra_ss = {}, {}
 
         for k in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
             self.mlibs[k] = sqlite_library.MotifSqliteLibrary(k)
@@ -25,26 +61,15 @@ class ResourceManager(object):
         for k in sqlite_library.MotifStateEnsembleSqliteLibrary.get_libnames().keys():
             self.mse_libs[k] = sqlite_library.MotifStateEnsembleSqliteLibrary(k)
 
-        for k in sqlite_library.MotifSSIDSqliteLibrary.get_libnames().keys():
-            self.ss_libs[k] = sqlite_library.MotifSSIDSqliteLibrary(k)
-
-    def get_motif(self, mname, end_name=None):
-        if end_name is not None:
-            mname = mname + "-" + end_name
-
+    def get_motif(self, **options):
         for mlib in self.mlibs.itervalues():
-            if mlib.contains(mname):
-                return mlib.get(mname)
+            if mlib.contains(**options):
+                return mlib.get(**options)
 
-        for mlib in self.ss_libs.itervalues():
-             if mlib.contains(mname):
-                 return mlib.get(mname)
+        if self.added_motifs.contains(**options):
+            return self.added_motifs.get(**options)
 
-        if mname in self.extra_motifs:
-            return self.extra_motifs[mname]
-
-
-        raise ValueError("cannot find " + mname)
+        raise ValueError("cannot find motif")
 
     def get_state(self, ms_name, end_name=None):
         if end_name is not None:
@@ -82,8 +107,7 @@ class ResourceManager(object):
             m_added = motif_factory.factory.align_motif_to_common_frame(m_added, i)
             if m_added is None:
                 continue
-            m_added.name = m_added.name + "-" + m_added.ends[0].name()
-            self.extra_motifs[m_added.name] = m_added
+            self.added_motifs.add_motif(m_added)
 
 
 manager = ResourceManager()

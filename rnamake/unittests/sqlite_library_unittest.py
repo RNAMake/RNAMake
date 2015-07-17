@@ -9,6 +9,29 @@ import rnamake.resource_manager as rm
 
 class SqliteLibraryUnittest(unittest.TestCase):
 
+    def test_creation(self):
+        mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
+
+    def test_get(self):
+        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+        m1 = mlib.get(name="HELIX.IDEAL.6")
+        m2 = mlib.get(name='HELIX.IDEAL.6', end_name='A8-A9')
+        m3 = mlib.get(end_id='GGGGGGGG_LLLLLLLL_CCCCCCCC_RRRRRRRR')
+
+        if m1 is None or m2 is None or m3 is None:
+            self.fail("something wrong in get()")
+
+    def test_load_all(self):
+        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+        mlib.load_all()
+        if  len(mlib.data) == 0:
+            self.fail("something wrong with load_all()")
+
+    def test_get_multi(self):
+        mlib = sqlite_library.MotifSqliteLibrary("twoway")
+        m = mlib.get_random()
+        motifs1 = mlib.get_multi(name=m.name)
+        motifs2 = mlib.get_multi(end_id=m.end_ids[0])
 
     def test_bp_steps(self):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("bp_steps")
@@ -54,11 +77,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
                 mt.write_pdbs()
                 self.fail("random generation of twoways failed")
 
-
-    def test_creation(self):
-        mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
-
-    def test_get(self):
+    def test_get_ss(self):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
         m = mlib.get_random()
         while len(m.residues()) > 5:
@@ -90,8 +109,14 @@ class SqliteLibraryUnittest(unittest.TestCase):
         #m.to_pdb("test.pdb")
 
     def test_end_id(self):
-        ms = rm.manager.get_state("GG_LL_CC_RR")
-        print ms.end_names
+        mlib = rm.manager.mlibs['tcontact']
+        mlib.load_all()
+        keep = "103 109 111 117 120".split()
+        for i, m in enumerate(mlib.all()):
+            if len(m.ends) != 3:
+                continue
+            if str(i) in keep:
+                print m.name
 
     def _test_specific(self):
         ss_tree_1 = rnamake.secondary_structure.ss_id_to_ss_tree("AC_LL_GGU_RUR")

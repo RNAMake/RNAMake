@@ -24,6 +24,8 @@ class MotifStateSearch(base.Base):
         constraints = { 'max_node_level'  : 15,
                         'max_steps'       : 100000000,
                         'max_solutions'   : 10,
+                        'max_size'        : 100000000,
+                        'min_size'        : 0,
                         'accept_score'    : 10}
 
         self.options = option.Options(options)
@@ -38,22 +40,26 @@ class MotifStateSearch(base.Base):
 
     def _get_local_variables(self):
         return self.constraint('accept_score'), self.constraint('max_node_level'), \
-               self.option('sterics')
+               self.option('sterics'), self.constraint('max_size'), self.constraint('min_size')
 
     def search(self, start, end):
         start_n = self._start_node(start)
         test_node = start_n.copy()
         self.queue.put(start_n, 10000)
         self.scorer.set_target(end)
-        accept_score, max_node_level, sterics = self._get_local_variables()
+        accept_score, max_node_level, sterics, max_size, min_size = self._get_local_variables()
         while not self.queue.empty():
             current = self.queue.get()
             score = self.scorer.accept_score(current)
             if score < accept_score:
                 if not self.selector.is_valid_solution(current):
                     continue
+                if current.size < min_size:
+                    continue
                 self.solutions.append(MotifStateSearchSolution(current, score))
-                return self.solutions
+                if len(self.solutions) >= self.constraint('max_solutions'):
+                    return self.solutions
+                continue
 
             if current.level+1 > max_node_level:
                 continue
@@ -84,6 +90,8 @@ class MotifStateSearch(base.Base):
                                 continue
                     child = test_node.copy()
                     child.update()
+                    if child.size > max_size:
+                        continue
                     child.ntype = types[i]
                     self.queue.put(child, score)
 
@@ -95,6 +103,7 @@ class MotifStateSearchNode(object):
         self.parent = parent
         self.parent_end_index = parent_end_index
         self.ss_score = ref_state.score
+        self.size =   ref_state.size
         self.node_type_usages = []
         if parent is None:
             self.level = 1
@@ -124,7 +133,8 @@ class MotifStateSearchNode(object):
         if self.parent is None:
             return
         self.level = self.parent.level + 1
-        self.ss_score += self.parent.ss_score
+        self.ss_score = self.ref_state.score + self.parent.ss_score
+        self.size = self.ref_state.size + self.parent.size
         if self.ntype == -1:
             return
         self.node_type_usages = self.parent.node_type_usages[::]

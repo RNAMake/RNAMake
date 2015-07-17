@@ -36,7 +36,6 @@ class Structure(object):
                 r.chain_id = chains[i]
                 j += 1
 
-
     def get_beads(self, excluded_res=[]):
         """
         generates 3-bead model residue beads for all residues in current structure.

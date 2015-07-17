@@ -51,6 +51,7 @@ class Pose(motif.Motif):
             motif_type.HELIX         : [],
             motif_type.SSTRAND       : [],
             motif_type.TCONTACT      : [],
+            motif_type.UNKNOWN       : [],
             motif_type.ALL           : []
         }
 

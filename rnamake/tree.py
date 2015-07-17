@@ -152,6 +152,8 @@ class TreeNode(object):
         return 1
 
     def parent_end_index(self):
+        if self.parent is None:
+            return -1
         return self.parent.children.index(self)
 
 class TreeNodeDynamic(TreeNode):

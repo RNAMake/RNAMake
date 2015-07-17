@@ -137,6 +137,9 @@ class MotifStateTree(base.Base):
 
         return mt
 
+    def to_pdb(self, name="test.pdb"):
+        return self.to_motif_tree().to_pdb(name)
+
     def secondary_structure(self):
         mt = self.to_motif_tree()
         return mt.secondary_structure()

@@ -7,23 +7,58 @@ import residue
 import motif_type
 import motif_tree_merger
 import graph
-import resource_manager
+import resource_manager as rm
+import secondary_structure_factory as ssfactory
+import secondary_structure
 
 def motif_tree_from_topology(connectivty):
     mt = MotifTree()
+    offset = 0
     for c in connectivty:
-        m = resource_manager.manager.get_motif(c[0])
-        if c[2] == -1:
-            mt.add_motif(m)
+        motifs = []
+        if c.m_name != "":
+            if c.m_name[0:5] != "HELIX":
+                motifs = [rm.manager.get_motif(c.m_name)]
+            else:
+                ss = ssfactory.ss_id_to_secondary_structure(c.ss_id)
+                for bp_step in ss.motifs('BP_STEP'):
+                    id =  secondary_structure.assign_end_id(bp_step, bp_step.ends[0])
+                    motifs.append(rm.manager.get_motif(id))
         else:
-            n = mt.get_node(c[2])
-            parent_end_index = n.data.end_index_with_id(c[1])
-            print m, c[2], parent_end_index, len(n.data.end_ids)
-            i = mt.add_motif(m, c[2], parent_end_index)
-            if i == -1:
-                raise ValueError("could not build motif tree from topology")
+            motifs = [rm.manager.get_motif(c.ss_id)]
+
+        if c.parent_pos == -1:
+            for m in motifs:
+                mt.add_motif(m)
+        else:
+            n = mt.get_node(c.parent_pos+offset)
+            parent_end_index = n.data.end_index_with_id(c.parent_ss_id)
+            for j, m in enumerate(motifs):
+                if j == 0:
+                    mt.add_motif(m, parent_index=c.parent_pos+offset,
+                                 parent_end_index=parent_end_index)
+                else:
+                    mt.add_motif(m)
+
+        if len(motifs) > 1:
+            offset += (len(motifs)-1)
+
     return mt
 
+
+def motif_tree_from_topology_2(mtt):
+    mt = MotifTree()
+    for i, n in enumerate(mtt.tree):
+        m = rm.manager.get_motif(name=n.data.motif_name,
+                                 end_id=n.data.end_ss_id)
+        if i == 0:
+            mt.add_motif(m)
+        else:
+            n_parent = mt.get_node(n.parent_index())
+            parent_end_index = n_parent.data.end_index_with_id(n.data.parent_end_ss_id)
+            mt.add_motif(m, n.parent_index(), parent_end_index=parent_end_index)
+
+    return mt
 
 class MotifTree(base.Base):
     """
@@ -239,18 +274,21 @@ class MotifTree(base.Base):
         node_2 = self.get_node(j)
 
         if i == j:
-            return 0
+            raise ValueError("you cannot connect a motif to itself in add_connection")
 
         avail_ends_1 = node_1.available_children_pos()
         avail_ends_2 = node_2.available_children_pos()
 
         for end_index_1 in avail_ends_1:
+            print node_1.data.ends[end_index_1].name()
             if i_name != node_1.data.ends[end_index_1].name():
                 continue
             for end_index_2 in avail_ends_2:
-                print node_1.data.ends[end_index_1].name(), node_2.data.ends[end_index_2].name()
                 self.graph.connect(i, j, end_index_1, end_index_2)
                 return 1
+
+        raise ValueError("could not connect node " + str(i) + " " + str(j) + "with end name " +
+                         i_name)
 
 
 

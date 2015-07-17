@@ -1,8 +1,12 @@
 import unittest
 import build
-import rnamake.motif_tree
+import random
+import rnamake.motif_tree as motif_tree
 import rnamake.resource_manager as rm
 import rnamake.secondary_structure_factory as ssfactory
+import rnamake.motif_type as motif_type
+import rnamake.eternabot.sequence_designer as sequence_designer
+import rnamake.motif_tree_topology as motif_tree_topology
 import util
 
 class MotifTreeUnittest(unittest.TestCase):
@@ -70,10 +74,36 @@ class MotifTreeUnittest(unittest.TestCase):
         mt1 = rnamake.motif_tree.motif_tree_from_topology(connectivity)
 
     def test_secondary_structure(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build()
+        rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
+        mt = motif_tree.MotifTree()
+        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
+                                          end_name="A228-A246"))
+        mt.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.20"), parent_end_name="A221-A252")
+        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
+                                          end_name="A228-A246"))
+        mt.write_pdbs("org")
         p = mt.to_pose()
-        print p.secondary_structure.copy().ends
+        ss = p.designable_secondary_structure()
+        for ss_r in ss.residues():
+            r = p.get_residue(uuid=ss_r.uuid)
+            if r is None:
+                self.fail("did nto copy secondary structure properly")
+
+        pairs = ["AU", "UA", "GC", "CG"]
+        for bp in ss.basepairs:
+            if bp.res1.name == "N" and bp.res2.name == "N":
+                p = random.choice(pairs)
+                bp.res1.name = p[0]
+                bp.res2.name = p[1]
+
+        conn =  ss.motif_topology_from_end(ss.ends[0])
+        mtt = motif_tree_topology.MotifTreeTopology(conn)
+        #for n in mtt.tree:
+        #    print n.data.motif_name, n.data.parent_end_ss_id
+        mt2 = motif_tree.motif_tree_from_topology_2(mtt)
+        mt2.write_pdbs()
+
+
 
 
 

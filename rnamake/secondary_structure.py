@@ -2,6 +2,7 @@ import util
 import ss_tree
 import Queue
 import uuid
+import tree
 
 class Residue(object):
     def __init__(self, name, dot_bracket, num, chain_id, uuid, i_code=" "):
@@ -65,6 +66,10 @@ class Basepair(object):
     def __init__(self, res1, res2):
         self.res1, self.res2 = res1, res2
 
+    def __repr__(self):
+        return "<Basepair("+self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
+            "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code) + ")>"
+
     def partner(self, r):
         if   r == self.res1:
             return self.res2
@@ -78,6 +83,7 @@ class SecondaryStructureMotif(object):
     def __init__(self, type, ends, chains):
         self.type, self.ends, self.chains = type, ends, chains
         self.basepairs = []
+        self.name = ""
         self.end_ids = []
 
     def residues(self):
@@ -234,6 +240,7 @@ class SecondaryStructure(SecondaryStructureMotif):
         queue.put([current_e, current_end, -1])
         pos = 0
         indexed_e = {}
+
         while not queue.empty():
 
             current_e, current_end, parent_pos = queue.get()
@@ -246,8 +253,7 @@ class SecondaryStructure(SecondaryStructureMotif):
                 parent = indexed_e[parent_pos]
                 parent_id = assign_end_id(parent, current_end)
 
-            connectivity.append([ss_id, parent_id, parent_pos])
-
+            connectivity.append([ss_id, parent_id, parent_pos, current_e.name])
             new_ends = []
             for end in current_e.ends:
                 if end != current_end:
@@ -321,14 +327,20 @@ class SecondaryStructure(SecondaryStructureMotif):
         basepairs = []
         ends = []
         for bp in m.basepairs:
-            new_bp = Basepair(n_ss.get_residue(uuid=bp.res1.uuid),
-                              n_ss.get_residue(uuid=bp.res2.uuid))
+            #new_bp = Basepair(n_ss.get_residue(uuid=bp.res1.uuid),
+            #                  n_ss.get_residue(uuid=bp.res2.uuid))
+            res1 = n_ss.get_residue(uuid=bp.res1.uuid)
+            res2 = n_ss.get_residue(uuid=bp.res2.uuid)
+            new_bp = n_ss.get_bp(res1, res2)
+            if new_bp is None:
+                raise ValueError("did not copy ss motif properly")
             basepairs.append(new_bp)
         for end in m.ends:
             i = m.basepairs.index(end)
             ends.append(basepairs[i])
         m_copy = SecondaryStructureMotif(m.type, ends, new_chains)
         m_copy.basepairs = basepairs
+        m_copy.name = m.name
         return m_copy
 
     def replace_sequence(self, seq):
@@ -340,6 +352,19 @@ class SecondaryStructure(SecondaryStructureMotif):
     def motifs(self, motif_type):
         return self.elements[motif_type]
 
+
+"""class MotifTopologyNode(object):
+    def __init__(self, ss_id, parent_ss_id, parent_pos, m_name):
+        self.ss_id, self.parent_ss_id = ss_id, parent_ss_id
+        self.parent_pos, self.m_name = parent_pos, m_name
+
+    def __repr__(self):
+        s = "<(MotifTopologyNode ( ss_id: %s\n" \
+            "                      parent_ss_id: %s\n" \
+            "                      parent_pos: %s\n" \
+            "                      m_name: %s))" % (self.ss_id, self.parent_ss_id,
+                                                  self.parent_pos, self.m_name)
+        return s"""
 
 def str_to_residue(s):
     spl = s.split(",")
