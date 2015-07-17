@@ -10,6 +10,7 @@ import settings
 import basic_io
 import secondary_structure
 import numpy as np
+import uuid
 
 class Motif(object):
     """
@@ -250,10 +251,12 @@ class Motif(object):
         raise ValueError("no matching end id in motif")
 
     def new_res_uuids(self):
-        for r in self.residues():
+        for i, r in enumerate(self.residues()):
             ss_r = self.secondary_structure.get_residue(uuid=r.uuid)
             r.new_uuid()
             ss_r.uuid = r.uuid
+        for bp in self.basepairs:
+            bp.uuid = uuid.uuid1()
 
 class MotifState(object):
     __slots__ = ['name', 'end_names', 'end_ids', 'end_states', 'beads', 'score', 'size']
@@ -359,6 +362,10 @@ def str_to_motif(s):
     end_ids = spl[7].split()
     m.end_ids = end_ids
     m.secondary_structure = secondary_structure.str_to_secondary_structure(spl[8])
+    ss_res = m.secondary_structure.residues()
+    for i, r in enumerate(m.residues()):
+        ss_res[i].uuid = r.uuid
+
     return m
 
 

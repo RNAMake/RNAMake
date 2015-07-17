@@ -9,6 +9,7 @@ import atom
 import util
 import math
 import secondary_structure
+import pose_factory
 import motif_factory
 import numpy as np
 
@@ -69,6 +70,10 @@ class MotifTreeMerger(base.Base):
         new_structure = structure.Structure(chains)
         new_structure.renumber()
 
+        if self.option('chain_closure'):
+            for i,c in enumerate(new_structure.chains):
+                close_chain(c)
+
         residues = new_structure.residues()
         basepairs = []
 
@@ -76,8 +81,10 @@ class MotifTreeMerger(base.Base):
         for res in residues:
             uuids[res.uuid] = res
 
-        new_pose = pose.Pose()
-        for node in self.graph:
+        motifs = []
+        designable = {}
+        for node in self.graph.nodes:
+            motifs.append(node.data)
             for bp in node.data.basepairs:
                 if bp.res1.uuid in uuids and bp.res2.uuid in uuids:
                     cbp = bp.copy()
@@ -85,23 +92,15 @@ class MotifTreeMerger(base.Base):
                     cbp.res2 = uuids[bp.res2.uuid]
 
                     if node.data.mtype == motif_type.HELIX:
-                        new_pose.designable[cbp.uuid] = 1
+                        designable[cbp.uuid] = 1
 
                     basepairs.append(cbp)
 
-        new_pose.name = "assembled"
-        new_pose.path = "assembled"
-        new_pose.structure = new_structure
-        new_pose.basepairs = basepairs
-        new_pose.ends = motif_factory.factory._setup_basepair_ends(new_structure, basepairs)
-        motif_factory.factory.standardize_motif(new_pose)
 
-        if self.option('chain_closure'):
-            for i,c in enumerate(new_pose.chains()):
-                close_chain(c)
+        p = pose_factory.factory.pose_from_motif_tree(new_structure, basepairs,
+                                                      motifs, designable)
 
-        #new_pose.nodes = self.graph.nodes
-        return new_pose
+        return p
 
     def _merge_chains_in_node(self, node):
         for c in node.connections:

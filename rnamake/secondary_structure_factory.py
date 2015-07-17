@@ -65,7 +65,6 @@ class MotiftoSecondaryStructure(object):
         for end in motif.ends:
             res1 = ss.get_residue(uuid=end.res1.uuid)
             res2 = ss.get_residue(uuid=end.res2.uuid)
-            print end
             bp = ss.get_bp(res1, res2)
             if bp is None:
                 raise ValueError("did not properly find end in generating ss")
@@ -263,10 +262,7 @@ class StructureSecondaryFactory(object):
         return ss
 
 
-
-factory = StructureSecondaryFactory()
-
-def ss_id_to_ss_tree(ss_id):
+def ss_id_to_seq_and_db(ss_id):
     ss = ""
     seq = ""
     spl = ss_id.split("_")
@@ -286,6 +282,16 @@ def ss_id_to_ss_tree(ss_id):
         if i != len(spl)-2:
             seq += "+"
             ss += "+"
+    return seq, ss
 
+def ss_id_to_ss_tree(ss_id):
+    seq, ss = ss_id_to_seq_and_db(ss_id)
     return ss_tree.SS_Tree(ss, seq)
 
+
+def ss_id_to_secondary_structure(ss_id):
+    seq, ss = ss_id_to_seq_and_db(ss_id)
+    return factory.get_structure(seq, ss)
+
+
+factory = StructureSecondaryFactory()

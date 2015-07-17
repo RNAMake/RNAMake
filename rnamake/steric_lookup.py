@@ -59,8 +59,8 @@ class StericLookup(object):
     def add_beads(self, beads):
         centers = []
         for b in beads:
-            if b.btype == 0:
-                continue
+            #if b.btype == 0:
+            #    continue
             centers.append(b.center)
         self.add_centers(centers)
 

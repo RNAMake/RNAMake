@@ -15,9 +15,13 @@ class SqliteLibrary(object):
 
     def _setup(self, path):
         self.connection = sqlite3.connect(path)
-        rows = self.connection.execute('SELECT id from data_table').fetchall()
-        for r in rows:
-            self.data_path[r[0]] = r[0]
+        cols =  self.connection.execute('PRAGMA table_info(data_table)').fetchall()
+        self.keys = {}
+        for c in cols:
+            self.keys[c[1]] = 1
+
+        cols = self.connection.execute('SELECT count(*) from data_table').fetchone()
+        self.max_size = int(cols[0])
 
     def _get_path(self, libname):
         self.name = libname
@@ -31,42 +35,83 @@ class SqliteLibrary(object):
     def _generate_data(self, s):
         return s
 
-    def get(self, id):
-        if id in self.data:
-            return self.data[id].copy()
+    def _args_to_str(self, options):
+        s = ""
+        for k, v in options.iteritems():
+            s += k + " = " + v + ","
+        return s
 
-        if id not in self.data_path:
-            raise ValueError("cannot find id in table: " + id)
+    def _generate_query(self, options):
+        cmd = "SELECT * from data_table WHERE "
+        replace = "{"
+        l = len(options)
+        count = 0
+        for k,v in options.iteritems():
+            if k not in self.keys:
+                raise ValueError("attempted to use " + k + "=" + v + " in getting data from "
+                                 "SqliteLibrary, this key does not exist")
 
-        data = self.connection.execute('SELECT * from data_table WHERE id=:Id LIMIT 1',
-                                       {"Id":id}).fetchone()
+            cmd += k + "='" + v + "' "
+            if len(options) != count+1:
+                cmd += " AND "
+            count += 1
 
-        if data is None:
-            raise ValueError("cannot find id in table, should exist " + id)
+        return cmd
 
-        self.data[id] = self._generate_data(data[0])
+    def get(self, **options):
+
+        query = self._generate_query(options)
+        rows = self.connection.execute(query).fetchall()
+        #if len(rows) > 1:
+        #    raise ValueError("query returned too many rows, if this was expected use" \
+        #                     " get_multi(): " + self._args_to_str(options) )
+
+        if len(rows) == 0:
+            raise ValueError("query returned no rows: " + self._args_to_str(options) )
+
+        id = rows[0][-1]
+        if id not in self.data:
+            self.data[id] = self._generate_data(rows[0][0])
+
         return self.data[id].copy()
 
+    def get_multi(self, **options):
+        query = self._generate_query(options)
+        rows = self.connection.execute(query).fetchall()
+
+        if len(rows) == 0:
+            raise ValueError("query returned no rows: " + self._args_to_str(options) )
+
+        datas = []
+        for r in rows:
+            id = r[-1]
+            if id not in self.data:
+                self.data[id] = self._generate_data(r[0])
+            datas.append(self.data[id].copy())
+        return datas
+
     def get_random(self):
-        return self.get(random.choice(self.data_path.keys()))
+        id = str(random.randint(1, self.max_size-1))
+        return self.get(id=id)
 
     def load_all(self, limit=99999):
         i = 0
-        for id in self.data_path.keys():
+        for row in self.connection.execute('SELECT * from data_table').fetchall():
             i += 1
-            self.get(id)
+            self.get(id=row[-1])
             if i > limit:
                 break
 
     def all(self):
         return self.data.values()
 
-    def contains(self, id):
-        if id in self.data_path:
-            return 1
-        else:
+    def contains(self, **options):
+        query = self._generate_query(options)
+        rows = self.connection.execute(query).fetchall()
+        if len(rows) == 0:
             return 0
-
+        else:
+            return 1
 
 class MotifSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
@@ -86,7 +131,8 @@ class MotifSqliteLibrary(SqliteLibrary):
             "tcontact"        : "/motif_libraries_new/tcontact.db",
             "hairpin"         : "/motif_libraries_new/hairpin.db",
             "nway"            : "/motif_libraries_new/nway.db",
-            "unique_twoway"  : "/motif_libraries_new/unique_twoway.db"
+            "unique_twoway"   : "/motif_libraries_new/unique_twoway.db",
+            "bp_steps"        : "/motif_libraries_new/bp_steps.db"
         }
 
         return libnames
@@ -207,7 +253,8 @@ class MotifStateSqliteLibrary(SqliteLibrary):
             "twoway"        :  "/motif_state_libraries/twoway.db",
             "unique_twoway" :  "/motif_state_libraries/unique_twoway.db",
             "ss_bp_steps"   :  "/motif_state_libraries/ss_bp_steps.db",
-            "ss_twoway"     :  "/motif_state_libraries/ss_twoway.db"
+            "ss_twoway"     :  "/motif_state_libraries/ss_twoway.db",
+            "nway"          :  "/motif_state_libraries/nway.db",
 
         }
 
@@ -270,3 +317,41 @@ def build_sqlite_library(path, data_values, ids):
         data.append([d.to_str(),ids[i]])
     connection.executemany("INSERT INTO data_table(data,id) VALUES (?,?) ", data)
     connection.commit()
+
+
+def build_sqlite_library_2(path, data, keys, primary_key):
+    if os.path.isfile(path):
+        os.remove(path)
+    connection = sqlite3.connect(path)
+    insert_str = "INSERT INTO data_table("
+    table_str = "CREATE TABLE data_table("
+    for key in keys:
+        table_str += key + " TEXT,"
+        insert_str += key
+        if key != keys[-1]:
+            insert_str += ","
+    table_str += "PRIMARY KEY ("+primary_key+"))"
+    insert_str += ") VALUES ("
+    for key in keys:
+        insert_str += "?"
+        if key != keys[-1]:
+            insert_str += ","
+    insert_str += ")"
+
+    connection.execute(table_str)
+    connection.executemany(insert_str, data)
+    connection.commit()
+
+
+
+
+
+
+
+
+
+
+
+
+
+

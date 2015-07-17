@@ -28,11 +28,10 @@ class ResourceManagerUnittest(unittest.TestCase):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
         rnamake.resource_manager.manager.add_motif(path)
         mt = motif_tree.MotifTree()
-        m = rnamake.resource_manager.manager.get_motif("tetraloop_receptor_min",
-                                                       "A228-A246")
-        mt.add_motif(m)
-
-
+        m = rnamake.resource_manager.manager.get_motif(name="tetraloop_receptor_min",
+                                                       end_name="A228-A246")
+        if m.name != 'tetraloop_receptor_min':
+            self.fail('did not get correct motif back')
 
 
 def main():

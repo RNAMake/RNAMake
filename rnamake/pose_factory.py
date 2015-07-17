@@ -1,4 +1,6 @@
 import motif_factory
+import secondary_structure_factory
+import secondary_structure
 import motif_type
 import pose
 import x3dna
@@ -70,9 +72,6 @@ class PoseFactory(object):
             p.motif_dict[m.mtype].append(m)
             p.motif_dict[motif_type.ALL].append(m)
 
-
-
-
     def _remove_gu_basepair_motifs(self, m):
         res = []
         keep = 0
@@ -105,7 +104,6 @@ class PoseFactory(object):
 
         return None
 
-
     def _convert_x3dna_to_motif(self, xm, p):
         res = []
         for xr in xm.residues:
@@ -128,9 +126,80 @@ class PoseFactory(object):
 
         return p
 
+    def _add_secondary_structure_motifs(self, p):
+        ss = p.secondary_structure
+        for m in p.motifs(motif_type.ALL):
+            ss_ends, ss_bps, ss_chains = [], [], []
+            for c in m.chains():
+                ss_res = []
+                for r in c.residues:
+                    ss_r = ss.get_residue(uuid=r.uuid)
+                    ss_res.append(ss_r)
+                ss_chains.append(secondary_structure.Chain(ss_res))
+            for bp in m.basepairs:
+                res1 = ss.get_residue(uuid=bp.res1.uuid)
+                res2 = ss.get_residue(uuid=bp.res2.uuid)
+                ss_bp = ss.get_bp(res1, res2)
+                if ss_bp is None:
+                    continue
+                ss_bps.append(ss_bp)
+            for end in m.ends:
+                res1 = ss.get_residue(uuid=end.res1.uuid)
+                res2 = ss.get_residue(uuid=end.res2.uuid)
+                new_bp = ss.get_bp(res1, res2)
+                if new_bp is None:
+                    raise ValueError("cannot find ss end")
+                ss_ends.append(new_bp)
 
-    def pose_from_motif_tree(self):
-        pass
+            type = motif_type.type_to_str(m.mtype)
+            ss_motif = secondary_structure.SecondaryStructureMotif(type, ss_ends, ss_chains)
+            ss_motif.basepairs = ss_bps
+            if type not in ss.elements:
+                ss.elements[type] = []
+            ss_motif.name = m.name
+            ss.elements[type].append(ss_motif)
+            ss.elements['ALL'].append(ss_motif)
+
+    def pose_from_motif_tree(self, structure, basepairs, motifs, designable):
+
+        p = pose.Pose()
+        p.designable = designable
+        p.name = "assembled"
+        p.path = "assembled"
+        p.structure = structure
+        p.basepairs = basepairs
+        p.ends = motif_factory.factory._setup_basepair_ends(structure, basepairs)
+        ss = secondary_structure_factory.factory.secondary_structure_from_motif(p)
+        p.secondary_structure = ss
+        for m in motifs:
+            bps, res = [], []
+            for r in m.residues():
+                new_r = p.get_residue(uuid=r.uuid)
+                if new_r is not None:
+                    res.append(new_r)
+            for bp in m.basepairs:
+                new_bp = p.get_basepair(bp_uuid=bp.uuid)
+                if len(new_bp) == 0:
+                    best = 1000
+                    best_bp = None
+                    for bp2 in p.basepairs:
+                        if len(m.get_basepair(bp_uuid=bp2.uuid)) > 0:
+                            continue
+                        dist = util.distance(bp.d(), bp2.d())
+                        if dist < best:
+                            best_bp = bp2
+                            best = dist
+                    new_bp = [best_bp]
+                    res.extend(best_bp.residues())
+                bps.append(new_bp[0])
+            m_copy = motif_factory.factory.motif_from_res(res, bps)
+            m_copy.mtype = m.mtype
+            m_copy.name = m.name
+            p.motif_dict[m_copy.mtype].append(m_copy)
+            p.motif_dict[motif_type.ALL].append(m_copy)
+
+        self._add_secondary_structure_motifs(p)
+        return p
 
 
 factory = PoseFactory()

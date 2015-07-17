@@ -102,7 +102,6 @@ class MotifFactory(object):
                 raise ValueError("cannot find residues in basepair")
 
             bp = basepair.Basepair(res1, res2, xbp.r, xbp.bp_type)
-            #self._assign_bp_primes(bp)
             basepairs.append(bp)
 
         if os.path.isfile("ref_frames.dat"):
@@ -295,7 +294,10 @@ class MotifFactory(object):
         m.basepairs = bps
         ends = self._setup_basepair_ends(m.structure, bps)
         m.ends = ends
-        self._setup_secondary_structure(m)
+        try:
+            self._setup_secondary_structure(m)
+        except:
+            pass
         return m
 
 
