@@ -37,6 +37,11 @@ class SqliteLibraryUnittest(unittest.TestCase):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("bp_steps")
         mlib.load_all()
 
+        for m in mlib.all():
+            print m.name, m.end_ids[0]
+
+        exit()
+
         base = motif_factory.factory.base_motif
         mt = motif_tree.MotifTree()
         mt.add_motif(base)
