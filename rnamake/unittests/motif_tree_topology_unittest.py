@@ -42,8 +42,8 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
 
     def test_nway(self):
         builder = build.BuildMotifTree(lib_names=['ideal_helices', 'nway'])
-        mt = builder.build_specific('HELIX.IDEAL.3,NWAY.2VQE.9,HELIX.IDEAL.3'.split(','))
-        #mt = builder.build(size=3)
+        #mt = builder.build_specific('HELIX.IDEAL.3,NWAY.2VQE.9,HELIX.IDEAL.3'.split(','))
+        mt = builder.build(size=3)
         for n in mt:
             print n.data.name
         mt.write_pdbs("org")
