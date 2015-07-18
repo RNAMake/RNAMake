@@ -44,7 +44,7 @@ class BuildMotifTree(object):
             if pos == len(self.libs):
                 pos = 0
 
-            m = self.libs[pos].get(names[cpos])
+            m = self.libs[pos].get(name=names[cpos])
             i = mt.add_motif(m)
             count += 1
             if count > 100:

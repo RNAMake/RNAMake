@@ -46,17 +46,23 @@ def motif_tree_from_topology(connectivty):
     return mt
 
 
-def motif_tree_from_topology_2(mtt):
-    mt = MotifTree()
-    for i, n in enumerate(mtt.tree):
-        m = rm.manager.get_motif(name=n.data.motif_name,
-                                 end_id=n.data.end_ss_id)
+def motif_tree_from_topology_2(mtt, sterics=1):
+    mt = MotifTree(sterics=sterics)
+    for i, n in enumerate(mtt.tree.nodes):
+        #print n.data.motif_name, n.data.parent_end_ss_id
+        if n.data.motif_name != "":
+            m = rm.manager.get_motif(name=n.data.motif_name,
+                                     end_id=n.data.end_ss_id)
+        else:
+            m = rm.manager.get_motif(end_id=n.data.end_ss_id)
         if i == 0:
             mt.add_motif(m)
         else:
             n_parent = mt.get_node(n.parent_index())
             parent_end_index = n_parent.data.end_index_with_id(n.data.parent_end_ss_id)
-            mt.add_motif(m, n.parent_index(), parent_end_index=parent_end_index)
+            j = mt.add_motif(m, n.parent_index(), parent_end_index=parent_end_index)
+            if j == -1:
+                raise ValueError("was unable to build motiftree from topology")
 
     return mt
 

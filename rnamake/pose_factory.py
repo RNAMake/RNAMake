@@ -5,6 +5,8 @@ import motif_type
 import pose
 import x3dna
 import util
+import chain
+import motif
 
 class PoseFactory(object):
     def __init__(self):
@@ -172,11 +174,8 @@ class PoseFactory(object):
         ss = secondary_structure_factory.factory.secondary_structure_from_motif(p)
         p.secondary_structure = ss
         for m in motifs:
-            bps, res = [], []
-            for r in m.residues():
-                new_r = p.get_residue(uuid=r.uuid)
-                if new_r is not None:
-                    res.append(new_r)
+            bps = []
+            residue_map = {}
             for bp in m.basepairs:
                 new_bp = p.get_basepair(bp_uuid=bp.uuid)
                 if len(new_bp) == 0:
@@ -190,11 +189,41 @@ class PoseFactory(object):
                             best_bp = bp2
                             best = dist
                     new_bp = [best_bp]
-                    res.extend(best_bp.residues())
+                    #res.extend(best_bp.residues())
+                    for r1 in best_bp.residues():
+                        r1_cent = util.center(r1.atoms)
+                        best_match = None
+                        best_dist = 1000
+                        for r2 in m.residues():
+                            r2_cent = util.center(r2.atoms)
+                            dist = util.distance(r1_cent, r2_cent)
+                            if dist < best_dist:
+                                best_dist = dist
+                                best_match = r2
+                        residue_map[best_match] = r1
+
                 bps.append(new_bp[0])
-            m_copy = motif_factory.factory.motif_from_res(res, bps)
+
+            chains = []
+            for c in m.chains():
+                res = []
+                for r in c.residues:
+                    new_r = p.get_residue(uuid=r.uuid)
+                    if new_r is not None:
+                        res.append(new_r)
+                    elif r in residue_map:
+                        res.append(residue_map[r])
+                    else:
+                        raise ValueError("cannot find residue")
+                chains.append(chain.Chain(res))
+
+            m_copy = motif.Motif()
             m_copy.mtype = m.mtype
             m_copy.name = m.name
+            m_copy.structure.chains = chains
+            m_copy.basepairs = bps
+            m_copy.ends = motif_factory.factory._setup_basepair_ends(m_copy.structure, bps)
+            motif_factory.factory._setup_secondary_structure(m_copy)
             p.motif_dict[m_copy.mtype].append(m_copy)
             p.motif_dict[motif_type.ALL].append(m_copy)
 

@@ -1,65 +1,60 @@
 import unittest
 import random
 import rnamake.sqlite_library as sqlite_library
-import rnamake.ss_tree as ss_tree
 import rnamake.motif_tree_topology as motif_tree_topology
 import rnamake.motif_tree as motif_tree
 import rnamake.resource_manager as resource_manager
 import rnamake.motif_type
 import rnamake.settings as settings
-import rnamake.ss_to_motif_tree_adapter as ss_to_motif_tree_adapter
 import rnamake.motif_factory as motif_factory
 import rnamake.secondary_structure as secondary_structure
 import rnamake.ss_tree as ss_tree
 import build
+import rnamake.motif_type as motif_type
 
 class MotifTreeTopologyUnittest(unittest.TestCase):
 
-    def test_creation(self):
-        builder = build.BuildSSTree()
-        ss_tree = builder.build_helix()
-        mtt = motif_tree_topology.MotifTreeTopology(ss_tree)
+    def _fill_basepairs_in_ss(self, ss):
+        pairs = ["AU", "UA", "GC", "CG"]
+        for bp in ss.basepairs:
+            if bp.res1.name == "N" and bp.res2.name == "N":
+                p = random.choice(pairs)
+                bp.res1.name = p[0]
+                bp.res2.name = p[1]
 
-        #connectivity = mtt.get_connectivity_from(0)
-        #for c in connectivity:
-        #    print c.parent_index, c.parent_ss_id, c.ss_id
-        #adapter = ss_to_motif_tree_adapter.SStoMotifTreeAdapter()
-        #mt = adapter.convert(ss_tree)
-        #mt.write_pdbs()
+    def test_creation(self):
+        builder = build.BuildSecondaryStructure()
+        ss = builder.build_helix()
+        conn = ss.motif_topology_from_end(ss.ends[1])
+        mtt = motif_tree_topology.MotifTreeTopology(conn)
+        mt = motif_tree.motif_tree_from_topology_2(mtt)
+        if len(mt) != len(ss.motifs('ALL')):
+            self.fail("did not build properly")
+
+    def test_twoway(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(size=10)
+        ss = mt.designable_secondary_structure()
+        self._fill_basepairs_in_ss(ss)
+        con = ss.motif_topology_from_end(ss.ends[1])
+        mtt = motif_tree_topology.MotifTreeTopology(con)
+        mt2 = motif_tree.motif_tree_from_topology_2(mtt)
 
     def test_nway(self):
-        mlib2 = sqlite_library.MotifSqliteLibrary("nway")
-        mlib1 = sqlite_library.MotifSqliteLibrary("ideal_helices")
-        builder = build.BuildMotifTree(libs=[mlib1, mlib2])
-        #mt = builder.build(3)
-        mt = builder.build_specific(["HELIX.IDEAL.2",
-                                     "NWAY.1S72.18-01551-01634",
-                                     "HELIX.IDEAL.2"])
-
-        m = resource_manager.manager.get_motif("NWAY.1S72.18-01551-01634")
-        ss = m.secondary_structure()
-        seq = m.sequence()
-
-        print ss
-        print seq
-        #p = mt.to_pose()
-        #print p.secondary_structure()
-        #print  p.sequence()
-        #exit()
-
-        sstree = ss_tree.SS_Tree(ss, seq)
-
-        for n in sstree:
-            print n.index, n.data.ss_data, n.data.what(),
-            print n.parent_index(),
-            for c in n.children:
-                print c.index,
-            print
-
-
-
-        #p.to_pdb("test.pdb")
-
+        builder = build.BuildMotifTree(lib_names=['ideal_helices', 'nway'])
+        mt = builder.build_specific('HELIX.IDEAL.3,NWAY.2VQE.9,HELIX.IDEAL.3'.split(','))
+        #mt = builder.build(size=3)
+        for n in mt:
+            print n.data.name
+        mt.write_pdbs("org")
+        ss = mt.designable_secondary_structure()
+        self._fill_basepairs_in_ss(ss)
+        con = ss.motif_topology_from_end(ss.ends[1])
+        mtt = motif_tree_topology.MotifTreeTopology(con)
+        #for n in mtt.tree.nodes:
+        #    print n.index, n.data.motif_name, n.data.parent_end_ss_id, n.parent_index()
+        mt2 = motif_tree.motif_tree_from_topology_2(mtt)
+        mt2.write_pdbs()
 
     def _test_build_mt(self):
         sstree = ss_tree.SS_Tree("(((+)))", "GAG+UUC")
@@ -111,3 +106,23 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
