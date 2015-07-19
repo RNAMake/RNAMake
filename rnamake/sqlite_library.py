@@ -138,6 +138,33 @@ class MotifSqliteLibrary(SqliteLibrary):
         return libnames
 
 
+    def get_best_match(self, new_id):
+        if self.contains(end_id=new_id):
+            return self.get(end_id=new_id)
+
+        exit()
+
+        if len(self.ss_trees) == 0:
+            for id in self.data_path:
+                sstree = secondary_structure.ss_id_to_ss_tree(id)
+                self.ss_trees[id] = sstree
+
+        new_ss_tree = secondary_structure.ss_id_to_ss_tree(new_id)
+        best_score = 10000
+        best_id = None
+        for id, sstree in self.ss_trees.iteritems():
+            score = ss_tree.compare_ss_tree(new_ss_tree, sstree)
+            if score < best_score:
+                best_score = score
+                best_id = id
+
+        if best_score == 10000:
+            raise  ValueError("get_best_match failed in MotifSSIDSqliteLibrary")
+
+        print best_score
+        return self.get(best_id)
+
+
 class MotifSSIDSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
         super(MotifSSIDSqliteLibrary, self).__init__()
@@ -162,29 +189,7 @@ class MotifSSIDSqliteLibrary(SqliteLibrary):
 
         return libnames
 
-    def get_best_match(self, new_id):
-        if self.contains(new_id):
-            return self.get(new_id)
 
-        if len(self.ss_trees) == 0:
-            for id in self.data_path:
-                sstree = secondary_structure.ss_id_to_ss_tree(id)
-                self.ss_trees[id] = sstree
-
-        new_ss_tree = secondary_structure.ss_id_to_ss_tree(new_id)
-        best_score = 10000
-        best_id = None
-        for id, sstree in self.ss_trees.iteritems():
-            score = ss_tree.compare_ss_tree(new_ss_tree, sstree)
-            if score < best_score:
-                best_score = score
-                best_id = id
-
-        if best_score == 10000:
-            raise  ValueError("get_best_match failed in MotifSSIDSqliteLibrary")
-
-        print best_score
-        return self.get(best_id)
 
 
 

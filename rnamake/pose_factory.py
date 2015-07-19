@@ -188,8 +188,9 @@ class PoseFactory(object):
                         if dist < best:
                             best_bp = bp2
                             best = dist
+                    if best_bp is None:
+                        continue
                     new_bp = [best_bp]
-                    #res.extend(best_bp.residues())
                     for r1 in best_bp.residues():
                         r1_cent = util.center(r1.atoms)
                         best_match = None

@@ -261,7 +261,6 @@ class StructureSecondaryFactory(object):
         self.parser.reset()
         return ss
 
-
 def ss_id_to_seq_and_db(ss_id):
     ss = ""
     seq = ""
@@ -287,7 +286,6 @@ def ss_id_to_seq_and_db(ss_id):
 def ss_id_to_ss_tree(ss_id):
     seq, ss = ss_id_to_seq_and_db(ss_id)
     return ss_tree.SS_Tree(ss, seq)
-
 
 def ss_id_to_secondary_structure(ss_id):
     seq, ss = ss_id_to_seq_and_db(ss_id)

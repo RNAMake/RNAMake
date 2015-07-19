@@ -209,30 +209,22 @@ class BuildSqliteLibraries(object):
 
     def build_motif_state_libraries(self):
         for libname in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
+            data = []
+            keys = ['data', 'name', 'end_name', 'end_id', 'id']
+
             mlib = sqlite_library.MotifSqliteLibrary(libname)
             mlib.load_all()
             motif_states = []
             names = []
-            for m in mlib.all():
+            for i, m in enumerate(mlib.all()):
                 ms = m.get_state()
-                motif_states.append(ms)
-                names.append(ms.name)
+                data.append([ms.to_str(), ms.name,
+                             ms.end_names[0], ms.end_ids[0], i])
+
+
 
             path = settings.RESOURCES_PATH + "/motif_state_libraries/" + libname + ".db"
-            sqlite_library.build_sqlite_library(path, motif_states, names)
-
-        for libname in sqlite_library.MotifSSIDSqliteLibrary.get_libnames().keys():
-            mlib = sqlite_library.MotifSSIDSqliteLibrary(libname)
-            mlib.load_all()
-            motif_states = []
-            names = []
-            for m in mlib.all():
-                ms = m.get_state()
-                motif_states.append(ms)
-                names.append(ms.name)
-
-            path = settings.RESOURCES_PATH + "/motif_state_libraries/ss_" + libname + ".db"
-            sqlite_library.build_sqlite_library(path, motif_states, names)
+            sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
     def build_unique_twoway_library(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
@@ -353,7 +345,7 @@ builder = BuildSqliteLibraries()
 #builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
-builder.build_unique_twoway_library()
+#builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()
 #builder.build_motif_ensemble_state_libraries()
 
