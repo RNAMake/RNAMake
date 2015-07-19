@@ -21,6 +21,14 @@ class SqliteLibraryUnittest(unittest.TestCase):
         if m1 is None or m2 is None or m3 is None:
             self.fail("something wrong in get()")
 
+        mlib = sqlite_library.MotifStateSqliteLibrary('ideal_helices')
+        ms1 = mlib.get(name="HELIX.IDEAL.6")
+        ms2 = mlib.get(name='HELIX.IDEAL.6', end_name='A8-A9')
+        ms3 = mlib.get(end_id='GGGGGGGG_LLLLLLLL_CCCCCCCC_RRRRRRRR')
+
+        if ms1 is None or ms2 is None or ms3 is None:
+            self.fail("something wrong in get()")
+
     def test_load_all(self):
         mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
         mlib.load_all()
@@ -36,11 +44,6 @@ class SqliteLibraryUnittest(unittest.TestCase):
     def test_bp_steps(self):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("bp_steps")
         mlib.load_all()
-
-        for m in mlib.all():
-            print m.name, m.end_ids[0]
-
-        exit()
 
         base = motif_factory.factory.base_motif
         mt = motif_tree.MotifTree()
@@ -73,7 +76,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         builder = build.BuildMotifTree()
 
-        for i in range(100):
+        for i in range(10):
             mt = builder.build(3)
             if len(mt) != 3:
                 for n in mt:
@@ -81,15 +84,6 @@ class SqliteLibraryUnittest(unittest.TestCase):
                 print len(mt)
                 mt.write_pdbs()
                 self.fail("random generation of twoways failed")
-
-    def test_get_ss(self):
-        mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
-        m = mlib.get_random()
-        while len(m.residues()) > 5:
-            m = mlib.get_random()
-
-        ss_id = m.end_ids[0]
-        m1 = mlib.get(ss_id)
 
     def _get_random_motif(self, size=5):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
@@ -99,7 +93,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         return m
 
-    def test_get_best(self):
+    def _test_get_best(self):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
         #ss_id1 = "AC_LL_GGGU_RUUR"
         ss_id1 = "AGG_LLL_CGU_RRR"
@@ -113,7 +107,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
         #m = mlib.get(ss_id1)
         #m.to_pdb("test.pdb")
 
-    def test_end_id(self):
+    def _test_end_id(self):
         mlib = rm.manager.mlibs['tcontact']
         mlib.load_all()
         keep = "103 109 111 117 120".split()
@@ -132,7 +126,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         print ss_tree.compare_ss_tree(ss_tree_1, ss_tree_2)
 
-    def test_get_by_topology(self):
+    def _test_get_by_topology(self):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
         motifs = mlib.get_by_topology([1,0])
 

@@ -1,19 +1,10 @@
-import heapq
-import pose
-
-
-class PriorityQueue(object):
-    def __init__(self):
-        self.elements = []
-
-    def empty(self):
-        return len(self.elements) == 0
-
-    def put(self, item, priority):
-        heapq.heappush(self.elements, (priority, item))
-
-    def get(self):
-        return heapq.heappop(self.elements)[1]
+import priority_queue
+import chain
+import basepair
+import numpy as np
+import pose_factory
+import motif_type
+import structure
 
 
 class Pair(object):
@@ -48,7 +39,7 @@ class PairSearchNode(object):
 
 class PairSearch(object):
     def __init__(self):
-        self.queue = PriorityQueue()
+        self.queue = priority_queue.PriorityQueue()
 
     def _default_values(self, res, pairs, end_pairs):
         values = {}
@@ -144,7 +135,6 @@ class Segmenter(object):
                     end_pairs.append(Pair(c.first(), res1, len(sc2.residues)))
         return pairs, end_pairs
 
-
     def _get_subchain(self, m, pair):
         for c in m.chains():
             sc = c.subchain(start_res=pair.res1, end_res=pair.res2)
@@ -154,23 +144,43 @@ class Segmenter(object):
         raise ValueError("cannot create subchain")
 
     def _get_pose(self, org_pose, res, bps):
-        p = pose.Pose()
-        p.structure._build_chains(res)
-        p.structure._cache_coords()
-        p.basepairs = bps
-        p._cache_basepair_frames()
-        p.setup_basepair_ends()
-        motifs = pose.Motifs()
-        for m in org_pose.all_motifs():
+        copied_res = [r.copy() for r in res]
+        uuids = {r.uuid : r for r in copied_res}
+        chains = []
+        c_res = []
+        for c in org_pose.chains():
+            c_res = []
+            for r in c.residues:
+                if r.uuid in uuids:
+                    c_res.append(uuids[r.uuid])
+                elif len(c_res) > 0:
+                    chains.append(chain.Chain(c_res))
+                    c_res = []
+        if len(c_res) > 0:
+            chains.append(chain.Chain(c_res))
+
+        struct = structure.Structure(chains)
+        basepairs = []
+
+        for bp in bps:
+            new_res1 = uuids[bp.res1.uuid]
+            new_res2 = uuids[bp.res2.uuid]
+            new_r = np.copy(bp.bp_state.r)
+            new_bp = basepair.Basepair(new_res1, new_res2, new_r, bp.bp_type)
+            new_bp.uuid = bp.uuid
+            basepairs.append(new_bp)
+        motifs = []
+        for m in org_pose.motifs(motif_type.ALL):
             fail = 0
             for r in m.residues():
-                if r not in res:
+                if r.uuid not in uuids:
                     fail = 1
                     break
             if fail:
                 continue
-            motifs._assign_motif_by_type(m)
-        p.motifs = motifs
+            motifs.append(m)
+
+        p = pose_factory.factory.pose_from_motif_tree(struct, basepairs, motifs, {})
         return p
 
     def _get_segments(self, m, res, bps, cutpoints):

@@ -43,7 +43,7 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
     def test_nway(self):
         builder = build.BuildMotifTree(lib_names=['ideal_helices', 'nway'])
         #mt = builder.build_specific('HELIX.IDEAL.3,NWAY.2VQE.9,HELIX.IDEAL.3'.split(','))
-        mt = builder.build(size=3)
+        mt = builder.build(size=5)
         for n in mt:
             print n.data.name
         mt.write_pdbs("org")
@@ -51,10 +51,7 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
         self._fill_basepairs_in_ss(ss)
         con = ss.motif_topology_from_end(ss.ends[1])
         mtt = motif_tree_topology.MotifTreeTopology(con)
-        #for n in mtt.tree.nodes:
-        #    print n.index, n.data.motif_name, n.data.parent_end_ss_id, n.parent_index()
-        mt2 = motif_tree.motif_tree_from_topology_2(mtt)
-        mt2.write_pdbs()
+        mt2 = motif_tree.motif_tree_from_topology_2(mtt, sterics=0)
 
     def _test_build_mt(self):
         sstree = ss_tree.SS_Tree("(((+)))", "GAG+UUC")
