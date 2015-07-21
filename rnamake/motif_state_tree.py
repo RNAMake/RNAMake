@@ -43,8 +43,7 @@ class MotifStateTree(base.Base):
         self.constraints = {}
 
     def _setup_from_mt(self, mt):
-        self.option('sterics', 0)
-        for i, n in enumerate(mt):
+        for i, n in enumerate(mt.tree.nodes):
             if i == 0:
                 self.add_state(resource_manager.manager.get_state(n.data.name))
             else:
@@ -117,8 +116,12 @@ class MotifStateTree(base.Base):
 
         mt = motif_tree.MotifTree(sterics=self.option('sterics'))
         for i, n in enumerate(self.tree.nodes):
-            m = resource_manager.manager.get_motif(name=n.data.ref_state.name,
-                                                   end_id=n.data.ref_state.end_ids[0])
+            if n.data.ref_state.name != "":
+                m = resource_manager.manager.get_motif(name=n.data.ref_state.name,
+                                                       end_id=n.data.ref_state.end_ids[0])
+            else:
+                m = resource_manager.manager.get_motif(end_id=n.data.ref_state.end_ids[0])
+
             if i == 0:
                 motif.align_motif(n.data.cur_state.end_states[0],
                                   m.ends[0],
