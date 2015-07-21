@@ -173,36 +173,49 @@ class PoseFactory(object):
         p.ends = motif_factory.factory._setup_basepair_ends(structure, basepairs)
         ss = secondary_structure_factory.factory.secondary_structure_from_motif(p)
         p.secondary_structure = ss
+        p.end_ids = ["" for x in p.ends]
+        for i, end in enumerate(p.ends):
+            res1 = ss.get_residue(uuid=end.res1.uuid)
+            res2 = ss.get_residue(uuid=end.res2.uuid)
+            ss_end = ss.get_bp(res1, res2)
+            p.end_ids[i] = secondary_structure.assign_end_id(ss, ss_end)
+
         for m in motifs:
             bps = []
             residue_map = {}
             for bp in m.basepairs:
                 new_bp = p.get_basepair(bp_uuid=bp.uuid)
-                if len(new_bp) == 0:
-                    best = 1000
-                    best_bp = None
-                    for bp2 in p.basepairs:
-                        if len(m.get_basepair(bp_uuid=bp2.uuid)) > 0:
-                            continue
-                        dist = util.distance(bp.d(), bp2.d())
-                        if dist < best:
-                            best_bp = bp2
-                            best = dist
-                    if best_bp is None:
-                        continue
-                    new_bp = [best_bp]
-                    for r1 in best_bp.residues():
-                        r1_cent = util.center(r1.atoms)
-                        best_match = None
-                        best_dist = 1000
-                        for r2 in m.residues():
-                            r2_cent = util.center(r2.atoms)
-                            dist = util.distance(r1_cent, r2_cent)
-                            if dist < best_dist:
-                                best_dist = dist
-                                best_match = r2
-                        residue_map[best_match] = r1
+                if len(new_bp) != 0:
+                    bps.append(new_bp[0])
+                    continue
 
+                best = 1000
+                best_bp = None
+                for m2 in motifs:
+                    if m == m2:
+                        continue
+                    for end in m2.ends:
+                        alt_bp = p.get_basepair(bp_uuid=end.uuid)
+                        if len(alt_bp) == 0:
+                            continue
+                        dist = util.distance(bp.d(), alt_bp[0].d())
+                        if dist < best:
+                            best_bp = alt_bp[0]
+                            best = dist
+                if best_bp is None:
+                    continue
+                new_bp = [best_bp]
+                for r1 in best_bp.residues():
+                    r1_cent = util.center(r1.atoms)
+                    best_match = None
+                    best_dist = 1000
+                    for r2 in bp.residues():
+                        r2_cent = util.center(r2.atoms)
+                        dist = util.distance(r1_cent, r2_cent)
+                        if dist < best_dist:
+                            best_dist = dist
+                            best_match = r2
+                    residue_map[best_match] = r1
                 bps.append(new_bp[0])
 
             chains = []
@@ -215,7 +228,8 @@ class PoseFactory(object):
                     elif r in residue_map:
                         res.append(residue_map[r])
                     else:
-                        raise ValueError("cannot find residue")
+                        print r, r.uuid
+                        #raise ValueError("cannot find residue")
                 chains.append(chain.Chain(res))
 
             m_copy = motif.Motif()
@@ -229,7 +243,26 @@ class PoseFactory(object):
             p.motif_dict[motif_type.ALL].append(m_copy)
 
         self._add_secondary_structure_motifs(p)
+        self.standardize_pose(p)
         return p
+
+    def standardize_pose(self, p):
+        fail = 0
+        added_helix = motif_factory.factory.added_helix
+        for i in range(len(p.ends)):
+            m_added = motif.get_aligned_motif(p.ends[i],
+                                              added_helix.ends[0],
+                                              added_helix)
+
+            if not motif_factory.factory._steric_clash(p, m_added):
+                continue
+
+            p.ends[i].flip()
+
+            m_added = motif.get_aligned_motif(p.ends[i],
+                                              added_helix.ends[0],
+                                              added_helix)
+
 
 
 factory = PoseFactory()

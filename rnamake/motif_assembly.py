@@ -1,14 +1,12 @@
 import motif_tree
-import resource_manager
+import resource_manager as rm
 
 class MotifAssembly(object):
     def __init__(self, m=None, error_on_add=1, **options):
         self.error_on_add = error_on_add
         self.mt = motif_tree.MotifTree(m, **options)
 
-    def add_motif(self, m=None, mname=None, end=None, end_index=None,
-                  parent=None, parent_index=None, parent_end=None,
-                  end_name=None, parent_end_name=None):
+    def add_motif(self, name, ):
 
         if m is not None and mname is not None:
             raise ValueError("must supply motif or motif name")

@@ -59,6 +59,7 @@ class Motif(object):
         self.end_ids = []
         self.structure = structure.Structure()
         self.secondary_structure = secondary_structure.SecondaryStructure()
+        self.block_end_add = 0
 
     def __repr__(self):
         """
@@ -134,7 +135,8 @@ class Motif(object):
         """
         stringifies motif object
         """
-        s = self.path + "&" + self.name + "&" + str(self.score) + "&" + \
+        s = self.path + "&" + self.name + "&" + str(self.score) + "&" +  \
+            str(self.block_end_add) + "&" + \
             str(self.mtype) + "&" + self.structure.to_str() + "&"
         for bp in self.basepairs:
             s += bp.to_str() + "@"
@@ -208,6 +210,7 @@ class Motif(object):
         cmotif.beads     = [b.copy() for b in self.beads]
         cmotif.end_ids   = list(self.end_ids)
         cmotif.secondary_structure = self.secondary_structure.copy()
+        cmotif.block_end_add = self.block_end_add
 
         for bp in self.basepairs:
             new_res1 = cmotif.get_residue(uuid=bp.res1.uuid)
@@ -239,11 +242,11 @@ class Motif(object):
             ends[i] = end.state()
             end_names.append(end.name())
         return MotifState(self.name, end_names, self.end_ids, ends, bead_centers,
-                          self.score, len(self.residues()))
+                          self.score, len(self.residues()), self.block_end_add)
 
     def end_index_with_id(self, id):
         for i, end_id in enumerate(self.end_ids):
-            if i == 0:
+            if i == self.block_end_add:
                 continue
             if id == end_id:
                 return i
@@ -259,17 +262,19 @@ class Motif(object):
             bp.uuid = uuid.uuid1()
 
 class MotifState(object):
-    __slots__ = ['name', 'end_names', 'end_ids', 'end_states', 'beads', 'score', 'size']
+    __slots__ = ['name', 'end_names', 'end_ids', 'end_states',
+                 'beads', 'score', 'size', 'block_end_add']
 
     def __init__(self, name, end_names, end_ids, end_states,
-                 beads, score, size):
+                 beads, score, size, block_end_add):
         self.name, self.end_states, self.beads = name, end_states, beads
         self.score, self.size = score, size
         self.end_names, self.end_ids = end_names, end_ids
+        self.block_end_add = block_end_add
 
     def to_str(self):
         s = self.name + "|" + str(self.score) + "|" + str(self.size) + "|"
-        s += basic_io.points_to_str(self.beads) + "|"
+        s += str(self.block_end_add) + "|" + basic_io.points_to_str(self.beads) + "|"
         s += ",".join(self.end_names) + "|"
         s += ",".join(self.end_ids) + "|"
         for state in self.end_states:
@@ -286,7 +291,7 @@ class MotifState(object):
 
     def end_index_with_id(self, id):
         for i, end_id in enumerate(self.end_ids):
-            if i == 0:
+            if i == self.block_end_add:
                 continue
             if id == end_id:
                 return i
@@ -298,7 +303,7 @@ class MotifState(object):
         beads = np.copy(self.beads)
 
         return MotifState(self.name, self.end_names, self.end_ids, end_states,
-                          beads, self.score, self.size)
+                          beads, self.score, self.size, self.block_end_add)
 
 
 class MotifArray(object):
@@ -340,11 +345,12 @@ def str_to_motif(s):
     m.path = spl[0]
     m.name = spl[1]
     m.score = float(spl[2])
-    m.mtype = int(spl[3])
-    m.structure = io.str_to_structure(spl[4])
+    m.block_end_add = int(spl[3])
+    m.mtype = int(spl[4])
+    m.structure = io.str_to_structure(spl[5])
     m.basepairs = []
 
-    basepair_str = spl[5].split("@")
+    basepair_str = spl[6].split("@")
     for bp_str in basepair_str[:-1]:
         bp_spl = bp_str.split(",")
         res_spl = bp_spl[0].split("-")
@@ -356,30 +362,30 @@ def str_to_motif(s):
         bp = basepair.Basepair(res1, res2, state.r, bp_spl[2])
         m.basepairs.append(bp)
 
-    end_indexes = spl[6].split()
+    end_indexes = spl[7].split()
     for index in end_indexes:
         m.ends.append(m.basepairs[int(index)])
-    end_ids = spl[7].split()
+    end_ids = spl[8].split()
     m.end_ids = end_ids
-    m.secondary_structure = secondary_structure.str_to_secondary_structure(spl[8])
+    m.secondary_structure = secondary_structure.str_to_secondary_structure(spl[9])
     ss_res = m.secondary_structure.residues()
     for i, r in enumerate(m.residues()):
         ss_res[i].uuid = r.uuid
-
     return m
 
 
 def str_to_motif_state(s):
     spl = s.split("|")
     name, score, size = spl[0], float(spl[1]), float(spl[2])
-    beads = basic_io.str_to_points(spl[3])
-    end_names = spl[4].split(",")
-    end_ids = spl[5].split(",")
+    block_end_add = int(spl[3])
+    beads = basic_io.str_to_points(spl[4])
+    end_names = spl[5].split(",")
+    end_ids = spl[6].split(",")
     end_states = []
-    for i in range(6, len(spl)-1):
+    for i in range(7, len(spl)-1):
             end_states.append(basepair.str_to_basepairstate(spl[i]))
 
-    return MotifState(name, end_names, end_ids, end_states, beads, score, size)
+    return MotifState(name, end_names, end_ids, end_states, beads, score, size, block_end_add)
 
 
 def str_to_motif_array(str):

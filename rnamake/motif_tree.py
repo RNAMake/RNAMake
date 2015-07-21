@@ -66,6 +66,7 @@ def motif_tree_from_topology_2(mtt, sterics=1):
 
     return mt
 
+
 class MotifTree(base.Base):
     """
     MotifTree class orchestrates the connection of motifs to both other motifs and full structure and is a core feature of this package
@@ -106,15 +107,12 @@ class MotifTree(base.Base):
 
     """
 
-    def __init__(self, m=None, **options):
+    def __init__(self, **options):
         self.setup_options_and_constraints()
         self.options.dict_set(options)
-        self.clash_radius = settings.CLASH_RADIUS - 0.1
+        self.clash_radius = settings.CLASH_RADIUS
 
         self.graph = graph.GraphStatic()
-        if m is not None:
-            self.add_motif(m)
-
         self.merger = motif_tree_merger.MotifTreeMerger()
 
     def __len__(self):
@@ -141,8 +139,7 @@ class MotifTree(base.Base):
         return self.graph.next()
 
     def setup_options_and_constraints(self):
-        options = { 'sterics'              : 1,
-                    'full_beads_first_res' : 1}
+        options = { 'sterics'              : 1}
 
         self.options = option.Options(options)
         self.constraints = {}
@@ -165,7 +162,7 @@ class MotifTree(base.Base):
         avail_pos = self.graph.get_availiable_pos(parent, parent_end_index)
 
         for p in avail_pos:
-            if p == 0:
+            if p == parent.data.block_end_add:
                 continue
 
             m_added = motif.get_aligned_motif(parent.data.ends[p], m.ends[0], m)

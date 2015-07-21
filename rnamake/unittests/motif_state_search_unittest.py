@@ -7,6 +7,8 @@ import rnamake.settings as settings
 import rnamake.resource_manager as rm
 import rnamake.steric_lookup as steric_lookup
 import rnamake.motif_state_search_scorer as motif_state_search_scorer
+import rnamake.segmenter as segmenter
+import rnamake.pose_factory as pf
 
 class MotifStateSearchUnittest(unittest.TestCase):
 
@@ -54,8 +56,32 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mst.add_connection(0, mst.last_node().index, "A146-A157")
         p = mst.to_pose()
 
+    def test_redesign(self):
+        s = rnamake.segmenter.Segmenter()
+        path = rnamake.settings.UNITTEST_PATH + "/resources/motifs/p4p6"
+        p = pf.factory.pose_from_file(path)
+        end1 = p.get_basepair(name='A111-A209')[0]
+        end2 = p.get_basepair(name='A118-A203')[0]
+        segments = s.apply(p, [end1, end2])
+        pd = segments.remaining
+        segments.remaining.to_pdb("test.pdb")
+        start = end1.state()
+        end   = end2.state()
 
+        mss = rnamake.motif_state_search.MotifStateSearch()
+        mss.constraint('max_node_level', 5)
+        mss.constraint('max_solutions', 1)
+        mss.constraint('accept_score', 5)
+        mss.scorer = motif_state_search_scorer.MTSS_Astar()
 
+        sl = steric_lookup.StericLookup()
+        beads = pd.get_beads(pd.ends)
+        sl.add_beads(beads)
+        mss.lookup = sl
+
+        solutions = mss.search(start, end)
+        mst_sol = solutions[0].to_mst()
+        mst_sol.to_pdb("sol.pdb")
 
 
 

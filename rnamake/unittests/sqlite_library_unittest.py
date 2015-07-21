@@ -29,6 +29,10 @@ class SqliteLibraryUnittest(unittest.TestCase):
         if ms1 is None or ms2 is None or ms3 is None:
             self.fail("something wrong in get()")
 
+        me_lib = sqlite_library.MotifEnsembleSqliteLibrary('bp_steps')
+        me = me_lib.get(name='GG_LL_CC_RR')
+        print len(me.members)
+
     def test_load_all(self):
         mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
         mlib.load_all()

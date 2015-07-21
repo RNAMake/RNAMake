@@ -283,10 +283,6 @@ class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
     def get_libnames():
         libnames = {
             "bp_steps" :  "/motif_state_ensemble_libraries/bp_steps.db",
-            "twoway"   :  "/motif_state_ensemble_libraries/twoway.db",
-            "nway"     :  "/motif_state_ensemble_libraries/nway.db",
-            "tcontact" :  "/motif_state_ensemble_libraries/tcontact.db",
-            "hairpin"  :  "/motif_state_ensemble_libraries/hairpin.db",
 
         }
 

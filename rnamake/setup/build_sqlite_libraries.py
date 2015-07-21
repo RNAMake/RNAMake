@@ -75,7 +75,7 @@ class BuildSqliteLibraries(object):
 
         sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
         mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
-        m = mlib.get(name="HELIX.IDEAL.6")
+        m = mlib.get(name="HELIX.IDEAL.3")
         s = m.to_str()
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
         f = open(path, "w")
@@ -161,14 +161,13 @@ class BuildSqliteLibraries(object):
                         clusters.append(SSandSeqCluster(m_bps.end_ids[1]))
                         clusters[-1].motif_matches(m_bps)
 
-        mes = []
-        mes_names = []
+        mes_keys = ['data', 'name', 'id']
+        mes_data = []
+
         motif_data = []
         motif_keys = ['data', 'name', 'end_name', 'end_id', 'id']
         count = 0
         for c in clusters:
-            #if c.end_id != "AG_LL_UU_RR" and  c.end_id != "CU_LL_AG_RR":
-            #    continue
             aligned_motifs = []
             for i, m_and_e in enumerate(c.motif_and_ends):
                 m, ei = m_and_e.motif, m_and_e.end_index
@@ -188,8 +187,7 @@ class BuildSqliteLibraries(object):
 
             me = motif_ensemble.MotifEnsemble()
             me.setup(c.end_id, clustered_motifs, energies)
-            mes.append(me)
-            mes_names.append(me.id)
+            mes_data.append([me.to_str(), me.id, count])
 
             motif = me.members[0].motif
             spl = me.id.split("_")
@@ -202,7 +200,7 @@ class BuildSqliteLibraries(object):
 
 
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
-        sqlite_library.build_sqlite_library(path, mes, mes_names)
+        sqlite_library.build_sqlite_library_2(path, mes_data, mes_keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps.db"
         #sqlite_library.build_sqlite_library(path, motifs, mes_names)
         sqlite_library.build_sqlite_library_2(path, motif_data, motif_keys, 'id')
@@ -324,30 +322,32 @@ class BuildSqliteLibraries(object):
     def build_motif_ensemble_state_libraries(self):
 
         for libname in sqlite_library.MotifEnsembleSqliteLibrary.get_libnames().keys():
+            if libname != "bp_steps":
+                continue
 
             me_lib = sqlite_library.MotifEnsembleSqliteLibrary(libname)
             me_lib.load_all()
 
+            keys = ['data', 'name', 'id']
+            data = []
+
             mses = []
             names = []
-            for me in me_lib.all():
+            for i, me in enumerate(me_lib.all()):
                 mse = me.get_state()
-                mses.append(mse)
-                names.append(mse.id)
+                data.append([mse.to_str(), mse.id, i])
 
             path = settings.RESOURCES_PATH +"/motif_state_ensemble_libraries/"+libname+".db"
-            sqlite_library.build_sqlite_library(path, mses, names)
-
-#setup_start_motif()
+            sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
 #builder.build_basic_libraries()
-#builder.build_helix_ensembles()
+builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()
-#builder.build_motif_ensemble_state_libraries()
+builder.build_motif_ensemble_state_libraries()
 
 
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")

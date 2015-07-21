@@ -33,7 +33,7 @@ class MotifStateSearch(base.Base):
 
     def _start_node(self, start_bp):
         ms = motif.MotifState('start', ['start', 'start'], ['', ''],
-                              [start_bp, start_bp], [], 0, 0)
+                              [start_bp, start_bp], [], 0, 0, 0)
         n = MotifStateSearchNode(ms, None, -1, -1)
         n.node_type_usages = [0 for i in range(len(self.selector.graph))]
         return n
@@ -162,6 +162,8 @@ class MotifStateSearchSolution(object):
         mst.option('sterics', 0)
         for i, n in enumerate(self.path):
             n.cur_state.name = n.ref_state.name
+            n.cur_state.end_ids = n.ref_state.end_ids
+            n.cur_state.end_names = n.ref_state.end_names
             if i == 0:
                 mst.add_state(n.cur_state)
             else:

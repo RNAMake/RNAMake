@@ -16,12 +16,15 @@ import settings
 class MotifFactory(object):
 
     def __init__(self):
-        path = settings.MOTIF_DIRS + "ref.motif"
-        self.ref_motif = motif.file_to_motif(path)
-        path = settings.MOTIF_DIRS + "base.motif"
-        self.base_motif = motif.file_to_motif(path)
-        self.base_motif.get_beads([self.base_motif.ends[1]])
-        self.added_helix = self.base_motif.copy()
+        try:
+            path = settings.MOTIF_DIRS + "ref.motif"
+            self.ref_motif = motif.file_to_motif(path)
+            path = settings.MOTIF_DIRS + "base.motif"
+            self.base_motif = motif.file_to_motif(path)
+            self.base_motif.get_beads([self.base_motif.ends[1]])
+            self.added_helix = self.base_motif.copy()
+        except:
+            pass
         self.clash_radius = settings.CLASH_RADIUS
         self.scorer = motif_scorer.MotifScorer()
 

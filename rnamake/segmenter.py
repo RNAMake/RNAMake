@@ -5,6 +5,8 @@ import numpy as np
 import pose_factory
 import motif_type
 import structure
+import motif
+import motif_factory
 
 
 class Pair(object):
@@ -183,8 +185,43 @@ class Segmenter(object):
         p = pose_factory.factory.pose_from_motif_tree(struct, basepairs, motifs, {})
         return p
 
+    def _get_motif(self, org_pose, res, bps):
+        copied_res = [r.copy() for r in res]
+        uuids = {r.uuid : r for r in copied_res}
+        chains = []
+        c_res = []
+        for c in org_pose.chains():
+            c_res = []
+            for r in c.residues:
+                if r.uuid in uuids:
+                    c_res.append(uuids[r.uuid])
+                elif len(c_res) > 0:
+                    chains.append(chain.Chain(c_res))
+                    c_res = []
+        if len(c_res) > 0:
+            chains.append(chain.Chain(c_res))
+
+        basepairs = []
+
+        for bp in bps:
+            new_res1 = uuids[bp.res1.uuid]
+            new_res2 = uuids[bp.res2.uuid]
+            new_r = np.copy(bp.bp_state.r)
+            new_bp = basepair.Basepair(new_res1, new_res2, new_r, bp.bp_type)
+            new_bp.uuid = bp.uuid
+            basepairs.append(new_bp)
+
+        m = motif.Motif()
+        m.structure.chains = chains
+
     def _get_segments(self, m, res, bps, cutpoints):
         removed = self._get_pose(m, res[:], bps)
+        cutpoint_name = ""
+        for c in cutpoints:
+            cutpoint_name += c.name + str(c.num) + c.chain_id
+            if c != cutpoints[-1]:
+                cutpoint_name += "-"
+        removed.name = m.name + ".removed." + cutpoint_name
         other_res = cutpoints[:]
         other_bps = []
         for r in m.residues():
@@ -194,6 +231,7 @@ class Segmenter(object):
             if bp.res1 in other_res and bp.res2 in other_res:
                 other_bps.append(bp)
         remaining = self._get_pose(m, other_res, other_bps)
+        remaining.name = m.name + ".remaining." + cutpoint_name
         segments = Segments(remaining, removed)
         return segments
 
