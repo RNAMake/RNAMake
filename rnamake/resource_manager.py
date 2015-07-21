@@ -110,12 +110,13 @@ class ResourceManager(object):
 
         raise ValueError("could not find motif ensemble with id: "+ss_id)
 
-    def get_motif_state_ensemble(self, ss_id):
+    def get_motif_state_ensemble(self, **options):
         for mse_lib in self.mse_libs.itervalues():
-            if mse_lib.contains(ss_id):
-                return mse_lib.get(ss_id)
+            if mse_lib.contains(**options):
+                return mse_lib.get(**options)
 
-        raise ValueError("could not find motif state ensemble with id: "+ss_id)
+        raise ValueError("could not find motif state ensemble with options:"+\
+                         self._args_to_str(options))
 
     def add_motif(self, path):
         m = motif_factory.factory.motif_from_file(path)
@@ -127,6 +128,9 @@ class ResourceManager(object):
             if m_added is None:
                 continue
             self.added_motifs.add_motif(m_added)
+
+    def register_motif(self, m):
+        self.added_motifs.add_motif(m)
 
 
 manager = ResourceManager()

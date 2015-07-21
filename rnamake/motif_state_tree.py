@@ -80,7 +80,7 @@ class MotifStateTree(base.Base):
         avail_pos = self.tree.get_available_pos(parent, parent_end_index)
 
         for p in avail_pos:
-            if p == 0:
+            if p == parent.data.ref_state.block_end_add:
                 continue
 
             n_data = NodeData(state)
@@ -117,7 +117,8 @@ class MotifStateTree(base.Base):
 
         mt = motif_tree.MotifTree(sterics=self.option('sterics'))
         for i, n in enumerate(self.tree.nodes):
-            m = resource_manager.manager.get_motif(n.data.ref_state.name)
+            m = resource_manager.manager.get_motif(name=n.data.ref_state.name,
+                                                   end_id=n.data.ref_state.end_ids[0])
             if i == 0:
                 motif.align_motif(n.data.cur_state.end_states[0],
                                   m.ends[0],

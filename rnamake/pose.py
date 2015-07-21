@@ -43,6 +43,7 @@ class Pose(motif.Motif):
     """
     def __init__(self):
         super(self.__class__, self).__init__()
+        self.block_end_add = -1
         self.designable = {}
         self.motif_dict = {
             motif_type.TWOWAY        : [],
@@ -100,3 +101,6 @@ class Pose(motif.Motif):
         results = designer.design(ss, seq)
         return results[0].sequence
 
+    def to_motif(self):
+        m = super(self.__class__, self).copy()
+        return m

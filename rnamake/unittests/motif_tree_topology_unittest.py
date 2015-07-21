@@ -3,7 +3,7 @@ import random
 import rnamake.sqlite_library as sqlite_library
 import rnamake.motif_tree_topology as motif_tree_topology
 import rnamake.motif_tree as motif_tree
-import rnamake.resource_manager as resource_manager
+import rnamake.resource_manager as rm
 import rnamake.motif_type
 import rnamake.settings as settings
 import rnamake.motif_factory as motif_factory
@@ -11,6 +11,8 @@ import rnamake.secondary_structure as secondary_structure
 import rnamake.ss_tree as ss_tree
 import build
 import rnamake.motif_type as motif_type
+import rnamake.segmenter as segmenter
+import rnamake.pose_factory as pf
 
 class MotifTreeTopologyUnittest(unittest.TestCase):
 
@@ -52,6 +54,30 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
         con = ss.motif_topology_from_end(ss.ends[1])
         mtt = motif_tree_topology.MotifTreeTopology(con)
         mt2 = motif_tree.motif_tree_from_topology_2(mtt, sterics=0)
+
+    def test_redesign(self):
+        s = rnamake.segmenter.Segmenter()
+        path = rnamake.settings.UNITTEST_PATH + "/resources/motifs/p4p6"
+        p = pf.factory.pose_from_file(path)
+        end1 = p.get_basepair(name='A111-A209')[0]
+        end2 = p.get_basepair(name='A118-A203')[0]
+        segments = s.apply(p, [end1, end2])
+        pd = segments.remaining
+        pd.name = "p4p6_frag"
+        rm.manager.register_motif(pd)
+        mt = motif_tree.MotifTree(sterics=0)
+        mt.add_motif(pd)
+        mt.add_motif(rm.manager.get_motif(name='HELIX.IDEAL.6'),
+                     parent_end_name='A111-A209')
+        mt.add_connection(0, 1, 'A118-A203')
+        ss = mt.designable_secondary_structure()
+        self._fill_basepairs_in_ss(ss)
+        con = ss.motif_topology_from_end()
+        mtt = motif_tree_topology.MotifTreeTopology(con)
+        mt2 = motif_tree.motif_tree_from_topology_2(mtt, sterics=0)
+        #print mtt
+        mt2.write_pdbs()
+
 
     def _test_build_mt(self):
         sstree = ss_tree.SS_Tree("(((+)))", "GAG+UUC")

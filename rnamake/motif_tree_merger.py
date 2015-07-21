@@ -96,10 +96,8 @@ class MotifTreeMerger(base.Base):
 
                     basepairs.append(cbp)
 
-
         p = pose_factory.factory.pose_from_motif_tree(new_structure, basepairs,
                                                       motifs, designable)
-
         return p
 
     def _merge_chains_in_node(self, node):
@@ -115,9 +113,12 @@ class MotifTreeMerger(base.Base):
             node_chains    = self._get_chains_from_connection(node, c)
             partner_chains = self._get_chains_from_connection(partner, c)
 
-            # TODO maybe figure out which is a better basepair to remove
-            if partner.data.mtype == motif_type.HELIX:
+            if   node.data.mtype != motif_type.HELIX and \
+                 partner.data.mtype == motif_type.HELIX:
                 merged_chains = self._helix_merge(node_chains, partner_chains)
+            elif node.data.mtype == motif_type.HELIX and \
+                 partner.data.mtype != motif_type.HELIX:
+                merged_chains = self._helix_merge(partner_chains, node_chains)
             else:
                 merged_chains = self._non_helix_merge(node_chains, partner_chains)
             used_chains = node_chains.chains() + partner_chains.chains()
@@ -129,6 +130,7 @@ class MotifTreeMerger(base.Base):
             for c in merged_chains:
                 if c is not None:
                     new_chains.append(c)
+
             self.chains = new_chains
             self._merge_chains_in_node(partner)
 
@@ -139,11 +141,13 @@ class MotifTreeMerger(base.Base):
         elif nc.is_hairpin():
             p3_chain = pc.p3_chain.subchain(0,-1)
             p5_chain = pc.p5_chain.subchain(1)
+
             merged_chain_1 = self._get_merged_hairpin(p3_chain, p5_chain,
                                                       nc.p5_chain)
         elif pc.is_hairpin():
-            merged_chain_1 = self._get_merged_hairpin(nc.p5_chain, nc_p3_chain,
-                                                      pc.p5_chain, 1, 1)
+            p5_chain = pc.p5_chain.subchain(1,-1)
+            merged_chain_1 = self._get_merged_hairpin(nc.p5_chain, nc.p3_chain,
+                                                      p5_chain, 1)
         else:
             merged_chain_1 = self._get_merged_chain(nc.p5_chain, pc.p3_chain,
                                                     1, 1)

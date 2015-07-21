@@ -32,6 +32,7 @@ class MotifTreeTopology(object):
                 else:
                     ss = ssf.ss_id_to_secondary_structure(c[0])
                     conn = ss.motif_topology_from_end(ss.ends[0])
+
                     for j, c2 in enumerate(conn):
                         spl = c2[0].split("_")
                         name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]

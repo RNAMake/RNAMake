@@ -80,6 +80,9 @@ class SecondaryStructureUnittest(unittest.TestCase):
         mt = motif_tree.motif_tree_from_topology(connectivity)
         mt.write_pdbs()
 
+    def test_ss_id_to_ss(self):
+        ss = ssfactory.ss_id_to_secondary_structure('GAUUUGAG_LLLLLLLL_CUCAAAUC_RRRRRRRR')
+
 def main():
     unittest.main()
 

@@ -20,6 +20,8 @@ class SegmenterUnittest(unittest.TestCase):
             segments.remaining.to_pdb("remaining.pdb")
             segments.removed.to_pdb("removed.pdb")
 
+
+
 def main():
     unittest.main()
 

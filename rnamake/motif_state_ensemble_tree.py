@@ -19,7 +19,7 @@ class MotifStateEnsembleTree(object):
         avail_pos = self.tree.get_available_pos(parent, parent_end_index)
 
         for p in avail_pos:
-            if p == 0:
+            if p == parent.data.block_end_add:
                 continue
 
             return self.tree.add_data(ensemble,
@@ -46,26 +46,8 @@ class MotifStateEnsembleTree(object):
         return mst
 
     def _setup_from_mt(self, mt):
-        for i, n in enumerate(mt.nodes):
-            if i == 0:
-                continue
+        pass
 
-            parent_index = n.parent().index
-            parent_end_index = n.parent_end_index()
-            end_index = n.motif_end_index(n.parent())
-
-            if n.motif.name[3] == "=":
-                me = motif_ensemble.MotifEnsemble(n.motif.name)
-            else:
-                mts_name = n.motif.name + "-" + str(end_index)
-                mts = resource_manager.manager.get_state(mts_name)
-                me = mts_to_me(mts)
-
-            node = self.add_ensemble(me, self.nodes[parent_index],
-                                     parent_end_index)
-
-            if node is None:
-                raise ValueError("could not translate motiftree to motifensembletree")
 
     def get_mtst(self):
         mtst = None
@@ -90,6 +72,17 @@ class MotifStateEnsembleTree(object):
                                      tree topology")
                 open_nodes.append(n)
         return mtst
+
+    def __len__(self):
+        return len(self.tree)
+
+    def __iter__(self):
+        self.tree.__iter__()
+        return self
+
+    def next(self):
+        return self.tree.next()
+
 
 
 class MotifEnsembleTreeNode(object):

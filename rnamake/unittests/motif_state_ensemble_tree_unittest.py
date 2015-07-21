@@ -42,11 +42,12 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
     def test_add(self):
         mset = motif_state_ensemble_tree.MotifStateEnsembleTree()
-        mse = rm.manager.get_motif_state_ensemble("GG_LL_CC_RR")
+        mse = rm.manager.get_motif_state_ensemble(name="GG_LL_CC_RR")
         mset.add_ensemble(mse)
         mset.add_ensemble(mse)
-        mst = mset.to_mst()
-        mt = mst.to_motif_tree()
+        print len(mset)
+        #mst = mset.to_mst()
+        #mt = mst.to_motif_tree()
 
 
     def _test_get_mtst(self):

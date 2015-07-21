@@ -21,6 +21,7 @@ class MotifEnsemble(object):
     def __init__(self):
         self.id = ""
         self.members = []
+        self.block_end_add = 0
 
     def setup(self, id, motifs, energies):
         self.id = id
@@ -30,10 +31,12 @@ class MotifEnsemble(object):
             self.members.append(ms)
 
         self.members.sort(key = lambda x : x.energy, reverse=False)
+        self.block_end_add = self.members[0].motif.block_end_add
 
     def copy(self):
         me_copy = MotifEnsemble()
         me_copy.id = self.id
+        me_copy.block_end_add = self.block_end_add
         members = [mem.copy() for mem in self.members]
         me_copy.members = self.members
 
@@ -46,7 +49,7 @@ class MotifEnsemble(object):
         pass
 
     def to_str(self):
-        s = self.id + "{"
+        s = self.id + "{" + str(self.block_end_add) + "{"
         for ms in self.members:
             s += ms.to_str() + "{"
         return s
@@ -82,17 +85,20 @@ class MotifStateEnsemble(object):
     def __init__(self):
         self.id = ""
         self.members = []
+        self.block_end_add = 0
 
     def setup(self, id, motif_states, energies):
         self.id = id
         for i in range(len(motif_states)):
             self.members.append((MotifStateEnsembleMember(motif_states[i], energies[i])))
         self.members.sort(key = lambda x : x.energy, reverse=False)
+        self.block_end_add = self.members[0].motif_state.block_end_add
 
     def copy(self):
         mes_copy = MotifStateEnsemble()
 
         mes_copy.id =self.id
+        mes_copy.block_end_add = self.block_end_add
         members = []
         for mem in self.members:
             members.append(mem.copy())
@@ -101,7 +107,7 @@ class MotifStateEnsemble(object):
         return mes_copy
 
     def to_str(self):
-        s = self.id + "{"
+        s = self.id + "{" + str(self.block_end_add) + "{"
         for ms in self.members:
             s += ms.to_str() + "{"
         return s
@@ -112,6 +118,7 @@ def str_to_motif_ensemble(s):
     spl = s.split("{")
     members = []
     me.id = spl.pop(0)
+    me.block_end_add = int(spl.pop(0))
     for s in spl[:-1]:
         spl2 = s.split("#")
         m = motif.str_to_motif(spl2[0])
@@ -121,11 +128,13 @@ def str_to_motif_ensemble(s):
     me.members = members
     return me
 
+
 def str_to_motif_state_ensemble(s):
     mes = MotifStateEnsemble()
     spl = s.split("{")
     members = []
     mes.id = spl.pop(0)
+    mes.block_end_add = int(spl.pop(0))
     for s in spl[:-1]:
         spl2 = s.split("#")
         m = motif.str_to_motif_state(spl2[0])

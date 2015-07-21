@@ -214,10 +214,15 @@ class SecondaryStructure(SecondaryStructureMotif):
         return id
 
     def motif_topology_from_end(self, end=None):
-        if end is None:
-            end = ss.ends[0]
-
         elements = self.motifs('ALL')
+        if end is None and len(self.ends) != 0:
+            end = self.ends[0]
+        elif end is None and len(self.ends) == 0:
+            for m in elements:
+                if len(m.ends) > 0:
+                    end = m.ends[0]
+                    break
+
 
         seen_e = {}
         seen_ends = {}
