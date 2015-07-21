@@ -254,8 +254,8 @@ class BuildSqliteLibraries(object):
         #sqlite_library.build_sqlite_library(path, motif_arrays, motif_array_names)
 
     def build_ss_and_seq_libraries(self):
-        #libnames = ["twoway", "tcontact", "hairpin", "nway"]
-        libnames = ["twoway"]
+        libnames = ["twoway", "tcontact", "hairpin", "nway"]
+        #libnames = ["twoway"]
 
         for libname in libnames:
             mlib = sqlite_library.MotifSqliteLibrary(libname)
@@ -281,7 +281,10 @@ class BuildSqliteLibraries(object):
                     clusters.append(SSandSeqCluster(m.end_ids[0]))
                     clusters[-1].motif_matches_end(m, 0)
 
-            for c in clusters:
+            keys = ['data', 'name', 'id']
+            data = []
+
+            for i, c in enumerate(clusters):
 
                 all_motifs = []
                 for m_e in c.motif_and_ends:
@@ -306,24 +309,16 @@ class BuildSqliteLibraries(object):
 
                 me = motif_ensemble.MotifEnsemble()
                 me.setup(c.end_id, clustered_motifs, energies)
-                mes.append(me)
-                motifs.append(me.members[0].motif)
-                motifs[-1].name = me.id
-                mes_names.append(me.id)
+                data.append([me.to_str(), me.id, i])
 
             print libname, len(mlib.all()), len(clusters)
 
             path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/"+libname+".db"
-            sqlite_library.build_sqlite_library(path, mes, mes_names)
-
-            path = settings.RESOURCES_PATH +"/motif_libraries_new/ss_"+libname+".db"
-            sqlite_library.build_sqlite_library(path, motifs, mes_names)
+            sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
     def build_motif_ensemble_state_libraries(self):
 
         for libname in sqlite_library.MotifEnsembleSqliteLibrary.get_libnames().keys():
-            if libname != "bp_steps":
-                continue
 
             me_lib = sqlite_library.MotifEnsembleSqliteLibrary(libname)
             me_lib.load_all()
@@ -331,8 +326,6 @@ class BuildSqliteLibraries(object):
             keys = ['data', 'name', 'id']
             data = []
 
-            mses = []
-            names = []
             for i, me in enumerate(me_lib.all()):
                 mse = me.get_state()
                 data.append([mse.to_str(), mse.id, i])
@@ -343,7 +336,7 @@ class BuildSqliteLibraries(object):
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
 #builder.build_basic_libraries()
-builder.build_helix_ensembles()
+#builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()
