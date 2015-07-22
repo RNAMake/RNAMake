@@ -1,5 +1,6 @@
 import tree
 import motif_state_tree
+import motif_ensemble
 import resource_manager as rm
 
 
@@ -52,9 +53,9 @@ class MotifStateEnsembleTree(object):
             try:
                 mse = rm.manager.get_motif_state_ensemble(name=n.data.end_ids[0])
             except ValueError:
-                m = rm.manager.get_motif(name=n.data.name, end_name=n.data.end_ids[0])
-                print m
-                exit()
+                m = rm.manager.get_motif(name=n.data.name, end_id=n.data.end_ids[0])
+                mse = motif_ensemble.motif_state_to_motif_state_ensemble(m.get_state())
+
             if i == 0:
                 self.add_ensemble(mse)
             else:

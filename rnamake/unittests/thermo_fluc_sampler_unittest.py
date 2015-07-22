@@ -54,7 +54,16 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         con = ss.motif_topology_from_end()
         mtt = motif_tree_topology.MotifTreeTopology(con)
         mt2 = motif_tree.motif_tree_from_topology_2(mtt, sterics=0)
-        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
+
+        ni_1 = 0
+        ei_1 = 0
+        ni_2 = mt2.last_node().index
+        ei_2 = 1
+        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt2)
+
+        relaxer = rnamake.thermo_fluc_sampler.ThermoFlucRelax()
+        relaxer.run(mset, ni_1, ni_2, ei_1, ei_2)
+        relaxer.write_pdbs()
 
 
 

@@ -115,6 +115,7 @@ class MotifStateEnsemble(object):
     def get_random_member(self):
         return random.choice(self.members)
 
+
 def str_to_motif_ensemble(s):
     me = MotifEnsemble()
     spl = s.split("{")
@@ -145,3 +146,9 @@ def str_to_motif_state_ensemble(s):
         members.append(ms)
     mes.members = members
     return mes
+
+
+def motif_state_to_motif_state_ensemble(ms):
+    mse = MotifStateEnsemble()
+    mse.setup(ms.end_ids[0], [ms], [1])
+    return mse
