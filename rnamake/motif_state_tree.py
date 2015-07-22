@@ -3,7 +3,7 @@ import option
 import motif
 import motif_tree
 import tree
-import resource_manager
+import resource_manager as rm
 import util
 import settings
 import basic_io
@@ -43,9 +43,10 @@ class MotifStateTree(base.Base):
         self.constraints = {}
 
     def _setup_from_mt(self, mt):
-        for i, n in enumerate(mt.tree.nodes):
+        for i, n in enumerate(mt.graph.nodes):
+            ms = rm.manager.get_state(name=n.data.name, end_id=n.data.end_ids[0])
             if i == 0:
-                self.add_state(resource_manager.manager.get_state(n.data.name))
+                self.add_state(ms)
             else:
                 parent_index = 1000
                 parent_end_index = -1
@@ -58,8 +59,7 @@ class MotifStateTree(base.Base):
 
                 if parent_index == 1000:
                     raise ValueError("did not convert motif tree to motif state tree properly")
-                j = self.add_state(resource_manager.manager.get_state(n.data.name),
-                                   parent_index, parent_end_index)
+                j = self.add_state(ms, parent_index, parent_end_index)
                 if j == -1:
                     raise ValueError("could not convert motif tree to motif state tree")
 
@@ -117,10 +117,10 @@ class MotifStateTree(base.Base):
         mt = motif_tree.MotifTree(sterics=self.option('sterics'))
         for i, n in enumerate(self.tree.nodes):
             if n.data.ref_state.name != "":
-                m = resource_manager.manager.get_motif(name=n.data.ref_state.name,
-                                                       end_id=n.data.ref_state.end_ids[0])
+                m = rm.manager.get_motif(name=n.data.ref_state.name,
+                                         end_id=n.data.ref_state.end_ids[0])
             else:
-                m = resource_manager.manager.get_motif(end_id=n.data.ref_state.end_ids[0])
+                m = rm.manager.get_motif(end_id=n.data.ref_state.end_ids[0])
 
             if i == 0:
                 motif.align_motif(n.data.cur_state.end_states[0],
@@ -200,6 +200,15 @@ class MotifStateTree(base.Base):
     def next(self):
         return self.tree.next()
 
+    def topology_to_str(self):
+        s = ""
+        for n in self.tree.nodes:
+            s += n.data.ref_state.name + "," + n.data.ref_state.end_ids[0] + "," + \
+                 str(n.parent_index()) + "," + str(n.parent_end_index())  +  " "
+        s += "|"
+        for c in self.connections:
+            s += str(c.i) + "," + str(c.j) + "," + c.end_name
+        return s
 
 class NodeData(object):
     def __init__(self, ref_state):

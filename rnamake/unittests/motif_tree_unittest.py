@@ -82,17 +82,27 @@ class MotifTreeUnittest(unittest.TestCase):
         mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
                                           end_name="A228-A246"))
 
-        mt.write_pdbs("org")
         ss = mt.designable_secondary_structure()
         build.fill_basepairs_in_ss(ss)
-        p = mt.to_pose()
         conn =  ss.motif_topology_from_end(ss.ends[0])
         mtt = motif_tree_topology.MotifTreeTopology(conn)
-        #for n in mtt.tree:
-        #    print n.data.motif_name, n.data.parent_end_ss_id
-        mt2 = motif_tree.motif_tree_from_topology_2(mtt)
+        mt2 = motif_tree.motif_tree_from_topology(mtt)
         mt2.write_pdbs()
 
+    def test_update_sequence(self):
+        rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
+        mt = motif_tree.MotifTree()
+        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
+                                          end_name="A228-A246"))
+        mt.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.20"), parent_end_name="A221-A252")
+        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
+                                          end_name="A228-A246"))
+
+
+        ss = mt.designable_secondary_structure()
+        build.fill_basepairs_in_ss(ss)
+        mt2 = motif_tree.update_sequence(mt, ss)
+        mt2.write_pdbs()
 
 
 

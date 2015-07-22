@@ -36,36 +36,6 @@ class ResidueUnittest(unittest.TestCase):
         except:
             self.fail("cannot creat Residue object sucessfully")
 
-    def test_setup_atoms_log1(self):
-        """
-        first tests in logging, make sure that
-        """
-        gtype = rnamake.residue_type.get_rtype("GUA")
-        res = rnamake.residue.Residue(gtype, "GUA", 1, "A")
-        atom_names = gtype.atom_map.keys()
-        atoms = [
-            rnamake.atom.Atom(name, np.array([0, 1, 2]))
-            for name in atom_names]
-        atom1 = rnamake.atom.Atom("H1", np.array([0, 1, 2]))
-        atoms.append(atom1)
-        output = util.get_log_output(res.setup_atoms, atoms)
-        expected = "H1 not included in <Residue('GUA1 chain A')>"
-        if output != expected:
-            self.fail("Did not get expected logging information")
-
-    def test_setup_atoms_log2(self):
-        gtype = rnamake.residue_type.get_rtype("GUA")
-        res = rnamake.residue.Residue(gtype, "GUA", 1, "A")
-        atom_names = gtype.atom_map.keys()
-        atoms = [
-            rnamake.atom.Atom(name, np.array([0, 1, 2]))
-            for name in atom_names]
-        atoms.pop()
-        output = util.get_log_output(res.setup_atoms, atoms)
-        expected = "O3' is undefined in <Residue('GUA1 chain A')>"
-        if output != expected:
-            self.fail()
-
     def test_get_atom(self):
         gtype = rnamake.residue_type.get_rtype("GUA")
         res = rnamake.residue.Residue(gtype, "GUA", 1, "A")

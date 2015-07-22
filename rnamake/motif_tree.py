@@ -10,43 +10,9 @@ import graph
 import resource_manager as rm
 import secondary_structure_factory as ssfactory
 import secondary_structure
+import motif_tree_topology
 
-def motif_tree_from_topology(connectivty):
-    mt = MotifTree()
-    offset = 0
-    for c in connectivty:
-        motifs = []
-        if c.m_name != "":
-            if c.m_name[0:5] != "HELIX":
-                motifs = [rm.manager.get_motif(c.m_name)]
-            else:
-                ss = ssfactory.ss_id_to_secondary_structure(c.ss_id)
-                for bp_step in ss.motifs('BP_STEP'):
-                    id =  secondary_structure.assign_end_id(bp_step, bp_step.ends[0])
-                    motifs.append(rm.manager.get_motif(id))
-        else:
-            motifs = [rm.manager.get_motif(c.ss_id)]
-
-        if c.parent_pos == -1:
-            for m in motifs:
-                mt.add_motif(m)
-        else:
-            n = mt.get_node(c.parent_pos+offset)
-            parent_end_index = n.data.end_index_with_id(c.parent_ss_id)
-            for j, m in enumerate(motifs):
-                if j == 0:
-                    mt.add_motif(m, parent_index=c.parent_pos+offset,
-                                 parent_end_index=parent_end_index)
-                else:
-                    mt.add_motif(m)
-
-        if len(motifs) > 1:
-            offset += (len(motifs)-1)
-
-    return mt
-
-
-def motif_tree_from_topology_2(mtt, sterics=1):
+def motif_tree_from_topology(mtt, sterics=1):
     mt = MotifTree(sterics=sterics)
     for i, n in enumerate(mtt.tree.nodes):
         #print n.data.motif_name, n.data.parent_end_ss_id
@@ -65,6 +31,11 @@ def motif_tree_from_topology_2(mtt, sterics=1):
                 raise ValueError("was unable to build motiftree from topology")
 
     return mt
+
+def update_sequence(mt, ss, end=None):
+    conn = ss.motif_topology_from_end(end)
+    mtt = motif_tree_topology.MotifTreeTopology(conn)
+    return motif_tree_from_topology(mtt)
 
 
 class MotifTree(base.Base):

@@ -59,8 +59,7 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mt.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.20"), parent_end_name="A221-A252")
         mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
                                           end_name="A228-A246"))
-        mt.write_pdbs("org")
-        p = mt.to_pose()
+
         ss = p.designable_secondary_structure()
         build.fill_basepairs_in_ss(ss)
 

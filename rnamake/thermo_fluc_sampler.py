@@ -103,3 +103,5 @@ class ThermoFlucRelax(base.Base):
 
     def write_pdbs(self):
         self.sampler.mst.write_pdbs()
+
+
