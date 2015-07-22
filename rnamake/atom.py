@@ -57,7 +57,7 @@ class Atom(object):
         .. code-block:: python
             >>>atom = rnamake.atom.Atom("H1", np.array([0, 1, 2]))
             >>>string = atom.to_str()
-            "H1 0 1 2"
+            "H1 0.0 1.0 2.0"
         """
         return self.name + " " + basic_io.point_to_str(self.coords)
 

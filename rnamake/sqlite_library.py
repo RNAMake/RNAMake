@@ -113,6 +113,7 @@ class SqliteLibrary(object):
         else:
             return 1
 
+
 class MotifSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
         super(MotifSqliteLibrary, self).__init__()
@@ -257,8 +258,8 @@ class MotifStateSqliteLibrary(SqliteLibrary):
             "ideal_helices" :  "/motif_state_libraries/ideal_helices.db",
             "twoway"        :  "/motif_state_libraries/twoway.db",
             "unique_twoway" :  "/motif_state_libraries/unique_twoway.db",
-            "ss_bp_steps"   :  "/motif_state_libraries/ss_bp_steps.db",
-            "ss_twoway"     :  "/motif_state_libraries/ss_twoway.db",
+            "bp_steps"   :  "/motif_state_libraries/bp_steps.db",
+            "twoway"     :  "/motif_state_libraries/twoway.db",
             "nway"          :  "/motif_state_libraries/nway.db",
 
         }

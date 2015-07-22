@@ -38,14 +38,13 @@ class AtomUnittest(unittest.TestCase):
         if diff < 0.1:
             self.fail()
 
-
     def test_to_str(self):
         """
         tests whether to_str() formats data correctly
         """
         atom = rnamake.atom.Atom("H1", np.array([0, 1, 2]))
         string = atom.to_str()
-        if string != "H1 0 1 2":
+        if string != "H1 0.0 1.0 2.0":
             print string
             self.fail("did not get correct string")
 

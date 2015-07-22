@@ -2,6 +2,11 @@ import unittest
 
 testmodules = [
     'atom_unittest',
+    'base_unittest',
+    'chain_unittest',
+    'residue_unittest',
+    'residue_type_unittest',
+    #'x3dna_unittest'
     ]
 
 suite = unittest.TestSuite()
@@ -14,7 +19,6 @@ for t in testmodules:
         suite.addTest(suitefn())
     except (ImportError, AttributeError):
         # else, just load all the test cases from the module.
-        print unittest.defaultTestLoader.loadTestsFromName(t)._tests[0]
         suite.addTest(unittest.defaultTestLoader.loadTestsFromName(t))
 
 unittest.TextTestRunner().run(suite)

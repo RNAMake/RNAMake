@@ -63,7 +63,12 @@ class MotifStateTreeUnittest(unittest.TestCase):
         results = designer.design(ss.dot_bracket(), ss.sequence())
         ss.replace_sequence(results[0].sequence)
         connectivity = ss.motif_topology_from_end(ss.ends[0])
-        mst_2 = motif_state_tree.motif_state_tree_from_topology(connectivity)
+
+    def test_topology_to_str(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build()
+        mst = motif_state_tree.MotifStateTree(mt)
+        print len(mst)
 
     def _test_to_mt(self):
         builder = build.BuildMotifTree()

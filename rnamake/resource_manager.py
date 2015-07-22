@@ -78,7 +78,6 @@ class ResourceManager(object):
                                                                m.ends[0].name())
             raise ValueError(s)
 
-
         raise ValueError("cannot find motif: " + self._args_to_str(options))
 
     def _args_to_str(self, options):
@@ -97,16 +96,13 @@ class ResourceManager(object):
 
         raise ValueError("cannot find motif")
 
-    def get_state(self, ms_name, end_name=None):
-        if end_name is not None:
-            ms_name = ms_name + "-" + end_name
+    def get_state(self, **options):
+        for me_lib in self.ms_libs.values():
+            if me_lib.contains(**options):
+                return me_lib.get(**options)
 
-        for ms_lib in self.ms_libs.itervalues():
-            if ms_lib.contains(ms_name):
-                return ms_lib.get(ms_name)
-
-        if ms_name in self.extra_motifs:
-            return self.extra_motifs[ms_name].get_state()
+        if self.added_motifs.contains(**options):
+            return self.added_motifs.get(**options).get_state()
 
         raise ValueError("cannot find mts: "+ ms_name)
 
@@ -145,9 +141,6 @@ class ResourceManager(object):
                 end_id = end_ids[end.uuid]
                 m.end_ids[i] = end_id
             self.added_motifs.add_motif(m)
-
-
-
 
     def register_motif(self, m):
         self.added_motifs.add_motif(m)

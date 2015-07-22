@@ -172,11 +172,6 @@ class Residue(object):
             index = self.rtype.atom_map[atom_name]
             return self.atoms[index]
         except KeyError:
-            logger.critical(
-                "cannot find atom " +
-                atom_name +
-                "in " +
-                repr(self))
             raise KeyError("cannot find atom")
 
     def short_name(self):
