@@ -205,11 +205,13 @@ class StructureSecondaryFactory(object):
             for bp in ss.basepairs:
                 if bp.res1 in res and bp.res2 in res:
                     bps.append(bp)
-
             e.basepairs = bps
             if type_name not in elements:
                 elements[type_name] = []
-
+            end_ids = []
+            for end in e.ends:
+                end_ids.append(secondary_structure.assign_end_id(e, end))
+            e.end_ids = end_ids
             elements[type_name].append(e)
             elements['ALL'].append(e)
         return elements

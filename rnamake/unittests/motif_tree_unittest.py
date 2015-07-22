@@ -81,21 +81,11 @@ class MotifTreeUnittest(unittest.TestCase):
         mt.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.20"), parent_end_name="A221-A252")
         mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
                                           end_name="A228-A246"))
+
         mt.write_pdbs("org")
+        ss = mt.designable_secondary_structure()
+        build.fill_basepairs_in_ss(ss)
         p = mt.to_pose()
-        ss = p.designable_secondary_structure()
-        for ss_r in ss.residues():
-            r = p.get_residue(uuid=ss_r.uuid)
-            if r is None:
-                self.fail("did nto copy secondary structure properly")
-
-        pairs = ["AU", "UA", "GC", "CG"]
-        for bp in ss.basepairs:
-            if bp.res1.name == "N" and bp.res2.name == "N":
-                p = random.choice(pairs)
-                bp.res1.name = p[0]
-                bp.res2.name = p[1]
-
         conn =  ss.motif_topology_from_end(ss.ends[0])
         mtt = motif_tree_topology.MotifTreeTopology(conn)
         #for n in mtt.tree:

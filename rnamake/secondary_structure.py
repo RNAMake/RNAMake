@@ -246,10 +246,13 @@ class SecondaryStructure(SecondaryStructureMotif):
         pos = 0
         indexed_e = {}
 
+
         while not queue.empty():
 
             current_e, current_end, parent_pos = queue.get()
-            ss_id = assign_end_id(current_e, current_end)
+            #ss_id = assign_end_id(current_e, current_end)
+            i = current_e.ends.index(current_end)
+            ss_id = current_e.end_ids[i]
             seen_e[current_e] = pos
             indexed_e[pos] = current_e
 
@@ -346,6 +349,7 @@ class SecondaryStructure(SecondaryStructureMotif):
         m_copy = SecondaryStructureMotif(m.type, ends, new_chains)
         m_copy.basepairs = basepairs
         m_copy.name = m.name
+        m_copy.end_ids = m.end_ids
         return m_copy
 
     def replace_sequence(self, seq):
@@ -525,7 +529,7 @@ def assign_end_id(ss, end):
         seq = ""
 
 
-        best_score = 0
+        best_score = -1
 
         for c in all_chains:
             score = 0

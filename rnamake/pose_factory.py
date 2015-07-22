@@ -145,13 +145,15 @@ class PoseFactory(object):
                 if ss_bp is None:
                     continue
                 ss_bps.append(ss_bp)
-            for end in m.ends:
+            ss_end_ids = []
+            for i, end in enumerate(m.ends):
                 res1 = ss.get_residue(uuid=end.res1.uuid)
                 res2 = ss.get_residue(uuid=end.res2.uuid)
                 new_bp = ss.get_bp(res1, res2)
                 if new_bp is None:
                     raise ValueError("cannot find ss end")
                 ss_ends.append(new_bp)
+                ss_end_ids.append(m.end_ids[i])
 
             type = motif_type.type_to_str(m.mtype)
             ss_motif = secondary_structure.SecondaryStructureMotif(type, ss_ends, ss_chains)
@@ -159,6 +161,7 @@ class PoseFactory(object):
             if type not in ss.elements:
                 ss.elements[type] = []
             ss_motif.name = m.name
+            ss_motif.end_ids = ss_end_ids
             ss.elements[type].append(ss_motif)
             ss.elements['ALL'].append(ss_motif)
 
@@ -239,6 +242,8 @@ class PoseFactory(object):
             m_copy.basepairs = bps
             m_copy.ends = motif_factory.factory._setup_basepair_ends(m_copy.structure, bps)
             motif_factory.factory._setup_secondary_structure(m_copy)
+            if m_copy.mtype is not motif_type.HELIX:
+                m_copy.end_ids = m.end_ids
             p.motif_dict[m_copy.mtype].append(m_copy)
             p.motif_dict[motif_type.ALL].append(m_copy)
 

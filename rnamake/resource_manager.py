@@ -70,7 +70,14 @@ class ResourceManager(object):
             return self.added_motifs.get(**options)
 
         if 'name' in options:
-            pass
+            motifs = self.get_motif_multi(name=options['name'])
+            s = "cannot find motif: " + self._args_to_str(options)  + "\n"
+            s += "here are the available options: \n"
+            for m in motifs:
+                s += "name: %s, end_id: %s, end_name: %s\n" % (m.name, m.end_ids[0],
+                                                               m.ends[0].name())
+            raise ValueError(s)
+
 
         raise ValueError("cannot find motif: " + self._args_to_str(options))
 
@@ -120,6 +127,8 @@ class ResourceManager(object):
 
     def add_motif(self, path):
         m = motif_factory.factory.motif_from_file(path)
+        motifs = []
+        end_ids = {}
         for i in range(len(m.ends)):
             m_added = motif_factory.factory.can_align_motif_to_end(m, i)
             if m_added is None:
@@ -127,7 +136,18 @@ class ResourceManager(object):
             m_added = motif_factory.factory.align_motif_to_common_frame(m_added, i)
             if m_added is None:
                 continue
-            self.added_motifs.add_motif(m_added)
+            motifs.append(m_added)
+            end_ids[m_added.ends[0].uuid] = m_added.end_ids[0]
+
+        #fix minor changes between ids
+        for m in motifs:
+            for i, end in enumerate(m.ends):
+                end_id = end_ids[end.uuid]
+                m.end_ids[i] = end_id
+            self.added_motifs.add_motif(m)
+
+
+
 
     def register_motif(self, m):
         self.added_motifs.add_motif(m)

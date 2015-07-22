@@ -49,7 +49,12 @@ class MotifStateEnsembleTree(object):
 
     def _setup_from_mt(self, mt):
         for i, n in enumerate(mt.graph.nodes):
-            mse = rm.manager.get_motif_state_ensemble(name=n.data.end_ids[0])
+            try:
+                mse = rm.manager.get_motif_state_ensemble(name=n.data.end_ids[0])
+            except ValueError:
+                m = rm.manager.get_motif(name=n.data.name, end_name=n.data.end_ids[0])
+                print m
+                exit()
             if i == 0:
                 self.add_ensemble(mse)
             else:
@@ -75,4 +80,7 @@ class MotifStateEnsembleTree(object):
 
     def next(self):
         return self.tree.next()
+
+    def get_node(self, i):
+        return self.tree.get_node(i)
 

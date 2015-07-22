@@ -45,8 +45,8 @@ class MotifEnsemble(object):
     def most_populated_state(self):
         pass
 
-    def get_random_state(self):
-        pass
+    def get_random_member(self):
+        return random.choice(self.members)
 
     def to_str(self):
         s = self.id + "{" + str(self.block_end_add) + "{"
@@ -112,6 +112,8 @@ class MotifStateEnsemble(object):
             s += ms.to_str() + "{"
         return s
 
+    def get_random_member(self):
+        return random.choice(self.members)
 
 def str_to_motif_ensemble(s):
     me = MotifEnsemble()
