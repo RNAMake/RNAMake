@@ -68,8 +68,7 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mtt = motif_tree_topology.MotifTreeTopology(conn)
         mt2 = motif_tree.motif_tree_from_topology_2(mtt)
 
-        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
-
+        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt2)
 
 
 

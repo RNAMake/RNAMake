@@ -217,7 +217,7 @@ class BasepairState(object):
     def diff(self, state):
         diff  = util.distance(self.d, state.d)
         diff += self._rot_diff(state)
-        diff += self._sugar_diff(state)
+        #diff += self._sugar_diff(state)
         return diff
 
     def _rot_diff(self, state):
