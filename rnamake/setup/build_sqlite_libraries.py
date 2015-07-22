@@ -168,6 +168,7 @@ class BuildSqliteLibraries(object):
         motif_keys = ['data', 'name', 'end_name', 'end_id', 'id']
         count = 0
         for c in clusters:
+            spl = c.end_id.split("_")
             aligned_motifs = []
             for i, m_and_e in enumerate(c.motif_and_ends):
                 m, ei = m_and_e.motif, m_and_e.end_index
@@ -180,7 +181,12 @@ class BuildSqliteLibraries(object):
             clustered_motifs = []
             energies = []
             for j, c_motifs in enumerate(m_clusters):
-                clustered_motifs.append(c_motifs.motifs[0])
+                m = c_motifs.motifs[0]
+                m.name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0] + "." + str(j)
+                motif_data.append([m.to_str(), m.name, m.ends[0].name(), c.end_id, count])
+                count += 1
+                clustered_motifs.append(m)
+
                 pop = float(len(c_motifs.motifs)) / float(len(aligned_motifs))
                 energy = -kBT*math.log(pop)
                 energies.append(energy)
@@ -190,7 +196,6 @@ class BuildSqliteLibraries(object):
             mes_data.append([me.to_str(), me.id, count])
 
             motif = me.members[0].motif
-            spl = me.id.split("_")
             motif.name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
 
             motif_data.append([motif.to_str(), motif.name, motif.ends[0].name(),
@@ -336,7 +341,7 @@ class BuildSqliteLibraries(object):
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
 #builder.build_basic_libraries()
-#builder.build_helix_ensembles()
+builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()

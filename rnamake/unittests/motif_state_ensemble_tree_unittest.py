@@ -46,7 +46,31 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
     def test_setup_from_mt_2(self):
         builder = build.BuildMotifTree()
-        mt = builder.build()
+        mt = builder.build_no_ideal_helices()
+        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
+        mst = mset.to_mst()
+        #mst.write_pdbs()
+
+    def test_setup_from_mt_3(self):
+        rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
+        mt = motif_tree.MotifTree()
+        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
+                                          end_name="A228-A246"))
+        mt.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.20"), parent_end_name="A221-A252")
+        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
+                                          end_name="A228-A246"))
+        mt.write_pdbs("org")
+        p = mt.to_pose()
+        ss = p.designable_secondary_structure()
+        build.fill_basepairs_in_ss(ss)
+
+        conn =  ss.motif_topology_from_end(ss.ends[0])
+        mtt = motif_tree_topology.MotifTreeTopology(conn)
+        mt2 = motif_tree.motif_tree_from_topology_2(mtt)
+
+        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
+
+
 
 
 
