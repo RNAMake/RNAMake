@@ -1,5 +1,6 @@
 import unittest
 import build
+import numpy as np
 import rnamake.sqlite_library as sqlite_library
 import rnamake.secondary_structure
 import rnamake.motif_factory as motif_factory
@@ -137,18 +138,16 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
     def test_end_orientation(self):
         mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
-        mlib.load_all(10)
+        mlib.load_all()
 
         for i,m in enumerate(mlib.all()):
-            pass
-            #for c in m.chains():
-            #    if c.first() == m.ends[0].res2:
-            #        m.ends[0].res1, m.ends[0].res2 = m.ends[0].res2, m.ends[0].res1
-            #print util.center(m.ends[0].res1.atoms), m.ends[0].res1
-
-            #m.to_pdb("motif."+str(i)+'.pdb')
-
-
+            res = m.residues()
+            vec1 = res[0].get_atom("C2'").coords - res[0].get_atom("O4'").coords
+            vec2 = res[-1].get_atom("C2'").coords - res[-1].get_atom("O4'").coords
+            result = np.dot(vec1, vec2)
+            if result > 2:
+                print i, result
+                m.to_pdb("motif."+str(i)+".pdb")
 
 
 def main():

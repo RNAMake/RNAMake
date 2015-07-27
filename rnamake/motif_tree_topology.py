@@ -40,14 +40,15 @@ class MotifTreeTopology(object):
                     num = 0
                 new_c.size = num
 
-            new_c.end_pos = new_c.start_pos + new_c.size
             if i == 0:
+                new_c.end_pos = new_c.start_pos + new_c.size
                 new_conn_nodes.append(new_c)
                 continue
             parent = new_conn_nodes[c.parent_index]
 
             new_c.parent_index = parent.end_pos
             new_c.start_pos = new_conn_nodes[-1].start_pos + new_conn_nodes[-1].size + 1
+            new_c.end_pos = new_c.start_pos + new_c.size
 
             new_conn_nodes.append(new_c)
 

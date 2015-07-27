@@ -1,5 +1,4 @@
 import unittest
-#motif_state_ensemble_tree_unittest.py
 
 testmodules = [
     'atom_unittest',
@@ -14,6 +13,7 @@ testmodules = [
     'motif_scorer_unittest',
     'motif_state_search_unittest',
     'motif_state_selector_unittest',
+    'motif_state_ensemble_tree_unittest',
     'motif_state_tree_unittest',
     'motif_tree_unittest',
     'motif_tree_topology_unittest',

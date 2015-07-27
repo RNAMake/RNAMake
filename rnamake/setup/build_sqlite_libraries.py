@@ -9,6 +9,7 @@ import rnamake.settings as settings
 import rnamake.sqlite_library as sqlite_library
 import math
 import subprocess
+import numpy as np
 
 def test_align():
     mlib = sqlite_library.MotifLibrarySqlite(libname="ideal_helices")
@@ -139,6 +140,7 @@ class BuildSqliteLibraries(object):
                 if m.basepairs[i].bp_type != "cW-W" or m.basepairs[i+1].bp_type != "cW-W":
                     continue
                 bps = [m.basepairs[i], m.basepairs[i+1]]
+
                 res = []
                 for bp in bps:
                     for r in bp.residues():
@@ -176,6 +178,18 @@ class BuildSqliteLibraries(object):
                 if m_a is None:
                     continue
                 m_a = motif_factory.factory.align_motif_to_common_frame(m_a, ei)
+
+                #catch basepairs that have 5' - 5' interactions or 3' - 3'
+                fail = 0
+                for bp in m_a.basepairs:
+                    vec1 = bp.res1.get_atom("C2'").coords - bp.res1.get_atom("O4'").coords
+                    vec2 = bp.res2.get_atom("C2'").coords - bp.res2.get_atom("O4'").coords
+                    if np.dot(vec1, vec2) > 2:
+                        fail = 1
+                        break
+                if fail:
+                    continue
+
                 aligned_motifs.append(m_a)
             m_clusters = cluster.cluster_motifs(aligned_motifs)
             clustered_motifs = []
@@ -340,11 +354,11 @@ class BuildSqliteLibraries(object):
             sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
 builder = BuildSqliteLibraries()
-builder.build_ideal_helices()
-builder.build_basic_libraries()
-builder.build_helix_ensembles()
-builder.build_ss_and_seq_libraries()
-builder.build_unique_twoway_library()
+#builder.build_ideal_helices()
+#builder.build_basic_libraries()
+#builder.build_helix_ensembles()
+#builder.build_ss_and_seq_libraries()
+#builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
 builder.build_motif_ensemble_state_libraries()
 

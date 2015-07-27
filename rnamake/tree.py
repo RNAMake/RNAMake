@@ -20,7 +20,6 @@ class Tree(object):
 
         #iterator stuff
         self.current_node = None
-        self.queue = Queue.Queue()
 
     def get_node(self, index):
         for n in self.nodes:
@@ -50,7 +49,7 @@ class Tree(object):
         while 1:
             removed = 0
             for n in nodes:
-                if n.level >= level:
+                if n.level == level:
                     self.remove_node(n)
                     removed = 1
                     break
@@ -63,24 +62,18 @@ class Tree(object):
 
     def __iter__(self):
         self.current_node = self.get_node(0)
-        while not self.queue.empty():
-            self.queue.get()
         return self
 
     def next(self):
         if self.current_node is None:
             raise StopIteration
 
-        for c in self.current_node.children:
-            if c is not None:
-                self.queue.put(c)
-
         node = self.current_node
 
-        if self.queue.empty():
+        if len(self.nodes)-1 == node.index:
             self.current_node = None
         else:
-            self.current_node = self.queue.get()
+            self.current_node = self.nodes[node.index + 1]
 
         return node
 

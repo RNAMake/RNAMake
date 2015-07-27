@@ -31,31 +31,18 @@ class Graph(object):
 
     def __iter__(self):
         self.current_node = self.get_node(0)
-        while not self.queue.empty():
-            self.queue.get()
-        self.seen = {}
-        #self.seen[self.current_node] = 1
         return self
 
     def next(self):
         if self.current_node is None:
             raise StopIteration
-        self.seen[self.current_node] = 1
-
-        for c in self.current_node.connections:
-            if c is None:
-                continue
-            partner = c.partner(self.current_node.index)
-            if partner in self.seen:
-                continue
-
-            self.queue.put(partner)
 
         node = self.current_node
-        if self.queue.empty():
+
+        if len(self.nodes)-1 == node.index:
             self.current_node = None
         else:
-            self.current_node = self.queue.get()
+            self.current_node = self.nodes[node.index + 1]
 
         return node
 
