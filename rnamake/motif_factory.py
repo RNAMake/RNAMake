@@ -184,6 +184,17 @@ class MotifFactory(object):
             if end != closest:
                 updated_ends.append(end)
 
+        for i, end in enumerate(updated_ends):
+            flip_res = 0
+            for c in m.chains():
+                if c.first() == end.res2:
+                    flip_res = 1
+                    break
+
+            if flip_res:
+                updated_ends[i].res1,updated_ends[i].res2 = \
+                    updated_ends[i].res2,updated_ends[i].res1
+
         m.ends = updated_ends
 
     def _setup_secondary_structure(self, m):

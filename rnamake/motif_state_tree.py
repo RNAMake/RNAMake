@@ -7,23 +7,37 @@ import resource_manager as rm
 import util
 import settings
 import basic_io
+import motif_tree_topology
 from collections import namedtuple
 
 MotifStateConnection = namedtuple('MotifSTateConnection', 'i j end_name')
 
-def motif_state_tree_from_topology(connectivty):
-    mst = MotifStateTree()
-    for c in connectivty:
-        state = resource_manager.manager.get_state(c[0])
-        if c[2] == -1:
-            mst.add_state(state)
+def motif_state_tree_from_topology(mtt, sterics=1):
+    mst = MotifStateTree(sterics=sterics)
+    for i, n in enumerate(mtt.tree.nodes):
+        if n.data.motif_name != "":
+            ms = rm.manager.get_state(name=n.data.motif_name,
+                                     end_id=n.data.end_ss_id)
         else:
-            n = mst.get_node(c[2])
-            parent_end_index = n.data.cur_state.end_index_with_id(c[1])
-            i = mst.add_state(state, c[2], parent_end_index)
-            if i == -1:
-                raise ValueError("could not build motif state tree from topology")
+            ms = rm.manager.get_state(end_id=n.data.end_ss_id)
+        if i == 0:
+            mst.add_state(ms)
+        else:
+            n_parent = mst.get_node(n.parent_index())
+            end_id = n.data.parent_end_ss_id
+            parent_end_index = n_parent.data.ref_state.end_index_with_id(end_id)
+            j = mst.add_state(ms, n.parent_index(), parent_end_index=parent_end_index)
+            if j == -1:
+                raise ValueError("was unable to build motifstatetree from topology")
+
     return mst
+
+def update_sequence(mst, ss, end=None):
+    conn = ss.motif_topology_from_end(end)
+    mtt = motif_tree_topology.MotifTreeTopology(conn)
+    return motif_state_tree_from_topology(mtt, sterics=0)
+
+
 
 class MotifStateTree(base.Base):
     def __init__(self, mt=None, **options):
@@ -190,6 +204,24 @@ class MotifStateTree(base.Base):
     def last_node(self):
         return self.tree.last_node
 
+    def remove_node(self, i):
+        self.tree.remove_node(index=i)
+
+        for c in self.connections:
+            if c.i == i or c.j == i:
+                self.connections.remove(c)
+
+
+    def remove_node_level(self, level=None):
+        self.tree.remove_node_level(level)
+
+        for c in self.connections:
+            if len(self.tree) > c.i or len(self.tree) > c.j:
+                self.connections.remove(c)
+
+    def next_level(self):
+        self.tree.level += 1
+
     def __len__(self):
         return len(self.tree)
 
@@ -199,6 +231,9 @@ class MotifStateTree(base.Base):
 
     def next(self):
         return self.tree.next()
+
+    def copy(self):
+        return str_to_motif_state_tree(self.topology_to_str(), sterics=0)
 
     def topology_to_str(self):
         s = ""
@@ -217,4 +252,37 @@ class NodeData(object):
 
     def get_end_state(self, name):
         return self.cur_state.get_end_state(name)
+
+def str_to_motif_state_tree(s, sterics=1):
+    spl = s.split("|")
+    node_strs = spl[0].split()
+    mst = MotifStateTree(sterics=sterics)
+    for n_str in node_strs:
+        n_spl = n_str.split(",")
+        if n_spl[0] != "":
+            ms = rm.manager.get_state(name=n_spl[0], end_id=n_spl[1])
+        else:
+            ms = rm.manager.get_state(end_id=n_spl[1])
+
+        mst.add_state(ms, int(n_spl[2]), int(n_spl[3]))
+
+    conn_strs = spl[1].split()
+    for c_str in conn_strs:
+        c_spl = c_str.split(",")
+        mst.add_connection(int(c_spl[0]), int(c_spl[1]), c_spl[2])
+
+    return mst
+
+
+
+
+
+
+
+
+
+
+
+
+
 

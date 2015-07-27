@@ -20,7 +20,13 @@ class SegmenterUnittest(unittest.TestCase):
             segments.remaining.to_pdb("remaining.pdb")
             segments.removed.to_pdb("removed.pdb")
 
-
+    def random_cuts(self):
+        s = rnamake.segmenter.Segmenter()
+        path = rnamake.settings.UNITTEST_PATH + "/resources/motifs/p4p6"
+        p = pf.factory.pose_from_file(path)
+        end1 = p.get_basepair(name='A111-A209')[0]
+        end2 = p.get_basepair(name='A118-A203')[0]
+        segments = s.apply(p, [end1, end2])
 
 def main():
     unittest.main()

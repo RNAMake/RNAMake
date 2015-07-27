@@ -163,7 +163,7 @@ class MotifTree(base.Base):
         like to check this
         """
         if i == -1:
-            i = len(self.graph)-1
+            i = self.graph.last_node.index
 
         self.graph.remove_node(i)
 
@@ -254,7 +254,6 @@ class MotifTree(base.Base):
         avail_ends_2 = node_2.available_children_pos()
 
         for end_index_1 in avail_ends_1:
-            print node_1.data.ends[end_index_1].name()
             if i_name != node_1.data.ends[end_index_1].name():
                 continue
             for end_index_2 in avail_ends_2:

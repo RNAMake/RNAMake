@@ -71,7 +71,9 @@ class ThermoFlucSampler(base.Base):
 class ThermoFlucRelax(base.Base):
     def __init__(self):
         self.sampler = ThermoFlucSampler(temperature=1000.0)
-        self.max_steps = 1000
+        self.max_steps = 10000
+        kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+        self.kBT = kB * 100
 
     def run(self, mset, ni_1, ni_2, ei_1, ei_2):
         self.sampler.setup(mset)
@@ -81,27 +83,47 @@ class ThermoFlucRelax(base.Base):
         end_state_2 = self.sampler.mst.get_node(ni_2).data.cur_state.end_states[ei_2]
         cur_diff = end_state_1.diff(end_state_2)
         new_diff = 1000
+        self.best = self.sampler.mst.copy()
+        best_diff = 1000
 
         while steps < self.max_steps:
             r = self.sampler.next()
+            steps += 1
+
+            if steps % 1000 == 0:
+                self.kBT *= 0.5
+
             if r == 0:
                 continue
 
             end_state_1 = self.sampler.mst.get_node(ni_1).data.cur_state.end_states[ei_1]
             end_state_2 = self.sampler.mst.get_node(ni_2).data.cur_state.end_states[ei_2]
             new_diff = end_state_1.diff(end_state_2)
-            if new_diff > cur_diff:
-                self.sampler.undo()
-            else:
+
+            #if steps % 10 == 0:
+            #    print cur_diff, new_diff, best_diff, steps
+
+            if new_diff < best_diff:
+                best_diff = new_diff
+                self.best = self.sampler.mst.copy()
+
+            if new_diff < cur_diff:
                 cur_diff = new_diff
-            steps += 1
-        print cur_diff
+                continue
+
+            score = math.exp((cur_diff - new_diff) / self.kBT)
+            dice_roll = random.random()
+            if dice_roll < score:
+                cur_diff = new_diff
+                continue
+
+            self.sampler.undo()
+        #print end_state_1.diff(end_state_2)
 
 
     def to_pdb(self, name="test.pdb"):
-        self.sampler.to_pdb(name)
+        self.best.to_pdb(name)
 
     def write_pdbs(self):
-        self.sampler.mst.write_pdbs()
-
+        self.best.write_pdbs()
 

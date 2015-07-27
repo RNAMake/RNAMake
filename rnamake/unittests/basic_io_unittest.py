@@ -1,6 +1,7 @@
 import unittest
 import rnamake.basic_io
 import numerical
+import numpy as np
 
 class BasicIoUnittest(unittest.TestCase):
 
@@ -11,6 +12,14 @@ class BasicIoUnittest(unittest.TestCase):
 
         if not numerical.are_points_equal(p, p1):
             self.fail("points are not the same")
+
+    def test_matrix_to_str(self):
+        m = np.eye(3)
+        s = rnamake.basic_io.matrix_to_str(m)
+        m1 = rnamake.basic_io.str_to_matrix(s)
+        if not numerical.are_matrices_equal(m, m1):
+            self.fail("matrices are not the same")
+
 
 
 def main():

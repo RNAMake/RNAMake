@@ -46,7 +46,7 @@ class BuildMotifTree(object):
         fill_basepairs_in_ss(ss)
         conn = ss.motif_topology_from_end(ss.ends[0])
         mtt = motif_tree_topology.MotifTreeTopology(conn)
-        return motif_tree.motif_tree_from_topology_2(mtt)
+        return motif_tree.motif_tree_from_topology(mtt)
 
 
     def build_specific(self, names):

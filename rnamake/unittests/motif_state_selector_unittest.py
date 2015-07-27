@@ -55,7 +55,8 @@ class MotifStateSelectorUnittest(unittest.TestCase):
 
         n.ntype = 0
         motif_states, types = selector.get_children_ms(n)
-        print len(motif_states)
+        if len(motif_states) != 896:
+            self.fail("did not get the expected number of states")
 
 def main():
     unittest.main()

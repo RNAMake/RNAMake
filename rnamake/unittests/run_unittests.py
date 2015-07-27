@@ -1,12 +1,39 @@
 import unittest
+#motif_state_ensemble_tree_unittest.py
 
 testmodules = [
     'atom_unittest',
     'base_unittest',
+    'basepair_unittest',
+    'basic_io_unittest',
     'chain_unittest',
+    'eternabot_unittest',
+    'graph_unittest',
+    'motif_unittest',
+    'motif_library_unittest',
+    'motif_scorer_unittest',
+    'motif_state_search_unittest',
+    'motif_state_selector_unittest',
+    'motif_state_tree_unittest',
+    'motif_tree_unittest',
+    'motif_tree_topology_unittest',
+    'option_unittest',
+    'pdb_parser_unittest',
+    'pose_unittest',
     'residue_unittest',
     'residue_type_unittest',
-    #'x3dna_unittest'
+    'resource_manager_unittest',
+    'secondary_structure_unittest',
+    'segmenter_unittest',
+    'sqlite_library_unittest',
+    'ss_tree_unittest',
+    'steric_lookup_unittest',
+    'structure_unittest',
+    'transform_unittest',
+    'thermo_fluc_sampler_unittest',
+    'tree_unittest',
+    'vienna_unittest',
+    'x3dna_unittest'
     ]
 
 suite = unittest.TestSuite()

@@ -182,6 +182,7 @@ class BuildSqliteLibraries(object):
             energies = []
             for j, c_motifs in enumerate(m_clusters):
                 m = c_motifs.motifs[0]
+                m.mtype = motif_type.HELIX
                 m.name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0] + "." + str(j)
                 motif_data.append([m.to_str(), m.name, m.ends[0].name(), c.end_id, count])
                 count += 1
@@ -339,12 +340,12 @@ class BuildSqliteLibraries(object):
             sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
 builder = BuildSqliteLibraries()
-#builder.build_ideal_helices()
-#builder.build_basic_libraries()
+builder.build_ideal_helices()
+builder.build_basic_libraries()
 builder.build_helix_ensembles()
-#builder.build_ss_and_seq_libraries()
-#builder.build_unique_twoway_library()
-#builder.build_motif_state_libraries()
+builder.build_ss_and_seq_libraries()
+builder.build_unique_twoway_library()
+builder.build_motif_state_libraries()
 builder.build_motif_ensemble_state_libraries()
 
 

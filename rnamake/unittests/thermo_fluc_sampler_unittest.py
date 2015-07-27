@@ -27,7 +27,7 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         ss = builder.build_helix(5)
         con = ss.motif_topology_from_end()
         mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt = motif_tree.motif_tree_from_topology_2(mtt)
+        mt = motif_tree.motif_tree_from_topology(mtt)
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
 
         tfs = rnamake.thermo_fluc_sampler.ThermoFlucSampler()
@@ -53,7 +53,7 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         self._fill_basepairs_in_ss(ss)
         con = ss.motif_topology_from_end()
         mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt2 = motif_tree.motif_tree_from_topology_2(mtt, sterics=0)
+        mt2 = motif_tree.motif_tree_from_topology(mtt, sterics=0)
 
         ni_1 = 0
         ei_1 = 0

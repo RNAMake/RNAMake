@@ -255,11 +255,11 @@ class Segmenter(object):
             basepairs = []
             missed_bps = 0
             for bp in m.basepairs:
-                if   bp.res1 in res and bp.res2 in res:
+                if   bp.res1 in sub_res and bp.res2 in sub_res:
                     basepairs.append(bp)
-                elif bp.res1 in res and bp.res2 not in res:
+                elif bp.res1 in sub_res and bp.res2 not in sub_res:
                     missed_bps += 1
-                elif bp.res1 not in res and bp.res2 in res:
+                elif bp.res1 not in sub_res and bp.res2 in sub_res:
                     missed_bps += 1
             if missed_bps > 2:
                 continue

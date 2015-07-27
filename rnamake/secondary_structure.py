@@ -223,7 +223,6 @@ class SecondaryStructure(SecondaryStructureMotif):
                     end = m.ends[0]
                     break
 
-
         seen_e = {}
         seen_ends = {}
         current_e = None
@@ -241,27 +240,33 @@ class SecondaryStructure(SecondaryStructureMotif):
         current_end = end
         count = 0
         connectivity = []
-        queue = Queue.Queue()
-        queue.put([current_e, current_end, -1])
+        queue = []
+        queue.append([current_e, current_end, -1])
         pos = 0
         indexed_e = {}
 
+        while not len(queue) == 0:
 
-        while not queue.empty():
-
-            current_e, current_end, parent_pos = queue.get()
-            #ss_id = assign_end_id(current_e, current_end)
+            current_e, current_end, parent_pos = queue.pop()
             i = current_e.ends.index(current_end)
-            ss_id = current_e.end_ids[i]
+            if current_e.type != 'HELIX':
+                ss_id = current_e.end_ids[i]
+            else:
+                ss_id = assign_end_id(current_e, current_end)
             seen_e[current_e] = pos
             indexed_e[pos] = current_e
 
             parent_id = ""
             if pos != 0:
                 parent = indexed_e[parent_pos]
-                parent_id = assign_end_id(parent, current_end)
+                i = parent.ends.index(current_end)
+                if parent.type != 'HELIX':
+                    parent_id = parent.end_ids[i]
+                else:
+                    parent_id = assign_end_id(parent, current_end)
 
-            connectivity.append([ss_id, parent_id, parent_pos, current_e.name])
+            connectivity.append([ss_id, parent_id,
+                                 parent_pos, current_e.name, len(connectivity)])
             new_ends = []
             for end in current_e.ends:
                 if end != current_end:
@@ -274,7 +279,7 @@ class SecondaryStructure(SecondaryStructureMotif):
                     continue
                 for end in e.ends:
                     if end in new_ends:
-                        queue.put([e, end, pos])
+                        queue.append([e, end, pos])
 
             pos += 1
 
