@@ -38,7 +38,7 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
         mt = builder.build(size=10)
         ss = mt.designable_secondary_structure()
         self._fill_basepairs_in_ss(ss)
-        con = ss.motif_topology_from_end(ss.ends[1])
+        con = ss.motif_topology_from_end(ss.ends[0])
         mtt = motif_tree_topology.MotifTreeTopology(con)
         mt2 = motif_tree.motif_tree_from_topology(mtt)
 

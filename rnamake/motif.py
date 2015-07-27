@@ -251,7 +251,7 @@ class Motif(object):
             if id == end_id:
                 return i
 
-        raise ValueError("no matching end id in motif")
+        raise ValueError("no end id: " + id + " in motif: " + self.name)
 
     def new_res_uuids(self):
         for i, r in enumerate(self.residues()):
