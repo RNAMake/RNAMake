@@ -6,11 +6,12 @@ import rnamake.motif_factory as motif_factory
 import rnamake.motif_tree as motif_tree
 import rnamake.ss_tree as ss_tree
 import rnamake.resource_manager as rm
+import rnamake.util as util
 
 class SqliteLibraryUnittest(unittest.TestCase):
 
     def test_creation(self):
-        mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
+        mlib = sqlite_library.MotifSqliteLibrary("twoway")
 
     def test_get(self):
         mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
@@ -46,7 +47,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
         motifs2 = mlib.get_multi(end_id=m.end_ids[0])
 
     def test_bp_steps(self):
-        mlib = sqlite_library.MotifSSIDSqliteLibrary("bp_steps")
+        mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
         mlib.load_all()
 
         base = motif_factory.factory.base_motif
@@ -67,14 +68,14 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         builder = build.BuildMotifTree(libs=[mlib])
 
-        for i in range(10):
-            mt = builder.build(100)
-            if len(mt) != 100:
+        """for i in range(10):
+            mt = builder.build(10)
+            if len(mt) != 10:
                 for n in mt:
                     print n.data.name
                 print len(mt)
                 mt.write_pdbs()
-                self.fail("random generation of helices failed")
+                self.fail("random generation of helices failed")"""
 
     def test_twoways(self):
 
@@ -133,6 +134,20 @@ class SqliteLibraryUnittest(unittest.TestCase):
     def _test_get_by_topology(self):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
         motifs = mlib.get_by_topology([1,0])
+
+    def test_end_orientation(self):
+        mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
+        mlib.load_all(10)
+
+        for i,m in enumerate(mlib.all()):
+            pass
+            #for c in m.chains():
+            #    if c.first() == m.ends[0].res2:
+            #        m.ends[0].res1, m.ends[0].res2 = m.ends[0].res2, m.ends[0].res1
+            #print util.center(m.ends[0].res1.atoms), m.ends[0].res1
+
+            #m.to_pdb("motif."+str(i)+'.pdb')
+
 
 
 

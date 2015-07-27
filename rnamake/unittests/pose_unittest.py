@@ -22,19 +22,13 @@ class PoseUnittest(unittest.TestCase):
         ss = p.designable_secondary_structure()
         designer = sequence_designer.SequenceDesigner()
         results = designer.design(ss.dot_bracket(), ss.sequence())
-        print results[0].sequence
         #print results[0]['end'][0]
-
-    def test_optimized_sequence(self):
-        mt = get_twoway_helix_motiftree()
-        p = mt.to_pose()
-        seq = p.optimized_sequence()
 
     def test_motifs(self):
         p = pf.factory.pose_from_file("resources/motifs/p4p6")
         twoways = p.motifs(motif_type.TWOWAY)
-        for i, m in enumerate(twoways):
-            m.to_pdb("motif."+str(i)+".pdb")
+        if len(twoways) != 6:
+            self.fail("did not properly get all two way junctions")
 
 
 

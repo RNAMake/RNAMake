@@ -22,7 +22,7 @@ class ViennaUnittest(unittest.TestCase):
 
     def test_fold_exhustive(self):
         v = vienna.Vienna()
-        for i in range(1000):
+        for i in range(100):
             results = v.fold(random_sequence())
 
 

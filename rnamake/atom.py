@@ -1,7 +1,6 @@
 import basic_io
 import numpy as np
 
-
 class Atom(object):
 
     """
@@ -67,7 +66,7 @@ class Atom(object):
         :params acount: the atom number of the atom in pdb file
         :type   acount: int
         .. code-block:: python
-            >>>a = Atom("P",[1.0,2.0,3.0"])
+            >>>a = Atom("P",[1.0,2.0,3.0])
             >>>atom.to_pdb_str()
             ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P
 

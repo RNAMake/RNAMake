@@ -72,10 +72,9 @@ class MSS_RoundRobin(MotifStateSelector):
     def __init__(self):
         self.graph = graph.GraphDynamic()
 
-    def add(self, lib=None, mse=None, max_uses=1000, required_uses=0):
-        super(self.__class__, self).add(lib, mse, max_uses, required_uses)
+    def add(self, lib=None, mse=None, m=None, max_uses=1000, required_uses=0):
+        super(self.__class__, self).add(lib, mse, m, max_uses, required_uses)
         i = len(self.graph)-1
-        print len(self.graph)
         for n in self.graph.nodes:
             self.graph.connect(n.index, i)
 

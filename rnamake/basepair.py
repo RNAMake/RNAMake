@@ -69,7 +69,6 @@ class Basepair(object):
         else:
             return str2+"-"+str1
 
-
     def flip(self):
         self.bp_state.flip()
 
@@ -105,7 +104,10 @@ class Basepair(object):
         """
         stringify basepair object
         """
-        s = self.name() + "," + self.bp_state.to_str() + "," + \
+        str1 = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
+        str2 = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
+
+        s = str1+"-"+str2 + "," + self.bp_state.to_str() + "," + \
             self.bp_type
         return s
 
@@ -216,7 +218,7 @@ class BasepairState(object):
 
     def diff(self, state):
         diff  = util.distance(self.d, state.d)
-        diff += self._rot_diff(state)
+        diff += self._rot_diff(state) * 2
         #diff += self._sugar_diff(state)
         return diff
 
@@ -231,13 +233,13 @@ class BasepairState(object):
         return r_diff
 
     def _sugar_diff(self, state):
-        diff_1 = util.distance(self.sugars[0], state.sugars[0]) + \
-                 util.distance(self.sugars[1], state.sugars[1])
+        #diff_1 = util.distance(self.sugars[0], state.sugars[0]) + \
+        #         util.distance(self.sugars[1], state.sugars[1])
         diff_2 = util.distance(self.sugars[1], state.sugars[0]) + \
                  util.distance(self.sugars[0], state.sugars[1])
-        if diff_1 > diff_2:
-            diff_1 = diff_2
-        return diff_1
+        #if diff_1 > diff_2:
+        #    diff_1 = diff_2
+        return diff_2
 
     def to_str(self):
         """

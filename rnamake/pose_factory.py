@@ -183,7 +183,7 @@ class PoseFactory(object):
             ss_end = ss.get_bp(res1, res2)
             p.end_ids[i] = secondary_structure.assign_end_id(ss, ss_end)
 
-        for m in motifs:
+        for j, m in enumerate(motifs):
             bps = []
             residue_map = {}
             for bp in m.basepairs:
@@ -191,7 +191,6 @@ class PoseFactory(object):
                 if len(new_bp) != 0:
                     bps.append(new_bp[0])
                     continue
-
                 best = 1000
                 best_bp = None
                 for m2 in motifs:
@@ -232,8 +231,11 @@ class PoseFactory(object):
                         res.append(residue_map[r])
                     else:
                         print r, r.uuid
-                        #raise ValueError("cannot find residue")
+                        raise ValueError("cannot find residue")
                 chains.append(chain.Chain(res))
+
+            if len(bps) != len(m.basepairs):
+                raise ValueError("something went horribly wrong: did not find all basepairs")
 
             m_copy = motif.Motif()
             m_copy.mtype = m.mtype
@@ -243,7 +245,25 @@ class PoseFactory(object):
             m_copy.ends = motif_factory.factory._setup_basepair_ends(m_copy.structure, bps)
             motif_factory.factory._setup_secondary_structure(m_copy)
             if m_copy.mtype is not motif_type.HELIX:
-                m_copy.end_ids = m.end_ids
+                best_ends = []
+                best_end_ids = []
+                for i, end in enumerate(m.ends):
+                    best = 1000
+                    best_end = None
+                    best_end_id = None
+                    for c_end in m_copy.ends:
+                        dist = util.distance(end.d(), c_end.d())
+                        if dist < best:
+                            best_end = c_end
+                            best_end_id = m.end_ids[i]
+                            best = dist
+                    best_ends.append(best_end)
+                    best_end_ids.append(best_end_id)
+
+                m_copy.ends = best_ends
+                m_copy.end_ids = best_end_ids
+
+
             p.motif_dict[m_copy.mtype].append(m_copy)
             p.motif_dict[motif_type.ALL].append(m_copy)
 

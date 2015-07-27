@@ -8,8 +8,8 @@ class EternaBotUnittest(unittest.TestCase):
         solutions = designer.design("(((....)))", "NNNNNNNNNN", 10)
 
         #solutions = designer.design("(((....)&..))", "NNNNNNNN&NNNN")
-        for s in solutions:
-            print s.sequence, s.score
+        #for s in solutions:
+        #    print s.sequence, s.score
 
 
 

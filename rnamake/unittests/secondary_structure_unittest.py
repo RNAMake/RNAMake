@@ -62,8 +62,6 @@ class SecondaryStructureUnittest(unittest.TestCase):
         seq = "UG&CA&CGACACAG"
         db  = "((&))&(......)"
         ss = ssfactory.factory.get_structure(seq, db)
-        for bp in ss.basepairs:
-            print bp.res1.num, bp.res2.num
 
     def test_parse_nway(self):
         mlib = motif_library.MotifLibrary(motif_type.NWAY)
@@ -75,10 +73,6 @@ class SecondaryStructureUnittest(unittest.TestCase):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(10)
         connectivity = ss.motif_topology_from_end(ss.ends[0])
-        for c in connectivity:
-            print c
-        mt = motif_tree.motif_tree_from_topology(connectivity)
-        mt.write_pdbs()
 
     def test_ss_id_to_ss(self):
         ss = ssfactory.ss_id_to_secondary_structure('GAUUUGAG_LLLLLLLL_CUCAAAUC_RRRRRRRR')

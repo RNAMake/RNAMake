@@ -35,11 +35,28 @@ class Tree(object):
         elif node is None and index is None:
             raise ValueError("need to include node or index in remove_node")
 
-        node.parent.remove_child(node)
+        if node.parent is not None:
+            node.parent.remove_child(node)
         self.nodes.remove(node)
         node.parent = None
         self.last_node = node.parent
         self.index -= 1
+
+    def remove_node_level(self, level=None):
+        if level is None:
+            level = self.level
+
+        nodes = self.nodes[::-1]
+        while 1:
+            removed = 0
+            for n in nodes:
+                if n.level >= level:
+                    self.remove_node(n)
+                    removed = 1
+                    break
+            nodes = self.nodes[::-1]
+            if not removed:
+                break
 
     def __len__(self):
         return len(self.nodes)
@@ -67,6 +84,11 @@ class Tree(object):
 
         return node
 
+    def next_level(self):
+        self.level += 1
+
+    def decrease_level(self):
+        self.level -= 1
 
 class TreeDynamic(Tree):
     def __init__(self):

@@ -5,10 +5,12 @@ import resource_manager as rm
 
 
 class MotifStateEnsembleTree(object):
-    def __init__(self, mt=None):
+    def __init__(self, mt=None, mst=None):
         self.tree = tree.TreeStatic()
         if mt is not None:
             self._setup_from_mt(mt)
+        if mst is not None:
+            self._setup_from_mst(mst)
 
     def add_ensemble(self, ensemble, parent_index=-1, parent_end_index=-1):
         parent = self.tree.last_node
@@ -31,9 +33,9 @@ class MotifStateEnsembleTree(object):
                                       p)
 
     def to_mst(self):
-        mst = motif_state_tree.MotifStateTree()
+        mst = motif_state_tree.MotifStateTree(sterics=0)
 
-        for i, n in enumerate(self.tree):
+        for i, n in enumerate(self.tree.nodes):
             state = n.data.members[0].motif_state
             if i == 0:
                 mst.add_state(state)
@@ -71,6 +73,17 @@ class MotifStateEnsembleTree(object):
                     raise ValueError("did not convert motif_tree to motif state tree properly")
                 self.add_ensemble(mse, parent_index, parent_end_index)
 
+    def _setup_from_mst(self, mst):
+        for i, n in enumerate(mst.tree.nodes):
+            try:
+                mse = rm.manager.get_motif_state_ensemble(name=n.data.ref_state.end_ids[0])
+            except ValueError:
+                mse = motif_ensemble.motif_state_to_motif_state_ensemble(n.data.ref_state)
+
+            if i ==0:
+                self.add_ensemble(mse)
+            else:
+                self.add_ensemble(mse, n.parent_index(), n.parent_end_index())
 
     def __len__(self):
         return len(self.tree)

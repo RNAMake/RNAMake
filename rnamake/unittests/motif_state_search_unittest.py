@@ -17,13 +17,15 @@ class MotifStateSearchUnittest(unittest.TestCase):
 
     def test_search(self):
         builder = build.BuildMotifTree()
-        mt = builder.build(3)
+        mt = builder.build(2)
         start = mt.get_node(0).data.ends[0].state()
         end   = mt.last_node().data.ends[1].state()
         mss = rnamake.motif_state_search.MotifStateSearch()
-        mss.constraint('max_node_level', 3)
+        mss.constraint('max_node_level', 2)
         mss.constraint('max_solutions', 1)
         solutions = mss.search(start, end)
+        if len(solutions) == 0:
+            raise ValueError("could not find a suitable solution")
         mst = solutions[0].to_mst()
         new_end = mst.last_node().data.cur_state.end_states[1]
 
@@ -35,8 +37,8 @@ class MotifStateSearchUnittest(unittest.TestCase):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
         rm.manager.add_motif(path)
         mst = motif_state_tree.MotifStateTree(sterics=0)
-        ms = rm.manager.get_state("tetraloop_receptor_min", "A228-A246")
-        m  = rm.manager.get_motif("tetraloop_receptor_min", "A228-A246")
+        ms = rm.manager.get_state(name="tetraloop_receptor_min", end_name="A228-A246")
+        m  = rm.manager.get_motif(name="tetraloop_receptor_min", end_name="A228-A246")
         mst.add_state(ms)
         start = mst.get_node(0).data.get_end_state("A221-A252")
         end   = mst.get_node(0).data.get_end_state("A146-A157")
@@ -64,7 +66,6 @@ class MotifStateSearchUnittest(unittest.TestCase):
         end2 = p.get_basepair(name='A118-A203')[0]
         segments = s.apply(p, [end1, end2])
         pd = segments.remaining
-        segments.remaining.to_pdb("test.pdb")
         start = end1.state()
         end   = end2.state()
 
@@ -81,7 +82,6 @@ class MotifStateSearchUnittest(unittest.TestCase):
 
         solutions = mss.search(start, end)
         mst_sol = solutions[0].to_mst()
-        mst_sol.to_pdb("sol.pdb")
 
 
 

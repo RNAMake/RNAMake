@@ -1,19 +1,18 @@
 import unittest
-import rnamake.resource_manager
+import rnamake.resource_manager as rm
 import rnamake.settings as settings
 import rnamake.motif_tree as motif_tree
 
 class ResourceManagerUnittest(unittest.TestCase):
 
     def test_creation(self):
-        m = rnamake.resource_manager.manager.get_motif("HELIX.IDEAL")
+        m = rm.manager.get_motif(name="HELIX.IDEAL")
 
     def test_get_motif(self):
-        rm = rnamake.resource_manager.ResourceManager()
-        m = rm.get_motif("HELIX.IDEAL")
+        m = rm.manager.get_motif(name="HELIX.IDEAL")
 
         try:
-            m = rm.get_motif("test")
+            m = rm.manager.get_motif(name="test")
             self.fail()
         except ValueError:
             pass
@@ -21,15 +20,14 @@ class ResourceManagerUnittest(unittest.TestCase):
             self.fail("unexpected error")
 
     def test_get_motif_step(self):
-        rm = rnamake.resource_manager.ResourceManager()
-        m = rm.get_motif("GG_LL_CC_RR")
+        m = rm.manager.get_motif(end_id="GG_LL_CC_RR")
 
     def test_add_motif(self):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
-        rnamake.resource_manager.manager.add_motif(path)
+        rm.manager.add_motif(path)
         mt = motif_tree.MotifTree()
-        m = rnamake.resource_manager.manager.get_motif(name="tetraloop_receptor_min",
-                                                       end_name="A228-A246")
+        m = rm.manager.get_motif(name="tetraloop_receptor_min",
+                                 end_name="A228-A246")
         if m.name != 'tetraloop_receptor_min':
             self.fail('did not get correct motif back')
 

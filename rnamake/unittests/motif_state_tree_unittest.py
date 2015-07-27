@@ -46,13 +46,14 @@ class MotifStateTreeUnittest(unittest.TestCase):
     def test_align(self):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
         rm.manager.add_motif(path)
-        m  = rm.manager.get_motif("tetraloop_receptor_min", "A228-A246")
-        m.to_pdb("test.pdb")
+        m  = rm.manager.get_motif(name="tetraloop_receptor_min", end_name="A228-A246")
         bp_state = m.ends[1].state()
-        test_state = rm.manager.ms_libs["ideal_helices"].get('HELIX.IDEAL.3')
-        print bp_state.d
+        test_state = rm.manager.ms_libs["ideal_helices"].get(name='HELIX.IDEAL.3')
+        d1 = bp_state.d
         motif.align_motif_state(bp_state, test_state)
-        print test_state.end_states[0].d
+        d2 = test_state.end_states[0].d
+        if util.distance(d1, d2) > 0.5:
+            self.fail("did not align motif state properly")
 
     def test_change_sequence(self):
         builder = build.BuildMotifTree()
@@ -68,20 +69,21 @@ class MotifStateTreeUnittest(unittest.TestCase):
         builder = build.BuildMotifTree()
         mt = builder.build()
         mst = motif_state_tree.MotifStateTree(mt)
-        print len(mst)
+        s = mst.topology_to_str()
+        mst2 = motif_state_tree.str_to_motif_state_tree(s)
+        if len(mst2) != len(mt):
+            self.fail("did not reconstituate motif_state_tree from topology")
 
-    def _test_to_mt(self):
+    def test_remove_node(self):
         builder = build.BuildMotifTree()
-        mt = builder.build(10)
-        mt.write_pdbs()
-
-        for n in mt:
-            print n.data.name
-
+        mt = builder.build(3)
         mst = motif_state_tree.MotifStateTree(mt)
+        mst.remove_node(mst.last_node().index)
+        if len(mst) != 2:
+            self.fail("did not properly remove node")
 
-        mt2 = mst.to_motif_tree()
-        mt2.to_pdb("test2.pdb")
+    def test_remove_node_level(self):
+        pass
 
     def _test_replace_state(self):
         builder = build.BuildMotifTree()
@@ -101,25 +103,6 @@ class MotifStateTreeUnittest(unittest.TestCase):
 
         if util.distance(d1, d2) > 0.1:
             self.fail("did not properly replace state")
-
-    def _test_specific(self):
-        str = """HELIX.IDEAL.11
-TWOWAY.2VQE.7-A416-A427
-HELIX.IDEAL.16
-TWOWAY.2VQE.13-A662-A743
-HELIX.IDEAL.19
-TWOWAY.1S72.29-01312-01342
-HELIX.IDEAL.13
-TWOWAY.1D4R.1-A17-B12
-HELIX.IDEAL.3
-TWOWAY.2VQE.9-A455-A477"""
-        motif_names = str.split("\n")
-        mt = motif_tree.MotifTree()
-        for m_n in motif_names:
-            mt.add_motif(rm.manager.get_motif(m_n))
-
-        mst = motif_state_tree.MotifStateTree(mt)
-        mt2 = mst.to_motif_tree()
 
 
 

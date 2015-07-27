@@ -62,6 +62,7 @@ def matrix_to_str(m):
 def bead_to_str(bead):
     return point_to_str(p) + "," + bead.btype
 
+
 def beads_to_str(beads):
     s = ""
     for b in beads:

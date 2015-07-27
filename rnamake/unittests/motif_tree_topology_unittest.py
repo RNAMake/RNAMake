@@ -29,7 +29,7 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
         ss = builder.build_helix()
         conn = ss.motif_topology_from_end(ss.ends[1])
         mtt = motif_tree_topology.MotifTreeTopology(conn)
-        mt = motif_tree.motif_tree_from_topology_2(mtt)
+        mt = motif_tree.motif_tree_from_topology(mtt)
         if len(mt) != len(ss.motifs('ALL')):
             self.fail("did not build properly")
 
@@ -40,20 +40,17 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
         self._fill_basepairs_in_ss(ss)
         con = ss.motif_topology_from_end(ss.ends[1])
         mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt2 = motif_tree.motif_tree_from_topology_2(mtt)
+        mt2 = motif_tree.motif_tree_from_topology(mtt)
 
     def test_nway(self):
         builder = build.BuildMotifTree(lib_names=['ideal_helices', 'nway'])
         #mt = builder.build_specific('HELIX.IDEAL.3,NWAY.2VQE.9,HELIX.IDEAL.3'.split(','))
         mt = builder.build(size=5)
-        for n in mt:
-            print n.data.name
-        mt.write_pdbs("org")
         ss = mt.designable_secondary_structure()
         self._fill_basepairs_in_ss(ss)
         con = ss.motif_topology_from_end(ss.ends[1])
         mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt2 = motif_tree.motif_tree_from_topology_2(mtt, sterics=0)
+        mt2 = motif_tree.motif_tree_from_topology(mtt, sterics=0)
 
     def test_redesign(self):
         s = rnamake.segmenter.Segmenter()
@@ -74,10 +71,8 @@ class MotifTreeTopologyUnittest(unittest.TestCase):
         self._fill_basepairs_in_ss(ss)
         con = ss.motif_topology_from_end()
         mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt2 = motif_tree.motif_tree_from_topology_2(mtt, sterics=0)
+        mt2 = motif_tree.motif_tree_from_topology(mtt, sterics=0)
         #print mtt
-        mt2.write_pdbs()
-
 
     def _test_build_mt(self):
         sstree = ss_tree.SS_Tree("(((+)))", "GAG+UUC")
