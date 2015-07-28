@@ -12,7 +12,7 @@
 #include "data_structure_unittests/tree_unittest.h"
 #include "data_structure_unittests/graph_unittest.h"
 
-#include "util_unittests/uuid_unittest.h"
+/*#include "util_unittests/uuid_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
 
 #include "secondary_structure_unittests/ss_tree_unittest.h"
@@ -35,11 +35,11 @@
 #include "resources_unittests/motif_library_unittest.h"
 #include "resources_unittests/library_manager_unittest.h"
 
-#include "motif_assembly_unittests/motif_assembly_unittest.h"
+#include "motif_assembly_unittests/motif_assembly_unittest.h"*/
 
 
 int main(int argc, const char * argv[]) {
     
-    MotifTreeTopologyUnittest test;
+    GraphUnittest test;
     test.run();
 }

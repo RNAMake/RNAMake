@@ -51,7 +51,6 @@ public:
         
         throw GraphException("cannot find node with index");
     }
-    
 
     inline
     GraphNodeOPs<DataType> const &
@@ -73,7 +72,6 @@ public:
     GraphDynamic(): Graph<DataType>() {}
    
 public:
-
     
     inline
     int
@@ -181,26 +179,27 @@ public:
     
 private:
     GraphNodeOP<DataType> node_ptr_;
-    std::map<int, int> seen_;
-    std::queue<GraphNodeOP<DataType>> queue_;
+    Graph<DataType>* graph_;
     
     GraphIterator(
-        GraphNodeOP<DataType> const & node):
+        GraphNodeOP<DataType> const & node,
+        Graph<DataType>* graph):
     node_ptr_(node),
-    queue_(std::queue<GraphNodeOP<DataType>>())
+    graph_(graph)
     {}
+    
 };
 
 template <typename DataType>
 typename Graph<DataType>::iterator
 Graph<DataType>::begin() const {
-    return iterator(nodes_[0]);
+    return iterator(nodes_[0], this);
 }
 
 template <typename DataType>
 typename Graph<DataType>::iterator
 Graph<DataType>::end() const {
-    return iterator(nullptr);
+    return iterator(nullptr, nullptr);
 }
 
 template <typename DataType>
@@ -212,25 +211,12 @@ GraphIterator<DataType>::operator* () {
 template <typename DataType>
 GraphIterator<DataType> &
 GraphIterator<DataType>::operator++() {
-    GraphConnectionOPs<DataType> connections = node_ptr_->connections();
-    seen_[node_ptr_->index()] = 1;
-    for(auto const & c : connections) {
-        if(c != nullptr) {
-            GraphNodeOP<DataType> other_node = c->partner(node_ptr_->index());
-            if(seen_.find(other_node->index()) != seen_.end()) { continue; }
-            queue_.push(other_node);
-               
-        }
-    }
-    
-    if(!queue_.empty()) {
-        node_ptr_ = queue_.front();
-        queue_.pop();
-    }
-    else {
+    if(node_ptr_->index()+1 == (int)graph_->size()) {
         node_ptr_ = nullptr;
     }
-    
+    else{
+        node_ptr_ = graph_->get_node(node_ptr_->index()+1);
+    }
     
     return *this;
 }

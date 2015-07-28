@@ -77,6 +77,22 @@ class SecondaryStructureUnittest(unittest.TestCase):
     def test_ss_id_to_ss(self):
         ss = ssfactory.ss_id_to_secondary_structure('GAUUUGAG_LLLLLLLL_CUCAAAUC_RRRRRRRR')
 
+    def test_add_motif(self):
+        seq1 = 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG'
+        seq2 = 'CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG'
+
+        db1  = '(((((((..((((((((((((....))))))))))))...)))))))'
+        db2  = '((((((....((((((((((((....))))))))))))....))))))'
+
+        ss = ssfactory.factory.get_structure(seq1 +"+" + seq2, db1 + "+" + db2)
+        ss.convert_to_RNA()
+
+        rm.manager.add_motif('resources/motifs/GAAA_tetraloop.pdb')
+        m = rm.manager.get_motif(name='GAAA_tetraloop')
+        m_ss = m.secondary_structure
+        ss.add_motif(m_ss, m.name)
+        print m.name
+
 def main():
     unittest.main()
 

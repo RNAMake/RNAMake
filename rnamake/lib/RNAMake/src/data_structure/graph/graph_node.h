@@ -40,7 +40,7 @@ public:
     connections_(GraphConnectionOPs<DataType>(n_connections))
     {}
     
-public:
+public: //Vitrual functions need to be implemented in derived clases
     
     virtual
     inline
@@ -55,6 +55,8 @@ public:
     remove_connection(
         GraphConnectionOP<DataType> const & connection) = 0;
     
+public:
+
     inline
     Ints
     available_children_pos() const {
@@ -74,19 +76,18 @@ public:
         if(connections_[pos] != nullptr) { return 0; }
         return 1;
     }
-
     
-public:
     inline
     GraphNodeOP<DataType> const &
     parent() {
         for(auto const & c : connections_) {
             if(c->partner(index_)->index_ < index_) { return c->partner(index_); }
         }
+        return nullptr;
         
-        throw GraphException("could not find parent for node");
     }
     
+public: //getters
     inline
     int
     index() const { return index_; }
@@ -152,10 +153,7 @@ public:
         
         this->connections_.erase(std::remove(this->connections_.begin(), this->connections_.end(),
                                 connection), this->connections_.end());
-
     }
-
-    
 };
 
 
@@ -242,6 +240,20 @@ public:
         else if(i == node_2_->index()) { return node_1_; }
         else { throw GraphException("cannot call partner with node not in connection"); }
     }
+    
+    int
+    end_index(
+        int n_index) {
+        if     (n_index == node_1_->index()) {
+            return end_index_1_;
+        }
+        else if(n_index == node_2_->index()) {
+            return end_index_2_;
+        }
+        else{
+            throw GraphException("cannot call end_index with node not in connection");
+        }
+     }
     
     
 private:

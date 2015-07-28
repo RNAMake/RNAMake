@@ -145,7 +145,6 @@ class GraphStatic(Graph):
 
 
 
-
 class GraphNode(object):
     def __init__(self, data, index, level, n_connections=0):
         self.data, self.index, self.level = data, index, level
@@ -175,40 +174,6 @@ class GraphNode(object):
 
         return None
 
-    def n_connections(self):
-        count = 0
-        for c in self.connections:
-            if c is not None:
-                count += 1
-        return count
-
-    def connection_with_node(self, n_index):
-        for c in self.connections:
-            if c is None:
-                continue
-            if n_index == c.partner(self.index).index:
-                return c
-
-        raise ValueError("cannot find connection with node in connection_with_node")
-
-    def end_indexes_with_node(self, n_index):
-        c = self.connection_with_node(n_index)
-        return c.end_index(self.index), c.end_index(n_index)
-
-    def is_connected(self, n_index):
-        for c in self.connections:
-            if c is None:
-                continue
-            if c.partner(self.index).index == n_index:
-                return 1
-        return 0
-
-    def connected_nodes(self):
-        nodes = []
-        for c in self.connections:
-            if c is not None:
-                nodes.append(c.partner(self.index))
-        return nodes
 
 class GraphNodeDynamic(GraphNode):
     def __init__(self, data, index, level):
