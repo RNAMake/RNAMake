@@ -73,7 +73,7 @@ MotifTreeTopologyUnittest::test_simple_build() {
     for(auto const & n : mtt.nodes()) {
         //std::cout << n->data()->seq[0] << " " << n->data()->seq[1] << std::endl;
         //std::cout << name << std::endl;
-        std::cout << "|" << n->data()->name << "|" << qstd::endl;
+        std::cout << "|" << n->data()->name << "|" << std::endl;
         MotifOP m  = LibraryManager::getInstance().get_motif(n->data()->name);
     }
     

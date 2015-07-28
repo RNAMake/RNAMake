@@ -36,7 +36,6 @@ GraphUnittest::test_nodes() {
     }
     
     return 1;
-    
 }
 
 int
@@ -52,9 +51,9 @@ GraphUnittest::test_creation() {
     g1.add_data(0, -1, -1, -1, 2);
     g1.add_data(1, -1, -1, -1, 2);
     
-    
     return 1;
 }
+
 
 
 

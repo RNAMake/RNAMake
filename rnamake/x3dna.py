@@ -176,6 +176,7 @@ class X3dna(object):
             ref_frames_path = base_dir + "/ref_frames.dat"
 
         if not os.path.isfile(ref_frames_path):
+            ref_frames_path = "ref_frames.dat"
             self.generate_ref_frame(path)
 
         return ref_frames_path

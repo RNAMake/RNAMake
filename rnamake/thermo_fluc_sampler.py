@@ -127,3 +127,10 @@ class ThermoFlucRelax(base.Base):
     def write_pdbs(self):
         self.best.write_pdbs()
 
+
+class ThermoFlucSimulation(base.Base):
+    def __init__(self, **options):
+        pass
+
+    def setup(self, mset, changeable=None):
+        pass

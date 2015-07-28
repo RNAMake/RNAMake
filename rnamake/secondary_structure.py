@@ -366,19 +366,55 @@ class SecondaryStructure(SecondaryStructureMotif):
     def motifs(self, motif_type):
         return self.elements[motif_type]
 
+    def add_motif(self, motif_ss, name):
+        chains = []
+        for c1 in motif_ss.chains:
+            m_seq = c1.sequence()
+            best = None
+            best_pos = None
+            for c2 in self.chains:
+                ful_seq = c2.sequence()
+                pos = ful_seq.find(m_seq)
+                if pos != -1:
+                    if best is not None:
+                        raise ValueError("there are more then one match for this motif")
+                    best = c2
+                    best_pos = pos
+            chains.append(Chain(best.residues[best_pos:best_pos+len(m_seq)]))
 
-"""class MotifTopologyNode(object):
-    def __init__(self, ss_id, parent_ss_id, parent_pos, m_name):
-        self.ss_id, self.parent_ss_id = ss_id, parent_ss_id
-        self.parent_pos, self.m_name = parent_pos, m_name
+        bps = []
+        ends = []
+        m = SecondaryStructureMotif('UNKNOWN', [], chains)
+        for bp in self.basepairs:
+            if m.get_residue(uuid=bp.res1.uuid) is None or \
+               m.get_residue(uuid=bp.res2.uuid) is None:
+               continue
+            bps.append(bp)
 
-    def __repr__(self):
-        s = "<(MotifTopologyNode ( ss_id: %s\n" \
-            "                      parent_ss_id: %s\n" \
-            "                      parent_pos: %s\n" \
-            "                      m_name: %s))" % (self.ss_id, self.parent_ss_id,
-                                                  self.parent_pos, self.m_name)
-        return s"""
+        m.basepairs = bps
+        chain_ends = []
+        for c in chains:
+            chain_ends.append(c.first())
+            if len(c.residues) > 1:
+                chain_ends.append(c.last())
+        for bp in bps:
+            if bp.res1 in chain_ends and bp.res2 in chain_ends:
+                ends.append(bp)
+        m.ends = ends
+
+
+    def convert_to_RNA(self):
+        for c in self.chains:
+            for r in c.residues:
+                if r.name == 'T':
+                    r.name = 'U'
+
+    def convert_to_DNA(self):
+        for c in self.chains:
+            for r in c.residues:
+                if r.name == 'U':
+                    r.name = 'T'
+
 
 def str_to_residue(s):
     spl = s.split(",")
