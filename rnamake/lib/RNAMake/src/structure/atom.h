@@ -1,10 +1,13 @@
-//
-//  atom.h
-//  RNAMake
-//
-//  Created by Joseph Yesselman on 12/23/14.
-//  Copyright (c) 2014 Joseph Yesselman. All rights reserved.
-//
+/**
+ * @file
+ * @author  Joseph D. Yesselman
+ * @version 1.0
+ *
+ * @section DESCRIPTION
+ *
+ *  stores atomic information from pdb file, design is to be extremely
+ *  lightweight only storing the atom name and coordinates.
+ */
 
 #ifndef __RNAMake__atom__
 #define __RNAMake__atom__

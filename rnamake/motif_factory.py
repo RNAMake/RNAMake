@@ -199,12 +199,14 @@ class MotifFactory(object):
 
     def _setup_secondary_structure(self, m):
         ss = secondary_structure_factory.factory.secondary_structure_from_motif(m)
+        ss.end_ids = ["" for x in m.ends]
         m.end_ids = ["" for x in m.ends]
         for i, end in enumerate(m.ends):
             res1 = ss.get_residue(uuid=end.res1.uuid)
             res2 = ss.get_residue(uuid=end.res2.uuid)
             ss_end = ss.get_bp(res1, res2)
             m.end_ids[i] = secondary_structure.assign_end_id(ss, ss_end)
+            ss.end_ids[i] = m.end_ids[i]
 
         m.secondary_structure = ss
 

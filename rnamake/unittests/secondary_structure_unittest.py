@@ -10,6 +10,7 @@ import rnamake.secondary_structure_factory as ssfactory
 import rnamake.motif_tree as motif_tree
 import rnamake.setup.motif_library as motif_library
 import rnamake.motif_type as motif_type
+import rnamake.motif_tree_topology as motif_tree_topology
 
 class SecondaryStructureUnittest(unittest.TestCase):
 
@@ -84,14 +85,25 @@ class SecondaryStructureUnittest(unittest.TestCase):
         db1  = '(((((((..((((((((((((....))))))))))))...)))))))'
         db2  = '((((((....((((((((((((....))))))))))))....))))))'
 
-        ss = ssfactory.factory.get_structure(seq1 +"+" + seq2, db1 + "+" + db2)
-        ss.convert_to_RNA()
+        ss = ssfactory.factory.get_structure(seq1 +"+" + seq2, db1 + "+" + db2, to_RNA=1)
 
         rm.manager.add_motif('resources/motifs/GAAA_tetraloop.pdb')
-        m = rm.manager.get_motif(name='GAAA_tetraloop')
-        m_ss = m.secondary_structure
-        ss.add_motif(m_ss, m.name)
-        print m.name
+        rm.manager.add_motif('resources/motifs/GGAA_tetraloop.pdb')
+        m1 = rm.manager.get_motif(name='GAAA_tetraloop')
+        m2 = rm.manager.get_motif(name='GGAA_tetraloop')
+        ss.add_motif(m1.secondary_structure, m1.name)
+        ss.add_motif(m2.secondary_structure, m2.name)
+        ss_m = ss.motif('GGAA_tetraloop')
+        last_end = None
+        for i, end in enumerate(ss_m.ends):
+            if ss_m.end_ids[i] == 'GGGAAC_LUUUUR_CCUGUGUC_LLULUULL_GAAUCUGG_RRUURURR':
+                last_end = end
+                break
+        conn = ss.motif_topology_from_end(ss.ends[1], last_end=last_end)
+        mtt = motif_tree_topology.MotifTreeTopology(conn)
+        mt = motif_tree.motif_tree_from_topology(mtt, sterics=0)
+        mt.write_pdbs()
+        print len(mt)
 
 def main():
     unittest.main()

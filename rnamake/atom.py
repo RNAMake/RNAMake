@@ -47,6 +47,10 @@ class Atom(object):
         return "<Atom(name='%s', coords='%s')>" % (self.name, coords)
 
     def copy(self):
+        """
+        deep copies the current atom instance
+        :return:  Atom object
+        """
         coords = np.array(self.coords)
         return Atom(self.name, coords)
 

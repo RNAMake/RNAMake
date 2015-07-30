@@ -10,21 +10,33 @@ def transverse_graph(graph, i):
             raise StopIteration
         yield next
 
+
 class Graph(object):
+    """
+    A general graph storage base class. Do not call directly!
+
+    Attributes
+    ----------
+    `nodes` : list of GraphNode objects
+        all the nodes in the tree, used for fast access by index
+    `connections` : list of GraphConnection objects
+        all the connections between two different nodes in the graph
+    `level` : int
+        the current graph level, used for quickly deleting sections of the graph
+    `index`: int
+        the current node index, always the length of the number of nodes in teh graph
+    `last_node` : GraphNode object
+        the last node added to the graph
+    `current_node` GraphNode object
+        the current node during iteration
+
+    """
+
     def __init__(self):
         self.nodes, self.connections, self.level, self.index = [], [], 0, 0
         self.last_node = None
         #iterator stuff
         self.current_node = None
-        self.queue = Queue.Queue()
-        self.seen = {}
-
-    def get_node(self, index):
-        for n in self.nodes:
-            if n.index == index:
-                return n
-
-        raise ValueError("cannot find node with index")
 
     def __len__(self):
         return len(self.nodes)
@@ -46,12 +58,56 @@ class Graph(object):
 
         return node
 
+    def get_node(self, index):
+        """
+        :param index: the node index that you want
+        :type index: int
+        :return: GraphNode object
+
+        .. code-block:: python
+        >>>g = Graph()
+        >>>g.add_data(10)
+        #get node of index '0' which is the first one
+        >>>print g.get_node(0).data
+        10
+        """
+        for n in self.nodes:
+            if n.index == index:
+                return n
+
+        raise ValueError("cannot find node with index")
+
 
 class GraphDynamic(Graph):
+    """
+    a Graph with dynamic connections between nodes. i.e. each node does NOT have a predefined
+    number of connections. Each node starts with 0 connections and are added over time,
+    there is no max to the number of connections each node can have
+
+    Examples
+
+    .. code-block:: python
+        >>>g = GraphDynamic()
+        >>>g.add_data(0)
+        >>>g.add_data(1)
+        >>>g.add_data(2, parent_index=0)
+        >>>g.add_data(3, parent_index=0)
+
+        >>>len(g.get_node(0).connections)
+        3
+    """
+
     def __init__(self):
         super(GraphDynamic, self).__init__()
 
     def add_data(self, data, parent_index=-1):
+        """
+        add a new peice of data to the graph
+
+        :param data:
+        :param parent_index:
+        :return:
+        """
         parent = None
         if parent_index != -1:
             parent = self.get_node(parent_index)

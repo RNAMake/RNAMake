@@ -63,12 +63,24 @@ class Chain(object):
 
 
 class Basepair(object):
-    def __init__(self, res1, res2):
+    def __init__(self, res1, res2, bp_uuid=None):
         self.res1, self.res2 = res1, res2
+        self.uuid = bp_uuid
+        if self.uuid is None:
+            self.uuid = uuid.uuid1()
 
     def __repr__(self):
         return "<Basepair("+self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
             "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code) + ")>"
+
+    def name(self):
+        str1 = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
+        str2 = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
+
+        if str1 < str2:
+            return str1+"-"+str2
+        else:
+            return str2+"-"+str1
 
     def partner(self, r):
         if   r == self.res1:
@@ -100,11 +112,15 @@ class SecondaryStructureMotif(object):
         dot_brackets = [x.dot_bracket() for x in self.chains]
         return "&".join(dot_brackets)
 
-    def get_bp(self, res1, res2=None):
+    def get_bp(self, res1=None, res2=None, uuid=None, name=None):
         for bp in self.basepairs:
-            if bp.res1 != res1 and bp.res2 != res1:
+            if res1 is not None and (bp.res1 != res1 and bp.res2 != res1):
                 continue
             if res2 is not None and (bp.res1 != res2 and bp.res2 != res2):
+                continue
+            if uuid is not None and bp.uuid != uuid:
+                continue
+            if name is not None and bp.name() != name:
                 continue
             return bp
         return None
@@ -149,6 +165,11 @@ class SecondaryStructureMotif(object):
                  str(bp.res2.num) + "|" + bp.res2.chain_id + "|" + bp.res2.i_code + ","
         return s
 
+    def get_end_by_id(self, id):
+        for i, end in enumerate(self.ends):
+            if id == self.end_ids[i]:
+                return end
+        raise ValueError("cannot find end with this id: ", id)
 
 class SecondaryStructure(SecondaryStructureMotif):
     def __init__(self, sequence=None, dot_bracket=None, chains=None):
@@ -213,7 +234,7 @@ class SecondaryStructure(SecondaryStructureMotif):
                 id += "_"
         return id
 
-    def motif_topology_from_end(self, end=None):
+    def motif_topology_from_end(self, end=None, last_end=None):
         elements = self.motifs('ALL')
         if end is None and len(self.ends) != 0:
             end = self.ends[0]
@@ -253,6 +274,10 @@ class SecondaryStructure(SecondaryStructureMotif):
                 ss_id = current_e.end_ids[i]
             else:
                 ss_id = assign_end_id(current_e, current_end)
+            if current_e.type == "BP_STEP":
+                spl = ss_id.split("_")
+                name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
+                current_e.name = name
             seen_e[current_e] = pos
             indexed_e[pos] = current_e
 
@@ -269,6 +294,8 @@ class SecondaryStructure(SecondaryStructureMotif):
                                  parent_pos, current_e.name, len(connectivity)])
             new_ends = []
             for end in current_e.ends:
+                if last_end == end and len(seen_e) < len(elements)/2:
+                    continue
                 if end != current_end:
                     new_ends.append(end)
 
@@ -311,7 +338,8 @@ class SecondaryStructure(SecondaryStructureMotif):
         n_ss = SecondaryStructure(chains=new_chains)
         for bp in self.basepairs:
             new_bp = Basepair(n_ss.get_residue(uuid=bp.res1.uuid),
-                              n_ss.get_residue(uuid=bp.res2.uuid))
+                              n_ss.get_residue(uuid=bp.res2.uuid),
+                              bp.uuid)
             basepairs.append(new_bp)
         for end in self.ends:
             i = self.basepairs.index(end)
@@ -366,8 +394,15 @@ class SecondaryStructure(SecondaryStructureMotif):
     def motifs(self, motif_type):
         return self.elements[motif_type]
 
+    def motif(self, name):
+        for m in self.elements['ALL']:
+            if m.name == name:
+                return m
+        raise ValueError("cannot find motif with name: "+ name)
+
     def add_motif(self, motif_ss, name):
         chains = []
+        res_map = {}
         for c1 in motif_ss.chains:
             m_seq = c1.sequence()
             best = None
@@ -380,28 +415,47 @@ class SecondaryStructure(SecondaryStructureMotif):
                         raise ValueError("there are more then one match for this motif")
                     best = c2
                     best_pos = pos
-            chains.append(Chain(best.residues[best_pos:best_pos+len(m_seq)]))
+            res_splice = best.residues[best_pos:best_pos+len(m_seq)]
+            res_map[c1.first()] = res_splice[0]
+            res_map[c1.last()]  = res_splice[-1]
+            chains.append(Chain(res_splice))
 
         bps = []
         ends = []
-        m = SecondaryStructureMotif('UNKNOWN', [], chains)
+        end_ids = []
+        motif = SecondaryStructureMotif('UNKNOWN', [], chains)
         for bp in self.basepairs:
-            if m.get_residue(uuid=bp.res1.uuid) is None or \
-               m.get_residue(uuid=bp.res2.uuid) is None:
+            if motif.get_residue(uuid=bp.res1.uuid) is None or \
+               motif.get_residue(uuid=bp.res2.uuid) is None:
                continue
             bps.append(bp)
+        motif.basepairs = bps
+        for i, end in enumerate(motif_ss.ends):
+            res1 = res_map[end.res1]
+            res2 = res_map[end.res2]
+            bp = motif.get_bp(res1=res1, res2=res2)
+            ends.append(bp)
+            end_ids.append(motif_ss.end_ids[i])
+        motif.ends = ends
+        motif.end_ids = end_ids
+        motif.name = name
 
-        m.basepairs = bps
-        chain_ends = []
-        for c in chains:
-            chain_ends.append(c.first())
-            if len(c.residues) > 1:
-                chain_ends.append(c.last())
-        for bp in bps:
-            if bp.res1 in chain_ends and bp.res2 in chain_ends:
-                ends.append(bp)
-        m.ends = ends
-
+        remove = []
+        for m in self.motifs('ALL'):
+            include_count = 0
+            for r in m.residues():
+                if r in motif.residues():
+                    include_count += 1
+            if include_count == len(m.residues()):
+                remove.append(m)
+        for motifs in self.elements.itervalues():
+            for m in motifs:
+                if m in remove:
+                    motifs.remove(m)
+        if 'UNKNOWN' not in self.elements:
+            self.elements['UNKNOWN'] = []
+        self.elements['UNKNOWN'].append(motif)
+        self.elements['ALL'].append(motif)
 
     def convert_to_RNA(self):
         for c in self.chains:

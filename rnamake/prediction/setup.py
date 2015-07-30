@@ -9,6 +9,7 @@ import rnamake.motif_type as motif_type
 import rnamake.motif_outputer as motif_outputer
 import rnamake.motif_tree_state as motif_tree_state
 import rnamake.motif_library_sqlite as motif_library_sqlite
+import rnamake.resource_manager as rm
 import copy
 import math
 
@@ -45,6 +46,7 @@ def target_end_origin(hmotif):
     mt.add_motif(hmotif)
     mt.nodes[1].motif.to_pdb('ideal.pdb')
     return mt.nodes[1].available_ends()[0].d()
+
 
 def get_bp_step_prediction_lib(targets, helix_mlib):
     not_seen = {}
@@ -299,7 +301,7 @@ if __name__ == '__main__':
             m = get_bp_step_prediction_lib(target, helix_mlib)
             m.name = name
             ideal_motifs.append(m)
-    motif_library_sqlite.build_sqlite_library("bp_steps.db", ideal_motifs)
+    #motif_library_sqlite.build_sqlite_library("bp_steps.db", ideal_motifs)
 
     f = open(base_dir+"all.new.me", "w")
     for m in ideal_motifs:

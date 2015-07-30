@@ -10,13 +10,13 @@
 #define __RNAMake__graph__
 
 #include <stdio.h>
+#include <sstream> 
 
 #include "data_structure/graph/graph_node.h"
 #include "data_structure/graph/graph_node.fwd.h"
 
 template <typename DataType>
 class GraphIterator;
-
 
 template <typename DataType>
 class Graph {
@@ -89,7 +89,6 @@ public:
             parent->add_connection(c);
             n->add_connection(c);
         }
-        
     
         this->nodes_.push_back(n);
         this->index_++;
@@ -122,8 +121,8 @@ public:
 
         if(parent_index != -1) { parent = this->get_node(parent_index); }
         if(parent != nullptr) {
-            check_pos_is_valid(parent, parent_pos);
-            check_pos_is_valid(n, child_pos);
+            parent_pos = check_pos_is_valid(parent, parent_pos);
+            child_pos = check_pos_is_valid(n, child_pos);
             auto c = std::make_shared<GraphConnection<DataType>>(parent, n, parent_pos, child_pos);
             parent->add_connection(c, parent_pos);
             n->add_connection(c, child_pos);
@@ -134,11 +133,28 @@ public:
         this->last_node_ = n;
         return this->index_-1;
         
-        
     }
     
     inline
     void
+    connect(
+        int i,
+        int j,
+        int i_pos,
+        int j_pos) {
+        
+        auto n1 = this->get_node(i);
+        auto n2 = this->get_node(j);
+        i_pos = check_pos_is_valid(n1, i_pos);
+        j_pos = check_pos_is_valid(n2, j_pos);
+        auto c = std::make_shared<GraphConnection<DataType>>(n1, n2, i_pos, j_pos);
+        n1->add_connection(c, i_pos);
+        n2->add_connection(c, j_pos);
+        this->connections_.push_back(c);
+    }
+    
+    inline
+    int
     check_pos_is_valid(
         GraphNodeOP<DataType> const & n,
         int & pos) {
@@ -148,17 +164,40 @@ public:
             if(avail_pos.size() == 0) {
                 throw GraphException("cannot add connection to node, has not available ends");
             }
-            pos = avail_pos[0];
-            return;
+            return avail_pos[0];
         }
         
         else {
             if(n->available_pos(pos) == 0) {
                 throw GraphException("graph pos is not availabe");
             }
+            return pos;
         }
         
     }
+    
+    inline
+    Ints
+    get_available_pos(
+        GraphNodeOP<DataType> const & n,
+        int & pos) {
+        
+        if(pos == -1) {
+            return n->available_children_pos();
+        }
+        else {
+            if(n->available_pos(pos) == 0) {
+                std::stringstream ss;
+                ss << "graph pos is not available " << pos << std::endl;
+                throw GraphException(ss.str());
+            }
+            Ints r(1);
+            r[0] = pos;
+            return r;
+        }
+        
+    }
+    
     
 };
 

@@ -15,7 +15,7 @@ import motif_tree_topology
 def motif_tree_from_topology(mtt, sterics=1):
     mt = MotifTree(sterics=sterics)
     for i, n in enumerate(mtt.tree.nodes):
-        #print n.data.motif_name, n.data.parent_end_ss_id
+        #print i, n.data.motif_name, n.data.parent_end_ss_id
         if n.data.motif_name != "":
             m = rm.manager.get_motif(name=n.data.motif_name,
                                      end_id=n.data.end_ss_id)
