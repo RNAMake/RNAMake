@@ -52,15 +52,20 @@ class MotifTreeTopology(object):
 
             new_conn_nodes.append(new_c)
 
+        #for c in new_conn_nodes:
+        #    print c
+        #exit()
+
         for i, c in enumerate(new_conn_nodes):
             if c.name != "":
                 if c.name[0:5] != "HELIX":
                     parent_end_ss_id = c.parent_end_id
                     if i > 0:
                         n = self.tree.get_node(c.parent_index)
-                        if n.data.motif_name[2] == "=":
-                            ss = ssf.ss_id_to_secondary_structure(n.data.end_ss_id)
-                            parent_end_ss_id = secondary_structure.assign_end_id(ss, ss.ends[1])
+                        if len(n.data.motif_name) > 0:
+                            if n.data.motif_name[2] == "=":
+                                ss = ssf.ss_id_to_secondary_structure(n.data.end_ss_id)
+                                parent_end_ss_id = secondary_structure.assign_end_id(ss, ss.ends[1])
                     d = MotifTreeTopologyNodeData(c.name, c.end_id, parent_end_ss_id)
                     self.tree.add_data(d, c.parent_index)
                 else:
@@ -77,7 +82,7 @@ class MotifTreeTopology(object):
                             self.tree.add_data(d)
             else:
                 d = MotifTreeTopologyNodeData(c.name, c.end_id, c.parent_end_id)
-                self.tree.add_data(d)
+                self.tree.add_data(d, c.parent_index)
 
             #print c
             #print "length",len(self.tree), self.tree.last_node.index

@@ -1,6 +1,9 @@
 import unittest
 import random
 import build
+import math
+import numpy as np
+import numpy.linalg as lin
 import rnamake.thermo_fluc_sampler
 import rnamake.motif_tree_topology as motif_tree_topology
 import rnamake.motif_state_ensemble_tree as motif_state_ensemble_tree
@@ -8,6 +11,8 @@ import rnamake.motif_tree as motif_tree
 import rnamake.segmenter as segmenter
 import rnamake.resource_manager as rm
 import rnamake.pose_factory as pf
+import rnamake.transformations as trans
+import rnamake.util as util
 
 class ThermoFlucSamplerUnittest(unittest.TestCase):
 
@@ -65,6 +70,75 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         relaxer.run(mset, ni_1, ni_2, ei_1, ei_2)
         relaxer.write_pdbs()
 
+    def test_update(self):
+        builder = build.BuildSecondaryStructure()
+        ss = builder.build_helix(5)
+        con = ss.motif_topology_from_end()
+        mtt = motif_tree_topology.MotifTreeTopology(con)
+        mt = motif_tree.motif_tree_from_topology(mtt)
+        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
+
+        tfs = rnamake.thermo_fluc_sampler.ThermoFlucSampler()
+        tfs.option('temperature', 1000.0)
+        tfs.setup(mset)
+
+        n = tfs.mst.get_node(3)
+        for i in range(100):
+            tfs.next()
+            print n.data.cur_state.end_states[0].d
+
+    def test_interia_rmsd(self):
+        motif = rm.manager.get_motif(name='HELIX.IDEAL.3')
+        Ix = 1.94917
+        Iy = 12.3736
+        Iz = 330.499
+
+        r1 = motif.ends[0].r()
+        r2 = motif.ends[1].r()
+        r = util.unitarize(r1.T.dot(r2))
+        e = trans.euler_from_matrix(r)
+
+        x = math.atan2(r[2][1], r[2][2])
+        y = math.atan2(-r[2][0], math.sqrt(r[2][1]*r[2][1] + r[2][2]*r[2][2]))
+        z = math.atan2(r[1][0], r[0,0])
+
+        g = e[2]
+        b = e[1]
+        a = e[0]
+
+
+        t = motif.ends[0].d() - motif.ends[1].d()
+        #t = [0, 0, 10]
+
+        #g, b, a = 1.57, 0, 0
+
+        k = (1 - (math.cos(g) * math.cos(a) * math.cos(b)) + (math.sin(a) * math.sin(g)) )
+        l = (1 + (math.sin(g) * math.sin(a) * math.cos(b)) - (math.cos(a) * math.cos(g)) )
+        m = (1 - math.cos(b))
+
+        print k,l, m
+
+        print Ix*k, Iy*l, Iz*m, lin.norm(t)
+        rmsd = math.sqrt( 2 * ( (Ix * k) + (Iy * l) + (Iz * m) )  + lin.norm(t) ** 2 )
+
+        #print  motif.ends[0].res1
+        #print  motif.ends[1].res2
+
+        dist_squared = 0
+        count = 0
+        for i, a in enumerate(motif.ends[0].res1.atoms):
+            if a is None:
+                continue
+            dist_squared +=  util.distance(a.coords, motif.ends[1].res2.atoms[i].coords) ** 2
+            count += 1
+        for i, a in enumerate(motif.ends[0].res2.atoms):
+            if a is None:
+                continue
+            dist_squared +=  util.distance(a.coords, motif.ends[1].res1.atoms[i].coords) ** 2
+            count += 1
+        dist_squared = dist_squared / count
+        print rmsd
+        print math.sqrt(dist_squared)
 
 
 

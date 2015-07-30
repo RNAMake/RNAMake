@@ -3,6 +3,7 @@ import option
 import random
 import math
 import basepair
+import util
 
 class ThermoFlucSampler(base.Base):
     def __init__(self, **options):
@@ -11,10 +12,6 @@ class ThermoFlucSampler(base.Base):
         self.mset = None
         self.mst = None
 
-        kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
-        # kB.T at room temperature (25 degree Celsius)
-        self.kBT = kB * self.option('temperature')
-
     def setup_options_and_constraints(self):
         options = { 'temperature' : 298.15 }
 
@@ -22,6 +19,10 @@ class ThermoFlucSampler(base.Base):
         self.constraints = {}
 
     def setup(self, mset):
+        kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+        # kB.T at room temperature (25 degree Celsius)
+        self.kBT = kB * self.option('temperature')
+
         self.mset = mset
         self.mst  = mset.to_mst()
         self.states = [ 0 for x in range(len(self.mst)) ]
@@ -128,9 +129,79 @@ class ThermoFlucRelax(base.Base):
         self.best.write_pdbs()
 
 
-class ThermoFlucSimulation(base.Base):
-    def __init__(self, **options):
+class ThermoFlucScorer(object):
+    def __init__(self):
         pass
 
-    def setup(self, mset, changeable=None):
+class FrameScorer(ThermoFlucScorer):
+    def __init__(self):
         pass
+
+    def score(self, state_1, state_2):
+        frame_score = util.distance(state_1.d, state_2.d)
+        r_diff = util.matrix_distance(state_1.r, state_2.r)
+        state_2.flip()
+        r_diff_flip = util.matrix_distance(state_1.r, state_2.r)
+        state_2.flip()
+        if r_diff > r_diff_flip:
+            r_diff = r_diff_flip
+        frame_score += r_diff
+        return frame_score
+
+
+class RMSDScorer(ThermoFlucScorer):
+    pass
+
+
+class ThermoFlucSimulation(base.Base):
+    def __init__(self, **options):
+        self.setup_options_and_constraints()
+        self.scorer = FrameScorer()
+        self.sampler = ThermoFlucSampler()
+
+    def setup_options_and_constraints(self):
+        options   = { 'temperature' : 298.15,
+                      'steps'       : 1000 }
+
+        opt_types =  { 'temperature' : 'sampler'  }
+
+        self.options = option.Options(options)
+        self.opt_types = opt_types
+        self.constraints = {}
+
+    def setup(self, mset, ni1, ni2, ei1, ei2, **options):
+        self.options.dict_set(options)
+
+        for k,v in self.options.options.iteritems():
+            print k, v.value
+
+        self.sampler.setup(mset)
+        self.n1 = self.sampler.mst.get_node(ni1)
+        self.n2 = self.sampler.mst.get_node(ni2)
+        self.ei1, self.ei2 = ei1, ei2
+
+        end_state_1 = self.n1.data.cur_state.end_states[self.ei1]
+        end_state_2 = self.n2.data.cur_state.end_states[self.ei2]
+
+
+    def run(self):
+
+        step = 0
+        max_steps = self.option('steps')
+        while step < max_steps:
+            self.sampler.next()
+
+            end_state_1 = self.n1.data.cur_state.end_states[self.ei1]
+            end_state_2 = self.n2.data.cur_state.end_states[self.ei2]
+
+            score = self.scorer.score(end_state_1, end_state_2)
+            step += 1
+
+
+
+
+
+
+
+
+

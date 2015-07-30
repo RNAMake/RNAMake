@@ -27,6 +27,12 @@ public:
     int
     test_creation();
     
+    int
+    test_add();
+    
+    int
+    test_connect();
+    
     
 public:
     

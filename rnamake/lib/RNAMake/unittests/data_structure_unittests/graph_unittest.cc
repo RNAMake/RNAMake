@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <stdio.h>
 #include "graph_unittest.h"
 #include "data_structure/graph/graph.h"
 
@@ -45,7 +46,13 @@ GraphUnittest::test_creation() {
     g.add_data(0);
     g.add_data(1);
     g.add_data(2, 0);
-    int index = g.add_data(3, 0);
+    g.add_data(3, 0);
+    
+    //try to get a node that doesnt exist
+    try { g.get_node(10); throw std::runtime_error("failed"); }
+    catch(GraphException e) {}
+    catch(...) { return 0; }
+    
     
     GraphStatic<int> g1;
     g1.add_data(0, -1, -1, -1, 2);
@@ -54,12 +61,59 @@ GraphUnittest::test_creation() {
     return 1;
 }
 
+int
+GraphUnittest::test_add() {
+    GraphDynamic<int> g;
+    g.add_data(0);
+    
+    //catch improper parent index
+    try { g.add_data(1, 1); throw std::runtime_error("failed"); }
+    catch(GraphException e) {}
+    catch(...) { return 0; }
+    
+    GraphStatic<int> g1;
+    g1.add_data(0, -1, -1, 0, 1);
+    
+    //catch improper parent index
+    try { g1.add_data(1, 1); throw std::runtime_error("failed"); }
+    catch(GraphException e) {}
+    catch(...) { return 0; }
 
+    g1.add_data(1, 0, 0, 0, 2);
+    
+    //catch improper connection index, cannot add to node 0 already at max connections
+    try { g1.add_data(2, 0); throw std::runtime_error("failed");  }
+    catch(GraphException e) {}
+    catch(...) { return 0; }
+    
+    //catch incorrect end index,
+    try { g1.add_data(2, 1, 0, 0, 1); throw std::runtime_error("failed"); }
+    catch(GraphException e) {}
+    catch(...) { return 0; }
+    
+    g1.add_data(2, 1, 1, 0, 1);
+    
+    return 1;
+    
+}
 
+int
+GraphUnittest::test_connect() {
+    GraphStatic<int> g;
+    g.add_data(0, -1, -1, -1, 2);
+    g.add_data(1,  0, 0, 0, 2);
+    g.add_data(2,  1, 1, 0, 2);
+    g.connect(0, 2, 1, 1);
+    
+    return 1;
+}
 
 int
 GraphUnittest::run() {
-    if (test_nodes() == 0)               { std::cout << "test_nodes failed" << std::endl;  }
-    if (test_creation() == 0)            { std::cout << "test_creation failed" << std::endl;  }
+    if (test_nodes() == 0)           { std::cout << "test_nodes failed" << std::endl;  }
+    if (test_creation() == 0)        { std::cout << "test_creation failed" << std::endl;  }
+    if (test_add() == 0)             { std::cout << "test_add failed" << std::endl;  }
+    if (test_connect() == 0)         { std::cout << "test_connect failed" << std::endl;  }
+
     return 0;
 }

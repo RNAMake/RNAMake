@@ -58,7 +58,7 @@ class MotiftoSecondaryStructure(object):
         for bp in self.seen_bp.keys():
             res1 = ss.get_residue(uuid=bp.res1.uuid)
             res2 = ss.get_residue(uuid=bp.res2.uuid)
-            ss_bps.append(secondary_structure.Basepair(res1, res2))
+            ss_bps.append(secondary_structure.Basepair(res1, res2, bp.uuid))
         ss.basepairs = ss_bps
         ss_ends = []
 
@@ -243,7 +243,7 @@ class StructureSecondaryFactory(object):
             chains.append(secondary_structure.Chain(c_res))
         return chains
 
-    def get_structure(self, sequence=None, dot_bracket=None, base_ss=None):
+    def get_structure(self, sequence=None, dot_bracket=None, base_ss=None, to_RNA=0):
         if   sequence is not None and dot_bracket is not None:
             sstree = ss_tree.SS_Tree(sequence, dot_bracket)
         elif base_ss is not None:
@@ -252,6 +252,8 @@ class StructureSecondaryFactory(object):
             raise ValueError("supply sequence and dot_bracket strings or a" + \
                              " SecondaryStructure object")
         ss = sstree.ss
+        if to_RNA:
+            ss.convert_to_RNA()
 
         ss.basepairs, ss.ends = self._get_basepairs(sstree, ss)
         ss.elements = self._get_elements(sstree, ss)
