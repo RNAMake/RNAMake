@@ -11,12 +11,14 @@
 
 #include <stdio.h>
 #include <sstream> 
+#include <typeinfo>
 
 #include "data_structure/graph/graph_node.h"
 #include "data_structure/graph/graph_node.fwd.h"
 
-template <typename DataType>
+/*template <typename DataType>
 class GraphIterator;
+*/
 
 template <typename DataType>
 class Graph {
@@ -29,10 +31,15 @@ public:
     
 public:
     
-    typedef GraphIterator<DataType> iterator;
+    /*typedef GraphIterator<DataType> iterator;
     friend class GraphIterator<DataType>;
     iterator begin() const;
-    iterator end() const;
+    iterator end() const;*/
+    typedef typename GraphNodeOPs<DataType>::iterator iterator;
+    typedef typename GraphNodeOPs<DataType>::const_iterator const_iterator;
+
+    iterator begin() { return nodes_.begin(); }
+    iterator end()   { return nodes_.end(); }
     
 public:
     
@@ -198,6 +205,24 @@ public:
         
     }
     
+    inline
+    void
+    remove_node(
+        int pos) {
+        
+        auto n = this->get_node(pos);
+        for(auto c : n->connections()) {
+            if(c == nullptr) { continue; }
+            c->disconnect();
+            this->connections_.erase(std::remove(this->connections_.begin(), this->connections_.end(),
+                                                 c), this->connections_.end());
+            
+        }
+        
+        this->nodes_.erase(std::remove(this->nodes_.begin(), this->nodes_.end(),
+                                             n), this->nodes_.end());
+        this->last_node_ = this->nodes_.back();
+    }
     
 };
 
@@ -229,10 +254,12 @@ private:
     
 };
 
-template <typename DataType>
+/*template <typename DataType>
 typename Graph<DataType>::iterator
 Graph<DataType>::begin() const {
-    return iterator(nodes_[0], this);
+    std::cout << typeid(this).name() << std::endl;
+    return iterator(nodes_[0], nullptr);
+
 }
 
 template <typename DataType>
@@ -250,7 +277,7 @@ GraphIterator<DataType>::operator* () {
 template <typename DataType>
 GraphIterator<DataType> &
 GraphIterator<DataType>::operator++() {
-    if(node_ptr_->index()+1 == (int)graph_->size()) {
+    if(node_ptr_->index()+1 == graph_->index_) {
         node_ptr_ = nullptr;
     }
     else{
@@ -273,7 +300,7 @@ GraphIterator<DataType>::operator!= (
     GraphIterator<DataType> const& rhs) const {
     return node_ptr_ != rhs.node_ptr_;
 }
-
+*/
 
 
 

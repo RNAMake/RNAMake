@@ -33,6 +33,11 @@ public:
     int
     test_connect();
     
+    int
+    test_remove();
+    
+    int
+    test_iteration();
     
 public:
     

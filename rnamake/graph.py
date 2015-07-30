@@ -42,7 +42,7 @@ class Graph(object):
         return len(self.nodes)
 
     def __iter__(self):
-        self.current_node = self.get_node(0)
+        self.current_node = self.nodes[0]
         return self
 
     def next(self):
@@ -51,10 +51,10 @@ class Graph(object):
 
         node = self.current_node
 
-        if len(self.nodes)-1 == node.index:
+        try:
+            self.current_node = self.get_node(self.current_node.index+1)
+        except:
             self.current_node = None
-        else:
-            self.current_node = self.nodes[node.index + 1]
 
         return node
 
@@ -166,6 +166,7 @@ class GraphStatic(Graph):
         c = GraphConnection(n1, n2, i_pos, j_pos)
         n1.add_connection(c, i_pos)
         n2.add_connection(c, j_pos)
+
         self.connections.append(c)
 
     def remove_node(self, pos):
@@ -176,7 +177,7 @@ class GraphStatic(Graph):
                 self.connections.remove(c)
         self.nodes.remove(n)
         self.last_node = self.nodes[-1]
-        self.index -= 1
+        #self.index -= 1
 
     def check_pos_is_value(self, n, pos):
         if pos == -1:

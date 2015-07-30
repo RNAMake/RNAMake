@@ -104,9 +104,47 @@ GraphUnittest::test_connect() {
     g.add_data(1,  0, 0, 0, 2);
     g.add_data(2,  1, 1, 0, 2);
     g.connect(0, 2, 1, 1);
+    return 1;
+}
+
+int
+GraphUnittest::test_remove() {
+    GraphStatic<int> g;
+    g.add_data(0, -1, -1, -1, 2);
+    g.add_data(1,  0, 0, 0, 2);
+    g.add_data(2,  1, 1, 0, 2);
+    g.remove_node(2);
+    
+    if(g.size() != 2) {
+        return 0;
+    }
+    
+    GraphStatic<int> g1;
+    g1.add_data(0, -1, -1, -1, 2);
+    g1.add_data(1,  0, 0, 0, 2);
+    g1.add_data(2,  1, 1, 0, 2);
+    g1.remove_node(0);
+    
+    if(g.size() != 2) {
+        return 0;
+    }
     
     return 1;
 }
+
+int
+GraphUnittest::test_iteration() {
+    GraphStatic<int> g;
+    g.add_data(0, -1, -1, -1, 2);
+    g.add_data(1,  0, 0, 0, 2);
+    g.add_data(2,  1, 1, 0, 2);
+    int count = 0;
+    for(auto const & n : g) { auto n2 = n; count++; }
+    std::cout << count << std::endl;
+    return 1;
+}
+
+
 
 int
 GraphUnittest::run() {
@@ -114,6 +152,8 @@ GraphUnittest::run() {
     if (test_creation() == 0)        { std::cout << "test_creation failed" << std::endl;  }
     if (test_add() == 0)             { std::cout << "test_add failed" << std::endl;  }
     if (test_connect() == 0)         { std::cout << "test_connect failed" << std::endl;  }
+    if (test_remove() == 0)          { std::cout << "test_remove failed" << std::endl;  }
+    if (test_iteration() == 0)       { std::cout << "test_iteration failed" << std::endl;  }
 
     return 0;
 }
