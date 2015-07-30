@@ -64,8 +64,8 @@ class SqliteLibraryUnittest(unittest.TestCase):
             if index == -1:
                 self.fail("something wrong with bp_step directionality 2")
 
-            mt.remove_node(2)
-            mt.remove_node(1)
+            mt.remove_node()
+            mt.remove_node()
 
         builder = build.BuildMotifTree(libs=[mlib])
 
