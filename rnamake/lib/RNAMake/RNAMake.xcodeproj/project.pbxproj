@@ -109,7 +109,6 @@
 		1CF7641E1B66BA8200DA68FC /* option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DAF1B095ACB0076284E /* option.cc */; };
 		1CF7641F1B66BA8200DA68FC /* string.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFE791AF0636B00C03772 /* string.cc */; };
 		1CF764221B66BA8200DA68FC /* base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB11B095AE80076284E /* base.cc */; };
-		1CF764231B66BA8200DA68FC /* base.h in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB21B095AE80076284E /* base.h */; };
 		1CF764241B66BA8200DA68FC /* variant.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB51B0985A40076284E /* variant.cc */; };
 		1CF764261B66BA8200DA68FC /* cl_option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB81B09B43F0076284E /* cl_option.cc */; };
 		1CF764281B66BA8E00DA68FC /* unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFE5D1AF0495700C03772 /* unittest.cc */; };
@@ -123,6 +122,24 @@
 		1CF764341B6ADDBF00DA68FC /* tree_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7642F1B6AD90200DA68FC /* tree_node.cc */; };
 		1CF764351B6AF7FB00DA68FC /* tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F4F01B17FF9F000D1B6A /* tree.cc */; };
 		1CF764361B6B079800DA68FC /* tree_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F4E41B15151D000D1B6A /* tree_unittest.cc */; };
+		1CF764391B6BF97C00DA68FC /* secondary_structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764371B6BF97C00DA68FC /* secondary_structure.cc */; };
+		1CF7643A1B6BF97C00DA68FC /* secondary_structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764371B6BF97C00DA68FC /* secondary_structure.cc */; };
+		1CF7643B1B6BF97C00DA68FC /* secondary_structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764371B6BF97C00DA68FC /* secondary_structure.cc */; };
+		1CF7643E1B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7643C1B6BFA9600DA68FC /* secondary_structure_unittest.cc */; };
+		1CF7643F1B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7643C1B6BFA9600DA68FC /* secondary_structure_unittest.cc */; };
+		1CF764401B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7643C1B6BFA9600DA68FC /* secondary_structure_unittest.cc */; };
+		1CF764411B6C0A9800DA68FC /* numerical.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF3E1AF1A71000C03772 /* numerical.cc */; };
+		1CF764421B6C0AA900DA68FC /* sqlite3_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CC11B0013F20076284E /* sqlite3_connection.cc */; };
+		1CF764431B6C0AA900DA68FC /* cartesian_product.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CA31AF417A30076284E /* cartesian_product.cc */; };
+		1CF764441B6C0AA900DA68FC /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF471AF1AD6400C03772 /* uuid.cc */; };
+		1CF764451B6C0AA900DA68FC /* file_io.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF1E1AF0658B00C03772 /* file_io.cc */; };
+		1CF764461B6C0AA900DA68FC /* x3dna.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CDA1B014EE90076284E /* x3dna.cc */; };
+		1CF764491B6C0B1A00DA68FC /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764471B6C0B1A00DA68FC /* residue.cc */; };
+		1CF7644A1B6C0B1A00DA68FC /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764471B6C0B1A00DA68FC /* residue.cc */; };
+		1CF7644B1B6C0B1A00DA68FC /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764471B6C0B1A00DA68FC /* residue.cc */; };
+		1CF7644E1B6C104A00DA68FC /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7644C1B6C104A00DA68FC /* chain.cc */; };
+		1CF7644F1B6C104A00DA68FC /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7644C1B6C104A00DA68FC /* chain.cc */; };
+		1CF764501B6C104A00DA68FC /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7644C1B6C104A00DA68FC /* chain.cc */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -455,6 +472,14 @@
 		1CF7642F1B6AD90200DA68FC /* tree_node.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tree_node.cc; sourceTree = "<group>"; };
 		1CF764301B6AD90200DA68FC /* tree_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree_node.h; sourceTree = "<group>"; };
 		1CF764331B6AD93C00DA68FC /* tree_node.fwd.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tree_node.fwd.hh; sourceTree = "<group>"; };
+		1CF764371B6BF97C00DA68FC /* secondary_structure.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = secondary_structure.cc; sourceTree = "<group>"; };
+		1CF764381B6BF97C00DA68FC /* secondary_structure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secondary_structure.h; sourceTree = "<group>"; };
+		1CF7643C1B6BFA9600DA68FC /* secondary_structure_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = secondary_structure_unittest.cc; sourceTree = "<group>"; };
+		1CF7643D1B6BFA9600DA68FC /* secondary_structure_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secondary_structure_unittest.h; sourceTree = "<group>"; };
+		1CF764471B6C0B1A00DA68FC /* residue.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = residue.cc; sourceTree = "<group>"; };
+		1CF764481B6C0B1A00DA68FC /* residue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = residue.h; sourceTree = "<group>"; };
+		1CF7644C1B6C104A00DA68FC /* chain.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chain.cc; sourceTree = "<group>"; };
+		1CF7644D1B6C104A00DA68FC /* chain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chain.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -619,6 +644,7 @@
 		1C41F5051B1CE858000D1B6A /* memory_tests */ = {
 			isa = PBXGroup;
 			children = (
+				1CF7642E1B6AB23400DA68FC /* graph_memory_test.cc */,
 				1C41F5061B1CE868000D1B6A /* tree_memory_test.cc */,
 			);
 			path = memory_tests;
@@ -734,6 +760,12 @@
 				1C4E3E321B0AE5A20076284E /* ss_tree_node.cc */,
 				1C4E3E331B0AE5A20076284E /* ss_tree_node.h */,
 				1C4E3E351B0AE5B60076284E /* ss_tree_node.fwd.h */,
+				1CF764371B6BF97C00DA68FC /* secondary_structure.cc */,
+				1CF764381B6BF97C00DA68FC /* secondary_structure.h */,
+				1CF764471B6C0B1A00DA68FC /* residue.cc */,
+				1CF764481B6C0B1A00DA68FC /* residue.h */,
+				1CF7644C1B6C104A00DA68FC /* chain.cc */,
+				1CF7644D1B6C104A00DA68FC /* chain.h */,
 			);
 			path = secondary_structure;
 			sourceTree = "<group>";
@@ -743,6 +775,8 @@
 			children = (
 				1C4E3E371B0AE77C0076284E /* ss_tree_unittest.cc */,
 				1C4E3E381B0AE77C0076284E /* ss_tree_unittest.h */,
+				1CF7643C1B6BFA9600DA68FC /* secondary_structure_unittest.cc */,
+				1CF7643D1B6BFA9600DA68FC /* secondary_structure_unittest.h */,
 			);
 			path = secondary_structure_unittests;
 			sourceTree = "<group>";
@@ -969,7 +1003,6 @@
 				1CBEFF401AF1AAEF00C03772 /* random_number_generator.h */,
 				1CBEFF211AF066E400C03772 /* settings.h */,
 				1CBEFF221AF066E400C03772 /* settings.cc */,
-				1CF7642E1B6AB23400DA68FC /* graph_memory_test.cc */,
 				1CBEFF1E1AF0658B00C03772 /* file_io.cc */,
 				1CBEFF1F1AF0658B00C03772 /* file_io.h */,
 				1C4E3CDA1B014EE90076284E /* x3dna.cc */,
@@ -1396,8 +1429,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1CF764421B6C0AA900DA68FC /* sqlite3_connection.cc in Sources */,
+				1CF764431B6C0AA900DA68FC /* cartesian_product.cc in Sources */,
+				1CF764441B6C0AA900DA68FC /* uuid.cc in Sources */,
+				1CF764451B6C0AA900DA68FC /* file_io.cc in Sources */,
+				1CF764461B6C0AA900DA68FC /* x3dna.cc in Sources */,
+				1CF764411B6C0A9800DA68FC /* numerical.cc in Sources */,
 				1CF764361B6B079800DA68FC /* tree_unittest.cc in Sources */,
 				1CF764351B6AF7FB00DA68FC /* tree.cc in Sources */,
+				1CF7643B1B6BF97C00DA68FC /* secondary_structure.cc in Sources */,
 				1CF7642D1B66BCDF00DA68FC /* settings.cc in Sources */,
 				1CF7642C1B66BCD200DA68FC /* graph_unittest.cc in Sources */,
 				1CF7642A1B66BA9800DA68FC /* graph.cc in Sources */,
@@ -1407,10 +1447,12 @@
 				1CF764291B66BA8E00DA68FC /* main.cc in Sources */,
 				1CF7641E1B66BA8200DA68FC /* option.cc in Sources */,
 				1CF7641F1B66BA8200DA68FC /* string.cc in Sources */,
+				1CF764401B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */,
 				1CF764221B66BA8200DA68FC /* base.cc in Sources */,
-				1CF764231B66BA8200DA68FC /* base.h in Sources */,
 				1CF764241B66BA8200DA68FC /* variant.cc in Sources */,
 				1CF764261B66BA8200DA68FC /* cl_option.cc in Sources */,
+				1CF7644B1B6C0B1A00DA68FC /* residue.cc in Sources */,
+				1CF764501B6C104A00DA68FC /* chain.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1461,6 +1503,7 @@
 				1CBEFF1C1AF0642E00C03772 /* string.cc in Sources */,
 				1CF764321B6AD90200DA68FC /* tree_node.cc in Sources */,
 				1CBEFF4E1AF1AF2E00C03772 /* numerical.cc in Sources */,
+				1CF7643F1B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */,
 				1C41F4E61B15151D000D1B6A /* tree_unittest.cc in Sources */,
 				1C4E3C9F1AF312FD0076284E /* library_manager.cc in Sources */,
 				1CAACEA51AF2EC0F0098AA49 /* motif_type.cc in Sources */,
@@ -1469,6 +1512,7 @@
 				1C4E3DA51B0936FA0076284E /* motif_scorer_unittest.cc in Sources */,
 				1CBEFF3D1AF1651600C03772 /* settings.cc in Sources */,
 				1CAACE901AF2DE120098AA49 /* basepair_state.cc in Sources */,
+				1CF7644F1B6C104A00DA68FC /* chain.cc in Sources */,
 				1C4E3DB01B095ACB0076284E /* option.cc in Sources */,
 				1C4E3DB31B095AE80076284E /* base.cc in Sources */,
 				1CAACE871AF2C2510098AA49 /* structure_unittest.cc in Sources */,
@@ -1496,6 +1540,7 @@
 				1CAACE8E1AF2DE120098AA49 /* basepair.cc in Sources */,
 				1C4E3CDF1B01530B0076284E /* x3dna_unittest.cc in Sources */,
 				1C4E3CC21B0013F20076284E /* sqlite3_connection.cc in Sources */,
+				1CF7643A1B6BF97C00DA68FC /* secondary_structure.cc in Sources */,
 				1C4E3CDC1B014EE90076284E /* x3dna.cc in Sources */,
 				1C4E3E311B0AE57C0076284E /* ss_tree.cc in Sources */,
 				1C4E3CBB1AF455510076284E /* motif_tree_merger_unittest.cc in Sources */,
@@ -1503,6 +1548,7 @@
 				1CBEFF6F1AF1BEB600C03772 /* chain.cc in Sources */,
 				1C4E3DA21B07C92F0076284E /* motif_scorer.cc in Sources */,
 				1C4E3DC11B0A63340076284E /* cl_option_unittest.cc in Sources */,
+				1CF7644A1B6C0B1A00DA68FC /* residue.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1513,7 +1559,9 @@
 				1CBEFF001AF0636B00C03772 /* motif_tree_state_node_aligner.cc in Sources */,
 				1CAACEA91AF2ED570098AA49 /* motif_unittest.cc in Sources */,
 				1CAACE821AF2BB240098AA49 /* structure.cc in Sources */,
+				1CF7644E1B6C104A00DA68FC /* chain.cc in Sources */,
 				1CBEFEF61AF0636B00C03772 /* motif_ensemble.cc in Sources */,
+				1CF7643E1B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */,
 				1CBEFF131AF0636B00C03772 /* sequence_designer.cc in Sources */,
 				1CBEFEFD1AF0636B00C03772 /* motif_tree_state_alt_pather.cc in Sources */,
 				1CAACE8D1AF2DE120098AA49 /* basepair.cc in Sources */,
@@ -1544,7 +1592,9 @@
 				1CBEFEF71AF0636B00C03772 /* motif_ensemble_tree.cc in Sources */,
 				1CBEFF4C1AF1AE1000C03772 /* uuid_unittest.cc in Sources */,
 				1CBEFF231AF066E400C03772 /* settings.cc in Sources */,
+				1CF764491B6C0B1A00DA68FC /* residue.cc in Sources */,
 				1CAACEA41AF2EC0F0098AA49 /* motif_type.cc in Sources */,
+				1CF764391B6BF97C00DA68FC /* secondary_structure.cc in Sources */,
 				1CBEFF121AF0636B00C03772 /* sequence_design_scorer.cc in Sources */,
 				1CBEFF091AF0636B00C03772 /* mtst_to_met_converter.cc in Sources */,
 				1CF764311B6AD90200DA68FC /* tree_node.cc in Sources */,
