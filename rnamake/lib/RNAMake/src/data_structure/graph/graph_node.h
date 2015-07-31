@@ -19,7 +19,7 @@ class GraphException : public std::runtime_error {
 public:
     GraphException(
         String const & message) :
-    std::runtime_error("Graph Exception: " + message)
+    std::runtime_error(message)
     {}
     
 };
@@ -86,6 +86,17 @@ public:
         return nullptr;
         
     }
+    
+    inline
+    void
+    unset_connections() {
+        for(auto & c : connections_) {
+            if(c == nullptr) { continue;}
+            c->disconnect();
+            c = nullptr;
+        }
+    }
+    
     
 public: //getters
     inline
@@ -206,9 +217,6 @@ public:
         throw GraphException("tried to remove connection but is not present in node");
         
     }
-
-    
-    
 };
 
 

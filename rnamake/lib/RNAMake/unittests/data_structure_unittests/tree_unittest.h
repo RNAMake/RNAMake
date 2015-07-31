@@ -28,6 +28,9 @@ public:
     test_creation();
     
     int
+    test_add();
+    
+    int
     test_remove_node();
     
     int

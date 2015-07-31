@@ -1,1 +1,1 @@
-set(libraries base math util structure motif motif_tree_state resources motif_assembly unittests)
+set(libraries base math data_structure util unittests)

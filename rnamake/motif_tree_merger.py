@@ -96,6 +96,7 @@ class MotifTreeMerger(base.Base):
 
                     basepairs.append(cbp)
 
+        new_structure.to_pdb("test.pdb")
         p = pose_factory.factory.pose_from_motif_tree(new_structure, basepairs,
                                                       motifs, designable)
         return p
@@ -161,8 +162,11 @@ class MotifTreeMerger(base.Base):
         if   nc.is_hairpin() and pc.is_hairpin():
             raise ValueError("cannot merge an hairpin with another hairpin")
         elif nc.is_hairpin():
-            merged_chain_1 = self._get_merged_hairpin(pc.p3_chain, pc.p5_chain,
-                                                      p5_chain)
+            p3_chain = pc.p3_chain.subchain(0,-1)
+            p5_chain = pc.p5_chain.subchain(1)
+
+            merged_chain_1 = self._get_merged_hairpin(p3_chain, p5_chain,
+                                                      nc.p5_chain)
         elif pc.is_hairpin():
             merged_chain_1 = self._get_merged_hairpin(p5_chain, p3_chain,
                                                       pc.p5_chain, 1)
