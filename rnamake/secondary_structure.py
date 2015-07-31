@@ -5,7 +5,7 @@ import uuid
 import tree
 
 class Residue(object):
-    def __init__(self, name, dot_bracket, num, chain_id, uuid, i_code=" "):
+    def __init__(self, name, dot_bracket, num, chain_id, uuid, i_code=""):
         self.name, self.dot_bracket, self.num = name, dot_bracket, num
         self.uuid = uuid
         self.chain_id, self.i_code = chain_id, i_code

@@ -12,10 +12,11 @@
 #include "data_structure_unittests/tree_unittest.h"
 #include "data_structure_unittests/graph_unittest.h"
 
+#include "secondary_structure_unittests/secondary_structure_unittest.h"
+
 /*#include "util_unittests/uuid_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
 
-#include "secondary_structure_unittests/ss_tree_unittest.h"
 
 #include "structure_unittests/atom_unittest.h"
 #include "structure_unittests/residue_unittest.h"
@@ -40,6 +41,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    TreeUnittest test;
+    SecondaryStructureUnittest test;
     test.run();
 }
