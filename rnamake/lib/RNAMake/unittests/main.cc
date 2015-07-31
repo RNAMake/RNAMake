@@ -40,6 +40,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    GraphUnittest test;
+    TreeUnittest test;
     test.run();
 }

@@ -140,10 +140,18 @@ GraphUnittest::test_iteration() {
     g.add_data(2,  1, 1, 0, 2);
     int count = 0;
     for(auto const & n : g) { auto n2 = n; count++; }
-    std::cout << count << std::endl;
+    if(count != 3) {
+        return 0;
+    }
+    count = 0;
+    g.remove_node(0);
+    for(auto const & n : g) { auto n2 = n; count++; }
+    if(count != 2) {
+        return 0;
+    }
+    
     return 1;
 }
-
 
 
 int
@@ -156,4 +164,31 @@ GraphUnittest::run() {
     if (test_iteration() == 0)       { std::cout << "test_iteration failed" << std::endl;  }
 
     return 0;
+}
+
+void
+GraphUnittest::run_all() {
+    String name = "GraphUnittest";
+    typedef int (GraphUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_nodes"      ] = &GraphUnittest::test_nodes;
+    func_map["test_creation"   ] = &GraphUnittest::test_creation;
+    func_map["test_add"        ] = &GraphUnittest::test_add;
+    func_map["test_connect"    ] = &GraphUnittest::test_connect;
+    func_map["test_remove"     ] = &GraphUnittest::test_remove;
+    func_map["test_iteration"  ] = &GraphUnittest::test_iteration;
+
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+            if(result == 0) {
+                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
+            }
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+        std::cout << ".";
+        
+    }
 }

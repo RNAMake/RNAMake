@@ -2,22 +2,34 @@ import os
 import glob
 import fnmatch
 
-libs = "base math util structure motif motif_tree_state resources motif_assembly"
+libs = "base math data_structure util"
 lib_paths = libs.split()
 
 for p in lib_paths:
-    files = glob.glob("../../src/"+p+"/*.cc")
     f = open(p+".cmake", "w")
     f.write("set("+p+"_files\n")
-    for file in files:
-        f.write("\t"+file+"\n")
+    for root, dirnames, filenames in os.walk('../../src/'+p):
+        for filename in filenames:
+            if filename[-2:] != 'cc':
+                continue
+            f.write("\t"+os.path.join(root, filename)+"\n")
     f.write(")\n")
+    f.close()
+
 
 matches = []
-progs = "main.cc all_tests.cc shared_vs_raw.cc tree_memory_test.cc".split()
 for root, dirnames, filenames in os.walk('../../unittests'):
     for filename in fnmatch.filter(filenames, '*.cc'):
-        if filename in progs:
+        path = os.path.join(root, filename)
+        f = open(path)
+        fail = 0
+        for l in f.readlines():
+            if len(l) < 8:
+                continue
+            if l[:8] == 'int main':
+                fail = 1
+                break
+        if fail:
             continue
         matches.append(os.path.join(root, filename))
 

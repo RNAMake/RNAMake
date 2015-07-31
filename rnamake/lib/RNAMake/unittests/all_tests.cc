@@ -12,32 +12,15 @@
 //RNAMake Headers
 #include "base_unittests/option_unittest.h"
 
-#include "util_unittests/uuid_unittest.h"
-#include "util_unittests/x3dna_unittest.h"
+#include "data_structure_unittests/graph_unittest.h"
 
-#include "structure_unittests/atom_unittest.h"
-#include "structure_unittests/residue_type_set_unittest.h"
-#include "structure_unittests/residue_unittest.h"
-#include "structure_unittests/chain_unittest.h"
-#include "structure_unittests/structure_unittest.h"
-#include "structure_unittests/basepair_unittest.h"
-#include "structure_unittests/pdb_parser_unittest.h"
-
-#include "motif_unittests/motif_unittest.h"
-#include "motif_unittests/motif_tree_unittest.h"
-#include "motif_unittests/motif_tree_merger_unittest.h"
-#include "motif_unittests/motif_scorer_unittest.h"
-
-#include "motif_tree_state_unittests/motif_tree_state_library_unittest.h"
-
-#include "resources_unittests/motif_library_unittest.h"
-#include "resources_unittests/library_manager_unittest.h"
 
 
 int main(int argc, const char * argv[]) {
     std::vector<Unittest*> units;
     units.push_back(new OptionUnittest());
-    units.push_back(new UuidUnittest());
+    units.push_back(new GraphUnittest());
+    /*units.push_back(new UuidUnittest());
     units.push_back(new X3dnaUnittest());
     units.push_back(new AtomUnittest());
     units.push_back(new ResidueTypeSetUnittest());
@@ -52,12 +35,13 @@ int main(int argc, const char * argv[]) {
     units.push_back(new MotifScorerUnittest());
     units.push_back(new MotifTreeStateLibraryUnittest());
     units.push_back(new MotifLibraryUnittest());
-    units.push_back(new LibraryManagerUnittest());
+    units.push_back(new LibraryManagerUnittest());*/
     
     for(auto const & test : units) {
         if(test == nullptr) { continue; }
         test->run_all();
     }
+    std::cout << std::endl;
 
     
     

@@ -44,6 +44,8 @@ public:
     int
     run();
     
+    void
+    run_all();
     
 };
 

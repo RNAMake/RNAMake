@@ -39,7 +39,7 @@ class Tree(object):
         self.nodes.remove(node)
         node.parent = None
         self.last_node = node.parent
-        self.index -= 1
+        #self.index -= 1
 
     def remove_node_level(self, level=None):
         if level is None:

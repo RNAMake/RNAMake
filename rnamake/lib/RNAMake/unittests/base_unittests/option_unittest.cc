@@ -104,6 +104,6 @@ OptionUnittest::run_all() {
         catch(...) {
             std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
         }
-        
+        std::cout << ".";
     }
 }
