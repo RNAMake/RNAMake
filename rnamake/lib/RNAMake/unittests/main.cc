@@ -13,6 +13,7 @@
 #include "data_structure_unittests/graph_unittest.h"
 
 #include "secondary_structure_unittests/secondary_structure_unittest.h"
+#include "secondary_structure_unittests/ss_tree_unittest.h"
 
 /*#include "util_unittests/uuid_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
@@ -41,6 +42,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    SecondaryStructureUnittest test;
+    SS_TreeUnittest test;
     test.run();
 }

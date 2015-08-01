@@ -14,10 +14,27 @@
 #include "base/types.h"
 #include "util/uuid.h"
 
+#include "secondary_structure/chain.h"
+#include "secondary_structure/motif.h"
+
 namespace sstruct {
 
     
-class SecondaryStructure {
+class SecondaryStructure : public Motif {
+public:
+    
+    SecondaryStructure() {}
+    
+    SecondaryStructure(
+        String const &,
+        String const &);
+    
+    SecondaryStructure(
+        ChainOPs const &);
+    
+    ~SecondaryStructure() {}
+    
+public:
     
     
 };

@@ -19,6 +19,16 @@
 
 namespace sstruct {
     
+class SecondaryStructureException : public std::runtime_error {
+public:
+    SecondaryStructureException(
+        String const & message) :
+    std::runtime_error(message)
+    {}
+    
+};
+
+    
 class Residue {
 public:
     Residue(

@@ -11,8 +11,12 @@
 #include <vector>
 #include <memory>
 
+namespace sstruct {
+
 class SS_NodeData;
 typedef std::shared_ptr<SS_NodeData> SS_NodeDataOP;
 
+}
+    
 
 #endif

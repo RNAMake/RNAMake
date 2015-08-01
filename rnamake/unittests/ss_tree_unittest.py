@@ -8,10 +8,12 @@ import rnamake.secondary_structure_factory as sf
 class SSTreeUnittest(unittest.TestCase):
 
     def test_creation(self):
-        #sstree = ss_tree.SS_Tree("GAG&CAG&CAC", "(.(&).(&).)")
+        sstree = ss_tree.SS_Tree("GAG&CAG&CAC", "(.(&).(&).)")
+        for n in sstree:
+            print n.data.what(), n.data.sequence(), n.index
 
         #sstree = ss_tree.SS_Tree("GUG+CUC", "(.(+).)")
-        #exit()
+        exit()
 
         seq = "CAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIA"
         ss  = "..(((((...(((((...(((((...(((((.....)))))...))))).....(((((...(((((.....)))))...))))).....)))))...))))).."
@@ -30,6 +32,11 @@ class SSTreeUnittest(unittest.TestCase):
         path = settings.MOTIF_DIRS + "/tertiary_contacts/TC.1DUQ.0"
         tc = motif_factory.factory.motif_from_file(path)
         ss = sf.factory.get_structure(base_ss=tc.secondary_structure)
+
+    def test_creation_c(self):
+        sstree = ss_tree.SS_Tree("GG+CC+GG+CC", "((+))+((+))")
+        for n in sstree:
+            print n.data.what(), n.data.sequence(), n.index
 
 
 def main():
