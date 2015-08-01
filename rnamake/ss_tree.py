@@ -111,8 +111,8 @@ class SS_Tree(object):
         return self.tree.next()
 
     def _check_from_chain_ends(self, xb, yb):
-        if self._is_res_end_of_chain(self.residues[xb].num) or \
-           self._is_res_end_of_chain(self.residues[yb].num):
+        if  self._is_res_end_of_chain(self.residues[xb].num) or \
+            self._is_res_end_of_chain(self.residues[yb].num):
             ss_chains = [secondary_structure.Chain(),
                          secondary_structure.Chain()]
             fake_res1 = secondary_structure.Residue('&', '&', self.residues[xb].num,
@@ -126,6 +126,9 @@ class SS_Tree(object):
             return current
         return None
 
+    def _check_start_for_start_res(self, xb, yb):
+        pass
+
     def _build_tree(self):
         xb, yb = 1, len(self.residues)-2
         ss_chains = [secondary_structure.Chain(),
@@ -135,6 +138,7 @@ class SS_Tree(object):
         NodeandIndex = namedtuple('NodeandIndex', 'node index')
         open_nodes = Queue.Queue()
         open_nodes.put(NodeandIndex(current, -1))
+
         while not open_nodes.empty():
             current_pair = open_nodes.get()
 
@@ -145,13 +149,11 @@ class SS_Tree(object):
             xb =  self._map_back_to_index(current_pair.node.bound_side(0, Bound_Side.RIGHT))+1
             yb =  self._map_back_to_index(current_pair.node.bound_side(1, Bound_Side.LEFT)) -1
 
-
             if xb > yb:
                 index = self.tree.add_data(current_pair.node, current_pair.index)
                 seq_break = self._check_from_chain_ends(xb-1, yb+1)
                 if seq_break is not None:
                     self.tree.add_data(seq_break, index)
-
                 continue
 
             next_level = self._build_tree_level(xb, yb)
@@ -169,6 +171,7 @@ class SS_Tree(object):
                     else:
                         not_part_of_nway.append(n)
                 next_level = not_part_of_nway
+                print xb, yb, len(part_of_nway), len(not_part_of_nway)
 
                 if len(part_of_nway) > 0:
                     ss_chains = current_pair.node.ss_chains
@@ -191,11 +194,9 @@ class SS_Tree(object):
                     current_pair = NodeandIndex(new_node, index)
 
             index = self.tree.add_data(current_pair.node, current_pair.index)
+
             for n in next_level:
                 open_nodes.put(NodeandIndex(n, index))
-
-    def _build_tree_sub(self, xb, yb):
-        pass
 
     def _build_tree_level(self, xb, yb):
         next_level = []
@@ -313,6 +314,8 @@ class SS_Tree(object):
 
 
         return pos
+
+    #def _is_res_start_of_chain(self, num):
 
     def _is_res_end_of_chain(self, num):
         for c in self.ss.chains:

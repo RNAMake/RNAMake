@@ -14,68 +14,49 @@
 //RNAMake Headers
 #include "base/types.h"
 #include "data_structure/tree/tree.h"
+#include "secondary_structure/secondary_structure.h"
 #include "secondary_structure/ss_tree_node.h"
 #include "secondary_structure/ss_tree_node.fwd.h"
 
-using SS_Node  = NodeOP<SS_NodeDataOP>;
-using SS_Nodes = std::vector<SS_Node>;
+namespace sstruct {
 
-struct SubSSTree {
-    SubSSTree(
-        Strings const & nseq,
-        Strings const & nss,
-        std::vector<Ints> const & nbounds):
-    seq(nseq),
-    ss(nss),
-    bounds(nbounds)
-    {}
-
-    Strings seq, ss;
-    std::vector<Ints> bounds;
-};
-
-using SubSSTreeUP = std::unique_ptr<SubSSTree>;
+//using SS_Node  = TreeNodeOP<SS_NodeDataOP>;
+//using SS_Nodes = std::vector<SS_Node>;
 
 class SS_Tree {
 public:
     SS_Tree(
         String const &,
         String const &);
+    
+    ~SS_Tree() {}
+    
+public:
+    
+    typedef typename TreeDynamic<SS_NodeDataOP>::iterator iterator;
+    typedef typename TreeDynamic<SS_NodeDataOP>::const_iterator const_iterator;
+    
+    iterator begin() { return tree_.begin(); }
+    iterator end()   { return tree_.end(); }
+    
+    const_iterator begin() const { return tree_.begin(); }
+    const_iterator end()   const { return tree_.end(); }
+    
 
 public:
     inline
     int
     size() { return (int)tree_.size(); }
     
-    inline
-    SS_Node
-    get_node(int pos) { return tree_.get_node(pos); }
-    
-    inline
-    SS_NodeDataOP
-    get_data(int pos) { return tree_.get_data(pos); }
-    
-    TreeIterator<SS_NodeDataOP>
-    begin() const { return tree_.begin(); }
-
-    TreeIterator<SS_NodeDataOP>
-    end() const { return tree_.end(); }
-    
-    SubSSTreeUP 
-    seq_from_nodes(
-        SS_Nodes const &) const;
-
-    
 private:
     void
     _build_tree();
-    
     
     std::vector<SS_NodeDataOP>
     _build_tree_level(
         int,
         int);
-    
+  
     SS_NodeDataOP
     _assign_new_node(
         int,
@@ -89,11 +70,27 @@ private:
     _get_dot_bounds(
         int,
         int);
+    
+    int
+    _map_back_to_index(
+        ResidueOP const &);
+    
+    SS_NodeDataOP
+    _check_from_chain_ends(
+        int,
+        int);
 
+    int
+    _is_res_end_of_chain(
+        int);
+    
 private:
-    String ss_, seq_;
-    Tree<SS_NodeDataOP> tree_;
+    TreeDynamic<SS_NodeDataOP> tree_;
+    ResidueOPs residues_; 
+    SecondaryStructure ss_;
     
 };
+    
+} //sstruct
 
 #endif /* defined(__RNAMake__ss_tree__) */

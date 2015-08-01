@@ -12,54 +12,53 @@
 #include <stdio.h>
 #include "base/string.h"
 #include "secondary_structure/ss_tree_node.fwd.h"
+#include "secondary_structure/chain.h"
 
+namespace sstruct {
 
 class SS_NodeData {
 public:
-    enum SS_Type { SS_BP, SS_BULGE, SS_HAIRPIN, SS_NWAY, SS_PSEUDO_BP, SS_SEQ_BREAK };
+    enum SS_Type { SS_BP, SS_BULGE, SS_HAIRPIN, SS_NWAY, SS_PSEUDO_BP, SS_SEQ_BREAK, SS_MULTI };
     enum Bound_Side { LEFT, RIGHT };
     
     inline
     SS_NodeData(
-        Strings const & seq,
         SS_Type type,
-        std::vector<Ints> bounds):
-    seq_(seq),
+        ChainOPs const & ss_chains,
+        ResidueOPs const & bounds):
+    ss_chains_(ss_chains),
     type_(type),
     bounds_(bounds)
     {}
         
 public: //getters
     
-    Ints const &
-    bounds(
-        int pos) {
-        if(pos >= bounds_.size()) {
-            throw std::runtime_error("cannot call bounds in SS_TreeNode, with this pos");
-        }
-        
-        return bounds_[pos];
-    }
-    
-    std::vector<Ints> const &
-    bounds() { return bounds_; }
-
-    int const &
+    ResidueOP const &
     bound_side(
         int pos,
         Bound_Side side) {
+    
+        try {
+            auto ss_chain = ss_chains_.at(pos);
+            if(ss_chain->length() == 0) {
+                return bounds_[pos];
+            }
+            if(side == Bound_Side::LEFT) { return ss_chain->first(); }
+            else {                        return ss_chain->last();  }
+        }
         
-        Ints bound = bounds(pos);
-        return bound[(int)side];
+        catch(std::out_of_range) {
+            throw SecondaryStructureException("cannot access chain pos in bound_side");
+        }
+        catch(...) {
+            throw std::runtime_error("unexpected error in bound_side");
+        }
+        
     }
     
     inline
     SS_Type const &
     type() { return type_; }
-    
-    inline
-    int
-    nstrands() { return (int)seq_.size(); }
     
     inline
     String
@@ -74,50 +73,38 @@ public: //getters
     }
     
     inline
-    Strings
-    seqs() { return seq_; }
-    
-    
-public: //virtual getters
-    
-    virtual
-    inline
     String
-    seq() {
+    sequence() {
         String seq;
-        int i =-1;
-        for(auto const & s : seq_) {
+        int i = 0;
+        for (auto const & c : ss_chains_) {
+            seq += c->sequence();
+            if(i+1 != ss_chains_.size()) { seq += "&"; }
             i++;
-            seq += s;
-            if(i < seq_.size()-1) { seq += "+"; }
         }
         return seq;
     }
     
+public: //getters
+    
+    inline
+    ChainOPs
+    ss_chains() { return ss_chains_; }
+    
+    inline
+    ResidueOPs
+    bounds() { return bounds_; }
+    
+    
 protected:
-    Strings seq_;
-    std::vector<Ints> bounds_;
+    ChainOPs ss_chains_;
+    ResidueOPs bounds_;
     SS_Type type_;
 };
 
-class SS_NodeDataBP : public SS_NodeData {
-public:
-    SS_NodeDataBP(
-        Strings const & s,
-        SS_Type ntype,
-        std::vector<Ints> bounds):
-    SS_NodeData(s, ntype, bounds)
-    { }
-    
-    
-public:
-    
-    inline
-    String
-    seq() { return seq_[0]+seq_[1]; }
-    
-};
 
+
+} //sstruct
 
 
 

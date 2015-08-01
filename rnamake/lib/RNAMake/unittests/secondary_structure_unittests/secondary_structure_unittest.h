@@ -24,6 +24,12 @@ public:
     int
     test_creation();
     
+    int
+    test_creation_residue();
+    
+    int
+    test_get_residue();
+    
 public:
     
     int

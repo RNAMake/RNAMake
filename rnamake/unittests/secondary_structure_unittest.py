@@ -105,6 +105,7 @@ class SecondaryStructureUnittest(unittest.TestCase):
         mt.write_pdbs()
         print len(mt)
 
+
 def main():
     unittest.main()
 
