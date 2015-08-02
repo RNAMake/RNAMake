@@ -16,7 +16,7 @@
 //RNAMake Headers
 #include "util/settings.h"
 #include "util/x3dna.h"
-#include "structure/resource_manager.h"
+#include "structure/residue_type_set_manager.h"
 #include "structure/chain.h"
 #include "motif/motif.h"
 
@@ -27,9 +27,8 @@ Motif::Motif(
     score_(0),
     basepairs_(BasepairOPs()),
     ends_(BasepairOPs()),
-    mdir_(String()),
-    name_(String()),
-    cached_rotations_(Matrices())
+    path_(String()),
+    name_(String())
 {
  
     if(s.length() < 10) {
@@ -37,7 +36,7 @@ Motif::Motif(
     }
     
     Strings spl = split_str_by_delimiter(s, "&");
-    mdir_ = spl[0];
+    path_ = spl[0];
     name_ = spl[1];
     score_ = std::stof(spl[2]);
     mtype_ = static_cast<MotifType>(std::stoi(spl[3]));
@@ -63,52 +62,14 @@ Motif::Motif(
     for (auto const & index : end_indexes) {
         ends_.push_back( basepairs_ [ std::stoi(index) ]);
     }
-    _cache_basepair_frames();
 }
-
-Motif::Motif(
-    String const & path):
-    beads_(Beads()),
-    score_(0),
-    basepairs_(BasepairOPs()),
-    ends_(BasepairOPs()),
-    mdir_(String()),
-    name_(String()),
-    cached_rotations_(Matrices()) {
-        
-    struct stat s;
-    if( stat(path.c_str(),&s) == 0 ) {
-        //it's a directory
-        if( s.st_mode & S_IFDIR ) {
-            String fname = filename(path);
-            mdir_ = path;
-            name_ = fname;
-            structure_ = StructureOP(new Structure(mdir_ + "/" + fname + ".pdb"));
-        }
-        //it's a file
-        else if( s.st_mode & S_IFREG )
-        {
-            mdir_ = base_dir(path);
-            String fname = filename(path);
-            name_ = fname.substr(0, fname.length()-4);
-            structure_ = StructureOP(new Structure(path));
-        }
-
-    }
-
-    _setup_basepairs();
-    setup_basepair_ends();
-    _cache_basepair_frames();
-
-}
-
 
 
 Motif
 Motif::copy() {
     Motif cmotif;
     cmotif.name_ = name_;
-    cmotif.mdir_ = mdir_;
+    cmotif.path_ = path_;
     cmotif.score_ = score_;
     cmotif.mtype_ = mtype_;
     cmotif.structure_ = StructureOP (new Structure(structure_->copy()));
@@ -135,36 +96,14 @@ Motif::copy() {
         cmotif.ends_.push_back(bps[0]);
     }
     
-    cmotif._cache_basepair_frames();
     return cmotif;
 }
 
-void
-Motif::setup_basepair_ends() {
-    //TODO check to see if this works the same as python, its different
-    
-    ResidueOPs chain_ends;
-    for(auto const & c : chains()) {
-        chain_ends.push_back(c->first());
-        if(c->residues().size() > 1) { chain_ends.push_back(c->last()); }
-    }
-    
-    for( auto const & bp : basepairs_ ) {
-        for (auto const & ce1 : chain_ends) {
-            for(auto const & ce2 : chain_ends) {
-                if(bp->bp_type().compare("cW-W") == 0 && bp->res1() == ce1 && bp->res2() == ce2) {
-                    ends_.push_back(bp);
-                }
-                
-            }
-        }
-    }
-}
 
 String const
 Motif::to_str() {
     std::stringstream ss;
-    ss << mdir_ << "&" << name_ << "&" << score_ << "&" << mtype_ << "&" << structure_->to_str() << "&";
+    ss << path_ << "&" << name_ << "&" << score_ << "&" << mtype_ << "&" << structure_->to_str() << "&";
     for ( auto const & bp : basepairs_ ) {
         ss << bp->to_str() << "@";
     }
@@ -245,129 +184,6 @@ Motif::get_beads(BasepairOP const & excluded_end) {
     return beads_;
 }
 
-String
-Motif::sequence() {
-    String seq;
-    ChainOPs const cs = chains();
-    int i = -1;
-    for (auto const & c : cs) {
-        i++;
-        for (auto const & r : c->residues()) {
-            seq += r->short_name();
-        }
-        if(i+1 != cs.size()) {
-            seq += "&";
-        }
-    }
-    return seq;
-}
-
-String
-Motif::secondary_structure() {
-    String structure, ss;
-    BasepairOPs bps;
-    BasepairOP saved_bp(NULL);
-    ResidueOP partner_res;
-    std::map<String, int> seen_bp, seen_res;
-    int is_bp = 0, passes = 0, bp_seen = 0, res_seen = 0, partner_res_seen = 0;
-    int count = -1;
-    for (auto const & c : chains()) {
-        for (auto const & r : c->residues()) {
-            count ++;
-            ss = "";
-            is_bp = 0;
-            bps = get_basepair(r->uuid());
-            for(auto const & bp : bps) {
-                partner_res = bp->partner(r);
-                is_bp = 1;
-                passes = 0;
-                saved_bp.reset();
-                if(wc_bp(bp) && bp->bp_type().compare("cW-W") == 0) { passes = 1; }
-                if(gu_bp(bp) && bp->bp_type().compare("cW-W") == 0) { passes = 1; }
-                
-                if(passes) {
-                    saved_bp = bp;
-                    bp_seen = 0; partner_res_seen = 0; res_seen = 0;
-                    if(seen_bp.find(bp->uuid().s_uuid()) != seen_bp.end())  { bp_seen = 1;  }
-                    if(seen_res.find(partner_res->uuid().s_uuid()) != seen_res.end()) { partner_res_seen = 1; }
-                    if(seen_res.find(r->uuid().s_uuid()) != seen_res.end()) { res_seen = 1; }
-                    if(bp_seen == 0 && res_seen == 0 && partner_res_seen == 0) {
-                        seen_res[r->uuid().s_uuid()] = 1;
-                        ss = "(";
-                    }
-                    else if(partner_res_seen == 1) {
-                        if(seen_res[partner_res->uuid().s_uuid()] > 1) { ss = "."; }
-                        else {
-                            ss = ")";
-                            seen_res[r->uuid().s_uuid()] = 1;
-                            seen_res[partner_res->uuid().s_uuid()] += 1;
-                            break;
-                        }
-                    }
-                }
-                else if(seen_res.find(r->uuid().s_uuid()) == seen_res.end()) {  ss = "."; }
-
-            }
-            if(!is_bp) { ss = "."; }
-            if(saved_bp.get() != NULL) { seen_bp[saved_bp->uuid().s_uuid()] = 1; }
-            structure += ss;
-        }
-        structure += "&";
-    }
-    
-    return structure.substr(0, structure.length()-1);
-
-}
-
-void
-Motif::_setup_basepairs() {
-    
-    X3dna x3dna_parser;
-    String mdir = mdir_;
-    if(mdir.length() < 3) { mdir = ""; }
-    
-    X3Basepairs x_basepairs = x3dna_parser.get_basepairs(mdir + "/" + name_);
-    ResidueOP res1, res2;
-    BasepairOP bp;
-    for(auto const & xbp : x_basepairs) {
-        res1 = structure_->get_residue(xbp.res1.num, xbp.res1.chain_id, xbp.res1.i_code);
-        res2 = structure_->get_residue(xbp.res2.num, xbp.res2.chain_id, xbp.res2.i_code);
-        if (res1 == nullptr || res2 == nullptr) {
-            throw "cannot find residues in basepair during setup";
-        }
-        
-        bp = BasepairOP(new Basepair(res1, res2, xbp.r, xbp.bp_type));
-        _assign_bp_primes(bp);
-        basepairs_.push_back(bp);
-    }
-}
-
-void
-Motif::_assign_bp_primes(BasepairOP & bp) {
-    int res1_pos = 0, res2_pos = 0, res1_total = 0, res2_total = 0;
-    int i = 0;
-    for(auto const & c : chains()) {
-        i = 0;
-        for(auto const & r : c->residues()) {
-            if(bp->res1() == r) {
-                res1_pos = i;
-                res1_total = (int)c->residues().size();
-            }
-            else if(bp->res2() == r) {
-                res2_pos = i;
-                res2_total = (int)c->residues().size();
-            }
-            i++;
-        }
-    }
-    
-    if(res1_pos > res1_total/2 || res2_pos < res2_total/2) {
-        ResidueOP temp = bp->res1();
-        bp->res1(bp->res2());
-        bp->res2(temp);
-    }
-    
-}
 
 BasepairOP const &
 Motif::get_basepair_by_name(

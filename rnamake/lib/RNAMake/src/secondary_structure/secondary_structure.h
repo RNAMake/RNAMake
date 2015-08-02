@@ -10,6 +10,7 @@
 #define __RNAMake__secondary_structure__
 
 #include <stdio.h>
+#include <memory.h>
 
 #include "base/types.h"
 #include "util/uuid.h"
@@ -39,6 +40,7 @@ public:
     
 };
     
+typedef std::shared_ptr<SecondaryStructure> SecondaryStructureOP;
     
 }
 

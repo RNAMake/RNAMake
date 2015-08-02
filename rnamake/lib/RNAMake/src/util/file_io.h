@@ -14,6 +14,7 @@
 #include <string>
 #include <map>
 #include <sys/stat.h>
+#include <sys/types.h>
 #include <fstream>
 
 //RNAMake Headers
@@ -25,6 +26,20 @@ bool
 file_exists (String const & name) {
     struct stat buffer;
     return (stat (name.c_str(), &buffer) == 0);
+}
+
+inline
+int
+is_dir(String const & path) {
+    if(!file_exists(path)) { return 0; }
+    struct stat st;
+    lstat(path.c_str(), &st);
+    if(S_ISDIR(st.st_mode)) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 
