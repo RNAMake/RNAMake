@@ -46,7 +46,7 @@ class MotifTree(base.Base):
     :type motif: Motif object
 
     Examples
-
+m
     .. code-block:: python
         >>>mt = MotifTree()
         >>>mlib = MotifLibrary()

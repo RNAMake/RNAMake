@@ -105,7 +105,7 @@ MotifTree
 MotifTreeStateTree::to_motiftree() const {
     int i = -1;
     MotifTree mt;
-    ResidueTypeSet rts = ResourceManager::getInstance().residue_type_set();
+    ResidueTypeSet rts = ResidueTypeSetManager::getInstance().residue_type_set();
     for (auto const & n : nodes_) {
         i++;
         if(i == 0) {

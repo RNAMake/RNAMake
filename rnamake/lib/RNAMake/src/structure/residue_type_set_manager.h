@@ -14,10 +14,10 @@
 //RNAMake Headers
 #include "structure/residue_type_set.h"
 
-class ResourceManager {
+class ResidueTypeSetManager {
 public:
-    static ResourceManager & getInstance() {
-        static ResourceManager instance;
+    static ResidueTypeSetManager & getInstance() {
+        static ResidueTypeSetManager instance;
         return instance;
     }
    
@@ -31,16 +31,16 @@ public:
     
     
 protected:
-    ResourceManager() { //Prevent construction
+    ResidueTypeSetManager() { //Prevent construction
         rts_ = ResidueTypeSet();
         //std::cout << "created\n"; should only see this once!!!
     }
     
-    ResourceManager(ResourceManager const &); //Prevent construction
-    void operator= (ResourceManager const &);
+    ResidueTypeSetManager(ResidueTypeSetManager const &); //Prevent construction
+    void operator= (ResidueTypeSetManager const &);
     
 private:
-    ~ResourceManager() {}
+    ~ResidueTypeSetManager() {}
 
 private:
     ResidueTypeSet rts_;

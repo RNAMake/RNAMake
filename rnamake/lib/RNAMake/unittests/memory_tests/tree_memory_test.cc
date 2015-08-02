@@ -16,7 +16,7 @@ int main(int argc, const char * argv[]) {
     RandomNumberGenerator rng;
     
     for(int i = 0; i < 100000; i++) {
-        Tree<int> t;
+        TreeDynamic<int> t;
         int max = rng.randrange(100);
         for(int j = 0; j < max; j++) {
             t.add_data(rng.randrange(100));

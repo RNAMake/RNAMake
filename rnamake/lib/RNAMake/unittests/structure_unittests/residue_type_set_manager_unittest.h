@@ -14,12 +14,12 @@
 //RNAMake Headers
 #include "unittest.h"
 
-class ResourceMangerUnittest : public Unittest {
+class ResidueTypeSetManagerUnittest : public Unittest {
 public:
     
-    ResourceMangerUnittest() {} 
+    ResidueTypeSetManagerUnittest() {}
     
-    ~ResourceMangerUnittest() {}
+    ~ResidueTypeSetManagerUnittest() {}
     
 public:
     

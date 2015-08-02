@@ -8,4 +8,5 @@ set(structure_files
 	../../src/structure/residue_type.cc
 	../../src/structure/residue_type_set.cc
 	../../src/structure/structure.cc
+	../../src/structure/structure_factory.cc
 )
