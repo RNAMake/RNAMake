@@ -13,27 +13,38 @@
 
 //RNAMake Headers
 #include "base/types.h"
-#include "structure/structure.h"
-#include "structure/pdb_parser.h"
+#include "structure/structure_factory.h"
+#include "motif/motif.h"
 
 
 class MotifFactory {
 public:
-    MotifFactory() {}
+    MotifFactory():
+    sf_(StructureFactory()) {}
     
     ~MotifFactory() {}
     
 public:
     
-    StructureOP
-    get_structure(
-        String const & );
+    MotifOP
+    motif_from_file(
+        String const & path);
     
 private:
     
-    ChainOPs
-    _build_chains(
-        ResidueOPs & );
+    BasepairOPs
+    _setup_basepairs(
+        String const &,
+        StructureOP const &);
+    
+    BasepairOPs
+    _setup_basepair_ends(
+        StructureOP const &,
+        BasepairOPs const &);
+    
+    
+private:
+    StructureFactory sf_;
     
     
 };

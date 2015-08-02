@@ -8,19 +8,28 @@
 
 #include "unittest.h"
 #include "motif_unittest.h"
+#include "motif/motif_factory.h"
 #include "util/file_io.h"
-#include "resources/motif_library.h"
-
+#include "util/settings.h"
 
 MotifUnittest::MotifUnittest() {
-    String path = unittest_resource_dir() + "/motif/test_str_to_motif.dat";
+    
+    MotifFactory mf;
+    //String path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6";
+    //m_ = mf.motif_from_file(path);
+    
+    String path2 = base_dir() + "/rnamake/resources/motifs/helices/HELIX.IDEAL";
+    MotifOP m = mf.motif_from_file(path2);
+    std::cout << m->ends().size() << std::endl;
+    
+    /*String path = unittest_resource_dir() + "/motif/test_str_to_motif.dat";
     Strings lines = get_lines_from_file(path);
     
     ResidueTypeSet rts;
     m_ = Motif(lines[0], rts);
-    
+    */
 }
-
+/*
 int
 MotifUnittest::test_copy() {
     Motif mcopy = m_.copy();
@@ -63,8 +72,8 @@ MotifUnittest::test_secondary_structure() {
 
 int
 MotifUnittest::test_creation_from_dir() {
-    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/";
-    Motif m(m_path);
+    //String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/";
+    //Motif m(m_path);
     
     return 1;
 }
@@ -74,24 +83,25 @@ MotifUnittest::test_get_basepair_by_name() {
     MotifLibrary mlib(HELIX);
     MotifOP m = mlib.get_motif("HELIX.IDEAL");
     BasepairOP bp = m->get_basepair_by_name("A5-B7");
-    
+
     return 1;
 }
+*/
 
 int
 MotifUnittest::run() {
-    if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
+    /*if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
     if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
     if (test_secondary_structure() == 0)  { std::cout << "test_secondary_structure failed" << std::endl; }
     if (test_creation_from_dir() == 0)    { std::cout << "test_copy failed" << std::endl; }
     if (test_get_basepair_by_name() == 0) { std::cout << "test_get_basepair_by_name failed" << std::endl; }
-
+     */
     return 0;
 }
 
 void
 MotifUnittest::run_all() {
-    String name = "MotifUnittest";
+    /*String name = "MotifUnittest";
     typedef int (MotifUnittest::*fptr)();
     std::map<String, fptr> func_map;
     func_map["test_copy"   ] = &MotifUnittest::test_copy;
@@ -111,7 +121,7 @@ MotifUnittest::run_all() {
             std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
         }
         
-    }
+    }*/
 }
 
 

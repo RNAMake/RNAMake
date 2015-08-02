@@ -48,7 +48,7 @@ public:
     
 private:
     
-    Motif m_;
+    MotifOP m_;
     
     
 };

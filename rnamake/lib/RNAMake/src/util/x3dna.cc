@@ -103,7 +103,7 @@ X3dna::_get_ref_frame_path(String const & pdb_name) {
     }
     else {
         generate_ref_frame(pdb_name);
-        ref_frames_path = "ref_Frames.dat";
+        ref_frames_path = "ref_frames.dat";
     }
     
     return ref_frames_path;
@@ -242,7 +242,6 @@ X3dna::_split_over_white_space(String const & str) {
     return non_white_space;
 }
 
-
 X3Residue
 X3dna::_parse_dssr_res_str(String const & res_str) {
     Strings spl = split_str_by_delimiter(res_str, ".");
@@ -297,8 +296,7 @@ X3dna::get_basepairs(String const & pdb_path) {
             basepairs_.push_back(X3Basepair(res1, res2, Matrix(), Point(-1,-1,-1)));
         }
         
-    }
-    
+    }    
     return basepairs_;
     
 

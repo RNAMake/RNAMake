@@ -84,6 +84,10 @@ private:
     _is_res_end_of_chain(
         int);
     
+public: //getters
+    SecondaryStructure const &
+    secondary_structure() { return ss_; }
+    
 private:
     TreeDynamic<SS_NodeDataOP> tree_;
     ResidueOPs residues_; 
