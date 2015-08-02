@@ -441,7 +441,7 @@ ref_motif() {
         std::cout << line << std::endl;
         exit(0);
     }
-    Motif m ( line, ResourceManager::getInstance().residue_type_set());
+    Motif m ( line, ResidueTypeSetManager::getInstance().residue_type_set());
     return m;
 }
 

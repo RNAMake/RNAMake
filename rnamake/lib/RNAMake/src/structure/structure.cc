@@ -14,61 +14,30 @@
 #include "structure/chain.h"
 #include "structure/chain.fwd.h"
 
-void
-Structure::_build_chains(
-    ResidueOPs & residues) {
-    chains_ = ChainOPs();
-    ResidueOP current;
-    ResidueOPs current_chain_res;
-    int five_prime_end = 1;
-    int found = 1;
-    while (true) {
-        for (auto & r1 : residues) {
-            five_prime_end = 1;
-            for (auto & r2 : residues) {
-                if(r1->connected_to(*r2) == -1) {
-                    five_prime_end = 0;
-                    break;
-                }
-            }
-            if ( five_prime_end ) { current = r1; break; }
-        }
-        if(!five_prime_end) { break; }
-        residues.erase(std::remove(residues.begin(), residues.end(), current), residues.end());
-        current_chain_res = ResidueOPs();
-        found = 1;
-        while ( found ) {
-            current_chain_res.push_back(current);
-            found = 0;
-            for (auto & r : residues) {
-                if ( current->connected_to(*r) == 1) {
-                    current = r;
-                    found = 1;
-                    break;
-                }
-            }
-            if( found ) {
-                residues.erase(std::remove(residues.begin(), residues.end(), current), residues.end());
-            }
-            else {
-                chains_.push_back(ChainOP(new Chain(current_chain_res)));
-            }
-        }
-        if(residues.size() == 0) {
-            break;
-        }
-    }
-    
-}
+
 
 Structure
 Structure::copy() {
-    Structure cstruct;
+    ChainOPs chains;
     for (auto const & c : chains_) {
-        cstruct.chains_.push_back(ChainOP(new Chain(c->copy())));
+        chains.push_back(ChainOP(new Chain(c->copy())));
     }
-    cstruct._cache_coords();
-    return cstruct;
+    return Structure(chains);
+}
+
+void
+Structure::renumber() {
+    int i = 1, j = 0;
+    auto chain_ids = split_str_by_delimiter("A B C D E F G H I J K L M", " ");
+    for(auto & c : chains_) {
+        for(auto & r : c->residues()) {
+            r->num(i);
+            r->chain_id(chain_ids[j]);
+            i++;
+        }
+        j++;
+    }
+    
 }
 
 ResidueOPs const
@@ -110,17 +79,6 @@ Structure::get_residue(
 }
 
 
-void
-Structure::renumber() {
-    int i = 1;
-    for( auto & r : residues()) {
-        r->num(i);
-        r->chain_id("A");
-        i++;
-    }
-    
-}
-
 
 String
 Structure::to_pdb_str() {
@@ -156,15 +114,12 @@ Structure
 str_to_structure(
     String const & s,
     ResidueTypeSet const & rts) {
-    Structure structure;
     ChainOPs chains;
     Strings spl = split_str_by_delimiter(s, ":");
     for( auto const & c_str : spl) {
         Chain c = str_to_chain(c_str, rts);
         chains.push_back(ChainOP(new Chain(c)));
     }
-    structure.chains(chains);
-    structure._cache_coords();
-    return structure;
+    return Structure(chains);
 }
 

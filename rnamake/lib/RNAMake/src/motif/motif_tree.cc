@@ -21,7 +21,7 @@ MotifTree::MotifTree() {
     in.open(path.c_str());
     getline(in, line);
     in.close();
-    MotifOP m ( new Motif ( line, ResourceManager::getInstance().residue_type_set()) );
+    MotifOP m ( new Motif ( line, ResidueTypeSetManager::getInstance().residue_type_set()) );
     MotifTreeNodeOP head ( new MotifTreeNode (m, 0, 0, 0));
     last_node_ = head;
     nodes_ = MotifTreeNodeOPs();

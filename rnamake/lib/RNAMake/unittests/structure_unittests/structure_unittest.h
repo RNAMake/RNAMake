@@ -14,7 +14,7 @@
 //RNAMake Headers
 #include "unittest.h"
 #include "structure/structure.h"
-
+#include "structure/structure_factory.h"
 
 class StructureUnittest : public Unittest {
 public:
@@ -24,10 +24,7 @@ public:
     ~StructureUnittest() {}
     
 public:
-    
-    int
-    test_build_chains();
-    
+ 
     int
     test_move();
     
@@ -36,9 +33,6 @@ public:
     
     int
     test_get_residue();
-    
-    int
-    test_creation_from_pdb();
     
 public:
     
@@ -49,7 +43,8 @@ public:
     run_all();
     
 private:
-    Structure s_;
+    StructureOP s_;
+    StructureFactory sf_;
     
     
     

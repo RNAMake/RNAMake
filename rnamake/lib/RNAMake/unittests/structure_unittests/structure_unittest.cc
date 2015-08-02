@@ -13,33 +13,24 @@
 
 StructureUnittest::StructureUnittest() {
     
-    String path = unittest_resource_dir() + "/structure/test_str_to_structure.dat";
+    /*String path = unittest_resource_dir() + "/structure/test_str_to_structure.dat";
     Strings lines = get_lines_from_file(path);
     
     ResidueTypeSet rts;
-    s_ = str_to_structure(lines[0], rts);
-}
-
-int
-StructureUnittest::test_build_chains() {
-    Structure s2 = s_.copy();
-    ResidueOPs res = s_.residues();
-    s_._build_chains(res);
-    for(int i = 0; i < s_.residues().size(); i++ ){
-        if(s_.residues()[i]->num() != s2.residues()[i]->num()) { return 0; }
-    }
+    s_ = str_to_structure(lines[0], rts);*/
+    String path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
     
-    return 1;
-
+    sf_ = StructureFactory();
+    s_ = sf_.get_structure(path);
 }
 
 int
 StructureUnittest::test_move() {
-    Structure s2 = s_.copy();
+    Structure s2 = s_->copy();
     Point p (10.0, 0 ,0);
     s2.move(p);
     AtomOPs new_atoms = s2.atoms();
-    AtomOPs org_atoms = s_.atoms();
+    AtomOPs org_atoms = s_->atoms();
     
     float dist;
     for(int i = 0; i < org_atoms.size(); i++) {
@@ -63,10 +54,10 @@ StructureUnittest::test_transform() {
     Structure s2 = str_to_structure(lines[2], rts);
 
     Transform t(r, trans);
-    s_.transform(t);
+    s_->transform(t);
     
     AtomOPs org_atoms = s2.atoms();
-    AtomOPs new_atoms = s_.atoms();
+    AtomOPs new_atoms = s_->atoms();
     
     float dist;
     for(int i = 0; i < org_atoms.size(); i++) {
@@ -78,45 +69,33 @@ StructureUnittest::test_transform() {
     return 1;
 }
 
+
 int
 StructureUnittest::test_get_residue() {
     
 
-    ResidueOPs res = s_.residues();
+    ResidueOPs res = s_->residues();
     for(auto const & r : res) {
-        ResidueOP r_new = s_.get_residue(r->num(), r->chain_id(), r->i_code());
+        ResidueOP r_new = s_->get_residue(r->num(), r->chain_id(), r->i_code());
         if(!(r_new->uuid() == r->uuid())) { return 0; }
-        r_new = s_.get_residue(r->uuid());
+        r_new = s_->get_residue(r->uuid());
         if(!(r_new->uuid() == r->uuid())) { return 0; }
         
     }
     
-    ResidueOP r_new = s_.get_residue(100, "A", "");
+    ResidueOP r_new = s_->get_residue(100, "A", "");
     if(r_new.get() != NULL) { return 0; }
     
     return 1;
 }
 
-int
-StructureUnittest::test_creation_from_pdb() {
-    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
-    Structure s(m_path);
-    
-    if(s.residues().size() != 157) { return 0; }
-    
-    return 1;
-}
-
-
 
 int
 StructureUnittest::run() {
-    if (test_build_chains() == 0)       { std::cout << "test_build_chains failed" << std::endl; }
+    
     if (test_move() == 0)               { std::cout << "test_move failed" << std::endl; }
     if (test_transform() == 0)          { std::cout << "test_transform failed" << std::endl; }
     if (test_get_residue() == 0)        { std::cout << "test_get_residue failed" << std::endl; }
-    if (test_creation_from_pdb() == 0)  { std::cout << "test_creation_from_pdb failed" << std::endl; }
-
     return 0;
 }
 
@@ -126,11 +105,9 @@ StructureUnittest::run_all() {
     String name = "StructureUnittest";
     typedef int (StructureUnittest::*fptr)();
     std::map<String, fptr> func_map;
-    func_map["test_build_chains"      ] = &StructureUnittest::test_build_chains;
     func_map["test_move"              ] = &StructureUnittest::test_move;
     func_map["test_transform"         ] = &StructureUnittest::test_transform;
     func_map["test_get_residue"       ] = &StructureUnittest::test_get_residue;
-    func_map["test_creation_from_pdb" ] = &StructureUnittest::test_creation_from_pdb;
 
     for(auto const & kv : func_map) {
         try {

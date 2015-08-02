@@ -17,7 +17,6 @@
 #include "math/xyz_matrix.h"
 #include "structure/chain.fwd.h"
 #include "structure/residue.h"
-#include "structure/pdb_parser.h"
 
 class Structure {
 public:
@@ -25,21 +24,13 @@ public:
     
 public:
     Structure():
-    chains_ ( ChainOPs() ),
-    dummy_ ( Point (0, 0, 0))
+    chains_ (ChainOPs())
     {}
     
     Structure(
-        String const & pdb):
-    chains_ ( ChainOPs() ),
-    dummy_ ( Point (0, 0, 0)) {
-        
-        PDBParser pdb_parser;
-        ResidueOPs residues = pdb_parser.parse(pdb);
-        _build_chains(residues);
-        _cache_coords();
-        
-    }
+        ChainOPs const & chains):
+    chains_ (chains)
+    {}
     
     Structure
     copy();
@@ -48,62 +39,8 @@ public:
     
 public:
     
-    inline
     void
-    _cache_coords() {
-        coords_ = Points();
-        org_coords_ = Points();
-        for(auto const & a : atoms()) {
-            coords_.push_back(a->coords());
-            org_coords_.push_back(a->coords());
-        }
-        
-    }
-    
-    void
-    _build_chains(
-        ResidueOPs &);
-    
-    inline
-    void
-    _update_coords(
-        Points const & ncoords) {
-        int i = 0;
-        for (auto & a : atoms()) {
-            a->coords(ncoords[i]);
-            i++;
-        }
-    }
-    
-    inline
-    void
-    _restore_coords() {
-        _update_coords(org_coords_);
-        _cache_coords();
-    }
-    
-    inline
-    void
-    move(Point const & p) {
-        for(auto & a : atoms()) {
-            a->coords(a->coords() + p);
-        }
-    }
-    
-    inline
-    void
-    transform(Transform const & t) {
-        Matrix r = t.rotation().transpose();
-        Point trans = t.translation();
-        for( auto & p : coords_) {
-            dot_vector(r, p, dummy_);
-            dummy_ += trans;
-            p = dummy_;
-        }
-        
-        
-        _update_coords(coords_);
-    }
+    renumber();
     
     inline
     Beads
@@ -124,23 +61,16 @@ public:
         return beads;
     }
     
-    String
-    to_pdb_str();
+    ResidueOP const
+    get_residue(
+        int const & ,
+        String const & ,
+        String const & );
     
-    String
-    to_str();
-    
-    void
-    to_pdb(String const);
-    
-    void
-    renumber();
-    
-public: // getters
-    inline
-    ChainOPs const &
-    chains() { return chains_; }
-    
+    ResidueOP const
+    get_residue(
+        Uuid const &);
+
     ResidueOPs const
     residues();
     
@@ -157,23 +87,42 @@ public: // getters
         }
         return atoms;
     }
-    
-    
-    ResidueOP const
-    get_residue(
-        int const & ,
-        String const & ,
-        String const & );
-    
-    ResidueOP const
-    get_residue(
-        Uuid const &);
-    
-public: // setters
+
+    inline
+    void
+    move(Point const & p) {
+        for(auto & a : atoms()) {
+            a->coords(a->coords() + p);
+        }
+    }
     
     inline
     void
-    chains(ChainOPs const & nchains) { chains_ = nchains; }
+    transform(Transform const & t) {
+        Matrix r = t.rotation().transpose();
+        Point trans = t.translation();
+        for( auto & a : atoms() ) {
+            dot_vector(r, a->coords(), dummy_);
+            dummy_ += trans;
+            a->coords(dummy_);
+        }
+    }
+    
+      String
+    to_pdb_str();
+    
+    String
+    to_str();
+    
+    void
+    to_pdb(String const);
+    
+public: // getters
+    
+    inline
+    ChainOPs const &
+    chains() { return chains_; }
+
     
 private:
     ChainOPs chains_;
