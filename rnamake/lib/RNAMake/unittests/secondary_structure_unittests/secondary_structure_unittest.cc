@@ -14,6 +14,7 @@
 #include "secondary_structure/residue.h"
 #include "secondary_structure/chain.h"
 #include "secondary_structure/secondary_structure.h"
+#include "secondary_structure/secondary_structure_factory.h"
 
 
 int
@@ -96,9 +97,23 @@ SecondaryStructureUnittest::test_get_residue() {
 }
 
 int
+SecondaryStructureUnittest::test_assign_end_id() {
+    sstruct::SecondaryStructureFactory sf;
+    auto ss = sf.get_structure("GGGG&CCCC", "((((&))))");
+    auto end_id = sstruct::assign_end_id(ss, ss->ends()[0]);
+    std::cout << end_id << std::endl;
+    auto end_id2 = sstruct::assign_end_id(ss, ss->ends()[1]);
+    std::cout << end_id2 << std::endl;
+
+    return 1;
+}
+
+
+int
 SecondaryStructureUnittest::run() {
     if (test_creation_residue() == 0)  {  std::cout << "test_creation_residue failed" << std::endl; }
     if (test_creation() == 0)          {  std::cout << "test_creation failed" << std::endl; }
     if (test_get_residue() == 0)       {  std::cout << "test_get_residue failed" << std::endl; }
+    if (test_assign_end_id() == 0)     {  std::cout << "test_assign_end_id failed" << std::endl; }
     return 1;
 }
