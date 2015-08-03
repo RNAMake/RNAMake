@@ -66,4 +66,17 @@ SecondaryStructure::SecondaryStructure(
 
 }
 
+    
+String
+assign_end_id(
+    SecondaryStructureOP const &,
+    BasepairOP const &) {
+    
+    
+    
+    return "";
+    
+}
+
+    
 }

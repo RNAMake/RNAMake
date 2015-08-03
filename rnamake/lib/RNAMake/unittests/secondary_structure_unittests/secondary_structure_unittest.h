@@ -30,6 +30,9 @@ public:
     int
     test_get_residue();
     
+    int
+    test_assign_end_id();
+    
 public:
     
     int

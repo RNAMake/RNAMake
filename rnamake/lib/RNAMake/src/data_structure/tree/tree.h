@@ -175,45 +175,6 @@ public:
 
 #endif /* defined(__RNAMake__tree__) */
 
-/*
-inline
-int
-add_data(
-         DataType const & data,
-         int n_children=0,
-         int parent_index=-1,
-         int parent_child_pos=-1) {
-    auto n = std::make_shared<Node<DataType>>(data, index_, level_, node_type_, n_children);
-    NodeOP<DataType> parent = last_node_;
-    if(parent_index != -1) { parent = get_node(parent_index);}
-    if(parent == nullptr) {
-        nodes_.push_back(n);
-        index_++;
-        last_node_ = n;
-        return 0;
-    }
-    else if (parent_child_pos == -1 && node_type_ == NodeTypeStatic) {
-        Ints avail_child_pos = parent->available_children_pos();
-        if(avail_child_pos.size() == 0) {
-            throw std::runtime_error("cannot use node as parent as it has not spots for children\n");
-        }
-        parent_child_pos = avail_child_pos[0];
-    }
-    
-    parent->add_child(n, parent_child_pos);
-    n->set_parent(parent);
-    
-    nodes_.push_back(n);
-    index_++;
-    last_node_ = n;
-    
-    return n->index();
-    
-}
-
-*/
-
-
 
 
 

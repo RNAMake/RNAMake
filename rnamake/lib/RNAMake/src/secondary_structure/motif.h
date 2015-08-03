@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "secondary_structure/chain.h"
+#include "secondary_structure/basepair.h"
 
 namespace sstruct {
  
@@ -20,8 +21,25 @@ public:
     
     Motif():
     chains_(ChainOPs()),
-    end_ids_(Strings())
+    end_ids_(Strings()),
+    ends_(BasepairOPs()),
+    basepairs_(BasepairOPs()),
+    name_(String()),
+    type_("UNKNOWN")
     {}
+    
+    Motif(
+        String const & type,
+        BasepairOPs const & ends,
+        ChainOPs const & chains):
+    chains_(chains),
+    end_ids_(Strings()),
+    ends_(ends),
+    basepairs_(BasepairOPs()),
+    name_(String()),
+    type_(type)
+    {}
+
     
     ~Motif() {}
     
@@ -100,19 +118,77 @@ public:
 
     }
     
+    inline
+    BasepairOP
+    get_bp(
+        ResidueOP const & r1,
+        ResidueOP const & r2) {
+        
+        for(auto const & bp : basepairs_) {
+            if     (r1 == bp->res1() && r2 == bp->res2()) { return bp; }
+            else if(r2 == bp->res1() && r1 == bp->res2()) { return bp; }
+        }
+        
+        throw std::runtime_error("cannot find basepair in sstruct::motifs");
+        
+    }
+    
+ 
 public: //getters
     
     inline
-    ChainOPs
+    ChainOPs const &
     chains() { return chains_; }
+    
+    inline
+    BasepairOPs const &
+    basepairs() { return basepairs_; }
+    
+    inline
+    BasepairOPs const &
+    ends() { return ends_; }
+    
+    inline
+    String const &
+    type() { return type_; }
+    
+    inline
+    String const &
+    name() { return name_; }
+    
+    inline
+    Strings const &
+    end_ids() { return end_ids_; }
+    
+public: //setters
+    
+    inline
+    void
+    basepairs(BasepairOPs const & nbasepairs) { basepairs_ = nbasepairs; }
+    
+    inline
+    void
+    ends(BasepairOPs const & nends) { ends_ = nends; }
+    
+    inline
+    void
+    name(String const & name) { name_ = name; }
+    
+    inline
+    void
+    end_ids(Strings const & end_ids) { end_ids_ = end_ids; }
     
     
 protected:
     ChainOPs chains_;
+    BasepairOPs basepairs_, ends_;
     Strings end_ids_;
-    
+    String type_, name_;
     
 };
+    
+typedef std::shared_ptr<Motif> MotifOP;
+typedef std::vector<MotifOP>   MotifOPs;
     
 }
 

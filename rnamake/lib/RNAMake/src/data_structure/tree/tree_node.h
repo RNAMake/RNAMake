@@ -106,6 +106,15 @@ public: //getters
     TreeNodeOP<DataType> const &
     parent() { return parent_; }
     
+    inline
+    int
+    parent_index() {
+        if(parent_ == nullptr) {
+            return -1;
+        }
+        return parent_->index();
+    }
+    
 public: //setters
     
     inline

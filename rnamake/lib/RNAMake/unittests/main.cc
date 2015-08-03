@@ -48,6 +48,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    SecondaryStructureFactoryUnittest test;
+    SecondaryStructureUnittest test;
     test.run();
 }

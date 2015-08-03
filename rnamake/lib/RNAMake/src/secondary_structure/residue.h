@@ -27,7 +27,7 @@ public:
     {}
     
 };
-
+    
     
 class Residue {
 public:
@@ -102,6 +102,14 @@ str_to_residue(String const & s);
 
 typedef std::shared_ptr<Residue> ResidueOP;
 typedef std::vector<ResidueOP> ResidueOPs;
+    
+struct res_less_than_key {
+    inline
+    bool
+    operator() (ResidueOP const & r1, ResidueOP const & r2) {
+        return (r1->num() < r2->num());
+    }
+};
     
 } //sstruct
 
