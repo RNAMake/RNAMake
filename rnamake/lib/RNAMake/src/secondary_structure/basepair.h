@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__basepair__
-#define __RNAMake__basepair__
+#ifndef __RNAMake__ss_basepair__
+#define __RNAMake__ss_basepair__
 
 #include <stdio.h>
 #include <sstream>
@@ -18,6 +18,7 @@
 namespace sstruct {
 
 class Basepair {
+public:
     inline
     Basepair(
         ResidueOP const & res1,
@@ -58,6 +59,20 @@ public:
         }
         
     }
+    
+public:
+    
+    inline
+    ResidueOP const &
+    res1() { return res1_; }
+    
+    inline
+    ResidueOP const &
+    res2() { return res2_; }
+    
+    inline
+    Uuid const &
+    uuid() { return uuid_; }
     
 private:
     ResidueOP res1_, res2_;

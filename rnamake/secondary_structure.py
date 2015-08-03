@@ -183,6 +183,7 @@ class SecondaryStructure(SecondaryStructureMotif):
         self.elements = {'ALL' : []}
         self.basepairs = []
         self.ends = []
+        self.end_ids = []
 
     def __repr__(self):
         return "<SecondaryStructure( " + self.sequence() + " " + self.dot_bracket() + " )"

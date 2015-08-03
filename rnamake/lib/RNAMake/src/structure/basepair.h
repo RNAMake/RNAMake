@@ -190,7 +190,6 @@ private:
     
 };
 
-typedef std::vector<Basepair> Basepairs;
 typedef std::shared_ptr<Basepair> BasepairOP;
 typedef std::vector<BasepairOP> BasepairOPs;
 

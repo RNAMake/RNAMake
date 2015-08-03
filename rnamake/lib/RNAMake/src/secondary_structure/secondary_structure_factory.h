@@ -33,8 +33,9 @@ public:
         auto sstree = SS_Tree(sequence, dot_bracket);
         auto ss = std::make_shared<SecondaryStructure>(sstree.secondary_structure());
         _get_basepairs(sstree, ss);
+        _get_motifs(sstree, ss);
         
-        return nullptr;
+        return ss;
         
     }
 
@@ -44,6 +45,16 @@ private:
     _get_basepairs(
         SS_Tree const &,
         SecondaryStructureOP &);
+    
+    void
+    _get_motifs(
+        SS_Tree const &,
+        SecondaryStructureOP &);
+    
+    ChainOPs
+    _get_chains(
+        SecondaryStructureOP const &,
+        std::vector<TreeNodeOP<SS_NodeDataOP>> const &);
 
 };
 
