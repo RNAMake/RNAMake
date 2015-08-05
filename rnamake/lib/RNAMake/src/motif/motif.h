@@ -32,6 +32,7 @@ public:
     ends_(BasepairOPs()),
     path_(String()),
     name_(String()),
+    end_ids_(Strings()),
     structure_ ( StructureOP() )
     {}
     
@@ -45,6 +46,7 @@ public:
     ends_(ends),
     path_(String()),
     name_(String()),
+    end_ids_(Strings()),
     structure_ (structure)
     {}
         
@@ -198,6 +200,11 @@ public: // setters
     void
     score(float const & nscore) { score_ = nscore; }
     
+    inline
+    void
+    end_ids(Strings const & end_ids) {
+        end_ids_ = end_ids;
+    }
     
     inline
     void
@@ -212,6 +219,7 @@ protected:
     MotifType mtype_;
     BasepairOPs basepairs_, ends_;
     String path_, name_;
+    Strings end_ids_;
     StructureOP structure_;
     sstruct::SecondaryStructureOP secondary_structure_;
     int block_end_add_;

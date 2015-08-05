@@ -14,13 +14,16 @@
 //RNAMake Headers
 #include "base/types.h"
 #include "structure/structure_factory.h"
+#include "motif/motif_to_secondary_structure.h"
+#include "motif/motif_scorer.h"
 #include "motif/motif.h"
 
 
 class MotifFactory {
 public:
     MotifFactory():
-    sf_(StructureFactory()) {}
+    sf_(StructureFactory()),
+    parser_(MotiftoSecondaryStructure()){}
     
     ~MotifFactory() {}
     
@@ -42,9 +45,15 @@ private:
         StructureOP const &,
         BasepairOPs const &);
     
+    void
+    _setup_secondary_structure(
+        MotifOP &);
+    
     
 private:
     StructureFactory sf_;
+    MotiftoSecondaryStructure parser_;
+    MotifScorer scorer_;
     
     
 };

@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <iostream>
+
 #include "motif/motif_factory.h"
 #include "structure/chain.h"
 #include "util/file_io.h"
@@ -29,11 +31,10 @@ MotifFactory::motif_from_file(
     auto basepairs = _setup_basepairs(path, structure);
     auto ends = _setup_basepair_ends(structure, basepairs);
     auto m = std::make_shared<Motif>(structure, basepairs, ends);
-    
+    _setup_secondary_structure(m);
     
     return m;
 }
-
 
 BasepairOPs
 MotifFactory::_setup_basepairs(
@@ -60,7 +61,6 @@ MotifFactory::_setup_basepairs(
     
 }
 
-
 BasepairOPs
 MotifFactory::_setup_basepair_ends(
     StructureOP const & structure,
@@ -86,7 +86,26 @@ MotifFactory::_setup_basepair_ends(
     return ends;
 }
 
-
+void
+MotifFactory::_setup_secondary_structure(
+    MotifOP & m) {
+    
+    auto ss = parser_.to_secondary_structure(m);
+    Strings end_ids(m->ends().size());
+    int i = 0;
+    for(auto const & end : m->ends()) {
+        auto res1 = ss->get_residue(end->res1()->uuid());
+        auto res2 = ss->get_residue(end->res2()->uuid());
+        auto ss_end = ss->get_bp(res1, res2);
+        end_ids[i] = sstruct::assign_end_id(ss, ss_end);
+    }
+    
+    ss->end_ids(end_ids);
+    m->end_ids(end_ids);
+    m->secondary_structure(ss);
+    
+    
+}
 
 
 

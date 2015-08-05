@@ -101,10 +101,23 @@ SecondaryStructureUnittest::test_assign_end_id() {
     sstruct::SecondaryStructureFactory sf;
     auto ss = sf.get_structure("GGGG&CCCC", "((((&))))");
     auto end_id = sstruct::assign_end_id(ss, ss->ends()[0]);
-    std::cout << end_id << std::endl;
+    //std::cout << end_id << std::endl;
     auto end_id2 = sstruct::assign_end_id(ss, ss->ends()[1]);
-    std::cout << end_id2 << std::endl;
+    //std::cout << end_id2 << std::endl;
 
+    return 1;
+}
+
+int
+SecondaryStructureUnittest::test_to_str() {
+    sstruct::SecondaryStructureFactory sf;
+    auto ss = sf.get_structure("GGGG&CCCC", "((((&))))");
+    //std::cout << ss->basepairs().size() << std::endl;
+    auto s = ss->to_str();
+    auto ss1 = sstruct::str_to_secondary_structure(s);
+    if(ss->motifs("ALL").size() != ss1.motifs("ALL").size()) {
+        return 0;
+    }
     return 1;
 }
 
@@ -115,5 +128,6 @@ SecondaryStructureUnittest::run() {
     if (test_creation() == 0)          {  std::cout << "test_creation failed" << std::endl; }
     if (test_get_residue() == 0)       {  std::cout << "test_get_residue failed" << std::endl; }
     if (test_assign_end_id() == 0)     {  std::cout << "test_assign_end_id failed" << std::endl; }
+    if (test_to_str() == 0)            {  std::cout << "test_to_str failed" << std::endl; }
     return 1;
 }

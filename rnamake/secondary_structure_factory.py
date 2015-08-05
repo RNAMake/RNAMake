@@ -116,7 +116,7 @@ class MotiftoSecondaryStructure(object):
                 if saved_bp is not None:
                     self.seen_bp[saved_bp] = 1
 
-                ss_res.append(secondary_structure.Residue(r.name, ss, r.num,
+                ss_res.append(secondary_structure.Residue(r.short_name(), ss, r.num,
                                                           r.chain_id, r.uuid, r.i_code))
             ss_chains.append(secondary_structure.Chain(ss_res))
             best_chain = self._get_next_chain(motif)

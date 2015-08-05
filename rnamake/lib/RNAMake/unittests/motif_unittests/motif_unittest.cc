@@ -9,6 +9,7 @@
 #include "unittest.h"
 #include "motif_unittest.h"
 #include "motif/motif_factory.h"
+#include "motif/motif_to_secondary_structure.h"
 #include "util/file_io.h"
 #include "util/settings.h"
 
@@ -20,7 +21,7 @@ MotifUnittest::MotifUnittest() {
     
     String path2 = base_dir() + "/rnamake/resources/motifs/helices/HELIX.IDEAL";
     MotifOP m = mf.motif_from_file(path2);
-    std::cout << m->ends().size() << std::endl;
+    std::cout << m->dot_bracket() << std::endl;
     
     /*String path = unittest_resource_dir() + "/motif/test_str_to_motif.dat";
     Strings lines = get_lines_from_file(path);

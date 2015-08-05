@@ -198,6 +198,13 @@ m
         pose = self.to_pose()
         pose.to_pdb(fname)
 
+    def topology_to_str(self):
+        s = ""
+        for n in self.graph:
+            s += n.data.name + "," + n.data.end_ids[0] + "," + \
+                 str(n.parent_index())
+        return s
+
     def _update_beads(self, parent, child):
         """
         This may seem strange but it correct the small differences that can

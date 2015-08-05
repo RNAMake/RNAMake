@@ -9,6 +9,7 @@
 #include <memory.h>
 #include <map>
 #include <queue>
+#include <sstream>
 
 #include "secondary_structure/chain.h"
 #include "secondary_structure/secondary_structure.h"
@@ -68,6 +69,33 @@ SecondaryStructure::SecondaryStructure(
 
 }
 
+String
+SecondaryStructure::to_str() {
+    std::stringstream ss;
+    for(auto const & c : chains_) {
+        ss << c->to_str() + ":";
+    }
+    ss << "@";
+    for(auto const & bp : basepairs_) {
+        ss << bp->res1()->num() << "|" << bp->res1()->chain_id() << "|" << bp->res1()->i_code() << "_";
+        ss << bp->res2()->num() << "|" << bp->res2()->chain_id() << "|" << bp->res2()->i_code() << ",";
+    }
+    ss << "@";
+    for(auto const & bp : ends_) {
+        ss << bp->res1()->num() << "|" << bp->res1()->chain_id() << "|" << bp->res1()->i_code() << "_";
+        ss << bp->res2()->num() << "|" << bp->res2()->chain_id() << "|" << bp->res2()->i_code() << ",";
+    }
+    ss << "@";
+    for(auto const & kv : motifs_) {
+        if(kv.first == "ALL") { continue; }
+        for(auto const & m : kv.second) {
+            ss << m->to_str() + "$";
+        }
+    }
+    
+    return ss.str();
+    
+}
     
 String
 assign_end_id(
@@ -220,6 +248,109 @@ assign_end_id(
     
 }
 
+    
+ResidueOP
+get_res_from_res_str(
+    SecondaryStructure const & ss,
+    String const & res_str) {
+    
+    Strings res_spl = split_str_by_delimiter(res_str, "|");
+    int num = std::stoi(res_spl[0]);
+    if(res_str.size() == 3) {
+        return ss.get_residue(num, res_spl[1], res_spl[2]);
+    }
+    else {
+        return ss.get_residue(num, res_spl[1]);
+
+    }
+}
+    
+
+SecondaryStructure
+str_to_secondary_structure(
+    String const & s) {
+    
+    auto spl = split_str_by_delimiter(s, "@");
+    auto c_spl = split_str_by_delimiter(spl[0], ":");
+    ChainOPs chains;
+    for(auto const & chain_str : c_spl) {
+        auto c = std::make_shared<Chain>(str_to_chain(chain_str));
+        chains.push_back(c);
+    }
+    auto ss = SecondaryStructure(chains);
+    auto bp_spl = split_str_by_delimiter(spl[1], ",");
+    BasepairOPs basepairs, ends;
+    ResidueOP res_1, res_2;
+    
+    for(auto const & bp_str : bp_spl) {
+        auto res_info = split_str_by_delimiter(bp_str, "_");
+        res_1 = get_res_from_res_str(ss, res_info[0]);
+        res_2 = get_res_from_res_str(ss, res_info[1]);
+        auto bp = std::make_shared<Basepair>(res_1, res_2, Uuid());
+        basepairs.push_back(bp);
+    }
+    ss.basepairs(basepairs);
+    auto end_spl = split_str_by_delimiter(spl[2], ",");
+    for(auto const & end_str : end_spl) {
+        auto res_info = split_str_by_delimiter(end_str, "_");
+        res_1 = get_res_from_res_str(ss, res_info[0]);
+        res_2 = get_res_from_res_str(ss, res_info[1]);
+        auto bp = ss.get_bp(res_1, res_2);
+    }
+    auto motif_spl = split_str_by_delimiter(spl[3], "$");
+    std::map<String, MotifOPs> motifs;
+    motifs["ALL"] = MotifOPs();
+    for(auto const & motif_str : motif_spl) {
+        auto motif_info = split_str_by_delimiter(motif_str, ";");
+        auto type = motif_info[0];
+        auto chain_spl = split_str_by_delimiter(motif_info[1], ",");
+        ChainOPs m_chains;
+        for(auto const & res_list : chain_spl) {
+            auto res = split_str_by_delimiter(res_list, "_");
+            ResidueOPs residues;
+            for(auto const & r_str : res) {
+                auto r = get_res_from_res_str(ss, r_str);
+                residues.push_back(r);
+            }
+            m_chains.push_back(std::make_shared<Chain>(residues));
+        }
+        BasepairOPs m_basepairs, m_ends;
+        auto bp_spl = split_str_by_delimiter(motif_info[2], ",");
+        for(auto const & bp_str : bp_spl) {
+            auto res_info = split_str_by_delimiter(bp_str, "_");
+            res_1 = get_res_from_res_str(ss, res_info[0]);
+            res_2 = get_res_from_res_str(ss, res_info[1]);
+            auto bp = ss.get_bp(res_1, res_2);
+            if(bp == nullptr) {
+                throw std::runtime_error("cannot find basepair in str_to_ss");
+            }
+            m_basepairs.push_back(bp);
+        }
+        auto end_spl = split_str_by_delimiter(motif_info[3], ",");
+        for(auto const & end_str : end_spl) {
+            auto res_info = split_str_by_delimiter(end_str, "_");
+            res_1 = get_res_from_res_str(ss, res_info[0]);
+            res_2 = get_res_from_res_str(ss, res_info[1]);
+            auto bp = ss.get_bp(res_1, res_2);
+            if(bp == nullptr) {
+                throw std::runtime_error("cannot find basepair in str_to_ss");
+            }
+            m_ends.push_back(bp);
+        }
+        auto m = std::make_shared<Motif>(type, m_ends, m_chains);
+        m->basepairs(m_basepairs);
+        motifs["ALL"].push_back(m);
+        if(motifs.find(m->type()) == motifs.end()) {
+            motifs[m->type()] = MotifOPs();
+        }
+        motifs[m->type()].push_back(m);
+    }
+    
+    ss.set_motifs(motifs);
+    
+    return ss;
+    
+}
     
 }
 

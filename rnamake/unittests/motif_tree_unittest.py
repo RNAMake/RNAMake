@@ -71,7 +71,8 @@ class MotifTreeUnittest(unittest.TestCase):
         build.fill_basepairs_in_ss(ss)
         mt2 = motif_tree.update_sequence(mt, ss)
 
-
+    def test_topology_to_str(self):
+        pass
 
 
 

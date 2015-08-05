@@ -89,7 +89,7 @@ public:
     get_residue(
         int num,
         String const & chain_id,
-        String i_code = "") {
+        String i_code = "") const {
         
         for(auto & c : chains_) {
             for (auto & r : c->residues() ){
@@ -105,7 +105,7 @@ public:
     inline
     ResidueOP
     get_residue(
-        Uuid const & uuid) {
+        Uuid const & uuid) const {
         
         for(auto & c : chains_) {
             for (auto & r : c->residues() ){
@@ -122,7 +122,7 @@ public:
     BasepairOP const &
     get_bp(
         ResidueOP const & r1,
-        ResidueOP const & r2) {
+        ResidueOP const & r2) const {
         
         for(auto const & bp : basepairs_) {
             if     (r1 == bp->res1() && r2 == bp->res2()) { return bp; }
@@ -143,6 +143,32 @@ public:
         }
         return nullptr;
     }
+    
+    virtual
+    String
+    to_str() {
+        std::stringstream ss;
+        ss << type_ << ";";
+        for(auto const & c : chains_) {
+            for(auto const & r : c->residues()) {
+                ss << r->num() << "|" << r->chain_id() << "|" << r->i_code() << "_";
+            }
+            ss << ",";
+        }
+        ss << ";";
+        for(auto const & bp : basepairs_) {
+            ss << bp->res1()->num() << "|" << bp->res1()->chain_id() << "|" << bp->res1()->i_code() << "_";
+            ss << bp->res2()->num() << "|" << bp->res2()->chain_id() << "|" << bp->res2()->i_code() << ",";
+        }
+        ss << ";";
+        for(auto const & end : ends_) {
+            ss << end->res1()->num() << "|" << end->res1()->chain_id() << "|" << end->res1()->i_code() << "_";
+            ss << end->res2()->num() << "|" << end->res2()->chain_id() << "|" << end->res2()->i_code() << ",";
+        }
+        
+        return ss.str();
+    }
+    
     
  
 public: //getters
