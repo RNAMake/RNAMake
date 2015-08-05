@@ -33,6 +33,10 @@ public:
     int
     test_assign_end_id();
     
+    int
+    test_to_str();
+    
+    
 public:
     
     int

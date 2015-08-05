@@ -117,7 +117,8 @@ public:
         }
     }
     
-
+    String
+    to_str();
     
 public: //setters
     
@@ -136,8 +137,21 @@ String
 assign_end_id(
     SecondaryStructureOP const &,
     BasepairOP const &);
+ 
+
+//helper functions for str_to_secondary_structure
+ResidueOP
+get_res_from_res_str(
+    SecondaryStructure const &,
+    String const &);
+
+    
+SecondaryStructure
+str_to_secondary_structure(
+    String const &);
     
 }
+
 
 
 

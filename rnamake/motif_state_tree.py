@@ -211,7 +211,6 @@ class MotifStateTree(base.Base):
             if c.i == i or c.j == i:
                 self.connections.remove(c)
 
-
     def remove_node_level(self, level=None):
         self.tree.remove_node_level(level)
 
