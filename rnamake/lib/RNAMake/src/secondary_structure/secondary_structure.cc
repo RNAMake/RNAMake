@@ -70,7 +70,7 @@ SecondaryStructure::SecondaryStructure(
 }
 
 String
-SecondaryStructure::to_str() {
+SecondaryStructure::to_str() const {
     std::stringstream ss;
     for(auto const & c : chains_) {
         ss << c->to_str() + ":";
@@ -270,6 +270,7 @@ SecondaryStructure
 str_to_secondary_structure(
     String const & s) {
     
+  
     auto spl = split_str_by_delimiter(s, "@");
     auto c_spl = split_str_by_delimiter(spl[0], ":");
     ChainOPs chains;
@@ -281,7 +282,7 @@ str_to_secondary_structure(
     auto bp_spl = split_str_by_delimiter(spl[1], ",");
     BasepairOPs basepairs, ends;
     ResidueOP res_1, res_2;
-    
+
     for(auto const & bp_str : bp_spl) {
         auto res_info = split_str_by_delimiter(bp_str, "_");
         res_1 = get_res_from_res_str(ss, res_info[0]);
@@ -297,6 +298,10 @@ str_to_secondary_structure(
         res_2 = get_res_from_res_str(ss, res_info[1]);
         auto bp = ss.get_bp(res_1, res_2);
     }
+    if(spl.size() == 3) {
+        return ss;
+    }
+    
     auto motif_spl = split_str_by_delimiter(spl[3], "$");
     std::map<String, MotifOPs> motifs;
     motifs["ALL"] = MotifOPs();

@@ -69,13 +69,21 @@ class MotifTreeTopology(object):
                     d = MotifTreeTopologyNodeData(c.name, c.end_id, parent_end_ss_id)
                     self.tree.add_data(d, c.parent_index)
                 else:
+                    if i > 0:
+                        parent_end_ss_id = c.parent_end_id
+                        n = self.tree.get_node(c.parent_index)
+                        if len(n.data.motif_name) > 0:
+                            if n.data.motif_name[2] == "=":
+                                ss = ssf.ss_id_to_secondary_structure(n.data.end_ss_id)
+                                parent_end_ss_id = secondary_structure.assign_end_id(ss, ss.ends[1])
+
                     ss = ssf.ss_id_to_secondary_structure(c.end_id)
                     conn = ss.motif_topology_from_end(ss.ends[0])
                     for j, c2 in enumerate(conn):
                         spl = c2[0].split("_")
                         name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
                         if j == 0:
-                            d = MotifTreeTopologyNodeData(name, c2[0], c.parent_end_id)
+                            d = MotifTreeTopologyNodeData(name, c2[0], parent_end_ss_id)
                             self.tree.add_data(d, c.parent_index)
                         else:
                             d = MotifTreeTopologyNodeData(name, c2[0], c2[1])

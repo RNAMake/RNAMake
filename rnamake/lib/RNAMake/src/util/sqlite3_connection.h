@@ -42,9 +42,6 @@ public:
     void
     query(String const);
     
-    virtual
-    Strings const &
-    next() { return values_; }
     
 public: //getters
     
@@ -53,7 +50,6 @@ protected:
     int rc_;
     int ic_;
     String query_statement_;
-    Strings values_;
     std::string db_name_;
     sqlite3* db_;
     sqlite3_stmt* stmt_;

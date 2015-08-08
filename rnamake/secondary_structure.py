@@ -270,6 +270,10 @@ class SecondaryStructure(SecondaryStructureMotif):
         while not len(queue) == 0:
 
             current_e, current_end, parent_pos = queue.pop()
+
+            if current_e in seen_e:
+                continue
+
             i = current_e.ends.index(current_end)
             if current_e.type != 'HELIX':
                 ss_id = current_e.end_ids[i]

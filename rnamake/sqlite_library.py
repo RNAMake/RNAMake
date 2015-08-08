@@ -4,6 +4,7 @@ import os
 import settings
 import motif
 import motif_ensemble
+import secondary_structure_factory
 import secondary_structure
 import ss_tree
 
@@ -118,6 +119,7 @@ class MotifSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
         super(MotifSqliteLibrary, self).__init__()
         self.libnames = self.get_libnames()
+        self.ss_trees = {}
         path = self._get_path(libname)
         self._setup(path)
 
@@ -138,19 +140,18 @@ class MotifSqliteLibrary(SqliteLibrary):
 
         return libnames
 
-
-    def get_best_match(self, new_id):
+    def get_best_matches(self, new_id):
         if self.contains(end_id=new_id):
             return self.get(end_id=new_id)
 
-        exit()
 
         if len(self.ss_trees) == 0:
-            for id in self.data_path:
-                sstree = secondary_structure.ss_id_to_ss_tree(id)
-                self.ss_trees[id] = sstree
+            self.load_all()
+            for m in self.all():
+                sstree = secondary_structure_factory.ss_id_to_ss_tree(m.end_ids[0])
+                self.ss_trees[m.end_ids[0]] = sstree
 
-        new_ss_tree = secondary_structure.ss_id_to_ss_tree(new_id)
+        new_ss_tree = secondary_structure_factory.ss_id_to_ss_tree(new_id)
         best_score = 10000
         best_id = None
         for id, sstree in self.ss_trees.iteritems():
@@ -162,8 +163,8 @@ class MotifSqliteLibrary(SqliteLibrary):
         if best_score == 10000:
             raise  ValueError("get_best_match failed in MotifSSIDSqliteLibrary")
 
-        print best_score
-        return self.get(best_id)
+        #print best_score
+        return self.get(end_id=best_id)
 
 
 class MotifSSIDSqliteLibrary(SqliteLibrary):

@@ -38,6 +38,9 @@ public:
     int
     test_get_basepair_by_name();
     
+    int
+    test_align();
+    
 public:
     
     int
@@ -48,7 +51,7 @@ public:
     
 private:
     
-    MotifOP m_;
+    MotifOP p4p6_, base_;
     
     
 };

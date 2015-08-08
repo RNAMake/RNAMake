@@ -14,6 +14,7 @@
 #include <algorithm>
 
 //RNAMake Headers
+#include "util/file_io.h"
 #include "util/settings.h"
 #include "util/x3dna.h"
 #include "structure/residue_type_set_manager.h"
@@ -39,9 +40,10 @@ Motif::Motif(
     path_ = spl[0];
     name_ = spl[1];
     score_ = std::stof(spl[2]);
-    mtype_ = static_cast<MotifType>(std::stoi(spl[3]));
-    structure_ = StructureOP( new Structure(str_to_structure(spl[4], rts)));
-    Strings basepair_str = split_str_by_delimiter(spl[5], "@");
+    block_end_add_ = std::stoi(spl[3]);
+    mtype_ = static_cast<MotifType>(std::stoi(spl[4]));
+    structure_ = StructureOP( new Structure(str_to_structure(spl[5], rts)));
+    Strings basepair_str = split_str_by_delimiter(spl[6], "@");
     for (auto const & bp_str : basepair_str) {
         Strings bp_spl = split_str_by_delimiter(bp_str, ",");
         Strings res_spl = split_str_by_delimiter(bp_spl[0], "-");
@@ -53,15 +55,16 @@ Motif::Motif(
         ResidueOP res2 = structure_->get_residue(res2_num, res2_id, "");
         BasepairState bpstate = str_to_basepairstate(bp_spl[1]);
         BasepairOP bp ( new Basepair(res1, res2, bpstate.r(), bp_spl[2] ));
-        bp->flipped(std::stoi(bp_spl[4]));
 
         basepairs_.push_back(bp);
     }
     
-    Strings end_indexes = split_str_by_delimiter(spl[6], " ");
+    Strings end_indexes = split_str_by_delimiter(spl[7], " ");
     for (auto const & index : end_indexes) {
         ends_.push_back( basepairs_ [ std::stoi(index) ]);
     }
+    end_ids_ = split_str_by_delimiter(spl[8], " ");
+    secondary_structure_ = std::make_shared<sstruct::SecondaryStructure>(sstruct::str_to_secondary_structure(spl[9]));
 }
 
 
@@ -76,6 +79,9 @@ Motif::copy() {
     cmotif.beads_ = Beads(beads_.size());
     cmotif.basepairs_ = BasepairOPs();
     cmotif.ends_ = BasepairOPs();
+    cmotif.secondary_structure_ = std::make_shared<sstruct::SecondaryStructure>(secondary_structure_->copy());
+    cmotif.end_ids_ = end_ids_;
+    cmotif.block_end_add_ = block_end_add_;
     int i = 0;
     for (auto const & b : beads_) {
         cmotif.beads_[i] = b.copy();
@@ -103,7 +109,8 @@ Motif::copy() {
 String const
 Motif::to_str() {
     std::stringstream ss;
-    ss << path_ << "&" << name_ << "&" << score_ << "&" << mtype_ << "&" << structure_->to_str() << "&";
+    ss << path_ << "&" << name_ << "&" << score_ << "&" << block_end_add_ << "&" << mtype_;
+    ss << "&" << structure_->to_str() << "&";
     for ( auto const & bp : basepairs_ ) {
         ss << bp->to_str() << "@";
     }
@@ -117,6 +124,12 @@ Motif::to_str() {
         }
         ss << pos << " ";
     }
+    ss << "&";
+    for (auto const & end_id : end_ids_) {
+        ss << end_id << " ";
+    }
+    ss << "&";
+    ss << secondary_structure_->to_str();
     ss << "&";
     return ss.str();
 }
@@ -143,8 +156,9 @@ Motif::get_basepair(Uuid const & bp_uuid) {
 }
 
 BasepairOPs
-Motif::get_basepair(ResidueOP res1,
-                    ResidueOP res2) {
+Motif::get_basepair(
+    ResidueOP const & res1,
+    ResidueOP const & res2) {
     BasepairOPs bps;
     for(auto & bp : basepairs_) {
         if(bp->res1()->uuid() == res1->uuid() && bp->res2()->uuid() == res2->uuid()) { bps.push_back(bp); }
@@ -154,8 +168,10 @@ Motif::get_basepair(ResidueOP res1,
 }
 
 BasepairOPs
-Motif::get_basepair(Uuid const & uuid1,
-                    Uuid const & uuid2) {
+Motif::get_basepair(
+    Uuid const & uuid1,
+    Uuid const & uuid2) {
+    
     BasepairOPs bps;
     for( auto const & bp : basepairs_) {
         if(bp->res1()->uuid() == uuid1 && bp->res2()->uuid() == uuid2) { bps.push_back(bp); }
@@ -165,7 +181,9 @@ Motif::get_basepair(Uuid const & uuid1,
 }
 
 Beads const &
-Motif::get_beads(BasepairOPs const & excluded_ends) {
+Motif::get_beads(
+    BasepairOPs const & excluded_ends) {
+    
     ResidueOPs excluded_res;
     for (auto const & end : excluded_ends) {
         excluded_res.push_back(end->res1());
@@ -176,7 +194,9 @@ Motif::get_beads(BasepairOPs const & excluded_ends) {
 }
 
 Beads const &
-Motif::get_beads(BasepairOP const & excluded_end) {
+Motif::get_beads(
+    BasepairOP const & excluded_end) {
+    
     ResidueOPs excluded_res;
     excluded_res.push_back(excluded_end->res1());
     excluded_res.push_back(excluded_end->res2());
@@ -184,15 +204,14 @@ Motif::get_beads(BasepairOP const & excluded_end) {
     return beads_;
 }
 
-
-BasepairOP const &
-Motif::get_basepair_by_name(
+BasepairOPs 
+Motif::get_basepair(
     String const & name) {
     Strings name_spl = split_str_by_delimiter(name, "-");
     String alt_name = name_spl[1] + "-" + name_spl[0];
     for(auto const & bp : basepairs_) {
         if(name.compare(bp->name()) == 0 || alt_name.compare(bp->name()) == 0) {
-            return bp;
+            return BasepairOPs{ bp };
         }
     }
     
@@ -208,38 +227,62 @@ Motif::end_index(BasepairOP const & end) {
 
 
 void
-align_motif(BasepairOP const & ref_bp,
-            BasepairOP const & motif_end,
-            MotifOP const & motif) {
+align_motif(
+    BasepairStateOP const & ref_bp_state,
+    BasepairOP const & motif_end,
+    MotifOP & motif) {
     
     Matrix ref_T;
-    transpose(ref_bp->r(), ref_T);
+    transpose(ref_bp_state->r(), ref_T);
     Matrix r;
     dot(ref_T, motif_end->r(), r);
     Point trans = -motif_end->d();
     Transform t(r, trans);
     motif->transform(t);
-    Point bp_pos_diff = ref_bp->d() - motif_end->d();
+    Point bp_pos_diff = ref_bp_state->d() - motif_end->d();
     motif->move(bp_pos_diff);
-    bp_pos_diff = ref_bp->d() - motif_end->d();
+    bp_pos_diff = ref_bp_state->d() - motif_end->d();
     
     //align sugars for better overlap
-    float dist1 = motif_end->res1()->get_atom("C1'")->coords().distance(ref_bp->res1()->get_atom("C1'")->coords());
-    float dist2 = motif_end->res2()->get_atom("C1'")->coords().distance(ref_bp->res1()->get_atom("C1'")->coords());
+    float dist1 = motif_end->res1()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
+    float dist2 = motif_end->res2()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[1]);
     
     if (dist1 > 5 && dist2 > 5) { return; }
     
     Point sugar_diff_1, sugar_diff_2;
     if( dist1 < dist2 ) {
-        sugar_diff_1 = ref_bp->res1()->get_atom("C1'")->coords() - motif_end->res1()->get_atom("C1'")->coords();
-        sugar_diff_2 = ref_bp->res2()->get_atom("C1'")->coords() - motif_end->res2()->get_atom("C1'")->coords();
+        sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res1()->get_atom("C1'")->coords();
+        sugar_diff_2 = ref_bp_state->sugars()[1]- motif_end->res2()->get_atom("C1'")->coords();
     }
     else {
-        sugar_diff_1 = ref_bp->res1()->get_atom("C1'")->coords() - motif_end->res2()->get_atom("C1'")->coords();
-        sugar_diff_2 = ref_bp->res2()->get_atom("C1'")->coords() - motif_end->res1()->get_atom("C1'")->coords();
+        sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res2()->get_atom("C1'")->coords();
+        sugar_diff_2 = ref_bp_state->sugars()[1] - motif_end->res1()->get_atom("C1'")->coords();
     }
     
     motif->move( (sugar_diff_1 + sugar_diff_2) / 2);
+}
+
+
+MotifOP
+get_aligned_motif(
+    BasepairOP const & ref_bp,
+    BasepairOP const & motif_end,
+    MotifOP const & motif) {
+    
+    int motif_end_index = motif->end_index(motif_end);
+    auto m_copy = std::make_shared<Motif>(motif->copy());
+    auto new_motif_end = m_copy->ends()[motif_end_index];
+    align_motif(ref_bp->state(), motif_end, m_copy);
+    return m_copy;
+    
+}
+
+MotifOP
+file_to_motif(
+    String const & path ) {
+    Strings lines = get_lines_from_file(path);
+    return std::make_shared<Motif>(lines[0],
+                                   ResidueTypeSetManager::getInstance().residue_type_set());
 }
 
 Motif
