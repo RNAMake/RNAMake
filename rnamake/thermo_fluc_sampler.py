@@ -32,7 +32,7 @@ class ThermoFlucSampler(base.Base):
             self.next()
 
     def next(self):
-        node_num  = random.randint(1, len(self.mset)-1)
+        node_num  = random.randint(2, len(self.mset)-1)
         mset_node = self.mset.get_node(node_num)
         mst_node  = self.mst.get_node(node_num)
         pos       = self.states[node_num]

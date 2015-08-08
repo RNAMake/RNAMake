@@ -99,17 +99,13 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         return m
 
-    def _test_get_best(self):
-        mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
+    def test_get_best(self):
+        mlib = sqlite_library.MotifSqliteLibrary("twoway")
         #ss_id1 = "AC_LL_GGGU_RUUR"
         ss_id1 = "AGG_LLL_CGU_RRR"
 
-        mlib.load_all()
-        for i, m in enumerate(mlib.all()):
-            if len(m.residues()) != 6:
-                continue
-            m.to_pdb("motif."+str(i)+".pdb")
-
+        matches = mlib.get_best_match(ss_id1, num=10)
+        #m.to_pdb("test.pdb")
         #m = mlib.get(ss_id1)
         #m.to_pdb("test.pdb")
 

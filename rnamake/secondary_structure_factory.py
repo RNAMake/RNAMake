@@ -210,7 +210,11 @@ class StructureSecondaryFactory(object):
                 elements[type_name] = []
             end_ids = []
             for end in e.ends:
-                end_ids.append(secondary_structure.assign_end_id(e, end))
+                try:
+                    end_ids.append(secondary_structure.assign_end_id(e, end))
+                except:
+                    end_ids.append("")
+                    print "warning could not assign end id"
             e.end_ids = end_ids
             elements[type_name].append(e)
             elements['ALL'].append(e)
@@ -291,7 +295,7 @@ def ss_id_to_seq_and_db(ss_id):
 
 def ss_id_to_ss_tree(ss_id):
     seq, ss = ss_id_to_seq_and_db(ss_id)
-    return ss_tree.SS_Tree(ss, seq)
+    return ss_tree.SS_Tree(seq, ss)
 
 
 def ss_id_to_secondary_structure(ss_id):

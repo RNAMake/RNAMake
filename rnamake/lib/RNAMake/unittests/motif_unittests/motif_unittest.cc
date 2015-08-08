@@ -12,32 +12,26 @@
 #include "motif/motif_to_secondary_structure.h"
 #include "util/file_io.h"
 #include "util/settings.h"
+#include "math/numerical.h"
 
 MotifUnittest::MotifUnittest() {
     
     MotifFactory mf;
-    //String path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6";
-    //m_ = mf.motif_from_file(path);
+    String path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6";
+    p4p6_ = mf.motif_from_file(path);
+
+    String path1 = base_dir() + "/rnamake/resources/motifs/base.motif";
+    base_ = file_to_motif(path1);
     
-    String path2 = base_dir() + "/rnamake/resources/motifs/helices/HELIX.IDEAL";
-    MotifOP m = mf.motif_from_file(path2);
-    std::cout << m->dot_bracket() << std::endl;
-    
-    /*String path = unittest_resource_dir() + "/motif/test_str_to_motif.dat";
-    Strings lines = get_lines_from_file(path);
-    
-    ResidueTypeSet rts;
-    m_ = Motif(lines[0], rts);
-    */
 }
-/*
+
 int
 MotifUnittest::test_copy() {
-    Motif mcopy = m_.copy();
+    Motif mcopy = p4p6_->copy();
     Point p(50,0,0);
-    m_.move(p);
+    mcopy.move(p);
     
-    Point org_center = center(m_.atoms());
+    Point org_center = center(p4p6_->atoms());
     Point new_center = center(mcopy.atoms());
     float dist = (50) - org_center.distance(new_center);
     if(dist > 0.001) { return 0; }
@@ -48,10 +42,10 @@ MotifUnittest::test_copy() {
 int
 MotifUnittest::test_to_str() {
     ResidueTypeSet rts;
-    Motif m2 = Motif(m_.to_str(), rts);
+    Motif m2 = Motif(p4p6_->to_str(), rts);
     
     AtomOPs new_atoms = m2.atoms();
-    AtomOPs org_atoms = m_.atoms();
+    AtomOPs org_atoms = p4p6_->atoms();
     
     float dist;
     for(int i = 0; i < org_atoms.size(); i++) {
@@ -64,7 +58,7 @@ MotifUnittest::test_to_str() {
 int
 MotifUnittest::test_secondary_structure() {
     String org = "....((((((...(((.((.....(((.((((.(((..(((((((((....)))))))))..((.......))....)))......)))))))....)).)))..))))))(....((((..(((((((((.....)))))))).)))))......)";
-    String new_ss = m_.secondary_structure();
+    String new_ss = p4p6_->dot_bracket();
     for(int i = 0; i < org.size(); i++) {
         if(org[i] != new_ss[i]) { return 0; }
     }
@@ -72,31 +66,37 @@ MotifUnittest::test_secondary_structure() {
 }
 
 int
-MotifUnittest::test_creation_from_dir() {
-    //String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/";
-    //Motif m(m_path);
-    
+MotifUnittest::test_get_basepair_by_name() {
+    String path = base_dir() + "/rnamake/resources/motifs/base.motif";
+    auto m = file_to_motif(path);
+    auto bp = m->get_basepair("A2-A9")[0];
+
     return 1;
 }
 
 int
-MotifUnittest::test_get_basepair_by_name() {
-    MotifLibrary mlib(HELIX);
-    MotifOP m = mlib.get_motif("HELIX.IDEAL");
-    BasepairOP bp = m->get_basepair_by_name("A5-B7");
-
+MotifUnittest::test_align() {
+    auto m = std::make_shared<Motif>(base_->copy());
+    auto m1 = std::make_shared<Motif>(base_->copy());
+    
+    align_motif(m->ends()[1]->state(), m1->ends()[0], m1);
+    
+    if(!are_xyzVector_equal(m->ends()[1]->d(), m1->ends()[0]->d())) {
+        return 0;
+    }
+        
     return 1;
 }
-*/
+
 
 int
 MotifUnittest::run() {
-    /*if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
+    if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
     if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
     if (test_secondary_structure() == 0)  { std::cout << "test_secondary_structure failed" << std::endl; }
-    if (test_creation_from_dir() == 0)    { std::cout << "test_copy failed" << std::endl; }
-    if (test_get_basepair_by_name() == 0) { std::cout << "test_get_basepair_by_name failed" << std::endl; }
-     */
+    //if (test_get_basepair_by_name() == 0) { std::cout << "test_get_basepair_by_name failed" << std::endl; }
+    if (test_align() == 0)                { std::cout << "test_align failed" << std::endl; }
+
     return 0;
 }
 

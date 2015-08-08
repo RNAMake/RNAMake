@@ -146,7 +146,7 @@ public:
     
     virtual
     String
-    to_str() {
+    to_str() const {
         std::stringstream ss;
         ss << type_ << ";";
         for(auto const & c : chains_) {

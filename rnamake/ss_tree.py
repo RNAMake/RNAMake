@@ -8,14 +8,14 @@ from collections import namedtuple
 def compare_ss_tree(ss_tree1, ss_tree2):
 
     bp_score = {
-        "G+C-A+U" : 0.25,
-        "A+U-G+C" : 0.25,
-        "G+C-U+A" : 0.50,
-        "U+A-G+C" : 0.50,
-        "C+G-A+U" : 0.50,
-        "A+U-C+G" : 0.50,
-        "C+G-U+A" : 0.25,
-        "U+A-C+G" : 0.25
+        "G&C-A&U" : 0.25,
+        "A&U-G&C" : 0.25,
+        "G&C-U&A" : 0.50,
+        "U&A-G&C" : 0.50,
+        "C&G-A&U" : 0.50,
+        "A&U-C&G" : 0.50,
+        "C&G-U&A" : 0.25,
+        "U&A-C&G" : 0.25
     }
 
     n_score = {
@@ -39,18 +39,18 @@ def compare_ss_tree(ss_tree1, ss_tree2):
         n2 = ss_tree2.get_node(n1.index)
 
         if n1.data.type == SS_Type.SS_BP:
-            if n1.data.seq() ==  n2.data.seq():
+            if n1.data.sequence() ==  n2.data.sequence():
                 continue
             else:
-                str_id = n1.data.seq() + "-" + n2.data.seq()
+                str_id = n1.data.sequence() + "-" + n2.data.sequence()
                 if str_id not in bp_score:
                     score += 0.75
                 else:
                     score += bp_score[str_id]
 
         else:
-            spl1 = n1.data.seq().split("+")
-            spl2 = n2.data.seq().split("+")
+            spl1 = n1.data.sequence().split("&")
+            spl2 = n2.data.sequence().split("&")
 
             if len(spl1) != len(spl2):
                 return 1000
@@ -171,7 +171,7 @@ class SS_Tree(object):
                     else:
                         not_part_of_nway.append(n)
                 next_level = not_part_of_nway
-                print xb, yb, len(part_of_nway), len(not_part_of_nway)
+                #print xb, yb, len(part_of_nway), len(not_part_of_nway)
 
                 if len(part_of_nway) > 0:
                     ss_chains = current_pair.node.ss_chains

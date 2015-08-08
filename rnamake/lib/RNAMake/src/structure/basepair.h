@@ -48,7 +48,7 @@ public:
         Points sugars(2);
         sugars[0] = res1_->get_atom("C1'")->coords();
         sugars[1] = res2_->get_atom("C1'")->coords();
-        bp_state_ = BasepairState(d, r, sugars);
+        bp_state_ = std::make_shared<BasepairState>(d, r, sugars);
         
     }
     
@@ -67,9 +67,9 @@ public:
 public: // getters
     
     inline
-    BasepairState &
+    BasepairStateOP const &
     state() {
-        bp_state_.d(center(atoms_));
+        bp_state_->d(center(atoms_));
         return bp_state_;
     }
     
@@ -106,21 +106,21 @@ public: // getters
         if( flip_d == -1) {
             if(flipped_ == 0) {  flip_d = 1; }
             else              {  flip_d = 0; }
-            bp_state_.flip();
+            bp_state_->flip();
             flipped_ = flip_d;
             return;
         }
         
         if( flip_d == flipped_) { return; }
         else {
-            bp_state_.flip();
+            bp_state_->flip();
             flipped_ = flip_d;
         }
     }
     
     inline
     Matrix const &
-    r() const { return bp_state_.r(); }
+    r() const { return bp_state_->r(); }
     
     inline
     Point const
@@ -150,7 +150,7 @@ public: // setters
     
     inline
     void
-    r(Matrix const & nr) { bp_state_.r(nr); }
+    r(Matrix const & nr) { bp_state_->r(nr); }
     
     inline
     void
@@ -183,7 +183,7 @@ public:
 private:
     ResidueOP res1_, res2_;
     AtomOPs atoms_;
-    BasepairState bp_state_;
+    BasepairStateOP bp_state_;
     String bp_type_;
     int flipped_;
     Uuid uuid_;

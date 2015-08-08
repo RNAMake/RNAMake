@@ -118,7 +118,7 @@ public:
     }
     
     String
-    to_str();
+    to_str() const;
     
 public: //setters
     

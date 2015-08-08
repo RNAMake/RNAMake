@@ -15,6 +15,7 @@ MotifStateConnection = namedtuple('MotifSTateConnection', 'i j end_name')
 def motif_state_tree_from_topology(mtt, sterics=1):
     mst = MotifStateTree(sterics=sterics)
     for i, n in enumerate(mtt.tree.nodes):
+        #print i, n.data.motif_name, n.data.end_ss_id, n.data.parent_end_ss_id, n.parent_index()
         if n.data.motif_name != "":
             ms = rm.manager.get_state(name=n.data.motif_name,
                                      end_id=n.data.end_ss_id)

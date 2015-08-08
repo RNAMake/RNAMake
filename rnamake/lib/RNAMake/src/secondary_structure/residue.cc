@@ -13,7 +13,12 @@ namespace sstruct {
 Residue
 str_to_residue(String const & s) {
     Strings spl = split_str_by_delimiter(s, ",");
-    return Residue(spl[0], spl[1], std::stoi(spl[2]), spl[3], Uuid(), spl[4]);
+    if(spl.size() == 5) {
+        return Residue(spl[0], spl[1], std::stoi(spl[2]), spl[3], Uuid(), spl[4]);
+    }
+    else {
+        return Residue(spl[0], spl[1], std::stoi(spl[2]), spl[3], Uuid());
+    }
 }
 
 }

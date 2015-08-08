@@ -62,10 +62,11 @@ public:
 public:
 
     int
-    end_index(BasepairOP const &);
+    end_index(
+        BasepairOP const &);
     
-    BasepairOP const &
-    get_basepair_by_name(
+    BasepairOPs 
+    get_basepair(
         String const &);
     
     BasepairOPs
@@ -74,8 +75,8 @@ public:
     
     BasepairOPs
     get_basepair(
-        ResidueOP,
-        ResidueOP);
+        ResidueOP const &,
+        ResidueOP const &);
     
     BasepairOPs
     get_basepair(
@@ -99,7 +100,9 @@ public:
 
     inline
     void
-    transform(Transform const & t) {
+    transform(
+        Transform const & t) {
+        
         Matrix r_T = t.rotation();
         Matrix transformed;
         r_T.transpose();
@@ -112,7 +115,8 @@ public:
     
     inline
     void
-    move(Point const & p) { structure_->move(p); }
+    move(
+        Point const & p) { structure_->move(p); }
 
     String const
     to_str();
@@ -121,7 +125,8 @@ public:
     to_pdb_str();
     
     void
-    to_pdb(String const);
+    to_pdb(
+        String const);
     
 public: //wrappers from structure
     
@@ -186,6 +191,10 @@ public: //getters
     StructureOP const &
     structure() { return structure_; }
     
+    inline
+    sstruct::SecondaryStructureOP const &
+    secondary_structure() { return secondary_structure_; }
+    
 public: // setters
     
     inline
@@ -230,12 +239,29 @@ typedef std::shared_ptr<Motif> MotifOP;
 typedef std::vector<MotifOP>   MotifOPs;
 
 void
-align_motif(BasepairOP const &,
-            BasepairOP const &,
-            MotifOP const &);
+align_motif(
+    BasepairStateOP const &,
+    BasepairOP const &,
+    MotifOP &);
+
+MotifOP
+get_aligned_motif(
+    BasepairOP const &,
+    BasepairOP const &,
+    MotifOP const &);
+
 
 Motif
 ref_motif();
+
+MotifOP
+file_to_motif(
+    String const &);
+
+
+
+
+
 
 
 #endif /* defined(__RNAMake__motif__) */
