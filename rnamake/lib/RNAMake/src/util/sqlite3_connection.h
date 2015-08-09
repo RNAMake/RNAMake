@@ -30,6 +30,8 @@ callback(void *NotUsed, int argc, char **argv, char **azColName){
 
 class Sqlite3Connection {
 public:
+    Sqlite3Connection() {}
+    
     Sqlite3Connection(String const &);
     
     ~Sqlite3Connection() {
@@ -41,6 +43,9 @@ public:
     
     void
     query(String const);
+    
+    int
+    count();
     
     
 public: //getters
