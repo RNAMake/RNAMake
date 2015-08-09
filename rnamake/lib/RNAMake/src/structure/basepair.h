@@ -95,9 +95,12 @@ public: // getters
     name() const {
         std::stringstream ss;
         ss << res1_->chain_id() << res1_->num() << res1_->i_code();
-        ss << "-";
+        String str1 = ss.str();
+        ss.str("");
         ss << res2_->chain_id() << res2_->num() << res2_->i_code();
-        return ss.str();
+        String str2 = ss.str();
+        if(str1 < str2) { return str1+"-"+str2; }
+        else            { return str2+"-"+str1; }
     }
     
     inline

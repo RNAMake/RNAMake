@@ -33,7 +33,8 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         me_lib = sqlite_library.MotifEnsembleSqliteLibrary('bp_steps')
         me = me_lib.get(name='GG_LL_CC_RR')
-        print len(me.members)
+
+        #print len(me.members)
 
     def test_load_all(self):
         mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")

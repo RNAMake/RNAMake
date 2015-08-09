@@ -54,6 +54,9 @@ Motif::Motif(
         ResidueOP res1 = structure_->get_residue(res1_num, res1_id, "");
         ResidueOP res2 = structure_->get_residue(res2_num, res2_id, "");
         BasepairState bpstate = str_to_basepairstate(bp_spl[1]);
+        //Hack to stop memory out of bounds
+        //TODO look into why this is happening!
+        if(bp_spl.size() == 2) { bp_spl.push_back("c..."); }
         BasepairOP bp ( new Basepair(res1, res2, bpstate.r(), bp_spl[2] ));
 
         basepairs_.push_back(bp);
