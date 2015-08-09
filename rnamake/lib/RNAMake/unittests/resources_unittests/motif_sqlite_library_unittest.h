@@ -29,6 +29,18 @@ public:
     int
     test_get();
     
+    int
+    test_get_random();
+    
+    int
+    test_all();
+    
+    int
+    test_get_multi();
+    
+    int
+    test_contains();
+    
 public:
     
     int

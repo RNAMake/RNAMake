@@ -172,6 +172,10 @@ public: //getters
     ends() const { return ends_; }
     
     inline
+    Strings const &
+    end_ids() const { return end_ids_; }
+    
+    inline
     String const &
     name() const { return name_; }
     
