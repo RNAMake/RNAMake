@@ -21,7 +21,6 @@ Sqlite3Connection::Sqlite3Connection(
         fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db_));
         exit(0);
     }
-    values_ = Strings(2);
 
 }
 
@@ -33,6 +32,15 @@ Sqlite3Connection::query(String const query_statement) {
                              &stmt_,
                              NULL);
     rc_ = sqlite3_step(stmt_);
+}
+
+int
+Sqlite3Connection::count() {
+    query("SELECT count(*) from data_table");
+    
+    int count = sqlite3_column_int(stmt_,0);
+    rc_ = sqlite3_step(stmt_);
+    return count;
 }
 
 

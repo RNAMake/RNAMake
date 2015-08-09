@@ -17,10 +17,25 @@
 #include "base/types.h"
 #include "util/sqlite3_connection.h"
 
+struct MotifSqliteData {
+    MotifSqliteData():
+    data(""), name(""), end_name(""), end_id(""),
+    id("0")
+    {}
+    
+    String data, name, end_name, end_id, id;
+    
+};
+
+typedef std::shared_ptr<MotifSqliteData> MotifSqliteDataOP;
+
 class MotifSqliteConnection : public Sqlite3Connection {
 public:
+    MotifSqliteConnection() {}
+    
     MotifSqliteConnection(String const & path):
-    Sqlite3Connection(path)
+    Sqlite3Connection(path),
+    data_(std::make_shared<MotifSqliteData>())
     {}
     
     ~MotifSqliteConnection() {
@@ -30,8 +45,12 @@ public:
     
 public:
     
-    Strings const &
+    MotifSqliteDataOP const &
     next();
+    
+private:
+    MotifSqliteDataOP data_;
+    
     
 };
 

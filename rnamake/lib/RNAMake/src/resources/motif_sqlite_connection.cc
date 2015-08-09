@@ -11,17 +11,21 @@
 #include "resources/motif_sqlite_connection.h"
 
 
-Strings const &
+MotifSqliteDataOP const &
 MotifSqliteConnection::next() {
     if(rc_ != SQLITE_ROW) {
         sqlite3_finalize(stmt_);
-        values_[0] = "";
-        values_[1] = "";
-        return values_;
+        data_->data = "";
+        return data_;
     }
-    values_[0] = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,0)));
-    values_[1] = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,1)));
+    data_->data     = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,0)));
+    data_->name     = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,1)));
+    data_->end_name = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,2)));
+    data_->end_id   = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,3)));
+    data_->id       = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,4)));
+    //values_[0] = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,0)));
+    //values_[1] = String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,1)));
     rc_ = sqlite3_step(stmt_);
     
-    return values_;
+    return data_;
 }
