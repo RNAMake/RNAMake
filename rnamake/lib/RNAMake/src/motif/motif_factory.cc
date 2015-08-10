@@ -31,9 +31,21 @@ MotifFactory::motif_from_file(
     auto basepairs = _setup_basepairs(path, structure);
     auto ends = _setup_basepair_ends(structure, basepairs);
     auto m = std::make_shared<Motif>(structure, basepairs, ends);
+    m->name(fname);
+    m->path(path);
     _setup_secondary_structure(m);
     
     return m;
+}
+
+
+void
+MotifFactory::standardize_motif(
+    MotifOP & m) {
+    
+    _align_chains(m);
+    _align_ends(m);
+    _setup_secondary_structure(m);
 }
 
 BasepairOPs
@@ -107,8 +119,75 @@ MotifFactory::_setup_secondary_structure(
     
 }
 
+void
+MotifFactory::_align_chains(
+    MotifOP & m) {
+    
+    auto chains = m->chains();
+    ChainOP closest;
+    float best = 1000, dist;
+    auto c2 = center(ref_motif_->ends()[0]->atoms());
+    Point c1;
+    for(auto const & c : chains) {
+        c1 = center(c->first()->atoms());
+        dist = c1.distance(c2);
+        if(dist < best) {
+            best = dist;
+            closest = c;
+        }
+    }
+    
+    auto updated_chains = ChainOPs{closest};
+    for (auto const & c : chains) {
+        if(c != closest) { updated_chains.push_back(c); }
+    }
+    
+    m->structure(std::make_shared<Structure>(Structure(updated_chains)));
+}
 
-
+void
+MotifFactory::_align_ends(
+    MotifOP & m) {
+    
+    BasepairOP closest;
+    float best = 1000, dist;
+    auto c2 = center(ref_motif_->ends()[0]->atoms());
+    Point c1;
+    
+    for(auto const & end : m->ends()) {
+        c1 = center(end->atoms());
+        dist = c1.distance(c2);
+        if(dist < best) {
+            best = dist;
+            closest = end;
+        }
+    }
+    
+    auto updated_ends = BasepairOPs{closest};
+    for(auto const & end : m->ends()) {
+        if(end != closest) { updated_ends.push_back(end); }
+    }
+    
+    int flip_res = 0;;
+    for(auto & end : m->ends()) {
+        flip_res = 0;
+        for (auto const & c : m->chains()) {
+            if(c->first() == end->res2()) {
+                flip_res = 1;
+                break;
+            }
+        }
+        
+        if(!flip_res) { continue; }
+            
+        auto temp = end->res1();
+        end->res1(end->res2());
+        end->res2(temp);
+    }
+    
+    m->ends(updated_ends);
+    
+}
 
 
 

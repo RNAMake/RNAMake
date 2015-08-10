@@ -22,9 +22,12 @@
 #include "structure_unittests/structure_unittest.h"
 
 #include "motif_unittests/motif_unittest.h"
+#include "motif_unittests/motif_factory_unittest.h"
 
 #include "resources_unittests/motif_sqlite_connection_unittest.h"
 #include "resources_unittests/motif_sqlite_library_unittest.h"
+#include "resources_unittests/resource_manager_unittest.h"
+#include "resources_unittests/added_motif_library_unittest.h"
 
 /*#include "util_unittests/uuid_unittest.h"
 
@@ -51,6 +54,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    MotifSqliteLibraryUnittest test;
+    AddedMotifLibraryUnittest test;
     test.run();
 }

@@ -111,9 +111,10 @@ private:
     std::map<String, MotifOP> data_;
     RandomNumberGenerator rng_;
     
-    
-    
 };
+
+
+typedef std::shared_ptr<MotifSqliteLibrary> MotifSqliteLibraryOP;
 
 
 #endif /* defined(__RNAMake__motif_sqlite_library__) */

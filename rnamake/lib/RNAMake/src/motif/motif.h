@@ -226,6 +226,18 @@ public: // setters
         secondary_structure_ = ss;
     }
     
+    inline
+    void
+    structure(
+        StructureOP const & s) {
+        structure_ = s;
+    }
+    
+    inline
+    void
+    ends(
+        BasepairOPs const & ends) { ends_ = ends; }
+    
 protected:
     Beads beads_;
     float score_;
