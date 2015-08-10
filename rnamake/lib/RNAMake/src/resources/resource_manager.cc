@@ -7,3 +7,21 @@
 //
 
 #include "resource_manager.h"
+
+
+MotifOP
+ResourceManager::get_motif(
+    String const & name,
+    String const & end_id,
+    String const & end_name,
+    String const & id) {
+    
+    for(auto const & kv : mlibs_) {
+        if(kv.second->contains(name, end_id, end_name, id)) {
+            return kv.second->get(name, end_id, end_name, id);
+        }
+    }
+    
+    throw ResourceManagerException("cannot find motif: ");
+    
+}

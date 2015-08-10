@@ -21,6 +21,9 @@ String
 resources_path();
 
 String
+motif_dirs();
+
+String
 x3dna_path();
 
 

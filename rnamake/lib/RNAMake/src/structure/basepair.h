@@ -148,6 +148,10 @@ public: // getters
     inline
     int const
     flipped() const { return flipped_; }
+    
+    inline
+    AtomOPs const &
+    atoms() const { return atoms_; }
 
 public: // setters
     
