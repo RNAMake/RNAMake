@@ -6,8 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "added_motif_library.h"
-
+#include "resources/added_motif_library.h"
 
 MotifOPs
 AddedMotifLibrary::_find_motifs(

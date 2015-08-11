@@ -15,13 +15,16 @@
 //RNAMake Headers
 #include "base/types.h"
 #include "base/base.h"
+#include "data_structure/graph/graph.h"
+#include "data_structure/graph/graph_node.h"
+
+
 #include "structure/residue_type_set.h"
-#include "motif/motif_tree.fwd.h"
-#include "motif/motif_tree_node.h"
 #include "motif/motif.h"
-#include "motif/motif_tree_merger.h"
+//#include "motif/motif_tree_merger.h"
 #include "motif/pose.h"
 
+typedef GraphNodeOP<MotifOP> MotifTreeNodeOP;
 
 class MotifTree : public Base {
 public:
@@ -29,26 +32,37 @@ public:
     MotifTree(
         MotifOP const &);
     
-    MotifTree(
-        String const &,
-        ResidueTypeSet const &);
+    //MotifTree(
+    //    String const &,
+    //    ResidueTypeSet const &);
     
-    ~MotifTree() {
-        last_node_ = nullptr;
-        for(auto const & n : nodes_) {
-            for(auto & c : n->connections()) { c->disconnect(); }
-        }
-     }
+    ~MotifTree() {}
+    
+public:
+    
+    typedef typename GraphStatic<MotifOP>::iterator iterator;
+    typedef typename GraphStatic<MotifOP>::const_iterator const_iterator;
+    
+    iterator begin() { return graph_.begin(); }
+    iterator end()   { return graph_.end(); }
+    
+    const_iterator begin() const { return graph_.begin(); }
+    const_iterator end()   const { return graph_.end(); }
     
 public:
     
     MotifTreeNodeOP
+    get_node(int i) { return graph_.get_node(i); }
+    
+    size_t
+    size() { return graph_.size(); }
+    
+    int
     add_motif(
         MotifOP const & m,
-        MotifTreeNodeOP parent = nullptr,
-        int end_index = -1,
-        int parent_end = -1,
-        int end_flip = -1);
+        int parent_index = -1,
+        int parent_end_index = -1,
+        String parent_end_name = "");
     
     void
     write_pdbs(
@@ -75,24 +89,18 @@ public:
     
     void
     remove_node(
-        MotifTreeNodeOP const &);
-    
-    void
-    inline
-    remove_last_node() { remove_node(last_node_); }
+        int i = -1);
     
     void
     remove_node_level(int level=-1);
 
 public: //getters
     
-    inline
-    MotifTreeNodeOPs const &
-    nodes() const { return nodes_; }
+
     
     inline
     MotifTreeNodeOP const &
-    last_node() { return last_node_; }
+    last_node() { return graph_.last_node(); }
         
     
 protected:
@@ -105,29 +113,14 @@ private:
     void
     update_var_options();
     
-    
-    MotifTreeNodeOP
-    _add_motif(
-        MotifTreeNodeOP const &,
-        MotifOP const &,
-        BasepairOP const &,
-        BasepairOP const &,
-        Ints const &);
-    
     int
     _steric_clash(
-        MotifOP const &,
-        BasepairOP const &);
+        MotifOP const &);
     
-    void
-    _update_beads(
-        MotifTreeNodeOP const &,
-        MotifTreeNodeOP const &);
 
 private:
-    MotifTreeNodeOPs nodes_;
-    MotifTreeNodeOP last_node_;
-    MotifTreeMerger merger_;
+    GraphStatic<MotifOP> graph_;
+    //MotifTreeMerger merger_;
     float clash_radius_;
     int level_;
     //options ... need a better way

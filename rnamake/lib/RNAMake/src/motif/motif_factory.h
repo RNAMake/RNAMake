@@ -30,6 +30,7 @@ public:
         path = motif_dirs() + "base.motif";
         base_motif_ = file_to_motif(path);
         added_helix_ = std::make_shared<Motif>(base_motif_->copy());
+        clash_radius_ = 2.9;
     }
     
     ~MotifFactory() {}
@@ -43,6 +44,16 @@ public:
     void
     standardize_motif(
         MotifOP &);
+    
+    MotifOP
+    can_align_motif_to_end(
+        MotifOP const &,
+        int);
+    
+    MotifOP
+    align_motif_to_common_frame(
+        MotifOP const &,
+        int);
     
 private:
     
@@ -68,11 +79,17 @@ private:
     _align_ends(
         MotifOP &);
     
+    int
+    _steric_clash(
+        MotifOP const &,
+        MotifOP const &);
+    
 private:
     StructureFactory sf_;
     MotiftoSecondaryStructure parser_;
     MotifScorer scorer_;
     MotifOP ref_motif_, base_motif_, added_helix_;
+    float clash_radius_;
     
     
 };

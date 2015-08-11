@@ -66,6 +66,10 @@ public:
         return nodes_;
     }
     
+    inline
+    GraphNodeOP<DataType> const &
+    last_node() { return last_node_; }
+    
     
 protected:
     GraphNodeOP<DataType> last_node_;

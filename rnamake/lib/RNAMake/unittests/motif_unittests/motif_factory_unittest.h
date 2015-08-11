@@ -29,6 +29,9 @@ public:
     int
     test_standardize_motif();
     
+    int
+    test_can_align_motif_to_end();
+    
 public:
     
     int

@@ -68,6 +68,13 @@ Motif::Motif(
     }
     end_ids_ = split_str_by_delimiter(spl[8], " ");
     secondary_structure_ = std::make_shared<sstruct::SecondaryStructure>(sstruct::str_to_secondary_structure(spl[9]));
+    
+    auto ss_res = secondary_structure_->residues();
+    int i = 0;
+    for(auto const & r : residues()) {
+        ss_res[i]->uuid(r->uuid());
+        i++;
+    }
 }
 
 
@@ -228,6 +235,15 @@ Motif::end_index(BasepairOP const & end) {
     return pos;
 }
 
+void
+Motif::new_res_uuids() {
+    for(auto & r : residues()) {
+        auto ss_r = secondary_structure_->get_residue(r->uuid());
+        r->new_uuid();
+        ss_r->uuid(r->uuid());
+    }
+    for(auto & bp : basepairs()) { bp->uuid(Uuid()); }
+}
 
 void
 align_motif(
@@ -244,7 +260,6 @@ align_motif(
     motif->transform(t);
     Point bp_pos_diff = ref_bp_state->d() - motif_end->d();
     motif->move(bp_pos_diff);
-    bp_pos_diff = ref_bp_state->d() - motif_end->d();
     
     //align sugars for better overlap
     float dist1 = motif_end->res1()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
@@ -263,6 +278,7 @@ align_motif(
     }
     
     motif->move( (sugar_diff_1 + sugar_diff_2) / 2);
+    motif->get_beads(motif_end);
 }
 
 
@@ -275,7 +291,8 @@ get_aligned_motif(
     int motif_end_index = motif->end_index(motif_end);
     auto m_copy = std::make_shared<Motif>(motif->copy());
     auto new_motif_end = m_copy->ends()[motif_end_index];
-    align_motif(ref_bp->state(), motif_end, m_copy);
+    //align_motif(ref_bp->state(), motif_end, m_copy);
+    align_motif(ref_bp->state(), new_motif_end, m_copy);
     return m_copy;
     
 }

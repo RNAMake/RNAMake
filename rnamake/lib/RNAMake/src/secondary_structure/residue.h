@@ -90,6 +90,13 @@ public: //getters
     Uuid const &
     uuid() { return uuid_; }
 
+public: //setters
+    
+    inline
+    void
+    uuid(Uuid const & nuuid) { uuid_ = nuuid; }
+    
+
 private:
     int num_;
     String name_, dot_bracket_, chain_id_, i_code_;

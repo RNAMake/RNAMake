@@ -41,6 +41,13 @@ public:
     int
     test_align();
     
+    int
+    test_get_aligned();
+    
+    int
+    test_secondary_structure_obj();
+    
+    
 public:
     
     int

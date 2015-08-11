@@ -15,6 +15,7 @@
 #include "base/types.h"
 #include "motif/motif_factory.h"
 #include "resources/motif_sqlite_library.h"
+#include "resources/added_motif_library.h"
 
 class ResourceManagerException : public std::runtime_error {
 public:
@@ -49,6 +50,7 @@ public:
 protected:
     ResourceManager() { //Prevent construction
         mf_ = MotifFactory();
+        added_motifs_ = AddedMotifLibrary();
         mlibs_ = std::map<String, MotifSqliteLibraryOP>();
         
         for(auto const & kv : MotifSqliteLibrary::get_libnames()) {
@@ -66,6 +68,7 @@ private:
 private:
     std::map<String, MotifSqliteLibraryOP> mlibs_;
     MotifFactory mf_;
+    AddedMotifLibrary added_motifs_;
 
     
 };

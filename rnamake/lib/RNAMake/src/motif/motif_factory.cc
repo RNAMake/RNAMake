@@ -48,6 +48,53 @@ MotifFactory::standardize_motif(
     _setup_secondary_structure(m);
 }
 
+
+MotifOP
+MotifFactory::can_align_motif_to_end(
+    MotifOP const & m,
+    int ei) {
+    
+    auto m_end = m->ends()[ei];
+    auto m_added = get_aligned_motif(base_motif_->ends()[1], m_end, m);
+    if(_steric_clash(base_motif_, m_added)) {
+        m_end->flip();
+        m_added = get_aligned_motif(base_motif_->ends()[1], m_end, m);
+        if(_steric_clash(base_motif_, m_added)) { return nullptr; }
+    }
+    
+    int fail = 0;
+    MotifOP m2_added;
+    for(auto & end : m_added->ends()) {
+        if(end == m_end) { continue; }
+        m2_added = get_aligned_motif(end, added_helix_->ends()[0], added_helix_);
+        if(_steric_clash(m_added, m2_added) == 0 &&
+           _steric_clash(base_motif_, m2_added) == 0) {
+            continue;
+        }
+        
+        end->flip();
+        m2_added = get_aligned_motif(end, added_helix_->ends()[0], added_helix_);
+        if(_steric_clash(m_added, m2_added) || _steric_clash(base_motif_, m2_added)) {
+            fail = 1; break;
+        }
+
+    }
+    
+    if (fail) { return nullptr; }
+    else      { return m_added; }
+    
+}
+
+MotifOP
+MotifFactory::align_motif_to_common_frame(
+    MotifOP const & m,
+    int ei) {
+    
+    auto m_added = get_aligned_motif(ref_motif_->ends()[0], m->ends()[ei], m);
+    standardize_motif(m_added);
+    return m_added;
+}
+
 BasepairOPs
 MotifFactory::_setup_basepairs(
     String const & path,
@@ -189,7 +236,23 @@ MotifFactory::_align_ends(
     
 }
 
-
+int
+MotifFactory::_steric_clash(
+    MotifOP const & m1,
+    MotifOP const & m2) {
+    
+    float dist;
+    for(auto const & c1 : m1->beads()) {
+        for(auto const & c2 : m2->beads()) {
+            if(c1.btype() == BeadType::PHOS || c2.btype() == BeadType::PHOS) {continue; }
+            dist = c1.center().distance(c2.center());
+            if( dist < clash_radius_) { return 1; }
+        }
+    }
+    
+    return 0;
+    
+}
 
 
 
