@@ -13,6 +13,7 @@
 #include "util/file_io.h"
 #include "util/settings.h"
 #include "math/numerical.h"
+#include "resources/resource_manager.h"
 
 MotifUnittest::MotifUnittest() {
     
@@ -76,15 +77,47 @@ MotifUnittest::test_get_basepair_by_name() {
 
 int
 MotifUnittest::test_align() {
-    auto m = std::make_shared<Motif>(base_->copy());
-    auto m1 = std::make_shared<Motif>(base_->copy());
+    auto m = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
+    auto m1 = std::make_shared<Motif>(m->copy());
     
-    align_motif(m->ends()[1]->state(), m1->ends()[0], m1);
+    align_motif(m->ends()[0]->state(), m1->ends()[1], m1);
     
-    if(!are_xyzVector_equal(m->ends()[1]->d(), m1->ends()[0]->d())) {
+    if(!are_xyzVector_equal(m->ends()[0]->d(), m1->ends()[1]->d())) {
         return 0;
     }
         
+    return 1;
+}
+
+int
+MotifUnittest::test_get_aligned() {
+    auto m = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
+    auto m1 = std::make_shared<Motif>(m->copy());
+    
+    auto m2 = get_aligned_motif(m->ends()[1], m1->ends()[0], m1);
+ 
+    if(!are_xyzVector_equal(m->ends()[0]->d(), m2->ends()[1]->d())) {
+        return 0;
+    }
+    
+    //m->to_pdb("test.pdb");
+    //m2->to_pdb("test1.pdb");
+    
+    return 1;
+}
+
+int
+MotifUnittest::test_secondary_structure_obj() {
+    auto m = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
+    auto ss = m->secondary_structure();
+    
+    for(auto const & r : m->residues()) {
+        auto ss_r = ss->get_residue(r->uuid());
+        if(ss_r == nullptr) {
+            return 0;
+        }
+    }
+    
     return 1;
 }
 
@@ -94,8 +127,11 @@ MotifUnittest::run() {
     if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
     if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
     if (test_secondary_structure() == 0)  { std::cout << "test_secondary_structure failed" << std::endl; }
-    //if (test_get_basepair_by_name() == 0) { std::cout << "test_get_basepair_by_name failed" << std::endl; }
+    if (test_get_basepair_by_name() == 0) { std::cout << "test_get_basepair_by_name failed" << std::endl; }
     if (test_align() == 0)                { std::cout << "test_align failed" << std::endl; }
+    if (test_get_aligned() == 0)            { std::cout << "test_get_align failed" << std::endl; }
+
+    if (test_secondary_structure_obj() == 0)  { std::cout << "test_secondary_structure_obj failed" << std::endl; }
 
     return 0;
 }

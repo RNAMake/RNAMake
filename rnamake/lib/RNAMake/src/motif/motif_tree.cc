@@ -10,206 +10,92 @@
 
 //RNAMake Headers
 #include "util/settings.h"
-#include "structure/resource_manager.h"
 #include "motif/motif_tree.h"
 #include "motif/motif.h"
 
 MotifTree::MotifTree() {
-    String path = resources_path() + "/start.motif";
-    String line;
-    std::ifstream in;
-    in.open(path.c_str());
-    getline(in, line);
-    in.close();
-    MotifOP m ( new Motif ( line, ResidueTypeSetManager::getInstance().residue_type_set()) );
+    graph_ = GraphStatic<MotifOP>();
+    /*MotifOP m ( new Motif ( line, ResidueTypeSetManager::getInstance().residue_type_set()) );
     MotifTreeNodeOP head ( new MotifTreeNode (m, 0, 0, 0));
     last_node_ = head;
     nodes_ = MotifTreeNodeOPs();
     nodes_.push_back(head);
     merger_ = MotifTreeMerger();
-    level_ = 1;
+    level_ = 1;*/
     setup_options(); update_var_options();
 }
 
 MotifTree::MotifTree(MotifOP const & m) {
-    MotifTreeNodeOP head ( new MotifTreeNode (m, 0, 0, 0));
+    /*MotifTreeNodeOP head ( new MotifTreeNode (m, 0, 0, 0));
     last_node_ = head;
     nodes_ = MotifTreeNodeOPs();
     nodes_.push_back(head);
     merger_ = MotifTreeMerger();
     level_ = 1;
-    setup_options(); update_var_options();
+    setup_options(); update_var_options();*/
 
 }
 
-MotifTree::MotifTree(
-    String const & s,
-    ResidueTypeSet const & rts) {
-    nodes_ = MotifTreeNodeOPs();
-    setup_options(); update_var_options();
-    Strings spl = split_str_by_delimiter(s, "#");
-    int i = -1;
-    for (auto const & e : spl) {
-        i++;
-        Strings mtn_spl = split_str_by_delimiter(e, "!");
-        MotifOP m ( new Motif ( mtn_spl[0], rts));
-        if ( i == 0) {
-            MotifTreeNodeOP head ( new MotifTreeNode (m, 0, 0, 0));
-            nodes_.push_back(head);
-            continue;
-        }
-        MotifTreeNodeOP mtn ( new MotifTreeNode(m, 1, i, std::stoi(mtn_spl[4])));
-        MotifTreeNodeOP parent = nodes_[ std::stoi(mtn_spl[1]) ];
-        BasepairOP parent_end = parent->motif()->ends()[ std::stoi(mtn_spl[2]) ];
-        BasepairOP node_end = m->ends() [ std::stoi(mtn_spl[3]) ];
-        MotifTreeConnection(parent, mtn, parent_end, node_end);
-        nodes_.push_back(mtn);
-    }
-    last_node_ = nodes_.back();
-    merger_ = MotifTreeMerger();
-    level_ = 1;
-}
 
 void
 MotifTree::setup_options() {
     options_ = Options();
     options_.add_option(Option("sterics", 1));
-    options_.add_option(Option("full_beads_first_res_", 1));
-    options_.add_option(Option("clash_radius", 2.8f));
+    options_.add_option(Option("clash_radius", 2.9f));
 }
 
 void
 MotifTree::update_var_options() {
     sterics_              = options_.option<int>("sterics");
-    full_beads_first_res_ = options_.option<int>("full_beads_first_res_");
     clash_radius_         = options_.option<float>("clash_radius");
 }
 
 
-MotifTreeNodeOP
+int
 MotifTree::add_motif(
     MotifOP const & m,
-    MotifTreeNodeOP parent,
-    int end_index,
     int parent_index,
-    int end_flip) {
+    int parent_end_index,
+    String parent_end_name) {
     
-    if(parent == nullptr) { parent = last_node_; }
+    auto parent = graph_.last_node();
+    if(parent_index != -1) { parent = graph_.get_node(parent_index); }
     
-    BasepairOPs parent_ends, motif_ends;
-    
-    if (parent_index == -1) {
-        parent_ends = parent->available_ends();
-        if(parent_ends.size() == 0) {
-            throw "cannot use this parent it has not available ends\n";
-        }
-    
-    }
-    else                    {
-        if(parent_index >= parent->motif()->ends().size()) {
-            throw "cannot use this parent index, it is out of range\n";
-        }
-        int status = parent->get_end_status(parent->motif()->ends()[parent_index]);
-        if(status == 0) {
-            throw "cannot ue this parent index, it is currently being used";
-        }
-        parent_ends.push_back(parent->motif()->ends()[parent_index]);
-    }
-    
-    if (end_index == -1) {
+    if(parent == nullptr) {
+        auto m_copy = std::make_shared<Motif>(m->copy());
+        m_copy->get_beads(m_copy->ends());
+        return graph_.add_data(m_copy, -1, -1, -1, (int)m_copy->ends().size());
         
-        motif_ends = m->ends();
-        if(motif_ends.size() == 0) {
-            throw "cannot add this motif to the tree it has no ends\n";
-        }
-    }
-    else                 {
-        if(end_index >= m->ends().size()) {
-            throw "cannot use this end index, it is out of range\n";
-        }
-        motif_ends.push_back(m->ends()[end_index]);
-    }
-
-    MotifTreeNodeOP new_node(NULL);
-    Ints flips;
-    if ( end_flip == -1) {
-        flips.push_back(0);
-        flips.push_back(1);
-    }
-    else {
-        if(end_flip != 0 && end_flip != 1) {
-            throw "supplied an end_flip that is not 1 or 0\n";
-        }
-        flips.push_back(end_flip);
-    }
-
-    for (auto const & parent_end : parent_ends) {
-        for (auto const & end : motif_ends) {
-            new_node = _add_motif(parent, m, parent_end, end, flips);
-            if( new_node.get() != NULL) { break; }
-        }
-        if ( new_node.get() != NULL ) { break; }
     }
     
-    if ( new_node.get() != NULL ) {
-        nodes_.push_back(new_node);
-        last_node_ = new_node;
+    if(parent_end_name.size() > 0) {
+        auto parent_end = parent->data()->get_basepair(parent_end_name)[0];
+        parent_end_index = parent->data()->end_index(parent_end);
     }
     
-    return new_node;
-    
-}
-
-MotifTreeNodeOP
-MotifTree::_add_motif(
-    MotifTreeNodeOP const & parent,
-    MotifOP const & m,
-    BasepairOP const & parent_end,
-    BasepairOP const & end,
-    Ints const & flip_status) {
-    
-    for (auto const & flip : flip_status) {
-        end->flip(flip);
-        align_motif(parent_end, end, m);
-        if(sterics_ == 1) {
-            if(_steric_clash(m, end) == 1) {
-                m->reset();
-                continue;
-            }
-        }
+    auto avail_pos = graph_.get_available_pos(parent, parent_end_index);
+    for(auto const & p : avail_pos) {
+        if(p == parent->data()->block_end_add()) { continue; }
+        auto m_added = get_aligned_motif(parent->data()->ends()[p], m->ends()[0], m);
+        if(sterics_ && _steric_clash(m_added)) { continue; }
         
-        MotifOP m_copy ( new Motif ( m->copy() ));
-        MotifTreeNodeOP new_node ( new MotifTreeNode(m_copy, level_, (int)nodes_.size(), flip) );
-        m->reset();
-        BasepairOP new_end = m_copy->get_basepair(end->uuid())[0];
-        for ( auto const & r : m_copy->residues() ) {  r->new_uuid(); }
-        MotifTreeConnectionOP mtc (new MotifTreeConnection(parent, new_node, parent_end, new_end, 0));
-        parent->add_connection(mtc);
-        new_node->add_connection(mtc);
-        
-        if(nodes_.size() == 1 && full_beads_first_res_ == 1) {
-            nodes_[0]->motif()->get_beads();
-        }
-        
-        _update_beads(parent, new_node);
-        return new_node;
+        m_added->new_res_uuids();
+        return graph_.add_data(m_added, parent->index(), p, 0, (int)m_added->ends().size());
     }
     
-    return MotifTreeNodeOP(NULL);
+    return -1;
     
 }
 
 int
 MotifTree::_steric_clash(
-    MotifOP const & m,
-    BasepairOP const & end) {
+    MotifOP const & m) {
     
-    Beads beads = m->get_beads(end);
     float dist;
-    for( auto const & n : nodes_) {
-        for ( auto const & b1 : n->motif()->beads() ) {
-            for ( auto const & b2 : beads ) {
-                if (b1.btype() == PHOS || b2.btype() == PHOS) { continue; }
+    for( auto const & n : graph_) {
+        for ( auto const & b1 : n->data()->beads() ) {
+            for ( auto const & b2 : m->beads() ) {
+                if (b1.btype() == BeadType::PHOS || b2.btype() == BeadType::PHOS) { continue; }
                 dist = b1.center().distance(b2.center());
                 if(dist < clash_radius_) {
                     return 1;
@@ -220,31 +106,9 @@ MotifTree::_steric_clash(
     return 0;
 }
 
-void
-MotifTree::_update_beads(
-    MotifTreeNodeOP const & parent,
-    MotifTreeNodeOP const & child) {
-    
-    if (parent->motif()->mtype() != HELIX || child->motif()->mtype() != HELIX) {
-        return;
-    }
-    
-    BasepairOPs not_used = parent->available_ends();
-    BasepairOPs exclude;
-    int found = 0;
-    for( auto const & end1 : parent->motif()->ends()) {
-        found = 0;
-        for ( auto const & end2 : not_used) {
-            if(end1->uuid() == end2->uuid())  { found = 1; break; }
-        }
-        if(!found) { exclude.push_back(end1); }
-    }
-    parent->motif()->get_beads(exclude);
-    child->motif()->get_beads();
-}
 
 
-void
+/*void
 MotifTree::_add_connection(
     MotifTreeNodeOP const & node_1,
     MotifTreeNodeOP const & node_2,
@@ -265,70 +129,51 @@ MotifTree::_add_connection(
         }
     }
     
-}
+}*/
 
 
 void
 MotifTree::remove_node(
-    MotifTreeNodeOP const & node) {
-        
-    if(node->index() == 0) {
-        throw "cannot remove head node from tree";
-    }
+    int i) {
     
-    MotifTreeNodeOP parent = node->parent();
-    
-    for(auto & c : node->connections()) {
-        MotifTreeNodeOP partner = c->partner(node);
-        partner->remove_connection(c);
-        c->disconnect();
+    if(i == -1) {
+        i = graph_.last_node()->index();
     }
-    
-    try {
-        nodes_.erase(std::remove(nodes_.begin(), nodes_.end(), node), nodes_.end());
-    }
-    catch(...) {
-        throw "could not remove motif_tree_node from motif_tree";
-    }
-    
-    last_node_ = parent;
-    if(nodes_.size() == 1) {
-        nodes_[0]->motif()->remove_beads();
-    }
+    graph_.remove_node(i);
 }
 
 
-void
+/*void
 MotifTree::remove_node_level(int level) {
     if(level == -1) { level = level_; }
     for(int i = (int)nodes_.size()-1; i >= 0; i--) {
         if(nodes_[i]->level() >= level) { remove_node(nodes_[i]); }
     }
     last_node_ = nodes_.back();
-}
+}*/
 
 
 void
 MotifTree::write_pdbs(String const & fname) {
     int i = 0;
     std::stringstream ss;
-    for( auto const & n : nodes_) {
+    for( auto const & n : graph_) {
         ss << fname << "." << i << ".pdb";
-        n->motif()->to_pdb(ss.str());
+        n->data()->to_pdb(ss.str());
         ss.str("");
         i++;
     }
 }
 
-PoseOP
+/*PoseOP
 MotifTree::to_pose(int include_head) {
     return merger_.merge(*this);
-}
+}*/
 
 void
 MotifTree::to_pdb(String fname, int include_head) {
-    PoseOP pose = to_pose();
-    pose->to_pdb(fname);
+    /*PoseOP pose = to_pose();
+    pose->to_pdb(fname);*/
 }
 
 

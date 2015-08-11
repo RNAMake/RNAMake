@@ -157,6 +157,9 @@ public: //wrappers from structure
         return structure_->get_residue(uuid);
     }
     
+    void
+    new_res_uuids();
+    
 public: //wrappers from secondary structure
     
     String
@@ -198,6 +201,11 @@ public: //getters
     inline
     sstruct::SecondaryStructureOP const &
     secondary_structure() { return secondary_structure_; }
+    
+    inline
+    int const &
+    block_end_add() { return block_end_add_; }
+    
     
 public: // setters
     

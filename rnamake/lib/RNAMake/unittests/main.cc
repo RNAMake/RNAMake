@@ -23,6 +23,7 @@
 
 #include "motif_unittests/motif_unittest.h"
 #include "motif_unittests/motif_factory_unittest.h"
+#include "motif_unittests/motif_tree_unittest.h"
 
 #include "resources_unittests/motif_sqlite_connection_unittest.h"
 #include "resources_unittests/motif_sqlite_library_unittest.h"
@@ -38,8 +39,6 @@
 #include "structure_unittests/pdb_parser_unittest.h"
 #include "structure_unittests/basepair_unittest.h"
 
-#include "motif_unittests/motif_unittest.h"
-#include "motif_unittests/motif_tree_unittest.h"
 #include "motif_unittests/motif_tree_merger_unittest.h"
 #include "motif_unittests/motif_scorer_unittest.h"
 #include "motif_unittests/motif_tree_topology_unittest.h"
@@ -54,6 +53,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    AddedMotifLibraryUnittest test;
+    MotifTreeUnittest test;
     test.run();
 }

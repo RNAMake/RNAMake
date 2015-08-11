@@ -70,6 +70,7 @@ public: // getters
     BasepairStateOP const &
     state() {
         bp_state_->d(center(atoms_));
+        bp_state_->sugars(Points{ res1_->get_atom("C1'")->coords(), res2_->get_atom("C1'")->coords() });
         return bp_state_;
     }
     
@@ -105,21 +106,7 @@ public: // getters
     
     inline
     void
-    flip(int flip_d=-1) {
-        if( flip_d == -1) {
-            if(flipped_ == 0) {  flip_d = 1; }
-            else              {  flip_d = 0; }
-            bp_state_->flip();
-            flipped_ = flip_d;
-            return;
-        }
-        
-        if( flip_d == flipped_) { return; }
-        else {
-            bp_state_->flip();
-            flipped_ = flip_d;
-        }
-    }
+    flip() { bp_state_->flip(); }
     
     inline
     Matrix const &

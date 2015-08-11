@@ -105,6 +105,8 @@ class MotifUnittest(unittest.TestCase):
         m = rm.manager.get_motif(name="HELIX.IDEAL")
         end_id = m.end_index_with_id('GG_LL_CC_RR')
 
+    def test_align(self):
+        pass
 
 
 
