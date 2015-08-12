@@ -247,6 +247,35 @@ class StructureSecondaryFactory(object):
             chains.append(secondary_structure.Chain(c_res))
         return chains
 
+    def _get_ss_chains(self, ss, nodes):
+        res = []
+        for n in nodes:
+            for c in n.chains:
+                for r in c.residues:
+                    if r in res:
+                        continue
+                    res.append(r)
+        res.sort(key=lambda x: x.num)
+        chains = []
+        c_res = []
+        last = -1
+        for r in res:
+            is_chain_start = 0
+            for c in ss.chains:
+                if c.first() == r:
+                    is_chain_start = 1
+                    break
+            if last == -1:
+                pass
+            elif last+1 != r.num or is_chain_start:
+                chains.append(secondary_structure.Chain(c_res))
+                c_res = []
+            c_res.append(r)
+            last = r.num
+        if len(c_res) > 0:
+            chains.append(secondary_structure.Chain(c_res))
+        return chains
+
     def get_structure(self, sequence=None, dot_bracket=None, base_ss=None, to_RNA=0):
         if   sequence is not None and dot_bracket is not None:
             sstree = ss_tree.SS_Tree(sequence, dot_bracket)
@@ -268,6 +297,56 @@ class StructureSecondaryFactory(object):
         ss = self.parser.to_secondary_structure(m)
         self.parser.reset()
         return ss
+
+    def get_helices(self, ss):
+        bp_steps = ss.motifs('BP_STEP')
+        seen = {}
+        groups = []
+        seen [ bp_steps[0] ] = 1
+        group = [ bp_steps[0] ]
+
+        while len(seen) < len(bp_steps):
+            if len(group) == 0:
+                for bp_step in bp_steps:
+                    if bp_step not in seen:
+                        group.append(bp_step)
+                        break
+
+            found = 0
+            ends = []
+            for step in group:
+                ends.extend(step.ends)
+
+            for bp_step in bp_steps:
+                if bp_step in seen:
+                    continue
+
+                for end in ends:
+                    if end in bp_step.ends:
+                        found = 1
+                        break
+
+                if found:
+                    seen[bp_step] = 1
+                    group.append(bp_step)
+                    break
+
+            if not found:
+                groups.append(group)
+                group = []
+
+        if len(group) > 0:
+            groups.append(group)
+
+
+        helices = []
+        for g in groups:
+            chains = self._get_ss_chains(ss, g)
+            e = secondary_structure.SecondaryStructureMotif("HELIX", [], chains)
+            helices.append(e)
+
+        return helices
+
 
 
 def ss_id_to_seq_and_db(ss_id):

@@ -198,7 +198,7 @@ class SecondaryStructure(SecondaryStructureMotif):
         if dot_bracket[0] != '(' and dot_bracket[0] != '.' and dot_bracket != '&':
             raise ValueError("secondary structure is not valid did you flip seq and ss?")
 
-        count = 0
+        count = 1
         chains_ids = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K"]
         chain_i = 0
         for i in range(len(sequence)):
