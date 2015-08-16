@@ -154,17 +154,24 @@ class MotifSqliteLibrary(SqliteLibrary):
         new_ss_tree = secondary_structure_factory.ss_id_to_ss_tree(new_id)
         best_score = 10000
         best_id = None
+        matches = []
         for id, sstree in self.ss_trees.iteritems():
             score = ss_tree.compare_ss_tree(new_ss_tree, sstree)
             if score < best_score:
                 best_score = score
                 best_id = id
+            matches.append([id, score])
 
         if best_score == 10000:
             raise  ValueError("get_best_match failed in MotifSSIDSqliteLibrary")
 
-        #print best_score
-        return self.get(end_id=best_id)
+        matches.sort(key=lambda x: x[1])
+
+        motifs = []
+        for i in range(0, 9):
+            motifs.append(self.get(end_id=matches[i][0]))
+
+        return motifs
 
 
 class MotifSSIDSqliteLibrary(SqliteLibrary):

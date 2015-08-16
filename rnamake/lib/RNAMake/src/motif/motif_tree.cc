@@ -13,6 +13,8 @@
 #include "motif/motif_tree.h"
 #include "motif/motif.h"
 
+
+
 MotifTree::MotifTree() {
     graph_ = GraphStatic<MotifOP>();
     /*MotifOP m ( new Motif ( line, ResidueTypeSetManager::getInstance().residue_type_set()) );
@@ -50,7 +52,6 @@ MotifTree::update_var_options() {
     clash_radius_         = options_.option<float>("clash_radius");
 }
 
-
 int
 MotifTree::add_motif(
     MotifOP const & m,
@@ -59,7 +60,14 @@ MotifTree::add_motif(
     String parent_end_name) {
     
     auto parent = graph_.last_node();
-    if(parent_index != -1) { parent = graph_.get_node(parent_index); }
+    
+    //catch out of bounds node index
+    try {
+        if(parent_index != -1) { parent = graph_.get_node(parent_index); }
+    }
+    catch(GraphException e) {
+        throw MotifTreeException("could not add motif: " + m->name() + " with parent: " + std::to_string(parent_index) + "there is no node with that index");
+    }
     
     if(parent == nullptr) {
         auto m_copy = std::make_shared<Motif>(m->copy());
@@ -73,7 +81,15 @@ MotifTree::add_motif(
         parent_end_index = parent->data()->end_index(parent_end);
     }
     
-    auto avail_pos = graph_.get_available_pos(parent, parent_end_index);
+    //catch not a viable end index for this parent node
+    Ints avail_pos;
+    try {
+        avail_pos = graph_.get_available_pos(parent, parent_end_index);
+    }
+    catch(GraphException e) {
+        throw MotifTreeException("could not add motif: " + m->name() + " with parent: " + std::to_string(parent_index));
+    }
+    
     for(auto const & p : avail_pos) {
         if(p == parent->data()->block_end_add()) { continue; }
         auto m_added = get_aligned_motif(parent->data()->ends()[p], m->ends()[0], m);
@@ -81,10 +97,11 @@ MotifTree::add_motif(
         
         m_added->new_res_uuids();
         return graph_.add_data(m_added, parent->index(), p, 0, (int)m_added->ends().size());
+
+     
     }
     
     return -1;
-    
 }
 
 int
@@ -135,22 +152,37 @@ MotifTree::_add_connection(
 void
 MotifTree::remove_node(
     int i) {
-    
-    if(i == -1) {
-        i = graph_.last_node()->index();
+
+    if(graph_.size() == 0) {
+        throw MotifTreeException("tried to remove a node from motiftree but there arent any nodes!");
     }
-    graph_.remove_node(i);
+    
+    try {
+        if(i == -1) {
+            i = graph_.last_node()->index();
+        }
+        graph_.remove_node(i);
+    }
+    catch(GraphException e) {
+        throw MotifTreeException("tried to remove node from motiftree that does not exist");
+    }
 }
 
 
-/*void
+void
 MotifTree::remove_node_level(int level) {
-    if(level == -1) { level = level_; }
-    for(int i = (int)nodes_.size()-1; i >= 0; i--) {
-        if(nodes_[i]->level() >= level) { remove_node(nodes_[i]); }
+    
+    if(level == -1) { level = graph_.level(); }
+    int size = (int)graph_.size();
+    
+    Ints indices;
+    for(auto const & n : graph_) {
+        if(n->level() >= level) { indices.push_back(n->index()); }
     }
-    last_node_ = nodes_.back();
-}*/
+    
+    for(auto & i: indices) { graph_.remove_node(i); }
+    
+}
 
 
 void

@@ -26,6 +26,15 @@
 
 typedef GraphNodeOP<MotifOP> MotifTreeNodeOP;
 
+class MotifTreeException : public std::runtime_error {
+public:
+    MotifTreeException(
+        String const & message) :
+    std::runtime_error(message)
+    {}
+    
+};
+
 class MotifTree : public Base {
 public:
     MotifTree();

@@ -21,32 +21,65 @@ MotifTreeUnittest::test_add_motif() {
     MotifTree mt;
     MotifOP m = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
     for (int i = 0; i < 20; i ++) { mt.add_motif(m); }
-    std::cout << mt.size() << std::endl;
-    mt.write_pdbs();
-    return 1;
     
-    try {
-        mt.add_motif(m, 0);
-        std::cout << "did not catch exception" << std::endl;
-        exit(EXIT_FAILURE);
-    } catch(char const * e) { }
+    if(mt.add_motif(m, 0) != -1) { return 0; }
     
     try {
         mt.add_motif(m, -1, 10);
-        std::cout << "did not catch exception" << std::endl;
-        exit(EXIT_FAILURE);
-    } catch(char const * e) { }
+        throw UnittestException("did not error when expected");
+    }
+    catch(MotifTreeException e) {}
+    catch(...) { return 0; }
+
+    try {
+        mt.add_motif(m, 99, 10);
+        throw UnittestException("did not error when expected");
+    }
+    catch(MotifTreeException e) {}
+    catch(...) { return 0; }
     
+    return 1;
+}
+
+int
+MotifTreeUnittest::test_remove_node() {
+    MotifTree mt;
+    MotifOP m = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
+    mt.add_motif(m);
+    mt.remove_node();
+    
+    if(mt.size() != 0 ) { return 0; }
     
     try {
-        mt.add_motif(m, -1, -1);
-        std::cout << "did not catch exception" << std::endl;
-        exit(EXIT_FAILURE);
-    } catch(char const * e) { }
+        mt.remove_node(2);
+        throw UnittestException("did not error when expected");
+    }
+    catch(MotifTreeException e) {}
+    catch(...) { return 0; }
     
+    try {
+        mt.remove_node();
+        throw UnittestException("did not error when expected");
+    }
+    catch(MotifTreeException e) {}
+    catch(...) { return 0; }
+    
+    
+    return 1;
+}
+
+int
+MotifTreeUnittest::test_remove_node_level() {
+    MotifTree mt;
+    MotifOP m = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
+    for (int i = 0; i < 20; i ++) { mt.add_motif(m); }
+    mt.remove_node_level();
+    
+    if(mt.size() != 0) { return 0; }
 
     return 1;
 }
+
 
 /*
 int
@@ -82,29 +115,7 @@ MotifTreeUnittest::test_motif_tree_to_str() {
     return 1;
 }
 
-int
-MotifTreeUnittest::test_remove_node() {
-    MotifLibrary mlib (HELIX);
-    MotifTree mt;
-    MotifOP m = mlib.get_motif("HELIX.IDEAL");
-    mt.add_motif(m);
-    mt.remove_node(mt.last_node());
-    
-    return 1;
-}
 
-int
-MotifTreeUnittest::test_remove_node_level() {
-    MotifLibrary mlib (HELIX);
-    MotifTree mt;
-    MotifOP m = mlib.get_motif("HELIX.IDEAL");
-    for(int i = 0; i < 10; i++) {
-        mt.add_motif(m);
-    }
-    mt.remove_node_level();
-    if(mt.nodes().size() != 1) { return 0; }
-    return 1;
-}
 
 int
 MotifTreeUnittest::test_options() {
@@ -128,8 +139,8 @@ MotifTreeUnittest::run() {
     if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
     if (test_add_motif() == 0)         { std::cout << "test_add_motif failed" << std::endl; }
     //if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
-    //if (test_remove_node() == 0)       { std::cout << "test_remove_node failed" << std::endl; }
-    //if (test_remove_node_level() == 0) { std::cout << "test_remove_node_level failed" << std::endl; }
+    if (test_remove_node() == 0)       { std::cout << "test_remove_node failed" << std::endl; }
+    if (test_remove_node_level() == 0) { std::cout << "test_remove_node_level failed" << std::endl; }
     //if (test_options() == 0) { std::cout << "test_options failed" << std::endl; }
     
     return 0;
