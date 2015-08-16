@@ -41,7 +41,7 @@ public:
     
     const_iterator begin() const { return nodes_.begin(); }
     const_iterator end()   const { return nodes_.end(); }
-    
+        
 public:
     
     inline
@@ -69,6 +69,10 @@ public:
     inline
     GraphNodeOP<DataType> const &
     last_node() { return last_node_; }
+    
+    inline
+    int
+    level() { return level_; }
     
     
 protected:
@@ -238,7 +242,11 @@ public:
         
         this->nodes_.erase(std::remove(this->nodes_.begin(), this->nodes_.end(),
                                              n), this->nodes_.end());
-        this->last_node_ = this->nodes_.back();
+        
+        if(this->nodes_.size() != 0) {
+            this->last_node_ = this->nodes_.back();
+        }
+        else { this->last_node_ = nullptr; }
     }
     
 };

@@ -177,7 +177,8 @@ class SS_Tree(object):
                     ss_chains = current_pair.node.ss_chains
                     bounds = current_pair.node.bounds
 
-                    for n in part_of_nway:
+                    while len(part_of_nway) > 0:
+                        n = part_of_nway.pop(0)
                         for i in range(len(n.ss_chains)):
                             if len(n.ss_chains[i].sequence()) > 0:
                                 ss_chains.append(n.ss_chains[i])
@@ -187,7 +188,10 @@ class SS_Tree(object):
                             nyb = self._map_back_to_index(n.bound_side(1, Bound_Side.LEFT)) -1
                             next_level_2 = self._build_tree_level(nxb, nyb)
                             for n2 in next_level_2:
-                                next_level.append(n2)
+                                if n2.type == SS_Type.SS_BULGE:
+                                    part_of_nway.append(n2)
+                                else:
+                                    next_level.append(n2)
 
                     new_node = SS_NodeData(SS_Type.SS_NWAY, ss_chains, bounds)
                     index = current_pair.index
@@ -204,6 +208,9 @@ class SS_Tree(object):
         while xb <= yb:
             if xb == yb and self.residues[xb].dot_bracket != ".":
                 break
+            if self.residues[xb].dot_bracket == ']' or self.residues[xb].dot_bracket == ')':
+                xb += 1
+                continue
             child = self._assign_new_node(xb, yb)
             xb =  self._map_back_to_index(child.bound_side(1, Bound_Side.RIGHT))+1
             next_level.append(child)
@@ -230,12 +237,15 @@ class SS_Tree(object):
 
         type = None
         if len(ss_chains[0].residues) == 0 and len(ss_chains[1].residues) == 0:
-            pair = self._get_bracket_pair(xb)
+            if self.residues[xb].dot_bracket == '[':
+                type = SS_Type.SS_PSEUDO_BP
+                pair = self._get_pseudo_bracket_pair(xb)
+            else:
+                type = SS_Type.SS_BP
+                pair = self._get_bracket_pair(xb)
             ss_chains[0].residues.append(self.residues[xb])
             ss_chains[1].residues.append(self.residues[pair])
-            type = SS_Type.SS_BP
-            if(self.residues[xb].dot_bracket == '['):
-               type = SS_Type.SS_PSEUDO_BP
+
 
         elif hairpin:
             type = SS_Type.SS_HAIRPIN
@@ -274,6 +284,22 @@ class SS_Tree(object):
                     return i
 
         raise ValueError("cannot find pair")
+
+    def _get_pseudo_bracket_pair(self, num):
+
+        bracket_count = 0
+        for i, r in enumerate(self.residues):
+            if i < num:
+                continue
+            if r.dot_bracket == "[":
+                bracket_count += 1
+            if r.dot_bracket == "]":
+                bracket_count -= 1
+                if bracket_count == 0:
+                    return i
+
+        raise ValueError("cannot find pair")
+
 
     def _get_dot_bounds(self, pos,reverse=0):
         """

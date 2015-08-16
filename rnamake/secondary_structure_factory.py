@@ -164,6 +164,9 @@ class StructureSecondaryFactory(object):
     def _get_elements(self, sstree, ss):
         elements = { 'ALL' : [] }
 
+        #for n in sstree:
+        #    print n.index, n.data.what(), n.data.sequence(), n.parent_index()
+
         for n in sstree:
             if n.parent_index() == -1 or n.parent.data.type == ss_tree.SS_Type.SS_SEQ_BREAK:
                 continue

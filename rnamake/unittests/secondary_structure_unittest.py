@@ -11,6 +11,7 @@ import rnamake.motif_tree as motif_tree
 import rnamake.setup.motif_library as motif_library
 import rnamake.motif_type as motif_type
 import rnamake.motif_tree_topology as motif_tree_topology
+import rnamake.settings as settings
 
 class SecondaryStructureUnittest(unittest.TestCase):
 
@@ -105,6 +106,26 @@ class SecondaryStructureUnittest(unittest.TestCase):
         mt.write_pdbs()
         print len(mt)
 
+    def _test_complex(self):
+        seq = "GGGCUUGUAGCUCAGGUGGUUAGAGCGCACCCCUGAUAAGGGUGAGGUCGGUGGUUCAAGUCCACUCAGGCCCAC"
+        db  = "(((((((..((((.....[...)))).(((((.......))))).....(((((..]....)))))))))))).."
+
+        ss = ssfactory.factory.get_structure(seq, db)
+
+        for m in ss.motifs('ALL'):
+            print m.type, m.sequence()
+
+    def test_complex(self):
+        path = settings.UNITTEST_PATH + "/resources/seq_ss.txt"
+        f = open(path)
+        lines = f.readlines()
+        f.close()
+
+        for l in lines:
+            name,seq,db = l.split()
+            print name, len(seq), len(db)
+            ss = ssfactory.factory.get_structure(seq, db)
+            print ss
 
 def main():
     unittest.main()

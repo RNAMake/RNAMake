@@ -111,9 +111,12 @@ int
 GraphUnittest::test_remove() {
     GraphStatic<int> g;
     g.add_data(0, -1, -1, -1, 2);
-    g.add_data(1,  0, 0, 0, 2);
-    g.add_data(2,  1, 1, 0, 2);
-    g.remove_node(2);
+    g.remove_node(0);
+    
+    g.add_data(0, -1, -1, -1, 2);
+    g.add_data(1,  1, 0, 0, 2);
+    g.add_data(2,  2, 1, 0, 2);
+    g.remove_node(3);
     
     if(g.size() != 2) {
         return 0;
