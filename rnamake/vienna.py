@@ -35,4 +35,24 @@ class Vienna(object):
 
 
     def cofold(self, seq):
-        pass
+        if len(seq) == 0:
+            raise ValueError("must supply a sequence longer then 0")
+        os.system("echo \""+seq+"\" | "+self.bin_path+"RNAcofold -p > rnafold_dump")
+        f = open("rnafold_dump")
+        lines = f.readlines()
+        f.close()
+        try:
+            last_line = lines.pop()
+        except:
+            return None
+        spl = last_line.split()
+        ensemble_prob = float(spl[6][:-1])
+        ensemble_diversity = float(spl[-1])
+        spl = lines[1].split()
+        spl2 = lines[1].split("(")
+        structure = spl[0]
+        energy = float(spl2[-1][:-2].rstrip())
+        results = ViennaResults(structure, energy, ensemble_prob,
+                                ensemble_diversity)
+        os.remove("rnafold_dump")
+        return results
