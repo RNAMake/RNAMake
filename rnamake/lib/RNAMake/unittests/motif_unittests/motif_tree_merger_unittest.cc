@@ -8,17 +8,13 @@
 
 #include "motif_tree_merger_unittest.h"
 #include "motif/motif_tree.h"
-#include "resources/motif_library.h"
+#include "resources/resource_manager.h"
 
 int
 MotifTreeMergerUnittest::test_merger() {
-    MotifLibrary mlib(HELIX);
+    MotifOP m = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
     MotifTree mt;
-    mt.add_motif(mlib.get_motif("HELIX.IDEAL"));
-    mt.add_motif(mlib.get_motif("HELIX.IDEAL"));
-    for(int i = 0; i < 10; i++) {
-        mt.add_motif(mlib.get_motif("HELIX.IDEAL"));
-    }
+    for(int i = 0; i < 10; i++) { mt.add_motif(m);}
     
     PoseOP pose = mt.to_pose();
     if(pose->chains().size() != 2) { return 0; }

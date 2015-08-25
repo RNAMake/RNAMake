@@ -194,7 +194,7 @@ m
         p = self.to_pose()
         return p.designable_secondary_structure()
 
-    def to_pdb(self, fname="mt.pdb", include_head=1, chain_closure=1):
+    def to_pdb(self, fname="mt.pdb", chain_closure=1):
         pose = self.to_pose()
         pose.to_pdb(fname)
 
@@ -204,28 +204,6 @@ m
             s += n.data.name + "," + n.data.end_ids[0] + "," + \
                  str(n.parent_index())
         return s
-
-    def _update_beads(self, parent, child):
-        """
-        This may seem strange but it correct the small differences that can
-        occur between the beads in a motif tree vs that in a merged motif.
-        Merged motifs remove overlapping basepairs by including the motif's
-        basepair over the helices basepair. Thus this function reflects this
-        change a motif tree will behave like a merged motif sterically.
-        """
-
-        if parent.motif.mtype != motif_type.HELIX or \
-           child.motif.mtype != motif_type.HELIX:
-            return
-
-        not_used = parent.available_ends()
-        exclude = []
-        for end in parent.motif.ends:
-            if end not in not_used:
-                exclude.append(end)
-
-        parent.motif.get_beads(exclude)
-        child.motif.get_beads()
 
     def _steric_clash(self, m):
         beads = m.beads
@@ -257,6 +235,7 @@ m
         if i == j:
             raise ValueError("you cannot connect a motif to itself in add_connection")
 
+        #TODO add it more error checks here
         avail_ends_1 = node_1.available_children_pos()
         avail_ends_2 = node_2.available_children_pos()
 
@@ -267,7 +246,7 @@ m
                 self.graph.connect(i, j, end_index_1, end_index_2)
                 return 1
 
-        raise ValueError("could not connect node " + str(i) + " " + str(j) + "with end name " +
+        raise ValueError("could not connect node " + str(i) + " " + str(j) + " with end name " +
                          i_name)
 
 

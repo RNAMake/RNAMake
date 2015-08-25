@@ -21,33 +21,19 @@
 
 #include "structure/residue_type_set.h"
 #include "motif/motif.h"
-//#include "motif/motif_tree_merger.h"
+#include "motif/motif_tree.fwd.h"
+#include "motif/motif_tree_merger.h"
 #include "motif/pose.h"
 
-typedef GraphNodeOP<MotifOP> MotifTreeNodeOP;
 
-class MotifTreeException : public std::runtime_error {
-public:
-    MotifTreeException(
-        String const & message) :
-    std::runtime_error(message)
-    {}
-    
-};
 
 class MotifTree : public Base {
 public:
     MotifTree();
-    MotifTree(
-        MotifOP const &);
-    
-    //MotifTree(
-    //    String const &,
-    //    ResidueTypeSet const &);
     
     ~MotifTree() {}
     
-public:
+public: //iterators
     
     typedef typename GraphStatic<MotifOP>::iterator iterator;
     typedef typename GraphStatic<MotifOP>::const_iterator const_iterator;
@@ -59,12 +45,6 @@ public:
     const_iterator end()   const { return graph_.end(); }
     
 public:
-    
-    MotifTreeNodeOP
-    get_node(int i) { return graph_.get_node(i); }
-    
-    size_t
-    size() { return graph_.size(); }
     
     int
     add_motif(
@@ -78,23 +58,17 @@ public:
         String const & fname = "nodes");
     
     PoseOP
-    to_pose(
-        int include_head = 0);
+    to_pose();
     
     void
     to_pdb(
-        String fname = "mt.pdb",
-        int include_head = 0);
+        String fname = "mt.pdb");
     
     void
-    _add_connection(
-        MotifTreeNodeOP const &,
-        MotifTreeNodeOP const &,
-        float cutoff = 25);
-    
-    inline
-    void
-    increase_level() { level_ += 1; }
+    add_connection(
+        int,
+        int,
+        String const &);
     
     void
     remove_node(
@@ -102,14 +76,37 @@ public:
     
     void
     remove_node_level(int level=-1);
-
-public: //getters
+    
+    String
+    topology_to_str();
     
 
+public: //graph wrappers
+    
+    inline
+    void
+    increase_level() {
+        graph_.increase_level();
+    }
+    
+    MotifTreeNodeOP
+    get_node(int i) { return graph_.get_node(i); }
+    
+    size_t
+    size() { return graph_.size(); }
+    
+
+    
+
+public: //getters
     
     inline
     MotifTreeNodeOP const &
     last_node() { return graph_.last_node(); }
+    
+public: //setters
+    
+    
         
     
 protected:
@@ -129,11 +126,11 @@ private:
 
 private:
     GraphStatic<MotifOP> graph_;
-    //MotifTreeMerger merger_;
+    MotifTreeMerger merger_;
     float clash_radius_;
     int level_;
     //options ... need a better way
-    int sterics_, full_beads_first_res_;
+    int sterics_;
     
     
 };
