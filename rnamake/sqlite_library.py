@@ -141,9 +141,8 @@ class MotifSqliteLibrary(SqliteLibrary):
         return libnames
 
     def get_best_matches(self, new_id):
-        if self.contains(end_id=new_id):
-            return self.get(end_id=new_id)
-
+        #if self.contains(end_id=new_id):
+        #    return self.get(end_id=new_id)
 
         if len(self.ss_trees) == 0:
             self.load_all()
@@ -170,7 +169,6 @@ class MotifSqliteLibrary(SqliteLibrary):
         motifs = []
         for i in range(0, 9):
             motifs.append(self.get(end_id=matches[i][0]))
-
         return motifs
 
 

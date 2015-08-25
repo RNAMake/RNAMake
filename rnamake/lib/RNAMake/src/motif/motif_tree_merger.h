@@ -15,6 +15,9 @@
 //RNAMake Headers
 #include "structure/chain.fwd.h"
 #include "motif/pose.h"
+#include "motif/motif_tree.fwd.h"
+
+typedef std::vector<MotifTreeNodeOP> MotifTreeNodeOPs;
 
 struct ChainEndPairMap {
 public:
@@ -72,7 +75,7 @@ public:
     
 public:
     PoseOP
-    merge(MotifTree const &, int include_head = 0);
+    merge(GraphStatic<MotifOP> const &);
     
 private:
     
@@ -108,6 +111,11 @@ private:
         ChainOP const &,
         int join_by_3prime = 0,
         int remove_overlap = 0);
+    
+    ChainEndPairMap
+    _get_chains_from_connection(
+        MotifTreeNodeOP const &,
+        MotifTreeConnectionOP const &);
     
     PoseOP
     _build_pose();

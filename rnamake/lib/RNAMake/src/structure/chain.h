@@ -34,6 +34,12 @@ public:
 public:
     
     inline
+    int
+    length() const {
+        return (int)residues_.size();
+    }
+    
+    inline
     ResidueOP const &
     first() { return residues_[0]; }
     

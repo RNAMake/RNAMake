@@ -7,22 +7,18 @@
 	<key>IDESourceControlProjectIdentifier</key>
 	<string>4BC7C4CB-C6DF-43CC-9371-1665D7090463</string>
 	<key>IDESourceControlProjectName</key>
-	<string>RNAMake</string>
+	<string>project</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
 		<key>1B80E269BBB3666E01F20705036709F701B2465F</key>
 		<string>github.com:jyesselm/RNAMake.git</string>
-		<key>4236B6C5095CBA349223DA0F02910EC02098AE17</key>
-		<string>github.com:CxxTest/cxxtest.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>rnamake/lib/RNAMake/RNAMake.xcodeproj</string>
+	<string>rnamake/lib/RNAMake/RNAMake.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
 		<key>1B80E269BBB3666E01F20705036709F701B2465F</key>
 		<string>../../../../..</string>
-		<key>4236B6C5095CBA349223DA0F02910EC02098AE17</key>
-		<string>../../../../../../Downloads/cxxtest</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
 	<string>github.com:jyesselm/RNAMake.git</string>
@@ -32,14 +28,6 @@
 	<string>1B80E269BBB3666E01F20705036709F701B2465F</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
-		<dict>
-			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
-			<string>public.vcs.git</string>
-			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>4236B6C5095CBA349223DA0F02910EC02098AE17</string>
-			<key>IDESourceControlWCCName</key>
-			<string>cxxtest</string>
-		</dict>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>

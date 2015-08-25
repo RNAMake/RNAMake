@@ -231,6 +231,16 @@ class GraphNode(object):
 
         return None
 
+    def parent_index(self):
+        parent = self.parent()
+        if parent is None:
+            return -1
+        for c in self.connections:
+            if c.partner(self.index) == parent.index:
+                return c.end_index(parent.index)
+
+        return -1
+
 
 class GraphNodeDynamic(GraphNode):
     def __init__(self, data, index, level):

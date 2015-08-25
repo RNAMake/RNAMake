@@ -202,7 +202,7 @@ class SecondaryStructure(SecondaryStructureMotif):
         chains_ids = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K"]
         chain_i = 0
         for i in range(len(sequence)):
-            if sequence[i] != "&" and sequence[i] != "+":
+            if sequence[i] != "&" and sequence[i] != "+" and sequence[i] != "-":
                 r = Residue(sequence[i], dot_bracket[i], count,
                             chains_ids[chain_i], uuid.uuid1())
                 residues.append(r)

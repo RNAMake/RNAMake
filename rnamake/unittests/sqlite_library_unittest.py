@@ -103,12 +103,11 @@ class SqliteLibraryUnittest(unittest.TestCase):
     def test_get_best(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
         #ss_id1 = "AC_LL_GGGU_RUUR"
-        ss_id1 = "AGG_LLL_CGU_RRR"
+        ss_id1 = "GAAG_LUUL_CAC_RUR"
 
-        matches = mlib.get_best_match(ss_id1, num=10)
-        #m.to_pdb("test.pdb")
-        #m = mlib.get(ss_id1)
-        #m.to_pdb("test.pdb")
+        matches = mlib.get_best_matches(ss_id1)
+        for i, m in enumerate(matches):
+            m.to_pdb("motif."+str(i)+".pdb")
 
     def _test_end_id(self):
         mlib = rm.manager.mlibs['tcontact']

@@ -96,7 +96,7 @@ class MotifTreeMerger(base.Base):
 
                     basepairs.append(cbp)
 
-        new_structure.to_pdb("test.pdb")
+        #new_structure.to_pdb("test.pdb")
         p = pose_factory.factory.pose_from_motif_tree(new_structure, basepairs,
                                                       motifs, designable)
         return p

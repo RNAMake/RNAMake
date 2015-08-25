@@ -115,25 +115,18 @@ MotifTreeUnittest::test_motif_tree_to_str() {
     return 1;
 }
 
-
+*/
 
 int
 MotifTreeUnittest::test_options() {
-    MotifLibrary mlib (HELIX);
-    MotifTree mt;
-    MotifOP m = mlib.get_motif("HELIX.IDEAL");
-    
-    if(mt.option<float>("clash_radius") != 2.8f) { return 0; }
-    
+    MotifTree mt;    
+    if(mt.option<float>("clash_radius") != 2.9f) { return 0; }
     mt.option("clash_radius", 3.0f);
-    
     if(mt.option<float>("clash_radius") != 3.0f) { return 0; }
-
     
     return 1;
 }
-*/
- 
+
 int
 MotifTreeUnittest::run() {
     if (test_creation() == 0)          { std::cout << "test_creation failed" << std::endl;  }
@@ -141,7 +134,7 @@ MotifTreeUnittest::run() {
     //if (test_motif_tree_to_str() == 0) { std::cout << "test_motif_tree_to_str failed" << std::endl; }
     if (test_remove_node() == 0)       { std::cout << "test_remove_node failed" << std::endl; }
     if (test_remove_node_level() == 0) { std::cout << "test_remove_node_level failed" << std::endl; }
-    //if (test_options() == 0) { std::cout << "test_options failed" << std::endl; }
+    if (test_options() == 0)           { std::cout << "test_options failed" << std::endl; }
     
     return 0;
 }

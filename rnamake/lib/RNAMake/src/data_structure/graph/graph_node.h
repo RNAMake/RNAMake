@@ -88,6 +88,20 @@ public:
     }
     
     inline
+    int
+    parent_index() {
+        auto n_parent = parent();
+        if(n_parent == nullptr) { return -1; }
+        for (auto const & c : connections_) {
+            if(c->partner(index_)->index() == n_parent->index()) {
+                return c->end_index(n_parent->index());
+            }
+        }
+        return -1;
+     }
+    
+    
+    inline
     void
     unset_connections() {
         for(auto & c : connections_) {
@@ -262,6 +276,16 @@ public:
             throw GraphException("cannot call end_index with node not in connection");
         }
      }
+    
+public:
+    inline
+    GraphNodeOP<DataType> const &
+    node_1() { return node_1_; }
+    
+    inline
+    GraphNodeOP<DataType> const &
+    node_2() { return node_2_; }
+    
     
     
 private:

@@ -46,12 +46,12 @@ public:
     
     inline
     size_t
-    size() { return nodes_.size(); }
+    size() const { return nodes_.size(); }
     
     inline
     GraphNodeOP<DataType> const &
     get_node(
-        int index) {
+        int index) const {
         
         for(auto const & n : nodes_) {
             if(n->index() == index) { return n; }
@@ -60,6 +60,18 @@ public:
         throw GraphException("cannot find node with index");
     }
 
+
+    inline
+    void
+    increase_level() { level_ += 1; }
+    
+    inline
+    void
+    decrease_level() { level_ -= 1; }
+    
+    
+public: //getters
+    
     inline
     GraphNodeOPs<DataType> const &
     nodes() {
@@ -73,6 +85,7 @@ public:
     inline
     int
     level() { return level_; }
+    
     
     
 protected:
