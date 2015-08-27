@@ -33,11 +33,11 @@ public:
         return s_uuid_.compare(uuid.s_uuid_) == 0;
     }
  
-    inline
+    /*inline
     bool
-    operator <(Uuid const & uuid) const {
+    operator < (Uuid const & uuid) const {
         return s_uuid_.compare(uuid.s_uuid());
-    }
+    }*/
     
 private:
     String s_uuid_;
@@ -51,7 +51,7 @@ struct UuidCompare {
     bool operator() (
         Uuid const & u1,
         Uuid const & u2) const {
-        return u1 < u2;
+        return u1.s_uuid() < u2.s_uuid();
     }
 };
 

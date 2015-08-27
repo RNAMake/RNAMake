@@ -36,7 +36,7 @@ ResourceManager::add_motif(
     
     auto m = mf_.motif_from_file(path);
     MotifOPs motifs;
-    std::map<Uuid, String> end_ids;
+    std::map<Uuid, String, UuidCompare> end_ids;
     for( int i = 0; i < m->ends().size(); i++) {
         auto m_added = mf_.can_align_motif_to_end(m, i);
         if(m_added == nullptr) { continue; }

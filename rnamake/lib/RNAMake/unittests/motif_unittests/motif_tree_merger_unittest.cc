@@ -14,7 +14,7 @@ int
 MotifTreeMergerUnittest::test_merger() {
     MotifOP m = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
     MotifTree mt;
-    for(int i = 0; i < 10; i++) { mt.add_motif(m);}
+    for(int i = 0; i < 2; i++) { mt.add_motif(m);}
     
     PoseOP pose = mt.to_pose();
     if(pose->chains().size() != 2) { return 0; }

@@ -51,11 +51,14 @@ MotifTreeMerger::_build_pose() {
     new_structure->renumber();
     
     auto residues = new_structure->residues();
-    std::map<Uuid, ResidueOP> uuids;
+    std::map<Uuid, ResidueOP, UuidCompare> uuids;
     for(auto const & res : residues) { uuids[res->uuid() ] = res; }
+    
     BasepairOPs basepairs;
-    std::map<Uuid, int> designable;
+    MotifOPs motifs;
+    std::map<Uuid, int, UuidCompare> designable;
     for(auto const & node : nodes_) {
+        motifs.push_back(node->data());
         for(auto const & bp : node->data()->basepairs()) {
             if(uuids.find(bp->res1()->uuid()) ==  uuids.end()) { continue; }
             if(uuids.find(bp->res2()->uuid()) ==  uuids.end()) { continue; }
@@ -67,10 +70,8 @@ MotifTreeMerger::_build_pose() {
         }
     }
 
-    PoseOP new_pose (new Pose(new_structure, basepairs));
-    new_pose->designable(designable);
-    
-    return new_pose;
+    PoseOP p = pf_.pose_from_motif_tree(new_structure, basepairs, motifs, designable);
+    return p;
     
 }
 
