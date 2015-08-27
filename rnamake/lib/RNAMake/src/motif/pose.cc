@@ -13,7 +13,7 @@ Pose::Pose(MotifOP const & m) {
     structure_ = m->structure();
     basepairs_ = m->basepairs();
     ends_ = m->ends();
-    designable_ = std::map<Uuid, int> ();
+    designable_ = std::map<Uuid, int, UuidCompare> ();
 }
 
 Pose::Pose(
@@ -21,7 +21,7 @@ Pose::Pose(
     BasepairOPs const & basepairs) {
     structure_ = structure;
     basepairs_ = basepairs;
-    designable_ = std::map<Uuid, int> ();
+    designable_ = std::map<Uuid, int, UuidCompare> ();
 }
 
 String

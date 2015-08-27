@@ -55,13 +55,6 @@ public:
         MotifOP const &,
         int);
     
-private:
-    
-    BasepairOPs
-    _setup_basepairs(
-        String const &,
-        StructureOP const &);
-    
     BasepairOPs
     _setup_basepair_ends(
         StructureOP const &,
@@ -70,6 +63,14 @@ private:
     void
     _setup_secondary_structure(
         MotifOP &);
+    
+private:
+    
+    BasepairOPs
+    _setup_basepairs(
+        String const &,
+        StructureOP const &);
+    
     
     void
     _align_chains(

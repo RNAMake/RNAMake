@@ -19,7 +19,7 @@
 class Pose : public Motif {
 public:
     Pose():
-    designable_ (std::map<Uuid, int>()) {}
+    designable_ (std::map<Uuid, int, UuidCompare>()) {}
     
     Pose(MotifOP const &);
     
@@ -39,10 +39,10 @@ public:
     
     inline
     void
-    designable(std::map<Uuid, int> const & ndesignable) { designable_ = ndesignable; }
+    designable(std::map<Uuid, int, UuidCompare> const & ndesignable) { designable_ = ndesignable; }
     
 private:
-    std::map<Uuid, int> designable_;
+    std::map<Uuid, int, UuidCompare> designable_;
 
     
 };

@@ -16,6 +16,7 @@
 #include "structure/chain.fwd.h"
 #include "motif/pose.h"
 #include "motif/motif_tree.fwd.h"
+#include "motif/pose_factory.h"
 
 typedef std::vector<MotifTreeNodeOP> MotifTreeNodeOPs;
 
@@ -70,7 +71,7 @@ public:
         seen_connections_ = std::map<MotifTreeConnectionOP, int>();
         chains_ = ChainOPs();
         nodes_ = MotifTreeNodeOPs();
-        include_head_ = 0;
+        pf_ = PoseFactory();
     }
     
 public:
@@ -124,7 +125,7 @@ private:
     std::map<MotifTreeConnectionOP, int> seen_connections_;
     ChainOPs chains_;
     MotifTreeNodeOPs nodes_;
-    int include_head_;
+    PoseFactory pf_;
 };
 
 #endif /* defined(__RNAMake__motif_tree_merger__) */

@@ -183,6 +183,9 @@ class PoseFactory(object):
             ss_end = ss.get_bp(res1, res2)
             p.end_ids[i] = secondary_structure.assign_end_id(ss, ss_end)
 
+        #update all motifs in pose, make sure that the correct basepairs are used
+        #since basepairs are used to align there are two choices of which basepair to
+        #be used
         for j, m in enumerate(motifs):
             bps = []
             residue_map = {}

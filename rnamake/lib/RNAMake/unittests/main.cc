@@ -14,6 +14,7 @@
 
 #include "util_unittests/sqlite3_connection_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
+#include "util_unittests/uuid_unittest.h"
 
 #include "secondary_structure_unittests/secondary_structure_factory_unittest.h"
 #include "secondary_structure_unittests/secondary_structure_unittest.h"
@@ -25,6 +26,7 @@
 #include "motif_unittests/motif_factory_unittest.h"
 #include "motif_unittests/motif_tree_unittest.h"
 #include "motif_unittests/motif_tree_merger_unittest.h"
+#include "motif_unittests/pose_factory_unittest.h"
 
 #include "resources_unittests/motif_sqlite_connection_unittest.h"
 #include "resources_unittests/motif_sqlite_library_unittest.h"
