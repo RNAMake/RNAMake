@@ -12,6 +12,7 @@
 Pose::Pose(MotifOP const & m) {
     structure_ = m->structure();
     basepairs_ = m->basepairs();
+    secondary_structure_ = m->secondary_structure();
     ends_ = m->ends();
     designable_ = std::map<Uuid, int, UuidCompare> ();
 }
@@ -22,6 +23,17 @@ Pose::Pose(
     structure_ = structure;
     basepairs_ = basepairs;
     designable_ = std::map<Uuid, int, UuidCompare> ();
+}
+
+MotifOPs const &
+Pose::motifs(
+    MotifType const & mtype) {
+    
+    if(motifs_.find(mtype) == motifs_.end()) {
+        motifs_[mtype] = MotifOPs();
+    }
+    return motifs_[mtype];
+
 }
 
 String
@@ -43,8 +55,6 @@ Pose::designable_sequence() {
     
     return seq.substr(0, seq.length()-1);
 }
-
-
 
 void
 Pose::set_bp_designable(BasepairOP const & bp) {

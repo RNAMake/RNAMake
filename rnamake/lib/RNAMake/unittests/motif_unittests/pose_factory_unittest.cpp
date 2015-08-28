@@ -12,6 +12,8 @@
 int
 PoseFactoryUnittest::test_creation() {
     PoseFactory pf;
+    
+    
     return 1;
 }
 

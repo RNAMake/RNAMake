@@ -274,6 +274,7 @@ class PoseFactory(object):
         self.standardize_pose(p)
         return p
 
+    #TODO try and minimize clashes
     def standardize_pose(self, p):
         fail = 0
         added_helix = motif_factory.factory.added_helix
