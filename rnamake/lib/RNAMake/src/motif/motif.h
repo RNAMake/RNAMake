@@ -169,7 +169,6 @@ public: //wrappers from secondary structure
     dot_bracket() { return secondary_structure_->dot_bracket(); }
     
 public: //getters
-    
     inline
     BasepairOPs const &
     ends() const { return ends_; }
@@ -181,6 +180,10 @@ public: //getters
     inline
     String const &
     name() const { return name_; }
+    
+    inline
+    String const &
+    path() const { return path_; }
     
     inline
     BasepairOPs const &
@@ -208,6 +211,10 @@ public: //getters
     
     
 public: // setters
+    
+    inline
+    void
+    mtype(MotifType const & mtype) { mtype_ = mtype; }
     
     inline
     void

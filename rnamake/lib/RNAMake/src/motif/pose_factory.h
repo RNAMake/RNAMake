@@ -17,7 +17,8 @@
 class PoseFactory {
 public:
     PoseFactory():
-    mf_(MotifFactory())
+    mf_(MotifFactory()),
+    clash_radius_(2.9)
     {}
     
     ~PoseFactory() {}
@@ -36,9 +37,24 @@ private:
         PoseOP &,
         MotifOPs const &);
     
+    void
+    _add_secondary_structure_motifs(
+        PoseOP &);
+    
+    void
+    _standardize_prepose(
+        MotifOP &);
+    
+    int
+    _steric_clash(
+        MotifOP const &,
+        MotifOP const &);
+    
+    
     
 private:
     MotifFactory mf_;
+    float clash_radius_;
     
 };
 

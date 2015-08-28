@@ -64,6 +64,12 @@ public:
     _setup_secondary_structure(
         MotifOP &);
     
+public:
+    inline
+    MotifOP const &
+    added_helix() { return added_helix_; }
+    
+    
 private:
     
     BasepairOPs
@@ -84,6 +90,7 @@ private:
     _steric_clash(
         MotifOP const &,
         MotifOP const &);
+    
     
 private:
     StructureFactory sf_;

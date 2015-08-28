@@ -16,8 +16,14 @@ MotifTreeMergerUnittest::test_merger() {
     MotifTree mt;
     for(int i = 0; i < 2; i++) { mt.add_motif(m);}
     
-    PoseOP pose = mt.to_pose();
-    if(pose->chains().size() != 2) { return 0; }
+    PoseOP p = mt.to_pose();
+    if(p->chains().size() != 2) { return 0; }
+    
+    auto motifs = p->motifs(MotifType::ALL);
+    auto ss_motifs = p->secondary_structure()->motifs("ALL");
+    
+    if(motifs.size() != ss_motifs.size()) { return 0; }
+ 
     return 1;
 }
 

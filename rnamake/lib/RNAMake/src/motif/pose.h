@@ -15,17 +15,26 @@
 
 //RNAMake Headers
 #include "motif/motif.h"
+#include "motif/motif_type.h"
 
 class Pose : public Motif {
 public:
     Pose():
-    designable_ (std::map<Uuid, int, UuidCompare>()) {}
+    designable_ (std::map<Uuid, int, UuidCompare>()),
+    motifs_(std::map<MotifType, MotifOPs>())
+    {}
     
     Pose(MotifOP const &);
     
     Pose(StructureOP const &, BasepairOPs const &);
     
     ~Pose() { }
+    
+public:
+    
+    MotifOPs const &
+    motifs(
+        MotifType const &);
 
 public:
     
@@ -41,8 +50,19 @@ public:
     void
     designable(std::map<Uuid, int, UuidCompare> const & ndesignable) { designable_ = ndesignable; }
     
+    inline
+    void
+    set_motifs(std::map<MotifType, MotifOPs> const & motifs) { motifs_ = motifs; }
+    
+    inline
+    void
+    set_ss_motifs(std::map<String, sstruct::MotifOPs> & ss_motifs) {
+        secondary_structure_->set_motifs(ss_motifs);
+    }
+    
 private:
     std::map<Uuid, int, UuidCompare> designable_;
+    std::map<MotifType, MotifOPs> motifs_;
 
     
 };

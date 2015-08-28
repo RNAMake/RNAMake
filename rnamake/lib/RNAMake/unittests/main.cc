@@ -56,6 +56,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    MotifTreeMergerUnittest test;
+    PoseFactoryUnittest test;
     test.run();
 }
