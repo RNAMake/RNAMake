@@ -23,7 +23,7 @@ class Vienna(object):
             return None
         spl = last_line.split()
         ensemble_prob = float(spl[6][:-1])
-        ensemble_diversity = float(spl[-1])
+        ensemble_diversity = float(spl[-1].split('=')[-1])
         spl = lines[1].split()
         spl2 = lines[1].split("(")
         structure = spl[0]
@@ -47,7 +47,7 @@ class Vienna(object):
             return None
         spl = last_line.split()
         ensemble_prob = float(spl[6][:-1])
-        ensemble_diversity = float(spl[-1])
+        ensemble_diversity = float(spl[-1].split('=')[-1])
         spl = lines[1].split()
         spl2 = lines[1].split("(")
         structure = spl[0]
