@@ -7,7 +7,9 @@
 //
 
 #include <map>
+#include <algorithm>
 
+#include "util/x3dna.h"
 #include "structure/chain.h"
 #include "motif/pose_factory.h"
 #include "motif/motif.h"
@@ -31,6 +33,57 @@ PoseFactory::pose_from_motif_tree(
     return p;
     
 }
+
+PoseOP
+PoseFactory::pose_from_file(
+    String const & path,
+    int gu_are_helix,
+    int signlet_bp_seperation) {
+    
+    auto base_motif = mf_.motif_from_file(path);
+    auto p = std::make_shared<Pose>(base_motif);
+    _setup_motifs_from_x3dna(p, gu_are_helix, signlet_bp_seperation);
+    
+    return p;
+    
+}
+
+void
+PoseFactory::_setup_motifs_from_x3dna(
+    PoseOP & p,
+    int gu_are_helix,
+    int singlet_bp_seperation) {
+
+    auto pdb_path = p->path();
+    auto fname = filename(pdb_path);
+    if(is_dir(p->path())) {
+        pdb_path = pdb_path + "/" + fname + ".pdb";
+    }
+    
+    X3dna x;
+    auto x3_motifs = x.get_motifs(pdb_path);
+    MotifOPs motifs;
+    
+    for(auto const & x3_m : x3_motifs) {
+        auto m = _convert_x3dna_to_motif(x3_m, p);
+        motifs.push_back(m);
+    }
+    
+    
+    std::map<MotifType, MotifOPs> motif_map;
+    motif_map[MotifType::ALL] = MotifOPs();
+    for(auto const & m : motifs) {
+        if(motif_map.find(m->mtype()) == motif_map.end() ) {
+            motif_map[m->mtype()] = MotifOPs();
+        }
+        motif_map[MotifType::ALL].push_back(m);
+        motif_map[m->mtype()].push_back(m);
+    }
+    
+    p->set_motifs(motif_map);
+    
+}
+
 
 void
 PoseFactory::_add_secondary_structure_motifs(
@@ -245,7 +298,34 @@ PoseFactory::_steric_clash(
     
 }
 
-
+MotifOP
+PoseFactory::_convert_x3dna_to_motif(
+    X3Motif const & xm,
+    PoseOP const & p) {
+    
+    ResidueOPs res;
+    for(auto const & xr : xm.residues) {
+        auto r = p->get_residue(xr.num, xr.chain_id, xr.i_code);
+        res.push_back(r);
+    }
+    
+    BasepairOPs basepairs;
+    for(auto const & r : res) {
+        auto bps = p->get_basepair(r->uuid());
+        for(auto const & bp : bps) {
+            if(std::find(res.begin(), res.end(), bp->res1()) != res.end() &&
+               std::find(res.begin(), res.end(), bp->res2()) != res.end() &&
+               std::find(basepairs.begin(), basepairs.end(), bp) != basepairs.end()) {
+                basepairs.push_back(bp);
+            }
+        }
+    }
+    
+    auto m = mf_.motif_from_res(res, basepairs);
+    m->mtype(str_to_type(xm.mtype));
+    return m;
+    
+}
 
 
 

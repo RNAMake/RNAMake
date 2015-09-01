@@ -23,26 +23,21 @@ X3dna::X3dna() {
 void
 X3dna::generate_ref_frame(String const & path) {
     
-    String full_path = "";
-    String fname = filename(path);
-    if     (file_exists(path + ".pdb")) {
-        full_path = path + ".pdb";
-    }
-    else if(file_exists(path + "/" + fname + ".pdb")) {
-        full_path = path + "/" + fname + ".pdb";
-    }
-    else {
-        throw "cannot find pdb for generate_ref_frames\n";
+    String fname = filename(path).substr(0,-4);
+    fname = fname.substr(0, fname.length()-4);
+    if(!file_exists(path)) {
+        throw X3dnaException("cannot find pdb for ref_frames.dat\n");
     }
     
     String find_pair_path = bin_path_ + "find_pair ";
     String analyze_path   = bin_path_ + "analyze ";
-    String command = find_pair_path + full_path + " 2> /dev/null stdout | " + analyze_path + "stdin >& /dev/null";
+    String command = find_pair_path + path + " 2> /dev/null stdout | " + analyze_path + "stdin >& /dev/null";
     char * s = strdup(command.c_str());
     int result = std::system(s);
 
-    if(result != 0) { throw "could not call x3dna properly\n"; }
-    
+    if(result != 0) {
+        throw X3dnaException("could not call find_pair properly, please make sure you have it set up properly\n");
+    }
     String files_str = "auxiliary.par,bestpairs.pdb,bp_helical.par,bp_order.dat,bp_step.par,cf_7methods.par,col_chains.scr,col_helices.scr,hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb";
     Strings files = split_str_by_delimiter(files_str, ",");
     files.push_back(fname+".out");
@@ -56,24 +51,20 @@ X3dna::generate_ref_frame(String const & path) {
 void
 X3dna::generate_dssr_file(String const & path) {
     
-    String full_path = "";
     String fname = filename(path);
-    if     (file_exists(path + ".pdb")) {
-        full_path = path + ".pdb";
-    }
-    else if(file_exists(path + "/" + fname + ".pdb")) {
-        full_path = path + "/" + fname + ".pdb";
-    }
-    else {
-        throw "cannot find pdb for generate_ref_frames\n";
+    fname = fname.substr(0, fname.length()-4);
+    if(!file_exists(path)) {
+        throw X3dnaException("cannot find pdb for generate_dssr_file\n");
     }
     
     String dssr_path = bin_path_ + "x3dna-dssr ";
-    String command = dssr_path + "-i="+full_path+" -o="+fname+"_dssr.out --non-pair >& /dev/null";
+    String command = dssr_path + "-i="+path+" -o="+fname+"_dssr.out --non-pair >& /dev/null";
     char * s = strdup(command.c_str());
     int result = std::system(s);
 
-    if(result != 0) { throw "could not call x3dna properly\n"; }
+    if(result != 0) {
+        throw X3dnaException("could not call x3dna-dssr properly, please make sure you have it set up properly\n");
+    }
     
     String filename_str = "dssr-2ndstrs.ct,dssr-2ndstrs.dbn,dssr-helices.pdb,dssr-pairs.pdb,dssr-stems.pdb,hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb,dssr-torsions.dat,dssr-Kturns.pdb,dssr-multiplets.pdb,dssr-hairpins.pdb,dssr-Aminors.pdb";
     Strings files = split_str_by_delimiter(filename_str, ",");
@@ -113,8 +104,9 @@ X3dna::_get_ref_frame_path(String const & pdb_name) {
 String
 X3dna::_get_dssr_file_path(String const & pdb_path) {
     String basedir = base_dir(pdb_path);
-    String pdb_name = filename(pdb_path);
-    String dssr_name = pdb_name + "_dssr.out";
+    String fname = filename(pdb_path);
+    fname = fname.substr(0, fname.length()-4);
+    String dssr_name = fname + "_dssr.out";
     String dssr_file_path = "";
     
     if     (file_exists(basedir + "/" + dssr_name)) {
@@ -125,7 +117,7 @@ X3dna::_get_dssr_file_path(String const & pdb_path) {
         dssr_file_path = pdb_path + "/" + dssr_name;
     }
     else {
-        generate_dssr_file(pdb_name);
+        generate_dssr_file(pdb_path);
         dssr_file_path = dssr_name;
         
     }
@@ -277,7 +269,11 @@ X3dna::get_basepairs(String const & pdb_path) {
         if(spl.size() < 6) { continue; }
         X3Residue res1 = _parse_dssr_res_str(spl[1]);
         X3Residue res2 = _parse_dssr_res_str(spl[2]);
-        String bp_type = spl[7];
+        String bp_type = "c...";
+        //TODO look into why this is happening, sometimes will error out if I dont do this check
+        if(spl.size() > 6) {
+            bp_type = spl[7];
+        }
         found = 0;
         for(auto & bp : basepairs_) {
             if(bp.res1 == res1 && bp.res2 == res2) {
@@ -302,6 +298,130 @@ X3dna::get_basepairs(String const & pdb_path) {
 
 
 }
+
+X3Motifs
+X3dna::get_motifs(
+    String const & pdb_path) {
+    
+    auto dssr_file_path = _get_dssr_file_path(pdb_path);
+    auto sections = _divide_dssr_file_into_sections(dssr_file_path);
+
+    X3Motifs all_motifs;
+    
+    StringStringMap types;
+    types["hairpin"] = "HAIRPIN";
+    types["bulges"]   = "TWOWAY";
+    types["internal"] = "TWOWAY";
+    types["junction"]= "NWAY";
+    types["non-loop"]= "SSTRAND";
+    
+    for(auto const & kv : types) {
+        if(sections.find(kv.first) != sections.end()) {
+            auto motifs = _parse_dssr_section(sections[kv.first], kv.second);
+            for(auto const & m : motifs) { all_motifs.push_back(m); }
+        }
+    }
+    if(sections.find("stems") != sections.end()) {
+        auto motifs = _parse_dssr_helix_section(sections["stems"]);
+        for(auto const & m : motifs) { all_motifs.push_back(m); }
+    }
+    
+    return all_motifs;
+    
+}
+
+X3Motifs
+X3dna::_parse_dssr_section(
+    Strings const & section,
+    String const & mtype) {
+    
+    X3Motifs motifs;
+    X3Residues seen_res;
+    int count = 0;
+    for(auto const & l : section) {
+        auto spl = _split_over_white_space(l);
+        if(spl.size() == 0) { continue; }
+        try {
+            if(spl[0].length() < 3 || spl[0].substr(0,3) != "nts") { continue; }
+        } catch(...) { continue; }
+        if(spl.size() < 3) { continue; }
+        
+        auto res_strs = split_str_by_delimiter(spl[2], ",");
+        X3Residues res;
+        for(auto const & res_str : res_strs) {
+            auto res_obj = _parse_dssr_res_str(res_str);
+            res.push_back(res_obj);
+        }
+
+        count = 0;
+        for(auto const & r : res) {
+            for(auto const & r2 : seen_res) {
+                if(r == r2) { count += 1; break; }
+            }
+        }
+        if(count == res.size()) {
+            continue;
+        }
+        for(auto const & r : res) { seen_res.push_back(r); }
+        motifs.push_back(X3Motif(res, mtype));
+        
+    }
+    
+    return motifs;
+    
+}
+
+X3Motifs
+X3dna::_parse_dssr_helix_section(
+    Strings const & section) {
+    
+    X3Motifs motifs;
+    X3Residues res;
+    int i = 0;
+    for(auto const & l : section) {
+        auto spl = _split_over_white_space(l);
+        if(spl.size() == 0) { continue; }
+        try {
+            i = std::stoi(spl[0]);
+        } catch(...) { continue; }
+
+        if(i == 1 && res.size() > 0) {
+            motifs.push_back(X3Motif(res, "HELIX"));
+            res = X3Residues();
+        }
+        res.push_back(_parse_dssr_res_str(spl[1]));
+        res.push_back(_parse_dssr_res_str(spl[2]));
+    }
+    
+    if(res.size() > 0) {
+        motifs.push_back(X3Motif(res, "HELIX"));
+    }
+    
+    return motifs;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

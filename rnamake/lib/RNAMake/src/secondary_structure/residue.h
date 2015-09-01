@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <sstream>
 #include <memory>
+#include <stdexcept>
 
 #include "base/types.h"
 #include "base/string.h"

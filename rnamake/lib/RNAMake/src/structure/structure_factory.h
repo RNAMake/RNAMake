@@ -24,11 +24,11 @@ public:
     get_structure(
         String const & );
     
-private:
     
     ChainOPs
-    _build_chains(
+    build_chains(
         ResidueOPs & );
+      
 };
 
 #endif /* defined(__RNAMake__structure_factory__) */

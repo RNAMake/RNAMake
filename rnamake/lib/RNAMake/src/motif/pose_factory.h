@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 
+#include "util/x3dna.h"
 #include "motif/motif_factory.h"
 #include "motif/pose.h"
 
@@ -31,7 +32,19 @@ public:
         MotifOPs const &,
         std::map<Uuid, int, UuidCompare> const &);
     
+    PoseOP
+    pose_from_file(
+        String const & path,
+        int gu_are_helix=1,
+        int signlet_bp_seperation=0);
+    
 private:
+    void
+    _setup_motifs_from_x3dna(
+        PoseOP &,
+        int,
+        int);
+    
     void
     _add_motifs_to_pose(
         PoseOP &,
@@ -49,6 +62,11 @@ private:
     _steric_clash(
         MotifOP const &,
         MotifOP const &);
+    
+    MotifOP
+    _convert_x3dna_to_motif(
+        X3Motif const &,
+        PoseOP const &);
     
     
     

@@ -15,6 +15,7 @@ Pose::Pose(MotifOP const & m) {
     secondary_structure_ = m->secondary_structure();
     ends_ = m->ends();
     designable_ = std::map<Uuid, int, UuidCompare> ();
+    path_ = m->path();
 }
 
 Pose::Pose(
