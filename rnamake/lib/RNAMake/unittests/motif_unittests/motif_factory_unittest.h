@@ -27,6 +27,9 @@ public:
     test_creation();
     
     int
+    test_load();
+    
+    int
     test_standardize_motif();
     
     int

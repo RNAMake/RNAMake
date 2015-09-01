@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
+#include <stdexcept>
+
 
 //RNAMake Headers
 #include "base/string.h"
@@ -20,8 +22,17 @@
 #include "math/xyz_matrix.h"
 #include "util/settings.h"
 
-struct X3Residue {
+class X3dnaException : public std::runtime_error {
 public:
+    X3dnaException(
+        String const & message) :
+    std::runtime_error(message)
+    {}
+    
+};
+
+
+struct X3Residue {
     X3Residue(
         int nnum,
         String const & nchain_id,
@@ -72,7 +83,22 @@ public:
     
 };
 
+typedef std::vector<X3Residue>  X3Residues;
 typedef std::vector<X3Basepair> X3Basepairs;
+
+struct X3Motif {
+    X3Motif(
+        X3Residues const & nresidues,
+        String const & nmtype):
+    residues(nresidues),
+    mtype(nmtype)
+    {}
+    
+    X3Residues residues;
+    String mtype;
+};
+
+typedef std::vector<X3Motif>    X3Motifs;
 
 class X3dna {
 public:
@@ -90,6 +116,9 @@ public:
     
     X3Basepairs const &
     get_basepairs(String const &);
+    
+    X3Motifs
+    get_motifs(String const &);
     
 private:
     
@@ -114,6 +143,14 @@ private:
     X3Residue
     _parse_dssr_res_str(String const &);
     
+    X3Motifs
+    _parse_dssr_section(
+        Strings const &,
+        String const &);
+    
+    X3Motifs
+    _parse_dssr_helix_section(
+        Strings const &);
     
     
 private:

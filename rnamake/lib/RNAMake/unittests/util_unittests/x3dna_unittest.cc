@@ -10,19 +10,9 @@
 #include "util/file_io.h"
 
 
-//get_ref_frame_path is private
-/*int
-X3dnaUnittest::test_get_ref_frame() {
-    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6";
-    
-    String path = x_._get_ref_frame_path(m_path);
-    std::cout << path << std::endl;
-    return 1;
-}*/
-
 int
 X3dnaUnittest::test_generate_ref_frame() {
-    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2";
+    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
     x_.generate_ref_frame(m_path);
     
     if(!(file_exists("ref_frames.dat"))) {
@@ -41,7 +31,7 @@ X3dnaUnittest::test_generate_ref_frame() {
 
 int
 X3dnaUnittest::test_generate_dssr_file() {
-    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2";
+    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
     x_.generate_dssr_file(m_path);
     
     if(!(file_exists("p4p6_2_dssr.out"))) {
@@ -69,12 +59,33 @@ X3dnaUnittest::test_res_compare() {
 
 int
 X3dnaUnittest::test_get_basepairs() {
-    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6";
-    x_.get_basepairs(m_path);
+    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+    auto basepairs = x_.get_basepairs(m_path);
     
-    //Strings lines = get_lines_from_file(m_path+"/ref_frames.dat");
-    //Strings lines = get_lines_from_file("all_tests.cc");
+    if(file_exists("p4p6_dssr.out") || file_exists("ref_frames.dat")) {
+        throw UnittestException("produced x3dna files when they already exists");
+    }
+    
+    m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
+    basepairs = x_.get_basepairs(m_path);
 
+    if(! file_exists("p4p6_2_dssr.out") || ! file_exists("ref_frames.dat")) {
+        throw UnittestException("did not produce x3dna files when required");
+    }
+    
+    //cleanup
+    std::remove("ref_frames.dat");
+    std::remove("p4p6_2_dssr.out");
+
+    return 1;
+}
+
+int
+X3dnaUnittest::test_get_motifs() {
+    String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+    auto motifs = x_.get_motifs(m_path);
+    
+    
     return 1;
 }
 
@@ -82,11 +93,11 @@ X3dnaUnittest::test_get_basepairs() {
 
 int
 X3dnaUnittest::run() {
-    //if (test_get_ref_frame() == 0)    {  std::cout << "test_get_ref_frame failed" << std::endl; }
-    if (test_generate_ref_frame() == 0)    {  std::cout << "test_generate_ref_frame failed" << std::endl; }
-    if (test_generate_dssr_file() == 0)    {  std::cout << "test_generate_ref_frame failed" << std::endl; }
-    if (test_res_compare() == 0)           {  std::cout << "test_res_compare failed" << std::endl;}
-    if (test_get_basepairs() == 0)         {  std::cout << "test_get_basepairs failed" << std::endl;}
+    //if (test_generate_ref_frame() == 0)    {  std::cout << "test_generate_ref_frame failed" << std::endl; }
+    //if (test_generate_dssr_file() == 0)    {  std::cout << "test_generate_ref_frame failed" << std::endl; }
+    //if (test_res_compare() == 0)           {  std::cout << "test_res_compare failed" << std::endl;}
+    //if (test_get_basepairs() == 0)         {  std::cout << "test_get_basepairs failed" << std::endl;}
+    if (test_get_motifs() == 0)            {  std::cout << "test_get_motifs failed" << std::endl;}
 
     return 1;
     

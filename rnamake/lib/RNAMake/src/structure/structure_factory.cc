@@ -16,13 +16,13 @@ StructureFactory::get_structure(
     
     PDBParser pdb_parser;
     auto residues = pdb_parser.parse(pdb_path);
-    auto chains = _build_chains(residues);
+    auto chains = build_chains(residues);
     auto s = std::make_shared<Structure>(chains);
     return s;
 }
 
 ChainOPs
-StructureFactory::_build_chains(
+StructureFactory::build_chains(
     ResidueOPs & residues) {
     ChainOPs chains;
     ResidueOP current;

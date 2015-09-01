@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <stdexcept>
 
 #include "base/types.h"
 #include "data_structure/graph/graph_node.fwd.h"

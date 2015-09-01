@@ -13,6 +13,7 @@
 #include <vector>
 #include <memory>
 #include <iostream>
+#include <stdexcept>
 
 //RNAMake Headers
 #include "base/types.h"

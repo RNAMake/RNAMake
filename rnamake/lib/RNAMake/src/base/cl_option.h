@@ -12,10 +12,12 @@
 #include <stdio.h>
 #include <map>
 #include <memory>
+#include <exception>
 
 //RNAMake Headers
 #include "base/types.h"
 #include "base/option.h"
+
 
 enum OptionType {
     BOOL_TYPE,
