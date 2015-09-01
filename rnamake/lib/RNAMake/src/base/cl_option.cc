@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <stdexcept>
+
 #include "base/cl_option.h"
 #include "base/option.h"
 

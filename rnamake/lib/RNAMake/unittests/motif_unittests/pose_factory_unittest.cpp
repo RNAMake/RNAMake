@@ -12,8 +12,8 @@
 int
 PoseFactoryUnittest::test_creation() {
     PoseFactory pf;
-    
-    
+    String path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+    auto p = pf.pose_from_file(path);
     return 1;
 }
 

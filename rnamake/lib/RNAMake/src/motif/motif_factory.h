@@ -14,6 +14,7 @@
 //RNAMake Headers
 #include "base/types.h"
 #include "util/settings.h"
+#include "util/file_io.h"
 #include "structure/structure_factory.h"
 #include "motif/motif_to_secondary_structure.h"
 #include "motif/motif_scorer.h"
@@ -40,6 +41,11 @@ public:
     MotifOP
     motif_from_file(
         String const & path);
+    
+    MotifOP
+    motif_from_res(
+        ResidueOPs &,
+        BasepairOPs const &);
     
     void
     standardize_motif(

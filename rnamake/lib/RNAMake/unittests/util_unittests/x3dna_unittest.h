@@ -42,6 +42,9 @@ public:
     int
     test_get_basepairs();
     
+    int
+    test_get_motifs();
+    
 public:
     
     int
