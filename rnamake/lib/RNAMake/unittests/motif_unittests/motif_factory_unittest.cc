@@ -17,6 +17,14 @@ MotifFactoryUnittest::test_creation() {
 }
 
 int
+MotifFactoryUnittest::test_load() {
+    MotifFactory mf;
+    String path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+    mf.motif_from_file(path);
+    return 1;
+}
+
+int
 MotifFactoryUnittest::test_standardize_motif() {
     MotifFactory mf;
     auto path = motif_dirs() + "helices/HELIX.IDEAL";
@@ -39,6 +47,7 @@ MotifFactoryUnittest::test_can_align_motif_to_end() {
 int
 MotifFactoryUnittest::run() {
     if (test_creation() == 0)            { std::cout << "test_creation failed" << std::endl;  }
+    if (test_load() == 0)                { std::cout << "test_load failed" << std::endl;  }
     if (test_standardize_motif() == 0)   { std::cout << "test_standardize_motif failed" << std::endl;  }
     if (test_can_align_motif_to_end() == 0)   { std::cout << "test_can_align_motif_to_end failed" << std::endl;  }
 

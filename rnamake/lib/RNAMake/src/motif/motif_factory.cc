@@ -19,22 +19,37 @@ MotifFactory::motif_from_file(
     String const & path) {
     
     auto fname = filename(path);
+    auto pdb_path = path;
     StructureOP structure;
     if(is_dir(path)) {
         structure = sf_.get_structure(path + "/" + fname + ".pdb");
+        pdb_path = path + "/" + fname + ".pdb";
     }
     else {
         structure = sf_.get_structure(path);
         fname = fname.substr(0, -4);
     }
     
-    auto basepairs = _setup_basepairs(path, structure);
+    auto basepairs = _setup_basepairs(pdb_path, structure);
     auto ends = _setup_basepair_ends(structure, basepairs);
     auto m = std::make_shared<Motif>(structure, basepairs, ends);
     m->name(fname);
     m->path(path);
     _setup_secondary_structure(m);
     
+    return m;
+}
+
+MotifOP
+MotifFactory::motif_from_res(
+    ResidueOPs & res,
+    BasepairOPs const & bps) {
+    
+    auto chains = sf_.build_chains(res);
+    auto structure = std::make_shared<Structure>(chains);
+    auto ends = _setup_basepair_ends(structure, bps);
+    auto m = std::make_shared<Motif>(structure, bps, ends);
+    _setup_secondary_structure(m);
     return m;
 }
 
