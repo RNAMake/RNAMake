@@ -143,5 +143,8 @@ str_to_motif_tree(
     ResidueTypeSet const &);
 
 
+typedef std::shared_ptr<MotifTree> MotifTreeOP;
+
+
 
 #endif /* defined(__RNAMake__motif_tree__) */

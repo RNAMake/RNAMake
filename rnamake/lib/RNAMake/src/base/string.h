@@ -20,6 +20,11 @@ split_str_by_delimiter(
     String);
 
 String
+join_by_delimiter(
+    Strings const &,
+    String const &);
+
+String
 filename(
     String const &);
 

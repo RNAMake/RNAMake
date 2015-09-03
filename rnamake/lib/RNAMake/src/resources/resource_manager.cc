@@ -6,8 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "resource_manager.h"
-
+#include "resources/resource_manager.h"
 
 MotifOP
 ResourceManager::get_motif(
@@ -28,6 +27,26 @@ ResourceManager::get_motif(
     
     throw ResourceManagerException("cannot find motif: ");
     
+}
+
+MotifStateOP
+ResourceManager::get_state(
+    String const & name,
+    String const & end_id,
+    String const & end_name,
+    String const & id) {
+
+    for(auto const & kv : ms_libs) {
+        if(kv.second->contains(name, end_id, end_name, id)) {
+            return kv.second->get(name, end_id, end_name, id);
+        }
+    }
+    
+    if(added_motifs_.contains(name, end_id, end_name)) {
+        return added_motifs_.get(name, end_id, end_name)->get_state();
+    }
+    
+    throw ResourceManagerException("cannot find state: ");
 }
 
 void

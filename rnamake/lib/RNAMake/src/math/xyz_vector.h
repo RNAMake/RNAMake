@@ -1001,6 +1001,18 @@ vector_to_str(
 }
 
 inline
+String
+vectors_to_str(
+    Vectors const & vs) {
+    std::stringstream ss;
+    for (auto const & v : vs) {
+        ss << v.x() << " " << v.y() << " " << v.z() << " ";
+    }
+    return ss.str();
+    
+}
+
+inline
 const
 Vectors
 vectors_from_str(

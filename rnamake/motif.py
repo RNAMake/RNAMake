@@ -283,7 +283,7 @@ class MotifState(object):
 
     def get_end_state(self, name):
         for i, n in enumerate(self.end_names):
-            if i == 0:
+            if i == self.block_end_add:
                 continue
             if n == name:
                 return self.end_states[i]
@@ -453,6 +453,7 @@ def get_aligned_motif(ref_bp, motif_end, motif, sterics=1):
 
 def align_motif_state(ref_bp_state, org_state):
     r, t = ref_bp_state.get_transforming_r_and_t_w_state(org_state.end_states[0])
+    print t
     t += ref_bp_state.d
 
     for i, s in enumerate(org_state.end_states):

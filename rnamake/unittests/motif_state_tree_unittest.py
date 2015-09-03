@@ -6,6 +6,7 @@ import rnamake.motif_state_tree as motif_state_tree
 import rnamake.resource_manager as rm
 import rnamake.util as util
 import rnamake.settings as settings
+import rnamake.basic_io as basic_io
 import rnamake.eternabot.sequence_designer as sequence_designer
 import build
 
@@ -41,7 +42,13 @@ class MotifStateTreeUnittest(unittest.TestCase):
         mst = motif_state_tree.MotifStateTree(mt)
         if len(mst) != 10:
             self.fail("did not build mst properly")
-        mst.write_pdbs("new")
+
+        for n in mt:
+            print n.data.name
+
+        print mt.last_node().data.ends[0].d()
+        print mst.last_node().data.cur_state.end_states[0].d
+
 
     def test_align(self):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
@@ -50,6 +57,7 @@ class MotifStateTreeUnittest(unittest.TestCase):
         bp_state = m.ends[1].state()
         test_state = rm.manager.ms_libs["ideal_helices"].get(name='HELIX.IDEAL.3')
         d1 = bp_state.d
+        print d1
         motif.align_motif_state(bp_state, test_state)
         d2 = test_state.end_states[0].d
         if util.distance(d1, d2) > 0.5:
@@ -103,6 +111,28 @@ class MotifStateTreeUnittest(unittest.TestCase):
 
         if util.distance(d1, d2) > 0.1:
             self.fail("did not properly replace state")
+
+    def _test_specific(self):
+        motifs_str = """HELIX.IDEAL.16
+TWOWAY.3R1C.5
+HELIX.IDEAL.7
+TWOWAY.3DIL.0
+HELIX.IDEAL.12
+TWOWAY.3LOA.0
+HELIX.IDEAL.11
+TWOWAY.2VQE.3
+HELIX.IDEAL.14
+TWOWAY.4K27.0"""
+        motifs = motifs_str.split("\n")
+        builder = build.BuildMotifTree()
+        mt = builder.build_specific(motifs)
+        mt.write_pdbs()
+        mst = motif_state_tree.MotifStateTree(mt)
+        i = 0
+        for n in mst:
+            basic_io.points_to_pdb("beads."+str(i)+".pdb",n.data.cur_state.beads)
+            i += 1
+
 
 
 

@@ -245,6 +245,25 @@ Motif::new_res_uuids() {
     for(auto & bp : basepairs()) { bp->uuid(Uuid()); }
 }
 
+MotifStateOP
+Motif::get_state() {
+    auto beads = get_beads(ends_[0]);
+    Points bead_centers;
+    for(auto const & b : beads) {
+        if(b.btype() == BeadType::PHOS) { continue; }
+        bead_centers.push_back(b.center());
+    }
+    BasepairStateOPs end_states;
+    Strings end_names;
+    for(auto const & end : ends_) {
+        end_states.push_back(end->state());
+        end_names.push_back(end->name());
+    }
+    MotifState ms(name_, end_names, end_ids_, end_states, bead_centers, score_,
+                  (int)residues().size(), block_end_add_);
+    return std::make_shared<MotifState>(ms);
+}
+
 void
 align_motif(
     BasepairStateOP const & ref_bp_state,

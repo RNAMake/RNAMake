@@ -14,7 +14,9 @@
 //RNAMake Headers
 #include "base/types.h"
 #include "motif/motif_factory.h"
+#include "motif/motif_state.h"
 #include "resources/motif_sqlite_library.h"
+#include "resources/motif_state_sqlite_library.h"
 #include "resources/added_motif_library.h"
 
 class ResourceManagerException : public std::runtime_error {
@@ -42,6 +44,13 @@ public:
         String const & end_name = dummy_name,
         String const & id = dummy_id);
     
+    MotifStateOP
+    get_state(
+        String const & name = dummy_name,
+        String const & end_id = dummy_end_id,
+        String const & end_name = dummy_name,
+        String const & id = dummy_id);
+    
     void
     add_motif(
         String const &);
@@ -52,9 +61,14 @@ protected:
         mf_ = MotifFactory();
         added_motifs_ = AddedMotifLibrary();
         mlibs_ = std::map<String, MotifSqliteLibraryOP>();
+        ms_libs = std::map<String, MotifStateSqliteLibraryOP>();
         
         for(auto const & kv : MotifSqliteLibrary::get_libnames()) {
             mlibs_[kv.first] = std::make_shared<MotifSqliteLibrary>(kv.first);
+        }
+        
+        for(auto const & kv : MotifStateSqliteLibrary::get_libnames()) {
+            ms_libs[kv.first] = std::make_shared<MotifStateSqliteLibrary>(kv.first);
         }
     
     }
@@ -67,6 +81,7 @@ private:
     
 private:
     std::map<String, MotifSqliteLibraryOP> mlibs_;
+    std::map<String, MotifStateSqliteLibraryOP> ms_libs;
     MotifFactory mf_;
     AddedMotifLibrary added_motifs_;
 
