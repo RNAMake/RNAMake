@@ -183,7 +183,7 @@ MotifTree::topology_to_str() {
     String s = "";
     for(auto const & n : graph_) {
         s += n->data()->name() + "," + n->data()->end_ids()[0] + ",";
-        s += std::to_string(n->parent_index());
+        //s += std::to_string(n->parent_index());
     }
     
     return s;

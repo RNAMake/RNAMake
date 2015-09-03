@@ -76,7 +76,10 @@ public:
 	get_transforming_r_and_t (
 		BasepairState const & o_state, //state with desired rotation and translation
 		BasepairState & r_state) {
-		
+
+        //TODO figure out why I have to do this each time???
+        calculate_r_T();
+        
 		//calculate transforming rotation matrix and store it in r_state (result state)
 		dot(r_T_,o_state.r_,r_state.r_);
 		r_state.calculate_r_T();

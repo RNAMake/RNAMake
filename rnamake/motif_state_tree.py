@@ -59,7 +59,8 @@ class MotifStateTree(base.Base):
 
     def _setup_from_mt(self, mt):
         for i, n in enumerate(mt.graph.nodes):
-            ms = rm.manager.get_state(name=n.data.name, end_id=n.data.end_ids[0])
+            ms = rm.manager.get_state(name=n.data.name, end_id=n.data.end_ids[0],
+                                      end_name=n.data.ends[0].name())
             if i == 0:
                 self.add_state(ms)
             else:

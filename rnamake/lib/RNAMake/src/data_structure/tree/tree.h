@@ -80,6 +80,10 @@ public: //getters
     size_t
     size() { return nodes_.size(); }
     
+    inline
+    TreeNodeOP<DataType> const &
+    last_node() { return last_node_; }
+    
     
 protected:
     TreeNodeOPs<DataType> nodes_;
@@ -167,6 +171,24 @@ public:
         this->index_++;
         this->last_node_ = n;
         return this->index_-1;
+    }
+    
+    inline
+    Ints
+    get_available_pos(
+        TreeNodeOP<DataType> const & n,
+        int pos=-1) {
+        
+        if(pos == -1) {
+            return n->available_children_pos();
+        }
+        else {
+            if(n->available_pos(pos) == 0) {
+                throw TreeException("tree pos is not available");
+            }
+            return Ints { pos } ;
+        }
+        
     }
     
     

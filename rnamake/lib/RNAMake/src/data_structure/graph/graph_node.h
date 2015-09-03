@@ -90,7 +90,7 @@ public:
     
     inline
     int
-    parent_index() {
+    parent_end_index() {
         auto n_parent = parent();
         if(n_parent == nullptr) { return -1; }
         for (auto const & c : connections_) {

@@ -33,6 +33,25 @@ split_str_by_delimiter(
 }
 
 String
+join_by_delimiter(
+    Strings const & strs,
+    String const & delimiter) {
+    
+    String return_s;
+    int i =0;
+    for(auto const & s : strs) {
+        return_s += s;
+        if(i != strs.size()-1) { return_s += delimiter; }
+    }
+    
+    return return_s;
+    
+    
+    
+}
+
+
+String
 filename(
     String const & path) {
     Strings path_spl = split_str_by_delimiter(path, "/");
