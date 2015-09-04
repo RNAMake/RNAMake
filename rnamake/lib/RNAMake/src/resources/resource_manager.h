@@ -17,6 +17,7 @@
 #include "motif/motif_state.h"
 #include "resources/motif_sqlite_library.h"
 #include "resources/motif_state_sqlite_library.h"
+#include "resources/motif_state_ensemble_sqlite_library.h"
 #include "resources/added_motif_library.h"
 
 class ResourceManagerException : public std::runtime_error {
@@ -51,6 +52,11 @@ public:
         String const & end_name = dummy_name,
         String const & id = dummy_id);
     
+    MotifStateEnsembleOP
+    get_motif_state_ensemble(
+        String const & name = dummy_name,
+        String const & id = dummy_id);
+    
     void
     add_motif(
         String const &);
@@ -61,14 +67,19 @@ protected:
         mf_ = MotifFactory();
         added_motifs_ = AddedMotifLibrary();
         mlibs_ = std::map<String, MotifSqliteLibraryOP>();
-        ms_libs = std::map<String, MotifStateSqliteLibraryOP>();
+        ms_libs_ = std::map<String, MotifStateSqliteLibraryOP>();
+        mse_libs_ = std::map<String, MotifStateEnsembleSqliteLibraryOP>();
         
         for(auto const & kv : MotifSqliteLibrary::get_libnames()) {
             mlibs_[kv.first] = std::make_shared<MotifSqliteLibrary>(kv.first);
         }
         
         for(auto const & kv : MotifStateSqliteLibrary::get_libnames()) {
-            ms_libs[kv.first] = std::make_shared<MotifStateSqliteLibrary>(kv.first);
+            ms_libs_[kv.first] = std::make_shared<MotifStateSqliteLibrary>(kv.first);
+        }
+        
+        for(auto const & kv : MotifStateEnsembleSqliteLibrary::get_libnames()) {
+            mse_libs_[kv.first] = std::make_shared<MotifStateEnsembleSqliteLibrary>(kv.first);
         }
     
     }
@@ -81,7 +92,8 @@ private:
     
 private:
     std::map<String, MotifSqliteLibraryOP> mlibs_;
-    std::map<String, MotifStateSqliteLibraryOP> ms_libs;
+    std::map<String, MotifStateSqliteLibraryOP> ms_libs_;
+    std::map<String, MotifStateEnsembleSqliteLibraryOP> mse_libs_;
     MotifFactory mf_;
     AddedMotifLibrary added_motifs_;
 
