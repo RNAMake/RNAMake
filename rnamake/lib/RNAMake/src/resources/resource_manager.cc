@@ -36,7 +36,7 @@ ResourceManager::get_state(
     String const & end_name,
     String const & id) {
 
-    for(auto const & kv : ms_libs) {
+    for(auto const & kv : ms_libs_) {
         if(kv.second->contains(name, end_id, end_name, id)) {
             return kv.second->get(name, end_id, end_name, id);
         }
@@ -47,6 +47,22 @@ ResourceManager::get_state(
     }
     
     throw ResourceManagerException("cannot find state: ");
+}
+
+MotifStateEnsembleOP
+ResourceManager::get_motif_state_ensemble(
+    String const & name,
+    String const & id) {
+    
+    for(auto const & kv : mse_libs_) {
+        if(kv.second->contains(name, id)) {
+            return kv.second->get(name, id);
+        }
+    }
+    
+    throw ResourceManagerException("cannot find motif_state_ensemble");
+    
+    
 }
 
 void

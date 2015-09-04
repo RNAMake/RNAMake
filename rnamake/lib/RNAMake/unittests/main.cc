@@ -32,11 +32,12 @@
 #include "resources_unittests/motif_sqlite_connection_unittest.h"
 #include "resources_unittests/motif_sqlite_library_unittest.h"
 #include "resources_unittests/motif_state_sqlite_library_unittest.h"
+#include "resources_unittests/motif_state_ensemble_sqlite_library_unittest.h"
 #include "resources_unittests/resource_manager_unittest.h"
 #include "resources_unittests/added_motif_library_unittest.h"
 
 #include "motif_data_structures_unittests/motif_state_tree_unittest.h"
-
+#include "motif_data_structures_unittests/motif_state_ensemble_unittest.h"
 
 /*#include "util_unittests/uuid_unittest.h"
 
@@ -61,6 +62,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    MotifStateTreeUnittest test;
+    MotifStateEnsembleUnittest test;
     test.run();
 }
