@@ -7,6 +7,7 @@
 //
 
 #include <map>
+#include <algorithm>
 
 //RNAMake Headers
 #include "secondary_structure/secondary_structure_factory.h"

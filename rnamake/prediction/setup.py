@@ -2,16 +2,15 @@ import rnamake.motif as motif
 import rnamake.motif_tree as motif_tree
 import rnamake.util as util
 import rnamake.cluster as cluster
-import rnamake.motif_tree_precomputer as motif_tree_precomputer
 import rnamake.settings as settings
-import rnamake.motif_library as motif_library
+import rnamake.setup.motif_library as motif_library
 import rnamake.motif_type as motif_type
 import rnamake.motif_outputer as motif_outputer
-import rnamake.motif_tree_state as motif_tree_state
-import rnamake.motif_library_sqlite as motif_library_sqlite
 import rnamake.resource_manager as rm
+import rnamake.motif_factory as mf
 import copy
 import math
+import itertools
 
 def bp_match_target(bp, target):
     bpstr = bp.res1.rtype.name[0]+bp.res2.rtype.name[0]
@@ -29,23 +28,61 @@ def residue_in_matched_bp(m, r, target):
 
 def motif_from_bps(bps):
     # bps = [copy.deepcopy(bp) for bp in bps]
-    m = motif.Motif()
-    res = []
-    for bp in bps:
-        res.extend(bp.residues())
-    m.structure._build_chains(res)
-    m.basepairs = bps
-    m.structure._cache_coords()
-    m._cache_basepair_frames()
-    m.ends = [bps[0], bps[-1]]
+    m = mf.factory.motif_from_bps(bps)
     return m
 
-
-def target_end_origin(hmotif):
+def get_bp_step_prediction_lib_new(helix_mlib):
+    not_seen = {}
     mt = motif_tree.MotifTree()
-    mt.add_motif(hmotif)
-    mt.nodes[1].motif.to_pdb('ideal.pdb')
-    return mt.nodes[1].available_ends()[0].d()
+    ideal = helix_mlib.get_motif("HELIX.IDEAL")
+    #name = "=".join(targets)
+    base_dir = settings.RESOURCES_PATH + "prediction/"
+
+    bps = ["AU","UA","CG","GC","GU","UG"]
+    combos = itertools.product(bps, bps)
+
+    mes_keys = ['data', 'name', 'id']
+    mes_data = []
+
+    motif_data = []
+    motif_keys = ['data', 'name', 'end_name', 'end_id', 'id']
+
+    clusters = []
+
+    for targets in combos:
+        aligned_motifs = []
+        for m in helix_mlib.motifs():
+            spl = m.name.split(".")
+            #if spl[1] not in include:
+            #    continue
+            if spl[1] == "IDEAL" or spl[1] == "LE":
+               continue
+            for c in m.chains():
+                for i in range(len(c.residues)-1):
+                    bp1 = residue_in_matched_bp(m, c.residues[i], targets[0])
+                    bp2 = residue_in_matched_bp(m, c.residues[i+1], targets[1])
+                    if bp1 is None or bp2 is None:
+                        continue
+                    m = motif_from_bps((bp1, bp2))
+                    aligned_motifs.append(m)
+
+        clusters.append([aligned_motifs, targets])
+        break
+
+    for c in clusters:
+        motifs = []
+        for m in c[0]:
+            m_a = mf.factory.can_align_motif_to_end(m, 0)
+            if m_a is None:
+                continue
+            m_a = mf.factory.align_motif_to_common_frame(m, 0)
+            motifs.append(m_a)
+
+        for i, m in enumerate(motifs):
+            m.to_pdb("motif."+str(i)+'.pdb')
+
+
+
 
 
 def get_bp_step_prediction_lib(targets, helix_mlib):
@@ -283,8 +320,9 @@ if __name__ == '__main__':
     all_targets = []
     bps = ["AU","UA","CG","GC","GU","UG"]
     seen = []
-    test_helix = helix_mlib.get_motif("HELIX.IDEAL.2")
-    get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
+    #test_helix = helix_mlib.get_motif("HELIX.IDEAL.2")
+    #get_bp_step_prediction_lib(["GC","GC"], helix_mlib)
+    get_bp_step_prediction_lib_new(helix_mlib)
     exit()
 
     ideal_motifs = []

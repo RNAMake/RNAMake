@@ -31,6 +31,7 @@ class MotifStateEnsembleTree(object):
                                       len(ensemble.members[0].motif_state.end_states),
                                       parent.index,
                                       p)
+        return -1
 
     def to_mst(self):
         mst = motif_state_tree.MotifStateTree(sterics=0)
@@ -44,8 +45,8 @@ class MotifStateEnsembleTree(object):
             parent_index = n.parent_index()
             parent_end_index = n.parent_end_index()
 
-            i = mst.add_state(state, parent_index, parent_end_index)
-            if i == -1:
+            j = mst.add_state(state, parent_index, parent_end_index)
+            if j == -1:
                 raise ValueError("can not build motif state tree from mset")
 
         return mst

@@ -10,6 +10,7 @@
 #define __RNAMake__motif_state_tree__
 
 #include <stdio.h>
+#include <queue>
 
 //RNAMake Headers
 #include "base/types.h"
@@ -55,6 +56,7 @@ public:
     
     MotifStateTree() {
         tree_ = TreeStatic<MSTNodeDataOP>();
+        queue_ = std::queue<MotifStateTreeNodeOP>();
         setup_options(); update_var_options();
     }
     
@@ -84,6 +86,22 @@ public:
     setup_from_mt(
         MotifTreeOP const &);
     
+    MotifTreeOP
+    to_motif_tree();
+    
+    void
+    replace_state(
+        int i, 
+        MotifStateOP const &);
+    
+public: //motif tree wrappers
+    
+    void
+    write_pdbs(
+        String const & fname = "nodes") {
+        to_motif_tree()->write_pdbs(fname);
+    }
+    
 public:
     size_t
     size() { return tree_.size(); }
@@ -91,6 +109,11 @@ public:
     MotifStateTreeNodeOP const &
     last_node() { return tree_.last_node(); }
     
+    MotifStateTreeNodeOP const &
+    get_node(
+        int i) {
+        return tree_.get_node(i);
+    }
     
 private:
     
@@ -121,9 +144,12 @@ private:
     
 private:
     TreeStatic<MSTNodeDataOP> tree_;
+    std::queue<MotifStateTreeNodeOP> queue_;
     int sterics_;
     float clash_radius_;
     
 };
+
+typedef std::shared_ptr<MotifStateTree> MotifStateTreeOP;
 
 #endif /* defined(__RNAMake__motif_state_tree__) */

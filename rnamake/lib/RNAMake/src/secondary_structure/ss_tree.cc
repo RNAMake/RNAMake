@@ -8,7 +8,10 @@
 
 #include <queue>
 #include <iostream>
+#include <algorithm>
 
+//RNAMake Headers
+#include "data_structure/tree/tree_node.h"
 #include "secondary_structure/residue.h"
 #include "secondary_structure/ss_tree.h"
 #include "secondary_structure/ss_tree_node.h"
@@ -124,88 +127,6 @@ SS_Tree::_build_tree() {
     }
 }
     
-    
-/*
-void
-SS_Tree::_build_tree() {
-    int xb = 0, yb = (int)seq_.size()-1;
-    SS_NodeDataOP current = _assign_new_node(xb, yb);
-    int index;
-    
-    using NodeandIndex = std::pair<SS_NodeDataOP, int>;
-    std::queue<NodeandIndex> open_nodes;
-    open_nodes.push(NodeandIndex(current, -1));
-    
-    while(! open_nodes.empty()) {
-        NodeandIndex current_pair = open_nodes.front();
-        current = current_pair.first;
-        
-        if(current->type() == SS_NodeData::SS_Type::SS_HAIRPIN) {
-            index = tree_.add_data(current, 0, current_pair.second);
-            open_nodes.pop();
-            continue;
-        }
-        
-        int xb = current->bound_side(0, SS_NodeData::Bound_Side::RIGHT)+1;
-        int yb = current->bound_side(1, SS_NodeData::Bound_Side::LEFT) -1;
-        
-        std::vector<SS_NodeDataOP> next_level = _build_tree_level(xb, yb);
-        
-        // Check for multi way junctions will be defined as a bulge as a child of another bulge
-        if(current->type() == SS_NodeData::SS_Type::SS_BULGE) {
-            std::vector<SS_NodeDataOP> part_of_nway;
-            std::vector<SS_NodeDataOP> not_part_of_nway;
-            for(auto const & n : next_level) {
-                if(n->type() == SS_NodeData::SS_Type::SS_BULGE ||
-                   n->type() == SS_NodeData::SS_Type::SS_HAIRPIN) { part_of_nway.push_back(n); }
-                else { not_part_of_nway.push_back(n); }
-            }
-            next_level = not_part_of_nway;
-            
-            if(part_of_nway.size() > 0) {
-                Strings seq;
-                std::vector<Ints> bounds;
-                
-                seq.push_back(current->seqs()[0]);
-                bounds.push_back(current->bounds(0));
-
-                seq.push_back(current->seqs()[1]);
-                bounds.push_back(current->bounds(1));
-                
-                for(auto const & n : part_of_nway) {
-                    Strings child_seq = n->seqs();
-                    for(int i = 0; i < child_seq.size(); i++) {
-                        if(child_seq[i].size() > 0) {
-                            seq.push_back(child_seq[i]);
-                            bounds.push_back(n->bounds(i));
-                        }
-                    }
-                    
-                    if(n->type() == SS_NodeData::SS_Type::SS_BULGE) {
-                        int nxb = n->bound_side(0, SS_NodeData::Bound_Side::RIGHT)+1;
-                        int nyb = n->bound_side(1, SS_NodeData::Bound_Side::LEFT) -1;
-                        std::vector<SS_NodeDataOP> next_level_2 = _build_tree_level(nxb, nyb);
-                        for(auto const & n2 : next_level_2) { next_level.push_back(n2); }
-                    }
-                }
-                
-                
-                current = std::make_shared<SS_NodeData>(seq, SS_NodeData::SS_Type::SS_NWAY, bounds);
-            }
-            
-        }
-        
-        index = tree_.add_data(current, 0, current_pair.second);
-        open_nodes.pop();
-        
-        for(auto const & n : next_level) {
-            open_nodes.push(NodeandIndex(n, index));
-        }
-    }
-    
-}
-
-*/
 
 std::vector<SS_NodeDataOP>
 SS_Tree::_build_tree_level(

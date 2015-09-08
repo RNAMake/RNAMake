@@ -8,12 +8,12 @@
 
 #include "motif_scorer_unittest.h"
 #include "motif/motif_scorer.h"
-#include "resources/library_manager.h"
+#include "resources/resource_manager.h"
 
 int
 MotifScorerUnittest::test_score() {
     MotifScorer ms;
-    MotifOP m  = LibraryManager::getInstance().get_motif("HELIX.IDEAL");
+    MotifOP m  = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
     float score = ms.score(m);
     if(score - -3.4 > 0.1) { return 1; }
     

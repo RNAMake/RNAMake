@@ -161,7 +161,8 @@ class ThermoFlucSimulation(base.Base):
 
     def setup_options_and_constraints(self):
         options   = { 'temperature' : 298.15,
-                      'steps'       : 1000 }
+                      'steps'       : 100000,
+                      'record'      : 1}
 
         opt_types =  { 'temperature' : 'sampler'  }
 
@@ -172,9 +173,6 @@ class ThermoFlucSimulation(base.Base):
     def setup(self, mset, ni1, ni2, ei1, ei2, **options):
         self.options.dict_set(options)
 
-        for k,v in self.options.options.iteritems():
-            print k, v.value
-
         self.sampler.setup(mset)
         self.n1 = self.sampler.mst.get_node(ni1)
         self.n2 = self.sampler.mst.get_node(ni2)
@@ -183,11 +181,16 @@ class ThermoFlucSimulation(base.Base):
         end_state_1 = self.n1.data.cur_state.end_states[self.ei1]
         end_state_2 = self.n2.data.cur_state.end_states[self.ei2]
 
-
     def run(self):
 
         step = 0
         max_steps = self.option('steps')
+        record = self.option('record')
+
+        if record:
+            f = open("results.txt", "w")
+
+        count = 0
         while step < max_steps:
             self.sampler.next()
 
@@ -195,8 +198,24 @@ class ThermoFlucSimulation(base.Base):
             end_state_2 = self.n2.data.cur_state.end_states[self.ei2]
 
             score = self.scorer.score(end_state_1, end_state_2)
+
+            if score < 5:
+                count += 1
+                #d_diff = util.distance(end_state_1.d, end_state_2.d)
+                #r_diff = end_state_1._rot_diff(end_state_2)
+                #f.write(str(d_diff) + " " + str(r_diff) + "\n")
+
+            if record:
+                d_diff = util.distance(end_state_1.d, end_state_2.d)
+                r_diff = end_state_1._rot_diff(end_state_2)
+                f.write(str(d_diff) + " " + str(r_diff) + "\n")
+
             step += 1
 
+        if record:
+            f.close()
+
+        print count
 
 
 

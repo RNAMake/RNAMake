@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "motif_state_ensemble.h"
+#include "motif/motif_state_ensemble.h"
 
 
 MotifStateEnsemble::MotifStateEnsemble(

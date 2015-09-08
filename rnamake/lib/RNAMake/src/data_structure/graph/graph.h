@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <sstream> 
 #include <typeinfo>
+#include <algorithm>
 
 #include "data_structure/graph/graph_node.h"
 #include "data_structure/graph/graph_node.fwd.h"

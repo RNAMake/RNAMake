@@ -60,6 +60,7 @@ MotifStateTree::add_state(
                                 n_data->cur_state,
                                 n_data->ref_state);
         
+        //TODO need to comment this out of occasionally will not allow conversion from mt
         if(sterics_ && _steric_clash(n_data)) { continue; }
     
         return tree_.add_data(n_data, (int)state->end_states().size(), parent->index(), p);
@@ -100,6 +101,84 @@ MotifStateTree::setup_from_mt(
     
 }
 
+MotifTreeOP
+MotifStateTree::to_motif_tree() {
+    
+    auto mt = std::make_shared<MotifTree>();
+    mt->option("sterics", option<int>("sterics"));
+    int i = -1, j = -1;
+    int parent_index = -1, parent_end_index = -1;
+    for(auto const & n : tree_) {
+        i++;
+        MotifOP m;
+        if(n->data()->ref_state->name() != "") {
+            m = ResourceManager::getInstance().get_motif(n->data()->ref_state->name(),
+                                                         n->data()->ref_state->end_ids()[0]);
+        }
+        else {
+            m = ResourceManager::getInstance().get_motif("", n->data()->ref_state->end_ids()[0]);
+        }
+        
+        if(i == 0) {
+            align_motif(n->data()->cur_state->end_states()[0],
+                        m->ends()[0], m);
+            mt->add_motif(m);
+            continue;
+        }
+        
+        parent_index = n->parent_index();
+        parent_end_index = n->parent_end_index();
+        if(parent_end_index == -1) {
+            throw MotifStateTreeException("cannot convert to motif tree");
+        }
+        
+        j = mt->add_motif(m, parent_index, parent_end_index);
+        if(j == -1) {
+            throw MotifStateTreeException("failed to add motif in to_motif_tree");
+        }
+        
+        
+    }
+    
+    return mt;
+}
+
+void
+MotifStateTree::replace_state(
+    int i,
+    MotifStateOP const & new_state) {
+
+    auto n = tree_.get_node(i);
+    if(new_state->end_states().size() != n->data()->ref_state->end_states().size()) {
+        throw MotifStateTreeException("attempted to replace a state with a different number of ends");
+    }
+    
+    auto old_state = n->data()->ref_state;
+    n->data()->ref_state = new_state;
+    n->data()->cur_state = std::make_shared<MotifState>(new_state->copy());
+    
+    queue_.push(n);
+    MotifStateTreeNodeOP current, parent;
+    int pei;
+    while(!queue_.empty()) {
+        current = queue_.front();
+        queue_.pop();
+    
+        parent = current->parent();
+        pei = current->parent_end_index();
+        get_aligned_motif_state(parent->data()->cur_state->end_states()[pei],
+                                n->data()->cur_state,
+                                n->data()->ref_state);
+        
+        for(auto const & c : current->children()) {
+            if(c != nullptr) { queue_.push(c); }
+        }
+        
+    }
+    
+    
+    
+}
 
 
 

@@ -10,6 +10,7 @@
 #define __RNAMake__motif_state_ensemble__
 
 #include <stdio.h>
+#include <algorithm>
 
 #include "util/random_number_generator.h"
 #include "motif/motif_state.h"
@@ -65,7 +66,21 @@ public:
     {}
     
     MotifStateEnsemble(
+        MotifStateOP const & ms):
+    id_(ms->end_ids()[0]),
+    block_end_add_(ms->block_end_add()),
+    members_(MotifStateEnsembleMemberOPs()),
+    rng_(RandomNumberGenerator()) {
+        
+        members_.push_back(std::make_shared<MotifStateEnsembleMember>(ms, 1));
+    }
+    
+    MotifStateEnsemble(
         String const &);
+    
+    ~MotifStateEnsemble() {}
+    
+public:
     
     void
     setup(
@@ -84,6 +99,35 @@ public:
     get_random_member() {
         return members_[rng_.randrange((int)members_.size()-1) ];
     }
+    
+    inline
+    int
+    num_end_states() { return (int)members_[0]->motif_state->end_states().size(); }
+    
+    inline
+    MotifStateOP const &
+    most_populated() { return members_[0]->motif_state; }
+    
+    inline
+    MotifStateEnsembleMemberOP const &
+    get_member(
+        int i) {
+        return members_[i];
+    }
+    
+    inline
+    int
+    member_index(
+        MotifStateEnsembleMemberOP const & mem) {
+        return std::find(members_.begin(), members_.end(), mem) - members_.begin();
+        
+    }
+    
+public:
+    
+    inline
+    int
+    block_end_add() { return block_end_add_; }
     
 private:
     String id_;

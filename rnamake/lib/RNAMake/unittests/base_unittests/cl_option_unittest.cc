@@ -7,7 +7,9 @@
 //
 
 #include <string>
+#include <cstring>
 
+//RNAMake Headers
 #include "cl_option_unittest.h"
 #include "base/cl_option.h"
 
@@ -81,8 +83,8 @@ CL_OptionUnittest::test_parse_2() {
 int
 CL_OptionUnittest::run() {
     if (test_add_option() == 0)  {  std::cout << "test_add_option failed" << std::endl; }
-    if (test_parse_1() == 0)       {  std::cout << "test_parse_1 failed" << std::endl; }
-    if (test_parse_2() == 0)       {  std::cout << "test_parse_2 failed" << std::endl; }
+    if (test_parse_1() == 0)     {  std::cout << "test_parse_1 failed" << std::endl; }
+    if (test_parse_2() == 0)     {  std::cout << "test_parse_2 failed" << std::endl; }
 
     return 1;
 }
