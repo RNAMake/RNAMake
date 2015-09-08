@@ -26,7 +26,7 @@ BasepairUnittest::test_creation() {
     ResidueOP res2 = s_.get_residue(104, "A", "");
     Matrix r(0.0);
     Basepair bp (res1, res2, r, "c...");
-    BasepairState bpstate = bp.state();
+    auto bpstate = bp.state();
     return 1;
 }
 

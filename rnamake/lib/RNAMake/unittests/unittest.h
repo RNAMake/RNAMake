@@ -9,6 +9,7 @@
 #ifndef __RNAMake__unittest__
 #define __RNAMake__unittest__
 
+#include <stdexcept>
 #include <stdio.h>
 #include <iostream>
 #include <map>

@@ -2,7 +2,7 @@ import os
 import glob
 import fnmatch
 
-libs = "base math data_structure util secondary_structure structure motif resources"
+libs = "base math data_structure util secondary_structure structure motif resources motif_data_structures thermo_fluctuation"
 lib_paths = libs.split()
 
 for p in lib_paths:
@@ -10,16 +10,15 @@ for p in lib_paths:
     f.write("set("+p+"_files\n")
     for root, dirnames, filenames in os.walk('../../src/'+p):
         for filename in filenames:
-            if filename[-2:] != 'cc':
-                continue
-            f.write("\t"+os.path.join(root, filename)+"\n")
+            if filename[-2:] == 'cc' or filename[-3:] == 'cpp':
+                f.write("\t"+os.path.join(root, filename)+"\n")
     f.write(")\n")
     f.close()
 
 
 matches = []
 for root, dirnames, filenames in os.walk('../../unittests'):
-    for filename in fnmatch.filter(filenames, '*.cc'):
+    for filename in fnmatch.filter(filenames, '*.c*'):
         path = os.path.join(root, filename)
         f = open(path)
         fail = 0

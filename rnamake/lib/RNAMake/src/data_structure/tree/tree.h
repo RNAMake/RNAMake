@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <memory>
 #include <queue>
+#include <algorithm>
 
 //RNAMAke Headers
 #include "base/types.h"

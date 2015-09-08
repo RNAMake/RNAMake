@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <stdexcept>
+
+//RNAMake Headers
 #include "util/settings.h"
 #include "resources/sqlite_library.h"
 

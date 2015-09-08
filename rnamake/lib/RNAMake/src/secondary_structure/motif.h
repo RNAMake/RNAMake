@@ -119,7 +119,7 @@ public:
     }
     
     inline
-    BasepairOP const &
+    BasepairOP
     get_bp(
         ResidueOP const & r1,
         ResidueOP const & r2) const {
@@ -129,8 +129,7 @@ public:
             else if(r2 == bp->res1() && r1 == bp->res2()) { return bp; }
         }
         
-        throw std::runtime_error("cannot find basepair in sstruct::motifs");
-        
+        return nullptr;
     }
     
     inline

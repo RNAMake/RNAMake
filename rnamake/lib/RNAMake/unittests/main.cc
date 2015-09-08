@@ -38,6 +38,10 @@
 
 #include "motif_data_structures_unittests/motif_state_tree_unittest.h"
 #include "motif_data_structures_unittests/motif_state_ensemble_unittest.h"
+#include "motif_data_structures_unittests/motif_state_ensemble_tree_unittest.h"
+
+#include "thermo_fluctuation_unittests/thermo_fluc_sampler_unittest.h"
+#include "thermo_fluctuation_unittests/thermo_fluc_simulation_unittest.h"
 
 /*#include "util_unittests/uuid_unittest.h"
 
@@ -55,13 +59,12 @@
 #include "motif_tree_state_unittests/motif_tree_state_library_unittest.h"
 
 #include "resources_unittests/motif_library_unittest.h"
-#include "resources_unittests/library_manager_unittest.h"
 
 #include "motif_assembly_unittests/motif_assembly_unittest.h"*/
 
 
 int main(int argc, const char * argv[]) {
     
-    MotifStateEnsembleUnittest test;
+    ThermoFlucSimulationUnittest test;
     test.run();
 }

@@ -129,7 +129,7 @@ class MotifStateTree(base.Base):
         self.connections.append(MotifStateConnection(i, j, end_name))
 
     def to_motif_tree(self):
-
+        #TODO add end names to avoid palendroms
         mt = motif_tree.MotifTree(sterics=self.option('sterics'))
         for i, n in enumerate(self.tree.nodes):
             if n.data.ref_state.name != "":

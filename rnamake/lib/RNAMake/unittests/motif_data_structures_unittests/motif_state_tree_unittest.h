@@ -33,6 +33,12 @@ public:
     int
     test_from_mt();
     
+    int
+    test_to_motif_tree();
+    
+    int
+    test_replace_state();
+    
 public:
     
     int

@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include <memory.h>
 #include <map>
+#include <algorithm>
 
 #include "base/types.h"
 #include "util/uuid.h"

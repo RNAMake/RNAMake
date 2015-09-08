@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <stdexcept>
+#include <algorithm>
+
 #include "math/xyz_vector.h"
 #include "structure/basepair_state.h"
 #include "motif/motif_state.h"

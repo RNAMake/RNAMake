@@ -14,6 +14,7 @@
 #include <memory>
 #include <iostream>
 #include <stdexcept>
+#include <algorithm>
 
 //RNAMake Headers
 #include "base/types.h"
@@ -100,6 +101,10 @@ public: //getters
     data() const { return data_; }
     
     inline
+    DataType &
+    data() { return data_; }
+    
+    inline
     TreeNodeOPs<DataType> const &
     children() { return children_; }
     
@@ -114,6 +119,20 @@ public: //getters
             return -1;
         }
         return parent_->index();
+    }
+    
+    inline
+    int
+    parent_end_index() {
+        if(parent_ == nullptr) { return -1; }
+        int i = -1;
+        for(auto const & c : parent_->children()) {
+            i++;
+            if(c == nullptr) { continue;}
+            if(c->index() == index_) { return i; }
+        }
+        return -1;
+    
     }
     
 public: //setters

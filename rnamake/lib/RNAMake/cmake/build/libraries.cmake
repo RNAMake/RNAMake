@@ -1,1 +1,1 @@
-set(libraries base math data_structure util secondary_structure structure motif resources unittests)
+set(libraries base math data_structure util secondary_structure structure motif resources motif_data_structures thermo_fluctuation unittests)
