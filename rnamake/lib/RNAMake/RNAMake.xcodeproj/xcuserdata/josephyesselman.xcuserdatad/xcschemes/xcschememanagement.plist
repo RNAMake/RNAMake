@@ -49,6 +49,11 @@
 			<key>orderHint</key>
 			<integer>3</integer>
 		</dict>
+		<key>unittests copy copy.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>12</integer>
+		</dict>
 		<key>unittests copy.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -128,6 +133,16 @@
 			<true/>
 		</dict>
 		<key>1C4F56471A76229800C7E6D7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C7C1FC81B9FA10F00E6E959</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C7C20301B9FA12D00E6E959</key>
 		<dict>
 			<key>primary</key>
 			<true/>

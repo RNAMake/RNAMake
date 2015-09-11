@@ -172,6 +172,7 @@ class BuildSqliteLibraries(object):
         for c in clusters:
             spl = c.end_id.split("_")
             aligned_motifs = []
+            #print "before",len(c.motif_and_ends)
             for i, m_and_e in enumerate(c.motif_and_ends):
                 m, ei = m_and_e.motif, m_and_e.end_index
                 m_a = motif_factory.factory.can_align_motif_to_end(m, ei)
@@ -191,7 +192,11 @@ class BuildSqliteLibraries(object):
                     continue
 
                 aligned_motifs.append(m_a)
-            m_clusters = cluster.cluster_motifs(aligned_motifs)
+            #print "after",len(aligned_motifs)
+
+            #best 0.7: -1.39
+            m_clusters = cluster.cluster_motifs(aligned_motifs, 0.65)
+            #print "last", len(m_clusters)
             clustered_motifs = []
             energies = []
             for j, c_motifs in enumerate(m_clusters):
@@ -339,7 +344,7 @@ class BuildSqliteLibraries(object):
     def build_motif_ensemble_state_libraries(self):
 
         for libname in sqlite_library.MotifEnsembleSqliteLibrary.get_libnames().keys():
-
+            print libname
             me_lib = sqlite_library.MotifEnsembleSqliteLibrary(libname)
             me_lib.load_all()
 
@@ -348,6 +353,7 @@ class BuildSqliteLibraries(object):
 
             for i, me in enumerate(me_lib.all()):
                 mse = me.get_state()
+                print len(me.members)
                 data.append([mse.to_str(), mse.id, i])
 
             path = settings.RESOURCES_PATH +"/motif_state_ensemble_libraries/"+libname+".db"
@@ -356,7 +362,7 @@ class BuildSqliteLibraries(object):
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
 #builder.build_basic_libraries()
-#builder.build_helix_ensembles()
+builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()

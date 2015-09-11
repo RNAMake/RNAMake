@@ -282,14 +282,15 @@ align_motif(
     
     //align sugars for better overlap
     float dist1 = motif_end->res1()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
-    float dist2 = motif_end->res2()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[1]);
+    float dist2 = motif_end->res2()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
     
+    motif->get_beads(motif_end);
     if (dist1 > 5 && dist2 > 5) { return; }
     
     Point sugar_diff_1, sugar_diff_2;
     if( dist1 < dist2 ) {
         sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res1()->get_atom("C1'")->coords();
-        sugar_diff_2 = ref_bp_state->sugars()[1]- motif_end->res2()->get_atom("C1'")->coords();
+        sugar_diff_2 = ref_bp_state->sugars()[1] - motif_end->res2()->get_atom("C1'")->coords();
     }
     else {
         sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res2()->get_atom("C1'")->coords();
@@ -297,7 +298,6 @@ align_motif(
     }
     
     motif->move( (sugar_diff_1 + sugar_diff_2) / 2);
-    motif->get_beads(motif_end);
 }
 
 

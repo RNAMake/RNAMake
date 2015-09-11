@@ -20,7 +20,9 @@
 
 namespace sstruct {
 
-//using SS_Node  = TreeNodeOP<SS_NodeDataOP>;
+typedef TreeNodeOP<SS_NodeDataOP>  SS_TreeNodeOP;
+typedef std::vector<SS_TreeNodeOP> SS_TreeNodeOPs;
+
 //using SS_Nodes = std::vector<SS_Node>;
 
 class SS_Tree {

@@ -24,8 +24,9 @@ ThermoFlucSamplerUnittest::test_sample() {
     auto mse = ResourceManager::getInstance().get_motif_state_ensemble("GG_LL_CC_RR");
     for(int i = 0; i < 10; i++) { mset->add_ensemble(mse); }
     tfs.setup(mset);
-    tfs.to_pdb("start.pdb");
     tfs.sample(10000);
+    return 1;
+    tfs.to_pdb("start.pdb");
     tfs.to_pdb("end.pdb");
 
     
