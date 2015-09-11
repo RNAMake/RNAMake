@@ -18,6 +18,7 @@ MotifOP
 MotifFactory::motif_from_file(
     String const & path) {
     
+    parser_ = MotiftoSecondaryStructure();
     auto fname = filename(path);
     auto pdb_path = path;
     StructureOP structure;
@@ -80,7 +81,7 @@ MotifFactory::can_align_motif_to_end(
     int fail = 0;
     MotifOP m2_added;
     for(auto & end : m_added->ends()) {
-        if(end == m_end) { continue; }
+        if(end->name() == m_end->name()) { continue; }
         m2_added = get_aligned_motif(end, added_helix_->ends()[0], added_helix_);
         if(_steric_clash(m_added, m2_added) == 0 &&
            _steric_clash(base_motif_, m2_added) == 0) {

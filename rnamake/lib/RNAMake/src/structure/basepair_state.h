@@ -62,6 +62,9 @@ public:
     
     BasepairState
     copy() const {
+        //Point d = d_;
+        //Matrix r = r_;
+        //Points sugars = sugars_;
         return BasepairState(d_, r_, sugars_);
     }
 

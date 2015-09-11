@@ -55,7 +55,11 @@ public:
         return tree_.get_node(i);
     }
     
-
+public:
+    inline
+    MotifStateEnsembleTreeNodeOP const &
+    last_node() { return tree_.last_node(); }
+    
 
 private:
     TreeStatic<MotifStateEnsembleOP> tree_;

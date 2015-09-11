@@ -8,6 +8,8 @@ import rnamake.motif_type as motif_type
 import rnamake.motif_outputer as motif_outputer
 import rnamake.resource_manager as rm
 import rnamake.motif_factory as mf
+import rnamake.sqlite_library as sqlite_library
+import rnamake.motif_ensemble as motif_ensemble
 import copy
 import math
 import itertools
@@ -67,7 +69,16 @@ def get_bp_step_prediction_lib_new(helix_mlib):
                     aligned_motifs.append(m)
 
         clusters.append([aligned_motifs, targets])
-        break
+
+    mes_keys = ['data', 'name', 'id']
+    mes_data = []
+
+    motif_data = []
+    motif_keys = ['data', 'name', 'end_name', 'end_id', 'id']
+    count = 0
+
+    kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+    kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
 
     for c in clusters:
         motifs = []
@@ -75,13 +86,41 @@ def get_bp_step_prediction_lib_new(helix_mlib):
             m_a = mf.factory.can_align_motif_to_end(m, 0)
             if m_a is None:
                 continue
-            m_a = mf.factory.align_motif_to_common_frame(m, 0)
+            m_a = mf.factory.align_motif_to_common_frame(m_a, 0)
             motifs.append(m_a)
 
-        for i, m in enumerate(motifs):
-            m.to_pdb("motif."+str(i)+'.pdb')
+        aligned_clusters = cluster.cluster_motifs(motifs, 0.80)
+        target_name = "=".join(c[1])
+        clustered_motifs = []
+        energies = []
 
+        for j, c_motifs in enumerate(aligned_clusters):
+            m = c_motifs.motifs[0]
+            m.mtype = motif_type.HELIX
+            m.name = target_name + "." + str(j)
+            motif_data.append([m.to_str(), m.name, m.ends[0].name(), m.end_ids[0], count])
+            count += 1
 
+            pop = float(len(c_motifs.motifs)) / float(len(motifs))
+            energy = -kBT*math.log(pop)
+            clustered_motifs.append(m)
+            energies.append(energy)
+
+        me = motif_ensemble.MotifEnsemble()
+        me.setup(clustered_motifs[0].end_ids[0], clustered_motifs, energies)
+        mes_data.append([me.to_str(), me.id, count])
+
+        motif = me.members[0].motif
+        motif.name =  target_name
+
+        motif_data.append([motif.to_str(), motif.name, motif.ends[0].name(),
+                           me.id, count])
+        count += 1
+
+    path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps_old.db"
+    sqlite_library.build_sqlite_library_2(path, mes_data, mes_keys, 'id')
+    path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps_old.db"
+    sqlite_library.build_sqlite_library_2(path, motif_data, motif_keys, 'id')
 
 
 

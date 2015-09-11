@@ -20,7 +20,7 @@
 class ThermoFlucSimulation : public Base {
 public:
     ThermoFlucSimulation() {
-        scorer_ = std::make_shared<ThermoFlucScorer>(FrameScorer());
+        scorer_ = std::make_shared<FrameScorer>(FrameScorer());
         sampler_ = ThermoFlucSampler();
         setup_options();
         
@@ -54,8 +54,9 @@ private:
 private:
     ThermoFlucScorerOP scorer_;
     ThermoFlucSampler sampler_;
-    MotifStateTreeNodeOP n1_, n2_;
-    int ei1_, ei2_;
+    BasepairStateOP end_state_1_, end_state_2_;
+    int ni1_, ni2_, ei1_, ei2_;
+    float score_;
     //option vars
     float temperature_, cutoff_;
     int steps_, record_;

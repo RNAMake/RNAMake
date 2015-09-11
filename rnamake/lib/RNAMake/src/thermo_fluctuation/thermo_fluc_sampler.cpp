@@ -33,12 +33,12 @@ ThermoFlucSampler::next() {
     mset_node_ = mset_->get_node(node_num_);
     mst_node_  = mst_->get_node(node_num_);
     pos_ = states_[node_num_];
-
+    
     energy_ = mset_node_->data()->get_member(pos_)->energy;
     new_mem_ = mset_node_->data()->get_random_member();
     
     accept_ = mc_.accept(energy_, new_mem_->energy);
-    
+        
     if(accept_) {
         update(node_num_, new_mem_);
         return 1;
@@ -58,6 +58,7 @@ ThermoFlucSampler::update(
     last_state_ = mst_node_->data()->ref_state;
     last_num_ = node_num;
     mst_->replace_state(node_num, new_mem->motif_state);
+    //std::cout << node_num << " " << mst_->get_node(node_num)->data()->cur_state->end_states()[1]->d() << std::endl;
 }
 
 void

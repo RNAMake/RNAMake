@@ -38,8 +38,8 @@ ThermoFlucSimulation::setup(
     sampler_.setup(mset);
     sampler_.temperature(option<float>("temperature"));
     
-    n1_ = sampler_.mst()->get_node(ni1);
-    n2_ = sampler_.mst()->get_node(ni2);
+    ni1_ = ni1;
+    ni2_ = ni2;
     ei1_ = ei1;
     ei2_ = ei2;
 }
@@ -49,13 +49,44 @@ ThermoFlucSimulation::run() {
     
     int steps = 0;
     int r = 0;
+    int count = 0;
+    int clash = 0;
+    sampler_.mst()->to_motif_tree()->write_pdbs();
+    Ints check_nodes = { 22, 22};
     while (steps < steps_) {
         r = sampler_.next();
+        //if(r == 0) { continue; }
         
-        std::cout << r << std::endl;
+        clash = 0;
+        for(auto const & i : check_nodes) {
+            for(auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
+                for(auto const & b1 : sampler_.mst()->get_node(1)->data()->cur_state->beads()) {
+                    if(b1.distance(b2) < 2.2) { clash = 1; }
+                }
+                
+                if(clash) { break; }
+            }
+            if(clash) { break; }
+        }
+        
+        if(clash) {
+            continue;
+        }
+        
+        end_state_1_ = sampler_.mst()->get_node(ni1_)->data()->cur_state->end_states()[ei1_];
+        end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->cur_state->end_states()[ei2_];
+
+        score_ = scorer_->score(end_state_1_, end_state_2_);
+        if(score_ < cutoff_) {
+            /*try {
+                sampler_.mst()->to_motif_tree()->to_pdb("test." + std::to_string(count) + ".pdb");
+            }
+            catch(...) { }*/
+            count += 1;
+        }
         
         steps++;
     }
     
-    return 0;
+    return count;
 }

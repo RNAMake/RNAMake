@@ -30,6 +30,7 @@ public:
         ref_motif_ = file_to_motif(path);
         path = motif_dirs() + "base.motif";
         base_motif_ = file_to_motif(path);
+        base_motif_->get_beads(base_motif_->ends()[0]);
         added_helix_ = std::make_shared<Motif>(base_motif_->copy());
         clash_radius_ = 2.9;
     }
