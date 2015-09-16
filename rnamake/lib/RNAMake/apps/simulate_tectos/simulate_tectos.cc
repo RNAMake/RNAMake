@@ -44,7 +44,7 @@ SimulateTectos::SimulateTectos(
     auto mset = get_mset_old(fseq, fss, cseq, css);
     ThermoFlucSimulation tfs;
     tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
-    tfs.option("steps", 1000000);
+    tfs.option("steps", 10000000);
     tfs.option("cutoff", 4.5f);
     int count = tfs.run();
     std::cout << count << std::endl;

@@ -2,7 +2,7 @@ import os
 import glob
 import fnmatch
 
-libs = "base math data_structure util secondary_structure structure motif resources motif_data_structures thermo_fluctuation"
+libs = "base math data_structure util secondary_structure structure motif resources motif_data_structures thermo_fluctuation motif_state_search"
 lib_paths = libs.split()
 
 for p in lib_paths:

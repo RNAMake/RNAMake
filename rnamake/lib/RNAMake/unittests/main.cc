@@ -43,6 +43,9 @@
 #include "thermo_fluctuation_unittests/thermo_fluc_sampler_unittest.h"
 #include "thermo_fluctuation_unittests/thermo_fluc_simulation_unittest.h"
 
+#include "motif_state_search_unittests/motif_state_selector_unittest.h"
+#include "motif_state_search_unittests/motif_state_search_unittest.h"
+
 /*#include "util_unittests/uuid_unittest.h"
 
 
@@ -65,6 +68,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    ThermoFlucSimulationUnittest test;
+    MotifStateSearchUnittest test;
     test.run();
 }

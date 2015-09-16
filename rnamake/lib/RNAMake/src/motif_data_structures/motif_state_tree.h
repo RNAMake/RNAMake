@@ -18,6 +18,7 @@
 #include "data_structure/tree/tree.h"
 #include "data_structure/tree/tree_node.h"
 #include "motif/motif_state.h"
+#include "motif/motif_state_aligner.h"
 #include "motif/motif_tree.h"
 
 
@@ -56,6 +57,7 @@ public:
     
     MotifStateTree() {
         tree_ = TreeStatic<MSTNodeDataOP>();
+        aligner_ = MotifStateAligner();
         queue_ = std::queue<MotifStateTreeNodeOP>();
         setup_options(); update_var_options();
     }
@@ -145,6 +147,7 @@ private:
 private:
     TreeStatic<MSTNodeDataOP> tree_;
     std::queue<MotifStateTreeNodeOP> queue_;
+    MotifStateAligner aligner_;
     int sterics_;
     float clash_radius_;
     

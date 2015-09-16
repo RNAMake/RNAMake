@@ -68,6 +68,7 @@ class MotifStateSelector(object):
                 diff += (n.data.required_uses - current.node_type_usages[i])
         return diff
 
+
 class MSS_RoundRobin(MotifStateSelector):
     def __init__(self):
         self.graph = graph.GraphDynamic()
