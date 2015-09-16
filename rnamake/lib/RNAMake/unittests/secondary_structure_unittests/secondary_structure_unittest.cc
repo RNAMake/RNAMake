@@ -10,7 +10,7 @@
 
 #include "secondary_structure_unittest.h"
 
-#include "uuid/uuid.h"
+#include "util/uuid.h"
 #include "secondary_structure/residue.h"
 #include "secondary_structure/chain.h"
 #include "secondary_structure/secondary_structure.h"

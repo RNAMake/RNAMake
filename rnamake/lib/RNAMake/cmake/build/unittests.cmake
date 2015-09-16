@@ -1,42 +1,42 @@
 set(unittests_files
-	../../unittests/build_motif_tree.cpp
 	../../unittests/unittest.cc
-	../../unittests/base_unittests/cl_option_unittest.cc
-	../../unittests/base_unittests/option_unittest.cc
+	../../unittests/build_motif_tree.cpp
+	../../unittests/structure_unittests/pdb_parser_unittest.cc
+	../../unittests/structure_unittests/residue_type_set_manager_unittest.cc
+	../../unittests/structure_unittests/structure_unittest.cc
+	../../unittests/structure_unittests/residue_type_set_unittest.cc
+	../../unittests/structure_unittests/residue_unittest.cc
+	../../unittests/structure_unittests/chain_unittest.cc
+	../../unittests/structure_unittests/basepair_unittest.cc
+	../../unittests/structure_unittests/atom_unittest.cc
+	../../unittests/motif_unittests/motif_unittest.cc
+	../../unittests/motif_unittests/motif_tree_unittest.cc
+	../../unittests/motif_unittests/motif_factory_unittest.cc
+	../../unittests/motif_unittests/motif_state_unittest.cpp
+	../../unittests/motif_unittests/motif_tree_merger_unittest.cc
+	../../unittests/motif_unittests/motif_scorer_unittest.cc
+	../../unittests/motif_unittests/pose_factory_unittest.cpp
 	../../unittests/data_structure_unittests/graph_unittest.cc
 	../../unittests/data_structure_unittests/tree_unittest.cc
+	../../unittests/base_unittests/cl_option_unittest.cc
+	../../unittests/base_unittests/option_unittest.cc
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_tree_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_tree_unittest.cpp
-	../../unittests/motif_state_search_unittests/motif_state_search_unittest.cpp
-	../../unittests/motif_state_search_unittests/motif_state_selector_unittest.cpp
-	../../unittests/motif_unittests/motif_factory_unittest.cc
-	../../unittests/motif_unittests/motif_scorer_unittest.cc
-	../../unittests/motif_unittests/motif_state_unittest.cpp
-	../../unittests/motif_unittests/motif_tree_merger_unittest.cc
-	../../unittests/motif_unittests/motif_tree_unittest.cc
-	../../unittests/motif_unittests/motif_unittest.cc
-	../../unittests/motif_unittests/pose_factory_unittest.cpp
-	../../unittests/resources_unittests/added_motif_library_unittest.cc
+	../../unittests/util_unittests/sqlite3_connection_unittest.cc
+	../../unittests/util_unittests/x3dna_unittest.cc
+	../../unittests/util_unittests/uuid_unittest.cc
+	../../unittests/resources_unittests/motif_state_ensemble_sqlite_library_unittest.cpp
 	../../unittests/resources_unittests/motif_sqlite_connection_unittest.cc
 	../../unittests/resources_unittests/motif_sqlite_library_unittest.cc
-	../../unittests/resources_unittests/motif_state_ensemble_sqlite_library_unittest.cpp
-	../../unittests/resources_unittests/motif_state_sqlite_library_unittest.cpp
+	../../unittests/resources_unittests/added_motif_library_unittest.cc
 	../../unittests/resources_unittests/resource_manager_unittest.cc
+	../../unittests/resources_unittests/motif_state_sqlite_library_unittest.cpp
+	../../unittests/thermo_fluctuation_unittests/thermo_fluc_simulation_unittest.cpp
+	../../unittests/thermo_fluctuation_unittests/thermo_fluc_sampler_unittest.cpp
+	../../unittests/motif_state_search_unittests/motif_state_search_unittest.cpp
+	../../unittests/motif_state_search_unittests/motif_state_selector_unittest.cpp
+	../../unittests/secondary_structure_unittests/ss_tree_unittest.cc
 	../../unittests/secondary_structure_unittests/secondary_structure_factory_unittest.cc
 	../../unittests/secondary_structure_unittests/secondary_structure_unittest.cc
-	../../unittests/secondary_structure_unittests/ss_tree_unittest.cc
-	../../unittests/structure_unittests/atom_unittest.cc
-	../../unittests/structure_unittests/basepair_unittest.cc
-	../../unittests/structure_unittests/chain_unittest.cc
-	../../unittests/structure_unittests/pdb_parser_unittest.cc
-	../../unittests/structure_unittests/residue_type_set_manager_unittest.cc
-	../../unittests/structure_unittests/residue_type_set_unittest.cc
-	../../unittests/structure_unittests/residue_unittest.cc
-	../../unittests/structure_unittests/structure_unittest.cc
-	../../unittests/thermo_fluctuation_unittests/thermo_fluc_sampler_unittest.cpp
-	../../unittests/thermo_fluctuation_unittests/thermo_fluc_simulation_unittest.cpp
-	../../unittests/util_unittests/sqlite3_connection_unittest.cc
-	../../unittests/util_unittests/uuid_unittest.cc
-	../../unittests/util_unittests/x3dna_unittest.cc
 )
