@@ -54,7 +54,7 @@ for l in f.readlines():
     fsum.write("add_executable("+l.rstrip()+")\n")
     fsum.write("target_link_libraries("+spl[0]+" ${link_libraries})\n")
     fsum.write("add_custom_target("+symlink+" ALL)\n")
-    fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink ../../bin/"+spl[0]+" "+ spl[0]+")\n")
+    #fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink ../../bin/"+spl[0]+" "+ spl[0]+")\n")
     fsum.write("\n\n")
 
 fsum.close()
@@ -69,7 +69,7 @@ for l in f.readlines():
     fsum.write("add_executable("+l.rstrip()+")\n")
     fsum.write("target_link_libraries("+spl[0]+" ${link_libraries})\n")
     fsum.write("add_custom_target("+symlink+" ALL)\n")
-    fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
+    #fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND  -E create_symlink ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
     fsum.write("\n\n")
 
 fsum.close()

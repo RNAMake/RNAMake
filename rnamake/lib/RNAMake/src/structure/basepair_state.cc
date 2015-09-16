@@ -7,7 +7,7 @@
 //
 
 #include "util/settings.h"
-#include "util/file_iO.h"
+#include "util/file_io.h"
 #include "structure/basepair_state.h"
 
 BasepairState
