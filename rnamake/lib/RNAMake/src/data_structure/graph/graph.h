@@ -132,6 +132,22 @@ public:
         return this->index_-1;
     }
     
+    inline
+    void
+    connect(
+        int i,
+        int j) {
+        
+        auto n1 = this->get_node(i);
+        auto n2 = this->get_node(j);
+        auto c = std::make_shared<GraphConnection<DataType>>(n1, n2, 0, 0);
+        n1->add_connection(c);
+        if(n1 != n2) { n2->add_connection(c); }
+        this->connections_.push_back(c);
+        
+        
+    }
+    
     
 };
 

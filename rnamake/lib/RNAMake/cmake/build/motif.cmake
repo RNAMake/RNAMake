@@ -4,6 +4,7 @@ set(motif_files
 	../../src/motif/motif_factory.cc
 	../../src/motif/motif_scorer.cc
 	../../src/motif/motif_state.cpp
+	../../src/motif/motif_state_aligner.cpp
 	../../src/motif/motif_state_ensemble.cpp
 	../../src/motif/motif_to_secondary_structure.cc
 	../../src/motif/motif_tree.cc

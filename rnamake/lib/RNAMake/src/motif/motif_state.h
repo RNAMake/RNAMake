@@ -77,7 +77,7 @@ public:
     end_ids() { return end_ids_; }
     
     inline
-    BasepairStateOPs const &
+    BasepairStateOPs  &
     end_states() { return end_states_; }
     
     inline

@@ -32,9 +32,9 @@ class MotifTreeStateSearchScorer(object):
                 r_diff = r_diff_flip
 
             score += 2*r_diff
-            if score > best_score:
+            if score < best_score:
                 best_score = score
-        return score
+        return best_score
 
 
 class MTSS_GreedyBestFirstSearch(MotifTreeStateSearchScorer):

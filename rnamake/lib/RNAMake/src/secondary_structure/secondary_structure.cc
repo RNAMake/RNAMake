@@ -237,7 +237,7 @@ assign_end_id(
                 ss_id += ".";
             }
             else {
-                throw SecondaryStructureException("unexpected symbol in dot bracket notation: " + e);
+                throw SecondaryStructureException("unexpected symbol in dot bracket notation: " + std::to_string(e));
             }
         }
         if(i != id_chains.size()-1) { ss_id += "_"; }
