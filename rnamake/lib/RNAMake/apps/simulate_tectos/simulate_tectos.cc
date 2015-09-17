@@ -40,7 +40,6 @@ SimulateTectos::SimulateTectos(
     String const & cseq,
     String const & css) {
     
-    //auto motif_names = get_motifs_from_seq_and_ss(fseq, fss);
     auto mset = get_mset_old(fseq, fss, cseq, css);
     ThermoFlucSimulation tfs;
     tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
@@ -60,6 +59,7 @@ SimulateTectos::get_mset_old(
     String const & css) {
     
     auto mt = std::make_shared<MotifTree>();
+    mt->option("sterics", 0);
     mt->add_motif(ResourceManager::getInstance().get_motif("GC=GC"));
     mt->add_motif(ResourceManager::getInstance().get_motif("GGAA_tetraloop", "", "A14-A15"));
     auto flow_motif_names = get_motifs_from_seq_and_ss(fseq, fss);
@@ -76,7 +76,7 @@ SimulateTectos::get_mset_old(
     for(int i = 2; i < chip_motif_names.size(); i++) {
         mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_names[i]));
     }
-        
+    
     MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
     mset->setup_from_mt(mt);
 
