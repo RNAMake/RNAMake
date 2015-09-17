@@ -1,4 +1,4 @@
-# Install script for directory: /home/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/cmake/build
+# Install script for directory: /Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -27,18 +27,13 @@ if(NOT CMAKE_INSTALL_COMPONENT)
   endif()
 endif()
 
-# Install shared libraries without execute permission?
-if(NOT DEFINED CMAKE_INSTALL_SO_NO_EXE)
-  set(CMAKE_INSTALL_SO_NO_EXE "0")
-endif()
-
 if(CMAKE_INSTALL_COMPONENT)
   set(CMAKE_INSTALL_MANIFEST "install_manifest_${CMAKE_INSTALL_COMPONENT}.txt")
 else()
   set(CMAKE_INSTALL_MANIFEST "install_manifest.txt")
 endif()
 
-file(WRITE "/home/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/${CMAKE_INSTALL_MANIFEST}" "")
+file(WRITE "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/${CMAKE_INSTALL_MANIFEST}" "")
 foreach(file ${CMAKE_INSTALL_MANIFEST_FILES})
-  file(APPEND "/home/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
+  file(APPEND "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/${CMAKE_INSTALL_MANIFEST}" "${file}\n")
 endforeach()

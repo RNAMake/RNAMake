@@ -51,7 +51,6 @@ ThermoFlucSimulation::run() {
     int r = 0;
     int count = 0;
     int clash = 0;
-    sampler_.mst()->to_motif_tree()->write_pdbs();
     Ints check_nodes = { 22, 22};
     while (steps < steps_) {
         r = sampler_.next();
