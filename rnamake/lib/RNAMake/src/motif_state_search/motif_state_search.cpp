@@ -18,6 +18,7 @@ MotifStateSearch::setup_options() {
     options_.add_option(Option("max_node_level", 15));
     options_.add_option(Option("min_size", 0));
     options_.add_option(Option("max_size", 10000));
+    options_.add_option(Option("max_solutions", 10));
     options_.add_option(Option("max_steps", LONG_MAX*1.0f));
     options_.add_option(Option("accept_score", 10.0f));
     update_var_options();
@@ -56,7 +57,7 @@ MotifStateSearch::search(
         queue_.pop();
         
         if(steps % 1000 == 0) {
-            std::cout << steps << " " << current->level() << " " << current->score() << std::endl;
+        std::cout << steps << " " << current->level() << " " << current->score() << std::endl;
         }
         
         steps += 1;
