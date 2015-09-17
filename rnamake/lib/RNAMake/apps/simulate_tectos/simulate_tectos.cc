@@ -77,6 +77,8 @@ SimulateTectos::get_mset_old(
         mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_names[i]));
     }
     
+    mt->to_pdb("old_flow.pdb");
+    exit(0);
     MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
     mset->setup_from_mt(mt);
 
