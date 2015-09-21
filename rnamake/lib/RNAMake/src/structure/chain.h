@@ -62,6 +62,10 @@ public:
     subchain(
         ResidueOP const & r1,
         ResidueOP const & r2) {
+        
+        if(std::find(residues_.begin(), residues_.end(), r1) == residues_.end()) { return nullptr; }
+        if(std::find(residues_.begin(), residues_.end(), r2) == residues_.end()) { return nullptr; }
+
         int start = (int)(std::find(residues_.begin(), residues_.end(), r1) - residues_.begin());
         int end   = (int)(std::find(residues_.begin(), residues_.end(), r2) - residues_.begin());
         

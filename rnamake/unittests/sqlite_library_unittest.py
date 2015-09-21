@@ -9,6 +9,7 @@ import rnamake.ss_tree as ss_tree
 import rnamake.resource_manager as rm
 import rnamake.util as util
 
+
 class SqliteLibraryUnittest(unittest.TestCase):
 
     def test_creation(self):
@@ -145,6 +146,19 @@ class SqliteLibraryUnittest(unittest.TestCase):
                 print i, result
                 m.to_pdb("motif."+str(i)+".pdb")
 
+    def test_bp_step_ensembles(self):
+        me_lib = sqlite_library.MotifEnsembleSqliteLibrary("bp_steps")
+        me = me_lib.get(name="GG_LL_CC_RR")
+
+        for i, mem in enumerate(me.members):
+            mem.motif.to_pdb("motif."+str(i)+".pdb")
+            print i, mem.energy
+
+    def test_bp_steps_2(self):
+        mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
+        mlib.load_all()
+        for m in mlib.all():
+            print m.name
 
 def main():
     unittest.main()

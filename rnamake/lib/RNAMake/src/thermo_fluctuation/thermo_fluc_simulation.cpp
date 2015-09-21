@@ -51,24 +51,30 @@ ThermoFlucSimulation::run() {
     int r = 0;
     int count = 0;
     int clash = 0;
-    Ints check_nodes = { 22, 22};
+    Ints check_nodes = { 22, 21 };
+    Ints check_nodes_2 = { 1 };
+
     while (steps < steps_) {
         r = sampler_.next();
         //if(r == 0) { continue; }
         
         clash = 0;
         for(auto const & i : check_nodes) {
-            for(auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
-                for(auto const & b1 : sampler_.mst()->get_node(1)->data()->cur_state->beads()) {
-                    if(b1.distance(b2) < 2.2) { clash = 1; }
-                }
+            for(auto const & j : check_nodes_2) {
+                for(auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
+                    for(auto const & b1 : sampler_.mst()->get_node(j)->data()->cur_state->beads()) {
+                        if(b1.distance(b2) < 2.2) { clash = 1; }
+                    }
                 
+                    if(clash) { break; }
+                }
                 if(clash) { break; }
             }
             if(clash) { break; }
         }
         
         if(clash) {
+            //steps++;
             continue;
         }
         

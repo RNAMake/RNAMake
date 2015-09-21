@@ -1,10 +1,10 @@
 set(resources_files
+	../../src/resources/added_motif_library.cc
+	../../src/resources/motif_ensemble_sqlite_connection.cpp
 	../../src/resources/motif_sqlite_connection.cc
-	../../src/resources/motif_state_sqlite_library.cpp
+	../../src/resources/motif_sqlite_library.cc
 	../../src/resources/motif_state_ensemble_sqlite_library.cpp
+	../../src/resources/motif_state_sqlite_library.cpp
 	../../src/resources/resource_manager.cc
 	../../src/resources/sqlite_library.cc
-	../../src/resources/motif_sqlite_library.cc
-	../../src/resources/motif_ensemble_sqlite_connection.cpp
-	../../src/resources/added_motif_library.cc
 )

@@ -44,7 +44,7 @@ private:
 };
 
 typedef std::shared_ptr<MotifStateSearchSolution> MotifStateSearchSolutionOP;
-typedef std::vector<MotifStateSearchSolution>     MotifStateSearchSolutionOPs;
+typedef std::vector<MotifStateSearchSolutionOP>   MotifStateSearchSolutionOPs;
 
 
 #endif /* defined(__RNAMake__motif_state_search_solution__) */

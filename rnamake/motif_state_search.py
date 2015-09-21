@@ -15,13 +15,13 @@ class MotifStateSearch(base.Base):
         self.scorer = motif_state_search_scorer.MTSS_GreedyBestFirstSearch()
         self.solutions = []
         self.lookup = None
+        self.test_node = None
 
     def setup_options_and_constraints(self):
         options =     { 'sterics'        :  1,
                         'verbose'        :  0,
-                        'frequency'      : 10 }
-
-        constraints = { 'max_node_level'  : 15,
+                        'frequency'      :  10,
+                        'max_node_level'  : 15,
                         'max_steps'       : 100000000,
                         'max_solutions'   : 10,
                         'max_size'        : 100000000,
@@ -29,7 +29,6 @@ class MotifStateSearch(base.Base):
                         'accept_score'    : 10}
 
         self.options = option.Options(options)
-        self.constraints = option.Options(constraints)
 
     def _start_node(self, start_bp):
         ms = motif.MotifState('start', ['start', 'start'], ['', ''],
@@ -39,14 +38,29 @@ class MotifStateSearch(base.Base):
         return n
 
     def _get_local_variables(self):
-        return self.constraint('accept_score'), self.constraint('max_node_level'), \
-               self.option('sterics'), self.constraint('max_size'), self.constraint('min_size')
+        return self.option('accept_score'), self.option('max_node_level'), \
+               self.option('sterics'), self.option('max_size'), self.option('min_size')
 
-    def search(self, start, end):
+    def setup(self, start, end):
         start_n = self._start_node(start)
         test_node = start_n.copy()
         self.queue.put(start_n, 10000)
         self.scorer.set_target(end)
+        accept_score, max_node_level
+        self.scorer.set_target(end)
+        start_n = self._start_node(start)
+        self.queue.put(start_n, 10000)
+        self.test_node = start_n.copy()
+
+    def finished(self):
+        if len(self.solutions) >= self.option("max_solutions"):
+            return 1
+        else:
+            return 0
+
+    def search(self, one=0):
+
+
         accept_score, max_node_level, sterics, max_size, min_size = self._get_local_variables()
         while not self.queue.empty():
             current = self.queue.get()
@@ -57,7 +71,7 @@ class MotifStateSearch(base.Base):
                 if current.size < min_size:
                     continue
                 self.solutions.append(MotifStateSearchSolution(current, score))
-                if len(self.solutions) >= self.constraint('max_solutions'):
+                if len(self.solutions) >= self.option('max_solutions') or one == 1:
                     return self.solutions
                 continue
 

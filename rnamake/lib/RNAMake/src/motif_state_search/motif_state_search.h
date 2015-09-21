@@ -66,7 +66,7 @@ private:
     MotifStateAligner aligner_;
     MotifStateandTypes possible_children_;
     //options
-    int sterics_, max_node_level_, min_size_, max_size_;
+    int sterics_, max_node_level_, min_size_, max_size_, max_solutions_;
     float accept_score_, max_steps_;
     
 };
