@@ -29,6 +29,7 @@ MotifStateSearch::update_var_options() {
     sterics_        = options_.option<int>("sterics");
     min_size_       = options_.option<int>("min_size");
     max_size_       = options_.option<int>("max_size");
+    max_solutions_  = options_.option<int>("max_solutions");
     max_node_level_ = options_.option<int>("max_node_level");
     accept_score_   = options_.option<float>("accept_score");
     max_steps_      = options_.option<float>("max_steps");
@@ -57,14 +58,15 @@ MotifStateSearch::search(
         queue_.pop();
         
         if(steps % 1000 == 0) {
-        std::cout << steps << " " << current->level() << " " << current->score() << std::endl;
+        //std::cout << steps << " " << current->level() << " " << current->score() << std::endl;
         }
         
         steps += 1;
         score = scorer_->accept_score(current);
         if(score < accept_score_) {
-            std::cout << score << std::endl;
-            exit(0);
+            auto s = std::make_shared<MotifStateSearchSolution>(current, score);
+            solutions_.push_back(s);
+            if(solutions_.size() >= max_solutions_) { return solutions_; }
         }
         
         if(current->level()+1 > max_node_level_) { continue; }
@@ -110,7 +112,8 @@ MotifStateSearchNodeOP
 MotifStateSearch::_start_node(
     BasepairStateOP const & start_bp) {
     
-    auto ms = std::make_shared<MotifState>("start", Strings {"start", "start"}, Strings {"", ""},
+    auto ms = std::make_shared<MotifState>("start", Strings {"start", "start"},
+                                           Strings {"", ""},
                                            BasepairStateOPs { start_bp, start_bp},
                                            Points(), 0, 0, 0);
     

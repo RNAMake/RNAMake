@@ -9,6 +9,7 @@ import rnamake.settings as settings
 import rnamake.sqlite_library as sqlite_library
 import math
 import subprocess
+import os
 import numpy as np
 
 def test_align():
@@ -172,7 +173,6 @@ class BuildSqliteLibraries(object):
         for c in clusters:
             spl = c.end_id.split("_")
             aligned_motifs = []
-            #print "before",len(c.motif_and_ends)
             for i, m_and_e in enumerate(c.motif_and_ends):
                 m, ei = m_and_e.motif, m_and_e.end_index
                 m_a = motif_factory.factory.can_align_motif_to_end(m, ei)
@@ -192,10 +192,41 @@ class BuildSqliteLibraries(object):
                     continue
 
                 aligned_motifs.append(m_a)
-            #print "after",len(aligned_motifs)
 
-            #best 0.7: -1.39
-            m_clusters = cluster.cluster_motifs(aligned_motifs, 0.65)
+            motifs_and_energies = []
+            """sum = open(c.end_id + ".scores", "w")
+            for m in aligned_motifs:
+                m.to_pdb("motif.pdb")
+                subprocess.call("rna_score -s motif.pdb", shell=True)
+                f = open("default.out")
+                lines = f.readlines()
+                f.close()
+                energy_spl = lines[3].split()
+                os.remove("default.out")
+                motifs_and_energies.append([m, float(energy_spl[1])])
+                sum.write(energy_spl[1] + "\n")
+
+            sum.close()"""
+
+            f = open(c.end_id + ".scores")
+            lines = f.readlines()
+            f.close()
+            for i, l in enumerate(lines):
+                #motifs_and_energies.append([aligned_motifs[i], float(l.lstrip())])
+                motifs_and_energies.append([aligned_motifs[i], 0])
+
+            motifs_and_energies.sort(key=lambda x : x[1])
+            scored_motifs = []
+
+            for m, energy in motifs_and_energies:
+                scored_motifs.append(m)
+
+
+
+            #best 0.65
+            m_clusters = cluster.cluster_motifs(scored_motifs, 0.65)
+            print "start, ", c.end_id
+            #m_clusters = cluster.cluster_motifs_3(scored_motifs, 0.65, 150)
             #print "last", len(m_clusters)
             clustered_motifs = []
             energies = []

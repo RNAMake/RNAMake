@@ -48,6 +48,7 @@ class Options(object):
     def dict_set(self, options):
         for k,v in options.iteritems():
             self.set(k, v)
+
     def add(self, name, value):
         if name in self.options:
             raise ValueError("cannot add option "+ name +", already exists")
@@ -72,6 +73,9 @@ class Options(object):
             raise ValueError("cannot get option "+ name +", it does not exist")
 
         return self.options[name].value
+
+    def valid_options(self):
+        return self.options.keys()
 
     def __contains__(self, name):
         return name in self.options

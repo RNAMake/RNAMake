@@ -28,6 +28,7 @@
 #include "motif_unittests/motif_tree_merger_unittest.h"
 #include "motif_unittests/pose_factory_unittest.h"
 #include "motif_unittests/motif_state_unittest.h"
+#include "motif_unittests/segmenter_unittest.h"
 
 #include "resources_unittests/motif_sqlite_connection_unittest.h"
 #include "resources_unittests/motif_sqlite_library_unittest.h"
@@ -68,6 +69,6 @@
 
 int main(int argc, const char * argv[]) {
     
-    MotifStateSearchUnittest test;
+    SegmenterUnittest test;
     test.run();
 }

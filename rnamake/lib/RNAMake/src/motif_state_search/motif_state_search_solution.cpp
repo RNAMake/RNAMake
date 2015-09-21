@@ -19,9 +19,8 @@ MotifStateSearchSolution::_get_path(
         path_.push_back(current);
         current = current->parent();
     }
-    std::reverse(path_.begin(), path_.end());
     path_.pop_back();
-    
+    std::reverse(path_.begin(), path_.end());
 }
 
 MotifStateTreeOP

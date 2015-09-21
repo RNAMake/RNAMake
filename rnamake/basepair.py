@@ -227,19 +227,18 @@ class BasepairState(object):
         state.flip()
         r_diff_2 = util.matrix_distance(self.r, state.r)
         state.flip()
-
         if r_diff > r_diff_2:
             r_diff = r_diff_2
         return r_diff
 
     def _sugar_diff(self, state):
-        #diff_1 = util.distance(self.sugars[0], state.sugars[0]) + \
-        #         util.distance(self.sugars[1], state.sugars[1])
+        diff_1 = util.distance(self.sugars[0], state.sugars[0]) + \
+                 util.distance(self.sugars[1], state.sugars[1])
         diff_2 = util.distance(self.sugars[1], state.sugars[0]) + \
                  util.distance(self.sugars[0], state.sugars[1])
-        #if diff_1 > diff_2:
-        #    diff_1 = diff_2
-        return diff_2
+        if diff_1 > diff_2:
+            diff_1 = diff_2
+        return diff_1
 
     def to_str(self):
         """

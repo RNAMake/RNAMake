@@ -29,7 +29,11 @@ ThermoFlucSampler::sample(
 int
 ThermoFlucSampler::next() {
     
-    node_num_ = 1 + rng_.randrange((int)mst_->size()-2);
+    node_num_ = 1 + rng_.randrange((int)mst_->size()-1);
+    /*std::cout << node_num_ << std::endl;
+    if(node_num_ == 22) {
+        std::cout << "made it" << std::endl;
+    }*/
     mset_node_ = mset_->get_node(node_num_);
     mst_node_  = mst_->get_node(node_num_);
     pos_ = states_[node_num_];

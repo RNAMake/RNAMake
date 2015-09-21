@@ -69,14 +69,14 @@ class ResourceManager(object):
         if self.added_motifs.contains(**options):
             return self.added_motifs.get(**options)
 
-        if 'name' in options:
-            motifs = self.get_motif_multi(name=options['name'])
-            s = "cannot find motif: " + self._args_to_str(options)  + "\n"
-            s += "here are the available options: \n"
-            for m in motifs:
-                s += "name: %s, end_id: %s, end_name: %s\n" % (m.name, m.end_ids[0],
-                                                               m.ends[0].name())
-            raise ValueError(s)
+        #if 'name' in options:
+        #    motifs = self.get_motif_multi(name=options['name'])
+        #    s = "cannot find motif: " + self._args_to_str(options)  + "\n"
+        #    s += "here are the available options: \n"
+        #    for m in motifs:
+        #        s += "name: %s, end_id: %s, end_name: %s\n" % (m.name, m.end_ids[0],
+        #                                                       m.ends[0].name())
+        #    raise ValueError(s)
 
         raise ValueError("cannot find motif: " + self._args_to_str(options))
 

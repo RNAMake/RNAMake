@@ -21,13 +21,16 @@ MotifStateSearchUnittest::test_creation() {
 int
 MotifStateSearchUnittest::test_search() {
     MotifStateSearch mss;
-    mss.option("accept_score", 5.0f);
-    mss.option("max_node_level", 15);
+    mss.option("accept_score", 10.0f);
+    mss.option("max_node_level", 10);
+    mss.option("max_solutions", 1);
     BuildMotifTree builder;
-    auto mt = builder.build(20);
+    auto mt = builder.build(10);
     auto start = mt->get_node(0)->data()->ends()[0]->state();
-    auto end   = mt->get_node(19)->data()->ends()[1]->state();
+    auto end   = mt->get_node(9)->data()->ends()[1]->state();
     auto solutions = mss.search(start, end);
+    //mt->to_pdb("test.pdb");
+    //solutions[0]->to_mst()->to_motif_tree()->to_pdb("solution.pdb");
     return 1;
 }
 
