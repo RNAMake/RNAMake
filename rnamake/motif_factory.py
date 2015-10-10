@@ -316,6 +316,17 @@ class MotifFactory(object):
             pass
         return m
 
+    def motif_from_chains(self, chains, bps):
+        m = motif.Motif()
+        m.structure.chains = chains
+        m.basepairs = bps
+        ends = self._setup_basepair_ends(m.structure, bps)
+        m.ends = ends
+        try:
+            self._setup_secondary_structure(m)
+        except:
+            pass
+        return m
 
 
 def ref_motif():

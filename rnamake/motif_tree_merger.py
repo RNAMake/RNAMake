@@ -31,6 +31,7 @@ class MotifTreeMerger(base.Base):
     def __init__(self, **options):
         self.seen_connections, self.chains, self.nodes = {}, [], []
         self.setup_options_and_constraints()
+        self.res_dict = {}
 
     def setup_options_and_constraints(self):
         options = { 'chain_closure'        : 1,
@@ -96,9 +97,12 @@ class MotifTreeMerger(base.Base):
 
                     basepairs.append(cbp)
 
+        #for c in self.seen_connections.iterkeys():
+        #    print c.node_1.index, c.node_2.index, c.end_index_1, c.end_index_2
+
         #new_structure.to_pdb("test.pdb")
-        p = pose_factory.factory.pose_from_motif_tree(new_structure, basepairs,
-                                                      motifs, designable)
+        p = pose_factory.factory.pose_from_motif_tree_new(new_structure, basepairs,
+                                                      self.graph.nodes, designable)
         return p
 
     def _merge_chains_in_node(self, node):
@@ -198,14 +202,13 @@ class MotifTreeMerger(base.Base):
         set remove_overlap to 0 to stop that from happning
 
         """
-
         merged_chain = chain.Chain()
         chain1_res, chain2_res = c1.residues, c2.residues
         if join_by_3prime:
             chain1_res, chain2_res = chain1_res[::-1], chain2_res[::-1]
         merged_chain.residues = list(chain1_res)
         if remove_overlap:
-            chain2_res.pop(0)
+            r = chain2_res.pop(0)
         merged_chain.residues.extend(list(chain2_res))
         if join_by_3prime:
             merged_chain.residues = merged_chain.residues[::-1]
