@@ -327,6 +327,7 @@ class X3dna(object):
                 basepairs.append(Basepair(res1, res2, np.eye(3),
                                           np.array([-1,-1,-1])))
                 basepairs[-1].bp_type = bp_type
+
         return basepairs
 
     def get_dssr_file_sections(self, pdb_path):

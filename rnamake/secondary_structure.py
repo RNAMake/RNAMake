@@ -171,6 +171,10 @@ class SecondaryStructureMotif(object):
                 return end
         raise ValueError("cannot find end with this id: ", id)
 
+    def get_step_name(self):
+        return self.chains[0].residues[0].name + self.chains[1].residues[1].name + "=" + \
+               self.chains[0].residues[1].name + self.chains[1].residues[0].name
+
 class SecondaryStructure(SecondaryStructureMotif):
     def __init__(self, sequence=None, dot_bracket=None, chains=None):
         if sequence is not None and dot_bracket is not None:

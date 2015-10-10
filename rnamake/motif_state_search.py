@@ -12,7 +12,7 @@ class MotifStateSearch(base.Base):
         self.setup_options_and_constraints()
         self.queue = priority_queue.PriorityQueue()
         self.selector = motif_state_selector.default_selector()
-        self.scorer = motif_state_search_scorer.MTSS_GreedyBestFirstSearch()
+        self.scorer = motif_state_search_scorer.MTSS_Astar()
         self.solutions = []
         self.lookup = None
         self.test_node = None
@@ -46,7 +46,6 @@ class MotifStateSearch(base.Base):
         test_node = start_n.copy()
         self.queue.put(start_n, 10000)
         self.scorer.set_target(end)
-        accept_score, max_node_level
         self.scorer.set_target(end)
         start_n = self._start_node(start)
         self.queue.put(start_n, 10000)
@@ -59,8 +58,6 @@ class MotifStateSearch(base.Base):
             return 0
 
     def search(self, one=0):
-
-
         accept_score, max_node_level, sterics, max_size, min_size = self._get_local_variables()
         while not self.queue.empty():
             current = self.queue.get()
@@ -71,8 +68,11 @@ class MotifStateSearch(base.Base):
                 if current.size < min_size:
                     continue
                 self.solutions.append(MotifStateSearchSolution(current, score))
-                if len(self.solutions) >= self.option('max_solutions') or one == 1:
+
+                if len(self.solutions) >= self.option('max_solutions'):
                     return self.solutions
+                if one == 1:
+                    return self.solutions[-1]
                 continue
 
             if current.level+1 > max_node_level:
@@ -84,25 +84,27 @@ class MotifStateSearch(base.Base):
                 if i == 0:
                     continue
                 avail_ends.append(end)
-            test_node.parent = current
-            test_node.update()
+            self.test_node.parent = current
+            self.test_node.update()
             for end in avail_ends:
                 parent_end_index = current.cur_state.end_states.index(end)
-                test_node.parent_end_index = parent_end_index
+                self.test_node.parent_end_index = parent_end_index
                 for i, ms in enumerate(motif_states):
-                    test_node.update_ms(ms)
-                    test_node.ntype = types[i]
-                    motif.get_aligned_motif_state(end, test_node.cur_state, test_node.ref_state)
+                    self.test_node.update_ms(ms)
+                    self.test_node.ntype = types[i]
+                    motif.get_aligned_motif_state(end,
+                                                  self.test_node.cur_state,
+                                                  self.test_node.ref_state)
 
-                    score = self.scorer.score(test_node)
-                    score += self.selector.score(test_node)*test_node.level*10
+                    score = self.scorer.score(self.test_node)
+                    score += self.selector.score(self.test_node)*self.test_node.level*10
                     if score > current.score:
                         continue
                     if sterics:
                         if self.lookup is not None:
                             if self.lookup.clash(test_node.cur_state.beads):
                                 continue
-                    child = test_node.copy()
+                    child = self.test_node.copy()
                     child.update()
                     if child.size > max_size:
                         continue
