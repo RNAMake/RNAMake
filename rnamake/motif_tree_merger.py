@@ -101,7 +101,7 @@ class MotifTreeMerger(base.Base):
         #    print c.node_1.index, c.node_2.index, c.end_index_1, c.end_index_2
 
         #new_structure.to_pdb("test.pdb")
-        p = pose_factory.factory.pose_from_motif_tree_new(new_structure, basepairs,
+        p = pose_factory.factory.pose_from_motif_tree(new_structure, basepairs,
                                                       self.graph.nodes, designable)
         return p
 

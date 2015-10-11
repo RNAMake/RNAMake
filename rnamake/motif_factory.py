@@ -329,6 +329,7 @@ class MotifFactory(object):
         return m
 
 
+
 def ref_motif():
     path = settings.RESOURCES_PATH + "/start"
     m = factory.motif_from_file(path)

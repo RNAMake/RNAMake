@@ -166,7 +166,7 @@ class PoseFactory(object):
             ss.elements[type].append(ss_motif)
             ss.elements['ALL'].append(ss_motif)
 
-    def pose_from_motif_tree(self, structure, basepairs, motifs, designable):
+    def pose_from_motif_tree_old(self, structure, basepairs, motifs, designable):
 
         p = pose.Pose()
         p.designable = designable
@@ -278,6 +278,108 @@ class PoseFactory(object):
         self.standardize_pose(p)
         return p
 
+    def pose_from_motif_tree(self, structure, basepairs, nodes, designable):
+
+        p = pose.Pose()
+        p.designable = designable
+        p.name = "assembled"
+        p.path = "assembled"
+        p.structure = structure
+        p.basepairs = basepairs
+        p.ends = motif_factory.factory._setup_basepair_ends(structure, basepairs)
+        ss = secondary_structure_factory.factory.secondary_structure_from_motif(p)
+        p.secondary_structure = ss
+        p.end_ids = ["" for x in p.ends]
+        for i, end in enumerate(p.ends):
+            res1 = ss.get_residue(uuid=end.res1.uuid)
+            res2 = ss.get_residue(uuid=end.res2.uuid)
+            ss_end = ss.get_bp(res1, res2)
+            p.end_ids[i] = secondary_structure.assign_end_id(ss, ss_end)
+
+
+        #update all motifs in pose, make sure that the correct basepairs are used
+        #since basepairs are used to align there are two choices of which basepair to
+        #be used
+        for j, n in enumerate(nodes):
+            m = n.data
+            bps = []
+            residue_map = {}
+            for bp in m.basepairs:
+                new_bp = p.get_basepair(bp_uuid=bp.uuid)
+                if len(new_bp) != 0:
+                    bps.append(new_bp[0])
+                    continue
+                best = 1000
+                best_bp = None
+                for c in n.connections:
+                    if c is None:
+                        continue
+                    if bp not in m.ends:
+                        raise ValueError("cannot find a non end basepair")
+                    if c.end_index(n.index) != m.ends.index(bp):
+                        continue
+                    partner = c.partner(n.index)
+                    alt_bp = partner.data.ends[c.end_index(partner.index)]
+                    pose_bps = p.get_basepair(bp_uuid=alt_bp.uuid)
+                    if len(pose_bps) == 0:
+                        raise ValueError("cannot find partner end bp in pose")
+                    #TODO Check if this is okay, not sure if I have to try and match
+                    #TODO residues correctly
+                    residue_map[bp.res1] = pose_bps[0].res1
+                    residue_map[bp.res2] = pose_bps[0].res2
+                    bps.append(pose_bps[0])
+                    break
+
+            chains = []
+            for c in m.chains():
+                res = []
+                for r in c.residues:
+                    new_r = p.get_residue(uuid=r.uuid)
+                    if new_r is not None:
+                        res.append(new_r)
+                    elif r in residue_map:
+                        res.append(residue_map[r])
+                    else:
+                        print r, r.uuid
+                        raise ValueError("cannot find residue")
+                chains.append(chain.Chain(res))
+            if len(bps) != len(m.basepairs):
+                raise ValueError("something went horribly wrong: did not find all basepairs")
+
+            m_copy = motif.Motif()
+            m_copy.mtype = m.mtype
+            m_copy.name = m.name
+            m_copy.structure.chains = chains
+            m_copy.basepairs = bps
+            m_copy.ends = motif_factory.factory._setup_basepair_ends(m_copy.structure, bps)
+            motif_factory.factory._setup_secondary_structure(m_copy)
+            if m_copy.mtype is not motif_type.HELIX:
+                best_ends = []
+                best_end_ids = []
+                for i, end in enumerate(m.ends):
+                    best = 1000
+                    best_end = None
+                    best_end_id = None
+                    for c_end in m_copy.ends:
+                        dist = util.distance(end.d(), c_end.d())
+                        if dist < best:
+                            best_end = c_end
+                            best_end_id = m.end_ids[i]
+                            best = dist
+                    best_ends.append(best_end)
+                    best_end_ids.append(best_end_id)
+
+                m_copy.ends = best_ends
+                m_copy.end_ids = best_end_ids
+
+
+            p.motif_dict[m_copy.mtype].append(m_copy)
+            p.motif_dict[motif_type.ALL].append(m_copy)
+
+        self._add_secondary_structure_motifs(p)
+        self.standardize_pose(p)
+        return p
+
     def pose_from_motif_tree_new(self, structure, basepairs, nodes, designable):
         p = pose.Pose()
         p.designable = designable
@@ -302,24 +404,34 @@ class PoseFactory(object):
         for j, n in enumerate(nodes):
             m = n.data
             residue_map = {}
-
+            print j
             chains = []
             res = []
             for c in m.chains():
                 bounds = [0, len(c.residues)]
                 first = 0
+                start_pos = 0
+                found = 0
                 for i, r in enumerate(c.residues):
                     r_new = p.get_residue(uuid=r.uuid)
-                    if r_new is not None and first == 0:
-                        bounds[0] = p_res.index(r_new) - i
-                        first = 1
-                    elif r_new is not None:
-                        bounds[1] = bounds[0] + i
-                chains.append(chain.Chain(p_res[bounds[0]:bounds[1]+1]))
+                    if r_new is not None:
+                        first = i
+                        start_pos = p_res.index(r_new)
+                        found = 1
+                        break
+
+                bounds[0] = start_pos - first
+                bounds[1] = bounds[0] + len(c.residues)
+                print bounds[0], bounds[1]
+
+                chains.append(chain.Chain(p_res[bounds[0]:bounds[1]]))
                 res.extend(chains[-1].residues)
 
             bps = self._subselect_bps_from_res(p.basepairs, res)
-            m_copy =
+            m_copy = motif_factory.factory.motif_from_chains(chains, bps)
+            m_copy.to_pdb("m."+str(j)+".pdb")
+            m.to_pdb("org."+str(j)+".pdb")
+            continue
 
             exit()
 
@@ -329,10 +441,6 @@ class PoseFactory(object):
             m_copy = motif.Motif()
             m_copy.mtype = m.mtype
             m_copy.name = m.name
-            m_copy.structure.chains = chains
-            m_copy.basepairs = bps
-            m_copy.ends = motif_factory.factory._setup_basepair_ends(m_copy.structure, bps)
-            motif_factory.factory._setup_secondary_structure(m_copy)
             if m_copy.mtype is not motif_type.HELIX:
                 best_ends = []
                 best_end_ids = []
