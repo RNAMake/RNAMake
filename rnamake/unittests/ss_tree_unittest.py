@@ -9,11 +9,8 @@ class SSTreeUnittest(unittest.TestCase):
 
     def test_creation(self):
         sstree = ss_tree.SS_Tree("GAG&CAG&CAC", "(.(&).(&).)")
-        for n in sstree:
-            print n.data.what(), n.data.sequence(), n.index
-
-        #sstree = ss_tree.SS_Tree("GUG+CUC", "(.(+).)")
-        exit()
+        #for n in sstree:
+        #    print n.data.what(), n.data.sequence(), n.index
 
         seq = "CAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIACAGCACGACACUAGCAGUCAGUGUCAGACUGCAIA"
         ss  = "..(((((...(((((...(((((...(((((.....)))))...))))).....(((((...(((((.....)))))...))))).....)))))...))))).."
@@ -35,8 +32,8 @@ class SSTreeUnittest(unittest.TestCase):
 
     def test_creation_c(self):
         sstree = ss_tree.SS_Tree("GG+CC+GG+CC", "((+))+((+))")
-        for n in sstree:
-            print n.data.what(), n.data.sequence(), n.index
+        #for n in sstree:
+        #    print n.data.what(), n.data.sequence(), n.index
 
 
 def main():

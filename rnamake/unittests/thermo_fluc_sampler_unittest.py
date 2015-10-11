@@ -85,9 +85,9 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         n = tfs.mst.get_node(3)
         for i in range(100):
             tfs.next()
-            print n.data.cur_state.end_states[0].d
+            #print n.data.cur_state.end_states[0].d
 
-    def test_interia_rmsd(self):
+    def _test_interia_rmsd(self):
         motif = rm.manager.get_motif(name='HELIX.IDEAL.3')
         Ix = 1.94917
         Iy = 12.3736

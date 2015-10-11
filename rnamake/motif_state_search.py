@@ -69,10 +69,10 @@ class MotifStateSearch(base.Base):
                     continue
                 self.solutions.append(MotifStateSearchSolution(current, score))
 
-                if len(self.solutions) >= self.option('max_solutions'):
-                    return self.solutions
                 if one == 1:
                     return self.solutions[-1]
+                if len(self.solutions) >= self.option('max_solutions'):
+                    return self.solutions
                 continue
 
             if current.level+1 > max_node_level:
@@ -102,7 +102,7 @@ class MotifStateSearch(base.Base):
                         continue
                     if sterics:
                         if self.lookup is not None:
-                            if self.lookup.clash(test_node.cur_state.beads):
+                            if self.lookup.clash(self.test_node.cur_state.beads):
                                 continue
                     child = self.test_node.copy()
                     child.update()
@@ -110,6 +110,9 @@ class MotifStateSearch(base.Base):
                         continue
                     child.ntype = types[i]
                     self.queue.put(child, score)
+
+        if one == 1:
+            return None
 
         return self.solutions
 

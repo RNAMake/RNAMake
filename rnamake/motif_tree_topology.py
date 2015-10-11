@@ -83,7 +83,7 @@ class MotifTreeTopology(object):
                         spl = c2[0].split("_")
                         name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
                         if j == 0:
-                            d = MotifTreeTopologyNodeData(name, c2[0], parent_end_ss_id)
+                            d = MotifTreeTopologyNodeData(name, c2[0], c.parent_end_id)
                             self.tree.add_data(d, c.parent_index)
                         else:
                             d = MotifTreeTopologyNodeData(name, c2[0], c2[1])

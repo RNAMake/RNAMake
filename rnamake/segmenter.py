@@ -182,7 +182,7 @@ class Segmenter(object):
                 continue
             motifs.append(m)
 
-        p = pose_factory.factory.pose_from_motif_tree(struct, basepairs, motifs, {})
+        p = pose_factory.factory.pose_from_motif_tree_old(struct, basepairs, motifs, {})
         return p
 
     def _get_motif(self, org_pose, res, bps):

@@ -16,21 +16,24 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mss = rnamake.motif_state_search.MotifStateSearch()
 
     def test_search(self):
+        #TODO randomly fails, figure out why
         builder = build.BuildMotifTree()
         mt = builder.build(2)
         start = mt.get_node(0).data.ends[0].state()
         end   = mt.last_node().data.ends[1].state()
         mss = rnamake.motif_state_search.MotifStateSearch()
-        mss.constraint('max_node_level', 2)
-        mss.constraint('max_solutions', 1)
-        solutions = mss.search(start, end)
-        if len(solutions) == 0:
-            raise ValueError("could not find a suitable solution")
-        mst = solutions[0].to_mst()
+        mss.option('max_node_level', 2)
+        mss.option('max_solutions', 1)
+        mss.setup(start, end)
+        s = mss.search(one=1)
+        if s is None:
+            print mt
+            raise ValueError("SOMETIMES HAPPENS: could not find a suitable solution")
+        mst = s.to_mst()
         new_end = mst.last_node().data.cur_state.end_states[1]
 
         dist = util.distance(new_end.d, end.d)
-        if dist > mss.constraint('accept_score'):
+        if dist > mss.option('accept_score'):
             self.fail("did not find a suitable solution")
 
     def test_search_2(self):
@@ -43,8 +46,8 @@ class MotifStateSearchUnittest(unittest.TestCase):
         start = mst.get_node(0).data.get_end_state("A221-A252")
         end   = mst.get_node(0).data.get_end_state("A146-A157")
         mss = rnamake.motif_state_search.MotifStateSearch()
-        mss.constraint('max_node_level', 6)
-        mss.constraint('max_solutions', 1)
+        mss.option('max_node_level', 6)
+        mss.option('max_solutions', 1)
         mss.scorer = motif_state_search_scorer.MTSS_Astar()
 
         sl = steric_lookup.StericLookup()
@@ -52,8 +55,9 @@ class MotifStateSearchUnittest(unittest.TestCase):
         sl.add_beads(beads)
         mss.lookup = sl
 
-        solutions = mss.search(start, end)
-        mst_sol = solutions[0].to_mst()
+        mss.setup(start, end)
+        s = mss.search(one=1)
+        mst_sol = s.to_mst()
         mst.add_mst(mst_sol, parent_end_name="A221-A252")
         mst.add_connection(0, mst.last_node().index, "A146-A157")
         p = mst.to_pose()
@@ -70,9 +74,9 @@ class MotifStateSearchUnittest(unittest.TestCase):
         end   = end2.state()
 
         mss = rnamake.motif_state_search.MotifStateSearch()
-        mss.constraint('max_node_level', 5)
-        mss.constraint('max_solutions', 1)
-        mss.constraint('accept_score', 5)
+        mss.option('max_node_level', 5)
+        mss.option('max_solutions', 1)
+        mss.option('accept_score', 5)
         mss.scorer = motif_state_search_scorer.MTSS_Astar()
 
         sl = steric_lookup.StericLookup()
@@ -80,8 +84,9 @@ class MotifStateSearchUnittest(unittest.TestCase):
         sl.add_beads(beads)
         mss.lookup = sl
 
-        solutions = mss.search(start, end)
-        mst_sol = solutions[0].to_mst()
+        mss.setup(start, end)
+        s = mss.search(one=1)
+        mst_sol = s.to_mst()
 
 
 

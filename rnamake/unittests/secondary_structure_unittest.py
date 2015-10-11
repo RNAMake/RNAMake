@@ -31,7 +31,7 @@ class SecondaryStructureUnittest(unittest.TestCase):
 
     def test_find_residue(self):
         ss = secondary_structure.SecondaryStructure("AGCU+AGCU","((((+))))")
-        r = ss.get_residue(0, "A")
+        r = ss.get_residue(1, "A")
         if r is None:
             self.fail("did not find a known residue, finde_residue not working")
 
@@ -103,8 +103,7 @@ class SecondaryStructureUnittest(unittest.TestCase):
         conn = ss.motif_topology_from_end(ss.ends[1], last_end=last_end)
         mtt = motif_tree_topology.MotifTreeTopology(conn)
         mt = motif_tree.motif_tree_from_topology(mtt, sterics=0)
-        mt.write_pdbs()
-        print len(mt)
+        #mt.write_pdbs()
 
     def _test_complex(self):
         seq = "GGGCUUGUAGCUCAGGUGGUUAGAGCGCACCCCUGAUAAGGGUGAGGUCGGUGGUUCAAGUCCACUCAGGCCCAC"
@@ -115,7 +114,7 @@ class SecondaryStructureUnittest(unittest.TestCase):
         for m in ss.motifs('ALL'):
             print m.type, m.sequence()
 
-    def test_complex(self):
+    def _test_complex(self):
         path = settings.UNITTEST_PATH + "/resources/seq_ss.txt"
         f = open(path)
         lines = f.readlines()
@@ -123,9 +122,9 @@ class SecondaryStructureUnittest(unittest.TestCase):
 
         for l in lines:
             name,seq,db = l.split()
-            print name, len(seq), len(db)
+            #print name, len(seq), len(db)
             ss = ssfactory.factory.get_structure(seq, db)
-            print ss
+            #print ss
 
 def main():
     unittest.main()

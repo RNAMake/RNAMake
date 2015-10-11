@@ -84,9 +84,9 @@ class Structure(object):
 
         if len(found) > 1:
             self.to_pdb()
-            for f in found:
-                print f.name, f.num
-            print "num,chain_id,icode,uuid=",num,chain_id,i_code,uuid
+            #for f in found:
+            #    print f.name, f.num
+            #print "num,chain_id,icode,uuid=",num,chain_id,i_code,uuid
             raise ValueError(
                 "found multiple residues in get_residue(), narrow " +
                 "your search")

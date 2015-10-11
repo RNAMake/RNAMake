@@ -88,28 +88,27 @@ class ThermoFlucRelax(base.Base):
         new_diff = 0
         self.best = self.sampler.mst.copy()
         best_diff = 0
-        self.max_steps = 100
 
-        print len(self.sampler.mst)
-        self.sampler.mst.add_connection(0, 16, "A149-A154")
-        outputer = motif_outputer.MotifOutputer()
+        #print len(self.sampler.mst)
+        #self.sampler.mst.add_connection(0, 16, "A149-A154")
+        #outputer = motif_outputer.MotifOutputer()
 
         while steps < self.max_steps:
 
-            print steps
+            #print steps
             r = self.sampler.next()
 
-            if steps % 10 == 0:
+            """if steps % 10 == 0:
                 try:
                     mst2 = self.sampler.mst.copy()
                     p = mst2.to_pose()
                     outputer.add_motif(p, 0)
 
                 except:
-                    pass
+                    pass"""
             steps += 1
 
-            if steps % 10 == 0:
+            if steps % 1000 == 0:
                 self.kBT *= 0.5
 
             if r == 0:
@@ -138,7 +137,7 @@ class ThermoFlucRelax(base.Base):
 
             self.sampler.undo()
         #print end_state_1.diff(end_state_2)
-        outputer.to_pdb()
+        #outputer.to_pdb()
 
 
     def to_pdb(self, name="test.pdb"):
