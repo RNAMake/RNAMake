@@ -72,7 +72,7 @@ class PdbParserUnittest(unittest.TestCase):
             import prody
         except:
             self.skipTest("cannot import prody")
-
+        prody.LOGGER.verbosity = 'none'
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
         new_residues = util.supress_log_output(rnamake.pdb_parser.parse,path)
 

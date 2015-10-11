@@ -68,7 +68,7 @@ class StructureUnittest(unittest.TestCase):
         path = "/Users/josephyesselman/projects/REDESIGN/resources/non-redundant-rnas"
         for l in lines:
             spl = l.split(",")
-            print spl[0]
+            #print spl[0]
             if spl[0] in skip_structs:
                 continue
             pdb_path = path + "/" + spl[0] + "/" + spl[0] + ".pdb"

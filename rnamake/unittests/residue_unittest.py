@@ -162,8 +162,6 @@ class ResidueUnittest(unittest.TestCase):
         if res.num == copy_res.num:
             self.fail("did not copy num correctly")
 
-        print copy_res.name, res.name
-
     def test_new_uuid(self):
         res = self.residues[0]
         old_uuid = res.uuid

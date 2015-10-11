@@ -2,7 +2,6 @@ import unittest
 import build
 import rnamake.pose
 import rnamake.settings as settings
-import rnamake.motif_library as motif_library
 import rnamake.motif_type as motif_type
 import rnamake.motif_tree as motif_tree
 import random

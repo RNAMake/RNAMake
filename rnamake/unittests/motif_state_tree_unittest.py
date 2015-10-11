@@ -43,12 +43,11 @@ class MotifStateTreeUnittest(unittest.TestCase):
         if len(mst) != 10:
             self.fail("did not build mst properly")
 
-        for n in mt:
-            print n.data.name
+        #for n in mt:
+        #    print n.data.name
 
-        print mt.last_node().data.ends[0].d()
-        print mst.last_node().data.cur_state.end_states[0].d
-
+        #print mt.last_node().data.ends[0].d()
+        #print mst.last_node().data.cur_state.end_states[0].d
 
     def test_align(self):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
@@ -57,7 +56,7 @@ class MotifStateTreeUnittest(unittest.TestCase):
         bp_state = m.ends[1].state()
         test_state = rm.manager.ms_libs["ideal_helices"].get(name='HELIX.IDEAL.3')
         d1 = bp_state.d
-        print d1
+        #rint d1
         motif.align_motif_state(bp_state, test_state)
         d2 = test_state.end_states[0].d
         if util.distance(d1, d2) > 0.5:

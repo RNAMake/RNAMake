@@ -107,7 +107,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
         ss_id1 = "CGG_LLL_CAG_RRR"
 
         matches = mlib.get_best_matches(ss_id1)
-        print len(matches)
+        #print len(matches)
 
 
     def _test_end_id(self):
@@ -146,7 +146,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
                 print i, result
                 m.to_pdb("motif."+str(i)+".pdb")
 
-    def test_bp_step_ensembles(self):
+    def _test_bp_step_ensembles(self):
         me_lib = sqlite_library.MotifEnsembleSqliteLibrary("bp_steps")
         me = me_lib.get(name="GG_LL_CC_RR")
 
@@ -154,7 +154,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
             mem.motif.to_pdb("motif."+str(i)+".pdb")
             print i, mem.energy
 
-    def test_bp_steps_2(self):
+    def _test_bp_steps_2(self):
         mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
         mlib.load_all()
         for m in mlib.all():
