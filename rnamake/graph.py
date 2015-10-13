@@ -1,4 +1,4 @@
-import Queue
+import priority_queue
 
 def transverse_graph(graph, i):
     graph.__iter__()
@@ -37,12 +37,16 @@ class Graph(object):
         self.last_node = None
         #iterator stuff
         self.current_node = None
+        self.queue = priority_queue.PriorityQueue()
+        self.seen = []
 
     def __len__(self):
         return len(self.nodes)
 
     def __iter__(self):
         self.current_node = self.nodes[0]
+        self.seen = []
+        self.queue = priority_queue.PriorityQueue()
         return self
 
     def next(self):
@@ -50,11 +54,22 @@ class Graph(object):
             raise StopIteration
 
         node = self.current_node
+        next = []
 
-        try:
-            self.current_node = self.get_node(self.current_node.index+1)
-        except:
+        self.seen.append(node)
+        for c in node.connections:
+            if c is None:
+                continue
+            partner = c.partner(node.index)
+            if partner not in self.seen:
+                self.queue.put(partner, partner.index)
+
+
+        if self.queue.empty():
             self.current_node = None
+        else:
+            self.current_node = self.queue.get()
+
 
         return node
 
@@ -77,6 +92,12 @@ class Graph(object):
 
         raise ValueError("cannot find node with index")
 
+    def oldest_node(self):
+        node = self.last_node
+        for n in self.nodes:
+            if n.index < node.index:
+                node = n
+        return node
 
 class GraphDynamic(Graph):
     """
@@ -139,10 +160,14 @@ class GraphStatic(Graph):
     def __init__(self):
         super(GraphStatic, self).__init__()
 
-    def add_data(self, data, parent_index=-1, parent_pos=-1, child_pos=-1, n_children=1):
+    def add_data(self, data, parent_index=-1, parent_pos=-1, child_pos=-1, n_children=1,
+                 orphan=0):
         parent = self.last_node
         if parent_index != -1:
             parent = self.get_node(parent_index)
+        if orphan:
+            parent = None
+
         n = GraphNodeStatic(data, self.index, self.level, n_children)
 
         if parent is not None:
@@ -200,7 +225,20 @@ class GraphStatic(Graph):
                 raise ValueError("graph pos is not available: " + str(pos) + " " + n.data.name)
             return [pos]
 
-
+    def copy(self):
+        gs = GraphStatic()
+        new_nodes = []
+        for n in self.nodes:
+            new_nodes.append(n.copy())
+        gs.nodes = new_nodes
+        for c in self.connections:
+            i, j = c.node_1.index, c.node_2.index
+            ni, nj = c.end_index_1, c.end_index_2
+            gs.connect(i, j, ni, nj)
+        gs.last_node = gs.nodes[self.last_node.index]
+        gs.level = self.level
+        gs.index = self.index
+        return gs
 
 class GraphNode(object):
     def __init__(self, data, index, level, n_connections=0):
@@ -275,6 +313,16 @@ class GraphNodeStatic(GraphNode):
 
         i = self.connections.index(c)
         self.connections[i] = None
+
+    def copy(self):
+        new_data = None
+        try:
+            new_data = self.data.copy()
+        except:
+            new_data = self.data
+
+        c = GraphNodeStatic(new_data, self.index, self.level, len(self.connections))
+        return c
 
 
 class GraphConnection(object):

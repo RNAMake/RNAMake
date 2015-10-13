@@ -59,6 +59,33 @@ class MotifTreeMerger(base.Base):
         motif = self._build_pose()
         return motif
 
+    def get_secondary_structure(self, graph, start):
+        self.seen_constraints, self.chains, self.graph = {}, [], graph
+
+        for n in self.graph.nodes:
+            self.chains.extend([c.subchain(0) for c in n.data.chains()])
+
+        self.residue_map = {}
+        self._merge_chains_in_node(start)
+
+        chains = self.chains
+        basepairs = []
+
+        uuids = {}
+        for c in chains:
+            for res in c.residues:
+                uuids[res.uuid] = res
+
+        for node in self.graph.nodes:
+            for bp in node.data.basepairs:
+                if bp.res1.uuid in uuids and bp.res2.uuid in uuids:
+                    basepairs.append(bp)
+
+        m = motif_factory.factory.motif_from_chains(chains, basepairs)
+        return m.secondary_structure
+
+
+
     def reset(self):
         self.chains = []
         self.nodes = []
@@ -216,7 +243,6 @@ class MotifTreeMerger(base.Base):
 
     def _get_merged_hairpin(self, c1, c2, hairpin, join_by_3prime=0,
                             remove_overlap=0):
-        #hairpin.to_pdb("hairpin.pdb")
         merged_chain = self._get_merged_chain(c1, hairpin, join_by_3prime,
                                               remove_overlap)
         merged_chain = self._get_merged_chain(merged_chain, c2, join_by_3prime,
