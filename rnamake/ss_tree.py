@@ -230,7 +230,7 @@ class SS_Tree(object):
             if end_x == yb:
                 hairpin = 1
 
-        if self.residues[yb].dot_bracket == '.' and hairpin == 0:
+        if self.residues[yb].dot_bracket ==                                                                                                                       '.' and hairpin == 0:
             end_y = self._get_dot_bounds(yb, 1)
             for i in range(end_y, yb+1):
                 ss_chains[1].residues.append(self.residues[i])
