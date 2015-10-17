@@ -105,16 +105,26 @@ class SecondaryStructureUnittest(unittest.TestCase):
         mt = motif_tree.motif_tree_from_topology(mtt, sterics=0)
         #mt.write_pdbs()
 
-    def _test_complex(self):
-        seq = "GGGCUUGUAGCUCAGGUGGUUAGAGCGCACCCCUGAUAAGGGUGAGGUCGGUGGUUCAAGUCCACUCAGGCCCAC"
-        db  = "(((((((..((((.....[...)))).(((((.......))))).....(((((..]....)))))))))))).."
+    def test_complex(self):
+        seq = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
+        db  = "......((((((....)))...((.....))))).."
 
+        sstree = ss_tree.SS_Tree(seq, db)
+        #for n in sstree:
+        #    if n.parent == None:
+        #        continue
+        #    print n.index, n.parent.index, n.data.what(), n.data.sequence()
+
+        #return
         ss = ssfactory.factory.get_structure(seq, db)
 
         for m in ss.motifs('ALL'):
-            print m.type, m.sequence()
+            print m.type,
+            for r in m.residues():
+                print r.num,
+            print
 
-    def _test_complex(self):
+    def _test_complex_2(self):
         path = settings.UNITTEST_PATH + "/resources/seq_ss.txt"
         f = open(path)
         lines = f.readlines()

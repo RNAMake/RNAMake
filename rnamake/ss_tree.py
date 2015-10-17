@@ -163,7 +163,10 @@ class SS_Tree(object):
                 if seq_break is not None:
                     next_level.append(seq_break)
 
-            if current_pair.node.type == SS_Type.SS_BULGE:
+
+            if current_pair.node.type == SS_Type.SS_BULGE or \
+               current_pair.node.type == SS_Type.SS_BP and len(next_level) > 1:
+                print current_pair.index, current_pair.node.what(), len(next_level)
                 part_of_nway, not_part_of_nway = [], []
                 for n in next_level:
                     if n.type == SS_Type.SS_BULGE or n.type == SS_Type.SS_HAIRPIN:
@@ -174,8 +177,13 @@ class SS_Tree(object):
                 #print xb, yb, len(part_of_nway), len(not_part_of_nway)
 
                 if len(part_of_nway) > 0:
-                    ss_chains = current_pair.node.ss_chains
-                    bounds = current_pair.node.bounds
+                    if current_pair.node.type != SS_Type.SS_BP:
+                        ss_chains = current_pair.node.ss_chains
+                        bounds = current_pair.node.bounds
+                    else:
+                        ss_chains = [secondary_structure.Chain(),
+                                     secondary_structure.Chain()]
+                        bounds = current_pair.node.bounds
 
                     while len(part_of_nway) > 0:
                         n = part_of_nway.pop(0)

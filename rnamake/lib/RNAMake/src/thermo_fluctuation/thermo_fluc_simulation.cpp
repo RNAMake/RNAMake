@@ -55,8 +55,30 @@ ThermoFlucSimulation::run() {
     Ints check_nodes_2 = { 1 };
 
     while (steps < steps_) {
-        r = sampler_.next();
         //if(r == 0) { continue; }
+        
+        end_state_1_ = sampler_.mst()->get_node(ni1_)->data()->cur_state->end_states()[ei1_];
+        end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->cur_state->end_states()[ei2_];
+        
+        int frame_score = end_state_1_->d().distance(end_state_2_->d());
+        int r_diff = end_state_1_->r().difference(end_state_2_->r());
+        end_state_2_->flip();
+        int r_diff_flip = end_state_1_->r().difference(end_state_2_->r());;
+        end_state_2_->flip();
+        
+        if(r_diff > r_diff_flip) {
+            
+        }
+        
+
+        std::cout << score_ << std::endl;
+        
+        exit(0);
+        
+        return score_;
+       
+        r = sampler_.next();
+ 
         
         clash = 0;
         for(auto const & i : check_nodes) {

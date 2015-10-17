@@ -351,6 +351,9 @@ class StructureSecondaryFactory(object):
         return helices
 
 
+def get_ss_graph(m_graph, residue_map):
+    pass
+
 
 def ss_id_to_seq_and_db(ss_id):
     ss = ""

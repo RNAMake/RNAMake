@@ -1,6 +1,8 @@
+import numpy as np
+
 import pdb_parser
 import chain
-import numpy as np
+import util
 
 class StructureException(Exception):
     pass
@@ -162,4 +164,9 @@ class Structure(object):
             a.coords += p
 
 
-
+def structure_from_pdb(pdb_path):
+    residues = pdb_parser.parse(pdb_path)
+    chains = chain.connect_residues_into_chains(residues)
+    s = Structure(chains)
+    s.name = util.filename(pdb_path[:-4])
+    return s

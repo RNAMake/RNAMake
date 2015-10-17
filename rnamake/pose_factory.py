@@ -469,6 +469,10 @@ class PoseFactory(object):
 
         return p
 
+    def pose_from_motif_graph(self):
+        pass
+
+
     def _old_pose_from_motif_tree(self):
 
         return

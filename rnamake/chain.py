@@ -107,3 +107,53 @@ class Chain(object):
         for r in self.residues:
             s += r.rtype.name[0] + str(r.num) + " "
         return s
+
+
+def connect_residues_into_chains(residues):
+        """
+        takes all residues and puts into the correct order in chains checking
+        for physical connection between O5' and P atoms between residues
+
+        :param residues: residue objects that belong in this structure
+        :type residues: List of Residue objects
+        """
+
+        chains = []
+        # sort residues so check residues for connection quicker as the next on
+        # in the array will be closest to it by number
+        residues.sort(key=lambda x: x.num)
+
+        while True:
+            current = None
+            # find next 5' end, all chains go from 5' to 3'
+            for i, r in enumerate(residues):
+                five_prime_end = 1
+                for j, r2 in enumerate(residues):
+                    if r.connected_to(r2) == -1:
+                        five_prime_end = 0
+                        break
+                if five_prime_end:
+                    current = r
+                    break
+            if not current:
+                break
+            residues.remove(current)
+            current_chain_res = []
+            # extend chain until 3' end
+            while current is not None:
+                current_chain_res.append(current)
+                found = 0
+                for r in residues:
+                    if current.connected_to(r) == 1:
+                        current = r
+                        found = 1
+                        break
+                if found:
+                    residues.remove(current)
+                else:
+                    # no more residues to add, make chain object
+                    chains.append(Chain(current_chain_res))
+                    current = None
+
+        return chains
+
