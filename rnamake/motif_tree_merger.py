@@ -9,8 +9,10 @@ import atom
 import util
 import math
 import secondary_structure
+import secondary_structure_factory as ssf
 import pose_factory
 import motif_factory
+import rna_structure
 import numpy as np
 
 class ChainEndPairMap(object):
@@ -68,9 +70,9 @@ class MotifTreeMerger(base.Base):
         self.residue_map = {}
         self._merge_chains_in_node(start)
 
-        chains = self.chains
         basepairs = []
 
+        chains = self.chains
         uuids = {}
         for c in chains:
             for res in c.residues:
@@ -81,8 +83,26 @@ class MotifTreeMerger(base.Base):
                 if bp.res1.uuid in uuids and bp.res2.uuid in uuids:
                     basepairs.append(bp)
 
+        r_struct = rna_structure.RNAStructure(structure.Structure(chains), basepairs)
+        parser = ssf.MotiftoSecondaryStructure()
+        ss = parser.to_secondary_structure(r_struct)
+        print ss
+        exit()
+
         m = motif_factory.factory.motif_from_chains(chains, basepairs)
+        start_end = None
+        for end in m.ends:
+            if end == start.data.ends[0]:
+                start_end = end
+        m.ends.remove(start_end)
+        m.ends.insert(0, start_end)
+        motif_factory.factory.standardize_motif(m)
+
+        m.secondary_structure.residue_map = self.residue_map
         return m.secondary_structure
+
+    def _build_secondary_structure_graph(self):
+        pass
 
 
 
@@ -189,21 +209,21 @@ class MotifTreeMerger(base.Base):
 
     def _non_helix_merge(self, nc, pc):
         merged_chain_1, merged_chain_2 = None, None
-        p3_chain, p5_chain = nc.p3_chain.subchain(0,-1), nc.p5_chain.subchain(1)
+        #p3_chain, p5_chain = nc.p3_chain.subchain(0,-1), nc.p5_chain.subchain(1)
         if   nc.is_hairpin() and pc.is_hairpin():
             raise ValueError("cannot merge an hairpin with another hairpin")
         elif nc.is_hairpin():
-            p3_chain = pc.p3_chain.subchain(0,-1)
-            p5_chain = pc.p5_chain.subchain(1)
+            #p3_chain = pc.p3_chain.subchain(0,-1)
+            #p5_chain = pc.p5_chain.subchain(1)
 
-            merged_chain_1 = self._get_merged_hairpin(p3_chain, p5_chain,
-                                                      nc.p5_chain)
+            merged_chain_1 = self._get_merged_hairpin(pc.p3_chain, pc.p5_chain,
+                                                      nc.p5_chain, 0, 1)
         elif pc.is_hairpin():
-            merged_chain_1 = self._get_merged_hairpin(p5_chain, p3_chain,
-                                                      pc.p5_chain, 1)
+            merged_chain_1 = self._get_merged_hairpin(nc.p5_chain, nc.p3_chain,
+                                                      pc.p5_chain, 1, 1)
         else:
-            merged_chain_1 = self._get_merged_chain(p5_chain, pc.p3_chain, 1)
-            merged_chain_2 = self._get_merged_chain(p3_chain, pc.p5_chain)
+            merged_chain_1 = self._get_merged_chain(nc.p5_chain, pc.p3_chain, 1, 1)
+            merged_chain_2 = self._get_merged_chain(nc.p3_chain, pc.p5_chain, 0, 1)
         return merged_chain_1, merged_chain_2
 
     def _get_merged_chain(self, c1, c2, join_by_3prime=0, remove_overlap=0):
@@ -236,6 +256,7 @@ class MotifTreeMerger(base.Base):
         merged_chain.residues = list(chain1_res)
         if remove_overlap:
             r = chain2_res.pop(0)
+            self.residue_map[r.uuid] = chain1_res[-1].uuid
         merged_chain.residues.extend(list(chain2_res))
         if join_by_3prime:
             merged_chain.residues = merged_chain.residues[::-1]

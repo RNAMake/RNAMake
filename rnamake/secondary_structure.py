@@ -3,6 +3,7 @@ import ss_tree
 import Queue
 import uuid
 import tree
+import motif_type
 
 class Residue(object):
     def __init__(self, name, dot_bracket, num, chain_id, uuid, i_code=""):
@@ -91,12 +92,139 @@ class Basepair(object):
             raise ValueError("call partner with a residue not in basepair")
 
 
+class Structure(object):
+    def __init__(self, chains=None):
+        self.chains = []
+        if chains is not None:
+            self.chains = chains
+
+    def residues(self):
+        res = []
+        for c in self.chains:
+            res.extend(c.residues)
+        return res
+
+    def sequence(self):
+        sequences = [x.sequence() for x in self.chains]
+        return "&".join(sequences)
+
+    def dot_bracket(self):
+        dot_brackets = [x.dot_bracket() for x in self.chains]
+        return "&".join(dot_brackets)
+
+    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
+        found = []
+        for r in self.residues():
+            if num is not None and num != r.num:
+                continue
+            if i_code is not None and i_code != r.i_code:
+                continue
+            if chain_id is not None and chain_id != r.chain_id:
+                continue
+            if uuid is not None and uuid != r.uuid:
+                continue
+            found.append(r)
+
+        if len(found) == 0:
+            return None
+
+        if len(found) > 1:
+            print "num,chain_id,icode=",num,chain_id,i_code,
+            raise ValueError(
+                "found multiple residues in get_residue(), narrow " +
+                "your search")
+
+        return found[0]
+
+
+class RNAStructure(object):
+    def __init__(self, structure, basepairs, ends=[], name="assembled", path="assembled",
+                 mtype=motif_type.UNKNOWN, score=0, end_ids=[]):
+        self.structure = structure
+        self.basepairs =basepairs
+        self.name = name
+        self.path = path
+        self.score = score
+        self.ends = ends
+        self.end_ids = end_ids
+        self.mtype = mtype
+
+    def __repr__(self):
+        return "<secondary_structure.RNAStructure( " + self.sequence() + " " + self.dot_bracket() + " )"
+
+    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
+        return self.structure.get_residue(num, chain_id, i_code, uuid)
+
+    def get_basepair(self, res1=None, res2=None, uuid=None, name=None):
+        for bp in self.basepairs:
+            if res1 is not None and (bp.res1 != res1 and bp.res2 != res1):
+                continue
+            if res2 is not None and (bp.res1 != res2 and bp.res2 != res2):
+                continue
+            if uuid is not None and bp.uuid != uuid:
+                continue
+            if name is not None and bp.name() != name:
+                continue
+            return bp
+        return None
+
+    def sequence(self):
+        return self.structure.sequence()
+
+    def dot_bracket(self):
+        return self.structure.dot_bracket()
+
+
+class Motif(RNAStructure):
+    def __init__(self, structure=None, basepairs=[], ends=[],
+                 name="assembled", path="assembled", mtype=motif_type.UNKNOWN,
+                 score=0, end_ids=[],  id=uuid.uuid1(), r_struct=None):
+        self.structure = structure
+        self.basepairs =basepairs
+        self.name = name
+        self.path = path
+        self.score = score
+        self.ends = ends
+        self.end_ids = end_ids
+        self.mtype = mtype
+        self.id = id
+        if r_struct is not None:
+            self.__dict__.update(r_struct.__dict__)
+
+
+class Pose(RNAStructure):
+    def __init__(self, structure=None, basepairs=[], ends=[],
+                 name="assembled", path="assembled", score=0, end_ids=[],
+                 r_struct=None):
+        self.structure = structure
+        self.basepairs =basepairs
+        self.name = name
+        self.path = path
+        self.score = score
+        self.ends = ends
+        self.end_ids = end_ids
+        self.motifs = []
+
+        if r_struct is not None:
+            self.__dict__.update(r_struct.__dict__)
+
+    def __repr__(self):
+        return "<secondary_structure.Pose( " + self.sequence() + " " + self.dot_bracket() + " )"
+
+    def motif(self, m_id):
+        for m in self.motifs:
+            if m.id == m_id:
+                return m
+        return None
+
+
 class SecondaryStructureMotif(object):
     def __init__(self, type, ends, chains):
         self.type, self.ends, self.chains = type, ends, chains
         self.basepairs = []
         self.name = ""
         self.end_ids = []
+        self.id = None
 
     def residues(self):
         res = []
@@ -477,6 +605,11 @@ class SecondaryStructure(SecondaryStructureMotif):
             for r in c.residues:
                 if r.name == 'U':
                     r.name = 'T'
+
+class SecondaryStructurePose(SecondaryStructureMotif):
+    def __init__(self):
+        pass
+
 
 
 def str_to_residue(s):

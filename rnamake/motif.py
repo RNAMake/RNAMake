@@ -11,8 +11,9 @@ import basic_io
 import secondary_structure
 import numpy as np
 import uuid
+import rna_structure
 
-class Motif(object):
+class Motif(rna_structure.RNAStructure):
     """
     The basic unit of this project stores the 3D coordinates of a RNA Motif
     as well as the 3DNA parameters such as reference frame and origin for
@@ -53,13 +54,17 @@ class Motif(object):
         the name of the directory without entire path
     """
 
-    def __init__(self):
+    def __init__(self, r_struct=None):
         self.beads, self.score, self.mtype, self.basepairs = [], 0, motif_type.UNKNOWN, []
         self.path, self.name, self.ends = "", "", []
         self.end_ids = []
         self.structure = structure.Structure()
         self.secondary_structure = secondary_structure.SecondaryStructure()
         self.block_end_add = 0
+        self.id = uuid.uuid1()
+
+        if r_struct is not None:
+            self.__dict__.update(r_struct.__dict__)
 
     def __repr__(self):
         """
@@ -68,62 +73,6 @@ class Motif(object):
         return "<Motif(\n\tstructure='%s', \n\tends='%s')>" % (
         self.structure,len(self.ends))
 
-    def get_basepair(self, bp_uuid=None, res1=None, res2=None, uuid1=None,
-                     uuid2=None, name=None):
-        """
-        locates a Basepair object based on residue objects or uuids if nothing
-        is supplied you will get back all the basepairs in the motif. The way
-        to make sure you will only get one basepair back is to supply BOTH
-        res1 and res2 OR uuid1 and uuid2, I have left it open like this
-        because it is sometimes useful to get all basepairs that a single
-        residue is involved
-
-        :param res1: First residue
-        :param res2: Second residue
-        :param uuid1: First residue uuid
-        :param uuid2: Second residue uuid
-
-        :type res1: Residue object
-        :type res2: Residue object
-        :type uuid1: uuid object
-        :type uuid2: uuid object
-        """
-        alt_name = None
-        if name:
-            name_spl = name.split("-")
-            alt_name = name_spl[1] + "-" + name_spl[0]
-
-        found = []
-        for bp in self.basepairs:
-            if bp_uuid is not None and bp_uuid != bp.uuid:
-                continue
-            if res1 is not None and (res1 != bp.res1 and res1 != bp.res2):
-                continue
-            if res2 is not None and (res2 != bp.res1 and res2 != bp.res2):
-                continue
-            if uuid1 is not None and \
-               (uuid1 != bp.res1.uuid and uuid1 != bp.res2.uuid):
-                continue
-            if uuid2 is not None and \
-               (uuid2 != bp.res1.uuid and uuid2 != bp.res2.uuid):
-                continue
-            if name is not None and \
-               (name != bp.name() and alt_name != bp.name()):
-                continue
-            found.append(bp)
-        return found
-
-    def get_beads(self, excluded_ends=None, excluded_res=None):
-        excluded = []
-        if excluded_ends:
-            for end in excluded_ends:
-                excluded.extend(end.residues())
-
-        if excluded_res:
-            excluded.extend(excluded_res)
-
-        self.beads = self.structure.get_beads(excluded)
-        return self.beads
 
     def sequence(self):
         return self.secondary_structure.sequence()
@@ -152,33 +101,7 @@ class Motif(object):
         s += "&"
         return s
 
-    def to_pdb_str(self):
-        """
-        returns pdb formatted string of motif's structure object
-        """
-        return self.structure.to_pdb_str()
 
-    def to_pdb(self, fname="motif.pdb"):
-        """
-        writes the current motif's structure to a pdb
-        """
-        return self.structure.to_pdb(fname)
-
-    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
-        """
-        wrapper to self.structure.get_residue()
-        """
-        return self.structure.get_residue(num=num, chain_id=chain_id,
-                                          i_code=i_code, uuid=uuid)
-
-    def residues(self):
-        """
-        wrapper to self.structure.residues()
-        """
-        return self.structure.residues()
-
-    def chains(self):
-        return self.structure.chains
 
     def transform(self, t):
         """
@@ -206,6 +129,7 @@ class Motif(object):
         cmotif.path      = self.path
         cmotif.score     = self.score
         cmotif.mtype     = self.mtype
+        cmotif.id        = self.id
         cmotif.structure = self.structure.copy()
         cmotif.beads     = [b.copy() for b in self.beads]
         cmotif.end_ids   = list(self.end_ids)
@@ -254,6 +178,7 @@ class Motif(object):
         raise ValueError("no end id: " + id + " in motif: " + self.name)
 
     def new_res_uuids(self):
+        self.id = uuid.uuid1()
         for i, r in enumerate(self.residues()):
             ss_r = self.secondary_structure.get_residue(uuid=r.uuid)
             r.new_uuid()
