@@ -174,6 +174,13 @@ class RNAStructure(object):
     def dot_bracket(self):
         return self.structure.dot_bracket()
 
+    def replace_sequence(self, seq):
+        spl = seq.split("&")
+        seq2 = "".join(spl)
+        for i, r in enumerate(self.structure.residues()):
+            r.name = seq2[i]
+
+
 
 class Motif(RNAStructure):
     def __init__(self, structure=None, basepairs=[], ends=[],
@@ -216,6 +223,13 @@ class Pose(RNAStructure):
             if m.id == m_id:
                 return m
         return None
+
+    def replace_sequence(self, seq):
+        super(self.__class__, self).replace_sequence(seq)
+
+        for m in self.motifs:
+            for i, end in enumerate(m.ends):
+                m.end_ids[i] = assign_end_id_new(m, end)
 
 
 class SecondaryStructureMotif(object):
@@ -793,6 +807,121 @@ def assign_end_id(ss, end):
             pos = 1000
             for i, r in enumerate(c.residues):
                 bp = ss.get_bp(r)
+                if bp is not None and bp in seen_bp:
+                    pos = i
+                    break
+            if pos < best_score:
+                best_score = pos
+                best_chain = c
+
+        if best_chain is None:
+            break
+        all_chains.remove(best_chain)
+        open_chains.append(best_chain)
+
+    ss_id = ""
+    for i, chain in enumerate(ss_chains):
+        ss_id += chain[0] + "_"
+        for e in chain[1]:
+            if   e == "(":
+                ss_id += "L"
+            elif e == ")":
+                ss_id += "R"
+            elif e == ".":
+                ss_id += "U"
+            else:
+                raise ValueError("unexpected symbol in dot bracket notation: " + e)
+        if i != len(ss_chains)-1:
+            ss_id += "_"
+    return ss_id
+
+
+def assign_end_id_new(ss, end):
+    if end not in ss.ends:
+        raise ValueError("supplied an end that is not in current ss element")
+
+
+    all_chains = ss.structure.chains[::]
+    open_chains = []
+    for c in all_chains:
+        if c.first() == end.res1 or c.first() == end.res2:
+            open_chains.append(c)
+            break
+
+    if len(open_chains) == 0:
+        raise ValueError("could not find chain to start with")
+
+    all_chains.remove(open_chains[0])
+
+    seen_res = {}
+    seen_bp = {}
+    saved_bp = None
+    structure = ""
+    seq = ""
+    bounds = [0, 0]
+    ss_chains = []
+    count = 0
+    while len(open_chains) > 0:
+        c = open_chains.pop(0)
+        for r in c.residues:
+            count += 1
+            dot_bracket = "."
+            bp = ss.get_basepair(r)
+            saved_bp = None
+            if bp is not None:
+                saved_bp = bp
+                partner_res = bp.partner(r)
+                if   bp not in seen_bp and r not in seen_res and \
+                                partner_res not in seen_res:
+                    seen_res[r] = 1
+                    dot_bracket = "("
+                elif partner_res in seen_res:
+                    if seen_res[partner_res] > 1:
+                        dot_bracket = "."
+                    else:
+                        dot_bracket = ")"
+                        seen_res[r] = 1
+                        seen_res[partner_res] += 1
+
+            structure += dot_bracket
+            seq += r.name
+
+            if saved_bp is not None:
+                seen_bp[saved_bp] = 1
+
+        bounds[1] = count
+        ss_chains.append([seq, structure])
+        structure = ""
+        seq = ""
+
+
+        best_score = -1
+
+        for c in all_chains:
+            score = 0
+            for r in c.residues:
+                bp = ss.get_basepair(r)
+                if bp is not None and bp in seen_bp:
+                    score += 1
+            if score > best_score:
+                best_score = score
+
+        best_chains = []
+        for c in all_chains:
+            score = 0
+            for r in c.residues:
+                bp = ss.get_basepair(r)
+                if bp is not None and bp in seen_bp:
+                    score += 1
+            if score == best_score:
+                best_chains.append(c)
+
+        best_chain = None
+        best_score = 10000
+        for c in best_chains:
+            pos = 1000
+            for i, r in enumerate(c.residues):
+                bp = ss.get_basepair(r)
                 if bp is not None and bp in seen_bp:
                     pos = i
                     break
