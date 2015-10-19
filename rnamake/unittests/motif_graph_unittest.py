@@ -128,10 +128,23 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.graph.nodes:
             mg.add_motif(n.data)
 
+
         mg.replace_ideal_helices()
+        #mg.write_pdbs()
+        #for i, c in enumerate(mg.structure.chains()):
+        #    c.to_pdb("c."+str(i)+".pdb")
+
+        #mg.structure.to_pdb("test.pdb")
+
+        ss = mg.designable_secondary_structure()
+
+        designer = sd.SequenceDesigner()
+        r = designer.design(ss.dot_bracket(), ss.sequence())
+        ss.replace_sequence(r[0].sequence)
+        print ss
+        mg.replace_helix_sequence(ss)
         mg.write_pdbs()
         mg.structure.to_pdb("test.pdb")
-        print mg.designable_secondary_structure()
 
 
 def main():

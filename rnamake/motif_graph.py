@@ -84,8 +84,9 @@ class MotifGraph(base.Base):
     def _add_motif_to_graph(self, m, parent=None, parent_end_index=None):
         if parent == None:
             m_copy = m.copy()
-            m_copy.get_beads(m_copy.ends)
             m_copy.new_res_uuids()
+            m_copy.get_beads(m_copy.ends)
+
             pos  =  self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends), orphan=1)
             self.structure.add(self.graph.get_node(pos))
             return pos
@@ -122,7 +123,10 @@ class MotifGraph(base.Base):
 
 
             name_spl = n.data.name.split(".")
-            count = int(name_spl[2])
+            if len(name_spl) == 3:
+                count = int(name_spl[2])
+            else:
+                count = 1
             self.remove_motif(i)
             h = rm.manager.get_motif(name="HELIX.IDEAL")
             if parent is None:
@@ -136,8 +140,9 @@ class MotifGraph(base.Base):
 
             if other:
                 self.graph.connect(pos, other.index, 1, other_end_index)
-                self.structure.connect_node_chains_new(self.graph.get_node(pos),
-                                                   other)
+                self.structure.connect(self.graph.get_node(pos), other)
+
+
 
     def secondary_structure(self):
         return self.structure.secondary_structure(self.graph)
@@ -160,27 +165,20 @@ class MotifGraph(base.Base):
         return ss
 
     def replace_helix_sequence(self, ss):
-        print ss
 
         for n in self.graph.nodes:
             if n.data.mtype != motif_type.HELIX:
                 continue
-            bp_names = []
-            for i, end in enumerate(n.data.ends):
-                bp_name = ""
-                for r in end.residues():
-                    try:
-                        bp_name += ss.get_residue(uuid=r.uuid).name
-                    except:
-                        #pass
-                        new_uuid =  ss.residue_map[r.uuid]
-                        bp_name += ss.get_residue(uuid=new_uuid).name
-                bp_names.append(bp_name)
+            ss_m = ss.motif(n.data.id)
+            spl = ss_m.end_ids[0].split("_")
+            new_name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
+            m = rm.manager.get_motif(name=new_name)
 
-            bp_names[1] = bp_names[1][::-1]
-            bp_name = "=".join(bp_names)
+            org_res = n.data.residues()
+            new_res = m.residues()
 
-            m = rm.manager.get_motif(name=bp_name)
+            for i in range(len(org_res)):
+                new_res[i].uuid = org_res[i].uuid
 
             parent = None
             parent_end_index = None
@@ -201,6 +199,8 @@ class MotifGraph(base.Base):
             else:
                 n.data = m
 
+            self.structure.update(n)
+
             if other is None:
                 continue
             if other.data.mtype == motif_type.HELIX:
@@ -210,6 +210,7 @@ class MotifGraph(base.Base):
                                               other.data.ends[0],
                                               other.data)
             other.data = m_added
+            self.structure.update(other)
 
     def _steric_clash(self, m):
         beads = m.beads
@@ -258,29 +259,51 @@ class MotifGraphStructure(rna_structure.RNAStructure):
         self.all_res = {}
         self.all_bp = {}
 
-    def connect_node_chains_new(self, n, p, conn=None):
-        if conn == None:
-            for c in n.connections:
-                if c is None:
-                    continue
-                if p == c.partner(n.index):
-                    conn = c
-                    break
+    def connect(self, n, p):
+        for c in n.connections:
+            if c is None:
+                continue
+            if p == c.partner(n.index):
+                conn = c
+                break
 
         if conn is None:
             raise ValueError("could not find connection between nodes")
 
+        self._merge_node_chains(conn, n, p, self.chains(), self.chains())
+
+    def update(self, n):
+        for r in n.data.residues():
+            act_r = self.get_residue(uuid=r.uuid)
+            if r.uuid != act_r.uuid:
+                continue
+
+            for c in self.structure.chains:
+                index = -1
+                for i, r1 in enumerate(c.residues):
+                    if r.uuid == r1.uuid and r.name != 'N':
+                        index = i
+                        break
+
+                if index != -1:
+                    c.residues[index] = r
+
+
+
+    def _merge_node_chains(self, conn, n, p, n_chains, p_chains):
         end = p.data.ends[conn.end_index(p.index)]
         n_end = n.data.ends[conn.end_index(n.index)]
 
-        s_chain_map = rna_structure.get_chain_end_map(self.chains(), end)
-        n_chain_map = rna_structure.get_chain_end_map(self.chains(), n_end)
+        s_chain_map = rna_structure.get_chain_end_map(p_chains, end)
+        n_chain_map = rna_structure.get_chain_end_map(n_chains, n_end)
 
         if   p.data.mtype == motif_type.HELIX and n.data.mtype != motif_type.HELIX:
             chains = self._merge_chains(n_chain_map, s_chain_map)
+            self.basepair_map[end.uuid] = n_end.uuid
             self.basepairs.remove(end)
         else:
             chains = self._merge_chains(s_chain_map, n_chain_map)
+            self.basepair_map[n_end.uuid] = end.uuid
 
         #update chains in structure
         for c in s_chain_map.chains() + n_chain_map.chains():
@@ -289,66 +312,27 @@ class MotifGraphStructure(rna_structure.RNAStructure):
         for c in chains:
             self.structure.chains.append(c)
 
+        for e in n.data.ends:
+            if e != n_end and e not in self.ends:
+                self.ends.append(e)
+
         #update ends
         self.ends.remove(end)
-
-        for e in n.data.ends:
-            if e != n_end:
-                self.ends.append(e)
+        try:
+            self.ends.remove(n_end)
+        except:
+            pass
 
         #update basepairs
         uuids = [r.uuid for r in self.residues()]
         for bp in n.data.basepairs:
-            if bp.res1.uuid in uuids and bp.res2.uuid in uuids:
+            if bp.res1.uuid in uuids and bp.res2.uuid in uuids and \
+               bp not in self.basepairs:
                 self.basepairs.append(bp)
-
-    def connect_node_chains(self, n, p, conn=None):
-        if conn == None:
-            for c in n.connections:
-                if c is None:
-                    continue
-                if p == c.partner(n.index):
-                    conn = c
-                    break
-
-        if conn is None:
-            raise ValueError("could not find connection between nodes")
-
-        end = p.data.ends[conn.end_index(p.index)]
-        n_end = n.data.ends[conn.end_index(n.index)]
-
-        if end not in self.ends:
-            raise ValueError("cannot find structure end")
-
-        n_chains = [c.subchain(0) for c in n.data.chains()]
-        s_chain_map = rna_structure.get_chain_end_map(self.chains(), end)
-        n_chain_map = rna_structure.get_chain_end_map(n_chains, n_end)
-
-        if   p.data.mtype == motif_type.HELIX and n.data.mtype != motif_type.HELIX:
-            chains = self._merge_chains(n_chain_map, s_chain_map)
-            self.basepairs.remove(end)
-        else:
-            chains = self._merge_chains(s_chain_map, n_chain_map)
-
-        #update chains in structure
-        for c in s_chain_map.chains():
-            if c in self.structure.chains:
-                self.structure.chains.remove(c)
-        for c in chains:
-            self.structure.chains.append(c)
-
-        #update ends
-        self.ends.remove(end)
-
-        for e in n.data.ends:
-            if e != n_end:
-                self.ends.append(e)
-
-        #update basepairs
-        uuids = [r.uuid for r in self.residues()]
-        for bp in n.data.basepairs:
-            if bp.res1.uuid in uuids and bp.res2.uuid in uuids:
-                self.basepairs.append(bp)
+        try:
+            self.basepairs.remove(n_end)
+        except:
+            pass
 
     def add(self, n):
 
@@ -357,26 +341,22 @@ class MotifGraphStructure(rna_structure.RNAStructure):
         for bp in n.data.basepairs:
             self.all_bp[bp.uuid] = bp
 
-
-        n_conn = 0
-        for c in n.connections:
-            if c is not None:
-                n_conn += 1
-
-        if len(self.structure.chains) == 0 or n_conn == 0:
-            self.structure.chains.extend([c.subchain(0) for c in n.data.chains() ])
-            self.basepairs.extend(n.data.basepairs)
-            self.ends.extend(n.data.ends)
-            return
-
         conn = None
         for c in n.connections:
             if c is not None:
                 conn = c
                 break
 
+        if len(self.structure.chains) == 0 or conn is None:
+            self.structure.chains.extend([c.subchain(0) for c in n.data.chains() ])
+            self.basepairs.extend(n.data.basepairs)
+            self.ends.extend(n.data.ends)
+            return
+
+
         p = conn.partner(n.index)
-        self.connect_node_chains(n, p, conn)
+        self._merge_node_chains(conn, n, p, [c.subchain(0) for c in n.data.chains()],
+                                self.chains())
 
     def _get_key_for_value(self, uuid):
         for k,v in self.residue_map.iteritems():
@@ -389,6 +369,7 @@ class MotifGraphStructure(rna_structure.RNAStructure):
         new_chains = []
         removed_res = []
         removed = 1
+        count = 0
         while removed:
             removed = 0
             split = []
@@ -422,21 +403,29 @@ class MotifGraphStructure(rna_structure.RNAStructure):
                             new_r = self.all_res[other_uuid]
                             new_c.residues.append(new_r)
 
-                    new_chains.extend(next_chains)
+                    if start != 0 or len(c) != start+len(found):
+                        split.append(c)
+
+                    if len(next_chains) > 0:
+                        new_chains.extend(next_chains)
                     removed_res.extend(found)
-                    split.append(c)
                     removed = 1
+
+            if len(new_chains) == 0 and count == 0:
+                chains = []
+                break
 
             if len(new_chains) == 0:
                 break
 
-            #un used chains to still be included
+            #unused chains to still be included
             for c in chains:
                 if c not in split:
                     new_chains.append(c)
 
             chains = new_chains
             new_chains = []
+            count += 1
 
         self.structure.chains = chains
         res = self.residues()
@@ -464,13 +453,21 @@ class MotifGraphStructure(rna_structure.RNAStructure):
         for r in removed_res:
             self.all_res.pop(r.uuid, None)
             if r.uuid in self.residue_map:
-                self.residue_map.pop(r.uuid)
+                self.residue_map.pop(r.uuid, None)
             key = self._get_key_for_value(r.uuid)
             if key is not None:
                 self.residue_map.pop(key, None)
 
         for bp in removed_bp:
             self.all_bp.pop(bp, None)
+            """if bp.uuid in self.basepair_map:
+                self.basepair_map.pop(bp.uuid, None)
+            remove = []
+            for k, v in self.basepair_map.iteritems():
+                if v == bp.uuid:
+                    remove.append(k)
+            for k in remove:
+                self.basepair_map.pop(k, None)"""
 
     def _merge_chains(self, cm1, cm2):
         merged_chain_1, merged_chain_2 = None, None
@@ -534,7 +531,22 @@ class MotifGraphStructure(rna_structure.RNAStructure):
             return super(self.__class__, self).get_residue(num, chain_id, i_code,
                                                            self.residue_map[uuid])
 
+    def get_basepair(self, bp_uuid=None, res1=None, res2=None, uuid1=None,
+                     uuid2=None, name=None):
+        bps = super(self.__class__, self).get_basepair(bp_uuid, res1, res2, uuid1, uuid2, name)
+        if len(bps) == 0:
+            if bp_uuid in self.basepair_map:
+                new_uuid = self.basepair_map[bp_uuid]
+                return super(self.__class__, self).get_basepair(new_uuid)
+            else:
+                return bps
+
+        else:
+            return bps
+
+
     def secondary_structure(self, graph):
+        print len(self.chains())
         ss = ssf.factory.secondary_structure_from_motif(self)
 
         ss_motifs = []
@@ -550,23 +562,27 @@ class MotifGraphStructure(rna_structure.RNAStructure):
             ss_struct = secondary_structure.Structure(ss_chains)
             ss_bps = []
             for bp in self.basepairs:
-                res1 = ss_struct.get_residue(uuid=bp.res1.uuid)
-                res2 = ss_struct.get_residue(uuid=bp.res2.uuid)
-                if res1 is None or res2 is None:
+                if bp.bp_type != "cW-W":
                     continue
-                ss_bp = secondary_structure.Basepair(res1, res2, bp.uuid)
-                ss_bps.append(ss_bp)
+                if not util.wc_bp(bp) and not util.gu_bp(bp):
+                    continue
+                correct_bp = self.get_basepair(bp_uuid=bp.uuid)
+                ss_bp = ss.get_bp(uuid=correct_bp[0].uuid)
+
+                if ss_bp is None:
+                    print correct_bp[0].uuid
+                    print correct_bp[0], ss_bp, "type: ", correct_bp[0].bp_type
+                    print correct_bp[0].res1 in self.residues(), correct_bp[0].res2 in self.residues()
+                    #raise ValueError("did not find a bp we should of")
+
             ss_rna_struct = secondary_structure.RNAStructure(
                                 ss_struct, ss_bps, [], n.data.name, n.data.path,
                                 n.data.mtype, n.data.score, n.data.end_ids)
 
             ss_ends = []
             for end in n.data.ends:
-                res1 = self.get_residue(uuid=end.res1.uuid)
-                res2 = self.get_residue(uuid=end.res2.uuid)
-                ss_res1 = ss_struct.get_residue(uuid=res1.uuid)
-                ss_res2 = ss_struct.get_residue(uuid=res2.uuid)
-                ss_bp = ss_rna_struct.get_basepair(ss_res1, ss_res2)
+                correct_bp = self.get_basepair(bp_uuid=end.uuid)
+                ss_bp = ss.get_bp(uuid=correct_bp[0].uuid)
                 ss_ends.append(ss_bp)
             ss_rna_struct.ends = ss_ends
             ss_motifs.append(secondary_structure.Motif(r_struct=ss_rna_struct,

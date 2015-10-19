@@ -201,7 +201,9 @@ class GraphStatic(Graph):
                 c.disconnect()
                 self.connections.remove(c)
         self.nodes.remove(n)
-        self.last_node = self.nodes[-1]
+        self.last_node = None
+        if len(self.nodes) > 0:
+            self.last_node = self.nodes[-1]
         #self.index -= 1
 
     def check_pos_is_value(self, n, pos):
