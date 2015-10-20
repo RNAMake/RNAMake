@@ -9,6 +9,7 @@ import motif_type
 import settings
 import basic_io
 import secondary_structure
+import secondary_structure_factory as ssf
 import numpy as np
 import uuid
 import rna_structure
@@ -73,7 +74,6 @@ class Motif(rna_structure.RNAStructure):
         return "<Motif(\n\tstructure='%s', \n\tends='%s')>" % (
         self.structure,len(self.ends))
 
-
     def sequence(self):
         return self.secondary_structure.sequence()
 
@@ -100,8 +100,6 @@ class Motif(rna_structure.RNAStructure):
         s += self.secondary_structure.to_str()
         s += "&"
         return s
-
-
 
     def transform(self, t):
         """
@@ -185,6 +183,10 @@ class Motif(rna_structure.RNAStructure):
             ss_r.uuid = r.uuid
         for bp in self.basepairs:
             bp.uuid = uuid.uuid1()
+
+    def to_secondary_structure(self):
+        ss = ssf.factory.secondary_structure_from_motif(self)
+        return ss
 
 class MotifState(object):
     __slots__ = ['name', 'end_names', 'end_ids', 'end_states',
