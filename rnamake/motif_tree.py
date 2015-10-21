@@ -7,10 +7,12 @@ import residue
 import motif_type
 import motif_tree_merger
 import graph
+import tree
 import resource_manager as rm
 import secondary_structure_factory as ssfactory
 import secondary_structure
 import motif_tree_topology
+import motif_merger
 
 def motif_tree_from_topology(mtt, sterics=1):
     mt = MotifTree(sterics=sterics)
@@ -84,18 +86,20 @@ m
         self.clash_radius = settings.CLASH_RADIUS
 
         self.graph = graph.GraphStatic()
-        self.merger = motif_tree_merger.MotifTreeMerger()
+        self.tree = tree.TreeStatic()
+        #self.merger = motif_tree_merger.MotifTreeMerger()
+        self.merger = motif_merger.MotifMerger()
 
     def __len__(self):
-        return len(self.graph)
+        return len(self.tree)
 
     def __iter__(self):
-        self.graph.__iter__()
+        self.tree.__iter__()
         return self
 
     def __repr__(self):
         s = "<(MotifTree: #nodes: %d\n" % (len(self.graph))
-        for n in self.graph:
+        for n in self.tree:
             c_str = ""
             for c in n.connections:
 
@@ -107,7 +111,7 @@ m
         return s
 
     def next(self):
-        return self.graph.next()
+        return self.tree.next()
 
     def setup_options_and_constraints(self):
         options = { 'sterics'              : 1}
@@ -117,14 +121,15 @@ m
 
     def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
                   parent_end_name=None):
-        parent = self.graph.last_node
+        parent = self.tree.last_node
         if parent_index != -1:
-            parent = self.graph.get_node(parent_index)
+            parent = self.tree.get_node(parent_index)
 
         if parent is None:
             m_copy = m.copy()
             m_copy.get_beads(m_copy.ends)
-            return self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends))
+            self.merger.add_motif(m_copy)
+            return self.tree.add_data(m_copy, len(m_copy.ends), -1, -1)
 
         if parent_end_name is not None:
             parent_end = parent.data.get_basepair(name=parent_end_name)[0]
@@ -143,16 +148,19 @@ m
 
             m_added.new_res_uuids()
 
-            return self.graph.add_data(m_added, parent.index, p, 0, len(m_added.ends))
+            pos =  self.tree.add_data(m_added, len(m_added.ends), parent.index, p)
+            self.merger.add_motif(m_added, m_added.ends[0],
+                                  parent.data, parent.data.ends[p])
+            return pos
         #self._update_beads(parent, new_node)
 
         return -1
 
     def get_node(self, i):
-        return self.graph.get_node(i)
+        return self.tree.get_node(i)
 
     def write_pdbs(self,name="node"):
-        for n in self.graph:
+        for n in self.tree:
             n.data.to_pdb(name+"."+str(n.index)+".pdb")
 
     def remove_node(self, i=-1):
@@ -163,9 +171,11 @@ m
         like to check this
         """
         if i == -1:
-            i = self.graph.last_node.index
+            i = self.tree.last_node.index
 
-        self.graph.remove_node(i)
+        n = self.get_node(i)
+        self.tree.remove_node(index=i)
+        self.merger.remove_motif(n.data)
 
     def remove_node_level(self, level=None):
         if level is None:
@@ -178,7 +188,7 @@ m
         self.last_node = self.nodes[-1]
 
     def last_node(self):
-        return self.graph.last_node
+        return self.tree.last_node
 
     def to_pose(self, chain_closure=0):
 
@@ -187,12 +197,20 @@ m
         return pose
 
     def secondary_structure(self):
-        p = self.to_pose()
-        return p.secondary_structure
+        return self.merger.secondary_structure()
 
     def designable_secondary_structure(self):
-        p = self.to_pose()
-        return p.designable_secondary_structure()
+        ss = self.merger.secondary_structure()
+
+        for n in self.graph.nodes:
+            if n.data.name != "HELIX.IDEAL":
+                continue
+            for r in n.data.residues():
+                r_ss = ss.get_residue(uuid=r.uuid)
+                if r_ss is not None:
+                    r_ss.name = "N"
+
+        return ss
 
     def to_pdb(self, fname="mt.pdb", chain_closure=1):
         pose = self.to_pose()
@@ -207,7 +225,7 @@ m
 
     def _steric_clash(self, m):
         beads = m.beads
-        for n in self.graph:
+        for n in self.tree:
             for c1 in n.data.beads:
                 for c2 in beads:
                     if c1.btype == residue.BeadType.PHOS or \
@@ -215,6 +233,7 @@ m
                         continue
                     dist = util.distance(c1.center, c2.center)
                     if dist < self.clash_radius:
+                        print dist
                         return 1
         return 0
 
