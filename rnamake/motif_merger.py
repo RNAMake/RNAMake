@@ -288,6 +288,9 @@ class MotifMerger(rna_structure.RNAStructure):
         for c in merged_chains:
             if c is not None:
                 self.structure.chains.append(c)
+        for c in m1_chains:
+            if c not in self.structure.chains and c not in m_chain_map.chains():
+                self.structure.chains.append(c)
 
         for e in m1.ends:
             if e != m1_end and e not in self.ends:

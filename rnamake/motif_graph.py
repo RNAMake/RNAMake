@@ -249,3 +249,36 @@ class MotifGraph(base.Base):
                 continue
             leaf_nodes.append(n)
         return leaf_nodes
+
+    def get_beads(self, exclude_phos=1):
+        pass
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

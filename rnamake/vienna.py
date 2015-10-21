@@ -33,7 +33,6 @@ class Vienna(object):
         os.remove("rnafold_dump")
         return results
 
-
     def cofold(self, seq):
         if len(seq) == 0:
             raise ValueError("must supply a sequence longer then 0")

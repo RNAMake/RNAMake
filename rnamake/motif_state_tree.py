@@ -92,6 +92,7 @@ class MotifStateTree(base.Base):
         if parent_end_name is not None:
             parent_end = parent.data.cur_state.get_end_state(parent_end_name)
             parent_end_index = parent.data.cur_state.end_states.index(parent_end)
+
         avail_pos = self.tree.get_available_pos(parent, parent_end_index)
 
         for p in avail_pos:

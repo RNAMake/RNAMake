@@ -152,9 +152,50 @@ class MotifGraphUnittest(unittest.TestCase):
         mg.add_motif(hairpin)
         mg.write_pdbs()
 
+    def test_ss_real_case(self):
+        rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
+        mg = motif_graph.MotifGraph()
+        mg.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
+                                          end_name="A228-A246"))
+        mg.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.20"), parent_end_name="A221-A252")
+        mg.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
+                                          end_name="A221-A252"))
+
+        mg.replace_ideal_helices()
+        ss = mg.designable_secondary_structure()
+        build.fill_basepairs_in_ss(ss)
+        mg.replace_helix_sequence(ss)
+        print ss
+        mg.write_pdbs()
+
+        exit()
+
+    def test_to_tree(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(3)
+        mg = motif_graph.MotifGraph()
+
+        for n in mt.graph.nodes:
+            mg.add_motif(n.data)
+
+        mt2 = mg.to_tree()
 
 def main():
     unittest.main()
 
 if __name__ == '__main__':
     main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
