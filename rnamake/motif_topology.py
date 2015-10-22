@@ -13,6 +13,7 @@ def graph_to_tree(mg, start=None):
 
         mt = motif_tree.MotifTree()
         ss = mg.secondary_structure()
+        print ss
         while len(open) > 0:
             current = open.pop(0)
             ss_m = ss.motif(current.data.id)

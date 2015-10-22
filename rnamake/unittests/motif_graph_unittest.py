@@ -177,16 +177,12 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        #mg.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.10"))
-        #mg.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.10"))
-        #mg.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.10"))
-
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-        mg.secondary_structure()
+        #mg.secondary_structure()
 
-        #mt2 = motif_topology.graph_to_tree(mg, mg.last_node())
+        mt2 = motif_topology.graph_to_tree(mg, mg.last_node())
 
 def main():
     unittest.main()
