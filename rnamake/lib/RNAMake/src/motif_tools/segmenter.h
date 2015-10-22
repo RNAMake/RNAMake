@@ -73,15 +73,9 @@ struct PairSearchNode {
     int score;
 };
 
-class PairSearchNode {
+class PairSearch {
 public:
     
-    PairSearchNode(
-        ResidueOPs const & ) {}
-    
-    ~PairSearchNode() {}
-    
-
     
 };
 

@@ -9,6 +9,8 @@
 #include "data_structure/graph/graph_node.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
 #include "resources/resource_manager.h"
+#include "util/cartesian_product.h"
+#include "math/xyz_matrix.h"
 
 
 int
@@ -110,7 +112,72 @@ MotifStateEnsembleTree::setup_from_mt(
 }
 
 
+void
+MotifStateEnsembleTreeEnumerator::record() {
+    
+    std::vector<Ints> ranges(mtst_->size());
+    for(int i = 0; i < mtst_->size(); i++) {
+        int max = (int)mtst_->get_node(i)->data()->members().size();
+        Ints range(max);
+        for(int j = 0; j < max; j++) {
+            range[j] = j;
+        }
+        ranges[i] = range;
+    }
+    
+    auto mst = mtst_->to_mst();
+    CartesianProduct<int> iterator(ranges);
+    Ints c, last_combo;
+    Matrix r;
+    Point d;
+    Vector euler;
+    int j = 0;
+    float mag;
+    float r_diff, r_diff_flip, r_best;
+    
+    Matrix I = Matrix::identity();
+    Matrix I_flip = I.get_flip_orientation();
 
+    std::ofstream out("test.out");
+    while(!iterator.end()) {
+        c = iterator.next();
+        if(last_combo.size() == 0) { last_combo = c; }
+        
+        for(int i = 0; i < c.size(); i++) {
+            if(c[i] == last_combo[i]) { continue; }
+            else{
+                mst->replace_state(i, mtst_->get_node(i)->data()->members()[c[i]]->motif_state);
+            }
+         }
+        
+        d = mst->last_node()->data()->cur_state->end_states()[1]->d();
+        r = mst->last_node()->data()->cur_state->end_states()[1]->r();
+        mag = d.magnitude();
+        
+        r_diff = I.difference(r);
+        r_diff_flip = I_flip.difference(r);
+        
+        r_best = r_diff;
+        if(r_diff > r_diff_flip) {
+            r_best = r_diff_flip;
+        }
+        
+        calc_euler(r, euler);
+        out << vector_to_str(d) << "," << matrix_to_str(r) << "," << mag << "," << r_diff << "," << r_best << "," << euler[0] << "," << euler[1] << "," << euler[2] << std::endl;
+
+        j++;
+        if(j % 1000 == 0) { std::cout << j << std::endl; }
+        
+        last_combo = c;
+        
+    }
+    
+    out.close();
+
+
+    
+    
+}
 
 
 

@@ -188,6 +188,8 @@ class MotifStateTree(base.Base):
         n.data.cur_state = new_state
         for n in tree.transverse_tree(self.tree, i):
             parent = n.parent
+            if parent is None:
+                continue
             pei = n.parent_end_index()
 
             motif.get_aligned_motif_state(parent.data.cur_state.end_states[pei],

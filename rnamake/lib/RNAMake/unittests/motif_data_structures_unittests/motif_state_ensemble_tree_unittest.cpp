@@ -10,6 +10,7 @@
 #include "motif_state_ensemble_tree_unittest.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
 #include "resources/resource_manager.h"
+#include "resources/motif_state_ensemble_sqlite_library.h"
 
 
 int
@@ -51,13 +52,26 @@ MotifStateEnsembleTreeUnittest::test_from_mt() {
     return 1;
 }
 
+int
+MotifStateEnsembleTreeUnittest::test_enumerator() {
+    MotifStateEnsembleSqliteLibrary lib("all_bp_steps");
+    auto mtst = std::make_shared<MotifStateEnsembleTree>();
+    mtst->add_ensemble(lib.get("GG_LL_UC_RR"));
+    mtst->add_ensemble(lib.get("GG_LL_CU_RR"));
+    MotifStateEnsembleTreeEnumerator enumerator(mtst);
+    enumerator.record();
+    
+    return 1;
+}
+
 
 int
 MotifStateEnsembleTreeUnittest::run() {
-    if (test_creation() == 0)      { std::cout << "test_creation failed" << std::endl;  }
-    if (test_add_ensemble() == 0)  { std::cout << "test_add_ensemble failed" << std::endl;  }
-    if (test_to_mst() == 0)        { std::cout << "test_to_mst failed" << std::endl;  }
-    if (test_from_mt() == 0)       { std::cout << "test_from_mt failed" << std::endl;  }
+    //if (test_creation() == 0)      { std::cout << "test_creation failed" << std::endl;  }
+    //if (test_add_ensemble() == 0)  { std::cout << "test_add_ensemble failed" << std::endl;  }
+    //if (test_to_mst() == 0)        { std::cout << "test_to_mst failed" << std::endl;  }
+    //if (test_from_mt() == 0)       { std::cout << "test_from_mt failed" << std::endl;  }
+    if (test_enumerator() == 0)      { std::cout << "test_enumerator failed" << std::endl;  }
 
     return 1;
 }
