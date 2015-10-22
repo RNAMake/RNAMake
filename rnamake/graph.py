@@ -99,6 +99,8 @@ class Graph(object):
                 node = n
         return node
 
+
+
 class GraphDynamic(Graph):
     """
     a Graph with dynamic connections between nodes. i.e. each node does NOT have a predefined

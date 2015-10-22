@@ -78,6 +78,7 @@ class MotiftoSecondaryStructure(object):
         self.chains = motif.chains()[::]
         self.open_chains = [self.chains.pop(0)]
 
+
         while len(self.open_chains) > 0:
             c = self.open_chains.pop(0)
             ss_res = []
@@ -123,6 +124,7 @@ class MotiftoSecondaryStructure(object):
 
             if best_chain is None:
                 break
+            print best_chain
             self.chains.remove(best_chain)
             self.open_chains.append(best_chain)
 

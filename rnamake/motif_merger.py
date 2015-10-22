@@ -1,6 +1,5 @@
 import motif_type
 import rna_structure
-import structure
 import chain
 import secondary_structure_factory as ssf
 import secondary_structure
@@ -8,7 +7,7 @@ import util
 
 class MotifMerger(rna_structure.RNAStructure):
     def __init__(self):
-        super(self.__class__, self).__init__(structure.Structure(), [])
+        super(self.__class__, self).__init__()
         self.residue_map = {}
         self.basepair_map = {}
         self.all_res = {}
@@ -72,6 +71,7 @@ class MotifMerger(rna_structure.RNAStructure):
                                [c.subchain(0) for c in m.chains()],
                                self.chains())
 
+
     def connect_motifs(self, m1, m2, m1_end, m2_end):
         self._merge_motifs(m1, m2, m1_end, m2_end,self.chains(), self.chains())
 
@@ -118,6 +118,7 @@ class MotifMerger(rna_structure.RNAStructure):
         self.motifs[m.id] = m
 
     def secondary_structure(self):
+
         ss = ssf.factory.secondary_structure_from_motif(self)
         ss_motifs = []
 
@@ -312,6 +313,7 @@ class MotifMerger(rna_structure.RNAStructure):
 
         if m1_chains == m2_chains:
             self.basepairs.remove(m1_end)
+
 
     def _merge_chains(self, cm1, cm2):
         merged_chain_1, merged_chain_2 = None, None
