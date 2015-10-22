@@ -3,21 +3,28 @@ import basepair
 import x3dna
 import secondary_structure
 import secondary_structure_factory as ssf
+import structure
 import util
 
 import os
 
 
 class RNAStructure(object):
-    def __init__(self, structure, basepairs, ends=[], name="assembled", path="assembled",
-                 mtype=motif_type.UNKNOWN, score=0):
-        self.structure = structure
+    def __init__(self, struct=None, basepairs=None, ends=None, name="assembled",
+                 path="assembled", mtype=motif_type.UNKNOWN, score=0):
+        self.structure = struct
+        if self.structure is None:
+            self.structure = structure.Structure()
         self.basepairs =basepairs
+        if self.basepairs is None:
+            self.basepairs = []
         self.mtype = mtype
         self.name = name
         self.path = path
         self.score = score
         self.ends = ends
+        if self.ends is None:
+            self.ends = []
         self.beads = []
         self.end_ids = []
 

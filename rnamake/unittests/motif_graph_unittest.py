@@ -5,6 +5,7 @@ import rnamake.graph as graph
 import rnamake.util as util
 import rnamake.eternabot.sequence_designer as sd
 import rnamake.resource_manager as rm
+from rnamake import motif_topology
 import build
 
 
@@ -109,10 +110,11 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        for n in mt.graph.nodes:
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-        mg.write_pdbs()
+        mg.secondary_structure()
+        #mg.write_pdbs()
 
     def test_designable_secondary_structure(self):
         builder = build.BuildMotifTree()
@@ -175,10 +177,16 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        for n in mt.graph.nodes:
+        #mg.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.10"))
+        #mg.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.10"))
+        #mg.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.10"))
+
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-        mt2 = mg.to_tree()
+        mg.secondary_structure()
+
+        #mt2 = motif_topology.graph_to_tree(mg, mg.last_node())
 
 def main():
     unittest.main()

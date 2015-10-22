@@ -21,8 +21,10 @@ class Structure(object):
     `chains` : list of Chain objects that belong to the current structure
     """
 
-    def __init__(self, chains=[]):
+    def __init__(self, chains=None):
         self.chains = chains
+        if self.chains is None:
+            self.chains = []
         self.name = "N/A"
 
     def __repr__(self):
