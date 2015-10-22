@@ -12,5 +12,4 @@ set(motif_files
 	../../src/motif/motif_type.cc
 	../../src/motif/pose.cc
 	../../src/motif/pose_factory.cc
-	../../src/motif/segmenter.cpp
 )

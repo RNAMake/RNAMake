@@ -240,11 +240,12 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
     @staticmethod
     def get_libnames():
         libnames = {
-            "bp_steps" :  "/motif_ensemble_libraries/bp_steps.db",
-            "twoway"   :  "/motif_ensemble_libraries/twoway.db",
-            "nway"     :  "/motif_ensemble_libraries/nway.db",
-            "tcontact" :  "/motif_ensemble_libraries/tcontact.db",
-            "hairpin"  :  "/motif_ensemble_libraries/hairpin.db",
+            "all_bp_steps"  :  "/motif_ensemble_libraries/all_bp_steps.db",
+            "bp_steps"      :  "/motif_ensemble_libraries/bp_steps.db",
+            "twoway"        :  "/motif_ensemble_libraries/twoway.db",
+            "nway"          :  "/motif_ensemble_libraries/nway.db",
+            "tcontact"      :  "/motif_ensemble_libraries/tcontact.db",
+            "hairpin"       :  "/motif_ensemble_libraries/hairpin.db",
         }
 
         return libnames
@@ -264,8 +265,8 @@ class MotifStateSqliteLibrary(SqliteLibrary):
             "ideal_helices" :  "/motif_state_libraries/ideal_helices.db",
             "twoway"        :  "/motif_state_libraries/twoway.db",
             "unique_twoway" :  "/motif_state_libraries/unique_twoway.db",
-            "bp_steps"   :  "/motif_state_libraries/bp_steps.db",
-            "twoway"     :  "/motif_state_libraries/twoway.db",
+            "bp_steps"      :  "/motif_state_libraries/bp_steps.db",
+            "twoway"        :  "/motif_state_libraries/twoway.db",
             "nway"          :  "/motif_state_libraries/nway.db",
 
         }
@@ -289,11 +290,12 @@ class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
     @staticmethod
     def get_libnames():
         libnames = {
-            "bp_steps" :  "/motif_state_ensemble_libraries/bp_steps.db",
-            "twoway"   :  "/motif_state_ensemble_libraries/twoway.db",
-            "nway"     :  "/motif_state_ensemble_libraries/nway.db",
-            "tcontact" :  "/motif_state_ensemble_libraries/tcontact.db",
-            "hairpin"  :  "/motif_state_ensemble_libraries/hairpin.db",
+            "bp_steps"      :  "/motif_state_ensemble_libraries/bp_steps.db",
+            "all_bp_steps"  :  "/motif_state_ensemble_libraries/all_bp_steps.db",
+            "twoway"        :  "/motif_state_ensemble_libraries/twoway.db",
+            "nway"          :  "/motif_state_ensemble_libraries/nway.db",
+            "tcontact"      :  "/motif_state_ensemble_libraries/tcontact.db",
+            "hairpin"       :  "/motif_state_ensemble_libraries/hairpin.db",
         }
 
         return libnames

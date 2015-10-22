@@ -167,10 +167,15 @@ class BuildSqliteLibraries(object):
         mes_keys = ['data', 'name', 'id']
         mes_data = []
 
+        all_mes_keys = ['data', 'name', 'id']
+        all_mes_data = []
+        all_count = 1
+
         motif_data = []
         motif_keys = ['data', 'name', 'end_name', 'end_id', 'id']
         count = 0
         for c in clusters:
+            all_count += 1
             spl = c.end_id.split("_")
             aligned_motifs = []
             for i, m_and_e in enumerate(c.motif_and_ends):
@@ -222,6 +227,16 @@ class BuildSqliteLibraries(object):
                 scored_motifs.append(m)
 
 
+            name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
+            energies = []
+            for i, m in enumerate(scored_motifs):
+                m.mtype = motif_type.HELIX
+                m.name = name + "." + str(i)
+                energies.append(1)
+            all_me = motif_ensemble.MotifEnsemble()
+            all_me.setup(c.end_id, scored_motifs, energies)
+            all_mes_data.append([all_me.to_str(), all_me.id, all_count])
+
 
             #best 0.65
             m_clusters = cluster.cluster_motifs(scored_motifs, 0.65)
@@ -257,6 +272,8 @@ class BuildSqliteLibraries(object):
 
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
         sqlite_library.build_sqlite_library_2(path, mes_data, mes_keys, 'id')
+        path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/all_bp_steps.db"
+        sqlite_library.build_sqlite_library_2(path, all_mes_data, all_mes_keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps.db"
         #sqlite_library.build_sqlite_library(path, motifs, mes_names)
         sqlite_library.build_sqlite_library_2(path, motif_data, motif_keys, 'id')
@@ -384,7 +401,7 @@ class BuildSqliteLibraries(object):
 
             for i, me in enumerate(me_lib.all()):
                 mse = me.get_state()
-                print len(me.members)
+                #print len(me.members)
                 data.append([mse.to_str(), mse.id, i])
 
             path = settings.RESOURCES_PATH +"/motif_state_ensemble_libraries/"+libname+".db"
@@ -393,10 +410,10 @@ class BuildSqliteLibraries(object):
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
 #builder.build_basic_libraries()
-builder.build_helix_ensembles()
+#builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
-builder.build_motif_state_libraries()
+#builder.build_motif_state_libraries()
 builder.build_motif_ensemble_state_libraries()
 
 

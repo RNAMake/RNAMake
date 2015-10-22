@@ -165,6 +165,7 @@ MotifStateTree::replace_state(
         queue_.pop();
     
         parent = current->parent();
+        if(parent == nullptr) { continue; }
         pei = current->parent_end_index();
         aligner_.get_aligned_motif_state(parent->data()->cur_state->end_states()[pei],
                                          current->data()->cur_state,

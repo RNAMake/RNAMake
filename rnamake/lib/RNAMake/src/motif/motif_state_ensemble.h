@@ -129,6 +129,9 @@ public:
     int
     block_end_add() { return block_end_add_; }
     
+    inline
+    MotifStateEnsembleMemberOPs members() { return members_; }
+    
 private:
     String id_;
     int block_end_add_;

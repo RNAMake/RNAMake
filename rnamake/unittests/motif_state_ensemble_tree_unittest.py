@@ -2,15 +2,13 @@ import unittest
 import random
 import rnamake.motif_state_ensemble_tree as motif_state_ensemble_tree
 import rnamake.resource_manager as rm
-import rnamake.motif_type as motif_type
-import rnamake.util as util
-import rnamake.basic_io as basic_io
-import rnamake.settings as settings
-import rnamake.motif as motif
 import rnamake.motif_tree as motif_tree
-import rnamake.motif_type as motif_type
 import rnamake.motif_tree_topology as motif_tree_topology
+from rnamake import sqlite_library
 import build
+
+import pandas as pd
+import numpy as np
 
 class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
@@ -68,9 +66,13 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt2)
 
-
-
-
+    def test_enumerator(self):
+        lib = sqlite_library.MotifStateEnsembleSqliteLibrary("all_bp_steps")
+        mtst = motif_state_ensemble_tree.MotifStateEnsembleTree()
+        mtst.add_ensemble(lib.get(name="GG_LL_CC_RR"))
+        mtst.add_ensemble(lib.get(name="GG_LL_CC_RR"))
+        enumerator = motif_state_ensemble_tree.MotifStateEnsembleTreeEnumerator(mtst)
+        enumerator.record()
 
 
 def main():

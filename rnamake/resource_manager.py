@@ -48,17 +48,26 @@ class ResourceManager(object):
         self.ms_libs,  self.extra_ms = {}, {}
         self.me_libs,  self.extra_me = {}, {}
         self.mse_libs, self.extra_mse = {}, {}
+        exclude = ['all_bp_steps']
 
         for k in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
+            if k in exclude:
+                continue
             self.mlibs[k] = sqlite_library.MotifSqliteLibrary(k)
 
         for k in sqlite_library.MotifStateSqliteLibrary.get_libnames().keys():
+            if k in exclude:
+                continue
             self.ms_libs[k] = sqlite_library.MotifStateSqliteLibrary(k)
 
         for k in sqlite_library.MotifEnsembleSqliteLibrary.get_libnames().keys():
+            if k in exclude:
+                continue
             self.me_libs[k] = sqlite_library.MotifEnsembleSqliteLibrary(k)
 
         for k in sqlite_library.MotifStateEnsembleSqliteLibrary.get_libnames().keys():
+            if k in exclude:
+                continue
             self.mse_libs[k] = sqlite_library.MotifStateEnsembleSqliteLibrary(k)
 
     def get_motif(self, **options):

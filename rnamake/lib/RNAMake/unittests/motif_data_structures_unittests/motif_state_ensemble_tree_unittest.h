@@ -36,6 +36,9 @@ public:
     int
     test_to_mst();
     
+    int
+    test_enumerator();
+    
 public:
     
     int

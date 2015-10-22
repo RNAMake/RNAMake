@@ -12,6 +12,7 @@ StringStringMap
 MotifStateEnsembleSqliteLibrary::get_libnames() {
     StringStringMap libnames;
     
+    libnames["all_bp_steps"]   = "/motif_state_ensemble_libraries/all_bp_steps.db";
     libnames["bp_steps"]       = "/motif_state_ensemble_libraries/bp_steps.db";
     libnames["twoway"]         = "/motif_state_ensemble_libraries/twoway.db";
     libnames["tcontact"]       = "/motif_state_ensemble_libraries/tcontact.db";
