@@ -51,7 +51,7 @@ typedef std::shared_ptr<Pair> PairOP;
 typedef std::vector<PairOP>   PairOPs;
 typedef std::shared_ptr<Segments> SegmentsOP;
 
-struct PairSearchNode {
+/*struct PairSearchNode {
     PairSearchNode(
         PairOPs const & npairs):
     pairs(npairs) {}
@@ -73,7 +73,7 @@ struct PairSearchNode {
     int score;
 };
 
-class PairSearchNode {
+class PairSearchNodeSearch {
 public:
     
     PairSearchNode(
@@ -85,7 +85,7 @@ public:
     
 };
 
-
+*/
 class Segmenter {
 public:
     Segmenter() {}
@@ -107,8 +107,9 @@ private:
     
 private:
     
-    PairOPs pairs_, end_pairs_;
+    //PairOPs pairs_, end_pairs_;
     
 };
+
 
 #endif /* defined(__RNAMake__segmenter__) */

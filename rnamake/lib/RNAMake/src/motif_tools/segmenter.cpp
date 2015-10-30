@@ -9,7 +9,7 @@
 #include "structure/chain.h"
 #include "motif_tools/segmenter.h"
 
-
+/*
 void
 Segmenter::_get_pairs(
     PoseOP const & m,
@@ -51,14 +51,14 @@ Segmenter::_get_pairs(
         }
     }
 }
-
+*/
 
 SegmentsOP
 Segmenter::apply(
     PoseOP const & m,
     BasepairOPs const & bps) {
     
-    ResidueOPs res;
+    /*ResidueOPs res;
     for(auto const & bp : bps) {
         for(auto const & r : bp->residues()) {
             res.push_back(r);
@@ -66,6 +66,6 @@ Segmenter::apply(
     }
     
     _get_pairs(m, res);
-    
+    */
     return nullptr;
 }
