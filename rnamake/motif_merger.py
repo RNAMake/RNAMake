@@ -71,7 +71,6 @@ class MotifMerger(rna_structure.RNAStructure):
                                [c.subchain(0) for c in m.chains()],
                                self.chains())
 
-
     def connect_motifs(self, m1, m2, m1_end, m2_end):
         self._merge_motifs(m1, m2, m1_end, m2_end,self.chains(), self.chains())
 
@@ -198,6 +197,7 @@ class MotifMerger(rna_structure.RNAStructure):
         removed_res = []
         removed = 1
         count = 0
+        #TODO rewrite this many things wrong and not clean
         while removed:
             removed = 0
             split = []
@@ -238,7 +238,11 @@ class MotifMerger(rna_structure.RNAStructure):
                         new_chains.extend(next_chains)
                     removed_res.extend(found)
                     removed = 1
+                    break
+                if removed:
+                    break
 
+            #everything got removed
             if len(new_chains) == 0 and count == 0:
                 chains = []
                 break
@@ -314,14 +318,17 @@ class MotifMerger(rna_structure.RNAStructure):
         if m1_chains == m2_chains:
             self.basepairs.remove(m1_end)
 
-
     def _merge_chains(self, cm1, cm2):
         merged_chain_1, merged_chain_2 = None, None
         if   cm1.is_hairpin() and cm2.is_hairpin():
             raise ValueError("cannot merge an hairpin with another hairpin")
         elif cm1.is_hairpin():
+            res1 = cm2.p3_chain.residues.pop()
+            self.residue_map[res1.uuid] = cm1.p5_chain.residues[0].uuid
+            res2 = cm2.p5_chain.residues.pop(0)
+            self.residue_map[res2.uuid] = cm1.p5_chain.residues[-1].uuid
             merged_chain_1 = self._get_merged_hairpin(cm2.p3_chain, cm2.p5_chain,
-                                                      cm1.p5_chain, 0, 1)
+                                                      cm1.p5_chain, 0, 0)
         elif cm2.is_hairpin():
             merged_chain_1 = self._get_merged_hairpin(cm1.p5_chain, cm1.p3_chain,
                                                       cm2.p5_chain, 1, 1)

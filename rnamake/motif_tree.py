@@ -101,11 +101,11 @@ m
         s = "<(MotifTree: #nodes: %d\n" % (len(self.graph))
         for n in self.tree:
             c_str = ""
-            for c in n.connections:
+            for c in n.children:
 
                 if c is not None:
-                    c_str += str(c.partner(n.index).index) + ", "
-            s += "\t index: %d name: %s connections %s\n" % (n.index, n.data.name, c_str)
+                    c_str += str(c.index) + ", "
+            s += "\t index: %d name: %s end_name: %s children: %s\n" % (n.index, n.data.name, n.data.ends[0].name(), c_str)
         s += ")"
 
         return s
@@ -212,9 +212,11 @@ m
 
         return ss
 
-    def to_pdb(self, fname="mt.pdb", chain_closure=1):
-        pose = self.to_pose()
-        pose.to_pdb(fname)
+    def to_pdb(self, fname="mt.pdb", renumber=-1, close_chain=0):
+        self.merger.to_pdb(fname, renumber=renumber, close_chain=close_chain)
+
+    def to_pdb_str(self, renumber=-1, close_chain=0):
+        return self.merger.to_pdb_str(renumber=renumber, close_chain=close_chain)
 
     def topology_to_str(self):
         s = ""
@@ -268,6 +270,18 @@ m
         raise ValueError("could not connect node " + str(i) + " " + str(j) + " with end name " +
                          i_name)
 
+    def leafs_and_ends(self):
+        leaf_nodes = []
+        for n in self.tree.nodes:
+            f_conn = 0
+            for i, c in enumerate(n.children):
+                if i == 0:
+                    continue
+                if c is not None:
+                    continue
+
+                leaf_nodes.append([n, i])
+        return leaf_nodes
 
 
 

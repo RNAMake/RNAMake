@@ -121,8 +121,11 @@ class ResourceManager(object):
         raise ValueError("could not find motif state ensemble with options:"+\
                          self._args_to_str(options))
 
-    def add_motif(self, path):
-        m = motif_factory.factory.motif_from_file(path)
+    def add_motif(self, path=None, motif=None):
+        if path:
+            m = motif_factory.factory.motif_from_file(path)
+        else:
+            m = motif
         motifs = []
         end_ids = {}
         for i in range(len(m.ends)):
@@ -144,7 +147,6 @@ class ResourceManager(object):
 
     def register_motif(self, m):
         self.added_motifs.add_motif(m)
-
 
 manager = ResourceManager()
 

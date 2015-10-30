@@ -178,7 +178,7 @@ class BasepairState(object):
     def get_transforming_r_and_t(self, r, t, sugars):
         r1 = self.r
         r2 = r
-        r_trans = r1.T.dot(r2)
+        r_trans = util.unitarize(r1.T.dot(r2))
         t_trans = -t
 
         new_sugars_2 = np.dot(sugars, r_trans.T) + t_trans + self.d

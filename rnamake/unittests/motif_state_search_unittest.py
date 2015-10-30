@@ -9,6 +9,7 @@ import rnamake.steric_lookup as steric_lookup
 import rnamake.motif_state_search_scorer as motif_state_search_scorer
 import rnamake.segmenter as segmenter
 import rnamake.pose_factory as pf
+from rnamake import motif_tree
 
 class MotifStateSearchUnittest(unittest.TestCase):
 
@@ -16,19 +17,18 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mss = rnamake.motif_state_search.MotifStateSearch()
 
     def test_search(self):
-        #TODO randomly fails, figure out why
         builder = build.BuildMotifTree()
         mt = builder.build(2)
         start = mt.get_node(0).data.ends[0].state()
         end   = mt.last_node().data.ends[1].state()
         mss = rnamake.motif_state_search.MotifStateSearch()
-        mss.option('max_node_level', 2)
-        mss.option('max_solutions', 1)
+        mss.option('max_node_level', 3)
+        mss.option('accept_score', 2)
         mss.setup(start, end)
-        s = mss.search(one=1)
+        s = mss.next()
         if s is None:
             print mt
-            raise ValueError("SOMETIMES HAPPENS: could not find a suitable solution")
+            raise ValueError("could not find a suitable solution")
         mst = s.to_mst()
         new_end = mst.last_node().data.cur_state.end_states[1]
 

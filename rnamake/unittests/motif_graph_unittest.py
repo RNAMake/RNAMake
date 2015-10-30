@@ -65,6 +65,7 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.graph.nodes:
             mg.add_motif(n.data)
 
+        mg.write_pdbs("org")
         new_mg = mg.copy()
         new_mg.replace_ideal_helices()
         new_mg.write_pdbs()
@@ -109,37 +110,46 @@ class MotifGraphUnittest(unittest.TestCase):
         builder = build.BuildMotifTree()
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
-
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
+        mg.write_pdbs("org")
+        mg.replace_ideal_helices()
 
-        mg.secondary_structure()
+        mg.write_pdbs()
+        ss = mg.designable_secondary_structure()
+
+        designer = sd.SequenceDesigner()
+        r = designer.design(ss.dot_bracket(), ss.sequence())
+        ss.replace_sequence(r[0].sequence)
+        mg.replace_helix_sequence(ss)
+        mg.write_pdbs("new")
+        mg.merger.to_pdb("test.pdb")
         #mg.write_pdbs()
 
     def test_designable_secondary_structure(self):
         builder = build.BuildMotifTree()
-        mt = builder.build(10)
+        mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
         for n in mt.graph.nodes:
             mg.add_motif(n.data)
 
 
+        mg.write_pdbs("org")
         mg.replace_ideal_helices()
         #mg.write_pdbs()
         #for i, c in enumerate(mg.structure.chains()):
         #    c.to_pdb("c."+str(i)+".pdb")
 
         #mg.structure.to_pdb("test.pdb")
-
+        mg.write_pdbs()
         ss = mg.designable_secondary_structure()
 
         designer = sd.SequenceDesigner()
         r = designer.design(ss.dot_bracket(), ss.sequence())
         ss.replace_sequence(r[0].sequence)
-        print ss
         mg.replace_helix_sequence(ss)
-        mg.write_pdbs()
+        mg.write_pdbs("new")
         mg.merger.to_pdb("test.pdb")
 
     def test_designable_secondary_structure_2(self):
@@ -180,9 +190,11 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
+        mg.write_pdbs("org")
         #mg.secondary_structure()
 
-        mt2 = motif_topology.graph_to_tree(mg, mg.last_node())
+        mt2 = motif_topology.graph_to_tree(mg)
+        mt2.write_pdbs()
 
 def main():
     unittest.main()

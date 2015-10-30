@@ -16,6 +16,7 @@ class MotifStateSearch(base.Base):
         self.solutions = []
         self.lookup = None
         self.test_node = None
+        self.no_more_solutions = 0
 
     def setup_options_and_constraints(self):
         options =     { 'sterics'        :  1,
@@ -46,34 +47,45 @@ class MotifStateSearch(base.Base):
         test_node = start_n.copy()
         self.queue.put(start_n, 10000)
         self.scorer.set_target(end)
-        self.scorer.set_target(end)
         start_n = self._start_node(start)
         self.queue.put(start_n, 10000)
         self.test_node = start_n.copy()
 
     def finished(self):
-        if len(self.solutions) >= self.option("max_solutions"):
+        if len(self.solutions) >= self.option("max_solutions") or \
+            self.no_more_solutions == 1:
             return 1
         else:
             return 0
 
-    def search(self, one=0):
+    def next(self):
+        sol = self._search()
+        if sol == None:
+            self.no_more_solutions = 1
+            return None
+        self.solutions.append(sol)
+        return sol
+
+    def all(self):
+        while not self.queue.empty():
+            sol = self._search()
+            self.solutions.append(sol)
+            if len(self.solutions) >= self.option('max_solutions'):
+                break
+        return self.solutions
+
+    def _search(self):
         accept_score, max_node_level, sterics, max_size, min_size = self._get_local_variables()
         while not self.queue.empty():
             current = self.queue.get()
             score = self.scorer.accept_score(current)
+
             if score < accept_score:
                 if not self.selector.is_valid_solution(current):
                     continue
                 if current.size < min_size:
                     continue
-                self.solutions.append(MotifStateSearchSolution(current, score))
-
-                if one == 1:
-                    return self.solutions[-1]
-                if len(self.solutions) >= self.option('max_solutions'):
-                    return self.solutions
-                continue
+                return MotifStateSearchSolution(current, score)
 
             if current.level+1 > max_node_level:
                 continue
@@ -111,11 +123,8 @@ class MotifStateSearch(base.Base):
                     child.ntype = types[i]
                     self.queue.put(child, score)
 
-        if one == 1:
-            return None
 
-        return self.solutions
-
+        return None
 
 class MotifStateSearchNode(object):
     def __init__(self, ref_state, parent, parent_end_index, ntype):
@@ -191,5 +200,6 @@ class MotifStateSearchSolution(object):
                     raise ValueError("something went horribly wrong, cannot build solution")
         return mst
 
-
+    def to_motif_tree(self):
+        return self.to_mst().to_motif_tree()
 

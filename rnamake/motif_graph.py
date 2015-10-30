@@ -8,6 +8,7 @@ import motif_type
 import graph
 import resource_manager as rm
 import motif_merger
+import steric_lookup
 
 
 class MotifGraph(base.Base):
@@ -31,7 +32,13 @@ class MotifGraph(base.Base):
         self.constraints = {}
 
     def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
-                  parent_end_name=None):
+                  parent_end_name=None, m_name=None, m_end_name=None):
+        if m is None and m_name is not None:
+            if m_end_name is not None:
+                m = rm.manager.get_motif(name=m_name, end_name=m_end_name)
+            else:
+                m = rm.manager.get_motif(name=m_name)
+
         parent = self.graph.last_node
         if parent_index != -1:
             parent = self.graph.get_node(parent_index)
@@ -68,6 +75,54 @@ class MotifGraph(base.Base):
 
         return -1
 
+    def add_motif_tree(self, mt, parent_index, parent_end_name):
+        parent = self.get_node(parent_index)
+        bps = parent.data.get_basepair(name=parent_end_name)
+        if len(bps) == 0:
+            raise ValueError("cannot find parent end in add_motif_tree")
+        pei = parent.data.ends.index(bps[0])
+
+        for i, n in enumerate(mt):
+            if i == 0:
+                self.add_motif(n.data, parent_index, pei)
+            else:
+                self.add_motif(n.data)
+
+    def add_connection(self, i, j, i_bp_name=None, j_bp_name=None):
+        node_i = self.get_node(i)
+        node_j = self.get_node(j)
+
+        node_i_indexes = []
+        node_j_indexes = []
+        if i_bp_name is not None:
+            ei = node_i.data.get_end_index(i_bp_name)
+            if not node_i.available_pos(ei):
+                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                                 "using bp: " + i_bp_name + "as its not available")
+            node_i_indexes.append(ei)
+        else:
+            node_i_indexes = node_i.available_children_pos()
+
+        if j_bp_name is not None:
+            ei = node_j.data.get_end_index(j_bp_name)
+            if not node_j.available_pos(ei):
+                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                                 "using bp: " + j_bp_name + "as its not available")
+        else:
+            node_j_indexes = node_j.available_children_pos()
+
+        if len(node_i_indexes) > 1 or len(node_j_indexes) > 1:
+            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                             "its unclear which ends to attach")
+        if len(node_i_indexes) == 0 or len(node_j_indexes) == 0:
+            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                             "one node has no available ends")
+
+        self.graph.connect(i, j, node_i_indexes[0], node_j_indexes[0])
+        self.merger.connect_motifs(node_i.data, node_j.data,
+                                   node_i.data.ends[node_i_indexes[0]],
+                                   node_j.data.ends[node_j_indexes[0]])
+
     def remove_motif(self, pos):
         n = self.graph.get_node(pos)
         self.merger.remove_motif(n.data)
@@ -98,8 +153,7 @@ class MotifGraph(base.Base):
 
     def replace_ideal_helices(self):
         size = len(self.graph)
-        for i in range(0, size):
-            n = self.graph.get_node(i)
+        for n in self.graph.nodes:
             if n.data.mtype != motif_type.HELIX:
                 continue
             if len(n.data.residues()) == 4:
@@ -122,7 +176,9 @@ class MotifGraph(base.Base):
                 count = int(name_spl[2])
             else:
                 count = 1
+            i = n.index
             self.remove_motif(i)
+
             h = rm.manager.get_motif(name="HELIX.IDEAL")
             if parent is None:
                 pos = self._add_motif_to_graph(h)
@@ -228,7 +284,7 @@ class MotifGraph(base.Base):
                 return 1
         return 0
 
-    def write_pdbs(self,name="node"):
+    def write_pdbs(self, name="node"):
         for n in self.graph.nodes:
             n.data.to_pdb(name+"."+str(n.index)+".pdb")
 
@@ -250,8 +306,67 @@ class MotifGraph(base.Base):
             leaf_nodes.append(n)
         return leaf_nodes
 
+    def leafs_and_ends(self):
+        leaf_nodes = []
+        for n in self.graph.nodes:
+            f_conn = 0
+            for i, c in enumerate(n.connections):
+                if n.index == 0 and i == 0 and n.data.mtype != motif_type.HAIRPIN:
+                    continue
+                if c is not None:
+                    continue
+                leaf_nodes.append([n, i])
+        return leaf_nodes
+
+    def get_node(self, i):
+        return self.graph.get_node(i)
+
     def get_beads(self, exclude_phos=1):
         pass
+
+    def get_steric_lookup_table(self, exclude_phos=1):
+        pass
+
+    def get_end(self, pos=-1, m_name="", m_end_name=""):
+        n = None
+        if   pos != -1:
+            n = self.graph.get_node(pos)
+        elif m_name != "":
+            nodes = []
+            for n in self.graph.nodes:
+                if n.data.name == m_name:
+                    nodes.append(n)
+            if len(nodes) > 0:
+                raise ValueError("cannot get end, too many motifs match name given "
+                                + m_name)
+            n = nodes[0]
+
+        if m_end_name != "":
+            bps = n.data.get_basepair(name=m_end_name)
+            if len(bps) == 0:
+                raise ValueError("found motif but " + m_end_name + "is not is a "
+                                                                   "basepair in it")
+            end_index = n.data.get_end_index(name=m_end_name)
+            end = n.data.ends[end_index]
+            #check to see if the position is available
+            self.graph.get_availiable_pos(n, end_index)
+            return end
+
+        else:
+            avail_pos = n.available_children_pos()
+            if len(avail_pos) > 1:
+                raise ValueError("too many free ends to pick one in get_end")
+            if len(avail_pos) == 0:
+                raise ValueError("no ends available in get_end")
+
+            end = n.data.ends[avail_pos[0]]
+            return end
+
+
+
+
+
+
 
 
 

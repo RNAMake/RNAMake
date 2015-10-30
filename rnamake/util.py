@@ -43,6 +43,22 @@ def center(atoms):
 
     return center / float(len(atoms))
 
+def center_points(points):
+    """
+    returns the center of a list of atoms
+
+    :params atoms: list of atoms to calculate center
+    :type atoms: list of atoms
+    """
+
+    center = np.array([0.0, 0.0, 0.0])
+
+    for p in points:
+        center += p
+
+    return center / float(len(points))
+
+
 
 def base_dir(path):
     path_spl = path.split("/")
