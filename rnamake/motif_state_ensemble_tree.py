@@ -1,14 +1,15 @@
 import tree
 import motif_state_tree
 import motif_ensemble
+import motif_type
 import resource_manager as rm
 
 
 class MotifStateEnsembleTree(object):
-    def __init__(self, mt=None, mst=None):
+    def __init__(self, mt=None, mst=None, extra_mes=None):
         self.tree = tree.TreeStatic()
         if mt is not None:
-            self._setup_from_mt(mt)
+            self._setup_from_mt2(mt, extra_mes)
         if mst is not None:
             self._setup_from_mst(mst)
 
@@ -50,6 +51,29 @@ class MotifStateEnsembleTree(object):
                 raise ValueError("can not build motif state tree from mset")
 
         return mst
+
+
+    def _setup_from_mt2(self, mt, extra_mes):
+        if extra_mes is None:
+            extra_mes = {}
+
+        for i, n in enumerate(mt.tree.nodes):
+            if n.data.mtype == motif_type.HELIX:
+                mse = rm.manager.get_motif_state_ensemble(name=n.data.end_ids[0])
+            else:
+                if n.index in extra_mes:
+                    mse = extra_mes[n.index]
+                else:
+                    m = n.data
+                #m.name = "unknown."+str(i)+".pdb"
+                #rm.manager.add_motif(motif=m)
+                    mse = motif_ensemble.motif_state_to_motif_state_ensemble(m.get_state())
+
+            if i == 0:
+                self.add_ensemble(mse)
+            else:
+                self.add_ensemble(mse, n.parent_index(), n.parent_end_index())
+
 
     def _setup_from_mt(self, mt):
         for i, n in enumerate(mt.graph.nodes):

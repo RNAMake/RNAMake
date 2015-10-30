@@ -58,23 +58,15 @@ class MotifStateTree(base.Base):
         self.constraints = {}
 
     def _setup_from_mt(self, mt):
-        for i, n in enumerate(mt.graph.nodes):
+        for i, n in enumerate(mt.tree.nodes):
             ms = rm.manager.get_state(name=n.data.name, end_id=n.data.end_ids[0],
                                       end_name=n.data.ends[0].name())
             if i == 0:
                 self.add_state(ms)
             else:
-                parent_index = 1000
-                parent_end_index = -1
-                for c in n.connections:
-                    if c is None:
-                        continue
-                    if c.partner(n.index).index < parent_index:
-                        parent_index =  c.partner(n.index).index
-                        parent_end_index = c.end_index(c.partner(n.index).index)
+                parent_index = n.parent_index()
+                parent_end_index = n.parent_end_index()
 
-                if parent_index == 1000:
-                    raise ValueError("did not convert motif tree to motif state tree properly")
                 j = self.add_state(ms, parent_index, parent_end_index)
                 if j == -1:
                     raise ValueError("could not convert motif tree to motif state tree")
@@ -194,6 +186,11 @@ class MotifStateTree(base.Base):
             motif.get_aligned_motif_state(parent.data.cur_state.end_states[pei],
                                           n.data.cur_state,
                                           n.data.ref_state)
+
+            rot = parent.data.cur_state.end_states[pei]._rot_diff(n.data.cur_state.end_states[0])
+            if rot > 1:
+                print "made it"
+
 
     def _steric_clash(self, new_data):
         for n in self.tree.nodes[::-1]:

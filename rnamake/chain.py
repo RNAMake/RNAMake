@@ -86,10 +86,12 @@ class Chain(object):
             s += r.to_str() + ";"
         return s
 
-    def to_pdb_str(self, acount=1, return_acount=0):
+    def to_pdb_str(self, acount=1, return_acount=0, rnum=-1, chain_id=""):
         s = ""
         for r in self.residues:
-            r_str, acount = r.to_pdb_str(acount, 1)
+            r_str, acount = r.to_pdb_str(acount, 1, rnum, chain_id)
+            if rnum != -1:
+                rnum += 1
             s += r_str
 
         if return_acount:
@@ -97,9 +99,9 @@ class Chain(object):
         else:
             return s
 
-    def to_pdb(self, fname="chain.pdb"):
+    def to_pdb(self, fname="chain.pdb", rnum=-1, chain_id=""):
         f = open(fname, "w")
-        f.write(self.to_pdb_str())
+        f.write(self.to_pdb_str(rnum=rnum, chain_id=chain_id))
         f.close()
 
     def list_res(self):

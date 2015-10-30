@@ -264,17 +264,25 @@ class Residue(object):
                 s += a.to_str() + ","
         return s
 
-    def to_pdb_str(self, acount=1, return_acount=0):
+    def to_pdb_str(self, acount=1, return_acount=0, rnum=-1, chain_id=""):
         """
         returns pdb formatted of residues coordinate information
         """
+
+        num = self.num
+        cid = self.chain_id
+        if rnum != -1:
+            num = rnum
+        if chain_id != "":
+            cid = chain_id
+
         s = ""
         for a in self.atoms:
             if a is None:
                 continue
             s += basic_io.PDBLINE_GE100K % \
-                 ('ATOM', acount, a.name, '', self.rtype.name[0], self.chain_id,
-                  self.num, '', a.coords[0], a.coords[1], a.coords[2], 1.00,
+                 ('ATOM', acount, a.name, '', self.rtype.name[0], cid,
+                  num, '', a.coords[0], a.coords[1], a.coords[2], 1.00,
                   0.00, '', '')
             acount += 1
 

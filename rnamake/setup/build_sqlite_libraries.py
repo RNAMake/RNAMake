@@ -64,23 +64,32 @@ class BuildSqliteLibraries(object):
     def build_ideal_helices(self):
         mlib = motif_library.ideal_helix_lib()
         aligned_motifs = []
-        names = []
         path = settings.RESOURCES_PATH +"/motif_libraries_new/ideal_helices.db"
         data = []
+        rdata = []
         keys = ['data', 'name', 'end_name', 'end_id', 'id']
+        count = 0
         for i, m in enumerate(mlib.motifs()):
             #if m.name == "HELIX.IDEAL":
             #    aligned_motif = motif_factory.factory.align_motif_to_common_frame(m, 0)
             #else:
             aligned_motif = motif_factory.factory.align_motif_to_common_frame(m, 1)
 
-
-            aligned_motifs.append(aligned_motif)
-            names.append(aligned_motif.name)
             data.append([aligned_motif.to_str(), aligned_motif.name,
-                         aligned_motif.ends[0].name(), aligned_motif.end_ids[0], i])
+                         aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
+
+            aligned_motif = motif_factory.factory.can_align_motif_to_end(m, 0)
+            aligned_motif = motif_factory.factory.align_motif_to_common_frame(aligned_motif, 0)
+            aligned_motif.name = aligned_motif.name + "-reversed"
+            motif_factory.factory._setup_secondary_structure(aligned_motif)
+            rdata.append([aligned_motif.to_str(), aligned_motif.name,
+                         aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
+            count += 1
 
         sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
+        path = settings.RESOURCES_PATH +"/motif_libraries_new/ideal_helices_reversed.db"
+        sqlite_library.build_sqlite_library_2(path, rdata, keys, 'id')
+
         mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
         m = mlib.get(name="HELIX.IDEAL.3")
         s = m.to_str()
@@ -93,7 +102,7 @@ class BuildSqliteLibraries(object):
 
         types = [motif_type.TWOWAY, motif_type.NWAY, motif_type.HAIRPIN,
                  motif_type.TCONTACT]
-
+        #types = [motif_type.HAIRPIN]
         for t in types:
             count = 0
             mlib = motif_library.MotifLibrary(t)
@@ -103,6 +112,9 @@ class BuildSqliteLibraries(object):
             for k, m in enumerate(mlib.motifs()):
                 if m is None:
                     continue
+
+                if t == motif_type.HAIRPIN:
+                    m.block_end_add = -1
 
                 if t != motif_type.HAIRPIN and len(m.ends) == 1:
                     continue
@@ -396,8 +408,8 @@ class BuildSqliteLibraries(object):
             sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
 builder = BuildSqliteLibraries()
-builder.build_ideal_helices()
-#builder.build_basic_libraries()
+#builder.build_ideal_helices()
+builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()

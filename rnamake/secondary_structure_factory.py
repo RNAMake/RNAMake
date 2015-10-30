@@ -124,7 +124,6 @@ class MotiftoSecondaryStructure(object):
 
             if best_chain is None:
                 break
-            print best_chain
             self.chains.remove(best_chain)
             self.open_chains.append(best_chain)
 

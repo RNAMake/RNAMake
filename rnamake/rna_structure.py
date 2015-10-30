@@ -5,6 +5,7 @@ import secondary_structure
 import secondary_structure_factory as ssf
 import structure
 import util
+import chain_closure
 
 import os
 
@@ -28,17 +29,21 @@ class RNAStructure(object):
         self.beads = []
         self.end_ids = []
 
-    def to_pdb_str(self):
+    def to_pdb_str(self, renumber=-1, close_chain=0):
         """
         returns pdb formatted string of motif's structure object
         """
-        return self.structure.to_pdb_str()
+        if close_chain:
+            for c in self.chains():
+                chain_closure.close_chain(c)
 
-    def to_pdb(self, fname="motif.pdb"):
+        return self.structure.to_pdb_str(renumber)
+
+    def to_pdb(self, fname="motif.pdb", renumber=-1, close_chain=0):
         """
         writes the current motif's structure to a pdb
         """
-        return self.structure.to_pdb(fname)
+        return self.structure.to_pdb(fname, renumber)
 
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
         """
@@ -113,6 +118,29 @@ class RNAStructure(object):
         self.beads = self.structure.get_beads(excluded)
         return self.beads
 
+    def get_end_index(self, name=None, id=None):
+        if name is None and id is None:
+            raise ValueError("must specify name or id in get_end_index")
+        if name is not None:
+            bps = self.get_basepair(name=name)
+            if len(bps) == 0:
+                raise ValueError("cannot find basepair with name "+name)
+            end = bps[0]
+            return self.ends.index(end)
+        else:
+            matching = []
+            for i, end_id in enumerate(self.end_ids):
+                if end_id == id:
+                    matching.append(i)
+            if len(matching) > 1:
+                raise ValueError("more then one end with id "+ id + " in get_end_index")
+            return matching[0]
+
+    def sequence(self):
+        return self.secondary_structure.sequence()
+
+    def dot_bracket(self):
+        return self.secondary_structure.dot_bracket()
 
 
 
@@ -187,6 +215,9 @@ def get_chain_end_map(chains, end):
     chain_map = ChainEndPairMap()
 
     for c in chains:
+        #for r in c.residues:
+        #    print r,
+        #print
         for r in end.residues():
             if c.first().uuid == r.uuid and chain_map.p5_chain == None:
                 chain_map.p5_chain = c

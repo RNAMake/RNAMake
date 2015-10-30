@@ -19,7 +19,7 @@ def fill_basepairs_in_ss(ss):
             m.end_ids[i] = secondary_structure.assign_end_id_new(m, end)
 
 class BuildMotifTree(object):
-    def __init__(self, lib_names = ["ideal_helices", "twoway"], libs = None):
+    def __init__(self, lib_names = ["ideal_helices", "unique_twoway"], libs = None):
         if libs is None:
             self.libs = [rm.manager.mlibs[x] for x in lib_names ]
         else:

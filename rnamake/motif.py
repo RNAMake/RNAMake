@@ -74,12 +74,6 @@ class Motif(rna_structure.RNAStructure):
         return "<Motif(\n\tstructure='%s', \n\tends='%s')>" % (
         self.structure,len(self.ends))
 
-    def sequence(self):
-        return self.secondary_structure.sequence()
-
-    def dot_bracket(self):
-        return self.secondary_structure.dot_bracket()
-
     def to_str(self):
         """
         stringifies motif object

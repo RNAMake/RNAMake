@@ -6,6 +6,7 @@ import math
 import basepair
 import util
 import motif_outputer
+import basic_io
 
 class ThermoFlucSampler(base.Base):
     def __init__(self, **options):
@@ -42,8 +43,8 @@ class ThermoFlucSampler(base.Base):
         energy    = mset_node.data.members[pos].energy
         new_mem   = mset_node.data.get_random_member()
 
-        if new_mem.energy < energy:
-            return self.update(node_num, new_mem)
+        #if new_mem.energy < energy:
+        return self.update(node_num, new_mem)
 
         score = math.exp((energy - new_mem.energy) / self.kBT)
         dice_roll = random.random()
@@ -69,6 +70,81 @@ class ThermoFlucSampler(base.Base):
 
     def to_pdb(self, name="test.pdb"):
         self.mst.to_pdb(name)
+
+    def to_pdb_str(self, renumber=-1, close_chain=0):
+        return self.mst.to_motif_tree().to_pdb_str(renumber=renumber,
+                                                   close_chain=close_chain)
+
+
+class ThermoFlucFolding(base.Base):
+    def __init__(self, **options):
+        self.setup_options_and_constraints()
+        self.options.dict_set(options)
+        self.mset = None
+        self.mst = None
+        self.sampler = ThermoFlucSampler()
+        self.clash_radius = 3
+        self.movie = 1
+        self.movie_path = "movie.pdb"
+
+    def setup_options_and_constraints(self):
+        options = { 'temperature' : 298.15 }
+
+        self.options = option.Options(options)
+        self.constraints = {}
+
+    def setup(self, mset):
+        self.sampler.setup(mset)
+
+    def run(self):
+        if self.movie:
+            f = open(self.movie_path, "w")
+            f.write("MODEL 1\n")
+            f.write(self.sampler.to_pdb_str(renumber=1, close_chain=1))
+            f.write("ENDMDL\n")
+
+        count = 2
+        pos = 0
+        for i in range(1000):
+            if self.sampler.next() == 0:
+                continue
+
+            #clash = self._check_sterics()
+            #if clash:
+            #    self.sampler.undo()
+            #    continue
+            pos = (i / 10) + 1
+            print i
+            if count-1 <= pos and self.movie:
+                f.write("MODEL "+str(count)+"\n")
+                f.write(self.sampler.to_pdb_str(renumber=1, close_chain=1))
+                f.write("ENDMDL\n")
+                count += 1
+                #self.sampler.mst.write_pdbs()
+                #for i, n in enumerate(self.sampler.mst.tree.nodes):
+                #    basic_io.points_to_pdb("beads."+str(i)+".pdb",
+                #                           n.data.cur_state.beads)
+
+        f.close()
+
+    def _check_sterics(self):
+
+        nodes = self.sampler.mst.tree.nodes
+        centers = [util.center_points(n.data.cur_state.beads) for n in nodes]
+
+        for i in range(0, len(nodes)):
+            center_i = centers[i]
+            for j in range(i+1, len(nodes)):
+                center_j = centers[j]
+                dist = util.distance(center_i, center_j)
+                if dist > 40:
+                    continue
+                for b1 in nodes[i].data.cur_state.beads:
+                    for b2 in nodes[j].data.cur_state.beads:
+                        b_dist = util.distance(b1, b2)
+                        if b_dist < self.clash_radius:
+                            return 1
+        return 0
 
 
 class ThermoFlucRelax(base.Base):
@@ -150,6 +226,7 @@ class ThermoFlucRelax(base.Base):
 class ThermoFlucScorer(object):
     def __init__(self):
         pass
+
 
 class FrameScorer(ThermoFlucScorer):
     def __init__(self):

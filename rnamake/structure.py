@@ -121,16 +121,24 @@ class Structure(object):
             s += c.to_str() + ":"
         return s
 
-    def to_pdb_str(self):
+    def to_pdb_str(self, renumber=-1):
         acount = 1
         s = ""
-        for c in self.chains:
-            c_str, acount = c.to_pdb_str(acount, 1)
+        c_names = "ABCDEFGHIJKLM"
+        rnum = -1
+        chain_id = ""
+        if renumber != -1:
+            chain_id = "A"
+            rnum = 1
+        for i, c in enumerate(self.chains):
+            c_str, acount = c.to_pdb_str(acount, 1, rnum, chain_id)
+            if renumber != -1:
+                chain_id = c_names[i+1]
             s += c_str
             s += "TER\n"
         return s
 
-    def to_pdb(self, fname="structure.pdb"):
+    def to_pdb(self, fname="structure.pdb", renumber=-1):
         """
         write structure to pdb file
 
@@ -139,7 +147,7 @@ class Structure(object):
 
         """
         f = open(fname, "w")
-        f.write(self.to_pdb_str())
+        f.write(self.to_pdb_str(renumber))
         f.close()
 
     def copy(self):

@@ -70,7 +70,7 @@ class MTSS_Astar(MotifTreeStateSearchScorer):
             g = node.ss_score*self.ss_score_weight
             if node.level > 2:
                 g += node.level*self.level_weight
-            h = new_score_function(bp_state, self.target,
+            h = new_score_function_new(bp_state, self.target,
                                    self.target_flip)
 
             score = g + h
@@ -82,6 +82,31 @@ class MTSS_Astar(MotifTreeStateSearchScorer):
 
 def new_score_function(current, end, endflip):
     d_diff = util.distance(current.d,end.d)
+
+    if d_diff > 25:
+        return d_diff
+
+    r_diff       = util.matrix_distance(current.r, end.r)
+    r_diff_flip  = util.matrix_distance(current.r, endflip.r)
+
+    if r_diff > r_diff_flip:
+        r_diff = r_diff_flip
+
+    if d_diff < 0.0001:
+        d_diff = 0.00001
+    scale = (math.log(150/d_diff) - 1)
+    if scale > 2:
+        scale = 2
+    if scale < 0:
+        scale = 0
+
+    return d_diff + scale*r_diff
+
+def new_score_function_new(current, end, endflip):
+    #d_diff = util.distance(current.d,end.d)*.25
+    d_diff = (util.distance(current.sugars[0], end.sugars[1]) + \
+              util.distance(current.sugars[1], end.sugars[0]))*0.50
+
 
     if d_diff > 25:
         return d_diff

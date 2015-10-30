@@ -217,7 +217,7 @@ class MotifFactory(object):
 
     def motif_from_res(self, res, bps):
         m = motif.Motif()
-        chains = self.build_chains(res)
+        chains = chain.connect_residues_into_chains(res)
         m.structure.chains = chains
         m.basepairs = bps
         ends = self._setup_basepair_ends(m.structure, bps)

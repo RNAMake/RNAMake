@@ -68,7 +68,8 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt2)
 
-
+    def test_reverse_propagation(self):
+        pass
 
 
 
