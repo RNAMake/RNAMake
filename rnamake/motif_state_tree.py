@@ -126,8 +126,13 @@ class MotifStateTree(base.Base):
         mt = motif_tree.MotifTree(sterics=self.option('sterics'))
         for i, n in enumerate(self.tree.nodes):
             if n.data.ref_state.name != "":
-                m = rm.manager.get_motif(name=n.data.ref_state.name,
-                                         end_id=n.data.ref_state.end_ids[0])
+                if n.data.ref_state.end_names[0] != "":
+                    m = rm.manager.get_motif(name=n.data.ref_state.name,
+                                             end_name = n.data.ref_state.end_names[0],
+                                             end_id=n.data.ref_state.end_ids[0])
+                else:
+                    m = rm.manager.get_motif(name=n.data.ref_state.name,
+                                             end_id=n.data.ref_state.end_ids[0])
             else:
                 m = rm.manager.get_motif(end_id=n.data.ref_state.end_ids[0])
 
@@ -177,8 +182,9 @@ class MotifStateTree(base.Base):
 
         old_state = n.data.ref_state
 
+
         n.data.ref_state = new_state
-        n.data.cur_state = new_state
+        n.data.cur_state = new_state.copy()
         for n in tree.transverse_tree(self.tree, i):
             parent = n.parent
             pei = n.parent_end_index()
@@ -186,10 +192,6 @@ class MotifStateTree(base.Base):
             motif.get_aligned_motif_state(parent.data.cur_state.end_states[pei],
                                           n.data.cur_state,
                                           n.data.ref_state)
-
-            rot = parent.data.cur_state.end_states[pei]._rot_diff(n.data.cur_state.end_states[0])
-            if rot > 1:
-                print "made it"
 
 
     def _steric_clash(self, new_data):

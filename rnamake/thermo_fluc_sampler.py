@@ -109,10 +109,10 @@ class ThermoFlucFolding(base.Base):
             if self.sampler.next() == 0:
                 continue
 
-            #clash = self._check_sterics()
-            #if clash:
-            #    self.sampler.undo()
-            #    continue
+            clash = self._check_sterics()
+            if clash:
+                self.sampler.undo()
+                continue
             pos = (i / 10) + 1
             print i
             if count-1 <= pos and self.movie:
