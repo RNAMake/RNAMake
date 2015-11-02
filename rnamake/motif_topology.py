@@ -26,7 +26,8 @@ def graph_to_tree(mg, start=None):
                 for i, c in enumerate(current.connections):
                     if c is None:
                         free_end = i
-                m = rm.manager.get_motif(end_id=ss_m.end_ids[free_end])
+                m = rm.manager.get_motif(end_name=ss_m.ends[free_end].name(),
+                                         end_id=ss_m.end_ids[free_end])
                 mt.add_motif(m)
 
             else:
@@ -51,7 +52,7 @@ def graph_to_tree(mg, start=None):
 
 
                 m = rm.manager.get_motif(end_id=current.data.end_ids[c_end_index],
-                                        end_name=c_end_name)
+                                         end_name=c_end_name)
                 pos = mt.add_motif(m, parent_index=p_index, parent_end_name=p_end_name)
                 if pos == -1:
                     raise ValueError("could not convert graph to tree")

@@ -54,7 +54,6 @@ class Graph(object):
             raise StopIteration
 
         node = self.current_node
-        next = []
 
         self.seen.append(node)
         for c in node.connections:
