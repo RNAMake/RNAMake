@@ -116,7 +116,8 @@ public:
 public:
     
     void
-    record();
+    record(
+        String fname="test");
     
 public:
     MotifStateEnsembleTreeOP mtst_;

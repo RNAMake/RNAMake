@@ -17,6 +17,7 @@ set(unittests_files
 	../../unittests/motif_unittests/motif_tree_unittest.cc
 	../../unittests/motif_unittests/motif_unittest.cc
 	../../unittests/motif_unittests/pose_factory_unittest.cpp
+	../../unittests/motif_unittests/segmenter_unittest.cpp
 	../../unittests/resources_unittests/added_motif_library_unittest.cc
 	../../unittests/resources_unittests/motif_sqlite_connection_unittest.cc
 	../../unittests/resources_unittests/motif_sqlite_library_unittest.cc

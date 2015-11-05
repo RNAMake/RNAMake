@@ -54,12 +54,15 @@ MotifStateEnsembleTreeUnittest::test_from_mt() {
 
 int
 MotifStateEnsembleTreeUnittest::test_enumerator() {
-    MotifStateEnsembleSqliteLibrary lib("all_bp_steps");
-    auto mtst = std::make_shared<MotifStateEnsembleTree>();
-    mtst->add_ensemble(lib.get("GG_LL_UC_RR"));
-    mtst->add_ensemble(lib.get("GG_LL_CU_RR"));
-    MotifStateEnsembleTreeEnumerator enumerator(mtst);
-    enumerator.record();
+    MotifStateEnsembleSqliteLibrary lib("bp_steps");
+    lib.load_all();
+    for(auto const & mes : lib) {
+    
+        auto mtst = std::make_shared<MotifStateEnsembleTree>();
+        mtst->add_ensemble(mes);
+        MotifStateEnsembleTreeEnumerator enumerator(mtst);
+        enumerator.record(mes->id());
+    }
     
     return 1;
 }
