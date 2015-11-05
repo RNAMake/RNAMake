@@ -3,6 +3,8 @@ import random
 import build
 import math
 import numpy as np
+import pandas as pd
+import seaborn as sns
 import numpy.linalg as lin
 import rnamake.thermo_fluc_sampler
 import rnamake.motif_tree_topology as motif_tree_topology
@@ -13,6 +15,7 @@ import rnamake.resource_manager as rm
 import rnamake.pose_factory as pf
 import rnamake.transformations as trans
 import rnamake.util as util
+from rnamake import motif_topology, thermo_fluc_sampler, motif_graph
 
 class ThermoFlucSamplerUnittest(unittest.TestCase):
 
@@ -139,6 +142,32 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         dist_squared = dist_squared / count
         print rmsd
         print math.sqrt(dist_squared)
+
+    def test_folding(self):
+        builder = build.BuildMotifGraph()
+        #mg = builder.build(3)
+        mg = motif_graph.MotifGraph()
+        mg.add_motif(m_name="HELIX.IDEAL.12")
+        mg.add_motif(m_name="TWOWAY.1GID.2")
+        mg.add_motif(m_name="HELIX.IDEAL.12")
+        mg.replace_ideal_helices()
+
+        mt = motif_topology.graph_to_tree(mg, mg.last_node())
+        mt.to_pdb("test.pdb", renumber=1)
+        mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt=mt)
+
+        tff = thermo_fluc_sampler.ThermoFlucFolding()
+        tff.setup(mset, mt)
+        #tff.movie = 1
+        tff.run()
+
+        df = pd.DataFrame(tff.contacts)
+        sns.heatmap(df)
+        sns.plt.show()
+
+
+
+
 
 
 

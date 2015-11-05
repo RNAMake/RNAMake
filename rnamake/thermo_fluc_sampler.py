@@ -7,6 +7,7 @@ import basepair
 import util
 import motif_outputer
 import basic_io
+import numpy as np
 
 class ThermoFlucSampler(base.Base):
     def __init__(self, **options):
@@ -35,7 +36,7 @@ class ThermoFlucSampler(base.Base):
             self.next()
 
     def next(self):
-        node_num  = random.randint(2, len(self.mset)-1)
+        node_num  = random.randint(0, len(self.mset)-1)
         mset_node = self.mset.get_node(node_num)
         mst_node  = self.mst.get_node(node_num)
         pos       = self.states[node_num]
@@ -83,9 +84,10 @@ class ThermoFlucFolding(base.Base):
         self.mset = None
         self.mst = None
         self.sampler = ThermoFlucSampler()
-        self.clash_radius = 3
-        self.movie = 1
+        self.clash_radius = 2.0
+        self.movie = 0
         self.movie_path = "movie.pdb"
+        self.mt = None
 
     def setup_options_and_constraints(self):
         options = { 'temperature' : 298.15 }
@@ -93,8 +95,10 @@ class ThermoFlucFolding(base.Base):
         self.options = option.Options(options)
         self.constraints = {}
 
-    def setup(self, mset):
+    def setup(self, mset, mt):
         self.sampler.setup(mset)
+        self.mt = mt
+        self.contacts = np.zeros((len(self.mt.residues()), len(self.mt.residues())))
 
     def run(self):
         if self.movie:
@@ -115,17 +119,31 @@ class ThermoFlucFolding(base.Base):
                 continue
             pos = (i / 10) + 1
             print i
+
+            self._find_residue_contacts()
             if count-1 <= pos and self.movie:
                 f.write("MODEL "+str(count)+"\n")
                 f.write(self.sampler.to_pdb_str(renumber=1, close_chain=1))
                 f.write("ENDMDL\n")
                 count += 1
-                #self.sampler.mst.write_pdbs()
-                #for i, n in enumerate(self.sampler.mst.tree.nodes):
-                #    basic_io.points_to_pdb("beads."+str(i)+".pdb",
-                #                           n.data.cur_state.beads)
 
-        f.close()
+        if self.movie:
+            f.close()
+
+    def _find_residue_contacts(self):
+        res = self.mt.residues()
+        dist = 0
+        for i in range(0, len(res)):
+            for j in range(i+2, len(res)):
+                mst_ri = self.sampler.mst.get_residue(res[i].uuid)
+                mst_rj = self.sampler.mst.get_residue(res[j].uuid)
+                if len(self.mt.merger.get_basepair(res1=res[i], res2=res[j])) > 0:
+                    continue
+                for b1 in mst_ri.beads:
+                    for b2 in mst_rj.beads:
+                        dist = util.distance(b1, b2)
+                        if dist < 5:
+                            self.contacts[i][j] += 1
 
     def _check_sterics(self):
 

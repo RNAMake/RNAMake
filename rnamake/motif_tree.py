@@ -283,6 +283,8 @@ m
                 leaf_nodes.append([n, i])
         return leaf_nodes
 
+    def residues(self):
+        return self.merger.residues()
 
 
 

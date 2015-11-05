@@ -61,6 +61,9 @@ class MotifStateTree(base.Base):
         for i, n in enumerate(mt.tree.nodes):
             ms = rm.manager.get_state(name=n.data.name, end_id=n.data.end_ids[0],
                                       end_name=n.data.ends[0].name())
+            ms.update_res_uuids(n.data.residues())
+
+
             if i == 0:
                 self.add_state(ms)
             else:
@@ -187,12 +190,13 @@ class MotifStateTree(base.Base):
         n.data.cur_state = new_state.copy()
         for n in tree.transverse_tree(self.tree, i):
             parent = n.parent
+            if parent is None:
+                continue
             pei = n.parent_end_index()
 
             motif.get_aligned_motif_state(parent.data.cur_state.end_states[pei],
                                           n.data.cur_state,
                                           n.data.ref_state)
-
 
     def _steric_clash(self, new_data):
         for n in self.tree.nodes[::-1]:
@@ -245,6 +249,13 @@ class MotifStateTree(base.Base):
         for c in self.connections:
             s += str(c.i) + "," + str(c.j) + "," + c.end_name
         return s
+
+    def get_residue(self, uuid):
+        for n in self.tree:
+            for r in n.data.cur_state.residues:
+                if r.uuid == uuid:
+                    return r
+        return None
 
 class NodeData(object):
     def __init__(self, ref_state):

@@ -73,7 +73,7 @@ struct PairSearchNode {
     int score;
 };
 
-class PairSearchNode {
+/*class PairSearchNode {
 public:
     
     PairSearchNode(
@@ -83,7 +83,7 @@ public:
     
 
     
-};
+};*/
 
 
 class Segmenter {

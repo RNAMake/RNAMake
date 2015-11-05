@@ -2,14 +2,10 @@ import unittest
 import random
 import rnamake.motif_state_ensemble_tree as motif_state_ensemble_tree
 import rnamake.resource_manager as rm
-import rnamake.motif_type as motif_type
-import rnamake.util as util
-import rnamake.basic_io as basic_io
-import rnamake.settings as settings
-import rnamake.motif as motif
 import rnamake.motif_tree as motif_tree
 import rnamake.motif_type as motif_type
 import rnamake.motif_tree_topology as motif_tree_topology
+from rnamake import motif_graph, motif_topology
 import build
 
 class MotifStateEnsembleTreeUnittest(unittest.TestCase):
@@ -68,8 +64,17 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt2)
 
-    def test_reverse_propagation(self):
-        pass
+    def test_setup_from_mt_4(self):
+        mg = motif_graph.MotifGraph()
+        mg.add_motif(m_name="HELIX.IDEAL.20")
+        mg.replace_ideal_helices()
+        mt = motif_topology.graph_to_tree(mg)
+        mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
+
+        mst = mset.to_mst()
+        for r in mt.residues():
+            print mst.get_residue(r.uuid)
+
 
 
 

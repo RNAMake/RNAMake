@@ -38,7 +38,6 @@ class MotifStateTreeUnittest(unittest.TestCase):
     def test_creation_from_mt(self):
         builder = build.BuildMotifTree()
         mt = builder.build(10)
-        mt.write_pdbs()
         mst = motif_state_tree.MotifStateTree(mt)
         if len(mst) != 10:
             self.fail("did not build mst properly")
@@ -48,6 +47,17 @@ class MotifStateTreeUnittest(unittest.TestCase):
 
         #print mt.last_node().data.ends[0].d()
         #print mst.last_node().data.cur_state.end_states[0].d
+
+    def test_res_ids(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(3)
+        mst = motif_state_tree.MotifStateTree(mt)
+
+        for r in mt.residues():
+            r_mst = mst.get_residue(r.uuid)
+            if r_mst is None:
+                raise ValueError("cannot find residue in mst")
+
 
     def test_align(self):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
