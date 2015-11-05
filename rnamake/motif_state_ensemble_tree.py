@@ -52,7 +52,6 @@ class MotifStateEnsembleTree(object):
 
         return mst
 
-
     def _setup_from_mt2(self, mt, extra_mes):
         if extra_mes is None:
             extra_mes = {}
@@ -68,6 +67,8 @@ class MotifStateEnsembleTree(object):
                 #m.name = "unknown."+str(i)+".pdb"
                 #rm.manager.add_motif(motif=m)
                     mse = motif_ensemble.motif_state_to_motif_state_ensemble(m.get_state())
+
+            mse.update_res_uuids(n.data.residues())
 
             if i == 0:
                 self.add_ensemble(mse)

@@ -123,6 +123,10 @@ class MotifStateEnsemble(object):
     def get_random_member(self):
         return random.choice(self.members)
 
+    def update_res_uuids(self, res):
+        for mem in self.members:
+            mem.motif_state.update_res_uuids(res)
+
 
 def file_to_motif_ensemble(path):
     f = open(path)

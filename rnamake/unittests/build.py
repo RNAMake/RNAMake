@@ -4,6 +4,7 @@ import rnamake.motif_tree as motif_tree
 import rnamake.secondary_structure_factory as ssfactory
 import rnamake.secondary_structure as secondary_structure
 import rnamake.motif_tree_topology as motif_tree_topology
+from rnamake import motif_graph
 
 
 def fill_basepairs_in_ss(ss):
@@ -76,6 +77,35 @@ class BuildMotifTree(object):
                 return mt
 
         return mt
+
+
+class BuildMotifGraph(object):
+    def __init__(self, lib_names = ["ideal_helices", "unique_twoway"], libs = None):
+        if libs is None:
+            self.libs = [rm.manager.mlibs[x] for x in lib_names ]
+        else:
+            self.libs = libs
+
+    def build(self, size=2):
+        mg = motif_graph.MotifGraph()
+        pos = 0
+        count = 0
+        while len(mg) < size:
+            if pos == len(self.libs):
+                pos = 0
+
+            m = self.libs[pos].get_random()
+            i = mg.add_motif(m)
+            count += 1
+            if count > 100:
+                break
+            if i != -1:
+                pos += 1
+            else:
+                print "fail",m.name
+                return mg
+        return mg
+
 
 class BuildSecondaryStructure(object):
     def __init__(self):

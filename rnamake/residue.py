@@ -42,8 +42,63 @@ class Bead(object):
     def __init__(self, center, btype):
         self.center, self.btype = center, btype
 
+
     def copy(self):
         return  Bead(np.copy(self.center), self.btype)
+
+
+class ResidueState(object):
+    def __init__(self, uuid):
+        self.uuid = uuid
+        self.beads = []
+
+    def copy(self):
+        return ResidueState(self.uuid)
+
+class ResidueStateType(object):
+    NORM = 0
+    END =  1
+
+class ResidueState2Bead(ResidueState):
+    def __init__(self, uuid, sugar, base, type=ResidueStateType.NORM):
+        super(self.__class__, self).__init__(uuid)
+        self.sugar = sugar
+        self.base = base
+        self.beads = [sugar, base]
+        self.type = type
+
+    def copy(self):
+        sugar = np.copy(self.sugar)
+        base  = np.copy(self.base)
+        return ResidueState2Bead(self.uuid, sugar, base, self.type)
+
+    def to_str(self):
+        return basic_io.points_to_str(self.beads) + "," + str(self.type)
+
+    def update(self, r, t):
+        self.beads = np.dot(self.beads, r) + t
+        self.sugar = self.beads[0]
+        self.base = self.beads[1]
+
+
+def get_residue_state(r, type=ResidueStateType.NORM):
+    phos_atoms, sugar_atoms, base_atoms = [], [], []
+
+    for i, a in enumerate(r.atoms):
+        if a is None:
+            continue
+        if   i < 3:
+            phos_atoms.append(a)
+        elif i < 12:
+            sugar_atoms.append(a)
+        else:
+            base_atoms.append(a)
+
+    return ResidueState2Bead(r.uuid,
+                             util.center(sugar_atoms),
+                             util.center(base_atoms),
+                             type)
+
 
 
 class Residue(object):

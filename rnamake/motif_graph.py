@@ -18,6 +18,9 @@ class MotifGraph(base.Base):
         self.clash_radius = settings.CLASH_RADIUS
         self.merger = motif_merger.MotifMerger()
 
+    def __len__(self):
+        return len(self.graph)
+
     def copy(self):
         mg = MotifGraph()
         new_graph = self.graph.copy()

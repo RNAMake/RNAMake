@@ -31,6 +31,13 @@ class MotifUnittest(unittest.TestCase):
         except:
             self.fail("did not generate motif correctly")
 
+    def test_state_1(self):
+        ms1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        state = ms1.get_state()
+
+        s = state.to_str()
+        state2 = motif.str_to_motif_state(s)
+
     def test_state(self):
         ms1 = rm.manager.get_state(name="HELIX.IDEAL.2")
         ms2 = rm.manager.get_state(name="HELIX.IDEAL.2")
