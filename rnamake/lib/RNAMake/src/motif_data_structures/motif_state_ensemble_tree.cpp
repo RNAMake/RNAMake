@@ -113,7 +113,8 @@ MotifStateEnsembleTree::setup_from_mt(
 
 
 void
-MotifStateEnsembleTreeEnumerator::record() {
+MotifStateEnsembleTreeEnumerator::record(
+    String fname) {
     
     std::vector<Ints> ranges(mtst_->size());
     for(int i = 0; i < mtst_->size(); i++) {
@@ -138,7 +139,7 @@ MotifStateEnsembleTreeEnumerator::record() {
     Matrix I = Matrix::identity();
     Matrix I_flip = I.get_flip_orientation();
 
-    std::ofstream out("test.out");
+    std::ofstream out(fname + ".out");
     while(!iterator.end()) {
         c = iterator.next();
         if(last_combo.size() == 0) { last_combo = c; }
@@ -163,7 +164,8 @@ MotifStateEnsembleTreeEnumerator::record() {
         }
         
         calc_euler(r, euler);
-        out << vector_to_str(d) << "," << matrix_to_str(r) << "," << mag << "," << r_diff << "," << r_best << "," << euler[0] << "," << euler[1] << "," << euler[2] << std::endl;
+        out << vector_to_str(d) << "," << matrix_to_str(r) << "," << mag << "," << r_diff << "," << r_best << "," << euler[0] << "," << euler[1] << "," << euler[2] << " " <<
+            mtst_->get_node(0)->data()->members()[c[0]]->energy << std::endl;
 
         j++;
         if(j % 1000 == 0) { std::cout << j << std::endl; }
