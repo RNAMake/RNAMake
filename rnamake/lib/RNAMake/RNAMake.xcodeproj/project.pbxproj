@@ -121,6 +121,70 @@
 		1C56107B1B78764A00996CEC /* motif_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CAA1AF422450076284E /* motif_tree.cc */; };
 		1C56107C1B78764A00996CEC /* motif_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACEA31AF2EC0F0098AA49 /* motif_type.cc */; };
 		1C56107D1B78765300996CEC /* motif_tree_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CB61AF42A860076284E /* motif_tree_unittest.cc */; };
+		1C6AF77F1BED7ADA00EB378D /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF471AF1AD6400C03772 /* uuid.cc */; };
+		1C6AF7811BED7ADA00EB378D /* numerical.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF3E1AF1A71000C03772 /* numerical.cc */; };
+		1C6AF7821BED7ADA00EB378D /* graph.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F50E1B1E6756000D1B6A /* graph.cc */; };
+		1C6AF7831BED7ADA00EB378D /* graph_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F5111B1E6765000D1B6A /* graph_node.cc */; };
+		1C6AF7841BED7ADA00EB378D /* tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F4F01B17FF9F000D1B6A /* tree.cc */; };
+		1C6AF7851BED7ADA00EB378D /* tree_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7642F1B6AD90200DA68FC /* tree_node.cc */; };
+		1C6AF7861BED7ADA00EB378D /* sqlite3_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CC11B0013F20076284E /* sqlite3_connection.cc */; };
+		1C6AF7871BED7ADA00EB378D /* cartesian_product.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CA31AF417A30076284E /* cartesian_product.cc */; };
+		1C6AF7881BED7ADA00EB378D /* settings.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF221AF066E400C03772 /* settings.cc */; };
+		1C6AF7891BED7ADA00EB378D /* file_io.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF1E1AF0658B00C03772 /* file_io.cc */; };
+		1C6AF78A1BED7ADA00EB378D /* x3dna.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CDA1B014EE90076284E /* x3dna.cc */; };
+		1C6AF78B1BED7ADA00EB378D /* monte_carlo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */; };
+		1C6AF78C1BED7ADA00EB378D /* ss_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3E2F1B0AE57C0076284E /* ss_tree.cc */; };
+		1C6AF78D1BED7ADA00EB378D /* ss_tree_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3E321B0AE5A20076284E /* ss_tree_node.cc */; };
+		1C6AF78E1BED7ADA00EB378D /* secondary_structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764371B6BF97C00DA68FC /* secondary_structure.cc */; };
+		1C6AF78F1BED7ADA00EB378D /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764471B6C0B1A00DA68FC /* residue.cc */; };
+		1C6AF7901BED7ADA00EB378D /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7644C1B6C104A00DA68FC /* chain.cc */; };
+		1C6AF7911BED7ADA00EB378D /* motif.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764511B6C29D500DA68FC /* motif.cc */; };
+		1C6AF7921BED7ADA00EB378D /* secondary_structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610311B6EA33D00996CEC /* secondary_structure_factory.cc */; };
+		1C6AF7931BED7ADA00EB378D /* basepair.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C56103B1B6EA96A00996CEC /* basepair.cc */; };
+		1C6AF7941BED7ADA00EB378D /* basepair.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE891AF2DE120098AA49 /* basepair.cc */; };
+		1C6AF7951BED7ADA00EB378D /* basepair_state.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE8C1AF2DE120098AA49 /* basepair_state.cc */; };
+		1C6AF7961BED7ADA00EB378D /* structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE811AF2BB240098AA49 /* structure.cc */; };
+		1C6AF7971BED7ADA00EB378D /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF6D1AF1BEB600C03772 /* chain.cc */; };
+		1C6AF7981BED7ADA00EB378D /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF411AF1AB1700C03772 /* residue.cc */; };
+		1C6AF7991BED7ADA00EB378D /* residue_type_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF3A1AF163C800C03772 /* residue_type_set.cc */; };
+		1C6AF79A1BED7ADA00EB378D /* residue_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF2B1AF0680A00C03772 /* residue_type.cc */; };
+		1C6AF79B1BED7ADA00EB378D /* atom.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF281AF0676B00C03772 /* atom.cc */; };
+		1C6AF79C1BED7ADA00EB378D /* pdb_parser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CE01B02E89F0076284E /* pdb_parser.cc */; };
+		1C6AF79D1BED7ADA00EB378D /* structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610291B6D9D7900996CEC /* structure_factory.cc */; };
+		1C6AF79E1BED7ADA00EB378D /* motif_ensemble.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFBF71B98DC24002847BA /* motif_ensemble.cpp */; };
+		1C6AF79F1BED7ADA00EB378D /* motif_state_ensemble.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFBF91B98DC24002847BA /* motif_state_ensemble.cpp */; };
+		1C6AF7A01BED7ADA00EB378D /* motif_to_secondary_structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CC8C7091B90F5CC0032DDCC /* motif_to_secondary_structure.cc */; };
+		1C6AF7A11BED7ADA00EB378D /* motif_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C56101E1B6D8D4700996CEC /* motif_factory.cc */; };
+		1C6AF7A21BED7ADA00EB378D /* pose.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CB31AF423C30076284E /* pose.cc */; };
+		1C6AF7A31BED7ADA00EB378D /* motif_tree_merger.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CB01AF422F60076284E /* motif_tree_merger.cc */; };
+		1C6AF7A41BED7ADA00EB378D /* motif_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CAA1AF422450076284E /* motif_tree.cc */; };
+		1C6AF7A51BED7ADA00EB378D /* motif_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACEA31AF2EC0F0098AA49 /* motif_type.cc */; };
+		1C6AF7A61BED7ADA00EB378D /* motif.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE9A1AF2E9AC0098AA49 /* motif.cc */; };
+		1C6AF7A71BED7ADA00EB378D /* motif_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DA01B07C92F0076284E /* motif_scorer.cc */; };
+		1C6AF7A81BED7ADA00EB378D /* pose_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CC8C6FF1B8BEB680032DDCC /* pose_factory.cc */; };
+		1C6AF7A91BED7ADA00EB378D /* motif_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE6C1B962571000253B5 /* motif_state.cpp */; };
+		1C6AF7AA1BED7ADA00EB378D /* motif_sqlite_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CC41B0014BF0076284E /* motif_sqlite_connection.cc */; };
+		1C6AF7AC1BED7ADA00EB378D /* sqlite_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610521B7695E100996CEC /* sqlite_library.cc */; };
+		1C6AF7AD1BED7ADA00EB378D /* motif_sqlite_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610571B76983D00996CEC /* motif_sqlite_library.cc */; };
+		1C6AF7AE1BED7ADA00EB378D /* resource_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610611B76CF9100996CEC /* resource_manager.cc */; };
+		1C6AF7AF1BED7ADA00EB378D /* added_motif_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610701B78370200996CEC /* added_motif_library.cc */; };
+		1C6AF7B01BED7ADA00EB378D /* motif_state_sqlite_library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE801B9774C2000253B5 /* motif_state_sqlite_library.cpp */; };
+		1C6AF7B11BED7ADA00EB378D /* motif_state_ensemble_sqlite_library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFC011B98EB45002847BA /* motif_state_ensemble_sqlite_library.cpp */; };
+		1C6AF7B21BED7ADA00EB378D /* motif_ensemble_sqlite_connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFC061B98ECFC002847BA /* motif_ensemble_sqlite_connection.cpp */; };
+		1C6AF7B31BED7ADA00EB378D /* motif_state_ensemble_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFC1E1B99FD8A002847BA /* motif_state_ensemble_tree.cpp */; };
+		1C6AF7B41BED7ADA00EB378D /* motif_state_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE951B97D402000253B5 /* motif_state_tree.cpp */; };
+		1C6AF7B51BED7ADA00EB378D /* thermo_fluc_scorer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C1FBA1B9F510300E6E959 /* thermo_fluc_scorer.cpp */; };
+		1C6AF7B61BED7ADA00EB378D /* thermo_fluc_sampler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFC2B1B9CE84A002847BA /* thermo_fluc_sampler.cpp */; };
+		1C6AF7B81BED7ADA00EB378D /* option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DAF1B095ACB0076284E /* option.cc */; };
+		1C6AF7B91BED7ADA00EB378D /* string.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFE791AF0636B00C03772 /* string.cc */; };
+		1C6AF7BA1BED7ADA00EB378D /* base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB11B095AE80076284E /* base.cc */; };
+		1C6AF7BB1BED7ADA00EB378D /* variant.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB51B0985A40076284E /* variant.cc */; };
+		1C6AF7BC1BED7ADA00EB378D /* cl_option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB81B09B43F0076284E /* cl_option.cc */; };
+		1C6AF7BE1BED7ADA00EB378D /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
+		1C6AF7C71BED80A900EB378D /* thermo_fluc_simulation_devel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C6AF7C51BED80A900EB378D /* thermo_fluc_simulation_devel.cpp */; };
+		1C6AF7C81BED80A900EB378D /* thermo_fluc_simulation_devel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C6AF7C51BED80A900EB378D /* thermo_fluc_simulation_devel.cpp */; };
+		1C6AF7CC1BED81BE00EB378D /* simulate_tectos_devel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C6AF7CA1BED81BE00EB378D /* simulate_tectos_devel.cc */; };
+		1C6AF7CD1BED81BE00EB378D /* simulate_tectos_devel.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C6AF7CA1BED81BE00EB378D /* simulate_tectos_devel.cc */; };
 		1C7C1FA51B9E440C00E6E959 /* monte_carlo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */; };
 		1C7C1FA61B9E440C00E6E959 /* monte_carlo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */; };
 		1C7C1FA71B9E440C00E6E959 /* monte_carlo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */; };
@@ -413,6 +477,15 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		1C6AF7BF1BED7ADA00EB378D /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
 		1C7C202F1B9FA12D00E6E959 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -602,6 +675,12 @@
 		1C5610711B78370200996CEC /* added_motif_library.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = added_motif_library.h; sourceTree = "<group>"; };
 		1C5610751B7845E300996CEC /* added_motif_library_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = added_motif_library_unittest.cc; sourceTree = "<group>"; };
 		1C5610761B7845E300996CEC /* added_motif_library_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = added_motif_library_unittest.h; sourceTree = "<group>"; };
+		1C6AF7781BEC193600EB378D /* euler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = euler.h; sourceTree = "<group>"; };
+		1C6AF7C31BED7ADA00EB378D /* simulate_tectos copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "simulate_tectos copy"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C6AF7C51BED80A900EB378D /* thermo_fluc_simulation_devel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = thermo_fluc_simulation_devel.cpp; path = thermo_fluctuation/thermo_fluc_simulation_devel.cpp; sourceTree = "<group>"; };
+		1C6AF7C61BED80A900EB378D /* thermo_fluc_simulation_devel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = thermo_fluc_simulation_devel.h; path = thermo_fluctuation/thermo_fluc_simulation_devel.h; sourceTree = "<group>"; };
+		1C6AF7CA1BED81BE00EB378D /* simulate_tectos_devel.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = simulate_tectos_devel.cc; path = simulate_tectos_devel/simulate_tectos_devel.cc; sourceTree = "<group>"; };
+		1C6AF7CB1BED81BE00EB378D /* simulate_tectos_devel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = simulate_tectos_devel.h; path = simulate_tectos_devel/simulate_tectos_devel.h; sourceTree = "<group>"; };
 		1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monte_carlo.cpp; sourceTree = "<group>"; };
 		1C7C1FA41B9E440C00E6E959 /* monte_carlo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = monte_carlo.h; sourceTree = "<group>"; };
 		1C7C1FAA1B9E45E600E6E959 /* thermo_fluc_sampler_unittest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = thermo_fluc_sampler_unittest.cpp; path = unittests/thermo_fluctuation_unittests/thermo_fluc_sampler_unittest.cpp; sourceTree = SOURCE_ROOT; };
@@ -812,6 +891,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1C6AF7BD1BED7ADA00EB378D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C6AF7BE1BED7ADA00EB378D /* libsqlite3.0.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1092,6 +1179,15 @@
 			path = eternabot;
 			sourceTree = "<group>";
 		};
+		1C6AF7C91BED81B000EB378D /* simulate_tectos_devel */ = {
+			isa = PBXGroup;
+			children = (
+				1C6AF7CA1BED81BE00EB378D /* simulate_tectos_devel.cc */,
+				1C6AF7CB1BED81BE00EB378D /* simulate_tectos_devel.h */,
+			);
+			name = simulate_tectos_devel;
+			sourceTree = "<group>";
+		};
 		1C7C1FA91B9E45A000E6E959 /* thermo_fluctuation_unittests */ = {
 			isa = PBXGroup;
 			children = (
@@ -1196,6 +1292,7 @@
 		1CAACEAB1AF2EDED0098AA49 /* apps */ = {
 			isa = PBXGroup;
 			children = (
+				1C6AF7C91BED81B000EB378D /* simulate_tectos_devel */,
 				1C4E3DC61B0ABC190076284E /* simulate_tectos */,
 			);
 			path = apps;
@@ -1294,6 +1391,7 @@
 				1CBEFE921AF0636B00C03772 /* transform.h */,
 				1CBEFE931AF0636B00C03772 /* xyz_matrix.h */,
 				1CBEFE941AF0636B00C03772 /* xyz_vector.h */,
+				1C6AF7781BEC193600EB378D /* euler.h */,
 			);
 			path = math;
 			sourceTree = "<group>";
@@ -1447,6 +1545,7 @@
 				1CBEFE641AF0496E00C03772 /* unittests */,
 				1C4E3E2A1B0AC2090076284E /* unittests copy */,
 				1C7C20311B9FA12D00E6E959 /* simulate_tectos */,
+				1C6AF7C31BED7ADA00EB378D /* simulate_tectos copy */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1454,6 +1553,8 @@
 		1CEBFC251B9CE7EA002847BA /* thermo_fluctuation */ = {
 			isa = PBXGroup;
 			children = (
+				1C6AF7C51BED80A900EB378D /* thermo_fluc_simulation_devel.cpp */,
+				1C6AF7C61BED80A900EB378D /* thermo_fluc_simulation_devel.h */,
 				1C7C1FB91B9F510300E6E959 /* thermo_fluc_scorer.h */,
 				1C7C1FBA1B9F510300E6E959 /* thermo_fluc_scorer.cpp */,
 				1CEBFC2B1B9CE84A002847BA /* thermo_fluc_sampler.cpp */,
@@ -1597,6 +1698,23 @@
 			name = eternabot;
 			productName = eternabot;
 			productReference = 1C4F144E1AA2A690003B7895 /* eternabot */;
+			productType = "com.apple.product-type.tool";
+		};
+		1C6AF77D1BED7ADA00EB378D /* simulate_tectos_devel */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1C6AF7C01BED7ADA00EB378D /* Build configuration list for PBXNativeTarget "simulate_tectos_devel" */;
+			buildPhases = (
+				1C6AF77E1BED7ADA00EB378D /* Sources */,
+				1C6AF7BD1BED7ADA00EB378D /* Frameworks */,
+				1C6AF7BF1BED7ADA00EB378D /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = simulate_tectos_devel;
+			productName = simulate_tectos;
+			productReference = 1C6AF7C31BED7ADA00EB378D /* simulate_tectos copy */;
 			productType = "com.apple.product-type.tool";
 		};
 		1C7C20301B9FA12D00E6E959 /* simulate_tectos */ = {
@@ -1790,6 +1908,7 @@
 				1CBEFE631AF0496E00C03772 /* unittests */,
 				1C4E3DEA1B0AC2090076284E /* unittests copy */,
 				1C7C20301B9FA12D00E6E959 /* simulate_tectos */,
+				1C6AF77D1BED7ADA00EB378D /* simulate_tectos_devel */,
 			);
 		};
 /* End PBXProject section */
@@ -1941,6 +2060,74 @@
 			buildActionMask = 2147483647;
 			files = (
 				1C4F14511AA2A690003B7895 /* main.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1C6AF77E1BED7ADA00EB378D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1C6AF77F1BED7ADA00EB378D /* uuid.cc in Sources */,
+				1C6AF7811BED7ADA00EB378D /* numerical.cc in Sources */,
+				1C6AF7821BED7ADA00EB378D /* graph.cc in Sources */,
+				1C6AF7831BED7ADA00EB378D /* graph_node.cc in Sources */,
+				1C6AF7841BED7ADA00EB378D /* tree.cc in Sources */,
+				1C6AF7851BED7ADA00EB378D /* tree_node.cc in Sources */,
+				1C6AF7861BED7ADA00EB378D /* sqlite3_connection.cc in Sources */,
+				1C6AF7871BED7ADA00EB378D /* cartesian_product.cc in Sources */,
+				1C6AF7881BED7ADA00EB378D /* settings.cc in Sources */,
+				1C6AF7891BED7ADA00EB378D /* file_io.cc in Sources */,
+				1C6AF78A1BED7ADA00EB378D /* x3dna.cc in Sources */,
+				1C6AF78B1BED7ADA00EB378D /* monte_carlo.cpp in Sources */,
+				1C6AF7C81BED80A900EB378D /* thermo_fluc_simulation_devel.cpp in Sources */,
+				1C6AF78C1BED7ADA00EB378D /* ss_tree.cc in Sources */,
+				1C6AF78D1BED7ADA00EB378D /* ss_tree_node.cc in Sources */,
+				1C6AF78E1BED7ADA00EB378D /* secondary_structure.cc in Sources */,
+				1C6AF78F1BED7ADA00EB378D /* residue.cc in Sources */,
+				1C6AF7901BED7ADA00EB378D /* chain.cc in Sources */,
+				1C6AF7911BED7ADA00EB378D /* motif.cc in Sources */,
+				1C6AF7CD1BED81BE00EB378D /* simulate_tectos_devel.cc in Sources */,
+				1C6AF7921BED7ADA00EB378D /* secondary_structure_factory.cc in Sources */,
+				1C6AF7931BED7ADA00EB378D /* basepair.cc in Sources */,
+				1C6AF7941BED7ADA00EB378D /* basepair.cc in Sources */,
+				1C6AF7951BED7ADA00EB378D /* basepair_state.cc in Sources */,
+				1C6AF7961BED7ADA00EB378D /* structure.cc in Sources */,
+				1C6AF7971BED7ADA00EB378D /* chain.cc in Sources */,
+				1C6AF7981BED7ADA00EB378D /* residue.cc in Sources */,
+				1C6AF7991BED7ADA00EB378D /* residue_type_set.cc in Sources */,
+				1C6AF79A1BED7ADA00EB378D /* residue_type.cc in Sources */,
+				1C6AF79B1BED7ADA00EB378D /* atom.cc in Sources */,
+				1C6AF79C1BED7ADA00EB378D /* pdb_parser.cc in Sources */,
+				1C6AF79D1BED7ADA00EB378D /* structure_factory.cc in Sources */,
+				1C6AF79E1BED7ADA00EB378D /* motif_ensemble.cpp in Sources */,
+				1C6AF79F1BED7ADA00EB378D /* motif_state_ensemble.cpp in Sources */,
+				1C6AF7A01BED7ADA00EB378D /* motif_to_secondary_structure.cc in Sources */,
+				1C6AF7A11BED7ADA00EB378D /* motif_factory.cc in Sources */,
+				1C6AF7A21BED7ADA00EB378D /* pose.cc in Sources */,
+				1C6AF7A31BED7ADA00EB378D /* motif_tree_merger.cc in Sources */,
+				1C6AF7A41BED7ADA00EB378D /* motif_tree.cc in Sources */,
+				1C6AF7A51BED7ADA00EB378D /* motif_type.cc in Sources */,
+				1C6AF7A61BED7ADA00EB378D /* motif.cc in Sources */,
+				1C6AF7A71BED7ADA00EB378D /* motif_scorer.cc in Sources */,
+				1C6AF7A81BED7ADA00EB378D /* pose_factory.cc in Sources */,
+				1C6AF7A91BED7ADA00EB378D /* motif_state.cpp in Sources */,
+				1C6AF7AA1BED7ADA00EB378D /* motif_sqlite_connection.cc in Sources */,
+				1C6AF7AC1BED7ADA00EB378D /* sqlite_library.cc in Sources */,
+				1C6AF7AD1BED7ADA00EB378D /* motif_sqlite_library.cc in Sources */,
+				1C6AF7AE1BED7ADA00EB378D /* resource_manager.cc in Sources */,
+				1C6AF7AF1BED7ADA00EB378D /* added_motif_library.cc in Sources */,
+				1C6AF7B01BED7ADA00EB378D /* motif_state_sqlite_library.cpp in Sources */,
+				1C6AF7B11BED7ADA00EB378D /* motif_state_ensemble_sqlite_library.cpp in Sources */,
+				1C6AF7B21BED7ADA00EB378D /* motif_ensemble_sqlite_connection.cpp in Sources */,
+				1C6AF7B31BED7ADA00EB378D /* motif_state_ensemble_tree.cpp in Sources */,
+				1C6AF7B41BED7ADA00EB378D /* motif_state_tree.cpp in Sources */,
+				1C6AF7B51BED7ADA00EB378D /* thermo_fluc_scorer.cpp in Sources */,
+				1C6AF7B61BED7ADA00EB378D /* thermo_fluc_sampler.cpp in Sources */,
+				1C6AF7B81BED7ADA00EB378D /* option.cc in Sources */,
+				1C6AF7B91BED7ADA00EB378D /* string.cc in Sources */,
+				1C6AF7BA1BED7ADA00EB378D /* base.cc in Sources */,
+				1C6AF7BB1BED7ADA00EB378D /* variant.cc in Sources */,
+				1C6AF7BC1BED7ADA00EB378D /* cl_option.cc in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2193,6 +2380,7 @@
 				1CBEFE5F1AF0495700C03772 /* unittest.cc in Sources */,
 				1C5610201B6D8D4700996CEC /* motif_factory.cc in Sources */,
 				1C56102B1B6D9D7900996CEC /* structure_factory.cc in Sources */,
+				1C6AF7C71BED80A900EB378D /* thermo_fluc_simulation_devel.cpp in Sources */,
 				1CEBFBFE1B98DC24002847BA /* motif_state_ensemble.cpp in Sources */,
 				1C5610721B78370200996CEC /* added_motif_library.cc in Sources */,
 				1CBEFF2D1AF0680A00C03772 /* residue_type.cc in Sources */,
@@ -2217,6 +2405,7 @@
 				1CC8C7051B8BEBDE0032DDCC /* pose_factory_unittest.cpp in Sources */,
 				1C5610541B7695E100996CEC /* sqlite_library.cc in Sources */,
 				1CF764311B6AD90200DA68FC /* tree_node.cc in Sources */,
+				1C6AF7CC1BED81BE00EB378D /* simulate_tectos_devel.cc in Sources */,
 				1CF764531B6C29D500DA68FC /* motif.cc in Sources */,
 				1CAACE9C1AF2E9AC0098AA49 /* motif.cc in Sources */,
 				1C5610771B7845E300996CEC /* added_motif_library_unittest.cc in Sources */,
@@ -2371,6 +2560,40 @@
 					"/Users/josephyesselman/Downloads/ViennaRNA-2.1.8/lib",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		1C6AF7C11BED7ADA00EB378D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src,
+				);
+				PRODUCT_NAME = "simulate_tectos copy";
+			};
+			name = Debug;
+		};
+		1C6AF7C21BED7ADA00EB378D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				COPY_PHASE_STRIP = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src,
+				);
+				PRODUCT_NAME = "simulate_tectos copy";
 			};
 			name = Release;
 		};
@@ -2655,6 +2878,15 @@
 			buildConfigurations = (
 				1C4F14531AA2A690003B7895 /* Debug */,
 				1C4F14541AA2A690003B7895 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		1C6AF7C01BED7ADA00EB378D /* Build configuration list for PBXNativeTarget "simulate_tectos_devel" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1C6AF7C11BED7ADA00EB378D /* Debug */,
+				1C6AF7C21BED7ADA00EB378D /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
