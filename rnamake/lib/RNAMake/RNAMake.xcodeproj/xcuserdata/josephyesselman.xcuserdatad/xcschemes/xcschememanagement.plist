@@ -47,12 +47,17 @@
 		<key>simulate_tectos.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>3</integer>
+			<integer>4</integer>
+		</dict>
+		<key>simulate_tectos_devel.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>5</integer>
 		</dict>
 		<key>unittests copy.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>11</integer>
+			<integer>3</integer>
 		</dict>
 		<key>unittests.xcscheme</key>
 		<dict>
@@ -128,6 +133,11 @@
 			<true/>
 		</dict>
 		<key>1C4F56471A76229800C7E6D7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C6AF77D1BED7ADA00EB378D</key>
 		<dict>
 			<key>primary</key>
 			<true/>
