@@ -19,7 +19,7 @@
 class ThermoFlucSimulationDevel : public Base {
 public:
     ThermoFlucSimulationDevel() {
-        scorer_ = std::make_shared<FrameScorer>(FrameScorer());
+        scorer_ = std::make_shared<FrameScorerDevel>(FrameScorerDevel());
         sampler_ = ThermoFlucSampler();
         setup_options();
         
@@ -40,6 +40,9 @@ public:
     int
     run();
     
+    String
+    static_run();
+    
 protected:
     void
     setup_options();
@@ -57,7 +60,8 @@ private:
     int ni1_, ni2_, ei1_, ei2_;
     float score_;
     //option vars
-    float temperature_, cutoff_;
+    String record_file_;
+    float temperature_, cutoff_, steric_radius_;
     int steps_, record_;
 };
 

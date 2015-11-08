@@ -73,6 +73,7 @@ CL_Options::parse_command_line(
             key = key.substr(1);
 
             if(argv[i][1] == '-') {
+                key = key.substr(1);
                 if(l_cl_opts_.find(key) == l_cl_opts_.end()) {
                     throw std::runtime_error("unknown command line argument: " + key);
                 }

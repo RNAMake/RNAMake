@@ -13,15 +13,14 @@
 
 //RNAMake Headers
 #include "base/base.h"
+#include "base/cl_option.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
+
 
 class SimulateTectos {
 public:
     SimulateTectos(
-        String const &,
-        String const &,
-        String const &,
-        String const &);
+        Options &);
     
 public:
     
