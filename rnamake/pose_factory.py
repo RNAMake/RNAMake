@@ -205,7 +205,6 @@ class PoseFactory(object):
         new_p.mgraph = mg
         return new_p
 
-
     def _find_best_start_end(self, p, all_motifs):
         best_m = None
         best_free_ends = []
@@ -268,7 +267,7 @@ class PoseFactory(object):
                     if len(best_m.ends) > len(m1.ends):
                         best_m = m1
                         best_free_ends = free_ends
-        print best_m, len(best_free_ends)
+        #print best_m, len(best_free_ends)
         return best_m
 
     def _convert_helices_to_bp_steps(self, helices):
