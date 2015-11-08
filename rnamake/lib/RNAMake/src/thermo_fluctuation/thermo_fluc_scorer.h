@@ -54,7 +54,7 @@ public:
         r_diff_ = state_1->r().difference(state_2->r());
         state_2->flip();
         r_diff_flip_ = state_1->r().difference(state_2->r());;
-        state_1->flip();
+        state_2->flip();
         
         if(r_diff_ > r_diff_flip_) { frame_score_ += r_diff_flip_; }
         else                       { frame_score_ += r_diff_;      }
@@ -66,6 +66,64 @@ public:
 private:
     float frame_score_, r_diff_, r_diff_flip_;
 };
+
+
+class FrameScorerDevel : public ThermoFlucScorer {
+public:
+    FrameScorerDevel() : ThermoFlucScorer()
+    { weight_d_ = 1; weight_r_ = 1; }
+    
+    ~FrameScorerDevel() {}
+    
+public:
+    
+    inline
+    float
+    score(
+          BasepairStateOP & state_1,
+          BasepairStateOP & state_2) {
+        
+        frame_score_ = state_1->d().distance(state_2->d())*weight_d_;
+        r_diff_ = state_1->r().difference(state_2->r());
+        state_2->flip();
+        r_diff_flip_ = state_1->r().difference(state_2->r());;
+        state_2->flip();
+        
+        if(r_diff_ > r_diff_flip_) { frame_score_ += r_diff_flip_*weight_r_; }
+        else                       { frame_score_ += r_diff_*weight_r_;      }
+        
+        return frame_score_;
+        
+    }
+    
+public:
+    
+    inline
+    void
+    weight_d(
+             float weight_d) {  weight_d_ = weight_d; }
+    
+    inline
+    void
+    weight_r(
+             float weight_r) {  weight_r_ = weight_r; }
+    
+
+public:
+    
+    inline
+    float
+    weight_d() { return weight_d_; }
+    
+    inline
+    float
+    weight_r() { return weight_r_; }
+    
+private:
+    float frame_score_, r_diff_, r_diff_flip_;
+    float weight_d_, weight_r_;
+};
+
 
 
 typedef std::shared_ptr<ThermoFlucScorer> ThermoFlucScorerOP;

@@ -28,25 +28,48 @@ parse_command_line(
                        "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG", false);
     cl_opts.add_option("css" , "", STRING_TYPE,
                        "(((((((..((((((((((((....))))))))))))...)))))))", false);
-    cl_opts.add_option("s", "steps", FLOAT_TYPE, "1000000", false);
+    cl_opts.add_option("s", "steps", INT_TYPE, "1000000", false);
+    cl_opts.add_option("c", "cutoff", FLOAT_TYPE, "4.5f", false);
+    cl_opts.add_option("t", "temperature", FLOAT_TYPE, "298.15f", false);
+    cl_opts.add_option("sr", "steric_radius", FLOAT_TYPE, "2.2f", false);
+    cl_opts.add_option("wd", "", FLOAT_TYPE, "1.0f", false);
+    cl_opts.add_option("wr", "", FLOAT_TYPE, "1.0f", false);
+
+
+    cl_opts.add_option("", "static", INT_TYPE, "0", false);
+    cl_opts.add_option("r", "record", INT_TYPE, "0", false);
+    cl_opts.add_option("rf", "record_file", STRING_TYPE, "test.out", false);
+
     
     return cl_opts.parse_command_line(argc, argv);
     
 }
 
 SimulateTectos::SimulateTectos(
-    String const & fseq,
-    String const & fss,
-    String const & cseq,
-    String const & css) {
+    Options & opts) {
     
-    auto mset = get_mset_old(fseq, fss, cseq, css);
+    auto mset = get_mset_old(opts.option<String>("fseq"),
+                             opts.option<String>("fss"),
+                             opts.option<String>("cseq"),
+                             opts.option<String>("css"));
     ThermoFlucSimulationDevel tfs;
     tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
-    tfs.option("steps", 1000000);
-    tfs.option("cutoff", 4.5f);
-    //tfs.option("cutoff", 5.0f);
+    tfs.option("steps",  opts.option<int>("s"));
+    tfs.option("cutoff", opts.option<float>("c"));
+    tfs.option("temperature", opts.option<float>("t"));
+    tfs.option("steric_radius", opts.option<float>("sr"));
+    tfs.option("record", opts.option<int>("r"));
+    tfs.option("record_file", opts.option<String>("rf"));
+    tfs.option("d_weight", opts.option<float>("wd"));
+    tfs.option("r_weight", opts.option<float>("wr"));
 
+    
+    
+    if(opts.option<int>("static")) {
+        std::cout << tfs.static_run() << std::endl;
+        exit(0);
+    }
+    
     int count = tfs.run();
     std::cout << count << std::endl;
 }
@@ -140,17 +163,14 @@ SimulateTectos::get_motifs_from_seq_and_ss(
 
 
 int main(int argc, const char * argv[]) {
-    String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
+    String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos_devel/resources/";
     ResourceManager::getInstance().add_motif(base_path+"GAAA_tetraloop");
     ResourceManager::getInstance().add_motif(base_path+"GGAA_tetraloop");
 
     try {
         
         Options opts = parse_command_line(argc, argv);
-        SimulateTectos st(opts.option<String>("fseq"),
-                          opts.option<String>("fss"),
-                          opts.option<String>("cseq"),
-                          opts.option<String>("css"));
+        SimulateTectos st(opts);
                                               
     } catch(std::runtime_error e) {
         std::cerr << "caught runtime exception: " << e.what() << std::endl;
