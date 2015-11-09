@@ -43,6 +43,10 @@ class RNAStructure(object):
         """
         writes the current motif's structure to a pdb
         """
+        if close_chain:
+            for c in self.chains():
+                chain_closure.close_chain(c)
+
         return self.structure.to_pdb(fname, renumber)
 
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):

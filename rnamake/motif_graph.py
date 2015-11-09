@@ -291,8 +291,8 @@ class MotifGraph(base.Base):
         for n in self.graph.nodes:
             n.data.to_pdb(name+"."+str(n.index)+".pdb")
 
-    def to_pdb(self, name="test.pdb"):
-        return self.merger.to_pdb(name)
+    def to_pdb(self, name="test.pdb", renumber=-1, close_chain=0):
+        return self.merger.to_pdb(name, renumber=renumber, close_chain=close_chain)
 
     def last_node(self):
         return self.graph.last_node
