@@ -132,8 +132,9 @@ class Structure(object):
             rnum = 1
         for i, c in enumerate(self.chains):
             c_str, acount = c.to_pdb_str(acount, 1, rnum, chain_id)
-            if renumber != -1:
-                chain_id = c_names[i+1]
+            #if renumber != -1:
+            #    chain_id = c_names[i+1]
+            rnum += len(c.residues)
             s += c_str
             s += "TER\n"
         return s

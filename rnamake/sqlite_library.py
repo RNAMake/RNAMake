@@ -135,7 +135,7 @@ class MotifSqliteLibrary(SqliteLibrary):
             "hairpin"         : "/motif_libraries_new/hairpin.db",
             "nway"            : "/motif_libraries_new/nway.db",
             "unique_twoway"   : "/motif_libraries_new/unique_twoway.db",
-            "bp_steps"        : "/motif_libraries_new/bp_steps.db"
+            "bp_steps"        : "/motif_libraries_new/bp_steps.db",
         }
 
         return libnames
