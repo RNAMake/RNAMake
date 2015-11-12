@@ -33,7 +33,7 @@ class MotifStateSearch(base.Base):
 
     def _start_node(self, start_bp):
         ms = motif.MotifState('start', ['start', 'start'], ['', ''],
-                              [start_bp, start_bp], [], 0, 0, 0)
+                              [start_bp, start_bp], [], 0, 0, 0, [])
         n = MotifStateSearchNode(ms, None, -1, -1)
         n.node_type_usages = [0 for i in range(len(self.selector.graph))]
         return n

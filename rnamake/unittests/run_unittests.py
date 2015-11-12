@@ -9,6 +9,7 @@ testmodules = [
     'eternabot_unittest',
     'graph_unittest',
     'motif_unittest',
+    'motif_graph_unittest',
     'motif_library_unittest',
     'motif_scorer_unittest',
     'motif_state_search_unittest',

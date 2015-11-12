@@ -27,8 +27,8 @@ class GraphUnittest(unittest.TestCase):
         g.add_data(3, 0, 0, 0, 2)
         g.connect(3, 2, 1, 1)
 
-        for n in graph.transverse_graph(g, 2):
-            print n.data
+        #for n in graph.transverse_graph(g, 2):
+        #    print n.data
 
         g = graph.GraphStatic()
         g.add_data(0, -1, -1, -1, 2)
@@ -36,6 +36,10 @@ class GraphUnittest(unittest.TestCase):
         g.add_data(2, 1, 1, 0, 2)
         g.remove_node(1)
 
+    def test_iter(self):
+        g = graph.GraphStatic()
+        for n in g:
+            continue
 
 
 

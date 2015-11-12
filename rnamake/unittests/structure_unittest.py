@@ -12,11 +12,12 @@ class StructureUnittest(unittest.TestCase):
 
     def setUp(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        self.structure = rnamake.motif_factory.factory.get_structure(path)
+        self.structure = rnamake.structure.structure_from_pdb(path)
+
 
     def test_creation(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        rnamake.motif_factory.factory.get_structure(path)
+        rnamake.structure.structure_from_pdb(path)
 
     def _generate_build_chains_test(self, f_path):
         try:

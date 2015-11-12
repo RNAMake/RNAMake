@@ -56,11 +56,11 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mss.lookup = sl
 
         mss.setup(start, end)
-        s = mss.search(one=1)
+        s = mss.next()
         mst_sol = s.to_mst()
         mst.add_mst(mst_sol, parent_end_name="A221-A252")
         mst.add_connection(0, mst.last_node().index, "A146-A157")
-        p = mst.to_pose()
+        #p = mst.to_pose()
 
     def test_redesign(self):
         s = rnamake.segmenter.Segmenter()
@@ -85,7 +85,7 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mss.lookup = sl
 
         mss.setup(start, end)
-        s = mss.search(one=1)
+        s = mss.next()
         mst_sol = s.to_mst()
 
 

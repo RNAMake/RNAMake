@@ -107,7 +107,6 @@ def new_score_function_new(current, end, endflip):
     d_diff = (util.distance(current.sugars[0], end.sugars[1]) + \
               util.distance(current.sugars[1], end.sugars[0]))*0.50
 
-
     if d_diff > 25:
         return d_diff
 

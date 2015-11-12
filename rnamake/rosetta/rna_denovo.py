@@ -3,13 +3,27 @@ import glob
 import os
 from rnamake import motif_factory
 from rnamake import motif_ensemble
+from rnamake import base, option
 from rnamake.submit import qsub_job
 
-class RNADenovo(object):
-    def __init__(self, nstruct=2):
-        self.nstruct = nstruct
+class RNADenovo(base.Base):
+    def __init__(self, **options):
+        self.setup_options_and_constraints()
+        self.options.dict_set(options)
 
-    def run(self, ss):
+    def setup_options_and_constraints(self):
+        options = {'nstruct'        : 10,
+                   'tag'            : 'default',
+                   'data_file'      : None,
+                   'weights'        : "",
+                   'hires_wts'      : None,
+                   'lores_wts'      : None,
+                   'extra_bps'      : "",
+                   'allow_bulge'    : 0}
+
+        self.options = option.Options(options)
+
+    def _get_working(self, ss):
         cutpoints = []
         seq = ""
         db = ""
@@ -21,16 +35,36 @@ class RNADenovo(object):
                 length += len(c.sequence())
                 cutpoints.append(str(length))
 
-        for r in ss.residues():
-            print r.num, r.name,
-        print
+        return seq, db, cutpoints
 
-        subprocess.call('rna_denovo_setup.py -sequence \"%s\" -secstruct \"%s\" -cutpoint_open %s -out_script default.run -tag default -nstruct %d' % (seq, db, " ".join(cutpoints), self.nstruct), shell=True)
+    def _get_rna_denovo_setup_call(self, seq, db, cutpoints):
+        s = 'rna_denovo_setup.py -sequence \"%s\" -secstruct \"%s\" -cutpoint_open %s -out_script default.run -tag %s -nstruct %d ' % \
+            (seq, db, " ".join(cutpoints), self.option('tag'),
+             self.option('nstruct'))
+
+        if self.option('data_file'):
+            s += '-data_file ' + self.option('data_file') + " "
+        if self.option('lores_wts'):
+            s += ''
+        if self.option('weights') != "":
+            s += '-set_weights ' + self.option('weights') + " "
+
+        if self.option('allow_bulge'):
+            s += "-allow_bulge "
+
+        return s
+
+    def run(self, ss):
+        seq, db, cutpoints = self._get_working(ss)
+        s = self._get_rna_denovo_setup_call(seq, db, cutpoints)
+
+        subprocess.call(s, shell=True)
+
+        if self.option('extra_bps') != "":
+            subprocess.call('echo \"' + self.option('extra_bps') + '\"' + " >> default.params", shell=True )
 
         subprocess.call("source default.run", shell=True)
-
-        subprocess.call("extract_lowscore_decoys.py default.out " + str(self.nstruct),
-                        shell=True)
+        subprocess.call("extract_lowscore_decoys.py default.out " + str(self.option('nstruct')),shell=True)
 
 
     def generate_script(self, ss, name="test.sh", walltime="1:00:00"):
@@ -50,8 +84,6 @@ class RNADenovo(object):
         job_str += "extract_lowscore_decoys.py default.out " + str(self.nstruct)
 
         return qsub_job.QSUBJob(name, job_str, walltime)
-
-
 
     def process(self, ss, start_bp, name="default"):
         pdbs = glob.glob("default.out.*.pdb")

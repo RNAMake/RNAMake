@@ -72,7 +72,13 @@ class MotifMerger(rna_structure.RNAStructure):
                                self.chains())
 
     def connect_motifs(self, m1, m2, m1_end, m2_end):
-        self._merge_motifs(m1, m2, m1_end, m2_end,self.chains(), self.chains())
+        self._merge_motifs(m1, m2, m1_end, m2_end, self.chains(), self.chains())
+
+        uuids = [r.uuid for r in self.residues()]
+        for bp in m2.basepairs:
+            if bp.res1.uuid in uuids and bp.res2.uuid in uuids and \
+               bp not in self.basepairs:
+                self.basepairs.append(bp)
 
     def remove_motif(self, m):
         removed_res = self._remove_res_from_chains(m)
@@ -315,6 +321,7 @@ class MotifMerger(rna_structure.RNAStructure):
                bp not in self.basepairs:
                 self.basepairs.append(bp)
 
+        #not sure why I need this?
         if m1_chains == m2_chains:
             self.basepairs.remove(m1_end)
 
@@ -330,8 +337,13 @@ class MotifMerger(rna_structure.RNAStructure):
             merged_chain_1 = self._get_merged_hairpin(cm2.p3_chain, cm2.p5_chain,
                                                       cm1.p5_chain, 0, 0)
         elif cm2.is_hairpin():
-            merged_chain_1 = self._get_merged_hairpin(cm1.p5_chain, cm1.p3_chain,
-                                                      cm2.p5_chain, 1, 1)
+            res1 = cm1.p5_chain.residues.pop(0)
+            res2 = cm1.p3_chain.residues.pop()
+            self.residue_map[res1.uuid] = cm2.p5_chain.residues[-1].uuid
+            self.residue_map[res2.uuid] = cm2.p5_chain.residues[0].uuid
+
+            merged_chain_1 = self._get_merged_hairpin(cm1.p3_chain, cm1.p5_chain,
+                                                      cm2.p5_chain, 0, 0)
         else:
             merged_chain_1 = self._get_merged_chain(cm1.p5_chain, cm2.p3_chain, 1, 1)
             merged_chain_2 = self._get_merged_chain(cm1.p3_chain, cm2.p5_chain, 0, 1)
