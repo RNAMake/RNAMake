@@ -44,7 +44,10 @@ class Graph(object):
         return len(self.nodes)
 
     def __iter__(self):
-        self.current_node = self.nodes[0]
+        if len(self.nodes) != 0:
+            self.current_node = self.nodes[0]
+        else:
+            self.current_node = None
         self.seen = []
         self.queue = priority_queue.PriorityQueue()
         return self
@@ -238,7 +241,8 @@ class GraphStatic(Graph):
             i, j = c.node_1.index, c.node_2.index
             ni, nj = c.end_index_1, c.end_index_2
             gs.connect(i, j, ni, nj)
-        gs.last_node = gs.nodes[self.last_node.index]
+        if self.last_node is not None:
+            gs.last_node = gs.nodes[self.last_node.index]
         gs.level = self.level
         gs.index = self.index
         return gs

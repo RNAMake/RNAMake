@@ -14,30 +14,18 @@ import secondary_structure
 import motif_tree_topology
 import motif_merger
 
-def motif_tree_from_topology(mtt, sterics=1):
-    mt = MotifTree(sterics=sterics)
-    for i, n in enumerate(mtt.tree.nodes):
-        #print i, n.data.motif_name, n.data.parent_end_ss_id
-        if n.data.motif_name != "":
-            m = rm.manager.get_motif(name=n.data.motif_name,
-                                     end_id=n.data.end_ss_id)
-        else:
-            m = rm.manager.get_motif(end_id=n.data.end_ss_id)
+def motif_tree_from_topology_str(s):
+    mt = MotifTree()
+    spl = s.split("|")
+    for i, e in enumerate(spl[:-1]):
+        n_spl = e.split(",")
+        m = rm.manager.get_motif(name=n_spl[0], end_id=n_spl[1])
         if i == 0:
             mt.add_motif(m)
         else:
-            n_parent = mt.get_node(n.parent_index())
-            parent_end_index = n_parent.data.end_index_with_id(n.data.parent_end_ss_id)
-            j = mt.add_motif(m, n.parent_index(), parent_end_index=parent_end_index)
-            if j == -1:
-                raise ValueError("was unable to build motiftree from topology")
+            mt.add_motif(m, parent_index=int(n_spl[2]))
 
     return mt
-
-def update_sequence(mt, ss, end=None):
-    conn = ss.motif_topology_from_end(end)
-    mtt = motif_tree_topology.MotifTreeTopology(conn)
-    return motif_tree_from_topology(mtt)
 
 
 class MotifTree(base.Base):
@@ -220,9 +208,9 @@ m
 
     def topology_to_str(self):
         s = ""
-        for n in self.graph:
+        for n in self.tree.nodes:
             s += n.data.name + "," + n.data.end_ids[0] + "," + \
-                 str(n.parent_index())
+                 str(n.parent_index()) + "|"
         return s
 
     def _steric_clash(self, m):

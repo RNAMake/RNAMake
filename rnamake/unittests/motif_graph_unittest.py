@@ -19,7 +19,7 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
 
         mg = motif_graph.MotifGraph()
-        for n in mt.graph.nodes:
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
         if len(mg.graph) != 3:
@@ -33,7 +33,7 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        for n in mt.graph.nodes:
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
         mg.remove_motif(1)
@@ -47,7 +47,7 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        for n in mt.graph.nodes:
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
         new_mg = mg.copy()
@@ -62,7 +62,7 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        for n in mt.graph.nodes:
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
         mg.write_pdbs("org")
@@ -82,12 +82,12 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        for n in mt.graph.nodes:
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
         new_mg = mg.copy()
         new_mg.replace_ideal_helices()
-        ss = new_mg.designable_secondary_structure(leaf_pos=3)
+        ss = new_mg.designable_secondary_structure()
         designer = sd.SequenceDesigner()
         r = designer.design(ss.dot_bracket(), ss.sequence())
         ss.replace_sequence(r[0].sequence)
@@ -99,12 +99,12 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        for n in mt.graph.nodes:
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
         new_mg = mg.copy()
         new_mg.replace_ideal_helices()
-        ss = new_mg.designable_secondary_structure(leaf_pos=3)
+        ss = new_mg.designable_secondary_structure()
 
     def test_secondary_structure(self):
         builder = build.BuildMotifTree()
@@ -112,7 +112,7 @@ class MotifGraphUnittest(unittest.TestCase):
         mg = motif_graph.MotifGraph()
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
-        mg.write_pdbs("org")
+        #mg.write_pdbs("org")
         mg.replace_ideal_helices()
 
         mg.write_pdbs()
@@ -122,8 +122,8 @@ class MotifGraphUnittest(unittest.TestCase):
         r = designer.design(ss.dot_bracket(), ss.sequence())
         ss.replace_sequence(r[0].sequence)
         mg.replace_helix_sequence(ss)
-        mg.write_pdbs("new")
-        mg.merger.to_pdb("test.pdb")
+        #mg.write_pdbs("new")
+        #mg.merger.to_pdb("test.pdb")
         #mg.write_pdbs()
 
     def test_designable_secondary_structure(self):
@@ -131,7 +131,7 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        for n in mt.graph.nodes:
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
 
@@ -157,7 +157,7 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
 
-        for n in mt.graph.nodes:
+        for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
         hairpin = rm.manager.mlibs['hairpin'].get_random()
@@ -177,10 +177,8 @@ class MotifGraphUnittest(unittest.TestCase):
         ss = mg.designable_secondary_structure()
         build.fill_basepairs_in_ss(ss)
         mg.replace_helix_sequence(ss)
-        print ss
-        mg.write_pdbs()
-
-        exit()
+        #print ss
+        #mg.write_pdbs()
 
     def test_to_tree(self):
         builder = build.BuildMotifTree()
@@ -190,7 +188,7 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-        mg.write_pdbs("org")
+        #mg.write_pdbs("org")
         #mg.secondary_structure()
 
         mt2 = motif_topology.graph_to_tree(mg)

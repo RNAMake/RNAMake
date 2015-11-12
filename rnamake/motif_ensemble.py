@@ -54,6 +54,12 @@ class MotifEnsemble(object):
             s += ms.to_str() + "{"
         return s
 
+    def to_file(self, name="test.me"):
+        s = self.to_str()
+        f = open(name, "w")
+        f.write(s)
+        f.close()
+
     def get_state(self):
         mse = MotifStateEnsemble()
         motif_states = []

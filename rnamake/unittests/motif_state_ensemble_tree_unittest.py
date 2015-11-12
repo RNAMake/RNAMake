@@ -32,7 +32,7 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mst = mset.to_mst()
         mst.write_pdbs()
 
-    def test_setup_from_mt(self):
+    def _test_setup_from_mt(self):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(20)
         con = ss.motif_topology_from_end()
@@ -40,13 +40,13 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mt = motif_tree.motif_tree_from_topology(mtt)
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
 
-    def test_setup_from_mt_2(self):
+    def _test_setup_from_mt_2(self):
         builder = build.BuildMotifTree()
         mt = builder.build_no_ideal_helices()
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
         mst = mset.to_mst()
 
-    def test_setup_from_mt_3(self):
+    def _test_setup_from_mt_3(self):
         rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
         mt = motif_tree.MotifTree()
         mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
@@ -72,8 +72,8 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
 
         mst = mset.to_mst()
-        for r in mt.residues():
-            print mst.get_residue(r.uuid)
+        #for r in mt.residues():
+        #    print mst.get_residue(r.uuid)
 
 
 
