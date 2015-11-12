@@ -97,7 +97,7 @@ ThermoFlucSimulationDevel::run() {
     std::ofstream out;
     if(record_) {
         out.open(record_file_);
-        out << "d,r";
+        out << "d1,r1,d2,r2,cutoff";
         out << std::endl;
     }
     
@@ -135,7 +135,7 @@ ThermoFlucSimulationDevel::run() {
         }
         
         if(record_) {
-            out << vector_to_str(end_state_2_->d()) << "," << matrix_to_str(end_state_2_->r()) << "," << cutoff_;
+            out << vector_to_str(end_state_1_->d()) << "," << matrix_to_str(end_state_1_->r()) << "," <<vector_to_str(end_state_2_->d()) << "," << matrix_to_str(end_state_2_->r()) << "," << cutoff_;
             out << std::endl;
         }
         
