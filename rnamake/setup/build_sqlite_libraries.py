@@ -409,7 +409,7 @@ class BuildSqliteLibraries(object):
 
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
-#builder.build_basic_libraries()
+builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
