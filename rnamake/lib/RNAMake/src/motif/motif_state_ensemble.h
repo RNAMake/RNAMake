@@ -123,11 +123,19 @@ public:
         
     }
     
+    inline
+    MotifStateEnsembleMemberOPs const &
+    members() { return members_; }
+    
 public:
     
     inline
     int
     block_end_add() { return block_end_add_; }
+
+    inline
+    String
+    id() { return id_; }
     
 private:
     String id_;

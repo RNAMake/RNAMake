@@ -39,7 +39,9 @@ parse_command_line(
     cl_opts.add_option("", "static", INT_TYPE, "0", false);
     cl_opts.add_option("r", "record", INT_TYPE, "0", false);
     cl_opts.add_option("rf", "record_file", STRING_TYPE, "test.out", false);
-
+    cl_opts.add_option("rs", "recore_state", INT_TYPE, "0", false);
+    cl_opts.add_option("pdbs", "", INT_TYPE, "0", false);
+    cl_opts.add_option("ensembles", "", INT_TYPE, "0", false);
     
     return cl_opts.parse_command_line(argc, argv);
     
@@ -60,10 +62,28 @@ SimulateTectos::SimulateTectos(
     tfs.option("steric_radius", opts.option<float>("sr"));
     tfs.option("record", opts.option<int>("r"));
     tfs.option("record_file", opts.option<String>("rf"));
+    tfs.option("record_state", opts.option<int>("rs"));
     tfs.option("d_weight", opts.option<float>("wd"));
     tfs.option("r_weight", opts.option<float>("wr"));
 
+    if(opts.option<int>("ensembles")) {
+        auto lib = MotifStateEnsembleSqliteLibrary("bp_steps");
+        lib.load_all();
+        for(auto const & mes : lib) {
+            std::ofstream out;
+            out.open(mes->id() + ".ensemble");
+            for (auto const & mem : mes->members()) {
+                out << mem->motif_state->name() << " " << mem->energy << std::endl;
+            }
+            out.close();
+        }
+        exit(0);
+    }
     
+    if (opts.option<int>("pdbs")) {
+        mset->to_mst()->write_pdbs();
+        exit(0);
+    }
     
     if(opts.option<int>("static")) {
         std::cout << tfs.static_run() << std::endl;
