@@ -19,7 +19,8 @@ class RNADenovo(base.Base):
                    'hires_wts'      : None,
                    'lores_wts'      : None,
                    'extra_bps'      : "",
-                   'allow_bulge'    : 0}
+                   'allow_bulge'    : 0,
+                   'keep'           : 10}
 
         self.options = option.Options(options)
 
@@ -45,7 +46,7 @@ class RNADenovo(base.Base):
         if self.option('data_file'):
             s += '-data_file ' + self.option('data_file') + " "
         if self.option('lores_wts'):
-            s += ''
+            s += '-lores_scorefxn ' + self.option('lores_wts') + " "
         if self.option('weights') != "":
             s += '-set_weights ' + self.option('weights') + " "
 
@@ -64,7 +65,7 @@ class RNADenovo(base.Base):
             subprocess.call('echo \"' + self.option('extra_bps') + '\"' + " >> default.params", shell=True )
 
         subprocess.call("source default.run", shell=True)
-        subprocess.call("extract_lowscore_decoys.py default.out " + str(self.option('nstruct')),shell=True)
+        subprocess.call("extract_lowscore_decoys.py default.out " + str(self.option('keep')),shell=True)
 
 
     def generate_script(self, ss, name="test.sh", walltime="1:00:00"):
@@ -84,6 +85,22 @@ class RNADenovo(base.Base):
         job_str += "extract_lowscore_decoys.py default.out " + str(self.nstruct)
 
         return qsub_job.QSUBJob(name, job_str, walltime)
+
+    def get_score(self):
+        f = open("default.out")
+        lines = f.readlines()
+        f.close()
+
+        scores = []
+        for l in lines:
+            if l[0:5] != "SCORE":
+                continue
+            spl = l.split()
+            try:
+                scores.append(float(spl[1]))
+            except:
+                pass
+        print scores
 
     def process(self, ss, start_bp, name="default"):
         pdbs = glob.glob("default.out.*.pdb")

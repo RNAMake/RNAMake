@@ -310,6 +310,8 @@ class X3dna(object):
             if res1 == None or res2 == None:
                 continue
             bp_type = spl[8]
+            if len(bp_type) < 1:
+                bp_type = spl[7]
 
             found = 0
             for bp in basepairs:
