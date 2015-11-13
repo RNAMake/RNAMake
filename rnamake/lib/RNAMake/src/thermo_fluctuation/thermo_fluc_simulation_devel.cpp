@@ -20,6 +20,7 @@ ThermoFlucSimulationDevel::setup_options() {
     options_.add_option(Option("steric_radius", 2.2f));
     options_.add_option(Option("d_weight", 1.0f));
     options_.add_option(Option("r_weight", 1.0f));
+    options_.add_option(Option("record_state", 0));
 
     update_var_options();
 }
@@ -29,6 +30,7 @@ ThermoFlucSimulationDevel::update_var_options() {
     temperature_   = options_.option<float>("temperature");
     steps_         = options_.option<int>("steps");
     record_        = options_.option<int>("record");
+    record_state_  = options_.option<int>("record_state");
     record_file_   = options_.option<String>("record_file");
     cutoff_        = options_.option<float>("cutoff");
     steric_radius_ = options_.option<float>("steric_radius");
@@ -94,11 +96,33 @@ ThermoFlucSimulationDevel::run() {
     check_nodes[0] = sampler_.mst()->last_node()->index();
     check_nodes[1] = sampler_.mst()->last_node()->index()-1;
     
-    std::ofstream out;
+    std::ofstream out, out_state;
     if(record_) {
         out.open(record_file_);
         out << "d1,r1,d2,r2,cutoff";
         out << std::endl;
+    }
+    
+    if(record_state_) {
+        out_state.open("test_state.out");
+        int last = 0;
+        int c = 1;
+        for(int a = 2; a < sampler_.mst()->size(); a++) {
+            if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
+                last = a;
+                break;
+            }
+            out_state << "f" << c << ",";
+            c += 1;
+        }
+        
+        c = 1;
+        for(int a = last+1; a < sampler_.mst()->size(); a++) {
+            out_state << "c" << c << ",";
+            c += 1;
+        }
+        
+        out_state << "cutoff" << std::endl;
     }
     
     while (steps < steps_) {
@@ -139,11 +163,36 @@ ThermoFlucSimulationDevel::run() {
             out << std::endl;
         }
         
+        if(record_state_) {
+            int last = 0;
+            for(int a = 2; a < sampler_.mst()->size(); a++) {
+                if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
+                    last = a;
+                    break;
+                }
+                out_state << sampler_.mst()->get_node(a)->data()->cur_state->name() <<  ",";
+            }
+            
+            for(int a = last+1; a < sampler_.mst()->size(); a++) {
+                if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
+                    last = a;
+                    break;
+                }
+                out_state << sampler_.mst()->get_node(a)->data()->cur_state->name() <<  ",";
+            }
+
+            out_state << score_ << std::endl;
+        }
+        
         steps++;
     }
     
     if(record_) {
         out.close();
+    }
+    
+    if(record_state_) {
+        out_state.close();
     }
     
     return count;

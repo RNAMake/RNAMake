@@ -30,8 +30,7 @@ public:
         auto path = _get_path(libname);
         MotifEnsembleSqliteConnection conn(path);
         connection_ = conn;
-        max_size_ = connection_.count();
-        
+        max_size_ = connection_.count();        
     }
     
     ~MotifStateEnsembleSqliteLibrary() {}
