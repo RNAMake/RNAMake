@@ -17,6 +17,10 @@ def graph_to_tree(mg, start=None):
         seen_nodes = {}
         index = 0
 
+        for m in ss.motifs:
+            print m
+        exit()
+
         while len(open) > 0:
             current = open.pop(0)
             ss_m = ss.motif(current.data.id)

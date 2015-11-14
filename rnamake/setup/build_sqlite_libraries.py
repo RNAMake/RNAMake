@@ -80,7 +80,7 @@ class BuildSqliteLibraries(object):
 
             aligned_motif = motif_factory.factory.can_align_motif_to_end(m, 0)
             aligned_motif = motif_factory.factory.align_motif_to_common_frame(aligned_motif, 0)
-            aligned_motif.name = aligned_motif.name + "-reversed"
+            #aligned_motif.name = aligned_motif.name
             motif_factory.factory._setup_secondary_structure(aligned_motif)
             rdata.append([aligned_motif.to_str(), aligned_motif.name,
                          aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
@@ -408,13 +408,13 @@ class BuildSqliteLibraries(object):
             sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
 builder = BuildSqliteLibraries()
-#builder.build_ideal_helices()
-builder.build_basic_libraries()
+builder.build_ideal_helices()
+#builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
 
 
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
