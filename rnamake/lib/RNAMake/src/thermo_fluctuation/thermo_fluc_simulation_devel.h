@@ -62,7 +62,7 @@ private:
     //option vars
     String record_file_;
     float temperature_, cutoff_, steric_radius_;
-    int steps_, record_, record_state_;
+    int steps_, record_, record_state_, record_all_;
 };
 
 
