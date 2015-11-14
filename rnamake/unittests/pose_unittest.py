@@ -22,7 +22,7 @@ class PoseUnittest(unittest.TestCase):
     def test_creation(self):
         p = pf.factory.pose_from_file("resources/motifs/p4p6")
 
-    def test_designable_secondary_structure(self):
+    def _test_designable_secondary_structure(self):
         builder = build.BuildMotifTree()
         mt = builder.build()
         p = mt.to_pose()
@@ -37,7 +37,7 @@ class PoseUnittest(unittest.TestCase):
         if len(twoways) != 6:
             self.fail("did not properly get all two way junctions")
 
-    def test_load_as_mg(self):
+    def _test_load_as_mg(self):
         p = pf.factory.pose_from_file("/Users/josephyesselman/projects/RNAMake.projects/claw/tRNA.pdb")
 
         all_motifs = p.motifs(motif_type.ALL)

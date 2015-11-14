@@ -130,6 +130,7 @@ class MotifSqliteLibrary(SqliteLibrary):
     def get_libnames():
         libnames = {
             "ideal_helices"   : "/motif_libraries_new/ideal_helices.db",
+            "ideal_helices_reversed" :  "/motif_libraries_new/ideal_helices_reversed.db",
             "twoway"          : "/motif_libraries_new/twoway.db",
             "tcontact"        : "/motif_libraries_new/tcontact.db",
             "hairpin"         : "/motif_libraries_new/hairpin.db",

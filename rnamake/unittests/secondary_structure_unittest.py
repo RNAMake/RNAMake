@@ -1,4 +1,5 @@
 import unittest
+import unittest
 import build
 import rnamake.sqlite_library as sqlite_library
 import rnamake.secondary_structure as secondary_structure
@@ -79,7 +80,7 @@ class SecondaryStructureUnittest(unittest.TestCase):
     def test_ss_id_to_ss(self):
         ss = ssfactory.ss_id_to_secondary_structure('GAUUUGAG_LLLLLLLL_CUCAAAUC_RRRRRRRR')
 
-    def test_add_motif(self):
+    def _test_add_motif(self):
         seq1 = 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG'
         seq2 = 'CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG'
 
@@ -118,11 +119,11 @@ class SecondaryStructureUnittest(unittest.TestCase):
         #return
         ss = ssfactory.factory.get_structure(seq, db)
 
-        for m in ss.motifs('ALL'):
+        """for m in ss.motifs('ALL'):
             print m.type,
             for r in m.residues():
                 print r.num,
-            print
+            print"""
 
     def _test_complex_2(self):
         path = settings.UNITTEST_PATH + "/resources/seq_ss.txt"

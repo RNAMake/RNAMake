@@ -49,7 +49,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
         motifs1 = mlib.get_multi(name=m.name)
         motifs2 = mlib.get_multi(end_id=m.end_ids[0])
 
-    def test_bp_steps(self):
+    def _test_bp_steps(self):
         mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
         mlib.load_all()
 
