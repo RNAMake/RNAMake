@@ -17,7 +17,6 @@ testmodules = [
     'motif_state_ensemble_tree_unittest',
     'motif_state_tree_unittest',
     'motif_tree_unittest',
-    'motif_tree_topology_unittest',
     'option_unittest',
     'pdb_parser_unittest',
     'pose_unittest',
