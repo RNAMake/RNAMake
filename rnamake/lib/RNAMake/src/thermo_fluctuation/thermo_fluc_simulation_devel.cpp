@@ -21,6 +21,7 @@ ThermoFlucSimulationDevel::setup_options() {
     options_.add_option(Option("d_weight", 1.0f));
     options_.add_option(Option("r_weight", 1.0f));
     options_.add_option(Option("record_state", 0));
+    options_.add_option(Option("record_all", 0));
 
     update_var_options();
 }
@@ -31,6 +32,7 @@ ThermoFlucSimulationDevel::update_var_options() {
     steps_         = options_.option<int>("steps");
     record_        = options_.option<int>("record");
     record_state_  = options_.option<int>("record_state");
+    record_all_    = options_.option<int>("record_all");
     record_file_   = options_.option<String>("record_file");
     cutoff_        = options_.option<float>("cutoff");
     steric_radius_ = options_.option<float>("steric_radius");
@@ -96,7 +98,7 @@ ThermoFlucSimulationDevel::run() {
     check_nodes[0] = sampler_.mst()->last_node()->index();
     check_nodes[1] = sampler_.mst()->last_node()->index()-1;
     
-    std::ofstream out, out_state;
+    std::ofstream out, out_state, out_all;
     if(record_) {
         out.open(record_file_);
         out << "d1,r1,d2,r2,cutoff";
@@ -123,6 +125,28 @@ ThermoFlucSimulationDevel::run() {
         }
         
         out_state << "cutoff" << std::endl;
+    }
+    
+    if(record_all_) {
+        out_all.open("test_all.out");
+        int last = 0;
+        int c = 1;
+        for(int a = 2; a < sampler_.mst()->size(); a++) {
+            if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
+                last = a;
+                break;
+            }
+            out_all << "f" << c << "_d," << "f" << c << "_r,";
+            c += 1;
+        }
+        
+        c = 1;
+        for(int a = last+1; a < sampler_.mst()->size(); a++) {
+            out_all << "c" << c << "_d," << "c" << c << "_r,";
+            c += 1;
+        }
+        
+        out_all << "cutoff" << std::endl;
     }
     
     while (steps < steps_) {
@@ -184,6 +208,28 @@ ThermoFlucSimulationDevel::run() {
             out_state << score_ << std::endl;
         }
         
+        if(record_all_) {
+            int last = 0;
+            for(int a = 2; a < sampler_.mst()->size(); a++) {
+                if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
+                    last = a;
+                    break;
+                }
+                out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->d()) <<  ",";
+                out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->r()) <<  ",";
+            }
+            
+            for(int a = last+1; a < sampler_.mst()->size(); a++) {
+                if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
+                    last = a;
+                    break;
+                }
+                out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->d()) <<  ",";
+                out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->r()) <<  ",";            }
+            
+            out_all << score_ << std::endl;
+        }
+        
         steps++;
     }
     
@@ -193,6 +239,10 @@ ThermoFlucSimulationDevel::run() {
     
     if(record_state_) {
         out_state.close();
+    }
+    
+    if(record_all_) {
+        out_all.close();
     }
     
     return count;
