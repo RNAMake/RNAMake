@@ -74,8 +74,9 @@ SimulateTectos::SimulateTectos(
         for(auto const & mes : lib) {
             std::ofstream out;
             out.open(mes->id() + ".ensemble");
+            out << "name,energy,d,r" << std::endl;
             for (auto const & mem : mes->members()) {
-                out << mem->motif_state->name() << " " << mem->energy << std::endl;
+                out << mem->motif_state->name() << "," << mem->energy << "," << vector_to_str(mem->motif_state->end_states()[1]->d()) << "," << matrix_to_str(mem->motif_state->end_states()[1]->r()) << std::endl;
             }
             out.close();
         }
