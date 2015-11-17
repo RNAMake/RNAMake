@@ -23,7 +23,7 @@ class MotifTreeUnittest(unittest.TestCase):
             self.fail("did not add motifs properly")
 
         mt.merger.build_structure()
-
+        mt.merger.to_pdb("test.pdb", renumber=1)
 
 
     def test_remove_node(self):
