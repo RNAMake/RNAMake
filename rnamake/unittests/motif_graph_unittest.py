@@ -30,12 +30,14 @@ class MotifGraphUnittest(unittest.TestCase):
 
     def test_remove(self):
         builder = build.BuildMotifTree()
-        mt = builder.build(3)
+        mt = builder.build(2)
         mg = motif_graph.MotifGraph()
 
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
+
+        exit()
         mg.remove_motif(1)
         # mg.write_pdbs()
         #mg.merger.to_pdb("test.pdb")

@@ -22,6 +22,10 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt) != 2:
             self.fail("did not add motifs properly")
 
+        mt.merger.build_structure()
+
+
+
     def test_remove_node(self):
         mt = motif_tree.MotifTree()
         m = rm.manager.get_motif(name="HELIX.IDEAL.2")
