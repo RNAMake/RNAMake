@@ -59,4 +59,5 @@ target/
 
 #Project specific
 rnamake/resources/motifs
+rnamake/unittests/*.pdbs
 
