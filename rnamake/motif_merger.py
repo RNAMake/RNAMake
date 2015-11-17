@@ -4,40 +4,22 @@ import chain
 import secondary_structure_factory as ssf
 import secondary_structure
 import util
+import graph
 
-class ResPair(object):
-    def __init__(self, uuid1, uuid2):
-        self.uuid1 = uuid1
-        self.uuid2 = uuid2
-
-class BPPair(object):
-    def __init__(self, bp_uuid1, bp_uuid2):
-        pass
-
-class ChainHolder(object):
-    def __init__(self, c, m_id):
+class ChainNodeData(object):
+    def __init__(self, c, m_id, prime5_override=0, prime3_override=0):
         self.c = c
         self.m_id = m_id
-        self.prime5_link = None
-        self.prime3_link = None
+        self.prime5_override = prime5_override
+        self.prime3_override = prime3_override
 
-    def get_included_res(self):
-        pass
-
-class ChainLink(object):
-    def __init__(self, c1, c2, overlap=1, true_res=0):
-        self.c1 = c1
-        self.c2 = c2
-        self.overlap = overlap
-
-        self.c1.prime3_link = self
-        self.c2.prime5_link = self
-        self.res_pair = None
-
-        if true_res == 0:
-            self.res_pair = ResPair(self.c1.c.last().uuid, self.c2.c.first().uuid)
-        else:
-            self.res_pair = ResPair(self.c2.c.first().uuid, self.c1.c.last().uuid)
+    def included_res(self):
+        res = self.c.residues[::]
+        if self.prime5_override:
+            res.pop(0)
+        if self.prime3_override:
+            res.pop()
+        return res
 
 
 class MotifMerger(rna_structure.RNAStructure):
@@ -51,16 +33,33 @@ class MotifMerger(rna_structure.RNAStructure):
         self.res_dict = {}
         self.bp_dict = {}
 
-        self.nodes = []
-        self.links = []
+        self.chain_graph = graph.GraphStatic()
 
     def build_structure(self):
         res = []
         starts = []
-        for n in self.nodes:
-            if n.prime5_link == None:
+
+        for n in self.chain_graph.nodes:
+            if n.available_pos(0):
                 starts.append(n)
 
+        i = 0
+        chains = []
+        for n in starts:
+            res = []
+            cur = n
+            while cur is not None:
+                res.extend(cur.data.included_res())
+                if cur.available_pos(1):
+                    cur = None
+                else:
+                    con = cur.connections[1]
+                    cur = con.partner(cur.index)
+
+            c = chain.Chain(res)
+            chains.append(c)
+
+        self.structure.chains = chains
 
 
     def copy(self, new_motifs=None):
@@ -123,21 +122,16 @@ class MotifMerger(rna_structure.RNAStructure):
     def add_motif(self, m, m_end=None, parent=None, parent_end=None):
         new_chains = [c.subchain(0) for c in m.chains() ]
 
+        for c in new_chains:
+            data = ChainNodeData(c, m.id)
+            self.chain_graph.add_data(data, n_children=2, orphan=1)
+
         if parent is None:
-            for c in new_chains:
-                n = ChainHolder(c, m.id)
-                self.nodes.append(n)
             self.basepairs.extend(m.basepairs)
             self.ends.extend(m.ends)
 
         else:
-            new_nodes = []
-            for c in new_chains:
-                n = ChainHolder(c, m.id)
-                new_nodes.append(n)
-
-            self._merge_motifs_new(m, parent, m_end, parent_end,
-                                   new_nodes, self.nodes)
+            self._merge_motifs_new(m, parent, m_end, parent_end)
 
 
     def connect_motifs(self, m1, m2, m1_end, m2_end):
@@ -355,24 +349,28 @@ class MotifMerger(rna_structure.RNAStructure):
                 return k
         return None
 
-    def _merge_motifs_new(self, m1, m2, m1_end, m2_end, m1_nodes, m2_nodes):
-        s_end_nodes = self._get_end_nodes(m2_nodes, m2_end)
-        m_end_nodes = self._get_end_nodes(m1_nodes, m1_end)
+    def _merge_motifs_new(self, m1, m2, m1_end, m2_end):
+        s_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m2_end)
+        m_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m1_end)
 
         self._link_chains(s_end_nodes, m_end_nodes)
-        self.nodes.extend(m_end_nodes)
 
-    def _link_chains(self, s_end_nodes, m_end_nodes):
-        if s_end_nodes[0] == s_end_nodes[1]:
+    def _link_chains(self, dominant_nodes, auxiliary_nodes):
+        if dominant_nodes[0] == dominant_nodes[1]:
             pass
 
-        elif m_end_nodes[0] == m_end_nodes[1]:
+        elif auxiliary_nodes[0] == auxiliary_nodes[1]:
             pass
 
         else:
-            l1 = ChainLink(s_end_nodes[0], m_end_nodes[1])
-            l2 = ChainLink(m_end_nodes[0], s_end_nodes[0])
-            self.links.extend([l1, l2])
+            auxiliary_nodes[0].data.prime5_override = 1
+            auxiliary_nodes[1].data.prime3_override = 1
+            self.chain_graph.connect(dominant_nodes[1].index,
+                                     auxiliary_nodes[0].index, 1, 0)
+            self.chain_graph.connect(auxiliary_nodes[1].index,
+                                     dominant_nodes[0].index, 1, 0)
+
+            #self.links.extend([l1, l2])
 
 
     def _merge_motifs(self, m1, m2, m1_end, m2_end, m1_chains, m2_chains):
@@ -427,15 +425,15 @@ class MotifMerger(rna_structure.RNAStructure):
             #    print r,
             #print
             for r in end.residues():
-                if n.c.first().uuid == r.uuid and end_nodes[0] == None:
+                if n.data.c.first().uuid == r.uuid and end_nodes[0] == None:
                     end_nodes[0] = n
-                elif n.c.first().uuid == r.uuid:
+                elif n.data.c.first().uuid == r.uuid:
                     raise ValueError("cannot build chain map two residues are assigned"
                                      "to 5' chain")
 
-                if n.c.last().uuid == r.uuid and end_nodes[1] == None:
+                if n.data.c.last().uuid == r.uuid and end_nodes[1] == None:
                     end_nodes[1] = n
-                elif n.c.last().uuid == r.uuid:
+                elif n.data.c.last().uuid == r.uuid:
                     raise ValueError("cannot build chain map two residues are assigned"
                                      "to 3' chain")
 
@@ -443,7 +441,6 @@ class MotifMerger(rna_structure.RNAStructure):
             raise ValueError("did not build map properly, both chains are not found")
 
         return end_nodes
-
 
     def _merge_chains(self, cm1, cm2):
         merged_chain_1, merged_chain_2 = None, None
