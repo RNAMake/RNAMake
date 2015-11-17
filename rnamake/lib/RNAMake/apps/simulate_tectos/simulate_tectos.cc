@@ -72,7 +72,7 @@ SimulateTectos::get_mset_old(
         mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_names[i]));
     }
     mt->add_motif(ResourceManager::getInstance().get_motif("GAAA_tetraloop", "", "A149-A154"));
-    mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_names[0]),
+    mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_names[1]),
                   -1, -1, "A222-A251");
     
     for(int i = 2; i < chip_motif_names.size(); i++) {
