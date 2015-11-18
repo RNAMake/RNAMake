@@ -65,20 +65,17 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-        mg.write_pdbs("org")
-        mg.merger.get_structure().to_pdb("test.pdb", renumber=1)
-        exit()
-
         new_mg = mg.copy()
         new_mg.replace_ideal_helices()
-        new_mg.write_pdbs()
-        new_mg.merger.to_pdb("test.pdb")
 
         d1 = mg.last_node().data.ends[1].d()
         d2 = new_mg.last_node().data.ends[1].d()
         diff = util.distance(d1, d2)
         if diff > 1:
             self.fail("replacing ideal helices messed up graph")
+
+        if len(new_mg.merger.get_structure().chains()) != 2:
+            self.fail("does not have the right number of chains")
 
     def _test_get_ss(self):
         builder = build.BuildMotifTree()
