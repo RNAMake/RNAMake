@@ -90,11 +90,99 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
             tfs.next()
             #print n.data.cur_state.end_states[0].d
 
-    def _test_interia_rmsd(self):
-        motif = rm.manager.get_motif(name='HELIX.IDEAL.3')
-        Ix = 1.94917
+    def get_moment_tensor(self, coords):
+        sum = np.zeros([3,3])
+        for c in coords:
+            c_T = c[np.newaxis].T
+            c = c[np.newaxis]
+            sum +=  c_T.dot(c)
+        sum /= len(coords)
+        eig, vec = lin.eig(sum)
+        print eig
+        print vec
+
+    def get_moment(self, coords):
+        center = util.center_points(coords)
+        I = [0,0,0]
+        for c in coords:
+            I += (c - center) ** 2
+        print I / len(coords)
+
+
+
+    def test_interia_rmsd_2(self):
+        motif = rm.manager.get_motif(name='HELIX.IDEAL.6')
+        """Ix = 1.94917
         Iy = 12.3736
-        Iz = 330.499
+        Iz = 330.499"""
+
+        #Ix= 6.20066117
+
+        #Ix= 10.20066117
+        #Iy = 2.18802843
+        #Iz = 0.0303956
+        Ix = 1.9785968
+        Iy = 9.57526397
+        Iz = 0.03123626
+
+        It = np.eye(3)
+        It[0][0] = Ix
+        It[1][1] = Iy
+        It[2][2] = Iz
+
+        #motif.ends[0].flip()
+        r1 = motif.ends[0].r()
+        r2 = motif.ends[1].r()
+        r = util.unitarize(r1.T.dot(r2))
+        t = lin.norm(motif.ends[0].base_d() - motif.ends[1].base_d())
+        coords = []
+        for i, a in enumerate( motif.ends[0].res1.atoms):
+            if i < 12:
+                continue
+            coords.append(a.coords)
+        for i, a in enumerate( motif.ends[0].res2.atoms):
+            if i < 12:
+                continue
+            coords.append(a.coords)
+        #self.get_moment(coords)
+        #exit()
+        #self.get_moment_tensor(coords)
+        #exit()
+        rmsd = math.sqrt(t**2 + 2*(Ix +Iy + Iz) - 2*np.trace(r.dot(It)))
+        #rmsd = math.sqrt(t**2 + 2*(Ix +Iy + Iz) - 2*np.trace(r.dot(It)))
+
+
+        #print Ix*k, Iy*l, Iz*m, lin.norm(t)
+        #rmsd = math.sqrt( 2 * ( (Ix * k) + (Iy * l) + (Iz * m) )  + lin.norm(t) ** 2 )
+
+        #print  motif.ends[0].res1
+        #print  motif.ends[1].res2
+
+        dist_squared = 0
+        count = 0
+        for i, a in enumerate(motif.ends[0].res1.atoms):
+            if a is None:
+                continue
+            if i < 12:
+                continue
+            dist_squared +=  util.distance(a.coords, motif.ends[1].res2.atoms[i].coords) ** 2
+            count += 1
+        for i, a in enumerate(motif.ends[0].res2.atoms):
+            if a is None:
+                continue
+            if i < 12:
+                continue
+            dist_squared +=  util.distance(a.coords, motif.ends[1].res1.atoms[i].coords) ** 2
+            count += 1
+        dist_squared = dist_squared / count
+        print rmsd
+        print math.sqrt(dist_squared)
+
+    def test_interia_rmsd(self):
+        motif = rm.manager.get_motif(name='HELIX.IDEAL.3')
+        Ix = 37.61611754
+        Iy = 3.36202833
+        Iz = 0.53046916
 
         r1 = motif.ends[0].r()
         r2 = motif.ends[1].r()
@@ -109,6 +197,9 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         b = e[1]
         a = e[0]
 
+        print r
+        print a,b,g
+
 
         t = motif.ends[0].d() - motif.ends[1].d()
         #t = [0, 0, 10]
@@ -120,6 +211,7 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         m = (1 - math.cos(b))
 
         print k,l, m
+        #exit()
 
         print Ix*k, Iy*l, Iz*m, lin.norm(t)
         rmsd = math.sqrt( 2 * ( (Ix * k) + (Iy * l) + (Iz * m) )  + lin.norm(t) ** 2 )

@@ -100,6 +100,18 @@ class Basepair(object):
     def d(self):
         return util.center(self.atoms)
 
+    def base_d(self):
+        atoms = []
+        for i, a in enumerate( self.res1.atoms):
+            if i < 12:
+                continue
+            atoms.append(a)
+        for i, a in enumerate( self.res1.atoms):
+            if i < 12:
+                continue
+            atoms.append(a)
+        return util.center(atoms)
+
     def to_str(self):
         """
         stringify basepair object

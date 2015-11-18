@@ -36,8 +36,6 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-
-        exit()
         mg.remove_motif(1)
         # mg.write_pdbs()
         #mg.merger.to_pdb("test.pdb")
@@ -68,6 +66,9 @@ class MotifGraphUnittest(unittest.TestCase):
             mg.add_motif(n.data)
 
         mg.write_pdbs("org")
+        mg.merger.get_structure().to_pdb("test.pdb", renumber=1)
+        exit()
+
         new_mg = mg.copy()
         new_mg.replace_ideal_helices()
         new_mg.write_pdbs()
