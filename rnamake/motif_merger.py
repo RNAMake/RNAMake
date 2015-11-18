@@ -74,7 +74,8 @@ class MotifMerger(object):
                 current_bps.append(bp)
 
         self.rna_structure.basepairs = current_bps
-        self.rna_structure.ends = rna_structure.ends_from_basepairs(self.rna_structure.structure, current_bps)
+        self.rna_structure.ends = rna_structure.ends_from_basepairs(
+            self.rna_structure.structure, current_bps)
 
         self.rebuild_structure = 0
 
@@ -86,46 +87,6 @@ class MotifMerger(object):
             self.update_motif(m)
 
         return new_merger
-
-    def copy_old(self, new_motifs=None):
-        new_all_res = {}
-        new_all_bp = {}
-        motifs = {}
-        for m in new_motifs:
-            motifs[m.id] = m
-            for r in m.residues():
-                new_all_res[r.uuid] = r
-            for bp in m.basepairs:
-                new_all_bp[bp.uuid] = bp
-
-        new_struct = MotifMerger()
-        new_struct.residue_map = self.residue_map
-
-        chains = []
-        for c in self.chains():
-            new_res = []
-            for r in c.residues:
-                new_res.append(new_all_res[r.uuid])
-            chains.append(chain.Chain(new_res))
-
-        new_bps = []
-        for bp in self.basepairs:
-            new_bp = new_all_bp[bp.uuid]
-            new_bps.append(new_bp)
-
-        new_ends = []
-        for end in self.ends:
-            new_end = new_all_bp[end.uuid]
-            new_ends.append(new_end)
-
-        new_struct.structure.chains = chains
-        new_struct.basepairs = new_bps
-        new_struct.ends = new_ends
-        new_struct.all_res = new_all_res
-        new_struct.all_bp = new_all_bp
-        new_struct.motifs = motifs
-
-        return new_struct
 
     def add_motif(self, m, m_end=None, parent=None, parent_end=None):
         new_chains = [c.subchain(0) for c in m.chains() ]
@@ -147,13 +108,10 @@ class MotifMerger(object):
         self.rebuild_structure = 1
 
     def connect_motifs(self, m1, m2, m1_end, m2_end):
-        self._merge_motifs(m1, m2, m1_end, m2_end, self.chains(), self.chains())
+        s_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m1_end)
+        m_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m2_end)
 
-        uuids = [r.uuid for r in self.residues()]
-        for bp in m2.basepairs:
-            if bp.res1.uuid in uuids and bp.res2.uuid in uuids and \
-               bp not in self.basepairs:
-                self.basepairs.append(bp)
+        self._link_chains(s_end_nodes, m_end_nodes)
 
     def remove_motif(self, m):
         remove = []
@@ -191,24 +149,6 @@ class MotifMerger(object):
         for bp in m.basepairs:
             if bp.uuid in self.all_bps:
                 self.all_bps[bp.uuid] = bp
-        self.motifs[m.id] = m
-
-
-    def update_motif_old(self, m):
-        for r in m.residues():
-            act_r = self.get_residue(uuid=r.uuid)
-            if r.uuid != act_r.uuid:
-                continue
-
-            for c in self.structure.chains:
-                index = -1
-                for i, r1 in enumerate(c.residues):
-                    if r.uuid == r1.uuid and r.name != 'N':
-                        index = i
-                        break
-
-                if index != -1:
-                    c.residues[index] = r
         self.motifs[m.id] = m
 
     def secondary_structure(self):

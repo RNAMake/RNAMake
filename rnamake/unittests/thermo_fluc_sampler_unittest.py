@@ -111,19 +111,19 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
 
 
     def test_interia_rmsd_2(self):
-        motif = rm.manager.get_motif(name='HELIX.IDEAL.6')
+        motif = rm.manager.get_motif(name='HELIX.IDEAL')
         """Ix = 1.94917
         Iy = 12.3736
         Iz = 330.499"""
 
         #Ix= 6.20066117
 
-        #Ix= 10.20066117
-        #Iy = 2.18802843
-        #Iz = 0.0303956
-        Ix = 1.9785968
-        Iy = 9.57526397
-        Iz = 0.03123626
+        Ix= 10.20066117
+        Iy = 2.18802843
+        Iz = 0.0303956
+        #Ix = 193.8125623
+        #Iy = 41.57254019
+        #Iz = 0.57751647
 
         It = np.eye(3)
         It[0][0] = Ix
@@ -148,7 +148,7 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         #exit()
         #self.get_moment_tensor(coords)
         #exit()
-        rmsd = math.sqrt(t**2 + 2*(Ix +Iy + Iz) - 2*np.trace(r.dot(It)))
+        rmsd = math.sqrt((t**2 + 2*(Ix +Iy + Iz) - 2*np.trace(r.dot(It))))
         #rmsd = math.sqrt(t**2 + 2*(Ix +Iy + Iz) - 2*np.trace(r.dot(It)))
 
 

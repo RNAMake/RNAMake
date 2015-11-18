@@ -65,6 +65,9 @@ class MotifTreeUnittest(unittest.TestCase):
 
         #mt.merger.get_structure().to_pdb("test.pdb", renumber=1)
 
+    def test_get_residues(self):
+        pass
+
     def test_secondary_structure(self):
         rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
         mt = motif_tree.MotifTree()
