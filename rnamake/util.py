@@ -35,13 +35,14 @@ def center(atoms):
     """
 
     center = np.array([0.0, 0.0, 0.0])
-
+    count = 0
     for a in atoms:
         if a is None:
             continue
         center += a.coords
+        count += 1
 
-    return center / float(len(atoms))
+    return center / float(count)
 
 def center_points(points):
     """
