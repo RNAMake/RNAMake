@@ -6,6 +6,7 @@ import secondary_structure
 import util
 import graph
 
+
 class ChainNodeData(object):
     def __init__(self, c, m_id, prime5_override=0, prime3_override=0):
         self.c = c
@@ -27,6 +28,8 @@ class MotifMerger(object):
         super(self.__class__, self).__init__()
         self.all_bps = {}
         self.motifs = {}
+        self.res_overrides = {}
+        self.bp_overrides = {}
 
         self.rebuild_structure = 1
         self.chain_graph = graph.GraphStatic()
@@ -41,14 +44,12 @@ class MotifMerger(object):
         return self.rna_structure
 
     def _build_structure(self):
-        res = []
         starts = []
 
         for n in self.chain_graph.nodes:
             if n.available_pos(0):
                 starts.append(n)
 
-        i = 0
         chains = []
         for n in starts:
             res = []
@@ -82,6 +83,8 @@ class MotifMerger(object):
     def copy(self, new_motifs=None):
         new_merger = MotifMerger()
         new_merger.chain_graph = self.chain_graph.copy()
+        new_merger.res_overrides = self.res_overrides[::]
+        new_merger.bp_overrides = self.bp_overrides[::]
 
         for m in new_motifs:
             self.update_motif(m)
@@ -89,7 +92,7 @@ class MotifMerger(object):
         return new_merger
 
     def add_motif(self, m, m_end=None, parent=None, parent_end=None):
-        new_chains = [c.subchain(0) for c in m.chains() ]
+        new_chains = [c.subchain(0) for c in m.chains()]
 
         for c in new_chains:
             data = ChainNodeData(c, m.id)
@@ -99,21 +102,25 @@ class MotifMerger(object):
             self.all_bps[bp.uuid] = bp
 
         if parent is not None:
-            s_end_nodes = self._get_end_nodes(self.chain_graph.nodes, parent_end)
-            m_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m_end)
-
-            self._link_chains(s_end_nodes, m_end_nodes)
+            self._link_motifs(parent, m, parent_end, m_end)
 
         self.motifs[m.id] = m
         self.rebuild_structure = 1
 
     def connect_motifs(self, m1, m2, m1_end, m2_end):
-        s_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m1_end)
-        m_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m2_end)
-
-        self._link_chains(s_end_nodes, m_end_nodes)
+        self._link_motifs(m1, m2, m1_end, m2_end)
 
     def remove_motif(self, m):
+        for end in m.ends:
+            if end.uuid in self.bp_overrides:
+                del self.bp_overrides[end.uuid]
+            remove = []
+            for uuid1, uuid2 in self.bp_overrides.iteritems():
+                if uuid2 == end.uuid:
+                    remove.append(uuid1)
+            for r in remove:
+                del self.bp_overrides[r]
+
         remove = []
         for n in self.chain_graph.nodes:
             if n.data.m_id == m.id:
@@ -125,9 +132,12 @@ class MotifMerger(object):
                     continue
                 p = c.partner(r.index)
                 p_i = c.end_index(p.index)
-                if p_i == 0:
+
+                if   p_i == 0 and p.data.prime5_override == 1:
+                    del self.res_overrides[p.data.c.first().uuid]
                     p.data.prime5_override = 0
-                else:
+                elif p_i == 1 and p.data.prime3_override == 1:
+                    del self.res_overrides[p.data.c.last().uuid]
                     p.data.prime3_override = 0
             self.chain_graph.remove_node(r.index)
 
@@ -152,17 +162,20 @@ class MotifMerger(object):
         self.motifs[m.id] = m
 
     def secondary_structure(self):
+        ss = ssf.factory.secondary_structure_from_motif(self.get_structure())
 
-        ss = ssf.factory.secondary_structure_from_motif(self)
         ss_motifs = []
-
         for m in self.motifs.values():
             ss_chains = []
             for c in m.chains():
                 ss_res = []
                 for r in c.residues:
-                    correct_r = self.get_residue(uuid=r.uuid)
-                    ss_r = ss.get_residue(uuid=correct_r.uuid)
+                    r_cur = r
+                    if r.uuid in self.res_overrides:
+                        r_cur = self.get_residue(self.res_overrides[r.uuid])
+                    ss_r = ss.get_residue(uuid=r_cur.uuid)
+                    if ss_r is None:
+                        raise ValueError("could not find residue during ss build")
                     ss_res.append(ss_r)
                 ss_chains.append(secondary_structure.Chain(ss_res))
             ss_struct = secondary_structure.Structure(ss_chains)
@@ -172,23 +185,20 @@ class MotifMerger(object):
                     continue
                 if not util.wc_bp(bp) and not util.gu_bp(bp):
                     continue
-                correct_bp = self.get_basepair(bp_uuid=bp.uuid)
-                ss_bp = ss.get_bp(uuid=correct_bp[0].uuid)
-
+                correct_bp = bp
+                if bp.uuid in self.bp_overrides:
+                    correct_bp = self.get_basepair(self.bp_overrides[bp.uuid])
+                ss_bp = ss.get_bp(uuid=correct_bp.uuid)
                 if ss_bp is None:
-                    print correct_bp[0].uuid
-                    print correct_bp[0], ss_bp, "type: ", correct_bp[0].bp_type
-                    print correct_bp[0].res1 in self.residues(), correct_bp[0].res2 in self.residues()
-                    #raise ValueError("did not find a bp we should of")
-
+                    raise ValueError("could not find basepair during ss build")
             ss_rna_struct = secondary_structure.RNAStructure(
                                 ss_struct, ss_bps, [], m.name, m.path,
                                 m.mtype, m.score, m.end_ids)
-
             ss_ends = []
             for end in m.ends:
-                correct_bp = self.get_basepair(bp_uuid=end.uuid)
-                ss_bp = ss.get_bp(uuid=correct_bp[0].uuid)
+                if bp.uuid in self.bp_overrides:
+                    correct_bp = self.get_basepair(self.bp_overrides[bp.uuid])
+                ss_bp = ss.get_bp(uuid=correct_bp.uuid)
                 ss_ends.append(ss_bp)
             ss_rna_struct.ends = ss_ends
             ss_motifs.append(secondary_structure.Motif(r_struct=ss_rna_struct,
@@ -196,60 +206,62 @@ class MotifMerger(object):
 
         ss_struct = secondary_structure.Structure(ss.chains)
         ss_p = secondary_structure.Pose(ss_struct, ss.basepairs, ss.ends)
-        ss_p.residue_map = self.residue_map
         ss_p.motifs = ss_motifs
-
         return ss_p
 
-    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
-        """
-        wrapper to self.structure.get_residue()
-        """
-        r = super(self.__class__, self).get_residue(num, chain_id, i_code, uuid)
+    def get_residue(self, uuid):
+        for m in self.motifs.values():
+            r = m.get_residue(uuid=uuid)
+            if r is not None:
+                return r
+        return None
 
-        if r is not None:
-            return r
-        if uuid is not None and uuid in self.residue_map:
-            return super(self.__class__, self).get_residue(num, chain_id, i_code,
-                                                           self.residue_map[uuid])
-
-    def get_basepair(self, bp_uuid=None, res1=None, res2=None, uuid1=None,
-                     uuid2=None, name=None):
-        bps = super(self.__class__, self).get_basepair(bp_uuid, res1, res2, uuid1, uuid2, name)
-        if len(bps) == 0:
-            if bp_uuid in self.basepair_map:
-                new_uuid = self.basepair_map[bp_uuid]
-                return super(self.__class__, self).get_basepair(bp_uuid=new_uuid)
-            else:
-                return bps
-
+    def get_basepair(self, uuid):
+        if uuid in self.all_bps:
+            return self.all_bps[uuid]
         else:
-            return bps
+            return None
+
+    def _link_motifs(self, m1, m2, m1_end, m2_end):
+        m1_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m1_end)
+        m2_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m2_end)
+
+        if m2.mtype == motif_type.HELIX and m1.mtype != motif_type.HELIX:
+            self._link_chains(m1_end_nodes, m2_end_nodes)
+            self.bp_overrides[m2_end.uuid] = m1_end.uuid
+        else:
+            self._link_chains(m2_end_nodes, m1_end_nodes)
+            self.bp_overrides[m1_end.uuid] = m2_end.uuid
 
     def _link_chains(self, dominant_nodes, auxiliary_nodes):
         if dominant_nodes[0] == dominant_nodes[1]:
-            pass
+            self._connect_chains(dominant_nodes[0], auxiliary_nodes[0], 1, 0)
+            self._connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1)
 
         elif auxiliary_nodes[0] == auxiliary_nodes[1]:
-            pass
+            print "did this happen check to make sure it worked!!!"
+            self._connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0)
+            self._connect_chains(dominant_nodes[0], auxiliary_nodes[0], 0, 1)
 
         else:
-            auxiliary_nodes[0].data.prime5_override = 1
-            auxiliary_nodes[1].data.prime3_override = 1
-            self.chain_graph.connect(dominant_nodes[1].index,
-                                     auxiliary_nodes[0].index, 1, 0)
-            self.chain_graph.connect(auxiliary_nodes[1].index,
-                                     dominant_nodes[0].index, 1, 0)
+            self._connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0)
+            self._connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1)
 
-            #self.links.extend([l1, l2])
+    def _connect_chains(self, d_node, a_node, d_i, a_i):
+        if a_i == 0:
+            a_node.data.prime5_override = 1
+            self.res_overrides[a_node.data.c.first().uuid] = \
+                d_node.data.c.last().uuid
+        else:
+            a_node.data.prime3_override = 1
+            self.res_overrides[a_node.data.c.last().uuid] = \
+                d_node.data.c.first().uuid
+        self.chain_graph.connect(d_node.index, a_node.index, d_i, a_i)
 
     def _get_end_nodes(self, nodes, end):
         end_nodes = [None, None]
 
         for n in nodes:
-            #for r in c.residues:
-            #    print r,
-            #print
             for r in end.residues():
                 if n.data.c.first().uuid == r.uuid and end_nodes[0] == None:
                     end_nodes[0] = n
@@ -267,72 +279,3 @@ class MotifMerger(object):
             raise ValueError("did not build map properly, both chains are not found")
 
         return end_nodes
-
-    def _merge_chains(self, cm1, cm2):
-        merged_chain_1, merged_chain_2 = None, None
-        if   cm1.is_hairpin() and cm2.is_hairpin():
-            raise ValueError("cannot merge an hairpin with another hairpin")
-        elif cm1.is_hairpin():
-            res1 = cm2.p3_chain.residues.pop()
-            self.residue_map[res1.uuid] = cm1.p5_chain.residues[0].uuid
-            res2 = cm2.p5_chain.residues.pop(0)
-            self.residue_map[res2.uuid] = cm1.p5_chain.residues[-1].uuid
-            merged_chain_1 = self._get_merged_hairpin(cm2.p3_chain, cm2.p5_chain,
-                                                      cm1.p5_chain, 0, 0)
-        elif cm2.is_hairpin():
-            res1 = cm1.p5_chain.residues.pop(0)
-            res2 = cm1.p3_chain.residues.pop()
-            self.residue_map[res1.uuid] = cm2.p5_chain.residues[-1].uuid
-            self.residue_map[res2.uuid] = cm2.p5_chain.residues[0].uuid
-
-            merged_chain_1 = self._get_merged_hairpin(cm1.p3_chain, cm1.p5_chain,
-                                                      cm2.p5_chain, 0, 0)
-        else:
-            merged_chain_1 = self._get_merged_chain(cm1.p5_chain, cm2.p3_chain, 1, 1)
-            merged_chain_2 = self._get_merged_chain(cm1.p3_chain, cm2.p5_chain, 0, 1)
-
-        return merged_chain_1, merged_chain_2
-
-    def _get_merged_hairpin(self, c1, c2, hairpin, join_by_3prime=0,
-                            remove_overlap=0):
-        merged_chain = self._get_merged_chain(c1, hairpin, join_by_3prime,
-                                              remove_overlap)
-        merged_chain = self._get_merged_chain(merged_chain, c2, join_by_3prime,
-                                              remove_overlap)
-        return merged_chain
-
-    def _get_merged_chain(self, c1, c2, join_by_3prime=0, remove_overlap=0):
-        """
-        Merges two chains together that share a common resiude
-
-        :param c1: chain 1
-        :param c2: chain 2
-        :param join_by_3_prime: joins in the 3prime direction instead of the
-            standard (optional)
-        :param remove_overlap: removes the overlap residue between the two
-            chains (optional)
-        :type c1: chain object
-
-        Example:
-
-        chain1            chain2
-        5'_|_|_|_|_|_3' + 5'_|_|_|_|_|_3' =
-        5'_|_|_|_|_|_|_|_|_|_|_ 3'
-
-        Notice one residue is lost at 5' end of the chain2, this is the overlap
-        residue which was used to align the chains during alignment, you can
-        set remove_overlap to 0 to stop that from happning
-
-        """
-        merged_chain = chain.Chain()
-        chain1_res, chain2_res = c1.residues, c2.residues
-        if join_by_3prime:
-            chain1_res, chain2_res = chain1_res[::-1], chain2_res[::-1]
-        merged_chain.residues = list(chain1_res)
-        if remove_overlap:
-            r = chain2_res.pop(0)
-            self.residue_map[r.uuid] = chain1_res[-1].uuid
-        merged_chain.residues.extend(list(chain2_res))
-        if join_by_3prime:
-            merged_chain.residues = merged_chain.residues[::-1]
-        return merged_chain
