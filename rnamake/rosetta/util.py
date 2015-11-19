@@ -39,6 +39,8 @@ def convert_silent_file_to_motif_ensemble(path, keep=None):
                     bps.append(bp)
             m_sub = motif_factory.factory.motif_from_res(res, bps)
             m = m_sub
+        if len(m.ends) != 2:
+            continue
         m_added = motif_factory.factory.can_align_motif_to_end(m, 0)
         if m_added is None:
             continue
