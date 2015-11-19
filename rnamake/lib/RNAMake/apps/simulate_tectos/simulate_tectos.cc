@@ -116,7 +116,32 @@ SimulateTectos::get_motifs_from_seq_and_ss(
     for(int i = 1; i < required_nodes.size(); i++) {
         if(required_nodes[i]->data()->type()   != sstruct::SS_NodeData::SS_Type::SS_BP ||
            required_nodes[i-1]->data()->type() != sstruct::SS_NodeData::SS_Type::SS_BP) {
-            throw std::runtime_error("old method does not have non helical motifs implemented yet!!!!!");
+            String seq1, seq2, ss1, ss2;
+            seq1 = required_nodes[i-1]->data()->ss_chains()[0]->sequence() +
+                   required_nodes[i]->data()->ss_chains()[0]->sequence()   +
+                   required_nodes[i+1]->data()->ss_chains()[0]->sequence();
+            
+            seq2 = required_nodes[i-1]->data()->ss_chains()[1]->sequence() +
+                   required_nodes[i]->data()->ss_chains()[1]->sequence()   +
+                   required_nodes[i+1]->data()->ss_chains()[1]->sequence();
+            std::reverse(seq2.begin(), seq2.end());
+
+            ss1 = "L";
+            for(int j = 0; j < required_nodes[i]->data()->ss_chains()[0]->length(); j++) {
+                ss1 += "U";
+            }
+            ss1 += "L";
+            ss2 = "R";
+            for(int j = 0; j < required_nodes[i]->data()->ss_chains()[1]->length(); j++) {
+                ss2 += "U";
+            }
+            ss2 += "R";
+            String end_id = seq1 + "_" + ss1 + "_" + seq2 + "_" + ss2;
+            auto m = ResourceManager::getInstance().get_motif("", end_id);
+            motif_names.push_back(m->name());
+            i += 1;
+            
+            //throw std::runtime_error("old method does not have non helical motifs implemented yet!!!!!");
         }
         
         seq1 = required_nodes[i-1]->data()->sequence();
