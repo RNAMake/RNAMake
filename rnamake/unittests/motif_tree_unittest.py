@@ -25,15 +25,26 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt.merger.get_structure().residues()) != 14:
             self.fail("merger did not result in the right number of residues")
 
+        if len(mt.merger.res_overrides.values()) != 2:
+            self.fail("did not create the correct number of residue overrides")
+
+        if len(mt.merger.bp_overrides.values()) != 1:
+            self.fail("did not create the correct number of bp overrides")
+
     def test_remove_node(self):
         mt = motif_tree.MotifTree()
         m = rm.manager.get_motif(name="HELIX.IDEAL.2")
         mt.add_motif(m)
         mt.add_motif(m)
-
         mt.remove_node(1)
         if len(mt) != 1:
             self.fail("did not remove node correctly")
+
+        if len(mt.merger.res_overrides.values()) != 0:
+            self.fail(("did not remove residue overrides"))
+
+        if len(mt.merger.bp_overrides.values()) != 0:
+            self.fail(("did not remove bp overrides"))
 
     def test_remove_node_2(self):
         mt = motif_tree.MotifTree()
@@ -47,6 +58,7 @@ class MotifTreeUnittest(unittest.TestCase):
             self.fail("did not remove node correctly")
 
         if len(mt.merger.get_structure().chains()) != 4:
+            print len(mt.merger.get_structure().chains())
             self.fail("did not get the correct number of chains")
 
         if len(mt.merger.get_structure().ends) != 4:
@@ -66,22 +78,39 @@ class MotifTreeUnittest(unittest.TestCase):
         #mt.merger.get_structure().to_pdb("test.pdb", renumber=1)
 
     def test_get_residues(self):
-        pass
+        mt = motif_tree.MotifTree()
+        m = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        mt.add_motif(m)
+        mt.add_motif(m)
+        res = []
+        for n in mt:
+            res.extend(n.data.residues())
+        for r in res:
+            if mt.merger.get_residue(r.uuid) is None:
+                self.fail("could not find residue")
 
     def test_secondary_structure(self):
+        mt = motif_tree.MotifTree()
+        m = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        mt.add_motif(m)
+        mt.add_motif(m)
+        ss = mt.secondary_structure()
+        print ss
+
+    def test_complex(self):
         rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
         mt = motif_tree.MotifTree()
-        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
-                                          end_name="A228-A246"))
-        mt.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.20"), parent_end_name="A221-A252")
-        #mt.option('sterics', 0)
-        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
-                                          end_name="A221-A252"))
+        mt.add_motif(m_name="tetraloop_receptor_min",
+                     m_end_name="A228-A246")
 
-        ss = mt.secondary_structure()
+        mt.add_motif(m_name="HELIX.IDEAL.20",
+                     parent_end_name="A221-A252")
 
+        mt.add_motif(m_name="tetraloop_receptor_min",
+                     m_end_name="A146-A157")
 
-
+        if len(mt.merger.get_structure().chains()) != 4:
+            raise ValueError("did nto get the correct number of chains")
 
 
 

@@ -108,7 +108,14 @@ m
         self.constraints = {}
 
     def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
-                  parent_end_name=None):
+                  parent_end_name=None, m_name=None, m_end_name=None):
+
+        if m is None and m_name is not None:
+            if m_end_name is not None:
+                m = rm.manager.get_motif(name=m_name, end_name=m_end_name)
+            else:
+                m = rm.manager.get_motif(name=m_name)
+
         parent = self.tree.last_node
         if parent_index != -1:
             parent = self.tree.get_node(parent_index)
@@ -140,7 +147,6 @@ m
             self.merger.add_motif(m_added, m_added.ends[0],
                                   parent.data, parent.data.ends[p])
             return pos
-        #self._update_beads(parent, new_node)
 
         return -1
 
