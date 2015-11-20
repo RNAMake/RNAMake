@@ -140,6 +140,7 @@ SimulateTectos::get_motifs_from_seq_and_ss(
             auto m = ResourceManager::getInstance().get_motif("", end_id);
             motif_names.push_back(m->name());
             i += 1;
+            continue;
             
             //throw std::runtime_error("old method does not have non helical motifs implemented yet!!!!!");
         }

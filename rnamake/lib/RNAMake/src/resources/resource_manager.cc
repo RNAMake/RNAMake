@@ -91,3 +91,14 @@ ResourceManager::add_motif(
     }
     
 }
+
+
+void
+ResourceManager::register_motif(
+    MotifOP const & m) {
+    added_motifs_.add_motif(m);
+}
+
+
+
+

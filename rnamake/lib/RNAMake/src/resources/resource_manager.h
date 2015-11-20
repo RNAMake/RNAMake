@@ -61,6 +61,10 @@ public:
     add_motif(
         String const &);
     
+    void
+    register_motif(
+        MotifOP const &);
+    
     
 protected:
     ResourceManager() { //Prevent construction
