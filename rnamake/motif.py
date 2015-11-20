@@ -349,6 +349,7 @@ def str_to_motif(s):
     m.mtype = int(spl[4])
     m.structure = io.str_to_structure(spl[5])
     m.basepairs = []
+    m.id = uuid.uuid1()
 
     basepair_str = spl[6].split("@")
     for bp_str in basepair_str[:-1]:
