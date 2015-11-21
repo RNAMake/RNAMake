@@ -17,6 +17,17 @@ import rnamake.transformations as trans
 import rnamake.util as util
 from rnamake import motif_topology, thermo_fluc_sampler, motif_graph
 
+def center(points):
+    length = points.shape[0]
+    sum_x = np.sum(points[:, 0])
+    sum_y = np.sum(points[:, 1])
+    sum_z = np.sum(points[:, 2])
+
+    return np.array([sum_x/length, sum_y/length, sum_z/length])
+
+def rmsd(p1, p2):
+    return np.linalg.norm(p1 - p2) / np.sqrt(len(p1))
+
 class ThermoFlucSamplerUnittest(unittest.TestCase):
 
     def _fill_basepairs_in_ss(self, ss):
@@ -98,7 +109,7 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
             c_T = diff[np.newaxis].T
             c = diff[np.newaxis]
             sum +=  c_T.dot(c)
-        #sum /= len(coords)
+        sum /= len(coords)
         eig, vec = lin.eig(sum)
         print eig
         print vec
@@ -122,20 +133,64 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
 
         return [i_x, i_y, i_z ]
 
-    def test_interia_rmsd_2(self):
+    def test_interia_rmsd_3(self):
         motif = rm.manager.get_motif(name='HELIX.IDEAL')
+
+        r1 = motif.ends[0].r()
+        r2 = motif.ends[1].r()
+        r = util.unitarize(r1.T.dot(r2))
+        trans = lin.norm(motif.ends[0].base_d() - motif.ends[1].base_d())
+        diff = motif.ends[0].base_d() - motif.ends[1].base_d()
+
+        coords = []
+        for i, a in enumerate( motif.ends[0].res1.atoms):
+            if i < 12:
+                continue
+            coords.append(a.coords)
+        for i, a in enumerate( motif.ends[0].res2.atoms):
+            if i < 12:
+                continue
+            coords.append(a.coords)
+
+        coords = np.array(coords)
+        c = center(coords)
+        #c = c / np.linalg.norm(c)
+
+        dist_squared = 0
+        count = 0
+        for i, a in enumerate(motif.ends[0].res1.atoms):
+            if a is None:
+                continue
+            if i < 12:
+                continue
+            dist_squared +=  util.distance(a.coords, motif.ends[1].res2.atoms[i].coords) ** 2
+            count += 1
+        for i, a in enumerate(motif.ends[0].res2.atoms):
+            if a is None:
+                continue
+            if i < 12:
+                continue
+            dist_squared +=  util.distance(a.coords, motif.ends[1].res1.atoms[i].coords) ** 2
+            count += 1
+        dist_squared = dist_squared / count
+
+        print rmsd(np.array([np.dot(c, r.T) + diff ]), np.array([c]))
+        print math.sqrt(dist_squared)
+
+    def test_interia_rmsd_2(self):
+        motif = rm.manager.get_motif(name='HELIX.IDEAL.11')
         """Ix = 1.94917
         Iy = 12.3736
         Iz = 330.499"""
 
         #Ix= 6.20066117
 
-        #Ix = 9.606
-        #Iy = 1.94979491
-        #Iz = 0.02840045
-        Ix = 182.52865437
-        Iy = 37.048271
-        Iz = 219.525299703
+        Ix = 9.606
+        Iy = 1.94979491
+        Iz = 0.02840045
+        #Ix = 18.52865437
+        #Iy = 3.048271
+        #Iz = 21.525299703
 
         It = np.eye(3)
         It[0][0] = Ix
@@ -206,7 +261,7 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
             count += 1
         dist_squared = dist_squared / count
         print rmsd
-        print math.sqrt(dist_squared) - math.sqrt(t**2)
+        #print math.sqrt(dist_squared) - math.sqrt(t**2)
         print math.sqrt(dist_squared)
 
     def test_interia_rmsd(self):
