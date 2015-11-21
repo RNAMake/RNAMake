@@ -132,7 +132,7 @@ class Structure(object):
 
         :param fname: name of the file of the pdb file you want to write to
         :type fname: str
-
+9
         """
         f = open(fname, "w")
         f.write(self.to_pdb_str())

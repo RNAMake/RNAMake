@@ -261,6 +261,7 @@ class Motif(object):
         for bp in self.basepairs:
             bp.uuid = uuid.uuid1()
 
+
 class MotifState(object):
     __slots__ = ['name', 'end_names', 'end_ids', 'end_states',
                  'beads', 'score', 'size', 'block_end_add']

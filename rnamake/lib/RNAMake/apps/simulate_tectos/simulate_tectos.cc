@@ -29,7 +29,8 @@ parse_command_line(
     cl_opts.add_option("css" , "", STRING_TYPE,
                        "(((((((..((((((((((((....))))))))))))...)))))))", false);
     cl_opts.add_option("s", "steps", FLOAT_TYPE, "1000000", false);
-    
+    cl_opts.add_option("extra_mse", "", STRING_TYPE, "", false);
+
     return cl_opts.parse_command_line(argc, argv);
     
 }
@@ -81,7 +82,6 @@ SimulateTectos::get_mset_old(
     
     MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
     mset->setup_from_mt(mt);
-
     return mset;
 }
 
@@ -173,6 +173,12 @@ int main(int argc, const char * argv[]) {
     try {
         
         Options opts = parse_command_line(argc, argv);
+        
+        if(opts.option<String>("extra_mse").length() > 0) {
+            ResourceManager::getInstance().register_extra_motif_state_ensembles(
+                                                opts.option<String>("extra_mse"));
+        }
+        
         SimulateTectos st(opts.option<String>("fseq"),
                           opts.option<String>("fss"),
                           opts.option<String>("cseq"),
