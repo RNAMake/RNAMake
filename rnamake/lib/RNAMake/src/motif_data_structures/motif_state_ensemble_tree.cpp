@@ -79,38 +79,28 @@ MotifStateEnsembleTree::setup_from_mt(
     for(auto const & n : *mt) {
         i++;
         MotifStateEnsembleOP mse;
-        
-        if(n->data()->mtype() == TWOWAY and n->data()->ends().size() == 2) {
-            String f_name = n->data()->name() + "-" + n->data()->ends()[0]->name();
-            //std::cout << f_name << std::endl;
-            String path = "/Users/josephyesselman/projects/RNAMake.projects/thermo_fluc_ensembles/ensembles/";
-            if (file_exists(path + f_name + ".me") ) {
-                auto lines = get_lines_from_file(path + f_name + ".me");
-                auto me = MotifEnsemble(lines[0]);
-                for (auto const & mem : me.members()) {
-                    ResourceManager::getInstance().register_motif(mem->motif);
-                }
-                mse = me.get_state();
-            }
-            
-            else {
-                throw "could not find ensemble for motif";
-            }
-            
-
+    
+        if(n->data()->mtype() == HELIX) {
+            mse = ResourceManager::getInstance().get_motif_state_ensemble(n->data()->end_ids()[0]);
         }
         
         else {
-        
-            try {
-                mse = ResourceManager::getInstance().get_motif_state_ensemble(n->data()->end_ids()[0]);
+            int found = ResourceManager::getInstance().has_supplied_motif_state_ensemble(
+                            n->data()->name(),
+                            n->data()->ends()[0]->name());
+            if(found) {
+                mse = ResourceManager::getInstance().get_motif_state_ensemble(
+                                                            n->data()->name(),
+                                                            "",
+                                                            n->data()->ends()[0]->name());
             }
-            //cannot find ensemble build one from motif
-            catch(ResourceManagerException const & e) {
+            
+            else {
                 auto m = ResourceManager::getInstance().get_motif(n->data()->name(),
-                                                              n->data()->end_ids()[0]);
+                                                                  n->data()->end_ids()[0]);
                 mse = std::make_shared<MotifStateEnsemble>(m->get_state());
             }
+            
         }
         
         if(i == 0) {

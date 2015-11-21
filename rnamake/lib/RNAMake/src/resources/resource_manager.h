@@ -55,7 +55,8 @@ public:
     MotifStateEnsembleOP
     get_motif_state_ensemble(
         String const & name = dummy_name,
-        String const & id = dummy_id);
+        String const & end_id = dummy_end_id,
+        String const & end_name = dummy_name);
     
     void
     add_motif(
@@ -65,6 +66,14 @@ public:
     register_motif(
         MotifOP const &);
     
+    void
+    register_extra_motif_state_ensembles(
+        String const &);
+    
+    int
+    has_supplied_motif_state_ensemble(
+        String const &,
+        String const &);
     
 protected:
     ResourceManager() { //Prevent construction
@@ -85,6 +94,8 @@ protected:
         for(auto const & kv : MotifStateEnsembleSqliteLibrary::get_libnames()) {
             mse_libs_[kv.first] = std::make_shared<MotifStateEnsembleSqliteLibrary>(kv.first);
         }
+        
+        extra_mses_ = std::map<String, String>();
     
     }
     
@@ -98,6 +109,7 @@ private:
     std::map<String, MotifSqliteLibraryOP> mlibs_;
     std::map<String, MotifStateSqliteLibraryOP> ms_libs_;
     std::map<String, MotifStateEnsembleSqliteLibraryOP> mse_libs_;
+    std::map<String, String> extra_mses_;
     MotifFactory mf_;
     AddedMotifLibrary added_motifs_;
 
