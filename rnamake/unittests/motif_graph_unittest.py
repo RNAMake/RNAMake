@@ -25,9 +25,6 @@ class MotifGraphUnittest(unittest.TestCase):
         if len(mg.graph) != 3:
             self.fail("did not get the right number of motifs")
 
-        mg.write_pdbs()
-        mg.merger.to_pdb("test.pdb")
-
     def test_remove(self):
         builder = build.BuildMotifTree()
         mt = builder.build(2)
@@ -172,13 +169,10 @@ class MotifGraphUnittest(unittest.TestCase):
         mg.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.20"), parent_end_name="A221-A252")
         mg.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
                                           end_name="A221-A252"))
-
         mg.replace_ideal_helices()
         ss = mg.designable_secondary_structure()
         build.fill_basepairs_in_ss(ss)
         mg.replace_helix_sequence(ss)
-        #print ss
-        #mg.write_pdbs()
 
     def test_to_tree(self):
         builder = build.BuildMotifTree()
@@ -188,11 +182,7 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-        #mg.write_pdbs("org")
-        #mg.secondary_structure()
-
         mt2 = motif_topology.graph_to_tree(mg)
-        mt2.write_pdbs()
 
 def main():
     unittest.main()

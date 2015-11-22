@@ -141,6 +141,7 @@ class MotifMerger(object):
                     p.data.prime3_override = 0
             self.chain_graph.remove_node(r.index)
 
+        del self.motifs[m.id]
         self.rebuild_structure = 1
 
     def update_motif(self, m):
@@ -175,7 +176,8 @@ class MotifMerger(object):
                         r_cur = self.get_residue(self.res_overrides[r.uuid])
                     ss_r = ss.get_residue(uuid=r_cur.uuid)
                     if ss_r is None:
-                        raise ValueError("could not find residue during ss build")
+                        raise ValueError("could not find residue during ss build: " +
+                                         str(r_cur) + "from " + m.name)
                     ss_res.append(ss_r)
                 ss_chains.append(secondary_structure.Chain(ss_res))
             ss_struct = secondary_structure.Structure(ss_chains)
