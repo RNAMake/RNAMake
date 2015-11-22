@@ -108,8 +108,8 @@ class ResourceManager(object):
 
     def get_motif_ensemble(self, ss_id):
         for me_lib in self.me_libs.itervalues():
-            if me_lib.contains(ss_id):
-                return me_lib.get(ss_id)
+            if me_lib.contains(name=ss_id):
+                return me_lib.get(name=ss_id)
 
         raise ValueError("could not find motif ensemble with id: "+ss_id)
 
