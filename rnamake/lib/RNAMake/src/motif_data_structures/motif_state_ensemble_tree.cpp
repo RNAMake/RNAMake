@@ -8,6 +8,7 @@
 
 #include "data_structure/graph/graph_node.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
+#include "motif/motif_ensemble.h"
 #include "resources/resource_manager.h"
 
 
@@ -78,14 +79,28 @@ MotifStateEnsembleTree::setup_from_mt(
     for(auto const & n : *mt) {
         i++;
         MotifStateEnsembleOP mse;
-        try {
+    
+        if(n->data()->mtype() == HELIX) {
             mse = ResourceManager::getInstance().get_motif_state_ensemble(n->data()->end_ids()[0]);
         }
-        //cannot find ensemble build one from motif
-        catch(ResourceManagerException const & e) {
-            auto m = ResourceManager::getInstance().get_motif(n->data()->name(),
-                                                              n->data()->end_ids()[0]);
-            mse = std::make_shared<MotifStateEnsemble>(m->get_state());
+        
+        else {
+            int found = ResourceManager::getInstance().has_supplied_motif_state_ensemble(
+                            n->data()->name(),
+                            n->data()->ends()[0]->name());
+            if(found) {
+                mse = ResourceManager::getInstance().get_motif_state_ensemble(
+                                                            n->data()->name(),
+                                                            "",
+                                                            n->data()->ends()[0]->name());
+            }
+            
+            else {
+                auto m = ResourceManager::getInstance().get_motif(n->data()->name(),
+                                                                  n->data()->end_ids()[0]);
+                mse = std::make_shared<MotifStateEnsemble>(m->get_state());
+            }
+            
         }
         
         if(i == 0) {

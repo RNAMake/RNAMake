@@ -43,6 +43,7 @@ parse_command_line(
     cl_opts.add_option("rall", "record_all", INT_TYPE, "0", false);
     cl_opts.add_option("pdbs", "", INT_TYPE, "0", false);
     cl_opts.add_option("ensembles", "", INT_TYPE, "0", false);
+    cl_opts.add_option("extra_mse", "", STRING_TYPE, "", false);
     
     return cl_opts.parse_command_line(argc, argv);
     
@@ -50,6 +51,11 @@ parse_command_line(
 
 SimulateTectos::SimulateTectos(
     Options & opts) {
+    
+    if(opts.option<String>("extra_mse").length() > 0) {
+        ResourceManager::getInstance().register_extra_motif_state_ensembles(
+                                            opts.option<String>("extra_mse"));
+    }
     
     auto mset = get_mset_old(opts.option<String>("fseq"),
                              opts.option<String>("fss"),
@@ -67,7 +73,7 @@ SimulateTectos::SimulateTectos(
     tfs.option("record_all", opts.option<int>("rall"));
     tfs.option("d_weight", opts.option<float>("wd"));
     tfs.option("r_weight", opts.option<float>("wr"));
-
+    
     if(opts.option<int>("ensembles")) {
         auto lib = MotifStateEnsembleSqliteLibrary("bp_steps");
         lib.load_all();
@@ -162,8 +168,35 @@ SimulateTectos::get_motifs_from_seq_and_ss(
     for(int i = 1; i < required_nodes.size(); i++) {
         if(required_nodes[i]->data()->type()   != sstruct::SS_NodeData::SS_Type::SS_BP ||
            required_nodes[i-1]->data()->type() != sstruct::SS_NodeData::SS_Type::SS_BP) {
-            throw std::runtime_error("old method does not have non helical motifs implemented yet!!!!!");
+            String seq1, seq2, ss1, ss2;
+            seq1 = required_nodes[i-1]->data()->ss_chains()[0]->sequence() +
+            required_nodes[i]->data()->ss_chains()[0]->sequence()   +
+            required_nodes[i+1]->data()->ss_chains()[0]->sequence();
+            
+            seq2 = required_nodes[i-1]->data()->ss_chains()[1]->sequence() +
+            required_nodes[i]->data()->ss_chains()[1]->sequence()   +
+            required_nodes[i+1]->data()->ss_chains()[1]->sequence();
+            std::reverse(seq2.begin(), seq2.end());
+            
+            ss1 = "L";
+            for(int j = 0; j < required_nodes[i]->data()->ss_chains()[0]->length(); j++) {
+                ss1 += "U";
+            }
+            ss1 += "L";
+            ss2 = "R";
+            for(int j = 0; j < required_nodes[i]->data()->ss_chains()[1]->length(); j++) {
+                ss2 += "U";
+            }
+            ss2 += "R";
+            String end_id = seq1 + "_" + ss1 + "_" + seq2 + "_" + ss2;
+            auto m = ResourceManager::getInstance().get_motif("", end_id);
+            motif_names.push_back(m->name());
+            i += 1;
+            continue;
+            
+            //throw std::runtime_error("old method does not have non helical motifs implemented yet!!!!!");
         }
+
         
         seq1 = required_nodes[i-1]->data()->sequence();
         seq2 = required_nodes[i]->data()->sequence();

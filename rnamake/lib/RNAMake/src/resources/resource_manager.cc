@@ -7,6 +7,7 @@
 //
 
 #include "resources/resource_manager.h"
+#include "motif/motif_ensemble.h"
 
 MotifOP
 ResourceManager::get_motif(
@@ -52,7 +53,20 @@ ResourceManager::get_state(
 MotifStateEnsembleOP
 ResourceManager::get_motif_state_ensemble(
     String const & name,
-    String const & id) {
+    String const & id,
+    String const & end_name) {
+    
+    String key = name + "-" + end_name;
+    if(extra_mses_.find(key) != extra_mses_.end()) {
+        String path = extra_mses_[key];
+        auto lines = get_lines_from_file(path);
+        auto me = MotifEnsemble(lines[0]);
+        for (auto const & mem : me.members()) {
+            register_motif(mem->motif);
+        }
+        return me.get_state();
+
+    }
     
     for(auto const & kv : mse_libs_) {
         if(kv.second->contains(name, id)) {
@@ -91,3 +105,44 @@ ResourceManager::add_motif(
     }
     
 }
+
+
+void
+ResourceManager::register_motif(
+    MotifOP const & m) {
+    added_motifs_.add_motif(m);
+}
+
+
+int
+ResourceManager::has_supplied_motif_state_ensemble(
+    String const & name,
+    String const & end_name) {
+    
+    String key = name + "-" + end_name;
+    if(extra_mses_.find(key) != extra_mses_.end()) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+    
+}
+
+
+void
+ResourceManager::register_extra_motif_state_ensembles(
+    String const & f_name) {
+    
+    Strings lines = get_lines_from_file(f_name);
+    for(auto const & l : lines) {
+        if (l.size() < 10) { break; }
+        Strings spl = split_str_by_delimiter(l, " ");
+        extra_mses_[spl[0]] = spl[1];
+    }
+    
+}
+
+
+
+
