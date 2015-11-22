@@ -53,7 +53,7 @@ ThermoFlucSimulation::run() {
     int clash = 0;
     Ints check_nodes = { 22, 21 };
     Ints check_nodes_2 = { 1 };
-    
+        
     //fixes if length of tecto changes, need to come up with better system!
     check_nodes[0] = sampler_.mst()->last_node()->index();
     check_nodes[1] = sampler_.mst()->last_node()->index()-1;

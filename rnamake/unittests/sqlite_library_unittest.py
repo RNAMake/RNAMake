@@ -160,6 +160,27 @@ class SqliteLibraryUnittest(unittest.TestCase):
         for m in mlib.all():
             print m.name
 
+    def test_get_1_0(self):
+        mlib = sqlite_library.MotifSqliteLibrary("twoway")
+        mlib.load_all()
+
+        motifs = []
+        end_name = ""
+        for i,m in enumerate(mlib.all()):
+            if len(m.residues()) != 5:
+                continue
+            if len(m.chains()[0].residues) != 3:
+                continue
+            if m.chains()[0].residues[1].name != 'A':
+                continue
+
+            if m.name == "TWOWAY.1DUQ.7":
+                end_name = m.ends[0].name()
+            motifs.append(m)
+            #m.to_pdb("m."+str(i)+".pdb")
+        print end_name
+
+
 def main():
     unittest.main()
 

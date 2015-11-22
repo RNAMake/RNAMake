@@ -261,6 +261,7 @@ class Motif(object):
         for bp in self.basepairs:
             bp.uuid = uuid.uuid1()
 
+
 class MotifState(object):
     __slots__ = ['name', 'end_names', 'end_ids', 'end_states',
                  'beads', 'score', 'size', 'block_end_add']
@@ -349,6 +350,7 @@ def str_to_motif(s):
     m.mtype = int(spl[4])
     m.structure = io.str_to_structure(spl[5])
     m.basepairs = []
+    m.id = uuid.uuid1()
 
     basepair_str = spl[6].split("@")
     for bp_str in basepair_str[:-1]:
