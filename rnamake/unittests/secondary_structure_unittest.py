@@ -1,5 +1,4 @@
 import unittest
-import unittest
 import build
 import rnamake.sqlite_library as sqlite_library
 import rnamake.secondary_structure as secondary_structure
@@ -11,27 +10,17 @@ import rnamake.secondary_structure_factory as ssfactory
 import rnamake.motif_tree as motif_tree
 import rnamake.setup.motif_library as motif_library
 import rnamake.motif_type as motif_type
-import rnamake.motif_tree_topology as motif_tree_topology
 import rnamake.settings as settings
 
 class SecondaryStructureUnittest(unittest.TestCase):
 
-    def _test_assign_secondary_structure(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build()
-        #for n in mt:
-        #    print n.data.name
-
-        p = mt.to_pose()
-        #print p.secondary_structure()
-        #print p.sequence()
-        #mt.write_pdbs()
-
     def test_creation(self):
-        ss = secondary_structure.SecondaryStructure("AGCU+AGCU","((((+))))")
+        ss = secondary_structure.Structure(sequence="AGCU+AGCU",
+                                           dot_bracket="((((+))))")
 
     def test_find_residue(self):
-        ss = secondary_structure.SecondaryStructure("AGCU+AGCU","((((+))))")
+        ss = secondary_structure.Structure(sequence="AGCU+AGCU",
+                                           dot_bracket="((((+))))")
         r = ss.get_residue(1, "A")
         if r is None:
             self.fail("did not find a known residue, finde_residue not working")

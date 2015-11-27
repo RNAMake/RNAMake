@@ -173,7 +173,9 @@ class PoseFactory(object):
         start_motif = self._find_best_start_end(p, all_motifs)
         all_motifs.remove(start_motif)
         mg = motif_graph.MotifGraph()
+        start_motif.name = p.name + ".motif.0"
         mg.add_motif(start_motif)
+        i = 1
         while len(all_motifs) > 0:
             leafs = mg.leafs_and_ends()
             #print len(leafs), len(all_motifs)
@@ -198,8 +200,10 @@ class PoseFactory(object):
                     print "fail, next is None"
                     exit()
 
+                next.name = p.name + ".motif." + str(i)
                 mg.add_motif(next, parent_index=l[0].index, parent_end_index=l[1])
                 all_motifs.remove(next)
+                i += 1
 
         new_p = pose.PoseNew(m=base_motif)
         new_p.mgraph = mg

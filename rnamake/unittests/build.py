@@ -4,7 +4,7 @@ import rnamake.motif_tree as motif_tree
 import rnamake.secondary_structure_factory as ssfactory
 import rnamake.secondary_structure as secondary_structure
 import rnamake.motif_tree_topology as motif_tree_topology
-from rnamake import motif_graph
+from rnamake import motif_graph, motif_type
 
 
 def fill_basepairs_in_ss(ss):
@@ -125,4 +125,63 @@ class BuildSecondaryStructure(object):
         ss  = ss1 + "+" + ss2
 
         return ssfactory.factory.get_structure(seq, ss)
+
+
+class BuildSecondaryStructurePose(object):
+    def __init__(self):
+        pass
+
+    def build_helix(self, size=10):
+        pairs = "AU,UA,GC,CG".split(",")
+        s1, s2, ss1, ss2 = "", "", "", ""
+        for i in range(size):
+            pair = random.choice(pairs)
+            s1 += pair[0]
+            s2 = pair[1] + s2
+            ss1 += "("
+            ss2 += ")"
+
+        seq = s1  + "+" + s2
+        ss  = ss1 + "+" + ss2
+
+        ss = ssfactory.factory.get_structure(seq, ss)
+        motifs = ss.motifs('ALL')
+        new_motifs = []
+        for m in motifs:
+            struct = secondary_structure.Structure(m.chains)
+            new_m = secondary_structure.Motif(struct, m.basepairs, m.ends, m.name,
+                                              m.name, motif_type.UNKNOWN, 0,
+                                              m.end_ids, m.id)
+            new_motifs.append(new_m)
+        struct = secondary_structure.Structure(ss.chains)
+        p = secondary_structure.Pose(struct, ss.basepairs, ss.ends, end_ids=ss.end_ids)
+        p.motifs = new_motifs
+        return p
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

@@ -93,10 +93,42 @@ class Basepair(object):
 
 
 class Structure(object):
-    def __init__(self, chains=None):
+    def __init__(self, chains=None, sequence="", dot_bracket=""):
         self.chains = []
         if chains is not None:
             self.chains = chains
+
+        if len(sequence) != 0 and len(dot_bracket) != 0:
+           self.chains = self._setup_chains(sequence, dot_bracket)
+
+    def _setup_chains(self, sequence, dot_bracket):
+        chains = []
+        residues = []
+
+        if len(dot_bracket) != len(sequence):
+            raise ValueError("sequence and dot bracket are not the same length")
+
+        if dot_bracket[0] != '(' and dot_bracket[0] != '.' and dot_bracket != '&':
+            raise ValueError("secondary structure is not valid did you flip seq and ss?")
+
+        count = 1
+        chains_ids = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K"]
+        chain_i = 0
+        for i in range(len(sequence)):
+            if sequence[i] != "&" and sequence[i] != "+" and sequence[i] != "-":
+                r = Residue(sequence[i], dot_bracket[i], count,
+                            chains_ids[chain_i], uuid.uuid1())
+                residues.append(r)
+                count += 1
+            else:
+                chain_i += 1
+                chains.append(Chain(residues))
+                residues = []
+
+        if len(residues) > 0:
+            chains.append(Chain(residues))
+
+        return chains
 
     def residues(self):
         res = []
@@ -136,17 +168,29 @@ class Structure(object):
 
         return found[0]
 
+    def copy(self):
+        new_chains = [ c.copy() for c in self.chains]
+        return SecondaryStructure(chains=new_chains)
+
 
 class RNAStructure(object):
-    def __init__(self, structure, basepairs, ends=[], name="assembled", path="assembled",
-                 mtype=motif_type.UNKNOWN, score=0, end_ids=[]):
+    def __init__(self, structure=None, basepairs=None, ends=None, name="assembled",
+                 path="assembled", mtype=motif_type.UNKNOWN, score=0, end_ids=None):
         self.structure = structure
+        if self.structure is None:
+            self.structure = Structure()
         self.basepairs =basepairs
+        if self.basepairs is None:
+            self.basepairs = []
         self.name = name
         self.path = path
         self.score = score
         self.ends = ends
+        if self.ends is None:
+            self.ends = []
         self.end_ids = end_ids
+        if self.end_ids is None:
+            self.end_ids = []
         self.mtype = mtype
 
     def __repr__(self):
@@ -180,36 +224,72 @@ class RNAStructure(object):
         for i, r in enumerate(self.structure.residues()):
             r.name = seq2[i]
 
+    def residues(self):
+        return self.structure.residues()
 
 
 class Motif(RNAStructure):
-    def __init__(self, structure=None, basepairs=[], ends=[],
+    def __init__(self, structure=None, basepairs=None, ends=None,
                  name="assembled", path="assembled", mtype=motif_type.UNKNOWN,
-                 score=0, end_ids=[],  id=uuid.uuid1(), r_struct=None):
+                 score=0, end_ids=None,  id=uuid.uuid1(), r_struct=None):
         self.structure = structure
-        self.basepairs =basepairs
+        if self.structure is None:
+            self.structure = Structure()
+        self.basepairs = basepairs
+        if self.basepairs is None:
+            self.basepairs = []
         self.name = name
         self.path = path
         self.score = score
         self.ends = ends
+        if self.ends is None:
+            self.ends = []
         self.end_ids = end_ids
+        if self.end_ids is None:
+            self.end_ids = []
         self.mtype = mtype
         self.id = id
         if r_struct is not None:
             self.__dict__.update(r_struct.__dict__)
 
+    def __repr__(self):
+        return "<secondary_structure.Motif( " + self.sequence() + " " + self.dot_bracket() + " )"
+
+    def copy(self):
+        n_ss = self.structure.copy()
+        basepairs, ends = [], []
+        for bp in self.basepairs:
+            new_bp = Basepair(n_ss.get_residue(uuid=bp.res1.uuid),
+                              n_ss.get_residue(uuid=bp.res2.uuid),
+                              bp.uuid)
+            basepairs.append(new_bp)
+        for end in self.ends:
+            i = self.basepairs.index(end)
+            ends.append(basepairs[i])
+
+        return Motif(n_ss, basepairs, ends, self.name, self.path, self.mtype,
+                     self.score, self.end_ids[::], self.id)
+
 
 class Pose(RNAStructure):
-    def __init__(self, structure=None, basepairs=[], ends=[],
-                 name="assembled", path="assembled", score=0, end_ids=[],
+    def __init__(self, structure=None, basepairs=None, ends=None,
+                 name="assembled", path="assembled", score=0, end_ids=None,
                  r_struct=None):
         self.structure = structure
-        self.basepairs =basepairs
+        if self.structure is None:
+            self.structure = Structure()
+        self.basepairs = basepairs
+        if self.basepairs is None:
+            self.basepairs = []
         self.name = name
         self.path = path
         self.score = score
         self.ends = ends
+        if self.ends is None:
+            self.ends = []
         self.end_ids = end_ids
+        if self.end_ids is None:
+            self.end_ids = []
         self.motifs = []
 
         if r_struct is not None:
@@ -231,7 +311,7 @@ class Pose(RNAStructure):
             for i, end in enumerate(m.ends):
                 m.end_ids[i] = assign_end_id_new(m, end)
 
-
+#TODO phase out this older class organization
 class SecondaryStructureMotif(object):
     def __init__(self, type, ends, chains):
         self.type, self.ends, self.chains = type, ends, chains
@@ -316,6 +396,7 @@ class SecondaryStructureMotif(object):
     def get_step_name(self):
         return self.chains[0].residues[0].name + self.chains[1].residues[1].name + "=" + \
                self.chains[0].residues[1].name + self.chains[1].residues[0].name
+
 
 class SecondaryStructure(SecondaryStructureMotif):
     def __init__(self, sequence=None, dot_bracket=None, chains=None):
@@ -623,8 +704,6 @@ class SecondaryStructure(SecondaryStructureMotif):
 class SecondaryStructurePose(SecondaryStructureMotif):
     def __init__(self):
         pass
-
-
 
 def str_to_residue(s):
     spl = s.split(",")

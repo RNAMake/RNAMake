@@ -106,7 +106,7 @@ MotifStateEnsembleTree::setup_from_mt(
         
     }
     
-    
+
 }
 
 

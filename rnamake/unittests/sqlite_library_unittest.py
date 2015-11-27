@@ -109,7 +109,6 @@ class SqliteLibraryUnittest(unittest.TestCase):
         matches = mlib.get_best_matches(ss_id1)
         #print len(matches)
 
-
     def _test_end_id(self):
         mlib = rm.manager.mlibs['tcontact']
         mlib.load_all()
