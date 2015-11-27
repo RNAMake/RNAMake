@@ -5,7 +5,6 @@ import motif
 import util
 import residue
 import motif_type
-import motif_tree_merger
 import graph
 import tree
 import resource_manager as rm
@@ -278,7 +277,7 @@ m
         return leaf_nodes
 
     def residues(self):
-        return self.merger.residues()
+        return self.merger.get_structure().residues()
 
 
 

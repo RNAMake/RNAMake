@@ -48,7 +48,7 @@ class Graph(object):
             self.current_node = self.nodes[0]
         else:
             self.current_node = None
-        self.seen = []
+        self.seen = [ self.current_node ]
         self.queue = priority_queue.PriorityQueue()
         return self
 
@@ -58,17 +58,23 @@ class Graph(object):
 
         node = self.current_node
 
-        self.seen.append(node)
         for c in node.connections:
             if c is None:
                 continue
             partner = c.partner(node.index)
-            if partner not in self.seen:
+            if partner not in self.seen and partner:
                 self.queue.put(partner, partner.index)
+                self.seen.append(partner)
 
-
-        if self.queue.empty():
+        if self.queue.empty() and len(self.seen) == len(self.nodes):
             self.current_node = None
+        elif self.queue.empty():
+            for n in self.nodes:
+                if n not in self.seen:
+                    self.seen.append(n)
+                    self.current_node = n
+                    break
+
         else:
             self.current_node = self.queue.get()
 
@@ -210,7 +216,7 @@ class GraphStatic(Graph):
             self.last_node = self.nodes[-1]
         #self.index -= 1
 
-    def check_pos_is_value(self, n, pos):
+    def check_pos_is_value(self, n, pos, error=1):
         if pos == -1:
             avail_pos = n.available_children_pos()
             if len(avail_pos) == 0:
@@ -218,8 +224,10 @@ class GraphStatic(Graph):
             return avail_pos[0]
 
         else:
-            if n.available_pos(pos) == 0:
+            if n.available_pos(pos) == 0 and error:
                 raise ValueError("graph pos is not available")
+            elif n.available_pos(pos) == 0:
+                return None
             return pos
 
     def get_availiable_pos(self, n, pos):

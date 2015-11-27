@@ -33,6 +33,8 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
     def test_sample(self):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(5)
+        print ss
+        exit()
         con = ss.motif_topology_from_end()
         mtt = motif_tree_topology.MotifTreeTopology(con)
         mt = motif_tree.motif_tree_from_topology(mtt)
@@ -122,7 +124,7 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
 
         return [i_x, i_y, i_z ]
 
-    def test_interia_rmsd_2(self):
+    def _test_interia_rmsd_2(self):
         motif = rm.manager.get_motif(name='HELIX.IDEAL')
         """Ix = 1.94917
         Iy = 12.3736
@@ -209,7 +211,7 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         print math.sqrt(dist_squared) - math.sqrt(t**2)
         print math.sqrt(dist_squared)
 
-    def test_interia_rmsd(self):
+    def _test_interia_rmsd(self):
         motif = rm.manager.get_motif(name='HELIX.IDEAL')
         Ix = 18.52865437
         Iy = 3.048271

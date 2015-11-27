@@ -83,11 +83,11 @@ class MotifMerger(object):
     def copy(self, new_motifs=None):
         new_merger = MotifMerger()
         new_merger.chain_graph = self.chain_graph.copy()
-        new_merger.res_overrides = self.res_overrides[::]
-        new_merger.bp_overrides = self.bp_overrides[::]
+        new_merger.res_overrides = { k : v for k,v in self.res_overrides.iteritems() }
+        new_merger.bp_overrides = {k : v for k,v in self.bp_overrides.iteritems() }
 
         for m in new_motifs:
-            self.update_motif(m)
+            new_merger.update_motif(m)
 
         return new_merger
 
@@ -158,8 +158,7 @@ class MotifMerger(object):
             n.data.c.residues = new_res
 
         for bp in m.basepairs:
-            if bp.uuid in self.all_bps:
-                self.all_bps[bp.uuid] = bp
+            self.all_bps[bp.uuid] = bp
         self.motifs[m.id] = m
 
     def secondary_structure(self):
@@ -198,6 +197,7 @@ class MotifMerger(object):
                                 m.mtype, m.score, m.end_ids)
             ss_ends = []
             for end in m.ends:
+                correct_bp = end
                 if bp.uuid in self.bp_overrides:
                     correct_bp = self.get_basepair(self.bp_overrides[bp.uuid])
                 ss_bp = ss.get_bp(uuid=correct_bp.uuid)

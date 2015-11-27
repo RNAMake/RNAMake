@@ -17,10 +17,6 @@ def graph_to_tree(mg, start=None):
         seen_nodes = {}
         index = 0
 
-        for m in ss.motifs:
-            print m
-        exit()
-
         while len(open) > 0:
             current = open.pop(0)
             ss_m = ss.motif(current.data.id)
@@ -34,14 +30,6 @@ def graph_to_tree(mg, start=None):
                 m = rm.manager.get_motif(name = ss_m.name,
                                          end_name=ss_m.ends[free_end].name(),
                                          end_id=ss_m.end_ids[free_end])
-
-               # m = rm.manager.get_motif(name = ss_m.name)
-
-                """try:
-                    m = rm.manager.get_motif(end_name=ss_m.ends[free_end].name(),
-                                             end_id=ss_m.end_ids[free_end])
-                except:
-                    m = rm.manager.get_motif(end_id=ss_m.end_ids[free_end])"""
                 mt.add_motif(m)
 
             else:
@@ -70,8 +58,7 @@ def graph_to_tree(mg, start=None):
                     m = rm.manager.get_motif(name = ss_m.name)
                 else:
                     m = rm.manager.get_motif(name = ss_m.name,
-                                         end_name=ss_m.ends[free_end].name(),
-                                         end_id=ss_m.end_ids[free_end])
+                                             end_name=c_end_name)
 
                 pos = mt.add_motif(m, parent_index=p_index, parent_end_name=p_end_name)
                 if pos == -1:

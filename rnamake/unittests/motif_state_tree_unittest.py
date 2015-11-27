@@ -58,7 +58,6 @@ class MotifStateTreeUnittest(unittest.TestCase):
             if r_mst is None:
                 raise ValueError("cannot find residue in mst")
 
-
     def test_align(self):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
         rm.manager.add_motif(path)

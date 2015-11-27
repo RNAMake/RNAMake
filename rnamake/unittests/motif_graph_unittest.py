@@ -131,8 +131,6 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-
-        mg.write_pdbs("org")
         mg.replace_ideal_helices()
         #mg.write_pdbs()
         #for i, c in enumerate(mg.structure.chains()):
@@ -146,8 +144,8 @@ class MotifGraphUnittest(unittest.TestCase):
         r = designer.design(ss.dot_bracket(), ss.sequence())
         ss.replace_sequence(r[0].sequence)
         mg.replace_helix_sequence(ss)
-        mg.write_pdbs("new")
-        mg.merger.to_pdb("test.pdb")
+        #mg.write_pdbs("new")
+        #mg.merger.to_pdb("test.pdb")
 
     def test_designable_secondary_structure_2(self):
         builder = build.BuildMotifTree()
@@ -159,7 +157,6 @@ class MotifGraphUnittest(unittest.TestCase):
 
         hairpin = rm.manager.mlibs['hairpin'].get_random()
         mg.add_motif(hairpin)
-        mg.write_pdbs()
 
     def test_ss_real_case(self):
         rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
@@ -183,6 +180,7 @@ class MotifGraphUnittest(unittest.TestCase):
             mg.add_motif(n.data)
 
         mt2 = motif_topology.graph_to_tree(mg)
+
 
 def main():
     unittest.main()

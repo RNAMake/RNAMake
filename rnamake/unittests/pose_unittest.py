@@ -112,12 +112,14 @@ class PoseUnittest(unittest.TestCase):
          #p = pf.factory.pose_from_file_new("/Users/josephyesselman/projects/REDESIGN/examples/example_2/p4p6/p4p6.pdb")
         p = pf.factory.pose_from_file_new("/Users/josephyesselman/projects/DasLabBot/tests/runs/v1/1LNG/1LNG.pdb")
 
-        rna_denovo_runner = rna_denovo.RNADenovo(nstruct=5)
+        #rna_denovo_runner = rna_denovo.RNADenovo(nstruct=5)
         for n in p.mgraph.graph:
             rm.manager.add_motif(motif=n.data)
 
 
         mt = motif_topology.graph_to_tree(p.mgraph)
+        return
+
         for n in mt:
             if n.data.mtype != motif_type.HELIX:
                 if n.index != 2:
@@ -127,10 +129,10 @@ class PoseUnittest(unittest.TestCase):
                     continue
                 print n.index, n.data.ends[0], n.data.sequence(), n.data.dot_bracket()
                 #rna_denovo_runner.run(n.data.secondary_structure)
-                rna_denovo_runner.process(n.data.secondary_structure, n.data.ends[0],
-                                          me_name)
-                rna_denovo_runner.clean_up()
-                exit()
+                #rna_denovo_runner.process(n.data.secondary_structure, n.data.ends[0],
+                #                          me_name)
+                #rna_denovo_runner.clean_up()
+                #exit()
 
         mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
         sampler = thermo_fluc_sampler.ThermoFlucSampler()
