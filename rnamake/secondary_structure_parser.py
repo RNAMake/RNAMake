@@ -1,106 +1,68 @@
 import secondary_structure
+import secondary_structure_graph
 import graph
+import motif_type
 
 class SecondaryStructureChainGraph(object):
     def __init__(self):
         self.graph = graph.GraphStatic()
 
-    def __len__(self):
-        return len(self.graph)
-
     def __repr__(self):
         s = ""
         for n in self.graph:
             seq = ""
-            for c in n.data:
-                seq += c.sequence()
-                if c != n.data[-1]:
-                    seq += "&"
-            conn_str = ""
-            for i, c in enumerate(n.connections):
-                if c is None:
-                    continue
-                conn_str += str(i) + " = " + str(c.partner(n.index).index) + ", "
-            s += "index: " + str(n.index) + " sequence:" + seq + " connections " + str(conn_str) + "\n"
+            for r in n.data.residues:
+                seq += r.name
+            conn_str = "5prime: "
+            if n.connections[0] is not None:
+                conn_str += str(n.connections[0].partner(n.index).index) + " "
+            else:
+                conn_str += "N "
+            conn_str += "3prime: "
+            if n.connections[1] is not None:
+                conn_str += str(n.connections[1].partner(n.index).index) + " "
+            else:
+                conn_str += "N "
+
+            if n.connections[2] is not None:
+                conn_str += "pair: " + str(n.connections[2].partner(n.index).index)
+
+            s += "index: " + str(n.index) + " sequence:" + seq + " " + str(conn_str) + "\n"
 
         return s
 
-    def get_node_by_res(self, res):
-        if len(self.graph) == 0:
-            return -1
-        for i, n in enumerate(self.graph):
-            for c in n.data:
-                for r in c.residues:
-                    if r == res:
-                        return i
-        return -1
-
-    def add_chains(self, chains, parent_index=-1, parent_end_index=-1, orphan=0):
+    def add_chain(self, data, parent_index=-1, orphan=0):
         parent = self.graph.last_node
         if parent_index != -1:
             parent = self.graph.get_node(parent_index)
 
         if parent is None:
-            return self.graph.add_data(chains, -1, -1, -1, len(chains)*2)
+            return self.graph.add_data(data, -1, -1, -1, 3)
 
-        if parent_end_index == -1:
-            avail = self.graph.check_pos_is_value(parent, 1, 0)
-            pos = 1
-            if not avail:
-                avail = self.graph.check_pos_is_value(parent, 3, 0)
-                if not avail:
-                    print chains
-                    print parent.data
-                    print self
-                    raise ValueError("trying to contect to a node that already has a default connection")
-                pos = 3
-        else:
-            avail = self.graph.check_pos_is_value(parent, parent_end_index)
-            pos = parent_end_index
+        return self.graph.add_data(data, parent_index, 1, 0, 3, orphan=orphan)
 
-        return self.graph.add_data(chains, parent_index, pos, 0, len(chains)*2, orphan=orphan)
+    def get_node_by_res(self, res):
+        for i, n in enumerate(self.graph):
+            for r in n.data.residues:
+                if r == res:
+                    return i
+        return -1
 
-    def connect_bp_to_parent_bp(self, n_i, n_j):
-        return self.graph.connect(n_i, n_j, 2, 3)
+    def pair_res(self, n_i, n_j):
+        self.graph.connect(n_i, n_j, 2, 2)
 
-    def connect_bp_to_parent_chain(self, n_i, n_j):
-        return self.graph.connect(n_i, n_j, 2, 1)
 
-    def node_is_bp(self, i):
-        n = self.graph.get_node(i)
-        if len(n.data) == 2:
-            return 1
-        else:
-            return 0
+class NodeType(object):
+    UNPAIRED = 0
+    PAIRED    = 1
+
+
+class NodeData(object):
+    def __init__(self, residues, type):
+        self.residues, self.type = residues, type
+
 
 class SecondaryStructureParser(object):
-    def __init__(self):
-        pass
-
-    def _add_chain_to_graph(self, chain, g, pos=0):
-        res = self._previous_res(chain.residues[0])
-        parent_index = g.get_node_by_res(res)
-        if res.dot_bracket == "(":
-            g.add_chains([chain], parent_index, parent_end_index=1)
-        else:
-            g.add_chains([chain], parent_index, parent_end_index=3)
-
-
-
-        """if pos == 0:
-            g.add_chains([chain], parent_index, parent_end_index=1)
-        else:
-            #check for hairpin
-            try:
-                next_index = g.get_node_by_res(self._next_res(chain.residues[-1]))
-                if next_index == parent_index:
-                    print g.graph.get_node(parent_index).connections
-                    g.add_chains([chain], parent_index, parent_end_index=1)
-
-            except:
-                print "still made it"
-                g.add_chains([chain], parent_index, parent_end_index=3)"""
-
 
     def parse(self, sequence=None, dot_bracket=None, structure=None):
         if sequence is not None and dot_bracket is not None:
@@ -112,131 +74,121 @@ class SecondaryStructureParser(object):
 
         g = SecondaryStructureChainGraph()
 
-        chain = secondary_structure.Chain()
+        res = []
+        self.pairs = []
         for i, r in enumerate(self.residues):
             if r.dot_bracket == ".":
-                chain.residues.append(r)
+                res.append(r)
 
             elif r.dot_bracket == "(":
-                #add previous unpaired region
-                if len(chain.residues) > 0:
-                    self._add_chain_to_graph(chain, g, pos=0)
-                    chain = secondary_structure.Chain()
-
+                if len(res) > 0:
+                    parent_index = g.get_node_by_res(self._previous_res(res[0]))
+                    new_data = NodeData(res, NodeType.UNPAIRED)
+                    g.add_chain(new_data, parent_index)
+                    res = []
                 pair_res = self._get_bracket_pair(r)
-                chains = [ secondary_structure.Chain([r]),
-                           secondary_structure.Chain([pair_res]) ]
-                if self._start_of_chain(r):
-                    g.add_chains(chains, -1, orphan=1)
-                else:
-                    parent_index = g.get_node_by_res(self._previous_res(r))
-                    g.add_chains(chains, parent_index)
+                new_data = NodeData([r], NodeType.PAIRED)
+                parent_index = g.get_node_by_res(self._previous_res(r))
+                self.pairs.append(secondary_structure.Basepair(r, pair_res))
+                g.add_chain(new_data, parent_index)
 
             elif r.dot_bracket == ")":
-                #add previous unpaired region
-                if len(chain.residues) > 0:
-                    self._add_chain_to_graph(chain, g, pos=1)
-                    chain = secondary_structure.Chain()
-                if self._start_of_chain(r):
-                    continue
+                if len(res) > 0:
+                    parent_index = g.get_node_by_res(self._previous_res(res[0]))
+                    new_data = NodeData(res, NodeType.UNPAIRED)
+                    g.add_chain(new_data, parent_index)
+                    res = []
+                pair = None
+                for p in self.pairs:
+                    if p.res2 == r:
+                        pair = p
+                        break
+                new_data = NodeData([r], NodeType.PAIRED)
                 parent_index = g.get_node_by_res(self._previous_res(r))
-                node_index = g.get_node_by_res(r)
-                #print parent_index, node_index, r.name, self._previous_res(r).name, len(g)
-                if g.node_is_bp(parent_index):
-                    g.connect_bp_to_parent_bp(node_index, parent_index)
-                else:
-                    g.connect_bp_to_parent_chain(node_index, parent_index)
+                pos = g.add_chain(new_data, parent_index)
+                pair_res_pos = g.get_node_by_res(pair.res1)
+                g.pair_res(pair_res_pos, pos)
 
         return g
 
-    def _get_basepairs(self, g):
-        basepairs = []
-        for n in g.graph:
-            if len(n.data) == 1:
-                continue
-            bp = secondary_structure.Basepair(n.data[0].residues[0],
-                                              n.data[1].residues[0])
-            basepairs.append(bp)
-        return basepairs
-
     def parse_to_motifs(self, sequence=None, dot_bracket=None, structure=None):
         g = self.parse(sequence, dot_bracket, structure)
-        print g
-        exit()
         motifs = []
-        basepairs = self._get_basepairs(g)
+        self.seen_nodes = []
         for i, n in enumerate(g.graph):
             if n.connections[1] is None:
                 continue
-            if len(n.data) == 1:
+            if n.data.type == NodeType.UNPAIRED:
                 continue
-
-            m = self._generate_motif(n, basepairs)
+            m = self._generate_motif(n)
+            self.seen_nodes.append(n)
+            if m is None:
+                continue
             motifs.append(m)
         return motifs
 
-    def _walk_nodes(self, n, seen, d=0):
+    def parse_to_motif_graph(self, sequence=None, dot_bracket=None, structure=None):
+        motifs = self.parse_to_motifs(sequence, dot_bracket, structure)
+        ssg = secondary_structure_graph.SecondaryStructureGraph()
+
+        start_m = motifs.pop(0)
+        seen_motifs = {}
+        open_motifs = [[start_m, -1, -1, 0]]
+        while len(open_motifs) > 0:
+            current, parent_index, parent_end_index, current_end_index = open_motifs.pop(0)
+            seen_motifs[current] = 1
+
+            pos = ssg.add_motif(current, parent_index, parent_end_index,
+                                m_end_index=current_end_index)
+            for m in motifs:
+                if m in seen_motifs:
+                    continue
+                for i, end1 in enumerate(current.ends):
+                    if i == current_end_index:
+                        continue
+                    for j, end2 in enumerate(m.ends):
+                        if end1 == end2:
+                            open_motifs.append([m, pos, i, j])
+
+        return ssg
+
+    def parse_to_motif(self, sequence=None, dot_bracket=None, structure=None):
+        g = self.parse(sequence, dot_bracket, structure)
+        struct = self.structure
+        return self._build_motif(struct)
+
+    def _walk_nodes(self, n):
         bps_count = 0
         chain = secondary_structure.Chain()
         current = n
         last_node = current
         while current is not None:
-            if len(current.data) > 1:
+            if current in self.seen_nodes:
+                return None, None
+
+            if current.data.type == NodeType.PAIRED:
                 bps_count += 1
-
-            if d == 0 or len(current.data) == 1:
-                chain.residues.extend(current.data[0].residues)
-            else:
-                if current.data[0].residues[0] not in seen:
-                    chain.residues.extend(current.data[0].residues)
-                    seen[current.data[0].residues[0]] = 1
-                else:
-                    chain.residues.extend(current.data[1].residues)
-
+            chain.residues.extend(current.data.residues)
             last_node = current
-            if d == 0 or len(current.data) == 1:
-                if current.connections[1] is not None:
-                    current = current.connections[1].partner(current.index)
-                else:
-                    current = None
+            if current.connections[1] is not None:
+                current = current.connections[1].partner(current.index)
             else:
-                if current.connections[3] is not None:
-                    current = current.connections[3].partner(current.index)
-                else:
-                    current = None
+                break
 
             if bps_count == 2:
                 break
 
-        return chain, last_node
+        return chain, last_node.connections[2].partner(last_node.index)
 
-    def _generate_motif(self, n, basepairs):
-        start = n
-        seen = {}
-        chain, next_n= self._walk_nodes(start, seen, d=0)
-        chains = [chain]
-        for r in chain.residues:
-            seen[r] = 1
-
-        print chain
-        for r in chain.residues:
-            print r.num,
-        print
-        print next_n.data[0].residues[0].num, next_n.data[1].residues[0].num
-        while next_n != start:
-            chain, next_n = self._walk_nodes(next_n, seen, d=1)
-            chains.append(chain)
-
-
-        struct = secondary_structure.Structure(chains)
+    def _build_motif(self, struct):
         res = struct.residues()
         bps = []
-        for bp in basepairs:
+        for bp in self.pairs:
             if bp.res1 in res and bp.res2 in res:
                 bps.append(bp)
 
         chain_ends = []
-        for c in chains:
+        for c in struct.chains:
             chain_ends.extend([c.first(), c.last()])
 
         ends = []
@@ -245,9 +197,34 @@ class SecondaryStructureParser(object):
                 ends.append(bp)
 
         m = secondary_structure.Motif(struct, bps, ends)
+        if len(m.residues()) == 4:
+            m.mtype = motif_type.HELIX
+        elif len(m.chains()) == 2:
+            m.mtype = motif_type.TWOWAY
+        elif len(m.chains()) == 1:
+            m.mtype = motif_type.HAIRPIN
+        else:
+            m.mtype = motif_type.NWAY
+
+        for end in m.ends:
+            m.end_ids.append(secondary_structure.assign_end_id_new(m, end))
+
         return m
 
+    def _generate_motif(self, n):
+        start = n
+        seen = {}
+        chain, next_n= self._walk_nodes(start)
+        chains = [chain]
 
+        while next_n != start:
+            chain, next_n = self._walk_nodes(next_n)
+            if next_n is None:
+                return None
+            chains.append(chain)
+
+        struct = secondary_structure.Structure(chains)
+        return self._build_motif(struct)
 
 
     def _previous_res(self, r):
@@ -275,7 +252,6 @@ class SecondaryStructureParser(object):
             if c.last() == r:
                 return 1
         return 0
-
 
     def _get_bracket_pair(self, r_start):
 

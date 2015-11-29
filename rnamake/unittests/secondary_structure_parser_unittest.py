@@ -37,6 +37,9 @@ class SecondaryStructureParserUnittest(unittest.TestCase):
         parser = secondary_structure_parser.SecondaryStructureParser()
         seq = "GGAAGACAAGACAACC"
         ss  = "((..(.)..(.)..))"
+        #seq = "GAG+CAC"
+        #ss  = "(.(+).)"
+
         g = parser.parse(seq, ss)
         print g
 
@@ -44,13 +47,19 @@ class SecondaryStructureParserUnittest(unittest.TestCase):
 
     def test_parse_to_motifs(self):
         parser = secondary_structure_parser.SecondaryStructureParser()
-        #motifs = parser.parse_to_motifs("GGAG+CACC","((.(+).))")
-        motifs = parser.parse_to_motifs("GAAGACAAGACAAC", "(..(.)..(.)..)")
-        for m in motifs:
-            print m,
-            for r in m.residues():
-                print r.num,
-            print
+        seq = "GGAAGACAAGACAACC"
+        ss  = "((..(.)..(.)..))"
+        motifs = parser.parse_to_motifs(seq, ss)
+        if len(motifs) != 4:
+            self.fail("did not get the right number of motifs")
+
+    def test_parse_to_motif_graph(self):
+        parser = secondary_structure_parser.SecondaryStructureParser()
+        seq = "GGAAGACAAGACAACC"
+        ss  = "((..(.)..(.)..))"
+        g = parser.parse_to_motif_graph(seq, ss)
+        if len(g.graph) != 4:
+            self.fail("did not build graph properly")
 
 
 def main():

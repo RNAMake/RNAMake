@@ -91,7 +91,6 @@ class Basepair(object):
         else:
             raise ValueError("call partner with a residue not in basepair")
 
-
 class Structure(object):
     def __init__(self, chains=None, sequence="", dot_bracket=""):
         self.chains = []
@@ -161,7 +160,7 @@ class Structure(object):
             return None
 
         if len(found) > 1:
-            print "num,chain_id,icode=",num,chain_id,i_code,
+            #print "num,chain_id,icode=",num,chain_id,i_code,
             raise ValueError(
                 "found multiple residues in get_residue(), narrow " +
                 "your search")
@@ -171,6 +170,12 @@ class Structure(object):
     def copy(self):
         new_chains = [ c.copy() for c in self.chains]
         return SecondaryStructure(chains=new_chains)
+
+    def to_str(self):
+        s = ""
+        for c in self.chains:
+            s += c.to_str() + "|"
+        return s
 
 
 class RNAStructure(object):
@@ -227,6 +232,9 @@ class RNAStructure(object):
     def residues(self):
         return self.structure.residues()
 
+    def chains(self):
+        return self.structure.chains
+
 
 class Motif(RNAStructure):
     def __init__(self, structure=None, basepairs=None, ends=None,
@@ -269,6 +277,14 @@ class Motif(RNAStructure):
 
         return Motif(n_ss, basepairs, ends, self.name, self.path, self.mtype,
                      self.score, self.end_ids[::], self.id)
+
+    def to_str(self):
+        s = self.mtype + "!" + self.structure.to_str() + "!"
+        res = self.residues()
+        for bp in self.basepairs:
+            s += res.index(bp.res1) + " " + res.index(bp.res2) + "@"
+        s += "!"
+        pass
 
 
 class Pose(RNAStructure):
@@ -701,6 +717,7 @@ class SecondaryStructure(SecondaryStructureMotif):
                 if r.name == 'U':
                     r.name = 'T'
 
+
 class SecondaryStructurePose(SecondaryStructureMotif):
     def __init__(self):
         pass
@@ -721,6 +738,14 @@ def str_to_chain(s):
         c.residues.append(r)
     return c
 
+
+def str_to_structure(s):
+    spl = s.split("|")
+    chains = []
+    for c_str in spl[:-1]:
+        c = str_to_chain(c_str)
+        chains.append(c)
+    return Structure(chains)
 
 def get_res_from_bp_str(ss, bp_str):
     res_info = bp_str.split("_")
@@ -918,7 +943,6 @@ def assign_end_id(ss, end):
 def assign_end_id_new(ss, end):
     if end not in ss.ends:
         raise ValueError("supplied an end that is not in current ss element")
-
 
     all_chains = ss.structure.chains[::]
     open_chains = []

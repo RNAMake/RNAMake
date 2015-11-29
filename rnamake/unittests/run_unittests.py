@@ -26,7 +26,6 @@ testmodules = [
     'secondary_structure_unittest',
     'segmenter_unittest',
     'sqlite_library_unittest',
-    'ss_tree_unittest',
     'steric_lookup_unittest',
     'structure_unittest',
     'transform_unittest',

@@ -11,8 +11,9 @@ import rnamake.motif_tree as motif_tree
 import rnamake.setup.motif_library as motif_library
 import rnamake.motif_type as motif_type
 import rnamake.settings as settings
+from rnamake import secondary_structure_factory as ssf
 
-class SecondaryStructureUnittest(unittest.TestCase):
+class Structure(unittest.TestCase):
 
     def test_creation(self):
         ss = secondary_structure.Structure(sequence="AGCU+AGCU",
@@ -23,51 +24,36 @@ class SecondaryStructureUnittest(unittest.TestCase):
                                            dot_bracket="((((+))))")
         r = ss.get_residue(1, "A")
         if r is None:
-            self.fail("did not find a known residue, finde_residue not working")
+            self.fail("did not find a known residue, find_residue not working")
 
         r2 = ss.get_residue(uuid=r.uuid)
         if r2 is None:
-            self.fail("did not find a known residue, finde_residue not working")
+            self.fail("did not find a known residue, find_residue not working")
 
-    def test_to_str(self):
-        builder = build.BuildSecondaryStructure()
-        ss = builder.build_helix(10)
-        s = ss.to_str()
-        ss1 = secondary_structure.str_to_secondary_structure(s)
-
-        if len(ss.residues()) != len(ss1.residues()):
-            self.fail("did not recover all residues from str_to_secondary_structure")
-
-        if len(ss.elements["BP_STEP"]) != len(ss1.elements["BP_STEP"]):
-            self.fail("did not get all basepair steps again")
+        try:
+            ss.get_residue(chain_id="A")
+        except ValueError:
+            pass
+        except:
+            self.fail("did not get expected error")
 
     def test_copy(self):
-        builder = build.BuildSecondaryStructure()
-        ss = builder.build_helix(2)
+        ss = secondary_structure.Structure(sequence="AGCU+AGCU",
+                                           dot_bracket="((((+))))")
+        c_ss = ss.copy()
+        for r in ss.residues():
+            if c_ss.get_residue(uuid=r.uuid) is None:
+                self.fail("cannot find residue in copy")
 
-        ss_copy = ss.copy()
+    def test_to_str(self):
+        ss = secondary_structure.Structure(sequence="AGCU+AGCU",
+                                           dot_bracket="((((+))))")
 
-        if len(ss.basepairs) != len(ss_copy.basepairs):
-            self.fail("did not get the right number of basepairs")
-
-    def test_parse(self):
-        seq = "UG&CA&CGACACAG"
-        db  = "((&))&(......)"
-        ss = ssfactory.factory.get_structure(seq, db)
-
-    def test_parse_nway(self):
-        mlib = motif_library.MotifLibrary(motif_type.NWAY)
-        m = mlib.get_motif("NWAY.1XPE.0")
-        parser = ssfactory.MotiftoSecondaryStructure()
-        ss = parser.to_secondary_structure(m)
-
-    def test_motif_topology_from_end(self):
-        builder = build.BuildSecondaryStructure()
-        ss = builder.build_helix(10)
-        connectivity = ss.motif_topology_from_end(ss.ends[0])
-
-    def test_ss_id_to_ss(self):
-        ss = ssfactory.ss_id_to_secondary_structure('GAUUUGAG_LLLLLLLL_CUCAAAUC_RRRRRRRR')
+        s = ss.to_str()
+        c_ss = secondary_structure.str_to_structure(s)
+        for r in ss.residues():
+            if c_ss.get_residue(r.num, r.chain_id) is None:
+                self.fail("cannot find residue in to_str")
 
     def _test_add_motif(self):
         seq1 = 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG'
@@ -95,36 +81,29 @@ class SecondaryStructureUnittest(unittest.TestCase):
         mt = motif_tree.motif_tree_from_topology(mtt, sterics=0)
         #mt.write_pdbs()
 
-    def test_complex(self):
-        seq = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"
-        db  = "......((((((....)))...((.....))))).."
+class Motif(unittest.TestCase):
 
-        sstree = ss_tree.SS_Tree(seq, db)
-        #for n in sstree:
-        #    if n.parent == None:
-        #        continue
-        #    print n.index, n.parent.index, n.data.what(), n.data.sequence()
+    def test_creation(self):
+        m = secondary_structure.Motif()
+        m1 = ssf.factory.motif("AGCU+AGCU", "((((+))))")
+        if len(m1.residues()) != 8:
+            self.fail("did not get the correct number of residues")
 
-        #return
-        ss = ssfactory.factory.get_structure(seq, db)
+        if len(m1.chains()) != 2:
+            self.fail("did not get the correct number of chains")
+ø
+    def test_copy(self):
+        m = ssf.factory.motif("AGCU+AGCU", "((((+))))")
+        m_copy = m.copy()
 
-        """for m in ss.motifs('ALL'):
-            print m.type,
-            for r in m.residues():
-                print r.num,
-            print"""
+        for r in m.residues():
+            if m_copy.get_residue(uuid=r.uuid) is None:
+                self.fail("did not find residue in motif copy")
 
-    def _test_complex_2(self):
-        path = settings.UNITTEST_PATH + "/resources/seq_ss.txt"
-        f = open(path)
-        lines = f.readlines()
-        f.close()
+    def test_to_str(self):
+        m = ssf.factory.motif("AGCU+AGCU", "((((+))))")
 
-        for l in lines:
-            name,seq,db = l.split()
-            #print name, len(seq), len(db)
-            ss = ssfactory.factory.get_structure(seq, db)
-            #print ss
+
 
 def main():
     unittest.main()
