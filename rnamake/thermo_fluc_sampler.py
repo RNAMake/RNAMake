@@ -90,7 +90,8 @@ class ThermoFlucFolding(base.Base):
         self.mt = None
 
     def setup_options_and_constraints(self):
-        options = { 'temperature' : 298.15 }
+        options = { 'temperature' : 298.15,
+                    'steps'       : 100 }
 
         self.options = option.Options(options)
         self.constraints = {}
@@ -109,7 +110,8 @@ class ThermoFlucFolding(base.Base):
 
         count = 2
         pos = 0
-        for i in range(1000):
+        max_steps = self.option('steps')
+        for i in range(max_steps):
             if self.sampler.next() == 0:
                 continue
 
@@ -118,7 +120,7 @@ class ThermoFlucFolding(base.Base):
                 self.sampler.undo()
                 continue
             pos = (i / 10) + 1
-            print i
+            #print i
 
             self._find_residue_contacts()
             if count-1 <= pos and self.movie:
@@ -137,7 +139,7 @@ class ThermoFlucFolding(base.Base):
             for j in range(i+2, len(res)):
                 mst_ri = self.sampler.mst.get_residue(res[i].uuid)
                 mst_rj = self.sampler.mst.get_residue(res[j].uuid)
-                if len(self.mt.merger.get_basepair(res1=res[i], res2=res[j])) > 0:
+                if len(self.mt.merger.get_structure().get_basepair(res1=res[i], res2=res[j])) > 0:
                     continue
                 for b1 in mst_ri.beads:
                     for b2 in mst_rj.beads:

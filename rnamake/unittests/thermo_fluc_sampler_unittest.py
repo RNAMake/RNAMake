@@ -3,8 +3,6 @@ import random
 import build
 import math
 import numpy as np
-import pandas as pd
-import seaborn as sns
 import numpy.linalg as lin
 import rnamake.thermo_fluc_sampler
 import rnamake.motif_tree_topology as motif_tree_topology
@@ -15,7 +13,7 @@ import rnamake.resource_manager as rm
 import rnamake.pose_factory as pf
 import rnamake.transformations as trans
 import rnamake.util as util
-from rnamake import motif_topology, thermo_fluc_sampler, motif_graph
+from rnamake import motif_topology, thermo_fluc_sampler, motif_graph, motif_tree, secondary_structure_tree
 
 class ThermoFlucSamplerUnittest(unittest.TestCase):
 
@@ -33,18 +31,15 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
     def test_sample(self):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(5)
-        print ss
-        exit()
-        con = ss.motif_topology_from_end()
-        mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt = motif_tree.motif_tree_from_topology(mtt)
+        sst = secondary_structure_tree.tree_from_pose(ss)
+        mt = motif_tree.motif_tree_from_ss_tree(sst)
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
 
         tfs = rnamake.thermo_fluc_sampler.ThermoFlucSampler()
         tfs.setup(mset)
         tfs.sample(100)
 
-    def test_relaxer(self):
+    def _test_relaxer(self):
         s = rnamake.segmenter.Segmenter()
         path = rnamake.settings.UNITTEST_PATH + "/resources/motifs/p4p6"
         p = pf.factory.pose_from_file(path)
@@ -78,9 +73,8 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
     def test_update(self):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(5)
-        con = ss.motif_topology_from_end()
-        mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt = motif_tree.motif_tree_from_topology(mtt)
+        sst = secondary_structure_tree.tree_from_pose(ss)
+        mt = motif_tree.motif_tree_from_ss_tree(sst)
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
 
         tfs = rnamake.thermo_fluc_sampler.ThermoFlucSampler()
@@ -268,7 +262,7 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         print rmsd
         print math.sqrt(dist_squared)
 
-    def test_folding(self):
+    def _test_folding(self):
         builder = build.BuildMotifGraph()
         #mg = builder.build(3)
         mg = motif_graph.MotifGraph()
@@ -283,12 +277,13 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
 
         tff = thermo_fluc_sampler.ThermoFlucFolding()
         tff.setup(mset, mt)
+        tff.option('steps', 10)
         #tff.movie = 1
         tff.run()
 
-        df = pd.DataFrame(tff.contacts)
-        sns.heatmap(df)
-        sns.plt.show()
+        #df = pd.DataFrame(tff.contacts)
+        #sns.heatmap(df)
+        #sns.plt.show()
 
 
 

@@ -101,7 +101,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         return m
 
-    def test_get_best(self):
+    def _test_get_best(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
         #ss_id1 = "AC_LL_GGGU_RUUR"
         ss_id1 = "CGG_LLL_CAG_RRR"

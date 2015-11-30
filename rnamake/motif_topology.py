@@ -28,8 +28,7 @@ def graph_to_tree(mg, start=None):
                         free_end = i
 
                 m = rm.manager.get_motif(name = ss_m.name,
-                                         end_name=ss_m.ends[free_end].name(),
-                                         end_id=ss_m.end_ids[free_end])
+                                         end_name=ss_m.ends[free_end].name())
                 mt.add_motif(m)
 
             else:
@@ -49,16 +48,13 @@ def graph_to_tree(mg, start=None):
                         p_end_name = p.data.ends[p_end_index].name()
                         c_end_index = c.end_index(current.index)
                         c_end_name = current.data.ends[c_end_index].name()
-
                         break
 
 
 
-                if ss_m.name[0:5] == "HELIX":
-                    m = rm.manager.get_motif(name = ss_m.name)
-                else:
-                    m = rm.manager.get_motif(name = ss_m.name,
-                                             end_name=c_end_name)
+
+                m = rm.manager.get_motif(name = ss_m.name,
+                                         end_name=c_end_name)
 
                 pos = mt.add_motif(m, parent_index=p_index, parent_end_name=p_end_name)
                 if pos == -1:

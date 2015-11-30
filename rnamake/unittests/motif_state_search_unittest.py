@@ -62,7 +62,7 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mst.add_connection(0, mst.last_node().index, "A146-A157")
         #p = mst.to_pose()
 
-    def test_redesign(self):
+    def _test_redesign(self):
         s = rnamake.segmenter.Segmenter()
         path = rnamake.settings.UNITTEST_PATH + "/resources/motifs/p4p6"
         p = pf.factory.pose_from_file(path)

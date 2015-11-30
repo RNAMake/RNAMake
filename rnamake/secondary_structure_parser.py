@@ -157,6 +157,12 @@ class SecondaryStructureParser(object):
         struct = self.structure
         return self._build_motif(struct)
 
+    def parse_to_pose(self, sequence=None, dot_bracket=None, structure=None):
+        motifs = self.parse_to_motifs(sequence, dot_bracket, structure)
+        p = self._build_pose(self.structure)
+        p.motifs = motifs
+        return p
+
     def _walk_nodes(self, n):
         bps_count = 0
         chain = secondary_structure.Chain()
@@ -180,6 +186,29 @@ class SecondaryStructureParser(object):
 
         return chain, last_node.connections[2].partner(last_node.index)
 
+    def _build_pose(self, struct):
+        res = struct.residues()
+        bps = []
+        for bp in self.pairs:
+            if bp.res1 in res and bp.res2 in res:
+                bps.append(bp)
+
+        chain_ends = []
+        for c in struct.chains:
+            chain_ends.extend([c.first(), c.last()])
+
+        ends = []
+        for bp in bps:
+            if bp.res1 in chain_ends and bp.res2 in chain_ends:
+                ends.append(bp)
+
+        p = secondary_structure.Pose(struct, bps, ends)
+
+        for end in p.ends:
+            p.end_ids.append(secondary_structure.assign_end_id_new(p, end))
+
+        return p
+
     def _build_motif(self, struct):
         res = struct.residues()
         bps = []
@@ -197,8 +226,14 @@ class SecondaryStructureParser(object):
                 ends.append(bp)
 
         m = secondary_structure.Motif(struct, bps, ends)
+
+        for end in m.ends:
+            m.end_ids.append(secondary_structure.assign_end_id_new(m, end))
+
         if len(m.residues()) == 4:
             m.mtype = motif_type.HELIX
+            spl = m.end_ids[0].split("_")
+            m.name = spl[0][0] + spl[2][1] + "=" + spl[0][1] + spl[2][0]
         elif len(m.chains()) == 2:
             m.mtype = motif_type.TWOWAY
         elif len(m.chains()) == 1:
@@ -206,8 +241,7 @@ class SecondaryStructureParser(object):
         else:
             m.mtype = motif_type.NWAY
 
-        for end in m.ends:
-            m.end_ids.append(secondary_structure.assign_end_id_new(m, end))
+
 
         return m
 
@@ -224,8 +258,11 @@ class SecondaryStructureParser(object):
             chains.append(chain)
 
         struct = secondary_structure.Structure(chains)
-        return self._build_motif(struct)
 
+        if len(struct.residues()) < 3:
+            return None
+
+        return self._build_motif(struct)
 
     def _previous_res(self, r):
         i = self.residues.index(r)

@@ -13,7 +13,7 @@ import rnamake.motif_type as motif_type
 import rnamake.settings as settings
 from rnamake import secondary_structure_factory as ssf
 
-class Structure(unittest.TestCase):
+class StructureUnittest(unittest.TestCase):
 
     def test_creation(self):
         ss = secondary_structure.Structure(sequence="AGCU+AGCU",
@@ -81,7 +81,8 @@ class Structure(unittest.TestCase):
         mt = motif_tree.motif_tree_from_topology(mtt, sterics=0)
         #mt.write_pdbs()
 
-class Motif(unittest.TestCase):
+
+class MotifUnittest(unittest.TestCase):
 
     def test_creation(self):
         m = secondary_structure.Motif()
@@ -91,7 +92,7 @@ class Motif(unittest.TestCase):
 
         if len(m1.chains()) != 2:
             self.fail("did not get the correct number of chains")
-ø
+
     def test_copy(self):
         m = ssf.factory.motif("AGCU+AGCU", "((((+))))")
         m_copy = m.copy()
@@ -102,8 +103,42 @@ class Motif(unittest.TestCase):
 
     def test_to_str(self):
         m = ssf.factory.motif("AGCU+AGCU", "((((+))))")
+        #print m.to_str()
+        m1 = secondary_structure.str_to_motif(m.to_str())
+
+    def test_copy_w_res(self):
+        m = ssf.factory.motif("AGCU+AGCU", "((((+))))")
+        res = {r.uuid  : r for r in m.residues()}
+        bps = {bp.uuid : bp for bp in m.basepairs}
+        m_copy = m.copy_w_res(res, bps)
+
+        for r in m.residues():
+            if m_copy.get_residue(uuid=r.uuid) != r:
+                self.fail("did not copy_w_res correctly")
 
 
+class PoseUnittest(unittest.TestCase):
+
+    def test_creation(self):
+        p = secondary_structure.Pose()
+
+        p1 = ssf.factory.pose("AGCU+AGCU", "((((+))))")
+        if len(p1.motifs) != 3:
+            self.fail("did not get the right number of motifs")
+
+    def test_copy(self):
+        p = ssf.factory.pose("AGCU+AGCU", "((((+))))")
+        p_copy = p.copy()
+        if len(p_copy.motifs) != 3:
+            self.fail("did not get the right number of motifs")
+
+    def test_to_str(self):
+        p = ssf.factory.pose("AGCU+AGCU", "((((+))))")
+        s = p.to_str()
+        p1 = secondary_structure.str_to_pose(s)
+
+        if len(p1.motifs) != 3:
+            self.fail("did not convert from string properly")
 
 def main():
     unittest.main()

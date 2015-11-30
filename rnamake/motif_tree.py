@@ -5,7 +5,6 @@ import motif
 import util
 import residue
 import motif_type
-import graph
 import tree
 import resource_manager as rm
 import secondary_structure_factory as ssfactory
@@ -23,6 +22,18 @@ def motif_tree_from_topology_str(s):
             mt.add_motif(m)
         else:
             mt.add_motif(m, parent_index=int(n_spl[2]))
+
+    return mt
+
+def motif_tree_from_ss_tree(sst):
+    mt = MotifTree()
+    for n in sst.tree:
+        #mt.add_motif()
+        if n.data.mtype == motif_type.HELIX:
+            mt.add_motif(m_name=n.data.name, parent_index=n.parent_index(),
+                         parent_end_index=n.parent_end_index())
+        else:
+            raise ValueError("not implemented")
 
     return mt
 
@@ -72,7 +83,6 @@ m
         self.options.dict_set(options)
         self.clash_radius = settings.CLASH_RADIUS
 
-        self.graph = graph.GraphStatic()
         self.tree = tree.TreeStatic()
         #self.merger = motif_tree_merger.MotifTreeMerger()
         self.merger = motif_merger.MotifMerger()
@@ -85,7 +95,7 @@ m
         return self
 
     def __repr__(self):
-        s = "<(MotifTree: #nodes: %d\n" % (len(self.graph))
+        s = "<(MotifTree: #nodes: %d\n" % (len(self.tree))
         for n in self.tree:
             c_str = ""
             for c in n.children:
@@ -129,7 +139,7 @@ m
             parent_end = parent.data.get_basepair(name=parent_end_name)[0]
             parent_end_index = parent.data.ends.index(parent_end)
 
-        avail_pos = self.graph.get_availiable_pos(parent, parent_end_index)
+        avail_pos = self.tree.get_available_pos(parent, parent_end_index)
 
         for p in avail_pos:
             if p == parent.data.block_end_add:
@@ -185,7 +195,7 @@ m
 
     def to_pose(self, chain_closure=0):
 
-        pose = self.merger.merge(self.graph)
+        pose = self.merger.merge(self.tree)
         self.merger.reset()
         return pose
 
@@ -195,7 +205,7 @@ m
     def designable_secondary_structure(self):
         ss = self.merger.secondary_structure()
 
-        for n in self.graph.nodes:
+        for n in self.tree.nodes:
             if n.data.name != "HELIX.IDEAL":
                 continue
             for r in n.data.residues():
@@ -206,7 +216,8 @@ m
         return ss
 
     def to_pdb(self, fname="mt.pdb", renumber=-1, close_chain=0):
-        self.merger.to_pdb(fname, renumber=renumber, close_chain=close_chain)
+        self.merger.get_structure().to_pdb(fname, renumber=renumber,
+                                           close_chain=close_chain)
 
     def to_pdb_str(self, renumber=-1, close_chain=0):
         return self.merger.to_pdb_str(renumber=renumber, close_chain=close_chain)
@@ -257,7 +268,7 @@ m
             if i_name != node_1.data.ends[end_index_1].name():
                 continue
             for end_index_2 in avail_ends_2:
-                self.graph.connect(i, j, end_index_1, end_index_2)
+                self.tree.connect(i, j, end_index_1, end_index_2)
                 return 1
 
         raise ValueError("could not connect node " + str(i) + " " + str(j) + " with end name " +

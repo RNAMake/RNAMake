@@ -5,7 +5,7 @@ import rnamake.graph as graph
 import rnamake.util as util
 import rnamake.eternabot.sequence_designer as sd
 import rnamake.resource_manager as rm
-from rnamake import motif_topology
+from rnamake import motif_topology, secondary_structure_graph
 import build
 
 
@@ -112,7 +112,6 @@ class MotifGraphUnittest(unittest.TestCase):
         #mg.write_pdbs("org")
         mg.replace_ideal_helices()
 
-        mg.write_pdbs()
         ss = mg.designable_secondary_structure()
 
         designer = sd.SequenceDesigner()
@@ -180,6 +179,12 @@ class MotifGraphUnittest(unittest.TestCase):
             mg.add_motif(n.data)
 
         mt2 = motif_topology.graph_to_tree(mg)
+
+    def test_from_ss(self):
+        builder = build.BuildSecondaryStructure()
+        ss_p = builder.build_helix(10)
+        ssg  = secondary_structure_graph.graph_from_pose(ss_p)
+
 
 
 def main():
