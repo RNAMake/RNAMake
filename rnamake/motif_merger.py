@@ -189,24 +189,27 @@ class MotifMerger(object):
                 correct_bp = bp
                 if bp.uuid in self.bp_overrides:
                     correct_bp = self.get_basepair(self.bp_overrides[bp.uuid])
-                ss_bp = ss.get_bp(uuid=correct_bp.uuid)
+                ss_bp = ss.get_basepair(uuid=correct_bp.uuid)
                 if ss_bp is None:
                     raise ValueError("could not find basepair during ss build")
             ss_rna_struct = secondary_structure.RNAStructure(
                                 ss_struct, ss_bps, [], m.name, m.path,
-                                m.mtype, m.score, m.end_ids)
+                                m.score, m.end_ids)
             ss_ends = []
             for end in m.ends:
                 correct_bp = end
-                if bp.uuid in self.bp_overrides:
-                    correct_bp = self.get_basepair(self.bp_overrides[bp.uuid])
-                ss_bp = ss.get_bp(uuid=correct_bp.uuid)
+                if end.uuid in self.bp_overrides:
+                    correct_bp = self.get_basepair(self.bp_overrides[end.uuid])
+                ss_bp = ss.get_basepair(uuid=correct_bp.uuid)
+                if ss_bp is None:
+                    raise ValueError("cnot not find end durign ss build")
                 ss_ends.append(ss_bp)
             ss_rna_struct.ends = ss_ends
             ss_motifs.append(secondary_structure.Motif(r_struct=ss_rna_struct,
-                                                       id=m.id))
+                                                       id=m.id,
+                                                       mtype=m.mtype))
 
-        ss_struct = secondary_structure.Structure(ss.chains)
+        ss_struct = secondary_structure.Structure(ss.chains())
         ss_p = secondary_structure.Pose(ss_struct, ss.basepairs, ss.ends)
         ss_p.motifs = ss_motifs
         return ss_p

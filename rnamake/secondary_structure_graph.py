@@ -69,7 +69,8 @@ class SecondaryStructureGraph(object):
 
         avail_pos = self.graph.get_availiable_pos(parent, parent_end_index)
         for p in avail_pos:
-            pos = self.graph.add_data(m_copy, parent.index, p, m_end_index, len(m.ends))
+            pos = self.graph.add_data(m_copy, parent.index,
+                                      p, m_end_index, len(m.ends))
             return pos
 
 

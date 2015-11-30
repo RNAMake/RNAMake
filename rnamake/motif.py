@@ -61,7 +61,7 @@ class Motif(rna_structure.RNAStructure):
         self.path, self.name, self.ends = "", "", []
         self.end_ids = []
         self.structure = structure.Structure()
-        self.secondary_structure = secondary_structure.SecondaryStructure()
+        self.secondary_structure = secondary_structure.Motif()
         self.block_end_add = 0
         self.id = uuid.uuid1()
 
@@ -311,7 +311,7 @@ def str_to_motif(s):
         m.ends.append(m.basepairs[int(index)])
     end_ids = spl[8].split()
     m.end_ids = end_ids
-    m.secondary_structure = secondary_structure.str_to_secondary_structure(spl[9])
+    m.secondary_structure = secondary_structure.str_to_motif(spl[9])
     ss_res = m.secondary_structure.residues()
     for i, r in enumerate(m.residues()):
         ss_res[i].uuid = r.uuid

@@ -10,7 +10,7 @@ class SegmenterUnittest(unittest.TestCase):
     def test_creation(self):
         s = rnamake.segmenter.Segmenter()
 
-    def test_apply(self):
+    def _test_apply(self):
         s = rnamake.segmenter.Segmenter()
         path = rnamake.settings.UNITTEST_PATH + "/resources/motifs/p4p6"
         p = pf.factory.pose_from_file(path)

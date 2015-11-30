@@ -80,7 +80,7 @@ class BuildSqliteLibraries(object):
 
             aligned_motif = motif_factory.factory.can_align_motif_to_end(m, 0)
             aligned_motif = motif_factory.factory.align_motif_to_common_frame(aligned_motif, 0)
-            #aligned_motif.name = aligned_motif.name
+            aligned_motif.name = aligned_motif.name
             motif_factory.factory._setup_secondary_structure(aligned_motif)
             rdata.append([aligned_motif.to_str(), aligned_motif.name,
                          aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
@@ -166,7 +166,10 @@ class BuildSqliteLibraries(object):
                             res.append(r)
                 if len(res) != 4:
                     continue
-                m_bps = motif_factory.factory.motif_from_bps(bps)
+                try:
+                    m_bps = motif_factory.factory.motif_from_bps(bps)
+                except:
+                    continue
                 if len(m_bps.end_ids[0]) != 11:
                     continue
                 matched = 0
@@ -192,7 +195,10 @@ class BuildSqliteLibraries(object):
             aligned_motifs = []
             for i, m_and_e in enumerate(c.motif_and_ends):
                 m, ei = m_and_e.motif, m_and_e.end_index
-                m_a = motif_factory.factory.can_align_motif_to_end(m, ei)
+                try:
+                    m_a = motif_factory.factory.can_align_motif_to_end(m, ei)
+                except:
+                    continue
                 if m_a is None:
                     continue
                 m_a = motif_factory.factory.align_motif_to_common_frame(m_a, ei)
@@ -228,20 +234,9 @@ class BuildSqliteLibraries(object):
             f = open(c.end_id + ".scores")
             lines = f.readlines()
             f.close()
-            for i, l in enumerate(lines):
-                #motifs_and_energies.append([aligned_motifs[i], float(l.lstrip())])
-                motifs_and_energies.append([aligned_motifs[i], 0])
-
-            motifs_and_energies.sort(key=lambda x : x[1])
-            scored_motifs = []
-
-            for m, energy in motifs_and_energies:
-                scored_motifs.append(m)
-
-
 
             #best 0.65
-            m_clusters = cluster.cluster_motifs(scored_motifs, 0.65)
+            m_clusters = cluster.cluster_motifs(aligned_motifs, 0.65)
             print "start, ", c.end_id
             #m_clusters = cluster.cluster_motifs_3(scored_motifs, 0.65, 150)
             #print "last", len(m_clusters)
@@ -407,14 +402,15 @@ class BuildSqliteLibraries(object):
             path = settings.RESOURCES_PATH +"/motif_state_ensemble_libraries/"+libname+".db"
             sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
+#setup_start_motif()
 builder = BuildSqliteLibraries()
-builder.build_ideal_helices()
+#builder.build_ideal_helices()
 #builder.build_basic_libraries()
 #builder.build_helix_ensembles()
-#builder.build_ss_and_seq_libraries()
-#builder.build_unique_twoway_library()
+builder.build_ss_and_seq_libraries()
+builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-#builder.build_motif_ensemble_state_libraries()
+builder.build_motif_ensemble_state_libraries()
 
 
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")

@@ -10,6 +10,7 @@ import rnamake.sqlite_library as sqlite_library
 import rnamake.util as util
 import numerical
 import numpy as np
+from rnamake import secondary_structure_factory as ssf
 
 
 class MotifUnittest(unittest.TestCase):
@@ -114,6 +115,10 @@ class MotifUnittest(unittest.TestCase):
 
     def test_align(self):
         pass
+
+    def test_get_secondary_structure(self):
+        pass
+        #m = rm.manager.get_motif(name="HELIX.IDEAL")
 
 
 

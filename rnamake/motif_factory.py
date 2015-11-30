@@ -118,8 +118,8 @@ class MotifFactory(object):
         for i, end in enumerate(m.ends):
             res1 = ss.get_residue(uuid=end.res1.uuid)
             res2 = ss.get_residue(uuid=end.res2.uuid)
-            ss_end = ss.get_bp(res1, res2)
-            m.end_ids[i] = secondary_structure.assign_end_id(ss, ss_end)
+            ss_end = ss.get_basepair(res1, res2)
+            m.end_ids[i] = secondary_structure.assign_end_id_new(ss, ss_end)
             ss.end_ids[i] = m.end_ids[i]
 
         m.secondary_structure = ss
@@ -208,7 +208,7 @@ class MotifFactory(object):
         res = []
         for bp in bps:
             res.extend(bp.residues())
-        chains = self.build_chains(res)
+        chains = chain.connect_residues_into_chains(res)
         m.structure.chains = chains
         m.basepairs = bps
         m.ends = [bps[0], bps[-1]]
