@@ -209,7 +209,19 @@ GraphIterator<DataType>::operator++() {
         queue_.pop();
     }
     else {
-        current_ = nullptr;
+        int found = 0;
+        for(auto const & n : leafs_) {
+            if(seen_.find(n) == seen_.end()) {
+                seen_[n] = 1;
+                current_ = n;
+                found = 1;
+                break;
+            }
+        }
+        
+        if(!found) {
+            current_ = nullptr;
+        }
     }
     
     
