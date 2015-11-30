@@ -13,10 +13,14 @@
 #include <sstream> 
 #include <typeinfo>
 #include <algorithm>
+#include <queue>
+#include <map>
 
 #include "data_structure/graph/graph_node.h"
 #include "data_structure/graph/graph_node.fwd.h"
 
+template <typename DataType>
+class GraphIterator;
 
 template <typename DataType>
 class Graph {
@@ -33,16 +37,15 @@ public:
     }
     
 public:
+    typedef GraphIterator<DataType> iterator;
+    typedef const GraphIterator<DataType> const_iterator;
+    friend class GraphIterator<DataType>;
+    iterator begin();
+    iterator end();
     
-    typedef typename GraphNodeOPs<DataType>::iterator iterator;
-    typedef typename GraphNodeOPs<DataType>::const_iterator const_iterator;
-
-    iterator begin() { return nodes_.begin(); }
-    iterator end()   { return nodes_.end(); }
+    const_iterator begin() const;
+    const_iterator end() const;
     
-    const_iterator begin() const { return nodes_.begin(); }
-    const_iterator end()   const { return nodes_.end(); }
-        
 public:
     
     inline
@@ -75,7 +78,7 @@ public: //getters
     
     inline
     GraphNodeOPs<DataType> const &
-    nodes() {
+    nodes() const {
         return nodes_;
     }
     
@@ -93,8 +96,142 @@ protected:
     GraphNodeOP<DataType> last_node_;
     GraphNodeOPs<DataType> nodes_;
     GraphConnectionOPs<DataType> connections_;
+    GraphNodeOPs<DataType> empty_;
     int index_, level_;
 };
+
+template <typename DataType>
+class GraphIterator {
+    friend class Graph<DataType>;
+    
+public:
+    GraphIterator() {}
+    
+public:
+    GraphIterator & operator++ ();
+    GraphIterator operator++ (int);
+    
+    bool operator== (const GraphIterator& rhs) const;
+    bool operator!= (const GraphIterator& rhs) const;
+    GraphNodeOP<DataType> & operator* ();
+
+    
+private:
+    GraphNodeOPs<DataType> nodes_, leafs_;
+    GraphNodeOP<DataType> current_;
+    std::queue<GraphNodeOP<DataType>> queue_;
+    std::map<GraphNodeOP<DataType>, int> seen_;
+    
+    GraphIterator(
+        GraphNodeOPs<DataType> const & nodes):
+    nodes_(nodes)
+    {
+        if(nodes_.size() == 0) {
+            current_ = nullptr;
+            return;
+        }
+        
+        queue_ = std::queue<GraphNodeOP<DataType>>();
+        seen_  = std::map<GraphNodeOP<DataType>, int> ();
+        
+        int active_conn = 0;
+        for(auto const & n : nodes) {
+            active_conn = 0;
+            for (auto const & c : n->connections()) {
+                if(c == nullptr) { active_conn += 1; }
+            }
+            if(active_conn < 2) {
+                leafs_.push_back(n);
+            }
+        }
+        
+        if(leafs_.size() > 0) {
+            current_ = leafs_[0];
+        }
+        else {
+            current_ = nodes_[0];
+        }
+        
+        seen_[current_] = 1;
+        
+    }
+};
+
+
+
+
+template <typename DataType>
+typename Graph<DataType>::iterator
+Graph<DataType>::begin()  {
+    return iterator(nodes_);
+}
+
+template <typename DataType>
+typename Graph<DataType>::iterator
+Graph<DataType>::end()  {
+    return iterator(empty_);
+}
+
+template <typename DataType>
+typename Graph<DataType>::const_iterator
+Graph<DataType>::begin() const {
+    return iterator(nodes_);
+}
+
+template <typename DataType>
+typename Graph<DataType>::const_iterator
+Graph<DataType>::end()  const {
+    return iterator(empty_);
+}
+
+template <typename DataType>
+GraphNodeOP<DataType>&
+GraphIterator<DataType>::operator* () {
+    return current_;
+}
+
+template <typename DataType>
+GraphIterator<DataType>&
+GraphIterator<DataType>::operator++() {
+    for(auto const & c : current_->connections()) {
+        if(c == nullptr) { continue; }
+        auto n = c->partner(current_->index());
+        if(seen_.find(n) != seen_.end()) {
+            continue;
+        }
+        queue_.push(n);
+        seen_[n] = 1;
+        
+    }
+    
+    if(!queue_.empty()) {
+        current_ = queue_.front();
+        queue_.pop();
+    }
+    else {
+        current_ = nullptr;
+    }
+    
+    
+    return *this;
+}
+
+template <typename DataType>
+bool
+GraphIterator<DataType>::operator== (
+    GraphIterator<DataType> const & rhs) const {
+    return current_ == rhs.current_;
+}
+
+template <typename DataType>
+bool
+GraphIterator<DataType>::operator!= (
+    GraphIterator<DataType> const& rhs) const {
+    return current_ != rhs.current_;
+}
+
+
+
 
 template <typename DataType>
 class GraphDynamic : public Graph<DataType> {
@@ -264,9 +401,10 @@ public:
         auto n = this->get_node(pos);
         for(auto c : n->connections()) {
             if(c == nullptr) { continue; }
+            auto partner = c->partner(n->index());
+            n->remove_connection(c);
+            partner->remove_connection(c);
             c->disconnect();
-            this->connections_.erase(std::remove(this->connections_.begin(), this->connections_.end(),
-                                                 c), this->connections_.end());
             
         }
         
@@ -280,5 +418,32 @@ public:
     }
     
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #endif /* defined(__RNAMake__graph__) */

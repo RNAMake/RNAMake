@@ -69,7 +69,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    MotifUnittest test;
+    GraphUnittest test;
     test.run();
 }
 
