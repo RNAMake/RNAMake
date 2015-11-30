@@ -6,7 +6,7 @@ import secondary_structure
 import rna_structure
 import motif_graph
 
-class Pose(motif.Motif):
+class Pose(rna_structure.RNAStructure):
     """
     Poses are for loading for RNA structures that have multiple motifs.
     Like motifs poses store 3D coordinates as well as 3DNA parameters but

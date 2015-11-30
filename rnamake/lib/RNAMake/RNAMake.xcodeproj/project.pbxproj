@@ -603,6 +603,7 @@
 		1C5610711B78370200996CEC /* added_motif_library.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = added_motif_library.h; sourceTree = "<group>"; };
 		1C5610751B7845E300996CEC /* added_motif_library_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = added_motif_library_unittest.cc; sourceTree = "<group>"; };
 		1C5610761B7845E300996CEC /* added_motif_library_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = added_motif_library_unittest.h; sourceTree = "<group>"; };
+		1C68F3E21C0CD25A0027EF6E /* graph_iterator_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graph_iterator_test.cpp; sourceTree = "<group>"; };
 		1C6AF7751BE81DE300EB378D /* beads_vs_points.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = beads_vs_points.cpp; sourceTree = "<group>"; };
 		1C6AF7761BE81DE300EB378D /* beads_vs_points.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = beads_vs_points.h; sourceTree = "<group>"; };
 		1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monte_carlo.cpp; sourceTree = "<group>"; };
@@ -936,6 +937,7 @@
 				1C41F4E91B17A3ED000D1B6A /* shared_vs_raw.h */,
 				1C6AF7751BE81DE300EB378D /* beads_vs_points.cpp */,
 				1C6AF7761BE81DE300EB378D /* beads_vs_points.h */,
+				1C68F3E21C0CD25A0027EF6E /* graph_iterator_test.cpp */,
 			);
 			path = speed_tests;
 			sourceTree = "<group>";

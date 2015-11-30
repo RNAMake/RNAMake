@@ -3,3 +3,4 @@ graph_memory_test ../../unittests/memory_tests/graph_memory_test.cc
 all_tests ../../unittests/all_tests.cc
 bead_speed_test ../../unittests/speed_tests/beads_vs_points.cpp
 test ../../unittests/main.cc
+graph_iterator_test ../../unittests/speed_tests/graph_iterator_test.cpp
