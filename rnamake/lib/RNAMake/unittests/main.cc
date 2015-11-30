@@ -16,7 +16,8 @@
 #include "util_unittests/x3dna_unittest.h"
 #include "util_unittests/uuid_unittest.h"
 
-#include "secondary_structure_unittests/secondary_structure_factory_unittest.h"
+#include "secondary_structure_unittests/structure_unittest.h"
+/*#include "secondary_structure_unittests/secondary_structure_factory_unittest.h"
 #include "secondary_structure_unittests/secondary_structure_unittest.h"
 #include "secondary_structure_unittests/ss_tree_unittest.h"
 
@@ -45,7 +46,7 @@
 #include "thermo_fluctuation_unittests/thermo_fluc_simulation_unittest.h"
 
 #include "motif_state_search_unittests/motif_state_selector_unittest.h"
-#include "motif_state_search_unittests/motif_state_search_unittest.h"
+#include "motif_state_search_unittests/motif_state_search_unittest.h"*/
 
 /*#include "util_unittests/uuid_unittest.h"
 
@@ -69,7 +70,8 @@
 
 int main(int argc, const char * argv[]) {
     
-    GraphUnittest test;
+    using namespace unittests;
+    StructureUnittest test;
     test.run();
 }
 
