@@ -9,11 +9,22 @@
 #include "secondary_structure_factory_unittest.h"
 #include "secondary_structure/secondary_structure_factory.h"
 
-int
+namespace unittests {
+
+void
 SecondaryStructureFactoryUnittest::test_creation() {
-    sstruct::SecondaryStructureFactory sf;
-    auto ss = sf.get_structure("GGGGG+CCCCC", "(((((+)))))");
-    if(ss->motifs("BP_STEP").size() != 4 || ss->motifs("ALL").size() != 4) {
+    sstruct::SecondaryStructureFactory ssf;
+    auto m = ssf.motif("GGGGG+CCCCC", "(((((+)))))");
+    if(m->residues().size() != 10) {
+        throw UnittestException("did not get the expected number of res");
+    }
+    
+    if(m->get_residue(10, "B", "") == nullptr) {
+        throw UnittestException("could not find last residue");
+    }
+    
+    
+    /*if(ss->motifs("BP_STEP").size() != 4 || ss->motifs("ALL").size() != 4) {
         return 0;
     }
 
@@ -26,15 +37,15 @@ SecondaryStructureFactoryUnittest::test_creation() {
     if(ss2.motifs("BP_STEP").size() != 3 || ss2.motifs("ALL").size() != 4 ||
        ss2.motifs("BULGE").size() != 1 ) {
         return 0;
-    }
-    
-    return 1;
+    }*/
 }
 
 
 int
 SecondaryStructureFactoryUnittest::run() {
-    if (test_creation() == 0)          {  std::cout << "test_creation failed" << std::endl; }
+    test_creation();
     return 1;
     
+}
+
 }

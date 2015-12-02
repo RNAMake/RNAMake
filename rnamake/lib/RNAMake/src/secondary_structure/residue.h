@@ -32,6 +32,7 @@ public:
     
 class Residue {
 public:
+    inline
     Residue(
         String const & name,
         String const & dot_bracket,
@@ -47,16 +48,20 @@ public:
     i_code_(i_code)
     {}
     
+    inline
+    Residue(
+        Residue const & r):
+    name_(r.name_),
+    dot_bracket_(r.dot_bracket_),
+    num_(r.num_),
+    chain_id_(r.chain_id_),
+    uuid_(r.uuid_),
+    i_code_(r.i_code_)
+    {}
     ~Residue() {}
     
 public:
-    
-    inline
-    Residue
-    copy() {
-        return Residue(name_, dot_bracket_, num_, chain_id_, uuid_, i_code_);
-    }
-    
+
     inline
     String
     to_str() {

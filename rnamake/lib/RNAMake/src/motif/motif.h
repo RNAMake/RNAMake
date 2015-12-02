@@ -21,7 +21,7 @@
 #include "structure/residue.h"
 #include "structure/basepair.h"
 #include "structure/structure.h"
-#include "motif/motif_type.h"
+#include "util/motif_type.h"
 #include "motif/motif_state.h"
 
 class Motif {

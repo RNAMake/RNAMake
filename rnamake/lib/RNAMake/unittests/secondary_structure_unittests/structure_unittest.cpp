@@ -10,6 +10,7 @@
 #include "secondary_structure/structure.h"
 
 namespace unittests {
+namespace sstruct_unittests  {
 
 void
 StructureUnittest::test_creation() {
@@ -37,13 +38,12 @@ StructureUnittest::test_find_residue() {
 void
 StructureUnittest::test_copy() {
     auto ss = sstruct::Structure("AGCU+AGCU", "((((+))))");
-    auto c_ss = ss.copy();
+    auto c_ss = sstruct::Structure(ss);
     for(auto const & r : ss.residues()) {
         if(c_ss.get_residue(r->uuid()) == nullptr) {
             throw UnittestException("cannot find residue in copy");
         }
     }
-    
 }
     
 void
@@ -68,4 +68,5 @@ StructureUnittest::run() {
 }
     
     
+}
 }
