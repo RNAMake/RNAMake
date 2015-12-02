@@ -19,24 +19,26 @@ class Chain {
 public:
     Chain() {}
     
+    inline
     Chain(
-        ResidueOPs residues):
+        ResidueOPs const & residues):
     residues_(residues)
     {}
     
-public:
-    
     inline
-    Chain
-    copy() {
-        ResidueOPs res;
-        for (auto const & r : residues_) {
-            auto r_copy = std::make_shared<Residue>(r->copy());
-            res.push_back(r_copy);
+    Chain(
+        Chain const & c) {
+        residues_ = ResidueOPs(c.residues_.size());
+        int i = 0;
+        for(auto const & r : c.residues_) {
+            residues_[i] = std::make_shared<Residue>(*r));
+            i++;
         }
-        return Chain(res);
     }
     
+public:
+    
+
     inline
     ResidueOP const &
     first() {

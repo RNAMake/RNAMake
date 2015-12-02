@@ -77,6 +77,7 @@ class SecondaryStructureParser(object):
         res = []
         self.pairs = []
         for i, r in enumerate(self.residues):
+            is_start_res = self._start_of_chain(r)
             if r.dot_bracket == ".":
                 res.append(r)
 
@@ -84,19 +85,19 @@ class SecondaryStructureParser(object):
                 if len(res) > 0:
                     parent_index = g.get_node_by_res(self._previous_res(res[0]))
                     new_data = NodeData(res, NodeType.UNPAIRED)
-                    g.add_chain(new_data, parent_index)
+                    g.add_chain(new_data, parent_index, is_start_res)
                     res = []
                 pair_res = self._get_bracket_pair(r)
                 new_data = NodeData([r], NodeType.PAIRED)
                 parent_index = g.get_node_by_res(self._previous_res(r))
                 self.pairs.append(secondary_structure.Basepair(r, pair_res))
-                g.add_chain(new_data, parent_index)
+                g.add_chain(new_data, parent_index, is_start_res)
 
             elif r.dot_bracket == ")":
                 if len(res) > 0:
                     parent_index = g.get_node_by_res(self._previous_res(res[0]))
                     new_data = NodeData(res, NodeType.UNPAIRED)
-                    g.add_chain(new_data, parent_index)
+                    g.add_chain(new_data, parent_index, is_start_res)
                     res = []
                 pair = None
                 for p in self.pairs:
@@ -105,7 +106,7 @@ class SecondaryStructureParser(object):
                         break
                 new_data = NodeData([r], NodeType.PAIRED)
                 parent_index = g.get_node_by_res(self._previous_res(r))
-                pos = g.add_chain(new_data, parent_index)
+                pos = g.add_chain(new_data, parent_index, is_start_res)
                 pair_res_pos = g.get_node_by_res(pair.res1)
                 g.pair_res(pair_res_pos, pos)
 
@@ -247,7 +248,6 @@ class SecondaryStructureParser(object):
 
     def _generate_motif(self, n):
         start = n
-        seen = {}
         chain, next_n= self._walk_nodes(start)
         chains = [chain]
 

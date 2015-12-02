@@ -17,8 +17,10 @@
 #include "util_unittests/uuid_unittest.h"
 
 #include "secondary_structure_unittests/structure_unittest.h"
-/*#include "secondary_structure_unittests/secondary_structure_factory_unittest.h"
-#include "secondary_structure_unittests/secondary_structure_unittest.h"
+#include "secondary_structure_unittests/motif_unittest.h"
+#include "secondary_structure_unittests/secondary_structure_parser_unittest.h"
+#include "secondary_structure_unittests/secondary_structure_factory_unittest.h"
+/*#include "secondary_structure_unittests/secondary_structure_unittest.h"
 #include "secondary_structure_unittests/ss_tree_unittest.h"
 
 #include "structure_unittests/structure_unittest.h"
@@ -70,8 +72,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    using namespace unittests;
-    StructureUnittest test;
+    unittests::sstruct_unittests::StructureUnittest test;
     test.run();
 }
 

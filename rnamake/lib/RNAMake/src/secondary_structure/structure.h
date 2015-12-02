@@ -32,6 +32,17 @@ public:
         _setup_chains(sequence, dot_bracket);
     }
     
+    Structure(
+        Structure const & structure) {
+    
+        chains_ = ChainOPs(structure.chains_.size());
+        int i = 0;
+        for(auto const & c : structure.chains_) {
+            chains_[i] = std::make_shared<Chain>(*c);
+            i++;
+        }
+    }
+    
 public:
     
     inline
@@ -83,15 +94,6 @@ public:
     get_residue(
         Uuid const &);
     
-    Structure
-    copy() {
-        ChainOPs new_chains;
-        for(auto const & c : chains_) {
-            new_chains.push_back(std::make_shared<Chain>(c->copy()));
-        }
-        return Structure(new_chains);
-    }
-    
     String
     to_str() {
         String s = "";
@@ -100,6 +102,11 @@ public:
         }
         return s;
     }
+    
+public:
+    inline
+    ChainOPs const &
+    chains() { return chains_; }
 
 
 private:

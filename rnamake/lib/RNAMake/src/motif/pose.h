@@ -14,8 +14,8 @@
 #include <memory>
 
 //RNAMake Headers
+#include "util/motif_type.h"
 #include "motif/motif.h"
-#include "motif/motif_type.h"
 
 class Pose : public Motif {
 public:

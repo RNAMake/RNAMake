@@ -29,7 +29,7 @@ Structure::_setup_chains(
     }
     
     ResidueOPs res;
-    int count = 0;
+    int count = 1;
     String chain_ids = "ABCDEFGHIKLMNO";
     int i = -1, ci = 0;
     for(auto & s : sequence) {

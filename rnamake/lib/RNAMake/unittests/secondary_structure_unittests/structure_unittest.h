@@ -15,6 +15,7 @@
 #include "unittest.h"
 
 namespace unittests {
+namespace sstruct_unittests  {
     
 class StructureUnittest : public Unittest {
 public:
@@ -47,6 +48,7 @@ public:
     
 };
     
+}
 }
 
 #endif /* defined(__RNAMake__structure_unittest__) */

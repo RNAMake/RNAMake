@@ -320,13 +320,17 @@ public:
         int parent_index = -1,
         int parent_pos = -1,
         int child_pos = -1,
-        int n_children = 0) {
+        int n_children = 0,
+        int orphan = 0) {
         
         GraphNodeOP<DataType> parent = this->last_node_;
         auto n = std::make_shared<GraphNodeStatic<DataType>>(data, this->index_, this->level_,
                                                              n_children);
 
         if(parent_index != -1) { parent = this->get_node(parent_index); }
+        if(orphan == 1) {
+            parent = nullptr;
+        }
         if(parent != nullptr) {
             parent_pos = check_pos_is_valid(parent, parent_pos);
             child_pos = check_pos_is_valid(n, child_pos);
