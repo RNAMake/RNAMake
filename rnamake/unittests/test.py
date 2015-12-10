@@ -14,13 +14,23 @@ def center(points):
     return np.array([sum_x/length, sum_y/length, sum_z/length])
 
 R = t.random_rotation_matrix(np.random.uniform(size=[3]))[:3,:3]
+R2 = t.random_rotation_matrix(np.random.uniform(size=[3]))[:3,:3]
+
 trans = np.random.uniform(-10,10,[3])
 
-start_points = np.random.uniform(-1,1,[10,3])
-end_points = np.dot(start_points, R.T) + trans
-c = center(start_points)
+s = np.random.uniform(-1,1,[1,3])
 
-act_rmsd =  rmsd(start_points, end_points)
+
+#print R.dot(R2).T
+#print R2.T.dot(R.T)
+
+print R.dot(s.T)
+exit()
+
+end_points = np.dot(s, R.T) + trans
+c = center(s)
+
+act_rmsd =  rmsd(s, end_points)
 print rmsd(np.array([np.dot(c, R.T) + trans]), np.array([c]))
 print act_rmsd
 
