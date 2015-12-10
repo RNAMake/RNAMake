@@ -88,3 +88,22 @@ CL_OptionUnittest::run() {
 
     return 1;
 }
+
+void
+CL_OptionUnittest::run_all() {
+    String name = "CL_OptionUnittest";
+    typedef int (CL_OptionUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_creation"   ] = &CL_OptionUnittest::test_add_option;
+    func_map["test_add_option" ] = &CL_OptionUnittest::test_parse_1;
+    func_map["test_option"     ] = &CL_OptionUnittest::test_parse_2;
+    
+    for(auto const & kv : func_map) {
+        try {
+            int result = (this->*kv.second)();
+        }
+        catch(...) {
+            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        }
+    }
+}

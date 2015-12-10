@@ -31,16 +31,100 @@ public:
         BasepairOPs const & ends):
     RNAStructure(structure, basepairs, ends)
     {}
-
+    
+    Motif(
+        StructureOP const & structure,
+        BasepairOPs const & basepairs,
+        BasepairOPs const & ends,
+        Strings const & end_ids,
+        String const & name,
+        String const & path,
+        float score):
+    RNAStructure(structure, basepairs, ends, end_ids, name, path, score)
+    {}
 
     Motif(
-        Motif const & motif) {
-        structure_ = std::make_shared<Structure>(*motif.structure_);
+        Motif const & m) {
+        structure_ = std::make_shared<Structure>(*m.structure_);
+        basepairs_ = BasepairOPs(m.basepairs_.size());
+        ends_      = BasepairOPs(m.ends_.size());
+        int i = 0;
+        for(auto const & bp : m.basepairs_) {
+            auto new_bp = std::make_shared<Basepair>(structure_->get_residue(bp->res1()->uuid()),
+                                                     structure_->get_residue(bp->res2()->uuid()),
+                                                     bp->uuid());
+            basepairs_[i] = new_bp;
+            i++;
+        }
+        
+        i = 0;
+        for(auto const & end : m.ends_) {
+            int pos = (int)(std::find(m.basepairs_.begin(),
+                                      m.basepairs_.end(), end) - m.basepairs_.begin());
+            ends_[i] = basepairs_[pos];
+            i++;
+
+        }
+        
+        mtype_   = m.mtype_;
+        name_    = m.name_;
+        path_    = m.path_;
+        end_ids_ = m.end_ids_;
+    
+    }
+    
+    Motif(
+        String const & s) {
+        auto spl = split_str_by_delimiter(s, "!");
+        mtype_      = static_cast<MotifType>(std::stoi(spl[0]));
+        name_       = spl[1];
+        path_       = spl[2];
+        structure_  = std::make_shared<Structure>(spl[3]);
+        basepairs_  = BasepairOPs();
+        ends_       = BasepairOPs();
+        end_ids_    = split_str_by_delimiter(spl[6], " ");
+        auto res = structure_->residues();
+        for(auto const & bp_str : split_str_by_delimiter(spl[4], "@")) {
+            auto res_is = split_str_by_delimiter(bp_str, " ");
+            auto res1   = res[std::stoi(res_is[0])];
+            auto res2   = res[std::stoi(res_is[1])];
+            auto bp     = std::make_shared<Basepair>(res1, res2, Uuid());
+            basepairs_.push_back(bp);
+        }
+        for(auto const & end_i : split_str_by_delimiter(spl[5], " ") ) {
+            ends_.push_back(basepairs_[std::stoi(end_i)]);
+        }
     }
     
     
     ~Motif() {}
     
+public:
+    StringOP
+    to_str() {
+        auto s = std::make_shared<String>("");
+        s->append(std::to_string(mtype_) + "!" + name_ + "!" + path_ + "!");
+        s->append(structure_->to_str() + "!");
+        auto res = structure_->residues();
+        
+        for(auto const & bp : basepairs_) {
+            int res1_pos = (int)(std::find(res.begin(), res.end(), bp->res1()) - res.begin());
+            int res2_pos = (int)(std::find(res.begin(), res.end(), bp->res2()) - res.begin());
+            s->append(std::to_string(res1_pos) + " " + std::to_string(res2_pos) + "@");
+        }
+        s->append("!");
+        for(auto const & end : ends_) {
+            int bp_pos = (int)(std::find(basepairs_.begin(), basepairs_.end(), end) -
+                               basepairs_.begin());
+            s->append(std::to_string(bp_pos) + " ");
+        }
+        s->append("!");
+        for(auto const & ei : end_ids_) {
+            s->append(ei + " ");
+        }
+        
+        return s;
+    }
  
 public: //getters
     

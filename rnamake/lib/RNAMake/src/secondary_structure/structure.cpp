@@ -84,17 +84,4 @@ Structure::get_residue(
     return ResidueOP(NULL);
 }
  
-Structure
-str_to_structure(
-    String const & s) {
-    ChainOPs chains;
-    auto spl = split_str_by_delimiter(s, "|");
-    for(auto const & c_str : spl) {
-        auto c = std::make_shared<Chain>(str_to_chain(c_str));
-        chains.push_back(c);
-    }
-    
-    return Structure(chains);
-}
-
 }

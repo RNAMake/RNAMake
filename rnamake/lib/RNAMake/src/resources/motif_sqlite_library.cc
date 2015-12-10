@@ -46,7 +46,7 @@ MotifSqliteLibrary::get(
                                                  ResidueTypeSetManager::getInstance().residue_type_set());
     }
     
-    return std::make_shared<Motif>(data_[row->id]->copy());
+    return std::make_shared<Motif>(*data_[row->id]);
     
 }
 
@@ -72,7 +72,7 @@ MotifSqliteLibrary::get_multi(
                                                      ResidueTypeSetManager::getInstance().residue_type_set());
         }
         
-        motifs.push_back(std::make_shared<Motif>(data_[row->id]->copy()));
+        motifs.push_back(std::make_shared<Motif>(*data_[row->id]));
         row = connection_.next();
     }
     

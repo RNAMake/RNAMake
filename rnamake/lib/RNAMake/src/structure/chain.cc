@@ -36,28 +36,51 @@ Chain::to_pdb(String const fname) const {
     out.close();
 }
 
-Chain
-Chain::copy() const {
-    ResidueOPs residues(residues_.size());
-    int i = 0;
-    for (auto const & r : residues_) {
-        residues[i] = ResidueOP( new Residue( r->copy()));
-        i++;
-    }
-    return Chain(residues);
-}
 
-
-Chain
-str_to_chain(
-    String const & s,
-    ResidueTypeSet const & rts) {
-    ResidueOPs residues;
-    Strings spl = split_str_by_delimiter(s, ";");
-    for(auto const & r_str : spl) {
-        ResidueOP r (new Residue (str_to_residue(r_str, rts)));
-        residues.push_back(r);
+void
+connect_residues_into_chains(
+    ResidueOPs & residues,
+    ChainOPs & chains) {
+    
+    ResidueOP current;
+    ResidueOPs current_chain_res;
+    int five_prime_end = 1;
+    int found = 1;
+    while (true) {
+        for (auto & r1 : residues) {
+            five_prime_end = 1;
+            for (auto & r2 : residues) {
+                if(r1->connected_to(*r2) == -1) {
+                    five_prime_end = 0;
+                    break;
+                }
+            }
+            if ( five_prime_end ) { current = r1; break; }
+        }
+        if(!five_prime_end) { break; }
+        residues.erase(std::remove(residues.begin(), residues.end(), current), residues.end());
+        current_chain_res = ResidueOPs();
+        found = 1;
+        while ( found ) {
+            current_chain_res.push_back(current);
+            found = 0;
+            for (auto & r : residues) {
+                if ( current->connected_to(*r) == 1) {
+                    current = r;
+                    found = 1;
+                    break;
+                }
+            }
+            if( found ) {
+                residues.erase(std::remove(residues.begin(), residues.end(), current), residues.end());
+            }
+            else {
+                chains.push_back(ChainOP(new Chain(current_chain_res)));
+            }
+        }
+        if(residues.size() == 0) {
+            break;
+        }
     }
-    Chain c (residues);
-    return c;
+
 }

@@ -50,7 +50,7 @@ void
 StructureUnittest::test_to_str() {
     auto ss = sstruct::Structure("AGCU+AGCU", "((((+))))");
     auto s = ss.to_str();
-    auto c_ss = sstruct::str_to_structure(s);
+    auto c_ss = sstruct::Structure(s);
     for(auto const & r : ss.residues()) {
         if(c_ss.get_residue(r->num(), r->chain_id(), r->i_code()) == nullptr) {
             throw UnittestException("cannot find reisdue in to_str");

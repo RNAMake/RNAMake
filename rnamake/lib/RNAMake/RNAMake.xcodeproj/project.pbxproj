@@ -7,6 +7,47 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C06DC071C0FED680001CC98 /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF411AF1AB1700C03772 /* residue.cc */; };
+		1C06DC081C0FED680001CC98 /* residue_type_set.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF3A1AF163C800C03772 /* residue_type_set.cc */; };
+		1C06DC091C0FED680001CC98 /* residue_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF2B1AF0680A00C03772 /* residue_type.cc */; };
+		1C06DC0A1C0FED680001CC98 /* residue_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF691AF1B7DE00C03772 /* residue_unittest.cc */; };
+		1C06DC0B1C0FF79D0001CC98 /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF6D1AF1BEB600C03772 /* chain.cc */; };
+		1C06DC0C1C0FF82D0001CC98 /* chain_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF711AF1C07600C03772 /* chain_unittest.cc */; };
+		1C06DC0D1C0FFC3F0001CC98 /* structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE811AF2BB240098AA49 /* structure.cc */; };
+		1C06DC0E1C0FFC3F0001CC98 /* structure_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE841AF2C2510098AA49 /* structure_unittest.cc */; };
+		1C06DC111C0FFD400001CC98 /* secondary_structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC0F1C0FFD400001CC98 /* secondary_structure_factory.cc */; };
+		1C06DC121C0FFD400001CC98 /* secondary_structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC0F1C0FFD400001CC98 /* secondary_structure_factory.cc */; };
+		1C06DC131C0FFF750001CC98 /* pdb_parser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CE01B02E89F0076284E /* pdb_parser.cc */; };
+		1C06DC161C0FFFF00001CC98 /* rna_structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC141C0FFFF00001CC98 /* rna_structure.cpp */; };
+		1C06DC171C0FFFF00001CC98 /* rna_structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC141C0FFFF00001CC98 /* rna_structure.cpp */; };
+		1C06DC181C1004000001CC98 /* motif.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE9A1AF2E9AC0098AA49 /* motif.cc */; };
+		1C06DC191C10BA920001CC98 /* basepair.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE891AF2DE120098AA49 /* basepair.cc */; };
+		1C06DC1A1C10BA920001CC98 /* basepair_state.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE8C1AF2DE120098AA49 /* basepair_state.cc */; };
+		1C06DC1B1C10BB7C0001CC98 /* motif_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C56101E1B6D8D4700996CEC /* motif_factory.cc */; };
+		1C06DC1C1C10BBAF0001CC98 /* motif_factory_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C56106B1B78072900996CEC /* motif_factory_unittest.cc */; };
+		1C06DC1D1C10C2150001CC98 /* motif_to_secondary_structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CC8C7091B90F5CC0032DDCC /* motif_to_secondary_structure.cc */; };
+		1C06DC1E1C10C2150001CC98 /* motif_scorer.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DA01B07C92F0076284E /* motif_scorer.cc */; };
+		1C06DC1F1C10C6E40001CC98 /* motif_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACEA71AF2ED570098AA49 /* motif_unittest.cc */; };
+		1C06DC201C1106F60001CC98 /* motif_ensemble.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFBF71B98DC24002847BA /* motif_ensemble.cpp */; };
+		1C06DC211C1106F60001CC98 /* motif_state_ensemble.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFBF91B98DC24002847BA /* motif_state_ensemble.cpp */; };
+		1C06DC221C1106F60001CC98 /* pose.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CB31AF423C30076284E /* pose.cc */; };
+		1C06DC231C1106F60001CC98 /* motif_tree_merger.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CB01AF422F60076284E /* motif_tree_merger.cc */; };
+		1C06DC241C1106F60001CC98 /* motif_tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CAA1AF422450076284E /* motif_tree.cc */; };
+		1C06DC251C1106F60001CC98 /* motif_state.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE6C1B962571000253B5 /* motif_state.cpp */; };
+		1C06DC261C1106F60001CC98 /* motif_state_aligner.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C3DE1301BA9FDA00006AC74 /* motif_state_aligner.cpp */; };
+		1C06DC271C1107580001CC98 /* pose_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CC8C6FF1B8BEB680032DDCC /* pose_factory.cc */; };
+		1C06DC281C1107C40001CC98 /* sqlite_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610521B7695E100996CEC /* sqlite_library.cc */; };
+		1C06DC291C1107C40001CC98 /* motif_sqlite_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610571B76983D00996CEC /* motif_sqlite_library.cc */; };
+		1C06DC2A1C1107C40001CC98 /* resource_manager.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610611B76CF9100996CEC /* resource_manager.cc */; };
+		1C06DC2B1C1107C40001CC98 /* added_motif_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610701B78370200996CEC /* added_motif_library.cc */; };
+		1C06DC2C1C1107C40001CC98 /* motif_state_sqlite_library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE801B9774C2000253B5 /* motif_state_sqlite_library.cpp */; };
+		1C06DC2D1C1107C40001CC98 /* motif_state_ensemble_sqlite_library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFC011B98EB45002847BA /* motif_state_ensemble_sqlite_library.cpp */; };
+		1C06DC2E1C1107C40001CC98 /* motif_ensemble_sqlite_connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFC061B98ECFC002847BA /* motif_ensemble_sqlite_connection.cpp */; };
+		1C06DC2F1C1107F80001CC98 /* sqlite3_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CC11B0013F20076284E /* sqlite3_connection.cc */; };
+		1C06DC301C1108180001CC98 /* motif_sqlite_connection.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CC41B0014BF0076284E /* motif_sqlite_connection.cc */; };
+		1C06DC371C110B0F0001CC98 /* motif_graph_unittest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC351C110B0F0001CC98 /* motif_graph_unittest.cpp */; };
+		1C06DC3A1C110D040001CC98 /* motif_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC381C110D040001CC98 /* motif_graph.cpp */; };
+		1C06DC3D1C121E310001CC98 /* motif_merger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC3B1C121E310001CC98 /* motif_merger.cpp */; };
 		1C2241451AC62A4100F76233 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C2241441AC62A4100F76233 /* main.cpp */; };
 		1C3AB1BE1A995B7C00361C7F /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C3AB1BD1A995B7C00361C7F /* main.cpp */; };
 		1C3AB1C21A995B9500361C7F /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
@@ -47,11 +88,7 @@
 		1C5610211B6D8D4700996CEC /* motif_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C56101E1B6D8D4700996CEC /* motif_factory.cc */; };
 		1C5610261B6D9C0D00996CEC /* residue_type_set_manager_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610241B6D9C0D00996CEC /* residue_type_set_manager_unittest.cc */; };
 		1C5610271B6D9C0D00996CEC /* residue_type_set_manager_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610241B6D9C0D00996CEC /* residue_type_set_manager_unittest.cc */; };
-		1C56102B1B6D9D7900996CEC /* structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610291B6D9D7900996CEC /* structure_factory.cc */; };
-		1C56102C1B6D9D7900996CEC /* structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610291B6D9D7900996CEC /* structure_factory.cc */; };
 		1C56102E1B6E900A00996CEC /* x3dna_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CDD1B01530B0076284E /* x3dna_unittest.cc */; };
-		1C5610331B6EA33D00996CEC /* secondary_structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610311B6EA33D00996CEC /* secondary_structure_factory.cc */; };
-		1C5610341B6EA33D00996CEC /* secondary_structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610311B6EA33D00996CEC /* secondary_structure_factory.cc */; };
 		1C5610381B6EA43200996CEC /* secondary_structure_factory_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610361B6EA43200996CEC /* secondary_structure_factory_unittest.cc */; };
 		1C5610391B6EA43200996CEC /* secondary_structure_factory_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610361B6EA43200996CEC /* secondary_structure_factory_unittest.cc */; };
 		1C56103D1B6EA96A00996CEC /* basepair.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C56103B1B6EA96A00996CEC /* basepair.cc */; };
@@ -77,6 +114,8 @@
 		1C5610731B78370200996CEC /* added_motif_library.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610701B78370200996CEC /* added_motif_library.cc */; };
 		1C5610771B7845E300996CEC /* added_motif_library_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610751B7845E300996CEC /* added_motif_library_unittest.cc */; };
 		1C5610781B7845E300996CEC /* added_motif_library_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610751B7845E300996CEC /* added_motif_library_unittest.cc */; };
+		1C63252F1C16AB35004D2C05 /* pose.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C63252D1C16AB35004D2C05 /* pose.cpp */; };
+		1C6325301C16AB35004D2C05 /* pose.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C63252D1C16AB35004D2C05 /* pose.cpp */; };
 		1C68F3E51C0CEA830027EF6E /* structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3E31C0CEA830027EF6E /* structure.cpp */; };
 		1C68F3E61C0CEB420027EF6E /* structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3E31C0CEA830027EF6E /* structure.cpp */; };
 		1C68F3E91C0CF0740027EF6E /* structure_unittest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3E71C0CF0740027EF6E /* structure_unittest.cpp */; };
@@ -86,8 +125,11 @@
 		1C68F3F81C0E3F450027EF6E /* motif_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3F61C0E3F450027EF6E /* motif_type.cc */; };
 		1C68F3FB1C0EA1960027EF6E /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3F91C0EA1960027EF6E /* util.cpp */; };
 		1C68F3FC1C0EA4960027EF6E /* rna_structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3EA1C0D06400027EF6E /* rna_structure.cpp */; };
-		1C68F3FD1C0EA9DF0027EF6E /* secondary_structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610311B6EA33D00996CEC /* secondary_structure_factory.cc */; };
 		1C68F3FE1C0EBA7B0027EF6E /* secondary_structure_factory_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610361B6EA43200996CEC /* secondary_structure_factory_unittest.cc */; };
+		1C68F3FF1C0FD0AA0027EF6E /* atom_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF331AF1630F00C03772 /* atom_unittest.cc */; };
+		1C68F4021C0FD0D50027EF6E /* atom.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF281AF0676B00C03772 /* atom.cc */; };
+		1C690A6B1C14ECDB0009EB2B /* build_motif_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C690A691C14ECDB0009EB2B /* build_motif_tree.cpp */; };
+		1C690A6E1C14ECF30009EB2B /* build_motif_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C690A6C1C14ECF30009EB2B /* build_motif_graph.cpp */; };
 		1C6AF7771BE81DE300EB378D /* beads_vs_points.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C6AF7751BE81DE300EB378D /* beads_vs_points.cpp */; };
 		1C7C1FA51B9E440C00E6E959 /* monte_carlo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */; };
 		1C7C1FA61B9E440C00E6E959 /* monte_carlo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */; };
@@ -119,7 +161,6 @@
 		1C7C204B1B9FA19700E6E959 /* residue.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764471B6C0B1A00DA68FC /* residue.cc */; };
 		1C7C204C1B9FA19700E6E959 /* chain.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7644C1B6C104A00DA68FC /* chain.cc */; };
 		1C7C204D1B9FA19700E6E959 /* motif.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF764511B6C29D500DA68FC /* motif.cc */; };
-		1C7C204E1B9FA19700E6E959 /* secondary_structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610311B6EA33D00996CEC /* secondary_structure_factory.cc */; };
 		1C7C204F1B9FA19700E6E959 /* basepair.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C56103B1B6EA96A00996CEC /* basepair.cc */; };
 		1C7C20501B9FA19700E6E959 /* basepair.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE891AF2DE120098AA49 /* basepair.cc */; };
 		1C7C20511B9FA19700E6E959 /* basepair_state.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE8C1AF2DE120098AA49 /* basepair_state.cc */; };
@@ -130,7 +171,6 @@
 		1C7C20561B9FA19700E6E959 /* residue_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF2B1AF0680A00C03772 /* residue_type.cc */; };
 		1C7C20571B9FA19700E6E959 /* atom.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF281AF0676B00C03772 /* atom.cc */; };
 		1C7C20581B9FA19700E6E959 /* pdb_parser.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CE01B02E89F0076284E /* pdb_parser.cc */; };
-		1C7C20591B9FA19700E6E959 /* structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C5610291B6D9D7900996CEC /* structure_factory.cc */; };
 		1C7C205A1B9FA19700E6E959 /* motif_ensemble.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFBF71B98DC24002847BA /* motif_ensemble.cpp */; };
 		1C7C205B1B9FA19700E6E959 /* motif_state_ensemble.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFBF91B98DC24002847BA /* motif_state_ensemble.cpp */; };
 		1C7C205C1B9FA19700E6E959 /* motif_to_secondary_structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CC8C7091B90F5CC0032DDCC /* motif_to_secondary_structure.cc */; };
@@ -228,7 +268,6 @@
 		1CD9FE831B9774C2000253B5 /* motif_state_sqlite_library.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE801B9774C2000253B5 /* motif_state_sqlite_library.cpp */; };
 		1CD9FE8C1B9797E9000253B5 /* motif_state_sqlite_library_unittest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE8A1B9797E9000253B5 /* motif_state_sqlite_library_unittest.cpp */; };
 		1CD9FE8D1B9797E9000253B5 /* motif_state_sqlite_library_unittest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE8A1B9797E9000253B5 /* motif_state_sqlite_library_unittest.cpp */; };
-		1CD9FE911B97A0B9000253B5 /* build_motif_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE8F1B97A0B9000253B5 /* build_motif_tree.cpp */; };
 		1CD9FE971B97D402000253B5 /* motif_state_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE951B97D402000253B5 /* motif_state_tree.cpp */; };
 		1CD9FE9E1B97D576000253B5 /* motif_state_tree_unittest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD9FE9C1B97D576000253B5 /* motif_state_tree_unittest.cpp */; };
 		1CEBFBF51B98DB6E002847BA /* motif_state_ensemble_unittest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CEBFBF31B98DB6E002847BA /* motif_state_ensemble_unittest.cpp */; };
@@ -405,6 +444,16 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1C06DC0F1C0FFD400001CC98 /* secondary_structure_factory.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = secondary_structure_factory.cc; sourceTree = "<group>"; };
+		1C06DC101C0FFD400001CC98 /* secondary_structure_factory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secondary_structure_factory.h; sourceTree = "<group>"; };
+		1C06DC141C0FFFF00001CC98 /* rna_structure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = rna_structure.cpp; sourceTree = "<group>"; };
+		1C06DC151C0FFFF00001CC98 /* rna_structure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rna_structure.h; sourceTree = "<group>"; };
+		1C06DC351C110B0F0001CC98 /* motif_graph_unittest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = motif_graph_unittest.cpp; path = unittests/motif_data_structures_unittests/motif_graph_unittest.cpp; sourceTree = SOURCE_ROOT; };
+		1C06DC361C110B0F0001CC98 /* motif_graph_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = motif_graph_unittest.h; path = unittests/motif_data_structures_unittests/motif_graph_unittest.h; sourceTree = SOURCE_ROOT; };
+		1C06DC381C110D040001CC98 /* motif_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = motif_graph.cpp; path = motif_data_structures/motif_graph.cpp; sourceTree = "<group>"; };
+		1C06DC391C110D040001CC98 /* motif_graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = motif_graph.h; path = motif_data_structures/motif_graph.h; sourceTree = "<group>"; };
+		1C06DC3B1C121E310001CC98 /* motif_merger.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = motif_merger.cpp; path = motif_data_structures/motif_merger.cpp; sourceTree = "<group>"; };
+		1C06DC3C1C121E310001CC98 /* motif_merger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = motif_merger.h; path = motif_data_structures/motif_merger.h; sourceTree = "<group>"; };
 		1C2241421AC62A4100F76233 /* design_primers */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = design_primers; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C2241441AC62A4100F76233 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C3AB1BB1A995B7C00361C7F /* motif_tree_state_search */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = motif_tree_state_search; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -495,10 +544,6 @@
 		1C56101F1B6D8D4700996CEC /* motif_factory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_factory.h; sourceTree = "<group>"; };
 		1C5610241B6D9C0D00996CEC /* residue_type_set_manager_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = residue_type_set_manager_unittest.cc; sourceTree = "<group>"; };
 		1C5610251B6D9C0D00996CEC /* residue_type_set_manager_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = residue_type_set_manager_unittest.h; sourceTree = "<group>"; };
-		1C5610291B6D9D7900996CEC /* structure_factory.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = structure_factory.cc; sourceTree = "<group>"; };
-		1C56102A1B6D9D7900996CEC /* structure_factory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = structure_factory.h; sourceTree = "<group>"; };
-		1C5610311B6EA33D00996CEC /* secondary_structure_factory.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = secondary_structure_factory.cc; sourceTree = "<group>"; };
-		1C5610321B6EA33D00996CEC /* secondary_structure_factory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secondary_structure_factory.h; sourceTree = "<group>"; };
 		1C5610361B6EA43200996CEC /* secondary_structure_factory_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = secondary_structure_factory_unittest.cc; sourceTree = "<group>"; };
 		1C5610371B6EA43200996CEC /* secondary_structure_factory_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secondary_structure_factory_unittest.h; sourceTree = "<group>"; };
 		1C56103B1B6EA96A00996CEC /* basepair.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = basepair.cc; sourceTree = "<group>"; };
@@ -523,6 +568,8 @@
 		1C5610711B78370200996CEC /* added_motif_library.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = added_motif_library.h; sourceTree = "<group>"; };
 		1C5610751B7845E300996CEC /* added_motif_library_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = added_motif_library_unittest.cc; sourceTree = "<group>"; };
 		1C5610761B7845E300996CEC /* added_motif_library_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = added_motif_library_unittest.h; sourceTree = "<group>"; };
+		1C63252D1C16AB35004D2C05 /* pose.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pose.cpp; sourceTree = "<group>"; };
+		1C63252E1C16AB35004D2C05 /* pose.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pose.h; sourceTree = "<group>"; };
 		1C68F3E21C0CD25A0027EF6E /* graph_iterator_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graph_iterator_test.cpp; sourceTree = "<group>"; };
 		1C68F3E31C0CEA830027EF6E /* structure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = structure.cpp; sourceTree = "<group>"; };
 		1C68F3E41C0CEA830027EF6E /* structure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = structure.h; sourceTree = "<group>"; };
@@ -540,6 +587,10 @@
 		1C68F3F71C0E3F450027EF6E /* motif_type.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_type.h; sourceTree = "<group>"; };
 		1C68F3F91C0EA1960027EF6E /* util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cpp; sourceTree = "<group>"; };
 		1C68F3FA1C0EA1960027EF6E /* util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		1C690A691C14ECDB0009EB2B /* build_motif_tree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = build_motif_tree.cpp; path = build/build_motif_tree.cpp; sourceTree = "<group>"; };
+		1C690A6A1C14ECDB0009EB2B /* build_motif_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = build_motif_tree.h; path = build/build_motif_tree.h; sourceTree = "<group>"; };
+		1C690A6C1C14ECF30009EB2B /* build_motif_graph.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = build_motif_graph.cpp; path = build/build_motif_graph.cpp; sourceTree = "<group>"; };
+		1C690A6D1C14ECF30009EB2B /* build_motif_graph.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = build_motif_graph.h; path = build/build_motif_graph.h; sourceTree = "<group>"; };
 		1C6AF7751BE81DE300EB378D /* beads_vs_points.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = beads_vs_points.cpp; sourceTree = "<group>"; };
 		1C6AF7761BE81DE300EB378D /* beads_vs_points.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = beads_vs_points.h; sourceTree = "<group>"; };
 		1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = monte_carlo.cpp; sourceTree = "<group>"; };
@@ -660,8 +711,6 @@
 		1CD9FE811B9774C2000253B5 /* motif_state_sqlite_library.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_state_sqlite_library.h; sourceTree = "<group>"; };
 		1CD9FE8A1B9797E9000253B5 /* motif_state_sqlite_library_unittest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = motif_state_sqlite_library_unittest.cpp; sourceTree = "<group>"; };
 		1CD9FE8B1B9797E9000253B5 /* motif_state_sqlite_library_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_state_sqlite_library_unittest.h; sourceTree = "<group>"; };
-		1CD9FE8F1B97A0B9000253B5 /* build_motif_tree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = build_motif_tree.cpp; sourceTree = "<group>"; };
-		1CD9FE901B97A0B9000253B5 /* build_motif_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = build_motif_tree.h; sourceTree = "<group>"; };
 		1CD9FE951B97D402000253B5 /* motif_state_tree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = motif_state_tree.cpp; path = motif_data_structures/motif_state_tree.cpp; sourceTree = "<group>"; };
 		1CD9FE961B97D402000253B5 /* motif_state_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = motif_state_tree.h; path = motif_data_structures/motif_state_tree.h; sourceTree = "<group>"; };
 		1CD9FE9C1B97D576000253B5 /* motif_state_tree_unittest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = motif_state_tree_unittest.cpp; path = unittests/motif_data_structures_unittests/motif_state_tree_unittest.cpp; sourceTree = SOURCE_ROOT; };
@@ -980,14 +1029,14 @@
 		1C4E3E2E1B0AE5560076284E /* secondary_structure */ = {
 			isa = PBXGroup;
 			children = (
+				1C06DC0F1C0FFD400001CC98 /* secondary_structure_factory.cc */,
+				1C06DC101C0FFD400001CC98 /* secondary_structure_factory.h */,
 				1CF764471B6C0B1A00DA68FC /* residue.cc */,
 				1CF764481B6C0B1A00DA68FC /* residue.h */,
 				1CF7644C1B6C104A00DA68FC /* chain.cc */,
 				1CF7644D1B6C104A00DA68FC /* chain.h */,
 				1CF764511B6C29D500DA68FC /* motif.cc */,
 				1CF764521B6C29D500DA68FC /* motif.h */,
-				1C5610311B6EA33D00996CEC /* secondary_structure_factory.cc */,
-				1C5610321B6EA33D00996CEC /* secondary_structure_factory.h */,
 				1C56103B1B6EA96A00996CEC /* basepair.cc */,
 				1C56103C1B6EA96A00996CEC /* basepair.h */,
 				1C68F3E31C0CEA830027EF6E /* structure.cpp */,
@@ -998,6 +1047,8 @@
 				1C68F3F11C0D18540027EF6E /* secondary_structure_parser.h */,
 				1C68F3F91C0EA1960027EF6E /* util.cpp */,
 				1C68F3FA1C0EA1960027EF6E /* util.h */,
+				1C63252D1C16AB35004D2C05 /* pose.cpp */,
+				1C63252E1C16AB35004D2C05 /* pose.h */,
 			);
 			path = secondary_structure;
 			sourceTree = "<group>";
@@ -1036,6 +1087,17 @@
 				1C4F14501AA2A690003B7895 /* main.cpp */,
 			);
 			path = eternabot;
+			sourceTree = "<group>";
+		};
+		1C690A681C14ECAA0009EB2B /* build */ = {
+			isa = PBXGroup;
+			children = (
+				1C690A691C14ECDB0009EB2B /* build_motif_tree.cpp */,
+				1C690A6A1C14ECDB0009EB2B /* build_motif_tree.h */,
+				1C690A6C1C14ECF30009EB2B /* build_motif_graph.cpp */,
+				1C690A6D1C14ECF30009EB2B /* build_motif_graph.h */,
+			);
+			name = build;
 			sourceTree = "<group>";
 		};
 		1C7C1FA91B9E45A000E6E959 /* thermo_fluctuation_unittests */ = {
@@ -1148,6 +1210,7 @@
 		1CBEFE371AF03ECF00C03772 /* unittests */ = {
 			isa = PBXGroup;
 			children = (
+				1C690A681C14ECAA0009EB2B /* build */,
 				1C41F5051B1CE858000D1B6A /* memory_tests */,
 				1C41F4E71B17A3CA000D1B6A /* speed_tests */,
 				1C4E3DBB1B0A557D0076284E /* base_unittests */,
@@ -1164,8 +1227,6 @@
 				1CBEFE5E1AF0495700C03772 /* unittest.h */,
 				1CBEFE6C1AF0499800C03772 /* main.cc */,
 				1CBEFF521AF1B41300C03772 /* all_tests.cc */,
-				1CD9FE8F1B97A0B9000253B5 /* build_motif_tree.cpp */,
-				1CD9FE901B97A0B9000253B5 /* build_motif_tree.h */,
 			);
 			path = unittests;
 			sourceTree = SOURCE_ROOT;
@@ -1290,8 +1351,8 @@
 				1CBEFF251AF0675500C03772 /* atom.h */,
 				1C4E3CE01B02E89F0076284E /* pdb_parser.cc */,
 				1C4E3CE11B02E89F0076284E /* pdb_parser.h */,
-				1C5610291B6D9D7900996CEC /* structure_factory.cc */,
-				1C56102A1B6D9D7900996CEC /* structure_factory.h */,
+				1C06DC141C0FFFF00001CC98 /* rna_structure.cpp */,
+				1C06DC151C0FFFF00001CC98 /* rna_structure.h */,
 			);
 			path = structure;
 			sourceTree = "<group>";
@@ -1335,10 +1396,14 @@
 		1CD9FE941B97D3EB000253B5 /* motif_data_structures */ = {
 			isa = PBXGroup;
 			children = (
+				1C06DC381C110D040001CC98 /* motif_graph.cpp */,
+				1C06DC391C110D040001CC98 /* motif_graph.h */,
 				1CEBFC1E1B99FD8A002847BA /* motif_state_ensemble_tree.cpp */,
 				1CEBFC1F1B99FD8A002847BA /* motif_state_ensemble_tree.h */,
 				1CD9FE951B97D402000253B5 /* motif_state_tree.cpp */,
 				1CD9FE961B97D402000253B5 /* motif_state_tree.h */,
+				1C06DC3B1C121E310001CC98 /* motif_merger.cpp */,
+				1C06DC3C1C121E310001CC98 /* motif_merger.h */,
 			);
 			name = motif_data_structures;
 			sourceTree = "<group>";
@@ -1352,6 +1417,8 @@
 				1CEBFBF41B98DB6E002847BA /* motif_state_ensemble_unittest.h */,
 				1CD9FE9C1B97D576000253B5 /* motif_state_tree_unittest.cpp */,
 				1CD9FE9D1B97D576000253B5 /* motif_state_tree_unittest.h */,
+				1C06DC351C110B0F0001CC98 /* motif_graph_unittest.cpp */,
+				1C06DC361C110B0F0001CC98 /* motif_graph_unittest.h */,
 			);
 			name = motif_data_structures_unittests;
 			path = motif_assembly_unittests;
@@ -1777,9 +1844,50 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C06DC301C1108180001CC98 /* motif_sqlite_connection.cc in Sources */,
+				1C06DC2F1C1107F80001CC98 /* sqlite3_connection.cc in Sources */,
+				1C06DC3A1C110D040001CC98 /* motif_graph.cpp in Sources */,
+				1C06DC281C1107C40001CC98 /* sqlite_library.cc in Sources */,
+				1C06DC291C1107C40001CC98 /* motif_sqlite_library.cc in Sources */,
+				1C06DC2A1C1107C40001CC98 /* resource_manager.cc in Sources */,
+				1C06DC2B1C1107C40001CC98 /* added_motif_library.cc in Sources */,
+				1C06DC2C1C1107C40001CC98 /* motif_state_sqlite_library.cpp in Sources */,
+				1C06DC2D1C1107C40001CC98 /* motif_state_ensemble_sqlite_library.cpp in Sources */,
+				1C6325301C16AB35004D2C05 /* pose.cpp in Sources */,
+				1C06DC2E1C1107C40001CC98 /* motif_ensemble_sqlite_connection.cpp in Sources */,
+				1C06DC271C1107580001CC98 /* pose_factory.cc in Sources */,
+				1C06DC201C1106F60001CC98 /* motif_ensemble.cpp in Sources */,
+				1C06DC211C1106F60001CC98 /* motif_state_ensemble.cpp in Sources */,
+				1C06DC221C1106F60001CC98 /* pose.cc in Sources */,
+				1C06DC231C1106F60001CC98 /* motif_tree_merger.cc in Sources */,
+				1C06DC241C1106F60001CC98 /* motif_tree.cc in Sources */,
+				1C06DC251C1106F60001CC98 /* motif_state.cpp in Sources */,
+				1C06DC261C1106F60001CC98 /* motif_state_aligner.cpp in Sources */,
+				1C06DC1F1C10C6E40001CC98 /* motif_unittest.cc in Sources */,
+				1C06DC1D1C10C2150001CC98 /* motif_to_secondary_structure.cc in Sources */,
+				1C06DC1E1C10C2150001CC98 /* motif_scorer.cc in Sources */,
+				1C06DC1C1C10BBAF0001CC98 /* motif_factory_unittest.cc in Sources */,
+				1C06DC1B1C10BB7C0001CC98 /* motif_factory.cc in Sources */,
+				1C06DC191C10BA920001CC98 /* basepair.cc in Sources */,
+				1C06DC1A1C10BA920001CC98 /* basepair_state.cc in Sources */,
+				1C690A6E1C14ECF30009EB2B /* build_motif_graph.cpp in Sources */,
+				1C06DC181C1004000001CC98 /* motif.cc in Sources */,
+				1C06DC131C0FFF750001CC98 /* pdb_parser.cc in Sources */,
+				1C06DC0D1C0FFC3F0001CC98 /* structure.cc in Sources */,
+				1C06DC0E1C0FFC3F0001CC98 /* structure_unittest.cc in Sources */,
+				1C06DC121C0FFD400001CC98 /* secondary_structure_factory.cc in Sources */,
+				1C06DC0C1C0FF82D0001CC98 /* chain_unittest.cc in Sources */,
+				1C06DC0B1C0FF79D0001CC98 /* chain.cc in Sources */,
+				1C06DC071C0FED680001CC98 /* residue.cc in Sources */,
+				1C06DC081C0FED680001CC98 /* residue_type_set.cc in Sources */,
+				1C06DC091C0FED680001CC98 /* residue_type.cc in Sources */,
+				1C06DC0A1C0FED680001CC98 /* residue_unittest.cc in Sources */,
+				1C68F4021C0FD0D50027EF6E /* atom.cc in Sources */,
+				1C06DC3D1C121E310001CC98 /* motif_merger.cpp in Sources */,
+				1C68F3FF1C0FD0AA0027EF6E /* atom_unittest.cc in Sources */,
 				1C68F3FE1C0EBA7B0027EF6E /* secondary_structure_factory_unittest.cc in Sources */,
-				1C68F3FD1C0EA9DF0027EF6E /* secondary_structure_factory.cc in Sources */,
 				1C68F3FC1C0EA4960027EF6E /* rna_structure.cpp in Sources */,
+				1C06DC371C110B0F0001CC98 /* motif_graph_unittest.cpp in Sources */,
 				1C68F3E61C0CEB420027EF6E /* structure.cpp in Sources */,
 				1C68F3F81C0E3F450027EF6E /* motif_type.cc in Sources */,
 				1CC8C7081B8F37AE0032DDCC /* uuid_unittest.cc in Sources */,
@@ -1790,6 +1898,7 @@
 				1CF764451B6C0AA900DA68FC /* file_io.cc in Sources */,
 				1CF764461B6C0AA900DA68FC /* x3dna.cc in Sources */,
 				1CF764411B6C0A9800DA68FC /* numerical.cc in Sources */,
+				1C06DC171C0FFFF00001CC98 /* rna_structure.cpp in Sources */,
 				1CF764351B6AF7FB00DA68FC /* tree.cc in Sources */,
 				1CF7642D1B66BCDF00DA68FC /* settings.cc in Sources */,
 				1CF7642C1B66BCD200DA68FC /* graph_unittest.cc in Sources */,
@@ -1843,7 +1952,6 @@
 				1C7C204B1B9FA19700E6E959 /* residue.cc in Sources */,
 				1C7C204C1B9FA19700E6E959 /* chain.cc in Sources */,
 				1C7C204D1B9FA19700E6E959 /* motif.cc in Sources */,
-				1C7C204E1B9FA19700E6E959 /* secondary_structure_factory.cc in Sources */,
 				1C7C204F1B9FA19700E6E959 /* basepair.cc in Sources */,
 				1C7C20501B9FA19700E6E959 /* basepair.cc in Sources */,
 				1C7C20511B9FA19700E6E959 /* basepair_state.cc in Sources */,
@@ -1854,7 +1962,6 @@
 				1C7C20561B9FA19700E6E959 /* residue_type.cc in Sources */,
 				1C7C20571B9FA19700E6E959 /* atom.cc in Sources */,
 				1C7C20581B9FA19700E6E959 /* pdb_parser.cc in Sources */,
-				1C7C20591B9FA19700E6E959 /* structure_factory.cc in Sources */,
 				1C7C205A1B9FA19700E6E959 /* motif_ensemble.cpp in Sources */,
 				1C7C205B1B9FA19700E6E959 /* motif_state_ensemble.cpp in Sources */,
 				1C7C205C1B9FA19700E6E959 /* motif_to_secondary_structure.cc in Sources */,
@@ -1927,7 +2034,6 @@
 				1C3DE1321BA9FDA00006AC74 /* motif_state_aligner.cpp in Sources */,
 				1C5610271B6D9C0D00996CEC /* residue_type_set_manager_unittest.cc in Sources */,
 				1CEBFBFC1B98DC24002847BA /* motif_ensemble.cpp in Sources */,
-				1CD9FE911B97A0B9000253B5 /* build_motif_tree.cpp in Sources */,
 				1CEBFC2E1B9CE84A002847BA /* thermo_fluc_sampler.cpp in Sources */,
 				1C3DE11A1BA60D4F0006AC74 /* motif_state_selector_unittest.cpp in Sources */,
 				1C9EF2EF1BA4B41E006DEB9C /* motif_state_selector.cpp in Sources */,
@@ -1961,7 +2067,6 @@
 				1CEBFC211B99FD8A002847BA /* motif_state_ensemble_tree.cpp in Sources */,
 				1CAACE901AF2DE120098AA49 /* basepair_state.cc in Sources */,
 				1CF7644F1B6C104A00DA68FC /* chain.cc in Sources */,
-				1C5610341B6EA33D00996CEC /* secondary_structure_factory.cc in Sources */,
 				1C4E3DB01B095ACB0076284E /* option.cc in Sources */,
 				1CEBFC041B98EB45002847BA /* motif_state_ensemble_sqlite_library.cpp in Sources */,
 				1C4E3DB31B095AE80076284E /* base.cc in Sources */,
@@ -1971,7 +2076,6 @@
 				1CBEFF491AF1AD6400C03772 /* uuid.cc in Sources */,
 				1C9EF2EC1BA4B41E006DEB9C /* motif_state_search_node.cpp in Sources */,
 				1C3DE12E1BA8D52D0006AC74 /* motif_state_search_unittest.cpp in Sources */,
-				1C56102C1B6D9D7900996CEC /* structure_factory.cc in Sources */,
 				1CD9FE831B9774C2000253B5 /* motif_state_sqlite_library.cpp in Sources */,
 				1C4E3DBE1B0A55AB0076284E /* option_unittest.cc in Sources */,
 				1C4E3CAC1AF422450076284E /* motif_tree.cc in Sources */,
@@ -1990,6 +2094,7 @@
 				1CBEFF441AF1AB1700C03772 /* residue.cc in Sources */,
 				1C5610491B76839800996CEC /* sqlite3_connection_unittest.cc in Sources */,
 				1CBEFF6B1AF1B7DE00C03772 /* residue_unittest.cc in Sources */,
+				1C690A6B1C14ECDB0009EB2B /* build_motif_tree.cpp in Sources */,
 				1CC8C7061B8BEBDE0032DDCC /* pose_factory_unittest.cpp in Sources */,
 				1C56105A1B76983D00996CEC /* motif_sqlite_library.cc in Sources */,
 				1C5610641B76CF9100996CEC /* resource_manager.cc in Sources */,
@@ -2032,7 +2137,6 @@
 				1CF7643E1B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */,
 				1CBEFF131AF0636B00C03772 /* sequence_designer.cc in Sources */,
 				1CBEFEFD1AF0636B00C03772 /* motif_tree_state_alt_pather.cc in Sources */,
-				1C5610331B6EA33D00996CEC /* secondary_structure_factory.cc in Sources */,
 				1C5610261B6D9C0D00996CEC /* residue_type_set_manager_unittest.cc in Sources */,
 				1C9EF2EE1BA4B41E006DEB9C /* motif_state_selector.cpp in Sources */,
 				1CD9FE731B9631B6000253B5 /* motif_state_unittest.cpp in Sources */,
@@ -2050,12 +2154,14 @@
 				1CD9FE6E1B962571000253B5 /* motif_state.cpp in Sources */,
 				1CBEFEE91AF0636B00C03772 /* string.cc in Sources */,
 				1CAACE8F1AF2DE120098AA49 /* basepair_state.cc in Sources */,
+				1C06DC161C0FFFF00001CC98 /* rna_structure.cpp in Sources */,
 				1CAACE971AF2E2300098AA49 /* basepair_unittest.cc in Sources */,
 				1CBEFF3F1AF1A71000C03772 /* numerical.cc in Sources */,
 				1CBEFF481AF1AD6400C03772 /* uuid.cc in Sources */,
 				1CEBFC1B1B99FCC1002847BA /* motif_state_ensemble_tree_unittest.cpp in Sources */,
 				1CD9FE821B9774C2000253B5 /* motif_state_sqlite_library.cpp in Sources */,
 				1CEBFC081B98ECFC002847BA /* motif_ensemble_sqlite_connection.cpp in Sources */,
+				1C06DC111C0FFD400001CC98 /* secondary_structure_factory.cc in Sources */,
 				1CBEFF041AF0636B00C03772 /* motif_tree_state_search_scorer.cc in Sources */,
 				1CBEFF531AF1B41300C03772 /* all_tests.cc in Sources */,
 				1C5610381B6EA43200996CEC /* secondary_structure_factory_unittest.cc in Sources */,
@@ -2065,7 +2171,6 @@
 				1CBEFF021AF0636B00C03772 /* motif_tree_state_search.cc in Sources */,
 				1CBEFE5F1AF0495700C03772 /* unittest.cc in Sources */,
 				1C5610201B6D8D4700996CEC /* motif_factory.cc in Sources */,
-				1C56102B1B6D9D7900996CEC /* structure_factory.cc in Sources */,
 				1CEBFBFE1B98DC24002847BA /* motif_state_ensemble.cpp in Sources */,
 				1C5610721B78370200996CEC /* added_motif_library.cc in Sources */,
 				1CBEFF2D1AF0680A00C03772 /* residue_type.cc in Sources */,
@@ -2075,6 +2180,7 @@
 				1CEBFBFB1B98DC24002847BA /* motif_ensemble.cpp in Sources */,
 				1CAACE861AF2C2510098AA49 /* structure_unittest.cc in Sources */,
 				1CEBFC371B9CE981002847BA /* energy_par.cc in Sources */,
+				1C63252F1C16AB35004D2C05 /* pose.cpp in Sources */,
 				1CC8C70B1B90F5CC0032DDCC /* motif_to_secondary_structure.cc in Sources */,
 				1CC8C7001B8BEB680032DDCC /* pose_factory.cc in Sources */,
 				1C68F3E51C0CEA830027EF6E /* structure.cpp in Sources */,
@@ -2202,6 +2308,7 @@
 					"$(inherited)",
 					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src,
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests,
 				);
 				PRODUCT_NAME = "unittests copy";
 			};
@@ -2215,6 +2322,7 @@
 					"$(inherited)",
 					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src,
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests,
 				);
 				PRODUCT_NAME = "unittests copy";
 			};

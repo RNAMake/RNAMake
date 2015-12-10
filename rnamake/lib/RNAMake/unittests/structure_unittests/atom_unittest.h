@@ -18,6 +18,8 @@
 #include "math/numerical.h"
 #include "structure/atom.h"
 
+namespace unittests {
+
 class AtomUnittest : public Unittest {
 public:
 
@@ -45,10 +47,12 @@ public:
     int
     run();
     
-    void
+    int
     run_all();
     
     
 };
+
+}
 
 #endif /* defined(__RNAMake__atom_unittest__) */

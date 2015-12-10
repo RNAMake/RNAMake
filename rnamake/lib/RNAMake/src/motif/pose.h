@@ -54,11 +54,11 @@ public:
     void
     set_motifs(std::map<MotifType, MotifOPs> const & motifs) { motifs_ = motifs; }
     
-    inline
+    /*inline
     void
     set_ss_motifs(std::map<String, sstruct::MotifOPs> & ss_motifs) {
         secondary_structure_->set_motifs(ss_motifs);
-    }
+    }*/
     
 private:
     std::map<Uuid, int, UuidCompare> designable_;

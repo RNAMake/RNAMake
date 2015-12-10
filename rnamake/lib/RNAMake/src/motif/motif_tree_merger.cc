@@ -14,7 +14,7 @@ PoseOP
 MotifTreeMerger::merge(GraphStatic<MotifOP> const & graph) {
     
     if(graph.size() == 1) {
-        auto m = std::make_shared<Motif>(graph.get_node(0)->data()->copy());
+        auto m = std::make_shared<Motif>(*graph.get_node(0)->data());
         return std::make_shared<Pose>(m);
     }
 
@@ -44,7 +44,7 @@ MotifTreeMerger::_build_pose() {
     ChainOPs new_chains;
         
     for( auto const & c : chains_) {
-        new_chains.push_back( ChainOP( new Chain(c->copy())) );
+        new_chains.push_back( ChainOP( new Chain(*c)) );
     }
     
     auto new_structure = std::make_shared<Structure>(new_chains);

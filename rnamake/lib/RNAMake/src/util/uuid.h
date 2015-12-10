@@ -33,11 +33,30 @@ public:
         return s_uuid_.compare(uuid.s_uuid_) == 0;
     }
  
-    /*inline
+    inline
+    bool
+    operator ==(Uuid & uuid)  {
+        return s_uuid_.compare(uuid.s_uuid_) == 0;
+    }
+    
+    inline
+    bool
+    operator != (Uuid const & uuid) const {
+        return s_uuid_.compare(uuid.s_uuid_) != 0;
+    }
+
+    
+    inline
+    bool
+    operator != (Uuid & uuid)  {
+        return s_uuid_.compare(uuid.s_uuid_) != 0;
+    }
+
+    inline
     bool
     operator < (Uuid const & uuid) const {
         return s_uuid_.compare(uuid.s_uuid());
-    }*/
+    }
     
 private:
     String s_uuid_;

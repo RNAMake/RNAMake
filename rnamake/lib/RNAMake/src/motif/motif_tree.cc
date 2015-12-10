@@ -53,7 +53,7 @@ MotifTree::add_motif(
     }
     
     if(parent == nullptr) {
-        auto m_copy = std::make_shared<Motif>(m->copy());
+        auto m_copy = std::make_shared<Motif>(*m);
         m_copy->get_beads(m_copy->ends());
         return graph_.add_data(m_copy, -1, -1, -1, (int)m_copy->ends().size());
         

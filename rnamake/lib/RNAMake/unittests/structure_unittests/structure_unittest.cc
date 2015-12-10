@@ -11,22 +11,18 @@
 #include "util/file_io.h"
 #include "util/settings.h"
 
+namespace unittests {
+    
 StructureUnittest::StructureUnittest() {
     
-    /*String path = unittest_resource_dir() + "/structure/test_str_to_structure.dat";
-    Strings lines = get_lines_from_file(path);
-    
-    ResidueTypeSet rts;
-    s_ = str_to_structure(lines[0], rts);*/
     String path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+    s_ = std::make_shared<Structure>(path);
     
-    sf_ = StructureFactory();
-    s_ = sf_.get_structure(path);
 }
 
 int
 StructureUnittest::test_move() {
-    Structure s2 = s_->copy();
+    auto s2 = Structure(*s_);
     Point p (10.0, 0 ,0);
     s2.move(p);
     AtomOPs new_atoms = s2.atoms();
@@ -51,7 +47,7 @@ StructureUnittest::test_transform() {
     Matrix r = matrix_from_str(lines[0]);
     Point trans = vector_from_str(lines[1]);
     ResidueTypeSet rts;
-    Structure s2 = str_to_structure(lines[2], rts);
+    auto s2 = Structure(lines[2], rts);
 
     Transform t(r, trans);
     s_->transform(t);
@@ -89,7 +85,6 @@ StructureUnittest::test_get_residue() {
     return 1;
 }
 
-
 int
 StructureUnittest::run() {
     
@@ -99,8 +94,7 @@ StructureUnittest::run() {
     return 0;
 }
 
-
-void
+int
 StructureUnittest::run_all() {
     String name = "StructureUnittest";
     typedef int (StructureUnittest::*fptr)();
@@ -109,20 +103,22 @@ StructureUnittest::run_all() {
     func_map["test_transform"         ] = &StructureUnittest::test_transform;
     func_map["test_get_residue"       ] = &StructureUnittest::test_get_residue;
 
+    int failed = 0;
     for(auto const & kv : func_map) {
         try {
             int result = (this->*kv.second)();
-            if(result == 0) {
-                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
-            }
         }
         catch(...) {
             std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+            failed += 1;
         }
         
     }
+    
+    return failed;
 }
 
+}
 
 
 

@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__motif_unittest__
-#define __RNAMake__motif_unittest__
+#ifndef __RNAMake__sec_motif_unittest__
+#define __RNAMake__sec_motif_unittest__
 
 #include <stdio.h>
 
@@ -27,7 +27,13 @@ public:
     
     void
     test_creation();
+    
+    void
+    test_copy();
  
+    void
+    test_to_str();
+    
 public:
     
     int
@@ -38,7 +44,7 @@ public:
     
 };
     
-} // sstruct
+} // sstruct_unittests
 } // unittests
 
 

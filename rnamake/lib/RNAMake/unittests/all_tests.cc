@@ -18,8 +18,10 @@
 
 int main(int argc, const char * argv[]) {
     std::vector<Unittest*> units;
-    units.push_back(new OptionUnittest());
-    units.push_back(new GraphUnittest());
+    units.push_back(new unittests::OptionUnittest());
+    units.push_back(new unittests::CL_OptionUnittest());
+
+    //units.push_back(new GraphUnittest());
     /*units.push_back(new UuidUnittest());
     units.push_back(new X3dnaUnittest());
     units.push_back(new AtomUnittest());
@@ -37,11 +39,14 @@ int main(int argc, const char * argv[]) {
     units.push_back(new MotifLibraryUnittest());
     units.push_back(new LibraryManagerUnittest());*/
     
+    int tests_run = 0;
+    int test_failed = 0;
     for(auto const & test : units) {
         if(test == nullptr) { continue; }
-        test->run_all();
+        test_failed += test->run_all();
+        test_run    += test->size();
     }
-    std::cout << std::endl;
+    std::cout "RAN: " << test_run << "  FAILED: " << test_failed << std::endl;
 
     
     

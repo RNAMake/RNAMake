@@ -20,13 +20,20 @@
 #include "secondary_structure_unittests/motif_unittest.h"
 #include "secondary_structure_unittests/secondary_structure_parser_unittest.h"
 #include "secondary_structure_unittests/secondary_structure_factory_unittest.h"
-/*#include "secondary_structure_unittests/secondary_structure_unittest.h"
-#include "secondary_structure_unittests/ss_tree_unittest.h"
 
+#include "structure_unittests/atom_unittest.h"
+#include "structure_unittests/residue_unittest.h"
+#include "structure_unittests/chain_unittest.h"
 #include "structure_unittests/structure_unittest.h"
 
 #include "motif_unittests/motif_unittest.h"
 #include "motif_unittests/motif_factory_unittest.h"
+
+#include "motif_data_structures_unittests/motif_graph_unittest.h"
+
+/*
+
+
 #include "motif_unittests/motif_tree_unittest.h"
 #include "motif_unittests/motif_tree_merger_unittest.h"
 #include "motif_unittests/pose_factory_unittest.h"
@@ -72,7 +79,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::sstruct_unittests::StructureUnittest test;
+    unittests::motif_structures::MotifGraphUnittest test;
     test.run();
 }
 

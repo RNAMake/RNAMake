@@ -31,8 +31,19 @@ public:
         residues_ = ResidueOPs(c.residues_.size());
         int i = 0;
         for(auto const & r : c.residues_) {
-            residues_[i] = std::make_shared<Residue>(*r));
+            residues_[i] = std::make_shared<Residue>(*r);
             i++;
+        }
+    }
+    
+    Chain(
+        String const & s) {
+        residues_ = ResidueOPs();
+        Strings spl = split_str_by_delimiter(s, ";");
+        for(auto const & r_str : spl) {
+            if(r_str.length() < 3) { continue; }
+            auto r = std::make_shared<Residue>(r_str);
+            residues_.push_back(r);
         }
     }
     
@@ -110,11 +121,7 @@ private:
     
     
 };
-    
-Chain
-str_to_chain(String const &);
 
-    
 typedef std::shared_ptr<Chain> ChainOP;
 typedef std::vector<ChainOP> ChainOPs;
     
