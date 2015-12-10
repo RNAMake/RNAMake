@@ -16,6 +16,7 @@
 #include "structure/residue.h"
 #include "structure/residue_type_set.h"
 
+namespace unittests {
 
 class ResidueUnittest : public Unittest {
 public:
@@ -52,11 +53,13 @@ public:
     int
     run();
     
-    void
+    int
     run_all();
     
     
-
 };
+
+    
+}
 
 #endif /* defined(__RNAMake__residue_unittest__) */

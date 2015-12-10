@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__structure__
-#define __RNAMake__structure__
+#ifndef __RNAMake__sec_structure__
+#define __RNAMake__sec_structure__
 
 #include <stdio.h>
 
@@ -24,7 +24,7 @@ public:
         ChainOPs const & chains):
     chains_(chains)
     {}
-    
+
     Structure(
         String const & sequence,
         String const & dot_bracket):
@@ -32,6 +32,7 @@ public:
         _setup_chains(sequence, dot_bracket);
     }
     
+    inline
     Structure(
         Structure const & structure) {
     
@@ -42,6 +43,18 @@ public:
             i++;
         }
     }
+    
+    Structure(
+        String const & s) {
+        chains_ = ChainOPs();
+        auto spl = split_str_by_delimiter(s, "|");
+        for(auto const & c_str : spl) {
+            auto c = std::make_shared<Chain>(c_str);
+            chains_.push_back(c);
+        }
+    }
+    
+    ~Structure() {}
     
 public:
     
@@ -120,11 +133,6 @@ private:
     ChainOPs chains_;
 };
    
-
-Structure
-str_to_structure(
-    String const &);
-    
 
 typedef std::shared_ptr<Structure> StructureOP;
 

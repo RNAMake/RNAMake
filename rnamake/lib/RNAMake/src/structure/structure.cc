@@ -15,16 +15,6 @@
 #include "structure/chain.fwd.h"
 
 
-
-Structure
-Structure::copy() {
-    ChainOPs chains;
-    for (auto const & c : chains_) {
-        chains.push_back(ChainOP(new Chain(c->copy())));
-    }
-    return Structure(chains);
-}
-
 void
 Structure::renumber() {
     int i = 1, j = 0;
@@ -109,17 +99,4 @@ Structure::to_pdb(
     out.close();
 }
 
-
-Structure
-str_to_structure(
-    String const & s,
-    ResidueTypeSet const & rts) {
-    ChainOPs chains;
-    Strings spl = split_str_by_delimiter(s, ":");
-    for( auto const & c_str : spl) {
-        Chain c = str_to_chain(c_str, rts);
-        chains.push_back(ChainOP(new Chain(c)));
-    }
-    return Structure(chains);
-}
 

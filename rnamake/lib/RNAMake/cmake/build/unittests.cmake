@@ -24,9 +24,12 @@ set(unittests_files
 	../../unittests/resources_unittests/motif_state_ensemble_sqlite_library_unittest.cpp
 	../../unittests/resources_unittests/motif_state_sqlite_library_unittest.cpp
 	../../unittests/resources_unittests/resource_manager_unittest.cc
+	../../unittests/secondary_structure_unittests/motif_unittest.cpp
 	../../unittests/secondary_structure_unittests/secondary_structure_factory_unittest.cc
+	../../unittests/secondary_structure_unittests/secondary_structure_parser_unittest.cpp
 	../../unittests/secondary_structure_unittests/secondary_structure_unittest.cc
 	../../unittests/secondary_structure_unittests/ss_tree_unittest.cc
+	../../unittests/secondary_structure_unittests/structure_unittest.cpp
 	../../unittests/structure_unittests/atom_unittest.cc
 	../../unittests/structure_unittests/basepair_unittest.cc
 	../../unittests/structure_unittests/chain_unittest.cc

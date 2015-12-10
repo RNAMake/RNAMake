@@ -86,8 +86,8 @@ public: // getters
     inline
     ResidueOP const &
     partner(ResidueOP const & res) {
-        if     ( res == res1_) {  return res2_;  }
-        else if( res == res2_) {  return res1_;  }
+        if     ( res->uuid() == res1_->uuid()) {  return res2_;  }
+        else if( res->uuid() == res2_->uuid()) {  return res1_;  }
         else { throw "called partner with resiude not in this basepair"; }
     }
     

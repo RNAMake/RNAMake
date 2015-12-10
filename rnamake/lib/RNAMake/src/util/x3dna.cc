@@ -272,6 +272,7 @@ X3dna::get_basepairs(String const & pdb_path) {
         String bp_type = "c...";
         //TODO look into why this is happening, sometimes will error out if I dont do this check
         if(spl.size() > 6) {
+            
             bp_type = spl[7];
         }
         found = 0;

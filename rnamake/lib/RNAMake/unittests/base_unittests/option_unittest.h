@@ -13,11 +13,16 @@
 
 #include "unittest.h"
 
+namespace unittests {
+    
 class OptionUnittest : public Unittest {
 public:
     OptionUnittest() {}
     
     ~OptionUnittest() {}
+    
+    int
+    size() { return 3; }
     
 public:
     
@@ -35,10 +40,12 @@ public:
     int
     run();
     
-    void
+    int
     run_all();
     
 };
+    
+}
 
 
 #endif /* defined(__RNAMake__option_unittest__) */

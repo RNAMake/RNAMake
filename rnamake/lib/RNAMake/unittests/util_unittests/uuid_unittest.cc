@@ -54,7 +54,7 @@ UuidUnittest::run() {
 
 }
 
-void
+int
 UuidUnittest::run_all() {
     String name = "UuidUnittest";
     typedef int (UuidUnittest::*fptr)();
@@ -74,4 +74,6 @@ UuidUnittest::run_all() {
         }
         
     }
+    
+    return 0;
 }

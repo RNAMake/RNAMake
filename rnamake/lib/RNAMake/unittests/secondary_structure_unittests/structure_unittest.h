@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__structure_unittest__
-#define __RNAMake__structure_unittest__
+#ifndef __RNAMake__sec_structure_unittest__
+#define __RNAMake__sec_structure_unittest__
 
 
 #include <stdio.h>
@@ -51,4 +51,4 @@ public:
 }
 }
 
-#endif /* defined(__RNAMake__structure_unittest__) */
+#endif /* defined(__RNAMake__sec_structure_unittest__) */

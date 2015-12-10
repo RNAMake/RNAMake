@@ -13,6 +13,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
+#include <cxxabi.h>
 
 #include "base/types.h"
 #include "data_structure/graph/graph_node.fwd.h"
@@ -31,6 +32,17 @@ template <typename DataType>
 class GraphNode {
 
 public:
+    inline
+    GraphNode(
+        int index,
+        int level,
+        size_t n_connections = 0):
+    data_(DataType()),
+    level_(level),
+    index_(index),
+    connections_(GraphConnectionOPs<DataType>(n_connections))
+    {}
+    
     GraphNode(
         DataType const & data,
         int index,
@@ -128,8 +140,12 @@ public: //getters
     data() const { return data_; }
     
     inline
+    DataType &
+    data() { return data_; }
+    
+    inline
     GraphConnectionOPs<DataType> const &
-    connections() { return connections_; }
+    connections() const { return connections_; }
     
     
 protected:
@@ -194,6 +210,11 @@ public:
         int level,
         int n_children):
     GraphNode<DataType>(data, index, level, n_children) {}
+    
+    inline
+    GraphNodeStatic(
+        GraphNode<DataType> const & n):
+    GraphNode<DataType>(n.index(), n.level(), (int)n.connections().size()) {}
     
 public:
     

@@ -13,6 +13,8 @@
 #include "atom_unittest.h"
 
 
+namespace unittests {
+    
 int
 AtomUnittest::test_creation() {
     Atom atom("P", Point(0, 1, 2));
@@ -42,13 +44,13 @@ AtomUnittest::test_to_pdb_str() {
 
 int
 AtomUnittest::test_str_to_atom() {
-    Atom atom("H1", Point(1, 2, 3));
-    String s = atom.to_str();
-    Atom atom2 = str_to_atom(s);
-    if(not are_xyzVector_equal(atom.coords(), atom2.coords())) {
+    auto a = Atom("H1", Point(1, 2, 3));
+    String s = a.to_str();
+    auto a2 = Atom(s);
+    if(not are_xyzVector_equal(a.coords(), a2.coords())) {
         return 0;
     }
-    if(not (atom.name().compare(atom2.name()) == 0)) {
+    if(not (a.name().compare(a2.name()) == 0)) {
         return 0;
     }
     return 1;
@@ -56,12 +58,12 @@ AtomUnittest::test_str_to_atom() {
 
 int
 AtomUnittest::test_copy() {
-    Atom atom("H1", Point(1, 2, 3));
-    Atom atom2 = atom.copy();
-    if(not are_xyzVector_equal(atom.coords(), atom2.coords())) {
+    auto a  = Atom("H1", Point(1, 2, 3));
+    auto a2 = Atom(a);
+    if(not are_xyzVector_equal(a.coords(), a2.coords())) {
         return 0;
     }
-    if(not (atom.name().compare(atom2.name()) == 0)) {
+    if(not (a.name().compare(a2.name()) == 0)) {
         return 0;
     }
     return 1;
@@ -78,7 +80,7 @@ AtomUnittest::run() {
     return 1;
 }
 
-void
+int
 AtomUnittest::run_all() {
     String name = "AtomUnittest";
     typedef int (AtomUnittest::*fptr)();
@@ -88,21 +90,23 @@ AtomUnittest::run_all() {
     func_map["test_str_to_atom"] = &AtomUnittest::test_str_to_atom;
     func_map["test_copy"       ] = &AtomUnittest::test_copy;
     
+    int failed = 0;
     for(auto const & kv : func_map) {
         try {
-            int result = (this->*kv.second)();
-            if(result == 0) {
-                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
-            }
+            (this->*kv.second)();
         }
         catch(...) {
             std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+            failed += 1;
         }
         
     }
+    
+    return failed;
 }
 
 
+}
 
 
 

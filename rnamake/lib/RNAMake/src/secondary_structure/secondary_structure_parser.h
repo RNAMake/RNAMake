@@ -29,6 +29,8 @@ enum NodeType {
     
     
 struct NodeData {
+    NodeData() {}
+    
     NodeData(
         ResidueOPs const & nresidues,
         NodeType const & ntype):

@@ -19,6 +19,9 @@ public:
     
     ~CL_OptionUnittest() {}
     
+    int
+    size() { return 3; }
+    
 public:
     
     int

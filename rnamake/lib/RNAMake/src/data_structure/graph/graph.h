@@ -138,13 +138,14 @@ private:
         for(auto const & n : nodes) {
             active_conn = 0;
             for (auto const & c : n->connections()) {
-                if(c == nullptr) { active_conn += 1; }
+                if(c != nullptr) { active_conn += 1; }
             }
+            
             if(active_conn < 2) {
                 leafs_.push_back(n);
             }
         }
-        
+                
         if(leafs_.size() > 0) {
             current_ = leafs_[0];
         }
@@ -303,7 +304,37 @@ public:
 template <typename DataType>
 class GraphStatic : public Graph<DataType> {
 public:
+    inline
     GraphStatic(): Graph<DataType>() {}
+    
+    inline
+    GraphStatic(
+        GraphStatic<DataType> const & g) {
+        this->nodes_ = GraphNodeOPs<DataType>(g.nodes_.size());
+        int i = 0;
+        for(auto const & n : g.nodes_) {
+            this->nodes_[i] = std::make_shared<GraphNodeStatic<DataType>>(*n);
+            i++;
+        }
+        
+        i = 0;
+        int j, ei, ej;
+        for(auto const & c : g.connections_) {
+            i = c->node_1()->index();
+            j = c->node_2()->index();
+            ei = c->end_index(i);
+            ej = c->end_index(j);
+            connect(i, j, ei, ej);
+        }
+        
+        if(g.last_node_ != nullptr) {
+            this->last_node_ = this->nodes_[g.last_node_->index()];
+        }
+        
+        this->level_ = g.level_;
+        this->index_ = g.index_;
+        
+    }
     
     ~GraphStatic() {
         for(int i = 0; i < this->nodes_.size(); i++){
@@ -337,6 +368,7 @@ public:
             auto c = std::make_shared<GraphConnection<DataType>>(parent, n, parent_pos, child_pos);
             parent->add_connection(c, parent_pos);
             n->add_connection(c, child_pos);
+            this->connections_.push_back(c);
         }
         
         this->nodes_.push_back(n);
@@ -420,6 +452,8 @@ public:
             auto partner = c->partner(n->index());
             n->remove_connection(c);
             partner->remove_connection(c);
+            this->connections_.erase(std::remove(this->connections_.begin(),
+                                                 this->connections_.end(), c));
             c->disconnect();
             
         }

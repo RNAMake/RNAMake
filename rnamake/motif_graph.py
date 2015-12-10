@@ -139,7 +139,6 @@ class MotifGraph(base.Base):
             m_copy.get_beads(m_copy.ends)
 
             pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends), orphan=1)
-            # self.structure.add(self.graph.get_node(pos))
             self.merger.add_motif(m_copy)
             return pos
 
@@ -150,7 +149,6 @@ class MotifGraph(base.Base):
             m_added.new_res_uuids()
             pos = self.graph.add_data(m_added, parent.index, parent_end_index,
                                       0, len(m_added.ends))
-            # self.structure.add(self.graph.get_node(pos))
             self.merger.add_motif(m_added, m_added.ends[0],
                                   parent.data, parent.data.ends[parent_end_index])
             return pos

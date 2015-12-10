@@ -58,6 +58,22 @@ public:
     uuid_(r.uuid_),
     i_code_(r.i_code_)
     {}
+    
+    Residue(
+        String const & s) {
+        
+        Strings spl = split_str_by_delimiter(s, ",");
+        name_         = spl[0];
+        dot_bracket_  = spl[1];
+        num_          = std::stoi(spl[2]);
+        chain_id_     = spl[3];
+        uuid_         = Uuid();
+        if(spl.size() == 5) {
+            i_code_ = spl[4];
+        }
+
+    }
+    
     ~Residue() {}
     
 public:
@@ -110,9 +126,6 @@ private:
 
 };
     
-Residue
-str_to_residue(String const & s);
-
 typedef std::shared_ptr<Residue> ResidueOP;
 typedef std::vector<ResidueOP> ResidueOPs;
     

@@ -14,8 +14,9 @@
 //RNAMake Headers
 #include "unittest.h"
 #include "structure/structure.h"
-#include "structure/structure_factory.h"
 
+namespace unittests {
+    
 class StructureUnittest : public Unittest {
 public:
     
@@ -39,15 +40,14 @@ public:
     int
     run();
     
-    void
+    int
     run_all();
     
 private:
     StructureOP s_;
-    StructureFactory sf_;
-    
-    
     
 };
+    
+}
 
 #endif /* defined(__RNAMake__structure_unittest__) */
