@@ -219,6 +219,10 @@ public: // setters
     void
     chain_id(String const & nchain_id) { chain_id_ = nchain_id; }
     
+    inline
+    void
+    uuid(Uuid const & uuid) { uuid_ = uuid; }
+    
     
 public: // getters
     

@@ -55,7 +55,7 @@ Structure::_setup_chains(
 }
     
 
-ResidueOP const
+ResidueOP
 Structure::get_residue(
     int const & num,
     String const & chain_id,
@@ -72,7 +72,7 @@ Structure::get_residue(
     return ResidueOP(NULL);
 }
 
-ResidueOP const
+ResidueOP 
 Structure::get_residue(
     Uuid const & uuid) {
     for( auto & c : chains_) {

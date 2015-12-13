@@ -71,6 +71,9 @@ public:
     void
     replace_ideal_helices();
     
+    void
+    replace_helical_sequence(sstruct::PoseOP const &);
+    
 public: //add motif interface
     
     int
@@ -103,6 +106,24 @@ public:
     sstruct::PoseOP
     secondary_structure() {
         return merger_.secondary_structure();
+    }
+    
+    sstruct::PoseOP
+    designable_secondary_structure() {
+        auto ss = merger_.secondary_structure();
+        auto ss_r = sstruct::ResidueOP(nullptr);
+        
+        for(auto const & n : graph_) {
+            if(n->data()->name() != "HELIX.IDEAL") { continue;}
+            for(auto const & r : n->data()->residues()) {
+                ss_r= ss->get_residue(r->uuid());
+                if(ss_r != nullptr) {
+                    ss_r->name("N");
+                }
+            }
+        }
+        
+        return ss;
     }
     
     void

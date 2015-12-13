@@ -36,11 +36,21 @@ MotifStateSearch::update_var_options() {
 
 }
 
+void
+MotifStateSearch::setup(
+    const BasepairStateOP & start,
+    const BasepairStateOP & end) {
+    
+    auto start_n = _start_node(start);
+    
+    
+}
+
 MotifStateSearchSolutionOPs
 MotifStateSearch::search(
     BasepairStateOP const & start,
     BasepairStateOP const & end) {
-    
+
     auto start_n = _start_node(start);
     auto test_node = std::make_shared<MotifStateSearchNode>(start_n->copy());
     MotifStateSearchNodeOP current, child;

@@ -40,15 +40,27 @@ public:
     {}
     
     Pose(
-        RNAStructureOP const & rna_struc,
+        RNAStructureOP const & rs,
         MotifOPs const & motifs):
-    RNAStructure(*rna_struc),
-    motifs_(motifs)
-    {}
+    motifs_(motifs) {
+        this->structure_ = rs->structure();
+        this->basepairs_ = rs->basepairs();
+        this->ends_      = rs->ends();
+        this->end_ids_   = rs->end_ids();
+    
+    }
     
 public:
     MotifOPs const &
     motifs() { return motifs_; }
+    
+    MotifOP
+    motif(Uuid const & uuid) {
+        for(auto const & m : motifs_) {
+            if(m->id() == uuid) { return m; }
+        }
+        return nullptr;
+    }
 
 private:
     MotifOPs motifs_;

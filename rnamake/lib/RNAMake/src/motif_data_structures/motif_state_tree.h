@@ -19,8 +19,7 @@
 #include "data_structure/tree/tree_node.h"
 #include "motif/motif_state.h"
 #include "motif/motif_state_aligner.h"
-#include "motif/motif_tree.h"
-
+#include "motif_data_structures/motif_tree.h"
 
 class MotifStateTreeException : public std::runtime_error {
 public:

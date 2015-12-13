@@ -132,6 +132,10 @@ public: //getters
     MotifType const &
     mtype() { return mtype_; }
     
+    inline
+    Uuid const &
+    id() { return id_; }
+    
 
 public: //setters
     
@@ -139,9 +143,14 @@ public: //setters
     void
     mtype(MotifType const & mtype) { mtype_ = mtype; }
     
+    inline
+    void
+    id(Uuid const & uuid) { id_ = uuid; }
+    
     
 private:
     MotifType mtype_;
+    Uuid id_;
     
 };
     

@@ -55,7 +55,7 @@ public:
         if     (r == res1_) { return res2_; }
         else if(r == res2_) { return res1_; }
         else {
-            throw std::runtime_error("called partner iwth a resiude not in basepair in sstruct");
+            throw std::runtime_error("called partner with a resiude not in basepair in sstruct");
         }
         
     }
@@ -63,11 +63,11 @@ public:
 public:
     
     inline
-    ResidueOP const &
+    ResidueOP &
     res1() { return res1_; }
     
     inline
-    ResidueOP const &
+    ResidueOP &
     res2() { return res2_; }
     
     inline
