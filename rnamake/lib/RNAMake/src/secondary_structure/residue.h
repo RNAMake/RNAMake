@@ -118,6 +118,10 @@ public: //setters
     void
     uuid(Uuid const & nuuid) { uuid_ = nuuid; }
     
+    inline
+    void
+    name(String const & name) { name_ = name;} 
+    
 
 private:
     int num_;

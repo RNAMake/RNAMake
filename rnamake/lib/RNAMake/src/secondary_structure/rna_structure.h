@@ -115,7 +115,7 @@ public:
 public: //wrappers for structure
     
     inline
-    ResidueOP const
+    ResidueOP
     get_residue(
         int num,
         String const & chain_id,
@@ -124,7 +124,7 @@ public: //wrappers for structure
     }
     
     inline
-    ResidueOP const
+    ResidueOP
     get_residue(
         Uuid const & uuid) {
         return structure_->get_residue(uuid);
@@ -145,6 +145,10 @@ public: //wrappers for structure
     inline
     ResidueOPs
     residues() { return structure_->residues(); }
+    
+    inline
+    StructureOP
+    structure() { return structure_; }
     
 public: //getters
     

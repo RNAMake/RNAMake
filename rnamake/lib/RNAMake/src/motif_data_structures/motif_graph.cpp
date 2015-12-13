@@ -20,7 +20,7 @@ MotifGraph::add_motif(
         m = ResourceManager::getInstance().get_motif(m_name);
     }
     catch(ResourceManagerException const & e) {
-        throw MotifMergerException("failed to retrieve motif by name in add_motif: "
+        throw MotifGraphException("failed to retrieve motif by name in add_motif: "
                                    + String(e.what()));
     }
     
@@ -147,8 +147,11 @@ MotifGraph::replace_ideal_helices() {
         if(parent == nullptr) { pos = _add_motif_to_graph(h); }
         else                  { pos = _add_motif_to_graph(h, parent->index(), parent_end_index); }
         
+        
+        int old_pos = pos;
         for(int j = 0; j < count; j++) {
-            pos = _add_motif_to_graph(h, pos, 1);
+            pos = _add_motif_to_graph(h, old_pos, 1);
+            old_pos = pos;
         }
         
         if(other != nullptr) {
@@ -192,6 +195,65 @@ MotifGraph::_add_motif_to_graph(
     }
     
 }
+
+void
+MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
+    for(auto & n : graph_.nodes()) {
+        if(n->data()->mtype() != MotifType::HELIX) { continue; }
+        
+        auto ss_m = ss->motif(n->data()->id());
+        if(ss_m == nullptr) {
+            throw MotifGraphException("could not find ss motif, cannot update helical sequence");
+        }
+        
+        auto spl = split_str_by_delimiter(ss_m->end_ids()[0], "_");
+        auto new_name = String();
+        new_name += spl[0][0]; new_name += spl[2][1]; new_name += "=";
+        new_name += spl[0][1]; new_name += spl[2][0];
+        auto m = ResourceManager::getInstance().get_motif(new_name);
+        auto org_res = n->data()->residues();
+        auto new_res = m->residues();
+        for(int i = 0; i < org_res.size(); i++) {
+            new_res[i]->uuid(org_res[i]->uuid());
+        }
+        
+        auto parent = GraphNodeOP<MotifOP>(nullptr);
+        auto parent_end_index = 0;
+        auto other  = GraphNodeOP<MotifOP>(nullptr);
+        
+        if(n->connections()[0] != nullptr) {
+            parent = n->connections()[0]->partner(n->index());
+            parent_end_index = n->connections()[0]->end_index(parent->index());
+        }
+        if(n->connections()[1] != nullptr) {
+            other = n->connections()[1]->partner(n->index());
+        }
+        
+        if(parent != nullptr) {
+            auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
+                                             m->ends()[0],
+                                             m);
+            n->data() = m_added;
+        }
+        else {
+            n->data() = m;
+        }
+        
+        
+        if(other == nullptr) { continue; }
+        if(other->data()->mtype() == MotifType::HELIX) { continue; }
+        
+        auto m_added = get_aligned_motif(n->data()->ends()[1],
+                                         other->data()->ends()[0],
+                                         other->data());
+        other->data() = m_added;
+        merger_.update_motif(other->data());
+    }
+    
+}
+
+
+
 
 
 

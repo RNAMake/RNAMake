@@ -43,6 +43,11 @@ public:
         BasepairStateOP const &,
         BasepairStateOP const &);
     
+    void
+    setup(
+        BasepairStateOP const &,
+        BasepairStateOP const &);
+    
 protected:
     
     void

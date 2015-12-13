@@ -97,13 +97,13 @@ public:
         return db;
     }
     
-    ResidueOP const
+    ResidueOP
     get_residue(
         int const & ,
         String const & ,
         String const & );
     
-    ResidueOP const
+    ResidueOP 
     get_residue(
         Uuid const &);
     

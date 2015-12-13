@@ -13,6 +13,8 @@
 #include "resources/resource_manager.h"
 #include "build/build_motif_graph.h"
 
+#include "secondary_structure_unittests/util.h"
+
 namespace unittests {
 namespace motif_structures {
 
@@ -144,10 +146,20 @@ MotifGraphUnittest::test_secondary_structure() {
 
     mg->replace_ideal_helices();
     ss = mg->secondary_structure();
-    if(mg->size() == ss->motifs().size()) {
+    if(mg->size() != ss->motifs().size()) {
         throw UnittestException("did not get the correct number of motifs");
     }
     
+}
+    
+void
+MotifGraphUnittest::test_replace_sequence() {
+    auto builder = BuildMotifGraph();
+    auto mg = builder.build(3);
+    mg->replace_ideal_helices();
+    auto ss = mg->designable_secondary_structure();
+    unittests::sstruct_unittests::fill_basepairs_in_ss(ss);
+    mg->replace_helical_sequence(ss);
 }
     
     
@@ -160,6 +172,7 @@ MotifGraphUnittest::run() {
     test_copy();
     test_replace_ideal_helices();
     test_secondary_structure();
+    test_replace_sequence();
     return 0;
 }
     

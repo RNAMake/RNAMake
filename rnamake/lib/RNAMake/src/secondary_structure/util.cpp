@@ -156,7 +156,7 @@ assign_end_id(
                 ss_id += "R";
             }
             else if(e == '.') {
-                ss_id += ".";
+                ss_id += "U";
             }
             else {
                 throw SecondaryStructureException("unexpected symbol in dot bracket notation: " + std::to_string(e));

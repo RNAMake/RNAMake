@@ -46,6 +46,9 @@ public:
     void
     test_secondary_structure();
     
+    void
+    test_replace_sequence();
+    
 public:
     
     int

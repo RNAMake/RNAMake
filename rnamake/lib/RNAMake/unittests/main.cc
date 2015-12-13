@@ -30,6 +30,9 @@
 #include "motif_unittests/motif_factory_unittest.h"
 
 #include "motif_data_structures_unittests/motif_graph_unittest.h"
+#include "motif_data_structures_unittests/motif_tree_unittest.h"
+
+#include "motif_state_search_unittests/motif_state_search_unittest.h"
 
 /*
 
@@ -55,7 +58,7 @@
 #include "thermo_fluctuation_unittests/thermo_fluc_simulation_unittest.h"
 
 #include "motif_state_search_unittests/motif_state_selector_unittest.h"
-#include "motif_state_search_unittests/motif_state_search_unittest.h"*/
+*/
 
 /*#include "util_unittests/uuid_unittest.h"
 
@@ -79,7 +82,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::motif_structures::MotifGraphUnittest test;
+    unittests::motif_state_search::MotifStateSearchUnittest test;
     test.run();
 }
 

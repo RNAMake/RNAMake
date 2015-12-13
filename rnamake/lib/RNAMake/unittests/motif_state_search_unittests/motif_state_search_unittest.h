@@ -14,6 +14,7 @@
 #include "unittest.h"
 #include "motif_state_search/motif_state_search.h"
 
+/*
 class aligner {
 public:
     aligner():
@@ -48,7 +49,10 @@ private:
     BasepairState bp_state_, bp_state_final_;
     Points t_beads_;
 };
+*/
 
+namespace unittests {
+namespace motif_state_search {
 
 class MotifStateSearchUnittest : public Unittest {
 public:
@@ -58,13 +62,13 @@ public:
     
 public:
     
-    int
+    void
     test_creation();
     
-    int
+    void
     test_search();
     
-    int
+    void
     test_aligner();
     
 public:
@@ -76,5 +80,8 @@ public:
     //run_all();
     
 };
+    
+}
+}
 
 #endif /* defined(__RNAMake__motif_state_search_unittest__) */

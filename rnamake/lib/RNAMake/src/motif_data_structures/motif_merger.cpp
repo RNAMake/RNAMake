@@ -1,4 +1,4 @@
-//
+
 //  motif_merger.cpp
 //  RNAMake
 //
@@ -272,7 +272,6 @@ MotifMerger::secondary_structure() {
     auto ss_motifs = sstruct::MotifOPs();
    
     auto r_cur = ResidueOP(nullptr);
-    auto ss_r  = sstruct::ResidueOP(nullptr);
     auto current_bp = BasepairOP(nullptr);
     auto ss_bp = sstruct::BasepairOPs();
     for(auto const & kv : motifs_) {
@@ -285,7 +284,7 @@ MotifMerger::secondary_structure() {
                 if(res_overrides_.find(r->uuid()) != res_overrides_.end()) {
                     r_cur = get_residue(res_overrides_[r->uuid()]);
                 }
-                ss_r = ss->get_residue(r_cur->uuid());
+                auto ss_r = ss->get_residue(r_cur->uuid());
                 if(ss_r == nullptr) {
                     throw MotifMergerException("could not find residue during ss build");
                 }
@@ -325,6 +324,7 @@ MotifMerger::secondary_structure() {
         
         auto ss_motif = std::make_shared<sstruct::Motif>(ss_struc, ss_bps, ss_ends, m->end_ids(),
                                                          m->name(), m->path(), m->score());
+        ss_motif->id(m->id());
         ss_motifs.push_back(ss_motif);
     }
     

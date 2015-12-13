@@ -41,6 +41,16 @@ public:
         score_ = 1000;
     }
     
+    inline
+    MotifStateSearchNode(
+        MotifStateSearchNode const & n):
+    ref_state_(n.ref_state_),
+    parent_(n.parent_),
+    parent_end_index_(n.parent_end_index_),
+    ntype_(n.ntype_) {
+        
+    }
+    
 public:
     MotifStateSearchNode
     copy() {
