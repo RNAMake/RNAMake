@@ -32,7 +32,7 @@ public:
     merger_(MotifMerger()),
     clash_radius_(2.5),
     sterics_(1)
-    {}
+    { setup_options(); }
     
 public: //iterators
     
@@ -45,10 +45,23 @@ public: //iterators
     const_iterator begin() const { return tree_.begin(); }
     const_iterator end()   const { return tree_.end(); }
     
-public:
+public: //tree wrappers
     
     size_t
     size() { return tree_.size(); }
+    
+    inline
+    TreeNodeOP<MotifOP> const &
+    get_node(int i) { return tree_.get_node(i); }
+    
+    inline
+    TreeNodeOP<MotifOP> const &
+    last_node() { return tree_.last_node(); }
+    
+    void
+    write_pdbs(String const & fname = "nodes");
+    
+public: //merger wrappers
     
     inline
     RNAStructureOP const &
@@ -57,12 +70,13 @@ public:
     }
     
     inline
-    TreeNodeOP<MotifOP> const &
-    get_node(int i) { return tree_.get_node(i); }
-    
     void
-    write_pdbs(String const & fname = "nodes");
-
+    to_pdb(
+        String const fname = "test.pdb",
+        int renumber = -1) {
+        return merger_.to_pdb(fname, renumber);
+    }
+    
 public: //add motif interface
     
     int

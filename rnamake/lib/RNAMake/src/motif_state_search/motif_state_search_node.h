@@ -47,9 +47,14 @@ public:
     ref_state_(n.ref_state_),
     parent_(n.parent_),
     parent_end_index_(n.parent_end_index_),
-    ntype_(n.ntype_) {
-        
-    }
+    ntype_(n.ntype_),
+    node_type_usages_(n.node_type_usages_),
+    cur_state_(std::make_shared<MotifState>(*n.cur_state_)),
+    ss_score_(n.ss_score_),
+    level_(n.level_),
+    size_(n.size_),
+    score_(n.score_)
+    {}
     
 public:
     MotifStateSearchNode

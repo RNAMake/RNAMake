@@ -98,11 +98,13 @@ public: //wrappers from structure
     }
     
     String const
-    to_pdb_str();
+    to_pdb_str(
+        int rnumber = -1);
     
     void
     to_pdb(
-           String const);
+        String const,
+        int renumber = -1);
     
     
 public: //getters
