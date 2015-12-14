@@ -42,8 +42,85 @@ MotifStateSearch::setup(
     const BasepairStateOP & end) {
     
     auto start_n = _start_node(start);
+    test_node_ = std::make_shared<MotifStateSearchNode>(*start_n);
+    queue_.push(start_n);
+    scorer_->set_target(end);
+    no_more_solutions_ = 0;
     
+}
+
+MotifStateSearchSolutionOP
+MotifStateSearch::next() {
+    auto sol = _search();
+    if(sol == nullptr) {
+        no_more_solutions_ = 1;
+        return nullptr;
+    }
+    solutions_.push_back(sol);
+    return sol;
     
+}
+
+
+MotifStateSearchSolutionOP
+MotifStateSearch::_search() {
+    float score;
+    int i = 0;
+    int steps = 0;
+    int j = 0;
+    int pos;
+    MotifStateSearchNodeOP current, child;
+    
+    while(! queue_.empty() ) {
+        current = queue_.top();
+        queue_.pop();
+        
+        if(steps % 1000 == 0) {
+            //std::cout << steps << " " << current->level() << " " << current->score() << std::endl;
+        }
+        
+        steps += 1;
+        score = scorer_->accept_score(current);
+        if(score < accept_score_) {
+            auto s = std::make_shared<MotifStateSearchSolution>(current, score);
+            return s;
+        }
+        
+        if(current->level()+1 > max_node_level_) { continue; }
+        
+        possible_children_ = selector_->get_children_ms(current);
+        pos = possible_children_.pos();
+        test_node_->parent(current);
+        i = -1;
+        
+        for(auto const & end : current->cur_state()->end_states()) {
+            i++;
+            if(i == 0) { continue; }
+            j = -1;
+            for(auto const & ms_and_type : possible_children_.motif_states_and_types()) {
+                j++;
+                
+                if(j >= pos) { break; }
+                test_node_->replace_ms(ms_and_type.motif_state,
+                                      ms_and_type.type);
+                
+                aligner_.get_aligned_motif_state(end,
+                                                 test_node_->cur_state(),
+                                                 test_node_->ref_state());
+                
+                score = scorer_->score(test_node_);
+                if(score > current->score()) { continue; }
+                child = std::make_shared<MotifStateSearchNode>(*test_node_);
+                child->update();
+                child->score(score);
+                queue_.push(child);
+            }
+        }
+        
+    }
+    
+    return nullptr;
+
 }
 
 MotifStateSearchSolutionOPs

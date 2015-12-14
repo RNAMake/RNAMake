@@ -17,25 +17,33 @@ Chain::to_str() const {
     return s;
 }
 
+
 String
-Chain::to_pdb_str(int & acount) const {
+Chain::to_pdb_str(
+    int & acount,
+    int rnum,
+    String const & chain_id) const {
+    
     String s;
     for (auto const & r : residues_ ) {
-        s += r->to_pdb_str(acount);
+        s += r->to_pdb_str(acount, rnum, chain_id);
+        rnum += 1;
     }
     return s;
 }
 
 void
-Chain::to_pdb(String const fname) const {
+Chain::to_pdb(
+    String const fname,
+    int rnum,
+    String const & chain_id) const {
     std::ofstream out;
     out.open(fname.c_str());
     int i = 1;
-    String s = to_pdb_str(i);
+    String s = to_pdb_str(i, rnum, chain_id);
     out << s << std::endl;
     out.close();
 }
-
 
 void
 connect_residues_into_chains(

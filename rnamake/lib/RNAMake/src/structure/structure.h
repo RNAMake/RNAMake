@@ -134,14 +134,17 @@ public:
         }
     }
     
-      String
-    to_pdb_str();
+    String
+    to_pdb_str(
+        int renumber = -1);
     
     String
     to_str();
     
     void
-    to_pdb(String const);
+    to_pdb(
+        String const,
+        int renumber = -1);
     
 public: // getters
     

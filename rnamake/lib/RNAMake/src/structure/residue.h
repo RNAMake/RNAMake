@@ -191,6 +191,7 @@ public:
     String
     to_str() const;
     
+    inline
     String
     to_pdb_str(int & acount) {
         return to_pdb_str(acount, -1, "");

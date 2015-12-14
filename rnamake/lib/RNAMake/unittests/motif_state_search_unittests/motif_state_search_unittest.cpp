@@ -28,10 +28,11 @@ MotifStateSearchUnittest::test_search() {
     BuildMotifTree builder;
     auto mt = builder.build(10);
     auto start = mt->get_node(0)->data()->ends()[0]->state();
-    auto end   = mt->get_node(9)->data()->ends()[1]->state();
+    auto end   = mt->last_node()->data()->ends()[1]->state();
     mss.setup(start, end);
-    //auto solutions = mss.search(start, end);
-    //mt->to_pdb("test.pdb");
+    auto sol = mss.next();
+    //mt->to_pdb("test.pdb", 1);
+    //sol->to_mst()->to_motif_tree()->to_pdb("solution.pdb");
     //solutions[0]->to_mst()->to_motif_tree()->to_pdb("solution.pdb");
 }
 

@@ -68,14 +68,26 @@ Structure::get_residue(
     return ResidueOP(NULL);
 }
 
-
-
 String
-Structure::to_pdb_str() {
+Structure::to_pdb_str(
+    int renumber) {
+    
+    int rnum = -1;
+    String chain_id = "";
+    
+    if(renumber != -1) {
+        rnum = 1;
+        chain_id = "A";
+    }
+    
     int acount = 1;
     String s;
     for (auto const & c : chains_) {
-        s += c->to_pdb_str(acount);
+        s += c->to_pdb_str(acount, rnum, chain_id);
+        if(renumber != -1) {
+            rnum += (int)c->residues().size();
+        }
+        s += "TER\n";
     }
     return s;
 }
@@ -91,10 +103,11 @@ Structure::to_str() {
 
 void
 Structure::to_pdb(
-    String const fname) {
+    String const fname,
+    int renumber) {
     std::ofstream out;
     out.open(fname.c_str());
-    String s = to_pdb_str();
+    String s = to_pdb_str(renumber);
     out << s << std::endl;
     out.close();
 }

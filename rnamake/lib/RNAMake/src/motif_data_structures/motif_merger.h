@@ -118,6 +118,7 @@ public:
     RNAStructureOP const &
     get_structure();
     
+    
     void
     remove_motif(MotifOP const &);
     
@@ -135,6 +136,8 @@ public:
     
     sstruct::PoseOP
     secondary_structure();
+    
+public:
     
     inline
     ResidueOP
@@ -156,6 +159,14 @@ public:
         else{
             return nullptr;
         }
+    }
+    
+    inline
+    void
+    to_pdb(
+        String const & fname,
+        int renumber = -1) {
+        return get_structure()->to_pdb(fname, renumber);
     }
     
 private:

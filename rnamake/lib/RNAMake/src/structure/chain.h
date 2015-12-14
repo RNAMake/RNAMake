@@ -101,11 +101,30 @@ public:
     String
     to_str() const;
     
+    
     String
-    to_pdb_str(int &) const;
+    to_pdb_str(
+        int &,
+        int,
+        String const &) const;
+    
+    inline
+    String
+    to_pdb_str(int & acount) const {
+        return to_pdb_str(acount, -1, "");
+    }
     
     void
-    to_pdb(String const) const;
+    to_pdb(
+        String const,
+        int,
+        String const &) const;
+    
+    inline
+    void
+    to_pdb(String const & fname) {
+        return to_pdb(fname, -1, "");
+    }
     
 public: //getters
     

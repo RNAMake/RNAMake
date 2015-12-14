@@ -90,13 +90,16 @@ RNAStructure::end_index(BasepairOP const & end) {
 }
 
 String const
-RNAStructure::to_pdb_str() {
-    return structure_->to_pdb_str();
+RNAStructure::to_pdb_str(
+    int renumber) {
+    return structure_->to_pdb_str(renumber);
 }
 
 void
-RNAStructure::to_pdb(String const fname) {
-    return structure_->to_pdb(fname);
+RNAStructure::to_pdb(
+    String const fname,
+    int renumber) {
+    return structure_->to_pdb(fname, renumber);
 }
 
 
