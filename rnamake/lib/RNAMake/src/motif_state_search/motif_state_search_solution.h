@@ -31,6 +31,18 @@ public:
     MotifStateTreeOP
     to_mst();
     
+    MotifTreeOP
+    to_motif_tree() {
+        return to_mst()->to_motif_tree();
+    }
+    
+    void
+    to_pdb(
+        String const & fname,
+        int renumber) {
+        return to_motif_tree()->to_pdb(fname, renumber); 
+    }
+    
 private:
     
     void

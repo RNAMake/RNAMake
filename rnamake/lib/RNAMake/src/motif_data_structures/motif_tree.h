@@ -114,7 +114,8 @@ private:
 private:
     TreeStatic<MotifOP> tree_;
     MotifMerger merger_;
-    int clash_radius_, sterics_; 
+    int sterics_;
+    float clash_radius_;
 };
 
 typedef std::shared_ptr<MotifTree> MotifTreeOP;

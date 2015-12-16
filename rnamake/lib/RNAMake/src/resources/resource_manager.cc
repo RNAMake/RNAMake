@@ -91,3 +91,17 @@ ResourceManager::add_motif(
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

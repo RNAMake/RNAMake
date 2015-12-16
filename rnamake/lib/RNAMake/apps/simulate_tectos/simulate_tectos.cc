@@ -8,10 +8,11 @@
 
 #include "base/cl_option.h"
 #include "util/settings.h"
-#include "secondary_structure/ss_tree.h"
 #include "resources/resource_manager.h"
-#include "motif/motif_tree.h"
+#include "motif_data_structures/motif_tree.h"
 #include "thermo_fluctuation/thermo_fluc_simulation.h"
+#include "secondary_structure/secondary_structure_tree.h"
+#include "secondary_structure/secondary_structure_factory.h"
 #include "simulate_tectos.h"
 
 Options
@@ -41,6 +42,7 @@ SimulateTectos::SimulateTectos(
     String const & css) {
     
     auto mset = get_mset_old(fseq, fss, cseq, css);
+    exit(0);
     ThermoFlucSimulation tfs;
     tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
     tfs.option("steps", 1000000);
@@ -62,9 +64,9 @@ SimulateTectos::get_mset_old(
     
     auto mt = std::make_shared<MotifTree>();
     mt->option("sterics", 0);
-    mt->add_motif(ResourceManager::getInstance().get_motif("GC=GC"));
-    mt->add_motif(ResourceManager::getInstance().get_motif("GGAA_tetraloop", "", "A14-A15"));
     auto flow_motif_names = get_motifs_from_seq_and_ss(fseq, fss);
+    /*mt->add_motif(ResourceManager::getInstance().get_motif("GC=GC"));
+    mt->add_motif(ResourceManager::getInstance().get_motif("GGAA_tetraloop", "", "A14-A15"));
     auto chip_motif_names = get_motifs_from_seq_and_ss(cseq, css);
     mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_names[1]),
                   -1, -1, "A7-A22");
@@ -78,7 +80,7 @@ SimulateTectos::get_mset_old(
     for(int i = 2; i < chip_motif_names.size(); i++) {
         mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_names[i]));
     }
-    
+    */
     MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
     mset->setup_from_mt(mt);
 
@@ -90,7 +92,12 @@ SimulateTectos::get_motifs_from_seq_and_ss(
     String const & seq,
     String const & ss) {
     
-    sstruct::SS_Tree ss_tree(seq, ss);
+    auto ssf = sstruct::SecondaryStructureFactory();
+    auto p = ssf.pose(seq, ss);
+    exit(0);
+    //std::cout << p->sequence() << std::endl;
+    
+    /*sstruct::SS_Tree ss_tree(seq, ss);
     sstruct::SS_TreeNodeOP current = nullptr;
     sstruct::SS_TreeNodeOPs required_nodes;
     for(auto const & n : ss_tree) {
@@ -108,9 +115,10 @@ SimulateTectos::get_motifs_from_seq_and_ss(
     while(current->data()->type() != sstruct::SS_NodeData::SS_Type::SS_HAIRPIN) {
         required_nodes.push_back(current);
         current = current->children()[0];
-    }
+    }*/
 
     Strings motif_names;
+    /*
     String motif_name, motif_name_rna;
     String seq1, seq2;
     for(int i = 1; i < required_nodes.size(); i++) {
@@ -132,7 +140,7 @@ SimulateTectos::get_motifs_from_seq_and_ss(
         }
         motif_names.push_back(motif_name_rna);
         
-    }
+    }*/
     
     return motif_names;
 }

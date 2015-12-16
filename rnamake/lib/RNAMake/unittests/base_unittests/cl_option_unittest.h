@@ -39,8 +39,8 @@ public:
     int
     run();
     
-    //void
-    //run_all();
+    int
+    run_all();
     
 };
 

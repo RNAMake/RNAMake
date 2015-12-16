@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "build_motif_tree.h"
+#include "build/build_motif_tree.h"
 #include "motif_state_ensemble_tree_unittest.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
 #include "resources/resource_manager.h"

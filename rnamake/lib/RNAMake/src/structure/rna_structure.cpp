@@ -6,6 +6,9 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <memory>
+
+//RNAMake Headers
 #include "structure/rna_structure.h"
 
 BasepairOPs

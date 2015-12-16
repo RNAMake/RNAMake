@@ -31,9 +31,8 @@ MotifStateSearchUnittest::test_search() {
     auto end   = mt->last_node()->data()->ends()[1]->state();
     mss.setup(start, end);
     auto sol = mss.next();
-    //mt->to_pdb("test.pdb", 1);
-    //sol->to_mst()->to_motif_tree()->to_pdb("solution.pdb");
-    //solutions[0]->to_mst()->to_motif_tree()->to_pdb("solution.pdb");
+    mt->to_pdb("test.pdb", 1);
+    sol->to_pdb("solution.pdb", 1);
 }
 
 /*int

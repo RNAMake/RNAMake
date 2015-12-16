@@ -61,6 +61,16 @@ MotifStateSearch::next() {
     
 }
 
+int
+MotifStateSearch::finished() {
+    if(solutions_.size() >= max_solutions_ || no_more_solutions_) {
+        return 1;
+    }
+    else{
+        return 0;
+    }
+}
+
 
 MotifStateSearchSolutionOP
 MotifStateSearch::_search() {

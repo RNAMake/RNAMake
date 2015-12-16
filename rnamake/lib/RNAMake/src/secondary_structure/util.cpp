@@ -22,7 +22,7 @@ assign_end_id(
     
     int found = 0;
     for(auto const & e : ss->ends()) {
-        if(end == e) { found = 1; break; }
+        if(end->uuid() == e->uuid()) { found = 1; break; }
     }
     
     if(!found) {

@@ -7,7 +7,7 @@
 //
 
 #include "motif_state_tree_unittest.h"
-#include "build_motif_tree.h"
+#include "build/build_motif_tree.h"
 
 #include "motif_data_structures/motif_state_tree.h"
 #include "resources/resource_manager.h"

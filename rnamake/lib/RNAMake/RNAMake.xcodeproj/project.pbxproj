@@ -194,6 +194,23 @@
 		1C7C20761B9FA1CB00E6E959 /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
 		1C7C20771B9FA2AF00E6E959 /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF471AF1AD6400C03772 /* uuid.cc */; };
 		1C8B83041C1E39B600D305EC /* build_motif_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C690A691C14ECDB0009EB2B /* build_motif_tree.cpp */; };
+		1C8B83071C1F814200D305EC /* secondary_structure_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8B83051C1F814200D305EC /* secondary_structure_tree.cpp */; };
+		1C8B83081C1F814200D305EC /* secondary_structure_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8B83051C1F814200D305EC /* secondary_structure_tree.cpp */; };
+		1C8B830B1C1F82A000D305EC /* secondary_structure_tree_unittest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8B83091C1F82A000D305EC /* secondary_structure_tree_unittest.cpp */; };
+		1C8B83111C1F9AB400D305EC /* build_secondary_structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8B83101C1F9AB400D305EC /* build_secondary_structure.cpp */; };
+		1C8B83121C1FA28B00D305EC /* build_secondary_structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8B83101C1F9AB400D305EC /* build_secondary_structure.cpp */; };
+		1C8B83131C20D7D300D305EC /* motif_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3F61C0E3F450027EF6E /* motif_type.cc */; };
+		1C8B83141C20D7D300D305EC /* secondary_structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC0F1C0FFD400001CC98 /* secondary_structure_factory.cc */; };
+		1C8B83151C20D7D300D305EC /* structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3E31C0CEA830027EF6E /* structure.cpp */; };
+		1C8B83161C20D7D300D305EC /* rna_structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3EA1C0D06400027EF6E /* rna_structure.cpp */; };
+		1C8B83171C20D7D300D305EC /* secondary_structure_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3F01C0D18540027EF6E /* secondary_structure_parser.cpp */; };
+		1C8B83181C20D7D300D305EC /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3F91C0EA1960027EF6E /* util.cpp */; };
+		1C8B83191C20D7D300D305EC /* pose.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C63252D1C16AB35004D2C05 /* pose.cpp */; };
+		1C8B831A1C20D7D300D305EC /* secondary_structure_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8B83051C1F814200D305EC /* secondary_structure_tree.cpp */; };
+		1C8B831B1C20D7D300D305EC /* rna_structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC141C0FFFF00001CC98 /* rna_structure.cpp */; };
+		1C8B831C1C20E60E00D305EC /* motif_tree.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CC0433E1C1D04C7002DF0CA /* motif_tree.cpp */; };
+		1C8B831D1C20E60E00D305EC /* motif_graph.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC381C110D040001CC98 /* motif_graph.cpp */; };
+		1C8B831E1C20E60E00D305EC /* motif_merger.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC3B1C121E310001CC98 /* motif_merger.cpp */; };
 		1C8FA1111AD1A2E20001B29C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C8FA1101AD1A2E20001B29C /* main.cpp */; };
 		1C9EF2EB1BA4B41E006DEB9C /* motif_state_search_node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C9EF2E61BA4B41E006DEB9C /* motif_state_search_node.cpp */; };
 		1C9EF2EC1BA4B41E006DEB9C /* motif_state_search_node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C9EF2E61BA4B41E006DEB9C /* motif_state_search_node.cpp */; };
@@ -312,8 +329,6 @@
 		1CF764321B6AD90200DA68FC /* tree_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7642F1B6AD90200DA68FC /* tree_node.cc */; };
 		1CF764341B6ADDBF00DA68FC /* tree_node.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7642F1B6AD90200DA68FC /* tree_node.cc */; };
 		1CF764351B6AF7FB00DA68FC /* tree.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C41F4F01B17FF9F000D1B6A /* tree.cc */; };
-		1CF7643E1B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7643C1B6BFA9600DA68FC /* secondary_structure_unittest.cc */; };
-		1CF7643F1B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CF7643C1B6BFA9600DA68FC /* secondary_structure_unittest.cc */; };
 		1CF764411B6C0A9800DA68FC /* numerical.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF3E1AF1A71000C03772 /* numerical.cc */; };
 		1CF764431B6C0AA900DA68FC /* cartesian_product.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CA31AF417A30076284E /* cartesian_product.cc */; };
 		1CF764441B6C0AA900DA68FC /* uuid.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFF471AF1AD6400C03772 /* uuid.cc */; };
@@ -534,8 +549,6 @@
 		1C4E3DC71B0ABC2C0076284E /* simulate_tectos.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = simulate_tectos.cc; sourceTree = "<group>"; };
 		1C4E3DC81B0ABC2C0076284E /* simulate_tectos.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = simulate_tectos.h; sourceTree = "<group>"; };
 		1C4E3E2A1B0AC2090076284E /* unittests copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "unittests copy"; sourceTree = BUILT_PRODUCTS_DIR; };
-		1C4E3E371B0AE77C0076284E /* ss_tree_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ss_tree_unittest.cc; sourceTree = "<group>"; };
-		1C4E3E381B0AE77C0076284E /* ss_tree_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ss_tree_unittest.h; sourceTree = "<group>"; };
 		1C4F144E1AA2A690003B7895 /* eternabot */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = eternabot; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C4F14501AA2A690003B7895 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C56100F1B6D88BB00996CEC /* residue_type_set_manager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = residue_type_set_manager.h; sourceTree = "<group>"; };
@@ -607,6 +620,12 @@
 		1C7C20311B9FA12D00E6E959 /* simulate_tectos */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = simulate_tectos; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C7F46B91B826BFB00989328 /* motif_tree.fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = motif_tree.fwd.h; sourceTree = "<group>"; };
 		1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
+		1C8B83051C1F814200D305EC /* secondary_structure_tree.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = secondary_structure_tree.cpp; sourceTree = "<group>"; };
+		1C8B83061C1F814200D305EC /* secondary_structure_tree.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secondary_structure_tree.h; sourceTree = "<group>"; };
+		1C8B83091C1F82A000D305EC /* secondary_structure_tree_unittest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = secondary_structure_tree_unittest.cpp; sourceTree = "<group>"; };
+		1C8B830A1C1F82A000D305EC /* secondary_structure_tree_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secondary_structure_tree_unittest.h; sourceTree = "<group>"; };
+		1C8B830F1C1F9AB400D305EC /* build_secondary_structure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = build_secondary_structure.h; path = build/build_secondary_structure.h; sourceTree = "<group>"; };
+		1C8B83101C1F9AB400D305EC /* build_secondary_structure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = build_secondary_structure.cpp; path = build/build_secondary_structure.cpp; sourceTree = "<group>"; };
 		1C8FA10E1AD1A2E20001B29C /* vienna_clone */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = vienna_clone; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C8FA1101AD1A2E20001B29C /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1C9EF2E61BA4B41E006DEB9C /* motif_state_search_node.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = motif_state_search_node.cpp; path = motif_state_search/motif_state_search_node.cpp; sourceTree = "<group>"; };
@@ -748,8 +767,6 @@
 		1CF7642F1B6AD90200DA68FC /* tree_node.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tree_node.cc; sourceTree = "<group>"; };
 		1CF764301B6AD90200DA68FC /* tree_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tree_node.h; sourceTree = "<group>"; };
 		1CF764331B6AD93C00DA68FC /* tree_node.fwd.hh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = tree_node.fwd.hh; sourceTree = "<group>"; };
-		1CF7643C1B6BFA9600DA68FC /* secondary_structure_unittest.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = secondary_structure_unittest.cc; sourceTree = "<group>"; };
-		1CF7643D1B6BFA9600DA68FC /* secondary_structure_unittest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = secondary_structure_unittest.h; sourceTree = "<group>"; };
 		1CF764471B6C0B1A00DA68FC /* residue.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = residue.cc; sourceTree = "<group>"; };
 		1CF764481B6C0B1A00DA68FC /* residue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = residue.h; sourceTree = "<group>"; };
 		1CF7644C1B6C104A00DA68FC /* chain.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = chain.cc; sourceTree = "<group>"; };
@@ -1054,6 +1071,8 @@
 				1C68F3FA1C0EA1960027EF6E /* util.h */,
 				1C63252D1C16AB35004D2C05 /* pose.cpp */,
 				1C63252E1C16AB35004D2C05 /* pose.h */,
+				1C8B83051C1F814200D305EC /* secondary_structure_tree.cpp */,
+				1C8B83061C1F814200D305EC /* secondary_structure_tree.h */,
 			);
 			path = secondary_structure;
 			sourceTree = "<group>";
@@ -1061,10 +1080,6 @@
 		1C4E3E361B0AE7690076284E /* secondary_structure_unittests */ = {
 			isa = PBXGroup;
 			children = (
-				1C4E3E371B0AE77C0076284E /* ss_tree_unittest.cc */,
-				1C4E3E381B0AE77C0076284E /* ss_tree_unittest.h */,
-				1CF7643C1B6BFA9600DA68FC /* secondary_structure_unittest.cc */,
-				1CF7643D1B6BFA9600DA68FC /* secondary_structure_unittest.h */,
 				1C5610361B6EA43200996CEC /* secondary_structure_factory_unittest.cc */,
 				1C5610371B6EA43200996CEC /* secondary_structure_factory_unittest.h */,
 				1C68F3E71C0CF0740027EF6E /* structure_unittest.cpp */,
@@ -1075,6 +1090,8 @@
 				1C68F3F41C0D32320027EF6E /* secondary_structure_parser_unittest.h */,
 				1C6A35D11C1A1E4800B512E5 /* util.cpp */,
 				1C6A35D21C1A1E4800B512E5 /* util.h */,
+				1C8B83091C1F82A000D305EC /* secondary_structure_tree_unittest.cpp */,
+				1C8B830A1C1F82A000D305EC /* secondary_structure_tree_unittest.h */,
 			);
 			path = secondary_structure_unittests;
 			sourceTree = "<group>";
@@ -1099,6 +1116,8 @@
 		1C690A681C14ECAA0009EB2B /* build */ = {
 			isa = PBXGroup;
 			children = (
+				1C8B830F1C1F9AB400D305EC /* build_secondary_structure.h */,
+				1C8B83101C1F9AB400D305EC /* build_secondary_structure.cpp */,
 				1C690A691C14ECDB0009EB2B /* build_motif_tree.cpp */,
 				1C690A6A1C14ECDB0009EB2B /* build_motif_tree.h */,
 				1C690A6C1C14ECF30009EB2B /* build_motif_graph.cpp */,
@@ -1847,6 +1866,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C8B83121C1FA28B00D305EC /* build_secondary_structure.cpp in Sources */,
 				1C8B83041C1E39B600D305EC /* build_motif_tree.cpp in Sources */,
 				1CC043481C1E074C002DF0CA /* motif_state_tree.cpp in Sources */,
 				1CC043471C1E05F2002DF0CA /* motif_state_search_unittest.cpp in Sources */,
@@ -1895,6 +1915,7 @@
 				1C06DC081C0FED680001CC98 /* residue_type_set.cc in Sources */,
 				1C06DC091C0FED680001CC98 /* residue_type.cc in Sources */,
 				1C06DC0A1C0FED680001CC98 /* residue_unittest.cc in Sources */,
+				1C8B830B1C1F82A000D305EC /* secondary_structure_tree_unittest.cpp in Sources */,
 				1C68F4021C0FD0D50027EF6E /* atom.cc in Sources */,
 				1C06DC3D1C121E310001CC98 /* motif_merger.cpp in Sources */,
 				1C68F3FF1C0FD0AA0027EF6E /* atom_unittest.cc in Sources */,
@@ -1915,6 +1936,7 @@
 				1CF764351B6AF7FB00DA68FC /* tree.cc in Sources */,
 				1CF7642D1B66BCDF00DA68FC /* settings.cc in Sources */,
 				1CF7642C1B66BCD200DA68FC /* graph_unittest.cc in Sources */,
+				1C8B83081C1F814200D305EC /* secondary_structure_tree.cpp in Sources */,
 				1CF7642A1B66BA9800DA68FC /* graph.cc in Sources */,
 				1C68F3E91C0CF0740027EF6E /* structure_unittest.cpp in Sources */,
 				1CF7642B1B66BA9800DA68FC /* graph_node.cc in Sources */,
@@ -1949,6 +1971,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C8B831C1C20E60E00D305EC /* motif_tree.cpp in Sources */,
+				1C8B831D1C20E60E00D305EC /* motif_graph.cpp in Sources */,
+				1C8B831E1C20E60E00D305EC /* motif_merger.cpp in Sources */,
+				1C8B83131C20D7D300D305EC /* motif_type.cc in Sources */,
+				1C8B83141C20D7D300D305EC /* secondary_structure_factory.cc in Sources */,
+				1C8B83151C20D7D300D305EC /* structure.cpp in Sources */,
+				1C8B83161C20D7D300D305EC /* rna_structure.cpp in Sources */,
+				1C8B83171C20D7D300D305EC /* secondary_structure_parser.cpp in Sources */,
+				1C8B83181C20D7D300D305EC /* util.cpp in Sources */,
+				1C8B83191C20D7D300D305EC /* pose.cpp in Sources */,
+				1C8B831A1C20D7D300D305EC /* secondary_structure_tree.cpp in Sources */,
+				1C8B831B1C20D7D300D305EC /* rna_structure.cpp in Sources */,
 				1C7C20771B9FA2AF00E6E959 /* uuid.cc in Sources */,
 				1C7C20751B9FA1AC00E6E959 /* simulate_tectos.cc in Sources */,
 				1C7C203D1B9FA19700E6E959 /* numerical.cc in Sources */,
@@ -2052,7 +2086,6 @@
 				1C7C1FB71B9F506300E6E959 /* thermo_fluc_simulation.cpp in Sources */,
 				1CF764321B6AD90200DA68FC /* tree_node.cc in Sources */,
 				1CBEFF4E1AF1AF2E00C03772 /* numerical.cc in Sources */,
-				1CF7643F1B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */,
 				1C41F4E61B15151D000D1B6A /* tree_unittest.cc in Sources */,
 				1C3DE1221BA756A10006AC74 /* motif_state_search.cpp in Sources */,
 				1CEBFC381B9CE981002847BA /* energy_par.cc in Sources */,
@@ -2115,6 +2148,7 @@
 				1CAACE8E1AF2DE120098AA49 /* basepair.cc in Sources */,
 				1CEBFC0D1B98F7B1002847BA /* motif_state_ensemble_sqlite_library_unittest.cpp in Sources */,
 				1CEBFBF51B98DB6E002847BA /* motif_state_ensemble_unittest.cpp in Sources */,
+				1C8B83111C1F9AB400D305EC /* build_secondary_structure.cpp in Sources */,
 				1C6AF7771BE81DE300EB378D /* beads_vs_points.cpp in Sources */,
 				1C4E3CDF1B01530B0076284E /* x3dna_unittest.cc in Sources */,
 				1C4E3CC21B0013F20076284E /* sqlite3_connection.cc in Sources */,
@@ -2144,7 +2178,7 @@
 				1CAACE821AF2BB240098AA49 /* structure.cc in Sources */,
 				1CF7644E1B6C104A00DA68FC /* chain.cc in Sources */,
 				1CD9FE8C1B9797E9000253B5 /* motif_state_sqlite_library_unittest.cpp in Sources */,
-				1CF7643E1B6BFA9600DA68FC /* secondary_structure_unittest.cc in Sources */,
+				1C8B83071C1F814200D305EC /* secondary_structure_tree.cpp in Sources */,
 				1CBEFF131AF0636B00C03772 /* sequence_designer.cc in Sources */,
 				1CBEFEFD1AF0636B00C03772 /* motif_tree_state_alt_pather.cc in Sources */,
 				1C5610261B6D9C0D00996CEC /* residue_type_set_manager_unittest.cc in Sources */,
@@ -2367,7 +2401,7 @@
 		1C7C20361B9FA12D00E6E959 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -2386,7 +2420,7 @@
 		1C7C20371B9FA12D00E6E959 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
 				COPY_PHASE_STRIP = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				HEADER_SEARCH_PATHS = (

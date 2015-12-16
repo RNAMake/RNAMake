@@ -1,20 +1,21 @@
 set(unittests_files
-	../../unittests/build_motif_tree.cpp
 	../../unittests/unittest.cc
 	../../unittests/base_unittests/cl_option_unittest.cc
 	../../unittests/base_unittests/option_unittest.cc
+	../../unittests/build/build_motif_graph.cpp
+	../../unittests/build/build_motif_tree.cpp
 	../../unittests/data_structure_unittests/graph_unittest.cc
 	../../unittests/data_structure_unittests/tree_unittest.cc
+	../../unittests/motif_data_structures_unittests/motif_graph_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_tree_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_tree_unittest.cpp
+	../../unittests/motif_data_structures_unittests/motif_tree_unittest.cpp
 	../../unittests/motif_state_search_unittests/motif_state_search_unittest.cpp
 	../../unittests/motif_state_search_unittests/motif_state_selector_unittest.cpp
 	../../unittests/motif_unittests/motif_factory_unittest.cc
 	../../unittests/motif_unittests/motif_scorer_unittest.cc
 	../../unittests/motif_unittests/motif_state_unittest.cpp
-	../../unittests/motif_unittests/motif_tree_merger_unittest.cc
-	../../unittests/motif_unittests/motif_tree_unittest.cc
 	../../unittests/motif_unittests/motif_unittest.cc
 	../../unittests/motif_unittests/pose_factory_unittest.cpp
 	../../unittests/motif_unittests/segmenter_unittest.cpp
@@ -27,9 +28,8 @@ set(unittests_files
 	../../unittests/secondary_structure_unittests/motif_unittest.cpp
 	../../unittests/secondary_structure_unittests/secondary_structure_factory_unittest.cc
 	../../unittests/secondary_structure_unittests/secondary_structure_parser_unittest.cpp
-	../../unittests/secondary_structure_unittests/secondary_structure_unittest.cc
-	../../unittests/secondary_structure_unittests/ss_tree_unittest.cc
 	../../unittests/secondary_structure_unittests/structure_unittest.cpp
+	../../unittests/secondary_structure_unittests/util.cpp
 	../../unittests/structure_unittests/atom_unittest.cc
 	../../unittests/structure_unittests/basepair_unittest.cc
 	../../unittests/structure_unittests/chain_unittest.cc

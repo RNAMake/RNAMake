@@ -16,7 +16,7 @@
 #include "data_structure/tree/tree.h"
 #include "data_structure/tree/tree_node.h"
 #include "motif/motif_state_ensemble.h"
-#include "motif/motif_tree.h"
+#include "motif_data_structures/motif_tree.h"
 #include "motif_data_structures/motif_state_tree.h"
 
 typedef TreeNodeOP<MotifStateEnsembleOP> MotifStateEnsembleTreeNodeOP;

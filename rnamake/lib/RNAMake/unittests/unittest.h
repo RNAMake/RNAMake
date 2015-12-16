@@ -43,6 +43,7 @@ public:
     virtual
     int run_all() { return 0; }
     
+    
 };
 
 #endif /* defined(__RNAMake__unittest__) */

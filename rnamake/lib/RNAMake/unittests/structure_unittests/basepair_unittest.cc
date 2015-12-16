@@ -16,7 +16,7 @@ BasepairUnittest::BasepairUnittest() {
     Strings lines = get_lines_from_file(path);
     
     ResidueTypeSet rts;
-    s_ = str_to_structure(lines[0], rts);
+    s_ = Structure(lines[0], rts);
     
 }
 
@@ -107,7 +107,7 @@ BasepairUnittest::run() {
     
 }
 
-void
+int
 BasepairUnittest::run_all() {
     String name = "BasepairUnittest";
     typedef int (BasepairUnittest::*fptr)();
@@ -129,4 +129,6 @@ BasepairUnittest::run_all() {
         }
         
     }
+    
+    return 0;
 }
