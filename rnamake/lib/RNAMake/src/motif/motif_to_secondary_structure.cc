@@ -166,7 +166,7 @@ MotiftoSecondaryStructure::_setup_basepairs_and_ends(
     for(auto const & end : motif->ends()) {
         auto res1 = struc->get_residue(end->res1()->uuid());
         auto res2 = struc->get_residue(end->res2()->uuid());
-        auto end_bp = sstruct::BasepairOP();
+        auto end_bp = sstruct::BasepairOP(nullptr);
         for(auto const & bp : ss_bps) {
             if(bp->res1()->uuid() == res1->uuid() &&
                bp->res2()->uuid() == res2->uuid()) {

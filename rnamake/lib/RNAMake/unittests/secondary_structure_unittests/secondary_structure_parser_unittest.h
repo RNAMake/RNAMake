@@ -33,6 +33,10 @@ public:
     void
     test_parse_to_motifs();
     
+    void
+    test_tecto();
+    
+    
 public:
     
     int
@@ -42,6 +46,11 @@ public:
     //run_all();
     
 };
+    
+void
+debug_ss_parser_graph(
+    String const &,
+    String const &);
     
 }
 

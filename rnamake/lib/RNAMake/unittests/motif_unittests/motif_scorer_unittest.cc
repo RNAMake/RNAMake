@@ -28,7 +28,7 @@ MotifScorerUnittest::run() {
     return 0;
 }
 
-void
+int
 MotifScorerUnittest::run_all() {
     String name = "MotifScorerUnittest";
     typedef int (MotifScorerUnittest::*fptr)();
@@ -47,4 +47,5 @@ MotifScorerUnittest::run_all() {
         }
         
     }
+    return 0;
 }

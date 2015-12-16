@@ -9,26 +9,24 @@
 #include "pdb_parser_unittest.h"
 #include "util/file_io.h"
 #include "structure/structure.h"
-#include "structure/structure_factory.h"
 
 
 int
 PDBParserUnittest::test_parse() {
     String m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
     
-    StructureFactory sf;
-    StructureOP s2 = sf.get_structure(m_path);
+    auto s2 = Structure(m_path);
     
     String path = unittest_resource_dir() + "/structure/test_str_to_structure.dat";
     Strings lines = get_lines_from_file(path);
     
     ResidueTypeSet rts;
-    Structure s = str_to_structure(lines[0], rts);
+    auto s = Structure(lines[0], rts);
     AtomOPs org_atoms = s.atoms();
-    AtomOPs new_atoms = s2->atoms();
+    AtomOPs new_atoms = s2.atoms();
     
     auto org_res = s.residues();
-    auto new_res = s2->residues();
+    auto new_res = s2.residues();
     
     float dist;
     for(int i = 0; i < org_atoms.size(); i++) {
@@ -50,7 +48,7 @@ PDBParserUnittest::run() {
 }
 
 
-void
+int
 PDBParserUnittest::run_all() {
     String name = "PDBParserUnittest";
     typedef int (PDBParserUnittest::*fptr)();
@@ -69,6 +67,7 @@ PDBParserUnittest::run_all() {
         }
         
     }
+    return 0;
 }
 
 

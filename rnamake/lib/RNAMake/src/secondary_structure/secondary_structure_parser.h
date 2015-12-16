@@ -9,6 +9,7 @@
 #ifndef __RNAMake__secondary_structure_parser__
 #define __RNAMake__secondary_structure_parser__
 
+#include <cassert>
 #include <stdio.h>
 #include <map>
 
@@ -18,6 +19,7 @@
 #include "secondary_structure/basepair.h"
 #include "secondary_structure/structure.h"
 #include "secondary_structure/motif.h"
+#include "secondary_structure/pose.h"
 
 namespace sstruct {
     
@@ -65,6 +67,9 @@ public:
 public:
     size_t
     size() { return graph_.size(); }
+    
+    GraphNodeOPs<NodeData> const &
+    nodes() { return graph_.nodes(); }
 
 public:
     int
@@ -90,7 +95,7 @@ public:
         ResidueOP const & res) {
         for(auto const & n : graph_) {
             for(auto const & r : n->data().residues) {
-                if(r == res) { return n->index(); }
+                if(r->uuid() == res->uuid()) { return n->index(); }
             }
         }
         return -1;
@@ -100,6 +105,11 @@ public:
     pair_res(
         int n_i,
         int n_j) {
+        
+        assert(graph_.get_node(n_i)->data().type == NodeType::PAIRED &&
+               "unpaired node is being paired");
+        assert(graph_.get_node(n_j)->data().type == NodeType::PAIRED &&
+               "unpaired node is being paired");
         graph_.connect(n_i, n_j, 2, 2);
     }
     
@@ -136,6 +146,11 @@ public:
     
     MotifOP
     parse_to_motif(
+        String const &,
+        String const &);
+    
+    PoseOP
+    parse_to_pose(
         String const &,
         String const &);
 

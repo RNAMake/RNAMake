@@ -81,7 +81,7 @@ ResidueTypeSetUnittest::run() {
     return 1;
 }
 
-void
+int
 ResidueTypeSetUnittest::run_all() {
     String name = "ResidueTypeSetUnittest";
     typedef int (ResidueTypeSetUnittest::*fptr)();
@@ -104,6 +104,8 @@ ResidueTypeSetUnittest::run_all() {
         }
         
     }
+    
+    return 0;
 }
 
 

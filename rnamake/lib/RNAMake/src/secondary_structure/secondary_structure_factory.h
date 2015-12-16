@@ -13,6 +13,7 @@
 
 //RNAMake Headers
 #include "secondary_structure/secondary_structure_parser.h"
+#include "secondary_structure/pose.h"
 
 namespace sstruct {
 
@@ -26,11 +27,20 @@ public:
     
 public:
     
+    inline
     MotifOP
     motif(
         String const & sequence,
         String const & dot_bracket) {
         return parser_.parse_to_motif(sequence, dot_bracket);
+    }
+    
+    inline
+    PoseOP
+    pose(
+        String const & sequence,
+        String const & dot_bracket) {
+        return parser_.parse_to_pose(sequence, dot_bracket);
     }
     
     /*SecondaryStructureOP

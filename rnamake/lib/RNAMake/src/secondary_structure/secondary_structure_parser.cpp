@@ -39,6 +39,7 @@ SecondaryStructureParser::parse(
             }
             auto pair_res = _get_bracket_pair(r);
             int parent_index = g->get_node_by_res(_previous_res(r));
+            //std::cout << r->num() << r->dot_bracket() << " " << pair_res->num() << " " << pair_res->dot_bracket() << std::endl;
             auto pair = std::make_shared<Basepair>(r, pair_res, Uuid());
             pairs_.push_back(pair);
             auto new_data = NodeData(ResidueOPs{r}, NodeType::PAIRED);
@@ -55,7 +56,7 @@ SecondaryStructureParser::parse(
             }
             BasepairOP pair = nullptr;
             for(auto const & p : pairs_) {
-                if(p->res2() == r) {
+                if(p->res2()->uuid() == r->uuid()) {
                     pair = p;
                     break;
                 }
@@ -66,7 +67,12 @@ SecondaryStructureParser::parse(
             int pos = g->add_chain(new_data, parent_index, is_start_res);
             g->pair_res(pair_res_pos, pos);
         }
+        
+        else {
+            throw SecondaryStructureException("unexpected symbol in dot bracket: " + r->dot_bracket());
+        }
     }
+    
     
     return g;
 }
@@ -78,6 +84,10 @@ SecondaryStructureParser::parse_to_motifs(
     String const & dot_bracket) {
     
     auto g = parse(sequence, dot_bracket);
+    
+    
+
+    
     auto motifs = MotifOPs();
     seen_ = std::map<SSNodeOP, int>();
     
@@ -107,6 +117,18 @@ SecondaryStructureParser::parse_to_motif(
     
 }
     
+PoseOP
+SecondaryStructureParser::parse_to_pose(
+    String const & sequence,
+    String const & dot_bracket) {
+    
+    auto motifs = parse_to_motifs(sequence, dot_bracket);
+    auto m = _build_motif(structure_);
+    return std::make_shared<Pose>(m, motifs);
+;
+}
+
+    
 SSNodeOP
 SecondaryStructureParser::_walk_nodes(
     SSNodeOP const & n) {
@@ -115,11 +137,12 @@ SecondaryStructureParser::_walk_nodes(
     auto res = ResidueOPs();
     auto current = n;
     auto last_node = n;
+    if(n == nullptr) { return nullptr; }
     while(current != nullptr) {
-        if(seen_.find(n) != seen_.end()) {
+        if(seen_.find(current) != seen_.end()) {
             return nullptr;
         }
-        if(n->data().type == NodeType::PAIRED) { bps_count += 1; }
+        if(current->data().type == NodeType::PAIRED) { bps_count += 1; }
         std::copy(current->data().residues.begin(),
                   current->data().residues.end(),
                   std::inserter(res, res.end()));
@@ -194,7 +217,7 @@ SecondaryStructureParser::_build_motif(
     auto m = std::make_shared<Motif>(struc, bps, ends);
     auto end_ids = Strings();
     for(auto const & end : m->ends()) {
-        auto end_id = assign_end_id(std::static_pointer_cast<RNAStructure>(m), end);
+        auto end_id = assign_end_id(m, end);
         end_ids.push_back(end_id);
     }
     m->end_ids(end_ids);

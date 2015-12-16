@@ -10,6 +10,8 @@
 #include "base/option.h"
 #include <vector>
 
+namespace unittests {
+
 int
 OptionUnittest::test_creation() {
 
@@ -85,7 +87,7 @@ OptionUnittest::run() {
     return 1;
 }
 
-void
+int
 OptionUnittest::run_all() {
     String name = "OptionUnittest";
     typedef int (OptionUnittest::*fptr)();
@@ -105,4 +107,6 @@ OptionUnittest::run_all() {
         }
     }
     return failed;
+}
+
 }

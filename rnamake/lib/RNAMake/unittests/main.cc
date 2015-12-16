@@ -20,6 +20,7 @@
 #include "secondary_structure_unittests/motif_unittest.h"
 #include "secondary_structure_unittests/secondary_structure_parser_unittest.h"
 #include "secondary_structure_unittests/secondary_structure_factory_unittest.h"
+#include "secondary_structure_unittests/secondary_structure_tree_unittest.h"
 
 #include "structure_unittests/atom_unittest.h"
 #include "structure_unittests/residue_unittest.h"
@@ -82,7 +83,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::motif_state_search::MotifStateSearchUnittest test;
+    unittests::SecondaryStructureParserUnittest test;
     test.run();
 }
 

@@ -175,6 +175,7 @@ MotifFactory::_setup_secondary_structure(
         auto res2 = ss->get_residue(end->res2()->uuid());
         auto ss_end = ss->get_basepair(res1, res2)[0];
         end_ids[i] = sstruct::assign_end_id(ss, ss_end);
+        i++;
     }
     
     ss->end_ids(end_ids);

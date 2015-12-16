@@ -51,6 +51,9 @@ public:
     MotifStateSearchSolutionOP
     next();
     
+    int
+    finished();
+    
 protected:
     
     void

@@ -89,7 +89,7 @@ CL_OptionUnittest::run() {
     return 1;
 }
 
-void
+int
 CL_OptionUnittest::run_all() {
     String name = "CL_OptionUnittest";
     typedef int (CL_OptionUnittest::*fptr)();
@@ -106,4 +106,5 @@ CL_OptionUnittest::run_all() {
             std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
         }
     }
+    return 0;
 }
