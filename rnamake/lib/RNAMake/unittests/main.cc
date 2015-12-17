@@ -83,7 +83,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::SecondaryStructureParserUnittest test;
+    unittests::motif_structures::MotifGraphUnittest test;
     test.run();
 }
 

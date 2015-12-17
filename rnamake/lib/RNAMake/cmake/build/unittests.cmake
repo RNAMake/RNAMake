@@ -4,6 +4,7 @@ set(unittests_files
 	../../unittests/base_unittests/option_unittest.cc
 	../../unittests/build/build_motif_graph.cpp
 	../../unittests/build/build_motif_tree.cpp
+	../../unittests/build/build_secondary_structure.cpp
 	../../unittests/data_structure_unittests/graph_unittest.cc
 	../../unittests/data_structure_unittests/tree_unittest.cc
 	../../unittests/motif_data_structures_unittests/motif_graph_unittest.cpp
@@ -28,6 +29,7 @@ set(unittests_files
 	../../unittests/secondary_structure_unittests/motif_unittest.cpp
 	../../unittests/secondary_structure_unittests/secondary_structure_factory_unittest.cc
 	../../unittests/secondary_structure_unittests/secondary_structure_parser_unittest.cpp
+	../../unittests/secondary_structure_unittests/secondary_structure_tree_unittest.cpp
 	../../unittests/secondary_structure_unittests/structure_unittest.cpp
 	../../unittests/secondary_structure_unittests/util.cpp
 	../../unittests/structure_unittests/atom_unittest.cc

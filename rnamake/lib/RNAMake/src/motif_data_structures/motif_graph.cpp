@@ -9,6 +9,53 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_graph.h"
 
+
+void
+MotifGraph::setup_options() {
+    options_ = Options();
+    options_.add_option(Option("sterics", 1));
+    options_.add_option(Option("clash_radius", 2.9f));
+}
+
+void
+MotifGraph::update_var_options() {
+    sterics_              = options_.option<int>("sterics");
+    clash_radius_         = options_.option<float>("clash_radius");
+}
+
+int
+MotifGraph::add_motif(
+    String const & m_name,
+    int parent_index,
+    String const & p_end_name) {
+    
+    auto parent = graph_.last_node();
+    if(parent_index != -1) {
+        parent = graph_.get_node(parent_index);
+    }
+    auto parent_end_index = parent->data()->end_index(p_end_name);
+    return add_motif(m_name, parent_index, parent_end_index);
+}
+
+int
+MotifGraph::add_motif(
+    String const & m_name,
+    String const & m_end_name,
+    int parent_index,
+    int parent_end_index) {
+    
+    auto m = MotifOP();
+    try {
+        m = ResourceManager::getInstance().get_motif(m_name, "", m_end_name);
+    }
+    catch(ResourceManagerException const & e) {
+        throw MotifGraphException("failed to retrieve motif by name in add_motif: "
+                                 + String(e.what()));
+    }
+    
+    return add_motif(m, parent_index, parent_end_index);
+}
+
 int
 MotifGraph::add_motif(
     String const & m_name,
@@ -80,6 +127,51 @@ MotifGraph::add_motif(
     
     
     return 0;
+}
+
+void
+MotifGraph::add_motif_tree(
+    MotifTreeOP const & mt,
+    int parent_index,
+    String const & parent_end_name) {
+    
+    auto parent = graph_.last_node();
+    if(parent_index != -1) {
+        parent = graph_.get_node(parent_index);
+    }
+    auto parent_end_index = parent->data()->end_index(parent_end_name);
+    int i = 0;
+    for(auto const & n : *mt) {
+        if(i == 0) { add_motif(n->data(), parent_index, parent_end_index); }
+        else       { add_motif(n->data()); }
+        i++;
+    }
+    
+}
+
+
+BasepairOP const &
+MotifGraph::get_end(int pos) {
+    auto n = graph_.get_node(pos);
+    auto avail_pos = n->available_children_pos();
+    assert(avail_pos.size() == 1 &&
+           "called get_end with only node pos there are more then one ends");
+    return n->data()->ends()[avail_pos[0]];
+}
+
+BasepairOP const &
+MotifGraph::get_end(
+        int pos,
+        String const & end_name) {
+    
+    auto n = graph_.get_node(pos);
+    auto end_index = n->data()->end_index(end_name);
+    auto avail_pos = n->available_children_pos();
+    
+    assert(std::find(avail_pos.begin(), avail_pos.end(), end_index) != avail_pos.end() &&
+           "end_name specified is not availiable");
+    
+    return n->data()->ends()[end_index];
 }
 
 int

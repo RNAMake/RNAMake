@@ -89,14 +89,20 @@ public: //add motif interface
     add_motif(
         String const & m_name,
         int parent_index = -1,
-        int parent_end_index = 1);
+        int parent_end_index = -1);
     
     int
     add_motif(
         String const & m_name,
         String const & m_end_name,
         int parent_index = -1,
-        int parent_end_index = 1);
+        int parent_end_index = -1);
+    
+    int
+    add_motif(
+        String const &,
+        int,
+        String const &);
 
 public:
     

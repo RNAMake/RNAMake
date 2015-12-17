@@ -25,10 +25,6 @@ public:
         String const & message) :
     std::runtime_error("Unittest Exception: " + message)
     {}
-    
-    int
-    size() { return 0; }
-
 };
 
 
@@ -36,6 +32,10 @@ class Unittest {
 public:
 
 public:
+    
+    virtual
+    int
+    size() { return 0; }
     
     virtual
     int run() { return  0; }

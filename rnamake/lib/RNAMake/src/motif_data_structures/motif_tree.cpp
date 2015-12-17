@@ -22,6 +22,24 @@ MotifTree::update_var_options() {
     clash_radius_         = options_.option<float>("clash_radius");
 }
 
+
+int
+MotifTree::add_motif(
+    String const & m_name,
+    int parent_index,
+    String const & p_end_name) {
+ 
+    
+    auto parent = last_node();
+    if(parent_index != -1) {
+        parent = get_node(parent_index);
+    }
+    auto parent_end_index = parent->data()->end_index(p_end_name);
+    return add_motif(m_name, parent_index, parent_end_index);
+    
+}
+
+
 int
 MotifTree::add_motif(
     String const & m_name,

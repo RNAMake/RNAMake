@@ -44,6 +44,9 @@ public:
     test_replace_ideal_helices();
     
     void
+    test_replace_ideal_helices_2();
+    
+    void
     test_secondary_structure();
     
     void

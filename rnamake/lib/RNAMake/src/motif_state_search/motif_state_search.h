@@ -54,6 +54,11 @@ public:
     int
     finished();
     
+public:
+    inline
+    void
+    beads(Points const & beads) { beads_ = beads; }
+    
 protected:
     
     void
@@ -80,6 +85,7 @@ private:
     MotifStateSearchNodeOP test_node_;
     MotifStateAligner aligner_;
     MotifStateandTypes possible_children_;
+    Points beads_;
     int no_more_solutions_;
     //options
     int sterics_, max_node_level_, min_size_, max_size_, max_solutions_;

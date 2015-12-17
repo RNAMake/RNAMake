@@ -47,7 +47,7 @@ MotifGraphUnittest::test_add_motif() {
         mg.add_motif("HELIX.IDEAL.600");
         throw "failed";
     }
-    catch(MotifMergerException const & e) { }
+    catch(MotifGraphException const & e) { }
     catch(...) {
         throw UnittestException("did not get expected error");
     }
@@ -136,6 +136,18 @@ MotifGraphUnittest::test_replace_ideal_helices() {
 }
     
 void
+MotifGraphUnittest::test_replace_ideal_helices_2() {
+    String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
+    ResourceManager::getInstance().add_motif(base_path+"GAAA_tetraloop");
+    
+    auto mg = MotifGraph();
+    mg.add_motif("GAAA_tetraloop", "A229-A245");
+    mg.add_motif("HELIX.IDEAL.6", -1, "A149-A154");
+    mg.replace_ideal_helices();
+
+}
+    
+void
 MotifGraphUnittest::test_secondary_structure() {
     auto builder = BuildMotifGraph();
     auto mg = builder.build(3);
@@ -170,7 +182,8 @@ MotifGraphUnittest::run() {
     test_remove();
     test_remove_2();
     test_copy();
-    test_replace_ideal_helices();
+    //test_replace_ideal_helices();
+    test_replace_ideal_helices_2();
     test_secondary_structure();
     test_replace_sequence();
     return 0;

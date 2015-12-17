@@ -80,6 +80,8 @@ MotifStateSearch::_search() {
     int j = 0;
     int pos;
     MotifStateSearchNodeOP current, child;
+    int clash;
+    float dist;
     
     while(! queue_.empty() ) {
         current = queue_.top();
@@ -112,7 +114,7 @@ MotifStateSearch::_search() {
                 
                 if(j >= pos) { break; }
                 test_node_->replace_ms(ms_and_type.motif_state,
-                                      ms_and_type.type);
+                                       ms_and_type.type);
                 
                 aligner_.get_aligned_motif_state(end,
                                                  test_node_->cur_state(),
@@ -120,6 +122,19 @@ MotifStateSearch::_search() {
                 
                 score = scorer_->score(test_node_);
                 if(score > current->score()) { continue; }
+                
+                if(sterics_) {
+                    clash = 0;
+                    for(auto const & b1 : beads_) {
+                        for(auto const & b2 : test_node_->cur_state()->beads()) {
+                            dist = b1.distance(b2);
+                            if(dist < 2.5) { clash = 1; break; }
+                        }
+                    }
+                    if(clash) { continue; }
+                }
+                
+                
                 child = std::make_shared<MotifStateSearchNode>(*test_node_);
                 child->update();
                 child->score(score);

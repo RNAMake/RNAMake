@@ -19,7 +19,7 @@
 int main(int argc, const char * argv[]) {
     std::vector<Unittest*> units;
     units.push_back(new unittests::OptionUnittest());
-    units.push_back(new unittests::CL_OptionUnittest());
+    //units.push_back(new unittests::CL_OptionUnittest());
 
     //units.push_back(new GraphUnittest());
     /*units.push_back(new UuidUnittest());
@@ -40,13 +40,13 @@ int main(int argc, const char * argv[]) {
     units.push_back(new LibraryManagerUnittest());*/
     
     int tests_run = 0;
-    int test_failed = 0;
+    int tests_failed = 0;
     for(auto const & test : units) {
         if(test == nullptr) { continue; }
-        test_failed += test->run_all();
-        test_run    += test->size();
+        tests_failed += test->run_all();
+        tests_run    += test->size();
     }
-    std::cout "RAN: " << test_run << "  FAILED: " << test_failed << std::endl;
+    std::cout << "RAN: " << tests_run << "  FAILED: " << tests_failed << std::endl;
 
     
     
