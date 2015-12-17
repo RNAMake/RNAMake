@@ -35,6 +35,10 @@ public:
     end_index(
         BasepairOP const &);
     
+    int
+    end_index(
+        String const &);
+    
     BasepairOPs
     get_basepair(
         String const &);

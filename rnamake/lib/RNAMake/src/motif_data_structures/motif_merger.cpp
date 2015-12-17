@@ -55,6 +55,8 @@ MotifMerger::_link_motifs(
     auto m1_end_nodes = _get_end_nodes(graph_.nodes(), m1_end);
     auto m2_end_nodes = _get_end_nodes(graph_.nodes(), m2_end);
     
+    //std::cout << m2_end_nodes[0]->index() << " " << m2_end_nodes[1]->index() << std::endl;
+    
     if(m2->mtype() == MotifType::HELIX && m1->mtype() != MotifType::HELIX) {
         _link_chains(m1_end_nodes, m2_end_nodes);
         bp_overrides_[m2_end->uuid()] = m1_end->uuid();
@@ -110,7 +112,7 @@ MotifMerger::_link_chains(
     
     
     if(dominant_nodes[0] == dominant_nodes[1]) {
-        _connect_chains(dominant_nodes[0], auxiliary_nodes[1], 1, 0);
+        _connect_chains(dominant_nodes[0], auxiliary_nodes[0], 1, 0);
         _connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1);
     }
     

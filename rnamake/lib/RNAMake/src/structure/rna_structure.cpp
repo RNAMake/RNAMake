@@ -88,8 +88,19 @@ RNAStructure::get_basepair(
 
 int
 RNAStructure::end_index(BasepairOP const & end) {
+    assert(std::find(ends_.begin(), ends_.end(), end) != ends_.end() &&
+           "end is not in internal array");
     int pos = (int)(std::find(ends_.begin(), ends_.end(), end) - ends_.begin());
     return pos;
+}
+
+int
+RNAStructure::end_index(String const & end_name) {
+    for(int i = 0; i < ends_.size(); i++) {
+        if(ends_[i]->name() == end_name) { return i; }
+    }
+    assert("could not find end with name");
+    return -1;
 }
 
 String const

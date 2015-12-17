@@ -37,7 +37,7 @@ public:
             i++;
             if(i == 0) { continue; }
             
-            score_ = new_score_function(state, target_, target_flip_);
+            score_ = new_score_function_new(state, target_, target_flip_);
             
             if(score_ < best_score_) {
                 best_score_ = score_;

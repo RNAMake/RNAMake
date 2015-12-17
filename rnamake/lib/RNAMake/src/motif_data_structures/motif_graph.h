@@ -12,8 +12,10 @@
 #include <stdio.h>
 
 //RNAMake Headers
+#include "base/base.h"
 #include "data_structure/graph/graph.h"
 #include "motif/motif.h"
+#include "motif_data_structures/motif_tree.h"
 #include "motif_data_structures/motif_merger.h"
 
 class MotifGraphException : public std::runtime_error {
@@ -24,7 +26,7 @@ public:
     {}
 };
 
-class MotifGraph {
+class MotifGraph : public Base {
 public:
     
     MotifGraph():
@@ -32,7 +34,7 @@ public:
     merger_(MotifMerger()),
     clash_radius_(2.5),
     sterics_(1)
-    {}
+    { setup_options(); }
     
     MotifGraph(
         MotifGraph const & mg):
@@ -43,6 +45,7 @@ public:
             graph_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
             motifs.push_back(graph_.get_node(n->index())->data());
         }
+        options_ = mg.options_;
         merger_ = MotifMerger(mg.merger_, motifs);
         
     }
@@ -64,6 +67,9 @@ public:
 
     size_t
     size() { return graph_.size(); }
+    
+    GraphNodeOP<MotifOP> const &
+    last_node() { return graph_.last_node(); }
     
     void
     remove_motif(int);
@@ -94,6 +100,34 @@ public: //add motif interface
         String const & m_end_name,
         int parent_index = -1,
         int parent_end_index = 1);
+    
+    int
+    add_motif(
+        String const &,
+        int,
+        String const &);
+
+public:
+    
+    void
+    add_motif_tree(
+        MotifTreeOP const &,
+        int,
+        String const &);
+    
+    void
+    add_connection(
+        int,
+        int,
+        String const &);
+    
+    BasepairOP const &
+    get_end(int);
+    
+    BasepairOP const &
+    get_end(
+        int,
+        String const &);
 
 public:
     
@@ -129,6 +163,18 @@ public:
     void
     write_pdbs(String const & fname = "nodes");
     
+    inline
+    Beads
+    beads() {
+        Beads beads;
+        for(auto const & n : graph_.nodes()) {
+            std::copy(n->data()->beads().begin(),
+                      n->data()->beads().end(),
+                      std::inserter(beads, beads.end()));
+        }
+        return beads;
+    }
+    
 
 private:
     int
@@ -140,6 +186,14 @@ private:
         MotifOP const & m,
         int parent_index = -1,
         int parent_end_index = -1);
+    
+private:
+    void
+    setup_options();
+    
+    void
+    update_var_options();
+    
     
 private:
     GraphStatic<MotifOP> graph_;
