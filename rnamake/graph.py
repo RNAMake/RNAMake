@@ -45,7 +45,13 @@ class Graph(object):
 
     def __iter__(self):
         if len(self.nodes) != 0:
-            self.current_node = self.nodes[0]
+            for n in self.nodes:
+                avail_pos = n.available_children_pos()
+                if len(avail_pos) != 0:
+                    self.current_node = n
+                    break
+            if self.current_node is None:
+                self.current_node = self.nodes[0]
         else:
             self.current_node = None
         self.seen = [ self.current_node ]
@@ -294,6 +300,13 @@ class GraphNode(object):
 
         return -1
 
+    def connected(self, n):
+        for c in self.connections:
+            if c is None:
+                continue
+            if c.partner(self.index) == n:
+                return c
+        return None
 
 class GraphNodeDynamic(GraphNode):
     def __init__(self, data, index, level):
@@ -338,7 +351,6 @@ class GraphNodeStatic(GraphNode):
 
         c = GraphNodeStatic(new_data, self.index, self.level, len(self.connections))
         return c
-
 
 class GraphConnection(object):
     def __init__(self, node_1, node_2, end_index_1, end_index_2):

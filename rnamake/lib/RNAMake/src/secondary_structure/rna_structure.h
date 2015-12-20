@@ -92,6 +92,9 @@ public:
     
     }
     
+    virtual
+    ~RNAStructure() {}
+    
 public:
     
     BasepairOPs

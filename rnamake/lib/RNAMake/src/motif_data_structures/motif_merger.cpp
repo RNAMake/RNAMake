@@ -212,12 +212,17 @@ MotifMerger::remove_motif(MotifOP const & m) {
         
     }
     
+    for(auto const & bp : m->basepairs()) {
+        all_bps_.erase(bp->uuid());
+    }
+    
     auto remove = ChainNodes();
     for(auto const & n : graph_.nodes()) {
         if(n->data().m_id == m->id()) {
             remove.push_back(n);
         }
     }
+    
     
     for(auto const & r : remove) {
         for(auto const & c : r->connections()) {
@@ -234,10 +239,20 @@ MotifMerger::remove_motif(MotifOP const & m) {
                 p->data().prime3_override = 0;
             }
         }
+        
+        for(auto const & res: r->data().c->residues()) {
+            if(res_overrides_.find(res->uuid()) != res_overrides_.end()) {
+                res_overrides_.erase(res->uuid());
+            }
+            
+        }
+        
         graph_.remove_node(r->index());
     }
     
-    motifs_.erase(m->id());
+    auto it = motifs_.find(m->id());
+    motifs_.erase(it);
+    //motifs_.erase(m->id());
     rebuild_structure_ = 1;
     
 }

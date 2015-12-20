@@ -12,6 +12,7 @@
 #include "motif_data_structures/motif_graph.h"
 #include "resources/resource_manager.h"
 #include "build/build_motif_graph.h"
+#include "build/build_motif_tree.h"
 
 #include "secondary_structure_unittests/util.h"
 
@@ -174,18 +175,58 @@ MotifGraphUnittest::test_replace_sequence() {
     mg->replace_helical_sequence(ss);
 }
     
+
+//no leak from just copying
+void
+MotifGraphUnittest::test_memory() {
+    auto builder = BuildMotifTree();
+    auto mg = builder.build(20);
+    int count = 0;
+    for(int i = 0; i < 10000; i++) {
+        auto mg2 = std::make_shared<MotifTree>();
+        for(auto const & n : *mg) {
+            mg2->add_motif(n->data());
+        }
+        count += mg2->size();
+    }
+}
+
+//no leak
+void
+MotifGraphUnittest::test_memory_2() {
+    
+    auto builder = BuildMotifTree();
+    auto mlib = std::make_shared<MotifSqliteLibrary>("twoway");
+    for(int i = 0; i < 10000; i++) {
+        auto mg = std::make_shared<MotifGraph>();
+        for(int j = 0; j < 20; j++) {
+            auto m = mlib->get_random();
+        }
+    }
+}
+    
+void
+MotifGraphUnittest::test_memory_3() {
+    auto builder = BuildMotifGraph();
+    for(int i = 0; i < 10000; i++) {
+        auto mg = builder.build(20);
+        //std::cout << mg->size() << std::endl;
+    }
+}
     
 int
 MotifGraphUnittest::run() {
-    test_creation();
-    test_add_motif();
     test_remove();
+
+    /*test_creation();
+    test_add_motif();
     test_remove_2();
     test_copy();
-    //test_replace_ideal_helices();
+    test_replace_ideal_helices();
     test_replace_ideal_helices_2();
     test_secondary_structure();
-    test_replace_sequence();
+    test_replace_sequence();*/
+    //test_memory_2();
     return 0;
 }
     

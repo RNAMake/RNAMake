@@ -35,6 +35,10 @@
 
 #include "motif_state_search_unittests/motif_state_search_unittest.h"
 
+#include "resources_unittests/motif_sqlite_connection_unittest.h"
+#include "resources_unittests/motif_sqlite_library_unittest.h"
+#include "resources_unittests/resource_manager_unittest.h"
+
 /*
 
 
@@ -44,7 +48,6 @@
 #include "motif_unittests/motif_state_unittest.h"
 //#include "motif_unittests/segmenter_unittest.h"
 
-#include "resources_unittests/motif_sqlite_connection_unittest.h"
 #include "resources_unittests/motif_sqlite_library_unittest.h"
 #include "resources_unittests/motif_state_sqlite_library_unittest.h"
 #include "resources_unittests/motif_state_ensemble_sqlite_library_unittest.h"
@@ -83,6 +86,7 @@
 
 int main(int argc, const char * argv[]) {
     
+    //ResourceManagerUnittest test;
     unittests::motif_structures::MotifGraphUnittest test;
     test.run();
 }

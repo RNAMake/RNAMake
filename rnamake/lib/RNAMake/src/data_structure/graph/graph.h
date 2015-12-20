@@ -467,6 +467,20 @@ public:
         else { this->last_node_ = nullptr; }
     }
     
+    inline
+    void
+    remove_level(
+        int level) {
+        
+        int pos = 0;
+        while(pos < this->nodes_.size()) {
+            auto n = this->nodes_[pos];
+            if(n->level() >= level) { remove_node(n->index()); continue; }
+            pos++;
+        }
+        
+    }
+    
 };
 
 

@@ -9,6 +9,7 @@
 #include "motif_sqlite_connection_unittest.h"
 #include "util/sqlite3_connection.h"
 #include "resources/motif_sqlite_connection.h"
+#include "util/random_number_generator.h"
 
 int
 MotifSqliteConnectionUnittest::test_creation() {
@@ -30,16 +31,36 @@ MotifSqliteConnectionUnittest::test_next() {
         data = conn.next();
     }
     std::cout << count << std::endl;
-    
+   
+
     return 1;
+
+}
+
+void
+MotifSqliteConnectionUnittest::test_memory() {
+    String path = resources_path()+"/motif_libraries_new/ideal_helices.db";
+    MotifSqliteConnection conn(path);
+    //auto total = conn.count();
+    auto names = Strings{"HELIX.IDEAL", "HELIX.IDEAL.2", "HELIX.IDEAL.3", "HELIX.IDEAL.4"};
+    auto rng = RandomNumberGenerator();
     
-    
+    int count = 0;
+    for(int i = 0; i < 1000000; i++) {
+        auto name = names[rng.randrange(names.size())];
+        conn.query("SELECT * from data_table WHERE name='"+name+"'");
+        auto data = conn.next();
+        conn.clear();
+        count += data->data.length();
+        if(i % 100 == 0) { count = 0; }
+    }
 }
 
 
 int
 MotifSqliteConnectionUnittest::run() {
-    if (test_creation() == 0)             { std::cout << "test_creation failed" << std::endl; }
-    if (test_next() == 0)                 { std::cout << "test_next failed" << std::endl; }
+    //if (test_creation() == 0)             { std::cout << "test_creation failed" << std::endl; }
+    //if (test_next() == 0)                 { std::cout << "test_next failed" << std::endl; }
+    test_memory();
     return 0;
 }

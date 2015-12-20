@@ -170,7 +170,7 @@ class ThermoFlucFolding(base.Base):
 class ThermoFlucRelax(base.Base):
     def __init__(self):
         self.sampler = ThermoFlucSampler(temperature=1000.0)
-        self.max_steps = 10000
+        self.max_steps = 1000
         kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
         self.kBT = kB * 100
 
@@ -183,7 +183,7 @@ class ThermoFlucRelax(base.Base):
         cur_diff = end_state_1.diff(end_state_2)
         new_diff = 0
         self.best = self.sampler.mst.copy()
-        best_diff = 0
+        best_diff = 10000
 
         #print len(self.sampler.mst)
         #self.sampler.mst.add_connection(0, 16, "A149-A154")
@@ -204,7 +204,7 @@ class ThermoFlucRelax(base.Base):
                     pass"""
             steps += 1
 
-            if steps % 1000 == 0:
+            if steps % 100 == 0:
                 self.kBT *= 0.5
 
             if r == 0:
@@ -215,13 +215,13 @@ class ThermoFlucRelax(base.Base):
             new_diff = end_state_1.diff(end_state_2)
 
             #if steps % 10 == 0:
-            #    print cur_diff, new_diff, best_diff, steps
+            print cur_diff, new_diff, best_diff, steps
 
-            if new_diff > best_diff:
+            if new_diff < best_diff:
                 best_diff = new_diff
                 self.best = self.sampler.mst.copy()
 
-            if new_diff > cur_diff:
+            if new_diff < cur_diff:
                 cur_diff = new_diff
                 continue
 

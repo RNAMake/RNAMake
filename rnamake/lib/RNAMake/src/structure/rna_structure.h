@@ -10,6 +10,7 @@
 #define RNAMAKE_LIB_RNAMAKE_SRC_STRUCTURE_RNA_STRUCTURE_H_
 
 #include <stdio.h>
+#include <memory>
 
 //RNAMake
 #include "structure/structure.h"
@@ -29,6 +30,9 @@ public:
     basepairs_(basepairs),
     ends_(ends)
     {}
+    
+    virtual
+    ~RNAStructure() {}
     
 public:
     int

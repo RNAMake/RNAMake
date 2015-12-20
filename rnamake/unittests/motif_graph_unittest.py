@@ -185,7 +185,30 @@ class MotifGraphUnittest(unittest.TestCase):
         ss_p = builder.build_helix(10)
         ssg  = secondary_structure_graph.graph_from_pose(ss_p)
 
+    def test_topology_to_str(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(3)
+        mg = motif_graph.MotifGraph()
 
+        for n in mt.tree.nodes:
+            mg.add_motif(n.data)
+
+        new_mg = mg.copy()
+        new_mg.replace_ideal_helices()
+
+        s = new_mg.topology_to_str()
+        new_mg_2 = motif_graph.motif_graph_from_topology(s)
+        #new_mg_2.write_pdbs()
+
+    def test_topology_to_str_2(self):
+        base_dir = "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/apps/mini_ttr"
+        rm.manager.add_motif(base_dir+"/resources/GAAA_tetraloop")
+        f = open(base_dir + "/test.top")
+        line = f.readline()
+        f.close()
+
+        mg = motif_graph.motif_graph_from_topology(line)
+        mg.write_pdbs()
 
 def main():
     unittest.main()

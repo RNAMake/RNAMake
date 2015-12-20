@@ -34,6 +34,8 @@ public:
     sterics_(1)
     { setup_options(); }
     
+    ~MotifTree() {}
+    
 public: //iterators
     
     typedef typename TreeStatic<MotifOP>::iterator iterator;

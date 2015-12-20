@@ -80,6 +80,16 @@ class ResourceManager(object):
 
         raise ValueError("cannot find motif: " + self._args_to_str(options))
 
+    def motif_exists(self, **options):
+        for mlib in self.mlibs.itervalues():
+            if mlib.contains(**options):
+                return 1
+
+        if self.added_motifs.contains(**options):
+            return 1
+
+        return 0
+
     def _args_to_str(self, options):
         s = ""
         for k, v in options.iteritems():

@@ -71,15 +71,29 @@ MotifSqliteLibraryUnittest::test_contains() {
     return 1;
 }
 
+void
+MotifSqliteLibraryUnittest::test_memory() {
+    MotifSqliteLibrary mlib("ideal_helices");
+    auto names = Strings{"HELIX.IDEAL", "HELIX.IDEAL.2", "HELIX.IDEAL.3", "HELIX.IDEAL.4"};
+    auto rng = RandomNumberGenerator();
+    int count = 0;
+    for(int i = 0; i < 1000000; i++) {
+        int in = mlib.contains(names[rng.randrange(names.size())]);
+        count += in;
+    }
+    
+}
+
 
 int
 MotifSqliteLibraryUnittest::run() {
-    if (test_creation() == 0)        { std::cout << "test_creations failed" << std::endl; }
+    /*if (test_creation() == 0)        { std::cout << "test_creations failed" << std::endl; }
     if (test_get() == 0)             { std::cout << "test_get failed" << std::endl; }
     if (test_get_random() == 0)      { std::cout << "test_get_random failed" << std::endl; }
     if (test_all() == 0)             { std::cout << "test_all failed" << std::endl; }
     if (test_get_multi() == 0)       { std::cout << "test_get_multi failed" << std::endl; }
-    if (test_contains() == 0)        { std::cout << "test_contains failed" << std::endl; }
+    if (test_contains() == 0)        { std::cout << "test_contains failed" << std::endl; }*/
+    test_memory();
     return 0;
     
 }

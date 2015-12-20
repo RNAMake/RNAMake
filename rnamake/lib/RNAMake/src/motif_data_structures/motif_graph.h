@@ -36,6 +36,8 @@ public:
     sterics_(1)
     { setup_options(); }
     
+    MotifGraph(String const &);
+    
     MotifGraph(
         MotifGraph const & mg):
     graph_(GraphStatic<MotifOP>(mg.graph_)) {
@@ -65,14 +67,24 @@ public: //iterators
     
 public:
 
+    inline
     size_t
     size() { return graph_.size(); }
     
+    inline
+    void
+    increase_level() { return graph_.increase_level(); }
+    
+    inline
     GraphNodeOP<MotifOP> const &
     last_node() { return graph_.last_node(); }
     
     void
     remove_motif(int);
+    
+    void
+    remove_level(int level);
+    
     
     void
     replace_ideal_helices();
@@ -106,6 +118,12 @@ public: //add motif interface
         String const &,
         int,
         String const &);
+    
+    int
+    add_motif(
+        MotifOP const &,
+        int,
+        String const &);
 
 public:
     
@@ -119,6 +137,13 @@ public:
     add_connection(
         int,
         int,
+        String const &);
+    
+    void
+    add_connection(
+        int,
+        int,
+        String const &,
         String const &);
     
     BasepairOP const &
@@ -135,6 +160,15 @@ public:
     RNAStructureOP const &
     get_structure() {
         return merger_.get_structure();
+    }
+    
+    
+    inline
+    void
+    to_pdb(
+        String const fname = "test.pdb",
+        int renumber = -1) {
+        return merger_.to_pdb(fname, renumber);
     }
     
     sstruct::PoseOP
@@ -175,7 +209,9 @@ public:
         return beads;
     }
     
-
+    String
+    topology_to_str();
+    
 private:
     int
     _steric_clash(
