@@ -48,6 +48,17 @@ public:
     MotifSqliteDataOP const &
     next();
     
+    MotifSqliteDataOP const &
+    contains();
+    
+    inline
+    void
+    clear() {
+        if(rc_ == SQLITE_ROW || rc_ == SQLITE_DONE) {
+            sqlite3_finalize(stmt_);
+        }
+    }
+    
 private:
     MotifSqliteDataOP data_;
     

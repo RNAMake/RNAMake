@@ -38,6 +38,11 @@ def motif_tree_from_ss_tree(sst):
     return mt
 
 
+class Connection(object):
+    def __init__(self, i, j, name_i, name_j):
+        self.i, self.j = i, j
+        self.name_i, self.name_j = name_i, name_j
+
 class MotifTree(base.Base):
     """
     MotifTree class orchestrates the connection of motifs to both other motifs and full structure and is a core feature of this package
@@ -84,8 +89,8 @@ m
         self.clash_radius = settings.CLASH_RADIUS
 
         self.tree = tree.TreeStatic()
-        #self.merger = motif_tree_merger.MotifTreeMerger()
         self.merger = motif_merger.MotifMerger()
+        self.connections = {}
 
     def __len__(self):
         return len(self.tree)
@@ -141,6 +146,7 @@ m
 
         avail_pos = self.tree.get_available_pos(parent, parent_end_index)
 
+        #print avail_pos
         for p in avail_pos:
             if p == parent.data.block_end_add:
                 continue
@@ -253,26 +259,44 @@ m
             if len(head_node_open_ends) == 0:
                 break
 
-    def add_connection(self, i, j, i_name=None):
-        node_1 = self.get_node(i)
-        node_2 = self.get_node(j)
+    def add_connection(self, i, j, i_bp_name=None, j_bp_name=None):
+        node_i = self.get_node(i)
+        node_j = self.get_node(j)
 
-        if i == j:
-            raise ValueError("you cannot connect a motif to itself in add_connection")
+        node_i_indexes = []
+        node_j_indexes = []
+        if i_bp_name is not None:
+            ei = node_i.data.get_end_index(i_bp_name)
+            if not node_i.available_pos(ei):
+                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                                 "using bp: " + i_bp_name + "as its not available")
+            node_i_indexes.append(ei)
+        else:
+            node_i_indexes = node_i.available_children_pos()
+            node_i_indexes.remove(0)
 
-        #TODO add it more error checks here
-        avail_ends_1 = node_1.available_children_pos()
-        avail_ends_2 = node_2.available_children_pos()
+        if j_bp_name is not None:
+            ei = node_j.data.get_end_index(j_bp_name)
+            if not node_j.available_pos(ei):
+                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                                 "using bp: " + j_bp_name + "as its not available")
+            node_j_indexes.append(ei)
+        else:
+            node_j_indexes = node_j.available_children_pos()
+            node_j_indexes.remove(0)
 
-        for end_index_1 in avail_ends_1:
-            if i_name != node_1.data.ends[end_index_1].name():
-                continue
-            for end_index_2 in avail_ends_2:
-                self.tree.connect(i, j, end_index_1, end_index_2)
-                return 1
+        if len(node_i_indexes) > 1 or len(node_j_indexes) > 1:
+            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                             "its unclear which ends to attach")
+        if len(node_i_indexes) == 0 or len(node_j_indexes) == 0:
+            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                             " one node has no available ends")
 
-        raise ValueError("could not connect node " + str(i) + " " + str(j) + " with end name " +
-                         i_name)
+        #self.graph.connect(i, j, node_i_indexes[0], node_j_indexes[0])
+
+        self.merger.connect_motifs(node_i.data, node_j.data,
+                                   node_i.data.ends[node_i_indexes[0]],
+                                   node_j.data.ends[node_j_indexes[0]])
 
     def leafs_and_ends(self):
         leaf_nodes = []

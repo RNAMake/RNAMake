@@ -30,7 +30,8 @@ class Motif : public RNAStructure {
 public:
     Motif():
     RNAStructure(),
-    id_(Uuid())
+    id_(Uuid()),
+    block_end_add_(0)
     {}
     
     Motif(
@@ -38,7 +39,8 @@ public:
         BasepairOPs const & basepairs,
         BasepairOPs const & ends):
     RNAStructure(structure, basepairs, ends),
-    id_(Uuid())
+    id_(Uuid()),
+    block_end_add_(0)
     {}
         
     Motif(String const &,

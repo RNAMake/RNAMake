@@ -308,6 +308,13 @@ class BuildSqliteLibraries(object):
                 if lowest.score > m.score:
                     lowest = m
 
+            if lowest.name == "TWOWAY.1GID.6" or \
+               lowest.name == "TWOWAY.1GID.2" or \
+               lowest.name == "TWOWAY.2GDI.4":
+                continue
+            #print i, lowest.score, lowest.name
+            #lowest.to_pdb("m."+str(i)+".pdb")
+
             motif_arrays.append(motif.MotifArray(c.motifs))
             motif_array_names.append(lowest.name)
 
@@ -407,10 +414,10 @@ builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
 #builder.build_basic_libraries()
 #builder.build_helix_ensembles()
-builder.build_ss_and_seq_libraries()
+#builder.build_ss_and_seq_libraries()
 builder.build_unique_twoway_library()
-builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_motif_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
 
 
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")

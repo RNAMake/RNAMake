@@ -104,6 +104,8 @@ public:
         for(auto const & m : motifs) { update_motif(m); }
     }
     
+    ~MotifMerger() {}
+    
 public:
     void
     add_motif(MotifOP const &);

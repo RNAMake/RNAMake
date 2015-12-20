@@ -52,6 +52,15 @@ public:
     void
     test_replace_sequence();
     
+    void
+    test_memory();
+    
+    void
+    test_memory_2();
+    
+    void
+    test_memory_3();
+    
 public:
     
     int

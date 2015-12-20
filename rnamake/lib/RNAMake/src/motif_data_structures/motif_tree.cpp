@@ -123,7 +123,9 @@ MotifTree::add_motif(
         
         m_added->new_res_uuids();
         int pos = tree_.add_data(m_added, (int)m_added->ends().size(), parent->index(), p);
-        merger_.add_motif(m_added, m_added->ends()[0], parent->data(), parent->data()->ends()[p]);
+        if(pos != -1) {
+            merger_.add_motif(m_added, m_added->ends()[0], parent->data(), parent->data()->ends()[p]);
+        }
         return pos;
     }
 

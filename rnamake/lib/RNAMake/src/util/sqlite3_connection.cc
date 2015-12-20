@@ -25,19 +25,20 @@ Sqlite3Connection::Sqlite3Connection(
 }
 
 void
-Sqlite3Connection::query(String const query_statement) {
+Sqlite3Connection::query(String const & query_statement) {
+    
     rc_ = sqlite3_prepare_v2(db_,
                              query_statement.c_str(),
                              (int)strlen(query_statement.c_str())+1,
                              &stmt_,
                              NULL);
     rc_ = sqlite3_step(stmt_);
+
 }
 
 int
 Sqlite3Connection::count() {
     query("SELECT count(*) from data_table");
-    
     int count = sqlite3_column_int(stmt_,0);
     rc_ = sqlite3_step(stmt_);
     return count;

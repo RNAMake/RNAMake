@@ -10,6 +10,35 @@ import resource_manager as rm
 import motif_merger
 import steric_lookup
 
+def motif_graph_from_topology(s):
+    spl = s.split("&")
+    node_spl = spl[0].split("|")
+    mg = MotifGraph()
+    mg.option('sterics', 0)
+    for i, n_spl in enumerate(node_spl[:-1]):
+        sspl = n_spl.split(",")
+        if rm.manager.motif_exists(name=sspl[0], end_name=sspl[1], end_id=sspl[2]):
+            m = rm.manager.get_motif(name=sspl[0], end_name=sspl[1], end_id=sspl[2])
+        elif rm.manager.motif_exists(name=sspl[0], end_id=sspl[2]):
+            m = rm.manager.get_motif(name=sspl[0], end_id=sspl[2])
+            print "warning: cannot find exact motif"
+        else:
+            print sspl
+            raise ValueError("cannot find motif")
+
+        pos = mg.add_motif(m, parent_index=int(sspl[3]), parent_end_name=sspl[4])
+        #print pos, sspl
+        if pos == -1:
+            raise ValueError("cannot get mg from topology failed to add motif")
+
+    connection_spl = spl[1].split("|")
+    for c_spl in connection_spl[:-1]:
+        sspl = c_spl.split()
+        mg.add_connection(int(sspl[0]), int(sspl[1]), sspl[2], sspl[3])
+
+
+    return mg
+
 
 class MotifGraph(base.Base):
     def __init__(self):
@@ -64,7 +93,6 @@ class MotifGraph(base.Base):
         for p in avail_pos:
             if p == parent.data.block_end_add:
                 continue
-
             m_added = motif.get_aligned_motif(parent.data.ends[p], m.ends[0], m)
             if self.option('sterics'):
                 if self._steric_clash(m_added):
@@ -112,6 +140,7 @@ class MotifGraph(base.Base):
             if not node_j.available_pos(ei):
                 raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
                                  "using bp: " + j_bp_name + "as its not available")
+            node_j_indexes.append(ei)
         else:
             node_j_indexes = node_j.available_children_pos()
 
@@ -120,7 +149,7 @@ class MotifGraph(base.Base):
                              "its unclear which ends to attach")
         if len(node_i_indexes) == 0 or len(node_j_indexes) == 0:
             raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                             "one node has no available ends")
+                             " one node has no available ends")
 
         self.graph.connect(i, j, node_i_indexes[0], node_j_indexes[0])
         self.merger.connect_motifs(node_i.data, node_j.data,
@@ -233,16 +262,17 @@ class MotifGraph(base.Base):
             for i in range(len(org_res)):
                 new_res[i].uuid = org_res[i].uuid
 
+            for i in range(len(n.data.basepairs)):
+                m.basepairs[i].uuid = n.data.basepairs[i].uuid
+
             parent = None
             parent_end_index = None
             if n.connections[0] is not None:
                 parent = n.connections[0].partner(n.index)
                 parent_end_index = n.connections[0].end_index(parent.index)
             other = None
-            other_end_index = None
             if n.connections[1] is not None:
                 other = n.connections[1].partner(n.index)
-                other_end_index = n.connections[1].end_index(other.index)
 
             if parent is not None:
                 m_added = motif.get_aligned_motif(parent.data.ends[parent_end_index],
@@ -363,7 +393,58 @@ class MotifGraph(base.Base):
             end = n.data.ends[avail_pos[0]]
             return end
 
+    def topology_to_str(self):
+        seen = {}
+        seen_connections = {}
+        s = ""
+        count = 0
+        for n in self.graph:
+            if len(seen) == 0:
+                found = 0
+                for i, c in enumerate(n.connections):
+                    if c is not None:
+                        continue
+                    s += n.data.name + "," + n.data.ends[i].name() + ","
+                    s += n.data.end_ids[i] + "," + str(-1) + "," + "" + "|"
+                    found = 1
+                    break
+                if found == 0:
+                    raise ValueError("cannot translate to topology")
+            else:
+                highest = -1
+                end_name = n.data.ends[0].name()
+                end_id = n.data.end_ids[0]
+                parent_end_name = None
+                for n2, pos in seen.iteritems():
+                    if n.connected(n2) is not None:
+                        c = n.connected(n2)
+                        highest = pos
+                        end_name = n.data.ends[c.end_index(n.index)].name()
+                        end_id = n.data.end_ids[c.end_index(n.index)]
+                        parent_end_name =  n2.data.ends[c.end_index(n2.index)].name()
+                s += n.data.name + "," + end_name + ","
+                s += end_id + "," + str(highest) + "," + parent_end_name + "|"
+                seen_connections[str(highest) + " " + str(count)] = 1
+            seen[n] = count
+            count += 1
 
+        s += "&"
+
+        for n in self.graph:
+            for c in n.connections:
+                if c is None:
+                    continue
+                key1 = str(seen[c.node_1]) + " " + str(seen[c.node_2])
+                key2 = str(seen[c.node_2]) + " " + str(seen[c.node_1])
+                if key1 not in seen_connections and key2 not in seen_connections:
+                    seen_connections[key1] = 1
+                    end_index_1 = c.end_index(c.node_1.index)
+                    end_index_2 = c.end_index(c.node_2.index)
+                    end_name_1 = c.node_1.data.ends[end_index_1].name()
+                    end_name_2 = c.node_2.data.ends[end_index_2].name()
+                    s += key1 + " " + end_name_1 + " " + end_name_2 +  "|"
+
+        return s
 
 
 

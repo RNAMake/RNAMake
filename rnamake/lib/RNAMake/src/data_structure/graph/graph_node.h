@@ -125,6 +125,17 @@ public:
         }
     }
     
+    inline
+    GraphConnectionOP<DataType>
+    connected(
+        GraphNodeOP<DataType> const & n) {
+        for(auto const & c : connections_) {
+            if(c == nullptr) { continue; }
+            if(c->partner(index_) == n) { return c; }
+        }
+        return nullptr;
+    }
+    
     
 public: //getters
     inline

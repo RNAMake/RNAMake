@@ -36,11 +36,26 @@ ResourceManagerUnittest::test_add_motif() {
     return 1;
 }
 
+void
+ResourceManagerUnittest::test_memory() {
+    auto names = Strings{"HELIX.IDEAL", "HELIX.IDEAL.2", "HELIX.IDEAL.3", "HELIX.IDEAL.4", "HELIX.IDEAL.5"};
+    auto rng = RandomNumberGenerator();
+    
+    auto mlib = std::make_shared<MotifSqliteLibrary>("ideal_helices");
+    int count = 0;
+    for(int i = 0; i < 1000000; i++) {
+        //auto m = mlib->get(names[rng.randrange(names.size())]);
+        auto m = ResourceManager::getInstance().get_motif(names[rng.randrange(names.size())]);
+        count += m->residues().size();
+    }
+}
+
 
 int
 ResourceManagerUnittest::run() {
-    if (test_get_motif() == 0)        { std::cout << "test_get_motif failed" << std::endl; }
-    if (test_add_motif() == 0)        { std::cout << "test_add_motif failed" << std::endl; }
-
+    //if (test_get_motif() == 0)        { std::cout << "test_get_motif failed" << std::endl; }
+    //if (test_add_motif() == 0)        { std::cout << "test_add_motif failed" << std::endl; }
+    test_memory();
+    
     return 0;
 }

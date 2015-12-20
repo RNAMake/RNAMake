@@ -28,6 +28,8 @@ public:
     int
     test_add_motif();
     
+    void
+    test_memory();
     
 public:
     
