@@ -118,6 +118,11 @@ private:
     float ss_score_weight_, level_weight_;
 };
 
+class MSS_PathFollow: public MotifStateSearchScorer {
+    
+};
+
+
 typedef std::shared_ptr<MotifStateSearchScorer> MotifStateSearchScorerOP;
 
 #endif /* defined(__RNAMake__motif_state_search_scorer__) */

@@ -8,9 +8,8 @@ import util
 import settings
 import basic_io
 import motif_tree_topology
+import motif_connection
 from collections import namedtuple
-
-MotifStateConnection = namedtuple('MotifSTateConnection', 'i j end_name')
 
 def motif_state_tree_from_topology(mtt, sterics=1):
     mst = MotifStateTree(sterics=sterics)
@@ -32,13 +31,6 @@ def motif_state_tree_from_topology(mtt, sterics=1):
                 raise ValueError("was unable to build motifstatetree from topology")
 
     return mst
-
-def update_sequence(mst, ss, end=None):
-    conn = ss.motif_topology_from_end(end)
-    mtt = motif_tree_topology.MotifTreeTopology(conn)
-    return motif_state_tree_from_topology(mtt, sterics=0)
-
-
 
 class MotifStateTree(base.Base):
     def __init__(self, mt=None, **options):
@@ -63,7 +55,6 @@ class MotifStateTree(base.Base):
                                       end_name=n.data.ends[0].name())
             ms.update_res_uuids(n.data.residues())
 
-
             if i == 0:
                 self.add_state(ms)
             else:
@@ -73,6 +64,9 @@ class MotifStateTree(base.Base):
                 j = self.add_state(ms, parent_index, parent_end_index)
                 if j == -1:
                     raise ValueError("could not convert motif tree to motif state tree")
+
+        for c in mt.connections:
+            self.connections.append(c.copy())
 
     def add_state(self, state, parent_index=-1, parent_end_index=-1,
                   parent_end_name=None):
@@ -121,8 +115,42 @@ class MotifStateTree(base.Base):
 
             index_dict[n.index] = j
 
-    def add_connection(self, i, j, end_name):
-        self.connections.append(MotifStateConnection(i, j, end_name))
+    def add_connection(self, i, j, i_bp_name="", j_bp_name=""):
+        node_i = self.get_node(i)
+        node_j = self.get_node(j)
+
+        node_i_indexes = []
+        node_j_indexes = []
+        if i_bp_name != "":
+            ei = node_i.data.get_end_index(i_bp_name)
+            if not node_i.available_pos(ei):
+                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                                 "using bp: " + i_bp_name + "as its not available")
+            node_i_indexes.append(ei)
+        else:
+            node_i_indexes = node_i.available_children_pos()
+            node_i_indexes.remove(0)
+
+        if j_bp_name != "":
+            ei = node_j.data.get_end_index(j_bp_name)
+            if not node_j.available_pos(ei):
+                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                                 "using bp: " + j_bp_name + "as its not available")
+            node_j_indexes.append(ei)
+        else:
+            node_j_indexes = node_j.available_children_pos()
+            node_j_indexes.remove(0)
+
+        if len(node_i_indexes) > 1 or len(node_j_indexes) > 1:
+            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                             "its unclear which ends to attach")
+        if len(node_i_indexes) == 0 or len(node_j_indexes) == 0:
+            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                             " one node has no available ends")
+
+        #self.graph.connect(i, j, node_i_indexes[0], node_j_indexes[0])
+
+        self.connections.append(motif_connection.MotifConnection(i, j, name_i, name_j))
 
     def to_motif_tree(self):
         #TODO add end names to avoid palendroms
@@ -154,7 +182,7 @@ class MotifStateTree(base.Base):
                 raise ValueError("cannot convert mst to mt in to_motif_tree")
 
         for c in self.connections:
-            mt.add_connection(c.i, c.j, c.end_name)
+            mt.add_connection(c.i, c.j, c.name_i, c.name_j)
 
         return mt
 
@@ -247,7 +275,7 @@ class MotifStateTree(base.Base):
                  str(n.parent_index()) + "," + str(n.parent_end_index())  +  " "
         s += "|"
         for c in self.connections:
-            s += str(c.i) + "," + str(c.j) + "," + c.end_name
+            s += c.to_str() + " "
         return s
 
     def get_residue(self, uuid):
@@ -281,7 +309,7 @@ def str_to_motif_state_tree(s, sterics=1):
     conn_strs = spl[1].split()
     for c_str in conn_strs:
         c_spl = c_str.split(",")
-        mst.add_connection(int(c_spl[0]), int(c_spl[1]), c_spl[2])
+        mst.connections.append(motif_connection.MotifConnection(int(c_spl[0]), int(c_spl[1]), c_spl[2], c_spl[3]))
 
     return mst
 

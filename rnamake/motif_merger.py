@@ -161,6 +161,18 @@ class MotifMerger(object):
             self.all_bps[bp.uuid] = bp
         self.motifs[m.id] = m
 
+    def replace_motif(self, old_m, new_m):
+        #assume chains are added in order
+        count = 0
+        for n in self.chain_graph.nodes:
+            if n.data.m_id != old_m.id:
+                continue
+            n.data.m_id = new_m.id
+            n.data.c = new_m.chains()[count]
+            count += 1
+        self.rebuild_structure = 1
+
+
     def secondary_structure(self):
         ss = ssf.factory.secondary_structure_from_motif(self.get_structure())
 

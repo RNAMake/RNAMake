@@ -246,6 +246,7 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
             "nway"     :  "/motif_ensemble_libraries/nway.db",
             "tcontact" :  "/motif_ensemble_libraries/tcontact.db",
             "hairpin"  :  "/motif_ensemble_libraries/hairpin.db",
+            "twoway_clusters" : "motif_ensemble_libraries/twoway_clusters.db"
         }
 
         return libnames

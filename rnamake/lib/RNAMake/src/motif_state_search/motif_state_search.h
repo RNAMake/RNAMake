@@ -29,6 +29,8 @@ public:
     selector_(default_selector()),
     scorer_(std::make_shared<MotifStateSearchScorer>(MSS_Astar())),
     solutions_(MotifStateSearchSolutionOPs()),
+    beads_(Points()),
+    path_(Points()),
     aligner_(MotifStateAligner())
     {
         setup_options();
@@ -59,6 +61,10 @@ public:
     void
     beads(Points const & beads) { beads_ = beads; }
     
+    inline
+    void
+    path(Points const & path) { path_ = path; }
+    
 protected:
     
     void
@@ -86,10 +92,11 @@ private:
     MotifStateAligner aligner_;
     MotifStateandTypes possible_children_;
     Points beads_;
+    Points path_;
     int no_more_solutions_;
     //options
     int sterics_, max_node_level_, min_size_, max_size_, max_solutions_;
-    int sol_count_;
+    int sol_count_, min_node_level_;
     float accept_score_, max_steps_, min_ss_score_;
     
 };
