@@ -53,7 +53,8 @@ public:
     ss_score_(n.ss_score_),
     level_(n.level_),
     size_(n.size_),
-    score_(n.score_)
+    score_(n.score_),
+    center_(n.center_)
     {}
     
 public:
@@ -66,6 +67,16 @@ public:
         new_n.level_ = level_;
         new_n.node_type_usages_ = node_type_usages_;
         return new_n;
+    }
+    
+    inline
+    void
+    calc_center() {
+        center_.x(0); center_.y(0); center_.z(0);
+        for(auto const & b : cur_state_->beads()) {
+            center_ += b;
+        }
+        center_ /= cur_state_->beads().size();
     }
     
     inline
@@ -86,7 +97,9 @@ public:
         if(ntype_ == -1) { return; }
         node_type_usages_ = parent_->node_type_usages_;
         node_type_usages_[ntype_] += 1;
+        
     }
+
     
     inline
     void
@@ -145,6 +158,10 @@ public: //getters
     int
     parent_end_index() { return parent_end_index_; }
     
+    inline
+    Point const &
+    center() { return center_; }
+    
 
 public: //setters
     
@@ -166,6 +183,7 @@ public: //setters
 private:
     MotifStateOP ref_state_, cur_state_;
     MotifStateSearchNodeOP parent_;
+    Point center_;
     Ints node_type_usages_;
     int parent_end_index_, level_, size_, ntype_;
     float ss_score_, score_;

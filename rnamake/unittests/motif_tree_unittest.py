@@ -6,7 +6,6 @@ import rnamake.resource_manager as rm
 import rnamake.secondary_structure_factory as ssfactory
 import rnamake.motif_type as motif_type
 import rnamake.eternabot.sequence_designer as sequence_designer
-import rnamake.motif_tree_topology as motif_tree_topology
 import util
 
 class MotifTreeUnittest(unittest.TestCase):
@@ -112,7 +111,45 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt.merger.get_structure().chains()) != 4:
             raise ValueError("did nto get the correct number of chains")
 
+    def test_topology_to_str(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(10)
+        s = mt.topology_to_str()
+        mt2 = motif_tree.motif_tree_from_topology_str(s)
+        if len(mt) != len(mt2):
+            self.fail("did not get the right number of motifs")
 
+        for i in range(len(mt)):
+            n1 = mt.get_node(i)
+            n2 = mt2.get_node(i)
+
+            if n1.data.name != n2.data.name:
+                self.fail("node " + str(i) + " did not have the same name")
+
+            if n1.data.ends[0].name() != n2.data.ends[0].name():
+                self.fail("node " + str(i) + " did not have the same end name")
+
+    def test_replace_motif(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(10)
+        m_new = builder.libs[0].get_random()
+        #mt.to_pdb("test.pdb", renumber=1)
+        #mt.write_pdbs("org")
+
+        mt.replace_motif(2, m_new)
+        #mt.write_pdbs()
+        #mt.to_pdb("test_new.pdb", renumber=1)
+
+    def test_copy(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(10)
+        mt_copy = mt.copy()
+
+        if len(mt) != len(mt_copy):
+            self.fail("did not copy the right number of nodes")
+
+        mt.get_node(0).data.name = "test"
+        print mt_copy.node(0)
 
 def main():
     unittest.main()

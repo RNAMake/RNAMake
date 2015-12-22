@@ -302,6 +302,10 @@ class BuildSqliteLibraries(object):
         data = []
         keys = ['data', 'name', 'end_name', 'end_id', 'id']
 
+        mes_keys = ['data', 'name', 'id']
+        mes_data = []
+
+        count = 0
         for i, c in enumerate(clusters):
             lowest = c.motifs[0]
             for m in c.motifs:
@@ -312,6 +316,7 @@ class BuildSqliteLibraries(object):
                lowest.name == "TWOWAY.1GID.2" or \
                lowest.name == "TWOWAY.2GDI.4":
                 continue
+            count += 1
             #print i, lowest.score, lowest.name
             #lowest.to_pdb("m."+str(i)+".pdb")
 
@@ -319,14 +324,35 @@ class BuildSqliteLibraries(object):
             motif_array_names.append(lowest.name)
 
             data.append([lowest.to_str(), lowest.name,
-                        lowest.ends[0].name(), lowest.end_ids[0], i])
+                        lowest.ends[0].name(), lowest.end_ids[0], count])
+
+            #remove duplicate sequences
+            motifs = []
+            end_ids = {}
+            for m in c.motifs:
+                if m.end_ids[0] not in end_ids:
+                    end_ids[m.end_ids[0]] = m
+                    motifs.append(m)
+                    continue
+
+                org_m = end_ids[m.end_ids[0]]
+                if m.score < org_m.score:
+                    motifs.remove(org_m)
+                    motifs.append(m)
+                    end_ids[m.end_ids[0]] = m
+
+            scores = [1 for x in motifs]
+
+            me = motif_ensemble.MotifEnsemble()
+            me.setup(lowest.name, motifs, scores)
+            mes_data.append([me.to_str(), me.id, count])
 
 
         path = settings.RESOURCES_PATH +"/motif_libraries_new/unique_twoway.db"
         sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
-        #path = settings.RESOURCES_PATH +"/motif_libraries_new/twoway_clusters.db"
-        #sqlite_library.build_sqlite_library(path, motif_arrays, motif_array_names)
+        path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/twoway_clusters.db"
+        sqlite_library.build_sqlite_library_2(path, mes_data, mes_keys, 'id')
 
     def build_ss_and_seq_libraries(self):
         libnames = ["twoway", "tcontact", "hairpin", "nway"]

@@ -9,10 +9,10 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>catch.xcscheme</key>
+		<key>cl_option_unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>7</integer>
+			<integer>8</integer>
 		</dict>
 		<key>design_primers.xcscheme</key>
 		<dict>
@@ -23,6 +23,11 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>6</integer>
+		</dict>
+		<key>option_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>7</integer>
 		</dict>
 		<key>simulate_tectos.xcscheme</key>
 		<dict>
@@ -83,6 +88,16 @@
 			<true/>
 		</dict>
 		<key>1C4B4F461AB8F7B300A2F04C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF0CD1C275012008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF0E01C275383008C5671</key>
 		<dict>
 			<key>primary</key>
 			<true/>

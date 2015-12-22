@@ -9,19 +9,26 @@ import tree
 import resource_manager as rm
 import secondary_structure_factory as ssfactory
 import secondary_structure
-import motif_tree_topology
 import motif_merger
+import motif_connection
 
 def motif_tree_from_topology_str(s):
     mt = MotifTree()
     spl = s.split("|")
-    for i, e in enumerate(spl[:-1]):
+    node_spl = spl[0].split()
+    for i, e in enumerate(node_spl):
         n_spl = e.split(",")
-        m = rm.manager.get_motif(name=n_spl[0], end_id=n_spl[1])
+        m = rm.manager.get_motif(name=n_spl[0], end_name=n_spl[1], end_id=n_spl[2])
         if i == 0:
             mt.add_motif(m)
         else:
-            mt.add_motif(m, parent_index=int(n_spl[2]))
+            mt.add_motif(m, parent_index=int(n_spl[3]), parent_end_index=int(n_spl[4]))
+
+    connection_spl = spl[1].split()
+    for c_str in connection_spl:
+        c_spl = c_str.split(",")
+        mc = motif_connection.MotifConnection(int(c_spl[0]), int(c_spl[1]),
+                                              c_spl[2], c_spl[3])
 
     return mt
 
@@ -38,10 +45,6 @@ def motif_tree_from_ss_tree(sst):
     return mt
 
 
-class Connection(object):
-    def __init__(self, i, j, name_i, name_j):
-        self.i, self.j = i, j
-        self.name_i, self.name_j = name_i, name_j
 
 class MotifTree(base.Base):
     """
@@ -90,7 +93,7 @@ m
 
         self.tree = tree.TreeStatic()
         self.merger = motif_merger.MotifMerger()
-        self.connections = {}
+        self.connections = []
 
     def __len__(self):
         return len(self.tree)
@@ -114,6 +117,14 @@ m
 
     def next(self):
         return self.tree.next()
+
+    def copy(self):
+        mt = MotifTree()
+        new_tree = self.tree.copy()
+        mt.tree = new_tree
+        mt.merger = self.merger.copy([n.data for n in new_tree.nodes])
+        return mt
+
 
     def setup_options_and_constraints(self):
         options = { 'sterics'              : 1}
@@ -164,6 +175,27 @@ m
             return pos
 
         return -1
+
+    def replace_motif(self, pos, new_motif):
+        node = self.get_node(pos)
+        if len(new_motif.ends) != len(node.data.ends):
+            raise ValueError("attmped to replace a motif with a different number of ends")
+
+        new_motif = new_motif.copy()
+        self.merger.replace_motif(node.data, new_motif)
+        node.data = new_motif
+
+        for n in tree.transverse_tree(self.tree, pos):
+            parent = n.parent
+            if parent is None:
+                continue
+            pei = n.parent_end_index()
+            m_added = motif.get_aligned_motif(parent.data.ends[pei],
+                                              n.data.ends[0],
+                                              n.data)
+            n.data = m_added
+            self.merger.update_motif(n.data)
+
 
     def get_node(self, i):
         return self.tree.get_node(i)
@@ -231,8 +263,12 @@ m
     def topology_to_str(self):
         s = ""
         for n in self.tree.nodes:
-            s += n.data.name + "," + n.data.end_ids[0] + "," + \
-                 str(n.parent_index()) + "|"
+            s += n.data.name + "," + n.data.ends[0].name() + "," +\
+                 n.data.end_ids[0] + "," + str(n.parent_index()) + \
+                 "," + str(n.parent_end_index())  +  " "
+        s += "|"
+        for c in self.connections:
+            s += c.to_str() + " "
         return s
 
     def _steric_clash(self, m):
@@ -259,13 +295,13 @@ m
             if len(head_node_open_ends) == 0:
                 break
 
-    def add_connection(self, i, j, i_bp_name=None, j_bp_name=None):
+    def add_connection(self, i, j, i_bp_name="", j_bp_name=""):
         node_i = self.get_node(i)
         node_j = self.get_node(j)
 
         node_i_indexes = []
         node_j_indexes = []
-        if i_bp_name is not None:
+        if i_bp_name != "":
             ei = node_i.data.get_end_index(i_bp_name)
             if not node_i.available_pos(ei):
                 raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
@@ -275,7 +311,7 @@ m
             node_i_indexes = node_i.available_children_pos()
             node_i_indexes.remove(0)
 
-        if j_bp_name is not None:
+        if j_bp_name != "":
             ei = node_j.data.get_end_index(j_bp_name)
             if not node_j.available_pos(ei):
                 raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
@@ -294,6 +330,8 @@ m
 
         #self.graph.connect(i, j, node_i_indexes[0], node_j_indexes[0])
 
+        self.connections.append(motif_connection.MotifConnection(i, j,
+                                                                 i_bp_name, j_bp_name))
         self.merger.connect_motifs(node_i.data, node_j.data,
                                    node_i.data.ends[node_i_indexes[0]],
                                    node_j.data.ends[node_j_indexes[0]])

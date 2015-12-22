@@ -31,6 +31,8 @@ def motif_graph_from_topology(s):
         if pos == -1:
             raise ValueError("cannot get mg from topology failed to add motif")
 
+    if len(spl) == 1:
+        return mg
     connection_spl = spl[1].split("|")
     for c_spl in connection_spl[:-1]:
         sspl = c_spl.split()

@@ -98,13 +98,15 @@ CL_OptionUnittest::run_all() {
     func_map["test_add_option" ] = &CL_OptionUnittest::test_parse_1;
     func_map["test_option"     ] = &CL_OptionUnittest::test_parse_2;
     
+    int failed = 0;
     for(auto const & kv : func_map) {
         try {
             int result = (this->*kv.second)();
         }
         catch(...) {
             std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+            failed += 1;
         }
     }
-    return 0;
+    return failed;
 }
