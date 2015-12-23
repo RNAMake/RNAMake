@@ -7,13 +7,38 @@
 //
 
 #include "mini_ttr.h"
+#include "base/cl_option.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_graph.h"
 #include "motif_state_search/motif_state_search.h"
 
+Options
+parse_command_line(
+    int argc,
+    const char ** argv) {
+    
+    CommandLineOptions cl_opts;
+    auto search = MotifStateSearch();
+    //for(auto const & o : search)
+    //cl_opts.add_option("max_node_level", "", OptionType::INT_TYPE, "12", false);
+    /*cl_opts.add_option("fseq", "", STRING_TYPE,
+                       "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", false);
+    cl_opts.add_option("fss" , "", STRING_TYPE,
+                       "((((((....((((((((((((....))))))))))))....))))))", false);
+    cl_opts.add_option("cseq", "", STRING_TYPE,
+                       "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG", false);
+    cl_opts.add_option("css" , "", STRING_TYPE,
+                       "(((((((..((((((((((((....))))))))))))...)))))))", false);
+    cl_opts.add_option("s", "steps", FLOAT_TYPE, "1000000", false);*/
+    
+    return cl_opts.parse_command_line(argc, argv);
+    
+}
+
 
 
 int main(int argc, const char * argv[]) {
+    auto options = parse_command_line(argc, argv);
     String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
     ResourceManager::getInstance().add_motif(base_path+"GAAA_tetraloop");
     

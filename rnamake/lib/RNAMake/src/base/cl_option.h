@@ -19,19 +19,12 @@
 #include "base/option.h"
 
 
-enum OptionType {
-    BOOL_TYPE,
-    INT_TYPE,
-    STRING_TYPE,
-    FLOAT_TYPE
-};
-
-struct CL_Option {
+struct CommandLineOption {
     
-    CL_Option(
+    CommandLineOption(
         String const & ns_name,
         String nl_name = "",
-        OptionType notype = STRING_TYPE,
+        OptionType notype = OptionType::STRING,
         String nvalue = "",
         bool nrequired = false):
     s_name(ns_name),
@@ -50,13 +43,13 @@ struct CL_Option {
     bool filled;
 };
 
-typedef std::shared_ptr<CL_Option> CL_OptionOP;
+typedef std::shared_ptr<CommandLineOption> CommandLineOptionOP;
 
-class CL_Options {
+class CommandLineOptions {
 public:
-    CL_Options():
-    s_cl_opts_(std::map<String, CL_OptionOP>()),
-    l_cl_opts_(std::map<String, CL_OptionOP>())
+    CommandLineOptions():
+    s_cl_opts_(std::map<String, CommandLineOptionOP>()),
+    l_cl_opts_(std::map<String, CommandLineOptionOP>())
     {}
     
 
@@ -65,9 +58,13 @@ public:
     add_option(
         String const & s_name,
         String l_name = "",
-        OptionType otype = STRING_TYPE,
+        OptionType otype = OptionType::STRING,
         String nvalue = "",
         bool required = false);
+    
+    void
+    add_options(
+        Options &);
     
     Options
     parse_command_line(
@@ -77,12 +74,12 @@ public:
 private:
     Option
     _generate_option(
-        CL_OptionOP const &,
+        CommandLineOptionOP const &,
         String const &);
     
 private:
-    std::map<String, CL_OptionOP> s_cl_opts_;
-    std::map<String, CL_OptionOP> l_cl_opts_;
+    std::map<String, CommandLineOptionOP> s_cl_opts_;
+    std::map<String, CommandLineOptionOP> l_cl_opts_;
 
 };
 

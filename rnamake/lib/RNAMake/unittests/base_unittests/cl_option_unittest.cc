@@ -15,16 +15,16 @@
 
 int
 CL_OptionUnittest::test_add_option() {
-    CL_Options cl_opts;
-    cl_opts.add_option("test", "", FLOAT_TYPE, "5.0", false);
+    CommandLineOptions cl_opts;
+    cl_opts.add_option("test", "", OptionType::FLOAT, "5", false);
     return 1;
 }
 
 int
 CL_OptionUnittest::test_parse_1() {
     
-    CL_Options cl_opts;
-    cl_opts.add_option("test", "", FLOAT_TYPE, "5.0", false);
+    CommandLineOptions cl_opts;
+    cl_opts.add_option("test", "", OptionType::FLOAT, "5", false);
     
     char ** argv = new char*[3];
     for(int i = 0; i < 3; i++) {
@@ -37,7 +37,7 @@ CL_OptionUnittest::test_parse_1() {
     
     Options opts = cl_opts.parse_command_line(3, c_argv);
     
-    if(opts.option<float>("test") != 7.0f) { return 0; }
+    if(opts.get_float("test") != 7.0f) { return 0; }
     
     return 1;
     
@@ -45,8 +45,8 @@ CL_OptionUnittest::test_parse_1() {
 
 int
 CL_OptionUnittest::test_parse_2() {
-    CL_Options cl_opts;
-    cl_opts.add_option("test2", "", FLOAT_TYPE, "5.0", false);
+    CommandLineOptions cl_opts;
+    cl_opts.add_option("test2", "", OptionType::FLOAT, "5", false);
 
     char ** argv = new char*[3];
     for(int i = 0; i < 3; i++) {
@@ -63,12 +63,12 @@ CL_OptionUnittest::test_parse_2() {
         exit(EXIT_FAILURE);
     } catch(...) {}
     
-    cl_opts.add_option("test", "", FLOAT_TYPE, "5.0", true);
+    cl_opts.add_option("test", "", OptionType::FLOAT, "5.0", true);
     Options opts = cl_opts.parse_command_line(3, c_argv);
     
-    if(opts.option<float>("test2") != 5.0f) { return 0; }
+    if(opts.get_float("test2") != 5.0f) { return 0; }
 
-    cl_opts.add_option("test3", "", FLOAT_TYPE, "5.0", true);
+    cl_opts.add_option("test3", "", OptionType::FLOAT, "5.0", true);
 
     try {
         opts = cl_opts.parse_command_line(3, c_argv);
@@ -81,6 +81,31 @@ CL_OptionUnittest::test_parse_2() {
 }
 
 int
+CL_OptionUnittest::test_add_by_options() {
+    auto cl_opts = CommandLineOptions();
+    auto opts = Options("TestOptions");
+    opts.add_option(Option("test_2", "test", OptionType::STRING));
+    
+    cl_opts.add_options(opts);
+    
+    char ** argv = new char*[3];
+    for(int i = 0; i < 3; i++) {
+        argv[i] = new char[100];
+    }
+    strcpy(argv[0], "");
+    strcpy(argv[1], "-test_2");
+    strcpy(argv[2], "test_3");
+    char const ** c_argv =  ( const char ** ) argv;
+
+    auto opts_2 = cl_opts.parse_command_line(3, c_argv);
+    if(opts_2.get_string("test_2") == "test_2") {
+        throw UnittestException("did not get expected option value");
+    }
+    
+    return 1;
+}
+
+int
 CL_OptionUnittest::run() {
     if (test_add_option() == 0)  {  std::cout << "test_add_option failed" << std::endl; }
     if (test_parse_1() == 0)     {  std::cout << "test_parse_1 failed" << std::endl; }
@@ -89,15 +114,18 @@ CL_OptionUnittest::run() {
     return 1;
 }
 
+
+
 int
 CL_OptionUnittest::run_all() {
     String name = "CL_OptionUnittest";
     typedef int (CL_OptionUnittest::*fptr)();
     std::map<String, fptr> func_map;
-    func_map["test_creation"   ] = &CL_OptionUnittest::test_add_option;
-    func_map["test_add_option" ] = &CL_OptionUnittest::test_parse_1;
-    func_map["test_option"     ] = &CL_OptionUnittest::test_parse_2;
-    
+    //func_map["test_creation"      ] = &CL_OptionUnittest::test_add_option;
+    //func_map["test_add_option"    ] = &CL_OptionUnittest::test_parse_1;
+    //func_map["test_option"        ] = &CL_OptionUnittest::test_parse_2;
+    func_map["test_add_by_options"] = &CL_OptionUnittest::test_add_by_options;
+
     int failed = 0;
     for(auto const & kv : func_map) {
         try {

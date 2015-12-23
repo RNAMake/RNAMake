@@ -22,7 +22,7 @@ public:
     ~OptionUnittest() {}
     
     int
-    size() { return 3; }
+    size() { return 4; }
     
 public:
     
@@ -34,6 +34,9 @@ public:
     
     int
     test_option();
+    
+    int
+    test_iteration();
     
 public:
     

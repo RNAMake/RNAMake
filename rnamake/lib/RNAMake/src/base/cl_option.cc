@@ -12,7 +12,7 @@
 #include "base/option.h"
 
 void
-CL_Options::add_option(
+CommandLineOptions::add_option(
     String const & s_name,
     String l_name,
     OptionType otype,
@@ -23,7 +23,8 @@ CL_Options::add_option(
         throw "cannot add option without a short name or a long name\n";
     }
 
-    CL_OptionOP opt(new CL_Option(s_name, l_name, otype, nvalue, required));
+    
+    auto opt = std::make_shared<CommandLineOption>(s_name, l_name, otype, nvalue, required);
     
     if(s_cl_opts_.find(s_name) != s_cl_opts_.end()) {
         throw "cannot add option " + s_name + " already exists in CL_Options";
@@ -38,9 +39,28 @@ CL_Options::add_option(
     
 }
 
+
+void
+CommandLineOptions::add_options(
+    Options & opts) {
+    
+    for(auto & opt : opts) {
+        if(opt.type() == OptionType::STRING) {
+            add_option(opt.name(), "", opt.type(), opt.get_string(), false);
+        }
+        if(opt.type() == OptionType::FLOAT) {
+            add_option(opt.name(), "", opt.type(), std::to_string(opt.get_float()), false);
+        }
+        if(opt.type() == OptionType::INT) {
+            add_option(opt.name(), "", opt.type(), std::to_string(opt.get_int()), false);
+        }
+    }
+    
+}
+
 Option
-CL_Options::_generate_option(
-    CL_OptionOP const & cl_opt,
+CommandLineOptions::_generate_option(
+    CommandLineOptionOP const & cl_opt,
     String const & value) {
     
     cl_opt->filled = true;
@@ -49,21 +69,27 @@ CL_Options::_generate_option(
     if(cl_opt->s_name.length() != 0) { name = cl_opt->s_name; }
     else                             { name = cl_opt->l_name; }
         
-    if     (cl_opt->otype == STRING_TYPE) { return Option(name, value); }
-    else if(cl_opt->otype == FLOAT_TYPE ) { return Option(name, std::stof(value)); }
-    else if(cl_opt->otype == INT_TYPE   ) { return Option(name, std::stoi(value)); }
+    if     (cl_opt->otype == OptionType::STRING) {
+        return Option(name, value, OptionType::STRING);
+    }
+    else if(cl_opt->otype == OptionType::FLOAT ) {
+        return Option(name, std::stof(value), OptionType::FLOAT);
+    }
+    else if(cl_opt->otype == OptionType::INT   ) {
+        return Option(name, std::stoi(value), OptionType::INT);
+    }
     else { throw "could not generate option from command line"; }
 
 }
 
 Options
-CL_Options::parse_command_line(
+CommandLineOptions::parse_command_line(
     int const argc,
     char const ** argv) {
     
-    Options opts;
+    Options opts("CMDOptions");
     String key = "";
-    CL_OptionOP cl_opt;
+    CommandLineOptionOP cl_opt;
     
     int last_arg = argc-1;
     for(int i = 1; i < last_arg; i++) {
@@ -71,6 +97,7 @@ CL_Options::parse_command_line(
             //
             key = String(argv[i]);
             key = key.substr(1);
+
 
             if(argv[i][1] == '-') {
                 if(l_cl_opts_.find(key) == l_cl_opts_.end()) {
@@ -92,11 +119,10 @@ CL_Options::parse_command_line(
                 opt = _generate_option(cl_opt, String(argv[i+1]));
             }
             else {
-                opt = _generate_option(cl_opt, "0");
+                opt = _generate_option(cl_opt, "1");
             }
             
             opts.add_option(opt);
-            
         }
     }
     

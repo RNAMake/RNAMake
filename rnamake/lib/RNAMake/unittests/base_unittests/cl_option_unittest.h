@@ -20,7 +20,7 @@ public:
     ~CL_OptionUnittest() {}
     
     int
-    size() { return 3; }
+    size() { return 4; }
     
 public:
     
@@ -32,6 +32,9 @@ public:
     
     int
     test_parse_2();
+    
+    int
+    test_add_by_options();
     
 
 public:

@@ -70,7 +70,6 @@
 		1C4BF0EF1C2753EE008C5671 /* option_unittest_app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4BF0DE1C275241008C5671 /* option_unittest_app.cpp */; };
 		1C4BF0F01C2753EE008C5671 /* option_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DBC1B0A55AB0076284E /* option_unittest.cc */; };
 		1C4BF0F11C27540E008C5671 /* string.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CBEFE791AF0636B00C03772 /* string.cc */; };
-		1C4BF0F21C27540E008C5671 /* base.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB11B095AE80076284E /* base.cc */; };
 		1C4BF0F31C27540E008C5671 /* variant.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB51B0985A40076284E /* variant.cc */; };
 		1C4BF0F41C27540E008C5671 /* cl_option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB81B09B43F0076284E /* cl_option.cc */; };
 		1C4BF0F51C275419008C5671 /* cl_option_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DBF1B0A63340076284E /* cl_option_unittest.cc */; };
@@ -1705,7 +1704,6 @@
 			files = (
 				1C4BF0F51C275419008C5671 /* cl_option_unittest.cc in Sources */,
 				1C4BF0F11C27540E008C5671 /* string.cc in Sources */,
-				1C4BF0F21C27540E008C5671 /* base.cc in Sources */,
 				1C4BF0F31C27540E008C5671 /* variant.cc in Sources */,
 				1C4BF0F41C27540E008C5671 /* cl_option.cc in Sources */,
 				1C4BF0F71C2754F8008C5671 /* cl_option_unittest_app.cpp in Sources */,
@@ -2145,12 +2143,18 @@
 		1C4BF0D31C275012008C5671 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests,
+					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
@@ -2159,9 +2163,15 @@
 		1C4BF0D41C275012008C5671 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				COPY_PHASE_STRIP = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests,
+					/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

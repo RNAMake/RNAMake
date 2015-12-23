@@ -13,5 +13,16 @@
 
 #include "base/base.h"
 
+Options
+parse_command_line(
+    int argc,
+    const char ** argv);
+
+class MiniTTR {
+public:
+    MiniTTR() {}
+    
+    ~MiniTTR() {}
+};
 
 #endif /* defined(__RNAMake__mini_ttr__) */
