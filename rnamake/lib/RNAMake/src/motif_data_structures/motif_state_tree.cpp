@@ -10,7 +10,7 @@
 #include "resources/resource_manager.h"
 
 
-void
+/*void
 MotifStateTree::setup_options() {
     options_ = Options();
     options_.add_option(Option("sterics", 1));
@@ -21,7 +21,7 @@ void
 MotifStateTree::update_var_options() {
     sterics_              = options_.option<int>("sterics");
     clash_radius_         = options_.option<float>("clash_radius");
-}
+}*/
 
 int
 MotifStateTree::add_state(

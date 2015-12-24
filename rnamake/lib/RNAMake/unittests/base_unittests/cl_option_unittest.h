@@ -11,7 +11,35 @@
 
 #include <stdio.h>
 
+#include "base/string.h"
 #include "unittest.h"
+
+struct CommandLineArgs {
+    char ** argv_;
+    int argc;
+    
+    CommandLineArgs(
+        String const & s) {
+        
+        Strings spl = split_str_by_delimiter(s, " ");
+        argv_ = new char*[spl.size()+1];
+        argv_[0] = new char[100];
+        strcpy(argv_[0], "program_name");
+        for(int i = 0; i < spl.size(); i++) {
+            argv_[i+1] = new char[spl[i].size()];
+            strcpy(argv_[i+1], spl[i].c_str());
+        }
+        argc = (int)(spl.size() + 1);
+
+    }
+    
+    char const **
+    argv() {
+        return ( const char ** ) argv_;
+
+    }
+    
+};
 
 class CL_OptionUnittest : public Unittest {
 public:
@@ -20,7 +48,7 @@ public:
     ~CL_OptionUnittest() {}
     
     int
-    size() { return 4; }
+    size() { return 5; }
     
 public:
     
@@ -32,6 +60,9 @@ public:
     
     int
     test_parse_2();
+    
+    int
+    test_parse_3();
     
     int
     test_add_by_options();

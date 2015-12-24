@@ -22,6 +22,16 @@ namespace motif_structures {
 void
 MotifGraphUnittest::test_creation() {
     auto mg = MotifGraph();
+    auto sterics = mg.get_bool_option("sterics");
+    if(sterics != true) {
+        throw UnittestException("was unable to retreieve correct option value");
+    }
+    
+    mg.set_option_value("sterics", false);
+    sterics = mg.get_bool_option("sterics");
+    if(sterics != false) {
+        throw UnittestException("was unable to retreieve correct option value");
+    }
 }
 
 void
@@ -229,6 +239,36 @@ MotifGraphUnittest::run() {
     //test_memory_2();
     return 0;
 }
+    
+int
+MotifGraphUnittest::run_all() {
+    String name = "MotifGraphUnittest";
+    typedef void (MotifGraphUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_creation"      ] = &MotifGraphUnittest::test_creation;
+    func_map["test_add_motif"     ] = &MotifGraphUnittest::test_add_motif;
+    func_map["test_remove"        ] = &MotifGraphUnittest::test_remove;
+    func_map["test_remove_2"      ] = &MotifGraphUnittest::test_remove_2;
+    func_map["test_copy"          ] = &MotifGraphUnittest::test_copy;
+    func_map["test_replace_ideal_helices"  ] = &MotifGraphUnittest::test_replace_ideal_helices;
+    func_map["test_replace_ideal_helices_2"] = &MotifGraphUnittest::test_replace_ideal_helices_2;
+    func_map["test_secondary_structure"    ] = &MotifGraphUnittest::test_secondary_structure;
+    func_map["test_replace_sequence"       ] = &MotifGraphUnittest::test_replace_sequence;
+
+
+    int failed = 0;
+    for(auto const & kv : func_map) {
+        try {
+            (this->*kv.second)();
+        }
+        catch(std::exception const & e) {
+            std::cout << name << "::" << kv.first << " returned ERROR! : " << e.what() << std::endl;
+            failed++;
+        }
+    }
+    return failed;
+}
+    
     
 }
 }

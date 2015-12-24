@@ -51,14 +51,14 @@ struct MSTNodeData {
 typedef std::shared_ptr<MSTNodeData> MSTNodeDataOP;
 typedef TreeNodeOP<MSTNodeDataOP> MotifStateTreeNodeOP;
 
-class MotifStateTree : public Base {
+class MotifStateTree {
 public:
     
     MotifStateTree() {
         tree_ = TreeStatic<MSTNodeDataOP>();
         aligner_ = MotifStateAligner();
         queue_ = std::queue<MotifStateTreeNodeOP>();
-        setup_options(); update_var_options();
+        //setup_options(); update_var_options();
     }
     
     ~MotifStateTree() {}
@@ -137,11 +137,12 @@ private:
     
     
 private:
-    void
+    /*void
     setup_options();
     
     void
     update_var_options();
+    */
     
 private:
     TreeStatic<MSTNodeDataOP> tree_;

@@ -16,8 +16,8 @@ MotifGraph::MotifGraph(String const & s):
 graph_(GraphStatic<MotifOP>()),
 merger_(MotifMerger()),
 clash_radius_(2.5),
+options_(Options("MotifGraphOptions")),
 sterics_(0) {
-    setup_options();
     auto spl = split_str_by_delimiter(s, "&");
     auto node_spl = split_str_by_delimiter(spl[0], "|");
     Strings sspl;
@@ -49,15 +49,16 @@ sterics_(0) {
 
 void
 MotifGraph::setup_options() {
-    options_ = Options();
-    options_.add_option(Option("sterics", 1));
-    options_.add_option(Option("clash_radius", 2.9f));
+    options_.add_option("sterics", true, OptionType::BOOL);
+    options_.add_option("clash_radius", 2.9f, OptionType::FLOAT);
+    options_.lock_option_adding();
+    update_var_options();
 }
 
 void
 MotifGraph::update_var_options() {
-    sterics_              = options_.option<int>("sterics");
-    clash_radius_         = options_.option<float>("clash_radius");
+    sterics_              = options_.get_bool("sterics");
+    clash_radius_         = options_.get_int("clash_radius");
 }
 
 int
@@ -115,13 +116,13 @@ MotifGraph::add_motif(
     int parent_end_index) {
 
     auto m = MotifOP();
-    //try {
+    try {
         m = ResourceManager::getInstance().get_motif(m_name);
-    //}
-    /*catch(ResourceManagerException const & e) {
+    }
+    catch(ResourceManagerException const & e) {
         throw MotifGraphException("failed to retrieve motif by name in add_motif: "
                                    + String(e.what()));
-    }*/
+    }
     
     return add_motif(m, parent_index, parent_end_index);
 }

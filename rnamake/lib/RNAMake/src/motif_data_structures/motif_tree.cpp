@@ -11,15 +11,16 @@
 
 void
 MotifTree::setup_options() {
-    options_ = Options();
-    options_.add_option(Option("sterics", 1));
-    options_.add_option(Option("clash_radius", 2.9f));
+    options_.add_option("sterics", true, OptionType::BOOL);
+    options_.add_option("clash_radius", 2.9f, OptionType::FLOAT);
+    options_.lock_option_adding();
+    update_var_options();
 }
 
 void
 MotifTree::update_var_options() {
-    sterics_              = options_.option<int>("sterics");
-    clash_radius_         = options_.option<float>("clash_radius");
+    sterics_              = options_.get_bool("sterics");
+    clash_radius_         = options_.get_int("clash_radius");
 }
 
 

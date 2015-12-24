@@ -23,6 +23,9 @@ public:
     
     ~MotifTreeUnittest() {}
     
+    int
+    size() { return 2; }
+    
 public:
     
     void
@@ -39,8 +42,8 @@ public:
     int
     run();
     
-    //int
-    //run_all();
+    int
+    run_all();
     
 private:
     

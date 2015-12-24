@@ -23,6 +23,9 @@ public:
     
     ~MotifGraphUnittest() {}
     
+    int
+    size() { return 9; }
+    
 public:
     
     void
@@ -66,8 +69,8 @@ public:
     int
     run();
     
-    //int
-    //run_all();
+    int
+    run_all();
     
 private:
     

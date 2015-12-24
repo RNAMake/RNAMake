@@ -10,7 +10,7 @@
 #define __RNAMake__motif_tree__
 
 #include <stdio.h>
-#include "base/base.h"
+#include "base/option.h"
 #include "data_structure/tree/tree.h"
 #include "motif/motif.h"
 #include "motif_data_structures/motif_merger.h"
@@ -24,14 +24,13 @@ public:
 };
 
 
-class MotifTree : public Base  {
+class MotifTree  {
 public:
     
     MotifTree():
     tree_(TreeStatic<MotifOP>()),
     merger_(MotifMerger()),
-    clash_radius_(2.5),
-    sterics_(1)
+    options_(Options("MotifTreeOptions"))    
     { setup_options(); }
     
     ~MotifTree() {}
@@ -77,7 +76,37 @@ public: //merger wrappers
         String const fname = "test.pdb",
         int renumber = -1) {
         return merger_.to_pdb(fname, renumber);
+        
     }
+    
+public: //option wrappers
+    
+    inline
+    float
+    get_int_option(String const & name) { return options_.get_int(name); }
+    
+    inline
+    float
+    get_float_option(String const & name) { return options_.get_float(name); }
+    
+    inline
+    String
+    get_string_option(String const & name) { return options_.get_string(name); }
+    
+    inline
+    bool
+    get_bool_option(String const & name) { return options_.get_bool(name); }
+    
+    
+    template<typename T>
+    void
+    set_option_value(
+        String const & name,
+        T const & val) {
+        options_.set_value(name, val);
+        update_var_options();
+    }
+
     
 public: //add motif interface
     
@@ -122,8 +151,9 @@ private:
 private:
     TreeStatic<MotifOP> tree_;
     MotifMerger merger_;
-    int sterics_;
+    bool sterics_;
     float clash_radius_;
+    Options options_;
 };
 
 typedef std::shared_ptr<MotifTree> MotifTreeOP;

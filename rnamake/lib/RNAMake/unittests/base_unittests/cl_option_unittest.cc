@@ -25,20 +25,27 @@ CL_OptionUnittest::test_parse_1() {
     
     CommandLineOptions cl_opts;
     cl_opts.add_option("test", "", OptionType::FLOAT, "5", false);
-    
-    char ** argv = new char*[3];
-    for(int i = 0; i < 3; i++) {
-        argv[i] = new char[100];
+    cl_opts.add_option("test_2", "", OptionType::STRING, "test_3", false);
+
+    auto cla = CommandLineArgs("-test 7.0");
+    auto opts = cl_opts.parse_command_line(cla.argc, cla.argv());
+
+    if(opts.get_float("test") != 7.0f) {
+        throw UnittestException("did not parse float option correctly");
     }
-    strcpy(argv[0], "");
-    strcpy(argv[1], "-test");
-    strcpy(argv[2], "7.0");
-    char const ** c_argv =  ( const char ** ) argv;
     
-    Options opts = cl_opts.parse_command_line(3, c_argv);
+    if(opts.get_string("test_2") != "test_3") {
+        throw UnittestException("did not parse string option correctly");
+    }
     
-    if(opts.get_float("test") != 7.0f) { return 0; }
-    
+    cla = CommandLineArgs("-test 7.0 -test_2 found");
+    opts = cl_opts.parse_command_line(cla.argc, cla.argv());
+
+    if(opts.get_string("test_2") != "found") {
+        std::cout << opts.get_string("test_2") << std::endl;
+        throw UnittestException("did not parse string option correctly");
+    }
+
     return 1;
     
 }
@@ -81,10 +88,27 @@ CL_OptionUnittest::test_parse_2() {
 }
 
 int
+CL_OptionUnittest::test_parse_3() {
+    CommandLineOptions cl_opts;
+    cl_opts.add_option("score", "", OptionType::FLOAT, "5", false);
+    cl_opts.add_option("sterics", "", OptionType::BOOL, "0", false);
+
+    auto cla = CommandLineArgs("-score 7 -sterics");
+    auto opts = cl_opts.parse_command_line(cla.argc, cla.argv());
+    auto val = opts.get_bool("sterics");
+    if(val != true) {
+        throw UnittestException("did not get correct bool option");
+    }
+    
+    
+    return 1;
+}
+
+int
 CL_OptionUnittest::test_add_by_options() {
     auto cl_opts = CommandLineOptions();
     auto opts = Options("TestOptions");
-    opts.add_option(Option("test_2", "test", OptionType::STRING));
+    opts.add_option("test_2", String("test"), OptionType::STRING);
     
     cl_opts.add_options(opts);
     
@@ -121,9 +145,10 @@ CL_OptionUnittest::run_all() {
     String name = "CL_OptionUnittest";
     typedef int (CL_OptionUnittest::*fptr)();
     std::map<String, fptr> func_map;
-    //func_map["test_creation"      ] = &CL_OptionUnittest::test_add_option;
-    //func_map["test_add_option"    ] = &CL_OptionUnittest::test_parse_1;
-    //func_map["test_option"        ] = &CL_OptionUnittest::test_parse_2;
+    func_map["test_creation"      ] = &CL_OptionUnittest::test_add_option;
+    func_map["test_parse_1"       ] = &CL_OptionUnittest::test_parse_1;
+    func_map["test_parse_2"       ] = &CL_OptionUnittest::test_parse_2;
+    func_map["test_parse_3"       ] = &CL_OptionUnittest::test_parse_3;
     func_map["test_add_by_options"] = &CL_OptionUnittest::test_add_by_options;
 
     int failed = 0;
@@ -131,9 +156,8 @@ CL_OptionUnittest::run_all() {
         try {
             int result = (this->*kv.second)();
         }
-        catch(...) {
-            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
-            failed += 1;
+        catch(std::exception const & e) {
+            std::cout << name << "::" << kv.first << " returned ERROR! : " << e.what() << std::endl;
         }
     }
     return failed;
