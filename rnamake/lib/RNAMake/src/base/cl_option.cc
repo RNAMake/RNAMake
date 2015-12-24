@@ -45,20 +45,20 @@ CommandLineOptions::add_options(
     Options & opts) {
     
     for(auto & opt : opts) {
-        if(opt.type() == OptionType::STRING) {
-            add_option(opt.name(), "", opt.type(), opt.get_string(), false);
+        if(opt->type() == OptionType::STRING) {
+            add_option(opt->name(), "", opt->type(), opt->get_string(), false);
         }
-        if(opt.type() == OptionType::FLOAT) {
-            add_option(opt.name(), "", opt.type(), std::to_string(opt.get_float()), false);
+        if(opt->type() == OptionType::FLOAT) {
+            add_option(opt->name(), "", opt->type(), std::to_string(opt->get_float()), false);
         }
-        if(opt.type() == OptionType::INT) {
-            add_option(opt.name(), "", opt.type(), std::to_string(opt.get_int()), false);
+        if(opt->type() == OptionType::INT) {
+            add_option(opt->name(), "", opt->type(), std::to_string(opt->get_int()), false);
         }
     }
     
 }
 
-Option
+void
 CommandLineOptions::_generate_option(
     CommandLineOptionOP const & cl_opt,
     String const & value) {
@@ -70,13 +70,17 @@ CommandLineOptions::_generate_option(
     else                             { name = cl_opt->l_name; }
         
     if     (cl_opt->otype == OptionType::STRING) {
-        return Option(name, value, OptionType::STRING);
+        opts_.add_option(name, value, OptionType::STRING);
     }
     else if(cl_opt->otype == OptionType::FLOAT ) {
-        return Option(name, std::stof(value), OptionType::FLOAT);
+        opts_.add_option(name, std::stof(value), OptionType::FLOAT);
     }
     else if(cl_opt->otype == OptionType::INT   ) {
-        return Option(name, std::stoi(value), OptionType::INT);
+        opts_.add_option(name, std::stoi(value), OptionType::INT);
+    }
+    else if(cl_opt->otype == OptionType::BOOL) {
+        opts_.add_option(name, (bool)std::stoi(value), OptionType::BOOL);
+
     }
     else { throw "could not generate option from command line"; }
 
@@ -87,50 +91,44 @@ CommandLineOptions::parse_command_line(
     int const argc,
     char const ** argv) {
     
-    Options opts("CMDOptions");
+    opts_ = Options("CommandLineOptions");
     String key = "";
     CommandLineOptionOP cl_opt;
     
-    int last_arg = argc-1;
-    for(int i = 1; i < last_arg; i++) {
-        if(argv[i][0] == '-') {
-            //
-            key = String(argv[i]);
-            key = key.substr(1);
-
-
-            if(argv[i][1] == '-') {
-                if(l_cl_opts_.find(key) == l_cl_opts_.end()) {
-                    throw std::runtime_error("unknown command line argument: " + key);
-                }
-                cl_opt = l_cl_opts_[key];
-            }
-            else {
-                if(s_cl_opts_.find(key) == s_cl_opts_.end()) {
-                    throw std::runtime_error("unknown command line argument: " + key);
-                }
-                cl_opt = s_cl_opts_[key];
-                
-            }
+    for(int i = 1; i < argc; i++) {
+        if(argv[i][0] != '-') { continue; }
         
-          
-            Option opt;
-            if(argv[i+1][0] != '-') {
-                opt = _generate_option(cl_opt, String(argv[i+1]));
+        key = String(argv[i]);
+        key = key.substr(1);
+
+
+        if(argv[i][1] == '-') {
+            if(l_cl_opts_.find(key) == l_cl_opts_.end()) {
+                throw std::runtime_error("unknown command line argument: " + key);
             }
-            else {
-                opt = _generate_option(cl_opt, "1");
-            }
-            
-            opts.add_option(opt);
+            cl_opt = l_cl_opts_[key];
         }
+        else {
+            if(s_cl_opts_.find(key) == s_cl_opts_.end()) {
+                throw std::runtime_error("unknown command line argument: " + key);
+            }
+            cl_opt = s_cl_opts_[key];
+            
+        }
+    
+        if(argc != i + 1 && argv[i+1][0] != '-') {
+            _generate_option(cl_opt, String(argv[i+1]));
+        }
+        else {
+            _generate_option(cl_opt, "1");
+        }
+            
     }
     
     for(auto const & kv : s_cl_opts_) {
         if(kv.second->filled != true) {
             if(kv.second->required == false) {
-                Option opt = _generate_option(kv.second, kv.second->value);
-                opts.add_option(opt);
+                _generate_option(kv.second, kv.second->value);
             }
             else {
                 String message = "missing required argument: ";
@@ -142,7 +140,7 @@ CommandLineOptions::parse_command_line(
         }
     }
     
-    return opts;
+    return opts_;
     
 }
 

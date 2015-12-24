@@ -49,7 +49,8 @@ class CommandLineOptions {
 public:
     CommandLineOptions():
     s_cl_opts_(std::map<String, CommandLineOptionOP>()),
-    l_cl_opts_(std::map<String, CommandLineOptionOP>())
+    l_cl_opts_(std::map<String, CommandLineOptionOP>()),
+    opts_(Options("CommandLineOptions"))
     {}
     
 
@@ -72,7 +73,7 @@ public:
         char const **);
     
 private:
-    Option
+    void
     _generate_option(
         CommandLineOptionOP const &,
         String const &);
@@ -80,6 +81,7 @@ private:
 private:
     std::map<String, CommandLineOptionOP> s_cl_opts_;
     std::map<String, CommandLineOptionOP> l_cl_opts_;
+    Options opts_;
 
 };
 

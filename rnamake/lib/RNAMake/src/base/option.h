@@ -43,6 +43,13 @@ public:
     Option() {}
     
     Option(
+        Option const & opt):
+    type_(opt.type_),
+    v_(opt.v_),
+    name_(opt.name_)
+    {}
+    
+    Option(
         String const & name,
         float const & value,
         OptionType const & type):
@@ -55,6 +62,23 @@ public:
         OptionType const & type):
     name_(name),
     type_(type) { v_.set<String>(value); }
+ 
+    Option(
+        String const & name,
+        bool const & value,
+        OptionType const & type):
+    name_(name),
+    type_(type) {
+        
+        
+        if(type_ != OptionType::BOOL) {
+            throw OptionException("calling wrong constructor for Option");
+        }
+        
+        v_.set<bool>(value);
+
+    
+    }
     
     Option(
         String const & name,
@@ -68,6 +92,10 @@ public:
         else if(type_ == OptionType::FLOAT) {
             v_.set<float>(float(value));
         }
+        
+        else if(type_ == OptionType::BOOL) {
+            v_.set<bool>(bool(value));
+        }
     }
     
 public:
@@ -76,6 +104,10 @@ public:
     get_float() {
         if(type_ == OptionType::STRING) {
             throw OptionException("attemped to get float but option is a string");
+        }
+        
+        if(type_ == OptionType::BOOL) {
+            throw OptionException("attemped to get float but option is a bool");
         }
         
         if(type_ == OptionType::INT) {
@@ -90,6 +122,11 @@ public:
         if(type_ == OptionType::STRING) {
             throw OptionException("attemped to get int but option is a string");
         }
+        
+        if(type_ == OptionType::BOOL) {
+            throw OptionException("attemped to get int but option is a bool");
+        }
+        
         
         if(type_ == OptionType::FLOAT) {
             return v_.get<float>();
@@ -107,14 +144,40 @@ public:
         if(type_ == OptionType::FLOAT) {
             throw OptionException("attemped to get string but option is a float");
         }
+        if(type_ == OptionType::BOOL) {
+            throw OptionException("attemped to get string but option is a bool");
+        }
         
         return v_.get<String>();
     }
     
-    template<typename T>
-    void
-    value(T const & v) {
+    bool const &
+    get_bool() {
+        
+        if(type_ == OptionType::INT) {
+            throw OptionException("attemped to get bool but option is a int");
+        }
+        if(type_ == OptionType::FLOAT) {
+            throw OptionException("attemped to get bool but option is a float");
+        }
+        if(type_ == OptionType::STRING) {
+            throw OptionException("attemped to get bool but option is a string");
+        }
+        return v_.get<bool>();
+        
     }
+    
+    void
+    value(String const &);
+    
+    void
+    value(float const &);
+    
+    void
+    value(int const &);
+    
+    void
+    value(bool const &);
     
     
 public: //getters
@@ -134,19 +197,32 @@ private:
     
 };
 
+typedef std::shared_ptr<Option> OptionOP;
 
 class Options {
 public:
     Options(String const & name):
     name_(name),
-    options_(std::vector<Option>())
+    options_(std::vector<OptionOP>()),
+    locked_(false)
     {}
+    
+    Options(Options const & opts):
+    name_(opts.name_),
+    locked_(opts.locked_),
+    options_(std::vector<OptionOP>()) {
+        for(auto const & opt : opts.options_) {
+            auto new_opt = std::make_shared<Option>(*opt);
+            options_.push_back(new_opt);
+        }
+        
+    }
     
     ~Options() {}
     
 public:
-    typedef std::vector<Option>::iterator iterator;
-    typedef std::vector<Option>::const_iterator const_iterator;
+    typedef std::vector<OptionOP>::iterator iterator;
+    typedef std::vector<OptionOP>::const_iterator const_iterator;
     
     iterator begin() { return options_.begin(); }
     iterator end()   { return options_.end(); }
@@ -160,10 +236,22 @@ public:
     size_t
     size() { return options_.size(); }
     
+    inline
+    void
+    lock_option_adding() { locked_ = true; }
+    
+    template<typename T>
     void
     add_option(
-        Option const & opt) {
+        String const & name,
+        T const & val,
+        OptionType const & type) {
         
+        if(locked_) {
+            throw OptionException("options are locked you cannot add any new ones");
+        }
+        
+        auto opt = std::make_shared<Option>(name, val, type);
         options_.push_back(opt);
         
     }
@@ -172,21 +260,28 @@ public:
     float
     get_int(String const & name) {
         auto opt = _find_option(name);
-        return opt.get_int();
+        return opt->get_int();
     }
     
     inline
     float
     get_float(String const & name) {
         auto opt = _find_option(name);
-        return opt.get_float();
+        return opt->get_float();
     }
     
     inline
     String
     get_string(String const & name) {
         auto opt = _find_option(name);
-        return opt.get_string();
+        return opt->get_string();
+    }
+    
+    inline
+    bool
+    get_bool(String const & name) {
+        auto opt = _find_option(name);
+        return opt->get_bool();
     }
     
 
@@ -197,57 +292,17 @@ public:
         T const & val) {
         
         auto opt = _find_option(name);
-        opt.value(val);
+        opt->value(val);
         
     }
-    
-    /*bool
-    contains_option(
-        String const & name) {
-        
-        if(option_map_.find(name) != option_map_.end()) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-
-    template <typename T>
-    T
-    option(
-        String const & name) {
-        
-        if(option_map_.find(name) == option_map_.end()) {
-            throw "trying to access option that does not exist\n";
-        }
-        
-        return option_map_[name].value<T>();
-        
-    }
-           
-           
-    template <typename T>
-    void
-    option(
-        String const & name,
-        T const & v) {
-        
-        if(option_map_.find(name) == option_map_.end()) {
-            throw "trying to access option that does not exist\n";
-        }
-        
-        option_map_[name].value(v);
-        
-    }*/
     
 private:
-    Option const &
+    OptionOP const &
     _find_option(
         String const & name) {
         
         for(auto const & opt : options_) {
-            if(opt.name() == name) { return opt; }
+            if(opt->name() == name) { return opt; }
         }
         
         throw OptionException("cannot find option with name " + name);
@@ -258,7 +313,7 @@ private:
 private:
     bool locked_;
     String name_;
-    std::vector<Option> options_;
+    std::vector<OptionOP> options_;
     
 };
 

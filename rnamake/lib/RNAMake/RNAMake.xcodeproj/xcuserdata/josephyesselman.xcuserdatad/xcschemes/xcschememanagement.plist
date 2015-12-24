@@ -24,6 +24,16 @@
 			<key>orderHint</key>
 			<integer>6</integer>
 		</dict>
+		<key>motif_graph_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>9</integer>
+		</dict>
+		<key>motif_tree_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>10</integer>
+		</dict>
 		<key>option_unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -98,6 +108,16 @@
 			<true/>
 		</dict>
 		<key>1C4BF0E01C275383008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF0F91C2B4DBB008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF1461C2B6ECE008C5671</key>
 		<dict>
 			<key>primary</key>
 			<true/>

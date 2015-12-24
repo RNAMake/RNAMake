@@ -29,7 +29,7 @@ OptionUnittest::test_creation() {
         throw UnittestException("unexpected error");
     }
     
-    opt = Option("test2", "test", OptionType::STRING);
+    opt = Option("test2", String("test"), OptionType::STRING);
     auto val3 = opt.get_string();
     try {
         auto val4 = opt.get_float();
@@ -39,6 +39,11 @@ OptionUnittest::test_creation() {
     catch(...) {
         throw UnittestException("unexpected error");
     }
+    opt.value("test_2");
+    
+    opt = Option("test2", false, OptionType::BOOL);
+    auto val4 = opt.get_bool();
+    opt.value(true);
     
     return 1;
 }
@@ -47,8 +52,8 @@ int
 OptionUnittest::test_add_option() {
     
     auto opts = Options("TestOptions");
-    opts.add_option(Option("test", "test", OptionType::STRING));
-    opts.add_option(Option("test_2", 5, OptionType::INT));
+    opts.add_option("test", String("test"), OptionType::STRING);
+    opts.add_option("test_2", 5, OptionType::INT);
     
     auto val = opts.get_int("test_2");
     if(val != 5) {
@@ -58,16 +63,15 @@ OptionUnittest::test_add_option() {
     return 1;
 }
 
-
 int
 OptionUnittest::test_option() {
     
     auto opts = Options("TestOptions");
-    opts.add_option(Option("test", "test", OptionType::STRING));
-    opts.add_option(Option("test_2", 5, OptionType::INT));
+    opts.add_option("test", String("test"), OptionType::STRING);
+    opts.add_option("test_2", 5, OptionType::INT);
 
     opts.set_value("test_2", 6);
-    opts.set_value("test", "test_2");
+    opts.set_value("test", String("test_2"));
 
     if(opts.get_string("test") != "test_2") {
         throw UnittestException("did not get expected option value");
@@ -82,16 +86,15 @@ OptionUnittest::test_option() {
     return 1;
 }
 
-
 int
 OptionUnittest::test_iteration() {
     auto opts = Options("TestOptions");
-    opts.add_option(Option("test", "test", OptionType::STRING));
-    opts.add_option(Option("test_2", 5, OptionType::INT));
+    opts.add_option("test", String("test"), OptionType::STRING);
+    opts.add_option("test_2", 5, OptionType::INT);
     
     int count = 0;
     for(auto const & opt : opts) {
-        std::cout << opt.name() << std::endl;
+        //std::cout << opt.name() << std::endl;
     }
     return 0;
 }
@@ -99,10 +102,10 @@ OptionUnittest::test_iteration() {
 int
 OptionUnittest::run() {
     
-    //if (test_creation() == 0)    {  std::cout << "test_creation failed" << std::endl; }
-    //if (test_add_option() == 0)  {  std::cout << "test_add_option failed" << std::endl; }
-    //if (test_option() == 0)      {  std::cout << "test_option failed" << std::endl; }
-    //test_iteration();
+    if (test_creation() == 0)    {  std::cout << "test_creation failed" << std::endl; }
+    if (test_add_option() == 0)  {  std::cout << "test_add_option failed" << std::endl; }
+    if (test_option() == 0)      {  std::cout << "test_option failed" << std::endl; }
+    test_iteration();
     return 1;
 }
 
@@ -111,9 +114,9 @@ OptionUnittest::run_all() {
     String name = "OptionUnittest";
     typedef int (OptionUnittest::*fptr)();
     std::map<String, fptr> func_map;
-    func_map["test_creation"   ] = &OptionUnittest::test_creation;
-    func_map["test_add_option" ] = &OptionUnittest::test_add_option;
-    //func_map["test_option"     ] = &OptionUnittest::test_option;
+    //func_map["test_creation"   ] = &OptionUnittest::test_creation;
+    //func_map["test_add_option" ] = &OptionUnittest::test_add_option;
+    func_map["test_option"     ] = &OptionUnittest::test_option;
     //func_map["test_iteration"  ] = &OptionUnittest::test_iteration;
 
     int failed = 0;

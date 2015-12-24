@@ -17,7 +17,7 @@
 class Base {
 public:
     
-    template <typename T>
+    /*template <typename T>
     inline
     void
     option(
@@ -48,7 +48,7 @@ public:
         return options_.contains_option(name);
         
     }
-    
+    */
     
     
 protected:

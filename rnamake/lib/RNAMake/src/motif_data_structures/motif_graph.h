@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 //RNAMake Headers
-#include "base/base.h"
+#include "base/option.h"
 #include "data_structure/graph/graph.h"
 #include "motif/motif.h"
 #include "motif_data_structures/motif_tree.h"
@@ -26,20 +26,22 @@ public:
     {}
 };
 
-class MotifGraph : public Base {
+class MotifGraph {
 public:
     
     MotifGraph():
     graph_(GraphStatic<MotifOP>()),
     merger_(MotifMerger()),
     clash_radius_(2.5),
-    sterics_(1)
-    { setup_options(); }
+    sterics_(1),
+    options_(Options("MotifGraphOptions"))
+    {  setup_options(); }
     
     MotifGraph(String const &);
     
     MotifGraph(
         MotifGraph const & mg):
+    options_(Options("MotifGraphOptions")),
     graph_(GraphStatic<MotifOP>(mg.graph_)) {
         auto motifs = MotifOPs();
         // dear god this is horrible but cant figure out a better way to do a copy
@@ -47,7 +49,7 @@ public:
             graph_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
             motifs.push_back(graph_.get_node(n->index())->data());
         }
-        options_ = mg.options_;
+        options_ = Options(mg.options_);
         merger_ = MotifMerger(mg.merger_, motifs);
         
     }
@@ -91,6 +93,44 @@ public:
     
     void
     replace_helical_sequence(sstruct::PoseOP const &);
+    
+    
+    sstruct::PoseOP
+    designable_secondary_structure() {
+        auto ss = merger_.secondary_structure();
+        auto ss_r = sstruct::ResidueOP(nullptr);
+        
+        for(auto const & n : graph_) {
+            if(n->data()->name() != "HELIX.IDEAL") { continue;}
+            for(auto const & r : n->data()->residues()) {
+                ss_r= ss->get_residue(r->uuid());
+                if(ss_r != nullptr) {
+                    ss_r->name("N");
+                }
+            }
+        }
+        
+        return ss;
+    }
+    
+    void
+    write_pdbs(String const & fname = "nodes");
+    
+    inline
+    Beads
+    beads() {
+        Beads beads;
+        for(auto const & n : graph_.nodes()) {
+            std::copy(n->data()->beads().begin(),
+                      n->data()->beads().end(),
+                      std::inserter(beads, beads.end()));
+        }
+        return beads;
+    }
+    
+    String
+    topology_to_str();
+
     
 public: //add motif interface
     
@@ -154,7 +194,7 @@ public:
         int,
         String const &);
 
-public:
+public: //Motif Merger Wrappers
     
     inline
     RNAStructureOP const &
@@ -176,41 +216,37 @@ public:
         return merger_.secondary_structure();
     }
     
-    sstruct::PoseOP
-    designable_secondary_structure() {
-        auto ss = merger_.secondary_structure();
-        auto ss_r = sstruct::ResidueOP(nullptr);
-        
-        for(auto const & n : graph_) {
-            if(n->data()->name() != "HELIX.IDEAL") { continue;}
-            for(auto const & r : n->data()->residues()) {
-                ss_r= ss->get_residue(r->uuid());
-                if(ss_r != nullptr) {
-                    ss_r->name("N");
-                }
-            }
-        }
-        
-        return ss;
-    }
     
-    void
-    write_pdbs(String const & fname = "nodes");
+public: //Options Wrappers
+
     
     inline
-    Beads
-    beads() {
-        Beads beads;
-        for(auto const & n : graph_.nodes()) {
-            std::copy(n->data()->beads().begin(),
-                      n->data()->beads().end(),
-                      std::inserter(beads, beads.end()));
-        }
-        return beads;
-    }
+    float
+    get_int_option(String const & name) { return options_.get_int(name); }
     
+    inline
+    float
+    get_float_option(String const & name) { return options_.get_float(name); }
+    
+    inline
     String
-    topology_to_str();
+    get_string_option(String const & name) { return options_.get_string(name); }
+    
+    inline
+    bool
+    get_bool_option(String const & name) { return options_.get_bool(name); }
+    
+    
+    template<typename T>
+    void
+    set_option_value(
+        String const & name,
+        T const & val) {
+        options_.set_value(name, val);
+        update_var_options();
+    }
+
+    
     
 private:
     int
@@ -230,12 +266,12 @@ private:
     void
     update_var_options();
     
-    
 private:
     GraphStatic<MotifOP> graph_;
     MotifMerger merger_;
+    Options options_;
     float clash_radius_;
-    int sterics_;
+    bool sterics_;
 
 };
 

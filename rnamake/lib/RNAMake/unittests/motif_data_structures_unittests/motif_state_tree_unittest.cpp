@@ -15,7 +15,7 @@
 int
 MotifStateTreeUnittest::test_creation() {
     MotifStateTree mst;
-    mst.option("sterics", 0);
+    //mst.option("sterics", 0);
     return 1;
 }
 
