@@ -12,7 +12,6 @@
 #include <stdio.h>
 
 //RNAMake Headers
-#include "base/base.h"
 #include "base/option.h"
 #include "motif/motif_state_aligner.h"
 #include "motif_state_search/motif_state_selector.h"
@@ -22,7 +21,7 @@
 #include "motif_state_search/motif_state_search_solution.h"
 
 
-class MotifStateSearch : public Base {
+class MotifStateSearch {
 public:
     MotifStateSearch():
     queue_(MotifStateSearchNodeQueue()),

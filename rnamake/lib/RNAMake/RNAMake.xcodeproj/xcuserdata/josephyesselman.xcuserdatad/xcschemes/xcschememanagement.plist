@@ -29,6 +29,11 @@
 			<key>orderHint</key>
 			<integer>9</integer>
 		</dict>
+		<key>motif_state_tree_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>11</integer>
+		</dict>
 		<key>motif_tree_unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -118,6 +123,11 @@
 			<true/>
 		</dict>
 		<key>1C4BF1461C2B6ECE008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF1971C2B9D27008C5671</key>
 		<dict>
 			<key>primary</key>
 			<true/>
