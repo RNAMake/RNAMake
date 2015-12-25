@@ -201,6 +201,12 @@ typedef std::shared_ptr<Option> OptionOP;
 
 class Options {
 public:
+    Options():
+    name_("DefaultOptions"),
+    options_(std::vector<OptionOP>()),
+    locked_(false)
+    {}
+    
     Options(String const & name):
     name_(name),
     options_(std::vector<OptionOP>()),
