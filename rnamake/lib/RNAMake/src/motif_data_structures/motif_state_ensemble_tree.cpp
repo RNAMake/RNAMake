@@ -46,8 +46,7 @@ MotifStateTreeOP
 MotifStateEnsembleTree::to_mst() {
     
     auto mst = std::make_shared<MotifStateTree>();
-    mst->option("sterics", 0);
-    
+    mst->set_option_value("sterics", false);    
     int i = -1, j = -1;
     int parent_index = -1, parent_end_index = -1;
     for(auto const & n : tree_) {

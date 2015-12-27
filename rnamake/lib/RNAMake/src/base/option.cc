@@ -15,10 +15,10 @@
 void
 Option::value(int const & i) {
     if(type_ == OptionType::INT) {
-        v_.set<int>(i);
+        i_val_ = i;
     }
     if(type_ == OptionType::FLOAT) {
-        v_.set<float>((float)i);
+        f_val_ = (float)i;
     }
     
     if(type_ == OptionType::STRING) {
@@ -33,10 +33,10 @@ Option::value(int const & i) {
 void
 Option::value(float const & i) {
     if(type_ == OptionType::INT) {
-        v_.set<int>((int)i);
+        i_val_ = (int)i;
     }
     if(type_ == OptionType::FLOAT) {
-        v_.set<float>(i);
+        f_val_ = i;
     }
     
     if(type_ == OptionType::STRING) {
@@ -62,7 +62,7 @@ Option::value(String const & i) {
     }
     
     if(type_ == OptionType::STRING) {
-        v_.set<String>(i);
+        s_val_ = i;
     }
 }
 
@@ -80,7 +80,7 @@ Option::value(bool const & i) {
     }
     
     if(type_ == OptionType::BOOL) {
-        v_.set<bool>(i);
+        b_val_ = i;
     }
 }
 

@@ -6,6 +6,7 @@ import priority_queue
 import motif_state_selector
 import motif_state_search_scorer
 import copy
+import numpy as np
 
 class MotifStateSearch(base.Base):
     def __init__(self):
@@ -22,7 +23,7 @@ class MotifStateSearch(base.Base):
         options =     { 'sterics'        :  1,
                         'verbose'        :  0,
                         'frequency'      :  10,
-                        'max_node_level'  : 15,
+                        'max_node_level'  : 20,
                         'max_steps'       : 100000000,
                         'max_solutions'   : 10,
                         'max_size'        : 100000000,
@@ -44,11 +45,10 @@ class MotifStateSearch(base.Base):
 
     def setup(self, start, end):
         start_n = self._start_node(start)
+        start_n.score = 10000000
         test_node = start_n.copy()
-        self.queue.put(start_n, 10000)
+        self.queue.put(start_n, 10000000)
         self.scorer.set_target(end)
-        start_n = self._start_node(start)
-        self.queue.put(start_n, 10000)
         self.test_node = start_n.copy()
 
     def finished(self):
@@ -76,9 +76,16 @@ class MotifStateSearch(base.Base):
 
     def _search(self):
         accept_score, max_node_level, sterics, max_size, min_size = self._get_local_variables()
+        best = 1000000000
         while not self.queue.empty():
             current = self.queue.get()
             score = self.scorer.accept_score(current)
+
+            #print current.score
+            if current.score < best:
+                best = current.score
+                print current.score, current.level
+
 
             if score < accept_score:
                 if not self.selector.is_valid_solution(current):
@@ -109,15 +116,22 @@ class MotifStateSearch(base.Base):
                                                   self.test_node.ref_state)
 
                     score = self.scorer.score(self.test_node)
-                    score += self.selector.score(self.test_node)*self.test_node.level*10
+                    #score += self.selector.score(self.test_node)*self.test_node.level*10
+                    #print score, current.score, len(current.cur_state.beads)
                     if score > current.score:
                         continue
+
                     if sterics:
                         if self.lookup is not None:
                             if self.lookup.clash(self.test_node.cur_state.beads):
                                 continue
+                    #print "test", len(self.test_node.cur_state.beads)
                     child = self.test_node.copy()
+                    #print "made it"
+                    child.score = score
                     child.update()
+                    #print "child", len(child.cur_state.beads)
+                    #exit()
                     if child.size > max_size:
                         continue
                     child.ntype = types[i]
@@ -145,6 +159,7 @@ class MotifStateSearchNode(object):
     def copy(self):
         new_n = MotifStateSearchNode(self.ref_state, self.parent,
                                      self.parent_end_index, self.ntype)
+        #print "copied", len(self.cur_state.copy().beads)
         new_n.cur_state = self.cur_state.copy()
         new_n.score = self.score
         new_n.ss_score = self.ss_score

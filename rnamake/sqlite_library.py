@@ -277,6 +277,15 @@ class MotifStateSqliteLibrary(SqliteLibrary):
     def _generate_data(self, s):
         return motif.str_to_motif_state(s)
 
+    def to_motif_state_ensemble(self):
+        self.load_all()
+        mes = motif_ensemble.MotifStateEnsemble()
+        motif_states = []
+        energies = []
+        for ms in self.all():
+            motif_states.append(ms)
+        mes.setup(self.name, motif_states, [1 for x in motif_states] )
+        return mes
 
 class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):

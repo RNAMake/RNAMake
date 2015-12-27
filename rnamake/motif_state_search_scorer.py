@@ -80,6 +80,36 @@ class MTSS_Astar(MotifTreeStateSearchScorer):
         return best_score
 
 
+class MTSS_PathFollow(MotifTreeStateSearchScorer):
+    def __init__(self, path, target=None):
+        super(self.__class__, self).__init__(target)
+        self.path = path
+
+    def score(self, node):
+        current = node
+        beads = []
+        while current is not None:
+            beads.extend(current.cur_state.beads)
+            #print len(beads), len(current.cur_state.beads)
+            current = current.parent
+            if current is None:
+                break
+
+        score = 0
+        for b1 in self.path:
+            best = 1000000
+            for b2 in beads:
+                dist = util.distance(b1, b2)
+                if best > dist:
+                    best = dist
+                if best < 3:
+                    break
+            if best > 3:
+                score += best-3
+
+        return score
+
+
 def new_score_function(current, end, endflip):
     d_diff = util.distance(current.d,end.d)
 

@@ -60,6 +60,9 @@ public:
     
     ~MotifStateSearchUnittest() {}
     
+    int
+    size() { return 2; }
+    
 public:
     
     void
@@ -76,8 +79,8 @@ public:
     int
     run();
     
-    //void
-    //run_all();
+    int
+    run_all();
     
 };
     

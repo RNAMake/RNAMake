@@ -206,11 +206,11 @@ class MotifState(object):
     def to_str(self):
         s = self.name + "|" + str(self.score) + "|" + str(self.size) + "|"
         s += str(self.block_end_add) + "|"
-        #basic_io.points_to_str(self.beads) + "|"
-        for r in self.residues:
-            s += r.to_str()
-            s += "E"
-        s += "|"
+        s += basic_io.points_to_str(self.beads) + "|"
+        #for r in self.residues:
+        #    s += r.to_str()
+        #    s += "E"
+        #s += "|"
         s += ",".join(self.end_names) + "|"
         s += ",".join(self.end_ids) + "|"
         for state in self.end_states:
@@ -241,9 +241,9 @@ class MotifState(object):
         for r in residues:
             if r.type != residue.ResidueStateType.END:
                 beads.extend(r.beads)
-
+        #print "beads", len(beads)
         return MotifState(self.name, self.end_names, self.end_ids, end_states,
-                          beads, self.score, self.size, self.block_end_add, residues)
+                          self.beads, self.score, self.size, self.block_end_add, residues)
 
     def update_res_uuids(self, res):
         for i, r in enumerate(res):
@@ -422,14 +422,14 @@ def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
         new_r, new_d, new_sug = s.get_transformed_state(r, t)
         cur_state.end_states[i].set(new_r, new_d, new_sug)
 
-    cur_state.beads = []
+    """cur_state.beads = []
     r_T = r.T
     for r in cur_state.residues:
         r.update(r_T, t)
         if r.type != residue.ResidueStateType.END:
             cur_state.beads.extend(r.beads)
-
-    #cur_state.beads = np.dot(org_state.beads, r.T) + t
+    """
+    cur_state.beads = np.dot(org_state.beads, r.T) + t
 
 
 

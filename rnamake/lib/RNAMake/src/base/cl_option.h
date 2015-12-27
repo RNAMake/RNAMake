@@ -19,49 +19,63 @@
 #include "base/option.h"
 
 
-struct CommandLineOption {
-    
+class CommandLineOption : public Option {
+public:
+    template<typename T>
     CommandLineOption(
-        String const & ns_name,
-        String nl_name = "",
-        OptionType notype = OptionType::STRING,
-        String nvalue = "",
-        bool nrequired = false):
-    s_name(ns_name),
-    l_name(nl_name),
-    otype(notype),
-    value(nvalue),
-    required(nrequired),
-    filled(false)
+        String const & name,
+        T const & value,
+        OptionType const & type,
+        bool required):
+    Option(name, value, type),
+    required_(required),
+    filled_(false)
     {}
     
-    String s_name;
-    String l_name;
-    OptionType otype;
-    String value;
-    bool required;
-    bool filled;
+    ~CommandLineOption() {}
+    
+public:
+    inline
+    bool
+    filled() { return filled_; }
+    
+    inline
+    bool
+    required() { return required_; }
+    
+    
+public: //setter
+    inline
+    void
+    filled(bool const & filled) { filled_ = filled; }
+    
+    
+private:
+    String long_name_;
+    bool required_;
+    bool filled_;
 };
 
 typedef std::shared_ptr<CommandLineOption> CommandLineOptionOP;
 
-class CommandLineOptions {
+class CommandLineOptions{
 public:
     CommandLineOptions():
-    s_cl_opts_(std::map<String, CommandLineOptionOP>()),
-    l_cl_opts_(std::map<String, CommandLineOptionOP>()),
-    opts_(Options("CommandLineOptions"))
+    options_(std::vector<CommandLineOptionOP>())
     {}
-    
 
 public:
+    template<typename T>
     void
     add_option(
-        String const & s_name,
-        String l_name = "",
-        OptionType otype = OptionType::STRING,
-        String nvalue = "",
-        bool required = false);
+        String const & name,
+        T const & value,
+        OptionType const & type,
+        bool required) {
+        
+        auto opt = std::make_shared<CommandLineOption>(name, value, type, required);
+        options_.push_back(opt);
+    }
     
     void
     add_options(
@@ -72,19 +86,81 @@ public:
         int const,
         char const **);
     
-private:
+public:
+    
+    inline
+    float
+    get_int(String const & name) {
+        auto opt = _find_option(name);
+        return opt->get_int();
+    }
+    
+    inline
+    float
+    get_float(String const & name) {
+        auto opt = _find_option(name);
+        return opt->get_float();
+    }
+    
+    inline
+    String
+    get_string(String const & name) {
+        auto opt = _find_option(name);
+        return opt->get_string();
+    }
+    
+    inline
+    bool
+    get_bool(String const & name) {
+        auto opt = _find_option(name);
+        return opt->get_bool();
+    }
+    
+    inline
+    bool
+    has_option(
+               String const & name) {
+        for(auto const & opt : options_) {
+            if(opt->name() == name) { return true; }
+        }
+        
+        return false;
+    }
+    
+    template<typename T>
     void
-    _generate_option(
+    set_value(
+              String const & name,
+              T const & val) {
+        
+        auto opt = _find_option(name);
+        opt->value(val);
+        
+    }
+    
+    
+private:
+    CommandLineOptionOP const &
+    _find_option(
+        String const & name) {
+        
+        for(auto const & opt : options_) {
+            if(opt->name() == name) { return opt; }
+        }
+        
+        throw OptionException("cannot find option with name " + name);
+        
+    }
+
+    void
+    _set_option(
         CommandLineOptionOP const &,
         String const &);
     
 private:
-    std::map<String, CommandLineOptionOP> s_cl_opts_;
-    std::map<String, CommandLineOptionOP> l_cl_opts_;
-    Options opts_;
-
+    std::vector<CommandLineOptionOP> options_;
+   
 };
-
 
 
 #endif /* defined(__RNAMake__cl_option__) */

@@ -13,30 +13,29 @@
 
 void
 MotifStateSearch::setup_options() {
-    options_ = Options();
-    options_.add_option(Option("sterics", 1));
-    options_.add_option(Option("max_node_level", 15));
-    options_.add_option(Option("min_node_level", 0));
-    options_.add_option(Option("min_size", 0));
-    options_.add_option(Option("max_size", 10000));
-    options_.add_option(Option("max_solutions", 10));
-    options_.add_option(Option("max_steps", LONG_MAX*1.0f));
-    options_.add_option(Option("accept_score", 10.0f));
-    options_.add_option(Option("min_ss_score", 10000.0f));
+    options_.add_option("sterics", true, OptionType::BOOL);
+    options_.add_option("max_node_level", 15, OptionType::INT);
+    options_.add_option("min_node_level", 0, OptionType::INT);
+    options_.add_option("min_size", 0, OptionType::INT);
+    options_.add_option("max_size", 10000, OptionType::INT);
+    options_.add_option("max_solutions", 100, OptionType::INT);
+    options_.add_option("accept_score", 10, OptionType::FLOAT);
+    options_.add_option("min_ss_score", 10000, OptionType::FLOAT);
+    options_.lock_option_adding();
+    
     update_var_options();
 }
 
 void
 MotifStateSearch::update_var_options() {
-    sterics_        = options_.option<int>("sterics");
-    min_size_       = options_.option<int>("min_size");
-    max_size_       = options_.option<int>("max_size");
-    max_solutions_  = options_.option<int>("max_solutions");
-    max_node_level_ = options_.option<int>("max_node_level");
-    min_node_level_ = options_.option<int>("min_node_level");
-    accept_score_   = options_.option<float>("accept_score");
-    max_steps_      = options_.option<float>("max_steps");
-    min_ss_score_   = options_.option<float>("min_ss_score");
+    sterics_        = options_.get_bool("sterics");
+    min_size_       = options_.get_int("min_size");
+    max_size_       = options_.get_int("max_size");
+    max_solutions_  = options_.get_int("max_solutions");
+    max_node_level_ = options_.get_int("max_node_level");
+    min_node_level_ = options_.get_int("min_node_level");
+    accept_score_   = options_.get_float("accept_score");
+    min_ss_score_   = options_.get_float("min_ss_score");
 
 }
 
@@ -85,15 +84,13 @@ MotifStateSearch::_search() {
     int steps = 0;
     int j = 0;
     int pos;
-    int path_count = 0;
-    int path_size = 0;
     MotifStateSearchNodeOP current, child, current_2;
     int clash;
-    float dist;
-    float path_score = 0;
-    float best_dist;
     Points centers(100);
     int center_count = 0;
+    float dist = 1000;
+    float best = 1000000000;
+    MotifStateSearchSolutionOP best_sol;
     
     while(! queue_.empty() ) {
         current = queue_.top();
@@ -102,6 +99,13 @@ MotifStateSearch::_search() {
         
         steps += 1;
         score = scorer_->accept_score(current);
+        
+        if(score < best) {
+            best = score;
+            best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
+            std::cout << best << " " << accept_score_ << " " << current->level() << std::endl;
+        }
+        
         if(score < accept_score_ && current->ss_score() < min_ss_score_ &&
            current->level() > min_node_level_) {
             auto s = std::make_shared<MotifStateSearchSolution>(current, score);
@@ -135,56 +139,38 @@ MotifStateSearch::_search() {
                 aligner_.get_aligned_motif_state(end,
                                                  test_node_->cur_state(),
                                                  test_node_->ref_state());
-             
-                test_node_->calc_center();
-
-                if(path_.size() > 0) {
-                    center_count = 0;
-                    current_2 = test_node_;
-                    while(current_2 != nullptr) {
-                        centers[center_count] = current_2->center();
-                        center_count++;
-                        current_2 = current_2->parent();
-                    }
-                    path_count = 0;
-                    for(auto const & b : path_) {
-                        best_dist = 10000;
-                        for(int i = 0; i < center_count; i++) {
-                            dist = b.distance(centers[i]);
-                            if(dist < best_dist) {
-                                best_dist = dist;
-                            }
-                        }
-                        path_score += best_dist;
-                    }
-                }
+                //test_node_->calc_center();
+                //test_node_->level(current->level() + 1);
+                test_node_->update();
                 
-                //score = scorer_->score(test_node_) + path_score/5;
-                //std::cout << path_score << std::endl;
-                score = path_score;
+                score = scorer_->score(test_node_);
+                //std::cout << score << " " << current->score() << std::endl;
+                //score = path_score;
                 if(score > current->score()) { continue; }
                 
                 if(sterics_) {
                     clash = 0;
-                    for(auto const & b1 : beads_) {
+                    /*for(auto const & b1 : beads_) {
                         for(auto const & b2 : test_node_->cur_state()->beads()) {
                             dist = b1.distance(b2);
                             if(dist < 2.5) { clash = 1; break; }
                         }
                     }
                     if(clash) { continue; }
-                    
+                    */
                     current_2 = test_node_->parent();
                     while (current_2 != nullptr) {
                         for(auto const & b1 : test_node_->cur_state()->beads()) {
                             for(auto const & b2 : current_2->cur_state()->beads()) {
                                 dist = b1.distance(b2);
-                                if(dist < 2.5) { clash = 1; break; }
+                                if(dist < 2.0) { clash = 1; break; }
                             }
                             if(clash) { break; }
                         }
                         current_2 = current_2->parent();
                     }
+                    if(clash) { continue; }
+
                 }
                 
              
@@ -198,7 +184,7 @@ MotifStateSearch::_search() {
         
     }
     
-    return nullptr;
+    return best_sol;
 
 }
 

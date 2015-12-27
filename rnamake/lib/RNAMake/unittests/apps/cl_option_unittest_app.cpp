@@ -12,7 +12,7 @@
 #include "base_unittests/cl_option_unittest.h"
 
 int main(int argc, const char * argv[]) {
-    CL_OptionUnittest test;
+    auto test = CL_OptionUnittest();
     int failed = test.run_all();
     int passed = test.size() - failed;
     std::cout << "base_unittests/cl_option_unittest: " << passed << " PASSED!" << std::endl;
