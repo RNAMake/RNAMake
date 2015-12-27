@@ -15,8 +15,8 @@
 int
 ThermoFlucSimulationUnittest::test_creation() {
     ThermoFlucSimulation tfs;
-    tfs.option("steps", 10);
-    if(tfs.option<int>("steps") != 10) { return 0; }
+    tfs.set_option_value("steps", 10);
+    if(tfs.get_int_option("steps") != 10) { return 0; }
     return 1;
 }
 
@@ -27,7 +27,7 @@ ThermoFlucSimulationUnittest::test_run() {
     auto mse = ResourceManager::getInstance().get_motif_state_ensemble("GG_LL_CC_RR");
     for(int i = 0; i < 10; i++) { mset->add_ensemble(mse); }
     tfs.setup(mset, 0, 9, 0, 1);
-    tfs.option("cutoff", 30.0f);
+    tfs.set_option_value("cutoff", 30);
     int count = tfs.run();    
     return 1;
 }

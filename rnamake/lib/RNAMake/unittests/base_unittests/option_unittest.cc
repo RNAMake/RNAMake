@@ -28,7 +28,6 @@ OptionUnittest::test_creation() {
     catch(...) {
         throw UnittestException("unexpected error");
     }
-    
     opt = Option("test2", String("test"), OptionType::STRING);
     auto val3 = opt.get_string();
     try {
@@ -39,12 +38,11 @@ OptionUnittest::test_creation() {
     catch(...) {
         throw UnittestException("unexpected error");
     }
-    opt.value("test_2");
-    
+    opt.value(String("test_2"));
+   
     opt = Option("test2", false, OptionType::BOOL);
     auto val4 = opt.get_bool();
     opt.value(true);
-    
     return 1;
 }
 
@@ -114,10 +112,10 @@ OptionUnittest::run_all() {
     String name = "OptionUnittest";
     typedef int (OptionUnittest::*fptr)();
     std::map<String, fptr> func_map;
-    //func_map["test_creation"   ] = &OptionUnittest::test_creation;
-    //func_map["test_add_option" ] = &OptionUnittest::test_add_option;
+    func_map["test_creation"   ] = &OptionUnittest::test_creation;
+    func_map["test_add_option" ] = &OptionUnittest::test_add_option;
     func_map["test_option"     ] = &OptionUnittest::test_option;
-    //func_map["test_iteration"  ] = &OptionUnittest::test_iteration;
+    func_map["test_iteration"  ] = &OptionUnittest::test_iteration;
 
     int failed = 0;
     for(auto const & kv : func_map) {

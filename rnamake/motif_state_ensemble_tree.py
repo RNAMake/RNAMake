@@ -3,6 +3,8 @@ import motif_state_tree
 import motif_ensemble
 import motif_type
 import resource_manager as rm
+import math
+import itertools
 
 
 class MotifStateEnsembleTree(object):
@@ -61,7 +63,7 @@ class MotifStateEnsembleTree(object):
             extra_mes = {}
 
         for i, n in enumerate(mt.tree.nodes):
-            if n.data.mtype == motif_type.HELIX:
+            if n.data.mtype == motif_type.HELIX and len(n.data.residues()) == 4:
                 mse = rm.manager.get_motif_state_ensemble(name=n.data.end_ids[0])
             else:
                 if n.index in extra_mes:
@@ -129,4 +131,76 @@ class MotifStateEnsembleTree(object):
 
     def get_node(self, i):
         return self.tree.get_node(i)
+
+
+class MotifStateEnsembleTreeEnumerator(object):
+    def __init__(self, mtst):
+        self.mtst = mtst
+        self.mst = self.mtst.to_mst()
+
+        ranges = []
+        for n in self.mtst:
+            ranges.append(range(0, len(n.data.members)))
+
+        self.combos = itertools.product(*ranges)
+        self.last_combo = None
+
+    def next(self):
+        c = next(self.combos)
+        if c is None:
+            return None
+        if self.last_combo is None:
+            self.last_combo = c
+
+        for i in range (0, len(c)):
+            if c[i] == self.last_combo[i]:
+                continue
+            else:
+                self.mst.replace_state(i, self.mtst.get_node(i).data.members[c[i]].motif_state)
+
+
+
+
+    def record(self, fname="summary.txt"):
+        mst = self.mtst.to_mst()
+
+        ranges = []
+        for n in self.mtst:
+            ranges.append(range(0, len(n.data.members)))
+
+
+        df = pd.DataFrame(columns="alpha,beta,gamma,dist,rot_dist".split(","))
+
+        combos = itertools.product(*ranges)
+        last_combo = None
+        j = 0
+        org = [0,0,0]
+        I = np.eye(3)
+        for c in combos:
+            if last_combo == None:
+                last_combo = c
+
+            for i in range (0, len(c)):
+                if c[i] == last_combo[i]:
+                    continue
+                else:
+                    mst.replace_state(i, self.mtst.get_node(i).data.members[c[i]].motif_state)
+
+            d = mst.last_node().data.cur_state.end_states[1].d
+            r = mst.last_node().data.cur_state.end_states[1].r
+            euler = t.euler_from_matrix(r)
+            dist = util.distance(d, org)
+
+            rot_dist =util.matrix_distance(I, r)
+
+
+            df.loc[j] = [euler[0]*180/math.pi,euler[1]*180/math.pi,euler[2]*180/math.pi,dist, rot_dist]
+
+            last_combo = c
+            j += 1
+            if j % 1000 == 0:
+                print j
+
+
+        df.to_csv("test.csv")
 

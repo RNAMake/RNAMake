@@ -6,40 +6,23 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <stdexcept>
-
 #include "base/cl_option.h"
 #include "base/option.h"
 
+/*template<typename T>
 void
 CommandLineOptions::add_option(
-    String const & s_name,
-    String l_name,
-    OptionType otype,
-    String nvalue,
+    String const & name,
+    T const & value,
+    OptionType const & type,
     bool required) {
     
-    if(s_name.length() == 0 && l_name.length() == 0) {
-        throw "cannot add option without a short name or a long name\n";
-    }
+    auto opt = std::make_shared<CommandLineOption>(name, value, type, required);
+    options_.push_back(opt);
+    
+}*/
 
-    
-    auto opt = std::make_shared<CommandLineOption>(s_name, l_name, otype, nvalue, required);
-    
-    if(s_cl_opts_.find(s_name) != s_cl_opts_.end()) {
-        throw "cannot add option " + s_name + " already exists in CL_Options";
-    }
-    
-    s_cl_opts_[s_name] = opt;
-    
-    if(l_name.length() > 0) {
-        l_cl_opts_[l_name] = opt;
-    }
-    
-    
-}
-
-
+/*
 void
 CommandLineOptions::add_options(
     Options & opts) {
@@ -145,7 +128,7 @@ CommandLineOptions::parse_command_line(
 }
 
 
-
+*/
 
 
 

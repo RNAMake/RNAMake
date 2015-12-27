@@ -19,7 +19,6 @@
 
 //RNAMake Headers
 #include "base/types.h"
-#include "base/variant.h"
 
 enum class OptionType {
     BOOL,
@@ -39,13 +38,11 @@ public:
 
 class Option {
 public:
-    using Values = variant<String, float, int, bool>;
     Option() {}
     
     Option(
         Option const & opt):
     type_(opt.type_),
-    v_(opt.v_),
     name_(opt.name_)
     {}
     
@@ -54,14 +51,14 @@ public:
         float const & value,
         OptionType const & type):
     name_(name),
-    type_(type) { v_.set<float>(value); }
+    type_(type) { f_val_ = value; }
     
     Option(
         String const & name,
         String const & value,
         OptionType const & type):
     name_(name),
-    type_(type) { v_.set<String>(value); }
+    type_(type) { s_val_ = value; }
  
     Option(
         String const & name,
@@ -69,15 +66,13 @@ public:
         OptionType const & type):
     name_(name),
     type_(type) {
-        
-        
+    
         if(type_ != OptionType::BOOL) {
             throw OptionException("calling wrong constructor for Option");
         }
         
-        v_.set<bool>(value);
-
-    
+        b_val_ = value;
+        
     }
     
     Option(
@@ -87,14 +82,14 @@ public:
     name_(name),
     type_(type) {
         if(type_ == OptionType::INT) {
-            v_.set<int>(value);
+            i_val_ = value;
         }
         else if(type_ == OptionType::FLOAT) {
-            v_.set<float>(float(value));
+            f_val_ = float(value);
         }
         
         else if(type_ == OptionType::BOOL) {
-            v_.set<bool>(bool(value));
+            b_val_ = bool(value);
         }
     }
     
@@ -111,10 +106,10 @@ public:
         }
         
         if(type_ == OptionType::INT) {
-            return v_.get<int>();
+            return i_val_;
         }
         
-        return v_.get<float>();
+        return f_val_;
     }
     
     int
@@ -129,10 +124,10 @@ public:
         
         
         if(type_ == OptionType::FLOAT) {
-            return v_.get<float>();
+            return f_val_;
         }
         
-        return v_.get<int>();
+        return i_val_;
     }
     
     String const &
@@ -148,7 +143,7 @@ public:
             throw OptionException("attemped to get string but option is a bool");
         }
         
-        return v_.get<String>();
+        return s_val_;
     }
     
     bool const &
@@ -163,7 +158,7 @@ public:
         if(type_ == OptionType::STRING) {
             throw OptionException("attemped to get bool but option is a string");
         }
-        return v_.get<bool>();
+        return b_val_;
         
     }
     
@@ -190,9 +185,13 @@ public: //getters
     OptionType const &
     type() const { return type_; }
     
-private:
+protected:
     String name_;
-    Values v_;
+    String s_val_;
+    int i_val_;
+    float f_val_;
+    bool b_val_;
+    
     OptionType type_;
     
 };
@@ -290,7 +289,17 @@ public:
         return opt->get_bool();
     }
     
-
+    inline
+    bool
+    has_option(
+        String const & name) {
+        for(auto const & opt : options_) {
+            if(opt->name() == name) { return true; }
+        }
+        
+        return false;
+    }
+    
     template<typename T>
     void
     set_value(
@@ -301,6 +310,7 @@ public:
         opt->value(val);
         
     }
+    
     
 private:
     OptionOP const &
