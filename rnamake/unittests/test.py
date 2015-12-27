@@ -18,13 +18,15 @@ R2 = t.random_rotation_matrix(np.random.uniform(size=[3]))[:3,:3]
 
 trans = np.random.uniform(-10,10,[3])
 
-s = np.random.uniform(-1,1,[1,3])
+s = np.random.uniform(-1,1,[3, 1])
 
 
 #print R.dot(R2).T
 #print R2.T.dot(R.T)
 
-print R.dot(s.T)
+print np.dot((R ** 2), s ** 2)
+
+
 exit()
 
 end_points = np.dot(s, R.T) + trans
