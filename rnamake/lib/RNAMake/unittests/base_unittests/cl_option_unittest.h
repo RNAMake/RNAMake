@@ -23,7 +23,7 @@ struct CommandLineArgs {
         
         Strings spl = split_str_by_delimiter(s, " ");
         argv_ = new char*[spl.size()+1];
-        argv_[0] = new char[100];
+        argv_[0] = new char[20];
         strcpy(argv_[0], "program_name");
         for(int i = 0; i < spl.size(); i++) {
             argv_[i+1] = new char[spl[i].size()];

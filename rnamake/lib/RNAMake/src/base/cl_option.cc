@@ -9,72 +9,51 @@
 #include "base/cl_option.h"
 #include "base/option.h"
 
-/*template<typename T>
-void
-CommandLineOptions::add_option(
-    String const & name,
-    T const & value,
-    OptionType const & type,
-    bool required) {
-    
-    auto opt = std::make_shared<CommandLineOption>(name, value, type, required);
-    options_.push_back(opt);
-    
-}*/
 
-/*
 void
 CommandLineOptions::add_options(
     Options & opts) {
     
-    for(auto & opt : opts) {
-        if(opt->type() == OptionType::STRING) {
-            add_option(opt->name(), "", opt->type(), opt->get_string(), false);
-        }
-        if(opt->type() == OptionType::FLOAT) {
-            add_option(opt->name(), "", opt->type(), std::to_string(opt->get_float()), false);
-        }
-        if(opt->type() == OptionType::INT) {
-            add_option(opt->name(), "", opt->type(), std::to_string(opt->get_int()), false);
-        }
+    for(auto const & opt : opts) {
+        auto cl_opt = std::make_shared<CommandLineOption>(*opt);
+        options_.push_back(cl_opt);
     }
-    
 }
-
+ 
 void
-CommandLineOptions::_generate_option(
+CommandLineOptions::_set_option(
     CommandLineOptionOP const & cl_opt,
     String const & value) {
     
-    cl_opt->filled = true;
+    if(cl_opt->filled()) {
+        CommandLineOptionException("commandline option has already has been set!: " +
+                                   cl_opt->name());
+    }
     
-    String name;
-    if(cl_opt->s_name.length() != 0) { name = cl_opt->s_name; }
-    else                             { name = cl_opt->l_name; }
-        
-    if     (cl_opt->otype == OptionType::STRING) {
-        opts_.add_option(name, value, OptionType::STRING);
+    cl_opt->filled(true);
+    
+    
+    if     (cl_opt->type() == OptionType::STRING) {
+        cl_opt->value(String(value));
     }
-    else if(cl_opt->otype == OptionType::FLOAT ) {
-        opts_.add_option(name, std::stof(value), OptionType::FLOAT);
+    else if(cl_opt->type() == OptionType::FLOAT ) {
+        cl_opt->value(std::stof(value));
     }
-    else if(cl_opt->otype == OptionType::INT   ) {
-        opts_.add_option(name, std::stoi(value), OptionType::INT);
+    else if(cl_opt->type() == OptionType::INT   ) {
+        cl_opt->value(std::stoi(value));
     }
-    else if(cl_opt->otype == OptionType::BOOL) {
-        opts_.add_option(name, (bool)std::stoi(value), OptionType::BOOL);
+    else if(cl_opt->type() == OptionType::BOOL  ) {
+        cl_opt->value((bool)std::stoi(value));
 
     }
-    else { throw "could not generate option from command line"; }
 
 }
 
-Options
+void
 CommandLineOptions::parse_command_line(
     int const argc,
     char const ** argv) {
     
-    opts_ = Options("CommandLineOptions");
     String key = "";
     CommandLineOptionOP cl_opt;
     
@@ -84,51 +63,26 @@ CommandLineOptions::parse_command_line(
         key = String(argv[i]);
         key = key.substr(1);
 
-
-        if(argv[i][1] == '-') {
-            if(l_cl_opts_.find(key) == l_cl_opts_.end()) {
-                throw std::runtime_error("unknown command line argument: " + key);
-            }
-            cl_opt = l_cl_opts_[key];
-        }
-        else {
-            if(s_cl_opts_.find(key) == s_cl_opts_.end()) {
-                throw std::runtime_error("unknown command line argument: " + key);
-            }
-            cl_opt = s_cl_opts_[key];
-            
-        }
+        cl_opt = _find_option(key);
+    
     
         if(argc != i + 1 && argv[i+1][0] != '-') {
-            _generate_option(cl_opt, String(argv[i+1]));
+            _set_option(cl_opt, String(argv[i+1]));
         }
         else {
-            _generate_option(cl_opt, "1");
+            _set_option(cl_opt, "1");
         }
             
     }
     
-    for(auto const & kv : s_cl_opts_) {
-        if(kv.second->filled != true) {
-            if(kv.second->required == false) {
-                _generate_option(kv.second, kv.second->value);
-            }
-            else {
-                String message = "missing required argument: ";
-                if(cl_opt->s_name.length() != 0 ) { message += "-" + cl_opt->s_name; }
-                else                              { message += "--" + cl_opt->l_name; }
-                throw message;
-            }
-
+    for(auto const & opt : options_) {
+        if(! opt->filled() && opt->required()) {
+            throw CommandLineOptionException(opt->name() + " is a required option and was not supplied");
         }
     }
     
-    return opts_;
-    
+
 }
-
-
-*/
 
 
 

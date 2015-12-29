@@ -2,6 +2,8 @@ import os
 import glob
 import fnmatch
 
+from rnamake import util
+
 libs = "base math data_structure util secondary_structure structure motif resources motif_data_structures thermo_fluctuation motif_state_search"
 #libs = "base math data_structure util secondary_structure structure"
 lib_paths = libs.split()
@@ -18,6 +20,7 @@ for p in lib_paths:
 
 
 matches = []
+unittest_apps = []
 for root, dirnames, filenames in os.walk('../../unittests'):
     for filename in fnmatch.filter(filenames, '*.c*'):
         path = os.path.join(root, filename)
@@ -27,6 +30,7 @@ for root, dirnames, filenames in os.walk('../../unittests'):
             if len(l) < 8:
                 continue
             if l[:8] == 'int main':
+                unittest_apps.append((os.path.join(root, filename)))
                 fail = 1
                 break
         if fail:
@@ -50,6 +54,8 @@ fsum = open("apps.cmake", "w")
 
 f = open("apps.txt")
 for l in f.readlines():
+    if l[0] == "#":
+        continue
     spl = l.split()
     symlink = spl[0]+"_symlink"
     fsum.write("add_executable("+l.rstrip()+")\n")
@@ -64,7 +70,7 @@ f.close()
 fsum = open("unittest_apps.cmake", "w")
 
 f = open("unittests.txt")
-for l in f.readlines():
+"""for l in f.readlines():
     spl = l.split()
     symlink = spl[0]+"_symlink"
     fsum.write("add_executable("+l.rstrip()+")\n")
@@ -73,6 +79,25 @@ for l in f.readlines():
     #fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND  -E create_symlink ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
     fsum.write("\n\n")
 
-fsum.close()
+fsum.close()"""
+for path in unittest_apps:
+    fname = util.filename(path)
+    if fname == "main.cc" or fname == "all_tests.cc" or fname == "main.cpp":
+        continue
+
+    spl = fname.split(".")
+    if spl[0][-3:] == "app":
+        prog_name = spl[0][:-4]
+    else:
+        prog_name = spl[0]
+
+    symlink = prog_name+"_symlink"
+    fsum.write("add_executable("+ prog_name + " " + path +")\n")
+    fsum.write("target_link_libraries("+prog_name+" ${link_libraries})\n")
+    fsum.write("add_custom_target("+symlink+" ALL)\n")
+    #fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND  -E create_symlink ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
+    fsum.write("\n\n")
+
+
 f.close()
 

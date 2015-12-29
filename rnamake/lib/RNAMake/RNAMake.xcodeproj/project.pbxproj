@@ -349,6 +349,7 @@
 		1C4BF2381C2D03CA008C5671 /* motif_state_search_unittest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C3DE12D1BA8D52D0006AC74 /* motif_state_search_unittest.cpp */; };
 		1C4BF23B1C2DCE87008C5671 /* motif_state_search_unittest_app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4BF2391C2D0580008C5671 /* motif_state_search_unittest_app.cpp */; };
 		1C4BF23D1C2FC30A008C5671 /* cl_option_unittest.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DBF1B0A63340076284E /* cl_option_unittest.cc */; };
+		1C4BF23E1C31FDB1008C5671 /* motif_graph_unittest_app.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4BF1941C2B95AF008C5671 /* motif_graph_unittest_app.cpp */; };
 		1C4E3C9A1AF30E6C0076284E /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
 		1C4E3CA51AF417A30076284E /* cartesian_product.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CA31AF417A30076284E /* cartesian_product.cc */; };
 		1C4E3CB51AF423C30076284E /* pose.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3CB31AF423C30076284E /* pose.cc */; };
@@ -2112,6 +2113,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C4BF23E1C31FDB1008C5671 /* motif_graph_unittest_app.cpp in Sources */,
 				1C4BF1441C2B59BA008C5671 /* util.cpp in Sources */,
 				1C4BF1421C2B5964008C5671 /* build_motif_tree.cpp in Sources */,
 				1C4BF1431C2B5964008C5671 /* build_motif_graph.cpp in Sources */,
