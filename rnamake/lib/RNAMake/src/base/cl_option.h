@@ -18,6 +18,14 @@
 #include "base/types.h"
 #include "base/option.h"
 
+class CommandLineOptionException : public std::runtime_error {
+public:
+    CommandLineOptionException(
+        String const & message):
+    std::runtime_error(message)
+    {}
+};
+
 
 class CommandLineOption : public Option {
 public:
@@ -29,6 +37,13 @@ public:
         bool required):
     Option(name, value, type),
     required_(required),
+    filled_(false)
+    {}
+    
+    CommandLineOption(
+        Option const & opt):
+    Option(opt),
+    required_(false),
     filled_(false)
     {}
     
@@ -58,11 +73,22 @@ private:
 
 typedef std::shared_ptr<CommandLineOption> CommandLineOptionOP;
 
-class CommandLineOptions{
+class CommandLineOptions {
 public:
     CommandLineOptions():
     options_(std::vector<CommandLineOptionOP>())
     {}
+    
+public:
+    typedef std::vector<CommandLineOptionOP>::iterator iterator;
+    typedef std::vector<CommandLineOptionOP>::const_iterator const_iterator;
+    
+    iterator begin() { return options_.begin(); }
+    iterator end()   { return options_.end(); }
+    
+    const_iterator begin() const { return options_.begin(); }
+    const_iterator end()   const { return options_.end(); }
+    
 
 public:
     template<typename T>
@@ -81,7 +107,7 @@ public:
     add_options(
         Options &);
     
-    Options
+    void
     parse_command_line(
         int const,
         char const **);
@@ -130,12 +156,20 @@ public:
     template<typename T>
     void
     set_value(
-              String const & name,
-              T const & val) {
+        String const & name,
+        T const & val) {
         
         auto opt = _find_option(name);
         opt->value(val);
         
+    }
+    
+    inline
+    bool
+    is_filled(
+        String const & name) {
+        auto opt = _find_option(name);
+        return opt->filled();
     }
     
     
@@ -148,7 +182,7 @@ private:
             if(opt->name() == name) { return opt; }
         }
         
-        throw OptionException("cannot find option with name " + name);
+        throw CommandLineOptionException("unknown command line argument: " + name);
         
     }
 

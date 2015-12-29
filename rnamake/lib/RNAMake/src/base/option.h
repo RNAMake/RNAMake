@@ -43,7 +43,11 @@ public:
     Option(
         Option const & opt):
     type_(opt.type_),
-    name_(opt.name_)
+    name_(opt.name_),
+    s_val_(opt.s_val_),
+    f_val_(opt.f_val_),
+    i_val_(opt.i_val_),
+    b_val_(opt.b_val_)
     {}
     
     Option(
