@@ -95,7 +95,7 @@ for path in unittest_apps:
     fsum.write("add_executable("+ prog_name + " " + path +")\n")
     fsum.write("target_link_libraries("+prog_name+" ${link_libraries})\n")
     fsum.write("add_custom_target("+symlink+" ALL)\n")
-    #fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND  -E create_symlink ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
+    fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
     fsum.write("\n\n")
 
 
