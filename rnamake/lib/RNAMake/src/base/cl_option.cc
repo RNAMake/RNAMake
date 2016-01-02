@@ -12,7 +12,7 @@
 
 void
 CommandLineOptions::add_options(
-    Options & opts) {
+    Options const & opts) {
     
     for(auto const & opt : opts) {
         auto cl_opt = std::make_shared<CommandLineOption>(*opt);

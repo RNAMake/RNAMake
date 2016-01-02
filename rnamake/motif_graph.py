@@ -257,7 +257,7 @@ class MotifGraph(base.Base):
             spl = ss_m.end_ids[0].split("_")
             new_name = spl[0][0] + spl[2][1] + "=" + spl[0][1] + spl[2][0]
             m = rm.manager.get_motif(name=new_name)
-
+            m.id = n.data.id
             org_res = n.data.residues()
             new_res = m.residues()
 

@@ -101,9 +101,9 @@ MotifStateSearch::_search() {
         score = scorer_->accept_score(current);
         
         if(score < best) {
-            best = score;
-            best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
-            std::cout << best << " " << accept_score_ << " " << current->level() << std::endl;
+            //best = score;
+            //best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
+            //std::cout << best << " " << accept_score_ << " " << current->level() << std::endl;
         }
         
         if(score < accept_score_ && current->ss_score() < min_ss_score_ &&
@@ -163,7 +163,7 @@ MotifStateSearch::_search() {
                         for(auto const & b1 : test_node_->cur_state()->beads()) {
                             for(auto const & b2 : current_2->cur_state()->beads()) {
                                 dist = b1.distance(b2);
-                                if(dist < 2.0) { clash = 1; break; }
+                                if(dist < 2.5) { clash = 1; break; }
                             }
                             if(clash) { break; }
                         }

@@ -31,6 +31,12 @@ resources_path() {
 }
 
 String
+lib_path() {
+    String base_path = base_dir();
+    return base_path + "/rnamake/lib/RNAMake/";
+}
+
+String
 motif_dirs() {
     String base_path = base_dir();
     return base_path + "/rnamake/resources/motifs/";

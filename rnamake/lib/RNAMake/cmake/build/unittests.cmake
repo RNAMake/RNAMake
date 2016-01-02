@@ -45,4 +45,5 @@ set(unittests_files
 	../../unittests/util_unittests/sqlite3_connection_unittest.cc
 	../../unittests/util_unittests/uuid_unittest.cc
 	../../unittests/util_unittests/x3dna_unittest.cc
+	../../unittests/vienna_unittests/vienna_unittest.cpp
 )

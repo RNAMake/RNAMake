@@ -13,7 +13,7 @@
 #include "motif_state_search/motif_state_search.h"
 #include "motif_state_search/motif_state_search_scorer.h"
 
-Options
+CommandLineOptions
 parse_command_line(
     int argc,
     const char ** argv) {
@@ -21,40 +21,143 @@ parse_command_line(
     CommandLineOptions cl_opts;
     auto search = MotifStateSearch();
     cl_opts.add_options(search.options());
-    cl_opts.add_option("path", "", OptionType::STRING, "", false);
-    //for(auto const & o : search)
-    //cl_opts.add_option("max_node_level", "", OptionType::INT_TYPE, "12", false);
-    /*cl_opts.add_option("fseq", "", STRING_TYPE,
-                       "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", false);
-    cl_opts.add_option("fss" , "", STRING_TYPE,
-                       "((((((....((((((((((((....))))))))))))....))))))", false);
-    cl_opts.add_option("cseq", "", STRING_TYPE,
-                       "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG", false);
-    cl_opts.add_option("css" , "", STRING_TYPE,
-                       "(((((((..((((((((((((....))))))))))))...)))))))", false);
-    cl_opts.add_option("s", "steps", FLOAT_TYPE, "1000000", false);*/
+    cl_opts.add_option("path", String(""), OptionType::STRING, false);
+    cl_opts.add_option("test_run", false, OptionType::BOOL, false);
+    cl_opts.add_option("out", String("solutions.top"), OptionType::STRING, false);
     
-    return cl_opts.parse_command_line(argc, argv);
+    cl_opts.parse_command_line(argc, argv);
+    return cl_opts;
+}
+
+
+void
+MiniTTR::run() {
+    //mg_.replace_ideal_helices();
+    auto end = mg_.get_end(2);
+    auto start  = mg_.get_end(3);
+    //auto end_pos = mg_.get_end(2);
+    mg_.increase_level();
+    
+    auto beads = mg_.beads();
+    auto centers = Points();
+    for(auto const & b : beads) {
+        if(b.btype() == BeadType::PHOS) {
+            continue;
+        }
+        centers.push_back(b.center());
+    }
+    
+    search_.setup(start->state(), end->state());
+    search_.beads(centers);
+
+    if(test_run_) {
+        auto sol = search_.next();
+        if(sol == nullptr) {
+            std::cout << "no solutions" << std::endl;
+            exit(0);
+        }
+        auto mt = sol->to_motif_tree();
+        mg_.add_motif_tree(mt, 3);
+        mg_.write_pdbs();
+        return;
+    }
+    
+    std::ofstream out;
+    out.open(options_.get_string("out"), std::ofstream::out);
+    
+    int count = 0;
+    while(! search_.finished()) {
+        auto sol = search_.next();
+        if(sol == nullptr) {
+            std::cout << "no more solutions" << std::endl;
+            exit(0);
+        }
+        count++;
+        if(count % 100 == 0) {
+            std::cout << count << std::endl;
+        }
+        
+        auto mt = sol->to_motif_tree();
+        //mg_.add_motif_tree(mt, mg_.last_node()->index());
+        mg_.add_motif_tree(mt, 3);
+
+        
+        mg_.add_connection(2, mg_.last_node()->index(), end->name());
+        //mg_.replace_ideal_helices();
+        //mg_.replace_ideal_helices();
+        out << mg_.topology_to_str() << std::endl;
+        try{
+            mg_.to_pdb("test."+ std::to_string(count) + ".pdb", 1);
+        }
+        catch(...) { }
+        mg_.remove_level(1);
+
+    }
+    
+    
+}
+
+void
+MiniTTRPathFollow::run() {
+    
+    auto lines = get_lines_from_file(options_.get_string("path"));
+    auto path_points = vectors_from_str(lines[0]);
+    auto scorer = std::make_shared<MSS_PathFollow>(path_points);
+    
+    auto end = mg_.get_end(0, "A222-A251");
+    auto start  = mg_.get_end(mg_.last_node()->index());
+    auto end_pos = mg_.last_node()->index();
+    
+    auto beads = mg_.beads();
+    auto centers = Points();
+    for(auto const & b : beads) {
+        if(b.btype() == BeadType::PHOS) {
+            continue;
+        }
+        centers.push_back(b.center());
+    }
+
+    search_.setup(start->state(), end->state());
+    search_.scorer(scorer);
+    search_.beads(centers);
+    
+    if(test_run_) {
+        auto sol = search_.next();
+        if(sol == nullptr) {
+            std::cout << "no solutions" << std::endl;
+            exit(0);
+        }
+        auto mt = sol->to_motif_tree();
+        mg_.add_motif_tree(mt, 1, "A1-A6");
+        auto start_2 = mg_.get_end(mg_.last_node()->index());
+        
+        auto search_2 = MotifStateSearch();
+        search_2.setup(start_2->state(), end->state());
+        auto sol_2 = search_2.next();
+        auto mt2 = sol_2->to_motif_tree();
+        mg_.add_motif_tree(mt2, mg_.last_node()->index());
+        mg_.write_pdbs();
+    }
+    
     
 }
 
 
 
 int main(int argc, const char * argv[]) {
+    auto base_path = base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
+    ResourceManager::getInstance().add_motif(base_path+"GAAA_tetraloop");
+
     auto options = parse_command_line(argc, argv);
+    auto app = std::make_shared<MiniTTR>();
     
+    if(options.is_filled("path")) { app.reset(new MiniTTRPathFollow()); }
     
-    if(options.get_string("path") != "") {
-        auto app = MiniTTRPathFollow();
-        app.setup(options);
-        
-    }
-    
+    app->setup(options);
+    app->run();
     
     exit(0);
     
-    String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
-    ResourceManager::getInstance().add_motif(base_path+"GAAA_tetraloop");
     
     auto lines = get_lines_from_file("all_points.str");
     auto path_points = vectors_from_str(lines[0]);

@@ -20,6 +20,8 @@
 #define TURN 3
 #define FORBIDDEN 9999
 
+namespace vienna {
+
 extern double lxc37;   /* parameter for logarithmic loop
                         energy extrapolation            */
 
@@ -101,4 +103,7 @@ extern int  Hexaloop37[40]; /* Bonus energy for special Triloops */
 extern int  HexaloopdH[40]; /* Bonus energy for special Triloops */
 
 extern double Tmeasure;
+    
+}
+
 #endif /* defined(__RNAMake__energy_par__) */

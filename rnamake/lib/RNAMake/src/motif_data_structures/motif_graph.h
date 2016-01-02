@@ -170,9 +170,15 @@ public:
     void
     add_motif_tree(
         MotifTreeOP const &,
+        int);
+    
+    void
+    add_motif_tree(
+        MotifTreeOP const &,
         int,
         String const &);
     
+
     void
     add_connection(
         int,

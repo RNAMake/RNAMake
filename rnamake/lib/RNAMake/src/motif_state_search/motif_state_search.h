@@ -57,7 +57,7 @@ public:
 public: //option wrappers
     
     inline
-    Options &
+    Options const &
     options() { return options_; }
     
     inline
