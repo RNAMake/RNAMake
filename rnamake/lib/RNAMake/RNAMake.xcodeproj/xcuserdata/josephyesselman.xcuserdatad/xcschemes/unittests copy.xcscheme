@@ -16,7 +16,7 @@
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "1C4E3DEA1B0AC2090076284E"
                BuildableName = "unittests copy"
-               BlueprintName = "unittests copy"
+               BlueprintName = "unittests"
                ReferencedContainer = "container:RNAMake.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -34,7 +34,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1C4E3DEA1B0AC2090076284E"
             BuildableName = "unittests copy"
-            BlueprintName = "unittests copy"
+            BlueprintName = "unittests"
             ReferencedContainer = "container:RNAMake.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -55,7 +55,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1C4E3DEA1B0AC2090076284E"
             BuildableName = "unittests copy"
-            BlueprintName = "unittests copy"
+            BlueprintName = "unittests"
             ReferencedContainer = "container:RNAMake.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -81,7 +81,7 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "1C4E3DEA1B0AC2090076284E"
             BuildableName = "unittests copy"
-            BlueprintName = "unittests copy"
+            BlueprintName = "unittests"
             ReferencedContainer = "container:RNAMake.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

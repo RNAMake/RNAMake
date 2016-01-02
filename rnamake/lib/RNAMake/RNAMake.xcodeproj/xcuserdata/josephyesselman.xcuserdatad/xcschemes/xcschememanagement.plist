@@ -74,6 +74,11 @@
 			<key>orderHint</key>
 			<integer>3</integer>
 		</dict>
+		<key>vienna_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>14</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -148,6 +153,11 @@
 			<true/>
 		</dict>
 		<key>1C4BF23F1C31FDCE008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF2911C336247008C5671</key>
 		<dict>
 			<key>primary</key>
 			<true/>

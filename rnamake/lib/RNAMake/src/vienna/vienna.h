@@ -18,12 +18,14 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "types.h"
-#include "energy_par.h"
-#include "pair_mat.h"
+
+//RNAMake Headers
+#include "base/types.h"
+#include "vienna/energy_par.h"
+#include "vienna/pair_mat.h"
 
 
-
+namespace vienna {
 
 struct bondT {
     unsigned int i;
@@ -903,6 +905,9 @@ private:
     
     
 };
+    
+    
+}
 
 
 #endif /* defined(__RNAMake__vienna_clone__) */

@@ -97,6 +97,9 @@ public:
         }
     }
     
+    virtual
+    ~Option() {}
+    
 public:
     
     float

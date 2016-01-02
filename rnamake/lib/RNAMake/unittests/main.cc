@@ -39,6 +39,8 @@
 #include "resources_unittests/motif_sqlite_library_unittest.h"
 #include "resources_unittests/resource_manager_unittest.h"
 
+#include "eternabot_unittests/eternabot_strategy_unittests.h"
+
 /*
 
 
@@ -86,9 +88,10 @@
 
 int main(int argc, const char * argv[]) {
     
-    //ResourceManagerUnittest test;
-    unittests::motif_structures::MotifGraphUnittest test;
+    unittests::eternabot::EternabotStrategyUnittest test;
     test.run();
+
+    return 0;
 }
 
 

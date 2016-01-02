@@ -8,6 +8,8 @@
 
 #include "energy_par.h"
 
+namespace vienna {
+
 double Tmeasure = 37+K0;
 double lxc37=107.856;
  int ML_intern37=-90;
@@ -25496,4 +25498,6 @@ int int22_dH[NBPAIRS+1][NBPAIRS+1][5][5][5][5] =
             }
         }
     }};
+    
+}
 

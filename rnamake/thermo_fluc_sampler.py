@@ -215,7 +215,9 @@ class ThermoFlucRelax(base.Base):
             new_diff = end_state_1.diff(end_state_2)
 
             #if steps % 10 == 0:
-            print cur_diff, new_diff, best_diff, steps
+            #print cur_diff, new_diff, best_diff, steps
+            if cur_diff < 1:
+                break
 
             if new_diff < best_diff:
                 best_diff = new_diff

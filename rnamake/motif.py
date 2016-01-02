@@ -429,7 +429,8 @@ def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
         if r.type != residue.ResidueStateType.END:
             cur_state.beads.extend(r.beads)
     """
-    cur_state.beads = np.dot(org_state.beads, r.T) + t
+    if len(org_state.beads) > 0:
+        cur_state.beads = np.dot(org_state.beads, r.T) + t
 
 
 

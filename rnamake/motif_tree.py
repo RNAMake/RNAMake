@@ -123,6 +123,7 @@ m
         new_tree = self.tree.copy()
         mt.tree = new_tree
         mt.merger = self.merger.copy([n.data for n in new_tree.nodes])
+        mt.connections = [c.copy() for c in self.connections]
         return mt
 
 

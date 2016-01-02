@@ -29,8 +29,12 @@ def graph_to_tree(mg, start=None, last_end=None):
                     if c is None:
                         free_end = i
 
-                m = rm.manager.get_motif(name = ss_m.name,
-                                         end_name=ss_m.ends[free_end].name())
+                name = ss_m.name
+                if ss_m.name[2] == "=":
+                   m =  rm.manager.get_motif(name = name)
+                else:
+                    m = rm.manager.get_motif(name = name,
+                                            end_name=ss_m.ends[free_end].name())
                 mt.add_motif(m)
 
             else:

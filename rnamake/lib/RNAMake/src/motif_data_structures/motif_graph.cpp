@@ -207,6 +207,25 @@ MotifGraph::add_motif_tree(
 }
 
 void
+MotifGraph::add_motif_tree(
+    MotifTreeOP const & mt,
+    int parent_index) {
+    
+    auto parent = graph_.get_node(parent_index);
+    auto avail_pos = parent->available_children_pos();
+    assert(avail_pos.size() > 0 && "cannot add_motif_tree to this node no free ends");
+    int parent_end_index = avail_pos[0];
+    int i = 0;
+    for(auto const & n : *mt) {
+        auto m = ResourceManager::getInstance().get_motif(n->data()->name(), n->data()->end_ids()[0]);
+        if(i == 0) { add_motif(n->data(), parent_index, parent_end_index); }
+        else       { add_motif(n->data()); }
+        i++;
+    }
+}
+
+
+void
 MotifGraph::add_connection(
     int i,
     int j,

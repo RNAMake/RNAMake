@@ -105,7 +105,7 @@ public:
     
     void
     add_options(
-        Options &);
+        Options const &);
     
     void
     parse_command_line(
@@ -116,36 +116,35 @@ public:
     
     inline
     float
-    get_int(String const & name) {
+    get_int(String const & name) const {
         auto opt = _find_option(name);
         return opt->get_int();
     }
     
     inline
     float
-    get_float(String const & name) {
+    get_float(String const & name) const {
         auto opt = _find_option(name);
         return opt->get_float();
     }
     
     inline
     String
-    get_string(String const & name) {
+    get_string(String const & name) const {
         auto opt = _find_option(name);
         return opt->get_string();
     }
     
     inline
     bool
-    get_bool(String const & name) {
+    get_bool(String const & name) const {
         auto opt = _find_option(name);
         return opt->get_bool();
     }
     
     inline
     bool
-    has_option(
-               String const & name) {
+    has_option(String const & name) const {
         for(auto const & opt : options_) {
             if(opt->name() == name) { return true; }
         }
@@ -167,7 +166,7 @@ public:
     inline
     bool
     is_filled(
-        String const & name) {
+        String const & name) const {
         auto opt = _find_option(name);
         return opt->filled();
     }
@@ -176,7 +175,7 @@ public:
 private:
     CommandLineOptionOP const &
     _find_option(
-        String const & name) {
+        String const & name) const {
         
         for(auto const & opt : options_) {
             if(opt->name() == name) { return opt; }
