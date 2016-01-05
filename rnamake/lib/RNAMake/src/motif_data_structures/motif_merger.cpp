@@ -333,6 +333,7 @@ MotifMerger::secondary_structure() {
             if(bp_overrides_.find(current_bp->uuid()) != bp_overrides_.end()) {
                 current_bp = get_basepair(bp_overrides_[current_bp->uuid()]);
             }
+            ss_bp = ss->get_basepair(current_bp->uuid());
             if(ss_bp.size() == 0) {
                 throw MotifMergerException("could not find basepair during ss build");
             }
@@ -342,6 +343,7 @@ MotifMerger::secondary_structure() {
         auto ss_motif = std::make_shared<sstruct::Motif>(ss_struc, ss_bps, ss_ends, m->end_ids(),
                                                          m->name(), m->path(), m->score());
         ss_motif->id(m->id());
+        ss_motif->mtype(m->mtype());
         ss_motifs.push_back(ss_motif);
     }
     

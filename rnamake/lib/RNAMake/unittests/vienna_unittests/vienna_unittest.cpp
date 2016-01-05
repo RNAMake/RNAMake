@@ -15,11 +15,11 @@
 
 
 namespace unittests {
-namespace vienna {
+namespace vienna_unittests {
 
 int
 ViennaUnittest::test_creation() {
-    auto vc = Vienna();
+    auto vc = vienna::Vienna();
     auto energy = vc.fold("GGGGUUCGCCCC");
     auto structure = vc.get_structure();
 
@@ -38,7 +38,7 @@ ViennaUnittest::test_folding() {
         Strings spl = split_str_by_delimiter(l, " ");
         if(spl.size() < 2) { break; }
         //std::cout << l << std::endl;
-        Vienna vc;
+        vienna::Vienna vc;
         vc.init_fold(1000);
         float energy = vc.fold(spl[0]);
         String structure = vc.get_structure();
@@ -59,7 +59,7 @@ int
 ViennaUnittest::test_folding_no_reset() {
     String path = lib_path() + "/unittests/resources/vienna/test_folding.dat";
     Strings lines = get_lines_from_file(path);
-    Vienna vc;
+    vienna::Vienna vc;
     vc.init_fold(1000);
     for(auto const & l : lines) {
         Strings spl = split_str_by_delimiter(l, " ");
@@ -84,11 +84,11 @@ int
 ViennaUnittest::test_bp_probs() {
     String path = lib_path() + "/unittests/resources/vienna/test_bp_probs.dat";
     Strings lines = get_lines_from_file(path);
-    plists bp_probs;
+    vienna::plists bp_probs;
     int i, j;
     float prob;
     int count = 0;
-    Vienna v;
+    vienna::Vienna v;
     for(auto const & l : lines) {
         if(l.length() < 5) { break; }
         Strings spl = split_str_by_delimiter(l, "|");
@@ -122,7 +122,7 @@ ViennaUnittest::test_memory_leak() {
     String ful_seq = "GGGGAUAUGGGGGGGGGGGGGGAUGGAAGGGGGGGGGGGGGGGGGGGGGCAACAGCGAGGGAGAGGGAAACCAAGUUCCCAUCGACAUGCCCCCCCCCCCCCCCCCCCCUGGACCCCCCCCCCCCCCUAAGUCCCCGGGGAUAUGGGGGGGGGGGGGGAUGGAAGGGGGGGGGGGGGGGGGGGGGCAACAGCGAGGGAGAGGGAAACCAAGUUCCCAUCGACAUGCCCCCCCCCCCCCCCCCCCCUGGACCCCCCCCCCCCCCUAAGUCCCC";
     int count = 0;
     String seq;
-    Vienna v;
+    vienna::Vienna v;
     
     for(int i = 0; i < 10000; i++) {
         seq = ful_seq.substr(0,10+count );

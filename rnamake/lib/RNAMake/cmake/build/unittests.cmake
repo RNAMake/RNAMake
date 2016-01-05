@@ -7,6 +7,8 @@ set(unittests_files
 	../../unittests/build/build_secondary_structure.cpp
 	../../unittests/data_structure_unittests/graph_unittest.cc
 	../../unittests/data_structure_unittests/tree_unittest.cc
+	../../unittests/eternabot_unittests/eternabot_strategy_unittests.cpp
+	../../unittests/eternabot_unittests/scorer_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_graph_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_tree_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_unittest.cpp

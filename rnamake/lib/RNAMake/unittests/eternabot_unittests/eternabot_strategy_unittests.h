@@ -14,7 +14,7 @@
 #include "unittest.h"
 
 namespace unittests {
-namespace eternabot {
+namespace eternabot_unittests {
 
 class EternabotStrategyUnittest : public Unittest {
 public:
@@ -29,7 +29,13 @@ public:
     test_creation();
     
     int
+    test_pose_helix();
+    
+    int
     test_score();
+    
+    int
+    test_score_compare();
     
 public:
     

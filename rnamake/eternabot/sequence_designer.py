@@ -65,9 +65,9 @@ class SequenceDesigner:
 
 if __name__ == "__main__":
     designer = SequenceDesigner()
-    solutions = designer.design("((((((.((((((((((((((......((((((((((((......((((((((((....)).))))))))...))))))))))))..)))))))))))))..)))))))",
-                                "GAGGAUAUGGAAUAGAGUUGCGCGAAACGGCCCCGAGGGAUGGAAGGGAGUCAGGGAAACCAUGACUCCUGGACCCUCGGGGCCGGAGCAACUCUAUUCCUAAGUCCUC")
+    solutions = designer.design("((((....))))",
+                                "GAGCCCCCGCUC")
     #solutions = designer.design("(((((....)))))", "GGAGCUUCGGCUCC")
     #solutions = designer.design("(((....)))", "NNNUUCGNNN")
-    print solutions
+    print solutions[0].score
 

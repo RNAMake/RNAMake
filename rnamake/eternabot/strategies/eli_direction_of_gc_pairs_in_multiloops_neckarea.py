@@ -38,5 +38,5 @@ class Strategy(strategy_template.Strategy):
                     else:
                         penalty += params[1]
 
-        if not multiloop_found: return UNSCORABLE
+        if not multiloop_found: return 100
         return 100 + penalty

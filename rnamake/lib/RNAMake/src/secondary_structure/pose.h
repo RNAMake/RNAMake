@@ -52,6 +52,15 @@ public:
     
 public:
     MotifOPs const &
+    helices() {
+        if(helices_.size() == 0) {
+            _build_helices();
+        }
+        return helices_;
+    }
+    
+    
+    MotifOPs const &
     motifs() { return motifs_; }
     
     MotifOP
@@ -63,7 +72,13 @@ public:
     }
 
 private:
+    void
+    _build_helices();
+    
+private:
     MotifOPs motifs_;
+    MotifOPs helices_;
+
     
 };
 

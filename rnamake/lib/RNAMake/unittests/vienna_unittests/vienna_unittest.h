@@ -15,7 +15,7 @@
 #include "unittest.h"
 
 namespace unittests {
-namespace vienna {
+namespace vienna_unittests {
 
 class ViennaUnittest : public Unittest {
 public:

@@ -18,6 +18,13 @@ namespace eternabot {
 class Strategy {
 public:
     
+    Strategy() {}
+    
+    virtual
+    ~Strategy() {}
+    
+public:
+    
     virtual
     float
     score(FeaturesOP const &) = 0;
@@ -37,6 +44,9 @@ protected:
     
 };
 
+typedef std::shared_ptr<Strategy> StrategyOP;
+typedef std::vector<StrategyOP>   StrategyOPs;
+    
 }
 
 #endif /* defined(__RNAMake__strategy__) */

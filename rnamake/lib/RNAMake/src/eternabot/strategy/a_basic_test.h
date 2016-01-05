@@ -35,20 +35,20 @@ public:
     
     inline
     float
-    score(FeaturesOP const & data) {
-        float total_pairs = data->gc + data->gu + data->ua;
+    score(FeaturesOP const & features) {
+        float total_pairs = features->gc + features->gu + features->ua;
         float score = 100;
         if(total_pairs > 0) {
-            score -= fabs(data->ua / total_pairs - params_[0]) * params_[1];
+            score -= fabs(features->ua / total_pairs - params_[0]) * params_[1];
         }
         float target_fe = params_[2] * total_pairs;
-        score -= fabs(target_fe - data->fe) * params_[3];
+        score -= fabs(target_fe - features->fe) * params_[3];
         
-        if(data->meltpoint < params_[5]) {
-            score -= fabs(data->meltpoint - params_[5]) * params_[4];
+        if(features->meltpoint < params_[5]) {
+            score -= fabs(features->meltpoint - params_[5]) * params_[4];
         }
-        else if(data->meltpoint > params_[6]) {
-            score -= fabs(data->meltpoint - params_[6]) * params_[4];
+        else if(features->meltpoint > params_[6]) {
+            score -= fabs(features->meltpoint - params_[6]) * params_[4];
         }
         return score;
     }

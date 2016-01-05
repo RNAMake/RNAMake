@@ -1,2 +1,3 @@
 #simulate_tectos ../../apps/simulate_tectos/simulate_tectos.cc 
 mini_ttr ../../apps/mini_ttr/mini_ttr.cpp 
+exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp

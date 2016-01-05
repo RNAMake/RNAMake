@@ -40,6 +40,7 @@
 #include "resources_unittests/resource_manager_unittest.h"
 
 #include "eternabot_unittests/eternabot_strategy_unittests.h"
+#include "eternabot_unittests/scorer_unittest.h"
 
 /*
 
@@ -88,7 +89,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::eternabot::EternabotStrategyUnittest test;
+    unittests::eternabot_unittests::ScorerUnittest test;
     test.run();
 
     return 0;

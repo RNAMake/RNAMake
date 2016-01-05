@@ -397,6 +397,9 @@ class Pose(RNAStructure):
             s += m.to_str() + "#"
         return s
 
+    def build_helices(self):
+        pass
+
 
 def str_to_residue(s):
     spl = s.split(",")
