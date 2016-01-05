@@ -140,6 +140,10 @@ class PoseUnittest(unittest.TestCase):
         if len(p1.motifs) != 3:
             self.fail("did not convert from string properly")
 
+    def test_get_helices(self):
+        p = ssf.factory.pose("AGCU+AGCU", "((((+))))")
+        p.build_helices()
+
 def main():
     unittest.main()
 

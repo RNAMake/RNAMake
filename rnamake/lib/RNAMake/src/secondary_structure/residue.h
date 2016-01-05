@@ -134,7 +134,17 @@ public: //setters
     
     inline
     void
-    name(String const & name) { name_ = name;} 
+    name(String const & name) {
+        name_ = name;
+        if     (name_ == "A") { res_type_ = 0; }
+        else if(name_ == "C") { res_type_ = 1; }
+        else if(name_ == "G") { res_type_ = 2; }
+        else if(name_ == "U") { res_type_ = 3; }
+        else if(name_ == "T") { res_type_ = 3; }
+        else {
+            throw SecondaryStructureException("in sstruct::Residue encountered a unknown name");
+        }
+    }
     
 
 private:

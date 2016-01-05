@@ -26,6 +26,9 @@ public:
     sstruct::PoseOP
     build_helix(int size = 10);
     
+    sstruct::PoseOP
+    build_hairpin(int size = 10);
+    
 };
     
 }

@@ -13,7 +13,7 @@
 #include "vienna_unittests/vienna_unittest.h"
 
 int main(int argc, const char * argv[]) {
-    unittests::vienna::ViennaUnittest test;
+    unittests::vienna_unittests::ViennaUnittest test;
     int failed = test.run_all();
     int passed = test.size() - failed;
     std::cout << "vienna_unittests/vienna_unittest.h: ";
