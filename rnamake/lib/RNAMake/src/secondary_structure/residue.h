@@ -51,6 +51,7 @@ public:
         else if(name_ == "G") { res_type_ = 2; }
         else if(name_ == "U") { res_type_ = 3; }
         else if(name_ == "T") { res_type_ = 3; }
+        else if(name_ == "N") { res_type_ = -1; }
         else {
             throw SecondaryStructureException("in sstruct::Residue encountered a unknown name");
         }
@@ -141,6 +142,7 @@ public: //setters
         else if(name_ == "G") { res_type_ = 2; }
         else if(name_ == "U") { res_type_ = 3; }
         else if(name_ == "T") { res_type_ = 3; }
+        else if(name_ == "N") { res_type_ = -1; }
         else {
             throw SecondaryStructureException("in sstruct::Residue encountered a unknown name");
         }

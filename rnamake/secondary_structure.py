@@ -349,6 +349,7 @@ class Pose(RNAStructure):
         if self.end_ids is None:
             self.end_ids = []
         self.motifs = []
+        self.helices = []
 
         if r_struct is not None:
             self.__dict__.update(r_struct.__dict__)
@@ -398,7 +399,71 @@ class Pose(RNAStructure):
         return s
 
     def build_helices(self):
-        pass
+        steps = []
+        for m in self.motifs:
+            if m.mtype != motif_type.HELIX:
+                continue
+            steps.append(m)
+
+        seen = {}
+        current = None
+        helix_motifs = []
+        found = 0
+        while 1:
+            helix_motifs = []
+            current = None
+            for m1 in steps:
+                found = 0
+                if m1 in seen:
+                    continue
+                for m2 in steps:
+                    if m2 in seen:
+                        continue
+                    if m1 == m2:
+                        continue
+                    for end in m2.ends:
+                        if m1.ends[0] == end:
+                            found = 1
+                            break
+                if not found:
+                    current = m1
+                    break
+
+            if found or current is None:
+                break
+
+            found = 1
+            while found:
+                seen[current] = 1
+                helix_motifs.append(current)
+                found = 0
+                for m in steps:
+                    if m in seen:
+                        continue
+                    if m.ends[0] == current.ends[1]:
+                        current = m
+                        found = 1
+                        break
+
+            res1, res2 = [], []
+            bps, ends = [], []
+
+            res1.append(helix_motifs[0].chains()[0].first())
+            res2.append(helix_motifs[0].chains()[1].last())
+            bps.append(helix_motifs[0].ends[0])
+            ends.append(helix_motifs[0].ends[0])
+            ends.append(helix_motifs[-1].ends[1])
+
+            for m in helix_motifs:
+                res1.append(m.chains()[0].last())
+                res2.append(m.chains()[1].first())
+                bps.append(m.ends[1])
+
+            res2.reverse()
+            chains = [Chain(res1), Chain(res2)]
+            struc = Structure(chains)
+            m = Motif(struc, bps, ends)
+            self.helices.append(m)
 
 
 def str_to_residue(s):
