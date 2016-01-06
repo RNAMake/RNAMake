@@ -110,6 +110,12 @@ class SecondaryStructureParser(object):
                 pair_res_pos = g.get_node_by_res(pair.res1)
                 g.pair_res(pair_res_pos, pos)
 
+
+        #if len(res) > 0:
+        #    parent_index = g.get_node_by_res(self._previous_res(res[0]))
+        #    new_data = NodeData(res, NodeType.UNPAIRED)
+        #    g.add_chain(new_data, parent_index, is_start_res)
+
         return g
 
     def parse_to_motifs(self, sequence=None, dot_bracket=None, structure=None):
@@ -117,9 +123,16 @@ class SecondaryStructureParser(object):
         motifs = []
         self.seen_nodes = []
         for i, n in enumerate(g.graph):
+            #single stranded motifs
+            #if i == 0 or n == g.graph.last_node:
+            #    chain = secondary_structure.Chain(n.data.residues)
+
+
             if n.connections[1] is None:
                 continue
             if n.data.type == NodeType.UNPAIRED:
+                continue
+            if n.data.residues[0].dot_bracket == ")":
                 continue
             m = self._generate_motif(n)
             self.seen_nodes.append(n)
@@ -184,6 +197,8 @@ class SecondaryStructureParser(object):
 
             if bps_count == 2:
                 break
+
+        #print current, last_node, len(chain.residues)
 
         return chain, last_node.connections[2].partner(last_node.index)
 
@@ -250,6 +265,11 @@ class SecondaryStructureParser(object):
         start = n
         chain, next_n= self._walk_nodes(start)
         chains = [chain]
+
+        if len(chain.residues) > 0 and next is None:
+            struct = secondary_structure.Structure(chains)
+            return self._build_motif(struct)
+
 
         while next_n != start:
             chain, next_n = self._walk_nodes(next_n)

@@ -141,8 +141,10 @@ class PoseUnittest(unittest.TestCase):
             self.fail("did not convert from string properly")
 
     def test_get_helices(self):
-        p = ssf.factory.pose("AGCU+AGCU", "((((+))))")
+        p = ssf.factory.pose("AGCUAGG+CCAGCU",
+                             "((((.((+))))))")
         p.build_helices()
+        print len(p.helices)
 
 def main():
     unittest.main()
