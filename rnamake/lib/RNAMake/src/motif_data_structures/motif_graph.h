@@ -69,18 +69,6 @@ public: //iterators
     
 public:
 
-    inline
-    size_t
-    size() { return graph_.size(); }
-    
-    inline
-    void
-    increase_level() { return graph_.increase_level(); }
-    
-    inline
-    GraphNodeOP<MotifOP> const &
-    last_node() { return graph_.last_node(); }
-    
     void
     remove_motif(int);
     
@@ -199,6 +187,25 @@ public:
     get_end(
         int,
         String const &);
+    
+public: //Graph Wrappers
+    inline
+    size_t
+    size() { return graph_.size(); }
+    
+    inline
+    void
+    increase_level() { return graph_.increase_level(); }
+    
+    inline
+    GraphNodeOP<MotifOP> const &
+    last_node() { return graph_.last_node(); }
+    
+    inline
+    GraphNodeOP<MotifOP> const &
+    oldest_node() { return graph_.oldest_node(); }
+    
+
 
 public: //Motif Merger Wrappers
     

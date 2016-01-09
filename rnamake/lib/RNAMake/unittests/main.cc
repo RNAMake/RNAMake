@@ -32,6 +32,7 @@
 
 #include "motif_data_structures_unittests/motif_graph_unittest.h"
 #include "motif_data_structures_unittests/motif_tree_unittest.h"
+#include "motif_data_structures_unittests/motif_topology_unittests.h"
 
 #include "motif_state_search_unittests/motif_state_search_unittest.h"
 
@@ -41,6 +42,7 @@
 
 #include "eternabot_unittests/eternabot_strategy_unittests.h"
 #include "eternabot_unittests/scorer_unittest.h"
+#include "eternabot_unittests/sequence_designer_unittests.h"
 
 /*
 
@@ -89,7 +91,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::eternabot_unittests::ScorerUnittest test;
+    unittests::motif_structures::MotifTopologyUnittest test;
     test.run();
 
     return 0;

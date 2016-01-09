@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <queue>
 #include <map>
+#include <cassert>
 
 #include "data_structure/graph/graph_node.h"
 #include "data_structure/graph/graph_node.fwd.h"
@@ -62,6 +63,19 @@ public:
         }
         
         throw GraphException("cannot find node with index");
+    }
+    
+    inline
+    GraphNodeOP<DataType> const &
+    oldest_node() {
+        auto node = last_node_;
+        assert(node != nullptr && "attemped to call oldest_node but there are no nodes");
+        
+        for(auto const & n : nodes_) {
+            if(n->index() < node->index()) { node = n; }
+        }
+        
+        return node;
     }
 
 
