@@ -21,7 +21,8 @@ parse_command_line(int, const char **);
 class ExhustiveEternabot {
 public:
     ExhustiveEternabot():
-    enumerated_bps_(sstruct::BasepairOPs())
+    enumerated_bps_(sstruct::BasepairOPs()),
+    out_name_("4bps.out")
     {}
     
     ~ExhustiveEternabot() {}
@@ -39,6 +40,7 @@ private:
     std::vector<Strings> pairs_;
     sstruct::PoseOP p_;
     sstruct::BasepairOPs enumerated_bps_;
+    String out_name_;
     
 };
 

@@ -416,6 +416,10 @@
 		1C5935B31C3C506D00BFACE7 /* scorer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1CD79A8D1C3B3DA100C43232 /* scorer.cpp */; };
 		1C5935B61C3C50E100BFACE7 /* exhustive_eternabot.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C5935B41C3C50E100BFACE7 /* exhustive_eternabot.cpp */; };
 		1C5935B71C3C51AB00BFACE7 /* secondary_structure_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3F01C0D18540027EF6E /* secondary_structure_parser.cpp */; };
+		1C5935BA1C4063A500BFACE7 /* sequence_designer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C5935B81C4063A500BFACE7 /* sequence_designer.cpp */; };
+		1C5935BD1C4064F400BFACE7 /* sequence_designer_unittests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C5935BB1C4064F400BFACE7 /* sequence_designer_unittests.cpp */; };
+		1C5935C91C409CC000BFACE7 /* motif_topology_unittests.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C5935C71C409CC000BFACE7 /* motif_topology_unittests.cpp */; };
+		1C5935CC1C419F9900BFACE7 /* motif_topology.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C5935CB1C419F9900BFACE7 /* motif_topology.cpp */; };
 		1C63252F1C16AB35004D2C05 /* pose.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C63252D1C16AB35004D2C05 /* pose.cpp */; };
 		1C6325301C16AB35004D2C05 /* pose.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C63252D1C16AB35004D2C05 /* pose.cpp */; };
 		1C68F3E51C0CEA830027EF6E /* structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3E31C0CEA830027EF6E /* structure.cpp */; };
@@ -896,6 +900,16 @@
 		1C59358F1C3C4F3500BFACE7 /* mini_ttr copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "mini_ttr copy"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C5935B41C3C50E100BFACE7 /* exhustive_eternabot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = exhustive_eternabot.cpp; path = exhustive_eternabot/exhustive_eternabot.cpp; sourceTree = "<group>"; };
 		1C5935B51C3C50E100BFACE7 /* exhustive_eternabot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = exhustive_eternabot.h; path = exhustive_eternabot/exhustive_eternabot.h; sourceTree = "<group>"; };
+		1C5935B81C4063A500BFACE7 /* sequence_designer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sequence_designer.cpp; path = eternabot/sequence_designer.cpp; sourceTree = "<group>"; };
+		1C5935B91C4063A500BFACE7 /* sequence_designer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sequence_designer.h; path = eternabot/sequence_designer.h; sourceTree = "<group>"; };
+		1C5935BB1C4064F400BFACE7 /* sequence_designer_unittests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sequence_designer_unittests.cpp; path = eternabot_unittests/sequence_designer_unittests.cpp; sourceTree = "<group>"; };
+		1C5935BC1C4064F400BFACE7 /* sequence_designer_unittests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = sequence_designer_unittests.h; path = eternabot_unittests/sequence_designer_unittests.h; sourceTree = "<group>"; };
+		1C5935C11C408D0000BFACE7 /* eternabot.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = eternabot.h; path = eternabot/eternabot.h; sourceTree = "<group>"; };
+		1C5935C21C408D0000BFACE7 /* eternabot.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = eternabot.cpp; path = eternabot/eternabot.cpp; sourceTree = "<group>"; };
+		1C5935C71C409CC000BFACE7 /* motif_topology_unittests.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = motif_topology_unittests.cpp; path = unittests/motif_data_structures_unittests/motif_topology_unittests.cpp; sourceTree = SOURCE_ROOT; };
+		1C5935C81C409CC000BFACE7 /* motif_topology_unittests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = motif_topology_unittests.h; path = unittests/motif_data_structures_unittests/motif_topology_unittests.h; sourceTree = SOURCE_ROOT; };
+		1C5935CA1C419F9900BFACE7 /* motif_topology.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = motif_topology.h; path = motif_data_structures/motif_topology.h; sourceTree = "<group>"; };
+		1C5935CB1C419F9900BFACE7 /* motif_topology.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = motif_topology.cpp; path = motif_data_structures/motif_topology.cpp; sourceTree = "<group>"; };
 		1C63252D1C16AB35004D2C05 /* pose.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pose.cpp; sourceTree = "<group>"; };
 		1C63252E1C16AB35004D2C05 /* pose.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pose.h; sourceTree = "<group>"; };
 		1C68F3E21C0CD25A0027EF6E /* graph_iterator_test.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = graph_iterator_test.cpp; sourceTree = "<group>"; };
@@ -1442,6 +1456,15 @@
 			name = exhustive_eternabot;
 			sourceTree = "<group>";
 		};
+		1C5935BE1C408C8100BFACE7 /* eternabot */ = {
+			isa = PBXGroup;
+			children = (
+				1C5935C11C408D0000BFACE7 /* eternabot.h */,
+				1C5935C21C408D0000BFACE7 /* eternabot.cpp */,
+			);
+			name = eternabot;
+			sourceTree = "<group>";
+		};
 		1C690A681C14ECAA0009EB2B /* build */ = {
 			isa = PBXGroup;
 			children = (
@@ -1549,6 +1572,7 @@
 		1CAACEAB1AF2EDED0098AA49 /* apps */ = {
 			isa = PBXGroup;
 			children = (
+				1C5935BE1C408C8100BFACE7 /* eternabot */,
 				1C5935441C3C4ECE00BFACE7 /* exhustive_eternabot */,
 				1C4BF23C1C2E5234008C5671 /* follow_path */,
 				1C8B837E1C21F38100D305EC /* mini_ttr */,
@@ -1739,6 +1763,8 @@
 				1CD79A661C35CABF00C43232 /* strategy.h */,
 				1CD79A8D1C3B3DA100C43232 /* scorer.cpp */,
 				1CD79A8E1C3B3DA100C43232 /* scorer.h */,
+				1C5935B81C4063A500BFACE7 /* sequence_designer.cpp */,
+				1C5935B91C4063A500BFACE7 /* sequence_designer.h */,
 			);
 			name = eternabot;
 			sourceTree = "<group>";
@@ -1767,6 +1793,8 @@
 				1C5935421C3B57C200BFACE7 /* scorer_unittest.cpp */,
 				1CD79A6C1C3601D000C43232 /* eternabot_strategy_unittests.h */,
 				1CD79A6D1C3601D000C43232 /* eternabot_strategy_unittests.cpp */,
+				1C5935BB1C4064F400BFACE7 /* sequence_designer_unittests.cpp */,
+				1C5935BC1C4064F400BFACE7 /* sequence_designer_unittests.h */,
 			);
 			name = eternabot_unittests;
 			sourceTree = "<group>";
@@ -1774,6 +1802,8 @@
 		1CD9FE941B97D3EB000253B5 /* motif_data_structures */ = {
 			isa = PBXGroup;
 			children = (
+				1C5935CA1C419F9900BFACE7 /* motif_topology.h */,
+				1C5935CB1C419F9900BFACE7 /* motif_topology.cpp */,
 				1CC0433E1C1D04C7002DF0CA /* motif_tree.cpp */,
 				1CC0433F1C1D04C7002DF0CA /* motif_tree.h */,
 				1C06DC381C110D040001CC98 /* motif_graph.cpp */,
@@ -1801,6 +1831,8 @@
 				1CD9FE9D1B97D576000253B5 /* motif_state_tree_unittest.h */,
 				1C06DC351C110B0F0001CC98 /* motif_graph_unittest.cpp */,
 				1C06DC361C110B0F0001CC98 /* motif_graph_unittest.h */,
+				1C5935C71C409CC000BFACE7 /* motif_topology_unittests.cpp */,
+				1C5935C81C409CC000BFACE7 /* motif_topology_unittests.h */,
 			);
 			name = motif_data_structures_unittests;
 			path = motif_assembly_unittests;
@@ -2509,6 +2541,7 @@
 				1CC043441C1E05E9002DF0CA /* motif_state_search_scorer.cpp in Sources */,
 				1CC043451C1E05E9002DF0CA /* motif_state_search.cpp in Sources */,
 				1CC043461C1E05E9002DF0CA /* motif_state_search_solution.cpp in Sources */,
+				1C5935BA1C4063A500BFACE7 /* sequence_designer.cpp in Sources */,
 				1CC0433D1C1CD200002DF0CA /* motif_tree_unittest.cpp in Sources */,
 				1C06DC301C1108180001CC98 /* motif_sqlite_connection.cc in Sources */,
 				1C06DC2F1C1107F80001CC98 /* sqlite3_connection.cc in Sources */,
@@ -2519,6 +2552,7 @@
 				1C06DC2B1C1107C40001CC98 /* added_motif_library.cc in Sources */,
 				1C06DC2C1C1107C40001CC98 /* motif_state_sqlite_library.cpp in Sources */,
 				1C06DC2D1C1107C40001CC98 /* motif_state_ensemble_sqlite_library.cpp in Sources */,
+				1C5935BD1C4064F400BFACE7 /* sequence_designer_unittests.cpp in Sources */,
 				1C6325301C16AB35004D2C05 /* pose.cpp in Sources */,
 				1C06DC2E1C1107C40001CC98 /* motif_ensemble_sqlite_connection.cpp in Sources */,
 				1C06DC271C1107580001CC98 /* pose_factory.cc in Sources */,
@@ -2564,8 +2598,10 @@
 				1C68F3F81C0E3F450027EF6E /* motif_type.cc in Sources */,
 				1CD79A891C3B337500C43232 /* num_of_yellow.cpp in Sources */,
 				1CC8C7081B8F37AE0032DDCC /* uuid_unittest.cc in Sources */,
+				1C5935CC1C419F9900BFACE7 /* motif_topology.cpp in Sources */,
 				1C56102E1B6E900A00996CEC /* x3dna_unittest.cc in Sources */,
 				1CD79A711C364E0F00C43232 /* a_basic_test.cpp in Sources */,
+				1C5935C91C409CC000BFACE7 /* motif_topology_unittests.cpp in Sources */,
 				1C7C1FA71B9E440C00E6E959 /* monte_carlo.cpp in Sources */,
 				1CF764431B6C0AA900DA68FC /* cartesian_product.cc in Sources */,
 				1CF764441B6C0AA900DA68FC /* uuid.cc in Sources */,

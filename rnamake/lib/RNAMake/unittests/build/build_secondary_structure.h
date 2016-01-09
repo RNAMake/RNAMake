@@ -24,10 +24,12 @@ public:
 public:
 
     sstruct::PoseOP
-    build_helix(int size = 10);
+    build_helix(int size = 10,
+                int opt = 0);
     
     sstruct::PoseOP
-    build_hairpin(int size = 10);
+    build_hairpin(int size = 10,
+                  int opt = 0);
     
 };
     

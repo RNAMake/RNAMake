@@ -14,7 +14,8 @@ namespace unittests {
     
 sstruct::PoseOP
 BuildSecondaryStructure::build_helix(
-    int size) {
+    int size,
+    int opt) {
     auto rng = RandomNumberGenerator();
     auto pairs = Strings{"AU", "UA", "GC", "CG"};
     String s1, s2, ss1, ss2;
@@ -35,13 +36,17 @@ BuildSecondaryStructure::build_helix(
 }
 
 sstruct::PoseOP
-BuildSecondaryStructure::build_hairpin(int size) {
+BuildSecondaryStructure::build_hairpin(int size, int opt) {
     auto rng = RandomNumberGenerator();
     auto pairs = Strings{"AU", "UA", "GC", "CG"};
+    if(opt) {
+        pairs = Strings{"NN"};
+    }
+    
     String s1, s2, ss1, ss2;
     
     for(int i = 0; i < size; i++) {
-        auto pos = rng.randrange(4);
+        auto pos = rng.randrange(pairs.size());
         auto p = pairs[pos];
         
         s1 += p[0];

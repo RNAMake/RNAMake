@@ -64,11 +64,6 @@
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
-		<key>unittests copy.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>5</integer>
-		</dict>
 		<key>unittests.xcscheme</key>
 		<dict>
 			<key>orderHint</key>

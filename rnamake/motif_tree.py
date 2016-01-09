@@ -126,7 +126,6 @@ m
         mt.connections = [c.copy() for c in self.connections]
         return mt
 
-
     def setup_options_and_constraints(self):
         options = { 'sterics'              : 1}
 

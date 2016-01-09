@@ -55,6 +55,11 @@ public:
     float
     score_secondary_structure(sstruct::PoseOP const &);
     
+public:
+    
+    Floats const &
+    scores() { return scores_; }
+    
     
 private:
     FeatureGenerator generator_;
