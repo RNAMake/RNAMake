@@ -23,7 +23,6 @@ MotifTree::update_var_options() {
     clash_radius_         = options_.get_int("clash_radius");
 }
 
-
 int
 MotifTree::add_motif(
     String const & m_name,
@@ -40,6 +39,19 @@ MotifTree::add_motif(
     
 }
 
+int
+MotifTree::add_motif(
+    MotifOP const & m,
+    int parent_index,
+    String parent_end_name) {
+    
+    auto parent = last_node();
+    if(parent_index != -1) {
+        parent = get_node(parent_index);
+    }
+    auto parent_end_index = parent->data()->end_index(parent_end_name);
+    return add_motif(m, parent_index, parent_end_index);
+}
 
 int
 MotifTree::add_motif(
@@ -137,6 +149,56 @@ MotifTree::add_motif(
 
 
 void
+MotifTree::add_connection(
+    int i,
+    int j,
+    String const & i_bp_name,
+    String const & j_bp_name) {
+    
+    auto node_i = tree_.get_node(i);
+    auto node_j = tree_.get_node(j);
+    auto name_i = String("");
+    auto name_j = String("");
+    auto ei = -1;
+    auto ej = -1;
+    
+    if (i_bp_name != "") {
+        ei = node_i->data()->end_index(i_bp_name);
+        assert(node_i->available_pos(ei) && "cannot add_connection");
+        name_i = i_bp_name;
+    }
+    else {
+        auto node_i_indexes = node_i->available_children_pos();
+        assert(node_i_indexes.size() != 1 && "cannot add_connection no available spots");
+        ei = node_i_indexes[1];
+        name_i = node_i->data()->ends()[ei]->name();
+    }
+    
+    
+    if (j_bp_name != "") {
+        ej = node_j->data()->end_index(j_bp_name);
+        assert(node_j->available_pos(ej) && "cannot add_connection");
+        name_j = j_bp_name;
+    }
+    else {
+        auto node_j_indexes = node_j->available_children_pos();
+        assert(node_j_indexes.size() != 1 && "cannot add_connection no available spots");
+        ej = node_j_indexes[1];
+        name_j = node_j->data()->ends()[ej]->name();
+    }
+    
+    
+    auto connection = std::make_shared<MotifConnection>(i, j, name_i, name_j);
+    connections_.push_back(connection);
+    
+    merger_.connect_motifs(node_i->data(), node_j->data(),
+                           node_i->data()->ends()[ei],
+                           node_j->data()->ends()[ej]);
+    
+}
+
+
+void
 MotifTree::write_pdbs(String const & fname) {
     std::stringstream ss;
     for( auto const & n : tree_) {
@@ -145,8 +207,6 @@ MotifTree::write_pdbs(String const & fname) {
         ss.str("");
     }
 }
-
-
 
 int
 MotifTree::_steric_clash(MotifOP const & m) {

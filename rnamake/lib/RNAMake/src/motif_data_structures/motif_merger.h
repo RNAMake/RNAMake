@@ -99,6 +99,7 @@ public:
         res_overrides_ = mm.res_overrides_;
         for(auto const & n : mm.graph_.nodes()) {
             graph_.get_node(n->index())->data() = ChainNodeData(n->data());
+  
         }
         
         for(auto const & m : motifs) { update_motif(m); }

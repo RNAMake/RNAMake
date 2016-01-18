@@ -7,6 +7,7 @@
 //
 
 #include "secondary_structure/pose.h"
+#include "secondary_structure/util.h"
 
 namespace sstruct {
 
@@ -88,6 +89,25 @@ Pose::_build_helices() {
         
         helices_.push_back(h_m);
         
+    }
+    
+}
+
+void
+Pose::replace_sequence(
+    String const & seq) {
+    
+    RNAStructure::replace_sequence(seq);
+
+    int i = 0;
+    for(auto & m : motifs_) {
+        i = 0;
+        auto end_ids = Strings(m->ends().size());
+        for(auto const & end : m->ends()) {
+            end_ids[i] = assign_end_id(m, end);
+            i++;
+        }
+        m->end_ids(end_ids);
     }
     
 }

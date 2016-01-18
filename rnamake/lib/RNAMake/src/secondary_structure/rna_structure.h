@@ -115,6 +115,11 @@ public:
         Uuid const &,
         Uuid const &);
     
+    virtual
+    void
+    replace_sequence(
+        String const &);
+    
 public: //wrappers for structure
     
     inline

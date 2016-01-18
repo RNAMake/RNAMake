@@ -59,7 +59,6 @@ public:
         return helices_;
     }
     
-    
     MotifOPs const &
     motifs() { return motifs_; }
     
@@ -70,6 +69,10 @@ public:
         }
         return nullptr;
     }
+    
+    void
+    replace_sequence(
+        String const &);
 
 private:
     void

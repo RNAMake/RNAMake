@@ -24,6 +24,10 @@ Chain::to_pdb_str(
     int rnum,
     String const & chain_id) const {
     
+    if(rnum == -1) {
+        rnum = residues_[0]->num();
+    }
+    
     String s;
     for (auto const & r : residues_ ) {
         s += r->to_pdb_str(acount, rnum, chain_id);

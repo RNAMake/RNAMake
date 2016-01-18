@@ -24,6 +24,7 @@ parse_command_line(
     cl_opts.add_option("path", String(""), OptionType::STRING, false);
     cl_opts.add_option("test_run", false, OptionType::BOOL, false);
     cl_opts.add_option("out", String("solutions.top"), OptionType::STRING, false);
+    cl_opts.add_option("opt_seq", true, OptionType::BOOL, false);
     
     cl_opts.parse_command_line(argc, argv);
     return cl_opts;
@@ -50,7 +51,7 @@ MiniTTR::run() {
     search_.setup(start->state(), end->state());
     search_.beads(centers);
 
-    if(test_run_) {
+    //if(test_run_) {
         auto sol = search_.next();
         if(sol == nullptr) {
             std::cout << "no solutions" << std::endl;
@@ -58,9 +59,13 @@ MiniTTR::run() {
         }
         auto mt = sol->to_motif_tree();
         mg_.add_motif_tree(mt, 3);
-        mg_.write_pdbs();
+        mg_.add_connection(2, mg_.last_node()->index(), end->name());
+        //mg_.write_pdbs();
+        if(opt_seq_) {
+            optimize_sequence(mg_);
+        }
         return;
-    }
+    //}
     
     std::ofstream out;
     out.open(options_.get_string("out"), std::ofstream::out);
@@ -78,13 +83,10 @@ MiniTTR::run() {
         }
         
         auto mt = sol->to_motif_tree();
-        //mg_.add_motif_tree(mt, mg_.last_node()->index());
         mg_.add_motif_tree(mt, 3);
 
         
         mg_.add_connection(2, mg_.last_node()->index(), end->name());
-        //mg_.replace_ideal_helices();
-        //mg_.replace_ideal_helices();
         out << mg_.topology_to_str() << std::endl;
         try{
             mg_.to_pdb("test."+ std::to_string(count) + ".pdb", 1);
@@ -93,6 +95,37 @@ MiniTTR::run() {
         mg_.remove_level(1);
 
     }
+    
+    
+}
+
+void
+MiniTTR::optimize_sequence(MotifGraph & org_mg) {
+    auto str = org_mg.topology_to_str();
+    auto mg = std::make_shared<MotifGraph>(str);
+    mg->replace_ideal_helices();
+    
+    int free_end_node = 0;
+    int free_ends = 0;
+    int tetraloop_node = 0;
+    for(auto const & n : *mg) {
+        free_ends = 0;
+        for(auto const & c : n->connections()) {
+            if(c == nullptr) { free_ends += 1; }
+        }
+        if(free_ends) {
+            free_end_node = n->index();
+        }
+        
+        if(n->data()->name() == "GAAA_tetraloop") {
+            tetraloop_node = n->index();
+        }
+    }
+
+    auto r = optimizer_.optimize(mg, free_end_node, tetraloop_node, 1, 2);
+    std::cout << r->score << std::endl;
+    //r->motif_tree->write_pdbs();
+    //r->motif_tree->to_pdb("final.pdb");
     
     
 }
@@ -120,8 +153,15 @@ MiniTTRPathFollow::run() {
     search_.setup(start->state(), end->state());
     search_.scorer(scorer);
     search_.beads(centers);
-    
+  
+    /*auto selector = std::make_shared<MotifStateSelector>(MSS_RoundRobin());
+    selector->add("ideal_helices");
+    selector->add("unique_twoway");
+    search_.selector(selector);
+    */
+
     if(test_run_) {
+        search_.set_option_value("verbose", true);
         auto sol = search_.next();
         if(sol == nullptr) {
             std::cout << "no solutions" << std::endl;
@@ -129,13 +169,28 @@ MiniTTRPathFollow::run() {
         }
         auto mt = sol->to_motif_tree();
         mg_.add_motif_tree(mt, 1, "A1-A6");
+        mg_.write_pdbs();
+        mg_.to_pdb("r.pdb", 1);
+        exit(0);
         auto start_2 = mg_.get_end(mg_.last_node()->index());
         
         auto search_2 = MotifStateSearch();
+        search_2.set_option_value("accept_score", 10.0f);
+        
+        beads = mg_.beads();
+        centers = Points();
+        for(auto const & b : beads) {
+            centers.push_back(b.center());
+        }
+        
+        search_2.beads(centers);
         search_2.setup(start_2->state(), end->state());
         auto sol_2 = search_2.next();
         auto mt2 = sol_2->to_motif_tree();
         mg_.add_motif_tree(mt2, mg_.last_node()->index());
+        mg_.add_connection(0, mg_.last_node()->index(), end->name());
+
+        mg_.to_pdb("full_path.pdb", 1);
         mg_.write_pdbs();
     }
     
@@ -159,88 +214,28 @@ int main(int argc, const char * argv[]) {
     exit(0);
     
     
-    auto lines = get_lines_from_file("all_points.str");
-    auto path_points = vectors_from_str(lines[0]);
- 
-    auto mg = MotifGraph();
-    mg.add_motif("GAAA_tetraloop", "A229-A245");
-    mg.add_motif("HELIX.IDEAL.6", -1, "A149-A154");
-    //mg.replace_ideal_helices();
-    auto end = mg.get_end(0, "A222-A251");
-    auto start   = mg.get_end(mg.last_node()->index());
-    int end_pos = mg.last_node()->index();
-    
-    auto beads = mg.beads();
-    auto centers = Points();
-    for(auto const & b : beads) {
-        if(b.btype() == BeadType::PHOS) {
-            continue;
-        }
-        centers.push_back(b.center());
-    }
-    
-    auto search = MotifStateSearch();
-    search.set_option_value("max_node_level", 40);
-    search.set_option_value("min_node_level", 0);
-    search.set_option_value("max_solutions", 100000000);
-    search.set_option_value("accept_score", 15);
-    search.set_option_value("max_size", 1000);
-    //search.set_option_value("sterics", false);
-    //search.option("min_ss_score", 0.0f);
-    search.setup(start->state(), end->state());
-    //search.beads(centers);
-    
-    auto scorer = std::make_shared<MSS_PathFollow>(path_points);
-    search.scorer(scorer);
-    //search.path(path_points);
-    
-    std::ofstream out;
-    out.open("solutions.top", std::ofstream::out);
-    
-    mg.set_option_value("sterics", false);
-    mg.increase_level();
-    int count = 0;
-    while(! search.finished()) {
-        auto sol = search.next();
-        if(sol == nullptr) {
-            std::cout << "no solutions" << std::endl;
-            exit(0);
-        }
-        count++;
-        if(count % 100 == 0) {
-            std::cout << count << std::endl;
-        }
-        
-        auto mt = sol->to_motif_tree();
-        //mg.add_motif_tree(mt, 1, "A222-A251");
-        mg.add_motif_tree(mt, 1, "A1-A6");
-
-        //mg.add_connection(end_pos, mg.last_node()->index(), end->name());
-        //mg.replace_ideal_helices();
-        mg.write_pdbs();
-        exit(0);
-        out << mg.topology_to_str() << std::endl;
-        
-        mg.remove_level(1);
-
-        if(count % 1000 == 0) {
-            mg = MotifGraph();
-            mg.add_motif("GAAA_tetraloop", "A229-A245");
-            mg.add_motif("HELIX.IDEAL.6", -1, "A149-A154");
-            mg.replace_ideal_helices();
-            mg.increase_level();
-            mg.set_option_value("sterics", false);
-
-        }
-        
-    }
-    
-    out.close();
-    
-    
-    //sol->to_pdb("test.pdb", 1);
-    
-    
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

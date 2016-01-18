@@ -35,6 +35,7 @@
 #include "motif_data_structures_unittests/motif_topology_unittests.h"
 
 #include "motif_state_search_unittests/motif_state_search_unittest.h"
+#include "motif_state_search_unittests/path_follower_unittests.h"
 
 #include "resources_unittests/motif_sqlite_connection_unittest.h"
 #include "resources_unittests/motif_sqlite_library_unittest.h"
@@ -44,54 +45,12 @@
 #include "eternabot_unittests/scorer_unittest.h"
 #include "eternabot_unittests/sequence_designer_unittests.h"
 
-/*
-
-
-#include "motif_unittests/motif_tree_unittest.h"
-#include "motif_unittests/motif_tree_merger_unittest.h"
-#include "motif_unittests/pose_factory_unittest.h"
-#include "motif_unittests/motif_state_unittest.h"
-//#include "motif_unittests/segmenter_unittest.h"
-
-#include "resources_unittests/motif_sqlite_library_unittest.h"
-#include "resources_unittests/motif_state_sqlite_library_unittest.h"
-#include "resources_unittests/motif_state_ensemble_sqlite_library_unittest.h"
-#include "resources_unittests/resource_manager_unittest.h"
-#include "resources_unittests/added_motif_library_unittest.h"
-
-#include "motif_data_structures_unittests/motif_state_tree_unittest.h"
-#include "motif_data_structures_unittests/motif_state_ensemble_unittest.h"
-#include "motif_data_structures_unittests/motif_state_ensemble_tree_unittest.h"
-
-#include "thermo_fluctuation_unittests/thermo_fluc_sampler_unittest.h"
-#include "thermo_fluctuation_unittests/thermo_fluc_simulation_unittest.h"
-
-#include "motif_state_search_unittests/motif_state_selector_unittest.h"
-*/
-
-/*#include "util_unittests/uuid_unittest.h"
-
-
-#include "structure_unittests/atom_unittest.h"
-#include "structure_unittests/residue_unittest.h"
-#include "structure_unittests/resource_manager_unittest.h"
-#include "structure_unittests/pdb_parser_unittest.h"
-#include "structure_unittests/basepair_unittest.h"
-
-#include "motif_unittests/motif_tree_merger_unittest.h"
-#include "motif_unittests/motif_scorer_unittest.h"
-#include "motif_unittests/motif_tree_topology_unittest.h"
-
-#include "motif_tree_state_unittests/motif_tree_state_library_unittest.h"
-
-#include "resources_unittests/motif_library_unittest.h"
-
-#include "motif_assembly_unittests/motif_assembly_unittest.h"*/
+#include "sequence_optimizer_unittests/sequence_optimizer_unittests.h"
 
 
 int main(int argc, const char * argv[]) {
     
-    unittests::motif_structures::MotifTopologyUnittest test;
+    unittests::motif_state_search::PathFollowerUnittest test;
     test.run();
 
     return 0;

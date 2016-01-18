@@ -18,7 +18,7 @@ MotifTreeOP
 graph_to_tree(
     MotifGraphOP const & mg,
     GraphNodeOP<MotifOP> start = nullptr,
-    String last_end = "");
+    BasepairOP last_end = nullptr);
 
 
 #endif /* defined(__RNAMake__motif_toplogy__) */

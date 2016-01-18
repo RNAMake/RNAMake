@@ -21,6 +21,7 @@ MotifStateSearch::setup_options() {
     options_.add_option("max_solutions", 100, OptionType::INT);
     options_.add_option("accept_score", 10, OptionType::FLOAT);
     options_.add_option("min_ss_score", 10000, OptionType::FLOAT);
+    options_.add_option("verbose", false, OptionType::BOOL);
     options_.lock_option_adding();
     
     update_var_options();
@@ -36,7 +37,8 @@ MotifStateSearch::update_var_options() {
     min_node_level_ = options_.get_int("min_node_level");
     accept_score_   = options_.get_float("accept_score");
     min_ss_score_   = options_.get_float("min_ss_score");
-
+    verbose_        = options_.get_bool("verbose");
+    
 }
 
 void
@@ -100,10 +102,10 @@ MotifStateSearch::_search() {
         steps += 1;
         score = scorer_->accept_score(current);
         
-        if(score < best) {
-            //best = score;
-            //best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
-            //std::cout << best << " " << accept_score_ << " " << current->level() << std::endl;
+        if(score < best && verbose_) {
+            best = score;
+            best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
+            std::cout << best << " " << accept_score_ << " " << current->level() << std::endl;
         }
         
         if(score < accept_score_ && current->ss_score() < min_ss_score_ &&
@@ -150,14 +152,14 @@ MotifStateSearch::_search() {
                 
                 if(sterics_) {
                     clash = 0;
-                    /*for(auto const & b1 : beads_) {
+                    for(auto const & b1 : beads_) {
                         for(auto const & b2 : test_node_->cur_state()->beads()) {
                             dist = b1.distance(b2);
                             if(dist < 2.5) { clash = 1; break; }
                         }
                     }
                     if(clash) { continue; }
-                    */
+                    
                     current_2 = test_node_->parent();
                     while (current_2 != nullptr) {
                         for(auto const & b1 : test_node_->cur_state()->beads()) {

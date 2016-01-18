@@ -14,6 +14,7 @@ set(unittests_files
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_tree_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_tree_unittest.cpp
+	../../unittests/motif_data_structures_unittests/motif_topology_unittests.cpp
 	../../unittests/motif_data_structures_unittests/motif_tree_unittest.cpp
 	../../unittests/motif_state_search_unittests/motif_state_search_unittest.cpp
 	../../unittests/motif_state_search_unittests/motif_state_selector_unittest.cpp
@@ -35,6 +36,7 @@ set(unittests_files
 	../../unittests/secondary_structure_unittests/secondary_structure_tree_unittest.cpp
 	../../unittests/secondary_structure_unittests/structure_unittest.cpp
 	../../unittests/secondary_structure_unittests/util.cpp
+	../../unittests/sequence_optimizer_unittests/sequence_optimizer_unittests.cpp
 	../../unittests/structure_unittests/atom_unittest.cc
 	../../unittests/structure_unittests/basepair_unittest.cc
 	../../unittests/structure_unittests/chain_unittest.cc
