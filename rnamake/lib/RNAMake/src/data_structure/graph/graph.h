@@ -66,7 +66,7 @@ public:
     }
     
     inline
-    GraphNodeOP<DataType> const &
+    GraphNodeOP<DataType>
     oldest_node() {
         auto node = last_node_;
         assert(node != nullptr && "attemped to call oldest_node but there are no nodes");
@@ -342,7 +342,7 @@ public:
         }
         
         if(g.last_node_ != nullptr) {
-            this->last_node_ = this->nodes_[g.last_node_->index()];
+            this->last_node_ = this->get_node(g.last_node_->index());
         }
         
         this->level_ = g.level_;

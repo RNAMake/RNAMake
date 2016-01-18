@@ -14,6 +14,7 @@
 #include "data_structure/tree/tree.h"
 #include "motif/motif.h"
 #include "motif_data_structures/motif_merger.h"
+#include "motif_data_structures/motif_connection.h"
 
 class MotifTreeException : public std::runtime_error {
 public:
@@ -118,6 +119,12 @@ public: //add motif interface
     
     int
     add_motif(
+        MotifOP const & m,
+        int parent_index,
+        String parent_end_name);
+    
+    int
+    add_motif(
         String const & m_name,
         int parent_index = -1,
         int parent_end_index = -1);
@@ -141,6 +148,13 @@ public:
     _steric_clash(
         MotifOP const &);
     
+    void
+    add_connection(
+        int,
+        int,
+        String const &,
+        String const &);
+    
 private:
     void
     setup_options();
@@ -151,6 +165,7 @@ private:
 private:
     TreeStatic<MotifOP> tree_;
     MotifMerger merger_;
+    MotifConnectionOPs connections_;
     bool sterics_;
     float clash_radius_;
     Options options_;

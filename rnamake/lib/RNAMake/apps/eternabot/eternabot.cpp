@@ -27,7 +27,7 @@ parse_command_line(
 }
 
 int main(int argc, const char * argv[]) {
-    auto cmd_opts = parse_command_line(argc, argv);
+    auto cl_opts = parse_command_line(argc, argv);
     
     auto designer = eternabot::SequenceDesigner();
     
@@ -37,8 +37,8 @@ int main(int argc, const char * argv[]) {
     
     designer.setup();
     auto parser = sstruct::SecondaryStructureParser();
-    auto p = parser.parse_to_pose(cmd_opts.get_string("seq"),
-                                  cmd_opts.get_string("ss"));
+    auto p = parser.parse_to_pose(cl_opts.get_string("seq"),
+                                  cl_opts.get_string("ss"));
     auto results = designer.design(p);
     std::cout << results[0]->score << " " << results[0]->sequence << std::endl;
     

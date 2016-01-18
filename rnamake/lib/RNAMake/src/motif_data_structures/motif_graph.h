@@ -202,8 +202,12 @@ public: //Graph Wrappers
     last_node() { return graph_.last_node(); }
     
     inline
-    GraphNodeOP<MotifOP> const &
+    GraphNodeOP<MotifOP>
     oldest_node() { return graph_.oldest_node(); }
+    
+    inline
+    GraphNodeOP<MotifOP> const &
+    get_node(int i) { return graph_.get_node(i); }
     
 
 

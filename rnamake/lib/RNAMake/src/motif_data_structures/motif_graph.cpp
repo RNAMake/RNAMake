@@ -26,7 +26,6 @@ sterics_(0) {
     for(auto const & n_spl : node_spl) {
         sspl = split_str_by_delimiter(n_spl, ",");
         auto m = ResourceManager::getInstance().get_motif(sspl[0], sspl[2], sspl[1]);
-        std::cout << pos+1 << " " << n_spl << std::endl;
 
         if(i == 0 ) {
             pos = add_motif(m);
@@ -425,53 +424,58 @@ MotifGraph::remove_level(int level) {
 
 void
 MotifGraph::replace_ideal_helices() {
-    for(auto const & n : graph_) {
-        if(n->data()->mtype() != MotifType::HELIX) { continue; }
-        if(n->data()->residues().size() == 4) { continue; }
-        
-        auto parent = GraphNodeOP<MotifOP>(nullptr);
-        auto parent_end_index = 0;
-        auto other  = GraphNodeOP<MotifOP>(nullptr);
-        auto other_end_index = 0;
-        
-        if(n->connections()[0] != nullptr) {
-            parent = n->connections()[0]->partner(n->index());
-            parent_end_index = n->connections()[0]->end_index(parent->index());
+    int found = 1;
+    while(found) {
+        found =0;
+        for(auto const & n : graph_) {
+            if(n->data()->mtype() != MotifType::HELIX) { continue; }
+            if(n->data()->residues().size() == 4) { continue; }
+            
+            found = 1;
+            
+            auto parent = GraphNodeOP<MotifOP>(nullptr);
+            auto parent_end_index = 0;
+            auto other  = GraphNodeOP<MotifOP>(nullptr);
+            auto other_end_index = 0;
+            
+            if(n->connections()[0] != nullptr) {
+                parent = n->connections()[0]->partner(n->index());
+                parent_end_index = n->connections()[0]->end_index(parent->index());
+            }
+            if(n->connections()[1] != nullptr) {
+                other = n->connections()[1]->partner(n->index());
+                other_end_index = n->connections()[1]->end_index(other->index());
+            }
+            
+            auto name_spl = split_str_by_delimiter(n->data()->name(), ".");
+            int count = 1;
+            if(name_spl.size() == 3) {
+                count = std::stoi(name_spl[2]);
+            }
+            
+            remove_motif(n->index());
+            auto h = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
+            int pos = 0;
+            if(parent == nullptr) { pos = _add_motif_to_graph(h); }
+            else                  { pos = _add_motif_to_graph(h, parent->index(), parent_end_index); }
+            
+            
+            int old_pos = pos;
+            for(int j = 0; j < count; j++) {
+                pos = _add_motif_to_graph(h, old_pos, 1);
+                old_pos = pos;
+            }
+            
+            if(other != nullptr) {
+                graph_.connect(pos, other->index(), 1, other_end_index);
+                auto node = graph_.get_node(pos);
+                merger_.connect_motifs(node->data(), other->data(),
+                                       node->data()->ends()[1],
+                                       other->data()->ends()[other_end_index]);
+            }
+            
         }
-        if(n->connections()[1] != nullptr) {
-            other = n->connections()[1]->partner(n->index());
-            other_end_index = n->connections()[1]->end_index(other->index());
-        }
-        
-        auto name_spl = split_str_by_delimiter(n->data()->name(), ".");
-        int count = 1;
-        if(name_spl.size() == 3) {
-            count = std::stoi(name_spl[2]);
-        }
-        
-        remove_motif(n->index());
-        auto h = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
-        int pos = 0;
-        if(parent == nullptr) { pos = _add_motif_to_graph(h); }
-        else                  { pos = _add_motif_to_graph(h, parent->index(), parent_end_index); }
-        
-        
-        int old_pos = pos;
-        for(int j = 0; j < count; j++) {
-            pos = _add_motif_to_graph(h, old_pos, 1);
-            old_pos = pos;
-        }
-        
-        if(other != nullptr) {
-            graph_.connect(pos, other->index(), 1, other_end_index);
-            auto node = graph_.get_node(pos);
-            merger_.connect_motifs(node->data(), other->data(),
-                                   node->data()->ends()[1],
-                                   other->data()->ends()[other_end_index]);
-        }
-        
     }
-    
 }
 
 int
@@ -519,6 +523,7 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
         new_name += spl[0][0]; new_name += spl[2][1]; new_name += "=";
         new_name += spl[0][1]; new_name += spl[2][0];
         auto m = ResourceManager::getInstance().get_motif(new_name);
+        m->id(n->data()->id());
         auto org_res = n->data()->residues();
         auto new_res = m->residues();
         for(int i = 0; i < org_res.size(); i++) {
@@ -551,9 +556,10 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
         if(other == nullptr) { continue; }
         if(other->data()->mtype() == MotifType::HELIX) { continue; }
         
+        auto new_other = ResourceManager::getInstance().get_motif(other->data()->name(), "", other->data()->ends()[0]->name());
         auto m_added = get_aligned_motif(n->data()->ends()[1],
-                                         other->data()->ends()[0],
-                                         other->data());
+                                         new_other->ends()[0],
+                                         new_other);
         other->data() = m_added;
         merger_.update_motif(other->data());
     }

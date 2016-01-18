@@ -116,6 +116,10 @@ public: // setters
     
     inline
     void
+    id(Uuid const & nid) { id_ = nid; }
+    
+    inline
+    void
     mtype(MotifType const & mtype) { mtype_ = mtype; }
     
     inline

@@ -148,6 +148,8 @@ public:
         }
         
         score_ = 0;
+        int sum = 0;
+        int i = 0;
         for(auto const & b1 : path_) {
             best_ = 1000000;
             for(int i = 0; i < bead_size_; i++) {
@@ -158,13 +160,20 @@ public:
                 if(best_ < 10) { break; }
             }
             if(best_ > 10) {
-                score_ += 1*weight_;
+                score_ += 1;
             }
-            weight_ *= 0.98;
+            else {
+                if(sum < i) {
+                    score_ += (float)(i - sum)/2;
+                }
+                sum += 1;
+            }
+            i++;
         }
         
-        return length_*0.01 + node->level()*0.50 + score_;
-        
+        //return length_*0.01 + node->level()*0.50 + score_;
+        return length_*0.02 + score_;
+  
     }
     
     inline
@@ -183,6 +192,7 @@ public:
         }
         
         score_ = 0;
+        int i = 0;
 
         for(auto const & b1 : path_) {
             best_ = 1000000;

@@ -4,7 +4,7 @@ import fnmatch
 
 from rnamake import util
 
-libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search"
+libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
 #libs = "base math data_structure util secondary_structure structure"
 lib_paths = libs.split()
 
@@ -82,12 +82,14 @@ f = open("unittests.txt")
 fsum.close()"""
 for path in unittest_apps:
     fname = util.filename(path)
-    if fname == "main.cc" or fname == "all_tests.cc" or fname == "main.cpp":
+    if fname == "all_tests.cc" or fname == "main.cpp":
         continue
 
     spl = fname.split(".")
     if spl[0][-3:] == "app":
         prog_name = spl[0][:-4]
+    elif fname == "main.cc":
+        prog_name = "test"
     else:
         prog_name = spl[0]
 

@@ -17,6 +17,8 @@
 #include "motif_data_structures/motif_graph.h"
 #include "motif_state_search/motif_state_search.h"
 #include "resources/resource_manager.h"
+#include "sequence_optimizer/sequence_optimizer.h"
+
 
 
 CommandLineOptions
@@ -28,8 +30,9 @@ class MiniTTR {
 public:
     MiniTTR():
     search_(MotifStateSearch()),
+    optimizer_(SequenceOptimizer()),
     options_(Options("MiniTTROptions"))
-    { setup_options(); }
+    {}
     
     ~MiniTTR() {}
 
@@ -38,11 +41,12 @@ public:
     virtual
     void
     setup(CommandLineOptions const & opts) {
+        setup_options();
         search_.set_option_value("max_node_level", 10);
         search_.set_option_value("min_node_level", 0);
         search_.set_option_value("max_solutions", 1000);
         search_.set_option_value("accept_score", 10);
-        search_.set_option_value("min_ss_score", -20);
+        search_.set_option_value("min_ss_score", 0);
         search_.set_option_value("max_size", 100);
         
         for(auto const & opt : opts) {
@@ -89,15 +93,20 @@ public:
 protected:
     Options options_;
     MotifStateSearch search_;
+    SequenceOptimizer optimizer_;
     MotifGraph mg_;
-    //option vars
-    bool test_run_;
+    bool test_run_, opt_seq_;
 
 private:
+    void
+    optimize_sequence(MotifGraph &);
+    
+    virtual
     void
     setup_options() {
         options_.add_option("test_run", false, OptionType::BOOL);
         options_.add_option("out", String("solutions.top"), OptionType::STRING);
+        options_.add_option("opt_seq", true, OptionType::BOOL);
         options_.lock_option_adding();
         update_var_options();
     }
@@ -105,6 +114,7 @@ private:
     void
     update_var_options() {
         test_run_ = options_.get_bool("test_run");
+        opt_seq_  = options_.get_bool("opt_seq");
     }
 
     
@@ -115,7 +125,6 @@ class MiniTTRPathFollow : public MiniTTR {
 public:
     
     MiniTTRPathFollow() : MiniTTR() {
-        setup_options();
     }
 
     ~MiniTTRPathFollow() {}
@@ -123,11 +132,12 @@ public:
 public:
     void
     setup(CommandLineOptions const & opts) {
-        search_.set_option_value("max_node_level", 40);
+        setup_options();
+        search_.set_option_value("max_node_level", 400);
         search_.set_option_value("min_node_level", 0);
         search_.set_option_value("max_solutions", 100000000);
         search_.set_option_value("accept_score", 15);
-        search_.set_option_value("max_size", 1000);
+        search_.set_option_value("max_size", 10000);
         
         for(auto const & opt : opts) {
             if(! search_.has_option(opt->name())) { continue; }
@@ -157,9 +167,9 @@ public:
         }*/
         
         mg_ = MotifGraph();
+        mg_.set_option_value("sterics", false);
         mg_.add_motif("GAAA_tetraloop", "A229-A245");
         mg_.add_motif("HELIX.IDEAL.6", -1, "A149-A154");
-
     }
     
     void
@@ -181,4 +191,7 @@ private:
     }
     
 };
+
+
+
 #endif /* defined(__RNAMake__mini_ttr__) */

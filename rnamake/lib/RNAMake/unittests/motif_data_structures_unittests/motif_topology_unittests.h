@@ -31,6 +31,9 @@ public:
     void
     test_to_tree();
     
+    void
+    test_to_tree_complex();
+    
 public:
     
     int

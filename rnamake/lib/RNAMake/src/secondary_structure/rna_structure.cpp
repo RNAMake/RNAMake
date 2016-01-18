@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <cassert>
 #include "secondary_structure/rna_structure.h"
 
 namespace sstruct {
@@ -59,5 +60,23 @@ RNAStructure::get_basepair(
     throw "could not find basepair with name " + name;
     
 }
+
+
+void
+RNAStructure::replace_sequence(
+    String const & seq) {
+    auto spl = split_str_by_delimiter(seq, "&");
+    auto seq2 = String();
+    for(auto const & s : spl) {
+        seq2 += s;
+    }
+    assert(seq2.length() == residues().size() && "cannot replace sequence with a different length sequence");
+    int i = 0;
+    for(auto & r : residues()) {
+        r->name(String(1, seq2[i]));
+        i++;
+    }
+}
+    
     
 }
