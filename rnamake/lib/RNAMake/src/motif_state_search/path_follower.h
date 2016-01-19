@@ -24,7 +24,10 @@ public:
     
     void
     setup(
-        Points const & path);
+        Points const & path) {
+        path_ = path;
+        mg_ = std::make_shared<MotifGraph>();
+    }
     
         
 private:
