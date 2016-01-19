@@ -1,6 +1,7 @@
 import unittest
+from rnamake import structure
 import rnamake.basepair
-import rnamake.motif_factory as mf
+
 import util
 import numpy as np
 import copy
@@ -10,7 +11,7 @@ class BasepairUnittest(unittest.TestCase):
 
     def setUp(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        struct = mf.factory.get_structure(path)
+        struct = structure.structure_from_pdb(path)
         r = np.eye(3)
         bp = rnamake.basepair.Basepair(struct.get_residue(num=103),
                                        struct.get_residue(num=104),
@@ -20,7 +21,7 @@ class BasepairUnittest(unittest.TestCase):
 
     def test_creation(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        struct = mf.factory.get_structure(path)
+        struct = structure.structure_from_pdb(path)
         r = np.eye(3)
         try:
             bp = rnamake.basepair.Basepair(struct.get_residue(num=103),
@@ -44,7 +45,7 @@ class BasepairUnittest(unittest.TestCase):
             self.fail()
 
         path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        struct = mf.factory.get_structure(path)
+        struct = structure.structure_from_pdb(path)
         residues = struct.residues()
 
         try:

@@ -15,6 +15,7 @@ MotifSqliteLibrary::get_libnames() {
     StringStringMap libnames;
     
     libnames["ideal_helices"]  = "/motif_libraries_new/ideal_helices.db";
+    libnames["ideal_helices_reversed"]  = "/motif_libraries_new/ideal_helices_reversed.db";
     libnames["twoway"]         = "/motif_libraries_new/twoway.db";
     libnames["tcontact"]       = "/motif_libraries_new/tcontact.db";
     libnames["hairpin"]        = "/motif_libraries_new/hairpin.db";
@@ -36,6 +37,7 @@ MotifSqliteLibrary::get(
     String query = _generate_query(name, end_id, end_name, id);
     connection_.query(query);
     auto row = connection_.next();
+    connection_.clear();
     
     if(row->data.length() == 0) {
         throw std::runtime_error("query returned no rows");
@@ -46,7 +48,7 @@ MotifSqliteLibrary::get(
                                                  ResidueTypeSetManager::getInstance().residue_type_set());
     }
     
-    return std::make_shared<Motif>(data_[row->id]->copy());
+    return std::make_shared<Motif>(*data_[row->id]);
     
 }
 
@@ -61,7 +63,8 @@ MotifSqliteLibrary::get_multi(
     String query = _generate_query(name, end_id, end_name, id);
     connection_.query(query);
     auto row = connection_.next();
-    
+    connection_.clear();
+
     if(row->data.length() == 0) {
         throw std::runtime_error("query returned no rows");
     }
@@ -72,10 +75,10 @@ MotifSqliteLibrary::get_multi(
                                                      ResidueTypeSetManager::getInstance().residue_type_set());
         }
         
-        motifs.push_back(std::make_shared<Motif>(data_[row->id]->copy()));
+        motifs.push_back(std::make_shared<Motif>(*data_[row->id]));
         row = connection_.next();
     }
-    
+
     return motifs;
     
 }
@@ -89,10 +92,11 @@ MotifSqliteLibrary::contains(
     
     String query = _generate_query(name, end_id, end_name, id);
     connection_.query(query);
-    auto row = connection_.next();
+    auto row = connection_.contains();
+    int length = (int)row->data.length();
     
-    if(row->data.length() == 0) { return 0; }
-    else                        { return 1; }
+    if(length == 0)  { return 0; }
+    else             { return 1; }
 
     
 }

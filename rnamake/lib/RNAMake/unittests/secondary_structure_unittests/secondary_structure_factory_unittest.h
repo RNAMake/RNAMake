@@ -15,6 +15,9 @@
 
 #include "unittest.h"
 
+namespace unittests {
+
+
 class SecondaryStructureFactoryUnittest : public Unittest {
 public:
     SecondaryStructureFactoryUnittest() {}
@@ -23,7 +26,7 @@ public:
     
 public:
     
-    int
+    void
     test_creation();
         
 public:
@@ -35,6 +38,8 @@ public:
     //run_all();
     
 };
+    
+}
 
 
 

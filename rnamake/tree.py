@@ -136,6 +136,27 @@ class TreeStatic(Tree):
                 raise ValueError("tree pos is not available")
             return [pos]
 
+    def copy(self):
+        ts = TreeStatic()
+        new_nodes = []
+        for n in self.nodes:
+            new_nodes.append(n.copy())
+        for n in self.nodes:
+            parent_index = n.parent_index()
+            pei = n.parent_end_index()
+            if parent_index == -1:
+                continue
+            new_nodes[parent_index].add_child(n, pei)
+            n.parent = new_nodes[parent_index]
+
+        ts.nodes = new_nodes
+        if self.last_node is not None:
+            ts.last_node = ts.nodes[self.last_node.index]
+        ts.level = self.level
+        ts.index = self.index
+        return ts
+
+
 
 class TreeNode(object):
     def __init__(self, data, index, level, n_children=0):
@@ -205,5 +226,13 @@ class TreeNodeStatic(TreeNode):
         i = self.children.index(node)
         self.children[i] = None
 
+    def copy(self):
+        new_data = None
+        try:
+            new_data = self.data.copy()
+        except:
+            new_data = self.data
+        c = TreeNodeStatic(new_data, self.index, self.level, len(self.children))
+        return c
 
 

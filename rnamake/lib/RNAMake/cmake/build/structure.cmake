@@ -7,6 +7,6 @@ set(structure_files
 	../../src/structure/residue.cc
 	../../src/structure/residue_type.cc
 	../../src/structure/residue_type_set.cc
+	../../src/structure/rna_structure.cpp
 	../../src/structure/structure.cc
-	../../src/structure/structure_factory.cc
 )

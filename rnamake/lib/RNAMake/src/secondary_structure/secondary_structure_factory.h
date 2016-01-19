@@ -12,20 +12,38 @@
 #include <stdio.h>
 
 //RNAMake Headers
-#include "secondary_structure/secondary_structure.h"
-#include "secondary_structure/ss_tree.h"
+#include "secondary_structure/secondary_structure_parser.h"
+#include "secondary_structure/pose.h"
 
 namespace sstruct {
 
 class SecondaryStructureFactory {
 public:
-    SecondaryStructureFactory() {}
+    SecondaryStructureFactory():
+    parser_(SecondaryStructureParser())
+    {}
     
     ~SecondaryStructureFactory() {}
     
 public:
     
-    SecondaryStructureOP
+    inline
+    MotifOP
+    motif(
+        String const & sequence,
+        String const & dot_bracket) {
+        return parser_.parse_to_motif(sequence, dot_bracket);
+    }
+    
+    inline
+    PoseOP
+    pose(
+        String const & sequence,
+        String const & dot_bracket) {
+        return parser_.parse_to_pose(sequence, dot_bracket);
+    }
+    
+    /*SecondaryStructureOP
     get_structure(
         String const & sequence,
         String const & dot_bracket) {
@@ -37,24 +55,12 @@ public:
         
         return ss;
         
-    }
+    }*/
 
 private:
+    SecondaryStructureParser parser_;
     
-    void
-    _get_basepairs(
-        SS_Tree const &,
-        SecondaryStructureOP &);
-    
-    void
-    _get_motifs(
-        SS_Tree const &,
-        SecondaryStructureOP &);
-    
-    ChainOPs
-    _get_chains(
-        SecondaryStructureOP const &,
-        std::vector<TreeNodeOP<SS_NodeDataOP>> const &);
+
 
 };
 

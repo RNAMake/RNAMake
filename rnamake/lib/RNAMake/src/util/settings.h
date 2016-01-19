@@ -21,6 +21,9 @@ String
 resources_path();
 
 String
+lib_path();
+
+String
 motif_dirs();
 
 String

@@ -15,6 +15,11 @@
 #include "base/base.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
 
+String
+bp_name_from_sequence(
+    String const &);
+
+
 class SimulateTectos {
 public:
     SimulateTectos(

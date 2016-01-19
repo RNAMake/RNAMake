@@ -18,9 +18,11 @@ typedef std::vector<int> Ints;
 typedef std::vector<char> Chars;
 typedef std::vector<short> Shorts;
 typedef std::vector<float> Floats;
+
 typedef std::string String;
-typedef std::vector<String> Strings;
 typedef std::shared_ptr<String> StringOP;
+
+typedef std::vector<String> Strings;
 
 typedef std::map<String, int> StringIntMap;
 typedef std::map<String, float> StringFloatMap;

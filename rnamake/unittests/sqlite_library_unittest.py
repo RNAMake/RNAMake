@@ -49,7 +49,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
         motifs1 = mlib.get_multi(name=m.name)
         motifs2 = mlib.get_multi(end_id=m.end_ids[0])
 
-    def test_bp_steps(self):
+    def _test_bp_steps(self):
         mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
         mlib.load_all()
 
@@ -101,14 +101,13 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         return m
 
-    def test_get_best(self):
+    def _test_get_best(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
         #ss_id1 = "AC_LL_GGGU_RUUR"
         ss_id1 = "CGG_LLL_CAG_RRR"
 
         matches = mlib.get_best_matches(ss_id1)
         #print len(matches)
-
 
     def _test_end_id(self):
         mlib = rm.manager.mlibs['tcontact']

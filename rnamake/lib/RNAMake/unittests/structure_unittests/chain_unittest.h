@@ -14,6 +14,7 @@
 #include "unittest.h"
 #include "structure/chain.h"
 
+namespace unittests {
 
 class ChainUnittest : public Unittest {
 public:
@@ -38,7 +39,7 @@ public:
     int
     run();
     
-    void
+    int
     run_all();
     
 private:
@@ -46,5 +47,7 @@ private:
     
     
 };
+    
+}
 
 #endif /* defined(__RNAMake__chain_unittest__) */

@@ -40,6 +40,25 @@ public:
     block_end_add_(block_end_add)
     {}
     
+    inline
+    MotifState(
+        MotifState const & ms):
+    name_(ms.name_),
+    end_names_(ms.end_names_),
+    end_ids_(ms.end_ids_),
+    end_states_(BasepairStateOPs(ms.end_states_.size())),
+    beads_(ms.beads_),
+    score_(ms.score_),
+    size_(ms.size_),
+    block_end_add_(ms.block_end_add_) {
+        int i = 0;
+        for(auto const & bp_state : ms.end_states_) {
+            end_states_[i] = std::make_shared<BasepairState>(*bp_state);
+            i++;
+        }
+    }
+    
+    
     ~MotifState() {}
 
 public:

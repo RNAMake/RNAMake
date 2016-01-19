@@ -54,6 +54,12 @@ class MotifEnsemble(object):
             s += ms.to_str() + "{"
         return s
 
+    def to_file(self, name="test.me"):
+        s = self.to_str()
+        f = open(name, "w")
+        f.write(s)
+        f.close()
+
     def get_state(self):
         mse = MotifStateEnsemble()
         motif_states = []
@@ -65,6 +71,14 @@ class MotifEnsemble(object):
 
         mse.setup(self.id, motif_states, energies)
         return mse
+
+    def to_pdb(self, name="test.pdb"):
+        f = open (name, "w")
+        for i, mem in enumerate(self.members):
+            f.write("MODEL " + str(i+1) + "\n")
+            f.write(mem.motif.to_pdb_str())
+            f.write("ENDMDL\n")
+        f.close()
 
 
 class MotifStateEnsembleMember(object):
@@ -115,6 +129,17 @@ class MotifStateEnsemble(object):
     def get_random_member(self):
         return random.choice(self.members)
 
+    def update_res_uuids(self, res):
+        for mem in self.members:
+            mem.motif_state.update_res_uuids(res)
+
+
+def file_to_motif_ensemble(path):
+    f = open(path)
+    s = f.readline()
+    f.close()
+
+    return str_to_motif_ensemble(s)
 
 def str_to_motif_ensemble(s):
     me = MotifEnsemble()

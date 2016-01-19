@@ -35,13 +35,30 @@ def center(atoms):
     """
 
     center = np.array([0.0, 0.0, 0.0])
-
+    count = 0
     for a in atoms:
         if a is None:
             continue
         center += a.coords
+        count += 1
 
-    return center / float(len(atoms))
+    return center / float(count)
+
+def center_points(points):
+    """
+    returns the center of a list of atoms
+
+    :params atoms: list of atoms to calculate center
+    :type atoms: list of atoms
+    """
+
+    center = np.array([0.0, 0.0, 0.0])
+
+    for p in points:
+        center += p
+
+    return center / float(len(points))
+
 
 
 def base_dir(path):

@@ -31,7 +31,7 @@ public:
         MotifSqliteConnection conn(path);
         connection_ = conn;
         max_size_ = connection_.count();
-        
+        //max_size_ = 1;
     }
 
     ~MotifSqliteLibrary() {}

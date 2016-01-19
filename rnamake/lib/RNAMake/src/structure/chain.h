@@ -26,8 +26,29 @@ public:
         residues_ ( residues )
     {}
     
-    Chain
-    copy() const;
+    Chain(
+        Chain const & c) {
+        
+        residues_ = ResidueOPs(c.residues_.size());
+        int i = 0;
+        for (auto const & r : c.residues_) {
+            residues_[i] = std::make_shared<Residue>(*r);
+            i++;
+        }
+    }
+    
+    Chain(
+        String const & s,
+        ResidueTypeSet const & rts) {
+        
+        residues_ = ResidueOPs();
+        Strings spl = split_str_by_delimiter(s, ";");
+        for(auto const & r_str : spl) {
+            auto r = std::make_shared<Residue>(r_str, rts);
+            residues_.push_back(r);
+        }
+    }
+    
     
     ~Chain() {}
 
@@ -80,11 +101,30 @@ public:
     String
     to_str() const;
     
+    
     String
-    to_pdb_str(int &) const;
+    to_pdb_str(
+        int &,
+        int,
+        String const &) const;
+    
+    inline
+    String
+    to_pdb_str(int & acount) const {
+        return to_pdb_str(acount, -1, "");
+    }
     
     void
-    to_pdb(String const) const;
+    to_pdb(
+        String const,
+        int,
+        String const &) const;
+    
+    inline
+    void
+    to_pdb(String const & fname) {
+        return to_pdb(fname, -1, "");
+    }
     
 public: //getters
     
@@ -96,11 +136,10 @@ private:
     ResidueOPs residues_;
 };
 
-Chain
-str_to_chain(
-    String const &,
-    ResidueTypeSet const & );
-
+void
+connect_residues_into_chains(
+    ResidueOPs & residues,
+    ChainOPs & chains);
 
 
 #endif /* defined(__RNAMake__chain__) */

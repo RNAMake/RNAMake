@@ -26,7 +26,7 @@ MotifStateSearchSolution::_get_path(
 MotifStateTreeOP
 MotifStateSearchSolution::to_mst() {
     auto mst = std::make_shared<MotifStateTree>();
-    mst->option("sterics", 0);
+    mst->set_option_value("sterics", false);
     int i = 0, j = 0;
     for(auto const & n : path_) {
         auto cur_state = std::make_shared<MotifState>(n->ref_state()->name(),

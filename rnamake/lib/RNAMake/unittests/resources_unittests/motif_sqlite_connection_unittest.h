@@ -28,6 +28,9 @@ public:
     int
     test_next();
     
+    void
+    test_memory();
+    
 public:
     
     int

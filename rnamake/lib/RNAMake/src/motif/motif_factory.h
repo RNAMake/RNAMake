@@ -15,7 +15,6 @@
 #include "base/types.h"
 #include "util/settings.h"
 #include "util/file_io.h"
-#include "structure/structure_factory.h"
 #include "motif/motif_to_secondary_structure.h"
 #include "motif/motif_scorer.h"
 #include "motif/motif.h"
@@ -24,14 +23,13 @@
 class MotifFactory {
 public:
     MotifFactory():
-    sf_(StructureFactory()),
     parser_(MotiftoSecondaryStructure()) {
         auto path = motif_dirs() + "ref.motif";
         ref_motif_ = file_to_motif(path);
         path = motif_dirs() + "base.motif";
         base_motif_ = file_to_motif(path);
         base_motif_->get_beads(base_motif_->ends()[0]);
-        added_helix_ = std::make_shared<Motif>(base_motif_->copy());
+        added_helix_ = std::make_shared<Motif>(*base_motif_);
         clash_radius_ = 2.9;
     }
     
@@ -100,7 +98,6 @@ private:
     
     
 private:
-    StructureFactory sf_;
     MotiftoSecondaryStructure parser_;
     MotifScorer scorer_;
     MotifOP ref_motif_, base_motif_, added_helix_;

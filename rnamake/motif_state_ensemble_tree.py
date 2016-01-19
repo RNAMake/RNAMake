@@ -6,16 +6,23 @@ import numpy as np
 import tree
 import motif_state_tree
 import motif_ensemble
+import motif_type
 import resource_manager as rm
+<<<<<<< HEAD
 import transformations as t
 import util
+=======
+import math
+import itertools
+>>>>>>> mt_and_pose_fix
 
 
 class MotifStateEnsembleTree(object):
-    def __init__(self, mt=None, mst=None):
+    def __init__(self, mt=None, mst=None, extra_mes=None):
         self.tree = tree.TreeStatic()
+        self.connections = []
         if mt is not None:
-            self._setup_from_mt(mt)
+            self._setup_from_mt2(mt, extra_mes)
         if mst is not None:
             self._setup_from_mst(mst)
 
@@ -56,7 +63,36 @@ class MotifStateEnsembleTree(object):
             if j == -1:
                 raise ValueError("can not build motif state tree from mset")
 
+        for c in self.connections:
+            mst.connections.append(c.copy())
+
         return mst
+
+    def _setup_from_mt2(self, mt, extra_mes):
+        if extra_mes is None:
+            extra_mes = {}
+
+        for i, n in enumerate(mt.tree.nodes):
+            if n.data.mtype == motif_type.HELIX and len(n.data.residues()) == 4:
+                mse = rm.manager.get_motif_state_ensemble(name=n.data.end_ids[0])
+            else:
+                if n.index in extra_mes:
+                    mse = extra_mes[n.index]
+                else:
+                    m = n.data
+                #m.name = "unknown."+str(i)+".pdb"
+                #rm.manager.add_motif(motif=m)
+                    mse = motif_ensemble.motif_state_to_motif_state_ensemble(m.get_state())
+
+            mse.update_res_uuids(n.data.residues())
+
+            if i == 0:
+                self.add_ensemble(mse)
+            else:
+                self.add_ensemble(mse, n.parent_index(), n.parent_end_index())
+
+        for c in mt.connections:
+            self.connections.append(c.copy())
 
     def _setup_from_mt(self, mt):
         for i, n in enumerate(mt.graph.nodes):
@@ -110,6 +146,33 @@ class MotifStateEnsembleTree(object):
 class MotifStateEnsembleTreeEnumerator(object):
     def __init__(self, mtst):
         self.mtst = mtst
+<<<<<<< HEAD
+=======
+        self.mst = self.mtst.to_mst()
+
+        ranges = []
+        for n in self.mtst:
+            ranges.append(range(0, len(n.data.members)))
+
+        self.combos = itertools.product(*ranges)
+        self.last_combo = None
+
+    def next(self):
+        c = next(self.combos)
+        if c is None:
+            return None
+        if self.last_combo is None:
+            self.last_combo = c
+
+        for i in range (0, len(c)):
+            if c[i] == self.last_combo[i]:
+                continue
+            else:
+                self.mst.replace_state(i, self.mtst.get_node(i).data.members[c[i]].motif_state)
+
+
+
+>>>>>>> mt_and_pose_fix
 
     def record(self, fname="summary.txt"):
         mst = self.mtst.to_mst()

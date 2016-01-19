@@ -9,10 +9,13 @@
 #ifndef RNAMake_pair_mat_h
 #define RNAMake_pair_mat_h
 
-#include "types.h"
+//RNAMake Headers
+#include "base/types.h"
 
 #define NBASES 8
 /*@notnull@*/
+
+namespace vienna {
 
 static const char Law_and_Order[] = "_ACGUTXKI";
 static int BP_pair[NBASES][NBASES]= {{ 0, 0, 0, 0, 0, 0, 0, 0},
@@ -155,6 +158,8 @@ encode_sequence(
             
             break;
     }
+    
+}
     
 }
 

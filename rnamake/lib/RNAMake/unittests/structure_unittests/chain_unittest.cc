@@ -10,13 +10,15 @@
 #include "math/numerical.h"
 #include "util/file_io.h"
 
+namespace unittests {
+
 ChainUnittest::ChainUnittest() {
     
     String path = unittest_resource_dir() + "/chain/test_str_to_chain.dat";
     Strings lines = get_lines_from_file(path);
     
     ResidueTypeSet rts;
-    c_ = ChainOP(new Chain(str_to_chain(lines[0], rts)));
+    c_ = std::make_shared<Chain>(lines[0], rts);
 }
 
 int
@@ -24,7 +26,7 @@ ChainUnittest::test_to_str() {
 
     String s = c_->to_str();
     ResidueTypeSet rts;
-    Chain c2 = str_to_chain(s, rts);
+    auto c2 = Chain(s, rts);
     
     ResidueOPs org_res = c_->residues();
     ResidueOPs new_res = c2.residues();
@@ -94,7 +96,7 @@ ChainUnittest::run() {
     return 1;
 }
 
-void
+int
 ChainUnittest::run_all() {
     String name = "ChainUnittest";
     typedef int (ChainUnittest::*fptr)();
@@ -103,16 +105,18 @@ ChainUnittest::run_all() {
     func_map["test_subchain" ] = &ChainUnittest::test_subchain;
     func_map["test_to_pdb"   ] = &ChainUnittest::test_to_pdb;
     
+    int failed = 0;
     for(auto const & kv : func_map) {
         try {
-            int result = (this->*kv.second)();
-            if(result == 0) {
-                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
-            }
+            (this->*kv.second)();
         }
         catch(...) {
             std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+            failed += 1;
         }
         
     }
+    return failed;
+}
+    
 }

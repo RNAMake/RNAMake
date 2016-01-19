@@ -14,6 +14,9 @@
 //RNAMake Headers
 #include "unittest.h"
 
+namespace unittests {
+namespace motif {
+
 class MotifFactoryUnittest : public Unittest {
 public:
     
@@ -44,5 +47,8 @@ public:
     //run_all();
     
 };
+    
+}
+}
 
 #endif /* defined(__RNAMake__motif_factory_unittest__) */

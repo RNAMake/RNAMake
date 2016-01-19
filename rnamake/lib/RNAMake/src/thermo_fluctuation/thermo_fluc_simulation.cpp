@@ -11,20 +11,20 @@
 
 void
 ThermoFlucSimulation::setup_options() {
-    options_ = Options();
-    options_.add_option(Option("temperature", 298.15f));
-    options_.add_option(Option("steps", 100000));
-    options_.add_option(Option("record", 1));
-    options_.add_option(Option("cutoff", 5.0f));
+    options_.add_option("temperature", 298.15f, OptionType::FLOAT);
+    options_.add_option("steps", 100000, OptionType::INT);
+    options_.add_option("record", false, OptionType::BOOL);
+    options_.add_option("cutoff", 5, OptionType::FLOAT);
+    options_.lock_option_adding();
     update_var_options();
 }
 
 void
 ThermoFlucSimulation::update_var_options() {
-    temperature_   = options_.option<float>("temperature");
-    steps_         = options_.option<int>("steps");
-    record_        = options_.option<int>("record");
-    cutoff_        = options_.option<float>("cutoff");
+    temperature_   = options_.get_float("temperature");
+    steps_         = options_.get_int("steps");
+    cutoff_        = options_.get_float("cutoff");
+    record_        = options_.get_bool("record");
 }
 
 void
@@ -36,7 +36,7 @@ ThermoFlucSimulation::setup(
     int ei2) {
     
     sampler_.setup(mset);
-    sampler_.temperature(option<float>("temperature"));
+    sampler_.temperature(temperature_);
     
     ni1_ = ni1;
     ni2_ = ni2;
@@ -55,8 +55,30 @@ ThermoFlucSimulation::run() {
     Ints check_nodes_2 = { 1 };
 
     while (steps < steps_) {
-        r = sampler_.next();
         //if(r == 0) { continue; }
+        
+        end_state_1_ = sampler_.mst()->get_node(ni1_)->data()->cur_state->end_states()[ei1_];
+        end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->cur_state->end_states()[ei2_];
+        
+        int frame_score = end_state_1_->d().distance(end_state_2_->d());
+        int r_diff = end_state_1_->r().difference(end_state_2_->r());
+        end_state_2_->flip();
+        int r_diff_flip = end_state_1_->r().difference(end_state_2_->r());;
+        end_state_2_->flip();
+        
+        if(r_diff > r_diff_flip) {
+            
+        }
+        
+
+        std::cout << score_ << std::endl;
+        
+        exit(0);
+        
+        return score_;
+       
+        r = sampler_.next();
+ 
         
         clash = 0;
         for(auto const & i : check_nodes) {

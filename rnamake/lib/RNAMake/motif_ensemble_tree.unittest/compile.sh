@@ -1,3 +1,0 @@
- g++ -O3 -std=gnu++11 -Wc++11-extensions -g -lsqlite3 -I ../RNAMAKE/ main.cpp ../RNAMAKE/atom.cpp ../RNAMAKE/motif_ensemble_tree.cc ../RNAMAKE/motif_ensemble.cc ../RNAMAKE/residue_type.cc ../RNAMAKE/residue_type_set.cc ../RNAMAKE/residue.cc ../RNAMAKE/chain.cc ../RNAMAKE/basepair_state.cc ../RNAMAKE/FileIO.cpp ../RNAMAKE/numerical.cpp ../RNAMAKE/settings.cc ../RNAMAKE/util.cc ../RNAMAKE/uuid.cc ../RNAMAKE/basepair.cc ../RNAMAKE/structure.cc ../RNAMAKE/motif.cc ../RNAMAKE/motif_type.cpp ../RNAMAKE/sqlite3_connection.cc ../RNAMAKE/motif_library.cc ../RNAMAKE/motif_tree.cc ../RNAMAKE/motif_tree_state.cc ../RNAMAKE/motif_tree_state_node_aligner.cc ../RNAMAKE/motif_tree_state_library.cc ../RNAMAKE/motif_tree_state_node.cc ../RNAMAKE/motif_tree_state_tree.cc
-
-

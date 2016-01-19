@@ -8,84 +8,106 @@
 
 #include "option_unittest.h"
 #include "base/option.h"
+#include "base/variant.h"
 #include <vector>
+
+namespace unittests {
 
 int
 OptionUnittest::test_creation() {
-
-    Option opt("test", 5.0f);
-    float s = opt.value<float>();
-
-    if((s - 5.0f) > 0.1) {
-        return 0;
-    }
     
-    Option opt2("test", "test");
-    String s1 = opt2.value<String>();
-    if(s1.compare("test") != 0) {
-        return 0;
-    }
-    
-    Option opt3("test", 2);
-    int s2 = opt3.value<int>();
-    if(s2 != 2) {
-        return 0;
-    }
+    auto opt = Option("test", 6, OptionType::FLOAT);
+    auto val  = opt.get_float();
+    auto val2 = opt.get_int();
     
     try {
-        opt2.value<float>();
-        std::cout << "did not catch exception" << std::endl;
-        exit(EXIT_FAILURE);
-    } catch(...) { }
-
+        auto val3 = opt.get_string();
+        throw "fail";
+    }
+    catch(OptionException e) {}
+    catch(...) {
+        throw UnittestException("unexpected error");
+    }
+    opt = Option("test2", String("test"), OptionType::STRING);
+    auto val3 = opt.get_string();
     try {
-        opt3.value<float>();
-        std::cout << "did not catch exception" << std::endl;
-        exit(EXIT_FAILURE);
-    } catch(...) { }
-    
-    
+        auto val4 = opt.get_float();
+        throw "fail";
+    }
+    catch(OptionException e) {}
+    catch(...) {
+        throw UnittestException("unexpected error");
+    }
+    opt.value(String("test_2"));
+   
+    opt = Option("test2", false, OptionType::BOOL);
+    auto val4 = opt.get_bool();
+    opt.value(true);
     return 1;
 }
 
 int
 OptionUnittest::test_add_option() {
     
-    Options opts;
-    opts.add_option(Option("test", "test"));
-    opts.add_option(Option("test_2", 5.0f));
+    auto opts = Options("TestOptions");
+    opts.add_option("test", String("test"), OptionType::STRING);
+    opts.add_option("test_2", 5, OptionType::INT);
+    
+    auto val = opts.get_int("test_2");
+    if(val != 5) {
+        throw UnittestException("did not get expected option value");
+    }
     
     return 1;
 }
 
 int
 OptionUnittest::test_option() {
-    Options opts;
-    opts.add_option(Option("test", "test"));
-    opts.add_option(Option("test_2", 5.0f));
     
-    float v = opts.option<float>("test_2");
-    
-    if(v != 5.0f) { return 0; }
-    
-    opts.option<float>("test_2", 7.0f);
-    v = opts.option<float>("test_2");
+    auto opts = Options("TestOptions");
+    opts.add_option("test", String("test"), OptionType::STRING);
+    opts.add_option("test_2", 5, OptionType::INT);
 
-    if(v != 7.0f) { return 0; }
+    opts.set_value("test_2", 6);
+    opts.set_value("test", String("test_2"));
+
+    if(opts.get_string("test") != "test_2") {
+        throw UnittestException("did not get expected option value");
+    }
+    
+    if(opts.get_float("test_2") != 6) {
+        throw UnittestException("did not get expected option value");
+    }
+    
+    
     
     return 1;
 }
 
 int
+OptionUnittest::test_iteration() {
+    auto opts = Options("TestOptions");
+    opts.add_option("test", String("test"), OptionType::STRING);
+    opts.add_option("test_2", 5, OptionType::INT);
+    
+    int count = 0;
+    for(auto const & opt : opts) {
+        //std::cout << opt.name() << std::endl;
+    }
+    return 0;
+}
+
+int
 OptionUnittest::run() {
+    
     if (test_creation() == 0)    {  std::cout << "test_creation failed" << std::endl; }
     if (test_add_option() == 0)  {  std::cout << "test_add_option failed" << std::endl; }
     if (test_option() == 0)      {  std::cout << "test_option failed" << std::endl; }
-
+    test_iteration();
     return 1;
 }
 
-void
+int
 OptionUnittest::run_all() {
     String name = "OptionUnittest";
     typedef int (OptionUnittest::*fptr)();
@@ -93,17 +115,19 @@ OptionUnittest::run_all() {
     func_map["test_creation"   ] = &OptionUnittest::test_creation;
     func_map["test_add_option" ] = &OptionUnittest::test_add_option;
     func_map["test_option"     ] = &OptionUnittest::test_option;
-    
+    func_map["test_iteration"  ] = &OptionUnittest::test_iteration;
+
+    int failed = 0;
     for(auto const & kv : func_map) {
         try {
             int result = (this->*kv.second)();
-            if(result == 0) {
-                std::cout << name << "::" << kv.first << " FAILED!" << std::endl;
-            }
         }
-        catch(...) {
-            std::cout << name << "::" << kv.first << " returned ERROR!" << std::endl;
+        catch(std::exception const & e) {
+            std::cout << name << "::" << kv.first << " returned ERROR! : " << e.what() << std::endl;
+            failed += 1;
         }
-        std::cout << ".";
     }
+    return failed;
+}
+
 }
