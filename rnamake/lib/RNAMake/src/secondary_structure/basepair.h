@@ -55,7 +55,7 @@ public:
         if     (r == res1_) { return res2_; }
         else if(r == res2_) { return res1_; }
         else {
-            throw std::runtime_error("called partner iwth a resiude not in basepair in sstruct");
+            throw std::runtime_error("called partner with a resiude not in basepair in sstruct");
         }
         
     }
@@ -63,12 +63,20 @@ public:
 public:
     
     inline
-    ResidueOP const &
+    ResidueOP &
     res1() { return res1_; }
     
     inline
-    ResidueOP const &
+    ResidueOP &
     res2() { return res2_; }
+    
+    inline
+    ResidueOP const &
+    res1() const { return res1_; }
+    
+    inline
+    ResidueOP const &
+    res2() const { return res2_; }
     
     inline
     Uuid const &
@@ -83,6 +91,31 @@ private:
 typedef std::shared_ptr<Basepair> BasepairOP;
 typedef std::vector<BasepairOP>   BasepairOPs;
 
+inline
+bool
+is_gc_pair(BasepairOP const & bp) {
+    if     (bp->res1()->res_type() == 2 && bp->res2()->res_type() == 1) { return true; }
+    else if(bp->res2()->res_type() == 2 && bp->res1()->res_type() == 1) { return true; }
+    else { return false; }
+}
+    
+    
+inline
+bool
+is_au_pair(BasepairOP const & bp) {
+    if     (bp->res1()->res_type() == 3 && bp->res2()->res_type() == 0) { return true; }
+    else if(bp->res2()->res_type() == 3 && bp->res1()->res_type() == 0) { return true; }
+    else { return false; }
+}
+    
+inline
+bool
+is_gu_pair(BasepairOP const & bp) {
+    if     (bp->res1()->res_type() == 3 && bp->res2()->res_type() == 2) { return true; }
+    else if(bp->res2()->res_type() == 3 && bp->res1()->res_type() == 2) { return true; }
+    else { return false; }
+}
+    
     
 }
 

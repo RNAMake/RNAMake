@@ -1,6 +1,8 @@
+import numpy as np
+
 import pdb_parser
 import chain
-import numpy as np
+import util
 
 class StructureException(Exception):
     pass
@@ -19,8 +21,10 @@ class Structure(object):
     `chains` : list of Chain objects that belong to the current structure
     """
 
-    def __init__(self, chains=[]):
+    def __init__(self, chains=None):
         self.chains = chains
+        if self.chains is None:
+            self.chains = []
         self.name = "N/A"
 
     def __repr__(self):
@@ -117,16 +121,26 @@ class Structure(object):
             s += c.to_str() + ":"
         return s
 
-    def to_pdb_str(self):
+    def to_pdb_str(self, renumber=-1):
         acount = 1
         s = ""
-        for c in self.chains:
-            c_str, acount = c.to_pdb_str(acount, 1)
+        c_names = "ABCDEFGHIJKLM"
+        rnum = -1
+        chain_id = ""
+        if renumber != -1:
+            chain_id = "A"
+            rnum = 1
+
+        for i, c in enumerate(self.chains):
+            c_str, acount = c.to_pdb_str(acount, 1, rnum, chain_id)
+            if renumber != -1:
+            #    chain_id = c_names[i+1]
+                rnum += len(c.residues)
             s += c_str
             s += "TER\n"
         return s
 
-    def to_pdb(self, fname="structure.pdb"):
+    def to_pdb(self, fname="structure.pdb", renumber=-1):
         """
         write structure to pdb file
 
@@ -135,7 +149,7 @@ class Structure(object):
 
         """
         f = open(fname, "w")
-        f.write(self.to_pdb_str())
+        f.write(self.to_pdb_str(renumber))
         f.close()
 
     def copy(self):
@@ -162,4 +176,9 @@ class Structure(object):
             a.coords += p
 
 
-
+def structure_from_pdb(pdb_path):
+    residues = pdb_parser.parse(pdb_path)
+    chains = chain.connect_residues_into_chains(residues)
+    s = Structure(chains)
+    s.name = util.filename(pdb_path[:-4])
+    return s

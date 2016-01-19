@@ -15,6 +15,8 @@ ResourceManager::get_motif(
     String const & end_name,
     String const & id) {
     
+    //return mlibs_["ideal_helices"]->get(name);
+    
     for(auto const & kv : mlibs_) {
         if(kv.second->contains(name, end_id, end_name, id)) {
             return kv.second->get(name, end_id, end_name, id);
@@ -91,3 +93,17 @@ ResourceManager::add_motif(
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+

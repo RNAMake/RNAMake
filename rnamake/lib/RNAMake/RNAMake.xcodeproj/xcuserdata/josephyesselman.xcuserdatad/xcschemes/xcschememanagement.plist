@@ -9,60 +9,75 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
-		<key>design_primers.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>8</integer>
-		</dict>
-		<key>eternabot.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>5</integer>
-		</dict>
-		<key>find_rings.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>6</integer>
-		</dict>
-		<key>motif_ensemble_tree.unittest.xcscheme</key>
-		<dict>
-			<key>orderHint</key>
-			<integer>1</integer>
-		</dict>
-		<key>motif_tree_path_refiner.xcscheme</key>
+		<key>all_tests.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>7</integer>
 		</dict>
-		<key>motif_tree_state_search.xcscheme</key>
+		<key>cl_option_unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>4</integer>
+			<integer>9</integer>
 		</dict>
-		<key>secondary_structure_tree.unittest.xcscheme</key>
+		<key>design_primers.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>2</integer>
 		</dict>
-		<key>simulate_tectos.xcscheme</key>
+		<key>exhustive_eternabot.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>3</integer>
+			<integer>15</integer>
 		</dict>
-		<key>unittests copy.xcscheme</key>
+		<key>mini_ttr.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>11</integer>
+			<integer>6</integer>
 		</dict>
-		<key>unittests.xcscheme</key>
+		<key>motif_graph_unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>10</integer>
 		</dict>
+		<key>motif_state_search_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>13</integer>
+		</dict>
+		<key>motif_state_tree_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>12</integer>
+		</dict>
+		<key>motif_tree_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>11</integer>
+		</dict>
+		<key>option_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
+		</dict>
+		<key>simulate_tectos.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
+		<key>unittests.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>4</integer>
+		</dict>
 		<key>vienna_clone.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>9</integer>
+			<integer>3</integer>
+		</dict>
+		<key>vienna_unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>14</integer>
 		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
@@ -107,6 +122,46 @@
 			<key>primary</key>
 			<true/>
 		</dict>
+		<key>1C4BF0CD1C275012008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF0E01C275383008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF0F91C2B4DBB008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF1461C2B6ECE008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF1971C2B9D27008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF1E61C2D0373008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF23F1C31FDCE008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C4BF2911C336247008C5671</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>1C4E3DEA1B0AC2090076284E</key>
 		<dict>
 			<key>primary</key>
@@ -128,6 +183,11 @@
 			<true/>
 		</dict>
 		<key>1C4F56471A76229800C7E6D7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C5935451C3C4F3500BFACE7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
@@ -168,6 +228,16 @@
 			<true/>
 		</dict>
 		<key>1C855B9B1A7FDB4300EED04D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C8B831F1C21ECDC00D305EC</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C8B836E1C21F0CB00D305EC</key>
 		<dict>
 			<key>primary</key>
 			<true/>

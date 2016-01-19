@@ -9,18 +9,18 @@
 #include "motif_data_structures/motif_state_tree.h"
 #include "resources/resource_manager.h"
 
-
 void
 MotifStateTree::setup_options() {
-    options_ = Options();
-    options_.add_option(Option("sterics", 1));
-    options_.add_option(Option("clash_radius", 2.9f));
+    options_.add_option("sterics", true, OptionType::BOOL);
+    options_.add_option("clash_radius", 2.9f, OptionType::FLOAT);
+    options_.lock_option_adding();
+    update_var_options();
 }
 
 void
 MotifStateTree::update_var_options() {
-    sterics_              = options_.option<int>("sterics");
-    clash_radius_         = options_.option<float>("clash_radius");
+    sterics_              = options_.get_bool("sterics");
+    clash_radius_         = options_.get_int("clash_radius");
 }
 
 int
@@ -61,7 +61,7 @@ MotifStateTree::add_state(
                                 n_data->ref_state);
         
         //TODO need to comment this out of occasionally will not allow conversion from mt
-        if(sterics_ && _steric_clash(n_data)) { continue; }
+        //if(sterics_ && _steric_clash(n_data)) { continue; }
     
         return tree_.add_data(n_data, (int)state->end_states().size(), parent->index(), p);
         
@@ -85,7 +85,7 @@ MotifStateTree::setup_from_mt(
             add_state(ms);
         }
         else {
-            parent_index = n->parent()->index();
+            parent_index = n->parent_index();
             parent_end_index = n->parent_end_index();
             if(parent_index == -1 || parent_end_index == -1) {
                 throw std::runtime_error("did not convert motif tree to motif state tree properly");
@@ -105,7 +105,7 @@ MotifTreeOP
 MotifStateTree::to_motif_tree() {
     
     auto mt = std::make_shared<MotifTree>();
-    mt->option("sterics", option<int>("sterics"));
+    mt->set_option_value("sterics", options_.get_bool("sterics"));
     int i = -1, j = -1;
     int parent_index = -1, parent_end_index = -1;
     for(auto const & n : tree_) {

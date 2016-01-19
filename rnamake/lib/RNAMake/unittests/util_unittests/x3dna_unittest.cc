@@ -104,7 +104,7 @@ X3dnaUnittest::run() {
 }
 
 
-void
+int
 X3dnaUnittest::run_all() {
     String name = "X3dnaUnittest";
     typedef int (X3dnaUnittest::*fptr)();
@@ -126,6 +126,8 @@ X3dnaUnittest::run_all() {
         }
         
     }
+    
+    return 0;
 }
 
 

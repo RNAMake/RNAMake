@@ -42,7 +42,7 @@ public:
 public:
     
     void
-    query(String const);
+    query(String const &);
     
     int
     count();

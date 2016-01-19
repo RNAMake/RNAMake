@@ -26,13 +26,3 @@ Atom::to_pdb_str(
     
 }
 
-Atom
-str_to_atom(
-    String const & s) {
-    
-    Strings spl = split_str_by_delimiter(s, " ");
-    Point coords(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
-    return Atom(spl[0], coords);
-}
-
-

@@ -3,6 +3,7 @@ import ss_tree
 import Queue
 import uuid
 import tree
+import motif_type
 
 class Residue(object):
     def __init__(self, name, dot_bracket, num, chain_id, uuid, i_code=""):
@@ -91,106 +92,14 @@ class Basepair(object):
             raise ValueError("call partner with a residue not in basepair")
 
 
-class SecondaryStructureMotif(object):
-    def __init__(self, type, ends, chains):
-        self.type, self.ends, self.chains = type, ends, chains
-        self.basepairs = []
-        self.name = ""
-        self.end_ids = []
-
-    def residues(self):
-        res = []
-        for c in self.chains:
-            res.extend(c.residues)
-        return res
-
-    def sequence(self):
-        sequences = [x.sequence() for x in self.chains]
-        return "&".join(sequences)
-
-    def dot_bracket(self):
-        dot_brackets = [x.dot_bracket() for x in self.chains]
-        return "&".join(dot_brackets)
-
-    def get_bp(self, res1=None, res2=None, uuid=None, name=None):
-        for bp in self.basepairs:
-            if res1 is not None and (bp.res1 != res1 and bp.res2 != res1):
-                continue
-            if res2 is not None and (bp.res1 != res2 and bp.res2 != res2):
-                continue
-            if uuid is not None and bp.uuid != uuid:
-                continue
-            if name is not None and bp.name() != name:
-                continue
-            return bp
-        return None
-
-    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
-        found = []
-        for r in self.residues():
-            if num is not None and num != r.num:
-                continue
-            if i_code is not None and i_code != r.i_code:
-                continue
-            if chain_id is not None and chain_id != r.chain_id:
-                continue
-            if uuid is not None and uuid != r.uuid:
-                continue
-            found.append(r)
-
-        if len(found) == 0:
-            return None
-
-        if len(found) > 1:
-            print "num,chain_id,icode=",num,chain_id,i_code,
-            raise ValueError(
-                "found multiple residues in get_residue(), narrow " +
-                "your search")
-
-        return found[0]
-
-    def to_str(self):
-        s = self.type + ";"
-        for c in self.chains:
-            for r in c.residues:
-                s += str(r.num) + "|" + r.chain_id + "|" + r.i_code + "_"
-            s += ","
-        s += ";"
-        for bp in self.basepairs:
-            s += str(bp.res1.num) + "|" + bp.res1.chain_id + "|" + bp.res1.i_code + "_" + \
-                 str(bp.res2.num) + "|" + bp.res2.chain_id + "|" + bp.res2.i_code + ","
-        s += ";"
-        for bp in self.ends:
-            s += str(bp.res1.num) + "|" + bp.res1.chain_id + "|" + bp.res1.i_code + "_" + \
-                 str(bp.res2.num) + "|" + bp.res2.chain_id + "|" + bp.res2.i_code + ","
-        return s
-
-    def get_end_by_id(self, id):
-        for i, end in enumerate(self.ends):
-            if id == self.end_ids[i]:
-                return end
-        raise ValueError("cannot find end with this id: ", id)
-
-    def get_step_name(self):
-        return self.chains[0].residues[0].name + self.chains[1].residues[1].name + "=" + \
-               self.chains[0].residues[1].name + self.chains[1].residues[0].name
-
-class SecondaryStructure(SecondaryStructureMotif):
-    def __init__(self, sequence=None, dot_bracket=None, chains=None):
-        if sequence is not None and dot_bracket is not None:
-            self.chains = self._setup_chains(sequence, dot_bracket)
-        else:
+class Structure(object):
+    def __init__(self, chains=None, sequence="", dot_bracket=""):
+        self.chains = []
+        if chains is not None:
             self.chains = chains
-            if self.chains is None:
-                self.chains = []
 
-        self.elements = {'ALL' : []}
-        self.basepairs = []
-        self.ends = []
-        self.end_ids = []
-
-    def __repr__(self):
-        return "<SecondaryStructure( " + self.sequence() + " " + self.dot_bracket() + " )"
+        if len(sequence) != 0 and len(dot_bracket) != 0:
+           self.chains = self._setup_chains(sequence, dot_bracket)
 
     def _setup_chains(self, sequence, dot_bracket):
         chains = []
@@ -219,132 +128,116 @@ class SecondaryStructure(SecondaryStructureMotif):
         if len(residues) > 0:
             chains.append(Chain(residues))
 
-
         return chains
 
-    def id(self):
-        id = ""
-        for i, chain in enumerate(self.chains):
-            id += chain.sequence + "_"
-            for e in chain.dot_bracket:
-                if   e == "(":
-                    id += "L"
-                elif e == ")":
-                    id += "R"
-                elif e == ".":
-                    id += "U"
-                else:
-                    raise ValueError("unexpected symbol in dot bracket notation: " + e)
-            if i != len(self.chains)-1:
-                id += "_"
-        return id
+    def residues(self):
+        res = []
+        for c in self.chains:
+            res.extend(c.residues)
+        return res
 
-    def motif_topology_from_end(self, end=None, last_end=None):
-        elements = self.motifs('ALL')
-        if end is None and len(self.ends) != 0:
-            end = self.ends[0]
-        elif end is None and len(self.ends) == 0:
-            for m in elements:
-                if len(m.ends) > 0:
-                    end = m.ends[0]
-                    break
+    def sequence(self):
+        sequences = [x.sequence() for x in self.chains]
+        return "&".join(sequences)
 
-        seen_e = {}
-        seen_ends = {}
-        current_e = None
-        for e in elements:
-            for bp in e.ends:
-                if bp == end:
-                    current_e = e
-                    break
-            if current_e is not None:
-                break
+    def dot_bracket(self):
+        dot_brackets = [x.dot_bracket() for x in self.chains]
+        return "&".join(dot_brackets)
 
-        if current_e is None:
-            raise ValueError("could not find element with current end")
-
-        current_end = end
-        count = 0
-        connectivity = []
-        queue = []
-        queue.append([current_e, current_end, -1])
-        pos = 0
-        indexed_e = {}
-
-        while not len(queue) == 0:
-
-            current_e, current_end, parent_pos = queue.pop()
-
-            if current_e in seen_e:
+    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
+        found = []
+        for r in self.residues():
+            if num is not None and num != r.num:
                 continue
+            if i_code is not None and i_code != r.i_code:
+                continue
+            if chain_id is not None and chain_id != r.chain_id:
+                continue
+            if uuid is not None and uuid != r.uuid:
+                continue
+            found.append(r)
 
-            i = current_e.ends.index(current_end)
-            if current_e.type != 'HELIX':
-                ss_id = current_e.end_ids[i]
-            else:
-                ss_id = assign_end_id(current_e, current_end)
-            if current_e.type == "BP_STEP":
-                spl = ss_id.split("_")
-                name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
-                current_e.name = name
-            seen_e[current_e] = pos
-            indexed_e[pos] = current_e
+        if len(found) == 0:
+            return None
 
-            parent_id = ""
-            if pos != 0:
-                parent = indexed_e[parent_pos]
-                i = parent.ends.index(current_end)
-                if parent.type != 'HELIX':
-                    parent_id = parent.end_ids[i]
-                else:
-                    parent_id = assign_end_id(parent, current_end)
+        if len(found) > 1:
+            #print "num,chain_id,icode=",num,chain_id,i_code,
+            raise ValueError(
+                "found multiple residues in get_residue(), narrow " +
+                "your search")
 
-            connectivity.append([ss_id, parent_id,
-                                 parent_pos, current_e.name, len(connectivity)])
-            new_ends = []
-            for end in current_e.ends:
-                if last_end == end and len(seen_e) < len(elements)/2:
-                    continue
-                if end != current_end:
-                    new_ends.append(end)
+        return found[0]
 
-            for e in elements:
-                if e in seen_e:
-                    continue
-                if e == current_e:
-                    continue
-                for end in e.ends:
-                    if end in new_ends:
-                        queue.append([e, end, pos])
-
-            pos += 1
-
-        return connectivity
+    def copy(self):
+        new_chains = [ c.copy() for c in self.chains]
+        return Structure(chains=new_chains)
 
     def to_str(self):
         s = ""
         for c in self.chains:
-            s += c.to_str() + ":"
-        s += "@"
-        for bp in self.basepairs:
-            s += str(bp.res1.num) + "|" + bp.res1.chain_id + "|" + bp.res1.i_code + "_" + \
-                 str(bp.res2.num) + "|" + bp.res2.chain_id + "|" + bp.res2.i_code + ","
-        s += "@"
-        for bp in self.ends:
-            s += str(bp.res1.num) + "|" + bp.res1.chain_id + "|" + bp.res1.i_code + "_" + \
-                 str(bp.res2.num) + "|" + bp.res2.chain_id + "|" + bp.res2.i_code + ","
-        s += "@"
-        for name, eles in self.elements.iteritems():
-            if name == 'ALL':
-                continue
-            for e in eles:
-                s += e.to_str() +  "$"
+            s += c.to_str() + "|"
         return s
 
+
+class RNAStructure(object):
+    def __init__(self, structure=None, basepairs=None, ends=None, name="assembled",
+                 path="assembled", score=0, end_ids=None):
+        self.structure = structure
+        if self.structure is None:
+            self.structure = Structure()
+        self.basepairs =basepairs
+        if self.basepairs is None:
+            self.basepairs = []
+        self.name = name
+        self.path = path
+        self.score = score
+        self.ends = ends
+        if self.ends is None:
+            self.ends = []
+        self.end_ids = end_ids
+        if self.end_ids is None:
+            self.end_ids = []
+
+    def __repr__(self):
+        return "<secondary_structure.RNAStructure( " + self.sequence() + " " + self.dot_bracket() + " )"
+
+    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
+        return self.structure.get_residue(num, chain_id, i_code, uuid)
+
+    def get_basepair(self, res1=None, res2=None, uuid=None, name=None):
+        for bp in self.basepairs:
+            if res1 is not None and (bp.res1 != res1 and bp.res2 != res1):
+                continue
+            if res2 is not None and (bp.res1 != res2 and bp.res2 != res2):
+                continue
+            if uuid is not None and bp.uuid != uuid:
+                continue
+            if name is not None and bp.name() != name:
+                continue
+            return bp
+        return None
+
+    def sequence(self):
+        return self.structure.sequence()
+
+    def dot_bracket(self):
+        return self.structure.dot_bracket()
+
+    def replace_sequence(self, seq):
+        spl = seq.split("&")
+        seq2 = "".join(spl)
+        for i, r in enumerate(self.structure.residues()):
+            r.name = seq2[i]
+
+    def residues(self):
+        return self.structure.residues()
+
+    def chains(self):
+        return self.structure.chains
+
     def copy(self):
-        new_chains = [ c.copy() for c in self.chains]
+        n_ss = self.structure.copy()
         basepairs, ends = [], []
-        n_ss = SecondaryStructure(chains=new_chains)
         for bp in self.basepairs:
             new_bp = Basepair(n_ss.get_residue(uuid=bp.res1.uuid),
                               n_ss.get_residue(uuid=bp.res2.uuid),
@@ -354,129 +247,223 @@ class SecondaryStructure(SecondaryStructureMotif):
             i = self.basepairs.index(end)
             ends.append(basepairs[i])
 
-        n_ss.basepairs = basepairs
-        n_ss.ends = ends
-        n_ss.elements['ALL'] = []
-        for m in self.elements['ALL']:
-            copy_m = self._copy_motif(m, n_ss)
-            if copy_m.type not in n_ss.elements:
-                n_ss.elements[copy_m.type] = []
-            n_ss.elements[copy_m.type].append(copy_m)
-            n_ss.elements['ALL'].append(copy_m)
+        return RNAStructure(n_ss, basepairs, ends, self.name, self.path,
+                            self.score, self.end_ids[::])
 
-        return n_ss
 
-    def _copy_motif(self, m, n_ss):
-        new_chains = []
-        for c in m.chains:
+class Motif(RNAStructure):
+    def __init__(self, structure=None, basepairs=None, ends=None,
+                 name="assembled", path="assembled", mtype=motif_type.UNKNOWN,
+                 score=0, end_ids=None,  id=uuid.uuid1(), r_struct=None):
+        self.structure = structure
+        if self.structure is None:
+            self.structure = Structure()
+        self.basepairs = basepairs
+        if self.basepairs is None:
+            self.basepairs = []
+        self.name = name
+        self.path = path
+        self.score = score
+        self.ends = ends
+        if self.ends is None:
+            self.ends = []
+        self.end_ids = end_ids
+        if self.end_ids is None:
+            self.end_ids = []
+        self.mtype = mtype
+        self.id = id
+        if r_struct is not None:
+            self.__dict__.update(r_struct.__dict__)
+
+    def __repr__(self):
+        return "<secondary_structure.Motif( " + self.sequence() + " " + self.dot_bracket() + " )"
+
+    def copy(self):
+        n_ss = self.structure.copy()
+        basepairs, ends = [], []
+        for bp in self.basepairs:
+            new_bp = Basepair(n_ss.get_residue(uuid=bp.res1.uuid),
+                              n_ss.get_residue(uuid=bp.res2.uuid),
+                              bp.uuid)
+            basepairs.append(new_bp)
+        for end in self.ends:
+            i = self.basepairs.index(end)
+            ends.append(basepairs[i])
+
+        return Motif(n_ss, basepairs, ends, self.name, self.path, self.mtype,
+                     self.score, self.end_ids[::], self.id)
+
+    def copy_w_res(self, res, bps):
+        chains = []
+        m = Motif()
+        for c in self.structure.chains:
             new_res = []
             for r in c.residues:
-                n_r = n_ss.get_residue(uuid=r.uuid)
-                new_res.append(n_r)
-            new_chains.append(Chain(new_res))
-        basepairs = []
-        ends = []
-        for bp in m.basepairs:
-            #new_bp = Basepair(n_ss.get_residue(uuid=bp.res1.uuid),
-            #                  n_ss.get_residue(uuid=bp.res2.uuid))
-            res1 = n_ss.get_residue(uuid=bp.res1.uuid)
-            res2 = n_ss.get_residue(uuid=bp.res2.uuid)
-            new_bp = n_ss.get_bp(res1, res2)
-            if new_bp is None:
-                raise ValueError("did not copy ss motif properly")
-            basepairs.append(new_bp)
-        for end in m.ends:
-            i = m.basepairs.index(end)
-            ends.append(basepairs[i])
-        m_copy = SecondaryStructureMotif(m.type, ends, new_chains)
-        m_copy.basepairs = basepairs
-        m_copy.name = m.name
-        m_copy.end_ids = m.end_ids
-        return m_copy
+                new_r = res[r.uuid]
+                new_res.append(new_r)
+            chains.append(Chain(new_res))
+
+        m.structure.chains = chains
+        m.end_ids = self.end_ids[::]
+        new_bps = []
+        new_ends = []
+        for bp in self.basepairs:
+            new_bps.append(bps[bp.uuid])
+        for end in self.ends:
+            new_ends.append(bps[bp.uuid])
+        m.basepairs = new_bps
+        m.ends = new_ends
+        return m
+
+    def to_str(self):
+        s = str(self.mtype) + "!" + self.name + "!" + self.path + "!" + self.structure.to_str() + "!"
+        res = self.residues()
+        for bp in self.basepairs:
+            s += str(res.index(bp.res1)) + " " + str(res.index(bp.res2)) + "@"
+        s += "!"
+        for end in self.ends:
+            s += str(self.basepairs.index(end)) + " "
+        s += "!"
+        for ei in self.end_ids:
+            s += ei + " "
+        return s
+
+
+class Pose(RNAStructure):
+    def __init__(self, structure=None, basepairs=None, ends=None,
+                 name="assembled", path="assembled", score=0, end_ids=None,
+                 r_struct=None):
+        self.structure = structure
+        if self.structure is None:
+            self.structure = Structure()
+        self.basepairs = basepairs
+        if self.basepairs is None:
+            self.basepairs = []
+        self.name = name
+        self.path = path
+        self.score = score
+        self.ends = ends
+        if self.ends is None:
+            self.ends = []
+        self.end_ids = end_ids
+        if self.end_ids is None:
+            self.end_ids = []
+        self.motifs = []
+        self.helices = []
+
+        if r_struct is not None:
+            self.__dict__.update(r_struct.__dict__)
+
+    def __repr__(self):
+        return "<secondary_structure.Pose( " + self.sequence() + " " + self.dot_bracket() + " )"
+
+    def motif(self, m_id):
+        for m in self.motifs:
+            if m.id == m_id:
+                return m
+        return None
 
     def replace_sequence(self, seq):
-        spl = seq.split("&")
-        seq2 = "".join(spl)
-        for i, r in enumerate(self.residues()):
-            r.name = seq2[i]
+        super(self.__class__, self).replace_sequence(seq)
 
-    def motifs(self, motif_type):
-        return self.elements[motif_type]
+        for m in self.motifs:
+            for i, end in enumerate(m.ends):
+                m.end_ids[i] = assign_end_id_new(m, end)
 
-    def motif(self, name):
-        for m in self.elements['ALL']:
-            if m.name == name:
-                return m
-        raise ValueError("cannot find motif with name: "+ name)
+    def copy(self):
+        c_rna_struct = super(self.__class__, self).copy()
+        c_p = Pose(r_struct=c_rna_struct)
+        res = {r.uuid  : r for r in self.residues()}
+        bps = {bp.uuid : bp for bp in self.basepairs}
+        new_motifs = []
+        for m in self.motifs:
+            m_copy = m.copy_w_res(res, bps)
+            new_motifs.append(m_copy)
+        c_p.motifs = new_motifs
+        return c_p
 
-    def add_motif(self, motif_ss, name):
-        chains = []
-        res_map = {}
-        for c1 in motif_ss.chains:
-            m_seq = c1.sequence()
-            best = None
-            best_pos = None
-            for c2 in self.chains:
-                ful_seq = c2.sequence()
-                pos = ful_seq.find(m_seq)
-                if pos != -1:
-                    if best is not None:
-                        raise ValueError("there are more then one match for this motif")
-                    best = c2
-                    best_pos = pos
-            res_splice = best.residues[best_pos:best_pos+len(m_seq)]
-            res_map[c1.first()] = res_splice[0]
-            res_map[c1.last()]  = res_splice[-1]
-            chains.append(Chain(res_splice))
-
-        bps = []
-        ends = []
-        end_ids = []
-        motif = SecondaryStructureMotif('UNKNOWN', [], chains)
+    def to_str(self):
+        s = self.name + "#" + self.path + "#" + self.structure.to_str() + "#"
+        res = self.residues()
         for bp in self.basepairs:
-            if motif.get_residue(uuid=bp.res1.uuid) is None or \
-               motif.get_residue(uuid=bp.res2.uuid) is None:
-               continue
-            bps.append(bp)
-        motif.basepairs = bps
-        for i, end in enumerate(motif_ss.ends):
-            res1 = res_map[end.res1]
-            res2 = res_map[end.res2]
-            bp = motif.get_bp(res1=res1, res2=res2)
-            ends.append(bp)
-            end_ids.append(motif_ss.end_ids[i])
-        motif.ends = ends
-        motif.end_ids = end_ids
-        motif.name = name
+            s += str(res.index(bp.res1)) + " " + str(res.index(bp.res2)) + "@"
+        s += "#"
+        for end in self.ends:
+            s += str(self.basepairs.index(end)) + " "
+        s += "#"
+        for ei in self.end_ids:
+            s += ei + " "
+        s += "#"
+        for m in self.motifs:
+            s += m.to_str() + "#"
+        return s
 
-        remove = []
-        for m in self.motifs('ALL'):
-            include_count = 0
-            for r in m.residues():
-                if r in motif.residues():
-                    include_count += 1
-            if include_count == len(m.residues()):
-                remove.append(m)
-        for motifs in self.elements.itervalues():
-            for m in motifs:
-                if m in remove:
-                    motifs.remove(m)
-        if 'UNKNOWN' not in self.elements:
-            self.elements['UNKNOWN'] = []
-        self.elements['UNKNOWN'].append(motif)
-        self.elements['ALL'].append(motif)
+    def build_helices(self):
+        steps = []
+        for m in self.motifs:
+            if m.mtype != motif_type.HELIX:
+                continue
+            steps.append(m)
 
-    def convert_to_RNA(self):
-        for c in self.chains:
-            for r in c.residues:
-                if r.name == 'T':
-                    r.name = 'U'
+        seen = {}
+        current = None
+        helix_motifs = []
+        found = 0
+        while 1:
+            helix_motifs = []
+            current = None
+            for m1 in steps:
+                found = 0
+                if m1 in seen:
+                    continue
+                for m2 in steps:
+                    if m2 in seen:
+                        continue
+                    if m1 == m2:
+                        continue
+                    for end in m2.ends:
+                        if m1.ends[0] == end:
+                            found = 1
+                            break
+                if not found:
+                    current = m1
+                    break
 
-    def convert_to_DNA(self):
-        for c in self.chains:
-            for r in c.residues:
-                if r.name == 'U':
-                    r.name = 'T'
+            if found or current is None:
+                break
+
+            found = 1
+            while found:
+                seen[current] = 1
+                helix_motifs.append(current)
+                found = 0
+                for m in steps:
+                    if m in seen:
+                        continue
+                    if m.ends[0] == current.ends[1]:
+                        current = m
+                        found = 1
+                        break
+
+            res1, res2 = [], []
+            bps, ends = [], []
+
+            res1.append(helix_motifs[0].chains()[0].first())
+            res2.append(helix_motifs[0].chains()[1].last())
+            bps.append(helix_motifs[0].ends[0])
+            ends.append(helix_motifs[0].ends[0])
+            ends.append(helix_motifs[-1].ends[1])
+
+            for m in helix_motifs:
+                res1.append(m.chains()[0].last())
+                res2.append(m.chains()[1].first())
+                bps.append(m.ends[1])
+
+            res2.reverse()
+            chains = [Chain(res1), Chain(res2)]
+            struc = Structure(chains)
+            m = Motif(struc, bps, ends)
+            self.helices.append(m)
 
 
 def str_to_residue(s):
@@ -496,90 +483,88 @@ def str_to_chain(s):
     return c
 
 
-def get_res_from_bp_str(ss, bp_str):
-    res_info = bp_str.split("_")
-    res_1_spl = res_info[0].split("|")
-    res_2_spl = res_info[1].split("|")
-    res1 = ss.get_residue(int(res_1_spl[0]), res_1_spl[1], res_1_spl[2])
-    res2 = ss.get_residue(int(res_2_spl[0]), res_2_spl[1], res_2_spl[2])
-    if res1 is None or res2 is None:
-        raise ValueError("failed to find both res in bp")
-    return res1, res2
-
-
-def get_res_from_res_str(ss, res_str):
-    res_str = res_str.split("|")
-    res = ss.get_residue(int(res_str[0]), res_str[1], res_str[2])
-    return res
-
-
-def str_to_secondary_structure(s):
-    spl = s.split("@")
-    c_spl = spl[0].split(":")
+def str_to_structure(s):
+    spl = s.split("|")
     chains = []
-    for chain_str in c_spl[:-1]:
-        c = str_to_chain(chain_str)
+    for c_str in spl[:-1]:
+        c = str_to_chain(c_str)
         chains.append(c)
-    ss = SecondaryStructure(chains=chains)
-    bp_spl = spl[1].split(",")
-    basepairs = []
-    for bp_str in bp_spl[:-1]:
-        res1, res2 = get_res_from_bp_str(ss, bp_str)
-        bp = Basepair(res1, res2)
-        basepairs.append(bp)
-    ss.basepairs = basepairs
-    end_spl = spl[2].split(",")
-    ends = []
-    for end_str in end_spl[:-1]:
-        res1, res2 = get_res_from_bp_str(ss, end_str)
-        bp = ss.get_bp(res1, res2)
-        ends.append(bp)
-    ss.ends = ends
-    ss.elements['ALL'] = []
-    motif_spl = spl[3].split("$")
-    for motif_str in motif_spl[:-1]:
-        motif_info = motif_str.split(";")
-        type = motif_info[0]
-        chain_spl = motif_info[1].split(",")
+    return Structure(chains)
+
+
+def str_to_motif(s):
+    spl = s.split("!")
+    m = Motif()
+    m.mtype = int(spl[0])
+    m.name = spl[1]
+    m.path = spl[2]
+    m.structure = str_to_structure(spl[3])
+    res = m.residues()
+    for bp_str in spl[4].split("@")[:-1]:
+        res_is = bp_str.split()
+        r1 = res[int(res_is[0])]
+        r2 = res[int(res_is[1])]
+        m.basepairs.append(Basepair(r1, r2))
+    for end_i in spl[5].split():
+        m.ends.append(m.basepairs[int(end_i)])
+    m.end_ids = spl[6].split()
+
+    return m
+
+
+def str_to_pose(s):
+    spl = s.split("#")
+    p = Pose()
+    p.name = spl[0]
+    p.path = spl[1]
+    p.structure = str_to_structure(spl[2])
+    res = p.residues()
+    for bp_str in spl[3].split("@")[:-1]:
+        res_is = bp_str.split()
+        r1 = res[int(res_is[0])]
+        r2 = res[int(res_is[1])]
+        p.basepairs.append(Basepair(r1, r2))
+    for end_i in spl[4].split():
+        p.ends.append(p.basepairs[int(end_i)])
+    p.end_ids = spl[5].split()
+
+    motifs = []
+    for str in spl[6:-1]:
+        spl2 = str.split("!")
+        m = Motif()
+        m.mtype = int(spl2[0])
+        m.name = spl2[1]
+        m.path = spl2[2]
+        m.structure = str_to_structure(spl2[3])
         chains = []
-        for res_list in chain_spl[:-1]:
-            res = res_list.split("_")
-            residues = []
-            for r_str in res[:-1]:
-                r = get_res_from_res_str(ss, r_str)
-                residues.append(r)
-            chains.append(Chain(residues))
-        basepairs = []
-        bp_spl = motif_info[2].split(",")
-        for bp_str in bp_spl[:-1]:
-            res1, res2 = get_res_from_bp_str(ss, bp_str)
-            bp = ss.get_bp(res1, res2)
-            if bp is None:
-                raise ValueError("cannot find basepair")
-            basepairs.append(bp)
-        motif = SecondaryStructureMotif(type, ends, chains)
-        motif.basepairs = basepairs
-        end_spl = motif_info[3].split(",")
-        ends = []
-        for bp_str in bp_spl[:-1]:
-            res1, res2 = get_res_from_bp_str(ss, bp_str)
-            bp = ss.get_bp(res1, res2)
-            ends.append(bp)
-        if type not in ss.elements:
-            ss.elements[type] = []
-        motif.ends = ends
-        ss.elements[type].append(motif)
-        ss.elements['ALL'].append(motif)
-
-    return ss
+        for c in m.chains():
+            res = []
+            for r in c.residues:
+                r_new = p.get_residue(r.num, r.chain_id)
+                res.append(r_new)
+            chains.append(Chain(res))
+        m.structure.chains = chains
+        res = m.residues()
+        for bp_str in spl2[4].split("@")[:-1]:
+            res_is = bp_str.split()
+            r1 = res[int(res_is[0])]
+            r2 = res[int(res_is[1])]
+            for bp in p.basepairs:
+                if bp.res1 == r1 and bp.res2 == r2:
+                    m.basepairs.append(bp)
+        for end_i in spl2[5].split():
+            m.ends.append(m.basepairs[int(end_i)])
+        m.end_ids = spl2[6].split()
+        motifs.append(m)
+    p.motifs = motifs
+    return p
 
 
-def assign_end_id(ss, end):
+def assign_end_id_new(ss, end):
     if end not in ss.ends:
         raise ValueError("supplied an end that is not in current ss element")
 
-
-    all_chains = ss.chains[::]
+    all_chains = ss.structure.chains[::]
     open_chains = []
     for c in all_chains:
         if c.first() == end.res1 or c.first() == end.res2:
@@ -604,7 +589,7 @@ def assign_end_id(ss, end):
         for r in c.residues:
             count += 1
             dot_bracket = "."
-            bp = ss.get_bp(r)
+            bp = ss.get_basepair(r)
             saved_bp = None
             if bp is not None:
                 saved_bp = bp
@@ -638,7 +623,7 @@ def assign_end_id(ss, end):
         for c in all_chains:
             score = 0
             for r in c.residues:
-                bp = ss.get_bp(r)
+                bp = ss.get_basepair(r)
                 if bp is not None and bp in seen_bp:
                     score += 1
             if score > best_score:
@@ -648,7 +633,7 @@ def assign_end_id(ss, end):
         for c in all_chains:
             score = 0
             for r in c.residues:
-                bp = ss.get_bp(r)
+                bp = ss.get_basepair(r)
                 if bp is not None and bp in seen_bp:
                     score += 1
             if score == best_score:
@@ -659,7 +644,7 @@ def assign_end_id(ss, end):
         for c in best_chains:
             pos = 1000
             for i, r in enumerate(c.residues):
-                bp = ss.get_bp(r)
+                bp = ss.get_basepair(r)
                 if bp is not None and bp in seen_bp:
                     pos = i
                     break

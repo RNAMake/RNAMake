@@ -8,6 +8,7 @@ import util
 import chain
 import motif
 import structure
+import motif_graph
 
 class PoseFactory(object):
     def __init__(self):
@@ -128,6 +129,170 @@ class PoseFactory(object):
         self._setup_motifs_from_x3dna(p, gu_are_helix, singlet_bp_seperation)
 
         return p
+
+    def pose_from_file_new(self, path, gu_are_helix=0, singlet_bp_seperation=0):
+        base_motif = motif_factory.factory.motif_from_file(path)
+        p = self._copy_info_into_pose(base_motif)
+        self._setup_motifs_from_x3dna(p, gu_are_helix, singlet_bp_seperation)
+        all_motifs = p.motifs(motif_type.ALL)
+
+
+
+        not_helix= []
+        helix = []
+        for m in all_motifs:
+            if m.mtype == motif_type.HELIX:
+                helix.append(m)
+            else:
+                if m.mtype == motif_type.HAIRPIN:
+                    m.block_end_add = -1
+                not_helix.append(m)
+
+        bp_steps = self._convert_helices_to_bp_steps(helix)
+        remove = []
+        for bp in bp_steps:
+            res = bp.residues()
+            for m in not_helix:
+                count = 0
+                for r in res:
+                    if r not in m.residues():
+                        break
+                    else:
+                        count += 1
+                if len(res) == count:
+                    remove.append(bp)
+                    break
+        for bp in remove:
+            bp_steps.remove(bp)
+
+        all_motifs = not_helix + bp_steps
+
+        #for i, m in enumerate(all_motifs):
+        #    m.to_pdb("motif."+str(i)+".pdb")
+
+        start_motif = self._find_best_start_end(p, all_motifs)
+        all_motifs.remove(start_motif)
+        mg = motif_graph.MotifGraph()
+        start_motif.name = p.name + ".motif.0"
+        mg.add_motif(start_motif)
+        i = 1
+        while len(all_motifs) > 0:
+            leafs = mg.leafs_and_ends()
+            #print len(leafs), len(all_motifs)
+            if len(leafs) == 0:
+                print "fail"
+                mg.write_pdbs()
+                exit()
+
+            for l in leafs:
+                bp = l[0].data.ends[l[1]]
+                found = 0
+                next = None
+                for m in all_motifs:
+                    old_bps = m.get_basepair(name=bp.name())
+                    if len(old_bps) == 0:
+                        continue
+                    pos = m.ends.index(old_bps[0])
+                    next = m
+
+                #mg.write_pdbs()
+                if next == None:
+                    print "fail, next is None"
+                    exit()
+
+                next.name = p.name + ".motif." + str(i)
+                mg.add_motif(next, parent_index=l[0].index, parent_end_index=l[1])
+                all_motifs.remove(next)
+                i += 1
+
+        new_p = pose.PoseNew(m=base_motif)
+        new_p.mgraph = mg
+        return new_p
+
+    def _find_best_start_end(self, p, all_motifs):
+        best_m = None
+        best_free_ends = []
+        for k, m1 in enumerate(all_motifs):
+            free_ends = []
+            for end in m1.ends:
+                free_end_res = []
+                not_free_end_res =[]
+                for r in end.residues():
+                    for c in p.chains():
+                        if r == c.first() or r == c.last():
+                            free_end_res.append(r)
+                    if r not in free_end_res:
+                        not_free_end_res.append(r)
+                if len(free_end_res) == 2:
+                    free_ends.append(end)
+                else:
+                    #if basepair has single-stranded areas, this will make sure
+                    #that this is the first basepair to build from
+                    #print len(free_end_res)
+                    for r in not_free_end_res:
+                        fine = 1
+                        cur_chain = None
+                        for c in p.chains():
+                            if r in c.residues:
+                                cur_chain = c
+                                break
+                        i = cur_chain.residues.index(r)
+                        start = 0
+                        c_end = i
+                        incr = 1
+                        if i > len(cur_chain.residues) / 2:
+                            start = len(cur_chain.residues)
+                            incr = -1
+                        while abs(start - c_end) > 1:
+                            start += incr
+                            new_r = cur_chain.residues[start]
+                            bps = p.get_basepair(res1=new_r)
+                            for bp in bps:
+                                if bp.bp_type == "cW-W":
+                                    fine = 0
+                                    break
+                        if fine:
+                            free_end_res.append(r)
+                    if len(free_end_res) == 2:
+                        free_ends.append(end)
+            if best_m is None:
+                best_m = m1
+                best_free_ends = free_ends
+                continue
+            if   len(free_ends) > len(best_free_ends):
+                best_m = m1
+                best_free_ends = free_ends
+            elif   (len(best_m.ends) - len(best_free_ends)) > \
+                 (len(m1.ends) - len(free_ends)):
+                best_m = m1
+                best_free_ends = free_ends
+            elif (len(best_m.ends) - len(best_free_ends)) > \
+                 (len(m1.ends) - len(free_ends)):
+                    if len(best_m.ends) > len(m1.ends):
+                        best_m = m1
+                        best_free_ends = free_ends
+        #print best_m, len(best_free_ends)
+        return best_m
+
+    def _convert_helices_to_bp_steps(self, helices):
+        basepair_steps = []
+        for m in helices:
+            c = m.chains()[0]
+            for i in range(1,len(c.residues)):
+                sub_res = [c.residues[i-1], c.residues[i] ]
+                sub_bps = []
+                for r in sub_res:
+                    bp = m.get_basepair(res1=r)[0]
+                    for bp_r in bp.residues():
+                        if bp_r not in sub_res:
+                            sub_res.append(bp_r)
+                    if bp not in sub_bps:
+                         sub_bps.append(bp)
+
+                bp_step = motif_factory.factory.motif_from_res(sub_res, sub_bps)
+                bp_step.mtype = motif_type.HELIX
+                basepair_steps.append(bp_step)
+        return basepair_steps
 
     def _add_secondary_structure_motifs(self, p):
         ss = p.secondary_structure
@@ -468,6 +633,9 @@ class PoseFactory(object):
         self.standardize_pose(p)
 
         return p
+
+    def pose_from_motif_graph(self):
+        pass
 
     def _old_pose_from_motif_tree(self):
 

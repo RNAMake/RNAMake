@@ -14,6 +14,9 @@
 #include "unittest.h"
 #include "motif/motif.h"
 
+namespace unittests {
+namespace motif {
+
 class MotifUnittest : public Unittest {
 public:
     
@@ -22,6 +25,9 @@ public:
     ~MotifUnittest() {}
     
 public:
+    
+    void
+    test_creation();
     
     int
     test_copy();
@@ -53,7 +59,7 @@ public:
     int
     run();
     
-    void
+    int
     run_all();
     
 private:
@@ -62,6 +68,9 @@ private:
     
     
 };
+    
+}
+}
 
 
 

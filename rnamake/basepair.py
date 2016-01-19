@@ -100,6 +100,18 @@ class Basepair(object):
     def d(self):
         return util.center(self.atoms)
 
+    def base_d(self):
+        atoms = []
+        for i, a in enumerate( self.res1.atoms):
+            if i < 12:
+                continue
+            atoms.append(a)
+        for i, a in enumerate( self.res1.atoms):
+            if i < 12:
+                continue
+            atoms.append(a)
+        return util.center(atoms)
+
     def to_str(self):
         """
         stringify basepair object
@@ -178,7 +190,7 @@ class BasepairState(object):
     def get_transforming_r_and_t(self, r, t, sugars):
         r1 = self.r
         r2 = r
-        r_trans = r1.T.dot(r2)
+        r_trans = util.unitarize(r1.T.dot(r2))
         t_trans = -t
 
         new_sugars_2 = np.dot(sugars, r_trans.T) + t_trans + self.d

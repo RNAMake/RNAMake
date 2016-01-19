@@ -333,6 +333,33 @@ new_score_function(
 	return d_diff + scale*r_diff;
 }
 
+inline
+const
+float
+new_score_function_new(
+    BasepairStateOP const & current,
+    BasepairStateOP const & end,
+    BasepairStateOP const & endflip) {
+    
+    float d_diff = (current->sugars()[0].distance(end->sugars()[1]) +
+                    current->sugars()[1].distance(end->sugars()[0]))*0.50;
+    
+    if(d_diff > 25) { return d_diff; }
+    
+    float r_diff      = current->r().difference(end->r());
+    float r_diff_flip = current->r().difference(endflip->r());
+    
+    if(r_diff > r_diff_flip) {
+        r_diff = r_diff_flip;
+    }
+    
+    float scale = (log(150/d_diff) - 1);
+    if (scale > 2) { scale = 2; }
+    if (scale < 0) { scale = 0; }
+    
+    return d_diff + scale*r_diff;
+}
+
 
 int
 are_BasepairStates_equal(

@@ -7,31 +7,35 @@
 //
 
 #include "motif_state_search_unittest.h"
-#include "build_motif_tree.h"
+#include "build/build_motif_tree.h"
 
 
 
+namespace unittests {
+namespace motif_state_search {
 
-int
+void
 MotifStateSearchUnittest::test_creation() {
     MotifStateSearch mss;
-    return 1;
 }
 
-int
+void
 MotifStateSearchUnittest::test_search() {
     MotifStateSearch mss;
-    mss.option("accept_score", 10.0f);
-    mss.option("max_node_level", 10);
-    mss.option("max_solutions", 1);
+    mss.set_option_value("accept_score", 10);
+    mss.set_option_value("max_node_level", 10);
+    mss.set_option_value("sterics", false);
     BuildMotifTree builder;
     auto mt = builder.build(10);
     auto start = mt->get_node(0)->data()->ends()[0]->state();
-    auto end   = mt->get_node(9)->data()->ends()[1]->state();
-    auto solutions = mss.search(start, end);
-    //mt->to_pdb("test.pdb");
-    //solutions[0]->to_mst()->to_motif_tree()->to_pdb("solution.pdb");
-    return 1;
+    auto end   = mt->last_node()->data()->ends()[1]->state();
+    mss.setup(start, end);
+    auto sol = mss.next();
+    if(sol == nullptr) {
+        throw UnittestException("could not find a solution to search");
+    }
+    //mt->to_pdb("test.pdb", 1);
+    //sol->to_pdb("solution.pdb", 1);
 }
 
 /*int
@@ -61,9 +65,37 @@ MotifStateSearchUnittest::test_aligner() {
 
 int
 MotifStateSearchUnittest::run() {
-    if(test_creation() == 0)       { std::cout << "test_creation failed" << std::endl; }
-    if(test_search() == 0)         { std::cout << "test_search failed" << std::endl; }
+    test_creation();
+    test_search();
+    //if(test_creation() == 0)       { std::cout << "test_creation failed" << std::endl; }
+    //if(test_search() == 0)         { std::cout << "test_search failed" << std::endl; }
     //if(test_aligner() == 0)        { std::cout << "test_aligner failed" << std::endl; }
     return 1;
+}
+    
+
+int
+MotifStateSearchUnittest::run_all() {
+    String name = "MotifStateSearchUnittest";
+    typedef void (MotifStateSearchUnittest::*fptr)();
+    std::map<String, fptr> func_map;
+    func_map["test_creation"   ] = &MotifStateSearchUnittest::test_creation;
+    func_map["test_search"     ] = &MotifStateSearchUnittest::test_search;
+    
+    
+    int failed = 0;
+    for(auto const & kv : func_map) {
+        try {
+            (this->*kv.second)();
+        }
+        catch(std::exception const & e) {
+            std::cout << name << "::" << kv.first << " returned ERROR! : " << e.what() << std::endl;
+            failed++;
+        }
+    }
+    return failed;
+}
+
+}
 }
 

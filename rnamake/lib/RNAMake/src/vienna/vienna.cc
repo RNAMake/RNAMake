@@ -23,6 +23,7 @@
 #define SMOOTH(X) ((X)/SCALE<-1.2283697)?0:(((X)/SCALE>0.8660254)?(X):\
 SCALE*0.38490018*(sin((X)/SCALE-0.34242663)+1)*(sin((X)/SCALE-0.34242663)+1))
 
+namespace vienna {
 
 float
 Vienna::fold(
@@ -1608,6 +1609,7 @@ Vienna::parenthesis_structure(
 }
 
 
+}
 
 
 

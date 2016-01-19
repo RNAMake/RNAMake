@@ -15,12 +15,18 @@
 //RNAMake Headers
 #include "unittest.h"
 
+namespace unittests {
+namespace motif_structures {
+
 class MotifStateTreeUnittest : public Unittest {
 public:
     
     MotifStateTreeUnittest() {}
     
     ~MotifStateTreeUnittest() {}
+    
+    int
+    size() { return 5; }
     
 public:
     
@@ -44,9 +50,12 @@ public:
     int
     run();
     
-    //void
-    //run_all();
-    
+    int
+    run_all();
+        
 };
+    
+}
+}
 
 #endif /* defined(__RNAMake__motif_state_tree_unittest__) */

@@ -28,8 +28,24 @@ public:
     Atom(
         String const & name,
         Point const & coords):
-        name_ ( name ),
-        coords_ ( coords )
+    name_ ( name ),
+    coords_ ( coords )
+    {}
+    
+    inline
+    Atom(
+        String const & s) {
+        
+        auto spl = split_str_by_delimiter(s, " ");
+        name_   = spl[0];
+        coords_ = Point(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
+    }
+    
+    inline
+    Atom(
+         Atom const & a):
+    name_(a.name_),
+    coords_(a.coords_)
     {}
     
     inline
@@ -39,7 +55,9 @@ public:
     }
     
     String to_str();
+    
     String to_pdb_str(int);
+    
 public: //accessors
     
     inline
@@ -80,9 +98,6 @@ private:
     
 };
 
-Atom
-str_to_atom(
-    String const &);
 
 typedef std::shared_ptr<Atom> AtomOP;
 typedef std::vector<AtomOP> AtomOPs;

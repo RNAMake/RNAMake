@@ -10,6 +10,9 @@
 #include "util/settings.h"
 #include "motif/motif_factory.h"
 
+namespace unittests {
+namespace motif {
+
 int
 MotifFactoryUnittest::test_creation() {
     MotifFactory mf;
@@ -52,4 +55,7 @@ MotifFactoryUnittest::run() {
     if (test_can_align_motif_to_end() == 0)   { std::cout << "test_can_align_motif_to_end failed" << std::endl;  }
 
     return 0;
+}
+
+}
 }

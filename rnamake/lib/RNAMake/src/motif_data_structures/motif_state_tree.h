@@ -14,13 +14,12 @@
 
 //RNAMake Headers
 #include "base/types.h"
-#include "base/base.h"
+#include "base/option.h"
 #include "data_structure/tree/tree.h"
 #include "data_structure/tree/tree_node.h"
 #include "motif/motif_state.h"
 #include "motif/motif_state_aligner.h"
-#include "motif/motif_tree.h"
-
+#include "motif_data_structures/motif_tree.h"
 
 class MotifStateTreeException : public std::runtime_error {
 public:
@@ -52,14 +51,15 @@ struct MSTNodeData {
 typedef std::shared_ptr<MSTNodeData> MSTNodeDataOP;
 typedef TreeNodeOP<MSTNodeDataOP> MotifStateTreeNodeOP;
 
-class MotifStateTree : public Base {
+class MotifStateTree {
 public:
     
     MotifStateTree() {
         tree_ = TreeStatic<MSTNodeDataOP>();
         aligner_ = MotifStateAligner();
         queue_ = std::queue<MotifStateTreeNodeOP>();
-        setup_options(); update_var_options();
+        options_ = Options("MotifTreeStateOptions");
+        setup_options();
     }
     
     ~MotifStateTree() {}
@@ -104,7 +104,7 @@ public: //motif tree wrappers
         to_motif_tree()->write_pdbs(fname);
     }
     
-public:
+public: //tree wrapers
     size_t
     size() { return tree_.size(); }
     
@@ -116,6 +116,34 @@ public:
         int i) {
         return tree_.get_node(i);
     }
+    
+public: //option wrappers
+    inline
+    float
+    get_int_option(String const & name) { return options_.get_int(name); }
+    
+    inline
+    float
+    get_float_option(String const & name) { return options_.get_float(name); }
+    
+    inline
+    String
+    get_string_option(String const & name) { return options_.get_string(name); }
+    
+    inline
+    bool
+    get_bool_option(String const & name) { return options_.get_bool(name); }
+    
+    
+    template<typename T>
+    void
+    set_option_value(
+        String const & name,
+        T const & val) {
+        options_.set_value(name, val);
+        update_var_options();
+    }
+    
     
 private:
     
@@ -144,10 +172,12 @@ private:
     void
     update_var_options();
     
+    
 private:
     TreeStatic<MSTNodeDataOP> tree_;
     std::queue<MotifStateTreeNodeOP> queue_;
     MotifStateAligner aligner_;
+    Options options_;
     int sterics_;
     float clash_radius_;
     

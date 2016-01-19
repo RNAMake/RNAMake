@@ -36,20 +36,20 @@ public:
         seen_bp_ = std::map<BasepairOP, int>();
     }
 
-    sstruct::SecondaryStructureOP
+    sstruct::RNAStructureOP
     to_secondary_structure(
-        MotifOP const &);
+        RNAStructureOP const &);
     
 private:
     
     ChainOP
     _get_next_chain(
-        MotifOP const &);
+        RNAStructureOP const &);
     
-    void
+    sstruct::RNAStructureOP
     _setup_basepairs_and_ends(
-        sstruct::SecondaryStructureOP &,
-        MotifOP const &);
+        sstruct::StructureOP &,
+        RNAStructureOP const &);
     
 private:
     ChainOPs chains_;

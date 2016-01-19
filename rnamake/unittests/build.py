@@ -2,7 +2,9 @@ import random
 import rnamake.resource_manager as rm
 import rnamake.motif_tree as motif_tree
 import rnamake.secondary_structure_factory as ssfactory
+import rnamake.secondary_structure as secondary_structure
 import rnamake.motif_tree_topology as motif_tree_topology
+from rnamake import motif_graph, motif_type
 
 
 def fill_basepairs_in_ss(ss):
@@ -13,8 +15,12 @@ def fill_basepairs_in_ss(ss):
             bp.res1.name = p[0]
             bp.res2.name = p[1]
 
+    for m in ss.motifs:
+        for i, end in enumerate(m.ends):
+            m.end_ids[i] = secondary_structure.assign_end_id_new(m, end)
+
 class BuildMotifTree(object):
-    def __init__(self, lib_names = ["ideal_helices", "twoway"], libs = None):
+    def __init__(self, lib_names = ["ideal_helices", "unique_twoway"], libs = None):
         if libs is None:
             self.libs = [rm.manager.mlibs[x] for x in lib_names ]
         else:
@@ -48,7 +54,6 @@ class BuildMotifTree(object):
         mtt = motif_tree_topology.MotifTreeTopology(conn)
         return motif_tree.motif_tree_from_topology(mtt)
 
-
     def build_specific(self, names):
         size = len(names)
         mt = motif_tree.MotifTree()
@@ -73,6 +78,35 @@ class BuildMotifTree(object):
 
         return mt
 
+
+class BuildMotifGraph(object):
+    def __init__(self, lib_names = ["ideal_helices", "unique_twoway"], libs = None):
+        if libs is None:
+            self.libs = [rm.manager.mlibs[x] for x in lib_names ]
+        else:
+            self.libs = libs
+
+    def build(self, size=2):
+        mg = motif_graph.MotifGraph()
+        pos = 0
+        count = 0
+        while len(mg) < size:
+            if pos == len(self.libs):
+                pos = 0
+
+            m = self.libs[pos].get_random()
+            i = mg.add_motif(m)
+            count += 1
+            if count > 100:
+                break
+            if i != -1:
+                pos += 1
+            else:
+                print "fail",m.name
+                return mg
+        return mg
+
+
 class BuildSecondaryStructure(object):
     def __init__(self):
         pass
@@ -90,5 +124,30 @@ class BuildSecondaryStructure(object):
         seq = s1  + "+" + s2
         ss  = ss1 + "+" + ss2
 
-        return ssfactory.factory.get_structure(seq, ss)
+        return ssfactory.factory.pose(seq, ss)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

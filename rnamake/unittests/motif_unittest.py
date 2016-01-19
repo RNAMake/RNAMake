@@ -10,6 +10,7 @@ import rnamake.sqlite_library as sqlite_library
 import rnamake.util as util
 import numerical
 import numpy as np
+from rnamake import secondary_structure_factory as ssf
 
 
 class MotifUnittest(unittest.TestCase):
@@ -30,6 +31,13 @@ class MotifUnittest(unittest.TestCase):
             m = rnamake.motif_factory.factory.motif_from_file(path)
         except:
             self.fail("did not generate motif correctly")
+
+    def test_state_1(self):
+        ms1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        state = ms1.get_state()
+
+        s = state.to_str()
+        state2 = motif.str_to_motif_state(s)
 
     def test_state(self):
         ms1 = rm.manager.get_state(name="HELIX.IDEAL.2")
@@ -107,6 +115,10 @@ class MotifUnittest(unittest.TestCase):
 
     def test_align(self):
         pass
+
+    def test_get_secondary_structure(self):
+        pass
+        #m = rm.manager.get_motif(name="HELIX.IDEAL")
 
 
 

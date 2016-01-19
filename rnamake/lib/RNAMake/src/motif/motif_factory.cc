@@ -10,6 +10,7 @@
 
 #include "motif/motif_factory.h"
 #include "structure/chain.h"
+#include "secondary_structure/util.h"
 #include "util/file_io.h"
 #include "util/x3dna.h"
 
@@ -23,11 +24,11 @@ MotifFactory::motif_from_file(
     auto pdb_path = path;
     StructureOP structure;
     if(is_dir(path)) {
-        structure = sf_.get_structure(path + "/" + fname + ".pdb");
         pdb_path = path + "/" + fname + ".pdb";
+        structure = std::make_shared<Structure>(pdb_path);
     }
     else {
-        structure = sf_.get_structure(path);
+        structure = std::make_shared<Structure>(path);
         fname = fname.substr(0, -4);
     }
     
@@ -46,7 +47,8 @@ MotifFactory::motif_from_res(
     ResidueOPs & res,
     BasepairOPs const & bps) {
     
-    auto chains = sf_.build_chains(res);
+    auto chains = ChainOPs();
+    connect_residues_into_chains(res, chains);
     auto structure = std::make_shared<Structure>(chains);
     auto ends = _setup_basepair_ends(structure, bps);
     auto m = std::make_shared<Motif>(structure, bps, ends);
@@ -171,13 +173,14 @@ MotifFactory::_setup_secondary_structure(
     for(auto const & end : m->ends()) {
         auto res1 = ss->get_residue(end->res1()->uuid());
         auto res2 = ss->get_residue(end->res2()->uuid());
-        auto ss_end = ss->get_bp(res1, res2);
+        auto ss_end = ss->get_basepair(res1, res2)[0];
         end_ids[i] = sstruct::assign_end_id(ss, ss_end);
+        i++;
     }
     
     ss->end_ids(end_ids);
     m->end_ids(end_ids);
-    m->secondary_structure(ss);
+    m->secondary_structure(std::static_pointer_cast<sstruct::Motif>(ss));
     
     
 }
@@ -205,7 +208,7 @@ MotifFactory::_align_chains(
         if(c != closest) { updated_chains.push_back(c); }
     }
     
-    m->structure(std::make_shared<Structure>(Structure(updated_chains)));
+    m->structure(std::make_shared<Structure>(updated_chains));
 }
 
 void

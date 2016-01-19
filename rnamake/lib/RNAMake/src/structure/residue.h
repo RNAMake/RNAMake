@@ -36,11 +36,12 @@ public:
     {}
     
     inline
-    Bead
-    copy() const {
-        return Bead(center_, btype_);
-    }
-
+    Bead(
+        Bead const & b):
+    center_(b.center_),
+    btype_(b.btype_)
+    {}
+    
 public:
     
     inline
@@ -69,17 +70,57 @@ public:
         int const & num,
         String const & chain_id,
         String const & i_code):
-        rtype_ ( rtype ),
-        name_ ( name ),
-        num_ ( num ),
-        chain_id_ ( chain_id ),
-        i_code_ ( i_code ),
-        atoms_ ( AtomOPs() ),
-        uuid_ ( Uuid() )
+    rtype_ ( rtype ),
+    name_ ( name ),
+    num_ ( num ),
+    chain_id_ ( chain_id ),
+    i_code_ ( i_code ),
+    atoms_ ( AtomOPs() ),
+    uuid_ ( Uuid() )
     {}
     
-    Residue
-    copy() const;
+    Residue(
+        Residue const & r):
+    rtype_(r.rtype_),
+    name_(r.name_),
+    num_(r.num_),
+    chain_id_(r.chain_id_),
+    i_code_(r.i_code_),
+    atoms_ ( AtomOPs(r.atoms().size()) ),
+    uuid_(r.uuid_) {
+        int i = -1;
+        for(auto const & a : r.atoms_) {
+            i++;
+            if(a  == nullptr) { continue; }
+            atoms_[i] = std::make_shared<Atom>(*a);
+        }
+    }
+    
+    Residue(
+        String const & s,
+        ResidueTypeSet const & rts) {
+        
+        Strings spl = split_str_by_delimiter(s, ",");
+        rtype_      = rts.get_rtype_by_resname(spl[0]);
+        name_       = spl[1];
+        num_        = std::stoi(spl[2]);
+        chain_id_   = spl[3];
+        i_code_     = spl[4];
+        atoms_      = AtomOPs();
+        auto atoms  = AtomOPs();
+        int i = 5;
+        while ( i < spl.size() ) {
+            if( spl[i].length() == 1) {
+                atoms.push_back( nullptr );
+            }
+            else {
+                atoms.push_back(std::make_shared<Atom>(spl[i]));
+            }
+            i++;
+        }        
+        setup_atoms(atoms);
+    }
+
     
     ~Residue() {}
 
@@ -130,7 +171,9 @@ public:
     }
     
     void
-    new_uuid() { uuid_ = Uuid(); }
+    new_uuid() {
+        uuid_ = Uuid();
+    }
 
     inline
     int
@@ -148,8 +191,16 @@ public:
     String
     to_str() const;
     
+    inline
     String
-    to_pdb_str(int &) const;
+    to_pdb_str(int & acount) {
+        return to_pdb_str(acount, -1, "");
+    }
+    
+    String
+    to_pdb_str(int &,
+               int,
+               String const &) const;
     
     void
     to_pdb(String const);
@@ -168,6 +219,10 @@ public: // setters
     inline
     void
     chain_id(String const & nchain_id) { chain_id_ = nchain_id; }
+    
+    inline
+    void
+    uuid(Uuid const & uuid) { uuid_ = uuid; }
     
     
 public: // getters
@@ -210,13 +265,8 @@ private:
 };
 
 
-Residue
-str_to_residue(
-    String const & s,
-    ResidueTypeSet const & rts);
-
 typedef std::shared_ptr<Residue> ResidueOP;
-typedef std::vector<ResidueOP> ResidueOPs;
+typedef std::vector<ResidueOP>   ResidueOPs;
 
 
 

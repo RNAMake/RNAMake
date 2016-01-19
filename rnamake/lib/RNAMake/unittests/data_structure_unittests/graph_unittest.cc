@@ -169,7 +169,7 @@ GraphUnittest::run() {
     return 0;
 }
 
-void
+int
 GraphUnittest::run_all() {
     String name = "GraphUnittest";
     typedef int (GraphUnittest::*fptr)();
@@ -194,4 +194,6 @@ GraphUnittest::run_all() {
         std::cout << ".";
         
     }
+    
+    return 0;
 }

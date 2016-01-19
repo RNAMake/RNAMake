@@ -4,7 +4,11 @@ import rnamake.motif_state_ensemble_tree as motif_state_ensemble_tree
 import rnamake.resource_manager as rm
 import rnamake.motif_tree as motif_tree
 import rnamake.motif_tree_topology as motif_tree_topology
+<<<<<<< HEAD
 from rnamake import sqlite_library
+=======
+from rnamake import motif_graph, motif_topology
+>>>>>>> mt_and_pose_fix
 import build
 
 import pandas as pd
@@ -34,7 +38,7 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mst = mset.to_mst()
         mst.write_pdbs()
 
-    def test_setup_from_mt(self):
+    def _test_setup_from_mt(self):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(20)
         con = ss.motif_topology_from_end()
@@ -42,13 +46,13 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mt = motif_tree.motif_tree_from_topology(mtt)
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
 
-    def test_setup_from_mt_2(self):
+    def _test_setup_from_mt_2(self):
         builder = build.BuildMotifTree()
         mt = builder.build_no_ideal_helices()
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
         mst = mset.to_mst()
 
-    def test_setup_from_mt_3(self):
+    def _test_setup_from_mt_3(self):
         rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
         mt = motif_tree.MotifTree()
         mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
@@ -66,6 +70,7 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt2)
 
+<<<<<<< HEAD
     def test_enumerator(self):
         lib = sqlite_library.MotifStateEnsembleSqliteLibrary("all_bp_steps")
         mtst = motif_state_ensemble_tree.MotifStateEnsembleTree()
@@ -73,6 +78,21 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mtst.add_ensemble(lib.get(name="GG_LL_CC_RR"))
         enumerator = motif_state_ensemble_tree.MotifStateEnsembleTreeEnumerator(mtst)
         enumerator.record()
+=======
+    def test_setup_from_mt_4(self):
+        mg = motif_graph.MotifGraph()
+        mg.add_motif(m_name="HELIX.IDEAL.20")
+        mg.replace_ideal_helices()
+        mt = motif_topology.graph_to_tree(mg)
+        mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
+
+        mst = mset.to_mst()
+        #for r in mt.residues():
+        #    print mst.get_residue(r.uuid)
+
+
+
+>>>>>>> mt_and_pose_fix
 
 
 def main():

@@ -130,12 +130,13 @@ class MotifSqliteLibrary(SqliteLibrary):
     def get_libnames():
         libnames = {
             "ideal_helices"   : "/motif_libraries_new/ideal_helices.db",
+            "ideal_helices_reversed" :  "/motif_libraries_new/ideal_helices_reversed.db",
             "twoway"          : "/motif_libraries_new/twoway.db",
             "tcontact"        : "/motif_libraries_new/tcontact.db",
             "hairpin"         : "/motif_libraries_new/hairpin.db",
             "nway"            : "/motif_libraries_new/nway.db",
             "unique_twoway"   : "/motif_libraries_new/unique_twoway.db",
-            "bp_steps"        : "/motif_libraries_new/bp_steps.db"
+            "bp_steps"        : "/motif_libraries_new/bp_steps.db",
         }
 
         return libnames
@@ -240,12 +241,21 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
     @staticmethod
     def get_libnames():
         libnames = {
+<<<<<<< HEAD
             "all_bp_steps"  :  "/motif_ensemble_libraries/all_bp_steps.db",
             "bp_steps"      :  "/motif_ensemble_libraries/bp_steps.db",
             "twoway"        :  "/motif_ensemble_libraries/twoway.db",
             "nway"          :  "/motif_ensemble_libraries/nway.db",
             "tcontact"      :  "/motif_ensemble_libraries/tcontact.db",
             "hairpin"       :  "/motif_ensemble_libraries/hairpin.db",
+=======
+            "bp_steps" :  "/motif_ensemble_libraries/bp_steps.db",
+            "twoway"   :  "/motif_ensemble_libraries/twoway.db",
+            "nway"     :  "/motif_ensemble_libraries/nway.db",
+            "tcontact" :  "/motif_ensemble_libraries/tcontact.db",
+            "hairpin"  :  "/motif_ensemble_libraries/hairpin.db",
+            "twoway_clusters" : "motif_ensemble_libraries/twoway_clusters.db"
+>>>>>>> mt_and_pose_fix
         }
 
         return libnames
@@ -276,6 +286,15 @@ class MotifStateSqliteLibrary(SqliteLibrary):
     def _generate_data(self, s):
         return motif.str_to_motif_state(s)
 
+    def to_motif_state_ensemble(self):
+        self.load_all()
+        mes = motif_ensemble.MotifStateEnsemble()
+        motif_states = []
+        energies = []
+        for ms in self.all():
+            motif_states.append(ms)
+        mes.setup(self.name, motif_states, [1 for x in motif_states] )
+        return mes
 
 class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):

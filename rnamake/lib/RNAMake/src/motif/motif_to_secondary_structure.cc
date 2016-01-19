@@ -11,9 +11,9 @@
 #include "structure/chain.h"
 
 
-sstruct::SecondaryStructureOP
+sstruct::RNAStructureOP
 MotiftoSecondaryStructure::to_secondary_structure(
-    MotifOP const & motif) {
+    RNAStructureOP const & motif) {
     
     BasepairOP saved_bp;
     BasepairOPs bps;
@@ -81,16 +81,15 @@ MotiftoSecondaryStructure::to_secondary_structure(
         
     }
     
-    auto secondary_structure = std::make_shared<sstruct::SecondaryStructure>(ss_chains);
-    _setup_basepairs_and_ends(secondary_structure, motif);
-    
-    return secondary_structure;
+    auto struc = std::make_shared<sstruct::Structure>(ss_chains);
+    return _setup_basepairs_and_ends(struc, motif);
+;
 }
 
 
 ChainOP
 MotiftoSecondaryStructure::_get_next_chain(
-    MotifOP const & motif) {
+    RNAStructureOP const & motif) {
     
     BasepairOPs bps;
     int best_score = -1;
@@ -151,31 +150,37 @@ MotiftoSecondaryStructure::_get_next_chain(
     
 }
 
-void
+sstruct::RNAStructureOP
 MotiftoSecondaryStructure::_setup_basepairs_and_ends(
-    sstruct::SecondaryStructureOP & ss,
-    MotifOP const & motif) {
+    sstruct::StructureOP & struc,
+    RNAStructureOP const & motif) {
     
     sstruct::BasepairOPs ss_bps, ss_ends;
     for(auto const & kv : seen_bp_) {
         auto bp = kv.first;
-        auto res1 = ss->get_residue(bp->res1()->uuid());
-        auto res2 = ss->get_residue(bp->res2()->uuid());
+        auto res1 = struc->get_residue(bp->res1()->uuid());
+        auto res2 = struc->get_residue(bp->res2()->uuid());
         ss_bps.push_back(std::make_shared<sstruct::Basepair>(res1, res2, bp->uuid()));
     }
-    ss->basepairs(ss_bps);
     
     for(auto const & end : motif->ends()) {
-        auto res1 = ss->get_residue(end->res1()->uuid());
-        auto res2 = ss->get_residue(end->res2()->uuid());
-        auto bp = ss->get_bp(res1, res2);
-        if(bp == nullptr) {
+        auto res1 = struc->get_residue(end->res1()->uuid());
+        auto res2 = struc->get_residue(end->res2()->uuid());
+        auto end_bp = sstruct::BasepairOP(nullptr);
+        for(auto const & bp : ss_bps) {
+            if(bp->res1()->uuid() == res1->uuid() &&
+               bp->res2()->uuid() == res2->uuid()) {
+                end_bp = bp;
+                break;
+            }
+        }
+        if(end_bp == nullptr) {
             throw std::runtime_error("did not properly find end in generating ss");
         }
-        ss_ends.push_back(bp);
+        ss_ends.push_back(end_bp);
     }
-    ss->ends(ss_ends);
-    
+
+    return std::make_shared<sstruct::RNAStructure>(struc, ss_bps, ss_ends);
     
 }
 

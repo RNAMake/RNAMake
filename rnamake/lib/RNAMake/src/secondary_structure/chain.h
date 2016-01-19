@@ -19,24 +19,37 @@ class Chain {
 public:
     Chain() {}
     
+    inline
     Chain(
-        ResidueOPs residues):
+        ResidueOPs const & residues):
     residues_(residues)
     {}
     
-public:
-    
     inline
-    Chain
-    copy() {
-        ResidueOPs res;
-        for (auto const & r : residues_) {
-            auto r_copy = std::make_shared<Residue>(r->copy());
-            res.push_back(r_copy);
+    Chain(
+        Chain const & c) {
+        residues_ = ResidueOPs(c.residues_.size());
+        int i = 0;
+        for(auto const & r : c.residues_) {
+            residues_[i] = std::make_shared<Residue>(*r);
+            i++;
         }
-        return Chain(res);
     }
     
+    Chain(
+        String const & s) {
+        residues_ = ResidueOPs();
+        Strings spl = split_str_by_delimiter(s, ";");
+        for(auto const & r_str : spl) {
+            if(r_str.length() < 3) { continue; }
+            auto r = std::make_shared<Residue>(r_str);
+            residues_.push_back(r);
+        }
+    }
+    
+public:
+    
+
     inline
     ResidueOP const &
     first() {
@@ -108,11 +121,7 @@ private:
     
     
 };
-    
-Chain
-str_to_chain(String const &);
 
-    
 typedef std::shared_ptr<Chain> ChainOP;
 typedef std::vector<ChainOP> ChainOPs;
     

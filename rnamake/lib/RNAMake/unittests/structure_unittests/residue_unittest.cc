@@ -11,7 +11,7 @@
 #include "unittest.h"
 #include "residue_unittest.h"
 
-
+namespace unittests {
 
 int
 ResidueUnittest::test_bead_creation() {
@@ -26,7 +26,7 @@ ResidueUnittest::test_str_to_residue() {
     ResidueTypeSet rts;
     for(auto const & line : lines) {
         if(line.size() < 10) { break; }
-        Residue r = str_to_residue(line, rts);
+        auto r = Residue(line, rts);
     }
     
     return 1;
@@ -37,7 +37,7 @@ ResidueUnittest::test_get_atom() {
     String path = unittest_resource_dir() + "residue/test_str_to_residue.dat";
     Strings lines = get_lines_from_file(path);
     ResidueTypeSet rts;
-    Residue r = str_to_residue(lines[0], rts);
+    auto r = Residue(lines[0], rts);
     String name = "C1'";
     AtomOP a = r.get_atom(name);
     return 1;
@@ -49,9 +49,9 @@ ResidueUnittest::test_connected_to() {
     Strings lines = get_lines_from_file(path);
 
     ResidueTypeSet rts;
-    Residue r1 = str_to_residue(lines[0], rts);
-    Residue r2 = str_to_residue(lines[1], rts);
-    Residue r3 = str_to_residue(lines[2], rts);
+    auto r1 = Residue(lines[0], rts);
+    auto r2 = Residue(lines[1], rts);
+    auto r3 = Residue(lines[2], rts);
     if (r1.connected_to(r2, 3.0)  != 1) {
         return 0;
     }
@@ -71,7 +71,7 @@ ResidueUnittest::test_get_beads() {
     Strings lines = get_lines_from_file(path);
 
     ResidueTypeSet rts;
-    Residue r = str_to_residue(lines[0], rts);
+    auto r = Residue(lines[0], rts);
     Beads beads = r.get_beads();
     return 1;
 }
@@ -82,8 +82,8 @@ ResidueUnittest::test_copy() {
     Strings lines = get_lines_from_file(path);
 
     ResidueTypeSet rts;
-    Residue r = str_to_residue(lines[0], rts);
-    Residue r2 = r.copy();
+    auto r  = Residue(lines[0], rts);
+    auto r2 = Residue(r);
     
     return 1;
 }
@@ -94,9 +94,9 @@ ResidueUnittest::test_to_str() {
     Strings lines = get_lines_from_file(path);
 
     ResidueTypeSet rts;
-    Residue r = str_to_residue(lines[0], rts);
+    auto r = Residue(lines[0], rts);
     String s = r.to_str();
-    Residue r2 = str_to_residue(s, rts);
+    auto r2 = Residue(s, rts);
     String name = "N1";
     AtomOP a = r2.get_atom(name);
     return 1;
@@ -108,14 +108,13 @@ ResidueUnittest::test_equals() {
     Strings lines = get_lines_from_file(path);
 
     ResidueTypeSet rts;
-    Residue r1 = str_to_residue(lines[0], rts);
-    Residue r2 = str_to_residue(lines[1], rts);
+    auto r1 = Residue(lines[0], rts);
+    auto r2 = Residue(lines[1], rts);
 
     if(!(r1 == r1)) { return 0; }
     if(r1 == r2) { return 0; }
     return 1;
 }
-
 
 int
 ResidueUnittest::test_memory_management() {
@@ -127,12 +126,12 @@ ResidueUnittest::test_memory_management() {
     getline(input, line);
     input.close();
     for(int i = 0; i < 100000; i++) {
-        Residue r = str_to_residue(line, rts);
+        auto r = Residue(line, rts);
     }
     return 1;
 }
 
-
+    
 int
 ResidueUnittest::run() {
     if (test_bead_creation() == 0)   { std::cout << "test_bead_creation failed" << std::endl; }
@@ -148,7 +147,7 @@ ResidueUnittest::run() {
     return 0;
 }
 
-void
+int
 ResidueUnittest::run_all() {
     String name = "ResidueUnittest";
     typedef int (ResidueUnittest::*fptr)();
@@ -174,11 +173,12 @@ ResidueUnittest::run_all() {
         }
         
     }
+    
+    return 0;
 }
 
 
-
-
+}
 
 
 
