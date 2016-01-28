@@ -29,21 +29,6 @@
 
 #include "motif_unittests/motif_unittest.h"
 #include "motif_unittests/motif_factory_unittest.h"
-<<<<<<< HEAD
-#include "motif_unittests/motif_tree_unittest.h"
-#include "motif_unittests/motif_tree_merger_unittest.h"
-#include "motif_unittests/pose_factory_unittest.h"
-#include "motif_unittests/motif_state_unittest.h"
-//#include "motif_unittests/segmenter_unittest.h"
-=======
-
-#include "motif_data_structures_unittests/motif_graph_unittest.h"
-#include "motif_data_structures_unittests/motif_tree_unittest.h"
-#include "motif_data_structures_unittests/motif_topology_unittests.h"
-
-#include "motif_state_search_unittests/motif_state_search_unittest.h"
-#include "motif_state_search_unittests/path_follower_unittests.h"
->>>>>>> mt_and_pose_fix
 
 #include "resources_unittests/motif_sqlite_connection_unittest.h"
 #include "resources_unittests/motif_sqlite_library_unittest.h"
@@ -52,6 +37,8 @@
 #include "eternabot_unittests/eternabot_strategy_unittests.h"
 #include "eternabot_unittests/scorer_unittest.h"
 #include "eternabot_unittests/sequence_designer_unittests.h"
+
+#include "motif_state_search_unittests/path_follower_unittests.h"
 
 #include "sequence_optimizer_unittests/sequence_optimizer_unittests.h"
 
@@ -65,16 +52,3 @@ int main(int argc, const char * argv[]) {
 }
 
 
-
-
-
-
-
-<<<<<<< HEAD
-int main(int argc, const char * argv[]) {
-    
-    MotifStateEnsembleTreeUnittest test;
-    test.run();
-}
-=======
->>>>>>> mt_and_pose_fix

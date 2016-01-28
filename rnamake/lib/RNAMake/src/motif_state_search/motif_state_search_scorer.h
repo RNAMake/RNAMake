@@ -124,14 +124,26 @@ public:
     MSS_PathFollow(Points const & path) {
         path_ = path;
         beads_ = Points(10000);
+        lengths_ = Floats(1000);
+        seen_ = Ints(path_.size());
+        bead_arrays_ = std::vector<Points>(1000);
+        bead_lengths_ = Floats(path_.size());
         bead_size_ = 0;
         weight_ = 2.0;
+        path_length_ = 0;
+        
+        bead_lengths_[0] = 0;
+        for(int i = 1; i < path_.size(); i++) {
+            path_length_ += path_[i-1].distance(path_[i]);
+            bead_lengths_[i] = path_length_;
+            seen_[i] = 0;
+        }
         
     }
     
     inline
     float
-    score(MotifStateSearchNodeOP const & node) {
+    _score(MotifStateSearchNodeOP const & node) {
         current_ = node;
         bead_size_ = 0;
         weight_ = 2.0;
@@ -157,14 +169,15 @@ public:
                 if(best_ > dist_) {
                     best_ = dist_;
                 }
-                if(best_ < 10) { break; }
+                if(best_ < 7) { break; }
             }
-            if(best_ > 10) {
-                score_ += 1;
+            if(best_ > 7) {
+                //score_ += 1 - (1000 - best_*5)/1000;
+                score_ += best_-7;
             }
             else {
                 if(sum < i) {
-                    score_ += (float)(i - sum)/2;
+                    score_ += (float)(i - sum)*10;
                 }
                 sum += 1;
             }
@@ -172,44 +185,180 @@ public:
         }
         
         //return length_*0.01 + node->level()*0.50 + score_;
-        return length_*0.02 + score_;
-  
+        //score_ += length_*0.01 + score_;
+        if(length_ > path_length_) {
+            score_ += (length_ - path_length_);
+        }
+        score_ += path_.back().distance(beads_[bead_size_-1]);
+    
+
+        return score_;
+        
     }
     
     inline
     float
-    _score(MotifStateSearchNodeOP const & node) {
+    _score_2(MotifStateSearchNodeOP const & node) {
         current_ = node;
         bead_size_ = 0;
-        weight_ = 2.0;
+        weight_ = 1.0;
+        length_ = 0;
+        int bead_count = 0;
         while(1) {
-            //for(auto const & b : current_->cur_state()->beads()) {
-            beads_[bead_size_] = current_->center();
+            /*for(auto const & b : current_->cur_state()->beads()) {
+             beads_[bead_size_] = b;
+             bead_size_++;
+             }*/
+            bead_arrays_[bead_size_] = current_->cur_state()->beads();
+            
+            length_ += current_->cur_state()->end_states()[1]->d().distance(current_->cur_state()->end_states()[0]->d());
+            lengths_[bead_size_] = current_->cur_state()->end_states()[1]->d().distance(current_->cur_state()->end_states()[0]->d());
             bead_size_++;
-            //}
+            
             current_ = current_->parent();
             if(current_ == nullptr) { break; }
         }
         
+        if(length_ > path_length_*2) {
+            return 1000000;
+        }
+        
         score_ = 0;
-        int i = 0;
-
-        for(auto const & b1 : path_) {
-            best_ = 1000000;
-            for(int i = 0; i < bead_size_; i++) {
-                dist_ = b1.distance(beads_[i]);
-                if(best_ > dist_) {
-                    best_ = dist_;
-                }
-                //if(best_ < 5) { break; }
+        int sum = 0;
+        int i = 0, j = -1;
+        
+        int pos = bead_size_-2;
+        int b_pos = 0;
+        int b_end = 0;
+        float diff, best_diff = 10000;
+        int best_b_pos = 0;
+        float avg_diff = 0;
+        float current_length = lengths_[pos];
+        
+        for(auto const & p : path_) {
+            j++;
+            
+            for(i = bead_arrays_.size(); i > 0; i--) {
+                
             }
-            score_ += best_*weight_;
-            weight_ *= 0.99;
+            
+           
+            b_end = best_b_pos;
+            //std::cout << pos << " " << b_pos << " " << b_end << " " << current_length << " " << bead_lengths_[best_b_pos] << " " << path_.size() << std::endl;
+            
+            for(i = b_pos; i < b_end; i++) {
+                best_ = 10000;
+                for(auto const & b : bead_arrays_[pos]) {
+                    dist_ = path_[i].distance(b);
+                    if(best_ > dist_) {
+                        best_ = dist_;
+                    }
+                    // if(best_ < 10) { break; }
+                }
+                /*if(best_ > 10) {
+                 //score_ += 1 - (1000 - best_*5)/1000;
+                 score_ += best_-10;
+                 }*/
+                score_ += best_;
+                
+            }
+            pos -= 1;
+            if(pos > -1) {
+                current_length += lengths_[pos];
+            }
+            weight_ += 1;
+            
+        }
+        
+        //avg_diff /= path_.size();
+        score_ += (path_.size() - b_end)*100;
+        
+        return score_;
+        
+    }
+
+    
+    inline
+    float
+    score(MotifStateSearchNodeOP const & node) {
+        current_ = node;
+        bead_size_ = 0;
+        weight_ = 1.0;
+        length_ = 0;
+        int bead_count = 0;
+        while(1) {
+            /*for(auto const & b : current_->cur_state()->beads()) {
+             beads_[bead_size_] = b;
+             bead_size_++;
+             }*/
+            bead_arrays_[bead_size_] = current_->cur_state()->beads();
+            
+            length_ += current_->cur_state()->end_states()[1]->d().distance(current_->cur_state()->end_states()[0]->d());
+            lengths_[bead_size_] = current_->cur_state()->end_states()[1]->d().distance(current_->cur_state()->end_states()[0]->d());
+            bead_size_++;
+            
+            current_ = current_->parent();
+            if(current_ == nullptr) { break; }
+        }
+        
+        if(length_ > path_length_*2) {
+            return 1000000;
+        }
+        
+        score_ = 0;
+        int sum = 0;
+        int i = 0, j = -1;
+        
+        int pos = bead_size_-2;
+        int b_pos = 0;
+        int b_end = 0;
+        float diff, best_diff = 10000;
+        int best_b_pos = 0;
+        float avg_diff = 0;
+        float current_length = lengths_[pos];
+        
+        for(i = 0; i < seen_.size(); i++) {
+            seen_[i] = 0;
+        }
+        
+        int last_seen_pos_ = 0;
+        
+        for(i = pos; i >= 0; i--) {
+            
+            for(auto const & b : bead_arrays_[i]) {
+                best_ = 10000;
+                best_b_pos = 0;
+                for(j = 0; j < path_.size(); j++ ) {
+                    dist_ = path_[j].distance(b);
+                    if(dist_ < best_) {
+                        best_b_pos = j;
+                        best_ = dist_;
+                    }
+                }
+                seen_[best_b_pos] = 1;
+                
+                if(best_ < 10) {
+                    score_ += best_b_pos;
+                }
+                else {
+                    score_ += best_b_pos + (best_ - 10);
+                }
+                
+            }
+            
+        }
+        
+        for(auto const & spos : seen_) {
+            if(spos == 0) {
+                score_ += 500;
+            }
         }
         
         return score_;
         
     }
+
+    
     
     float
     accept_score(MotifStateSearchNodeOP const & node) {
@@ -221,10 +370,14 @@ private:
     Points path_;
     MotifStateSearchNodeOP current_;
     Points beads_;
+    std::vector<Points> bead_arrays_;
+    Floats bead_lengths_, lengths_;
+    Ints seen_;
     int bead_size_;
     float score_, dist_, best_;
     float weight_;
     float length_;
+    float path_length_;
 };
 
 

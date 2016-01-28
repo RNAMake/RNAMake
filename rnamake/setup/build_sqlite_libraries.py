@@ -239,30 +239,6 @@ class BuildSqliteLibraries(object):
             f = open(c.end_id + ".scores")
             lines = f.readlines()
             f.close()
-<<<<<<< HEAD
-            for i, l in enumerate(lines):
-                #motifs_and_energies.append([aligned_motifs[i], float(l.lstrip())])
-                motifs_and_energies.append([aligned_motifs[i], 0])
-
-            motifs_and_energies.sort(key=lambda x : x[1])
-            scored_motifs = []
-
-            for m, energy in motifs_and_energies:
-                scored_motifs.append(m)
-
-
-            name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
-            energies = []
-            for i, m in enumerate(scored_motifs):
-                m.mtype = motif_type.HELIX
-                m.name = name + "." + str(i)
-                energies.append(1)
-            all_me = motif_ensemble.MotifEnsemble()
-            all_me.setup(c.end_id, scored_motifs, energies)
-            all_mes_data.append([all_me.to_str(), all_me.id, all_count])
-
-=======
->>>>>>> mt_and_pose_fix
 
             #best 0.65
             m_clusters = cluster.cluster_motifs(aligned_motifs, 0.65)
@@ -468,23 +444,14 @@ class BuildSqliteLibraries(object):
 
 #setup_start_motif()
 builder = BuildSqliteLibraries()
-<<<<<<< HEAD
-#builder.build_ideal_helices()
-#builder.build_basic_libraries()
-#builder.build_helix_ensembles()
-#builder.build_ss_and_seq_libraries()
-#builder.build_unique_twoway_library()
-#builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
-=======
+
 builder.build_ideal_helices()
 builder.build_basic_libraries()
 builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-#builder.build_motif_ensemble_state_libraries()
->>>>>>> mt_and_pose_fix
+builder.build_motif_ensemble_state_libraries()
 
 
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")

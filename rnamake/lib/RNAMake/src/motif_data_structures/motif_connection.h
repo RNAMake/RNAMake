@@ -40,7 +40,7 @@ public:
     
     ~MotifConnection() {}
     
-public:
+public: // getters
     inline
     int
     i() { return i_; }
@@ -56,6 +56,12 @@ public:
     inline
     String const &
     name_j() { return name_j_; }
+    
+public:
+    
+    String
+    to_str();
+
     
 private:
     int i_, j_;

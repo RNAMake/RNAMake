@@ -18,11 +18,8 @@ SegmenterUnittest::test_creation() {
     auto p = pf.pose_from_file(path);
     auto bp1 = p->get_basepair("A112-A208")[0];
     auto bp2 = p->get_basepair("A132-A191")[0];
-<<<<<<< HEAD
     s.apply(p, BasepairOPs { bp1, bp2} );*/ 
-=======
-    s.apply(p, BasepairOPs { bp1, bp2} );*/
->>>>>>> mt_and_pose_fix
+
     return 1;
 }
 

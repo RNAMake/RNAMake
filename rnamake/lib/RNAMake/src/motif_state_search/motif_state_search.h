@@ -136,7 +136,7 @@ private:
     bool sterics_, verbose_;
     int max_node_level_, min_size_, max_size_, max_solutions_;
     int sol_count_, min_node_level_;
-    float accept_score_, min_ss_score_;
+    float accept_score_, min_ss_score_, max_steps_;
     
 };
 

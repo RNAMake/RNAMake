@@ -18,6 +18,7 @@ set(unittests_files
 	../../unittests/motif_data_structures_unittests/motif_tree_unittest.cpp
 	../../unittests/motif_state_search_unittests/motif_state_search_unittest.cpp
 	../../unittests/motif_state_search_unittests/motif_state_selector_unittest.cpp
+	../../unittests/motif_state_search_unittests/path_follower_unittests.cpp
 	../../unittests/motif_unittests/motif_factory_unittest.cc
 	../../unittests/motif_unittests/motif_scorer_unittest.cc
 	../../unittests/motif_unittests/motif_state_unittest.cpp

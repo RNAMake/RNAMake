@@ -37,6 +37,8 @@ sterics_(0) {
         i++;
     }
     
+    if(spl.size() == 1) { return; }
+    
     auto connection_spl = split_str_by_delimiter(spl[1], "|");
     for(auto const & c_spl : connection_spl) {
         sspl = split_str_by_delimiter(c_spl, " ");

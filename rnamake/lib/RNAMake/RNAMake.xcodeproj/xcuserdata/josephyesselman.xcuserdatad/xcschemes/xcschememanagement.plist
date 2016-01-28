@@ -29,10 +29,20 @@
 			<key>orderHint</key>
 			<integer>15</integer>
 		</dict>
-		<key>mini_ttr.xcscheme</key>
+		<key>follow_path.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>6</integer>
+		</dict>
+		<key>mini_ttr.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>5</integer>
+		</dict>
+		<key>motif_ensemble_tree.unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>16</integer>
 		</dict>
 		<key>motif_graph_unittest.xcscheme</key>
 		<dict>
@@ -58,6 +68,11 @@
 		<dict>
 			<key>orderHint</key>
 			<integer>8</integer>
+		</dict>
+		<key>secondary_structure_tree.unittest.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>17</integer>
 		</dict>
 		<key>simulate_tectos.xcscheme</key>
 		<dict>
@@ -188,6 +203,16 @@
 			<true/>
 		</dict>
 		<key>1C5935451C3C4F3500BFACE7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C5935EC1C50702300BFACE7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C5936351C50703800BFACE7</key>
 		<dict>
 			<key>primary</key>
 			<true/>
