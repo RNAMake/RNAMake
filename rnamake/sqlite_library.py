@@ -241,22 +241,12 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
     @staticmethod
     def get_libnames():
         libnames = {
-<<<<<<< HEAD
-            "all_bp_steps"  :  "/motif_ensemble_libraries/all_bp_steps.db",
-            "bp_steps"      :  "/motif_ensemble_libraries/bp_steps.db",
-            "twoway"        :  "/motif_ensemble_libraries/twoway.db",
-            "nway"          :  "/motif_ensemble_libraries/nway.db",
-            "tcontact"      :  "/motif_ensemble_libraries/tcontact.db",
-            "hairpin"       :  "/motif_ensemble_libraries/hairpin.db",
-=======
             "bp_steps" :  "/motif_ensemble_libraries/bp_steps.db",
             "twoway"   :  "/motif_ensemble_libraries/twoway.db",
             "nway"     :  "/motif_ensemble_libraries/nway.db",
             "tcontact" :  "/motif_ensemble_libraries/tcontact.db",
             "hairpin"  :  "/motif_ensemble_libraries/hairpin.db",
-            "twoway_clusters" : "motif_ensemble_libraries/twoway_clusters.db"
->>>>>>> mt_and_pose_fix
-        }
+            "twoway_clusters" : "motif_ensemble_libraries/twoway_clusters.db" }
 
         return libnames
 

@@ -113,6 +113,11 @@ class Graph(object):
                 node = n
         return node
 
+    def increase_level(self):
+        self.level += 1
+
+    def decrease_level(self):
+        self.level -= 1
 
 
 class GraphDynamic(Graph):
@@ -221,6 +226,22 @@ class GraphStatic(Graph):
         if len(self.nodes) > 0:
             self.last_node = self.nodes[-1]
         #self.index -= 1
+
+    def remove_node_level(self, level=None):
+        if level is None:
+            level = self.level
+
+        nodes = self.nodes[::-1]
+        while 1:
+            removed = 0
+            for n in nodes:
+                if n.level == level:
+                    self.remove_node(n.index)
+                    removed = 1
+                    break
+            nodes = self.nodes[::-1]
+            if not removed:
+                break
 
     def check_pos_is_value(self, n, pos, error=1):
         if pos == -1:
@@ -351,6 +372,7 @@ class GraphNodeStatic(GraphNode):
 
         c = GraphNodeStatic(new_data, self.index, self.level, len(self.connections))
         return c
+
 
 class GraphConnection(object):
     def __init__(self, node_1, node_2, end_index_1, end_index_2):

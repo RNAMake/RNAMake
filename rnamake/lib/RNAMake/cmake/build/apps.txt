@@ -2,3 +2,4 @@
 mini_ttr ../../apps/mini_ttr/mini_ttr.cpp 
 exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp
 eternabot_app ../../apps/eternabot/eternabot.cpp
+follow_path ../../apps/follow_path/follow_path.cpp

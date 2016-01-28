@@ -223,3 +223,38 @@ MotifTree::_steric_clash(MotifOP const & m) {
     }
     return 0;
 }
+
+String
+MotifTree::topology_to_str() {
+    String s;
+    
+    for(auto const & n : tree_) {
+        s += n->data()->name() + "," + n->data()->ends()[0]->name() + ",";
+        s += n->data()->end_ids()[0] + "," + std::to_string(n->parent_index()) + ",";
+        s += std::to_string(n->parent_end_index()) + " ";
+    }
+    s += "|";
+    for(auto const & c : connections_) {
+        s += c->to_str() + " ";
+    }
+    
+    return s;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

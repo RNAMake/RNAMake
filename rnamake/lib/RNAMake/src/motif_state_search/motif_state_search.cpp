@@ -21,6 +21,7 @@ MotifStateSearch::setup_options() {
     options_.add_option("max_solutions", 100, OptionType::INT);
     options_.add_option("accept_score", 10, OptionType::FLOAT);
     options_.add_option("min_ss_score", 10000, OptionType::FLOAT);
+    options_.add_option("max_steps", 1000000000, OptionType::FLOAT);
     options_.add_option("verbose", false, OptionType::BOOL);
     options_.lock_option_adding();
     
@@ -37,6 +38,7 @@ MotifStateSearch::update_var_options() {
     min_node_level_ = options_.get_int("min_node_level");
     accept_score_   = options_.get_float("accept_score");
     min_ss_score_   = options_.get_float("min_ss_score");
+    max_steps_      = options_.get_float("max_steps");
     verbose_        = options_.get_bool("verbose");
     
 }
@@ -89,7 +91,6 @@ MotifStateSearch::_search() {
     MotifStateSearchNodeOP current, child, current_2;
     int clash;
     Points centers(100);
-    int center_count = 0;
     float dist = 1000;
     float best = 1000000000;
     MotifStateSearchSolutionOP best_sol;
@@ -100,16 +101,25 @@ MotifStateSearch::_search() {
         
         
         steps += 1;
+        
+        if(steps > max_steps_) {
+            if(verbose_) {
+                std::cout << "reached max steps" << std::endl;
+            }
+            return best_sol;
+        }
+        
         score = scorer_->accept_score(current);
         
         if(score < best && verbose_) {
             best = score;
             best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
-            std::cout << best << " " << accept_score_ << " " << current->level() << std::endl;
+            std::cout << best << " " << accept_score_ << " " << current->level() << " " << steps << " " << max_steps_ << std::endl;
         }
         
         if(score < accept_score_ && current->ss_score() < min_ss_score_ &&
            current->level() > min_node_level_) {
+            std::cout << "found a solution" << std::endl;
             auto s = std::make_shared<MotifStateSearchSolution>(current, score);
             return s;
         }
@@ -185,6 +195,8 @@ MotifStateSearch::_search() {
         }
         
     }
+    
+    std::cout << "ran out of options" << std::endl;
     
     return best_sol;
 

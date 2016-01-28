@@ -448,7 +448,11 @@ class MotifGraph(base.Base):
 
         return s
 
+    def increase_level(self):
+        self.graph.increase_level()
 
+    def decrease_level(self):
+        self.graph.decrease_level()
 
 
 

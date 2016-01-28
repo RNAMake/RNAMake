@@ -155,6 +155,9 @@ public:
         String const &,
         String const &);
     
+    String
+    topology_to_str();
+    
 private:
     void
     setup_options();

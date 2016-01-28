@@ -73,16 +73,6 @@ struct PairSearchNode {
     int score;
 };
 
-<<<<<<< HEAD
-class PairSearch {
-=======
-/*class PairSearchNode {
->>>>>>> mt_and_pose_fix
-public:
-    
-    
-};*/
-
 
 class Segmenter {
 public:
