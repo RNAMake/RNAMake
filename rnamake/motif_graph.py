@@ -163,6 +163,15 @@ class MotifGraph(base.Base):
         self.merger.remove_motif(n.data)
         self.graph.remove_node(pos)
 
+    def remove_node_level(self, level=None):
+        if level is None:
+            level = self.graph.level
+
+        r = range(1, len(self.graph.nodes))
+        for i in r[::-1]:
+            if self.graph.nodes[i].level >= level:
+                self.remove_motif(self.graph.nodes[i].index)
+
     def _add_motif_to_graph(self, m, parent=None, parent_end_index=None):
         if parent is None:
             m_copy = m.copy()
