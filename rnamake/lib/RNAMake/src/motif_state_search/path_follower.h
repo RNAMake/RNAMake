@@ -33,10 +33,10 @@ public:
         mg_ = mg;
         ni_ = ni;
         
-        search_.set_option_value("max_node_level", 400);
+        search_.set_option_value("max_node_level", 10);
         search_.set_option_value("min_node_level", 0);
         search_.set_option_value("max_solutions", 100000000);
-        search_.set_option_value("accept_score", 0.1f);
+        search_.set_option_value("accept_score", -10000.1f);
         search_.set_option_value("max_size", 10000);
         search_.set_option_value("max_steps", 100000.0f);
         search_.set_option_value("verbose", true);

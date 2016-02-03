@@ -301,10 +301,6 @@ public:
             if(current_ == nullptr) { break; }
         }
         
-        if(length_ > path_length_*2) {
-            return 1000000;
-        }
-        
         score_ = 0;
         int sum = 0;
         int i = 0, j = -1;
@@ -318,10 +314,12 @@ public:
         float current_length = lengths_[pos];
         
         for(i = 0; i < seen_.size(); i++) {
-            seen_[i] = 0;
+            seen_[i] = 500;
         }
         
         int last_seen_pos_ = 0;
+        int total = 0;
+        int k = 0;
         
         for(i = pos; i >= 0; i--) {
             
@@ -334,25 +332,41 @@ public:
                         best_b_pos = j;
                         best_ = dist_;
                     }
+                    if(seen_[j] > dist_) {
+                        seen_[j] = dist_;
+                    }
+                    
                 }
-                seen_[best_b_pos] = 1;
                 
-                if(best_ < 10) {
-                    score_ += best_b_pos;
+                total = 0;
+                for(k = 0; k < best_b_pos; k++){
+                    if(seen_[k] > 10) { total += 1; }
                 }
-                else {
-                    score_ += best_b_pos + (best_ - 10);
-                }
+                
+                //if(best_ < 10) {
+                //    score_ += (best_b_pos - total);
+                //}
+                //else {
+                score_ += (total /(float)seen_.size() )*10;
+                //}
                 
             }
             
         }
         
+        int count = 0;
+        
         for(auto const & spos : seen_) {
-            if(spos == 0) {
-                score_ += 500;
-            }
+            count = spos;
+            /*if(count < -15) {
+                count = -15;
+            }*/
+            score_+= count;
         }
+        
+        score_ += fabsf(length_ - bead_lengths_.back()) * 5;
+        
+        //score_ += seen_.back()*10;
         
         return score_;
         
