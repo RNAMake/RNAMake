@@ -109,7 +109,12 @@ class MotifGraph(base.Base):
 
         return -1
 
-    def add_motif_tree(self, mt, parent_index, parent_end_name):
+    def add_motif_tree(self, mt, parent_index=-1, parent_end_name=""):
+        if parent_index == -1:
+            for n in mt:
+                self.add_motif(n.data)
+            return
+
         parent = self.get_node(parent_index)
         bps = parent.data.get_basepair(name=parent_end_name)
         if len(bps) == 0:

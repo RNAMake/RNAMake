@@ -672,6 +672,7 @@
 		1C8B83601C21ECDC00D305EC /* variant.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB51B0985A40076284E /* variant.cc */; };
 		1C8B83611C21ECDC00D305EC /* cl_option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB81B09B43F0076284E /* cl_option.cc */; };
 		1C8B83631C21ECDC00D305EC /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
+		1C9E88321C8654F00080956A /* basic_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E88301C8654F00080956A /* basic_io.cpp */; };
 		1C9EF2EB1BA4B41E006DEB9C /* motif_state_search_node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C9EF2E61BA4B41E006DEB9C /* motif_state_search_node.cpp */; };
 		1C9EF2EE1BA4B41E006DEB9C /* motif_state_selector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C9EF2E91BA4B41E006DEB9C /* motif_state_selector.cpp */; };
 		1CAACE821AF2BB240098AA49 /* structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE811AF2BB240098AA49 /* structure.cc */; };
@@ -1072,6 +1073,9 @@
 		1C8B830F1C1F9AB400D305EC /* build_secondary_structure.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = build_secondary_structure.h; path = build/build_secondary_structure.h; sourceTree = "<group>"; };
 		1C8B83101C1F9AB400D305EC /* build_secondary_structure.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = build_secondary_structure.cpp; path = build/build_secondary_structure.cpp; sourceTree = "<group>"; };
 		1C8B83681C21ECDC00D305EC /* simulate_tectos copy */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "simulate_tectos copy"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C9E88301C8654F00080956A /* basic_io.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = basic_io.cpp; sourceTree = "<group>"; };
+		1C9E88311C8654F00080956A /* basic_io.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = basic_io.hpp; sourceTree = "<group>"; };
+		1C9E88331C8667800080956A /* motif_state_tree.fwd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = motif_state_tree.fwd.h; path = motif_data_structures/motif_state_tree.fwd.h; sourceTree = "<group>"; };
 		1C9EF2E61BA4B41E006DEB9C /* motif_state_search_node.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = motif_state_search_node.cpp; path = motif_state_search/motif_state_search_node.cpp; sourceTree = "<group>"; };
 		1C9EF2E71BA4B41E006DEB9C /* motif_state_search_node.fwd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = motif_state_search_node.fwd.h; path = motif_state_search/motif_state_search_node.fwd.h; sourceTree = "<group>"; };
 		1C9EF2E81BA4B41E006DEB9C /* motif_state_search_node.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = motif_state_search_node.h; path = motif_state_search/motif_state_search_node.h; sourceTree = "<group>"; };
@@ -1772,6 +1776,8 @@
 				1C4E3CDB1B014EE90076284E /* x3dna.h */,
 				1C7C1FA31B9E440C00E6E959 /* monte_carlo.cpp */,
 				1C7C1FA41B9E440C00E6E959 /* monte_carlo.h */,
+				1C9E88301C8654F00080956A /* basic_io.cpp */,
+				1C9E88311C8654F00080956A /* basic_io.hpp */,
 			);
 			path = util;
 			sourceTree = "<group>";
@@ -1901,6 +1907,7 @@
 				1CEBFC1F1B99FD8A002847BA /* motif_state_ensemble_tree.h */,
 				1CD9FE951B97D402000253B5 /* motif_state_tree.cpp */,
 				1CD9FE961B97D402000253B5 /* motif_state_tree.h */,
+				1C9E88331C8667800080956A /* motif_state_tree.fwd.h */,
 				1C06DC3B1C121E310001CC98 /* motif_merger.cpp */,
 				1C06DC3C1C121E310001CC98 /* motif_merger.h */,
 				1C5935CD1C422B7300BFACE7 /* motif_connection.cpp */,
@@ -2810,6 +2817,7 @@
 				1C5936421C50703800BFACE7 /* sequence_designer.cpp in Sources */,
 				1C5936431C50703800BFACE7 /* sequence_optimizer.cpp in Sources */,
 				1C5936441C50703800BFACE7 /* motif_state_search_node.cpp in Sources */,
+				1C9E88321C8654F00080956A /* basic_io.cpp in Sources */,
 				1C5936451C50703800BFACE7 /* motif_state_selector.cpp in Sources */,
 				1C5936461C50703800BFACE7 /* motif_state_search_scorer.cpp in Sources */,
 				1C5936471C50703800BFACE7 /* motif_state_search.cpp in Sources */,

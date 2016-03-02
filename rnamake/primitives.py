@@ -100,7 +100,6 @@ class Structure(object):
             residues.extend(c.residues)
         return residues
 
-
     def to_str(self):
         pass
 

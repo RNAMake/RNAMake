@@ -1,4 +1,5 @@
 set(util_files
+	../../src/util/basic_io.cpp
 	../../src/util/cartesian_product.cc
 	../../src/util/file_io.cc
 	../../src/util/monte_carlo.cpp

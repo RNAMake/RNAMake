@@ -71,6 +71,40 @@ MotifStateTree::add_state(
 }
 
 int
+MotifStateTree::add_mst(
+    MotifStateTreeOP const & mst,
+    int parent_index,
+    int parent_end_index,
+    String parent_end_name) {
+    
+    int i = -1;
+    int j = 0;
+    auto index_dict = std::map<int, int>();
+    
+    for(auto const & n : *mst) {
+        i++;
+        if(i == 0) {
+            j = add_state(n->data()->ref_state, parent_index, parent_end_index, parent_end_name);
+        }
+        else {
+            int ind = index_dict[n->parent_index()];
+            int pei = n->parent_end_index();
+            j = add_state(n->data()->ref_state, ind, parent_end_index);
+            
+        }
+        
+        index_dict[n->index()] = j;
+        if(j == -1) {
+            throw MotifStateTreeException("could not add motif state tree to this tree");
+        }
+    }
+    
+    return j;
+    
+    
+}
+
+int
 MotifStateTree::setup_from_mt(
     MotifTreeOP const & mt) {
     
