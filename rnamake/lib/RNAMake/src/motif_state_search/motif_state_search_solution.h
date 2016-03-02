@@ -43,6 +43,11 @@ public:
         return to_motif_tree()->to_pdb(fname, renumber); 
     }
     
+public:
+    inline
+    float
+    score() { return score_; }
+    
 private:
     
     void

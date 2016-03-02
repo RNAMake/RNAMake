@@ -45,16 +45,24 @@ MotifStateSearch::update_var_options() {
 
 void
 MotifStateSearch::setup(
-    const BasepairStateOP & start,
-    const BasepairStateOP & end) {
+    BasepairStateOP const & start,
+    BasepairStateOP const & end) {
     
     auto start_n = _start_node(start);
     start_n->score(100000);
+    queue_ =  MotifStateSearchNodeQueue();
     test_node_ = std::make_shared<MotifStateSearchNode>(*start_n);
     queue_.push(start_n);
     scorer_->set_target(end);
     no_more_solutions_ = 0;
     sol_count_ = 0;
+}
+
+void
+MotifStateSearch::reset() {
+    no_more_solutions_ = 0;
+    sol_count_ = 0;
+    
 }
 
 MotifStateSearchSolutionOP
