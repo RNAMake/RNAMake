@@ -40,6 +40,13 @@ struct MSTNodeData {
     {}
     
     inline
+    MSTNodeData(
+        MSTNodeData const & ndata):
+    ref_state(std::make_shared<MotifState>(*ndata.ref_state)),
+    cur_state(std::make_shared<MotifState>(*ndata.cur_state))
+    {}
+    
+    inline
     BasepairStateOP const &
     get_end_state(
         String const & name) {
@@ -50,7 +57,6 @@ struct MSTNodeData {
     
 };
 
-typedef std::shared_ptr<MSTNodeData> MSTNodeDataOP;
 typedef TreeNodeOP<MSTNodeDataOP> MotifStateTreeNodeOP;
 
 class MotifStateTree {
@@ -95,6 +101,20 @@ public:
         
     }
     
+    MotifStateTree(
+        MotifStateTree const & mst):
+    options_(Options("MotifStateTreeOptions")),
+    tree_(TreeStatic<MSTNodeDataOP>(mst.tree_)) {
+        
+        for(auto const & n : mst) {
+            tree_.get_node(n->index())->data() = std::make_shared<MSTNodeData>(*n->data());
+        }
+        
+        options_ = Options(mst.options_);
+        update_var_options();
+    }
+    
+    
     ~MotifStateTree() {}
     
 public: //iterators
@@ -115,14 +135,16 @@ public:
         MotifStateOP const & state,
         int parent_index=-1,
         int parent_end_index=-1,
-        String parent_end_name="");
+        String parent_end_name="",
+        bool forced=false);
     
     int
     add_mst(
         MotifStateTreeOP const & mst,
         int parent_index=-1,
         int parent_end_index=-1,
-        String parent_end_name="");
+        String parent_end_name="",
+        bool forced=false);
 
     int
     setup_from_mt(

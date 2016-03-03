@@ -118,10 +118,9 @@ def get_residue_state(r, type=ResidueStateType.NORM):
         else:
             base_atoms.append(a)
 
-    return ResidueState3Bead(r.uuid,
+    return ResidueState2Bead(r.uuid,
                              util.center(sugar_atoms),
                              util.center(base_atoms),
-                             util.center(phos_atoms),
                              type)
 
 
