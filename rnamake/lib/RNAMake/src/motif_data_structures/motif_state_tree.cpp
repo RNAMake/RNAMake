@@ -28,7 +28,8 @@ MotifStateTree::add_state(
     MotifStateOP const & state,
     int parent_index,
     int parent_end_index,
-    String parent_end_name) {
+    String parent_end_name,
+    bool forced) {
     
     auto parent = tree_.last_node();
 
@@ -56,10 +57,11 @@ MotifStateTree::add_state(
         if(p == parent->data()->ref_state->block_end_add()) { continue; }
         auto n_data = std::make_shared<MSTNodeData>(state);
         
-        get_aligned_motif_state(parent->data()->cur_state->end_states()[p],
-                                n_data->cur_state,
-                                n_data->ref_state);
-        
+        if(!forced) {
+            get_aligned_motif_state(parent->data()->cur_state->end_states()[p],
+                                    n_data->cur_state,
+                                    n_data->ref_state);
+        }
         //TODO need to comment this out of occasionally will not allow conversion from mt
         //if(sterics_ && _steric_clash(n_data)) { continue; }
     
@@ -75,7 +77,8 @@ MotifStateTree::add_mst(
     MotifStateTreeOP const & mst,
     int parent_index,
     int parent_end_index,
-    String parent_end_name) {
+    String parent_end_name,
+    bool forced) {
     
     int i = -1;
     int j = 0;
@@ -83,13 +86,16 @@ MotifStateTree::add_mst(
     
     for(auto const & n : *mst) {
         i++;
+        
+        
         if(i == 0) {
-            j = add_state(n->data()->ref_state, parent_index, parent_end_index, parent_end_name);
+            j = add_state(n->data()->ref_state, parent_index, parent_end_index, parent_end_name,
+                          forced);
         }
         else {
             int ind = index_dict[n->parent_index()];
             int pei = n->parent_end_index();
-            j = add_state(n->data()->ref_state, ind, parent_end_index);
+            j = add_state(n->data()->ref_state, ind, parent_end_index, "", forced);
             
         }
         

@@ -14,10 +14,73 @@
 #include "base/option.h"
 #include "base/cl_option.h"
 #include "motif_state_search/path_follower.h"
+#include "motif_data_structures/motif_state_tree.h"
+#include "motif_state_search/motif_state_search.h"
 
 
 CommandLineOptions
 parse_command_line(int, const char **);
+
+struct PathBuilderNode {
+    MotifStateTreeOP mst;
+    float path_score, ss_score, diversity_score;
+    
+    inline
+    PathBuilderNode(
+        MotifStateTreeOP const & nmst,
+        float npath_score,
+        float nss_score,
+        float ndiversity_score):
+    mst(nmst),
+    path_score(npath_score),
+    ss_score(nss_score),
+    diversity_score(ndiversity_score) {
+        mst->set_option_value("sterics", false);
+    }
+    
+    inline
+    PathBuilderNode(
+        PathBuilderNode const & n):
+    mst(std::make_shared<MotifStateTree>(*n.mst)),
+    path_score(n.path_score),
+    ss_score(n.ss_score),
+    diversity_score(n.diversity_score)
+    {}
+    
+    void
+    add_solution(
+        MotifStateSearchSolutionOP const & sol) {
+        
+        auto sol_mst = sol->to_mst();
+        mst->add_mst(sol_mst, -1, 1, "", true);
+        add_score(sol_mst, sol->score());
+    }
+    
+    void
+    add_score(
+        MotifStateTreeOP const & mst,
+        int const n_path_score) {
+        
+        path_score += n_path_score;
+        for(auto const & n : *mst) {
+            ss_score += n->data()->ref_state->score();
+        }
+        
+    }
+};
+
+//to allow sorting of nodes
+struct PathBuilderNode_LessThanKey {
+    inline
+    bool
+    operator() (
+                PathBuilderNode const & n1,
+                PathBuilderNode const & n2) {
+        return n1.path_score < n2.path_score;
+    }
+};
+
+typedef std::vector<PathBuilderNode> PathBuilderNodes;
 
 class PathBuilder {
 public:
@@ -85,6 +148,7 @@ private:
     
 private:
     Options options_;
+    PathBuilderNodes nodes_;
     
 };
 

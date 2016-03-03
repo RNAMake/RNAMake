@@ -12,13 +12,13 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_topology.h"
 #include "motif_data_structures/motif_graph.h"
-#include "motif_data_structures/motif_state_tree.h"
-#include "motif_state_search/motif_state_search.h"
 
 void
 PathBuilder::setup_options() {
     options_.add_option("path", String(""), OptionType::STRING);
     options_.add_option("mg", String(""), OptionType::STRING);
+    options_.add_option("solutions", 10, OptionType::INT);
+    options_.add_option("verbose", true, OptionType::BOOL);
     options_.lock_option_adding();
     update_var_options();
 }
@@ -29,6 +29,7 @@ PathBuilder::setup(
     
     for(auto const & opt: cmd_opts) {
         if(! has_option(opt->name())) { continue; }
+        if(! opt->filled()) { continue; }
         
         if     (opt->type() == OptionType::INT) {
             set_option_value(opt->name(), opt->get_int());
@@ -43,7 +44,6 @@ PathBuilder::setup(
             set_option_value(opt->name(), opt->get_string());
         }
     }
-    
 }
 
 void
@@ -71,13 +71,73 @@ PathBuilder::build() {
     
     auto pf = PathFollower();
     pf.setup(pathes[0], mg, n1, end_name);
+    pf.set_option_value("max_pathes", options_.get_int("solutions"));
+    auto sol_org = pf.solutions();
     
-    auto sol = pf.solutions();
-    mst->add_mst(sol[0]->to_mst(), 0, -1, end_name);
+    nodes_ = PathBuilderNodes();
+    for(int i = 0; i < sol_org.size(); i++) {
+        auto sol_mst = sol_org[i]->to_mst();
+        auto n = PathBuilderNode { std::make_shared<MotifStateTree>(*mst), 0, 0, 0 };
+        n.mst->add_mst(sol_mst, 0, -1, end_name);
+        n.add_score(sol_mst, sol_org[i]->score());
+        nodes_.push_back(n);
+    }
 
-    pf = PathFollower();
+    std::sort(nodes_.begin(), nodes_.end(), PathBuilderNode_LessThanKey());
     
+    if(options_.get_bool("verbose")) {
+        std::cout << "ROUND 0: SIZE=" << nodes_.size() << " MIN SCORE=" << nodes_[0].path_score;
+        std::cout << std::endl;
+    }
+
+    auto new_nodes = PathBuilderNodes();
+    for(int level = 1; level < pathes.size(); level++) {
+        new_nodes = PathBuilderNodes();
+        
+        for(auto const & n : nodes_) {
+            
+            pf = PathFollower();
+            pf.setup(pathes[level], n.mst->last_node()->data()->cur_state->end_states()[1],
+                     n.mst->centers());
+            pf.set_option_value("max_pathes", options_.get_int("solutions"));
+            auto sols = pf.solutions();
+            
+            for(auto const & sol : sols) {
+                auto new_n = PathBuilderNode(n);
+                new_n.add_solution(sol);
+                new_nodes.push_back(new_n);
+            }
+            
+        }
+        
+        std::sort(new_nodes.begin(), new_nodes.end(), PathBuilderNode_LessThanKey());
+        if(new_nodes.size() > options_.get_int("solutions")) {
+            nodes_ = PathBuilderNodes(&new_nodes[0], &new_nodes[options_.get_int("solutions")]);
+        }
+        else {
+            nodes_ = new_nodes;
+
+        }
+        
+        if(nodes_.size() == 0) {
+            std::cout << "full run, ran out of options" << std::endl;
+            return;
+        }
+            
+        if(options_.get_bool("verbose")) {
+            std::cout << "ROUND " << level << ": SIZE=" << nodes_.size();
+            std::cout <<" MIN SCORE=" << nodes_[0].path_score << std::endl;
+        }
+        
+        
+    }
     
+    int i = 0;
+    for(auto const & n : nodes_) {
+        n.mst->to_motif_tree()->to_pdb("solution."+std::to_string(i)+".pdb", 1);
+        i += 1;
+    }
+ 
 }
 
 
@@ -145,7 +205,7 @@ PathBuilder::_get_sub_pathes(
         }
         else {
             auto half = (int)segments[i].size() / 2;
-            for(int j = 0; j < half; j++) { p.push_back(segments[i][j]); }
+            for(int j = 0; j < half-1; j++) { p.push_back(segments[i][j]); }
         }
         
         pathes.push_back(p);

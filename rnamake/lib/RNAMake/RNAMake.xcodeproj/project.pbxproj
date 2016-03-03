@@ -462,7 +462,6 @@
 		1C59364C1C50703800BFACE7 /* motif_type.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3F61C0E3F450027EF6E /* motif_type.cc */; };
 		1C59364D1C50703800BFACE7 /* secondary_structure_factory.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C06DC0F1C0FFD400001CC98 /* secondary_structure_factory.cc */; };
 		1C59364E1C50703800BFACE7 /* structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3E31C0CEA830027EF6E /* structure.cpp */; };
-		1C59364F1C50703800BFACE7 /* mini_ttr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C4BF0BB1C21F3B1008C5671 /* mini_ttr.cpp */; };
 		1C5936501C50703800BFACE7 /* rna_structure.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3EA1C0D06400027EF6E /* rna_structure.cpp */; };
 		1C5936511C50703800BFACE7 /* secondary_structure_parser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3F01C0D18540027EF6E /* secondary_structure_parser.cpp */; };
 		1C5936521C50703800BFACE7 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C68F3F91C0EA1960027EF6E /* util.cpp */; };
@@ -673,6 +672,8 @@
 		1C8B83611C21ECDC00D305EC /* cl_option.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1C4E3DB81B09B43F0076284E /* cl_option.cc */; };
 		1C8B83631C21ECDC00D305EC /* libsqlite3.0.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1C855BB51A7FDE3300EED04D /* libsqlite3.0.dylib */; };
 		1C9E88321C8654F00080956A /* basic_io.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C9E88301C8654F00080956A /* basic_io.cpp */; };
+		1C9E88341C88C8DF0080956A /* path_follower.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C5935E61C4D70CE00BFACE7 /* path_follower.cpp */; };
+		1C9E88351C88C90B0080956A /* motif_connection.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C5935CD1C422B7300BFACE7 /* motif_connection.cpp */; };
 		1C9EF2EB1BA4B41E006DEB9C /* motif_state_search_node.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C9EF2E61BA4B41E006DEB9C /* motif_state_search_node.cpp */; };
 		1C9EF2EE1BA4B41E006DEB9C /* motif_state_selector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1C9EF2E91BA4B41E006DEB9C /* motif_state_selector.cpp */; };
 		1CAACE821AF2BB240098AA49 /* structure.cc in Sources */ = {isa = PBXBuildFile; fileRef = 1CAACE811AF2BB240098AA49 /* structure.cc */; };
@@ -2803,6 +2804,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1C9E88351C88C90B0080956A /* motif_connection.cpp in Sources */,
+				1C9E88341C88C8DF0080956A /* path_follower.cpp in Sources */,
 				1C5936371C50703800BFACE7 /* motif_topology.cpp in Sources */,
 				1C5936381C50703800BFACE7 /* energy_par.cc in Sources */,
 				1C5936391C50703800BFACE7 /* vienna.cc in Sources */,
@@ -2828,7 +2831,6 @@
 				1C59364C1C50703800BFACE7 /* motif_type.cc in Sources */,
 				1C59364D1C50703800BFACE7 /* secondary_structure_factory.cc in Sources */,
 				1C59364E1C50703800BFACE7 /* structure.cpp in Sources */,
-				1C59364F1C50703800BFACE7 /* mini_ttr.cpp in Sources */,
 				1C5936501C50703800BFACE7 /* rna_structure.cpp in Sources */,
 				1C5936511C50703800BFACE7 /* secondary_structure_parser.cpp in Sources */,
 				1C5936521C50703800BFACE7 /* util.cpp in Sources */,

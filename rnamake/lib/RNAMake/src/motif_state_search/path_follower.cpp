@@ -77,12 +77,16 @@ PathFollower::solutions() {
     auto sol = search_.next();
     auto solutions = MotifStateSearchSolutionOPs();
     
-    search_.setup(start_->state(), start_->state());
+    if(sol == nullptr) { return solutions; }
+    
+    search_.setup(start_state_, start_state_);
     search_.set_option_value("max_solutions", options_.get_int("max_pathes"));
     search_.set_option_value("accept_score", sol->score()*options_.get_float("score_diff"));
+    solutions.push_back(sol);
 
     while(!search_.finished()) {
         auto sol = search_.next();
+        if(sol == nullptr) { continue; }
         if(sol->score() < search_.get_float_option("accept_score")) {
             solutions.push_back(sol);
         }

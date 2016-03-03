@@ -12,8 +12,10 @@
 #include <memory>
 
 class MotifStateTree;
-
 typedef std::shared_ptr<MotifStateTree> MotifStateTreeOP;
+
+class MSTNodeData;
+typedef std::shared_ptr<MSTNodeData> MSTNodeDataOP;
 
 
 

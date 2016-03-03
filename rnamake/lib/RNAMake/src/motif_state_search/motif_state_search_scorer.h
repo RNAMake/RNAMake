@@ -406,7 +406,7 @@ public:
         int pos = bead_size_-2;
         int b_pos = 0;
         int b_end = 0;
-        float diff, best_diff = 1000000;
+        float diff, best_diff = 100000000;
         int best_b_pos = 0;
         float avg_diff = 0;
         float current_length = lengths_[pos];
@@ -422,7 +422,7 @@ public:
         for(i = 0; i < pos; i++) {
             
             for(auto const & b : bead_arrays_[i]) {
-                best_ = 10000;
+                best_ = 10000000;
                 best_b_pos = 0;
                 for(j = 0; j < path_.size(); j++ ) {
                     dist_ = path_[j].distance(b);
