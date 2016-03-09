@@ -240,7 +240,7 @@ public:
 class MSS_HelixFlank : public MotifStateSelector {
 public:
     MSS_HelixFlank() : MotifStateSelector() {
-        MotifStateSelector::add("ideal_helices");
+        MotifStateSelector::add("ideal_helices_min");
     }
     
     ~MSS_HelixFlank() {}

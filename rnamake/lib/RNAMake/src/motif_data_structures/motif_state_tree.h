@@ -22,6 +22,7 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_tree.h"
 #include "motif_data_structures/motif_state_tree.fwd.h"
+#include "motif_data_structures/motif_connection.h"
 
 class MotifStateTreeException : public std::runtime_error {
 public:
@@ -158,6 +159,7 @@ public:
         int i, 
         MotifStateOP const &);
     
+    inline
     Points
     centers() {
         auto centers = Points();
@@ -168,6 +170,9 @@ public:
         }
         return centers;
     }
+    
+    String
+    topology_to_str();
     
 public: //motif tree wrappers
     
@@ -189,6 +194,15 @@ public: //tree wrapers
         int i) {
         return tree_.get_node(i);
     }
+    
+    inline
+    void
+    increase_level() { tree_.increase_level(); }
+    
+    inline
+    void
+    decrease_level() { tree_.decrease_level(); }
+    
     
 public: //option wrappers
     inline
@@ -250,6 +264,7 @@ private:
     TreeStatic<MSTNodeDataOP> tree_;
     std::queue<MotifStateTreeNodeOP> queue_;
     MotifStateAligner aligner_;
+    MotifConnectionOPs connections_;
     Options options_;
     int sterics_;
     float clash_radius_;

@@ -53,7 +53,8 @@ void
 PathFollower::setup_options() {
     options_.add_option("only_one", 0, OptionType::INT);
     options_.add_option("max_pathes", 10, OptionType::INT);
-    options_.add_option("score_diff", .95f, OptionType::FLOAT);
+    options_.add_option("score_diff", .90f, OptionType::FLOAT);
+    options_.add_option("final_path", false, OptionType::BOOL);
     options_.lock_option_adding();
     update_var_options();
 }
@@ -81,7 +82,7 @@ PathFollower::solutions() {
     
     search_.setup(start_state_, start_state_);
     search_.set_option_value("max_solutions", options_.get_int("max_pathes"));
-    search_.set_option_value("accept_score", sol->score()*options_.get_float("score_diff"));
+    search_.set_option_value("accept_score", sol->score()*2);
     solutions.push_back(sol);
 
     while(!search_.finished()) {
@@ -89,8 +90,13 @@ PathFollower::solutions() {
         if(sol == nullptr) { continue; }
         if(sol->score() < search_.get_float_option("accept_score")) {
             solutions.push_back(sol);
+            search_.set_option_value("accept_score", sol->score());
         }
     }
+    
+    
+    
+    
     
     return solutions;
     

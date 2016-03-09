@@ -14,6 +14,7 @@ MotifStateSqliteLibrary::get_libnames() {
     StringStringMap libnames;
     
     libnames["ideal_helices"]  = "/motif_state_libraries/ideal_helices.db";
+    libnames["ideal_helices_min"]  = "/motif_state_libraries/ideal_helices_min.db";
     libnames["twoway"]         = "/motif_state_libraries/twoway.db";
     libnames["tcontact"]       = "/motif_state_libraries/tcontact.db";
     libnames["hairpin"]        = "/motif_state_libraries/hairpin.db";

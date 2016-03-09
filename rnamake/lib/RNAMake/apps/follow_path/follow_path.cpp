@@ -17,7 +17,7 @@ void
 PathBuilder::setup_options() {
     options_.add_option("path", String(""), OptionType::STRING);
     options_.add_option("mg", String(""), OptionType::STRING);
-    options_.add_option("solutions", 10, OptionType::INT);
+    options_.add_option("solutions", 100, OptionType::INT);
     options_.add_option("verbose", true, OptionType::BOOL);
     options_.lock_option_adding();
     update_var_options();
@@ -54,6 +54,7 @@ PathBuilder::build() {
     auto mg = MotifGraphOP(nullptr);
     int n1;
     String end_name = "";
+    auto end_bp = BasepairStateOP(nullptr);
     if(get_string_option("mg").size() > 0) {
         auto lines2 = get_lines_from_file(get_string_option("mg"));
         mg = std::make_shared<MotifGraph>(lines2[0]);
@@ -61,6 +62,11 @@ PathBuilder::build() {
         auto spl = split_str_by_delimiter(lines2[1], " ");
         n1 = std::stoi(spl[0]);
         end_name = spl[1];
+        
+        if(lines2.size() > 3) {
+            spl = split_str_by_delimiter(lines2[2], " ");
+            end_bp = mg->get_end(std::stoi(spl[0]), spl[1])->state();
+        }
     }
     
     auto segments = _get_segments(path_points);
@@ -71,6 +77,7 @@ PathBuilder::build() {
     
     auto pf = PathFollower();
     pf.setup(pathes[0], mg, n1, end_name);
+    std::cout << options_.get_int("solutions") << std::endl;
     pf.set_option_value("max_pathes", options_.get_int("solutions"));
     auto sol_org = pf.solutions();
     
@@ -78,7 +85,7 @@ PathBuilder::build() {
     for(int i = 0; i < sol_org.size(); i++) {
         auto sol_mst = sol_org[i]->to_mst();
         auto n = PathBuilderNode { std::make_shared<MotifStateTree>(*mst), 0, 0, 0 };
-        n.mst->add_mst(sol_mst, 0, -1, end_name);
+        n.mst->add_mst(sol_mst, n1, -1, end_name);
         n.add_score(sol_mst, sol_org[i]->score());
         nodes_.push_back(n);
     }
@@ -90,6 +97,12 @@ PathBuilder::build() {
         std::cout << std::endl;
     }
 
+    auto path = pathes.back();
+    pathes.pop_back();
+    for(auto const & p : path) {
+        pathes.back().push_back(p);
+    }
+    
     auto new_nodes = PathBuilderNodes();
     for(int level = 1; level < pathes.size(); level++) {
         new_nodes = PathBuilderNodes();
@@ -97,9 +110,20 @@ PathBuilder::build() {
         for(auto const & n : nodes_) {
             
             pf = PathFollower();
-            pf.setup(pathes[level], n.mst->last_node()->data()->cur_state->end_states()[1],
-                     n.mst->centers());
-            pf.set_option_value("max_pathes", options_.get_int("solutions"));
+            if(level == pathes.size()-1 && end_bp != nullptr) {
+                pf.setup(pathes[level], n.mst->last_node()->data()->cur_state->end_states()[1],
+                         end_bp, n.mst->centers());
+            }
+
+            else {
+                pf.setup(pathes[level], n.mst->last_node()->data()->cur_state->end_states()[1],
+                         n.mst->centers());
+            }
+            int num = options_.get_int("solutions")/10;
+            if(num > 1) { num = 1; }
+            pf.set_option_value("max_pathes", num);
+            
+            
             auto sols = pf.solutions();
             
             for(auto const & sol : sols) {
@@ -132,11 +156,30 @@ PathBuilder::build() {
         
     }
     
+    std::ofstream out2;
+    out2.open("solutions.top");
+    
     int i = 0;
     for(auto const & n : nodes_) {
         n.mst->to_motif_tree()->to_pdb("solution."+std::to_string(i)+".pdb", 1);
+        out2 << n.mst->topology_to_str() << std::endl;
         i += 1;
     }
+    
+    out2.close();
+    
+    
+    auto final_mst = std::make_shared<MotifStateTree>();
+    for(auto const & n : *nodes_[0].mst) {
+        if(n->level() == 0) { continue; }
+        final_mst->add_state(n->data()->cur_state, -1, -1, "", true);
+    }
+
+    std::ofstream out;
+    out.open("mt_out.top");
+    out << final_mst->topology_to_str();
+    out.close();
+    
  
 }
 

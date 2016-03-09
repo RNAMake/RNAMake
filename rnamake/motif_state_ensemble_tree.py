@@ -8,13 +8,6 @@ import motif_state_tree
 import motif_ensemble
 import motif_type
 import resource_manager as rm
-<<<<<<< HEAD
-import transformations as t
-import util
-=======
-import math
-import itertools
->>>>>>> mt_and_pose_fix
 
 
 class MotifStateEnsembleTree(object):
@@ -145,9 +138,6 @@ class MotifStateEnsembleTree(object):
 
 class MotifStateEnsembleTreeEnumerator(object):
     def __init__(self, mtst):
-        self.mtst = mtst
-<<<<<<< HEAD
-=======
         self.mst = self.mtst.to_mst()
 
         ranges = []
@@ -169,10 +159,6 @@ class MotifStateEnsembleTreeEnumerator(object):
                 continue
             else:
                 self.mst.replace_state(i, self.mtst.get_node(i).data.members[c[i]].motif_state)
-
-
-
->>>>>>> mt_and_pose_fix
 
     def record(self, fname="summary.txt"):
         mst = self.mtst.to_mst()

@@ -43,7 +43,7 @@ public:
         search_.set_option_value("accept_score", -10000.1f);
         search_.set_option_value("max_size", 10000);
         search_.set_option_value("max_steps", 10000.0f);
-        search_.set_option_value("verbose", false);
+        search_.set_option_value("verbose", true);
         
         auto beads = mg_->beads();
         auto centers = Points();
@@ -102,11 +102,35 @@ public:
         search_.set_option_value("max_steps", 10000.0f);
         search_.set_option_value("verbose", false);
         
-        auto scorer = std::make_shared<MSS_PathFollow>(path);
+        
+        search_.scorer(std::make_shared<MSS_PathFollow>(path));
         search_.setup(start_state_, start_state_);
-        search_.scorer(scorer);
         search_.beads(centers);
-
+    }
+    
+    void
+    setup(
+        Points const & path,
+        BasepairStateOP const & start,
+        BasepairStateOP const & end,
+        Points const & centers) {
+        
+        path_ = path;
+        start_state_ = start;
+        
+        //set default search values
+        search_.set_option_value("max_node_level", 8);
+        search_.set_option_value("min_node_level", 0);
+        search_.set_option_value("max_solutions", 100000000);
+        search_.set_option_value("accept_score", -10000.1f);
+        search_.set_option_value("max_size", 10000);
+        search_.set_option_value("max_steps", 10000.0f);
+        search_.set_option_value("verbose", false);
+        
+        
+        search_.scorer(std::make_shared<MSS_PathFollow_and_Astar>(path));
+        search_.setup(start_state_, end);
+        search_.beads(centers);
     }
     
     void
