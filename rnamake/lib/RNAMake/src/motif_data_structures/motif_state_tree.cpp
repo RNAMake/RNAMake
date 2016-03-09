@@ -216,13 +216,24 @@ MotifStateTree::replace_state(
         }
         
     }
-    
-    
-    
 }
 
-
-
+String
+MotifStateTree::topology_to_str() {
+    String s;
+    
+    for(auto const & n : tree_) {
+        s += n->data()->ref_state->name() + "," + n->data()->ref_state->end_names()[0] + ",";
+        s += n->data()->ref_state->end_ids()[0] + "," + std::to_string(n->parent_index()) + ",";
+        s += std::to_string(n->parent_end_index()) + " ";
+    }
+    s += "|";
+    for(auto const & c : connections_) {
+        s += c->to_str() + " ";
+    }
+    
+    return s;
+}
 
 
 

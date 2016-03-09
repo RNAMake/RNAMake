@@ -36,6 +36,7 @@ struct PathBuilderNode {
     ss_score(nss_score),
     diversity_score(ndiversity_score) {
         mst->set_option_value("sterics", false);
+        mst->increase_level();
     }
     
     inline
