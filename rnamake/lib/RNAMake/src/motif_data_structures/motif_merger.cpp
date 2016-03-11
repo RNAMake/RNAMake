@@ -287,7 +287,7 @@ MotifMerger::secondary_structure() {
     MotiftoSecondaryStructure parser;
     auto ss = parser.to_secondary_structure(get_structure());
     auto ss_motifs = sstruct::MotifOPs();
-   
+    
     auto r_cur = ResidueOP(nullptr);
     auto current_bp = BasepairOP(nullptr);
     auto ss_bp = sstruct::BasepairOPs();

@@ -157,8 +157,8 @@ public:
     
     void
     add_motif_tree(
-        MotifTreeOP const &,
-        int);
+        MotifTreeOP const & mt,
+        int parent_index = -1);
     
     void
     add_motif_tree(
@@ -179,6 +179,7 @@ public:
         int,
         String const &,
         String const &);
+    
     
     BasepairOP const &
     get_end(int);

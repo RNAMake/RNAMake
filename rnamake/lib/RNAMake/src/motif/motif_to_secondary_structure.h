@@ -21,8 +21,8 @@ public:
     MotiftoSecondaryStructure():
     chains_(ChainOPs()),
     open_chains_(std::queue<ChainOP>()),
-    seen_res_(std::map<ResidueOP, int>()),
-    seen_bp_(std::map<BasepairOP, int>())
+    seen_res_(std::map<Uuid, int, UuidCompare>()),
+    seen_bp_(std::map<Uuid, BasepairOP, UuidCompare>())
     {}
     
 public:
@@ -32,8 +32,8 @@ public:
     reset() {
         chains_ = ChainOPs();
         open_chains_ = std::queue<ChainOP>();
-        seen_res_ = std::map<ResidueOP, int>();
-        seen_bp_ = std::map<BasepairOP, int>();
+        seen_res_ = std::map<Uuid, int, UuidCompare>();
+        seen_bp_ = std::map<Uuid, BasepairOP, UuidCompare>();
     }
 
     sstruct::RNAStructureOP
@@ -54,8 +54,8 @@ private:
 private:
     ChainOPs chains_;
     std::queue<ChainOP> open_chains_;
-    std::map<ResidueOP, int> seen_res_;
-    std::map<BasepairOP, int> seen_bp_;
+    std::map<Uuid, int, UuidCompare> seen_res_;
+    std::map<Uuid, BasepairOP, UuidCompare> seen_bp_;
     
     
 };

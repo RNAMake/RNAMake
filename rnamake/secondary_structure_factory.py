@@ -89,7 +89,6 @@ class MotiftoSecondaryStructure(object):
             for r in c.residues:
                 ss = "."
                 bps = motif.get_basepair(res1=r)
-                is_bp = 0
                 for bp in bps:
                     partner_res = bp.partner(r)
                     passes = 0
