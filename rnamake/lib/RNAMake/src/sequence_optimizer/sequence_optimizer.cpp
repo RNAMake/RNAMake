@@ -18,6 +18,11 @@ SequenceOptimizer::optimize(
     int end_j) {
     
     auto dss = mg->designable_secondary_structure();
+    
+    std::cout << dss->sequence() << std::endl;
+    std::cout << dss->dot_bracket() << std::endl;
+    exit(0);
+    
     auto org_dss = mg->designable_secondary_structure();
     auto node_name = mg->get_node(node_j)->data()->name();
     int count = 0;
@@ -47,12 +52,9 @@ SequenceOptimizer::optimize(
 
         
         mg->replace_helical_sequence(dss);
-        mg->write_pdbs();
-      
         
         mt_ = graph_to_tree(mg, mg->get_node(node_i),
                             mg->get_node(node_j)->data()->ends()[end_j]);
-        
         
         new_node_j = 0;
         for(auto const & n : *mt_) {
@@ -66,6 +68,12 @@ SequenceOptimizer::optimize(
         d2 = mt_->last_node()->data()->ends()[1]->d();
         dist = d1.distance(d2);
 
+        std::cout << dist << " " << r->score << std::endl;
+        std::cout << dss->sequence() << std::endl;
+        std::cout << dss->dot_bracket() << std::endl;
+        mt_->write_pdbs();
+        exit(0);
+        
         if(best > dist) {
             best = dist;
             best_seq = r->sequence;

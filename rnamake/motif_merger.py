@@ -172,7 +172,6 @@ class MotifMerger(object):
             count += 1
         self.rebuild_structure = 1
 
-
     def secondary_structure(self):
         ss = ssf.factory.secondary_structure_from_motif(self.get_structure())
 
