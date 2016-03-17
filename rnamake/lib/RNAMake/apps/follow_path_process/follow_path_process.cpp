@@ -37,42 +37,51 @@ int main(int argc, const char * argv[]) {
     auto base_dir = String("/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/apps/mini_ttr");
     ResourceManager::getInstance().add_motif(base_dir+"/resources/GAAA_tetraloop");
     
+    auto out = std::ofstream();
+    out.open("finished.out");
+    
+    int i = 0;
     auto lines = get_lines_from_file("solutions.top");
-    auto mt = std::make_shared<MotifTree>(lines[0]);
-    auto mg = std::make_shared<MotifGraph>();
-    mg->set_option_value("sterics", false);
-    mg->add_motif_tree(mt);
-    mg->add_connection(3, mg->last_node()->index(), "", "");
-    
-    std::cout << "START!" << std::endl;
-    //std::cout << mg->secondary_structure()->sequence() << std::endl;
-    std::cout << mg->secondary_structure()->dot_bracket() << std::endl;
-    exit(0);
-    
-    mg->replace_ideal_helices();
-    
-    int tetraloop_node = -1, free_end_node = -1;
-    int free_ends = 0;
-    
-    for(auto const & n : *mg) {
-        if(n->data()->name() == "GAAA_tetraloop") {
-            tetraloop_node = n->index();
-            continue;
+    for(auto const & l : lines) {
+        
+        std::cout << i << std::endl;
+        auto mt = std::make_shared<MotifTree>(l);
+        auto mg = std::make_shared<MotifGraph>();
+        mg->set_option_value("sterics", false);
+        mg->add_motif_tree(mt);
+        mg->add_connection(3, mg->last_node()->index(), "", "");
+        mg->replace_ideal_helices();
+        
+        int tetraloop_node = -1, free_end_node = -1;
+        int free_ends = 0;
+        
+        for(auto const & n : *mg) {
+            if(n->data()->name() == "GAAA_tetraloop") {
+                tetraloop_node = n->index();
+                continue;
+            }
+            
+            free_ends = 0;
+            for(auto const & c : n->connections()) {
+                if(c == nullptr) { free_ends++; }
+            }
+            if(free_ends > 0) {
+                free_end_node = n->index();
+            }
+            
         }
         
-        free_ends = 0;
-        for(auto const & c : n->connections()) {
-            if(c == nullptr) { free_ends++; }
+        auto seq_opt = SequenceOptimizer();
+        auto sols = seq_opt.get_optimized_sequences(mg, free_end_node, tetraloop_node, 0, 2);
+        for(auto const & sol : sols) {
+            out << i << " " << sol->close_distance << " " << sol->eternabot_score << " " << sol->sequence << std::endl;
         }
-        if(free_ends > 0) {
-            free_end_node = n->index();
-        }
-        
+        i++;
+
     }
     
+    out.close();
     
-    auto seq_opt = SequenceOptimizer();
-    seq_opt.optimize(mg, free_end_node, tetraloop_node, 0, 2);
 }
 
 

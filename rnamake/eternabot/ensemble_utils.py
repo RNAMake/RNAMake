@@ -42,6 +42,9 @@ class Ensemble:
                 strategy.get_normalization(strategy.default_params_)
                 strategies.append(strategy)
 
+                if weights[i] > 0.0:
+                    print strategy, weights[i]
+
             self.strategies_ = strategies
 
         except IOError:
