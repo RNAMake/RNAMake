@@ -17,7 +17,7 @@ void
 PathBuilder::setup_options() {
     options_.add_option("path", String(""), OptionType::STRING);
     options_.add_option("mg", String(""), OptionType::STRING);
-    options_.add_option("solutions", 100, OptionType::INT);
+    options_.add_option("solutions", 10, OptionType::INT);
     options_.add_option("verbose", true, OptionType::BOOL);
     options_.lock_option_adding();
     update_var_options();
@@ -96,12 +96,13 @@ PathBuilder::build() {
         std::cout << "ROUND 0: SIZE=" << nodes_.size() << " MIN SCORE=" << nodes_[0].path_score;
         std::cout << std::endl;
     }
+    
 
-    auto path = pathes.back();
-    pathes.pop_back();
-    for(auto const & p : path) {
-        pathes.back().push_back(p);
-    }
+    //auto path = pathes.back();
+    //pathes.pop_back();
+    //for(auto const & p : path) {
+    //    pathes.back().push_back(p);
+    //}
     
     auto new_nodes = PathBuilderNodes();
     for(int level = 1; level < pathes.size(); level++) {

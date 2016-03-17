@@ -77,7 +77,7 @@ class MotifStateEnsembleTree(object):
                 #rm.manager.add_motif(motif=m)
                     mse = motif_ensemble.motif_state_to_motif_state_ensemble(m.get_state())
 
-            mse.update_res_uuids(n.data.residues())
+            #mse.update_res_uuids(n.data.residues())
 
             if i == 0:
                 self.add_ensemble(mse)

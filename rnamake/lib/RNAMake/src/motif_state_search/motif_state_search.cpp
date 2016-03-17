@@ -49,7 +49,7 @@ MotifStateSearch::setup(
     BasepairStateOP const & end) {
     
     auto start_n = _start_node(start);
-    start_n->score(100000);
+    start_n->score(1000000000);
     queue_ =  MotifStateSearchNodeQueue();
     test_node_ = std::make_shared<MotifStateSearchNode>(*start_n);
     queue_.push(start_n);

@@ -73,7 +73,7 @@ public:
         search_.set_option_value("accept_score", -10000.1f);
         search_.set_option_value("max_size", 10000);
         search_.set_option_value("max_steps", 10000.0f);
-        search_.set_option_value("verbose", false);
+        search_.set_option_value("verbose", true);
 
         auto scorer = std::make_shared<MSS_PathFollow>(path);
         auto f_path = motif_dirs() + "ref.motif";
@@ -100,7 +100,7 @@ public:
         search_.set_option_value("accept_score", -10000.1f);
         search_.set_option_value("max_size", 10000);
         search_.set_option_value("max_steps", 10000.0f);
-        search_.set_option_value("verbose", false);
+        search_.set_option_value("verbose", true);
         
         
         search_.scorer(std::make_shared<MSS_PathFollow>(path));
