@@ -213,9 +213,6 @@ public:
         
         for(auto const & spos : seen_) {
             count = spos;
-            /*if(count < -15) {
-             count = -15;
-             }*/
             score_+= count;
         }
         
