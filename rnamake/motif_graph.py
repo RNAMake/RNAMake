@@ -133,7 +133,6 @@ class MotifGraph(base.Base):
                 j = self.add_motif(n.data, pi, n.parent_end_index())
             index_hash[n.index] = j
 
-
     def add_connection(self, i, j, i_bp_name=None, j_bp_name=None):
         node_i = self.get_node(i)
         node_j = self.get_node(j)
@@ -475,7 +474,8 @@ class MotifGraph(base.Base):
     def decrease_level(self):
         self.graph.decrease_level()
 
-
+    def to_str(self):
+        pass
 
 
 

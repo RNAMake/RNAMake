@@ -40,8 +40,10 @@ class Strategy(strategy_template.Strategy):
                     penalty += yellow_cnt - self.upper_length_[stack_len]
                 elif(self.lower_length_[stack_len]>yellow_cnt):
                     penalty += self.lower_length_[stack_len] - yellow_cnt
+        print params[0]
         if(count == 0):
             return 100
+
 
         return 100 - params[0] * penalty/len(sequence)
 

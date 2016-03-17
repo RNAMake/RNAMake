@@ -27,7 +27,25 @@ struct SequenceOptimizerResult {
     float score;
 };
 
+struct OptimizedSequence {
+    inline
+    OptimizedSequence(
+        String const & nsequence,
+        float const & nclose_distance,
+        float const & neternabot_score):
+    sequence(nsequence),
+    close_distance(nclose_distance),
+    eternabot_score(neternabot_score)
+    {}
+    
+    String sequence;
+    float close_distance, eternabot_score;
+};
+
 typedef std::shared_ptr<SequenceOptimizerResult> SequenceOptimizerResultOP;
+typedef std::shared_ptr<OptimizedSequence>       OptimizedSequenceOP;
+typedef std::vector<OptimizedSequenceOP>         OptimizedSequenceOPs;
+
 
 class SequenceOptimizer {
 public:
@@ -44,6 +62,16 @@ public:
         int,
         int,
         int);
+    
+    OptimizedSequenceOPs
+    get_optimized_sequences(
+        MotifGraphOP &,
+        int,
+        int,
+        int,
+        int);
+    
+    
     
 private:
     MotifTreeOP mt_;
