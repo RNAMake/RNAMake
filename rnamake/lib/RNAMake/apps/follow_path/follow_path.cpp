@@ -17,7 +17,7 @@ void
 PathBuilder::setup_options() {
     options_.add_option("path", String(""), OptionType::STRING);
     options_.add_option("mg", String(""), OptionType::STRING);
-    options_.add_option("solutions", 10, OptionType::INT);
+    options_.add_option("solutions", 1, OptionType::INT);
     options_.add_option("verbose", true, OptionType::BOOL);
     options_.lock_option_adding();
     update_var_options();
