@@ -34,6 +34,9 @@ public:
     options_(Options("MotifTreeOptions"))    
     { setup_options(); }
     
+    MotifTree(
+        String const &);
+    
     ~MotifTree() {}
     
 public: //iterators

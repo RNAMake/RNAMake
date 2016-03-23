@@ -18,6 +18,7 @@ SequenceOptimizer::optimize(
     int end_j) {
     
     auto dss = mg->designable_secondary_structure();
+    
     auto org_dss = mg->designable_secondary_structure();
     auto node_name = mg->get_node(node_j)->data()->name();
     int count = 0;
@@ -47,12 +48,9 @@ SequenceOptimizer::optimize(
 
         
         mg->replace_helical_sequence(dss);
-        mg->write_pdbs();
-      
         
         mt_ = graph_to_tree(mg, mg->get_node(node_i),
                             mg->get_node(node_j)->data()->ends()[end_j]);
-        
         
         new_node_j = 0;
         for(auto const & n : *mt_) {
@@ -66,12 +64,15 @@ SequenceOptimizer::optimize(
         d2 = mt_->last_node()->data()->ends()[1]->d();
         dist = d1.distance(d2);
 
+        std::cout << dist << " " << r->score << " " << r->sequence << std::endl;
+   
+        
         if(best > dist) {
             best = dist;
             best_seq = r->sequence;
         }
         
-        if(i > 10) {
+        if(i > 100) {
             break;
         }
         
@@ -86,10 +87,72 @@ SequenceOptimizer::optimize(
     
     return std::make_shared<SequenceOptimizerResult>(mt_, best);
 
-    
-    
 }
 
+
+OptimizedSequenceOPs
+SequenceOptimizer::get_optimized_sequences(
+    MotifGraphOP & mg,
+    int node_i,
+    int node_j,
+    int end_i,
+    int end_j) {
+    
+    auto dss = mg->designable_secondary_structure();
+    
+    auto org_dss = mg->designable_secondary_structure();
+    auto node_name = mg->get_node(node_j)->data()->name();
+    int count = 0;
+    for (auto const & n : *mg) {
+        if(n->data()->name() == node_name) { count++; }
+    }
+    assert(count == 1 && "cannot optimize sequence too many nodes of the same name");
+    
+    designer_ = eternabot::SequenceDesigner();
+    designer_.setup();
+    
+    designer_results_ = designer_.design(dss);
+    int i = 0;
+    int new_node_j = 0;
+    Point d1, d2;
+    float dist;
+    
+    auto best_seq = String();
+    auto best = 100000;
+    
+    auto sols = OptimizedSequenceOPs();
+    
+    for(auto const & r : designer_results_) {
+        i++;
+        
+        if(r->sequence.length() < 2) { break; }
+        
+        dss->replace_sequence(r->sequence);
+        
+        
+        mg->replace_helical_sequence(dss);
+        
+        mt_ = graph_to_tree(mg, mg->get_node(node_i),
+                            mg->get_node(node_j)->data()->ends()[end_j]);
+        
+        new_node_j = 0;
+        for(auto const & n : *mt_) {
+            if(n->data()->name() == node_name) {
+                new_node_j = n->index();
+                break;
+            }
+        }
+        
+        d1 = mt_->get_node(new_node_j)->data()->ends()[end_j]->d();
+        d2 = mt_->last_node()->data()->ends()[1]->d();
+        dist = d1.distance(d2);
+
+        sols.push_back(std::make_shared<OptimizedSequence>(r->sequence, dist, r->score));
+        
+    }
+    
+    return sols;
+}
 
 
 

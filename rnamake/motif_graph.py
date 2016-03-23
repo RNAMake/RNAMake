@@ -109,18 +109,29 @@ class MotifGraph(base.Base):
 
         return -1
 
-    def add_motif_tree(self, mt, parent_index, parent_end_name):
-        parent = self.get_node(parent_index)
-        bps = parent.data.get_basepair(name=parent_end_name)
-        if len(bps) == 0:
-            raise ValueError("cannot find parent end in add_motif_tree")
-        pei = parent.data.ends.index(bps[0])
+    def add_motif_tree(self, mt, parent_index=-1, parent_end_name=""):
+        """if parent_index == -1:
+            for n in mt:
+                self.add_motif(n.data)
+            return"""
 
+        if parent_index != -1:
+            parent = self.get_node(parent_index)
+            bps = parent.data.get_basepair(name=parent_end_name)
+            if len(bps) == 0:
+                raise ValueError("cannot find parent end in add_motif_tree")
+            pei = parent.data.ends.index(bps[0])
+        else:
+            pei = -1
+
+        index_hash = {}
         for i, n in enumerate(mt):
             if i == 0:
-                self.add_motif(n.data, parent_index, pei)
+                j = self.add_motif(n.data, parent_index, pei)
             else:
-                self.add_motif(n.data)
+                pi = index_hash[n.parent_index()]
+                j = self.add_motif(n.data, pi, n.parent_end_index())
+            index_hash[n.index] = j
 
     def add_connection(self, i, j, i_bp_name=None, j_bp_name=None):
         node_i = self.get_node(i)
@@ -463,7 +474,8 @@ class MotifGraph(base.Base):
     def decrease_level(self):
         self.graph.decrease_level()
 
-
+    def to_str(self):
+        pass
 
 
 

@@ -41,15 +41,29 @@ public:
         
         float penalty = 0, count = 0;
         int stack_length;
-        float yellow_count = 0;
         for(auto const & helix : features->helices) {
-            if(helix->basepairs().size() < 2 || helix->basepairs().size() > 9) { continue; }
+            float yellow_count = 0;
+            if(helix->basepairs().size() < 2 ) {continue; }
             stack_length = (int)helix->basepairs().size();
             count ++;
             for(auto const & bp : helix->basepairs()) {
                 //is a bp of AU or UA
                 if(sstruct::is_au_pair(bp)) { yellow_count ++; }
             }
+            
+            if(helix->basepairs().size() > 9) {
+                float upper_limit = helix->basepairs().size()/2+1;
+                float lower_limit = 1;
+
+                if     (upper_limit < yellow_count) {
+                    penalty += yellow_count - upper_limit;
+                }
+                else if(lower_limit > yellow_count) {
+                    penalty += lower_limit - yellow_count;
+                }
+                continue;
+            }
+            
             if     (upper_length_[stack_length] < yellow_count) {
                 penalty += yellow_count - upper_length_[stack_length];
             }

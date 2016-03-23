@@ -92,13 +92,12 @@ def str_to_matrix(s):
 
 
 def points_to_pdb_str(points):
-	count=1
-	string = ""
-	for p in points:
-		string += "ATOM {:6d}  P   C   A   1 {:11.3f}{:8.3f}{:8.3f}  1.00 62.18           P\n".format(count,p[0],p[1],p[2])
-		count += 1
-	return string
-
+    count=1
+    string = ""
+    for p in points:
+        string += "ATOM {:6d}  P   C   A   1 {:11.3f}{:8.3f}{:8.3f}  1.00 62.18           P\n".format(count,p[0],p[1],p[2])
+        count += 1
+    return string
 
 def points_to_pdb(filename, points):
 	f = open(filename,"w")

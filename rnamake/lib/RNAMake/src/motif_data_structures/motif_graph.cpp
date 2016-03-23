@@ -212,15 +212,25 @@ MotifGraph::add_motif_tree(
     MotifTreeOP const & mt,
     int parent_index) {
     
-    auto parent = graph_.get_node(parent_index);
-    auto avail_pos = parent->available_children_pos();
-    assert(avail_pos.size() > 0 && "cannot add_motif_tree to this node no free ends");
-    int parent_end_index = avail_pos[0];
-    int i = 0;
+    int parent_end_index = -1;
+    if(parent_index != -1) {
+        auto parent = graph_.get_node(parent_index);
+        auto avail_pos = parent->available_children_pos();
+        assert(avail_pos.size() > 0 && "cannot add_motif_tree to this node no free ends");
+        parent_end_index = avail_pos[0];
+    }
+    
+    int i = 0, j = 0;
+    auto index_hash = std::map<int, int>();
     for(auto const & n : *mt) {
-        auto m = ResourceManager::getInstance().get_motif(n->data()->name(), n->data()->end_ids()[0]);
-        if(i == 0) { add_motif(n->data(), parent_index, parent_end_index); }
-        else       { add_motif(n->data()); }
+        if(i == 0) {
+            j = add_motif(n->data(), parent_index, parent_end_index);
+        }
+        else       {
+            int pi = index_hash[n->parent_index()];
+            j = add_motif(n->data(), pi, n->parent_end_index());
+        }
+        index_hash[n->index()] = j;
         i++;
     }
 }
@@ -261,14 +271,36 @@ MotifGraph::add_connection(
     auto node_i = graph_.get_node(i);
     auto node_j = graph_.get_node(j);
     
-    auto ei = node_i->data()->end_index(i_bp_name);
-    assert(node_i->available_pos(ei) &&
-           "cannot add_connection");
-    
-    auto ej = node_j->data()->end_index(j_bp_name);
-    assert(node_j->available_pos(ej) &&
-           "cannot add_connection");
+    auto name_i = String("");
+    auto name_j = String("");
+    auto ei = -1;
+    auto ej = -1;
 
+    
+    if (i_bp_name != "") {
+        ei = node_i->data()->end_index(i_bp_name);
+        assert(node_i->available_pos(ei) && "cannot add_connection");
+        name_i = i_bp_name;
+    }
+    else {
+        auto node_i_indexes = node_i->available_children_pos();
+        assert(node_i_indexes.size() != 0 && "cannot add_connection no available spots");
+        ei = node_i_indexes[0];
+        name_i = node_i->data()->ends()[ei]->name();
+    }
+    
+    if (j_bp_name != "") {
+        ej = node_j->data()->end_index(j_bp_name);
+        assert(node_j->available_pos(ej) && "cannot add_connection");
+        name_j = j_bp_name;
+    }
+    else {
+        auto node_j_indexes = node_j->available_children_pos();
+        assert(node_j_indexes.size() != 0 && "cannot add_connection no available spots");
+        ej = node_j_indexes[0];
+        name_j = node_j->data()->ends()[ej]->name();
+    }
+    
     graph_.connect(i, j, ei, ej);
     
     merger_.connect_motifs(node_i->data(), node_j->data(),

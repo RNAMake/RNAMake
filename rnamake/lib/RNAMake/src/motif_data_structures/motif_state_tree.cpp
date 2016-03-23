@@ -28,7 +28,8 @@ MotifStateTree::add_state(
     MotifStateOP const & state,
     int parent_index,
     int parent_end_index,
-    String parent_end_name) {
+    String parent_end_name,
+    bool forced) {
     
     auto parent = tree_.last_node();
 
@@ -56,10 +57,11 @@ MotifStateTree::add_state(
         if(p == parent->data()->ref_state->block_end_add()) { continue; }
         auto n_data = std::make_shared<MSTNodeData>(state);
         
-        get_aligned_motif_state(parent->data()->cur_state->end_states()[p],
-                                n_data->cur_state,
-                                n_data->ref_state);
-        
+        if(!forced) {
+            get_aligned_motif_state(parent->data()->cur_state->end_states()[p],
+                                    n_data->cur_state,
+                                    n_data->ref_state);
+        }
         //TODO need to comment this out of occasionally will not allow conversion from mt
         //if(sterics_ && _steric_clash(n_data)) { continue; }
     
@@ -68,6 +70,44 @@ MotifStateTree::add_state(
     }
     
     return -1;
+}
+
+int
+MotifStateTree::add_mst(
+    MotifStateTreeOP const & mst,
+    int parent_index,
+    int parent_end_index,
+    String parent_end_name,
+    bool forced) {
+    
+    int i = -1;
+    int j = 0;
+    auto index_dict = std::map<int, int>();
+    
+    for(auto const & n : *mst) {
+        i++;
+        
+        
+        if(i == 0) {
+            j = add_state(n->data()->ref_state, parent_index, parent_end_index, parent_end_name,
+                          forced);
+        }
+        else {
+            int ind = index_dict[n->parent_index()];
+            int pei = n->parent_end_index();
+            j = add_state(n->data()->ref_state, ind, parent_end_index, "", forced);
+            
+        }
+        
+        index_dict[n->index()] = j;
+        if(j == -1) {
+            throw MotifStateTreeException("could not add motif state tree to this tree");
+        }
+    }
+    
+    return j;
+    
+    
 }
 
 int
@@ -176,13 +216,24 @@ MotifStateTree::replace_state(
         }
         
     }
-    
-    
-    
 }
 
-
-
+String
+MotifStateTree::topology_to_str() {
+    String s;
+    
+    for(auto const & n : tree_) {
+        s += n->data()->ref_state->name() + "," + n->data()->ref_state->end_names()[0] + ",";
+        s += n->data()->ref_state->end_ids()[0] + "," + std::to_string(n->parent_index()) + ",";
+        s += std::to_string(n->parent_end_index()) + " ";
+    }
+    s += "|";
+    for(auto const & c : connections_) {
+        s += c->to_str() + " ";
+    }
+    
+    return s;
+}
 
 
 

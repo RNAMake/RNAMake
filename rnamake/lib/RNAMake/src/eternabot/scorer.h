@@ -29,15 +29,15 @@ public:
     weights_ ( Floats() ) {
         strategies_.push_back(std::make_shared<ABasicTest>());
         strategies_.push_back(std::make_shared<CleanPlotStackCapsandSafeGC>());
+        strategies_.push_back(std::make_shared<DirectionofGCPairsinMultiLoops>());
         strategies_.push_back(std::make_shared<BerexTest>());
         strategies_.push_back(std::make_shared<NumofYellowNucleotidesperLengthofString>());
-        strategies_.push_back(std::make_shared<DirectionofGCPairsinMultiLoops>());
         
-        weights_.push_back(-0.0981965481737);
-        weights_.push_back(0.44654228578);
-        weights_.push_back(0.325776127974);
-        weights_.push_back(0.173103278813);
-        weights_.push_back(0.139425514791);
+        weights_.push_back(0.09281782);
+        weights_.push_back(0.1250677);
+        weights_.push_back(0.2156337);
+        weights_.push_back(0.3661276);
+        weights_.push_back(0.2230357);
         
         mean_ = 84.8005952381;
         stdev_ = 16.4725276237;

@@ -13,6 +13,7 @@
 #include <memory>
 #include <queue>
 #include <algorithm>
+#include <cassert>
 
 //RNAMAke Headers
 #include "base/types.h"
@@ -75,6 +76,17 @@ public:
     void
     remove_node(int pos) { return remove_node(get_node(pos)); }
     
+    inline
+    void
+    increase_level() { level_ += 1; }
+    
+    inline
+    void
+    decrease_level() {
+        level_ -= 1;
+        assert(level_ > -1 && "level has to be positive");
+    }
+    
 public: //getters
     
     inline
@@ -135,6 +147,32 @@ template <typename DataType>
 class TreeStatic : public Tree<DataType> {
 public:
     TreeStatic(): Tree<DataType>() {}
+    
+    
+    TreeStatic(
+        TreeStatic<DataType> const & t) {
+        
+        for(auto const & n : t) {
+            auto n_new = std::make_shared<TreeNodeStatic<DataType>>(n->data(), n->index(),
+                                                                    n->level(), n->children().size());
+            if(n->parent() != nullptr) {
+                auto parent = this->get_node(n->parent_index());
+                parent->add_child(n_new, n->parent_end_index());
+                n_new->parent(parent);
+            }
+            
+            this->nodes_.push_back(n_new);
+            
+        }
+        
+        if(t.last_node_ != nullptr) {
+            this->last_node_ = this->get_node(t.last_node_->index());
+        }
+        
+        this->level_ = t.level_;
+        this->index_ = t.index_;
+        
+    }
     
     ~TreeStatic() {
         for(int i = 0; i < this->nodes_.size(); i++){

@@ -176,6 +176,25 @@ m
 
         return -1
 
+
+    def add_motif_tree(self, mt, parent_index=-1, parent_end_name=""):
+        if parent_index == -1:
+            for n in mt:
+                self.add_motif(n.data)
+            return
+
+        parent = self.get_node(parent_index)
+        bps = parent.data.get_basepair(name=parent_end_name)
+        if len(bps) == 0:
+            raise ValueError("cannot find parent end in add_motif_tree")
+        pei = parent.data.ends.index(bps[0])
+
+        for i, n in enumerate(mt):
+            if i == 0:
+                self.add_motif(n.data, parent_index, pei)
+            else:
+                self.add_motif(n.data)
+
     def replace_motif(self, pos, new_motif):
         node = self.get_node(pos)
         if len(new_motif.ends) != len(node.data.ends):

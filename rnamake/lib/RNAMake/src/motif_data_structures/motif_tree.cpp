@@ -9,6 +9,40 @@
 #include "motif_data_structures/motif_tree.h"
 #include "resources/resource_manager.h"
 
+MotifTree::MotifTree(
+    String const & s):
+tree_(TreeStatic<MotifOP>()),
+merger_(MotifMerger()),
+options_(Options("MotifTreeOptions"))  {
+    setup_options();
+    
+    auto spl = split_str_by_delimiter(s, "|");
+    auto node_spl = split_str_by_delimiter(spl[0], " ");
+    int i = -1;
+    for(auto const & e : node_spl) {
+        i++;
+        auto n_spl = split_str_by_delimiter(e, ",");
+        auto m = ResourceManager::getInstance().get_motif(n_spl[0], n_spl[2], n_spl[1]);
+        if(i == 0) {
+            add_motif(m);
+        }
+        else {
+            add_motif(m, std::stoi(n_spl[3]), std::stoi(n_spl[4]));
+        }
+        
+    }
+    
+    if(spl.size() == 1) { return; }
+    
+    auto connection_spl = split_str_by_delimiter(spl[1], " ");
+    for(auto const & c_str : connection_spl) {
+        auto c_spl = split_str_by_delimiter(c_str, ",");
+        auto mc = std::make_shared<MotifConnection>(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
+                                                    c_spl[2], c_spl[3]);
+        connections_.push_back(mc);
+    }
+}
+
 void
 MotifTree::setup_options() {
     options_.add_option("sterics", true, OptionType::BOOL);

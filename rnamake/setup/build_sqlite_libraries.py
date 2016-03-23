@@ -442,17 +442,47 @@ class BuildSqliteLibraries(object):
             path = settings.RESOURCES_PATH +"/motif_state_ensemble_libraries/"+libname+".db"
             sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
 
+    def build_trimmed_ideal_helix_library(self):
+        for libname in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
+            if libname != "ideal_helices":
+                continue
+            data = []
+            keys = ['data', 'name', 'end_name', 'end_id', 'id']
+
+            mlib = sqlite_library.MotifSqliteLibrary(libname)
+            mlib.load_all()
+            motif_states = []
+            names = []
+            j = 0
+            for i, m in enumerate(mlib.all()):
+                name = m.name
+                spl = name.split(".")
+                if len(spl) < 3:
+                    continue
+                num = int(spl[2])
+                if num < 2:
+                    continue
+                ms = m.get_state()
+                data.append([ms.to_str(), ms.name,
+                             ms.end_names[0], ms.end_ids[0], j])
+                j += 1
+
+
+
+            path = settings.RESOURCES_PATH + "/motif_state_libraries/" + libname + "_min.db"
+            sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
+
 #setup_start_motif()
 builder = BuildSqliteLibraries()
 
-builder.build_ideal_helices()
-builder.build_basic_libraries()
-builder.build_helix_ensembles()
+#builder.build_ideal_helices()
+#builder.build_basic_libraries()
+#builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
-builder.build_unique_twoway_library()
-builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
-
+#builder.build_unique_twoway_library()
+#builder.build_motif_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
+builder.build_trimmed_ideal_helix_library()
 
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
 #m = mlib.get("HELIX.IDEAL")

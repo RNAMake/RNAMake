@@ -43,6 +43,7 @@ class Strategy(strategy_template.Strategy):
         if(count == 0):
             return 100
 
+
         return 100 - params[0] * penalty/len(sequence)
 
     def patch(self, design, params):
