@@ -48,7 +48,7 @@ class MotifStateTreeUnittest(unittest.TestCase):
         #print mt.last_node().data.ends[0].d()
         #print mst.last_node().data.cur_state.end_states[0].d
 
-    def test_res_ids(self):
+    def _test_res_ids(self):
         builder = build.BuildMotifTree()
         mt = builder.build(3)
         mst = motif_state_tree.MotifStateTree(mt)

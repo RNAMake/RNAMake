@@ -94,7 +94,11 @@ class MotifTreeUnittest(unittest.TestCase):
         mt.add_motif(m)
         mt.add_motif(m)
         ss = mt.secondary_structure()
-        print ss
+        if ss.sequence() != "GGGGGGG&CCCCCCC":
+            self.fail("did not get correct sequence")
+
+        if ss.dot_bracket() != "(((((((&)))))))":
+            self.fail("did not get correct dot bracket")
 
     def test_complex(self):
         rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
@@ -149,7 +153,7 @@ class MotifTreeUnittest(unittest.TestCase):
             self.fail("did not copy the right number of nodes")
 
         mt.get_node(0).data.name = "test"
-        print mt_copy.node(0)
+        #print mt_copy.get_node(0)
 
 def main():
     unittest.main()
