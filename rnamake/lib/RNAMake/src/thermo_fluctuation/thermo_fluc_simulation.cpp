@@ -88,10 +88,11 @@ ThermoFlucSimulation::run() {
         score_ = scorer_->score(end_state_1_, end_state_2_);
         if(score_ < cutoff_) {
             /*try {
-                sampler_.mst()->to_motif_tree()->to_pdb("test." + std::to_string(count) + ".pdb");
+                sampler_.mst()->to_motif_tree()->to_pdb("test.pdb");
             }
             catch(...) { }*/
             count += 1;
+            //exit(0);
         }
         
         steps++;

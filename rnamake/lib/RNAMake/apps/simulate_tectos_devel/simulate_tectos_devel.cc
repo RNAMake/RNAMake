@@ -14,6 +14,8 @@
 #include "thermo_fluctuation/thermo_fluc_simulation_devel.h"
 #include "simulate_tectos_devel.h"
 
+
+
 Options
 parse_command_line(
     int argc,
@@ -90,10 +92,10 @@ SimulateTectos::SimulateTectos(
     }
     
     if (opts.option<int>("pdbs")) {
-        mset->to_mst()->write_pdbs();
+        auto mst = mset->to_mst();
+        mst->write_pdbs();
         exit(0);
     }
-    
     if(opts.option<int>("static")) {
         std::cout << tfs.static_run() << std::endl;
         exit(0);
@@ -116,28 +118,45 @@ SimulateTectos::get_mset_old(
     mt->option("sterics", 0);
     mt->add_motif(ResourceManager::getInstance().get_motif("GC=GC"));
     mt->add_motif(ResourceManager::getInstance().get_motif("GGAA_tetraloop", "", "A14-A15"));
-    auto flow_motif_names = get_motifs_from_seq_and_ss(fseq, fss);
-    auto chip_motif_names = get_motifs_from_seq_and_ss(cseq, css);
-    mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_names[1]),
+    auto flow_motif_infos = get_motifs_from_seq_and_ss(fseq, fss);
+    auto chip_motif_infos = get_motifs_from_seq_and_ss(cseq, css);
+    mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[1].name),
                   -1, -1, "A7-A22");
-    for(int i = 2; i < flow_motif_names.size(); i++) {
-        mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_names[i]));
+    
+    for(int i = 2; i < flow_motif_infos.size(); i++) {
+        if(flow_motif_infos[i].end_id.length() == 0) {
+            mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[i].name));
+        }
+        else{
+            mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[i].name,
+                                                                   flow_motif_infos[i].end_id,
+                                                                   flow_motif_infos[i].end_name));
+   
+        }
     }
     mt->add_motif(ResourceManager::getInstance().get_motif("GAAA_tetraloop", "", "A149-A154"));
-    mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_names[1]),
+    mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[1].name),
                   -1, -1, "A222-A251");
     
-    for(int i = 2; i < chip_motif_names.size(); i++) {
-        mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_names[i]));
+    for(int i = 2; i < chip_motif_infos.size(); i++) {
+        if(chip_motif_infos[i].end_id.length() == 0) {
+            mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[i].name));
+        }
+        else{
+            mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[i].name,
+                                                                   chip_motif_infos[i].end_id,
+                                                                   chip_motif_infos[i].end_name));
+            
+        }
     }
-    
+
     MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
     mset->setup_from_mt(mt);
 
     return mset;
 }
 
-Strings
+MotifInfos
 SimulateTectos::get_motifs_from_seq_and_ss(
     String const & seq,
     String const & ss) {
@@ -162,7 +181,8 @@ SimulateTectos::get_motifs_from_seq_and_ss(
         current = current->children()[0];
     }
 
-    Strings motif_names;
+    auto motif_infos = MotifInfos();
+    
     String motif_name, motif_name_rna;
     String seq1, seq2;
     for(int i = 1; i < required_nodes.size(); i++) {
@@ -190,13 +210,12 @@ SimulateTectos::get_motifs_from_seq_and_ss(
             ss2 += "R";
             String end_id = seq1 + "_" + ss1 + "_" + seq2 + "_" + ss2;
             auto m = ResourceManager::getInstance().get_motif("", end_id);
-            motif_names.push_back(m->name());
+            motif_infos.push_back(MotifInfo{m->name(), m->end_ids()[0], m->ends()[0]->name()});
             i += 1;
             continue;
             
             //throw std::runtime_error("old method does not have non helical motifs implemented yet!!!!!");
         }
-
         
         seq1 = required_nodes[i-1]->data()->sequence();
         seq2 = required_nodes[i]->data()->sequence();
@@ -209,11 +228,11 @@ SimulateTectos::get_motifs_from_seq_and_ss(
             if(e == 'T' ) { motif_name_rna += 'U'; }
             else          { motif_name_rna += e;   }
         }
-        motif_names.push_back(motif_name_rna);
+        motif_infos.push_back(MotifInfo{motif_name_rna, "", ""});
         
     }
     
-    return motif_names;
+    return motif_infos;
 }
 
 

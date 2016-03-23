@@ -17,6 +17,14 @@
 #include "motif_data_structures/motif_state_ensemble_tree.h"
 
 
+struct MotifInfo {
+    String name, end_id, end_name;
+};
+
+typedef std::vector<MotifInfo> MotifInfos;
+
+
+
 class SimulateTectos {
 public:
     SimulateTectos(
@@ -37,7 +45,7 @@ private:
         String const &,
         String const &);
     
-    Strings
+    MotifInfos
     get_motifs_from_seq_and_ss(
         String const &,
         String const &);
