@@ -34,6 +34,11 @@
 			<key>orderHint</key>
 			<integer>6</integer>
 		</dict>
+		<key>follow_path_process.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>16</integer>
+		</dict>
 		<key>mini_ttr.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -268,6 +273,11 @@
 			<true/>
 		</dict>
 		<key>1C8FA10D1AD1A2E20001B29C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C9E88391C9208130080956A</key>
 		<dict>
 			<key>primary</key>
 			<true/>

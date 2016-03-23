@@ -43,30 +43,30 @@ MotiftoSecondaryStructure::to_secondary_structure(
                 partner_r = bp->partner(r);
                 if(passes) {
                     saved_bp = bp;
-                    if     (seen_bp_.find(bp) == seen_bp_.end() &&
-                            seen_res_.find(r) == seen_res_.end() &&
-                            seen_res_.find(partner_r) == seen_res_.end()) {
-                        seen_res_[r] = 1;
+                    if     (seen_bp_.find(bp->uuid()) == seen_bp_.end() &&
+                            seen_res_.find(r->uuid()) == seen_res_.end() &&
+                            seen_res_.find(partner_r->uuid()) == seen_res_.end()) {
+                        seen_res_[r->uuid()] = 1;
                         ss = "(";
                     }
-                    else if(seen_res_.find(partner_r) != seen_res_.end()) {
-                        if(seen_res_[partner_r] > 1) {
+                    else if(seen_res_.find(partner_r->uuid()) != seen_res_.end()) {
+                        if(seen_res_[partner_r->uuid()] > 1) {
                             ss = ".";
                         }
                         else {
                             ss = ")";
-                            seen_res_[r] = 1;
-                            seen_res_[partner_r] += 1;
+                            seen_res_[r->uuid()] = 1;
+                            seen_res_[partner_r->uuid()] += 1;
                             break;
                         }
                     }
                 }
-                else if(seen_res_.find(r) == seen_res_.end() ) {
+                else if(seen_res_.find(r->uuid()) == seen_res_.end() ) {
                     ss = ".";
                 }
             }
             
-            if(saved_bp != nullptr) { seen_bp_[saved_bp] = 1; }
+            if(saved_bp != nullptr) { seen_bp_[saved_bp->uuid()] = saved_bp; }
             ss_res.push_back(std::make_shared<sstruct::Residue>(r->name(), ss, r->num(),
                                                                 r->chain_id(), r->uuid(),
                                                                 r->i_code()));
@@ -99,7 +99,7 @@ MotiftoSecondaryStructure::_get_next_chain(
         for(auto const & r : c->residues()) {
             bps = motif->get_basepair(r->uuid());
             for(auto const & bp : bps) {
-                if(seen_bp_.find(bp) != seen_bp_.end()) {
+                if(seen_bp_.find(bp->uuid()) != seen_bp_.end()) {
                     score += 1;
                 }
             }
@@ -115,7 +115,7 @@ MotiftoSecondaryStructure::_get_next_chain(
         for(auto const & r : c->residues()) {
             bps = motif->get_basepair(r->uuid());
             for(auto const & bp : bps) {
-                if(seen_bp_.find(bp) != seen_bp_.end()) {
+                if(seen_bp_.find(bp->uuid()) != seen_bp_.end()) {
                     score += 1;
                 }
             }
@@ -134,7 +134,7 @@ MotiftoSecondaryStructure::_get_next_chain(
         for(auto const & r : c->residues()) {
             bps = motif->get_basepair(r->uuid());
             for(auto const & bp : bps) {
-                if(seen_bp_.find(bp) != seen_bp_.end()) {
+                if(seen_bp_.find(bp->uuid()) != seen_bp_.end()) {
                     pos = i;
                     break;
                 }
@@ -157,7 +157,7 @@ MotiftoSecondaryStructure::_setup_basepairs_and_ends(
     
     sstruct::BasepairOPs ss_bps, ss_ends;
     for(auto const & kv : seen_bp_) {
-        auto bp = kv.first;
+        auto bp = kv.second;
         auto res1 = struc->get_residue(bp->res1()->uuid());
         auto res2 = struc->get_residue(bp->res2()->uuid());
         ss_bps.push_back(std::make_shared<sstruct::Basepair>(res1, res2, bp->uuid()));

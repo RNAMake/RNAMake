@@ -85,7 +85,10 @@ public:
     
     inline
     void
-    decrease_level() { level_ -= 1; }
+    decrease_level() {
+        level_ -= 1;
+        assert(level_ > -1 && "level has to be positive");
+    }
     
     
 public: //getters

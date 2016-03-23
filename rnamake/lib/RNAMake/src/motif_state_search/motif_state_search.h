@@ -54,6 +54,9 @@ public:
     int
     finished();
     
+    void
+    reset();
+    
 public: //option wrappers
     
     inline
@@ -75,7 +78,6 @@ public: //option wrappers
     inline
     bool
     get_bool_option(String const & name) { return options_.get_bool(name); }
-    
     
     inline
     bool

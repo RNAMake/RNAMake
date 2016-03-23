@@ -19,7 +19,10 @@
 #include "data_structure/tree/tree_node.h"
 #include "motif/motif_state.h"
 #include "motif/motif_state_aligner.h"
+#include "resources/resource_manager.h"
 #include "motif_data_structures/motif_tree.h"
+#include "motif_data_structures/motif_state_tree.fwd.h"
+#include "motif_data_structures/motif_connection.h"
 
 class MotifStateTreeException : public std::runtime_error {
 public:
@@ -38,6 +41,13 @@ struct MSTNodeData {
     {}
     
     inline
+    MSTNodeData(
+        MSTNodeData const & ndata):
+    ref_state(std::make_shared<MotifState>(*ndata.ref_state)),
+    cur_state(std::make_shared<MotifState>(*ndata.cur_state))
+    {}
+    
+    inline
     BasepairStateOP const &
     get_end_state(
         String const & name) {
@@ -48,7 +58,6 @@ struct MSTNodeData {
     
 };
 
-typedef std::shared_ptr<MSTNodeData> MSTNodeDataOP;
 typedef TreeNodeOP<MSTNodeDataOP> MotifStateTreeNodeOP;
 
 class MotifStateTree {
@@ -61,6 +70,51 @@ public:
         options_ = Options("MotifTreeStateOptions");
         setup_options();
     }
+    
+    MotifStateTree(
+        MotifTreeOP const & mt) {
+        
+        tree_ = TreeStatic<MSTNodeDataOP>();
+        aligner_ = MotifStateAligner();
+        queue_ = std::queue<MotifStateTreeNodeOP>();
+        options_ = Options("MotifTreeStateOptions");
+        setup_options();
+        
+        int i = -1;
+        for(auto const & n : *mt) {
+            i++;
+            auto ms = ResourceManager::getInstance().get_state(n->data()->name(),
+                                                               n->data()->end_ids()[0],
+                                                               n->data()->ends()[0]->name());
+            
+            if(i == 0) {
+                add_state(ms);
+            }
+            
+            else {
+                int j = add_state(ms, n->parent_index(), n->parent_end_index());
+                if(j == -1) {
+                    throw MotifStateTreeException("could not convert motif tree to motif state tree");
+                }
+            }
+            
+        }
+        
+    }
+    
+    MotifStateTree(
+        MotifStateTree const & mst):
+    options_(Options("MotifStateTreeOptions")),
+    tree_(TreeStatic<MSTNodeDataOP>(mst.tree_)) {
+        
+        for(auto const & n : mst) {
+            tree_.get_node(n->index())->data() = std::make_shared<MSTNodeData>(*n->data());
+        }
+        
+        options_ = Options(mst.options_);
+        update_var_options();
+    }
+    
     
     ~MotifStateTree() {}
     
@@ -82,7 +136,16 @@ public:
         MotifStateOP const & state,
         int parent_index=-1,
         int parent_end_index=-1,
-        String parent_end_name="");
+        String parent_end_name="",
+        bool forced=false);
+    
+    int
+    add_mst(
+        MotifStateTreeOP const & mst,
+        int parent_index=-1,
+        int parent_end_index=-1,
+        String parent_end_name="",
+        bool forced=false);
 
     int
     setup_from_mt(
@@ -95,6 +158,21 @@ public:
     replace_state(
         int i, 
         MotifStateOP const &);
+    
+    inline
+    Points
+    centers() {
+        auto centers = Points();
+        for(auto const & n : tree_) {
+            for(auto const & b : n->data()->cur_state->beads()) {
+                centers.push_back(b);
+            }
+        }
+        return centers;
+    }
+    
+    String
+    topology_to_str();
     
 public: //motif tree wrappers
     
@@ -116,6 +194,15 @@ public: //tree wrapers
         int i) {
         return tree_.get_node(i);
     }
+    
+    inline
+    void
+    increase_level() { tree_.increase_level(); }
+    
+    inline
+    void
+    decrease_level() { tree_.decrease_level(); }
+    
     
 public: //option wrappers
     inline
@@ -177,12 +264,12 @@ private:
     TreeStatic<MSTNodeDataOP> tree_;
     std::queue<MotifStateTreeNodeOP> queue_;
     MotifStateAligner aligner_;
+    MotifConnectionOPs connections_;
     Options options_;
     int sterics_;
     float clash_radius_;
     
 };
 
-typedef std::shared_ptr<MotifStateTree> MotifStateTreeOP;
 
 #endif /* defined(__RNAMake__motif_state_tree__) */

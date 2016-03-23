@@ -98,6 +98,12 @@ protected:
     update_var_options();
     
 private:
+    bool
+    _row_of_gc_bps(
+        sstruct::ResidueOP const &,
+        sstruct::ResidueOPs const &);
+
+private:
     Scorer scorer_;
     SequenceDesignerResultOPs results_;
     sstruct::BasepairOPs designable_bps_;
