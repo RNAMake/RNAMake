@@ -4,12 +4,8 @@ import rnamake.motif_state_ensemble_tree as motif_state_ensemble_tree
 import rnamake.resource_manager as rm
 import rnamake.motif_tree as motif_tree
 import rnamake.motif_tree_topology as motif_tree_topology
-<<<<<<< HEAD
 from rnamake import sqlite_library
-=======
 from rnamake import motif_graph, motif_topology
->>>>>>> mt_and_pose_fix
-import build
 
 import pandas as pd
 import numpy as np
@@ -70,15 +66,14 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt2)
 
-<<<<<<< HEAD
-    def test_enumerator(self):
+    def _test_enumerator(self):
         lib = sqlite_library.MotifStateEnsembleSqliteLibrary("all_bp_steps")
         mtst = motif_state_ensemble_tree.MotifStateEnsembleTree()
         mtst.add_ensemble(lib.get(name="GG_LL_CC_RR"))
         mtst.add_ensemble(lib.get(name="GG_LL_CC_RR"))
         enumerator = motif_state_ensemble_tree.MotifStateEnsembleTreeEnumerator(mtst)
         enumerator.record()
-=======
+
     def test_setup_from_mt_4(self):
         mg = motif_graph.MotifGraph()
         mg.add_motif(m_name="HELIX.IDEAL.20")
@@ -90,9 +85,6 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         #for r in mt.residues():
         #    print mst.get_residue(r.uuid)
 
-
-
->>>>>>> mt_and_pose_fix
 
 
 def main():

@@ -84,7 +84,7 @@ class MotifStateSearch(base.Base):
             #print current.score
             if current.score < best:
                 best = current.score
-                print current.score, current.level
+                #print current.score, current.level
 
 
             if score < accept_score:

@@ -8,13 +8,8 @@ import motif_state_tree
 import motif_ensemble
 import motif_type
 import resource_manager as rm
-<<<<<<< HEAD
 import transformations as t
 import util
-=======
-import math
-import itertools
->>>>>>> mt_and_pose_fix
 
 
 class MotifStateEnsembleTree(object):
@@ -84,7 +79,7 @@ class MotifStateEnsembleTree(object):
                 #rm.manager.add_motif(motif=m)
                     mse = motif_ensemble.motif_state_to_motif_state_ensemble(m.get_state())
 
-            mse.update_res_uuids(n.data.residues())
+            #mse.update_res_uuids(n.data.residues())
 
             if i == 0:
                 self.add_ensemble(mse)
@@ -146,8 +141,6 @@ class MotifStateEnsembleTree(object):
 class MotifStateEnsembleTreeEnumerator(object):
     def __init__(self, mtst):
         self.mtst = mtst
-<<<<<<< HEAD
-=======
         self.mst = self.mtst.to_mst()
 
         ranges = []
@@ -170,50 +163,4 @@ class MotifStateEnsembleTreeEnumerator(object):
             else:
                 self.mst.replace_state(i, self.mtst.get_node(i).data.members[c[i]].motif_state)
 
-
-
->>>>>>> mt_and_pose_fix
-
-    def record(self, fname="summary.txt"):
-        mst = self.mtst.to_mst()
-
-        ranges = []
-        for n in self.mtst:
-            ranges.append(range(0, len(n.data.members)))
-
-
-        df = pd.DataFrame(columns="alpha,beta,gamma,dist,rot_dist".split(","))
-
-        combos = itertools.product(*ranges)
-        last_combo = None
-        j = 0
-        org = [0,0,0]
-        I = np.eye(3)
-        for c in combos:
-            if last_combo == None:
-                last_combo = c
-
-            for i in range (0, len(c)):
-                if c[i] == last_combo[i]:
-                    continue
-                else:
-                    mst.replace_state(i, self.mtst.get_node(i).data.members[c[i]].motif_state)
-
-            d = mst.last_node().data.cur_state.end_states[1].d
-            r = mst.last_node().data.cur_state.end_states[1].r
-            euler = t.euler_from_matrix(r)
-            dist = util.distance(d, org)
-
-            rot_dist =util.matrix_distance(I, r)
-
-
-            df.loc[j] = [euler[0]*180/math.pi,euler[1]*180/math.pi,euler[2]*180/math.pi,dist, rot_dist]
-
-            last_combo = c
-            j += 1
-            if j % 1000 == 0:
-                print j
-
-
-        df.to_csv("test.csv")
 

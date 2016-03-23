@@ -53,7 +53,7 @@ class MotifStateTree(base.Base):
         for i, n in enumerate(mt.tree.nodes):
             ms = rm.manager.get_state(name=n.data.name, end_id=n.data.end_ids[0],
                                       end_name=n.data.ends[0].name())
-            ms.update_res_uuids(n.data.residues())
+            #ms.update_res_uuids(n.data.residues())
 
             if i == 0:
                 self.add_state(ms)
@@ -122,24 +122,31 @@ class MotifStateTree(base.Base):
         node_i_indexes = []
         node_j_indexes = []
         if i_bp_name != "":
-            ei = node_i.data.get_end_index(i_bp_name)
+            end_i = node_i.data.cur_state.get_end_state(i_bp_name)
+            ei = node_i.data.cur_state.end_states.index(end_i)
             if not node_i.available_pos(ei):
                 raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
                                  "using bp: " + i_bp_name + "as its not available")
             node_i_indexes.append(ei)
+            name_i = i_bp_name
         else:
             node_i_indexes = node_i.available_children_pos()
             node_i_indexes.remove(0)
+            name_i = node_j.data.cur_state.end_names[node_j_indexes[0]]
 
         if j_bp_name != "":
-            ei = node_j.data.get_end_index(j_bp_name)
+            end_j = node_j.data.cur_state.get_end_state(j_bp_name)
+            ei = node_j.data.cur_state.end_states.index(end_j)
             if not node_j.available_pos(ei):
                 raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
                                  "using bp: " + j_bp_name + "as its not available")
             node_j_indexes.append(ei)
+            name_j = j_bp_name
+
         else:
             node_j_indexes = node_j.available_children_pos()
             node_j_indexes.remove(0)
+            name_j = node_j.data.cur_state.end_names[node_j_indexes[0]]
 
         if len(node_i_indexes) > 1 or len(node_j_indexes) > 1:
             raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
