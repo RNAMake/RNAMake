@@ -73,21 +73,22 @@ class ThermoFlucSampler(base.Base):
 
 class ThermoFlucRelax(base.Base):
     def __init__(self):
-        self.sampler = ThermoFlucSampler(temperature=1000.0)
+        self.sampler = ThermoFlucSampler(temperature=298.0)
         self.max_steps = 10000
         kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
-        self.kBT = kB * 100
+        self.kBT = kB * 10
 
     def run(self, mset, ni_1, ni_2, ei_1, ei_2):
         self.sampler.setup(mset)
         steps = 0
+        scorer = FrameScorer()
 
         end_state_1 = self.sampler.mst.get_node(ni_1).data.cur_state.end_states[ei_1]
         end_state_2 = self.sampler.mst.get_node(ni_2).data.cur_state.end_states[ei_2]
-        cur_diff = end_state_1.diff(end_state_2)
+        cur_diff = scorer.score(end_state_1, end_state_2)
         new_diff = 0
         self.best = self.sampler.mst.copy()
-        best_diff = 0
+        best_diff = cur_diff
 
         #print len(self.sampler.mst)
         #self.sampler.mst.add_connection(0, 16, "A149-A154")
@@ -116,16 +117,15 @@ class ThermoFlucRelax(base.Base):
 
             end_state_1 = self.sampler.mst.get_node(ni_1).data.cur_state.end_states[ei_1]
             end_state_2 = self.sampler.mst.get_node(ni_2).data.cur_state.end_states[ei_2]
-            new_diff = end_state_1.diff(end_state_2)
+            new_diff = scorer.score(end_state_1, end_state_2)
 
-            #if steps % 10 == 0:
-            #    print cur_diff, new_diff, best_diff, steps
-
-            if new_diff > best_diff:
+            if steps % 10 == 0:
+                print cur_diff, new_diff, best_diff, steps
+            if new_diff < best_diff:
                 best_diff = new_diff
                 self.best = self.sampler.mst.copy()
 
-            if new_diff > cur_diff:
+            if new_diff < cur_diff:
                 cur_diff = new_diff
                 continue
 
