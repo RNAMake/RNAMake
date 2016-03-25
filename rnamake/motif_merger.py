@@ -255,7 +255,7 @@ class MotifMerger(object):
             self._connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1)
 
         elif auxiliary_nodes[0] == auxiliary_nodes[1]:
-            print "did this happen check to make sure it worked!!!"
+            #print "did this happen check to make sure it worked!!!"
             self._connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0)
             self._connect_chains(dominant_nodes[0], auxiliary_nodes[0], 0, 1)
 

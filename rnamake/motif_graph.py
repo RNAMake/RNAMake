@@ -22,6 +22,9 @@ def motif_graph_from_topology(s):
         elif rm.manager.motif_exists(name=sspl[0], end_id=sspl[2]):
             m = rm.manager.get_motif(name=sspl[0], end_id=sspl[2])
             print "warning: cannot find exact motif"
+        elif rm.manager.motif_exists(name=sspl[0]):
+            m = rm.manager.get_motif(name=sspl[0])
+            print "warning: cannot find exact motif"
         else:
             print sspl
             raise ValueError("cannot find motif")
@@ -126,11 +129,17 @@ class MotifGraph(base.Base):
 
         index_hash = {}
         for i, n in enumerate(mt):
+            m = rm.manager.get_motif(name=n.data.name, end_name=n.data.ends[0].name())
             if i == 0:
-                j = self.add_motif(n.data, parent_index, pei)
+                j = self.add_motif(m, parent_index, pei)
             else:
                 pi = index_hash[n.parent_index()]
-                j = self.add_motif(n.data, pi, n.parent_end_index())
+                j = self.add_motif(m, pi, n.parent_end_index())
+                if j == -1:
+                    self.write_pdbs()
+                    print m.name, self.option('sterics')
+                    raise ValueError("cannot add_motif_tree")
+
             index_hash[n.index] = j
 
     def add_connection(self, i, j, i_bp_name=None, j_bp_name=None):
@@ -295,6 +304,8 @@ class MotifGraph(base.Base):
             other = None
             if n.connections[1] is not None:
                 other = n.connections[1].partner(n.index)
+                if n.connections[1].end_index(other.index) != 0:
+                    other = None
 
             if parent is not None:
                 m_added = motif.get_aligned_motif(parent.data.ends[parent_end_index],
@@ -389,7 +400,7 @@ class MotifGraph(base.Base):
             for n in self.graph.nodes:
                 if n.data.name == m_name:
                     nodes.append(n)
-            if len(nodes) > 0:
+            if len(nodes) > 1:
                 raise ValueError("cannot get end, too many motifs match name given "
                                  + m_name)
             n = nodes[0]
@@ -477,7 +488,11 @@ class MotifGraph(base.Base):
     def to_str(self):
         pass
 
-
+    def get_node_num(self, m_name):
+        for n in self.graph.nodes:
+            if n.data.name == m_name:
+                return n.index
+        return -1
 
 
 

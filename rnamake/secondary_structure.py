@@ -672,4 +672,3 @@ def assign_end_id_new(ss, end):
         if i != len(ss_chains)-1:
             ss_id += "_"
     return ss_id
-
