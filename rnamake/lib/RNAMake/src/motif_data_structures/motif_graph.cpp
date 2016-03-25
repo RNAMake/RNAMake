@@ -37,6 +37,7 @@ sterics_(0) {
         i++;
     }
     
+    setup_options();
     if(spl.size() == 1) { return; }
     
     auto connection_spl = split_str_by_delimiter(spl[1], "|");
@@ -44,7 +45,6 @@ sterics_(0) {
         sspl = split_str_by_delimiter(c_spl, " ");
         add_connection(std::stoi(sspl[0]), std::stoi(sspl[1]), sspl[2], sspl[3]);
     }
-
 }
 
 

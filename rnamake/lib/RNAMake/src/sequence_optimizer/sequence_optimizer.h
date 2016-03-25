@@ -65,11 +65,11 @@ public:
     
     OptimizedSequenceOPs
     get_optimized_sequences(
-        MotifGraphOP &,
-        int,
-        int,
-        int,
-        int);
+        MotifGraphOP & mg,
+        int node_i,
+        int node_j,
+        int end_i,
+        int end_j);
     
     
     

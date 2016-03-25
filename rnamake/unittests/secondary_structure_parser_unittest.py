@@ -41,7 +41,7 @@ class SecondaryStructureParserUnittest(unittest.TestCase):
         ss  = "((+))"
 
         g = parser.parse(seq, ss)
-        print g
+        #print g
 
         #add_new_testcase(seq, ss, g)
 

@@ -4,3 +4,4 @@ exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp
 eternabot_app ../../apps/eternabot/eternabot.cpp
 follow_path ../../apps/follow_path/follow_path.cpp
 follow_path_process ../../apps/follow_path_process/follow_path_process.cpp
+path_builder ../../apps/path_builder/path_builder.cpp

@@ -74,6 +74,11 @@
 			<key>orderHint</key>
 			<integer>8</integer>
 		</dict>
+		<key>path_builder.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>17</integer>
+		</dict>
 		<key>secondary_structure_tree.unittest.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -103,6 +108,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>1C147FF11AF02B3F00F01A6D</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1C1527F51CA36FDA00002CF4</key>
 		<dict>
 			<key>primary</key>
 			<true/>
