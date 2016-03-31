@@ -91,13 +91,19 @@ ThermoFlucSimulationDevel::run() {
     int r = 0;
     int count = 0;
     int clash = 0;
-    Ints check_nodes = { 22, 21 };
-    Ints check_nodes_2 = { 1 };
+    
+    if(check_nodes_.size() == 0 && check_nodes_2_.size() == 0) {
+        check_nodes_ = { 22, 21 };
+        check_nodes_2_ = { 1 };
+    }
     
     //fixes if length of tecto changes, need to come up with better system!
-    check_nodes[0] = sampler_.mst()->last_node()->index();
-    check_nodes[1] = sampler_.mst()->last_node()->index()-1;
     
+    if(check_nodes_.size() == 2) {
+        check_nodes_[0] = sampler_.mst()->last_node()->index();
+        check_nodes_[1] = sampler_.mst()->last_node()->index()-1;
+    }
+        
     std::ofstream out, out_state, out_all;
     if(record_) {
         out.open(record_file_);
@@ -148,14 +154,15 @@ ThermoFlucSimulationDevel::run() {
         
         out_all << "cutoff" << std::endl;
     }
-    
+
+    int ncount = 0;
     while (steps < steps_) {
         r = sampler_.next();
         //if(r == 0) { continue; }
         
         clash = 0;
-        for(auto const & i : check_nodes) {
-            for(auto const & j : check_nodes_2) {
+        for(auto const & i : check_nodes_) {
+            for(auto const & j : check_nodes_2_) {
                 for(auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
                     for(auto const & b1 : sampler_.mst()->get_node(j)->data()->cur_state->beads()) {
                         if(b1.distance(b2) < steric_radius_) { clash = 1; }

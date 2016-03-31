@@ -152,7 +152,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         for i, mem in enumerate(me.members):
             mem.motif.to_pdb("motif."+str(i)+".pdb")
-            print i, mem.energy
+            print i, mem.
 
     def _test_bp_steps_2(self):
         mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
