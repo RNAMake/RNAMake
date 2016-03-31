@@ -46,7 +46,9 @@ parse_command_line(
     cl_opts.add_option("pdbs", "", INT_TYPE, "0", false);
     cl_opts.add_option("ensembles", "", INT_TYPE, "0", false);
     cl_opts.add_option("extra_mse", "", STRING_TYPE, "", false);
-    
+    cl_opts.add_option("full_seq", "", INT_TYPE, "0", false);
+    cl_opts.add_option("reverse", "", INT_TYPE, "0", false);
+
     return cl_opts.parse_command_line(argc, argv);
     
 }
@@ -59,12 +61,43 @@ SimulateTectos::SimulateTectos(
                                             opts.option<String>("extra_mse"));
     }
     
-    auto mset = get_mset_old(opts.option<String>("fseq"),
-                             opts.option<String>("fss"),
-                             opts.option<String>("cseq"),
-                             opts.option<String>("css"));
+    auto mset = std::make_shared<MotifStateEnsembleTree>();
     ThermoFlucSimulationDevel tfs;
-    tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
+    
+    if(opts.option<int>("full_seq")) {
+        mset = get_mset_old_full_seq(
+                            opts.option<String>("fseq"),
+                            opts.option<String>("fss"),
+                            opts.option<String>("cseq"),
+                            opts.option<String>("css"));
+        
+        tfs.setup(mset, 4, 25, 1, 1);
+        tfs.check_nodes({25, 24});
+        tfs.check_nodes_2({4});
+    }
+    
+    else if(opts.option<int>("reverse")) {
+        mset = get_mset_old_reverse(
+                            opts.option<String>("fseq"),
+                            opts.option<String>("fss"),
+                            opts.option<String>("cseq"),
+                            opts.option<String>("css"));
+        tfs.setup(mset, 0, mset->last_node()->index(), 0, 1);
+        Ints nodes = {0};
+        tfs.check_nodes_2(nodes);
+
+    }
+    
+    else {
+        mset = get_mset_old(opts.option<String>("fseq"),
+                            opts.option<String>("fss"),
+                            opts.option<String>("cseq"),
+                            opts.option<String>("css"));
+        tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
+        
+    }
+    
+
     tfs.option("steps",  opts.option<int>("s"));
     tfs.option("cutoff", opts.option<float>("c"));
     tfs.option("temperature", opts.option<float>("t"));
@@ -134,7 +167,44 @@ SimulateTectos::get_mset_old(
    
         }
     }
+    
+    int pos = mt->add_motif(ResourceManager::getInstance().get_motif("GAAA_tetraloop", "", "A149-A154"));
+    mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[1].name),
+                  -1, -1, "A222-A251");
+    
+    for(int i = 2; i < chip_motif_infos.size(); i++) {
+        if(chip_motif_infos[i].end_id.length() == 0) {
+            mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[i].name));
+        }
+        else{
+            mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[i].name,
+                                                                   chip_motif_infos[i].end_id,
+                                                                   chip_motif_infos[i].end_name));
+            
+        }
+    }
+    
+    MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
+    mset->setup_from_mt(mt);
+
+    return mset;
+}
+
+
+MotifStateEnsembleTreeOP
+SimulateTectos::get_mset_old_reverse(
+    String const & fseq,
+    String const & fss,
+    String const & cseq,
+    String const & css) {
+    
+    auto flow_motif_infos = get_motifs_from_seq_and_ss(fseq, fss);
+    auto chip_motif_infos = get_motifs_from_seq_and_ss(cseq, css);
+    auto mt = std::make_shared<MotifTree>();
+    mt->option("sterics", 0);
+    
     mt->add_motif(ResourceManager::getInstance().get_motif("GAAA_tetraloop", "", "A149-A154"));
+    
     mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[1].name),
                   -1, -1, "A222-A251");
     
@@ -150,9 +220,95 @@ SimulateTectos::get_mset_old(
         }
     }
 
+    mt->add_motif(ResourceManager::getInstance().get_motif("GGAA_tetraloop", "", "A1-A6"));
+
+    
+    mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[1].name),
+                  -1, -1, "A7-A22");
+    
+    for(int i = 2; i < flow_motif_infos.size(); i++) {
+        if(flow_motif_infos[i].end_id.length() == 0) {
+            mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[i].name));
+        }
+        else{
+            mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[i].name,
+                                                                   flow_motif_infos[i].end_id,
+                                                                   flow_motif_infos[i].end_name));
+            
+        }
+    }
+    
     MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
     mset->setup_from_mt(mt);
+    
+    return mset;
+}
 
+MotifStateEnsembleTreeOP
+SimulateTectos::get_mset_old_full_seq(
+    String const & fseq,
+    String const & fss,
+    String const & cseq,
+    String const & css) {
+    
+    auto mt = std::make_shared<MotifTree>();
+    mt->option("sterics", 0);
+    auto steps = Strings{"CG=UA", "UA=AU", "AU=GC", "GC=GC"};
+    //mt->add_motif(ResourceManager::getInstance().get_motif("GC=GC"));
+    for(auto const & s : steps) {
+        mt->add_motif(ResourceManager::getInstance().get_motif(s));
+    }
+    
+    mt->add_motif(ResourceManager::getInstance().get_motif("GGAA_tetraloop", "", "A14-A15"));
+    auto flow_motif_infos = get_motifs_from_seq_and_ss(fseq, fss);
+    auto chip_motif_infos = get_motifs_from_seq_and_ss(cseq, css);
+    mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[1].name),
+                  -1, -1, "A7-A22");
+    
+    for(int i = 2; i < flow_motif_infos.size(); i++) {
+        if(flow_motif_infos[i].end_id.length() == 0) {
+            mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[i].name));
+        }
+        else{
+            mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[i].name,
+                                                                   flow_motif_infos[i].end_id,
+                                                                   flow_motif_infos[i].end_name));
+            
+        }
+    }
+    
+    int pos = mt->add_motif(ResourceManager::getInstance().get_motif("GAAA_tetraloop", "", "A149-A154"));
+    mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[1].name),
+                  -1, -1, "A222-A251");
+    
+    for(int i = 2; i < chip_motif_infos.size(); i++) {
+        if(chip_motif_infos[i].end_id.length() == 0) {
+            mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[i].name));
+        }
+        else{
+            mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[i].name,
+                                                                   chip_motif_infos[i].end_id,
+                                                                   chip_motif_infos[i].end_name));
+            
+        }
+    }
+    
+    steps = Strings{"CG=CG", "CG=UA", "UA=AU", "AU=GC"};
+    int j = 0;
+    //mt->add_motif(ResourceManager::getInstance().get_motif("GC=GC"));
+    for(auto const & s : steps) {
+        if(j == 0) {
+            mt->add_motif(ResourceManager::getInstance().get_motif(s), pos, -1, "A229-A245");
+        }
+        else {
+            mt->add_motif(ResourceManager::getInstance().get_motif(s));
+        }
+        j++;
+    }
+    
+    MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
+    mset->setup_from_mt(mt);
+    
     return mset;
 }
 
