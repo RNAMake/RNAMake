@@ -82,9 +82,9 @@ SimulateTectos::SimulateTectos(
                             opts.option<String>("fss"),
                             opts.option<String>("cseq"),
                             opts.option<String>("css"));
-        tfs.setup(mset, 0, mset->last_node()->index(), 0, 1);
-        Ints nodes = {0};
-        tfs.check_nodes_2(nodes);
+        tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
+        //Ints nodes = {0};
+        //tfs.check_nodes_2(nodes);
 
     }
     
@@ -203,7 +203,8 @@ SimulateTectos::get_mset_old_reverse(
     auto mt = std::make_shared<MotifTree>();
     mt->option("sterics", 0);
     
-    mt->add_motif(ResourceManager::getInstance().get_motif("GAAA_tetraloop", "", "A149-A154"));
+    mt->add_motif(ResourceManager::getInstance().get_motif("GC=GC"));
+    mt->add_motif(ResourceManager::getInstance().get_motif("GAAA_tetraloop", "", "A229-A245"));
     
     mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_infos[1].name),
                   -1, -1, "A222-A251");
