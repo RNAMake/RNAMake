@@ -8,6 +8,7 @@
 
 #include "base_unittests/option_unittest.h"
 #include "base_unittests/cl_option_unittest.h"
+#include "base_unittests/application_unittest.hpp"
 
 #include "data_structure_unittests/tree_unittest.h"
 #include "data_structure_unittests/graph_unittest.h"
@@ -40,12 +41,14 @@
 
 #include "motif_state_search_unittests/path_follower_unittests.h"
 
+#include "motif_data_structures_unittests/motif_graph_unittest.h"
+
 #include "sequence_optimizer_unittests/sequence_optimizer_unittests.h"
 
 
 int main(int argc, const char * argv[]) {
     
-    unittests::motif_state_search::PathFollowerUnittest test;
+    unittests::motif_structures::MotifGraphUnittest test;
     test.run();
 
     return 0;

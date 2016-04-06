@@ -340,5 +340,10 @@ private:
     
 };
 
+//interface
+class OptionClass {
+public:
+    virtual ~OptionClass() {}
+};
 
 #endif /* defined(__REDESIGNC__Option__) */

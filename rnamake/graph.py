@@ -182,14 +182,17 @@ class GraphStatic(Graph):
         super(GraphStatic, self).__init__()
 
     def add_data(self, data, parent_index=-1, parent_pos=-1, child_pos=-1, n_children=1,
-                 orphan=0):
+                 orphan=0, index=-1):
+        given_index = self.index
+        if index != -1:
+            given_index = index
         parent = self.last_node
         if parent_index != -1:
             parent = self.get_node(parent_index)
         if orphan:
             parent = None
 
-        n = GraphNodeStatic(data, self.index, self.level, n_children)
+        n = GraphNodeStatic(data, given_index, self.level, n_children)
 
         if parent is not None:
             parent_pos = self.check_pos_is_value(parent, parent_pos)
@@ -202,7 +205,7 @@ class GraphStatic(Graph):
         self.nodes.append(n)
         self.index += 1
         self.last_node = n
-        return self.index-1
+        return given_index
 
     def connect(self, i, j, i_pos, j_pos):
         n1 = self.get_node(i)

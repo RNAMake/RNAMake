@@ -64,6 +64,10 @@ public:
     void
     test_memory_3();
     
+    void
+    test_topology_to_str();
+    
+    
 public:
     
     int

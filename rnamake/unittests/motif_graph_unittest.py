@@ -5,8 +5,9 @@ import rnamake.graph as graph
 import rnamake.util as util
 import rnamake.eternabot.sequence_designer as sd
 import rnamake.resource_manager as rm
-from rnamake import motif_topology, secondary_structure_graph
+from rnamake import motif_topology, secondary_structure_graph, settings
 import build
+import numerical
 
 
 class MotifGraphUnittest(unittest.TestCase):
@@ -193,22 +194,99 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-        new_mg = mg.copy()
-        new_mg.replace_ideal_helices()
 
-        s = new_mg.topology_to_str()
-        new_mg_2 = motif_graph.motif_graph_from_topology(s)
-        #new_mg_2.write_pdbs()
+        s = mg.topology_to_str_new()
+        new_mg = motif_graph.MotifGraph(top_str=s)
+        if len(mg) != len(new_mg):
+            self.fail("did not get the correct number of nodes")
 
     def test_topology_to_str_2(self):
-        base_dir = "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/apps/mini_ttr"
-        rm.manager.add_motif(base_dir+"/resources/GAAA_tetraloop")
-        f = open(base_dir + "/test.top")
-        line = f.readline()
+        #load motif graph with all atoms
+        base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
+        f = open(base_dir+"test.mg")
+        l = f.readline()
         f.close()
 
-        mg = motif_graph.motif_graph_from_topology(line)
-        mg.write_pdbs()
+        mg = motif_graph.MotifGraph(mg_str=l)
+
+        #load motif graph from topology
+        base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
+        f = open(base_dir+"test.top")
+        l = f.readline()
+        f.close()
+
+        mg2 = motif_graph.MotifGraph(top_str=l)
+
+        atoms1 = mg.get_structure().structure.atoms()
+        atoms2 = mg2.get_structure().structure.atoms()
+
+        for i in range(len(atoms1)):
+            if not numerical.are_atom_equal(atoms1[i], atoms2[i]):
+                self.fail("atoms are not equal")
+
+    def test_topology_to_str_3(self):
+        #load motif graph with all atoms
+        base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
+        f = open(base_dir+"test_added.mg")
+        l = f.readline()
+        f.close()
+
+        mg = motif_graph.MotifGraph(mg_str=l)
+
+        #load motif graph from topology
+        base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
+        f = open(base_dir+"test_added.top")
+        l = f.readline()
+        f.close()
+
+        mg2 = motif_graph.MotifGraph(top_str=l)
+
+        atoms1 = mg.get_structure().structure.atoms()
+        atoms2 = mg2.get_structure().structure.atoms()
+
+        for i in range(len(atoms1)):
+            if not numerical.are_atom_equal(atoms1[i], atoms2[i]):
+                self.fail("atoms are not equal")
+
+    def test_to_str(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(3)
+        mg = motif_graph.MotifGraph()
+
+        for n in mt.tree.nodes:
+            mg.add_motif(n.data)
+
+        s = mg.to_str()
+        mg_new = motif_graph.MotifGraph(mg_str=s)
+        if len(mg_new) != len(mg):
+            self.fail("did not get right number of nodes")
+
+        atoms1 = mg.get_structure().structure.atoms()
+        atoms2 = mg_new.get_structure().structure.atoms()
+
+        for i in range(len(atoms1)):
+            if not numerical.are_atom_equal(atoms1[i], atoms2[i]):
+                self.fail("atoms are not equal")
+
+    def test_to_str_2(self):
+        builder = build.BuildMotifGraph()
+        mg = builder.build(3)
+
+        mg.get_node(0).index = 5
+        mg.aligned[5] = 0
+        mg.get_node(1).index = 7
+        mg.aligned[7] = 1
+        s = mg.to_str()
+        mg_new = motif_graph.MotifGraph(mg_str=s)
+        indices = []
+        for n in mg.graph:
+            indices.append(n.index)
+
+        if " ".join(str(x) for x in indices) != "5 7 2":
+            self.fail("to_str did not work")
+
+
+
 
 def main():
     unittest.main()

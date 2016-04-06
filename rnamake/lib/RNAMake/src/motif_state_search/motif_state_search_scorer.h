@@ -19,6 +19,7 @@ class MotifStateSearchScorer {
 public:
     MotifStateSearchScorer() {}
     
+    virtual
     ~MotifStateSearchScorer() {}
     
 public:

@@ -10,6 +10,7 @@
 #define __RNAMake__motif_graph__
 
 #include <stdio.h>
+#include <map>
 
 //RNAMake Headers
 #include "base/option.h"
@@ -17,6 +18,12 @@
 #include "motif/motif.h"
 #include "motif_data_structures/motif_tree.h"
 #include "motif_data_structures/motif_merger.h"
+
+enum MotifGraphStringType {
+    OLD,
+    MG,
+    TOP
+};
 
 class MotifGraphException : public std::runtime_error {
 public:
@@ -34,10 +41,14 @@ public:
     merger_(MotifMerger()),
     clash_radius_(2.5),
     sterics_(1),
-    options_(Options("MotifGraphOptions"))
+    options_(Options("MotifGraphOptions")),
+    aligned_(std::map<int, int>())
     {  setup_options(); }
     
     MotifGraph(String const &);
+    
+    MotifGraph(String const &,
+               MotifGraphStringType const &);
     
     MotifGraph(
         MotifGraph const & mg):
@@ -118,6 +129,9 @@ public:
     
     String
     topology_to_str();
+    
+    String
+    topology_to_str_new();
 
     
 public: //add motif interface
@@ -285,9 +299,18 @@ private:
     update_var_options();
     
 private:
+    void
+    _setup_from_top_str(String const &);
+    
+    void
+    _setup_from_str(String const &);
+    
+private:
     GraphStatic<MotifOP> graph_;
     MotifMerger merger_;
     Options options_;
+    std::map<int, int> aligned_;
+    //options
     float clash_radius_;
     bool sterics_;
 
