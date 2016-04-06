@@ -41,20 +41,117 @@ def motif_graph_from_topology(s):
         sspl = c_spl.split()
         mg.add_connection(int(sspl[0]), int(sspl[1]), sspl[2], sspl[3])
 
-
     return mg
 
 
 class MotifGraph(base.Base):
-    def __init__(self):
+    def __init__(self, mg_str="", top_str=""):
         super(self.__class__, self).__init__()
         self.setup_options_and_constraints()
         self.graph = graph.GraphStatic()
         self.clash_radius = settings.CLASH_RADIUS
         self.merger = motif_merger.MotifMerger()
+        self.aligned = {}
+
+        if top_str != "":
+            self._setup_from_top_str(top_str)
+
+        if mg_str != "":
+            self._setup_from_str(mg_str)
 
     def __len__(self):
         return len(self.graph)
+
+    def _setup_from_top_str(self, s):
+        self.option('sterics', 0)
+        spl = s.split("&")
+        node_spl = spl[0].split("|")
+        for i, n_spl in enumerate(node_spl[:-1]):
+            sspl = n_spl.split(",")
+            m = None
+            if rm.manager.motif_exists(name=sspl[0], end_name=sspl[1]):
+                m = rm.manager.get_motif(name=sspl[0], end_name=sspl[1])
+            m_copy = m.copy()
+            m_copy.get_beads(m_copy.ends)
+            m_copy.new_res_uuids()
+            pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends),
+                                      orphan=1, index=int(sspl[2]))
+            self.aligned[int(sspl[2])] = int(sspl[3])
+
+        con_spl = spl[1].split("|")
+        for c_str in con_spl[:-1]:
+            c_spl = c_str.split(",")
+            self.graph.connect(int(c_spl[0]), int(c_spl[1]),
+                               int(c_spl[2]), int(c_spl[3]))
+
+        start = -1
+        for k,v in self.aligned.iteritems():
+            if v == 0:
+                start = k
+
+        if start == -1:
+            raise ValueError("cannot find a place to start in rebuilding motif_graph"
+                             " from string")
+
+
+        for n in graph.transverse_graph(self.graph, start):
+            if n.index == start:
+                self.merger.add_motif(n.data)
+                continue
+            if n.connections[0] is None:
+                continue
+
+            c = n.connections[0]
+            parent = c.partner(n.index)
+            parent_end_index = c.end_index(parent.index)
+
+            m_added = motif.get_aligned_motif(parent.data.ends[parent_end_index],
+                                              n.data.ends[0],
+                                              n.data)
+            n.data = m_added
+
+            self.merger.add_motif(n.data, n.data.ends[0],
+                                  parent.data, parent.data.ends[parent_end_index])
+
+    def _setup_from_str(self, s):
+        self.option('sterics', 0)
+        spl = s.split("FAF")
+        node_spl = spl[0].split("KAK")
+        for i, n_str in enumerate(node_spl[:-1]):
+            n_spl = n_str.split("^")
+            m = motif.str_to_motif(n_spl[0])
+            self.graph.add_data(m, -1, -1, -1, len(m.ends),
+                                orphan=1, index=int(n_spl[1]))
+            self.aligned[int(n_spl[1])] = int(n_spl[2])
+
+        con_spl = spl[1].split("|")
+        for c_str in con_spl[:-1]:
+            c_spl = c_str.split(",")
+            self.graph.connect(int(c_spl[0]), int(c_spl[1]),
+                               int(c_spl[2]), int(c_spl[3]))
+
+        start = -1
+        for k,v in self.aligned.iteritems():
+            if v == 0:
+                start = k
+
+        if start == -1:
+            raise ValueError("cannot find a place to start in rebuilding motif_graph"
+                             " from string")
+
+        for n in graph.transverse_graph(self.graph, start):
+            if n.index == start:
+                self.merger.add_motif(n.data)
+                continue
+            if n.connections[0] is None:
+                continue
+
+            c = n.connections[0]
+            parent = c.partner(n.index)
+            parent_end_index = c.end_index(parent.index)
+
+            self.merger.add_motif(n.data, n.data.ends[0],
+                                  parent.data, parent.data.ends[parent_end_index])
 
     def copy(self):
         mg = MotifGraph()
@@ -86,6 +183,7 @@ class MotifGraph(base.Base):
             m_copy.get_beads(m_copy.ends)
             m_copy.new_res_uuids()
             pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends))
+            self.aligned[pos] = 0
             self.merger.add_motif(m_copy)
             return pos
 
@@ -106,6 +204,7 @@ class MotifGraph(base.Base):
             m_added.new_res_uuids()
 
             pos = self.graph.add_data(m_added, parent.index, p, 0, len(m_added.ends))
+            self.aligned[pos] = 1
             self.merger.add_motif(m_added, m_added.ends[0],
                                   parent.data, parent.data.ends[p])
             return pos
@@ -182,6 +281,7 @@ class MotifGraph(base.Base):
         n = self.graph.get_node(pos)
         self.merger.remove_motif(n.data)
         self.graph.remove_node(pos)
+        del self.aligned[pos]
 
     def remove_node_level(self, level=None):
         if level is None:
@@ -191,6 +291,7 @@ class MotifGraph(base.Base):
         for i in r[::-1]:
             if self.graph.nodes[i].level >= level:
                 self.remove_motif(self.graph.nodes[i].index)
+                del self.aligned[self.graph.nodes[i].index]
 
     def _add_motif_to_graph(self, m, parent=None, parent_end_index=None):
         if parent is None:
@@ -242,9 +343,11 @@ class MotifGraph(base.Base):
             h = rm.manager.get_motif(name="HELIX.IDEAL")
             if parent is None:
                 pos = self._add_motif_to_graph(h)
+                self.aligned[pos] = 0
 
             else:
                 pos = self._add_motif_to_graph(h, parent, parent_end_index)
+                self.aligned[pos] = 1
 
             for j in range(0, count):
                 pos = self._add_motif_to_graph(h, self.graph.get_node(pos), 1)
@@ -256,6 +359,7 @@ class MotifGraph(base.Base):
                 self.merger.connect_motifs(node.data, other.data,
                                            node.data.ends[1],
                                            other.data.ends[other_end_index])
+                self.aligned[other.index] = 1
 
     def secondary_structure(self):
         return self.merger.secondary_structure()
@@ -354,6 +458,9 @@ class MotifGraph(base.Base):
     def to_pdb(self, name="test.pdb", renumber=-1, close_chain=0):
         return self.merger.get_structure().to_pdb(name, renumber=renumber,
                                                   close_chain=close_chain)
+
+    def get_structure(self):
+        return self.merger.get_structure()
 
     def last_node(self):
         return self.graph.last_node
@@ -479,14 +586,53 @@ class MotifGraph(base.Base):
 
         return s
 
+    def topology_to_str_new(self):
+        s = ""
+        con_str = ""
+        seen_connections = {}
+        for n in self.graph.nodes:
+            s += n.data.name + "," + n.data.ends[0].name() + "," + str(n.index) + ","
+            s += str(self.aligned[n.index]) + "|"
+            for c in n.connections:
+                if c is None:
+                    continue
+                key1 = str(c.node_1.index) + " " + str(c.node_2.index)
+                key2 = str(c.node_2.index) + " " + str(c.node_1.index)
+                if key1 in seen_connections or key2 in seen_connections:
+                    continue
+                seen_connections[key1] = 1
+                con_str += str(c.node_1.index) + "," + str(c.node_2.index) + ","
+                con_str += str(c.end_index_1) + "," + str(c.end_index_2) + "|"
+        s += "&"
+        s += con_str
+        return s
+
+    def to_str(self):
+        s = ""
+        con_str = ""
+        seen_connections = {}
+        for n in self.graph.nodes:
+            s += n.data.to_str() + "^" + str(n.index) + "^"
+            s += str(self.aligned[n.index]) + " KAK "
+            for c in n.connections:
+                if c is None:
+                    continue
+                key1 = str(c.node_1.index) + " " + str(c.node_2.index)
+                key2 = str(c.node_2.index) + " " + str(c.node_1.index)
+                if key1 in seen_connections or key2 in seen_connections:
+                    continue
+                seen_connections[key1] = 1
+                con_str += str(c.node_1.index) + "," + str(c.node_2.index) + ","
+                con_str += str(c.end_index_1) + "," + str(c.end_index_2) + "|"
+        s += " FAF "
+        s += con_str
+        return s
+
     def increase_level(self):
         self.graph.increase_level()
 
     def decrease_level(self):
         self.graph.decrease_level()
-
-    def to_str(self):
-        pass
 
     def get_node_num(self, m_name):
         for n in self.graph.nodes:

@@ -158,6 +158,13 @@ public: //getters
     GraphConnectionOPs<DataType> const &
     connections() const { return connections_; }
     
+public: //setters
+    
+    //cant find away around this
+    inline
+    void
+    index(int index) { index_ = index; }
+    
     
 protected:
     DataType data_;
@@ -319,6 +326,14 @@ public:
     inline
     GraphNodeOP<DataType> const &
     node_2() { return node_2_; }
+    
+    inline
+    int
+    end_index_1() { return end_index_1_; }
+    
+    inline
+    int
+    end_index_2() { return end_index_2_; }
     
     
     

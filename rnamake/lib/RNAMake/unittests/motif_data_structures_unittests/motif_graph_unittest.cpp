@@ -223,10 +223,21 @@ MotifGraphUnittest::test_memory_3() {
         //std::cout << mg->size() << std::endl;
     }
 }
+   
+
+void
+MotifGraphUnittest::test_topology_to_str() {
+    auto builder = BuildMotifGraph();
+    auto mg = builder.build(3);
+    
+    auto s = mg->topology_to_str_new();
+    auto mg_new = MotifGraph(s, MotifGraphStringType::TOP);
+    
+}
     
 int
 MotifGraphUnittest::run() {
-    test_remove();
+    test_topology_to_str();
 
     /*test_creation();
     test_add_motif();

@@ -9,6 +9,19 @@
 #include "motif_data_structures/motif_topology.h"
 #include "sequence_optimizer/sequence_optimizer.h"
 
+void
+SequenceOptimizer::setup_options() {
+    options_.add_option("sub_sequence", String(""), OptionType::STRING);
+    options_.add_option("solutions", 100, OptionType::INT);
+    options_.lock_option_adding();
+}
+
+void
+SequenceOptimizer::update_var_options() {
+    
+}
+
+
 SequenceOptimizerResultOP
 SequenceOptimizer::optimize(
     MotifGraphOP & mg,

@@ -17,7 +17,9 @@ graph_(GraphStatic<MotifOP>()),
 merger_(MotifMerger()),
 clash_radius_(2.5),
 options_(Options("MotifGraphOptions")),
-sterics_(0) {
+sterics_(0),
+aligned_(std::map<int, int>())
+{
     auto spl = split_str_by_delimiter(s, "&");
     auto node_spl = split_str_by_delimiter(spl[0], "|");
     Strings sspl;
@@ -38,15 +40,105 @@ sterics_(0) {
     }
     
     setup_options();
-    if(spl.size() == 1) { return; }
     
-    auto connection_spl = split_str_by_delimiter(spl[1], "|");
+    /*auto spl_indices = split_str_by_delimiter(spl[1], ",");
+    auto indices = Ints();
+    for(auto const & s : spl_indices) {
+        indices.push_back(std::stoi(s));
+    }
+    graph_.set_node_indexes(indices);*/
+    
+    if(spl.size() == 2) { return; }
+    
+    auto connection_spl = split_str_by_delimiter(spl[2], "|");
     for(auto const & c_spl : connection_spl) {
         sspl = split_str_by_delimiter(c_spl, " ");
         add_connection(std::stoi(sspl[0]), std::stoi(sspl[1]), sspl[2], sspl[3]);
     }
 }
 
+
+MotifGraph::MotifGraph(
+    String const & s,
+MotifGraphStringType const & s_type):
+graph_(GraphStatic<MotifOP>()),
+merger_(MotifMerger()),
+clash_radius_(2.5),
+options_(Options("MotifGraphOptions")),
+sterics_(0),
+aligned_(std::map<int, int>()) {
+    setup_options();
+
+    if      (s_type == MotifGraphStringType::OLD) { MotifGraph(s); }
+    else if (s_type == MotifGraphStringType::MG)  { _setup_from_str(s); }
+    else if (s_type == MotifGraphStringType::TOP) { _setup_from_top_str(s); }
+}
+
+void
+MotifGraph::_setup_from_top_str(String const & s) {
+    options_.set_value("sterics", false);
+    auto spl = split_str_by_delimiter(s, "&");
+    auto node_spl = split_str_by_delimiter(spl[0], "|");
+    auto sspl = Strings();
+    int i = 0;
+    for(auto const & n_spl : node_spl) {
+        sspl = split_str_by_delimiter(n_spl, ",");
+        auto m = MotifOP(nullptr);
+        try {
+            m = ResourceManager::getInstance().get_motif(sspl[0], "", sspl[1]);
+        } catch(...) { }
+        if(m == nullptr) {
+            m = ResourceManager::getInstance().get_motif(sspl[0]);
+  
+        }
+        m->get_beads(m->ends());
+        m->new_res_uuids();
+        graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1,
+                        std::stoi(sspl[2]));
+        aligned_[std::stoi(sspl[2])] = std::stoi(sspl[3]);
+    }
+    
+    auto con_spl = split_str_by_delimiter(spl[1], "|");
+    for(auto const & c_str : con_spl) {
+        auto c_spl = split_str_by_delimiter(c_str, ",");
+        graph_.connect(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
+                       std::stoi(c_spl[2]), std::stoi(c_spl[3]));
+    }
+    
+    int start = -1;
+    for(auto const kv : aligned_) {
+        if(kv.second == 0) { start = kv.first; }
+    }
+    
+    auto n = GraphNodeOP<MotifOP>();
+    for(auto it = graph_.transverse(graph_.get_node(start));
+        it != graph_.end();
+        ++it) {
+        
+        n = (*it);
+        if(n->index() == start) {
+            merger_.add_motif(n->data());
+            continue;
+        }
+        if(n->connections()[0] == nullptr) { continue; }
+        auto c = n->connections()[0];
+        auto parent = c->partner(n->index());
+        auto parent_end_index = c->end_index(parent->index());
+        auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
+                                         n->data()->ends()[0],
+                                         n->data());
+        n->data() = m_added;
+        merger_.add_motif(n->data(), n->data()->ends()[0],
+                          parent->data(), parent->data()->ends()[parent_end_index]);
+    }
+    
+    
+}
+
+void
+MotifGraph::_setup_from_str(String const & s) {
+    
+}
 
 void
 MotifGraph::setup_options() {
@@ -89,7 +181,6 @@ MotifGraph::add_motif(
     auto parent_end_index = parent->data()->end_index(p_end_name);
     return add_motif(m, parent_index, parent_end_index);
 }
-
 
 int
 MotifGraph::add_motif(
@@ -155,6 +246,7 @@ MotifGraph::add_motif(
         m_copy->new_res_uuids();
         int pos = graph_.add_data(m_copy, -1, -1, -1, (int)m_copy->ends().size());
         merger_.add_motif(m_copy);
+        aligned_[pos] = 0;
         return pos;
     }
     
@@ -178,6 +270,7 @@ MotifGraph::add_motif(
         if(pos != -1) {
             merger_.add_motif(m_added, m_added->ends()[0], parent->data(), parent->data()->ends()[p]);
         }
+        aligned_[pos] = 1;
         return pos;
         
     }
@@ -340,6 +433,7 @@ MotifGraph::topology_to_str() {
     auto seen = std::map<GraphNodeOP<MotifOP>, int>();
     auto seen_connections = std::map<String, int>();
     int count = 0;
+    Ints indices;
     for(auto const & n : graph_) {
         if(seen.size() == 0) {
             int found = 0;
@@ -349,6 +443,7 @@ MotifGraph::topology_to_str() {
                 if(c != nullptr) { continue; }
                 s += n->data()->name() + "," + n->data()->ends()[i]->name() + ",";
                 s += n->data()->end_ids()[i] + ",-1,|";
+                indices.push_back(n->index());
                 found = 1;
                 break;
             }
@@ -376,6 +471,7 @@ MotifGraph::topology_to_str() {
                     parent_end_name = n2->data()->ends()[end_index_2]->name();
                 }
             }
+            indices.push_back(n->index());
             s += n->data()->name() + "," + end_name + "," + end_id + ",";
             s += std::to_string(highest) + "," + parent_end_name + "|";
             //std::cout << std::to_string(highest) +  " " + std::to_string(count) << std::endl;
@@ -383,6 +479,11 @@ MotifGraph::topology_to_str() {
         }
         seen[n] = count;
         count++;
+    }
+    
+    s += "&";
+    for(auto const & i : indices) {
+        s += std::to_string(i) + ",";
     }
     
     s += "&";
@@ -407,6 +508,32 @@ MotifGraph::topology_to_str() {
         }
     }
     
+    return s;
+}
+
+String
+MotifGraph::topology_to_str_new() {
+    String s = "", con_str = "";
+    String key1 = "", key2 = "";
+    std::map<String, int> seen_connections;
+    for(auto const & n : graph_.nodes()) {
+        s += n->data()->name() + "," + n->data()->ends()[0]->name() + ",";
+        s += std::to_string(n->index()) + "," + std::to_string(aligned_[n->index()]) + "|";
+        for(auto const & c : n->connections()) {
+            if(c == nullptr) { continue; }
+            key1 = std::to_string(c->node_1()->index()) + " " + std::to_string(c->node_2()->index());
+            key2 = std::to_string(c->node_2()->index()) + " " + std::to_string(c->node_1()->index());
+            if(seen_connections.find(key1) != seen_connections.end() ||
+               seen_connections.find(key2) != seen_connections.end()) {
+                continue;
+            }
+            seen_connections[key1] = 1;
+            con_str += std::to_string(c->node_1()->index()) + "," + std::to_string(c->node_2()->index()) + ",";
+            con_str += std::to_string(c->end_index_1()) + "," + std::to_string(c->end_index_2()) + "|";
+        }
+    }
+    s += "&";
+    s += con_str;
     return s;
 }
 
@@ -441,6 +568,7 @@ MotifGraph::remove_motif(int pos) {
     auto n = graph_.get_node(pos);
     merger_.remove_motif(n->data());
     graph_.remove_node(pos);
+    aligned_.erase(pos);
 }
 
 void
@@ -490,13 +618,19 @@ MotifGraph::replace_ideal_helices() {
             remove_motif(n->index());
             auto h = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
             int pos = 0;
-            if(parent == nullptr) { pos = _add_motif_to_graph(h); }
-            else                  { pos = _add_motif_to_graph(h, parent->index(), parent_end_index); }
-            
+            if(parent == nullptr) {
+                pos = _add_motif_to_graph(h);
+                aligned_[pos] = 0 ;
+            }
+            else                  {
+                pos = _add_motif_to_graph(h, parent->index(), parent_end_index);
+                aligned_[pos] = 0 ;
+            }
             
             int old_pos = pos;
             for(int j = 0; j < count; j++) {
                 pos = _add_motif_to_graph(h, old_pos, 1);
+                aligned_[pos] = 1;
                 old_pos = pos;
             }
             
@@ -537,6 +671,7 @@ MotifGraph::_add_motif_to_graph(
                                   (int)m_added->ends().size());
         merger_.add_motif(m_added, m_added->ends()[0], parent->data(),
                           parent->data()->ends()[parent_end_index]);
+        
         return pos;
     }
     

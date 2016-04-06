@@ -1,5 +1,6 @@
 set(unittests_files
 	../../unittests/unittest.cc
+	../../unittests/base_unittests/application_unittest.cpp
 	../../unittests/base_unittests/cl_option_unittest.cc
 	../../unittests/base_unittests/option_unittest.cc
 	../../unittests/build/build_motif_graph.cpp

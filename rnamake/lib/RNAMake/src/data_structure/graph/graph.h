@@ -47,6 +47,8 @@ public:
     const_iterator begin() const;
     const_iterator end() const;
     
+    iterator transverse(GraphNodeOP<DataType> const &);
+    
 public:
     
     inline
@@ -173,6 +175,16 @@ private:
         seen_[current_] = 1;
         
     }
+    
+    GraphIterator(
+        GraphNodeOP<DataType> const & node):
+    nodes_(GraphNodeOPs<DataType>()) {
+        
+        queue_ = std::queue<GraphNodeOP<DataType>>();
+        seen_  = std::map<GraphNodeOP<DataType>, int> ();
+        current_ = node;
+        seen_[current_] = 1;
+    }
 };
 
 
@@ -189,6 +201,15 @@ typename Graph<DataType>::iterator
 Graph<DataType>::end()  {
     return iterator(empty_);
 }
+
+template <typename DataType>
+typename Graph<DataType>::iterator
+Graph<DataType>::transverse(
+    GraphNodeOP<DataType> const & node) {
+    return iterator(node);
+    
+}
+
 
 template <typename DataType>
 typename Graph<DataType>::const_iterator
@@ -369,12 +390,18 @@ public:
         int parent_pos = -1,
         int child_pos = -1,
         int n_children = 0,
-        int orphan = 0) {
+        int orphan = 0,
+        int index = -1) {
+        
+        int given_index = this->index_;
+        if(index != -1) {
+            given_index = index;
+        }
         
         GraphNodeOP<DataType> parent = this->last_node_;
-        auto n = std::make_shared<GraphNodeStatic<DataType>>(data, this->index_, this->level_,
+        auto n = std::make_shared<GraphNodeStatic<DataType>>(data, given_index, this->level_,
                                                              n_children);
-
+     
         if(parent_index != -1) { parent = this->get_node(parent_index); }
         if(orphan == 1) {
             parent = nullptr;
@@ -391,7 +418,7 @@ public:
         this->nodes_.push_back(n);
         this->index_++;
         this->last_node_ = n;
-        return this->index_-1;
+        return given_index;
         
     }
     
@@ -497,6 +524,7 @@ public:
         }
         
     }
+    
     
 };
 

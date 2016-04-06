@@ -21,7 +21,7 @@
 #include "motif_state_search/motif_state_search_solution.h"
 
 
-class MotifStateSearch {
+class MotifStateSearch : public OptionClass {
 public:
     MotifStateSearch():
     queue_(MotifStateSearchNodeQueue()),
@@ -60,7 +60,7 @@ public:
 public: //option wrappers
     
     inline
-    Options const &
+    Options &
     options() { return options_; }
     
     inline

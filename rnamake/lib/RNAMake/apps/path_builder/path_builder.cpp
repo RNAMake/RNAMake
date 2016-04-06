@@ -62,6 +62,7 @@ int main(int argc, const char * argv[]) {
     search.beads(centers);
     mg->increase_level();
     mg->set_option_value("sterics", false);
+    mg->write_pdbs();
     auto designer = eternabot::SequenceDesigner();
     
     std::ofstream out;
@@ -74,9 +75,10 @@ int main(int argc, const char * argv[]) {
         mg->add_motif_tree(mt_sol, std::stoi(spl1[0]), spl1[1]);
         //mg->add_connection(std::stoi(spl1[0]), mg->last_node()->index(), spl1[1]);
         //mg->replace_ideal_helices();
-        out << mg->topology_to_str() << std::endl;
+        out << mg->topology_to_str_new() << std::endl;
         
         mg->remove_level(1);
+        exit(0);
         
         i += 1;
         

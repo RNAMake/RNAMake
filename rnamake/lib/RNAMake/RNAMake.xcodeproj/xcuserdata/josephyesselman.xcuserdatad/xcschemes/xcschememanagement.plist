@@ -84,6 +84,11 @@
 			<key>orderHint</key>
 			<integer>17</integer>
 		</dict>
+		<key>sequence_optimizer.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>18</integer>
+		</dict>
 		<key>simulate_tectos.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -318,6 +323,11 @@
 			<true/>
 		</dict>
 		<key>1CBEFF541AF1B43400C03772</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1CE2FEAD1CB086B20044879E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
