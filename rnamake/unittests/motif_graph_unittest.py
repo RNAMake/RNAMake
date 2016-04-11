@@ -8,6 +8,8 @@ import rnamake.resource_manager as rm
 from rnamake import motif_topology, secondary_structure_graph, settings
 import build
 import numerical
+import secondary_structure_tools
+import is_equal
 
 
 class MotifGraphUnittest(unittest.TestCase):
@@ -35,10 +37,9 @@ class MotifGraphUnittest(unittest.TestCase):
             mg.add_motif(n.data)
 
         mg.remove_motif(1)
-        # mg.write_pdbs()
-        #mg.merger.to_pdb("test.pdb")
-        #print len(mg.structure.ends)
-        #mg.structure.to_pdb("test.pdb")
+
+        if len(mg) != 1:
+            self.fail("did not remove motif correctly")
 
     def test_copy(self):
         builder = build.BuildMotifTree()
@@ -285,7 +286,42 @@ class MotifGraphUnittest(unittest.TestCase):
         if " ".join(str(x) for x in indices) != "5 7 2":
             self.fail("to_str did not work")
 
+    def test_replace_helix_sequence(self):
+        builder = build.BuildMotifGraph()
+        mg = builder.build(5)
+        mg.replace_ideal_helices()
 
+        dss = mg.designable_secondary_structure()
+        secondary_structure_tools.fill_basepairs_in_ss(dss)
+        mg.replace_helix_sequence(dss)
+
+        mg_new = motif_graph.MotifGraph()
+        for n in mg.graph:
+            mg_new.add_motif(m_name=n.data.name, m_end_name=n.data.ends[0].name())
+
+        rs1 = mg.get_structure()
+        rs2 = mg_new.get_structure()
+
+        if not is_equal.are_atoms_equal(rs1.structure.atoms(),
+                                        rs2.structure.atoms()):
+            self.fail("structures are not the same")
+
+    def test_replace_helix_sequence_2(self):
+        #load motif graph from topology
+        base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
+        f = open(base_dir+"mg_build.top")
+        l = f.readline()
+        f.close()
+
+        mg = motif_graph.MotifGraph(top_str=l)
+        mg.replace_ideal_helices()
+
+        dss = mg.designable_secondary_structure()
+        secondary_structure_tools.fill_basepairs_in_ss(dss)
+        mg.replace_helix_sequence(dss)
+
+        for n in graph.transverse_graph(mg.graph, 0):
+            print n.index
 
 
 def main():

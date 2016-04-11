@@ -1,4 +1,4 @@
-//
+
 //  motif_toplogy.cpp
 //  RNAMake
 //
@@ -72,6 +72,7 @@ graph_to_tree(
                                                               current->data()->ends()[0]->name());
             }
             mt->add_motif(m);
+            mt->get_node(0)->data()->id(current->data()->id());
         }
         
         else {
@@ -124,6 +125,7 @@ graph_to_tree(
             
             seen_connections[std::to_string(p_index) + " " + std::to_string(index)] = 1;
             pos = mt->add_motif(m, p_index, p_end_name);
+            mt->get_node(pos)->data()->id(current->data()->id());
             assert(pos != -1 && "did not sucessfully add motif to tree during conversion");
             
         }

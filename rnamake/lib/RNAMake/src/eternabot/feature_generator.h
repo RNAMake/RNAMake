@@ -57,6 +57,7 @@ public:
     update_features(
         FeaturesOP &,
         sstruct::PoseOP const &);
+    
   
 private:
     vienna::Vienna v_;

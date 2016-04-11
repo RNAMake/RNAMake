@@ -160,6 +160,7 @@ class MotifMerger(object):
         for bp in m.basepairs:
             self.all_bps[bp.uuid] = bp
         self.motifs[m.id] = m
+        self.rebuild_structure = 1
 
     def replace_motif(self, old_m, new_m):
         #assume chains are added in order

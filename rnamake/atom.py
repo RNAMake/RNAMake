@@ -1,6 +1,7 @@
 import basic_io
 import numpy as np
 
+
 class Atom(object):
 
     """
@@ -49,7 +50,16 @@ class Atom(object):
     def copy(self):
         """
         deep copies the current atom instance
-        :return:  Atom object
+        returns an Atom object
+
+        Examples:
+
+        .. code-block:: python
+        >>>a = Atom("P",[1.0,2.0,3.0])
+        >>>a_copy = a.copy()
+        >>>print a_copy.name
+        P
+
         """
         coords = np.array(self.coords)
         return Atom(self.name, coords)
@@ -58,7 +68,7 @@ class Atom(object):
         """
         returns string version of atom
         .. code-block:: python
-            >>>atom = rnamake.atom.Atom("H1", np.array([0, 1, 2]))
+            >>>atom = atom.Atom("H1", np.array([0, 1, 2]))
             >>>string = atom.to_str()
             "H1 0.0 1.0 2.0"
         """
@@ -71,10 +81,10 @@ class Atom(object):
         :type   acount: int
         .. code-block:: python
             >>>a = Atom("P",[1.0,2.0,3.0])
-            >>>atom.to_pdb_str()
+            >>>a.to_pdb_str()
             ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P
 
-            >>>atom.to_pdb_str(10)
+            >>>a.to_pdb_str(10)
             ATOM     10  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P
         """
         if self is None:

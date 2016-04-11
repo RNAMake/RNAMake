@@ -74,6 +74,11 @@ public:
     replace_sequence(
         String const &);
 
+    Pose
+    sub_structure(
+        int start,
+        int end);
+    
 private:
     void
     _build_helices();

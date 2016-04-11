@@ -1,34 +1,31 @@
 import uuid
-import logging
 import atom
 import residue_type
 import util
 import basic_io
 import numpy as np
 
-#logging.basicConfig()
+# logging.basicConfig()
 #logger = logging.getLogger(__name__)
 
 
 class BeadType(object):
-
     """
     BeadType is an ENUM type. This is to keep track what atoms are used to
     generate the bead center. There are three types Phos(Phosphate), Sugar and
     Base
     """
-    PHOS = 0
-    SUGAR = 1
-    BASE = 2
+    PHOS = 0   #: P, OP1, OP2
+    SUGAR = 1  #: O5', C5', C4', O4', C3', O3', C1', C2', O2'
+    BASE = 2   #: All remaining
 
 
 class Bead(object):
-
     """
     Bead class stores information related to keeping track of steric clashes
     between residues during building. They are never used outside the Residue class
 
-    :param type: type of the bead either Phos(Phosphate), Sugar or Base, of
+    :param btype: type of the bead either Phos(Phosphate), Sugar or Base, of
         the atoms used generate the center
     :btype btype: BeadType
 
@@ -42,92 +39,14 @@ class Bead(object):
     def __init__(self, center, btype):
         self.center, self.btype = center, btype
 
-
     def copy(self):
-        return  Bead(np.copy(self.center), self.btype)
-
-
-class ResidueState(object):
-    def __init__(self, uuid):
-        self.uuid = uuid
-        self.beads = []
-
-    def copy(self):
-        return ResidueState(self.uuid)
-
-class ResidueStateType(object):
-    NORM = 0
-    END =  1
-
-class ResidueState2Bead(ResidueState):
-    def __init__(self, uuid, sugar, base, type=ResidueStateType.NORM):
-        super(self.__class__, self).__init__(uuid)
-        self.sugar = sugar
-        self.base = base
-        self.beads = [sugar, base]
-        self.type = type
-
-    def copy(self):
-        sugar = np.copy(self.sugar)
-        base  = np.copy(self.base)
-        return ResidueState2Bead(self.uuid, sugar, base, self.type)
-
-    def to_str(self):
-        return basic_io.points_to_str(self.beads) + "," + str(self.type)
-
-    def update(self, r, t):
-        self.beads = np.dot(self.beads, r) + t
-        self.sugar = self.beads[0]
-        self.base = self.beads[1]
-
-class ResidueState3Bead(ResidueState):
-    def __init__(self, uuid, sugar, base, phos,type=ResidueStateType.NORM):
-        super(self.__class__, self).__init__(uuid)
-        self.sugar = sugar
-        self.base = base
-        self.phos = phos
-        self.beads = [sugar, base, phos]
-        self.type = type
-
-    def copy(self):
-        sugar = np.copy(self.sugar)
-        base  = np.copy(self.base)
-        phos  = np.copy(self.phos)
-        return ResidueState3Bead(self.uuid, sugar, base, phos, self.type)
-
-    def to_str(self):
-        return basic_io.points_to_str(self.beads) + "," + str(self.type)
-
-    def update(self, r, t):
-        self.beads = np.dot(self.beads, r) + t
-        self.sugar = self.beads[0]
-        self.base = self.beads[1]
-        self.phos = self.beads[2]
-
-
-def get_residue_state(r, type=ResidueStateType.NORM):
-    phos_atoms, sugar_atoms, base_atoms = [], [], []
-
-    for i, a in enumerate(r.atoms):
-        if a is None:
-            continue
-        if   i < 3:
-            phos_atoms.append(a)
-        elif i < 12:
-            sugar_atoms.append(a)
-        else:
-            base_atoms.append(a)
-
-    return ResidueState3Bead(r.uuid,
-                             util.center(sugar_atoms),
-                             util.center(base_atoms),
-                             util.center(phos_atoms),
-                             type)
-
+        """
+        returns a deep copy of current bead object
+        """
+        return Bead(np.copy(self.center), self.btype)
 
 
 class Residue(object):
-
     """
     Store residue information from pdb file, stores all Atom objects that
     belong to residue. Implementation is designed to be extremely lightweight.
@@ -150,35 +69,35 @@ class Residue(object):
 
     .. code-block:: python
 
-		# example of generating a new adenine residue
-		>>>rts = ResidueTypeSet()
-		>>>rtype = rts.give_type_for_resname("ADE")
-		>>>r = Residue(rtype, "ADE", 1, "A")
+        # example of generating a new adenine residue
+        >>>rts = residue_type.ResidueTypeSet()
+        >>>rtype = rts.get_rtype_by_resname("ADE")
+        >>>r = Residue(rtype, "ADE", 1, "A")
+        >>>print r.name
+        ADE
 
-		>>>print r.name
-		ADE
+        # to add atoms to residue, use setup_atoms
+        >>>a1 = atom.Atom("P",[1.0,2.0,3.0])
+        >>>a2 = atom.Atom("O1P",[2.0,3.0,4.0])
+        >>>r.setup_atoms([a1,a2])
 
-		# to add atoms to residue, use setup_atoms
-		>>>a1 = Atom("P",[1.0,2.0,3.0])
-		>>>a2 = Atom("O1P",[2.0,3.0,4.0])
-		>>>r.setup_atoms([a1,a2])
-
-	Attributes
-	----------
-	`atoms` : Atom object list
-		holds all atoms that belong to this residue object
-	`name` : str
-		name of residue, ex. ADE, GUA etc
-	`num` : int
-		residue num
-	`type` : ResidueType objext
-		Information about residue type each nucleic acid has its own type
-	`chain_id` : str
-		chain indentification string, ex. 'A' or 'B'
-	`score` : float
-		Score associated with secondary structure score
-	`i_code`: str
-		residue insertion code
+    Attributes
+    ----------
+    `atoms` : Atom object list
+        holds all atoms that belong to this residue object
+    `name` : str
+        name of residue, ex. ADE, GUA etc
+    `num` : int
+        residue num
+    `rtype` : ResidueType objext
+        Information about residue type each nucleic acid has its own type
+    `chain_id` : str
+        chain indentification string, ex. 'A' or 'B'
+    `i_code`: str
+        residue insertion code
+    `uuid` : uuid.uuid1() object
+        the unique id to indentify residue
+    `
     """
 
     __slots__ = [
@@ -224,19 +143,6 @@ class Residue(object):
             if a.name in self.rtype.atom_map:
                 pos = self.rtype.atom_map[a.name]
                 self.atoms[pos] = a
-            else:
-                pass
-                #logger.warning(a.name + " not included in " + repr(self))
-
-        # Warning if an atom is missing
-        for i, a in enumerate(self.atoms):
-            if a is None:
-                correct_name = None
-                for name, pos in self.rtype.atom_map.iteritems():
-                    if pos == i:
-                        correct_name = name
-
-                #logger.warning(correct_name + " is undefined in " + repr(self))
 
     def get_atom(self, atom_name):
         """
@@ -244,9 +150,12 @@ class Residue(object):
 
         :param atom_name: name
         :type atom_name: str
-        .. code-block:: python
-            >>>r.get_atom("P")
-            <Atom(name='P', coords='0 1 2')>
+
+        Examples:
+
+            #get phosphate atom, and print coordinates
+            a = r.get_atom("P")
+            print a.coords
         """
         try:
             index = self.rtype.atom_map[atom_name]
@@ -259,9 +168,9 @@ class Residue(object):
 
     def connected_to(self, res, cutoff=3.0):
         """
-		Determine if another residue is connected to this residue, returns 0
-		if res is not connected to self, returns 1 if connection is going
-		from 5' to 3' and returns -1 if connection is going from 3' to 5'
+        Determine if another residue is connected to this residue, returns 0
+        if res is not connected to self, returns 1 if connection is going
+        from 5' to 3' and returns -1 if connection is going from 3' to 5'
 
         :param res: another residue
         :type res: Residue object
@@ -285,18 +194,18 @@ class Residue(object):
 
     def get_beads(self):
         """
-		Generates steric beads required for checking for steric clashes between
-		motifs. Each residues has three beads modeled after the typical three
-		bead models used in coarse grain modeling. The three beads are,
-		Phosphate (P, OP1, OP2) Sugar (O5',C5',C4',O4',C3',O3',C1',C2',O2')
-		and Base (All remaining atoms).
-		"""
-        phos_atoms,sugar_atoms,base_atoms = [],[],[]
+        Generates steric beads required for checking for steric clashes between
+        motifs. Each residues has three beads modeled after the typical three
+        bead models used in coarse grain modeling. The three beads are,
+        Phosphate (P, OP1, OP2) Sugar (O5',C5',C4',O4',C3',O3',C1',C2',O2')
+        and Base (All remaining atoms).
+        """
+        phos_atoms, sugar_atoms, base_atoms = [], [], []
 
-        for i,a in enumerate(self.atoms):
+        for i, a in enumerate(self.atoms):
             if a is None:
                 continue
-            if   i < 3:
+            if i < 3:
                 phos_atoms.append(a)
             elif i < 12:
                 sugar_atoms.append(a)
@@ -305,7 +214,7 @@ class Residue(object):
 
         beads = []
         types = [BeadType.PHOS, BeadType.SUGAR, BeadType.BASE]
-        for i,alist in enumerate([phos_atoms,sugar_atoms,base_atoms]):
+        for i, alist in enumerate([phos_atoms, sugar_atoms, base_atoms]):
             if len(alist) > 0:
                 beads.append(Bead(util.center(alist), types[i]))
 
@@ -313,11 +222,11 @@ class Residue(object):
 
     def copy(self):
         """
-		performs a deep copy of Residue object
-		"""
-        copied_r = Residue(self.rtype,self.name,self.num,self.chain_id,self.i_code)
+        performs a deep copy of Residue object
+        """
+        copied_r = Residue(self.rtype, self.name, self.num, self.chain_id, self.i_code)
         copied_r.atoms = [None for x in range(len(self.atoms))]
-        for i,a in enumerate(self.atoms):
+        for i, a in enumerate(self.atoms):
             if a is None:
                 continue
             copied_r.atoms[i] = a.copy()
@@ -327,15 +236,17 @@ class Residue(object):
 
     def new_uuid(self):
         """
-        give residue a new uuid code, do this with caution
+        give residue a new unique indentifier code.
+        There is probably no reason why you should call this unless writing a new,
+        motif structure.
         """
         self.uuid = uuid.uuid1()
 
     def to_str(self):
         """
-        stringifes residue object to string
+        stringifes residue object
         """
-        s = self.rtype.name + "," + self.name + "," + str(self.num) + "," +\
+        s = self.rtype.name + "," + self.name + "," + str(self.num) + "," + \
             self.chain_id + "," + self.i_code + ","
         for a in self.atoms:
             if a is None:
@@ -346,7 +257,7 @@ class Residue(object):
 
     def to_pdb_str(self, acount=1, return_acount=0, rnum=-1, chain_id=""):
         """
-        returns pdb formatted of residues coordinate information
+        returns pdb formatted string of residue's coordinate information
         """
 
         num = self.num
@@ -367,7 +278,7 @@ class Residue(object):
             acount += 1
 
         if return_acount:
-            return s,acount
+            return s, acount
         else:
             return s
 

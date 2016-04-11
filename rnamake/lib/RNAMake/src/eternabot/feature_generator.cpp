@@ -26,6 +26,7 @@ FeatureGenerator::get_features(
     return features;
     
 }
+    
 
 void
 FeatureGenerator::update_features(

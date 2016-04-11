@@ -60,7 +60,7 @@ aligned_(std::map<int, int>())
 
 MotifGraph::MotifGraph(
     String const & s,
-MotifGraphStringType const & s_type):
+    MotifGraphStringType const & s_type):
 graph_(GraphStatic<MotifOP>()),
 merger_(MotifMerger()),
 clash_radius_(2.5),
@@ -81,6 +81,7 @@ MotifGraph::_setup_from_top_str(String const & s) {
     auto node_spl = split_str_by_delimiter(spl[0], "|");
     auto sspl = Strings();
     int i = 0;
+    int max_index = 0;
     for(auto const & n_spl : node_spl) {
         sspl = split_str_by_delimiter(n_spl, ",");
         auto m = MotifOP(nullptr);
@@ -96,7 +97,13 @@ MotifGraph::_setup_from_top_str(String const & s) {
         graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1,
                         std::stoi(sspl[2]));
         aligned_[std::stoi(sspl[2])] = std::stoi(sspl[3]);
+        
+        if(std::stoi(sspl[2]) > max_index) {
+            max_index = std::stoi(sspl[2]);
+        }
     }
+    
+    graph_.index(max_index+1);
     
     auto con_spl = split_str_by_delimiter(spl[1], "|");
     for(auto const & c_str : con_spl) {
@@ -393,7 +400,7 @@ MotifGraph::add_connection(
         ej = node_j_indexes[0];
         name_j = node_j->data()->ends()[ej]->name();
     }
-    
+        
     graph_.connect(i, j, ei, ej);
     
     merger_.connect_motifs(node_i->data(), node_j->data(),
@@ -624,7 +631,7 @@ MotifGraph::replace_ideal_helices() {
             }
             else                  {
                 pos = _add_motif_to_graph(h, parent->index(), parent_end_index);
-                aligned_[pos] = 0 ;
+                aligned_[pos] = 1 ;
             }
             
             int old_pos = pos;
@@ -691,6 +698,9 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
         auto new_name = String();
         new_name += spl[0][0]; new_name += spl[2][1]; new_name += "=";
         new_name += spl[0][1]; new_name += spl[2][0];
+        if(n->data()->name() == new_name) {
+            continue;
+        }
         auto m = ResourceManager::getInstance().get_motif(new_name);
         m->id(n->data()->id());
         auto org_res = n->data()->residues();
@@ -721,6 +731,8 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
             n->data() = m;
         }
         
+        merger_.update_motif(n->data());
+
         
         if(other == nullptr) { continue; }
         if(other->data()->mtype() == MotifType::HELIX) { continue; }
@@ -735,7 +747,14 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
     
 }
 
-
+GraphNodeOPs<MotifOP>
+MotifGraph::unaligned_nodes() {
+    auto nodes = GraphNodeOPs<MotifOP>();
+    for(auto const & kv : aligned_) {
+        if(kv.second == 0) { nodes.push_back(get_node(kv.first)); }
+    }
+    return nodes;
+}
 
 
 

@@ -65,5 +65,3 @@ def are_matrices_equal(m1, m2):
     return 1
 
 
-def are_atom_equal(a1, a2):
-    return are_points_equal(a1.coords, a2.coords) and a1.name == a2.name

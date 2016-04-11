@@ -109,6 +109,11 @@ public: //getters
     int
     level() { return level_; }
     
+public: //setters
+    
+    inline
+    void
+    index(int nindex) { index_ = nindex; }
     
     
 protected:

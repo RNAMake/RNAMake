@@ -279,6 +279,7 @@ MotifMerger::update_motif(MotifOP const & m) {
     }
     
     motifs_[m->id()] = m;
+    rebuild_structure_ = 1;
 }
 
 

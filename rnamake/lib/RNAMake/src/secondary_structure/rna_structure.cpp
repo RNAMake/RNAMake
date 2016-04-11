@@ -70,6 +70,11 @@ RNAStructure::replace_sequence(
     for(auto const & s : spl) {
         seq2 += s;
     }
+    
+    //std::cout << seq << std::endl;
+    //std::cout << sequence() << std::endl;
+    //std::cout << seq2 << std::endl;
+    
     assert(seq2.length() == residues().size() && "cannot replace sequence with a different length sequence");
     int i = 0;
     for(auto & r : residues()) {
