@@ -59,6 +59,13 @@ private:
         String const &,
         String const &);
     
+    MotifStateEnsembleTreeOP
+    get_mset_old_coorigin(
+        String const &,
+        String const &,
+        String const &,
+        String const &);
+    
     MotifInfos
     get_motifs_from_seq_and_ss(
         String const &,
