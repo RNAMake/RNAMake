@@ -48,6 +48,7 @@ parse_command_line(
     cl_opts.add_option("extra_mse", "", STRING_TYPE, "", false);
     cl_opts.add_option("full_seq", "", INT_TYPE, "0", false);
     cl_opts.add_option("reverse", "", INT_TYPE, "0", false);
+    cl_opts.add_option("coorigin", "", INT_TYPE, "0", false);
 
     return cl_opts.parse_command_line(argc, argv);
     
@@ -85,6 +86,19 @@ SimulateTectos::SimulateTectos(
         tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
         //Ints nodes = {0};
         //tfs.check_nodes_2(nodes);
+
+    }
+    
+    else if(opts.option<int>("coorigin")) {
+        mset = get_mset_old_coorigin(
+                            opts.option<String>("fseq"),
+                            opts.option<String>("fss"),
+                            opts.option<String>("cseq"),
+                            opts.option<String>("css"));
+        auto mst = mset->to_mst();
+   
+        tfs.check_nodes_2({12});
+        tfs.setup(mset, 12, mset->last_node()->index(), 1, 1);
 
     }
     
@@ -312,6 +326,73 @@ SimulateTectos::get_mset_old_full_seq(
     
     return mset;
 }
+
+MotifStateEnsembleTreeOP
+SimulateTectos::get_mset_old_coorigin(
+    String const & fseq,
+    String const & fss,
+    String const & cseq,
+    String const & css) {
+    
+    
+    auto mt = std::make_shared<MotifTree>();
+    mt->option("sterics", 0);
+    mt->add_motif(ResourceManager::getInstance().get_motif("GC=GC"));
+    int pos = mt->add_motif(ResourceManager::getInstance().get_motif("GGAA_tetraloop", "", "A14-A15"));
+    
+    auto flow_motif_infos = get_motifs_from_seq_and_ss(fseq, fss);
+    auto chip_motif_infos = get_motifs_from_seq_and_ss(cseq, css);
+    mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[1].name),
+                  -1, -1, "A7-A22");
+    
+    for(int i = 2; i < flow_motif_infos.size(); i++) {
+        if(flow_motif_infos[i].end_id.length() == 0) {
+            mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[i].name));
+        }
+        else{
+            mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_infos[i].name,
+                                                                   flow_motif_infos[i].end_id,
+                                                                   flow_motif_infos[i].end_name));
+            
+        }
+    }
+    
+    mt->add_motif(ResourceManager::getInstance().get_motif("GAAA_tetraloop", "", "A149-A154"));
+    
+    auto fixed_motif_infos = MotifInfos();
+    for (int i = chip_motif_infos.size()-1; i > -1; i--) {
+        auto spl = split_str_by_delimiter(chip_motif_infos[i].name, "=");
+        auto new_info = chip_motif_infos[i];
+        new_info.name = spl[1].substr(1) + spl[1].substr(0,1) + "=" +
+                        spl[0].substr(1) + spl[0].substr(0,1);
+        //std::cout << chip_motif_infos[i].name << " " << new_info.name << std::endl;
+        fixed_motif_infos.push_back(new_info);
+    }
+    
+    mt->add_motif(ResourceManager::getInstance().get_motif(fixed_motif_infos[0].name),
+                  pos, -1, "A1-A6");
+    
+    for(int i = 1; i < fixed_motif_infos.size()-1; i++) {
+        if(fixed_motif_infos[i].end_id.length() == 0) {
+            mt->add_motif(ResourceManager::getInstance().get_motif(fixed_motif_infos[i].name));
+        }
+        else{
+            mt->add_motif(ResourceManager::getInstance().get_motif(fixed_motif_infos[i].name,
+                                                                   fixed_motif_infos[i].end_id,
+                                                                   fixed_motif_infos[i].end_name));
+            
+        }
+    }
+
+    
+    
+    MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
+    mset->setup_from_mt(mt);
+    
+    return mset;
+
+}
+
 
 MotifInfos
 SimulateTectos::get_motifs_from_seq_and_ss(
