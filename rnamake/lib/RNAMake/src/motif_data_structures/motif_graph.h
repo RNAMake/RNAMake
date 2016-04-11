@@ -203,6 +203,23 @@ public:
         int,
         String const &);
     
+    
+    GraphNodeOPs<MotifOP>
+    unaligned_nodes();
+    
+    inline
+    GraphNodeOP<MotifOP> const &
+    get_node_by_id(
+        Uuid const & uuid) {
+        for(auto const & n : graph_.nodes()) {
+            if(n->data()->id() == uuid) {
+                return n;
+            }
+        }
+        throw std::runtime_error("could not find node by id");
+    }
+
+    
 public: //Graph Wrappers
     inline
     size_t

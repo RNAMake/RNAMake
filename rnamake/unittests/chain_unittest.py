@@ -2,6 +2,7 @@ import unittest
 import rnamake.chain
 import rnamake.io
 import util
+import is_equal
 
 
 class ChainUnittest(unittest.TestCase):
@@ -74,6 +75,21 @@ class ChainUnittest(unittest.TestCase):
         sub3 = chain.subchain(0,-1)
         if len(sub3) != 156:
             self.fail()
+
+    def test_subchain_2(self):
+        chain = self.chains[0]
+        sub = chain.subchain(0)
+
+        if not is_equal.are_chains_equal(chain, sub):
+            self.fail("did not shallow copy chain correctly")
+
+    def test_copy(self):
+        chain = self.chains[0]
+        chain_copy = chain.copy()
+        if not is_equal.are_chains_equal(chain, chain_copy):
+            self.fail("did not copy chain correctly")
+
+
 
 
 

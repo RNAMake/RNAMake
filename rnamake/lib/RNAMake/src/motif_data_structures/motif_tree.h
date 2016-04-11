@@ -161,6 +161,18 @@ public:
     String
     topology_to_str();
     
+    inline
+    TreeNodeOP<MotifOP>  const &
+    get_node_by_id(
+        Uuid const & uuid) {
+        for(auto const & n : tree_) {
+            if(n->data()->id() == uuid) {
+                return n;
+            }
+        }
+        throw std::runtime_error("could not find node by id");
+    }
+    
 private:
     void
     setup_options();

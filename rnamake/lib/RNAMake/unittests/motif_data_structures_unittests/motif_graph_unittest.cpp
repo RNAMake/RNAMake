@@ -231,6 +231,7 @@ MotifGraphUnittest::test_topology_to_str() {
     auto mg = builder.build(3);
     
     auto s = mg->topology_to_str_new();
+    
     auto mg_new = MotifGraph(s, MotifGraphStringType::TOP);
     
 }

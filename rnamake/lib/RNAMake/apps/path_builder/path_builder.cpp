@@ -78,7 +78,6 @@ int main(int argc, const char * argv[]) {
         out << mg->topology_to_str_new() << std::endl;
         
         mg->remove_level(1);
-        exit(0);
         
         i += 1;
         

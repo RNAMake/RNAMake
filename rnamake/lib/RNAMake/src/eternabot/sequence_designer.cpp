@@ -85,7 +85,7 @@ SequenceDesigner::design(sstruct::PoseOP const & p) {
     float prob, diceroll;
     int fail = 0;
 
-    String best_sequence;
+    String best_sequence = p->sequence();
     float best_score = -100000;
     
     Strings last_pair{"", ""};

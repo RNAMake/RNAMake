@@ -136,7 +136,7 @@ public:
     diff(
         BasepairStateOP const & state) {
         float diff = d_.distance(state->d());
-        diff += _rot_diff(state);
+        diff += _rot_diff(state)*2;
         return diff;
     }
     

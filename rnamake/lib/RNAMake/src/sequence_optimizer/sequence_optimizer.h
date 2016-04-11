@@ -73,6 +73,19 @@ public:
         int end_i,
         int end_j);
     
+    OptimizedSequenceOPs
+    get_optimized_sequences_2(
+        MotifGraphOP & mg,
+        Uuid const & uuid_1,
+        Uuid const & uuid_2,
+        int end_i,
+        int end_j);
+    
+    String
+    get_final_sequence(
+        String const &,
+        String const &);
+    
 public: //option wrappers
     
     inline
@@ -122,6 +135,21 @@ private:
     MotifTreeOP mt_;
     eternabot::SequenceDesigner designer_;
     eternabot::SequenceDesignerResultOPs designer_results_;
+    //options
+    bool sub_sequence_;
+    int start_;
+    int end_;
+    int solutions_;
 };
 
 #endif /* defined(__RNAMake__sequence_optimizer__) */
+
+
+
+
+
+
+
+
+
+

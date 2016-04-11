@@ -8,6 +8,7 @@ import rnamake.io
 import rnamake.settings
 import rnamake.util
 import util
+import is_equal
 
 
 class ResidueUnittest(unittest.TestCase):
@@ -161,6 +162,13 @@ class ResidueUnittest(unittest.TestCase):
         copy_res.num = 1000
         if res.num == copy_res.num:
             self.fail("did not copy num correctly")
+
+    def test_copy_2(self):
+        res = self.residues[0]
+        copy_res = res.copy()
+
+        if not is_equal.are_residues_equal(res, copy_res):
+            self.fail("did not copy residue properly")
 
     def test_new_uuid(self):
         res = self.residues[0]
