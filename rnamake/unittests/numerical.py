@@ -1,4 +1,3 @@
-import rnamake.atom
 
 def are_floats_equal(f1,f2):
     """

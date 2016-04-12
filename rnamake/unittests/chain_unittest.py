@@ -1,6 +1,7 @@
 import unittest
-import rnamake.chain
-import rnamake.io
+
+from rnamake import chain, io, exceptions, settings
+
 import util
 import is_equal
 
@@ -8,7 +9,7 @@ import is_equal
 class ChainUnittest(unittest.TestCase):
 
     def setUp(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/chain_strs.dat"
+        path = settings.UNITTEST_PATH + "resources/chain_strs.dat"
         f = open(path)
         lines = f.readlines()
         f.close()
@@ -16,46 +17,32 @@ class ChainUnittest(unittest.TestCase):
         def get_chains(lines):
             chains = []
             for l in lines:
-                chain = rnamake.io.str_to_chain(l)
+                chain = io.str_to_chain(l)
                 chains.append(chain)
             return chains
 
         self.chains = util.supress_log_output(get_chains, lines)
 
     def test_creation(self):
+        """
+        creating a new object should never return an error
+        """
+
         try:
-            c = rnamake.chain.Chain()
+            c = chain.Chain()
         except:
             self.fail("was not expecting an error upon initation")
 
-    def test_str_to_chain(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/chain_strs.dat"
-        f = open(path)
-        lines = f.readlines()
-        f.close()
-
-        def get_chains(lines):
-            chains = []
-            for l in lines:
-                chain = rnamake.io.str_to_chain(l)
-                chains.append(chain)
-            return chains
-
-        chains = util.supress_log_output(get_chains, lines)
-        if len(chains) == 0:
-            self.fail("did not load chains")
-
     def test_first_and_last(self):
-        chain = self.chains[0]
-        if chain.residues[0]  != chain.first() or \
-           chain.residues[-1] != chain.last():
+        c = self.chains[0]
+        if c.residues[0]  != c.first() or \
+           c.residues[-1] != c.last():
             self.fail()
 
-    def test_repr(self):
-        try:
-            chain = rnamake.chain.Chain()
-        except:
-            self.fail("chain __repr__ yeilded unexpected error")
+        chain_2 = chain.Chain()
+
+        with self.assertRaises(exceptions.ChainException):
+            first = chain_2.first()
 
     def test_subchain(self):
         chain = self.chains[0]

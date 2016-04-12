@@ -1,8 +1,10 @@
+import exceptions
+
 
 class Chain(object):
 
     """
-    Store chain information from pdb file. Stores all residues in chain.
+    Stored chain information from pdb file. Stores all residues in chain.
     Implementation is designed to be extremely lightweight.
 
     :param residues: the residues that are to be included in this chain
@@ -17,8 +19,18 @@ class Chain(object):
     """
     __slots__ = ["residues"]
 
-    def __init__(self, residues=[]):
+    def __init__(self, residues=None):
+        """
+        creates new Chain object
+
+        :param residues: list of residues that make up this Chain, in 5' to 3' order
+        :type  residues: list of Residue objects
+
+        :return:
+        """
         self.residues = residues
+        if residues is None:
+            self.residues = []
 
     def __repr__(self):
         if len(self.residues) == 0:
@@ -32,15 +44,20 @@ class Chain(object):
 
     def first(self):
         """
-        returns 5' end of chain
+        returns residue at 5' end of chain
         """
-
+        if len(self.residues) == 0:
+            raise exceptions.ChainException("cannot call first there are no "
+                                            "residues in chain")
         return self.residues[0]
 
     def last(self):
         """
         returns 3' end of chain
         """
+        if len(self.residues) == 0:
+            raise exceptions.ChainException("cannot call first there are no "
+                                            "residues in chain")
         return self.residues[-1]
 
     def subchain(self, start=None, end=None, start_res=None, end_res=None):
@@ -48,25 +65,32 @@ class Chain(object):
         Creates a new chain from a subsection of the residues in the current
         chain.
 
-        :param start: start position in residues object list
-        :type start: int
+        :param start: start position in residues object list, default:None
+        :param end: end position in residues object list, default:None
+        :param start_res: The 5' residue of sub chain, default:None
+        :param end_res:  The 3' resiude of sub chain, default:None
 
-        :param end: end position in residues object list
+        :type start: int
         :type end: int
+
+        :return: Chain object
         """
-        if start_res:
+
+        if start_res is not None and end_res is not None:
             try:
                 start = self.residues.index(start_res)
                 end = self.residues.index(end_res)
             except:
-                return None
+                raise exceptions.ChainException("supplied start_res and end_res "
+                                                "but they are not members of "
+                                                "chain")
 
             if start > end:
                 start, end = end, start
             end += 1
 
         if start < 0:
-            raise ValueError("start cannot be less then 0")
+            raise exceptions.ChainException("start pos cannot be less then 0")
 
         if end is None:
             end = len(self.residues)
@@ -75,18 +99,42 @@ class Chain(object):
 
     def copy(self):
         """
-        Returns a deepcopy of the this chain element
+        Creates a deepcopy of the this chain object.
+
+        :return: Chain object
         """
         residues = [r.copy() for r in self.residues]
         return Chain(residues)
 
     def to_str(self):
+        """
+        Stringifes Chain object
+
+        :return: str
+        """
+
         s = ""
         for r in self.residues:
             s += r.to_str() + ";"
         return s
 
     def to_pdb_str(self, acount=1, return_acount=0, rnum=-1, chain_id=""):
+        """
+        creates a PDB string formatted verision of this Chain object.
+
+        :param acount: current atom index, default: 1
+        :param return_acount: final atom index after current atoms, default: 0
+        :param rnum: starting residue number, default: -1
+        :param chain_id: the chain id of the chain, i.e. "A", "B" etc
+
+        :type  acount: int
+        :type  return_acount: int
+        :type  rnum: int
+        :type  chain_id: str
+
+        :return: str
+        """
+
         s = ""
         for r in self.residues:
             r_str, acount = r.to_pdb_str(acount, 1, rnum, chain_id)
@@ -94,21 +142,29 @@ class Chain(object):
                 rnum += 1
             s += r_str
 
+        # TODO fix returns should only be one possibility
         if return_acount:
             return s, acount
         else:
             return s
 
     def to_pdb(self, fname="chain.pdb", rnum=-1, chain_id=""):
+        """
+        Writes a PDB string formmated verision of this Chain object to file
+
+        :param fname: filename of output PDB file, default="chain.pdb"
+        :param rnum: starting residue number, default: -1
+        :param chain_id: the chain id of the chain, i.e. "A", "B" etc
+
+        :type  fname: str
+        :type  rnum: int
+        :type  chain_id: str
+
+        :return: None
+        """
         f = open(fname, "w")
         f.write(self.to_pdb_str(rnum=rnum, chain_id=chain_id))
         f.close()
-
-    def list_res(self):
-        s = ""
-        for r in self.residues:
-            s += r.rtype.name[0] + str(r.num) + " "
-        return s
 
 
 def connect_residues_into_chains(residues):
@@ -118,6 +174,8 @@ def connect_residues_into_chains(residues):
 
         :param residues: residue objects that belong in this structure
         :type residues: List of Residue objects
+
+        :return: List of Chain objects
         """
 
         chains = []
