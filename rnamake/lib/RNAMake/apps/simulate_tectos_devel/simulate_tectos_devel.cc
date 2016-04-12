@@ -43,6 +43,8 @@ parse_command_line(
     cl_opts.add_option("rf", "record_file", STRING_TYPE, "test.out", false);
     cl_opts.add_option("rs", "recore_state", INT_TYPE, "0", false);
     cl_opts.add_option("rall", "record_all", INT_TYPE, "0", false);
+    cl_opts.add_option("rallf", "record_all_file", STRING_TYPE, "0", false);
+
     cl_opts.add_option("pdbs", "", INT_TYPE, "0", false);
     cl_opts.add_option("ensembles", "", INT_TYPE, "0", false);
     cl_opts.add_option("extra_mse", "", STRING_TYPE, "", false);
@@ -120,6 +122,7 @@ SimulateTectos::SimulateTectos(
     tfs.option("record_file", opts.option<String>("rf"));
     tfs.option("record_state", opts.option<int>("rs"));
     tfs.option("record_all", opts.option<int>("rall"));
+    tfs.option("record_all_file", opts.option<String>("rallf"));
     tfs.option("d_weight", opts.option<float>("wd"));
     tfs.option("r_weight", opts.option<float>("wr"));
     
