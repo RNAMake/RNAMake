@@ -22,20 +22,23 @@ ThermoFlucSimulationDevel::setup_options() {
     options_.add_option(Option("r_weight", 1.0f));
     options_.add_option(Option("record_state", 0));
     options_.add_option(Option("record_all", 0));
+    options_.add_option(Option("record_all_file", "test_all.out"));
 
+    
     update_var_options();
 }
 
 void
 ThermoFlucSimulationDevel::update_var_options() {
-    temperature_   = options_.option<float>("temperature");
-    steps_         = options_.option<int>("steps");
-    record_        = options_.option<int>("record");
-    record_state_  = options_.option<int>("record_state");
-    record_all_    = options_.option<int>("record_all");
-    record_file_   = options_.option<String>("record_file");
-    cutoff_        = options_.option<float>("cutoff");
-    steric_radius_ = options_.option<float>("steric_radius");
+    temperature_    = options_.option<float>("temperature");
+    steps_          = options_.option<int>("steps");
+    record_         = options_.option<int>("record");
+    record_state_   = options_.option<int>("record_state");
+    record_all_     = options_.option<int>("record_all");
+    record_all_file_= options_.option<String>("record_all_file");
+    record_file_    = options_.option<String>("record_file");
+    cutoff_         = options_.option<float>("cutoff");
+    steric_radius_  = options_.option<float>("steric_radius");
     
     std::dynamic_pointer_cast<FrameScorerDevel>(scorer_)->weight_d(options_.option<float>("d_weight"));
     std::dynamic_pointer_cast<FrameScorerDevel>(scorer_)->weight_r(options_.option<float>("r_weight"));
@@ -134,7 +137,7 @@ ThermoFlucSimulationDevel::run() {
     }
     
     if(record_all_) {
-        out_all.open("test_all.out");
+        out_all.open(record_all_file_);
         int last = 0;
         int c = 1;
         for(int a = 2; a < sampler_.mst()->size(); a++) {
