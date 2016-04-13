@@ -1,23 +1,21 @@
 import uuid
-import atom
-import residue_type
-import util
-import basic_io
 import numpy as np
 
-# logging.basicConfig()
-#logger = logging.getLogger(__name__)
-
+import residue_type, util, basic_io
 
 class BeadType(object):
     """
-    BeadType is an ENUM type. This is to keep track what atoms are used to
-    generate the bead center. There are three types Phos(Phosphate), Sugar and
-    Base
+    BeadType is an ENUM type. This is to specify which center of atoms each bead
+    represents.
+
+    Phosphate (0):  P, OP1, OP2\n
+    Sugar (1):  O5',C5',C4',O4',C3',O3',C1',C2',O2'\n
+    Base  (2):  All remaining atoms
     """
-    PHOS = 0   #: P, OP1, OP2
-    SUGAR = 1  #: O5', C5', C4', O4', C3', O3', C1', C2', O2'
-    BASE = 2   #: All remaining
+
+    PHOS = 0   # P, OP1, OP2
+    SUGAR = 1  # O5', C5', C4', O4', C3', O3', C1', C2', O2'
+    BASE = 2   # All remaining
 
 
 class Bead(object):
@@ -27,7 +25,7 @@ class Bead(object):
 
     :param btype: type of the bead either Phos(Phosphate), Sugar or Base, of
         the atoms used generate the center
-    :btype btype: BeadType
+    :type btype: BeadType
 
     :param center: The geometric center of the group of atoms
     :type center: numpy array
@@ -39,11 +37,32 @@ class Bead(object):
     def __init__(self, center, btype):
         self.center, self.btype = center, btype
 
+    def __repr__(self):
+        center = basic_io.point_to_str(self.center)
+        return "<Bead(btype='%s', center='%s')>" % (self.type_name(), center)
+
     def copy(self):
         """
         returns a deep copy of current bead object
+
+        :returns: copy of bead object
+        :rtype: Bead
         """
         return Bead(np.copy(self.center), self.btype)
+
+    def type_name(self):
+        """
+        returns name of btype in string form
+
+        :returns: name of btype type
+        :rtype: str
+        """
+        if self.btype == 0:
+            return "PHOSPHATE"
+        if self.btype == 1:
+            return "SUGAR"
+        if self.btype == 2:
+            return "BASE"
 
 
 class Residue(object):
@@ -52,7 +71,7 @@ class Residue(object):
     belong to residue. Implementation is designed to be extremely lightweight.
 
     :param rtype: residue type, stores information about residue
-    :type rtype: ResidueType object
+    :type rtype: residue_type.ResidueType
 
     :param name: residue name
     :type name: str
@@ -67,37 +86,62 @@ class Residue(object):
         set to
     :type i_code: str
 
-    .. code-block:: python
+    :attributes:
 
-        # example of generating a new adenine residue
-        >>>rts = residue_type.ResidueTypeSet()
-        >>>rtype = rts.get_rtype_by_resname("ADE")
-        >>>r = Residue(rtype, "ADE", 1, "A")
-        >>>print r.name
-        ADE
-
-        # to add atoms to residue, use setup_atoms
-        >>>a1 = atom.Atom("P",[1.0,2.0,3.0])
-        >>>a2 = atom.Atom("O1P",[2.0,3.0,4.0])
-        >>>r.setup_atoms([a1,a2])
-
-    Attributes
-    ----------
-    `atoms` : Atom object list
+    `atoms` : atom.Atom
         holds all atoms that belong to this residue object
     `name` : str
         name of residue, ex. ADE, GUA etc
     `num` : int
         residue num
-    `rtype` : ResidueType objext
+    `rtype` : residue_type.ResidueType
         Information about residue type each nucleic acid has its own type
     `chain_id` : str
         chain indentification string, ex. 'A' or 'B'
     `i_code`: str
         residue insertion code
-    `uuid` : uuid.uuid1() object
+    `uuid` : uuid.uuid1
         the unique id to indentify residue
-    `
+
+    :examples:
+
+    .. code-block:: python
+
+        # generating a new residue
+        >>>rts = residue_type.ResidueTypeSet()
+        >>>rtype = rts.get_rtype_by_resname("ADE")
+        >>>r = Residue(rtype, "ADE", 1, "A")
+        >>>print r.name
+        A
+
+        #using test residue
+        >>>import rnamake.unittests.instances
+        >>>r = rnamake.unittests.instances.residue()
+        >>>print r.name
+        G
+
+        >>>a = r.get_atom("C1'")
+        >>>print a.coords
+        [-23.806 -50.289  86.732]
+
+        >>>r.get_beads()
+        [<Bead(btype='SUGAR', center='-24.027 -48.5001111111 86.368')>, <Bead(btype='BASE', center='-21.2186363636 -52.048 85.1157272727')>]
+
+        #a fast way of saving coordinate information to file
+        >>>r.to_str()
+        "GUA,G,103,A,,N,N,N,O5' -26.469 -47.756 84.669,C5' -25.05 -47.579 84.775,C4' -24.521 -48.156 86.068,O4' -24.861 -49.568 86.118,C3' -23.009 -48.119 86.281,O3' -22.548 -46.872 86.808,C1' -23.806 -50.289 86.732,C2' -22.812 -49.259 87.269,O2' -23.167 -48.903 88.592,N1 -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,"
+
+        #get PDB formmated coordinates back out
+        >>>r.to_pdb_str()
+        ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
+        ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
+        ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
+        ATOM      4 O4'  G   A 103     -24.861 -49.568  86.118  1.00  0.00
+        ATOM      5 C3'  G   A 103     -23.009 -48.119  86.281  1.00  0.00
+        ATOM      6 O3'  G   A 103     -22.548 -46.872  86.808  1.00  0.00
+        .
+        .
+        .
     """
 
     __slots__ = [
@@ -126,10 +170,13 @@ class Residue(object):
         return "<Residue('%s%d%s chain %s')>" % (
             self.name, self.num, self.i_code, self.chain_id)
 
+    def short_name(self):
+        return self.rtype.name[0]
+
     def setup_atoms(self, atoms):
         """
-        put atoms in correct positon in internal atom list, warns of extra atoms
-        are included as well if atoms are missing
+        put atoms in correct positon in internal atom list, also corrects some
+        named atom names to their correct name
 
         :param atoms: list of atom objects that are to be part of this residue
         :type atoms: list of Atom objects
@@ -153,18 +200,19 @@ class Residue(object):
 
         Examples:
 
-            #get phosphate atom, and print coordinates
-            a = r.get_atom("P")
-            print a.coords
+        .. code-block:: python
+
+            >>>r = rnamake.unittests.instances.residue()
+            >>>a = r.get_atom("C1'")
+            >>>print a.coords
+            [-23.806 -50.289  86.732]
         """
+
         try:
             index = self.rtype.atom_map[atom_name]
             return self.atoms[index]
         except KeyError:
             raise KeyError("cannot find atom")
-
-    def short_name(self):
-        return self.rtype.name[0]
 
     def connected_to(self, res, cutoff=3.0):
         """
@@ -173,7 +221,12 @@ class Residue(object):
         from 5' to 3' and returns -1 if connection is going from 3' to 5'
 
         :param res: another residue
-        :type res: Residue object
+        :param cutoff: distance to be considered connected, default: 3 Angstroms
+
+        :type res: Residue
+        :type cutoff: int
+
+        :rtype: int
 
         """
         # 5' to 3'
@@ -196,9 +249,21 @@ class Residue(object):
         """
         Generates steric beads required for checking for steric clashes between
         motifs. Each residues has three beads modeled after the typical three
-        bead models used in coarse grain modeling. The three beads are,
-        Phosphate (P, OP1, OP2) Sugar (O5',C5',C4',O4',C3',O3',C1',C2',O2')
-        and Base (All remaining atoms).
+        bead models used in coarse grain modeling. The three beads are:
+
+        Phosphate:  P, OP1, OP2\n
+        Sugar    :  O5',C5',C4',O4',C3',O3',C1',C2',O2'\n
+        Base     :  All remaining atoms
+
+        if there are for example no phosphate atoms only 2 beads will be returned.
+
+        .. code-block:: python
+
+            >>>import rnamake.unittests.instances
+            >>>r = rnamake.unittests.instances.residue()
+            >>>r.get_beads()
+            [<Bead(btype='SUGAR', center='-24.027 -48.5001111111 86.368')>, <Bead(btype='BASE', center='-21.2186363636 -52.048 85.1157272727')>]
+
         """
         phos_atoms, sugar_atoms, base_atoms = [], [], []
 
@@ -223,6 +288,19 @@ class Residue(object):
     def copy(self):
         """
         performs a deep copy of Residue object
+
+        :rtype: Residue
+
+        :examples:
+
+        .. code-block:: python
+
+            >>>import rnamake.unittests.instances
+            >>>r = rnamake.unittests.instances.residue()
+            >>>r_copy = r.copy()
+            >>>r_copy.name
+            G
+
         """
         copied_r = Residue(self.rtype, self.name, self.num, self.chain_id, self.i_code)
         copied_r.atoms = [None for x in range(len(self.atoms))]
@@ -245,6 +323,15 @@ class Residue(object):
     def to_str(self):
         """
         stringifes residue object
+
+        :returns: stringified residue object
+
+        .. code-block:: python
+
+            >>>import rnamake.unittests.instances
+            >>>r = rnamake.unittests.instances.residue()
+            >>>r.to_str()
+            "GUA,G,103,A,,N,N,N,O5' -26.469 -47.756 84.669,C5' -25.05 -47.579 84.775,C4' -24.521 -48.156 86.068,O4' -24.861 -49.568 86.118,C3' -23.009 -48.119 86.281,O3' -22.548 -46.872 86.808,C1' -23.806 -50.289 86.732,C2' -22.812 -49.259 87.269,O2' -23.167 -48.903 88.592,N1 -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,"
         """
         s = self.rtype.name + "," + self.name + "," + str(self.num) + "," + \
             self.chain_id + "," + self.i_code + ","
@@ -258,6 +345,35 @@ class Residue(object):
     def to_pdb_str(self, acount=1, return_acount=0, rnum=-1, chain_id=""):
         """
         returns pdb formatted string of residue's coordinate information
+
+        :param acount: current atom index, default: 1
+        :param return_acount: final atom index after current atoms, default: 0
+        :param rnum: starting residue number, default: -1
+        :param chain_id: the chain id of the chain, i.e. "A", "B" etc
+
+        :type  acount: int
+        :type  return_acount: int
+        :type  rnum: int
+        :type  chain_id: str
+
+        :rtype: str
+
+        :examples:
+
+        .. code-block:: python
+
+            >>> import rnamake.unittests.instances
+            >>> r = rnamake.unittests.instances.residue()
+            >>>r.to_pdb_str()
+            ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
+            ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
+            ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
+            ATOM      4 O4'  G   A 103     -24.861 -49.568  86.118  1.00  0.00
+            ATOM      5 C3'  G   A 103     -23.009 -48.119  86.281  1.00  0.00
+            ATOM      6 O3'  G   A 103     -22.548 -46.872  86.808  1.00  0.00
+            .
+            .
+            .
         """
 
         num = self.num
