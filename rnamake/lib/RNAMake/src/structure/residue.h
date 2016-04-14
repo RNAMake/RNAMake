@@ -21,12 +21,37 @@
 Point
 center(AtomOPs const &);
 
+/**
+ * BeadType is an ENUM type. This is to specify which center of atoms each bead
+ * represents.
+ *
+ * Phosphate (0):  P, OP1, OP2\n
+ * Sugar (1):  O5',C5',C4',O4',C3',O3',C1',C2',O2'\n
+ * Base  (2):  All remaining atoms
+ */
 enum BeadType { PHOS = 0, SUGAR = 1, BASE = 2 };
 
+
+/**
+ * Bead class stores information related to keeping track of steric clashes
+ * between residues during building. They are never used outside the Residue class
+ *
+ */
 class Bead {
 public:
-    Bead() {}
+    /**
+     * Empty constructor for Bead object.
+     */
+    Bead():
+    center_(Point(0,0,0)),
+    btype_(BeadType(0))
+    {}
     
+    /**
+     * Standard constructor for Bead object.
+     * @param   btype   type of bead (PHOS, SUGAR or BASE)
+     * @param   center  the average 3D position of all atoms represented by bead
+     */
     inline
     Bead(
         Point const & center,
@@ -35,6 +60,10 @@ public:
         btype_ ( btype )
     {}
     
+    /**
+     * Copy constructor
+     * @param   b   Bead object copying from
+     */
     inline
     Bead(
         Bead const & b):
@@ -42,28 +71,86 @@ public:
     btype_(b.btype_)
     {}
     
-public:
+public: //accessors
     
+    /**
+     * Accessor for center_
+     */
     inline
     Point
     center() const { return center_; }
     
+    /**
+     * Accessor for btype_
+     */
     inline
     BeadType
     btype() const { return btype_; }
 
 private:
+    /**
+     * private variable for the 3D coordinates of the center of atoms the bead represents
+     */
     Point center_;
+    
+    /**
+     * private variable of the type of the bead PHOS, SUGAR or BASE)
+     */
     BeadType btype_;
     
 };
 
 typedef std::vector<Bead> Beads;
 
+/**
+ * Store residue information from pdb file, stores all Atom objects that
+ * belong to residue. Implementation is designed to be extremely lightweight.
+ *
+ * To get an example instance of Residue please include:\n
+ * #include "instances/structure_instances.hpp"
+ *
+ * Example of Common Usage:
+ *
+ * @code
+ *  //grabbing example instance
+ *  #include "instances/structure_instances.hpp"
+ *  auto r = instances::residue();
+ *  //simply getting name of residue, etc: A,G,C or U
+ *  std::cout << r->name() << std::endl; //OUTPUT: "G"
+ *
+ *  //getting a specific atom from residue
+ *  auto a = r->get_atom("C1'");
+ *  std::cout << a->coords() << std::endl; //OUTPUT: "-23.806 -50.289  86.732"
+ *
+ *  auto beads = r->get_beads();
+ *  std::cout << beads[0]->btype() << " " << beads[0]->center() << std::endl;
+ *  //OUTPUT: "1 24.027 -48.5001111111 86.368"
+ * 
+ *  //get PDB formatted String (can also write to file with r->to_pdb("test.pdb") )
+ *  std::cout << r->to_pdb_str() << std::endl; //OUTPUT -->
+ *  ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
+ *  ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
+ *  ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
+ *  ATOM      4 O4'  G   A 103     -24.861 -49.568  86.118  1.00  0.00
+ *  ATOM      5 C3'  G   A 103     -23.009 -48.119  86.281  1.00  0.00
+ *  ATOM      6 O3'  G   A 103     -22.548 -46.872  86.808  1.00  0.00
+ *  .
+ *  .
+ *  .
+ * @endcode
+ */
+
 class Residue {
 public:
-    Residue() {}
     
+    /**
+     * Standard constructor for Bead object.
+     * @param   rtype   residue type, dictates residue topology and information
+     * @param   name    name of residue i.e. "GUA", "CYT", etc
+     * @param   num     residue num 
+     * @param   chain_id    the id of the chain i.e. "A", "B", only one character
+     * @param   i_code  residue insertion code, usually nothing ("")
+     */
     Residue(
         ResidueType const & rtype,
         String const & name,
@@ -79,6 +166,10 @@ public:
     uuid_ ( Uuid() )
     {}
     
+    /**
+     * Copy constructor
+     * @param   r   Residue object copying from
+     */
     Residue(
         Residue const & r):
     rtype_(r.rtype_),
@@ -96,6 +187,11 @@ public:
         }
     }
     
+    /**
+     * Construction from String, used in reading data from files
+     * @param   s   string generated from to_str()
+     * @see to_str()
+     */
     Residue(
         String const & s,
         ResidueTypeSet const & rts) {
@@ -122,6 +218,9 @@ public:
     }
 
     
+    /**
+     * Empty deconstructor 
+     */
     ~Residue() {}
 
 public:

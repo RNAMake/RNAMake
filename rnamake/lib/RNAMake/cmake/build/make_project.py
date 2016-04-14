@@ -4,7 +4,7 @@ import fnmatch
 
 from rnamake import util
 
-libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
+libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer instances"
 #libs = "base math data_structure util secondary_structure structure"
 lib_paths = libs.split()
 

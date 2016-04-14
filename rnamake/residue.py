@@ -171,6 +171,11 @@ class Residue(object):
             self.name, self.num, self.i_code, self.chain_id)
 
     def short_name(self):
+        """gets letter of residue, i.e. A or G etc
+
+        :return: letter for residue
+        :rtype: str
+        """
         return self.rtype.name[0]
 
     def setup_atoms(self, atoms):
