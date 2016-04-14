@@ -45,10 +45,12 @@
 
 #include "sequence_optimizer_unittests/sequence_optimizer_unittests.h"
 
+#include "instance_unittests/instance_unittest.hpp"
+
 
 int main(int argc, const char * argv[]) {
     
-    unittests::motif_structures::MotifGraphUnittest test;
+    unittests::instances::InstanceUnittests test;
     test.run();
 
     return 0;

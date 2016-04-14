@@ -5,29 +5,62 @@ class Chain(object):
 
     """
     Stored chain information from pdb file. Stores all residues in chain.
-    Implementation is designed to be extremely lightweight.
+    Implementation is designed to be extremely lightweight. To connect residues
+    into chains it highly adviced that you use
+    :func:`connect_residues_into_chains`
 
     :param residues: the residues that are to be included in this chain
-    :type residues: list of residue objects
+    :type residues: list of residue.Residue objects
 
-    Attributes:
-    ----------
+    :attributes:
+
     `residues` : List of Residue objects
         The list of residues that belong to this chain will always be in
         5' to 3' order
+
+    :examples:
+
+    ..  code-block:: python
+
+        >>>import rnamake.unittests.instances
+        >>>c = rnamake.unittests.instances.chain()
+        >>>c.first()
+        <Residue('G103 chain A')>
+
+        >>>c.last()
+        <Residue('C260 chain A')>
+
+        >>>len(c)
+        157
+
+        >>>cs = c.subchain(1, 10)
+        >>>len(cs)
+        9
+
+        >>>cs.first()
+        <Residue('A104 chain A')>
+
+        >>>cs2 = c.subchain(start_res=c.residues[10], end_res=c.residues[15])
+        >>>len(cs2)
+        6
+
+        >>>c.to_pdb_str()
+        ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
+        ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
+        ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
+        ATOM      4 O4'  G   A 103     -24.861 -49.568  86.118  1.00  0.00
+        ATOM      5 C3'  G   A 103     -23.009 -48.119  86.281  1.00  0.00
+        ATOM      6 O3'  G   A 103     -22.548 -46.872  86.808  1.00  0.00
+        ATOM      7 C1'  G   A 103     -23.806 -50.289  86.732  1.00  0.00
+        ATOM      8 C2'  G   A 103     -22.812 -49.259  87.269  1.00  0.00
+        .
+        .
+        .
 
     """
     __slots__ = ["residues"]
 
     def __init__(self, residues=None):
-        """
-        creates new Chain object
-
-        :param residues: list of residues that make up this Chain, in 5' to 3' order
-        :type  residues: list of Residue objects
-
-        :return:
-        """
         self.residues = residues
         if residues is None:
             self.residues = []
@@ -45,6 +78,19 @@ class Chain(object):
     def first(self):
         """
         returns residue at 5' end of chain
+
+        :returns: first residue in chain
+        :rtype: residue.Residue
+
+        :examples:
+
+        ..  code-block:: python
+
+            >>>import rnamake.unittests.instances
+            >>>c = rnamake.unittests.instances.chain()
+            >>>c.first()
+            <Residue('G103 chain A')>
+
         """
         if len(self.residues) == 0:
             raise exceptions.ChainException("cannot call first there are no "
@@ -88,6 +134,12 @@ class Chain(object):
             if start > end:
                 start, end = end, start
             end += 1
+
+        elif start_res is not None and end_res is None:
+            raise exceptions.ChainException("supplied start_res but not end_res")
+
+        elif start_res is not None and start is not None:
+            raise exceptions.ChainException("cannot supply start and start_res")
 
         if start < 0:
             raise exceptions.ChainException("start pos cannot be less then 0")

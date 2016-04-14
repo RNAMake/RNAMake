@@ -11,6 +11,7 @@ set(unittests_files
 	../../unittests/eternabot_unittests/eternabot_strategy_unittests.cpp
 	../../unittests/eternabot_unittests/scorer_unittest.cpp
 	../../unittests/eternabot_unittests/sequence_designer_unittests.cpp
+	../../unittests/instance_unittests/instance_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_graph_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_tree_unittest.cpp
 	../../unittests/motif_data_structures_unittests/motif_state_ensemble_unittest.cpp

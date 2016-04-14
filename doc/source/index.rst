@@ -13,5 +13,5 @@ Contents:
 
    auto/atom
    auto/residue
-
+   auto/chain
 
