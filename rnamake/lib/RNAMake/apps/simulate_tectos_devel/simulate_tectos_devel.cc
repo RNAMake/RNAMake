@@ -46,6 +46,7 @@ parse_command_line(
     cl_opts.add_option("rallf", "record_all_file", STRING_TYPE, "0", false);
 
     cl_opts.add_option("pdbs", "", INT_TYPE, "0", false);
+    cl_opts.add_option("bound_pdb", "", INT_TYPE, "0", false);
     cl_opts.add_option("ensembles", "", INT_TYPE, "0", false);
     cl_opts.add_option("extra_mse", "", STRING_TYPE, "", false);
     cl_opts.add_option("full_seq", "", INT_TYPE, "0", false);
@@ -125,7 +126,8 @@ SimulateTectos::SimulateTectos(
     tfs.option("record_all_file", opts.option<String>("rallf"));
     tfs.option("d_weight", opts.option<float>("wd"));
     tfs.option("r_weight", opts.option<float>("wr"));
-    
+    tfs.option("bound_pdb", opts.option<int>("bound_pdb"));
+
     if(opts.option<int>("ensembles")) {
         auto lib = MotifStateEnsembleSqliteLibrary("bp_steps");
         lib.load_all();

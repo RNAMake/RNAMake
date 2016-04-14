@@ -44,7 +44,7 @@ public:
     first() { return residues_[0]; }
     
     inline
-    ResidueOP const &
+    ResidueOP const & 
     last() { return residues_.back(); }
     
     inline
@@ -53,6 +53,8 @@ public:
         if(start < 0) { throw "start cannot be less then 0"; }
         if(start == end) { throw "start and end cannot be the same value"; }
         if(end > residues().size()) { throw "end is greater then chain length"; }
+        //if(end > residues().size()) { end = residues().size()-1; }
+
         if(start > end) { throw "start is greater then end"; }
         return ChainOP(new Chain(ResidueOPs(residues_.begin() + start, residues_.begin() + end)));
     }
