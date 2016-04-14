@@ -219,7 +219,7 @@ public:
 
     
     /**
-     * Empty deconstructor 
+     * Empty deconstructor
      */
     ~Residue() {}
 
@@ -273,16 +273,6 @@ public:
     new_uuid() {
         uuid_ = Uuid();
     }
-
-    inline
-    int
-    acount() {
-        int count = 0;
-        for (auto const & a : atoms_) {
-            if (a.get() != NULL) { count++; }
-        }
-        return count;
-    }
     
     Beads
     get_beads() const;
@@ -297,9 +287,10 @@ public:
     }
     
     String
-    to_pdb_str(int &,
-               int,
-               String const &) const;
+    to_pdb_str(
+        int &,
+        int,
+        String const &) const;
     
     void
     to_pdb(String const);
