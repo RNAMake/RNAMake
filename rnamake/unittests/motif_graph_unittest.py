@@ -57,12 +57,8 @@ class MotifGraphUnittest(unittest.TestCase):
         new_mg.remove_motif(1)
 
     def test_replace_ideal_helices(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build(3)
-        mg = motif_graph.MotifGraph()
-
-        for n in mt.tree.nodes:
-            mg.add_motif(n.data)
+        builder = build.BuildMotifGraph()
+        mg = builder.build(5)
 
         new_mg = mg.copy()
         new_mg.replace_ideal_helices()
@@ -182,11 +178,6 @@ class MotifGraphUnittest(unittest.TestCase):
 
         mt2 = motif_topology.graph_to_tree(mg)
 
-    def test_from_ss(self):
-        builder = build.BuildSecondaryStructure()
-        ss_p = builder.build_helix(10)
-        ssg  = secondary_structure_graph.graph_from_pose(ss_p)
-
     def test_topology_to_str(self):
         builder = build.BuildMotifTree()
         mt = builder.build(3)
@@ -196,7 +187,7 @@ class MotifGraphUnittest(unittest.TestCase):
             mg.add_motif(n.data)
 
 
-        s = mg.topology_to_str_new()
+        s = mg.topology_to_str()
         new_mg = motif_graph.MotifGraph(top_str=s)
         if len(mg) != len(new_mg):
             self.fail("did not get the correct number of nodes")
@@ -222,7 +213,7 @@ class MotifGraphUnittest(unittest.TestCase):
         atoms2 = mg2.get_structure().structure.atoms()
 
         for i in range(len(atoms1)):
-            if not numerical.are_atom_equal(atoms1[i], atoms2[i]):
+            if not is_equal.are_atom_equal(atoms1[i], atoms2[i]):
                 self.fail("atoms are not equal")
 
     def test_topology_to_str_3(self):
@@ -246,7 +237,7 @@ class MotifGraphUnittest(unittest.TestCase):
         atoms2 = mg2.get_structure().structure.atoms()
 
         for i in range(len(atoms1)):
-            if not numerical.are_atom_equal(atoms1[i], atoms2[i]):
+            if not is_equal.are_atom_equal(atoms1[i], atoms2[i]):
                 self.fail("atoms are not equal")
 
     def test_to_str(self):
@@ -266,7 +257,7 @@ class MotifGraphUnittest(unittest.TestCase):
         atoms2 = mg_new.get_structure().structure.atoms()
 
         for i in range(len(atoms1)):
-            if not numerical.are_atom_equal(atoms1[i], atoms2[i]):
+            if not is_equal.are_atom_equal(atoms1[i], atoms2[i]):
                 self.fail("atoms are not equal")
 
     def test_to_str_2(self):
@@ -320,8 +311,8 @@ class MotifGraphUnittest(unittest.TestCase):
         secondary_structure_tools.fill_basepairs_in_ss(dss)
         mg.replace_helix_sequence(dss)
 
-        for n in graph.transverse_graph(mg.graph, 0):
-            print n.index
+        #for n in graph.transverse_graph(mg.graph, 0):
+        #    print n.index
 
 
 def main():

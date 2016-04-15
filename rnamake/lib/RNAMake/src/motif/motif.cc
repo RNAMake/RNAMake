@@ -64,6 +64,7 @@ id_(Uuid())
         ends_.push_back( basepairs_ [ std::stoi(index) ]);
     }
     end_ids_ = split_str_by_delimiter(spl[8], " ");
+    std::cout << "start " << spl[9] << std::endl;
     secondary_structure_ = std::make_shared<sstruct::Motif>(spl[9]);
     
     auto ss_res = secondary_structure_->residues();

@@ -19,7 +19,7 @@ def parse(pdb_file):
     this is because it will mostly be called in in Structure object
 
     .. code-block:: python
-        >>>parser = PDBParser
+        >>>parser = PDBParser()
         >>>residues = parser.parse("p4p6.pdb")
 
     """

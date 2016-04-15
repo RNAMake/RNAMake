@@ -48,7 +48,7 @@ MotifUnittest::test_to_str() {
     sstruct::SecondaryStructureFactory ssf;
     auto m = ssf.motif("GGGGG+CCCCC", "(((((+)))))");
     auto s = m->to_str();
-    auto m1 = sstruct::Motif(*s);
+    auto m1 = sstruct::Motif(s);
     for(auto const & r : m->residues()) {
         if(m1.get_residue(r->num(), r->chain_id(), r->i_code()) == nullptr) {
             throw UnittestException("cannot find residue in copy");

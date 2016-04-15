@@ -1,7 +1,7 @@
 import uuid
 import numpy as np
 
-import residue_type, util, basic_io
+import residue_type, util, basic_io, exceptions
 
 class BeadType(object):
     """
@@ -217,7 +217,7 @@ class Residue(object):
             index = self.rtype.atom_map[atom_name]
             return self.atoms[index]
         except KeyError:
-            raise KeyError("cannot find atom")
+            raise exceptions.ResidueException("cannot find atom")
 
     def connected_to(self, res, cutoff=3.0):
         """
@@ -404,6 +404,15 @@ class Residue(object):
             return s
 
     def to_pdb(self, fname="residue.pdb"):
+        """
+        Writes a PDB string formmated verision of this Residue object to file
+
+        :param fname: filename of output PDB file, default="chain.pdb"
+
+        :type  fname: str
+        :return: None
+        """
+
         f = open(fname, "w")
         s = self.to_pdb_str()
         f.write(s)

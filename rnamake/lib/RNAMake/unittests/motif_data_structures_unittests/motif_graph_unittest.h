@@ -67,6 +67,8 @@ public:
     void
     test_topology_to_str();
     
+    void
+    test_to_str();
     
 public:
     

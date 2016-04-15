@@ -1,48 +1,42 @@
 import sys
 import unittest
-import logging
 import numpy as np
-import rnamake.residue_type
-import rnamake.residue
-import rnamake.io
-import rnamake.settings
-import rnamake.util
-import util
+
+from rnamake import atom, residue_type, residue, io, settings, util, exceptions
+
 import is_equal
 
 
 class ResidueUnittest(unittest.TestCase):
 
     def setUp(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/res_strs.dat"
+        path = settings.UNITTEST_PATH + "resources/res_strs.dat"
         f = open(path)
         lines = f.readlines()
         f.close()
 
         residues = []
-        logging.disable(60)
         for l in lines:
-            res = rnamake.io.str_to_residue(l)
+            res = io.str_to_residue(l)
             residues.append(res)
-        logging.disable(0)
         self.residues = residues
 
     def test_creation(self):
         """
         make sure creating a Residue object does not throw any exceptions
         """
-        gtype = rnamake.residue_type.get_rtype("GUA")
+        gtype = residue_type.get_rtype("GUA")
         try:
-            res = rnamake.residue.Residue(gtype, "GUA", 1, "A")
+            res = residue.Residue(gtype, "GUA", 1, "A")
         except:
             self.fail("cannot creat Residue object sucessfully")
 
     def test_get_atom(self):
-        gtype = rnamake.residue_type.get_rtype("GUA")
-        res = rnamake.residue.Residue(gtype, "GUA", 1, "A")
+        gtype = residue_type.get_rtype("GUA")
+        res = residue.Residue(gtype, "GUA", 1, "A")
         atom_names = gtype.atom_map.keys()
         atoms = [
-            rnamake.atom.Atom(name, np.array([0, 1, 2]))
+            atom.Atom(name, np.array([0, 1, 2]))
             for name in atom_names]
         res.setup_atoms(atoms)
 
@@ -51,40 +45,32 @@ class ResidueUnittest(unittest.TestCase):
         self.assertIs(p_atom, res.atoms[0])
 
         # should throw and error if no error exist
-        try:
-            no_atom = res.get_atom("P1")
-        except KeyError:
-            pass
-        except:
-            self.fail("did not expect this error")
+        with self.assertRaises(exceptions.ResidueException):
+            res.get_atom("P1")
 
     def test_str_to_residue(self):
         """
         test
         """
-        path = rnamake.settings.UNITTEST_PATH + "resources/res_strs.dat"
+        path = settings.UNITTEST_PATH + "resources/res_strs.dat"
         f = open(path)
         lines = f.readlines()
         f.close()
 
         try:
-            logging.disable(60)
-            res = rnamake.io.str_to_residue(lines[0])
-            logging.disable(0)
+            res = io.str_to_residue(lines[0])
         except:
             self.fail()
 
     def test_connected_to(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/res_strs.dat"
+        path = settings.UNITTEST_PATH + "resources/res_strs.dat"
         f = open(path)
         lines = f.readlines()
         f.close()
 
-        logging.disable(60)
-        res1 = rnamake.io.str_to_residue(lines[0])
-        res2 = rnamake.io.str_to_residue(lines[1])
-        res3 = rnamake.io.str_to_residue(lines[2])
-        logging.disable(0)
+        res1 = io.str_to_residue(lines[0])
+        res2 = io.str_to_residue(lines[1])
+        res3 = io.str_to_residue(lines[2])
 
         result = res1.connected_to(res2)
         if result != 1:
@@ -99,17 +85,15 @@ class ResidueUnittest(unittest.TestCase):
             self.fail()
 
     def test_get_beads(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/res_strs.dat"
+        path = settings.UNITTEST_PATH + "resources/res_strs.dat"
         f = open(path)
         lines = f.readlines()
         f.close()
 
         residues = []
-        logging.disable(60)
         for l in lines:
-            res = rnamake.io.str_to_residue(l)
+            res = io.str_to_residue(l)
             residues.append(res)
-        logging.disable(0)
 
         for r in residues:
             beads = r.get_beads()
@@ -131,24 +115,24 @@ class ResidueUnittest(unittest.TestCase):
                 base_atoms.append(a)
 
         beads = residues[1].get_beads()
-        phos_center = rnamake.util.center(phos_atoms)
-        sugar_center = rnamake.util.center(sugar_atoms)
-        base_center = rnamake.util.center(base_atoms)
+        phos_center = util.center(phos_atoms)
+        sugar_center = util.center(sugar_atoms)
+        base_center = util.center(base_atoms)
 
         self.assertAlmostEqual(
-            rnamake.util.distance(
+            util.distance(
                 phos_center,
                 beads[0].center),
             0)
 
         self.assertAlmostEqual(
-            rnamake.util.distance(
+            util.distance(
                 sugar_center,
                 beads[1].center),
             0)
 
         self.assertAlmostEqual(
-            rnamake.util.distance(
+            util.distance(
                 base_center,
                 beads[2].center),
             0)

@@ -100,27 +100,27 @@ public:
     ~Motif() {}
     
 public:
-    StringOP
+    String
     to_str() {
-        auto s = std::make_shared<String>("");
-        s->append(std::to_string(mtype_) + "!" + name_ + "!" + path_ + "!");
-        s->append(structure_->to_str() + "!");
+        auto s = String("");
+        s.append(std::to_string(mtype_) + "!" + name_ + "!" + path_ + "!");
+        s.append(structure_->to_str() + "!");
         auto res = structure_->residues();
         
         for(auto const & bp : basepairs_) {
             int res1_pos = (int)(std::find(res.begin(), res.end(), bp->res1()) - res.begin());
             int res2_pos = (int)(std::find(res.begin(), res.end(), bp->res2()) - res.begin());
-            s->append(std::to_string(res1_pos) + " " + std::to_string(res2_pos) + "@");
+            s.append(std::to_string(res1_pos) + " " + std::to_string(res2_pos) + "@");
         }
-        s->append("!");
+        s.append("!");
         for(auto const & end : ends_) {
             int bp_pos = (int)(std::find(basepairs_.begin(), basepairs_.end(), end) -
                                basepairs_.begin());
-            s->append(std::to_string(bp_pos) + " ");
+            s.append(std::to_string(bp_pos) + " ");
         }
-        s->append("!");
+        s.append("!");
         for(auto const & ei : end_ids_) {
-            s->append(ei + " ");
+            s.append(ei + " ");
         }
         
         return s;

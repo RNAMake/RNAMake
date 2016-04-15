@@ -8,6 +8,7 @@ import motif_type
 import graph
 import resource_manager as rm
 import motif_merger
+import copy
 import steric_lookup
 
 def motif_graph_from_topology(s):
@@ -160,6 +161,14 @@ class MotifGraph(base.Base):
 
         self.options = option.Options(options)
         self.constraints = {}
+
+    def copy(self):
+        mg = MotifGraph()
+        new_graph = self.graph.copy()
+        mg.graph = new_graph
+        mg.merger = self.merger.copy([n.data for n in new_graph.nodes])
+        mg.aligned = copy.deepcopy(self.aligned)
+        return mg
 
     #ADD FUNCTIONS      #######################################################
     def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
