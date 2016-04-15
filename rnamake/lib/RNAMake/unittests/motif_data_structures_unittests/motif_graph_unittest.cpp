@@ -230,17 +230,27 @@ MotifGraphUnittest::test_topology_to_str() {
     auto builder = BuildMotifGraph();
     auto mg = builder.build(3);
     
-    auto s = mg->topology_to_str_new();
+    auto s = mg->topology_to_str();
     
     auto mg_new = MotifGraph(s, MotifGraphStringType::TOP);
+    if(mg->size() != mg_new.size()) {
+        throw UnittestException("did not get the correct size from new motif_graph");
+    }
+}
     
+void
+MotifGraphUnittest::test_to_str() {
+    auto builder = BuildMotifGraph();
+    auto mg = builder.build(3);
+    auto s = mg->to_str();
+    auto mg_new = MotifGraph(s, MotifGraphStringType::MG);
+
 }
     
 int
 MotifGraphUnittest::run() {
-    test_topology_to_str();
-
-    /*test_creation();
+    /*test_topology_to_str();
+    test_creation();
     test_add_motif();
     test_remove_2();
     test_copy();
@@ -248,7 +258,7 @@ MotifGraphUnittest::run() {
     test_replace_ideal_helices_2();
     test_secondary_structure();
     test_replace_sequence();*/
-    //test_memory_2();
+    test_to_str();
     return 0;
 }
     

@@ -16,11 +16,11 @@ def are_atoms_equal(atoms1, atoms2):
     return 1
 
 
-def are_residues_equal(r1, r2):
+def are_residues_equal(r1, r2, check_uuid=1):
     if r1.name != r2.name:
         return 0
 
-    if r1.uuid != r2. uuid:
+    if r1.uuid != r2. uuid and check_uuid:
         return 0
 
     for i, a  in enumerate(r1.atoms):
@@ -38,24 +38,24 @@ def are_residues_equal(r1, r2):
     return 1
 
 
-def are_chains_equal(c1, c2):
+def are_chains_equal(c1, c2, check_uuid=1):
 
     if len(c1.residues) != len(c2.residues):
         return 0
 
     for i in range(len(c1.residues)):
-        result = are_residues_equal(c1.residues[i],c2.residues[i])
+        result = are_residues_equal(c1.residues[i],c2.residues[i],check_uuid)
         if not result:
             return 0
     return 1
 
 
-def are_structure_equal(s1, s2):
+def are_structure_equal(s1, s2, check_uuid=1):
     if len(s1.chains) != len(s2.chains):
         return 0
 
     for i in range(len(s1.chains)):
-        result = are_chains_equal(s1.chains[i], s2.chains[i])
+        result = are_chains_equal(s1.chains[i], s2.chains[i], check_uuid)
         if not result:
             return 0
 

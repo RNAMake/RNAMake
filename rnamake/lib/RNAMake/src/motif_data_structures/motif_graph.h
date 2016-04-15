@@ -131,7 +131,7 @@ public:
     topology_to_str();
     
     String
-    topology_to_str_new();
+    to_str();
 
     
 public: //add motif interface
@@ -307,6 +307,9 @@ private:
         MotifOP const & m,
         int parent_index = -1,
         int parent_end_index = -1);
+    
+    void
+    _align_motifs_all_motifs();
     
 private:
     void

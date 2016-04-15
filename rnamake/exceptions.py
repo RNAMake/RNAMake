@@ -1,4 +1,6 @@
 
+class ResidueException(Exception):
+    pass
 
 class ChainException(Exception):
     pass

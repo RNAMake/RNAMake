@@ -4,6 +4,7 @@ import numpy as np
 def normalize(v):
     return v / math.sqrt( v[0] ** 2 + v[1] ** 2 + v[2] ** 2)
 
+
 def distance(p1, p2):
     """
     returns the distance between two 3D points
@@ -44,6 +45,7 @@ def center(atoms):
 
     return center / float(count)
 
+
 def center_points(points):
     """
     returns the center of a list of atoms
@@ -58,7 +60,6 @@ def center_points(points):
         center += p
 
     return center / float(len(points))
-
 
 
 def base_dir(path):

@@ -148,7 +148,7 @@ int
 MotifUnittest::run() {
     test_creation();
     if (test_copy() == 0)                 { std::cout << "test_copy failed" << std::endl; }
-    //if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
+    if (test_to_str() == 0)               { std::cout << "test_to_str failed" << std::endl; }
     if (test_secondary_structure() == 0)  { std::cout << "test_secondary_structure failed" << std::endl; }
     if (test_get_basepair_by_name() == 0) { std::cout << "test_get_basepair_by_name failed" << std::endl; }
     if (test_align() == 0)                { std::cout << "test_align failed" << std::endl; }

@@ -10,6 +10,7 @@
 
 //RNAMake Headers
 #include "resources/resource_manager.h"
+#include "structure/residue_type_set_manager.h"
 #include "motif_data_structures/motif_graph.h"
 
 MotifGraph::MotifGraph(String const & s):
@@ -144,7 +145,17 @@ MotifGraph::_setup_from_top_str(String const & s) {
 
 void
 MotifGraph::_setup_from_str(String const & s) {
-    
+    options_.set_value("sterics", false);
+    auto spl = split_str_by_delimiter(s, "FAF");
+    auto node_spl = split_str_by_delimiter(spl[0], "KAK");
+    int i = 0;
+    for(auto const & n_str : node_spl) {
+        auto n_spl = split_str_by_delimiter(n_str, "^");
+        auto m = std::make_shared<Motif>(n_spl[0],
+                                         ResidueTypeSetManager::getInstance().residue_type_set());
+        i++;
+    }
+
 }
 
 void
@@ -436,90 +447,6 @@ MotifGraph::get_end(
 
 String
 MotifGraph::topology_to_str() {
-    auto s = String();
-    auto seen = std::map<GraphNodeOP<MotifOP>, int>();
-    auto seen_connections = std::map<String, int>();
-    int count = 0;
-    Ints indices;
-    for(auto const & n : graph_) {
-        if(seen.size() == 0) {
-            int found = 0;
-            int i = -1;
-            for(auto const & c : n->connections()) {
-                i++;
-                if(c != nullptr) { continue; }
-                s += n->data()->name() + "," + n->data()->ends()[i]->name() + ",";
-                s += n->data()->end_ids()[i] + ",-1,|";
-                indices.push_back(n->index());
-                found = 1;
-                break;
-            }
-            if(found == 0) {
-                throw MotifGraphException("cannot translate to topology");
-            }
-        }
-        else {
-            int highest = -1;
-            auto end_name = n->data()->ends()[0]->name();
-            auto end_id = n->data()->end_ids()[0];
-            auto parent_end_name = String("");
-            auto n2 = GraphNodeOP<MotifOP>(nullptr);
-            auto pos = 0;
-            for(auto const & kv : seen) {
-                n2 = kv.first;
-                pos = kv.second;
-                if(n->connected(n2) != nullptr) {
-                    auto c = n->connected(n2);
-                    auto end_index_1 = c->end_index(n->index());
-                    auto end_index_2 = c->end_index(n2->index());
-                    highest = pos;
-                    end_name = n->data()->ends()[end_index_1]->name();
-                    end_id = n->data()->end_ids()[end_index_1];
-                    parent_end_name = n2->data()->ends()[end_index_2]->name();
-                }
-            }
-            indices.push_back(n->index());
-            s += n->data()->name() + "," + end_name + "," + end_id + ",";
-            s += std::to_string(highest) + "," + parent_end_name + "|";
-            //std::cout << std::to_string(highest) +  " " + std::to_string(count) << std::endl;
-            seen_connections[std::to_string(highest) +  " " + std::to_string(count)] = 1;
-        }
-        seen[n] = count;
-        count++;
-    }
-    
-    s += "&";
-    for(auto const & i : indices) {
-        s += std::to_string(i) + ",";
-    }
-    
-    s += "&";
-    String key1, key2;
-    for(auto const & n : graph_) {
-        for(auto const & c : n->connections()) {
-            if(c == nullptr) {
-                continue;
-            }
-            key1 = std::to_string(seen[c->node_1()]) + " " + std::to_string(seen[c->node_2()]);
-            key2 = std::to_string(seen[c->node_2()]) + " " + std::to_string(seen[c->node_1()]);
-            if(seen_connections.find(key1) != seen_connections.end() ||
-               seen_connections.find(key2) != seen_connections.end()) {
-                continue;
-            }
-            seen_connections[key1] = 1;
-            auto end_index_1 = c->end_index(c->node_1()->index());
-            auto end_index_2 = c->end_index(c->node_2()->index());
-            auto end_name_1 = c->node_1()->data()->ends()[end_index_1]->name();
-            auto end_name_2 = c->node_2()->data()->ends()[end_index_2]->name();
-            s += key1 + " " + end_name_1 + " " + end_name_2 +  "|";
-        }
-    }
-    
-    return s;
-}
-
-String
-MotifGraph::topology_to_str_new() {
     String s = "", con_str = "";
     String key1 = "", key2 = "";
     std::map<String, int> seen_connections;
@@ -542,6 +469,33 @@ MotifGraph::topology_to_str_new() {
     s += "&";
     s += con_str;
     return s;
+}
+
+String
+MotifGraph::to_str() {
+    String s = "", con_str = "";
+    String key1 = "", key2 = "";
+    std::map<String, int> seen_connections;
+    for(auto const & n : graph_.nodes()) {
+        s += n->data()->to_str() + "^" + std::to_string(n->index()) + "^";
+        s += std::to_string(aligned_[n->index()]) + " KAK ";
+        for(auto const & c : n->connections()) {
+            if(c == nullptr) { continue; }
+            key1 = std::to_string(c->node_1()->index()) + " " + std::to_string(c->node_2()->index());
+            key2 = std::to_string(c->node_2()->index()) + " " + std::to_string(c->node_1()->index());
+            if(seen_connections.find(key1) != seen_connections.end() ||
+               seen_connections.find(key2) != seen_connections.end()) {
+                continue;
+            }
+            seen_connections[key1] = 1;
+            con_str += std::to_string(c->node_1()->index()) + "," + std::to_string(c->node_2()->index()) + ",";
+            con_str += std::to_string(c->end_index_1()) + "," + std::to_string(c->end_index_2()) + "|";
+        }
+    }
+    s += " FAF ";
+    s += con_str;
+    return s;
+
 }
 
 int
@@ -705,45 +659,20 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
         m->id(n->data()->id());
         auto org_res = n->data()->residues();
         auto new_res = m->residues();
+        auto new_bps = m->basepairs();
         for(int i = 0; i < org_res.size(); i++) {
             new_res[i]->uuid(org_res[i]->uuid());
         }
         
-        auto parent = GraphNodeOP<MotifOP>(nullptr);
-        auto parent_end_index = 0;
-        auto other  = GraphNodeOP<MotifOP>(nullptr);
-        
-        if(n->connections()[0] != nullptr) {
-            parent = n->connections()[0]->partner(n->index());
-            parent_end_index = n->connections()[0]->end_index(parent->index());
-        }
-        if(n->connections()[1] != nullptr) {
-            other = n->connections()[1]->partner(n->index());
+        for(int i = 0; i < n->data()->basepairs().size(); i++) {
+            new_bps[i]->uuid(n->data()->basepairs()[i]->uuid());
         }
         
-        if(parent != nullptr) {
-            auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
-                                             m->ends()[0],
-                                             m);
-            n->data() = m_added;
-        }
-        else {
-            n->data() = m;
-        }
-        
-        merger_.update_motif(n->data());
+        n->data() = m;
 
-        
-        if(other == nullptr) { continue; }
-        if(other->data()->mtype() == MotifType::HELIX) { continue; }
-        
-        auto new_other = ResourceManager::getInstance().get_motif(other->data()->name(), "", other->data()->ends()[0]->name());
-        auto m_added = get_aligned_motif(n->data()->ends()[1],
-                                         new_other->ends()[0],
-                                         new_other);
-        other->data() = m_added;
-        merger_.update_motif(other->data());
     }
+    
+    _align_motifs_all_motifs();
     
 }
 
@@ -756,7 +685,34 @@ MotifGraph::unaligned_nodes() {
     return nodes;
 }
 
-
+void
+MotifGraph::_align_motifs_all_motifs() {
+    int start = -1;
+    for(auto const kv : aligned_) {
+        if(kv.second == 0) { start = kv.first; }
+    }
+    
+    auto n = GraphNodeOP<MotifOP>();
+    for(auto it = graph_.transverse(graph_.get_node(start));
+        it != graph_.end();
+        ++it) {
+        
+        n = (*it);
+        if(n->index() == start) {
+            merger_.add_motif(n->data());
+            continue;
+        }
+        if(n->connections()[0] == nullptr) { continue; }
+        auto c = n->connections()[0];
+        auto parent = c->partner(n->index());
+        auto parent_end_index = c->end_index(parent->index());
+        auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
+                                         n->data()->ends()[0],
+                                         n->data());
+        n->data() = m_added;
+        merger_.update_motif(n->data());
+    }
+}
 
 
 

@@ -3,22 +3,40 @@ import numpy as np
 import pdb_parser
 import chain
 import util
-
-class StructureException(Exception):
-    pass
+import exceptions
 
 class Structure(object):
-    """
-    Stores 3D structure information from a pdb file. Stores all chains,
+    """Stores 3D structure information from a pdb file. Stores all chains,
     residues and atoms objects. Implementation is designed to be extremely
-    lightweight and capable of performing fast transformations.
+    lightweight and capable of performing fast transformations. to load a PDB
+    formated file into a Structure object use
+    :func:`structure_from_pdb`
 
-    :param pdb: the path of the pdb to load this structure from, optional
-    :type pdb: str
+    :param chains: chains that belong to this structure, optional
+    :type chains: list of chain.Chain objects
 
-    Attributes
-    ----------
+    :attributes:
     `chains` : list of Chain objects that belong to the current structure
+
+    :examples:
+    ..  code-block:: python
+
+        #load structure from pdb formatted file
+        >>>import rnamake.unittests.files
+        >>>s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)
+
+        #load structure from test instance
+        >>>import rnamake.unittests.instances
+        >>>s = rnamake.unittests.instances.structure()
+
+        #get specific residue
+        >>>r = s.get_residue(num=106)
+        >>>print r
+        <Residue('U106 chain A')>
+
+        #get residue using its unique indentifer
+        >>>s.get_residue(uuid=r.uuid)
+        <Residue('U106 chain A')>
     """
 
     def __init__(self, chains=None):
@@ -31,23 +49,22 @@ class Structure(object):
         return """<Structure(name: %s, #chains: %s, #residues: %s, #atoms: %s)>""" %\
                (self.name, len(self.chains), len(self.residues()), len(self.atoms()))
 
-    def renumber(self):
-        chains = "A B C D E F G H I J K L M".split()
-        j = 1
-        for i, c in enumerate(self.chains):
-            for r in c.residues:
-                r.num = j
-                r.chain_id = chains[i]
-                j += 1
-
-    def get_beads(self, excluded_res=[]):
+    def get_beads(self, excluded_res=None):
         """
-        generates 3-bead model residue beads for all residues in current structure.
+        generates 3-bead model residue beads for all residues in current
+        structure.
 
-        :param excluded_res: List of residue objects that are not to be included in clash
-         checks for collisions
+        :param excluded_res: List of residue objects whose beads are not to be
+            included. This is generally end residues that would instantly clash
+            with residues they are being overlayed onto when performing motif
+            aligning
         :type excluded_res: List of Residue objects
+
+        :return: List of Bead objects
         """
+
+        if excluded_res is None:
+            excluded_res = []
 
         beads = []
         for r in self.residues():
@@ -63,7 +80,7 @@ class Structure(object):
         confusion
 
         :param num: residue number
-        :param chain id: what chain the residue belongs to
+        :param chain_id: what chain the residue belongs to
         :param i_code: the insertation code of the residue
         :param uuid: the unique indentifier that each residue is given
 
@@ -71,6 +88,9 @@ class Structure(object):
         :type chain_id: str
         :type i_code: str
         :type uuid: uuid
+
+        :return: Residue object
+        :rtype: residue.Residue
         """
 
         found = []
@@ -87,11 +107,7 @@ class Structure(object):
                 found.append(r)
 
         if len(found) > 1:
-            self.to_pdb()
-            #for f in found:
-            #    print f.name, f.num
-            #print "num,chain_id,icode,uuid=",num,chain_id,i_code,uuid
-            raise ValueError(
+            raise exceptions.StructureException(
                 "found multiple residues in get_residue(), narrow " +
                 "your search")
 
@@ -101,12 +117,25 @@ class Structure(object):
         return found[0]
 
     def residues(self):
+        """
+        Concats all residue objects from all Chain objects intos a unified
+        list to be able to easily iterate through.
+
+        :return: List of Residue objects
+        """
         residues = []
         for c in self.chains:
             residues.extend(c.residues)
         return residues
 
     def atoms(self):
+        """
+        Concats all Atom objects from all Residue objects intos a unified
+        list to be able to easily iterate through.
+
+        :return: List of Residue objects
+        """
+
         atoms = []
         for r in self.residues():
             for a in r.atoms:
@@ -116,12 +145,27 @@ class Structure(object):
         return atoms
 
     def to_str(self):
+        """
+        Stringifes Structure object
+
+        :return: str
+        """
+
         s = ""
         for c in self.chains:
             s += c.to_str() + ":"
         return s
 
     def to_pdb_str(self, renumber=-1):
+        """
+        creates a PDB string formatted verision of this Structure object.
+
+        :param renumber: what should the first residue be numbered. -1 is
+            to NOT renumber, Default=-1.
+        :return: int
+
+        :return: str
+        """
         acount = 1
         s = ""
         c_names = "ABCDEFGHIJKLM"
@@ -164,19 +208,45 @@ class Structure(object):
         return Structure(chains)
 
     def transform(self, t):
+        """
+        Transforms atomic coordinates based on a rotation and translation
+
+        :param t: Transformation to be performed on atoms
+        :type t: transform.Transformation
+
+        :return: None
+        """
+
         r_T = t.rotation().T
         for a in self.atoms():
             a.coords = np.dot(a.coords, r_T) + t.translation()
 
-        #transformed_coords = np.dot(self.coords, t.rotation().T) + \
-        #                     t.translation()
-
     def move(self, p):
+        """
+        Moves atomic coordinates based on a specified translation
+
+        :param p: Amount to 3D space to displace each atom
+        :type p: numpy.array
+
+        :return: None
+        """
+
         for a in self.atoms():
             a.coords += p
 
 
 def structure_from_pdb(pdb_path):
+    """
+    Processes a PDB formatted into Structure object. Uses pdb_parser module
+    to accomplish this.
+
+    :param pdb_path: path to PDB formatted file
+    :type pdb_path: str
+
+    :return: Structure object
+    :rtype: Structure
+    """
+
     residues = pdb_parser.parse(pdb_path)
     chains = chain.connect_residues_into_chains(residues)
     s = Structure(chains)
