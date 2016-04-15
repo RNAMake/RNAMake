@@ -43,7 +43,7 @@ parse_command_line(
     cl_opts.add_option("rf", "record_file", STRING_TYPE, "test.out", false);
     cl_opts.add_option("rs", "recore_state", INT_TYPE, "0", false);
     cl_opts.add_option("rall", "record_all", INT_TYPE, "0", false);
-    cl_opts.add_option("rallf", "record_all_file", STRING_TYPE, "0", false);
+    cl_opts.add_option("rallf", "record_all_file", STRING_TYPE, "test_all.out", false);
 
     cl_opts.add_option("pdbs", "", INT_TYPE, "0", false);
     cl_opts.add_option("bound_pdb", "", INT_TYPE, "0", false);

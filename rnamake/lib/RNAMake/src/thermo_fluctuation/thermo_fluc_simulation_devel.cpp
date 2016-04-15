@@ -96,6 +96,8 @@ ThermoFlucSimulationDevel::run() {
     int count = 0;
     int clash = 0;
     
+    std::cout << record_all_file_ << std::endl;
+    
     if(check_nodes_.size() == 0 && check_nodes_2_.size() == 0) {
         check_nodes_ = { 22, 21 };
         check_nodes_2_ = { 1 };
