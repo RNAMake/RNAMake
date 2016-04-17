@@ -1,5 +1,8 @@
+import exceptions
 import priority_queue
 
+
+# TODO this is actually not a great system should probably be a member of Graph
 def transverse_graph(graph, i):
     graph.__iter__()
     graph.current_node = graph.get_node(i)
@@ -13,10 +16,9 @@ def transverse_graph(graph, i):
 
 class Graph(object):
     """
-    A general graph storage base class. Do not call directly!
+    General implementation of a undirected graph. Do not call directly!
 
-    Attributes
-    ----------
+    :attributes:
     `nodes` : list of GraphNode objects
         all the nodes in the tree, used for fast access by index
     `connections` : list of GraphConnection objects
@@ -25,17 +27,20 @@ class Graph(object):
         the current graph level, used for quickly deleting sections of the graph
     `index`: int
         the current node index, always the length of the number of nodes in teh graph
-    `last_node` : GraphNode object
+    `last_node`: GraphNode object
         the last node added to the graph
-    `current_node` GraphNode object
+    `current_node`: GraphNode object
         the current node during iteration
-
+    `queue`: PriorityQueue object
+        tracks which nodes to visit turning iteration
+    `seen`: List of GraphNode Objects
+        tracks which nodes have alaready been visited during iteration
     """
 
     def __init__(self):
         self.nodes, self.connections, self.level, self.index = [], [], 0, 0
         self.last_node = None
-        #iterator stuff
+        # iterator stuff
         self.current_node = None
         self.queue = priority_queue.PriorityQueue()
         self.seen = []
@@ -54,7 +59,7 @@ class Graph(object):
                 self.current_node = self.nodes[0]
         else:
             self.current_node = None
-        self.seen = [ self.current_node ]
+        self.seen = [self.current_node]
         self.queue = priority_queue.PriorityQueue()
         return self
 
@@ -93,20 +98,40 @@ class Graph(object):
         :type index: int
         :return: GraphNode object
 
+        :examples:
+
         .. code-block:: python
-        >>>g = Graph()
-        >>>g.add_data(10)
-        #get node of index '0' which is the first one
-        >>>print g.get_node(0).data
-        10
+
+            >>>g = Graph()
+            >>>g.add_data(10)
+            #get node of index '0' which is the first one
+            >>>print g.get_node(0).data
+            10
         """
         for n in self.nodes:
             if n.index == index:
                 return n
 
-        raise ValueError("cannot find node with index")
+        raise exceptions.GraphException("cannot find node with index: " + str(index))
 
     def oldest_node(self):
+        """
+        returns the node with the lowest index. Only used a few examples may
+        deprecated in next verision.
+
+        :returns: GraphNode object
+
+        :examples:
+
+        .. code-block:: python
+
+            >>>g = Graph()
+            >>>g.add_data(10)
+            >>>g.add_data(5)
+            >>>g.add_data(15)
+            >>> g.oldest_node().data
+            10
+        """
         node = self.last_node
         for n in self.nodes:
             if n.index < node.index:
@@ -114,21 +139,38 @@ class Graph(object):
         return node
 
     def increase_level(self):
+        """
+        Increases the level of nodes to be added. default level is 0. This is
+        useful when removing or adding a set of nodes. Think of level as a
+        grouping mechanism
+        """
         self.level += 1
 
     def decrease_level(self):
+        """
+        Decreases the level of nodes to be added. default level is 0. This is
+        useful when removing or adding a set of nodes. Think of level as a
+        grouping mechanism
+        """
+
+        if self.level == 0:
+            raise exceptions.GraphException("cannot decrease level anymore is "
+                                            "already 0")
+
         self.level -= 1
 
 
 class GraphDynamic(Graph):
     """
-    a Graph with dynamic connections between nodes. i.e. each node does NOT have a predefined
-    number of connections. Each node starts with 0 connections and are added over time,
-    there is no max to the number of connections each node can have
+    a Graph with dynamic connections between nodes. i.e. each node does NOT
+    have a predefined number of connections. Each node starts with 0
+    connections and are added over time, there is no max to the number of
+    connections each node can have
 
     Examples
 
     .. code-block:: python
+
         >>>g = GraphDynamic()
         >>>g.add_data(0)
         >>>g.add_data(1)
@@ -146,13 +188,24 @@ class GraphDynamic(Graph):
         """
         add a new peice of data to the graph
 
-        :param data:
-        :param parent_index:
-        :return:
+        :param data: Item to be added to graph
+        :param parent_index: index of node that this element should be connected too
+
+        :type data: can be anything
+        :type parent_index: int
+
+        :return: index of added node
+        :rtype: int
         """
         parent = None
         if parent_index != -1:
-            parent = self.get_node(parent_index)
+            try:
+                parent = self.get_node(parent_index)
+            # cannot find node of that index
+            except exceptions.GraphException:
+                raise exceptions.GraphException("cannot add data to parent_" +
+                                                "index: " + str(parent_index) +
+                                                " that nodes does not exist")
 
         n = GraphNodeDynamic(data, self.index, self.level)
 
@@ -168,6 +221,17 @@ class GraphDynamic(Graph):
         return self.index - 1
 
     def connect(self, i, j):
+        """
+        Add a connection between two nodes. Since this is a Dynamic Graph this
+        cannot fail. i and j can be the same
+
+        :param i: index of node 1 to connect
+        :param j: index of node 2 to connect
+
+        :type i: int
+        :type j: int
+        :return: None
+        """
         n1 = self.get_node(i)
         n2 = self.get_node(j)
         c = GraphConnection(n1, n2, 0, 0)
@@ -178,6 +242,22 @@ class GraphDynamic(Graph):
 
 
 class GraphStatic(Graph):
+    """
+    a Graph with static connections between nodes. i.e. each node HAS a
+    predefined number of connections. This is useful for constructing graphs
+    of Motifs and Secondary Structure elements which have predefined ends.
+
+    :examples:
+
+    .. code-block:: python
+
+        >>>g = graph.GraphStatic()
+        >>>g.add_data(0, -1, -1, -1, 2)
+        >>>g.add_data(1, 0, 0, 0, 2)
+        >>>g.add_data(2, 0, 1, 0, 2)
+        >>>g.connect(1, 2, 1, 1)
+    """
+
     def __init__(self):
         super(GraphStatic, self).__init__()
 
@@ -285,6 +365,7 @@ class GraphStatic(Graph):
         gs.index = self.index
         return gs
 
+
 class GraphNode(object):
     def __init__(self, data, index, level, n_connections=0):
         self.data, self.index, self.level = data, index, level
@@ -332,6 +413,7 @@ class GraphNode(object):
                 return c
         return None
 
+
 class GraphNodeDynamic(GraphNode):
     def __init__(self, data, index, level):
         super(GraphNodeDynamic, self).__init__(data, index, level)
@@ -377,6 +459,7 @@ class GraphNodeStatic(GraphNode):
         return c
 
 
+#TODO rename connection position from end. Not general enough
 class GraphConnection(object):
     def __init__(self, node_1, node_2, end_index_1, end_index_2):
         self.node_1, self.node_2 = node_1, node_2

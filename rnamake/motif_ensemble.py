@@ -141,6 +141,7 @@ def file_to_motif_ensemble(path):
 
     return str_to_motif_ensemble(s)
 
+
 def str_to_motif_ensemble(s):
     me = MotifEnsemble()
     spl = s.split("{")

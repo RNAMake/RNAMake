@@ -1,16 +1,10 @@
 import glob
-import logging
 import settings
-import atom
-
-logging.basicConfig()
-logger = logging.getLogger(__name__)
 
 alt_names = {
     "O1P": "OP1",
     "O2P": "OP2"
 }
-
 
 class ResidueType(object):
 
@@ -27,8 +21,7 @@ class ResidueType(object):
     :type name: str
     :type atom_map: dict
 
-    Attributes
-    ----------
+    :attributes:
     `name` : str
         Residue name
     `atom_map` : dict
@@ -61,11 +54,12 @@ class ResidueTypeSet(object):
     initiate a instantance of ResidueTypeSet, if you want a new ResidueType do
 
     .. code-block:: python
+
+        >>>import rnamake.residue_type
         >>>rnamake.residue_type.get_rtype("GUA")
         <ResidueType(name='GUA')>
 
-   Attributes
-    ----------
+    :attributes:
     `residue_types` : list of ResidueTypes
         Contains all residue types that are acceptable in rnamake
     """
@@ -135,10 +129,12 @@ def get_rtype(resname):
     """
     Get a reference to a ResidueType by name. This is the only way you should
     get a ResidueType reference
+
     :param resname: the name of the residue you want the ResidueType
     :type resname: str
 
-     .. code-block:: python
+    .. code-block:: python
+
         >>>rnamake.residue_type.get_rtype("GUA")
         <ResidueType(name='GUA')>
 
