@@ -8,10 +8,24 @@ Welcome to RNAMake's documentation!
 
 Contents:
 
+
+Data Structures
+---------------
+
+.. toctree::
+   :maxdepth: 2
+
+   auto/graph
+
+3D Structure
+------------
+
 .. toctree::
    :maxdepth: 2
 
    auto/atom
-   auto/residue
+   auto/residue 
+   auto/residue_type
    auto/chain
-
+   auto/structure
+   auto/pdb_parser
