@@ -20,32 +20,34 @@ namespace unittests {
 
 class ResidueUnittest : public Unittest {
 public:
+    ResidueUnittest();
+
+    ~ResidueUnittest() {}
     
-    int
+public:
+    
+    void
     test_bead_creation();
     
-    int
-    test_str_to_residue();
-    
-    int
+    void
     test_get_atom();
     
-    int
+    void
     test_connected_to();
     
-    int
+    void
     test_get_beads();
     
-    int
+    void
     test_copy();
     
-    int
+    void
     test_to_str();
     
-    int
+    void
     test_equals();
     
-    int
+    void
     test_memory_management();
     
 public:
@@ -55,6 +57,11 @@ public:
     
     int
     run_all();
+    
+private:
+    
+    ResidueTypeSet rts_;
+    ResidueOPs residues_;
     
     
 };

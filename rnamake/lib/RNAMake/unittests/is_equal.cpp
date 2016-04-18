@@ -20,3 +20,58 @@ are_atoms_equal(
 }
 
 
+bool
+are_residues_equal(
+    ResidueOP const & r1,
+    ResidueOP const & r2,
+    int check_uuids) {
+    
+    if(r1->name() != r2->name()) { return false; }
+    if(check_uuids && r1->uuid() != r2->uuid()) {return false; }
+    
+    int i = -1;
+    auto r2_atoms = r2->atoms();
+    bool result;
+    for(auto const & a : r1->atoms()) {
+        i++;
+        if     (a == nullptr && r2_atoms[i] != nullptr) { return false; }
+        else if(a != nullptr && r2_atoms[i] == nullptr) { return false; }
+        else if(a == nullptr && r2_atoms[i] == nullptr) { continue;     }
+        
+        result = are_atoms_equal(a, r2_atoms[i]);
+        if(!result) { return false; }
+        
+    }
+    
+    return true;
+    
+}
+
+
+bool
+are_chains_equal(
+    ChainOP const & c1,
+    ChainOP const & c2,
+    int check_uuids) {
+    
+    if(c1->length() != c2->length()) { return false; }
+    
+    auto c1_res = c1->residues();
+    auto c2_res = c2->residues();
+    auto result = 0;
+    for(int i = 0; i < c1->length(); i++) {
+        result = are_residues_equal(c1_res[i], c2_res[i], check_uuids);
+        if(!result) { return false; }
+    }
+    return true;
+}
+
+bool
+are_structures_equal(
+    StructureOP const & s1,
+    StructureOP const & s2,
+    int check_uuids) {
+    
+    return true;
+    
+}

@@ -47,10 +47,21 @@
 
 #include "instance_unittests/instance_unittest.hpp"
 
+class TestException : public std::runtime_error {
+public:
+    TestException(
+        String const & message):
+    std::runtime_error("Test Exception: " + message)
+    {}
+};
+
 
 int main(int argc, const char * argv[]) {
     
-    unittests::AtomUnittest test;
+    std::function<void()> f = []() {  throw TestException("test"); };
+    failUnlessThrows<TestException>(f, "test");
+    
+    unittests::ResidueUnittest test;
     test.run();
 
     return 0;

@@ -29,6 +29,13 @@ public:
     {}
 };
 
+class FailedTestException : public std::runtime_error {
+public:
+    FailedTestException(
+        String const & message) :
+    std::runtime_error("FailedTestException Exception: " + message)
+    {}
+};
 
 class Unittest {
 public:
@@ -62,16 +69,21 @@ failUnless(
 template <typename T>
 void
 failUnlessThrows(
-    std::function<void()> f) {
+    std::function<void()> f,
+    String const & message) {
     
     try {
-        
+        f();
+        throw FailedTestException("failed exception");
     }
-    catch (T const & e) {
+    catch (T const & e) {}
+    
+    catch(FailedTestException const & e) {
+        throw UnittestException(message);
     }
     
-    catch(...) {
-        
+    catch(std::exception const & e) {
+        throw UnittestException("unexcepted exception");
     }
     
 }
