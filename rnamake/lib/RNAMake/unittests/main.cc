@@ -50,7 +50,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::motif::MotifUnittest test;
+    unittests::AtomUnittest test;
     test.run();
 
     return 0;

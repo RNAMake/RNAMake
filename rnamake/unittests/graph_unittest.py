@@ -4,6 +4,7 @@ from rnamake import graph, exceptions
 
 class GraphUnittest(unittest.TestCase):
 
+    #TODO check for weird uses of optional args in add_data
     def test_creation(self):
         g = graph.GraphDynamic()
         g.add_data(0)
@@ -16,10 +17,44 @@ class GraphUnittest(unittest.TestCase):
             g.add_data(10, parent_index=10)
 
         g = graph.GraphStatic()
-        g.add_data(0, -1, -1, -1, 2)
-        g.add_data(1, 0, 0, 0, 2)
-        g.add_data(2, 0, 1, 0, 2)
+        # legend
+        # N0 = Node 0
+        # N0C0 = Connection 0 of Node 0
+        # add first node with 2 possible connection
+        g.add_data(0, n_children=2)
+        #          N0
+        #    N0C0 /  \  N0C1
+        #        /    \
+        #     None     None
+        # add new node, connected to node 0. This new node: node 1 is connected
+        # to node 0 using the connnection in the 0th position on both node 0 and
+        # node 1. Do not need to specifiy parent_index=0 since adds to last node
+        # without specifying
+        # g.add_data(1, parent_index=0, parent_pos=0, child_pos=0, n_children=2)
+        # means the same thing
+        g.add_data(1, parent_pos=0, child_pos=0, n_children=2)
+        #          N0
+        #    N0C0 /  \  N0C1
+        #    N1C0/    \
+        #       N1   None
+        #   N1C1|
+        #       |
+        #      None
+        # add new node, connected to node 0.
+        g.add_data(2, parent_index=0, parent_pos=1, child_pos=0, n_children=2)
+        #          N0
+        #    N0C0 /  \  N0C1
+        #    N1C0/    \ N2C0
+        #       N1    N2
+        #   N1C1|      |N2C1
+        #       |      |
+        #      None   None
         g.connect(1, 2, 1, 1)
+        #          N0
+        #    N0C0 /  \  N0C1
+        #    N1C0/    \ N2C0
+        #       N1----N2
+        #      N1C1 N2C1
 
     def test_get_node(self):
         g = graph.GraphDynamic()

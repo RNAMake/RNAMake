@@ -185,7 +185,6 @@ MotifGraphUnittest::test_replace_sequence() {
     mg->replace_helical_sequence(ss);
 }
     
-
 //no leak from just copying
 void
 MotifGraphUnittest::test_memory() {
@@ -224,7 +223,6 @@ MotifGraphUnittest::test_memory_3() {
     }
 }
    
-
 void
 MotifGraphUnittest::test_topology_to_str() {
     auto builder = BuildMotifGraph();
@@ -244,6 +242,7 @@ MotifGraphUnittest::test_to_str() {
     auto mg = builder.build(3);
     auto s = mg->to_str();
     auto mg_new = MotifGraph(s, MotifGraphStringType::MG);
+    std::cout << mg_new.size() << std::endl;
 
 }
     

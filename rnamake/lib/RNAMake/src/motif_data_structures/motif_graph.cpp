@@ -148,13 +148,57 @@ MotifGraph::_setup_from_str(String const & s) {
     options_.set_value("sterics", false);
     auto spl = split_str_by_delimiter(s, "FAF");
     auto node_spl = split_str_by_delimiter(spl[0], "KAK");
-    int i = 0;
+    int max_index = 0;
     for(auto const & n_str : node_spl) {
+        if(n_str.length() < 10) { break; }
         auto n_spl = split_str_by_delimiter(n_str, "^");
         auto m = std::make_shared<Motif>(n_spl[0],
                                          ResidueTypeSetManager::getInstance().residue_type_set());
-        i++;
+        graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1, std::stoi(n_spl[1]));
+        aligned_[std::stoi(n_spl[1])] = std::stoi(n_spl[2]);
+        if(std::stoi(n_spl[2]) > max_index) {
+            max_index = std::stoi(n_spl[2]);
+        }
+
+
     }
+    
+    graph_.index(max_index+1);
+    
+    auto con_spl = split_str_by_delimiter(spl[1], "|");
+    for(auto const & c_str : con_spl) {
+        auto c_spl = split_str_by_delimiter(c_str, ",");
+        graph_.connect(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
+                       std::stoi(c_spl[2]), std::stoi(c_spl[3]));
+    }
+    
+    int start = -1;
+    for(auto const kv : aligned_) {
+        if(kv.second == 0) { start = kv.first; }
+    }
+    
+    auto n = GraphNodeOP<MotifOP>();
+    for(auto it = graph_.transverse(graph_.get_node(start));
+        it != graph_.end();
+        ++it) {
+        
+        n = (*it);
+        if(n->index() == start) {
+            merger_.add_motif(n->data());
+            continue;
+        }
+        if(n->connections()[0] == nullptr) { continue; }
+        auto c = n->connections()[0];
+        auto parent = c->partner(n->index());
+        auto parent_end_index = c->end_index(parent->index());
+        auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
+                                         n->data()->ends()[0],
+                                         n->data());
+        n->data() = m_added;
+        merger_.add_motif(n->data(), n->data()->ends()[0],
+                          parent->data(), parent->data()->ends()[parent_end_index]);
+    }
+
 
 }
 

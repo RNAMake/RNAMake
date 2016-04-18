@@ -9,6 +9,7 @@
 #include <functional>
 #include <map>
 
+#include "is_equal.hpp"
 #include "base/types.h"
 #include "atom_unittest.h"
 
@@ -17,55 +18,48 @@ namespace unittests {
     
 int
 AtomUnittest::test_creation() {
-    Atom atom("P", Point(0, 1, 2));
-    Point p(0, 1, 2);
-    if (!are_xyzVector_equal(atom.coords(), p)) {
-        return 0;
-    }
-    return 1;
-}
-
-int
-AtomUnittest::test_to_pdb_str() {
-    Atom atom("H1", Point(1, 2, 3));
-    String s = atom.to_pdb_str(1);
-    String ref("ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P\n");
-    if (s.compare(ref) != 0) {
-        return 1;
-    }
-    String s2 = atom.to_pdb_str(10);
-    String ref2("ATOM     10  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P\n");
-    if (s2.compare(ref2) != 0) {
-        return 1;
-    }
+    auto a = std::make_shared<Atom>("P", Point(0, 1, 2));
+    auto p = Point(0, 1, 2);
+ 
+    failUnless(a->coords() == p, "did properly create atomic coordinates");
     
     return 1;
 }
 
 int
+AtomUnittest::test_to_pdb_str() {
+    auto atom = std::make_shared<Atom>("P", Point(1, 2, 3));
+    auto s = atom->to_pdb_str(1);
+    auto ref = String("ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P\n");
+    
+    failUnless(s == ref, "did not produce right string output");
+    
+    auto s2 = atom->to_pdb_str(10);
+    auto ref2 = String("ATOM     10  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P\n");
+    
+    failUnless(s2 == ref2, "did not produce right string output");
+
+    return 1;
+}
+
+int
 AtomUnittest::test_str_to_atom() {
-    auto a = Atom("H1", Point(1, 2, 3));
-    String s = a.to_str();
-    auto a2 = Atom(s);
-    if(not are_xyzVector_equal(a.coords(), a2.coords())) {
-        return 0;
-    }
-    if(not (a.name().compare(a2.name()) == 0)) {
-        return 0;
-    }
+    auto a = std::make_shared<Atom>("P", Point(0, 1, 2));
+    auto s = a->to_str();
+    auto a2 = std::make_shared<Atom>(s);
+    
+    failUnless(are_atoms_equal(a, a2), "atoms are not equal");
+    
     return 1;
 }
 
 int
 AtomUnittest::test_copy() {
-    auto a  = Atom("H1", Point(1, 2, 3));
-    auto a2 = Atom(a);
-    if(not are_xyzVector_equal(a.coords(), a2.coords())) {
-        return 0;
-    }
-    if(not (a.name().compare(a2.name()) == 0)) {
-        return 0;
-    }
+    auto a = std::make_shared<Atom>("P", Point(0, 1, 2));
+    auto a2 = std::make_shared<Atom>(*a);
+   
+    failUnless(are_atoms_equal(a, a2), "atoms are not equal but should be");
+    
     return 1;
 }
 
