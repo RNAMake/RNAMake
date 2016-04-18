@@ -251,11 +251,45 @@ class GraphStatic(Graph):
 
     .. code-block:: python
 
-        >>>g = graph.GraphStatic()
-        >>>g.add_data(0, -1, -1, -1, 2)
-        >>>g.add_data(1, 0, 0, 0, 2)
-        >>>g.add_data(2, 0, 1, 0, 2)
-        >>>g.connect(1, 2, 1, 1)
+        >>> g = graph.GraphStatic()
+        # legend
+        # N0 = Node 0
+        # N0C0 = Connection 0 of Node 0
+        # add first node with 2 possible connection
+        >>> g.add_data(0, n_children=2)
+        #          N0
+        #    N0C0 /  \  N0C1
+        #        /    \\
+        #     None     None
+        # add new node, connected to node 0. This new node: node 1 is connected
+        # to node 0 using the connnection in the 0th position on both node 0 and
+        # node 1. Do not need to specifiy parent_index=0 since adds to last node
+        # without specifying
+        # g.add_data(1, parent_index=0, parent_pos=0, child_pos=0, n_children=2)
+        # means the same thing
+        >>> g.add_data(1, parent_pos=0, child_pos=0, n_children=2)
+        #          N0
+        #    N0C0 /  \  N0C1
+        #    N1C0/    \\
+        #       N1   None
+        #   N1C1|
+        #       |
+        #      None
+        # add new node, connected to node 0.
+        >>> g.add_data(2, parent_index=0, parent_pos=1, child_pos=0, n_children=2)
+        #          N0
+        #    N0C0 /  \  N0C1
+        #    N1C0/    \ N2C0
+        #       N1    N2
+        #   N1C1|      |N2C1
+        #       |      |
+        #      None   None
+        >>> g.connect(1, 2, 1, 1)
+        #          N0
+        #    N0C0 /  \  N0C1
+        #    N1C0/    \ N2C0
+        #       N1----N2
+        #      N1C1  N2C1
     """
 
     def __init__(self):
@@ -263,6 +297,60 @@ class GraphStatic(Graph):
 
     def add_data(self, data, parent_index=-1, parent_pos=-1, child_pos=-1, n_children=1,
                  orphan=0, index=-1):
+        """
+        Adds a new node to the graph given specfied data.
+
+        :param data: element to add to graph
+        :param parent_index: index of parent to connect to, optional
+        :param parent_pos:  connection position to connect to parent, optional
+        :param child_pos:  connection position on new node to be created, optional
+        :param n_children: number of connections new node will have, optional
+        :param orphan: whether node will not be connected to any other node.
+            default new nodes are connected to the last node added. if orphan=1
+            this will not happen
+        :param index: overrides internal index and set node to specific index
+            value, this is rarely used other then copying an entire graph
+
+        :type parent_index: int
+        :type parent_pos: int
+        :type child_pos: int
+        :type n_children: int
+        :type orphan: int
+        :type index: int
+
+        :return: index of new node
+        :rtype: int
+
+        :examples:
+
+        .. code-block:: python
+
+            >>> g = graph.GraphStatic()
+            # legend
+            # N0 = Node 0
+            # N0C0 = Connection 0 of Node 0
+            # add first node with 2 possible connection
+            >>> g.add_data(0, n_children=2)
+            #          N0
+            #    N0C0 /  \  N0C1
+            #        /    \\
+            #     None     None
+            # add new node, connected to node 0. This new node: node 1 is connected
+            # to node 0 using the connnection in the 0th position on both node 0 and
+            # node 1. Do not need to specifiy parent_index=0 since adds to last node
+            # without specifying
+            # g.add_data(1, parent_index=0, parent_pos=0, child_pos=0, n_children=2)
+            # means the same thing
+            >>> g.add_data(1, parent_pos=0, child_pos=0, n_children=2)
+            #          N0
+            #    N0C0 /  \  N0C1
+            #    N1C0/    \\
+            #       N1   None
+            #   N1C1|
+            #       |
+            #      None
+        """
+
         given_index = self.index
         if index != -1:
             given_index = index
@@ -288,6 +376,15 @@ class GraphStatic(Graph):
         return given_index
 
     def connect(self, i, j, i_pos, j_pos):
+        """
+        Connects two nodes together
+
+        :param i:
+        :param j:
+        :param i_pos:
+        :param j_pos:
+        :return:
+        """
         n1 = self.get_node(i)
         n2 = self.get_node(j)
         i_pos = self.check_pos_is_value(n1, i_pos)

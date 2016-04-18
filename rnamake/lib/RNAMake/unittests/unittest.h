@@ -13,6 +13,8 @@
 #include <stdio.h>
 #include <iostream>
 #include <map>
+#include <functional>
+
 
 #include "util/settings.h"
 
@@ -45,5 +47,39 @@ public:
     
     
 };
+
+
+inline
+void
+failUnless(
+    bool statement,
+    String const & message) {
+    
+    if(!statement) { throw UnittestException(message); }
+    
+}
+
+template <typename T>
+void
+failUnlessThrows(
+    std::function<void()> f) {
+    
+    try {
+        
+    }
+    catch (T const & e) {
+    }
+    
+    catch(...) {
+        
+    }
+    
+}
+
+
+
+
+
+
 
 #endif /* defined(__RNAMake__unittest__) */
