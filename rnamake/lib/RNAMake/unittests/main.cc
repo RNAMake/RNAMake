@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include "tool_unittests/tool_unittests.hpp"
+
 #include "base_unittests/option_unittest.h"
 #include "base_unittests/cl_option_unittest.h"
 #include "base_unittests/application_unittest.hpp"
@@ -57,9 +59,6 @@ public:
 
 
 int main(int argc, const char * argv[]) {
-    
-    std::function<void()> f = []() {  throw TestException("test"); };
-    failUnlessThrows<TestException>(f, "test");
     
     unittests::ResidueUnittest test;
     test.run();
