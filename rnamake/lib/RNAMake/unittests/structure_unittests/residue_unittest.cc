@@ -17,8 +17,8 @@ namespace unittests {
 ResidueUnittest::ResidueUnittest():
 rts_(ResidueTypeSet()),
 residues_(ResidueOPs()){
-    String path = unittest_resource_dir() + "residue/test_str_to_residue.dat";
-    Strings lines = get_lines_from_file(path);
+    auto path = unittest_resource_dir() + "residue/test_str_to_residue.dat";
+    auto lines = get_lines_from_file(path);
     for(auto const & line : lines) {
         if(line.size() < 10) { break; }
         auto r = std::make_shared<Residue>(line, rts_);
@@ -28,48 +28,33 @@ residues_(ResidueOPs()){
     
 void
 ResidueUnittest::test_bead_creation() {
-    Bead b ( Point(1, 2, 3), BASE);
+    auto b =  Bead( Point(1, 2, 3), BASE);
 }
 
 
 void
 ResidueUnittest::test_get_atom() {
-    String path = unittest_resource_dir() + "residue/test_str_to_residue.dat";
-    Strings lines = get_lines_from_file(path);
-    ResidueTypeSet rts;
-    auto r = Residue(lines[0], rts);
-    String name = "C1'";
-    AtomOP a = r.get_atom(name);
+    auto r = residues_[0];
+    auto name = String("C1'");
+    auto a = r->get_atom(name);
 }
 
 void
 ResidueUnittest::test_connected_to() {
-    String path = unittest_resource_dir() + "residue/test_str_to_residue.dat";
-    Strings lines = get_lines_from_file(path);
+    auto r1 = residues_[0];
+    auto r2 = residues_[1];
+    auto r3 = residues_[2];
+    
+    failUnless(r1->connected_to(*r2) == 1,  "r1 should be connected to r2");
+    failUnless(r1->connected_to(*r3) == 0,  "r1 should not be connected to r3");
+    failUnless(r3->connected_to(*r2) == -1, "r3 should be connected to r2");
 
-    ResidueTypeSet rts;
-    auto r1 = Residue(lines[0], rts);
-    auto r2 = Residue(lines[1], rts);
-    auto r3 = Residue(lines[2], rts);
-    /*if (r1.connected_to(r2, 3.0)  != 1) {
-        return 0;
-    }
-    if (r1.connected_to(r3, 3.0)  != 0) {
-        return 0;
-    }
-    if (r3.connected_to(r2, 3.0)  != -1) {
-        return 0;
-    }*/
 }
 
 void
 ResidueUnittest::test_get_beads() {
-    String path = unittest_resource_dir() + "residue/test_str_to_residue.dat";
-    Strings lines = get_lines_from_file(path);
-
-    ResidueTypeSet rts;
-    auto r = Residue(lines[0], rts);
-    Beads beads = r.get_beads();
+    auto r = residues_[0];
+    Beads beads = r->get_beads();
 }
 
 void
@@ -90,15 +75,12 @@ ResidueUnittest::test_to_str() {
 
 void
 ResidueUnittest::test_equals() {
-    String path = unittest_resource_dir() + "residue/test_str_to_residue.dat";
-    Strings lines = get_lines_from_file(path);
-
-    ResidueTypeSet rts;
-    auto r1 = Residue(lines[0], rts);
-    auto r2 = Residue(lines[1], rts);
-
-    //if(!(r1 == r1)) { return 0; }
-    //if(r1 == r2) { return 0; }
+    auto r1 = residues_[0];
+    auto r2 = residues_[1];
+    auto r1_copy = std::make_shared<Residue>(*r1);
+    
+    failUnless(!(*r1 == *r2), "r1 and r2 are not equal");
+    failUnless(*r1 == *r1_copy, "r1 and r1_copy are equal");
 }
 
 void
