@@ -34,6 +34,9 @@ public:
     int
     test_to_pdb();
     
+    int
+    test_copy();
+    
 public:
     
     int
@@ -44,7 +47,8 @@ public:
     
 private:
     ChainOP c_;
-    
+    ResidueTypeSet rts_;
+
     
 };
     

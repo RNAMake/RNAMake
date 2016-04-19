@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include "is_equal.hpp"
 #include "chain_unittest.h"
 #include "math/numerical.h"
 #include "util/file_io.h"
@@ -14,43 +15,33 @@ namespace unittests {
 
 ChainUnittest::ChainUnittest() {
     
-    String path = unittest_resource_dir() + "/chain/test_str_to_chain.dat";
-    Strings lines = get_lines_from_file(path);
+    auto path = unittest_resource_dir() + "/chain/test_str_to_chain.dat";
+    auto lines = get_lines_from_file(path);
     
-    ResidueTypeSet rts;
-    c_ = std::make_shared<Chain>(lines[0], rts);
+    rts_ = ResidueTypeSet();
+    c_ = std::make_shared<Chain>(lines[0], rts_);
 }
 
 int
 ChainUnittest::test_to_str() {
 
-    String s = c_->to_str();
-    ResidueTypeSet rts;
-    auto c2 = Chain(s, rts);
+    auto s = c_->to_str();
+    auto c2 = std::make_shared<Chain>(s, rts_);
     
-    ResidueOPs org_res = c_->residues();
-    ResidueOPs new_res = c2.residues();
-    
-    for(int i = 0; i < org_res.size(); i++) {
-        if(org_res[i]->name().compare(new_res[i]->name()) != 0) { return 0; }
-        if(org_res[i]->chain_id().compare(new_res[i]->chain_id())) { return  0; }
-        if(org_res[i]->num() != new_res[i]->num()) { return 0; }
-        
-        AtomOPs atoms_1 = org_res[i]->atoms();
-        AtomOPs atoms_2 = new_res[i]->atoms();
-        
-        for(int j = 0; j < atoms_1.size(); j++) {
-            if(atoms_1[j] == nullptr && atoms_2[j] != nullptr) { return 0; }
-            if(atoms_1[j] != nullptr && atoms_2[j] == nullptr) { return 0; }
-            if(atoms_1[j] == nullptr && atoms_2[j] == nullptr) { continue; }
-            
-            if(!are_xyzVector_equal(atoms_1[j]->coords(), atoms_2[j]->coords())) { return 0; }
-        }
-    }
+    failUnless(are_chains_equal(c_, c2, 0), "chains should be equal");
     
     return 1;
 }
 
+    
+int
+ChainUnittest::test_copy() {
+    auto c_copy = std::make_shared<Chain>(*c_);
+    failUnless(are_chains_equal(c_, c_copy, 1), "chains should be equal");
+    return 1;
+    
+}
+    
 int
 ChainUnittest::test_subchain() {
     
@@ -89,10 +80,10 @@ ChainUnittest::test_to_pdb() {
 int
 ChainUnittest::run() {
     
-    if (test_to_str() == 0)             { std::cout << "test_to_str failed" << std::endl; }
-    if (test_subchain() == 0)           { std::cout << "test_subchain failed" << std::endl; }
-    if (test_to_pdb() == 0)             { std::cout << "test_to_pdb failed" << std::endl; }
-    
+    test_to_str();
+    test_subchain();
+    test_to_pdb();
+    test_copy();
     return 1;
 }
 
