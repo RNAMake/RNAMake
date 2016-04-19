@@ -49,18 +49,10 @@
 
 #include "instance_unittests/instance_unittest.hpp"
 
-class TestException : public std::runtime_error {
-public:
-    TestException(
-        String const & message):
-    std::runtime_error("Test Exception: " + message)
-    {}
-};
-
 
 int main(int argc, const char * argv[]) {
     
-    unittests::ResidueUnittest test;
+    unittests::ChainUnittest test;
     test.run();
 
     return 0;
