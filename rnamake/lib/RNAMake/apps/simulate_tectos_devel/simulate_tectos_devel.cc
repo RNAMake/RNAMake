@@ -436,10 +436,9 @@ SimulateTectos::get_motifs_from_seq_and_ss(
             required_nodes[i]->data()->ss_chains()[0]->sequence()   +
             required_nodes[i+1]->data()->ss_chains()[0]->sequence();
             
-            seq2 = required_nodes[i-1]->data()->ss_chains()[1]->sequence() +
+            seq2 = required_nodes[i+1]->data()->ss_chains()[1]->sequence() +
             required_nodes[i]->data()->ss_chains()[1]->sequence()   +
-            required_nodes[i+1]->data()->ss_chains()[1]->sequence();
-            std::reverse(seq2.begin(), seq2.end());
+            required_nodes[i-1]->data()->ss_chains()[1]->sequence();
             
             ss1 = "L";
             for(int j = 0; j < required_nodes[i]->data()->ss_chains()[0]->length(); j++) {

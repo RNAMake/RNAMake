@@ -87,8 +87,9 @@ class BuildSqliteLibraries(object):
 
     def build_basic_libraries(self):
 
-        types = [motif_type.TWOWAY, motif_type.NWAY, motif_type.HAIRPIN,
-                 motif_type.TCONTACT]
+        #types = [motif_type.TWOWAY, motif_type.NWAY, motif_type.HAIRPIN,
+        #         motif_type.TCONTACT]
+        types = [motif_type.TWOWAY]
 
         for t in types:
             count = 0
@@ -117,6 +118,8 @@ class BuildSqliteLibraries(object):
             for i, s in enumerate(succeses):
                 m, ei = s
                 m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
+                print m_added.name, m_added.ends[0].name(), m_added.end_ids[0]
+
                 data.append([m_added.to_str(), m_added.name,
                             m_added.ends[0].name(), m_added.end_ids[0], i])
 
@@ -403,8 +406,8 @@ class BuildSqliteLibraries(object):
 
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
-#builder.build_basic_libraries()
-builder.build_helix_ensembles()
+builder.build_basic_libraries()
+#builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()
