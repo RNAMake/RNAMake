@@ -292,7 +292,7 @@ class MotifMerger(object):
                     raise ValueError("cannot build chain map two residues are assigned"
                                      "to 3' chain")
 
-        if end_nodes[0] == None or end_nodes[1] == None:
+        if end_nodes[0] is None or end_nodes[1] is None:
             raise ValueError("did not build map properly, both chains are not found")
 
         return end_nodes

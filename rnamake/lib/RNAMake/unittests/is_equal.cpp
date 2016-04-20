@@ -13,12 +13,31 @@
 bool
 are_atoms_equal(
     AtomOP const & a1,
-    AtomOP const & a2) {
+    AtomOP const & a2,
+    float tol) {
     
-    return are_xyzVector_equal(a1->coords(), a2->coords()) &&
+    return are_xyzVector_equal(a1->coords(), a2->coords(), tol) &&
            a1->name() == a2->name();
 }
 
+
+bool
+are_atom_vectors_equal(
+    AtomOPs const & atoms_1,
+    AtomOPs const & atoms_2,
+    float tol) {
+    
+    if(atoms_1.size() != atoms_2.size()) { return false; }
+    
+    int result = 0;
+    for(int i = 0; i < atoms_1.size(); i++) {
+        result = are_atoms_equal(atoms_1[i], atoms_2[i], tol);
+        //std::cout << atoms_1[i]->to_str() << " " << atoms_2[i]->to_str() << std::endl;
+        if(!result) { return false; }
+    }
+    return true;
+    
+}
 
 bool
 are_residues_equal(

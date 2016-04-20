@@ -8,7 +8,11 @@
 
 #include <cxxabi.h>
 
+#include "is_equal.hpp"
 #include "motif_graph_unittest.h"
+
+#include "util/settings.h"
+#include "util/file_io.h"
 #include "motif_data_structures/motif_graph.h"
 #include "resources/resource_manager.h"
 #include "build/build_motif_graph.h"
@@ -234,21 +238,77 @@ MotifGraphUnittest::test_topology_to_str() {
     if(mg->size() != mg_new.size()) {
         throw UnittestException("did not get the correct size from new motif_graph");
     }
+    
+    auto atoms_1 = mg->get_structure()->atoms();
+    auto atoms_2 = mg_new.get_structure()->atoms();
+    
+    failUnless(are_atom_vectors_equal(atoms_1, atoms_2), "atom vectors shoudl be equal");
 }
     
+void
+MotifGraphUnittest::test_topology_to_str_2() {
+    auto path = base_dir() + "/rnamake/unittests/resources/motif_graph";
+    auto lines = get_lines_from_file(path + "/test.mg");
+    auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
+
+    failUnless(mg->size() == 28, "did not get the right number of motifs in graph");
+    
+    auto lines2 = get_lines_from_file(path + "/test.top");
+    auto mg2 = std::make_shared<MotifGraph>(lines2[0], MotifGraphStringType::TOP);
+
+    failUnless(mg2->size() == 28, "did not get the right number of motifs in graph");
+    
+    auto atoms_1 = mg->get_structure()->atoms();
+    auto atoms_2 = mg2->get_structure()->atoms();
+    
+    //need to increase the tolerance to 0.1 since there seems to be some small
+    //numerical difference from Python to C++
+    failUnless(are_atom_vectors_equal(atoms_1, atoms_2, 0.1), "atoms should be the same");
+}
+    
+void
+MotifGraphUnittest::test_topology_to_str_3() {
+    auto path = base_dir() + "/rnamake/unittests/resources/motif_graph";
+    auto lines = get_lines_from_file(path + "/test_added.mg");
+    auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
+    
+    failUnless(mg->size() == 33, "did not get the right number of motifs in graph");
+    
+    auto lines2 = get_lines_from_file(path + "/test_added.top");
+    auto mg2 = std::make_shared<MotifGraph>(lines2[0], MotifGraphStringType::TOP);
+    
+    failUnless(mg2->size() == 33, "did not get the right number of motifs in graph");
+    
+    auto atoms_1 = mg->get_structure()->atoms();
+    auto atoms_2 = mg2->get_structure()->atoms();
+    
+    //need to increase the tolerance to 0.1 since there seems to be some small
+    //numerical difference from Python to C++
+    failUnless(are_atom_vectors_equal(atoms_1, atoms_2, 0.1), "atoms should be the same");
+}
+
 void
 MotifGraphUnittest::test_to_str() {
     auto builder = BuildMotifGraph();
     auto mg = builder.build(3);
     auto s = mg->to_str();
     auto mg_new = MotifGraph(s, MotifGraphStringType::MG);
-    std::cout << mg_new.size() << std::endl;
 
+    auto atoms_1 = mg->get_structure()->atoms();
+    auto atoms_2 = mg_new.get_structure()->atoms();
+    
+    failUnless(are_atom_vectors_equal(atoms_1, atoms_2), "atom vectors shoudl be equal");
+    
 }
     
 int
 MotifGraphUnittest::run() {
-    /*test_topology_to_str();
+    
+    auto path = base_dir() + "/rnamake/resources/motifs/extras/";
+    ResourceManager::getInstance().add_motif(path + "/GAAA_tetraloop");
+    ResourceManager::getInstance().add_motif(path + "/GGAA_tetraloop");
+    
+    /*
     test_creation();
     test_add_motif();
     test_remove_2();
@@ -257,7 +317,10 @@ MotifGraphUnittest::run() {
     test_replace_ideal_helices_2();
     test_secondary_structure();
     test_replace_sequence();*/
-    test_to_str();
+    //test_topology_to_str();
+    //test_topology_to_str_2();
+    test_topology_to_str_3();
+    //test_to_str();
     return 0;
 }
     

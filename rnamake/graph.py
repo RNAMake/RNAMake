@@ -14,6 +14,12 @@ def transverse_graph(graph, i):
         yield next
 
 
+# TODO using a priority queue is not enough to assume connectivity will be
+# followed correctly. Need to inforce that connectivity will go from
+# motif that is aligned to one that is not and not build connections between
+# ends 1 of two different motifs such at the end of a build path possibly need
+# seperate class that is a DirectedGraph instead of just Graph
+# see /rnamake/unittests/resources/motif_graph/test_added.mg to see this issue
 class Graph(object):
     """
     General implementation of a undirected graph. Do not call directly!
@@ -160,6 +166,7 @@ class Graph(object):
         self.level -= 1
 
 
+# TODO this could probably just be Graph doesnt need to be its own class
 class GraphDynamic(Graph):
     """
     a Graph with dynamic connections between nodes. i.e. each node does NOT

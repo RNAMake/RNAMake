@@ -170,6 +170,7 @@ MotifGraph::_setup_from_str(String const & s) {
         auto c_spl = split_str_by_delimiter(c_str, ",");
         graph_.connect(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
                        std::stoi(c_spl[2]), std::stoi(c_spl[3]));
+        
     }
     
     int start = -1;
@@ -183,22 +184,20 @@ MotifGraph::_setup_from_str(String const & s) {
         ++it) {
         
         n = (*it);
+        
         if(n->index() == start) {
             merger_.add_motif(n->data());
             continue;
         }
-        if(n->connections()[0] == nullptr) { continue; }
+        if(n->connections()[0] == nullptr) { std::cout << "no parent: " << n->index() << std::endl;
+            continue;}
+        
         auto c = n->connections()[0];
         auto parent = c->partner(n->index());
         auto parent_end_index = c->end_index(parent->index());
-        auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
-                                         n->data()->ends()[0],
-                                         n->data());
-        n->data() = m_added;
         merger_.add_motif(n->data(), n->data()->ends()[0],
                           parent->data(), parent->data()->ends()[parent_end_index]);
     }
-
 
 }
 

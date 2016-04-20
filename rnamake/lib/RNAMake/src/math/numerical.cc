@@ -15,19 +15,21 @@
 int
 are_floats_equal(
 	float const a,
-	float const b) {
-	if (fabs(a - b) < 0.001) { return 1; }
+	float const b,
+    float tol) {
+	if (fabs(a - b) < tol) { return 1; }
 	else					 { return 0; }
 }
 
 int
 are_xyzVector_equal(
 	Vector const & vec,
-	Vector const & correct_vec) {
+	Vector const & correct_vec,
+    float tol) {
     
-	if (are_floats_equal(vec.x(),correct_vec.x()) &&
-		are_floats_equal(vec.y(),correct_vec.y()) &&
-		are_floats_equal(vec.z(),correct_vec.z())) {
+	if (are_floats_equal(vec.x(), correct_vec.x(), tol) &&
+		are_floats_equal(vec.y(), correct_vec.y(), tol) &&
+		are_floats_equal(vec.z(), correct_vec.z(), tol)) {
 		return 1;
 	}
 	else {

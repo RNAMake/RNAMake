@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include "is_equal.hpp"
 #include "structure_unittest.h"
 #include "unittest.h"
 #include "util/file_io.h"
@@ -36,8 +37,19 @@ StructureUnittest::test_move() {
     }
     
     return 1;
-    
 }
+    
+int
+StructureUnittest::test_to_str() {
+    ResidueTypeSet rts;
+    auto s = s_->to_str();
+    auto s_copy = std::make_shared<Structure>(s, rts);
+    
+    failUnless(are_structures_equal(s_, s_copy, 0), "structures should be equal");
+    
+    return 1;
+}
+    
 
 int
 StructureUnittest::test_transform() {
@@ -91,6 +103,7 @@ StructureUnittest::run() {
     if (test_move() == 0)               { std::cout << "test_move failed" << std::endl; }
     if (test_transform() == 0)          { std::cout << "test_transform failed" << std::endl; }
     if (test_get_residue() == 0)        { std::cout << "test_get_residue failed" << std::endl; }
+    test_to_str();
     return 0;
 }
 
