@@ -68,6 +68,12 @@ public:
     test_topology_to_str();
     
     void
+    test_topology_to_str_2();
+    
+    void
+    test_topology_to_str_3();
+    
+    void
     test_to_str();
     
 public:

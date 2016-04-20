@@ -200,6 +200,7 @@ class MotifGraphUnittest(unittest.TestCase):
         f.close()
 
         mg = motif_graph.MotifGraph(mg_str=l)
+        print len(mg.graph)
 
         #load motif graph from topology
         base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
@@ -224,6 +225,8 @@ class MotifGraphUnittest(unittest.TestCase):
         f.close()
 
         mg = motif_graph.MotifGraph(mg_str=l)
+        mg.write_pdbs()
+        exit()
 
         #load motif graph from topology
         base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"

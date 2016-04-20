@@ -35,6 +35,9 @@ public:
     int
     test_get_residue();
     
+    int
+    test_to_str();
+    
 public:
     
     int

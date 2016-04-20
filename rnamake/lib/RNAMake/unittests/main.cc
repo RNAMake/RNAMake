@@ -52,7 +52,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::ChainUnittest test;
+    unittests::motif_structures::MotifGraphUnittest test;
     test.run();
 
     return 0;

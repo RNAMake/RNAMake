@@ -13,6 +13,7 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
+#include <queue>
 #include <cxxabi.h>
 
 #include "base/types.h"
@@ -26,6 +27,24 @@ public:
     {}
     
 };
+
+template <typename DataType>
+struct GraphNodeCompare {
+    bool
+    operator () (
+        GraphNodeOP<DataType> const & node1,
+        GraphNodeOP<DataType> const & node2) {
+        
+        if (node1->index() > node2->index()) { return true;  }
+        else     							 { return false; }
+    }
+};
+
+
+template <typename DataType>
+using GraphNodeQueue = std::priority_queue<GraphNodeOP<DataType>,
+                                           GraphNodeOPs<DataType>,
+                                           GraphNodeCompare<DataType> >;
 
 
 template <typename DataType>

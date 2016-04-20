@@ -20,6 +20,7 @@
 #include "data_structure/graph/graph_node.h"
 #include "data_structure/graph/graph_node.fwd.h"
 
+
 template <typename DataType>
 class GraphIterator;
 
@@ -143,7 +144,7 @@ public:
 private:
     GraphNodeOPs<DataType> nodes_, leafs_;
     GraphNodeOP<DataType> current_;
-    std::queue<GraphNodeOP<DataType>> queue_;
+    GraphNodeQueue<DataType> queue_;
     std::map<GraphNodeOP<DataType>, int> seen_;
     
     GraphIterator(
@@ -155,7 +156,7 @@ private:
             return;
         }
         
-        queue_ = std::queue<GraphNodeOP<DataType>>();
+        queue_ = GraphNodeQueue<DataType>();
         seen_  = std::map<GraphNodeOP<DataType>, int> ();
         
         int active_conn = 0;
@@ -185,8 +186,9 @@ private:
         GraphNodeOP<DataType> const & node):
     nodes_(GraphNodeOPs<DataType>()) {
         
-        queue_ = std::queue<GraphNodeOP<DataType>>();
+        queue_ = GraphNodeQueue<DataType>();
         seen_  = std::map<GraphNodeOP<DataType>, int> ();
+        leafs_ = GraphNodeOPs<DataType>();
         current_ = node;
         seen_[current_] = 1;
     }
@@ -249,7 +251,7 @@ GraphIterator<DataType>::operator++() {
     }
     
     if(!queue_.empty()) {
-        current_ = queue_.front();
+        current_ = queue_.top();
         queue_.pop();
     }
     else {

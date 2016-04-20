@@ -17,13 +17,15 @@
 
 int
 are_floats_equal(
-	float const,
-	float const);
+	float const a,
+	float const b,
+    float tol= 0.001);
 
 int
 are_xyzVector_equal(
-	Vector const &,
-	Vector const &);
+	Vector const & vec,
+	Vector const & correct_vec,
+    float tol= 0.001);
 
 int
 are_xyzVectors_equal(
