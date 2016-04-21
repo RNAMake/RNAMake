@@ -69,6 +69,7 @@ class MotifGraph(base.Base):
         self.option('sterics', 0)
         spl = s.split("&")
         node_spl = spl[0].split("|")
+        max_index = 0
         for i, n_spl in enumerate(node_spl[:-1]):
             sspl = n_spl.split(",")
             m = None
@@ -80,6 +81,11 @@ class MotifGraph(base.Base):
             pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends),
                                       orphan=1, index=int(sspl[2]))
             self.aligned[int(sspl[2])] = int(sspl[3])
+
+            if int(sspl[2]) > max_index:
+                max_index = int(sspl[2])
+
+        self.graph.index = max_index+1
 
         con_spl = spl[1].split("|")
         for c_str in con_spl[:-1]:
@@ -120,12 +126,18 @@ class MotifGraph(base.Base):
         self.option('sterics', 0)
         spl = s.split("FAF")
         node_spl = spl[0].split("KAK")
+        max_index = 0
         for i, n_str in enumerate(node_spl[:-1]):
             n_spl = n_str.split("^")
             m = motif.str_to_motif(n_spl[0])
             self.graph.add_data(m, -1, -1, -1, len(m.ends),
                                 orphan=1, index=int(n_spl[1]))
             self.aligned[int(n_spl[1])] = int(n_spl[2])
+
+            if int(n_spl[2]) > max_index:
+                max_index = int(n_spl[2])
+
+        self.graph.index = max_index+1
 
         con_spl = spl[1].split("|")
         for c_str in con_spl[:-1]:

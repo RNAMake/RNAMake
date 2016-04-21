@@ -3,6 +3,89 @@ import numpy as np
 
 import residue_type, util, basic_io, exceptions
 
+# TODO work on removing this stuff, ResidueState is going into MotifState module
+# This stuff is getting removed. but need now
+###############################################################################
+
+class ResidueState(object):
+    def __init__(self, uuid):
+        self.uuid = uuid
+        self.beads = []
+
+    def copy(self):
+        return ResidueState(self.uuid)
+
+class ResidueStateType(object):
+    NORM = 0
+    END =  1
+
+class ResidueState2Bead(ResidueState):
+    def __init__(self, uuid, sugar, base, type=ResidueStateType.NORM):
+        super(self.__class__, self).__init__(uuid)
+        self.sugar = sugar
+        self.base = base
+        self.beads = [sugar, base]
+        self.type = type
+
+    def copy(self):
+        sugar = np.copy(self.sugar)
+        base  = np.copy(self.base)
+        return ResidueState2Bead(self.uuid, sugar, base, self.type)
+
+    def to_str(self):
+        return basic_io.points_to_str(self.beads) + "," + str(self.type)
+
+    def update(self, r, t):
+        self.beads = np.dot(self.beads, r) + t
+        self.sugar = self.beads[0]
+        self.base = self.beads[1]
+
+class ResidueState3Bead(ResidueState):
+    def __init__(self, uuid, sugar, base, phos,type=ResidueStateType.NORM):
+        super(self.__class__, self).__init__(uuid)
+        self.sugar = sugar
+        self.base = base
+        self.phos = phos
+        self.beads = [sugar, base, phos]
+        self.type = type
+
+    def copy(self):
+        sugar = np.copy(self.sugar)
+        base  = np.copy(self.base)
+        phos  = np.copy(self.phos)
+        return ResidueState3Bead(self.uuid, sugar, base, phos, self.type)
+
+    def to_str(self):
+        return basic_io.points_to_str(self.beads) + "," + str(self.type)
+
+    def update(self, r, t):
+        self.beads = np.dot(self.beads, r) + t
+        self.sugar = self.beads[0]
+        self.base = self.beads[1]
+        self.phos = self.beads[2]
+
+
+def get_residue_state(r, type=ResidueStateType.NORM):
+    phos_atoms, sugar_atoms, base_atoms = [], [], []
+
+    for i, a in enumerate(r.atoms):
+        if a is None:
+            continue
+        if   i < 3:
+            phos_atoms.append(a)
+        elif i < 12:
+            sugar_atoms.append(a)
+        else:
+            base_atoms.append(a)
+
+    return ResidueState3Bead(r.uuid,
+                             util.center(sugar_atoms),
+                             util.center(base_atoms),
+                             util.center(phos_atoms),
+                             type)
+
+###############################################################################
+
 class BeadType(object):
     """
     BeadType is an ENUM type. This is to specify which center of atoms each bead
