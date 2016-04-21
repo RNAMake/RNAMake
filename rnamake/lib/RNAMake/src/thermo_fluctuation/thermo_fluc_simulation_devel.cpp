@@ -95,6 +95,7 @@ ThermoFlucSimulationDevel::run() {
     int r = 0;
     int count = 0;
     int clash = 0;
+    int bound_pdb_count = 0;
     
     //std::cout << record_all_file_ << std::endl;
     
@@ -194,9 +195,13 @@ ThermoFlucSimulationDevel::run() {
             
             count += 1;
             
-            if(bound_pdb_) {
-                sampler_.mst()->to_motif_tree()->to_pdb("bound.pdb");
-                exit(0);
+            if(bound_pdb_ > bound_pdb_count) {
+                try {
+                    sampler_.mst()->to_motif_tree()->to_pdb("bound."+std::to_string(bound_pdb_count)+
+                                                            ".pdb");
+                    bound_pdb_count++;
+                }
+                catch(...) {}
             }
         }
         
