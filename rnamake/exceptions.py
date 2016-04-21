@@ -13,3 +13,6 @@ class StructureException(Exception):
 
 class PDBParserException(Exception):
     pass
+
+class MotifClustersException(Exception):
+    pass

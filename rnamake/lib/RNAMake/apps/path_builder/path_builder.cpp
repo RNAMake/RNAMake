@@ -42,7 +42,7 @@ int main(int argc, const char * argv[]) {
                                  "topology followed by starting basepair and end basepair");
     }
     
-    auto mg = std::make_shared<MotifGraph>(lines[0]);
+    auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::TOP);
     auto spl1 = split_str_by_delimiter(lines[1], " ");
     auto spl2 = split_str_by_delimiter(lines[2], " ");
 
@@ -60,6 +60,8 @@ int main(int argc, const char * argv[]) {
     auto search = MotifStateSearch();
     search.setup(start->state(), end->state());
     search.beads(centers);
+    search.set_option_value("max_size", 80);
+
     mg->increase_level();
     mg->set_option_value("sterics", false);
     mg->write_pdbs();

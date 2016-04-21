@@ -27,7 +27,7 @@ ResourceManager::get_motif(
         return added_motifs_.get(name, end_id, end_name);
     }
     
-    throw ResourceManagerException("cannot find motif: ");
+    throw ResourceManagerException("cannot find motif: " + name);
     
 }
 

@@ -1,4 +1,5 @@
 set(unittests_files
+	../../unittests/is_equal.cpp
 	../../unittests/unittest.cc
 	../../unittests/base_unittests/application_unittest.cpp
 	../../unittests/base_unittests/cl_option_unittest.cc
@@ -50,6 +51,7 @@ set(unittests_files
 	../../unittests/structure_unittests/structure_unittest.cc
 	../../unittests/thermo_fluctuation_unittests/thermo_fluc_sampler_unittest.cpp
 	../../unittests/thermo_fluctuation_unittests/thermo_fluc_simulation_unittest.cpp
+	../../unittests/tool_unittests/tool_unittests.cpp
 	../../unittests/util_unittests/sqlite3_connection_unittest.cc
 	../../unittests/util_unittests/uuid_unittest.cc
 	../../unittests/util_unittests/x3dna_unittest.cc
