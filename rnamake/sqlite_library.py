@@ -6,7 +6,6 @@ import motif
 import motif_ensemble
 import secondary_structure_factory
 import secondary_structure
-import ss_tree
 
 class SqliteLibrary(object):
     def __init__(self):
