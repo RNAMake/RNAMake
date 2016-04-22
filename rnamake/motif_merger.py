@@ -145,6 +145,7 @@ class MotifMerger(object):
         self.rebuild_structure = 1
 
     def update_motif(self, m):
+        found = 0
         for n in self.chain_graph.nodes:
             if n.data.m_id != m.id:
                 continue
@@ -155,7 +156,10 @@ class MotifMerger(object):
                 if new_r is None:
                     raise ValueError("could not find corresponding res by uuid")
                 new_res.append(new_r)
+            if len(new_res) == 0:
+                print "warning did not find any res to update"
             n.data.c.residues = new_res
+
 
         for bp in m.basepairs:
             self.all_bps[bp.uuid] = bp
