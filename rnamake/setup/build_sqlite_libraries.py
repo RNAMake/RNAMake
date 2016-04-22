@@ -311,6 +311,7 @@ class BuildSqliteLibraries(object):
 
         mes_keys = ['data', 'name', 'id']
         mes_data = []
+        f = open("sim_list_new", "w")
 
         count = 0
         for i, c in enumerate(clusters):
@@ -324,6 +325,12 @@ class BuildSqliteLibraries(object):
                lowest.name == "TWOWAY.2GDI.4":
                 continue
             count += 1
+
+            f.write(lowest.name + "," + lowest.ends[0].name() + " | ")
+
+            for m in c.motifs:
+                f.write(m.name + "," + m.ends[0].name() + " | ")
+            f.write("\n")
             #print i, lowest.score, lowest.name
             #lowest.to_pdb("m."+str(i)+".pdb")
 
@@ -332,6 +339,7 @@ class BuildSqliteLibraries(object):
 
             data.append([lowest.to_str(), lowest.name,
                         lowest.ends[0].name(), lowest.end_ids[0], count])
+
 
             #remove duplicate sequences
             motifs = []
@@ -353,7 +361,7 @@ class BuildSqliteLibraries(object):
             me = motif_ensemble.MotifEnsemble()
             me.setup(lowest.name, motifs, scores)
             mes_data.append([me.to_str(), me.id, count])
-
+        f.close()
 
         path = settings.RESOURCES_PATH +"/motif_libraries_new/unique_twoway.db"
         sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
@@ -479,10 +487,10 @@ builder = BuildSqliteLibraries()
 #builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
-#builder.build_unique_twoway_library()
+builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
-builder.build_trimmed_ideal_helix_library()
+#builder.build_motif_ensemble_state_libraries()
+#builder.build_trimmed_ideal_helix_library()
 
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
 #m = mlib.get("HELIX.IDEAL")

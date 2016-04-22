@@ -492,6 +492,13 @@ class MotifGraph(base.Base):
 
         self._align_motifs_all_motifs()
 
+    def replace_motifs(self, motifs):
+        for i, m in motifs.iteritems():
+            self.merger.replace_motif(self.get_node(i).data, m)
+            self.get_node(i).data = m
+
+        self._align_motifs_all_motifs()
+
     #GETTERS            #######################################################
     def leafs(self):
         leaf_nodes = []

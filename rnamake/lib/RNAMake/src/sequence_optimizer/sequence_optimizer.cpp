@@ -215,6 +215,7 @@ SequenceOptimizer::get_optimized_sequences_2(
         if (end_ == -1) {
             end_ = start_dss->sequence().length();
         }
+        
         auto seq = start_dss->sequence().substr(start_, (end_-start_));
         auto db  = start_dss->dot_bracket().substr(start_, (end_-start_));
         auto parser = sstruct::SecondaryStructureParser();
