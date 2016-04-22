@@ -3,9 +3,10 @@ import priority_queue
 
 
 # TODO this is actually not a great system should probably be a member of Graph
-def transverse_graph(graph, i):
+def transverse_graph(graph, i, directed=-1):
     graph.__iter__()
     graph.current_node = graph.get_node(i)
+    graph.directed = 0
     while 1:
         try:
             next = graph.next()
@@ -50,6 +51,7 @@ class Graph(object):
         self.current_node = None
         self.queue = priority_queue.PriorityQueue()
         self.seen = []
+        self.directed = -1
 
     def __len__(self):
         return len(self.nodes)
@@ -67,6 +69,7 @@ class Graph(object):
             self.current_node = None
         self.seen = [self.current_node]
         self.queue = priority_queue.PriorityQueue()
+        self.directed = -1
         return self
 
     def next(self):
@@ -75,17 +78,22 @@ class Graph(object):
 
         node = self.current_node
 
-        for c in node.connections:
+        for i, c in enumerate(node.connections):
             if c is None:
                 continue
+
             partner = c.partner(node.index)
-            if partner not in self.seen and partner:
+            if c.end_index(partner.index) != 0 and self.directed == 0:
+                continue
+            if partner not in self.seen:
                 self.queue.put(partner, partner.index)
                 self.seen.append(partner)
 
         if self.queue.empty() and len(self.seen) == len(self.nodes):
             self.current_node = None
         elif self.queue.empty():
+            self.current_node = None
+
             for n in self.nodes:
                 if n not in self.seen:
                     self.seen.append(n)
