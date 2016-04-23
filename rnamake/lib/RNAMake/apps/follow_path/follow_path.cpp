@@ -13,6 +13,8 @@
 #include "motif_data_structures/motif_topology.h"
 #include "motif_data_structures/motif_graph.h"
 
+#include <cstdlib>
+
 void
 PathBuilder::setup_options() {
     options_.add_option("path", String(""), OptionType::STRING);
@@ -285,7 +287,8 @@ int main(int argc, const char * argv[]) {
     auto cmd_opts = parse_command_line(argc, argv);
 
     //load TTR
-    auto base_dir = String("/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/apps/mini_ttr");
+	auto rnamake_path = String(std::getenv("RNAMAKE"));
+    auto base_dir = String(rnamake_path+"/rnamake/lib/RNAMake/apps/mini_ttr");
     ResourceManager::getInstance().add_motif(base_dir+"/resources/GAAA_tetraloop");
 
     if(cmd_opts.get_bool("full_path")) {
