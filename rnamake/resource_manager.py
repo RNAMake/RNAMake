@@ -75,7 +75,6 @@ class ResourceManager(object):
         self.add_motif(settings.MOTIF_DIRS + "/extras/GAAA_tetraloop")
         self.add_motif(settings.MOTIF_DIRS + "/extras/GGAA_tetraloop")
 
-
     def get_motif(self, **options):
         for mlib in self.mlibs.itervalues():
             if mlib.contains(**options):
