@@ -15,6 +15,8 @@
 #include "motif_state_search/motif_state_search.h"
 #include "eternabot/sequence_designer.h"
 
+#include <cstdlib>
+
 CommandLineOptions
 parse_command_line(
     int argc,
@@ -31,7 +33,8 @@ parse_command_line(
 
 int main(int argc, const char * argv[]) {
     auto cmd_opts = parse_command_line(argc, argv);
-    auto base_dir = String("/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/apps/mini_ttr");
+	auto rnamake_path = String(std::getenv("RNAMAKE"));
+    auto base_dir = String(rnamake_path+"/rnamake/lib/RNAMake/apps/mini_ttr");
     ResourceManager::getInstance().add_motif(base_dir+"/resources/GAAA_tetraloop");
     ResourceManager::getInstance().add_motif(base_dir+"/resources/GGAA_tetraloop");
 

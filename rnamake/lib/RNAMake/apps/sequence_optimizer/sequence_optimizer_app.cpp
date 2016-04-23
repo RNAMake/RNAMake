@@ -12,6 +12,8 @@
 #include "motif_data_structures/motif_topology.h"
 #include "motif_data_structures/motif_graph.h"
 
+#include <cstdlib>
+
 void
 SequenceOptimizerApp::setup_options() {
     add_option("f", String(""), OptionType::STRING, true);
@@ -90,7 +92,8 @@ SequenceOptimizerApp::run() {
 int main(int argc, const char * argv[]) {
     
     //load TTR
-    auto base_dir = String("/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/apps/simulate_tectos");
+	auto rnamake_path = String(std::getenv("RNAMAKE"));
+    auto base_dir = String(rnamake_path+"/rnamake/lib/RNAMake/apps/simulate_tectos");
     ResourceManager::getInstance().add_motif(base_dir+"/resources/GAAA_tetraloop");
     ResourceManager::getInstance().add_motif(base_dir+"/resources/GGAA_tetraloop");
 

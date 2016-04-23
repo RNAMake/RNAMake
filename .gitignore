@@ -62,3 +62,6 @@ target/
 rnamake/resources/motifs
 rnamake/unittests/*.pdbs
 
+# Auto-generated build files
+rnamake/lib/RNAMake/cmake/build/cmake_install.cmake
+rnamake/lib/RNAMake/cmake/build_gcc/cmake_install.cmake
