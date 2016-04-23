@@ -21,22 +21,36 @@ class Structure(object):
     :examples:
     ..  code-block:: python
 
-        #load structure from pdb formatted file
-        >>>import rnamake.unittests.files
-        >>>s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)
+        # load structure from pdb formatted file
+        >>> import rnamake.unittests.files
+        >>> s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)
 
-        #load structure from test instance
-        >>>import rnamake.unittests.instances
-        >>>s = rnamake.unittests.instances.structure()
+        # load structure from test instance
+        >>> import rnamake.unittests.instances
+        >>> s = rnamake.unittests.instances.structure()
 
-        #get specific residue
-        >>>r = s.get_residue(num=106)
-        >>>print r
+        # get specific residue
+        >>> r = s.get_residue(num=106)
+        >>> print r
         <Residue('U106 chain A')>
 
-        #get residue using its unique indentifer
+        # get residue using its unique indentifer
         >>>s.get_residue(uuid=r.uuid)
         <Residue('U106 chain A')>
+
+        >>> s.chains()
+        [<Chain( First: <Residue('G103 chain A')>
+                Last:  <Residue('C260 chain A')>
+                Size: 157)>]
+
+        >>> len(s.get_beads())
+        470
+
+        # exclude beads from first residue. This can be useful if you only
+        # need sterics from a part of the structure
+        >>> len(s.get_beads(excluded_res=[s.residues()[0]]))
+        468
+
     """
 
     def __init__(self, chains=None):
@@ -61,6 +75,25 @@ class Structure(object):
         :type excluded_res: List of Residue objects
 
         :return: List of Bead objects
+
+        :examples:
+
+        .. code-block:: python
+
+            # load structure from pdb formatted file
+            >>> import rnamake.unittests.files
+            >>> s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)
+
+            >>> len(s.get_beads())
+            470
+
+            >>> s.get_beads()[0]
+            <Bead(btype='SUGAR', center='-24.027 -48.5001111111 86.368')>
+
+            # exclude beads from first residue. This can be useful if you only
+            # need sterics from a part of the structure
+            >>> len(s.get_beads(excluded_res=[s.residues()[0]]))
+            468
         """
 
         if excluded_res is None:
@@ -77,7 +110,7 @@ class Structure(object):
         """
         find a residue based on residue num, chain_id, insert_code and uuid
         will return an error if more then one residue matches search to avoid
-        confusion
+        confusion. Will return None is nothing matches search.
 
         :param num: residue number
         :param chain_id: what chain the residue belongs to
@@ -91,7 +124,29 @@ class Structure(object):
 
         :return: Residue object
         :rtype: residue.Residue
+
+        :examples:
+
+        .. code-block:: python
+
+              # load structure from pdb formatted file
+              >>> import rnamake.unittests.files
+              >>> s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)
+
+              # get specific residue
+              >>> r = s.get_residue(num=106)
+              >>> print r
+              <Residue('U106 chain A')>
+
+              # get residue using its unique indentifer
+              >>>s.get_residue(uuid=r.uuid)
+              <Residue('U106 chain A')>
         """
+
+        #nothing specified
+        if num is None and chain_id is None and i_code is None and uuid is None:
+            raise exceptions.StructureException("called get_residue wiht no "
+                                                "arguments")
 
         found = []
         for c in self.chains:
@@ -111,6 +166,7 @@ class Structure(object):
                 "found multiple residues in get_residue(), narrow " +
                 "your search")
 
+        # TODO maybe add warning here?
         if len(found) == 0:
             return None
 
@@ -189,7 +245,13 @@ class Structure(object):
         write structure to pdb file
 
         :param fname: name of the file of the pdb file you want to write to
+        :param renumber: what should the first residue be numbered. -1 is
+            to NOT renumber, Default=-1.
+
         :type fname: str
+        :type renumber: int
+
+        :return: None
 
         """
         f = open(fname, "w")
@@ -199,6 +261,9 @@ class Structure(object):
     def copy(self):
         """
         creates a deep copy of this structure
+
+        :returns: copy of Structure object
+        :rtype: Structure
         """
         chains = []
         for c in self.chains:

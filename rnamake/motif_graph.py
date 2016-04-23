@@ -578,11 +578,9 @@ class MotifGraph(base.Base):
             if v == 0:
                 start = k
 
-        print "start: ", start
         if start == -1:
             raise ValueError("cannot find a place to start in rebuilding motif_graph"
                              " from string")
-
 
         i = 0
         for n in graph.transverse_graph(self.graph, start, directed=0):
@@ -598,8 +596,6 @@ class MotifGraph(base.Base):
             c = n.connections[0]
             parent = c.partner(n.index)
             parent_end_index = c.end_index(parent.index)
-
-            print n.index, parent.index
 
             m_added = motif.get_aligned_motif(parent.data.ends[parent_end_index],
                                               n.data.ends[0],
