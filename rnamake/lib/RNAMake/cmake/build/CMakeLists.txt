@@ -1,5 +1,4 @@
 cmake_minimum_required(VERSION 2.8)
-CMAKE_POLICY( SET CMP0042 NEW )
 
 project (test)
 set(CMAKE_BUILD_TYPE Release)
