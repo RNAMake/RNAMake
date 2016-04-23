@@ -280,7 +280,40 @@ class Structure(object):
         :type t: transform.Transformation
 
         :return: None
+
+        :examples:
+
+        .. code-block:: python
+
+            # load structure from test instance
+            >>> import rnamake.unittests.instances
+            >>> s = rnamake.unittests.instances.structure()
+
+            >>> import rnamake.util
+            >>> rnamake.util.center(s.atoms())
+            array([ -8.49624784, -59.88166488,  80.1866473 ])
+
+            # load indenity transform (no changes)
+            >>> t = rnamake.unittests.instances.transform_indentity()
+            >>> s.transform(t)
+            >>> rnamake.util.center(s.atoms())
+            array([ -8.49624784, -59.88166488,  80.1866473 ])
+
+            # load random transform, write pdbs to disk
+            >>> t = rnamake.unittests.instances.transform_random()
+            >>> s.to_pdb("org.pdb")
+            >>> s.transform(t)
+            >>> s.to_pdb("transformed.pdb")
+
+        .. figure:: ../_static/img/transform_test.png
+            :align:   center
+
+            Result of example above, Red original, Blue transformed.
+
+
         """
+
+
 
         r_T = t.rotation().T
         for a in self.atoms():
@@ -288,12 +321,32 @@ class Structure(object):
 
     def move(self, p):
         """
-        Moves atomic coordinates based on a specified translation
+        Moves atomic coordinates based on a specified translation. If you do
+        not supply and np.array and instead give it a list it will not work!
 
         :param p: Amount to 3D space to displace each atom
         :type p: numpy.array
 
         :return: None
+
+        :examples:
+
+        .. code-block:: python
+
+            >>> import rnamake.unittests.instances
+            >>> import numpy as np
+
+            # print out original and moved structure of P4-P6 domain
+            >>> s = rnamake.unittests.instances.structure()
+            >>> s.to_pdb("org.pdb")
+            >>> s.move(np.array([50, 0, 0]))
+            >>> s.to_pdb("moved.pdb")
+
+        .. figure:: ../_static/img/move_test.png
+            :align:   center
+
+            Result of example above, Red original, Blue moved.
+
         """
 
         for a in self.atoms():
