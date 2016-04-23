@@ -120,16 +120,7 @@ class StructureUnittest(unittest.TestCase):
         s3 = self.structure.copy()
         s2.transform(instances.transform_indentity())
 
-        t = instances.transform_indentity()
-        atoms1 = s2.atoms()
-        atoms2 = s3.atoms()
-        for i in range(len(atoms1)):
-            dist = util.distance(atoms1[i].coords, atoms2[i].coords)
-            #if dist >
-
-        exit()
-
-        if is_equal.are_structure_equal(s2, s3):
+        if not is_equal.are_structure_equal(s2, s3):
             self.fail("did not transform")
 
     def test_move(self):

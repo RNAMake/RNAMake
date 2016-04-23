@@ -24,14 +24,14 @@ class Atom(object):
 
     .. code-block:: python
 
-        >>>a = Atom("P",[1.0,2.0,3.0])
-        >>>a.name
+        >>> a = Atom("P",[1.0,2.0,3.0])
+        >>> a.name
         P
 
-        >>>a.coords
+        >>> a.coords
         [1.0 2.0 3.0]
 
-        >>>print a
+        >>> print a
         <Atom(name ='P', coords='1.0 2.0 3.0')>
 
     """
@@ -57,9 +57,9 @@ class Atom(object):
 
         .. code-block:: python
 
-            >>>a = Atom("P",[1.0,2.0,3.0])
-            >>>a_copy = a.copy()
-            >>>print a_copy.name
+            >>> a = Atom("P",[1.0,2.0,3.0])
+            >>> a_copy = a.copy()
+            >>> print a_copy.name
             P
 
         """
@@ -76,8 +76,8 @@ class Atom(object):
 
         .. code-block:: python
 
-            >>>atom = atom.Atom("H1", np.array([0, 1, 2]))
-            >>>string = atom.to_str()
+            >>> atom = atom.Atom("H1", np.array([0, 1, 2]))
+            >>> string = atom.to_str()
             "H1 0.0 1.0 2.0"
         """
         return self.name + " " + basic_io.point_to_str(self.coords)
@@ -93,11 +93,11 @@ class Atom(object):
 
         .. code-block:: python
 
-            >>>a = Atom("P",[1.0,2.0,3.0])
-            >>>a.to_pdb_str()
+            >>> a = Atom("P",[1.0,2.0,3.0])
+            >>> a.to_pdb_str()
             ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P
 
-            >>>a.to_pdb_str(10)
+            >>> a.to_pdb_str(10)
             ATOM     10  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P
         """
         if self is None:
