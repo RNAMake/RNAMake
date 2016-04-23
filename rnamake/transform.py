@@ -36,12 +36,16 @@ class Transform(object):
 
     def __init__(self, *args):
         nargs = len(args)
-        if nargs == 1:
+        if nargs == 0:
+            self.matrix = np.eye(4)
+        elif nargs == 1:
             self.matrix = args[0]
-        else:
+        elif nargs == 2:
             self.matrix = np.eye(4)
             self.matrix[:3, :3] = args[0]
             self.matrix[:3, 3] = args[1]
+        else:
+            raise ValueError("invalid number of arguments")
 
     def rotation(self):
         """
