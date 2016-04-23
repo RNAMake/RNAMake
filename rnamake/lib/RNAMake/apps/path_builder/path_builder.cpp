@@ -10,12 +10,11 @@
 
 #include "base/cl_option.h"
 #include "util/file_io.h"
+#include "util/settings.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_graph.h"
 #include "motif_state_search/motif_state_search.h"
 #include "eternabot/sequence_designer.h"
-
-#include <cstdlib>
 
 CommandLineOptions
 parse_command_line(
@@ -33,10 +32,9 @@ parse_command_line(
 
 int main(int argc, const char * argv[]) {
     auto cmd_opts = parse_command_line(argc, argv);
-	auto rnamake_path = String(std::getenv("RNAMAKE"));
-    auto base_dir = String(rnamake_path+"/rnamake/lib/RNAMake/apps/mini_ttr");
-    ResourceManager::getInstance().add_motif(base_dir+"/resources/GAAA_tetraloop");
-    ResourceManager::getInstance().add_motif(base_dir+"/resources/GGAA_tetraloop");
+    auto ttr_dir = String(base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr");
+    ResourceManager::getInstance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
+    ResourceManager::getInstance().add_motif(ttr_dir+"/resources/GGAA_tetraloop");
 
     
     auto lines = get_lines_from_file(cmd_opts.get_string("mg"));

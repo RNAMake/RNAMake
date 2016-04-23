@@ -12,8 +12,7 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_topology.h"
 #include "motif_data_structures/motif_graph.h"
-
-#include <cstdlib>
+#include "util/settings.h"
 
 void
 PathBuilder::setup_options() {
@@ -287,9 +286,8 @@ int main(int argc, const char * argv[]) {
     auto cmd_opts = parse_command_line(argc, argv);
 
     //load TTR
-	auto rnamake_path = String(std::getenv("RNAMAKE"));
-    auto base_dir = String(rnamake_path+"/rnamake/lib/RNAMake/apps/mini_ttr");
-    ResourceManager::getInstance().add_motif(base_dir+"/resources/GAAA_tetraloop");
+    auto ttr_dir = String(base_dir()+"/rnamake/lib/RNAMake/apps/mini_ttr");
+    ResourceManager::getInstance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
 
     if(cmd_opts.get_bool("full_path")) {
         auto pb = PathBuilder();
