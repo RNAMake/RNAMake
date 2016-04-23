@@ -1,13 +1,16 @@
 import unittest
+import warnings
 import rnamake.structure
 import rnamake.transform
 import rnamake.motif_factory
 import rnamake.io
 
-from rnamake import exceptions
+from rnamake import exceptions, util
 
-import is_equal
+import is_equal, instances
 import numpy as np
+
+warnings.simplefilter("ignore")
 
 class StructureUnittest(unittest.TestCase):
 
@@ -112,6 +115,22 @@ class StructureUnittest(unittest.TestCase):
 
         if not is_equal.are_structure_equal(s, struct):
             self.fail("structures should be the same now")
+
+        s2 = self.structure.copy()
+        s3 = self.structure.copy()
+        s2.transform(instances.transform_indentity())
+
+        t = instances.transform_indentity()
+        atoms1 = s2.atoms()
+        atoms2 = s3.atoms()
+        for i in range(len(atoms1)):
+            dist = util.distance(atoms1[i].coords, atoms2[i].coords)
+            #if dist >
+
+        exit()
+
+        if is_equal.are_structure_equal(s2, s3):
+            self.fail("did not transform")
 
     def test_move(self):
         path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
