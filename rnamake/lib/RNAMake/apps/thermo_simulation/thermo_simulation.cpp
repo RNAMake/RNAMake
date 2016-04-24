@@ -17,6 +17,8 @@
 
 void
 ThermoSimulationApp::setup_options() {
+    add_option("mg", String(""), OptionType::STRING, true);
+
     /*add_option("f", String(""), OptionType::STRING, true);
     add_option("break_point", String(""), OptionType::STRING, true);
     add_option("connections", String(""), OptionType::STRING, false);
@@ -54,3 +56,5 @@ int main(int argc, const char * argv[]) {
     app.run();
     
     return 0;
+
+}

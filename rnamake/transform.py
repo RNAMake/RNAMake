@@ -2,20 +2,21 @@ import numpy as np
 
 class Transform(object):
     """
-    basic transform object, stores a 4x4 homogenous transform that contains
+    Basic transform object, stores a 4x4 homogenous transform that contains
     both the rotation and translation of a transform
 
-	.. code-block:: python
+    .. code-block:: python
+
         #with full matrix
         >>> t = Transform(np.eye(4))
-        >>> print t.rotation()
+        >>> t.rotation()
         [[ 1.  0.  0.]
          [ 0.  1.  0.]
          [ 0.  0.  1.]]
         >>> print t.translation()
         [ 0.  0.  0.]
 
-        #with rotation and translation
+        # with rotation and translation
         >>> r = np.eye(3)
         >>> d = np.array([1, 1, 1])
         >>> t = Transform(r, d)
@@ -26,8 +27,8 @@ class Transform(object):
         >>> print t.translation()
         [ 1.  1.  1.]
 
-	Attributes
-    ---------
+    :attributes:
+
     `matrix` : np.array
         4x4 matrix that holds both the rotation and translation
 

@@ -17,6 +17,15 @@ Data Structures
 
    auto/graph
 
+Utilities 
+---------
+
+.. toctree::
+   :maxdepth: 2
+
+   auto/transform
+   auto/sqlite_library
+
 3D Structure
 ------------
 
