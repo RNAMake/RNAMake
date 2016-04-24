@@ -17,7 +17,7 @@
 
 class ThermoSimulationApp : public Application {
 public:
-    ThermoSimulationApp() : Application(),
+    ThermoSimulationApp() : Application() {}
     
     ~ThermoSimulationApp() {}
     
@@ -28,8 +28,8 @@ public:
     
     void
     parse_command_line(
-                       int,
-                       const char **);
+        int,
+        const char **);
     
     void
     run();

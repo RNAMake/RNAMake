@@ -1,13 +1,22 @@
 import sqlite3
 import random
 import os
+
 import settings
 import motif
 import motif_ensemble
 import secondary_structure_factory
-import secondary_structure
+
 
 class SqliteLibrary(object):
+    """
+    A wrapper for sqlite3 library, makes it simpler to do repeated sqlite3
+    calls with a set database file. This is a base class and should not be
+    called directly.
+
+
+    """
+
     def __init__(self):
         self.data = {}
         self.data_path = {}

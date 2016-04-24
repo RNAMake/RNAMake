@@ -6,3 +6,4 @@ follow_path ../../apps/follow_path/follow_path.cpp
 follow_path_process ../../apps/follow_path_process/follow_path_process.cpp
 path_builder ../../apps/path_builder/path_builder.cpp
 sequence_optimizer_app ../../apps/sequence_optimizer/sequence_optimizer_app.cpp
+thermo_simulation ../../apps/thermo_simulation/thermo_simulation.cpp
