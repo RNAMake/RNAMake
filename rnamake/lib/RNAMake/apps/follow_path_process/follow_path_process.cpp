@@ -10,6 +10,7 @@
 #include "base/cl_option.h"
 #include "util/file_io.h"
 #include "util/basic_io.hpp"
+#include "util/settings.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_topology.h"
 #include "motif_data_structures/motif_graph.h"
@@ -31,11 +32,10 @@ parse_command_line(
 
 
 int main(int argc, const char * argv[]) {
-    //auto cmd_opts = parse_command_line(argc, argv);
     
     //load TTR
-    auto base_dir = String("/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/apps/mini_ttr");
-    ResourceManager::getInstance().add_motif(base_dir+"/resources/GAAA_tetraloop");
+    auto ttr_dir = String(base_dir()+"/rnamake/lib/RNAMake/apps/mini_ttr");
+    ResourceManager::getInstance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
     
     auto out = std::ofstream();
     out.open("finished.out");

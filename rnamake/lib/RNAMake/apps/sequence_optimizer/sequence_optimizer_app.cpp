@@ -7,12 +7,11 @@
 //
 
 #include "util/file_io.h"
+#include "util/settings.h"
 #include "sequence_optimizer_app.hpp"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_topology.h"
 #include "motif_data_structures/motif_graph.h"
-
-#include <cstdlib>
 
 void
 SequenceOptimizerApp::setup_options() {
@@ -91,11 +90,10 @@ SequenceOptimizerApp::run() {
 
 int main(int argc, const char * argv[]) {
     
-    //load TTR
-	auto rnamake_path = String(std::getenv("RNAMAKE"));
-    auto base_dir = String(rnamake_path+"/rnamake/lib/RNAMake/apps/simulate_tectos");
-    ResourceManager::getInstance().add_motif(base_dir+"/resources/GAAA_tetraloop");
-    ResourceManager::getInstance().add_motif(base_dir+"/resources/GGAA_tetraloop");
+    //load tectos
+    auto tecto_dir = String(base_dir()+"/rnamake/lib/RNAMake/apps/simulate_tectos");
+    ResourceManager::getInstance().add_motif(tecto_dir+"/resources/GAAA_tetraloop");
+    ResourceManager::getInstance().add_motif(tecto_dir+"/resources/GGAA_tetraloop");
 
     
     auto app = SequenceOptimizerApp();
