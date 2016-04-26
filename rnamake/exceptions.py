@@ -2,6 +2,9 @@
 class GraphException(Exception):
     pass
 
+class SqliteLibraryException(Exception):
+    pass
+
 class ResidueException(Exception):
     pass
 
