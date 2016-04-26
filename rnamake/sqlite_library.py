@@ -3,6 +3,7 @@ import random
 import os
 
 import settings
+import exceptions
 import motif
 import motif_ensemble
 import secondary_structure_factory
@@ -23,6 +24,17 @@ class SqliteLibrary(object):
         self.libnames = {}
 
     def _setup(self, path):
+        """
+
+        :param path:
+        :return:
+        """
+
+        if not os.path.isfile(path):
+            raise exceptions.SqliteLibraryException(
+                "path: " + path + " should exist but doesn't, either it was " +
+                "deleted by accident or not commited on this branch")
+
         self.connection = sqlite3.connect(path)
         cols =  self.connection.execute('PRAGMA table_info(data_table)').fetchall()
         self.keys = {}
@@ -32,12 +44,29 @@ class SqliteLibrary(object):
         cols = self.connection.execute('SELECT count(*) from data_table').fetchone()
         self.max_size = int(cols[0])
 
+        #if self.max_size == 0:
+        #    raise exceptions.SqliteLibraryException(
+        #        "opened database file: " + path + " but there are no rows!")
+
     def _get_path(self, libname):
+        """
+        helper method to check to make sure given name is a valid sqlite
+        library.
+
+        :param libname: name of sqlite library (twoway, nway etc)
+        :type libname: str
+
+        :return: full path of library
+        :rtype: str
+        """
+
         self.name = libname
         try:
             libpath = settings.RESOURCES_PATH  + self.libnames[libname]
         except:
-            raise IOError("cannot find sqlite library")
+            raise exceptions.SqliteLibraryException(
+                "libname: " + libname + " is not a valid sqlite_library. " +
+                "options are: " + " ".join(self.get_libnames().keys()))
 
         return libpath
 
@@ -150,10 +179,11 @@ class MotifSqliteLibrary(SqliteLibrary):
         return libnames
 
     def get_best_matches(self, new_id):
+        pass
         #if self.contains(end_id=new_id):
         #    return self.get(end_id=new_id)
 
-        if len(self.ss_trees) == 0:
+        """if len(self.ss_trees) == 0:
             self.load_all()
             for m in self.all():
                 sstree = secondary_structure_factory.ss_id_to_ss_tree(m.end_ids[0])
@@ -178,7 +208,7 @@ class MotifSqliteLibrary(SqliteLibrary):
         motifs = []
         for i in range(0, 9):
             motifs.append(self.get(end_id=matches[i][0]))
-        return motifs
+        return motifs"""
 
 
 class MotifSSIDSqliteLibrary(SqliteLibrary):
@@ -293,6 +323,7 @@ class MotifStateSqliteLibrary(SqliteLibrary):
             motif_states.append(ms)
         mes.setup(self.name, motif_states, [1 for x in motif_states] )
         return mes
+
 
 class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
