@@ -17,7 +17,7 @@ MotifStateSearch::setup_options() {
     options_.add_option("max_node_level", 12, OptionType::INT);
     options_.add_option("min_node_level", 0, OptionType::INT);
     options_.add_option("min_size", 0, OptionType::INT);
-    options_.add_option("max_size", 100, OptionType::INT);
+    options_.add_option("max_size", 1000000, OptionType::INT);
     options_.add_option("max_solutions", 1000000, OptionType::INT);
     options_.add_option("accept_score", 10, OptionType::FLOAT);
     options_.add_option("min_ss_score", 10000, OptionType::FLOAT);

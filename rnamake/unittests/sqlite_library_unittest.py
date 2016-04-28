@@ -9,11 +9,15 @@ import rnamake.ss_tree as ss_tree
 import rnamake.resource_manager as rm
 import rnamake.util as util
 
+from rnamake import exceptions
 
 class SqliteLibraryUnittest(unittest.TestCase):
 
     def test_creation(self):
-        mlib = sqlite_library.MotifSqliteLibrary("twoway")
+        sqlite_library.MotifSqliteLibrary("twoway")
+
+        with self.assertRaises(exceptions.SqliteLibraryException):
+            sqlite_library.MotifSqliteLibrary("fake")
 
     def test_get(self):
         mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
@@ -100,33 +104,6 @@ class SqliteLibraryUnittest(unittest.TestCase):
             m = mlib.get_random()
 
         return m
-
-    def _test_get_best(self):
-        mlib = sqlite_library.MotifSqliteLibrary("twoway")
-        #ss_id1 = "AC_LL_GGGU_RUUR"
-        ss_id1 = "CGG_LLL_CAG_RRR"
-
-        matches = mlib.get_best_matches(ss_id1)
-        #print len(matches)
-
-    def _test_end_id(self):
-        mlib = rm.manager.mlibs['tcontact']
-        mlib.load_all()
-        keep = "103 109 111 117 120".split()
-        for i, m in enumerate(mlib.all()):
-            if len(m.ends) != 3:
-                continue
-            if str(i) in keep:
-                print m.name
-
-    def _test_specific(self):
-        ss_tree_1 = rnamake.secondary_structure.ss_id_to_ss_tree("AC_LL_GGU_RUR")
-        ss_tree_2 = rnamake.secondary_structure.ss_id_to_ss_tree("AGAC_LUUL_GGGU_RUUR")
-
-        for i, n in enumerate(ss_tree_1):
-            print n.data.seq(), ss_tree_2.get_node(i).data.seq()
-
-        print ss_tree.compare_ss_tree(ss_tree_1, ss_tree_2)
 
     def _test_get_by_topology(self):
         mlib = sqlite_library.MotifSSIDSqliteLibrary("twoway")
