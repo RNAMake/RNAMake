@@ -23,14 +23,18 @@ void
 MotifStateSearchUnittest::test_search() {
     MotifStateSearch mss;
     mss.set_option_value("accept_score", 10);
-    mss.set_option_value("max_node_level", 10);
+    mss.set_option_value("max_node_level", 20);
     mss.set_option_value("sterics", false);
     BuildMotifTree builder;
     auto mt = builder.build(10);
     auto start = mt->get_node(0)->data()->ends()[0]->state();
     auto end   = mt->last_node()->data()->ends()[1]->state();
+    
+    mt->to_pdb("test.pdb");
+    
     mss.setup(start, end);
     auto sol = mss.next();
+
     if(sol == nullptr) {
         throw UnittestException("could not find a solution to search");
     }

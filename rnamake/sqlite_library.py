@@ -15,20 +15,40 @@ class SqliteLibrary(object):
     calls with a set database file. This is a base class and should not be
     called directly.
 
+    :attributes:
+    `data` : Dictionary of stored data
+        Holds data already queryed from database file so dont have to do an
+        extra query.
 
     """
 
-    def __init__(self):
+    def __init__(self, libname):
         self.data = {}
-        self.data_path = {}
-        self.libnames = {}
+        self._setup(libname)
 
-    def _setup(self, path):
+    @staticmethod
+    def get_libnames():
+        """
+        get dictionary of valid registered library names / paths. Only library
+        names registered in this corresponding function in children classes
+        can be loaded.
+
+        :return: Dictionary of names / pathes for each valid sqlite3 database
+        :rtype: dict
+        """
+        return {}
+
+    def _setup(self, libname):
+        """
+        Initates sqlite3 connection with database and ensures everything is
+        working properly.
+
+        :param path: path to sqlite3 database
+        :type path: string
+        :return: None
         """
 
-        :param path:
-        :return:
-        """
+        path = self._get_path(libname)
 
         if not os.path.isfile(path):
             raise exceptions.SqliteLibraryException(
@@ -44,9 +64,10 @@ class SqliteLibrary(object):
         cols = self.connection.execute('SELECT count(*) from data_table').fetchone()
         self.max_size = int(cols[0])
 
-        #if self.max_size == 0:
-        #    raise exceptions.SqliteLibraryException(
-        #        "opened database file: " + path + " but there are no rows!")
+        # make sure there is something in the library
+        if self.max_size == 0:
+            raise exceptions.SqliteLibraryException(
+                "opened database file: " + path + " but there are no rows!")
 
     def _get_path(self, libname):
         """
@@ -62,7 +83,7 @@ class SqliteLibrary(object):
 
         self.name = libname
         try:
-            libpath = settings.RESOURCES_PATH  + self.libnames[libname]
+            libpath = settings.RESOURCES_PATH  + self.get_libnames()[libname]
         except:
             raise exceptions.SqliteLibraryException(
                 "libname: " + libname + " is not a valid sqlite_library. " +
@@ -71,23 +92,48 @@ class SqliteLibrary(object):
         return libpath
 
     def _generate_data(self, s):
+        """
+        do not call directly. Needs to be overloaded to un-stringify data back
+        into an object.
+
+        :param s: string version of an object stored in database
+        """
         return s
 
     def _args_to_str(self, options):
+        """
+        returns string verision of options supplied used in sqlite select.
+        This is mainly used to report an error if a select does not yeild
+        results.
+
+        :param options: options for SELECT query.
+        :type options: dict
+        :return:
+        """
         s = ""
         for k, v in options.iteritems():
             s += k + " = " + v + ","
         return s
 
     def _generate_query(self, options):
+        """
+        Generates a SELECT query to retrieve rows from the sqlite3 database.
+
+        :param options: dictionary of variables used in selection
+        :type options:
+
+        :return: sqlite3 select command
+        :rtype: string
+        """
+
         cmd = "SELECT * from data_table WHERE "
-        replace = "{"
         l = len(options)
         count = 0
-        for k,v in options.iteritems():
+        for k, v in options.iteritems():
             if k not in self.keys:
-                raise ValueError("attempted to use " + k + "=" + v + " in getting data from "
-                                 "SqliteLibrary, this key does not exist")
+                raise exceptions.SqliteLibraryException(
+                    "attempted to use " + k + "=" + v + " in getting data from"
+                    " SqliteLibrary, this column does not exist in database")
 
             cmd += k + "='" + v + "' "
             if len(options) != count+1:
@@ -97,15 +143,21 @@ class SqliteLibrary(object):
         return cmd
 
     def get(self, **options):
+        """
+        Gets row for sqlite3 database with specific variables specified in
+        options. Will at most return 1 item even if multiple items meet
+        selection criteria.
+
+        :param options: sqlite3 select columns and values
+        :return: unstringified data from database
+        """
 
         query = self._generate_query(options)
         rows = self.connection.execute(query).fetchall()
-        #if len(rows) > 1:
-        #    raise ValueError("query returned too many rows, if this was expected use" \
-        #                     " get_multi(): " + self._args_to_str(options) )
 
         if len(rows) == 0:
-            raise ValueError("query returned no rows: " + self._args_to_str(options) )
+            raise exceptions.SqliteLibraryException(
+                "query returned no rows: " + self._args_to_str(options) )
 
         id = rows[0][-1]
         if id not in self.data:
@@ -114,11 +166,20 @@ class SqliteLibrary(object):
         return self.data[id].copy()
 
     def get_multi(self, **options):
+        """
+        Gets row for sqlite3 database with specific variables specified in
+        options. Same as get() except will return an list of all items that
+        meet the selection criteria.
+
+        :param options: sqlite3 select columns and values
+        :return: unstringified data from database
+        """
         query = self._generate_query(options)
         rows = self.connection.execute(query).fetchall()
 
         if len(rows) == 0:
-            raise ValueError("query returned no rows: " + self._args_to_str(options) )
+            raise exceptions.SqliteLibraryException(
+                "query returned no rows: " + self._args_to_str(options) )
 
         datas = []
         for r in rows:
@@ -129,10 +190,28 @@ class SqliteLibrary(object):
         return datas
 
     def get_random(self):
+        """
+        Gets a random row of data from sqlite3 database. Mostly used for
+        testing purposes.
+
+        :return: random row of unstringified data from database file
+        """
+
         id = str(random.randint(1, self.max_size-1))
         return self.get(id=id)
 
     def load_all(self, limit=99999):
+        """
+        Loads all data from database into memory. This has to be done if one
+        wants to iterate over all the rows in database. Can set a limit with
+        limit=N, will only load that many elements.
+
+        :param limit: the max number of database rows that should be loaded
+        :type limt: int
+
+        :return: None
+        """
+
         i = 0
         for row in self.connection.execute('SELECT * from data_table').fetchall():
             i += 1
@@ -153,18 +232,49 @@ class SqliteLibrary(object):
 
 
 class MotifSqliteLibrary(SqliteLibrary):
+    """
+    Sqlite3 library for holding stringifed motif.Motif objects. It is
+    significantly faster then reloading each motif from file.
+
+    :examples:
+
+    ..  code-block:: python
+
+        # gets all twoway junctions
+        >>> mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+        >>> mlib.get(name="HELIX.IDEAL.2")
+        <Motif(
+	            structure='<Structure(name: N/A, #chains: 2, #residues: 8, #atoms: 172)>',
+	            ends='2')>
+    """
+
     def __init__(self, libname):
-        super(MotifSqliteLibrary, self).__init__()
-        self.libnames = self.get_libnames()
-        self.ss_trees = {}
-        path = self._get_path(libname)
-        self._setup(path)
+        super(self.__class__, self).__init__(libname)
 
     def _generate_data(self, s):
+        """
+        Converts string to motif.Motif object
+
+        :param s: String verision of motif.Motif object
+        :type s: string
+
+        :return: returns unstringified version of motif.Motif
+        :rtype: motif.Motif
+        """
+
         return motif.str_to_motif(s)
 
     @staticmethod
     def get_libnames():
+        """
+        get dictionary of valid registered library names / paths. Only library
+        names registered in this corresponding function in children classes
+        can be loaded.
+
+        :return: Dictionary of names / pathes for each valid sqlite3 database
+        :rtype: dict
+        """
+
         libnames = {
             "ideal_helices"   : "/motif_libraries_new/ideal_helices.db",
             "ideal_helices_reversed" :  "/motif_libraries_new/ideal_helices_reversed.db",
@@ -178,100 +288,9 @@ class MotifSqliteLibrary(SqliteLibrary):
 
         return libnames
 
-    def get_best_matches(self, new_id):
-        pass
-        #if self.contains(end_id=new_id):
-        #    return self.get(end_id=new_id)
-
-        """if len(self.ss_trees) == 0:
-            self.load_all()
-            for m in self.all():
-                sstree = secondary_structure_factory.ss_id_to_ss_tree(m.end_ids[0])
-                self.ss_trees[m.end_ids[0]] = sstree
-
-        new_ss_tree = secondary_structure_factory.ss_id_to_ss_tree(new_id)
-        best_score = 10000
-        best_id = None
-        matches = []
-        for id, sstree in self.ss_trees.iteritems():
-            score = ss_tree.compare_ss_tree(new_ss_tree, sstree)
-            if score < best_score:
-                best_score = score
-                best_id = id
-            matches.append([id, score])
-
-        if best_score == 10000:
-            raise  ValueError("get_best_match failed in MotifSSIDSqliteLibrary")
-
-        matches.sort(key=lambda x: x[1])
-
-        motifs = []
-        for i in range(0, 9):
-            motifs.append(self.get(end_id=matches[i][0]))
-        return motifs"""
-
-
-class MotifSSIDSqliteLibrary(SqliteLibrary):
-    def __init__(self, libname):
-        super(MotifSSIDSqliteLibrary, self).__init__()
-        self.libnames = self.get_libnames()
-        self.libname = libname
-        self.ss_trees = {}
-        path = self._get_path(libname)
-        self._setup(path)
-
-    def _generate_data(self, s):
-        return motif.str_to_motif(s)
-
-    @staticmethod
-    def get_libnames():
-        libnames = {
-            "bp_steps"     : "/motif_libraries_new/bp_steps.db",
-            "twoway"       : "/motif_libraries_new/ss_twoway.db",
-            "tcontact"     : "/motif_libraries_new/ss_tcontact.db",
-            "hairpin"      : "/motif_libraries_new/ss_hairpin.db",
-            "nway"         : "/motif_libraries_new/ss_nway.db",
-        }
-
-        return libnames
-
-
-
-
-
-
-        #check end basepairs
-
-    def get_by_topology(self, top):
-        scaled_top = []
-        motifs = []
-        for t in top:
-            scaled_top.append(t + 2)
-
-        for id in self.data_path:
-            spl = id.split("_")
-            sizes = []
-            for i in range(0, len(spl)-1, 2):
-                sizes.append(len(spl[i+1]))
-
-            mismatch = 0
-            for i in range(len(sizes)):
-                if sizes[i] != scaled_top[i]:
-                    mismatch = 1
-                    continue
-
-            if not mismatch:
-                motifs.append(self.get(id))
-
-        return motifs
-
-
 class MotifEnsembleSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
-        super(MotifEnsembleSqliteLibrary, self).__init__()
-        self.libnames = self.get_libnames()
-        path = self._get_path(libname)
-        self._setup(path)
+        super(self.__class__, self).__init__(libname)
 
     def _generate_data(self, s):
         return motif_ensemble.str_to_motif_ensemble(s)
@@ -281,9 +300,6 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
         libnames = {
             "bp_steps" :  "/motif_ensemble_libraries/bp_steps.db",
             "twoway"   :  "/motif_ensemble_libraries/twoway.db",
-            "nway"     :  "/motif_ensemble_libraries/nway.db",
-            "tcontact" :  "/motif_ensemble_libraries/tcontact.db",
-            "hairpin"  :  "/motif_ensemble_libraries/hairpin.db",
             "twoway_clusters" : "motif_ensemble_libraries/twoway_clusters.db" }
 
         return libnames
@@ -292,10 +308,8 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
 class MotifStateSqliteLibrary(SqliteLibrary):
 
     def __init__(self, libname):
-        super(MotifStateSqliteLibrary, self).__init__()
-        self.libnames = self.get_libnames()
-        path = self._get_path(libname)
-        self._setup(path)
+        super(self.__class__, self).__init__(libname)
+        self._setup(libname)
 
     @staticmethod
     def get_libnames():
@@ -327,10 +341,8 @@ class MotifStateSqliteLibrary(SqliteLibrary):
 
 class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
-        super(MotifStateEnsembleSqliteLibrary, self).__init__()
-        self.libnames = self.get_libnames()
-        path = self._get_path(libname)
-        self._setup(path)
+        super(self.__class__, self).__init__(libname)
+        self._setup(libname)
 
     def _generate_data(self, s):
         return motif_ensemble.str_to_motif_state_ensemble(s)
@@ -341,9 +353,6 @@ class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
             "bp_steps"      :  "/motif_state_ensemble_libraries/bp_steps.db",
             "all_bp_steps"  :  "/motif_state_ensemble_libraries/all_bp_steps.db",
             "twoway"        :  "/motif_state_ensemble_libraries/twoway.db",
-            "nway"          :  "/motif_state_ensemble_libraries/nway.db",
-            "tcontact"      :  "/motif_state_ensemble_libraries/tcontact.db",
-            "hairpin"       :  "/motif_state_ensemble_libraries/hairpin.db",
         }
 
         return libnames
@@ -352,10 +361,7 @@ class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
 class MotifClusterSqliteLibrary(SqliteLibrary):
 
     def __init__(self, libname):
-        super(MotifClusterSqliteLibrary, self).__init__()
-        self.libnames = self.get_libnames()
-        path = self._get_path(libname)
-        self._setup(path)
+        super(self.__class__, self).__init__(libname)
 
     @staticmethod
     def get_libnames():

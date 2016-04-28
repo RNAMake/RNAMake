@@ -22,29 +22,29 @@ class Chain(object):
 
     ..  code-block:: python
 
-        >>>import rnamake.unittests.instances
-        >>>c = rnamake.unittests.instances.chain()
-        >>>c.first()
+        >>> import rnamake.unittests.instances
+        >>> c = rnamake.unittests.instances.chain()
+        >>> c.first()
         <Residue('G103 chain A')>
 
-        >>>c.last()
+        >>> c.last()
         <Residue('C260 chain A')>
 
-        >>>len(c)
+        >>> len(c)
         157
 
-        >>>cs = c.subchain(1, 10)
-        >>>len(cs)
+        >>> cs = c.subchain(1, 10)
+        >>> len(cs)
         9
 
-        >>>cs.first()
+        >>> cs.first()
         <Residue('A104 chain A')>
 
-        >>>cs2 = c.subchain(start_res=c.residues[10], end_res=c.residues[15])
-        >>>len(cs2)
+        >>> cs2 = c.subchain(start_res=c.residues[10], end_res=c.residues[15])
+        >>> len(cs2)
         6
 
-        >>>c.to_pdb_str()
+        >>> c.to_pdb_str()
         ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
         ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
         ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
@@ -86,9 +86,9 @@ class Chain(object):
 
         ..  code-block:: python
 
-            >>>import rnamake.unittests.instances
-            >>>c = rnamake.unittests.instances.chain()
-            >>>c.first()
+            >>> import rnamake.unittests.instances
+            >>> c = rnamake.unittests.instances.chain()
+            >>> c.first()
             <Residue('G103 chain A')>
 
         """
@@ -120,6 +120,22 @@ class Chain(object):
         :type end: int
 
         :return: Chain object
+
+        :examples:
+
+        ..  code-block:: python
+
+            >>> cs = c.subchain(1, 10)
+            >>> len(cs)
+            9
+
+            >>> cs.first()
+            <Residue('A104 chain A')>
+
+            >>> cs2 = c.subchain(start_res=c.residues[10], end_res=c.residues[15])
+            >>> len(cs2)
+            6
+
         """
 
         if start_res is not None and end_res is not None:
