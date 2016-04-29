@@ -5,6 +5,9 @@ class GraphException(Exception):
 class SqliteLibraryException(Exception):
     pass
 
+class MotifTypeException(Exception):
+    pass
+
 class ResidueException(Exception):
     pass
 

@@ -36,5 +36,7 @@ Utilities
    auto/residue 
    auto/residue_type
    auto/chain
-   auto/structure
+   auto/structure 
+   auto/basepair
    auto/pdb_parser
+   auto/motif_type

@@ -167,9 +167,8 @@ class BasepairState(object):
     :params sugars: C1` atom coords for both residues in basepair
     :type sugars: List of Np.Arrays
 
-    Attributes
-    ----------
-    `r` : Np.Matrix
+    :attributes:
+    `r` : np.Matrix
         Reference Frame of basepair
     `d` : Np.Array
         Center of mass of basepair
