@@ -13,14 +13,14 @@ StringStringMap
 MotifStateSqliteLibrary::get_libnames() {
     StringStringMap libnames;
     
-    libnames["ideal_helices"]  = "/motif_state_libraries_new/ideal_helices.db";
-    libnames["ideal_helices_min"]  = "/motif_state_libraries/ideal_helices.db";
-    libnames["twoway"]         = "/motif_state_libraries_new/twoway.db";
-    libnames["tcontact"]       = "/motif_state_libraries_new/tcontact.db";
-    libnames["hairpin"]        = "/motif_state_libraries_new/hairpin.db";
-    libnames["nway"]           = "/motif_state_libraries_new/nway.db";
-    libnames["unique_twoway"]  = "/motif_state_libraries_new/unique_twoway.db";
-    libnames["bp_steps"]       = "/motif_state_libraries_new/bp_steps.db";
+    libnames["ideal_helices"]  = "/motif_state_libraries/ideal_helices.db";
+    libnames["ideal_helices_min"]  = "/motif_state_libraries/ideal_helices_min.db";
+    libnames["twoway"]         = "/motif_state_libraries/twoway.db";
+    libnames["tcontact"]       = "/motif_state_libraries/tcontact.db";
+    libnames["hairpin"]        = "/motif_state_libraries/hairpin.db";
+    libnames["nway"]           = "/motif_state_libraries/nway.db";
+    libnames["unique_twoway"]  = "/motif_state_libraries/unique_twoway.db";
+    libnames["bp_steps"]       = "/motif_state_libraries/bp_steps.db";
     
     return libnames;
 }
