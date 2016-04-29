@@ -30,7 +30,7 @@ MotifStateSearchUnittest::test_search() {
     auto start = mt->get_node(0)->data()->ends()[0]->state();
     auto end   = mt->last_node()->data()->ends()[1]->state();
     
-    mt->to_pdb("test.pdb");
+    //mt->to_pdb("test.pdb");
     
     mss.setup(start, end);
     auto sol = mss.next();
@@ -38,8 +38,8 @@ MotifStateSearchUnittest::test_search() {
     if(sol == nullptr) {
         throw UnittestException("could not find a solution to search");
     }
-    //mt->to_pdb("test.pdb", 1);
-    //sol->to_pdb("solution.pdb", 1);
+    mt->to_pdb("test.pdb", 1);
+    sol->to_pdb("solution.pdb", 1);
 }
 
 /*int

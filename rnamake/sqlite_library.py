@@ -288,7 +288,24 @@ class MotifSqliteLibrary(SqliteLibrary):
 
         return libnames
 
+
 class MotifEnsembleSqliteLibrary(SqliteLibrary):
+    """
+    Sqlite3 library for holding stringifed motif_ensemble.MotifEnsemble objects.
+    It is significantly faster then reloading each motif from file.
+
+    :examples:
+
+    ..  code-block:: python
+
+        # gets all twoway junctions
+        >>> mlib = sqlite_library.MotifEnsembleSqliteLibrary("ideal_helices")
+        >>> mlib.get(name="HELIX.IDEAL.2")
+        <Motif(
+	            structure='<Structure(name: N/A, #chains: 2, #residues: 8, #atoms: 172)>',
+	            ends='2')>
+    """
+
     def __init__(self, libname):
         super(self.__class__, self).__init__(libname)
 
@@ -298,6 +315,7 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
     @staticmethod
     def get_libnames():
         libnames = {
+            "ideal_helices" :  "/motif_ensemble_libraries/ideal_helices.db",
             "bp_steps" :  "/motif_ensemble_libraries/bp_steps.db",
             "twoway"   :  "/motif_ensemble_libraries/twoway.db",
             "twoway_clusters" : "motif_ensemble_libraries/twoway_clusters.db" }
