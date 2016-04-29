@@ -191,31 +191,31 @@ class Residue(object):
     .. code-block:: python
 
         # generating a new residue
-        >>>rts = residue_type.ResidueTypeSet()
-        >>>rtype = rts.get_rtype_by_resname("ADE")
-        >>>r = Residue(rtype, "ADE", 1, "A")
-        >>>print r.name
+        >>> rts = residue_type.ResidueTypeSet()
+        >>> rtype = rts.get_rtype_by_resname("ADE")
+        >>> r = Residue(rtype, "ADE", 1, "A")
+        >>> print r.name
         A
 
         #using test residue
-        >>>import rnamake.unittests.instances
-        >>>r = rnamake.unittests.instances.residue()
-        >>>print r.name
+        >>> import rnamake.unittests.instances
+        >>> r = rnamake.unittests.instances.residue()
+        >>> print r.name
         G
 
-        >>>a = r.get_atom("C1'")
-        >>>print a.coords
+        >>> a = r.get_atom("C1'")
+        >>> print a.coords
         [-23.806 -50.289  86.732]
 
-        >>>r.get_beads()
+        >>> r.get_beads()
         [<Bead(btype='SUGAR', center='-24.027 -48.5001111111 86.368')>, <Bead(btype='BASE', center='-21.2186363636 -52.048 85.1157272727')>]
 
         #a fast way of saving coordinate information to file
-        >>>r.to_str()
+        >>> r.to_str()
         "GUA,G,103,A,,N,N,N,O5' -26.469 -47.756 84.669,C5' -25.05 -47.579 84.775,C4' -24.521 -48.156 86.068,O4' -24.861 -49.568 86.118,C3' -23.009 -48.119 86.281,O3' -22.548 -46.872 86.808,C1' -23.806 -50.289 86.732,C2' -22.812 -49.259 87.269,O2' -23.167 -48.903 88.592,N1 -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,"
 
         #get PDB formmated coordinates back out
-        >>>r.to_pdb_str()
+        >>> r.to_pdb_str()
         ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
         ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
         ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
@@ -290,9 +290,9 @@ class Residue(object):
 
         .. code-block:: python
 
-            >>>r = rnamake.unittests.instances.residue()
-            >>>a = r.get_atom("C1'")
-            >>>print a.coords
+            >>> r = rnamake.unittests.instances.residue()
+            >>> a = r.get_atom("C1'")
+            >>> print a.coords
             [-23.806 -50.289  86.732]
         """
 
@@ -347,9 +347,9 @@ class Residue(object):
 
         .. code-block:: python
 
-            >>>import rnamake.unittests.instances
-            >>>r = rnamake.unittests.instances.residue()
-            >>>r.get_beads()
+            >>> import rnamake.unittests.instances
+            >>> r = rnamake.unittests.instances.residue()
+            >>> r.get_beads()
             [<Bead(btype='SUGAR', center='-24.027 -48.5001111111 86.368')>, <Bead(btype='BASE', center='-21.2186363636 -52.048 85.1157272727')>]
 
         """
@@ -383,10 +383,10 @@ class Residue(object):
 
         .. code-block:: python
 
-            >>>import rnamake.unittests.instances
-            >>>r = rnamake.unittests.instances.residue()
-            >>>r_copy = r.copy()
-            >>>r_copy.name
+            >>> import rnamake.unittests.instances
+            >>> r = rnamake.unittests.instances.residue()
+            >>> r_copy = r.copy()
+            >>> r_copy.name
             G
 
         """
@@ -416,9 +416,9 @@ class Residue(object):
 
         .. code-block:: python
 
-            >>>import rnamake.unittests.instances
-            >>>r = rnamake.unittests.instances.residue()
-            >>>r.to_str()
+            >>> import rnamake.unittests.instances
+            >>> r = rnamake.unittests.instances.residue()
+            >>> r.to_str()
             "GUA,G,103,A,,N,N,N,O5' -26.469 -47.756 84.669,C5' -25.05 -47.579 84.775,C4' -24.521 -48.156 86.068,O4' -24.861 -49.568 86.118,C3' -23.009 -48.119 86.281,O3' -22.548 -46.872 86.808,C1' -23.806 -50.289 86.732,C2' -22.812 -49.259 87.269,O2' -23.167 -48.903 88.592,N1 -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,"
         """
         s = self.rtype.name + "," + self.name + "," + str(self.num) + "," + \
@@ -452,7 +452,7 @@ class Residue(object):
 
             >>> import rnamake.unittests.instances
             >>> r = rnamake.unittests.instances.residue()
-            >>>r.to_pdb_str()
+            >>> r.to_pdb_str()
             ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
             ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
             ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
