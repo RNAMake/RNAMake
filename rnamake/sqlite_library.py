@@ -295,15 +295,6 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
     It is significantly faster then reloading each motif from file.
 
     :examples:
-
-    ..  code-block:: python
-
-        # gets all twoway junctions
-        >>> mlib = sqlite_library.MotifEnsembleSqliteLibrary("ideal_helices")
-        >>> mlib.get(name="HELIX.IDEAL.2")
-        <Motif(
-	            structure='<Structure(name: N/A, #chains: 2, #residues: 8, #atoms: 172)>',
-	            ends='2')>
     """
 
     def __init__(self, libname):
@@ -315,7 +306,6 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
     @staticmethod
     def get_libnames():
         libnames = {
-            "ideal_helices" :  "/motif_ensemble_libraries/ideal_helices.db",
             "bp_steps" :  "/motif_ensemble_libraries/bp_steps.db",
             "twoway"   :  "/motif_ensemble_libraries/twoway.db",
             "twoway_clusters" : "motif_ensemble_libraries/twoway_clusters.db" }
@@ -392,19 +382,51 @@ class MotifClusterSqliteLibrary(SqliteLibrary):
         return motif.str_to_motif_array(s)
 
 
-def build_sqlite_library(path, data_values, ids):
-    if os.path.isfile(path):
-        os.remove(path)
-    connection = sqlite3.connect(path)
-    connection.execute("CREATE TABLE data_table(data TEXT, id TEXT, PRIMARY KEY (id))")
-    data = []
-    for i, d in enumerate(data_values):
-        data.append([d.to_str(),ids[i]])
-    connection.executemany("INSERT INTO data_table(data,id) VALUES (?,?) ", data)
-    connection.commit()
+def build_sqlite_library(path, data, keys, primary_key):
+    """
+    Builds a sqlite library to store various data. See setup scripts for
+    more info on use. It is unlikely to be necessary to need to build new
+    libraries. The length of each row must be the same length as keys.
 
+    :param path: the path of sqlite3 library you want to create
+    :param data: list of data to be stored in sqlite library
+    :param keys: name of columns for each row in sqlite library
+    :param primary_key: which of the keys specified will be the primary key,
+        for sqlite3 index purposes, this must be a unique key, different for
+        each row.
 
-def build_sqlite_library_2(path, data, keys, primary_key):
+    :type path: String
+    :type data: list
+    :type keys: list
+    :type primary_key: String
+
+    :return: None
+
+    :examples:
+
+    ..  code-block:: python
+
+        # build test library
+        # each list is a row in sqlite db
+        >>> data = [['the_word', 0], ['the', 1], ['hello', 2]]
+        # the name of each column
+        >>> keys = ['word', 'id']
+        >>> sqlite_library.build_sqlite_library("test.db", data, keys, 'id')
+
+        # read library
+        >>> import sqlite3
+        >>> conn = sqlite3.connect("test.db")
+        >>> conn.execute("SELECT * from data_table WHERE word=\'the_word\'").fetchone()
+        (u'the_word', u'0')
+    """
+
+    if len(data) == 0:
+        raise exceptions.SqliteLibraryException("data must be longer then 0")
+
+    if len(data[0]) != len(keys):
+        raise exceptions.SqliteLibraryException(
+            "length of each row must be the same length as keys")
+
     if os.path.isfile(path):
         os.remove(path)
     connection = sqlite3.connect(path)

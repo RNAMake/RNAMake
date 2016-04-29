@@ -203,7 +203,7 @@ class BasepairState(object):
         return r_trans, t_trans+diff
 
     def get_transforming_r_and_t_w_state(self, state):
-		return self.get_transforming_r_and_t(state.r, state.d, state.sugars)
+        return self.get_transforming_r_and_t(state.r, state.d, state.sugars)
 
     def get_transformed_state(self, r, t):
 

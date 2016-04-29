@@ -86,9 +86,9 @@ class BuildSqliteLibraries(object):
                          aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
             count += 1
 
-        sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
+        sqlite_library.build_sqlite_library(path, data, keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_libraries_new/ideal_helices_reversed.db"
-        sqlite_library.build_sqlite_library_2(path, rdata, keys, 'id')
+        sqlite_library.build_sqlite_library(path, rdata, keys, 'id')
 
         mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
         m = mlib.get(name="HELIX.IDEAL.3")
@@ -138,7 +138,7 @@ class BuildSqliteLibraries(object):
 
             path = settings.RESOURCES_PATH +"/motif_libraries_new/"+\
                    motif_type.type_to_str(t).lower()+".db"
-            sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
+            sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
     def build_helix_ensembles(self):
         helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
@@ -273,12 +273,11 @@ class BuildSqliteLibraries(object):
 
 
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
-        sqlite_library.build_sqlite_library_2(path, mes_data, mes_keys, 'id')
+        sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/all_bp_steps.db"
-        sqlite_library.build_sqlite_library_2(path, all_mes_data, all_mes_keys, 'id')
+        sqlite_library.build_sqlite_library(path, all_mes_data, all_mes_keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps.db"
-        #sqlite_library.build_sqlite_library(path, motifs, mes_names)
-        sqlite_library.build_sqlite_library_2(path, motif_data, motif_keys, 'id')
+        sqlite_library.build_sqlite_library(path, motif_data, motif_keys, 'id')
 
     def build_motif_state_libraries(self):
         for libname in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
@@ -297,7 +296,7 @@ class BuildSqliteLibraries(object):
 
 
             path = settings.RESOURCES_PATH + "/motif_state_libraries/" + libname + ".db"
-            sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
+            sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
     def build_unique_twoway_library(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
@@ -364,10 +363,10 @@ class BuildSqliteLibraries(object):
         f.close()
 
         path = settings.RESOURCES_PATH +"/motif_libraries_new/unique_twoway.db"
-        sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
+        sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/twoway_clusters.db"
-        sqlite_library.build_sqlite_library_2(path, mes_data, mes_keys, 'id')
+        sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
 
     def build_ss_and_seq_libraries(self):
         libnames = ["twoway", "tcontact", "hairpin", "nway"]
@@ -430,7 +429,7 @@ class BuildSqliteLibraries(object):
             print libname, len(mlib.all()), len(clusters)
 
             path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/"+libname+".db"
-            sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
+            sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
     def build_motif_ensemble_state_libraries(self):
 
@@ -448,7 +447,7 @@ class BuildSqliteLibraries(object):
                 data.append([mse.to_str(), mse.id, i])
 
             path = settings.RESOURCES_PATH +"/motif_state_ensemble_libraries/"+libname+".db"
-            sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
+            sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
     def build_trimmed_ideal_helix_library(self):
         for libname in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
@@ -478,7 +477,7 @@ class BuildSqliteLibraries(object):
 
 
             path = settings.RESOURCES_PATH + "/motif_state_libraries/" + libname + "_min.db"
-            sqlite_library.build_sqlite_library_2(path, data, keys, 'id')
+            sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
 #setup_start_motif()
 builder = BuildSqliteLibraries()
