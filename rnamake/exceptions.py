@@ -20,6 +20,9 @@ class ChainException(Exception):
 class StructureException(Exception):
     pass
 
+class BasepairException(Exception):
+    pass
+
 class PDBParserException(Exception):
     pass
 

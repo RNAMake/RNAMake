@@ -99,8 +99,8 @@ class X3dnaUnittest(unittest.TestCase):
         path1 = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
         path = rnamake.settings.UNITTEST_PATH + "p4p6.pdb"
         shutil.copy(path1, path)
-        x3dna = rnamake.x3dna.X3dna()
-        basepairs = x3dna.get_basepairs(path)
+        x = rnamake.x3dna.X3dna()
+        basepairs = x.get_basepairs(path)
         os.remove("ref_frames.dat")
         os.remove('p4p6_dssr.out')
         os.remove("p4p6.pdb")

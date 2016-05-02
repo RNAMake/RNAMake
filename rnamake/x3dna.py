@@ -127,7 +127,7 @@ class X3dna(object):
 
         pdb_name = util.filename(pdb_path)[:-4]
         result = subprocess.call(
-            self.dssr_path + "-i="+pdb_path+" -o="+pdb_name+ \
+            self.dssr_path + " -i="+pdb_path+" -o="+pdb_name+ \
             "_dssr.out --non-pair >& /dev/null", shell=True,
             executable="/bin/bash")
 
