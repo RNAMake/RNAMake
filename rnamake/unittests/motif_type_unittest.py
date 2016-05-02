@@ -1,18 +1,22 @@
 import unittest
-import rnamake.motif_type
+
+from rnamake import exceptions, motif_type
 
 class MotifTypeUnittest(unittest.TestCase):
 
     def test_type_to_str(self):
-        mtype = rnamake.motif_type.TWOWAY
-        s = rnamake.motif_type.type_to_str(mtype)
+        mtype = motif_type.TWOWAY
+        s = motif_type.type_to_str(mtype)
         if s != "TWOWAY":
             self.fail("did not get correct string")
 
+        with self.assertRaises(exceptions.MotifTypeException):
+            motif_type.type_to_str("FAKE")
+
     def test_str_to_type(self):
         s = "TWOWAY"
-        mtype = rnamake.motif_type.str_to_type(s)
-        if mtype != rnamake.motif_type.TWOWAY:
+        mtype = motif_type.str_to_type(s)
+        if mtype != motif_type.TWOWAY:
             self.fail("did not get correct type")
 
 def main():

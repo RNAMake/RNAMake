@@ -1,4 +1,4 @@
-
+import exceptions
 
 
 """
@@ -26,6 +26,14 @@ Basic type information for motifs for looking up in databases and libraries
 +-------------------+-------+---------------------------------------------+
 |   HELIX           | 9     | RNA with only GC/AU pairs                   |
 +-------------------+-------+---------------------------------------------+
+|   SSTRAND         | 10    | Single stranded RNA                         |
++-------------------+-------+---------------------------------------------+
+|   TCONTACT        | 11    | General tertiary contact                    |
++-------------------+-------+---------------------------------------------+
+|   UNKNOWN         | 99    | Motif with unassigned motif type            |
++-------------------+-------+---------------------------------------------+
+|   ALL             | 999   | Place holder type for iteration of motifs   |
++-------------------+-------+---------------------------------------------+
 """
 
 TWOWAY            = 0
@@ -42,47 +50,79 @@ UNKNOWN           = 99
 ALL               = 999
 
 type_to_str_dict = {
-    TWOWAY           : 'TWOWAY',
-    NWAY             : 'NWAY',
-    HAIRPIN          : 'HAIRPIN',
-    TCONTACT         : 'TCONTACT',
-    TCONTACT_HP_HP   : 'TCONTACT_HP_HP',
-    TCONTACT_H_HP    : 'TCONTACT_H_HP',
-    TCONTACT_H_H     : 'TCONTACT_H_H',
-    TWOWAY_SEGMENTS  : 'TWOWAY_SEGMENTS',
-    HELIX            : 'HELIX',
-    UNKNOWN          : 'UNKNOWN',
-    ALL              : 'ALL'
+    TWOWAY            : 'TWOWAY',
+    NWAY              : 'NWAY',
+    HAIRPIN           : 'HAIRPIN',
+    TCONTACT          : 'TCONTACT',
+    TCONTACT_HP_HP    : 'TCONTACT_HP_HP',
+    TCONTACT_H_HP     : 'TCONTACT_H_HP',
+    TCONTACT_H_H      : 'TCONTACT_H_H',
+    TWOWAY_SEGMENTS   : 'TWOWAY_SEGMENTS',
+    HELIX             : 'HELIX',
+    UNKNOWN           : 'UNKNOWN',
+    ALL               : 'ALL'
 }
 
 str_to_type_dict = {
-   'TWOWAY'                    : TWOWAY,
-   'NWAY'                      : NWAY,
-   'HAIRPIN'                   : HAIRPIN,
-   'TCONTACT_HP_HP'            : TCONTACT_HP_HP,
-   'TCONTACT_H_HP'             : TCONTACT_H_HP,
-   'TCONTACT_H_H'              : TCONTACT_H_H,
-   'TWOWAY_SEGMENTS'           : TWOWAY_SEGMENTS,
-   'HELIX'                     : HELIX,
-   'UNKNOWN'                   : UNKNOWN,
-   'ALL'                       : ALL
+   'TWOWAY'           : TWOWAY,
+   'NWAY'             : NWAY,
+   'HAIRPIN'          : HAIRPIN,
+   'TCONTACT_HP_HP'   : TCONTACT_HP_HP,
+   'TCONTACT_H_HP'    : TCONTACT_H_HP,
+   'TCONTACT_H_H'     : TCONTACT_H_H,
+   'TWOWAY_SEGMENTS'  : TWOWAY_SEGMENTS,
+   'HELIX'            : HELIX,
+   'UNKNOWN'          : UNKNOWN,
+   'ALL'              : ALL
 }
 
 
 def type_to_str(mtype):
+    """
+    convery motif_type enum value into a string for each printing
+
+    :param mtype: motif type value
+    :type mtype: motif_type
+    :return: return string name of motif_type from type_to_str_dict
+    :rtype: string
+
+    :examples:
+
+    ..  code-block:: python
+
+        >>> import motif_type
+        >>> motif_type.type_to_str(motif_type.TWOWAY)
+        TWOWAY
+
+    """
+
     if mtype in type_to_str_dict:
         return type_to_str_dict[mtype]
     else:
-        raise ValueError("MotifType not recognized: " + mtype)
+        raise exceptions.MotifTypeException("MotifType not recognized: " + mtype)
+
 
 def str_to_type(type_name):
+    """
+    converts string to its corresponding motif_type
+
+    :param type_name: name of motif_type enum
+    :return: corresponding motif_type enum
+    :rtype: motif_type
+
+    ..  code-block:: python
+
+        >>> import motif_type
+        >>> motif_type.str_to_type('TWOWAY')
+        0
+
+    """
+
     if type_name in str_to_type_dict:
         return str_to_type_dict[type_name.upper()]
     else:
-        raise ValueError("motif_type name not recognized")
+        raise exceptions.MotifTypeException("motif_type name not recognized")
 
-def is_valid_motiftype(mtype):
-    type_to_str(mtype)
 
 
 

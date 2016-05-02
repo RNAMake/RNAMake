@@ -6,6 +6,24 @@ import numpy as np
 import uuid
 
 class Basepair(object):
+    """
+
+
+    :params r: Reference Frame of basepair
+    :type r: np.array
+    :params d: Center of mass of basepair
+    :type d: np.array
+    :params sugars: C1` atom coords for both residues in basepair
+    :type sugars: List of Np.Arrays
+
+    :attributes:
+    `r` : np.Matrix
+        Reference Frame of basepair
+    `d` : Np.Array
+        Center of mass of basepair
+    `sugars` : List of Np.Arrays
+        C1` atom coords for both residues in basepair
+    """
 
     def __init__(self, res1, res2, r, bp_type="c..."):
         self.res1, self.res2 = res1, res2

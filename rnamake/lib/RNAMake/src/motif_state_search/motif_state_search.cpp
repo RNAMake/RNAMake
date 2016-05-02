@@ -181,7 +181,7 @@ MotifStateSearch::_search() {
                         }
                     }
                     if(clash) { continue; }
-                    
+                                        
                     current_2 = test_node_->parent();
                     while (current_2 != nullptr) {
                         for(auto const & b1 : test_node_->cur_state()->beads()) {

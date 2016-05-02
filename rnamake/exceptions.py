@@ -8,6 +8,9 @@ class SqliteLibraryException(Exception):
 class MotifTypeException(Exception):
     pass
 
+class X3dnaException(Exception):
+    pass
+
 class ResidueException(Exception):
     pass
 

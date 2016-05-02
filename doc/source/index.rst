@@ -25,6 +25,7 @@ Utilities
 
    auto/transform
    auto/sqlite_library
+   auto/x3dna
 
 3D Structure
 ------------
