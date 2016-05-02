@@ -16,9 +16,12 @@ class Structure(object):
     :type chains: list of chain.Chain objects
 
     :attributes:
-    `chains` : list of Chain objects that belong to the current structure
+
+    `chains` : list of chain.Chain
+        These chain belong to the current structure
 
     :examples:
+
     ..  code-block:: python
 
         # load structure from pdb formatted file

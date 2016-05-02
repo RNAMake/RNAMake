@@ -4,13 +4,15 @@ import os
 import re
 import numpy as np
 import util
-import motif_type
 
-X3DNA_BIN_PATH = settings.X3DNA_PATH + "/bin/"
+import motif_type, exceptions
+
+X3DNA_BIN_PATH = settings.X3DNA_PATH + "bin/"
 os.environ['X3DNA'] =  settings.X3DNA_PATH
 
 # TODO figure out what operating system is being used
 # TODO create at enum type for basepair types instead of strings
+# TODO check to see what happens with RNA without chain ids
 class X3dna(object):
     """
     a simple wrapper for interfacing with the x3dna package for determining the
@@ -24,14 +26,53 @@ class X3dna(object):
     of a basepair
 
     .. code-block:: python
-        # to get the basepairing information from a pdb, for example test.pdb
-        >>>x3dna = x3dna.X3dna()
-        >>>basepairs = x3dna.get_basepairs("test")
+
+        >>> from rnamake.unittests import files
+        >>> from rnamake import x3dna
+        >>> x = x3dna.X3dna()
+        >>> basepairs = x.get_basepairs(files.P4P6_PDB_PATH)
+        >>> len(basepairs)
+        79
+
+        >>> basepairs[10]
+        <X3DNA Basepair(A131 A192 cW-W)>
 
     """
 
     def __init__(self):
-        pass
+        self.find_pair_path = X3DNA_BIN_PATH + "find_pair"
+        self.analyze_path   = X3DNA_BIN_PATH + "analyze"
+        self.dssr_path      = X3DNA_BIN_PATH + "x3dna-dssr"
+
+        if not os.path.isfile(self.find_pair_path):
+            raise exceptions.X3dnaException(
+                "%s executable should exist but doesnt! " % (self.find_pair_path))
+
+        if not os.path.isfile(self.analyze_path):
+            raise exceptions.X3dnaException(
+                "%s executable should exist but doesnt! " % (self.analyze_path))
+
+        if not os.path.isfile(self.dssr_path):
+            raise exceptions.X3dnaException(
+                "%s executable should exist but doesnt! " % (self.dssr_path))
+
+        self.ref_frames_extra_files = (
+            "auxiliary.par,bestpairs.pdb,bp_helical.par,bp_order.dat," + \
+            "bp_step.par,cf_7methods.par,col_chains.scr,col_helices.scr," + \
+            "hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb").split(",")
+
+        self.dssr_extra_files = (
+            "dssr-2ndstrs.ct,dssr-2ndstrs.dbn,dssr-helices.pdb,"+ \
+            "dssr-pairs.pdb,dssr-stems.pdb,hel_regions.pdb,hstacking.pdb,"+ \
+            "poc_haxis.r3d,stacking.pdb,dssr-torsions.dat,dssr-Kturns.pdb,"+ \
+            "dssr-multiplets.pdb,dssr-hairpins.pdb,dssr-Aminors.pdb").split(",")
+
+    def _remove_files(self, f_list):
+        for f in f_list:
+            try:
+                os.remove(f)
+            except:
+                pass
 
     def generate_ref_frame(self, pdb_path):
         """
@@ -39,43 +80,37 @@ class X3dna(object):
         information of a given pdb and it is updated to a ref_frames.dat
         file which can be parsed by get_basepair_info if necessary
 
-        :param pdb_name: the pdb you want to run without the .pdb extension
-        :type pdb_name: str
+        :param pdb_path: the pdb you want to run without the .pdb extension
+        :type pdb_path: str
 
         .. code-block:: python
-            # assumes there is a file "test.pdb" in current dir
+
             # after running should be a "ref_frames.dat" in current dir
-            >>>x3dna = rnamake.x3dna.X3dna()
-            >>>x3dna.generate_ref_frame("test")
+            >>> from rnamake import x3dna
+            >>> x = x3dna.X3dna()
+            >>> x.generate_ref_frame("test.pdb")
 
         """
         pdb_name = util.filename(pdb_path)[:-4]
         if not os.path.isfile(pdb_path):
-            raise IOError(pdb_path + " is not found cannot generate "+ \
-                          "ref_frames.dat file")
+            raise exceptions.X3dnaException(
+                pdb_path + " is not found cannot generate ref_frames.dat file")
 
-        find_pair_path = X3DNA_BIN_PATH + "find_pair "
-        analyze_path = X3DNA_BIN_PATH + "analyze "
-
-        result = subprocess.call(find_pair_path + pdb_path + " 2> /dev/null "+
-                        "stdout | " + analyze_path + "stdin >& /dev/null",
-                        executable="/bin/bash", shell=True)
+        result = subprocess.call(
+                    self.find_pair_path + " " + pdb_path + " 2> /dev/null " +
+                    "stdout | " + self.analyze_path + " stdin >& /dev/null",
+                    executable="/bin/bash", shell=True)
 
         if result != 0:
-            raise SystemError("find_pair did not run correctly")
+            raise exceptions.X3dnaException("find_pair did not run correctly")
 
-        files = ("auxiliary.par,bestpairs.pdb,bp_helical.par,bp_order.dat,"+\
-                "bp_step.par,cf_7methods.par,col_chains.scr,col_helices.scr,"+\
-                "hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb").split(",")
+        if not os.path.isfile("ref_frames.dat"):
+            raise exceptions.X3dnaException(
+                "generate_ref_frame was ran on %s but no "  % (pdb_path) +
+                "ref_frames.dat file was produced something extremely wrong")
 
-        name_spl = pdb_name.split("/")
-        files.append(pdb_name+".out")
-
-        for f in files:
-            try:
-                os.remove(f)
-            except:
-                pass
+        self._remove_files(self.ref_frames_extra_files)
+        os.remove(pdb_name+".out")
 
     def generate_dssr_file(self, pdb_path):
         """
@@ -87,25 +122,19 @@ class X3dna(object):
 
         """
         if not os.path.isfile(pdb_path):
-            raise IOError(pdb_path + " is not found cannot generate "+ \
-                          "dssr file")
+            raise exceptions.X3dnaException(
+                pdb_path + " is not found cannot generate dssr file")
+
         pdb_name = util.filename(pdb_path)[:-4]
-        dssr_path = X3DNA_BIN_PATH + "x3dna-dssr "
-        result = subprocess.call(dssr_path + "-i="+pdb_path+" -o="+pdb_name+ \
-                                "_dssr.out --non-pair >& /dev/null", shell=True,
-                                executable="/bin/bash")
+        result = subprocess.call(
+            self.dssr_path + "-i="+pdb_path+" -o="+pdb_name+ \
+            "_dssr.out --non-pair >& /dev/null", shell=True,
+            executable="/bin/bash")
 
         if result != 0:
-            raise SystemError("dssr did not run correctly")
-        files = ("dssr-2ndstrs.ct,dssr-2ndstrs.dbn,dssr-helices.pdb,"+ \
-                "dssr-pairs.pdb,dssr-stems.pdb,hel_regions.pdb,hstacking.pdb,"+ \
-                "poc_haxis.r3d,stacking.pdb,dssr-torsions.dat,dssr-Kturns.pdb,"+ \
-                "dssr-multiplets.pdb,dssr-hairpins.pdb,dssr-Aminors.pdb").split(",")
-        for f in files:
-            try:
-                os.remove(f)
-            except:
-                pass
+            raise exceptions.X3dnaException("dssr did not run correctly")
+
+        self._remove_files(self.dssr_extra_files)
 
     def _parse_ref_frame_file(self, ref_frames_path):
         """
@@ -132,7 +161,8 @@ class X3dna(object):
                     m = p.search(l)
                     bps = m.groups()
                 else:
-                    raise ValueError("did not parse 3DNA ref frame correctly")
+                    raise exceptions.X3dnaException(
+                        "did not parse 3DNA ref frame correctly")
                 continue
             if start_bp == 0:
                 continue
@@ -290,7 +320,7 @@ class X3dna(object):
         residues and what type each basepair is. Returns a list of basepair
         X3DNA objects.
 
-        :param pdb_path: path to the pdb file with out .pdb extension
+        :param pdb_path: path to the pdb file
         :type pdb_path: str
         """
         ref_frames_path = self._get_ref_frame_path(pdb_path)
@@ -408,6 +438,17 @@ class X3dna(object):
         return motifs
 
 class Motif(object):
+    """
+    Container for motif residues from dssr files produceed by x3dna. Should not
+    be instantiated outside x3dna.X3dna class.
+
+    :attributes:
+    `residues` : list of Residue objects
+        residues that belong to same motif
+    `mtype`: motif_type enum
+        the enum type of the given motif
+    """
+
     __slots__ = ["residues", "mtype"]
 
     def __init__(self, residues, mtype):
@@ -415,6 +456,24 @@ class Motif(object):
 
 
 class Basepair(object):
+    """
+    Container for basepairs from ref_frames and dssr files produced
+    by x3dna. Should not be instantiated outside x3dna.X3dna class.
+
+    :attributes:
+
+    `res1` : Residue
+        first residue in basepair
+    `res2` : Residue
+        second residue in basepair
+    `r` : np.array
+        rotation matrix describing principle axies of orientation of basepair
+    `d` : np.array
+        center point of basepair
+    `bp_type`: str
+        x3dna dssr basepair type, see x3dna for more details
+
+    """
 
     __slots__ = ["res1", "res2", "r", "d", "bp_type"]
 
@@ -422,8 +481,29 @@ class Basepair(object):
         self.res1, self.res2, self.r, self.d = res1, res2, r, d
         self.bp_type = "c..."
 
+    def __repr__(self):
+        res1 = self.res1.chain_id + str(self.res1.num) + self.res1.i_code
+        res2 = self.res2.chain_id + str(self.res2.num) + self.res2.i_code
+
+        return "<X3DNA Basepair(%s %s %s)>" % \
+            (res1, res2, self.bp_type)
+
 
 class Residue(object):
+    """
+    Container for residues from ref_frames and dssr files produced
+    by x3dna. Should not be instantiated outside x3dna.X3dna class.
+
+    :attributes:
+
+    `num` : int
+        residue number
+    `chain_id` : str
+        residue chain id
+    `i_code` : str
+        residue insertion code
+
+    """
 
     __slots__ = ["num", "chain_id", "i_code"]
 
