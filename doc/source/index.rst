@@ -24,6 +24,7 @@ Utilities
    :maxdepth: 2
 
    auto/transform
+   auto/transformations
    auto/sqlite_library
    auto/x3dna
 
