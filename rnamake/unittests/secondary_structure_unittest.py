@@ -1,23 +1,104 @@
 import unittest
-import build
-import rnamake.sqlite_library as sqlite_library
-import rnamake.secondary_structure as secondary_structure
-import rnamake.resource_manager as rm
-import rnamake.motif_tree as motif_tree
-import rnamake.motif_factory as motif_factory
-import rnamake.ss_tree as ss_tree
-import rnamake.secondary_structure_factory as ssfactory
-import rnamake.motif_tree as motif_tree
-import rnamake.setup.motif_library as motif_library
-import rnamake.motif_type as motif_type
-import rnamake.settings as settings
+import uuid
+import instances
+
+
+from rnamake import secondary_structure, motif_tree, exceptions
+
 from rnamake import secondary_structure_factory as ssf
+from rnamake import resource_manager as rm
+import rnamake.secondary_structure_factory as ssfactory
+
+class ResidueUnittest(unittest.TestCase):
+
+    def test_creation(self):
+        secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
+
+    def test_copy(self):
+        r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
+        r_copy = r.copy()
+
+        r.dot_bracket = ")"
+        self.failIf(r.dot_bracket == r_copy.dot_bracket, "should not be equal")
+
+    def test_to_str(self):
+        r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
+        s = r.to_str()
+        r_copy = secondary_structure.str_to_residue(s)
+        self.failIf(r.name != r_copy.name)
+        self.failIf(r.dot_bracket != r_copy.dot_bracket)
+
+
+class ChainUnittest(unittest.TestCase):
+
+    def test_creation(self):
+        secondary_structure.Chain()
+
+    def test_copy(self):
+        c = instances.secondary_structure_chain()
+        c_copy = c.copy()
+
+        self.failIf(len(c) != len(c_copy), "copied chain is not the right size")
+        for i, r in enumerate(c):
+            self.failIf(r.uuid != c_copy.residues[i].uuid,
+                        "did not get correct uuid")
+
+    def test_first_and_last(self):
+        """test first and last functions, should return the first and last
+           residues of the chain respectively.
+
+           Also tests whether an empty chain will return exception when calling
+           either
+        """
+        c = instances.secondary_structure_chain()
+        if c.residues[0]  != c.first() or \
+           c.residues[-1] != c.last():
+            self.fail()
+
+        chain_2 = secondary_structure.Chain()
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            chain_2.first()
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            chain_2.last()
+
+    def test_to_str(self):
+        r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
+        s = r.to_str()
+        r_copy = secondary_structure.str_to_residue(s)
+
 
 class StructureUnittest(unittest.TestCase):
 
     def test_creation(self):
-        ss = secondary_structure.Structure(sequence="AGCU+AGCU",
-                                           dot_bracket="((((+))))")
+        secondary_structure.Structure(sequence="AGCU+AGCU",
+                                      dot_bracket="((((+))))")
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            secondary_structure.Structure(sequence="AGCU+AGCU",
+                                          dot_bracket="^((((+))))")
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            secondary_structure.Structure(sequence="KGCU+AGCU",
+                                          dot_bracket="((((+))))")
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            secondary_structure.Structure(sequence="GCU+AGCU",
+                                          dot_bracket="((((+))))")
+
+
+        seq = ""
+        db = ""
+        for i in range(100):
+            seq += "A&"
+            db += ".A"
+
+        #recycles chain ids does not run out of letters
+        secondary_structure.Structure(sequence=seq, dot_bracket=db)
+
+
+
 
     def test_find_residue(self):
         ss = secondary_structure.Structure(sequence="AGCU+AGCU",
@@ -145,6 +226,7 @@ class PoseUnittest(unittest.TestCase):
                              "((((.((+))))))")
         p.build_helices()
         print len(p.helices)
+
 
 def main():
     unittest.main()

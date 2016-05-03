@@ -11,6 +11,9 @@ class MotifTypeException(Exception):
 class X3dnaException(Exception):
     pass
 
+class SecondaryStructureException(Exception):
+    pass
+
 class ResidueException(Exception):
     pass
 

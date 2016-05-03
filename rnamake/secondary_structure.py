@@ -1,61 +1,265 @@
-import util
-import Queue
 import uuid
-import tree
 import motif_type
+import exceptions
+
 
 class Residue(object):
+    """
+    An extremely stripped down container object for use for keeping track of
+    secondary structure using dot bracket notation. Dot bracket notation is
+    represented by a string of equal length of a sequence, example:
+
+    sequence:    'GCAAAACG'\n
+    dot bracket: '((....))'
+
+    '(' represent the 5' end of a basepair, ')' the 3' end of the same base
+    pair. Thus there should be an equal number of '(' and ')' symbols. '.'
+    represents an unpaired residue.
+
+    This class along with others in this module are generally
+    not instatinated outside RNAStructure,  Motif  and Pose.
+
+    :param name: name of residue, etc A, G, C, U
+    :param dot_bracket: dot bracket notation for secondary structure either '(', '.', ')'
+    :param num: number of residue
+    :param chain_id: chain id of residue, etc "A" or "B"
+    :param uuid: residue unique indentifier
+    :param i_code: residue insertaion code, usually ""
+
+    :type name: str
+    :type dot_bracket: str
+    :type num: int
+    :type chain_id: str
+    :type uuid: uuid.uuid1
+    :type i_code: str
+
+    :attributes:
+
+    `name`: str
+        name of residue, etc A, G, C, U
+    `dot_bracket`: str
+        dot bracket notation for secondary structure either '(', '.', ')'
+    `num`: int
+        number of residue
+    `chain_id`: str
+        chain id of residue, etc "A" or "B"
+    `uuid`: uuid.uuid1
+        residue unique indentifier
+    `i_code`: str
+        residue insertaion code, usually ""
+
+    :examples:
+
+    ..  code-block:: python
+
+        # create a new residue
+        >>> r = Residue("G", "(", 10, "A", uuid.uuid1())
+
+    """
+
+    __slots__= ["name", "dot_bracket", "num", "chain_id", "uuid", "i_code"]
+
     def __init__(self, name, dot_bracket, num, chain_id, uuid, i_code=""):
         self.name, self.dot_bracket, self.num = name, dot_bracket, num
         self.uuid = uuid
         self.chain_id, self.i_code = chain_id, i_code
 
+    def __repr__(self):
+        return "<SecondaryStructureResidue('%s%d%s chain %s')>" % (
+            self.name, self.num, self.i_code, self.chain_id)
+
     def to_str(self):
+        """
+        stringify residue object. can be converted back with
+        :func:`str_to_residue`
+
+        :return: stringifed verision of residue
+        :rtype: str
+        """
+
         return self.name + "," + self.dot_bracket + "," + str(self.num) + "," + \
                str(self.chain_id) + "," + str(self.i_code)
 
     def copy(self):
-        return Residue(self.name, self.dot_bracket, self.num, self.chain_id, self.uuid, self.i_code)
+        """
+        creates copy of current residue
+
+        :return: copy of instatnce
+        :rtype: secondary_structure.Residue
+        """
+
+        return Residue(self.name, self.dot_bracket, self.num, self.chain_id,
+                       self.uuid, self.i_code)
 
 
 class Chain(object):
+    """
+    secondary structure chain container. Contains a chain of connected
+    residues. Chain should be from 5' to 3'.
+
+    :param residues: the residues that are to be included in chain. Optional.
+    :type residues: list of Residues.
+
+    :attributes:
+    `residues` : list of Residues
+        Residues contained in current chain
+
+    """
+
+    __slots__ = ["residues"]
+
     def __init__(self, residues=None):
         self.residues = residues
         if self.residues is None:
             self.residues = []
+
+    def __len__(self):
+        return len(self.residues)
 
     def __repr__(self):
         seq = ""
         for r in self.residues:
             seq += r.name
 
-        return "<Chain: " + seq
+        return "<SecondaryStructureChain( " + seq + ")"
+
+    def __iter__(self):
+        return self.residues.__iter__()
 
     def first(self):
+        """
+        gets the first residue in the chain
+
+        :return: 5' end of chain
+        :rtype: secondary_structure.Residue
+
+        :examples:
+
+        ..  code-block:: python
+
+            >>> from rnamake.unittests import instances
+            >>> c = instances.secondary_structure_chain()
+            >>> c.first()
+            <SecondaryStructureResidue('G13 chain A')>
+
+        """
+
+        if len(self.residues) == 0:
+            raise exceptions.SecondaryStructureException(
+                "cannot call first there are no residues in chain")
+
         return self.residues[0]
 
     def last(self):
+        """
+        gets the first residue in the chain
+
+        :return: 5' end of chain
+        :rtype: secondary_structure.Residue
+
+        :examples:
+
+        ..  code-block:: python
+
+            >>> from rnamake.unittests import instances
+            >>> c = instances.secondary_structure_chain()
+            >>> c.last()
+            <SecondaryStructureResidue('G24 chain A')>
+
+        """
+
+        if len(self.residues) == 0:
+            raise exceptions.SecondaryStructureException(
+                "cannot call last there are no residues in chain")
+
         return self.residues[-1]
 
     def sequence(self):
+        """
+        gets the string verision of the sequence in this chain
+
+        :returns: string of sequence of chain
+        :rtype: str
+
+        :examples:
+
+        ..  code-block:: python
+
+            >>> from rnamake.unittests import instances
+            >>> c = instances.secondary_structure_chain()
+
+            # see the residue of each residue in the chain, all Gs
+            >>> for r in c: print r
+            ...
+            <SecondaryStructureResidue('G13 chain A')>
+            <SecondaryStructureResidue('G14 chain A')>
+            <SecondaryStructureResidue('G15 chain A')>
+            <SecondaryStructureResidue('G16 chain A')>
+            <SecondaryStructureResidue('G17 chain A')>
+            <SecondaryStructureResidue('G18 chain A')>
+            <SecondaryStructureResidue('G19 chain A')>
+            <SecondaryStructureResidue('G20 chain A')>
+            <SecondaryStructureResidue('G21 chain A')>
+            <SecondaryStructureResidue('G22 chain A')>
+            <SecondaryStructureResidue('G23 chain A')>
+            <SecondaryStructureResidue('G24 chain A')>
+
+            >>> c.sequence()
+            u'GGGGGGGGGGGG'
+        """
+
         seq = ""
         for r in self.residues:
             seq += r.name
         return seq
 
     def dot_bracket(self):
+        """
+        gets the string verision of the secondary structure in
+        dot_bracket notation of this chain
+
+        :returns: string of secondary structure in dot bracket notation of
+            chain
+        :rtype: str
+
+        :examples:
+
+        ..  code-block:: python
+
+            >>> from rnamake.unittests import instances
+            >>> c = instances.secondary_structure_chain()
+            >>> c.dot_bracket()
+            u'(((((((((((('
+        """
+
         db = ""
         for r in self.residues:
             db += r.dot_bracket
         return db
 
     def to_str(self):
+        """
+        stringify chain object. can be converted back with
+        :func:`str_to_chain`
+
+        :return: stringifed verision of chain
+        :rtype: str
+        """
+
         s = ""
         for r in self.residues:
             s += r.to_str() + ";"
         return s
 
     def copy(self):
+        """
+        creates deep copy of chain instance
+
+        :return: copy of chain
+        :rtype: secondary_structure.Chain
+
+        """
+
         residues = []
         for r in self.residues:
             residues.append(r.copy())
@@ -63,6 +267,28 @@ class Chain(object):
 
 
 class Basepair(object):
+    """
+    :param res1: First residue in basepair
+    :param res2: Second residue in basepair
+    :param bp_uuid: basepair unique indentifier
+
+    :type res1: secondary_structure.Residue
+    :type res2: secondary_structure.Residue
+    :type bp_uuid: uuid.uuid1
+
+    :attributes:
+
+    `res1` : secondary_structure.Residue
+        First residue in basepair
+    `res2` : secondary_structure.Residue
+        Second residue in basepair
+    `uuid`: uuid.uuid1
+        unique id to indentify this basepair when locating it in a motif or
+        pose
+    """
+
+    __slots__ = ["res1", "res2", "uuid"]
+
     def __init__(self, res1, res2, bp_uuid=None):
         self.res1, self.res2 = res1, res2
         self.uuid = bp_uuid
@@ -70,10 +296,34 @@ class Basepair(object):
             self.uuid = uuid.uuid1()
 
     def __repr__(self):
-        return "<Basepair("+self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
-            "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code) + ")>"
+        return "<SecondaryStructureBasepair("+self.name()+")>"
 
     def name(self):
+        """
+        get name of basepair: which is the combined name of both residues
+        seperated by a "-". The residue with the lower res number should
+        come first
+
+        :return: name of basepair
+        :rtype: str
+
+        :examples:
+
+        ..  code-block:: python
+
+            # build basepair from stratch
+            >>> from rnamake.unittests import instances
+            >>> b = instances.secondary_structure_basepair()
+            >>> print b.res1
+            <SecondaryStructureResidue('C10 chain A')>
+
+            >>> print b.res2
+            <SecondaryStructureResidue('G15 chain A')>
+
+            >>> print b.name()
+            A10-A15
+        """
+
         str1 = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
         str2 = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
 
@@ -83,15 +333,64 @@ class Basepair(object):
             return str2+"-"+str1
 
     def partner(self, r):
+        """
+        get the other basepairing partner of a residue will throw an error
+        if the supplied residue is not contained within this basepair
+
+        :param res: the residue that you want to get the partner of
+        :type res: secondary_structure.Residue object
+        """
+
         if   r == self.res1:
             return self.res2
         elif r == self.res2:
             return self.res1
         else:
-            raise ValueError("call partner with a residue not in basepair")
+            raise exceptions.SecondaryStructureException(
+                "call partner with a residue not in basepair")
 
 
 class Structure(object):
+    """
+    lightweight container class for storing secondary structure information
+    for an entire RNA.
+
+    :param chains: secondary_structure.Chains that belong to this structure,
+        this is done when a structure is being built from an existing 3D
+        structure.Structure instance
+    :param sequence: sequence of RNA of interest, e.g. "AAAGGGCCC",
+    :param dot_bracket: dot bracket notation of the secondary structure of
+        RNA of interes, e.g. "(((())))"
+
+    :type chains: list of secondary_structure.Chains
+    :type sequence: str
+    :type dot_bracket: str
+
+    :attributes:
+
+    `chains`: list of secondary_structure.Chains
+        the chains of RNA residues in this structure
+
+    :examples:
+
+    ..  code-block:: python
+
+        # create a new structure
+        >>> from rnamake import secondary_structure
+        >>> s = secondary_structure.Structure(sequence="GCGAAAACGC",
+                                              dot_bracket="(((....)))")
+
+        >>> print s.sequence()
+        GCGAAAACGC
+        >>> print s.dot_bracket()
+        (((....)))
+
+        >>> s.get_residue(num=1)
+        <SecondaryStructureResidue('G1 chain A')>
+    """
+
+    __slots__ = ["chains"]
+
     def __init__(self, chains=None, sequence="", dot_bracket=""):
         self.chains = []
         if chains is not None:
@@ -101,19 +400,37 @@ class Structure(object):
            self.chains = self._setup_chains(sequence, dot_bracket)
 
     def _setup_chains(self, sequence, dot_bracket):
+        """
+        setup function for turning a string sequence and secondary structure
+        into a structure object.
+
+        :param sequence: sequence of RNA
+        :param dot_bracket: dot bracket of RNA
+
+        :type sequence: str
+        :type dot_bracket: str
+        """
+
         chains = []
         residues = []
 
         if len(dot_bracket) != len(sequence):
-            raise ValueError("sequence and dot bracket are not the same length")
+            raise exceptions.SecondaryStructureException(
+                "sequence and dot bracket are not the same length")
 
         if dot_bracket[0] != '(' and dot_bracket[0] != '.' and dot_bracket != '&':
-            raise ValueError("secondary structure is not valid did you flip seq and ss?")
+            raise exceptions.SecondaryStructureException(
+                "secondary structure is not valid did you flip seq and ss?")
 
         count = 1
-        chains_ids = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "K"]
+        chains_ids = "ABCDEFGHIJKLMNOPQRSTUVWXZ"
+        valid_seq = "AGUCTN&+-"
         chain_i = 0
         for i in range(len(sequence)):
+            if sequence[i] not in valid_seq:
+                raise exceptions.SecondaryStructureException(
+                    sequence[i] + " is not a valid secondary_structure element")
+
             if sequence[i] != "&" and sequence[i] != "+" and sequence[i] != "-":
                 r = Residue(sequence[i], dot_bracket[i], count,
                             chains_ids[chain_i], uuid.uuid1())
@@ -122,6 +439,9 @@ class Structure(object):
             else:
                 chain_i += 1
                 chains.append(Chain(residues))
+                # unlikely but hit max chains
+                if chain_i == len(chains_ids)-1:
+                    chain_i = 0
                 residues = []
 
         if len(residues) > 0:
@@ -130,20 +450,69 @@ class Structure(object):
         return chains
 
     def residues(self):
+        """
+        Concats all residue objects from all Chain objects intos a unified
+        list to be able to easily iterate through.
+
+        :return: List of secondary_structure.Residue objects
+        """
         res = []
         for c in self.chains:
             res.extend(c.residues)
         return res
 
     def sequence(self):
+        """
+        Concats the sequence of each Chain into one sequence for the entire
+        RNA
+
+        :return: sequence of structure
+        :rtype: seq
+        """
         sequences = [x.sequence() for x in self.chains]
         return "&".join(sequences)
 
     def dot_bracket(self):
+        """
+        Concats the secondary structure in the form of dot bracket notation
+        of each Chain into one sequence for the entire RNA
+
+        :return: sequence of structure
+        :rtype: seq
+        """
         dot_brackets = [x.dot_bracket() for x in self.chains]
         return "&".join(dot_brackets)
 
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
+        """
+        find a residue based on residue num, chain_id, insert_code and uuid
+        will return an error if more then one residue matches search to avoid
+        confusion. Will return None is nothing matches search.
+
+        :param num: residue number
+        :param chain_id: what chain the residue belongs to
+        :param i_code: the insertation code of the residue
+        :param uuid: the unique indentifier that each residue is given
+
+        :type num: int
+        :type chain_id: str
+        :type i_code: str
+        :type uuid: uuid
+
+        :return: Residue object
+        :rtype: residue.Residue
+
+        :examples:
+
+        .. code-block:: python
+
+            >>> from rnamake import secondary_structure
+            >>> s = secondary_structure.Structure(sequence="GCGAAAACGC",
+                                                  dot_bracket="(((....)))")
+            >>> s.get_residue(num=1)
+            <SecondaryStructureResidue('G1 chain A')>
+        """
+
         found = []
         for r in self.residues():
             if num is not None and num != r.num:
@@ -168,10 +537,23 @@ class Structure(object):
         return found[0]
 
     def copy(self):
+        """
+        creates a deep copy of structure instance
+
+        :return: copy of structure
+        :rtype: secondary_structure.Structure
+        """
+
         new_chains = [ c.copy() for c in self.chains]
         return Structure(chains=new_chains)
 
     def to_str(self):
+        """
+        generates a stringified verision of this instance.
+
+        :returns: stringified verision of structure
+        :rtype: str
+        """
         s = ""
         for c in self.chains:
             s += c.to_str() + "|"
@@ -179,8 +561,42 @@ class Structure(object):
 
 
 class RNAStructure(object):
-    def __init__(self, structure=None, basepairs=None, ends=None, name="assembled",
-                 path="assembled", score=0, end_ids=None):
+    """
+    Complete secondary structure container for representing a RNA. Contains
+    both the sequence indentity of each residue with its corresponding dot
+    bracket notation symbol but also includes basepair objects to represent the
+    pairs between residues. This class parallels the
+    rna_structure.RNAStructure class for describing RNA with 3D coordinates.
+    Having a parallel class for secondary structure makes it simple to move
+    between secondary structure and full atom representations of RNA.
+
+    :param structure: structure containing residue and chain information for
+        this RNAStructure instance
+    :param basepairs: basepairs contained in RNAStructure
+    :param ends: the basepairs at the end of chains. These define connection
+        points to other RNAStructures
+    :param name: name of RNAStructure
+    :param path: location of where RNAStructure originated from, this is just
+        a place holder for converting from rna_structure.RNAStructure
+    :param score: the score generated by motif_scorer.MotifScorer
+    :param end_ids: strings indenifying the secondary structure and sequence
+        in the perspective of a given basepair end see
+        :func:`assign_end_id_new`
+
+    :type structure: secondary_structure.Structure
+    :type basepairs: list of secondary_structure.Basepairs
+    :type ends: list of secondary_structure.Basepairs
+    :type name: str
+    :type path: str
+    :type score: float
+    :type end_ids: list of strs
+
+
+
+    """
+
+    def __init__(self, structure=None, basepairs=None, ends=None,
+                 name="assembled", path="assembled", score=0, end_ids=None):
         self.structure = structure
         if self.structure is None:
             self.structure = Structure()
@@ -466,6 +882,16 @@ class Pose(RNAStructure):
 
 
 def str_to_residue(s):
+    """
+    converts a residue from string generated from Resiude.to_str()
+
+    :param s: string created by Residue.to_str()
+    :type s: str
+
+    :return: residue from str
+    :rtype: secondary_structure.Residue
+    """
+
     spl = s.split(",")
     return Residue(spl[0], spl[1], int(spl[2]), spl[3], uuid.uuid1(), spl[4])
 
@@ -671,3 +1097,4 @@ def assign_end_id_new(ss, end):
         if i != len(ss_chains)-1:
             ss_id += "_"
     return ss_id
+

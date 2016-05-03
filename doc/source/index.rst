@@ -28,6 +28,15 @@ Utilities
    auto/sqlite_library
    auto/x3dna
 
+Secondary Structure
+-------------------
+
+.. toctree::
+   :maxdepth: 2
+
+   auto/secondary_structure
+
+
 3D Structure
 ------------
 
@@ -42,3 +51,4 @@ Utilities
    auto/basepair
    auto/pdb_parser
    auto/motif_type
+

@@ -147,7 +147,7 @@ class RNAStructure(object):
         return self.secondary_structure.dot_bracket()
 
 
-
+# TODO should probably move this somewhere else?
 class ChainEndPairMap(object):
     def __init__(self, chain1=None, chain2=None):
         self.p5_chain, self.p3_chain = chain1, chain2
