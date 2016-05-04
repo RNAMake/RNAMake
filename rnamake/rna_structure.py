@@ -1,8 +1,6 @@
 import motif_type
 import basepair
 import x3dna
-import secondary_structure
-import secondary_structure_factory as ssf
 import structure
 import util
 import chain_closure
@@ -104,8 +102,7 @@ class RNAStructure(object):
             if uuid2 is not None and \
                (uuid2 != bp.res1.uuid and uuid2 != bp.res2.uuid):
                 continue
-            if name is not None and \
-               (name != bp.name() and alt_name != bp.name()):
+            if name is not None and name != bp.name():
                 continue
             found.append(bp)
         return found

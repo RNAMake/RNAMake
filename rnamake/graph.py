@@ -116,10 +116,10 @@ class Graph(object):
 
         .. code-block:: python
 
-            >>>g = Graph()
-            >>>g.add_data(10)
+            >>> g = Graph()
+            >>> g.add_data(10)
             #get node of index '0' which is the first one
-            >>>print g.get_node(0).data
+            >>> print g.get_node(0).data
             10
         """
         for n in self.nodes:
@@ -139,10 +139,10 @@ class Graph(object):
 
         .. code-block:: python
 
-            >>>g = Graph()
-            >>>g.add_data(10)
-            >>>g.add_data(5)
-            >>>g.add_data(15)
+            >>> g = Graph()
+            >>> g.add_data(10)
+            >>> g.add_data(5)
+            >>> g.add_data(15)
             >>> g.oldest_node().data
             10
         """
@@ -186,13 +186,13 @@ class GraphDynamic(Graph):
 
     .. code-block:: python
 
-        >>>g = GraphDynamic()
-        >>>g.add_data(0)
-        >>>g.add_data(1)
-        >>>g.add_data(2, parent_index=0)
-        >>>g.add_data(3, parent_index=0)
+        >>> g = GraphDynamic()
+        >>> g.add_data(0)
+        >>> g.add_data(1)
+        >>> g.add_data(2, parent_index=0)
+        >>> g.add_data(3, parent_index=0)
 
-        >>>len(g.get_node(0).connections)
+        >>> len(g.get_node(0).connections)
         3
     """
 
@@ -392,13 +392,14 @@ class GraphStatic(Graph):
 
     def connect(self, i, j, i_pos, j_pos):
         """
-        Connects two nodes together
+        Connects two nodes together given a specific end index
 
-        :param i:
-        :param j:
-        :param i_pos:
-        :param j_pos:
-        :return:
+        :param i: index of node i
+        :param j: index of node j
+        :param i_pos: end pos of node i
+        :param j_pos: end pos of node j
+
+        :return: None
         """
         n1 = self.get_node(i)
         n2 = self.get_node(j)
@@ -410,8 +411,16 @@ class GraphStatic(Graph):
 
         self.connections.append(c)
 
-    def remove_node(self, pos):
-        n = self.get_node(pos)
+    def remove_node(self, index):
+        """
+        removes a node with a given index
+
+        :param index: the index of the node you want to remove
+        :type index: int
+        :return: None
+        """
+
+        n = self.get_node(index)
         for c in n.connections:
             if c is not None:
                 c.disconnect()
@@ -420,9 +429,17 @@ class GraphStatic(Graph):
         self.last_node = None
         if len(self.nodes) > 0:
             self.last_node = self.nodes[-1]
-        #self.index -= 1
 
     def remove_node_level(self, level=None):
+        """
+        remove all nodes with a given level, this is useful if you are unsure
+        how many nodes have been added from a given point
+
+        :param level: the node minimum node level you want to remove
+        :type level: int
+        :return: None
+        """
+
         if level is None:
             level = self.level
 
@@ -438,31 +455,73 @@ class GraphStatic(Graph):
             if not removed:
                 break
 
+    # TODO rework this function, is badly named and confusing
     def check_pos_is_value(self, n, pos, error=1):
+        """
+        checks to see if a given node has a free end to connect to
+
+        :param n: the node to check
+        :param pos: the end position to check
+        :param error: whether an error should be returned if end is not free,
+            default=1, will error
+
+        :type n: GraphNodeStatic
+        :type pos: int
+        :type error: int
+
+        :return: free end pos
+        """
+
         if pos == -1:
             avail_pos = n.available_children_pos()
             if len(avail_pos) == 0:
-                raise ValueError("cannot add connection to node has no available ends")
+                raise exceptions.GraphException(
+                    "cannot add connection to node has no available ends")
             return avail_pos[0]
 
         else:
             if n.available_pos(pos) == 0 and error:
-                raise ValueError("graph pos is not available: " + str(pos) +
-                                 " on node: " + str(n.index) )
+                raise exceptions.GraphException(
+                    "graph pos is not available: " + str(pos) +
+                     " on node: " + str(n.index) )
             elif n.available_pos(pos) == 0:
                 return None
             return pos
 
+    # TODO rename this function, badly named, what is the difference between
+    # this and check_pos_is_value?
     def get_availiable_pos(self, n, pos):
+        """
+        checks to see if a given node has a free end position will return
+        and error if it doesn't
+
+        :param n: the graph node in question
+        :param pos: the end position (connection point)
+
+        :type n: GraphNodeStatic
+        :type pos: int
+
+        :return: returns a list of positions if successful
+        """
+
         if pos == -1:
             avail_pos = n.available_children_pos()
             return avail_pos
         else:
             if n.available_pos(pos) == 0:
-                raise ValueError("graph pos is not available: " + str(pos) + " " + n.data.name)
+                raise exceptions.GraphException(
+                    "graph pos is not available: " + str(pos) + " " + n.data.name)
             return [pos]
 
     def copy(self):
+        """
+        creates a deep copy of the graph tries to create a copy of the
+        data held in each node
+
+        :return: copy of graph
+        :rtype: GraphStatic
+        """
+
         gs = GraphStatic()
         new_nodes = []
         for n in self.nodes:
@@ -480,11 +539,55 @@ class GraphStatic(Graph):
 
 
 class GraphNode(object):
+    """
+    An abstract class to define the behavior of a graph node or an element of
+    data that has connectivity relationships to other elements of data of the
+    same type. This class is never called directly.
+
+    :param data: The element that you wish to store in the graph
+    :param index: The way for you to find this element of data again through
+        :func:`Graph.get_node`
+    :param level: A way of grouping nodes together, increasing the level and
+        then removing all nodes of a given level is a quick way to batch
+        remove nodes
+    :param n_connections: The number of connections this node can have, in
+        GraphDynamic this does nothing.
+
+    :type data: anything
+    :type index: int
+    :type level: int
+    :type n_connections: int
+
+    :attributes:
+    `data` : anything
+        The element of data being stored in graph
+    `index`: int
+        The way for you to find this element of data again through
+        :func:`Graph.get_node`
+    `level`: int
+        A way of grouping nodes together, increasing the level and
+        then removing all nodes of a given level is a quick way to batch
+        remove nodes
+    `connections`: list of GraphConnections
+        the connections the node has with other nodes
+
+    """
+
+    __slots__ = ["data", "index", "level", "connections"]
+
     def __init__(self, data, index, level, n_connections=0):
         self.data, self.index, self.level = data, index, level
         self.connections = [None for x in range(n_connections)]
 
     def available_children_pos(self):
+        """
+        gets all of the connection positions that are not filled yet for this
+        node
+
+        :return: a list of end positions not yet filled
+        :rtype: list of ints
+        """
+
         pos = []
         for i, c in enumerate(self.connections):
             if c is None:
@@ -492,6 +595,16 @@ class GraphNode(object):
         return pos
 
     def available_pos(self, pos):
+        """
+        check to see if specific connection position is filled
+
+        :param pos: position to check within interal connctions member
+        :type pos: int
+
+        :return: returns 1 if not filled and 0 is filled
+        :rtype: int
+        """
+
         if len(self.connections) <= pos:
             return 0
         if self.connections[pos] is not None:
@@ -499,6 +612,15 @@ class GraphNode(object):
         return 1
 
     def parent(self):
+        """
+        A way to find the oldest node the current node is connected to. This is
+        usually the parent node but this is not always 100% true. If is
+        connected to no other nodes will return None.
+
+        :return: the oldest node the current one is connected too
+        :rtype: GraphNode
+        """
+
         for c in self.connections:
             if c is None:
                 continue
@@ -508,7 +630,15 @@ class GraphNode(object):
 
         return None
 
+    # TODO incorrectly named should be parent_end_index!
     def parent_index(self):
+        """
+        Gets the end index of the connected node that is the oldest.
+
+        :return: end index of oldest connected node.
+        :rtype: int
+        """
+
         parent = self.parent()
         if parent is None:
             return -1
@@ -519,6 +649,19 @@ class GraphNode(object):
         return -1
 
     def connected(self, n):
+        """
+        check to see if another node is connected to this one. If so will
+        return the GraphConnection object that they share. If not will return
+        None.
+
+        :param n: other GraphNode object
+        :type n: GraphNode
+
+        :return: Will return GraphConnection they share if connected if not
+            will return None
+        :rtype: GraphConnection
+        """
+
         for c in self.connections:
             if c is None:
                 continue
@@ -528,40 +671,160 @@ class GraphNode(object):
 
 
 class GraphNodeDynamic(GraphNode):
+    """
+    A GraphNode container that is specific for GraphDyanmic graphs. That is
+    it can be connected to an unlimited number of other nodes. There is no
+    reason to instantiate this class outside GraphDynamic.
+
+    :param data: The element that you wish to store in the graph
+    :param index: The way for you to find this element of data again through
+        :func:`Graph.get_node`
+    :param level: A way of grouping nodes together, increasing the level and
+        then removing all nodes of a given level is a quick way to batch
+        remove nodes
+
+    :type data: anything
+    :type index: int
+    :type level: int
+
+    :attributes:
+    `data` : anything
+        The element of data being stored in graph
+    `index`: int
+        The way for you to find this element of data again through
+        :func:`Graph.get_node`
+    `level`: int
+        A way of grouping nodes together, increasing the level and
+        then removing all nodes of a given level is a quick way to batch
+        remove nodes
+    `connections`: list of GraphConnections
+        the connections the node has with other nodes
+
+    """
+
+    __slots__ = ["data", "index", "level", "connections"]
+
     def __init__(self, data, index, level):
         super(GraphNodeDynamic, self).__init__(data, index, level)
 
     def add_connection(self, c):
+        """
+        adds a connection to another graph node
+
+        :param c: a connection to another node
+        :type c: GraphConnection
+
+        :return: None
+        """
+
         self.connections.append(c)
 
     def remove_connection(self, c):
+        """
+        removes a connection to another node
+
+        :param c: a connection to another node
+        :type c: GraphConnection
+
+        :return: None
+        """
+
         if c not in self.connections:
-            raise ValueError("cannot remove connection not in node")
+            raise exceptions.GraphException(
+                "cannot remove connection not in node")
 
         self.connections.remove(c)
 
 
 class GraphNodeStatic(GraphNode):
+    """
+    A GraphNode container that is specific for GraphStatic graphs. That is
+    it can be connected to an unlimited number of other nodes. There is no
+    reason to instantiate this class outside GraphStatic.
+
+    :param data: The element that you wish to store in the graph
+    :param index: The way for you to find this element of data again through
+        :func:`Graph.get_node`
+    :param level: A way of grouping nodes together, increasing the level and
+        then removing all nodes of a given level is a quick way to batch
+        remove nodes
+    :param n_connections: The number of connections this node can have.
+
+    :type data: anything
+    :type index: int
+    :type level: int
+    :type n_connections: int
+
+    :attributes:
+    `data` : anything
+        The element of data being stored in graph
+    `index`: int
+        The way for you to find this element of data again through
+        :func:`Graph.get_node`
+    `level`: int
+        A way of grouping nodes together, increasing the level and
+        then removing all nodes of a given level is a quick way to batch
+        remove nodes
+    `connections`: list of GraphConnections
+        the connections the node has with other nodes
+
+    """
+
+    __slots__ = ["data", "index", "level", "connections"]
+
     def __init__(self, data, index, level, n_children):
         super(GraphNodeStatic, self).__init__(data, index, level, n_children)
 
     def add_connection(self, c, pos):
+        """
+        Add a new connection at a specific position in connection list
+
+        :param c: the new connection
+        :param pos: the position to be added
+
+        :type c: GraphConnection
+        :type pos: int
+
+        :return: None
+        """
+
         if pos >= len(self.connections):
-            raise ValueError("cannot add child at position")
+            raise exceptions.GraphException("cannot add child at position")
 
         if self.connections[pos] is not None:
-            raise ValueError("attempted to add child in a position that is already full")
+            raise exceptions.GraphException(
+                "attempted to add child in a position that is already full")
 
         self.connections[pos] = c
 
     def remove_connection(self, c):
+        """
+        Remove a new connection at a specific position in connection list
+
+        :param c: the connection to remove
+        :param pos: the position to be added
+
+        :type c: GraphConnection
+        :type pos: int
+
+        :return: None
+        """
+
         if c not in self.connections:
-            raise ValueError("cannot remove connection not in node")
+            raise exceptions.GraphException(
+                "cannot remove connection not in node")
 
         i = self.connections.index(c)
         self.connections[i] = None
 
     def copy(self):
+        """
+        deep copies graph node and also tries to deep copy data. Will work if
+        data element has a function copy().
+
+        :return:
+        """
+
         new_data = None
         try:
             new_data = self.data.copy()
@@ -574,18 +837,57 @@ class GraphNodeStatic(GraphNode):
 
 #TODO rename connection position from end. Not general enough
 class GraphConnection(object):
+    """
+    A simple class to store a connection between two nodes in Graph classes.
+    Never needs to be called outside Graph classes.
+
+    :param node_1: first node in the connection, order doesn't matter
+    :param node_2: second node in the connection
+    :param end_index_1: connection position in node 1
+    :param_end_index_2: connection position in node 2
+
+    :type node_1: GraphNode
+    :type node_2: GraphNode
+    :type end_index_1: int
+    :type end_index_2: int
+
+    :attributes:
+
+    `node_1`: GraphNode
+        first node in the connection, order doesn't matter
+    `node_2`: GraphNode
+        second node in the connection
+    `end_index_1`: int
+        connection position in node 1
+    `end_index_2`: int
+        connection position in node 2
+    """
+
+    __slots__ = ["node_1", "node_2", "end_index_1", "end_index_2"]
+
     def __init__(self, node_1, node_2, end_index_1, end_index_2):
         self.node_1, self.node_2 = node_1, node_2
         self.end_index_1, self.end_index_2 = end_index_1, end_index_2
 
     def partner(self, n_index):
+        """
+        get other node in the connection.
+
+        :param n_index: index of node you know but want to find the other node
+        :type n_index: int
+
+        :return: other node
+        :rtype: GraphNode
+        """
+
         if   n_index == self.node_1.index:
             return self.node_2
         elif n_index == self.node_2.index:
             return self.node_1
         else:
-            raise ValueError("cannot call partner with node not in connection, index: " + \
-                              n_index + " if this is not a number you messed up")
+            raise exceptions.GraphException(
+                "cannot call partner with node not in connection, index: " +\
+                n_index + " if this is not a number you messed up")
 
     def end_index(self, n_index):
         if   n_index == self.node_1.index:
@@ -593,7 +895,8 @@ class GraphConnection(object):
         elif n_index == self.node_2.index:
             return self.end_index_2
         else:
-            raise ValueError("cannot call end_index with node not in connection")
+            raise exceptions.GraphException(
+                "cannot call end_index with node not in connection")
 
     def disconnect(self):
         self.node_1.remove_connection(self)
