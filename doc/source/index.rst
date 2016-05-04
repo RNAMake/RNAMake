@@ -51,4 +51,5 @@ Secondary Structure
    auto/basepair
    auto/pdb_parser
    auto/motif_type
+   auto/rna_structure
 
