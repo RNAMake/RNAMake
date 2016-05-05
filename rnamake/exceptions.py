@@ -2,6 +2,9 @@
 class GraphException(Exception):
     pass
 
+class TreeException(Exception):
+    pass
+
 class SqliteLibraryException(Exception):
     pass
 

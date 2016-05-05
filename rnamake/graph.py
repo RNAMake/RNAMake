@@ -126,7 +126,8 @@ class Graph(object):
             if n.index == index:
                 return n
 
-        raise exceptions.GraphException("cannot find node with index: " + str(index))
+        raise exceptions.GraphException(
+            "cannot find node with index: " + str(index))
 
     def oldest_node(self):
         """
@@ -182,7 +183,25 @@ class GraphDynamic(Graph):
     connections and are added over time, there is no max to the number of
     connections each node can have
 
-    Examples
+    :attributes:
+    `nodes` : list of GraphNode objects
+        all the nodes in the tree, used for fast access by index
+    `connections` : list of GraphConnection objects
+        all the connections between two different nodes in the graph
+    `level` : int
+        the current graph level, used for quickly deleting sections of the graph
+    `index`: int
+        the current node index, always the length of the number of nodes in teh graph
+    `last_node`: GraphNode object
+        the last node added to the graph
+    `current_node`: GraphNode object
+        the current node during iteration
+    `queue`: PriorityQueue object
+        tracks which nodes to visit turning iteration
+    `seen`: List of GraphNode Objects
+        tracks which nodes have alaready been visited during iteration
+
+    :examples:
 
     .. code-block:: python
 
@@ -218,9 +237,9 @@ class GraphDynamic(Graph):
                 parent = self.get_node(parent_index)
             # cannot find node of that index
             except exceptions.GraphException:
-                raise exceptions.GraphException("cannot add data to parent_" +
-                                                "index: " + str(parent_index) +
-                                                " that nodes does not exist")
+                raise exceptions.GraphException(
+                    "cannot add data to parent index: " + str(parent_index) +
+                    " that nodes does not exist")
 
         n = GraphNodeDynamic(data, self.index, self.level)
 
@@ -261,6 +280,24 @@ class GraphStatic(Graph):
     a Graph with static connections between nodes. i.e. each node HAS a
     predefined number of connections. This is useful for constructing graphs
     of Motifs and Secondary Structure elements which have predefined ends.
+
+    :attributes:
+    `nodes` : list of GraphNode objects
+        all the nodes in the tree, used for fast access by index
+    `connections` : list of GraphConnection objects
+        all the connections between two different nodes in the graph
+    `level` : int
+        the current graph level, used for quickly deleting sections of the graph
+    `index`: int
+        the current node index, always the length of the number of nodes in teh graph
+    `last_node`: GraphNode object
+        the last node added to the graph
+    `current_node`: GraphNode object
+        the current node during iteration
+    `queue`: PriorityQueue object
+        tracks which nodes to visit turning iteration
+    `seen`: List of GraphNode Objects
+        tracks which nodes have alaready been visited during iteration
 
     :examples:
 
@@ -371,14 +408,27 @@ class GraphStatic(Graph):
             given_index = index
         parent = self.last_node
         if parent_index != -1:
-            parent = self.get_node(parent_index)
+            try:
+                parent = self.get_node(parent_index)
+            except exceptions.GraphException:
+                raise exceptions.GraphException(
+                    "trying to add a connection to parent node with index "
+                    "%d but it does not exist"
+                    % (parent_index))
         if orphan:
             parent = None
 
         n = GraphNodeStatic(data, given_index, self.level, n_children)
 
         if parent is not None:
-            parent_pos = self.check_pos_is_value(parent, parent_pos)
+            try:
+                parent_pos = self.check_pos_is_value(parent, parent_pos)
+            except exceptions.GraphException:
+                raise exceptions.GraphException(
+                    "trying to add a connection to parent node with index "
+                    "%d but it does not have a free end or specified end is not"
+                    "free" % (parent_index))
+
             child_pos  = self.check_pos_is_value(n, child_pos)
             c = GraphConnection(parent, n, parent_pos, child_pos)
             parent.add_connection(c, parent_pos)
@@ -401,9 +451,34 @@ class GraphStatic(Graph):
 
         :return: None
         """
-        n1 = self.get_node(i)
-        n2 = self.get_node(j)
-        i_pos = self.check_pos_is_value(n1, i_pos)
+        try:
+            n1 = self.get_node(i)
+        except exceptions.GraphException:
+            raise exceptions.GraphException(
+                "trying to connect node %d to %d but node %d " % (i, j, i) +
+                "does not exist")
+
+        try:
+            n2 = self.get_node(j)
+        except exceptions.GraphException:
+            raise exceptions.GraphException(
+                "trying to connect node %d to %d but node %d " % (i, j, j) +
+                "does not exist")
+
+        try:
+            i_pos = self.check_pos_is_value(n1, i_pos)
+        except exceptions.GraphException:
+            raise exceptions.GraphException(
+                "trying to connect node %d to %d but node %d " % (i, j, i) +
+                "node %d does not have a free end at %d" % (i, i_pos))
+
+        try:
+            j_pos = self.check_pos_is_value(n2, j_pos)
+        except exceptions.GraphException:
+            raise exceptions.GraphException(
+                "trying to connect node %d to %d but node %d " % (i, j, j) +
+                "node %d does not have a free end at %d" % (j, j_pos))
+
         j_pos = self.check_pos_is_value(n2, j_pos)
         c = GraphConnection(n1, n2, i_pos, j_pos)
         n1.add_connection(c, i_pos)
@@ -420,7 +495,13 @@ class GraphStatic(Graph):
         :return: None
         """
 
-        n = self.get_node(index)
+        try:
+            n = self.get_node(index)
+        except exceptions.GraphException:
+            raise exceptions.GraphException(
+                "trying remove node with index %d but it does not exist"
+                % (index))
+
         for c in n.connections:
             if c is not None:
                 c.disconnect()
@@ -433,7 +514,8 @@ class GraphStatic(Graph):
     def remove_node_level(self, level=None):
         """
         remove all nodes with a given level, this is useful if you are unsure
-        how many nodes have been added from a given point
+        how many nodes have been added from a given point. if level is not
+        specified level will be set to current level
 
         :param level: the node minimum node level you want to remove
         :type level: int
@@ -890,6 +972,17 @@ class GraphConnection(object):
                 n_index + " if this is not a number you messed up")
 
     def end_index(self, n_index):
+        """
+        get the end index of a given node specified by its index
+
+        :param n_index: index of the node you want to find its end_index in
+            this connection
+        :type n_index: int
+
+        :return: end index of specified node in this connection
+        :rtype: int
+        """
+
         if   n_index == self.node_1.index:
             return self.end_index_1
         elif n_index == self.node_2.index:
@@ -899,5 +992,12 @@ class GraphConnection(object):
                 "cannot call end_index with node not in connection")
 
     def disconnect(self):
+        """
+        removes connection, gets each node to remove this connection from their
+        connection lists.
+
+        :return: None
+        """
+
         self.node_1.remove_connection(self)
         self.node_2.remove_connection(self)

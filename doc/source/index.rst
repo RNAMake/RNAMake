@@ -16,6 +16,7 @@ Data Structures
    :maxdepth: 2
 
    auto/graph
+   auto/tree
 
 Utilities 
 ---------

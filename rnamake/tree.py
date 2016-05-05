@@ -1,5 +1,6 @@
-import Queue
+import exceptions
 
+# TODO should be moved into Tree
 def transverse_tree(tree, i):
     tree.__iter__()
     tree.current_node = tree.get_node(i)
@@ -11,6 +12,21 @@ def transverse_tree(tree, i):
         yield next
 
 class Tree(object):
+    """
+    General implementation of a tree. Do not call directly!
+
+    :attributes:
+    `nodes` : list of TreeNode objects
+        all the nodes in the tree, used for fast access by index
+    `level` : int
+        the current tree level, used for quickly deleting sections of the tree
+    `index`: int
+        the current node index, always the length of the number of nodes in the tree
+    `last_node`: TreeNode object
+        the last node added to the tree
+    `current_node`: TreeNode object
+        the current node during iteration
+    """
 
     def __init__(self):
         self.nodes = []
@@ -22,26 +38,68 @@ class Tree(object):
         self.current_node = None
 
     def get_node(self, index):
+        """
+        :param index: the node index that you want
+        :type index: int
+        :return: TreeNode object
+
+        :examples:
+
+        .. code-block:: python
+
+            >>> t = TreeDynamic()
+            >>> t.add_data(10)
+            #get node of index '0' which is the first one
+            >>> print t.get_node(0).data
+            10
+        """
+
         for n in self.nodes:
             if n.index == index:
                 return n
 
-        raise ValueError("cannot find node with index "+ str(index))
+        raise exceptions.TreeException(
+            "cannot find node with index "+ str(index))
 
     def remove_node(self, node=None, index=None):
+        """
+        removes a node with a given index
+
+        :param node: the actual node object you want to remove
+        :param index: the index of the node you want to remove
+
+        :type node: TreeNode
+        :type index: int
+
+        :return: None
+        """
+
         if node is None and index is not None:
             node = self.get_node(index)
         elif node is None and index is None:
-            raise ValueError("need to include node or index in remove_node")
+            raise exceptions.TreeException(
+                "need to include node or index in remove_node")
 
         if node.parent is not None:
             node.parent.remove_child(node)
         self.nodes.remove(node)
         node.parent = None
-        self.last_node = node.parent
-        #self.index -= 1
+
+        if self.last_node == node:
+            self.last_node = node.parent
 
     def remove_node_level(self, level=None):
+        """
+        remove all nodes with a given level, this is useful if you are unsure
+        how many nodes have been added from a given point. if level is not
+        specified level will be set to current level
+
+        :param level: the node minimum node level you want to remove
+        :type level: int
+        :return: None
+
+        """
+
         if level is None:
             level = self.level
 
@@ -64,6 +122,7 @@ class Tree(object):
         self.current_node = self.get_node(0)
         return self
 
+    # TODO this is really bad need to just call connections.__iter__()
     def next(self):
         if self.current_node is None:
             raise StopIteration
@@ -78,20 +137,82 @@ class Tree(object):
         return node
 
     def next_level(self):
+        """
+        Increases the level of nodes to be added. default level is 0. This is
+        useful when removing or adding a set of nodes. Think of level as a
+        grouping mechanism
+        """
+
         self.level += 1
 
     def decrease_level(self):
+        """
+        Decreases the level of nodes to be added. default level is 0. This is
+        useful when removing or adding a set of nodes. Think of level as a
+        grouping mechanism
+        """
+
         self.level -= 1
 
+
 class TreeDynamic(Tree):
+    """
+    a Tree that has a dynamic number of children. i.e. each node does NOT
+    have a predefined number of children. Each node starts with 0
+    children and are added over time, there is no max to the number of
+    children each node can have
+
+    :attributes:
+    `nodes` : list of TreeNode objects
+        all the nodes in the tree, used for fast access by index
+    `level` : int
+        the current tree level, used for quickly deleting sections of the tree
+    `index`: int
+        the current node index, always the length of the number of nodes in the tree
+    `last_node`: TreeNode object
+        the last node added to the tree
+    `current_node`: TreeNode object
+        the current node during iteration
+
+    .. code-block:: python
+
+        >>> t = TreeDynamic()
+        >>> t.add_data(0)
+        >>> t.add_data(1)
+        >>> t.add_data(2, parent_index=0)
+        >>> t.add_data(3, parent_index=0)
+
+        >>> len(t.get_node(0).children)
+        3
+
+    """
+
     def __init__(self):
         super(TreeDynamic, self).__init__()
 
     def add_data(self, data, parent_index=-1):
+        """
+        add a new element of data to the tree
+
+        :param data: Item to be added to tree
+        :param parent_index: index of node that this element should be connected too
+
+        :type data: can be anything
+        :type parent_index: int
+
+        :return: index of added node
+        :rtype: int
+        """
+
         n = TreeNodeDynamic(data, self.index, self.level)
         parent = self.last_node
         if parent_index != -1:
-            parent = self.get_node(parent_index)
+            try:
+                parent = self.get_node(parent_index)
+            except exceptions.TreeException:
+                raise exceptions.TreeException(
+                    "cannot add data to parent index: " + str(parent_index) +
+                    " that nodes does not exist")
 
         if parent != None:
             parent.add_child(n)
@@ -101,6 +222,7 @@ class TreeDynamic(Tree):
         self.nodes.append(n)
         self.index += 1
         return self.index-1
+
 
 class TreeStatic(Tree):
     def __init__(self):
