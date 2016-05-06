@@ -1,4 +1,7 @@
 import itertools
+import numpy as np
+import uuid
+
 import x3dna
 import structure
 import basepair
@@ -10,8 +13,6 @@ import settings
 import basic_io
 import secondary_structure
 import secondary_structure_factory as ssf
-import numpy as np
-import uuid
 import rna_structure
 import residue
 
@@ -250,22 +251,6 @@ class MotifState(object):
             self.residues[i].uuid = r.uuid
 
 
-class MotifArray(object):
-    __slots__ = ['motifs']
-
-    def __init__(self, motifs=[]):
-        self.motifs = motifs
-
-    def add(self, m):
-        self.motifs.append(m)
-
-    def to_str(self):
-        s = ""
-        for m in self.motifs:
-            s += m.to_str() + "$"
-        return s
-
-
 def file_to_motif(path):
     try:
         f = open(path)
@@ -340,14 +325,6 @@ def str_to_motif_state(s):
             end_states.append(basepair.str_to_basepairstate(spl[i]))
 
     return MotifState(name, end_names, end_ids, end_states, beads, score, size, block_end_add, residues)
-
-
-def str_to_motif_array(str):
-    spl = str.split("$")
-    motifs = []
-    for s in spl:
-        motifs.append(str_to_motif(s))
-    return MotifArray(motifs)
 
 
 def align_motif(ref_bp_state, motif_end, motif, sterics=1):
