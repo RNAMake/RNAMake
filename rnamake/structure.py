@@ -221,7 +221,7 @@ class Structure(object):
 
         :param renumber: what should the first residue be numbered. -1 is
             to NOT renumber, Default=-1.
-        :return: int
+        :type renumber: int
 
         :return: str
         """

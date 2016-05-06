@@ -52,6 +52,9 @@ class ChainException(Exception):
 class StructureException(Exception):
     pass
 
+class RNAStructureException(Exception):
+    pass
+
 class BasepairException(Exception):
     pass
 
