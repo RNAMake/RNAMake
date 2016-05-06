@@ -1,0 +1,5 @@
+
+include: 
+    - _images
+    - _static
+    - _sources
