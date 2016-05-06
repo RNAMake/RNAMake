@@ -4,6 +4,7 @@ import residue_type
 import exceptions
 import user_warnings
 
+# TODO handle no chain id!
 def parse(pdb_file):
     """
     very minimalistc pdb parser, currently does not support multiple MODELS
