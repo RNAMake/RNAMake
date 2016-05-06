@@ -13,8 +13,9 @@ class GraphUnittest(unittest.TestCase):
         g.add_data(3, parent_index=0)
         g.connect(2, 3)
 
-        with self.assertRaises(exceptions.GraphException):
+        with self.assertRaises(exceptions.GraphIndexException):
             g.add_data(10, parent_index=10)
+
 
         g = graph.GraphStatic()
         # legend
@@ -56,6 +57,30 @@ class GraphUnittest(unittest.TestCase):
         #       N1----N2
         #      N1C1 N2C1
 
+        with self.assertRaises(exceptions.GraphInvalidEndException):
+            g.connect(1, 2, 1, 1)
+
+    def test_add_data(self):
+        g = graph.GraphStatic()
+        g.add_data(0, n_children=2)
+
+        with self.assertRaises(exceptions.GraphIndexException):
+            g.add_data(1, n_children=2, parent_index=10)
+
+        with self.assertRaises(exceptions.GraphIndexException):
+            g.add_data(1, n_children=2, index=0)
+
+        with self.assertRaises(exceptions.GraphInvalidEndException):
+            g.add_data(1, n_children=2, parent_pos=3)
+
+        with self.assertRaises(exceptions.GraphInvalidEndException):
+            g.add_data(1, n_children=2, parent_pos=-2)
+
+        g.add_data(1, n_children=2, parent_pos=0, child_pos=1)
+
+        with self.assertRaises(exceptions.GraphInvalidEndException):
+            g.add_data(2, n_children=2, parent_index=0, parent_pos=0)
+
     def test_get_node(self):
         g = graph.GraphDynamic()
         g.add_data(0)
@@ -63,7 +88,7 @@ class GraphUnittest(unittest.TestCase):
 
         self.failUnless(g.get_node(1).data == 1)
 
-        with self.assertRaises(exceptions.GraphException):
+        with self.assertRaises(exceptions.GraphIndexException):
             g.get_node(10)
 
     def test_decrease_level(self):
