@@ -1,0 +1,570 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Structure &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../index.html"/>
+        <link rel="next" title="Basepair" href="basepair.html"/>
+        <link rel="prev" title="Chain" href="chain.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chain.html">Chain</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Structure</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Structure</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto/structure.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="structure">
+<span id="id1"></span><h1>Structure<a class="headerlink" href="#structure" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.structure"></span><dl class="class">
+<dt id="rnamake.structure.Structure">
+<em class="property">class </em><code class="descclassname">rnamake.structure.</code><code class="descname">Structure</code><span class="sig-paren">(</span><em>chains=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Stores 3D structure information from a pdb file. Stores all chains,
+residues and atoms objects. Implementation is designed to be extremely
+lightweight and capable of performing fast transformations. to load a PDB
+formated file into a Structure object use
+<a class="reference internal" href="#rnamake.structure.structure_from_pdb" title="rnamake.structure.structure_from_pdb"><code class="xref py py-func docutils literal"><span class="pre">structure_from_pdb()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>chains</strong> (<em>list of chain.Chain objects</em>) &#8211; chains that belong to this structure, optional</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>chains</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of chain.Chain</span></dt>
+<dd>These chain belong to the current structure</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># load structure from pdb formatted file</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">rnamake.unittests.files</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">structure_from_pdb</span><span class="p">(</span><span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">P4P6_PDB_PATH</span><span class="p">)</span>
+
+<span class="c1"># load structure from test instance</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">structure</span><span class="p">()</span>
+
+<span class="c1"># get specific residue</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">106</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">r</span>
+<span class="o">&lt;</span><span class="n">Residue</span><span class="p">(</span><span class="s1">&#39;U106 chain A&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="c1"># get residue using its unique indentifer</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">s</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">Residue</span><span class="p">(</span><span class="s1">&#39;U106 chain A&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">chains</span><span class="p">()</span>
+<span class="p">[</span><span class="o">&lt;</span><span class="n">Chain</span><span class="p">(</span> <span class="n">First</span><span class="p">:</span> <span class="o">&lt;</span><span class="n">Residue</span><span class="p">(</span><span class="s1">&#39;G103 chain A&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+        <span class="n">Last</span><span class="p">:</span>  <span class="o">&lt;</span><span class="n">Residue</span><span class="p">(</span><span class="s1">&#39;C260 chain A&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+        <span class="n">Size</span><span class="p">:</span> <span class="mi">157</span><span class="p">)</span><span class="o">&gt;</span><span class="p">]</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get_beads</span><span class="p">())</span>
+<span class="mi">470</span>
+
+<span class="c1"># exclude beads from first residue. This can be useful if you only</span>
+<span class="c1"># need sterics from a part of the structure</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get_beads</span><span class="p">(</span><span class="n">excluded_res</span><span class="o">=</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">residues</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]))</span>
+<span class="mi">468</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.structure.Structure.atoms">
+<code class="descname">atoms</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.atoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concats all Atom objects from all Residue objects intos a unified
+list to be able to easily iterate through.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of Residue objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.structure.Structure.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a deep copy of this structure</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">copy of Structure object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.structure.Structure" title="rnamake.structure.Structure">Structure</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.structure.Structure.get_beads">
+<code class="descname">get_beads</code><span class="sig-paren">(</span><em>excluded_res=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.get_beads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.get_beads" title="Permalink to this definition">¶</a></dt>
+<dd><p>generates 3-bead model residue beads for all residues in current
+structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>excluded_res</strong> (<em>List of Residue objects</em>) &#8211; List of residue objects whose beads are not to be
+included. This is generally end residues that would instantly clash
+with residues they are being overlayed onto when performing motif
+aligning</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of Bead objects</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># load structure from pdb formatted file</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">rnamake.unittests.files</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">structure_from_pdb</span><span class="p">(</span><span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">P4P6_PDB_PATH</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get_beads</span><span class="p">())</span>
+<span class="mi">470</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">get_beads</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="o">&lt;</span><span class="n">Bead</span><span class="p">(</span><span class="n">btype</span><span class="o">=</span><span class="s1">&#39;SUGAR&#39;</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="s1">&#39;-24.027 -48.5001111111 86.368&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="c1"># exclude beads from first residue. This can be useful if you only</span>
+<span class="c1"># need sterics from a part of the structure</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">get_beads</span><span class="p">(</span><span class="n">excluded_res</span><span class="o">=</span><span class="p">[</span><span class="n">s</span><span class="o">.</span><span class="n">residues</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]))</span>
+<span class="mi">468</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.structure.Structure.get_residue">
+<code class="descname">get_residue</code><span class="sig-paren">(</span><em>num=None</em>, <em>chain_id=None</em>, <em>i_code=None</em>, <em>uuid=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.get_residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.get_residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>find a residue based on residue num, chain_id, insert_code and uuid
+will return an error if more then one residue matches search to avoid
+confusion. Will return None is nothing matches search.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num</strong> (<em>int</em>) &#8211; residue number</li>
+<li><strong>chain_id</strong> (<em>str</em>) &#8211; what chain the residue belongs to</li>
+<li><strong>i_code</strong> (<em>str</em>) &#8211; the insertation code of the residue</li>
+<li><strong>uuid</strong> (<em>uuid</em>) &#8211; the unique indentifier that each residue is given</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Residue object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="residue.html#rnamake.residue.Residue" title="rnamake.residue.Residue">residue.Residue</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># load structure from pdb formatted file</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">rnamake.unittests.files</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">structure_from_pdb</span><span class="p">(</span><span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">files</span><span class="o">.</span><span class="n">P4P6_PDB_PATH</span><span class="p">)</span>
+
+<span class="c1"># get specific residue</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">106</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">r</span>
+<span class="o">&lt;</span><span class="n">Residue</span><span class="p">(</span><span class="s1">&#39;U106 chain A&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="c1"># get residue using its unique indentifer</span>
+<span class="o">&gt;&gt;&gt;</span><span class="n">s</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">r</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">Residue</span><span class="p">(</span><span class="s1">&#39;U106 chain A&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.structure.Structure.move">
+<code class="descname">move</code><span class="sig-paren">(</span><em>p</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.move"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.move" title="Permalink to this definition">¶</a></dt>
+<dd><p>Moves atomic coordinates based on a specified translation. If you do
+not supply and np.array and instead give it a list it will not work!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>p</strong> (<em>numpy.array</em>) &#8211; Amount to 3D space to displace each atom</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="go"># print out original and moved structure of P4-P6 domain</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">structure</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">to_pdb</span><span class="p">(</span><span class="s2">&quot;org.pdb&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">50</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">to_pdb</span><span class="p">(</span><span class="s2">&quot;moved.pdb&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id2">
+<img alt="../_images/move_test.png" src="../_images/move_test.png" />
+<p class="caption"><span class="caption-text">Result of example above, Red original, Blue moved.</span></p>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.structure.Structure.residues">
+<code class="descname">residues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concats all residue objects from all Chain objects intos a unified
+list to be able to easily iterate through.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of Residue objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.structure.Structure.to_pdb">
+<code class="descname">to_pdb</code><span class="sig-paren">(</span><em>fname='structure.pdb'</em>, <em>renumber=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.to_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.to_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>write structure to pdb file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<em>str</em>) &#8211; name of the file of the pdb file you want to write to</li>
+<li><strong>renumber</strong> (<em>int</em>) &#8211; what should the first residue be numbered. -1 is
+to NOT renumber, Default=-1.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.structure.Structure.to_pdb_str">
+<code class="descname">to_pdb_str</code><span class="sig-paren">(</span><em>renumber=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.to_pdb_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.to_pdb_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a PDB string formatted verision of this Structure object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>renumber</strong> (<em>int</em>) &#8211; what should the first residue be numbered. -1 is
+to NOT renumber, Default=-1.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.structure.Structure.to_str">
+<code class="descname">to_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stringifes Structure object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.structure.Structure.transform">
+<code class="descname">transform</code><span class="sig-paren">(</span><em>t</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#Structure.transform"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.Structure.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transforms atomic coordinates based on a rotation and translation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>t</strong> (<em>transform.Transformation</em>) &#8211; Transformation to be performed on atoms</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># load structure from test instance</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">structure</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">rnamake.util</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">atoms</span><span class="p">())</span>
+<span class="n">array</span><span class="p">([</span> <span class="o">-</span><span class="mf">8.49624784</span><span class="p">,</span> <span class="o">-</span><span class="mf">59.88166488</span><span class="p">,</span>  <span class="mf">80.1866473</span> <span class="p">])</span>
+
+<span class="c1"># load indenity transform (no changes)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">t</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">transform_indentity</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">atoms</span><span class="p">())</span>
+<span class="n">array</span><span class="p">([</span> <span class="o">-</span><span class="mf">8.49624784</span><span class="p">,</span> <span class="o">-</span><span class="mf">59.88166488</span><span class="p">,</span>  <span class="mf">80.1866473</span> <span class="p">])</span>
+
+<span class="c1"># load random transform, write pdbs to disk</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">t</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">transform_random</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">to_pdb</span><span class="p">(</span><span class="s2">&quot;org.pdb&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">to_pdb</span><span class="p">(</span><span class="s2">&quot;transformed.pdb&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure align-center" id="id3">
+<img alt="../_images/transform_test.png" src="../_images/transform_test.png" />
+<p class="caption"><span class="caption-text">Result of example above, Red original, Blue transformed.</span></p>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.structure.structure_from_pdb">
+<code class="descclassname">rnamake.structure.</code><code class="descname">structure_from_pdb</code><span class="sig-paren">(</span><em>pdb_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/structure.html#structure_from_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.structure.structure_from_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Processes a PDB formatted into Structure object. Uses pdb_parser module
+to accomplish this.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pdb_path</strong> (<em>str</em>) &#8211; path to PDB formatted file</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Structure object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.structure.Structure" title="rnamake.structure.Structure">Structure</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="basepair.html" class="btn btn-neutral float-right" title="Basepair" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="chain.html" class="btn btn-neutral" title="Chain" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

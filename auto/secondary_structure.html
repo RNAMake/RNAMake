@@ -1,0 +1,1380 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Secondary Structure &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../index.html"/>
+        <link rel="next" title="Atom" href="atom.html"/>
+        <link rel="prev" title="X3dna" href="x3dna.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">Graph</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3dna.html">X3dna</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Secondary Structure</a><ul class="simple">
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motif_type.html">Motif Type</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Secondary Structure</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto/secondary_structure.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="secondary-structure">
+<span id="id1"></span><h1>Secondary Structure<a class="headerlink" href="#secondary-structure" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.secondary_structure"></span><dl class="class">
+<dt id="rnamake.secondary_structure.Basepair">
+<em class="property">class </em><code class="descclassname">rnamake.secondary_structure.</code><code class="descname">Basepair</code><span class="sig-paren">(</span><em>res1</em>, <em>res2</em>, <em>bp_uuid=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Basepair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Basepair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>res1</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue"><em>secondary_structure.Residue</em></a>) &#8211; First residue in basepair</li>
+<li><strong>res2</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue"><em>secondary_structure.Residue</em></a>) &#8211; Second residue in basepair</li>
+<li><strong>bp_uuid</strong> (<em>uuid.uuid1</em>) &#8211; basepair unique indentifier</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>res1</cite> <span class="classifier-delimiter">:</span> <span class="classifier">secondary_structure.Residue</span></dt>
+<dd>First residue in basepair</dd>
+<dt><cite>res2</cite> <span class="classifier-delimiter">:</span> <span class="classifier">secondary_structure.Residue</span></dt>
+<dd>Second residue in basepair</dd>
+<dt><cite>uuid</cite>: uuid.uuid1</dt>
+<dd>unique id to indentify this basepair when locating it in a motif or
+pose</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.secondary_structure.Basepair.name">
+<code class="descname">name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Basepair.name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Basepair.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>get name of basepair: which is the combined name of both residues
+seperated by a &#8220;-&#8221;. The residue with the lower res number should
+come first</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">name of basepair</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># build basepair from stratch</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">rnamake.unittests</span> <span class="kn">import</span> <span class="n">instances</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">b</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="n">secondary_structure_basepair</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">b</span><span class="o">.</span><span class="n">res1</span>
+<span class="o">&lt;</span><span class="n">SecondaryStructureResidue</span><span class="p">(</span><span class="s1">&#39;C10 chain A&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">b</span><span class="o">.</span><span class="n">res2</span>
+<span class="o">&lt;</span><span class="n">SecondaryStructureResidue</span><span class="p">(</span><span class="s1">&#39;G15 chain A&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">b</span><span class="o">.</span><span class="n">name</span><span class="p">()</span>
+<span class="n">A10</span><span class="o">-</span><span class="n">A15</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Basepair.partner">
+<code class="descname">partner</code><span class="sig-paren">(</span><em>r</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Basepair.partner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Basepair.partner" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the other basepairing partner of a residue will throw an error
+if the supplied residue is not contained within this basepair</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>res</strong> (<em>secondary_structure.Residue object</em>) &#8211; the residue that you want to get the partner of</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.secondary_structure.Chain">
+<em class="property">class </em><code class="descclassname">rnamake.secondary_structure.</code><code class="descname">Chain</code><span class="sig-paren">(</span><em>residues=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Chain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>secondary structure chain container. Contains a chain of connected
+residues. Chain should be from 5&#8217; to 3&#8217;.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>residues</strong> (<em>list of Residues.</em>) &#8211; the residues that are to be included in chain. Optional.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>residues</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of Residues</span></dt>
+<dd>Residues contained in current chain</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.secondary_structure.Chain.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Chain.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Chain.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates deep copy of chain instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">copy of chain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Chain" title="rnamake.secondary_structure.Chain">secondary_structure.Chain</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Chain.dot_bracket">
+<code class="descname">dot_bracket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Chain.dot_bracket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Chain.dot_bracket" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the string verision of the secondary structure in
+dot_bracket notation of this chain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string of secondary structure in dot bracket notation of
+chain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rnamake.unittests</span> <span class="kn">import</span> <span class="n">instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="n">secondary_structure_chain</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">dot_bracket</span><span class="p">()</span>
+<span class="go">u&#39;((((((((((((&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Chain.first">
+<code class="descname">first</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Chain.first"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Chain.first" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the first residue in the chain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">5&#8217; end of chain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue">secondary_structure.Residue</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rnamake.unittests</span> <span class="kn">import</span> <span class="n">instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="n">secondary_structure_chain</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G13 chain A&#39;)&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Chain.last">
+<code class="descname">last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Chain.last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Chain.last" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the first residue in the chain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">5&#8217; end of chain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue">secondary_structure.Residue</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rnamake.unittests</span> <span class="kn">import</span> <span class="n">instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="n">secondary_structure_chain</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G24 chain A&#39;)&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Chain.sequence">
+<code class="descname">sequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Chain.sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Chain.sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the string verision of the sequence in this chain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">string of sequence of chain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rnamake.unittests</span> <span class="kn">import</span> <span class="n">instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="n">secondary_structure_chain</span><span class="p">()</span>
+
+<span class="go"># see the residue of each residue in the chain, all Gs</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span> <span class="k">print</span> <span class="n">r</span>
+<span class="gp">...</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G13 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G14 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G15 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G16 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G17 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G18 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G19 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G20 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G21 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G22 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G23 chain A&#39;)&gt;</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G24 chain A&#39;)&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">sequence</span><span class="p">()</span>
+<span class="go">u&#39;GGGGGGGGGGGG&#39;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Chain.to_str">
+<code class="descname">to_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Chain.to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Chain.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>stringify chain object. can be converted back with
+<a class="reference internal" href="#rnamake.secondary_structure.str_to_chain" title="rnamake.secondary_structure.str_to_chain"><code class="xref py py-func docutils literal"><span class="pre">str_to_chain()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">stringifed verision of chain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.secondary_structure.Motif">
+<em class="property">class </em><code class="descclassname">rnamake.secondary_structure.</code><code class="descname">Motif</code><span class="sig-paren">(</span><em>structure=None</em>, <em>basepairs=None</em>, <em>ends=None</em>, <em>name='assembled'</em>, <em>path='assembled'</em>, <em>mtype=99</em>, <em>score=0</em>, <em>end_ids=None</em>, <em>id=None</em>, <em>r_struct=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Motif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Motif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.secondary_structure.RNAStructure" title="rnamake.secondary_structure.RNAStructure"><code class="xref py py-class docutils literal"><span class="pre">rnamake.secondary_structure.RNAStructure</span></code></a></p>
+<p>Complete secondary structure container for representing an RNA Motif.
+Contains both the sequence indentity of each residue with its corresponding
+dot bracket notation symbol but also includes basepair objects to represent
+the pairs between residues. This class parallels the motif.Motif class for
+describing RNA with 3D coordinates.
+Having a parallel class for secondary structure makes it simple to move
+between secondary structure and full atom representations of RNA.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>structure</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Structure" title="rnamake.secondary_structure.Structure"><em>secondary_structure.Structure</em></a>) &#8211; structure containing residue and chain information for
+this RNAStructure instance</li>
+<li><strong>basepairs</strong> (<em>list of secondary_structure.Basepairs</em>) &#8211; basepairs contained in RNAStructure</li>
+<li><strong>ends</strong> (<em>list of secondary_structure.Basepairs</em>) &#8211; the basepairs at the end of chains. These define connection
+points to other Motifs</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of Motif</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; location of where Motif originated from, this is just
+a place holder for converting from motif.Motif</li>
+<li><strong>mtype</strong> (<a class="reference internal" href="motif_type.html#module-rnamake.motif_type" title="rnamake.motif_type"><em>motif_type</em></a>) &#8211; motif_type enum value, to indentify what type of motif this
+is</li>
+<li><strong>score</strong> (<em>float</em>) &#8211; the score generated by motif_scorer.MotifScorer</li>
+<li><strong>end_ids</strong> (<em>list of strs</em>) &#8211; strings indenifying the secondary structure and sequence
+in the perspective of a given basepair end see
+<a class="reference internal" href="#rnamake.secondary_structure.assign_end_id_new" title="rnamake.secondary_structure.assign_end_id_new"><code class="xref py py-func docutils literal"><span class="pre">assign_end_id_new()</span></code></a></li>
+<li><strong>id</strong> (<em>uuid.uuid1</em>) &#8211; unique indentifer for motif</li>
+<li><strong>r_struct</strong> &#8211; an RNAStructure instance to setup from</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>structure</cite>: secondary_structure.Structure</dt>
+<dd>structure containing residue and chain information for
+this Motif instance</dd>
+<dt><cite>basepairs</cite>: list of secondary_structure.Basepairs</dt>
+<dd>Basepairs between residues</dd>
+<dt><cite>ends</cite>: list of secondary_structure.Basepairs</dt>
+<dd>Basepair ends where RNA structures can be connected</dd>
+<dt><cite>name</cite>: str</dt>
+<dd>the name of the Motif</dd>
+<dt><cite>path</cite>: str</dt>
+<dd>location of where Motif originated from, this is just
+a place holder for converting from motif.Motif</dd>
+<dt><cite>score</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>the score generated by motif_scorer.MotifScorer, estimates secondary
+structure stability</dd>
+<dt><cite>end_ids</cite>: list of strs</dt>
+<dd>strings indenifying the secondary structure and sequence
+in the perspective of a given basepair end see
+<a class="reference internal" href="#rnamake.secondary_structure.assign_end_id_new" title="rnamake.secondary_structure.assign_end_id_new"><code class="xref py py-func docutils literal"><span class="pre">assign_end_id_new()</span></code></a></dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.chains">
+<code class="descname">chains</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Motif.chains" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <code class="xref py py-func docutils literal"><span class="pre">Structure.chains()</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Motif.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Motif.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a deep copy of Motif instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">deep copy of instance</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Motif" title="rnamake.secondary_structure.Motif">secondary_structure.Motif</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.copy_w_res">
+<code class="descname">copy_w_res</code><span class="sig-paren">(</span><em>res</em>, <em>bps</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Motif.copy_w_res"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Motif.copy_w_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a deep copy of Motif instance replacing residues and basepairs
+that were already created. This is used when a pose is being copied to
+make sure there are duplicate copies of residues and basepairs.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>res</strong> (<em>list of secondary_structure.Residues</em>) &#8211; list of residues that were already copied</li>
+<li><strong>bps</strong> (<em>list of secondary_structure.Basepairs</em>) &#8211; list of basepairs that were already copied</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">deep copy of instance</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#rnamake.secondary_structure.Motif" title="rnamake.secondary_structure.Motif">secondary_structure.Motif</a></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.dot_bracket">
+<code class="descname">dot_bracket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Motif.dot_bracket" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.dot_bracket" title="rnamake.secondary_structure.Structure.dot_bracket"><code class="xref py py-func docutils literal"><span class="pre">Structure.dot_bracket()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.get_basepair">
+<code class="descname">get_basepair</code><span class="sig-paren">(</span><em>res1=None</em>, <em>res2=None</em>, <em>uuid=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Motif.get_basepair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a specific basepair based on many possible parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>res1</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue"><em>secondary_structure.Residue</em></a>) &#8211; first residue to be included in basepair</li>
+<li><strong>res2</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue"><em>secondary_structure.Residue</em></a>) &#8211; second residue to be included in basepair
+if both res1 and res2 are specified the basepair must be a pair
+between these two.</li>
+<li><strong>uuid</strong> (<em>uuid.uuid1</em>) &#8211; basepair unique indentifier</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of basepair, from function Basepair.name()</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.get_residue">
+<code class="descname">get_residue</code><span class="sig-paren">(</span><em>num=None</em>, <em>chain_id=None</em>, <em>i_code=None</em>, <em>uuid=None</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Motif.get_residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.get_residue" title="rnamake.secondary_structure.Structure.get_residue"><code class="xref py py-func docutils literal"><span class="pre">Structure.get_residue()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.replace_sequence">
+<code class="descname">replace_sequence</code><span class="sig-paren">(</span><em>seq</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Motif.replace_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>changes the sequence of structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seq</strong> (<em>str</em>) &#8211; the new sequence of structure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.residues">
+<code class="descname">residues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Motif.residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.residues" title="rnamake.secondary_structure.Structure.residues"><code class="xref py py-func docutils literal"><span class="pre">Structure.residues()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.sequence">
+<code class="descname">sequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Motif.sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.sequence" title="rnamake.secondary_structure.Structure.sequence"><code class="xref py py-func docutils literal"><span class="pre">Structure.sequence()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Motif.to_str">
+<code class="descname">to_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Motif.to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Motif.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a stringified verision of this instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">stringified verision of instance</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.secondary_structure.Pose">
+<em class="property">class </em><code class="descclassname">rnamake.secondary_structure.</code><code class="descname">Pose</code><span class="sig-paren">(</span><em>structure=None</em>, <em>basepairs=None</em>, <em>ends=None</em>, <em>name='assembled'</em>, <em>path='assembled'</em>, <em>score=0</em>, <em>end_ids=None</em>, <em>r_struct=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Pose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Pose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.secondary_structure.RNAStructure" title="rnamake.secondary_structure.RNAStructure"><code class="xref py py-class docutils literal"><span class="pre">rnamake.secondary_structure.RNAStructure</span></code></a></p>
+<p>Complete secondary structure container for representing an RNA Pose.
+Contains both the sequence indentity of each residue with its corresponding
+dot bracket notation symbol but also includes basepair objects to represent
+the pairs between residues. This class parallels the pose.Pose class for
+describing RNA with 3D coordinates.
+Having a parallel class for secondary structure makes it simple to move
+between secondary structure and full atom representations of RNA.
+A pose is a composite structure containing more then one motif.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>structure</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Structure" title="rnamake.secondary_structure.Structure"><em>secondary_structure.Structure</em></a>) &#8211; structure containing residue and chain information for
+this RNAStructure instance</li>
+<li><strong>basepairs</strong> (<em>list of secondary_structure.Basepairs</em>) &#8211; basepairs contained in RNAStructure</li>
+<li><strong>ends</strong> (<em>list of secondary_structure.Basepairs</em>) &#8211; the basepairs at the end of chains. These define connection
+points to other Motifs</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of Motif</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; location of where Pose originated from, this is just
+a place holder for converting from pose.Pose</li>
+<li><strong>score</strong> (<em>float</em>) &#8211; the score generated by motif_scorer.MotifScorer</li>
+<li><strong>end_ids</strong> (<em>list of strs</em>) &#8211; strings indenifying the secondary structure and sequence
+in the perspective of a given basepair end see
+<a class="reference internal" href="#rnamake.secondary_structure.assign_end_id_new" title="rnamake.secondary_structure.assign_end_id_new"><code class="xref py py-func docutils literal"><span class="pre">assign_end_id_new()</span></code></a></li>
+<li><strong>id</strong> (<em>uuid.uuid1</em>) &#8211; unique indentifer for motif</li>
+<li><strong>r_struct</strong> &#8211; an RNAStructure instance to setup from</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>structure</cite>: secondary_structure.Structure</dt>
+<dd>structure containing residue and chain information for
+this Motif instance</dd>
+<dt><cite>basepairs</cite>: list of secondary_structure.Basepairs</dt>
+<dd>Basepairs between residues</dd>
+<dt><cite>ends</cite>: list of secondary_structure.Basepairs</dt>
+<dd>Basepair ends where RNA structures can be connected</dd>
+<dt><cite>name</cite>: str</dt>
+<dd>the name of the Pose</dd>
+<dt><cite>path</cite>: str</dt>
+<dd>location of where Pose originated from, this is just
+a place holder for converting from pose.Pose</dd>
+<dt><cite>score</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>the score generated by motif_scorer.MotifScorer, estimates secondary
+structure stability</dd>
+<dt><cite>end_ids</cite>: list of strs</dt>
+<dd>strings indenifying the secondary structure and sequence
+in the perspective of a given basepair end see
+<a class="reference internal" href="#rnamake.secondary_structure.assign_end_id_new" title="rnamake.secondary_structure.assign_end_id_new"><code class="xref py py-func docutils literal"><span class="pre">assign_end_id_new()</span></code></a></dd>
+<dt><cite>motifs</cite>: list of secondary_structure.Motifs</dt>
+<dd>all motifs that are contained in this Pose, excluding helices which
+need to be built and are stored in helices. Instead motifs stores all
+basepair steps as seperate motifs</dd>
+<dt><cite>helices</cite>: list of secondary_structure.Motifs</dt>
+<dd>helical motifs that are more then 2 basepairs. needs to be build with
+<a class="reference internal" href="#rnamake.secondary_structure.Pose.build_helices" title="rnamake.secondary_structure.Pose.build_helices"><code class="xref py py-func docutils literal"><span class="pre">Pose.build_helices()</span></code></a></dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.build_helices">
+<code class="descname">build_helices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Pose.build_helices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Pose.build_helices" title="Permalink to this definition">¶</a></dt>
+<dd><p>finds all basepair step motifs and builds helices from them. This is
+only required for external applications such as rosetta. helices get
+stored in member variable helices.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.chains">
+<code class="descname">chains</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Pose.chains" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <code class="xref py py-func docutils literal"><span class="pre">Structure.chains()</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Pose.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Pose.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a deep copy of instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">deep copy</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Pose" title="rnamake.secondary_structure.Pose">secondary_structure.Pose</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.dot_bracket">
+<code class="descname">dot_bracket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Pose.dot_bracket" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.dot_bracket" title="rnamake.secondary_structure.Structure.dot_bracket"><code class="xref py py-func docutils literal"><span class="pre">Structure.dot_bracket()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.get_basepair">
+<code class="descname">get_basepair</code><span class="sig-paren">(</span><em>res1=None</em>, <em>res2=None</em>, <em>uuid=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Pose.get_basepair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a specific basepair based on many possible parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>res1</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue"><em>secondary_structure.Residue</em></a>) &#8211; first residue to be included in basepair</li>
+<li><strong>res2</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue"><em>secondary_structure.Residue</em></a>) &#8211; second residue to be included in basepair
+if both res1 and res2 are specified the basepair must be a pair
+between these two.</li>
+<li><strong>uuid</strong> (<em>uuid.uuid1</em>) &#8211; basepair unique indentifier</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of basepair, from function Basepair.name()</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.get_residue">
+<code class="descname">get_residue</code><span class="sig-paren">(</span><em>num=None</em>, <em>chain_id=None</em>, <em>i_code=None</em>, <em>uuid=None</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Pose.get_residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.get_residue" title="rnamake.secondary_structure.Structure.get_residue"><code class="xref py py-func docutils literal"><span class="pre">Structure.get_residue()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.motif">
+<code class="descname">motif</code><span class="sig-paren">(</span><em>m_id</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Pose.motif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Pose.motif" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets a motif by its unique indentifer</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>m_id</strong> (<em>uuid.uuid1</em>) &#8211; motifs unique indentifier, Motif.id</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">motif matching to its unique indentifier</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Motif" title="rnamake.secondary_structure.Motif">secondary_structure.Motif</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.replace_sequence">
+<code class="descname">replace_sequence</code><span class="sig-paren">(</span><em>seq</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Pose.replace_sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Pose.replace_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>changes the sequence of structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seq</strong> (<em>str</em>) &#8211; the new sequence of structure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.residues">
+<code class="descname">residues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Pose.residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.residues" title="rnamake.secondary_structure.Structure.residues"><code class="xref py py-func docutils literal"><span class="pre">Structure.residues()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.sequence">
+<code class="descname">sequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.secondary_structure.Pose.sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.sequence" title="rnamake.secondary_structure.Structure.sequence"><code class="xref py py-func docutils literal"><span class="pre">Structure.sequence()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Pose.to_str">
+<code class="descname">to_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Pose.to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Pose.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>generates a stringified verision of this instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">stringified verision of pose</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.secondary_structure.RNAStructure">
+<em class="property">class </em><code class="descclassname">rnamake.secondary_structure.</code><code class="descname">RNAStructure</code><span class="sig-paren">(</span><em>structure=None</em>, <em>basepairs=None</em>, <em>ends=None</em>, <em>name='assembled'</em>, <em>path='assembled'</em>, <em>score=0</em>, <em>end_ids=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#RNAStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.RNAStructure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Complete secondary structure container for representing a RNA. Contains
+both the sequence indentity of each residue with its corresponding dot
+bracket notation symbol but also includes basepair objects to represent the
+pairs between residues. This class parallels the
+rna_structure.RNAStructure class for describing RNA with 3D coordinates.
+Having a parallel class for secondary structure makes it simple to move
+between secondary structure and full atom representations of RNA.
+RNAStructure is rarely called directly but serves as an abstract class
+for both Motif and Pose so for example use please see those classes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>structure</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Structure" title="rnamake.secondary_structure.Structure"><em>secondary_structure.Structure</em></a>) &#8211; structure containing residue and chain information for
+this RNAStructure instance</li>
+<li><strong>basepairs</strong> (<em>list of secondary_structure.Basepairs</em>) &#8211; basepairs contained in RNAStructure</li>
+<li><strong>ends</strong> (<em>list of secondary_structure.Basepairs</em>) &#8211; the basepairs at the end of chains. These define connection
+points to other RNAStructures</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of RNAStructure</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; location of where RNAStructure originated from, this is just
+a place holder for converting from rna_structure.RNAStructure</li>
+<li><strong>score</strong> (<em>float</em>) &#8211; the score generated by motif_scorer.MotifScorer</li>
+<li><strong>end_ids</strong> (<em>list of strs</em>) &#8211; strings indenifying the secondary structure and sequence
+in the perspective of a given basepair end see
+<a class="reference internal" href="#rnamake.secondary_structure.assign_end_id_new" title="rnamake.secondary_structure.assign_end_id_new"><code class="xref py py-func docutils literal"><span class="pre">assign_end_id_new()</span></code></a></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>structure</cite>: secondary_structure.Structure</dt>
+<dd>structure containing residue and chain information for
+this RNAStructure instance</dd>
+<dt><cite>basepairs</cite>: list of secondary_structure.Basepairs</dt>
+<dd>Basepairs between residues</dd>
+<dt><cite>ends</cite>: list of secondary_structure.Basepairs</dt>
+<dd>Basepair ends where RNA structures can be connected</dd>
+<dt><cite>name</cite>: str</dt>
+<dd>the name of the RNAStructure</dd>
+<dt><cite>path</cite>: str</dt>
+<dd>location of where RNAStructure originated from, this is just
+a place holder for converting from rna_structure.RNAStructure</dd>
+<dt><cite>score</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>the score generated by motif_scorer.MotifScorer, estimates secondary
+structure stability</dd>
+<dt><cite>end_ids</cite>: list of strs</dt>
+<dd>strings indenifying the secondary structure and sequence
+in the perspective of a given basepair end see
+<a class="reference internal" href="#rnamake.secondary_structure.assign_end_id_new" title="rnamake.secondary_structure.assign_end_id_new"><code class="xref py py-func docutils literal"><span class="pre">assign_end_id_new()</span></code></a></dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.secondary_structure.RNAStructure.chains">
+<code class="descname">chains</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#RNAStructure.chains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.RNAStructure.chains" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <code class="xref py py-func docutils literal"><span class="pre">Structure.chains()</span></code></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.RNAStructure.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#RNAStructure.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.RNAStructure.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates deep copy of RNAStructure instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">copy of instance</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.RNAStructure" title="rnamake.secondary_structure.RNAStructure">RNAStructure</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.RNAStructure.dot_bracket">
+<code class="descname">dot_bracket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#RNAStructure.dot_bracket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.RNAStructure.dot_bracket" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.dot_bracket" title="rnamake.secondary_structure.Structure.dot_bracket"><code class="xref py py-func docutils literal"><span class="pre">Structure.dot_bracket()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.RNAStructure.get_basepair">
+<code class="descname">get_basepair</code><span class="sig-paren">(</span><em>res1=None</em>, <em>res2=None</em>, <em>uuid=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#RNAStructure.get_basepair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.RNAStructure.get_basepair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds a specific basepair based on many possible parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>res1</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue"><em>secondary_structure.Residue</em></a>) &#8211; first residue to be included in basepair</li>
+<li><strong>res2</strong> (<a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue"><em>secondary_structure.Residue</em></a>) &#8211; second residue to be included in basepair
+if both res1 and res2 are specified the basepair must be a pair
+between these two.</li>
+<li><strong>uuid</strong> (<em>uuid.uuid1</em>) &#8211; basepair unique indentifier</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of basepair, from function Basepair.name()</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.RNAStructure.get_residue">
+<code class="descname">get_residue</code><span class="sig-paren">(</span><em>num=None</em>, <em>chain_id=None</em>, <em>i_code=None</em>, <em>uuid=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#RNAStructure.get_residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.RNAStructure.get_residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.get_residue" title="rnamake.secondary_structure.Structure.get_residue"><code class="xref py py-func docutils literal"><span class="pre">Structure.get_residue()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.RNAStructure.replace_sequence">
+<code class="descname">replace_sequence</code><span class="sig-paren">(</span><em>seq</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#RNAStructure.replace_sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.RNAStructure.replace_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>changes the sequence of structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>seq</strong> (<em>str</em>) &#8211; the new sequence of structure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.RNAStructure.residues">
+<code class="descname">residues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#RNAStructure.residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.RNAStructure.residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.residues" title="rnamake.secondary_structure.Structure.residues"><code class="xref py py-func docutils literal"><span class="pre">Structure.residues()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.RNAStructure.sequence">
+<code class="descname">sequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#RNAStructure.sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.RNAStructure.sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="#rnamake.secondary_structure.Structure.sequence" title="rnamake.secondary_structure.Structure.sequence"><code class="xref py py-func docutils literal"><span class="pre">Structure.sequence()</span></code></a></p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.secondary_structure.Residue">
+<em class="property">class </em><code class="descclassname">rnamake.secondary_structure.</code><code class="descname">Residue</code><span class="sig-paren">(</span><em>name</em>, <em>dot_bracket</em>, <em>num</em>, <em>chain_id</em>, <em>uuid</em>, <em>i_code=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>An extremely stripped down container object for use for keeping track of
+secondary structure using dot bracket notation. Dot bracket notation is
+represented by a string of equal length of a sequence, example:</p>
+<p>sequence:    &#8216;GCAAAACG&#8217;</p>
+<p>dot bracket: &#8216;((....))&#8217;</p>
+<p>&#8216;(&#8216; represent the 5&#8217; end of a basepair, &#8216;)&#8217; the 3&#8217; end of the same base
+pair. Thus there should be an equal number of &#8216;(&#8216; and &#8216;)&#8217; symbols. &#8216;.&#8217;
+represents an unpaired residue.</p>
+<p>This class along with others in this module are generally
+not instatinated outside RNAStructure,  Motif  and Pose.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>name</strong> (<em>str</em>) &#8211; name of residue, etc A, G, C, U</li>
+<li><strong>dot_bracket</strong> (<em>str</em>) &#8211; dot bracket notation for secondary structure either &#8216;(&#8216;, &#8216;.&#8217;, &#8216;)&#8217;</li>
+<li><strong>num</strong> (<em>int</em>) &#8211; number of residue</li>
+<li><strong>chain_id</strong> (<em>str</em>) &#8211; chain id of residue, etc &#8220;A&#8221; or &#8220;B&#8221;</li>
+<li><strong>uuid</strong> (<em>uuid.uuid1</em>) &#8211; residue unique indentifier</li>
+<li><strong>i_code</strong> (<em>str</em>) &#8211; residue insertaion code, usually &#8220;&#8221;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>name</cite>: str</dt>
+<dd>name of residue, etc A, G, C, U</dd>
+<dt><cite>dot_bracket</cite>: str</dt>
+<dd>dot bracket notation for secondary structure either &#8216;(&#8216;, &#8216;.&#8217;, &#8216;)&#8217;</dd>
+<dt><cite>num</cite>: int</dt>
+<dd>number of residue</dd>
+<dt><cite>chain_id</cite>: str</dt>
+<dd>chain id of residue, etc &#8220;A&#8221; or &#8220;B&#8221;</dd>
+<dt><cite>uuid</cite>: uuid.uuid1</dt>
+<dd>residue unique indentifier</dd>
+<dt><cite>i_code</cite>: str</dt>
+<dd>residue insertaion code, usually &#8220;&#8221;</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># create a new residue</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">Residue</span><span class="p">(</span><span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="s2">&quot;(&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.secondary_structure.Residue.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Residue.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Residue.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates copy of current residue</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">copy of instatnce</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue">secondary_structure.Residue</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Residue.to_str">
+<code class="descname">to_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Residue.to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Residue.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>stringify residue object. can be converted back with
+<a class="reference internal" href="#rnamake.secondary_structure.str_to_residue" title="rnamake.secondary_structure.str_to_residue"><code class="xref py py-func docutils literal"><span class="pre">str_to_residue()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">stringifed verision of residue</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.secondary_structure.Structure">
+<em class="property">class </em><code class="descclassname">rnamake.secondary_structure.</code><code class="descname">Structure</code><span class="sig-paren">(</span><em>chains=None</em>, <em>sequence=''</em>, <em>dot_bracket=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>lightweight container class for storing secondary structure information
+for an entire RNA.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chains</strong> (<em>list of secondary_structure.Chains</em>) &#8211; secondary_structure.Chains that belong to this structure,
+this is done when a structure is being built from an existing 3D
+structure.Structure instance</li>
+<li><strong>sequence</strong> (<em>str</em>) &#8211; sequence of RNA of interest, e.g. &#8220;AAAGGGCCC&#8221;,</li>
+<li><strong>dot_bracket</strong> (<em>str</em>) &#8211; dot bracket notation of the secondary structure of
+RNA of interes, e.g. &#8220;(((())))&#8221;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>chains</cite>: list of secondary_structure.Chains</dt>
+<dd>the chains of RNA residues in this structure</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># create a new structure</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">rnamake</span> <span class="kn">import</span> <span class="n">secondary_structure</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span> <span class="o">=</span> <span class="n">secondary_structure</span><span class="o">.</span><span class="n">Structure</span><span class="p">(</span><span class="n">sequence</span><span class="o">=</span><span class="s2">&quot;GCGAAAACGC&quot;</span><span class="p">,</span>
+                                      <span class="n">dot_bracket</span><span class="o">=</span><span class="s2">&quot;(((....)))&quot;</span><span class="p">)</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">sequence</span><span class="p">()</span>
+<span class="n">GCGAAAACGC</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">s</span><span class="o">.</span><span class="n">dot_bracket</span><span class="p">()</span>
+<span class="p">(((</span><span class="o">....</span><span class="p">)))</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">s</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">SecondaryStructureResidue</span><span class="p">(</span><span class="s1">&#39;G1 chain A&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.secondary_structure.Structure.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Structure.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Structure.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a deep copy of structure instance</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">copy of structure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Structure" title="rnamake.secondary_structure.Structure">secondary_structure.Structure</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Structure.dot_bracket">
+<code class="descname">dot_bracket</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Structure.dot_bracket"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Structure.dot_bracket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concats the secondary structure in the form of dot bracket notation
+of each Chain into one sequence for the entire RNA</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">sequence of structure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">seq</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Structure.get_residue">
+<code class="descname">get_residue</code><span class="sig-paren">(</span><em>num=None</em>, <em>chain_id=None</em>, <em>i_code=None</em>, <em>uuid=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Structure.get_residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Structure.get_residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>find a residue based on residue num, chain_id, insert_code and uuid
+will return an error if more then one residue matches search to avoid
+confusion. Will return None is nothing matches search.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>num</strong> (<em>int</em>) &#8211; residue number</li>
+<li><strong>chain_id</strong> (<em>str</em>) &#8211; what chain the residue belongs to</li>
+<li><strong>i_code</strong> (<em>str</em>) &#8211; the insertation code of the residue</li>
+<li><strong>uuid</strong> (<em>uuid</em>) &#8211; the unique indentifier that each residue is given</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Residue object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="residue.html#rnamake.residue.Residue" title="rnamake.residue.Residue">residue.Residue</a></p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rnamake</span> <span class="kn">import</span> <span class="n">secondary_structure</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span> <span class="o">=</span> <span class="n">secondary_structure</span><span class="o">.</span><span class="n">Structure</span><span class="p">(</span><span class="n">sequence</span><span class="o">=</span><span class="s2">&quot;GCGAAAACGC&quot;</span><span class="p">,</span>
+<span class="go">                                      dot_bracket=&quot;(((....)))&quot;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">s</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">num</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="go">&lt;SecondaryStructureResidue(&#39;G1 chain A&#39;)&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Structure.residues">
+<code class="descname">residues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Structure.residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Structure.residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concats all residue objects from all Chain objects intos a unified
+list to be able to easily iterate through.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of secondary_structure.Residue objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Structure.sequence">
+<code class="descname">sequence</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Structure.sequence"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Structure.sequence" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concats the sequence of each Chain into one sequence for the entire
+RNA</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">sequence of structure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">seq</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.secondary_structure.Structure.to_str">
+<code class="descname">to_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#Structure.to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.Structure.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>generates a stringified verision of this instance.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">stringified verision of structure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.secondary_structure.assign_end_id_new">
+<code class="descclassname">rnamake.secondary_structure.</code><code class="descname">assign_end_id_new</code><span class="sig-paren">(</span><em>ss</em>, <em>end</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#assign_end_id_new"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.assign_end_id_new" title="Permalink to this definition">¶</a></dt>
+<dd><p>generate a new end_id based on the secondary structure instance in the
+perspective of the supplied end. An end id is a composition of both the
+sequence and secondary structure in a single string.</p>
+<p>Two GC pairs in a row would be: GG_LL_CC_RR. Sequence followed by secondary
+structure with L being left bracket, R being right bracket and U being dot.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ss</strong> &#8211; secondary structure instance either RNAStructure,Motif or Pose</li>
+<li><strong>end</strong> &#8211; secondary structure basepair that you want the end id to be in</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.secondary_structure.str_to_chain">
+<code class="descclassname">rnamake.secondary_structure.</code><code class="descname">str_to_chain</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#str_to_chain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.str_to_chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts a chain from string generated from <a class="reference internal" href="#rnamake.secondary_structure.Chain.to_str" title="rnamake.secondary_structure.Chain.to_str"><code class="xref py py-func docutils literal"><span class="pre">Chain.to_str()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) &#8211; string created by Chain.to_str()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">chain from str</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Chain" title="rnamake.secondary_structure.Chain">secondary_structure.Chain</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.secondary_structure.str_to_motif">
+<code class="descclassname">rnamake.secondary_structure.</code><code class="descname">str_to_motif</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#str_to_motif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.str_to_motif" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts a motif from string generated from <a class="reference internal" href="#rnamake.secondary_structure.Motif.to_str" title="rnamake.secondary_structure.Motif.to_str"><code class="xref py py-func docutils literal"><span class="pre">Motif.to_str()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) &#8211; string created by Motif.to_str()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">motif from str</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Motif" title="rnamake.secondary_structure.Motif">secondary_structure.Motif</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.secondary_structure.str_to_pose">
+<code class="descclassname">rnamake.secondary_structure.</code><code class="descname">str_to_pose</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#str_to_pose"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.str_to_pose" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts a pose from string generated from <a class="reference internal" href="#rnamake.secondary_structure.Pose.to_str" title="rnamake.secondary_structure.Pose.to_str"><code class="xref py py-func docutils literal"><span class="pre">Pose.to_str()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) &#8211; string created by Pose.to_str()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">pose from str</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Pose" title="rnamake.secondary_structure.Pose">secondary_structure.Pose</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.secondary_structure.str_to_residue">
+<code class="descclassname">rnamake.secondary_structure.</code><code class="descname">str_to_residue</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#str_to_residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.str_to_residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts a residue from string generated from <a class="reference internal" href="#rnamake.secondary_structure.Residue.to_str" title="rnamake.secondary_structure.Residue.to_str"><code class="xref py py-func docutils literal"><span class="pre">Residue.to_str()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) &#8211; string created by Residue.to_str()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">chain from str</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Residue" title="rnamake.secondary_structure.Residue">secondary_structure.Residue</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.secondary_structure.str_to_structure">
+<code class="descclassname">rnamake.secondary_structure.</code><code class="descname">str_to_structure</code><span class="sig-paren">(</span><em>s</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/secondary_structure.html#str_to_structure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.secondary_structure.str_to_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>converts a structure from string generated from <a class="reference internal" href="#rnamake.secondary_structure.Structure.to_str" title="rnamake.secondary_structure.Structure.to_str"><code class="xref py py-func docutils literal"><span class="pre">Structure.to_str()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>s</strong> (<em>str</em>) &#8211; string created by Structure.to_str()</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">structure from str</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.secondary_structure.Structure" title="rnamake.secondary_structure.Structure">secondary_structure.Structure</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="atom.html" class="btn btn-neutral float-right" title="Atom" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="x3dna.html" class="btn btn-neutral" title="X3dna" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

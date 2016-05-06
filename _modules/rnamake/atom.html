@@ -1,0 +1,323 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.atom &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.atom</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.atom</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">basic_io</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+
+<div class="viewcode-block" id="Atom"><a class="viewcode-back" href="../../auto/atom.html#rnamake.atom.Atom">[docs]</a><span class="k">class</span> <span class="nc">Atom</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stores atomic information from pdb file, design is to be extremely</span>
+<span class="sd">    lightweight only storing the atom name and coordinates.</span>
+
+<span class="sd">    :param name: name of atom</span>
+<span class="sd">    :param coords: 3d coordinates of atom&#39;s position</span>
+
+<span class="sd">    :type name: str</span>
+<span class="sd">    :type coords: numpy.array</span>
+
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `name` : str</span>
+<span class="sd">        Atomic name</span>
+<span class="sd">    `coords` : np.array</span>
+<span class="sd">        Atomic coordinates</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt; a = Atom(&quot;P&quot;,[1.0,2.0,3.0])</span>
+<span class="sd">        &gt;&gt;&gt; a.name</span>
+<span class="sd">        P</span>
+
+<span class="sd">        &gt;&gt;&gt; a.coords</span>
+<span class="sd">        [1.0 2.0 3.0]</span>
+
+<span class="sd">        &gt;&gt;&gt; print a</span>
+<span class="sd">        &lt;Atom(name =&#39;P&#39;, coords=&#39;1.0 2.0 3.0&#39;)&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;coords&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">coords</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns new atom.Atom object&quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">coords</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="n">coords</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns string representation of object&quot;&quot;&quot;</span>
+
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">point_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Atom(name=&#39;</span><span class="si">%s</span><span class="s2">&#39;, coords=&#39;</span><span class="si">%s</span><span class="s2">&#39;)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Atom.copy"><a class="viewcode-back" href="../../auto/atom.html#rnamake.atom.Atom.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deep copies the current atom instance.</span>
+
+<span class="sd">        :returns: an Atom object</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; a = Atom(&quot;P&quot;,[1.0,2.0,3.0])</span>
+<span class="sd">            &gt;&gt;&gt; a_copy = a.copy()</span>
+<span class="sd">            &gt;&gt;&gt; print a_copy.name</span>
+<span class="sd">            P</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Atom</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Atom.to_str"><a class="viewcode-back" href="../../auto/atom.html#rnamake.atom.Atom.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;returns string version of atom.</span>
+
+<span class="sd">        :returns: str</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; atom = atom.Atom(&quot;H1&quot;, np.array([0, 1, 2]))</span>
+<span class="sd">            &gt;&gt;&gt; string = atom.to_str()</span>
+<span class="sd">            &quot;H1 0.0 1.0 2.0&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">point_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Atom.to_pdb_str"><a class="viewcode-back" href="../../auto/atom.html#rnamake.atom.Atom.to_pdb_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_pdb_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acount</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        prints the current atom to a pdb string</span>
+
+<span class="sd">        :param acount: the atom number of the atom in pdb file</span>
+<span class="sd">        :type acount: int</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; a = Atom(&quot;P&quot;,[1.0,2.0,3.0])</span>
+<span class="sd">            &gt;&gt;&gt; a.to_pdb_str()</span>
+<span class="sd">            ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P</span>
+
+<span class="sd">            &gt;&gt;&gt; a.to_pdb_str(10)</span>
+<span class="sd">            ATOM     10  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;ATOM {:6d}  P   C   A   1 {:11.3f}{:8.3f}{:8.3f}  1.00 62.18           P</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">acount</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">s</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

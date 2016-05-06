@@ -1,0 +1,337 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.pdb_parser &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.pdb_parser</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.pdb_parser</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">atom</span>
+<span class="kn">import</span> <span class="nn">residue</span>
+<span class="kn">import</span> <span class="nn">residue_type</span>
+<span class="kn">import</span> <span class="nn">exceptions</span>
+<span class="kn">import</span> <span class="nn">user_warnings</span>
+
+<div class="viewcode-block" id="parse"><a class="viewcode-back" href="../../auto/pdb_parser.html#rnamake.pdb_parser.parse">[docs]</a><span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">pdb_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    very minimalistc pdb parser, currently does not support multiple MODELS</span>
+<span class="sd">    in NMR structures but works well for what I need at the moment will be</span>
+<span class="sd">    expanded in future versions. Currently returns an array of Residue object</span>
+<span class="sd">    this is because it will mostly be called in in Structure object. Also does</span>
+<span class="sd">    not parse specified connectivity in CONECT statements. If one is interested</span>
+<span class="sd">    in parsing into a Structure object, please use structure_from_pdb in the</span>
+<span class="sd">    structure module.</span>
+
+<span class="sd">    :param pdb_file: The path to the PDB formatted file you wish to parse</span>
+<span class="sd">    :type pdb_file: str</span>
+
+<span class="sd">    :return: List of residue.Residue objects</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt;import rnamake.unittests.files</span>
+<span class="sd">        &gt;&gt;&gt;residues = parse(rnamake.unittests.files.P4P6_PDB_PATH)</span>
+<span class="sd">        &gt;&gt;&gt;len(residues)</span>
+<span class="sd">        157</span>
+
+<span class="sd">        #Not yet sorted into chains, residue 106 is the first in this chain</span>
+<span class="sd">        &gt;&gt;&gt;residues[0]</span>
+<span class="sd">        &lt;Residue(&#39;G250 chain A&#39;)&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">pdb_file</span><span class="p">)</span>
+        <span class="n">lines</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="k">except</span> <span class="ne">IOError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">PDBParserException</span><span class="p">(</span><span class="s2">&quot;cannot parse pdb file: &quot;</span> <span class="o">+</span>
+                                            <span class="n">pdb_file</span> <span class="o">+</span> <span class="s2">&quot; as it does not exist&quot;</span><span class="p">)</span>
+
+    <span class="n">coordinates</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">atomnames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">resnames</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">resnums</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">chainids</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">icodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">line_num</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lines</span><span class="p">):</span>
+        <span class="n">startswith</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">6</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">startswith</span> <span class="o">==</span> <span class="s1">&#39;ATOM  &#39;</span> <span class="ow">or</span> <span class="n">startswith</span> <span class="o">==</span> <span class="s1">&#39;HETATM&#39;</span><span class="p">:</span>
+            <span class="n">atomname</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">12</span><span class="p">:</span><span class="mi">16</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">resname</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">17</span><span class="p">:</span><span class="mi">21</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">chid</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">21</span><span class="p">]</span>
+            <span class="n">alt</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">coords</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">30</span><span class="p">:</span><span class="mi">38</span><span class="p">]),</span>
+                          <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">38</span><span class="p">:</span><span class="mi">46</span><span class="p">]),</span>
+                          <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">46</span><span class="p">:</span><span class="mi">54</span><span class="p">])]</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">PDBParserError</span><span class="p">(</span><span class="s1">&#39;invalid or missing coordinate(s) at &#39;</span>
+                                                <span class="s1">&#39;line {0}.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">line</span><span class="p">))</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">atomname</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">user_warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;line &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">line_num</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: no atomname detected&quot;</span><span class="p">,</span>
+                                   <span class="n">user_warnings</span><span class="o">.</span><span class="n">PDBFormatWarning</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">resname</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">user_warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;line &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">line_num</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;: no resname detected&quot;</span><span class="p">,</span>
+                                   <span class="n">user_warnings</span><span class="o">.</span><span class="n">PDBFormatWarning</span><span class="p">)</span>
+
+            <span class="n">atomnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atomname</span><span class="p">)</span>
+            <span class="n">resnames</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resname</span><span class="p">)</span>
+            <span class="n">chainids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">chid</span><span class="p">)</span>
+            <span class="n">resnums</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">22</span><span class="p">:</span><span class="mi">26</span><span class="p">])</span>
+            <span class="n">icodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">26</span><span class="p">])</span>
+            <span class="n">coordinates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">coords</span><span class="p">)</span>
+
+        <span class="c1"># TODO handle multiple models at some point</span>
+        <span class="k">elif</span> <span class="n">startswith</span> <span class="o">==</span> <span class="s1">&#39;MODEL&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">PDBParserException</span><span class="p">(</span><span class="n">pdb_file</span> <span class="o">+</span> <span class="s2">&quot; contains NMR MODELS &quot;</span> <span class="o">+</span>
+                                                <span class="s2">&quot;most likely this is not being parsed &quot;</span> <span class="o">+</span>
+                                                <span class="s2">&quot;properly&quot;</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">startswith</span><span class="p">[:</span><span class="mi">3</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;END&#39;</span><span class="p">:</span>
+            <span class="k">break</span>
+
+    <span class="n">residue_atoms</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">atomnames</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">resnames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;HOH&quot;</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">key</span> <span class="o">=</span> <span class="n">resnames</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">resnums</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">chainids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">icodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">residue_atoms</span><span class="p">:</span>
+            <span class="n">residue_atoms</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">already_has</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">residue_atoms</span><span class="p">[</span><span class="n">key</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="n">atomnames</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                <span class="n">already_has</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">break</span>
+        <span class="k">if</span> <span class="n">already_has</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">residue_atoms</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">atom</span><span class="o">.</span><span class="n">Atom</span><span class="p">(</span><span class="n">atomnames</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="n">coordinates</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+    <span class="n">residues</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span><span class="n">res_atoms</span> <span class="ow">in</span> <span class="n">residue_atoms</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res_atoms</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">6</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="n">spl</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">rtype</span> <span class="o">=</span> <span class="n">residue_type</span><span class="o">.</span><span class="n">get_rtype</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">rtype</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">user_warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;restype &quot;</span> <span class="o">+</span> <span class="n">spl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;: is unknown&quot;</span><span class="p">,</span>
+                                <span class="n">user_warnings</span><span class="o">.</span><span class="n">PDBFormatWarning</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="n">icode</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spl</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">icode</span> <span class="o">=</span> <span class="n">spl</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">residue</span><span class="o">.</span><span class="n">Residue</span><span class="p">(</span><span class="n">rtype</span><span class="p">,</span> <span class="n">spl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span> <span class="n">spl</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">icode</span><span class="p">)</span>
+        <span class="n">r</span><span class="o">.</span><span class="n">setup_atoms</span><span class="p">(</span><span class="n">res_atoms</span><span class="p">)</span>
+        <span class="n">residues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">residues</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

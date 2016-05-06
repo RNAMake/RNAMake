@@ -1,0 +1,1651 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.secondary_structure &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.secondary_structure</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.secondary_structure</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">motif_type</span>
+<span class="kn">import</span> <span class="nn">exceptions</span>
+
+
+<div class="viewcode-block" id="Residue"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Residue">[docs]</a><span class="k">class</span> <span class="nc">Residue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An extremely stripped down container object for use for keeping track of</span>
+<span class="sd">    secondary structure using dot bracket notation. Dot bracket notation is</span>
+<span class="sd">    represented by a string of equal length of a sequence, example:</span>
+
+<span class="sd">    sequence:    &#39;GCAAAACG&#39;\n</span>
+<span class="sd">    dot bracket: &#39;((....))&#39;</span>
+
+<span class="sd">    &#39;(&#39; represent the 5&#39; end of a basepair, &#39;)&#39; the 3&#39; end of the same base</span>
+<span class="sd">    pair. Thus there should be an equal number of &#39;(&#39; and &#39;)&#39; symbols. &#39;.&#39;</span>
+<span class="sd">    represents an unpaired residue.</span>
+
+<span class="sd">    This class along with others in this module are generally</span>
+<span class="sd">    not instatinated outside RNAStructure,  Motif  and Pose.</span>
+
+<span class="sd">    :param name: name of residue, etc A, G, C, U</span>
+<span class="sd">    :param dot_bracket: dot bracket notation for secondary structure either &#39;(&#39;, &#39;.&#39;, &#39;)&#39;</span>
+<span class="sd">    :param num: number of residue</span>
+<span class="sd">    :param chain_id: chain id of residue, etc &quot;A&quot; or &quot;B&quot;</span>
+<span class="sd">    :param uuid: residue unique indentifier</span>
+<span class="sd">    :param i_code: residue insertaion code, usually &quot;&quot;</span>
+
+<span class="sd">    :type name: str</span>
+<span class="sd">    :type dot_bracket: str</span>
+<span class="sd">    :type num: int</span>
+<span class="sd">    :type chain_id: str</span>
+<span class="sd">    :type uuid: uuid.uuid1</span>
+<span class="sd">    :type i_code: str</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `name`: str</span>
+<span class="sd">        name of residue, etc A, G, C, U</span>
+<span class="sd">    `dot_bracket`: str</span>
+<span class="sd">        dot bracket notation for secondary structure either &#39;(&#39;, &#39;.&#39;, &#39;)&#39;</span>
+<span class="sd">    `num`: int</span>
+<span class="sd">        number of residue</span>
+<span class="sd">    `chain_id`: str</span>
+<span class="sd">        chain id of residue, etc &quot;A&quot; or &quot;B&quot;</span>
+<span class="sd">    `uuid`: uuid.uuid1</span>
+<span class="sd">        residue unique indentifier</span>
+<span class="sd">    `i_code`: str</span>
+<span class="sd">        residue insertaion code, usually &quot;&quot;</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    ..  code-block:: python</span>
+
+<span class="sd">        # create a new residue</span>
+<span class="sd">        &gt;&gt;&gt; r = Residue(&quot;G&quot;, &quot;(&quot;, 10, &quot;A&quot;, uuid.uuid1())</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span><span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;dot_bracket&quot;</span><span class="p">,</span> <span class="s2">&quot;num&quot;</span><span class="p">,</span> <span class="s2">&quot;chain_id&quot;</span><span class="p">,</span> <span class="s2">&quot;uuid&quot;</span><span class="p">,</span> <span class="s2">&quot;i_code&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">dot_bracket</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">chain_id</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">i_code</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot_bracket</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="n">name</span><span class="p">,</span> <span class="n">dot_bracket</span><span class="p">,</span> <span class="n">num</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_code</span> <span class="o">=</span> <span class="n">chain_id</span><span class="p">,</span> <span class="n">i_code</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;SecondaryStructureResidue(&#39;</span><span class="si">%s%d%s</span><span class="s2"> chain </span><span class="si">%s</span><span class="s2">&#39;)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Residue.to_str"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Residue.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        stringify residue object. can be converted back with</span>
+<span class="sd">        :func:`str_to_residue`</span>
+
+<span class="sd">        :return: stringifed verision of residue</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot_bracket</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> \
+               <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Residue.copy"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Residue.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates copy of current residue</span>
+
+<span class="sd">        :return: copy of instatnce</span>
+<span class="sd">        :rtype: secondary_structure.Residue</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">Residue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot_bracket</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span><span class="p">,</span>
+                       <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Chain"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Chain">[docs]</a><span class="k">class</span> <span class="nc">Chain</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    secondary structure chain container. Contains a chain of connected</span>
+<span class="sd">    residues. Chain should be from 5&#39; to 3&#39;.</span>
+
+<span class="sd">    :param residues: the residues that are to be included in chain. Optional.</span>
+<span class="sd">    :type residues: list of Residues.</span>
+
+<span class="sd">    :attributes:</span>
+<span class="sd">    `residues` : list of Residues</span>
+<span class="sd">        Residues contained in current chain</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;residues&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">residues</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residues</span> <span class="o">=</span> <span class="n">residues</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">residues</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+            <span class="n">seq</span> <span class="o">+=</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span>
+
+        <span class="k">return</span> <span class="s2">&quot;&lt;SecondaryStructureChain( &quot;</span> <span class="o">+</span> <span class="n">seq</span> <span class="o">+</span> <span class="s2">&quot;)&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="o">.</span><span class="n">__iter__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="Chain.first"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Chain.first">[docs]</a>    <span class="k">def</span> <span class="nf">first</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the first residue in the chain</span>
+
+<span class="sd">        :return: 5&#39; end of chain</span>
+<span class="sd">        :rtype: secondary_structure.Residue</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        ..  code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; from rnamake.unittests import instances</span>
+<span class="sd">            &gt;&gt;&gt; c = instances.secondary_structure_chain()</span>
+<span class="sd">            &gt;&gt;&gt; c.first()</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G13 chain A&#39;)&gt;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                <span class="s2">&quot;cannot call first there are no residues in chain&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Chain.last"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Chain.last">[docs]</a>    <span class="k">def</span> <span class="nf">last</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the first residue in the chain</span>
+
+<span class="sd">        :return: 5&#39; end of chain</span>
+<span class="sd">        :rtype: secondary_structure.Residue</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        ..  code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; from rnamake.unittests import instances</span>
+<span class="sd">            &gt;&gt;&gt; c = instances.secondary_structure_chain()</span>
+<span class="sd">            &gt;&gt;&gt; c.last()</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G24 chain A&#39;)&gt;</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                <span class="s2">&quot;cannot call last there are no residues in chain&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Chain.sequence"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Chain.sequence">[docs]</a>    <span class="k">def</span> <span class="nf">sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the string verision of the sequence in this chain</span>
+
+<span class="sd">        :returns: string of sequence of chain</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        ..  code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; from rnamake.unittests import instances</span>
+<span class="sd">            &gt;&gt;&gt; c = instances.secondary_structure_chain()</span>
+
+<span class="sd">            # see the residue of each residue in the chain, all Gs</span>
+<span class="sd">            &gt;&gt;&gt; for r in c: print r</span>
+<span class="sd">            ...</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G13 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G14 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G15 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G16 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G17 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G18 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G19 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G20 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G21 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G22 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G23 chain A&#39;)&gt;</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G24 chain A&#39;)&gt;</span>
+
+<span class="sd">            &gt;&gt;&gt; c.sequence()</span>
+<span class="sd">            u&#39;GGGGGGGGGGGG&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">seq</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+            <span class="n">seq</span> <span class="o">+=</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span>
+        <span class="k">return</span> <span class="n">seq</span></div>
+
+<div class="viewcode-block" id="Chain.dot_bracket"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Chain.dot_bracket">[docs]</a>    <span class="k">def</span> <span class="nf">dot_bracket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the string verision of the secondary structure in</span>
+<span class="sd">        dot_bracket notation of this chain</span>
+
+<span class="sd">        :returns: string of secondary structure in dot bracket notation of</span>
+<span class="sd">            chain</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        ..  code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; from rnamake.unittests import instances</span>
+<span class="sd">            &gt;&gt;&gt; c = instances.secondary_structure_chain()</span>
+<span class="sd">            &gt;&gt;&gt; c.dot_bracket()</span>
+<span class="sd">            u&#39;((((((((((((&#39;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">db</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+            <span class="n">db</span> <span class="o">+=</span> <span class="n">r</span><span class="o">.</span><span class="n">dot_bracket</span>
+        <span class="k">return</span> <span class="n">db</span></div>
+
+<div class="viewcode-block" id="Chain.to_str"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Chain.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        stringify chain object. can be converted back with</span>
+<span class="sd">        :func:`str_to_chain`</span>
+
+<span class="sd">        :return: stringifed verision of chain</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">r</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;;&quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Chain.copy"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Chain.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates deep copy of chain instance</span>
+
+<span class="sd">        :return: copy of chain</span>
+<span class="sd">        :rtype: secondary_structure.Chain</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">residues</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+            <span class="n">residues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">Chain</span><span class="p">(</span><span class="n">residues</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Basepair"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Basepair">[docs]</a><span class="k">class</span> <span class="nc">Basepair</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param res1: First residue in basepair</span>
+<span class="sd">    :param res2: Second residue in basepair</span>
+<span class="sd">    :param bp_uuid: basepair unique indentifier</span>
+
+<span class="sd">    :type res1: secondary_structure.Residue</span>
+<span class="sd">    :type res2: secondary_structure.Residue</span>
+<span class="sd">    :type bp_uuid: uuid.uuid1</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `res1` : secondary_structure.Residue</span>
+<span class="sd">        First residue in basepair</span>
+<span class="sd">    `res2` : secondary_structure.Residue</span>
+<span class="sd">        Second residue in basepair</span>
+<span class="sd">    `uuid`: uuid.uuid1</span>
+<span class="sd">        unique id to indentify this basepair when locating it in a motif or</span>
+<span class="sd">        pose</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;res1&quot;</span><span class="p">,</span> <span class="s2">&quot;res2&quot;</span><span class="p">,</span> <span class="s2">&quot;uuid&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res1</span><span class="p">,</span> <span class="n">res2</span><span class="p">,</span> <span class="n">bp_uuid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span> <span class="o">=</span> <span class="n">res1</span><span class="p">,</span> <span class="n">res2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">bp_uuid</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;SecondaryStructureBasepair(&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">()</span><span class="o">+</span><span class="s2">&quot;)&gt;&quot;</span>
+
+<div class="viewcode-block" id="Basepair.name"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Basepair.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get name of basepair: which is the combined name of both residues</span>
+<span class="sd">        seperated by a &quot;-&quot;. The residue with the lower res number should</span>
+<span class="sd">        come first</span>
+
+<span class="sd">        :return: name of basepair</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        ..  code-block:: python</span>
+
+<span class="sd">            # build basepair from stratch</span>
+<span class="sd">            &gt;&gt;&gt; from rnamake.unittests import instances</span>
+<span class="sd">            &gt;&gt;&gt; b = instances.secondary_structure_basepair()</span>
+<span class="sd">            &gt;&gt;&gt; print b.res1</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;C10 chain A&#39;)&gt;</span>
+
+<span class="sd">            &gt;&gt;&gt; print b.res2</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G15 chain A&#39;)&gt;</span>
+
+<span class="sd">            &gt;&gt;&gt; print b.name()</span>
+<span class="sd">            A10-A15</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">str1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">chain_id</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span>
+        <span class="n">str2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">chain_id</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">str1</span> <span class="o">&lt;</span> <span class="n">str2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">str1</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">str2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">str2</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">str1</span></div>
+
+<div class="viewcode-block" id="Basepair.partner"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Basepair.partner">[docs]</a>    <span class="k">def</span> <span class="nf">partner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get the other basepairing partner of a residue will throw an error</span>
+<span class="sd">        if the supplied residue is not contained within this basepair</span>
+
+<span class="sd">        :param res: the residue that you want to get the partner of</span>
+<span class="sd">        :type res: secondary_structure.Residue object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span>   <span class="n">r</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span>
+        <span class="k">elif</span> <span class="n">r</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">res1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                <span class="s2">&quot;call partner with a residue not in basepair&quot;</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="Structure"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Structure">[docs]</a><span class="k">class</span> <span class="nc">Structure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    lightweight container class for storing secondary structure information</span>
+<span class="sd">    for an entire RNA.</span>
+
+<span class="sd">    :param chains: secondary_structure.Chains that belong to this structure,</span>
+<span class="sd">        this is done when a structure is being built from an existing 3D</span>
+<span class="sd">        structure.Structure instance</span>
+<span class="sd">    :param sequence: sequence of RNA of interest, e.g. &quot;AAAGGGCCC&quot;,</span>
+<span class="sd">    :param dot_bracket: dot bracket notation of the secondary structure of</span>
+<span class="sd">        RNA of interes, e.g. &quot;(((())))&quot;</span>
+
+<span class="sd">    :type chains: list of secondary_structure.Chains</span>
+<span class="sd">    :type sequence: str</span>
+<span class="sd">    :type dot_bracket: str</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `chains`: list of secondary_structure.Chains</span>
+<span class="sd">        the chains of RNA residues in this structure</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    ..  code-block:: python</span>
+
+<span class="sd">        # create a new structure</span>
+<span class="sd">        &gt;&gt;&gt; from rnamake import secondary_structure</span>
+<span class="sd">        &gt;&gt;&gt; s = secondary_structure.Structure(sequence=&quot;GCGAAAACGC&quot;,</span>
+<span class="sd">                                              dot_bracket=&quot;(((....)))&quot;)</span>
+
+<span class="sd">        &gt;&gt;&gt; print s.sequence()</span>
+<span class="sd">        GCGAAAACGC</span>
+<span class="sd">        &gt;&gt;&gt; print s.dot_bracket()</span>
+<span class="sd">        (((....)))</span>
+
+<span class="sd">        &gt;&gt;&gt; s.get_residue(num=1)</span>
+<span class="sd">        &lt;SecondaryStructureResidue(&#39;G1 chain A&#39;)&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;chains&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chains</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">sequence</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">dot_bracket</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chains</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="n">chains</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chains</span> <span class="o">=</span> <span class="n">chains</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">dot_bracket</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+           <span class="bp">self</span><span class="o">.</span><span class="n">chains</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_chains</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">dot_bracket</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_setup_chains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sequence</span><span class="p">,</span> <span class="n">dot_bracket</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        setup function for turning a string sequence and secondary structure</span>
+<span class="sd">        into a structure object.</span>
+
+<span class="sd">        :param sequence: sequence of RNA</span>
+<span class="sd">        :param dot_bracket: dot bracket of RNA</span>
+
+<span class="sd">        :type sequence: str</span>
+<span class="sd">        :type dot_bracket: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">chains</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">residues</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dot_bracket</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                <span class="s2">&quot;sequence and dot bracket are not the same length&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">dot_bracket</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;(&#39;</span> <span class="ow">and</span> <span class="n">dot_bracket</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;.&#39;</span> <span class="ow">and</span> <span class="n">dot_bracket</span> <span class="o">!=</span> <span class="s1">&#39;&amp;&#39;</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                <span class="s2">&quot;secondary structure is not valid did you flip seq and ss?&quot;</span><span class="p">)</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">chains_ids</span> <span class="o">=</span> <span class="s2">&quot;ABCDEFGHIJKLMNOPQRSTUVWXZ&quot;</span>
+        <span class="n">valid_seq</span> <span class="o">=</span> <span class="s2">&quot;AGUCTN&amp;+-&quot;</span>
+        <span class="n">chain_i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sequence</span><span class="p">)):</span>
+            <span class="k">if</span> <span class="n">sequence</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">valid_seq</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                    <span class="n">sequence</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot; is not a valid secondary_structure element&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">sequence</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;&amp;&quot;</span> <span class="ow">and</span> <span class="n">sequence</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;+&quot;</span> <span class="ow">and</span> <span class="n">sequence</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+                <span class="n">r</span> <span class="o">=</span> <span class="n">Residue</span><span class="p">(</span><span class="n">sequence</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">dot_bracket</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">count</span><span class="p">,</span>
+                            <span class="n">chains_ids</span><span class="p">[</span><span class="n">chain_i</span><span class="p">],</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">())</span>
+                <span class="n">residues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">chain_i</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="n">chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Chain</span><span class="p">(</span><span class="n">residues</span><span class="p">))</span>
+                <span class="c1"># unlikely but hit max chains</span>
+                <span class="k">if</span> <span class="n">chain_i</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">chains_ids</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                    <span class="n">chain_i</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">residues</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">residues</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Chain</span><span class="p">(</span><span class="n">residues</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">chains</span>
+
+<div class="viewcode-block" id="Structure.residues"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Structure.residues">[docs]</a>    <span class="k">def</span> <span class="nf">residues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concats all residue objects from all Chain objects intos a unified</span>
+<span class="sd">        list to be able to easily iterate through.</span>
+
+<span class="sd">        :return: List of secondary_structure.Residue objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">:</span>
+            <span class="n">res</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">res</span></div>
+
+<div class="viewcode-block" id="Structure.sequence"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Structure.sequence">[docs]</a>    <span class="k">def</span> <span class="nf">sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concats the sequence of each Chain into one sequence for the entire</span>
+<span class="sd">        RNA</span>
+
+<span class="sd">        :return: sequence of structure</span>
+<span class="sd">        :rtype: seq</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">sequences</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">sequence</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s2">&quot;&amp;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sequences</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Structure.dot_bracket"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Structure.dot_bracket">[docs]</a>    <span class="k">def</span> <span class="nf">dot_bracket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concats the secondary structure in the form of dot bracket notation</span>
+<span class="sd">        of each Chain into one sequence for the entire RNA</span>
+
+<span class="sd">        :return: sequence of structure</span>
+<span class="sd">        :rtype: seq</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">dot_brackets</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">dot_bracket</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">]</span>
+        <span class="k">return</span> <span class="s2">&quot;&amp;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dot_brackets</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Structure.get_residue"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Structure.get_residue">[docs]</a>    <span class="k">def</span> <span class="nf">get_residue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">chain_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">i_code</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        find a residue based on residue num, chain_id, insert_code and uuid</span>
+<span class="sd">        will return an error if more then one residue matches search to avoid</span>
+<span class="sd">        confusion. Will return None is nothing matches search.</span>
+
+<span class="sd">        :param num: residue number</span>
+<span class="sd">        :param chain_id: what chain the residue belongs to</span>
+<span class="sd">        :param i_code: the insertation code of the residue</span>
+<span class="sd">        :param uuid: the unique indentifier that each residue is given</span>
+
+<span class="sd">        :type num: int</span>
+<span class="sd">        :type chain_id: str</span>
+<span class="sd">        :type i_code: str</span>
+<span class="sd">        :type uuid: uuid</span>
+
+<span class="sd">        :return: Residue object</span>
+<span class="sd">        :rtype: residue.Residue</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; from rnamake import secondary_structure</span>
+<span class="sd">            &gt;&gt;&gt; s = secondary_structure.Structure(sequence=&quot;GCGAAAACGC&quot;,</span>
+<span class="sd">                                                  dot_bracket=&quot;(((....)))&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; s.get_residue(num=1)</span>
+<span class="sd">            &lt;SecondaryStructureResidue(&#39;G1 chain A&#39;)&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># nothing specified</span>
+        <span class="k">if</span> <span class="n">num</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">chain_id</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">i_code</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">uuid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                <span class="s2">&quot;called get_residue wiht no arguments&quot;</span><span class="p">)</span>
+
+        <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">num</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">num</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">i_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">i_code</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">i_code</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">chain_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">chain_id</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">chain_id</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">uuid</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">uuid</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                <span class="s2">&quot;found multiple residues in get_residue(), narrow &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;your search&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">found</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Structure.copy"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Structure.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a deep copy of structure instance</span>
+
+<span class="sd">        :return: copy of structure</span>
+<span class="sd">        :rtype: secondary_structure.Structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">new_chains</span> <span class="o">=</span> <span class="p">[</span> <span class="n">c</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">Structure</span><span class="p">(</span><span class="n">chains</span><span class="o">=</span><span class="n">new_chains</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Structure.to_str"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Structure.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        generates a stringified verision of this instance.</span>
+
+<span class="sd">        :returns: stringified verision of structure</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">c</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;|&quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div></div>
+
+
+<div class="viewcode-block" id="RNAStructure"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.RNAStructure">[docs]</a><span class="k">class</span> <span class="nc">RNAStructure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Complete secondary structure container for representing a RNA. Contains</span>
+<span class="sd">    both the sequence indentity of each residue with its corresponding dot</span>
+<span class="sd">    bracket notation symbol but also includes basepair objects to represent the</span>
+<span class="sd">    pairs between residues. This class parallels the</span>
+<span class="sd">    rna_structure.RNAStructure class for describing RNA with 3D coordinates.</span>
+<span class="sd">    Having a parallel class for secondary structure makes it simple to move</span>
+<span class="sd">    between secondary structure and full atom representations of RNA.</span>
+<span class="sd">    RNAStructure is rarely called directly but serves as an abstract class</span>
+<span class="sd">    for both Motif and Pose so for example use please see those classes.</span>
+
+<span class="sd">    :param structure: structure containing residue and chain information for</span>
+<span class="sd">        this RNAStructure instance</span>
+<span class="sd">    :param basepairs: basepairs contained in RNAStructure</span>
+<span class="sd">    :param ends: the basepairs at the end of chains. These define connection</span>
+<span class="sd">        points to other RNAStructures</span>
+<span class="sd">    :param name: name of RNAStructure</span>
+<span class="sd">    :param path: location of where RNAStructure originated from, this is just</span>
+<span class="sd">        a place holder for converting from rna_structure.RNAStructure</span>
+<span class="sd">    :param score: the score generated by motif_scorer.MotifScorer</span>
+<span class="sd">    :param end_ids: strings indenifying the secondary structure and sequence</span>
+<span class="sd">        in the perspective of a given basepair end see</span>
+<span class="sd">        :func:`assign_end_id_new`</span>
+
+<span class="sd">    :type structure: secondary_structure.Structure</span>
+<span class="sd">    :type basepairs: list of secondary_structure.Basepairs</span>
+<span class="sd">    :type ends: list of secondary_structure.Basepairs</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    :type score: float</span>
+<span class="sd">    :type end_ids: list of strs</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `structure`: secondary_structure.Structure</span>
+<span class="sd">        structure containing residue and chain information for</span>
+<span class="sd">        this RNAStructure instance</span>
+<span class="sd">    `basepairs`: list of secondary_structure.Basepairs</span>
+<span class="sd">        Basepairs between residues</span>
+<span class="sd">    `ends`: list of secondary_structure.Basepairs</span>
+<span class="sd">        Basepair ends where RNA structures can be connected</span>
+<span class="sd">    `name`: str</span>
+<span class="sd">        the name of the RNAStructure</span>
+<span class="sd">    `path`: str</span>
+<span class="sd">        location of where RNAStructure originated from, this is just</span>
+<span class="sd">        a place holder for converting from rna_structure.RNAStructure</span>
+<span class="sd">    `score` : float</span>
+<span class="sd">        the score generated by motif_scorer.MotifScorer, estimates secondary</span>
+<span class="sd">        structure stability</span>
+<span class="sd">    `end_ids`: list of strs</span>
+<span class="sd">        strings indenifying the secondary structure and sequence</span>
+<span class="sd">        in the perspective of a given basepair end see</span>
+<span class="sd">        :func:`assign_end_id_new`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">basepairs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ends</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;assembled&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;assembled&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end_ids</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">structure</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span> <span class="o">=</span><span class="n">basepairs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ends</span> <span class="o">=</span> <span class="n">ends</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ends</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="n">end_ids</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;secondary_structure.RNAStructure( &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot_bracket</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot; )&quot;</span>
+
+<div class="viewcode-block" id="RNAStructure.get_residue"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.RNAStructure.get_residue">[docs]</a>    <span class="k">def</span> <span class="nf">get_residue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">chain_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">i_code</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        wrapper for :func:`Structure.get_residue`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">num</span><span class="p">,</span> <span class="n">chain_id</span><span class="p">,</span> <span class="n">i_code</span><span class="p">,</span> <span class="n">uuid</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="RNAStructure.get_basepair"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.RNAStructure.get_basepair">[docs]</a>    <span class="k">def</span> <span class="nf">get_basepair</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res1</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">res2</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finds a specific basepair based on many possible parameters.</span>
+
+<span class="sd">        :param res1: first residue to be included in basepair</span>
+<span class="sd">        :param res2: second residue to be included in basepair</span>
+<span class="sd">            if both res1 and res2 are specified the basepair must be a pair</span>
+<span class="sd">            between these two.</span>
+<span class="sd">        :param uuid: basepair unique indentifier</span>
+<span class="sd">        :param name: name of basepair, from function Basepair.name()</span>
+
+<span class="sd">        :type res1: secondary_structure.Residue</span>
+<span class="sd">        :type res2: secondary_structure.Residue</span>
+<span class="sd">        :type uuid: uuid.uuid1</span>
+<span class="sd">        :type name: str</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">res1</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">res2</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">uuid</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                <span class="s2">&quot;no arguments specified for get_basepair()&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">res1</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">res1</span> <span class="o">!=</span> <span class="n">res1</span> <span class="ow">and</span> <span class="n">bp</span><span class="o">.</span><span class="n">res2</span> <span class="o">!=</span> <span class="n">res1</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">res2</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">res1</span> <span class="o">!=</span> <span class="n">res2</span> <span class="ow">and</span> <span class="n">bp</span><span class="o">.</span><span class="n">res2</span> <span class="o">!=</span> <span class="n">res2</span><span class="p">):</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span><span class="o">.</span><span class="n">uuid</span> <span class="o">!=</span> <span class="n">uuid</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span><span class="o">.</span><span class="n">name</span><span class="p">()</span> <span class="o">!=</span> <span class="n">name</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">return</span> <span class="n">bp</span>
+        <span class="k">return</span> <span class="bp">None</span></div>
+
+<div class="viewcode-block" id="RNAStructure.sequence"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.RNAStructure.sequence">[docs]</a>    <span class="k">def</span> <span class="nf">sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        wrapper for :func:`Structure.sequence`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">sequence</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RNAStructure.dot_bracket"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.RNAStructure.dot_bracket">[docs]</a>    <span class="k">def</span> <span class="nf">dot_bracket</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        wrapper for :func:`Structure.dot_bracket`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">dot_bracket</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RNAStructure.replace_sequence"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.RNAStructure.replace_sequence">[docs]</a>    <span class="k">def</span> <span class="nf">replace_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        changes the sequence of structure.</span>
+
+<span class="sd">        :param seq: the new sequence of structure</span>
+<span class="sd">        :type seq: str</span>
+
+<span class="sd">        :returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">spl</span> <span class="o">=</span> <span class="n">seq</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;&amp;&quot;</span><span class="p">)</span>
+        <span class="n">seq2</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">spl</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">seq2</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">residues</span><span class="p">()):</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                <span class="s2">&quot;cannot replace sequence, sequence length is different then &quot;</span>
+                <span class="s2">&quot;the number of residues&quot;</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">residues</span><span class="p">()):</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">seq2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="RNAStructure.residues"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.RNAStructure.residues">[docs]</a>    <span class="k">def</span> <span class="nf">residues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        wrapper for :func:`Structure.residues`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">residues</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="RNAStructure.chains"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.RNAStructure.chains">[docs]</a>    <span class="k">def</span> <span class="nf">chains</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        wrapper for :func:`Structure.chains`</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">chains</span></div>
+
+<div class="viewcode-block" id="RNAStructure.copy"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.RNAStructure.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates deep copy of RNAStructure instance</span>
+
+<span class="sd">        :returns: copy of instance</span>
+<span class="sd">        :rtype: RNAStructure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n_ss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">basepairs</span><span class="p">,</span> <span class="n">ends</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="p">:</span>
+            <span class="n">new_bp</span> <span class="o">=</span> <span class="n">Basepair</span><span class="p">(</span><span class="n">n_ss</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">uuid</span><span class="p">),</span>
+                              <span class="n">n_ss</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">uuid</span><span class="p">),</span>
+                              <span class="n">bp</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+            <span class="n">basepairs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_bp</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+            <span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">basepairs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">RNAStructure</span><span class="p">(</span><span class="n">n_ss</span><span class="p">,</span> <span class="n">basepairs</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span><span class="p">[::])</span></div></div>
+
+
+<div class="viewcode-block" id="Motif"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Motif">[docs]</a><span class="k">class</span> <span class="nc">Motif</span><span class="p">(</span><span class="n">RNAStructure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Complete secondary structure container for representing an RNA Motif.</span>
+<span class="sd">    Contains both the sequence indentity of each residue with its corresponding</span>
+<span class="sd">    dot bracket notation symbol but also includes basepair objects to represent</span>
+<span class="sd">    the pairs between residues. This class parallels the motif.Motif class for</span>
+<span class="sd">    describing RNA with 3D coordinates.</span>
+<span class="sd">    Having a parallel class for secondary structure makes it simple to move</span>
+<span class="sd">    between secondary structure and full atom representations of RNA.</span>
+
+<span class="sd">    :param structure: structure containing residue and chain information for</span>
+<span class="sd">        this RNAStructure instance</span>
+<span class="sd">    :param basepairs: basepairs contained in RNAStructure</span>
+<span class="sd">    :param ends: the basepairs at the end of chains. These define connection</span>
+<span class="sd">        points to other Motifs</span>
+<span class="sd">    :param name: name of Motif</span>
+<span class="sd">    :param path: location of where Motif originated from, this is just</span>
+<span class="sd">        a place holder for converting from motif.Motif</span>
+<span class="sd">    :param mtype: motif_type enum value, to indentify what type of motif this</span>
+<span class="sd">        is</span>
+<span class="sd">    :param score: the score generated by motif_scorer.MotifScorer</span>
+<span class="sd">    :param end_ids: strings indenifying the secondary structure and sequence</span>
+<span class="sd">        in the perspective of a given basepair end see</span>
+<span class="sd">        :func:`assign_end_id_new`</span>
+<span class="sd">    :param id: unique indentifer for motif</span>
+<span class="sd">    :param r_struct: an RNAStructure instance to setup from</span>
+
+<span class="sd">    :type structure: secondary_structure.Structure</span>
+<span class="sd">    :type basepairs: list of secondary_structure.Basepairs</span>
+<span class="sd">    :type ends: list of secondary_structure.Basepairs</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    :type mtype: motif_type</span>
+<span class="sd">    :type score: float</span>
+<span class="sd">    :type end_ids: list of strs</span>
+<span class="sd">    :type id: uuid.uuid1</span>
+<span class="sd">    :type r_structure: secondary_structure.RNAStructure</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `structure`: secondary_structure.Structure</span>
+<span class="sd">        structure containing residue and chain information for</span>
+<span class="sd">        this Motif instance</span>
+<span class="sd">    `basepairs`: list of secondary_structure.Basepairs</span>
+<span class="sd">        Basepairs between residues</span>
+<span class="sd">    `ends`: list of secondary_structure.Basepairs</span>
+<span class="sd">        Basepair ends where RNA structures can be connected</span>
+<span class="sd">    `name`: str</span>
+<span class="sd">        the name of the Motif</span>
+<span class="sd">    `path`: str</span>
+<span class="sd">        location of where Motif originated from, this is just</span>
+<span class="sd">        a place holder for converting from motif.Motif</span>
+<span class="sd">    `score` : float</span>
+<span class="sd">        the score generated by motif_scorer.MotifScorer, estimates secondary</span>
+<span class="sd">        structure stability</span>
+<span class="sd">    `end_ids`: list of strs</span>
+<span class="sd">        strings indenifying the secondary structure and sequence</span>
+<span class="sd">        in the perspective of a given basepair end see</span>
+<span class="sd">        :func:`assign_end_id_new`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">basepairs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ends</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;assembled&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;assembled&quot;</span><span class="p">,</span> <span class="n">mtype</span><span class="o">=</span><span class="n">motif_type</span><span class="o">.</span><span class="n">UNKNOWN</span><span class="p">,</span>
+                 <span class="n">score</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end_ids</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">r_struct</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">structure</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span> <span class="o">=</span> <span class="n">basepairs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ends</span> <span class="o">=</span> <span class="n">ends</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ends</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="n">end_ids</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mtype</span> <span class="o">=</span> <span class="n">mtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">r_struct</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">r_struct</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;secondary_structure.Motif( &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot_bracket</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot; )&quot;</span>
+
+<div class="viewcode-block" id="Motif.copy"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Motif.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a deep copy of Motif instance</span>
+
+<span class="sd">        :returns: deep copy of instance</span>
+<span class="sd">        :rtype: secondary_structure.Motif</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n_ss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">basepairs</span><span class="p">,</span> <span class="n">ends</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="p">:</span>
+            <span class="n">new_bp</span> <span class="o">=</span> <span class="n">Basepair</span><span class="p">(</span><span class="n">n_ss</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">uuid</span><span class="p">),</span>
+                              <span class="n">n_ss</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">uuid</span><span class="o">=</span><span class="n">bp</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">uuid</span><span class="p">),</span>
+                              <span class="n">bp</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+            <span class="n">basepairs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_bp</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">:</span>
+            <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">end</span><span class="p">)</span>
+            <span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">basepairs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">Motif</span><span class="p">(</span><span class="n">n_ss</span><span class="p">,</span> <span class="n">basepairs</span><span class="p">,</span> <span class="n">ends</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mtype</span><span class="p">,</span>
+                     <span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span><span class="p">[::],</span> <span class="bp">self</span><span class="o">.</span><span class="n">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Motif.copy_w_res"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Motif.copy_w_res">[docs]</a>    <span class="k">def</span> <span class="nf">copy_w_res</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">bps</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a deep copy of Motif instance replacing residues and basepairs</span>
+<span class="sd">        that were already created. This is used when a pose is being copied to</span>
+<span class="sd">        make sure there are duplicate copies of residues and basepairs.</span>
+
+<span class="sd">        :param res: list of residues that were already copied</span>
+<span class="sd">        :param bps: list of basepairs that were already copied</span>
+
+<span class="sd">        :type res: list of secondary_structure.Residues</span>
+<span class="sd">        :type bps: list of secondary_structure.Basepairs</span>
+
+<span class="sd">        :returns: deep copy of instance</span>
+<span class="sd">        :rtype: secondary_structure.Motif</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">chains</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">Motif</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">chains</span><span class="p">:</span>
+            <span class="n">new_res</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+                <span class="n">new_r</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="n">r</span><span class="o">.</span><span class="n">uuid</span><span class="p">]</span>
+                <span class="n">new_res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_r</span><span class="p">)</span>
+            <span class="n">chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Chain</span><span class="p">(</span><span class="n">new_res</span><span class="p">))</span>
+
+        <span class="n">m</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">chains</span> <span class="o">=</span> <span class="n">chains</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span><span class="p">[::]</span>
+        <span class="n">new_bps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">new_ends</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="p">:</span>
+            <span class="n">new_bps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bps</span><span class="p">[</span><span class="n">bp</span><span class="o">.</span><span class="n">uuid</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">:</span>
+            <span class="n">new_ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bps</span><span class="p">[</span><span class="n">bp</span><span class="o">.</span><span class="n">uuid</span><span class="p">])</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">basepairs</span> <span class="o">=</span> <span class="n">new_bps</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">ends</span> <span class="o">=</span> <span class="n">new_ends</span>
+        <span class="k">return</span> <span class="n">m</span></div>
+
+<div class="viewcode-block" id="Motif.to_str"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Motif.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a stringified verision of this instance</span>
+
+<span class="sd">        :returns: stringified verision of instance</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mtype</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;!&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;!&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;!&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;!&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">res1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">res2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;@&quot;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;!&quot;</span>
+        <span class="k">for</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">end</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;!&quot;</span>
+        <span class="k">for</span> <span class="n">ei</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">ei</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div></div>
+
+
+<div class="viewcode-block" id="Pose"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Pose">[docs]</a><span class="k">class</span> <span class="nc">Pose</span><span class="p">(</span><span class="n">RNAStructure</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Complete secondary structure container for representing an RNA Pose.</span>
+<span class="sd">    Contains both the sequence indentity of each residue with its corresponding</span>
+<span class="sd">    dot bracket notation symbol but also includes basepair objects to represent</span>
+<span class="sd">    the pairs between residues. This class parallels the pose.Pose class for</span>
+<span class="sd">    describing RNA with 3D coordinates.</span>
+<span class="sd">    Having a parallel class for secondary structure makes it simple to move</span>
+<span class="sd">    between secondary structure and full atom representations of RNA.</span>
+<span class="sd">    A pose is a composite structure containing more then one motif.</span>
+
+<span class="sd">    :param structure: structure containing residue and chain information for</span>
+<span class="sd">        this RNAStructure instance</span>
+<span class="sd">    :param basepairs: basepairs contained in RNAStructure</span>
+<span class="sd">    :param ends: the basepairs at the end of chains. These define connection</span>
+<span class="sd">        points to other Motifs</span>
+<span class="sd">    :param name: name of Motif</span>
+<span class="sd">    :param path: location of where Pose originated from, this is just</span>
+<span class="sd">        a place holder for converting from pose.Pose</span>
+
+<span class="sd">    :param score: the score generated by motif_scorer.MotifScorer</span>
+<span class="sd">    :param end_ids: strings indenifying the secondary structure and sequence</span>
+<span class="sd">        in the perspective of a given basepair end see</span>
+<span class="sd">        :func:`assign_end_id_new`</span>
+<span class="sd">    :param id: unique indentifer for motif</span>
+<span class="sd">    :param r_struct: an RNAStructure instance to setup from</span>
+
+<span class="sd">    :type structure: secondary_structure.Structure</span>
+<span class="sd">    :type basepairs: list of secondary_structure.Basepairs</span>
+<span class="sd">    :type ends: list of secondary_structure.Basepairs</span>
+<span class="sd">    :type name: str</span>
+<span class="sd">    :type path: str</span>
+<span class="sd">    :type score: float</span>
+<span class="sd">    :type end_ids: list of strs</span>
+<span class="sd">    :type id: uuid.uuid1</span>
+<span class="sd">    :type r_structure: secondary_structure.RNAStructure</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `structure`: secondary_structure.Structure</span>
+<span class="sd">        structure containing residue and chain information for</span>
+<span class="sd">        this Motif instance</span>
+<span class="sd">    `basepairs`: list of secondary_structure.Basepairs</span>
+<span class="sd">        Basepairs between residues</span>
+<span class="sd">    `ends`: list of secondary_structure.Basepairs</span>
+<span class="sd">        Basepair ends where RNA structures can be connected</span>
+<span class="sd">    `name`: str</span>
+<span class="sd">        the name of the Pose</span>
+<span class="sd">    `path`: str</span>
+<span class="sd">        location of where Pose originated from, this is just</span>
+<span class="sd">        a place holder for converting from pose.Pose</span>
+<span class="sd">    `score` : float</span>
+<span class="sd">        the score generated by motif_scorer.MotifScorer, estimates secondary</span>
+<span class="sd">        structure stability</span>
+<span class="sd">    `end_ids`: list of strs</span>
+<span class="sd">        strings indenifying the secondary structure and sequence</span>
+<span class="sd">        in the perspective of a given basepair end see</span>
+<span class="sd">        :func:`assign_end_id_new`</span>
+<span class="sd">    `motifs`: list of secondary_structure.Motifs</span>
+<span class="sd">        all motifs that are contained in this Pose, excluding helices which</span>
+<span class="sd">        need to be built and are stored in helices. Instead motifs stores all</span>
+<span class="sd">        basepair steps as seperate motifs</span>
+<span class="sd">    `helices`: list of secondary_structure.Motifs</span>
+<span class="sd">        helical motifs that are more then 2 basepairs. needs to be build with</span>
+<span class="sd">        :func:`Pose.build_helices`</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">structure</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">basepairs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">ends</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="s2">&quot;assembled&quot;</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="s2">&quot;assembled&quot;</span><span class="p">,</span> <span class="n">score</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">end_ids</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">r_struct</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">structure</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span> <span class="o">=</span> <span class="n">basepairs</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="n">score</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ends</span> <span class="o">=</span> <span class="n">ends</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ends</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="n">end_ids</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">motifs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">helices</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">if</span> <span class="n">r_struct</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">r_struct</span><span class="o">.</span><span class="n">__dict__</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;secondary_structure.Pose( &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">sequence</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot_bracket</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot; )&quot;</span>
+
+<div class="viewcode-block" id="Pose.motif"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Pose.motif">[docs]</a>    <span class="k">def</span> <span class="nf">motif</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">m_id</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets a motif by its unique indentifer</span>
+
+<span class="sd">        :param m_id: motifs unique indentifier, Motif.id</span>
+<span class="sd">        :type m_id: uuid.uuid1</span>
+
+<span class="sd">        :returns: motif matching to its unique indentifier</span>
+<span class="sd">        :rtype: secondary_structure.Motif</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">motifs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">id</span> <span class="o">==</span> <span class="n">m_id</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">m</span>
+        <span class="k">return</span> <span class="bp">None</span></div>
+
+<div class="viewcode-block" id="Pose.replace_sequence"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Pose.replace_sequence">[docs]</a>    <span class="k">def</span> <span class="nf">replace_sequence</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        changes the sequence of structure.</span>
+
+<span class="sd">        :param seq: the new sequence of structure</span>
+<span class="sd">        :type seq: str</span>
+
+<span class="sd">        :returns: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">replace_sequence</span><span class="p">(</span><span class="n">seq</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">motifs</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">end</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">ends</span><span class="p">):</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">end_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">assign_end_id_new</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Pose.copy"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Pose.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a deep copy of instance</span>
+
+<span class="sd">        :returns: deep copy</span>
+<span class="sd">        :rtype: secondary_structure.Pose</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">c_rna_struct</span> <span class="o">=</span> <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">c_p</span> <span class="o">=</span> <span class="n">Pose</span><span class="p">(</span><span class="n">r_struct</span><span class="o">=</span><span class="n">c_rna_struct</span><span class="p">)</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">{</span><span class="n">r</span><span class="o">.</span><span class="n">uuid</span>  <span class="p">:</span> <span class="n">r</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">()}</span>
+        <span class="n">bps</span> <span class="o">=</span> <span class="p">{</span><span class="n">bp</span><span class="o">.</span><span class="n">uuid</span> <span class="p">:</span> <span class="n">bp</span> <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="p">}</span>
+        <span class="n">new_motifs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">motifs</span><span class="p">:</span>
+            <span class="n">m_copy</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">copy_w_res</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">bps</span><span class="p">)</span>
+            <span class="n">new_motifs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m_copy</span><span class="p">)</span>
+        <span class="n">c_p</span><span class="o">.</span><span class="n">motifs</span> <span class="o">=</span> <span class="n">new_motifs</span>
+        <span class="k">return</span> <span class="n">c_p</span></div>
+
+<div class="viewcode-block" id="Pose.to_str"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Pose.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        generates a stringified verision of this instance.</span>
+
+<span class="sd">        :returns: stringified verision of pose</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">res1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">res</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">bp</span><span class="o">.</span><span class="n">res2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;@&quot;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;#&quot;</span>
+        <span class="k">for</span> <span class="n">end</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">ends</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">basepairs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">end</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;#&quot;</span>
+        <span class="k">for</span> <span class="n">ei</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_ids</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">ei</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span>
+        <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;#&quot;</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">motifs</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">m</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Pose.build_helices"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.Pose.build_helices">[docs]</a>    <span class="k">def</span> <span class="nf">build_helices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        finds all basepair step motifs and builds helices from them. This is</span>
+<span class="sd">        only required for external applications such as rosetta. helices get</span>
+<span class="sd">        stored in member variable helices.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">steps</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">motifs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">mtype</span> <span class="o">!=</span> <span class="n">motif_type</span><span class="o">.</span><span class="n">HELIX</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">steps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+
+        <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="n">current</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">helix_motifs</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">found</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">helix_motifs</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">current</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">for</span> <span class="n">m1</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">if</span> <span class="n">m1</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">for</span> <span class="n">m2</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">m2</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">m1</span> <span class="o">==</span> <span class="n">m2</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">for</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">m2</span><span class="o">.</span><span class="n">ends</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">m1</span><span class="o">.</span><span class="n">ends</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">end</span><span class="p">:</span>
+                            <span class="n">found</span> <span class="o">=</span> <span class="mi">1</span>
+                            <span class="k">break</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">found</span><span class="p">:</span>
+                    <span class="n">current</span> <span class="o">=</span> <span class="n">m1</span>
+                    <span class="k">break</span>
+
+            <span class="k">if</span> <span class="n">found</span> <span class="ow">or</span> <span class="n">current</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">break</span>
+
+            <span class="n">found</span> <span class="o">=</span> <span class="mi">1</span>
+            <span class="k">while</span> <span class="n">found</span><span class="p">:</span>
+                <span class="n">seen</span><span class="p">[</span><span class="n">current</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="n">helix_motifs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current</span><span class="p">)</span>
+                <span class="n">found</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">steps</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                        <span class="k">continue</span>
+                    <span class="k">if</span> <span class="n">m</span><span class="o">.</span><span class="n">ends</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">current</span><span class="o">.</span><span class="n">ends</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+                        <span class="n">current</span> <span class="o">=</span> <span class="n">m</span>
+                        <span class="n">found</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="k">break</span>
+
+            <span class="n">res1</span><span class="p">,</span> <span class="n">res2</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+            <span class="n">bps</span><span class="p">,</span> <span class="n">ends</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+            <span class="n">res1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">helix_motifs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">chains</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">first</span><span class="p">())</span>
+            <span class="n">res2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">helix_motifs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">chains</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">last</span><span class="p">())</span>
+            <span class="n">bps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">helix_motifs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ends</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">helix_motifs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">ends</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">helix_motifs</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">ends</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">helix_motifs</span><span class="p">:</span>
+                <span class="n">res1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">chains</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">last</span><span class="p">())</span>
+                <span class="n">res2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">chains</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">first</span><span class="p">())</span>
+                <span class="n">bps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">ends</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+            <span class="n">res2</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="n">chains</span> <span class="o">=</span> <span class="p">[</span><span class="n">Chain</span><span class="p">(</span><span class="n">res1</span><span class="p">),</span> <span class="n">Chain</span><span class="p">(</span><span class="n">res2</span><span class="p">)]</span>
+            <span class="n">struc</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">(</span><span class="n">chains</span><span class="p">)</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">Motif</span><span class="p">(</span><span class="n">struc</span><span class="p">,</span> <span class="n">bps</span><span class="p">,</span> <span class="n">ends</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">helices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="str_to_residue"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.str_to_residue">[docs]</a><span class="k">def</span> <span class="nf">str_to_residue</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    converts a residue from string generated from :func:`Residue.to_str`</span>
+
+<span class="sd">    :param s: string created by Residue.to_str()</span>
+<span class="sd">    :type s: str</span>
+
+<span class="sd">    :return: chain from str</span>
+<span class="sd">    :rtype: secondary_structure.Residue</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Residue</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">spl</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span> <span class="n">spl</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">(),</span> <span class="n">spl</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="str_to_chain"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.str_to_chain">[docs]</a><span class="k">def</span> <span class="nf">str_to_chain</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    converts a chain from string generated from :func:`Chain.to_str`</span>
+
+<span class="sd">    :param s: string created by Chain.to_str()</span>
+<span class="sd">    :type s: str</span>
+
+<span class="sd">    :return: chain from str</span>
+<span class="sd">    :rtype: secondary_structure.Chain</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">Chain</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">r_str</span> <span class="ow">in</span> <span class="n">spl</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">r</span> <span class="o">=</span> <span class="n">str_to_residue</span><span class="p">(</span><span class="n">r_str</span><span class="p">)</span>
+        <span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">c</span></div>
+
+
+<div class="viewcode-block" id="str_to_structure"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.str_to_structure">[docs]</a><span class="k">def</span> <span class="nf">str_to_structure</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    converts a structure from string generated from :func:`Structure.to_str`</span>
+
+<span class="sd">    :param s: string created by Structure.to_str()</span>
+<span class="sd">    :type s: str</span>
+
+<span class="sd">    :return: structure from str</span>
+<span class="sd">    :rtype: secondary_structure.Structure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;|&quot;</span><span class="p">)</span>
+    <span class="n">chains</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c_str</span> <span class="ow">in</span> <span class="n">spl</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">str_to_chain</span><span class="p">(</span><span class="n">c_str</span><span class="p">)</span>
+        <span class="n">chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">Structure</span><span class="p">(</span><span class="n">chains</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="str_to_motif"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.str_to_motif">[docs]</a><span class="k">def</span> <span class="nf">str_to_motif</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    converts a motif from string generated from :func:`Motif.to_str`</span>
+
+<span class="sd">    :param s: string created by Motif.to_str()</span>
+<span class="sd">    :type s: str</span>
+
+<span class="sd">    :return: motif from str</span>
+<span class="sd">    :rtype: secondary_structure.Motif</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">Motif</span><span class="p">()</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">mtype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">spl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">spl</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">str_to_structure</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">residues</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">bp_str</span> <span class="ow">in</span> <span class="n">spl</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">res_is</span> <span class="o">=</span> <span class="n">bp_str</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">r1</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">res_is</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="n">r2</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">res_is</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">basepairs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Basepair</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">end_i</span> <span class="ow">in</span> <span class="n">spl</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">basepairs</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">end_i</span><span class="p">)])</span>
+    <span class="n">m</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="n">spl</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">m</span></div>
+
+
+<div class="viewcode-block" id="str_to_pose"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.str_to_pose">[docs]</a><span class="k">def</span> <span class="nf">str_to_pose</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    converts a pose from string generated from :func:`Pose.to_str`</span>
+
+<span class="sd">    :param s: string created by Pose.to_str()</span>
+<span class="sd">    :type s: str</span>
+
+<span class="sd">    :return: pose from str</span>
+<span class="sd">    :rtype: secondary_structure.Pose</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;#&quot;</span><span class="p">)</span>
+    <span class="n">p</span> <span class="o">=</span> <span class="n">Pose</span><span class="p">()</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">spl</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">spl</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">str_to_structure</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">residues</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">bp_str</span> <span class="ow">in</span> <span class="n">spl</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">res_is</span> <span class="o">=</span> <span class="n">bp_str</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">r1</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">res_is</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+        <span class="n">r2</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">res_is</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">basepairs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Basepair</span><span class="p">(</span><span class="n">r1</span><span class="p">,</span> <span class="n">r2</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">end_i</span> <span class="ow">in</span> <span class="n">spl</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+        <span class="n">p</span><span class="o">.</span><span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">basepairs</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">end_i</span><span class="p">)])</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="n">spl</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+
+    <span class="n">motifs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="nb">str</span> <span class="ow">in</span> <span class="n">spl</span><span class="p">[</span><span class="mi">6</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">spl2</span> <span class="o">=</span> <span class="nb">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;!&quot;</span><span class="p">)</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">Motif</span><span class="p">()</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">mtype</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">spl2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">spl2</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">path</span> <span class="o">=</span> <span class="n">spl2</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">structure</span> <span class="o">=</span> <span class="n">str_to_structure</span><span class="p">(</span><span class="n">spl2</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+        <span class="n">chains</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">chains</span><span class="p">():</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+                <span class="n">r_new</span> <span class="o">=</span> <span class="n">p</span><span class="o">.</span><span class="n">get_residue</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">num</span><span class="p">,</span> <span class="n">r</span><span class="o">.</span><span class="n">chain_id</span><span class="p">)</span>
+                <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_new</span><span class="p">)</span>
+            <span class="n">chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Chain</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">chains</span> <span class="o">=</span> <span class="n">chains</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="n">m</span><span class="o">.</span><span class="n">residues</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">bp_str</span> <span class="ow">in</span> <span class="n">spl2</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;@&quot;</span><span class="p">)[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">res_is</span> <span class="o">=</span> <span class="n">bp_str</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">res_is</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">res_is</span><span class="p">[</span><span class="mi">1</span><span class="p">])]</span>
+            <span class="k">for</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">p</span><span class="o">.</span><span class="n">basepairs</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">bp</span><span class="o">.</span><span class="n">res1</span> <span class="o">==</span> <span class="n">r1</span> <span class="ow">and</span> <span class="n">bp</span><span class="o">.</span><span class="n">res2</span> <span class="o">==</span> <span class="n">r2</span><span class="p">:</span>
+                    <span class="n">m</span><span class="o">.</span><span class="n">basepairs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bp</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">end_i</span> <span class="ow">in</span> <span class="n">spl2</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">():</span>
+            <span class="n">m</span><span class="o">.</span><span class="n">ends</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">basepairs</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">end_i</span><span class="p">)])</span>
+        <span class="n">m</span><span class="o">.</span><span class="n">end_ids</span> <span class="o">=</span> <span class="n">spl2</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">motifs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">motifs</span> <span class="o">=</span> <span class="n">motifs</span>
+    <span class="k">return</span> <span class="n">p</span></div>
+
+
+<div class="viewcode-block" id="assign_end_id_new"><a class="viewcode-back" href="../../auto/secondary_structure.html#rnamake.secondary_structure.assign_end_id_new">[docs]</a><span class="k">def</span> <span class="nf">assign_end_id_new</span><span class="p">(</span><span class="n">ss</span><span class="p">,</span> <span class="n">end</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    generate a new end_id based on the secondary structure instance in the</span>
+<span class="sd">    perspective of the supplied end. An end id is a composition of both the</span>
+<span class="sd">    sequence and secondary structure in a single string.</span>
+
+<span class="sd">    Two GC pairs in a row would be: GG_LL_CC_RR. Sequence followed by secondary</span>
+<span class="sd">    structure with L being left bracket, R being right bracket and U being dot.</span>
+
+<span class="sd">    :param ss: secondary structure instance either RNAStructure,Motif or Pose</span>
+<span class="sd">    :param end: secondary structure basepair that you want the end id to be in</span>
+<span class="sd">    :return:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">end</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ss</span><span class="o">.</span><span class="n">ends</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+            <span class="s2">&quot;supplied an end that is not in current ss element&quot;</span><span class="p">)</span>
+
+    <span class="n">all_chains</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">structure</span><span class="o">.</span><span class="n">chains</span><span class="p">[::]</span>
+    <span class="n">open_chains</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_chains</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">first</span><span class="p">()</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="n">res1</span> <span class="ow">or</span> <span class="n">c</span><span class="o">.</span><span class="n">first</span><span class="p">()</span> <span class="o">==</span> <span class="n">end</span><span class="o">.</span><span class="n">res2</span><span class="p">:</span>
+            <span class="n">open_chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="k">break</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">open_chains</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+            <span class="s2">&quot;could not find chain to start with&quot;</span><span class="p">)</span>
+
+    <span class="n">all_chains</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">open_chains</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">seen_res</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">seen_bp</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">saved_bp</span> <span class="o">=</span> <span class="bp">None</span>
+    <span class="n">structure</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">seq</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">ss_chains</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">open_chains</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">open_chains</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">dot_bracket</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+            <span class="n">bp</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">get_basepair</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+            <span class="n">saved_bp</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="k">if</span> <span class="n">bp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">saved_bp</span> <span class="o">=</span> <span class="n">bp</span>
+                <span class="n">partner_res</span> <span class="o">=</span> <span class="n">bp</span><span class="o">.</span><span class="n">partner</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">if</span>   <span class="n">bp</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen_bp</span> <span class="ow">and</span> <span class="n">r</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen_res</span> <span class="ow">and</span> \
+                                <span class="n">partner_res</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen_res</span><span class="p">:</span>
+                    <span class="n">seen_res</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="n">dot_bracket</span> <span class="o">=</span> <span class="s2">&quot;(&quot;</span>
+                <span class="k">elif</span> <span class="n">partner_res</span> <span class="ow">in</span> <span class="n">seen_res</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">seen_res</span><span class="p">[</span><span class="n">partner_res</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                        <span class="n">dot_bracket</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">dot_bracket</span> <span class="o">=</span> <span class="s2">&quot;)&quot;</span>
+                        <span class="n">seen_res</span><span class="p">[</span><span class="n">r</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+                        <span class="n">seen_res</span><span class="p">[</span><span class="n">partner_res</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+
+            <span class="n">structure</span> <span class="o">+=</span> <span class="n">dot_bracket</span>
+            <span class="n">seq</span> <span class="o">+=</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span>
+
+            <span class="k">if</span> <span class="n">saved_bp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">seen_bp</span><span class="p">[</span><span class="n">saved_bp</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">bounds</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">count</span>
+        <span class="n">ss_chains</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">seq</span><span class="p">,</span> <span class="n">structure</span><span class="p">])</span>
+        <span class="n">structure</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">seq</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+
+        <span class="n">best_score</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_chains</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+                <span class="n">bp</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">get_basepair</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">bp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">seen_bp</span><span class="p">:</span>
+                    <span class="n">score</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">score</span> <span class="o">&gt;</span> <span class="n">best_score</span><span class="p">:</span>
+                <span class="n">best_score</span> <span class="o">=</span> <span class="n">score</span>
+
+        <span class="n">best_chains</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">all_chains</span><span class="p">:</span>
+            <span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+                <span class="n">bp</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">get_basepair</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">bp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">seen_bp</span><span class="p">:</span>
+                    <span class="n">score</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">score</span> <span class="o">==</span> <span class="n">best_score</span><span class="p">:</span>
+                <span class="n">best_chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+        <span class="n">best_chain</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="n">best_score</span> <span class="o">=</span> <span class="mi">10000</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">best_chains</span><span class="p">:</span>
+            <span class="n">pos</span> <span class="o">=</span> <span class="mi">1000</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">):</span>
+                <span class="n">bp</span> <span class="o">=</span> <span class="n">ss</span><span class="o">.</span><span class="n">get_basepair</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">bp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">bp</span> <span class="ow">in</span> <span class="n">seen_bp</span><span class="p">:</span>
+                    <span class="n">pos</span> <span class="o">=</span> <span class="n">i</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="n">best_score</span><span class="p">:</span>
+                <span class="n">best_score</span> <span class="o">=</span> <span class="n">pos</span>
+                <span class="n">best_chain</span> <span class="o">=</span> <span class="n">c</span>
+
+        <span class="k">if</span> <span class="n">best_chain</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">break</span>
+        <span class="n">all_chains</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">best_chain</span><span class="p">)</span>
+        <span class="n">open_chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">best_chain</span><span class="p">)</span>
+
+    <span class="n">ss_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">chain</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ss_chains</span><span class="p">):</span>
+        <span class="n">ss_id</span> <span class="o">+=</span> <span class="n">chain</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_&quot;</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">chain</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">if</span>   <span class="n">e</span> <span class="o">==</span> <span class="s2">&quot;(&quot;</span><span class="p">:</span>
+                <span class="n">ss_id</span> <span class="o">+=</span> <span class="s2">&quot;L&quot;</span>
+            <span class="k">elif</span> <span class="n">e</span> <span class="o">==</span> <span class="s2">&quot;)&quot;</span><span class="p">:</span>
+                <span class="n">ss_id</span> <span class="o">+=</span> <span class="s2">&quot;R&quot;</span>
+            <span class="k">elif</span> <span class="n">e</span> <span class="o">==</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span>
+                <span class="n">ss_id</span> <span class="o">+=</span> <span class="s2">&quot;U&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SecondaryStructureException</span><span class="p">(</span>
+                    <span class="s2">&quot;unexpected symbol in dot bracket notation: &quot;</span> <span class="o">+</span> <span class="n">e</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ss_chains</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">ss_id</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span>
+    <span class="k">return</span> <span class="n">ss_id</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

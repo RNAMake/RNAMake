@@ -1,0 +1,676 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.sqlite_library &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.sqlite_library</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.sqlite_library</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">import</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">exceptions</span>
+<span class="kn">import</span> <span class="nn">motif</span>
+<span class="kn">import</span> <span class="nn">motif_ensemble</span>
+<span class="kn">import</span> <span class="nn">secondary_structure_factory</span>
+
+
+<div class="viewcode-block" id="SqliteLibrary"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.SqliteLibrary">[docs]</a><span class="k">class</span> <span class="nc">SqliteLibrary</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A wrapper for sqlite3 library, makes it simpler to do repeated sqlite3</span>
+<span class="sd">    calls with a set database file. This is a base class and should not be</span>
+<span class="sd">    called directly.</span>
+
+<span class="sd">    :attributes:</span>
+<span class="sd">    `data` : Dictionary of stored data</span>
+<span class="sd">        Holds data already queryed from database file so dont have to do an</span>
+<span class="sd">        extra query.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="SqliteLibrary.get_libnames"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.SqliteLibrary.get_libnames">[docs]</a>    <span class="k">def</span> <span class="nf">get_libnames</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get dictionary of valid registered library names / paths. Only library</span>
+<span class="sd">        names registered in this corresponding function in children classes</span>
+<span class="sd">        can be loaded.</span>
+
+<span class="sd">        :return: Dictionary of names / pathes for each valid sqlite3 database</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">{}</span></div>
+
+    <span class="k">def</span> <span class="nf">_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initates sqlite3 connection with database and ensures everything is</span>
+<span class="sd">        working properly.</span>
+
+<span class="sd">        :param path: path to sqlite3 database</span>
+<span class="sd">        :type path: string</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_path</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SqliteLibraryException</span><span class="p">(</span>
+                <span class="s2">&quot;path: &quot;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot; should exist but doesn&#39;t, either it was &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;deleted by accident or not commited on this branch&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+        <span class="n">cols</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;PRAGMA table_info(data_table)&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keys</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">cols</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">[</span><span class="n">c</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT count(*) from data_table&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="c1"># make sure there is something in the library</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SqliteLibraryException</span><span class="p">(</span>
+                <span class="s2">&quot;opened database file: &quot;</span> <span class="o">+</span> <span class="n">path</span> <span class="o">+</span> <span class="s2">&quot; but there are no rows!&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_path</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        helper method to check to make sure given name is a valid sqlite</span>
+<span class="sd">        library.</span>
+
+<span class="sd">        :param libname: name of sqlite library (twoway, nway etc)</span>
+<span class="sd">        :type libname: str</span>
+
+<span class="sd">        :return: full path of library</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">libname</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">libpath</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESOURCES_PATH</span>  <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_libnames</span><span class="p">()[</span><span class="n">libname</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SqliteLibraryException</span><span class="p">(</span>
+                <span class="s2">&quot;libname: &quot;</span> <span class="o">+</span> <span class="n">libname</span> <span class="o">+</span> <span class="s2">&quot; is not a valid sqlite_library. &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;options are: &quot;</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_libnames</span><span class="p">()</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+
+        <span class="k">return</span> <span class="n">libpath</span>
+
+    <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        do not call directly. Needs to be overloaded to un-stringify data back</span>
+<span class="sd">        into an object.</span>
+
+<span class="sd">        :param s: string version of an object stored in database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">_args_to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns string verision of options supplied used in sqlite select.</span>
+<span class="sd">        This is mainly used to report an error if a select does not yeild</span>
+<span class="sd">        results.</span>
+
+<span class="sd">        :param options: options for SELECT query.</span>
+<span class="sd">        :type options: dict</span>
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot; = &quot;</span> <span class="o">+</span> <span class="n">v</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span>
+        <span class="k">return</span> <span class="n">s</span>
+
+    <span class="k">def</span> <span class="nf">_generate_query</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates a SELECT query to retrieve rows from the sqlite3 database.</span>
+
+<span class="sd">        :param options: dictionary of variables used in selection</span>
+<span class="sd">        :type options:</span>
+
+<span class="sd">        :return: sqlite3 select command</span>
+<span class="sd">        :rtype: string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">cmd</span> <span class="o">=</span> <span class="s2">&quot;SELECT * from data_table WHERE &quot;</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">options</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">keys</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SqliteLibraryException</span><span class="p">(</span>
+                    <span class="s2">&quot;attempted to use &quot;</span> <span class="o">+</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot;=&quot;</span> <span class="o">+</span> <span class="n">v</span> <span class="o">+</span> <span class="s2">&quot; in getting data from&quot;</span>
+                    <span class="s2">&quot; SqliteLibrary, this column does not exist in database&quot;</span><span class="p">)</span>
+
+            <span class="n">cmd</span> <span class="o">+=</span> <span class="n">k</span> <span class="o">+</span> <span class="s2">&quot;=&#39;&quot;</span> <span class="o">+</span> <span class="n">v</span> <span class="o">+</span> <span class="s2">&quot;&#39; &quot;</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="o">!=</span> <span class="n">count</span><span class="o">+</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">cmd</span> <span class="o">+=</span> <span class="s2">&quot; AND &quot;</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">cmd</span>
+
+<div class="viewcode-block" id="SqliteLibrary.get"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.SqliteLibrary.get">[docs]</a>    <span class="k">def</span> <span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets row for sqlite3 database with specific variables specified in</span>
+<span class="sd">        options. Will at most return 1 item even if multiple items meet</span>
+<span class="sd">        selection criteria.</span>
+
+<span class="sd">        :param options: sqlite3 select columns and values</span>
+<span class="sd">        :return: unstringified data from database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_query</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SqliteLibraryException</span><span class="p">(</span>
+                <span class="s2">&quot;query returned no rows: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args_to_str</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="nb">id</span> <span class="o">=</span> <span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_data</span><span class="p">(</span><span class="n">rows</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="SqliteLibrary.get_multi"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.SqliteLibrary.get_multi">[docs]</a>    <span class="k">def</span> <span class="nf">get_multi</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets row for sqlite3 database with specific variables specified in</span>
+<span class="sd">        options. Same as get() except will return an list of all items that</span>
+<span class="sd">        meet the selection criteria.</span>
+
+<span class="sd">        :param options: sqlite3 select columns and values</span>
+<span class="sd">        :return: unstringified data from database</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_query</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SqliteLibraryException</span><span class="p">(</span>
+                <span class="s2">&quot;query returned no rows: &quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args_to_str</span><span class="p">(</span><span class="n">options</span><span class="p">)</span> <span class="p">)</span>
+
+        <span class="n">datas</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">rows</span><span class="p">:</span>
+            <span class="nb">id</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_data</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">datas</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">datas</span></div>
+
+<div class="viewcode-block" id="SqliteLibrary.get_random"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.SqliteLibrary.get_random">[docs]</a>    <span class="k">def</span> <span class="nf">get_random</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets a random row of data from sqlite3 database. Mostly used for</span>
+<span class="sd">        testing purposes.</span>
+
+<span class="sd">        :return: random row of unstringified data from database file</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="nb">id</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">max_size</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="nb">id</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="SqliteLibrary.load_all"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.SqliteLibrary.load_all">[docs]</a>    <span class="k">def</span> <span class="nf">load_all</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">99999</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads all data from database into memory. This has to be done if one</span>
+<span class="sd">        wants to iterate over all the rows in database. Can set a limit with</span>
+<span class="sd">        limit=N, will only load that many elements.</span>
+
+<span class="sd">        :param limit: the max number of database rows that should be loaded</span>
+<span class="sd">        :type limt: int</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s1">&#39;SELECT * from data_table&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">():</span>
+            <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">row</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">limit</span><span class="p">:</span>
+                <span class="k">break</span></div>
+
+    <span class="k">def</span> <span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">contains</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">options</span><span class="p">):</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_generate_query</span><span class="p">(</span><span class="n">options</span><span class="p">)</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">rows</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="MotifSqliteLibrary"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.MotifSqliteLibrary">[docs]</a><span class="k">class</span> <span class="nc">MotifSqliteLibrary</span><span class="p">(</span><span class="n">SqliteLibrary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sqlite3 library for holding stringifed motif.Motif objects. It is</span>
+<span class="sd">    significantly faster then reloading each motif from file.</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    ..  code-block:: python</span>
+
+<span class="sd">        # gets all twoway junctions</span>
+<span class="sd">        &gt;&gt;&gt; mlib = sqlite_library.MotifSqliteLibrary(&quot;ideal_helices&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; mlib.get(name=&quot;HELIX.IDEAL.2&quot;)</span>
+<span class="sd">        &lt;Motif(</span>
+<span class="sd">	            structure=&#39;&lt;Structure(name: N/A, #chains: 2, #residues: 8, #atoms: 172)&gt;&#39;,</span>
+<span class="sd">	            ends=&#39;2&#39;)&gt;</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Converts string to motif.Motif object</span>
+
+<span class="sd">        :param s: String verision of motif.Motif object</span>
+<span class="sd">        :type s: string</span>
+
+<span class="sd">        :return: returns unstringified version of motif.Motif</span>
+<span class="sd">        :rtype: motif.Motif</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">motif</span><span class="o">.</span><span class="n">str_to_motif</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="MotifSqliteLibrary.get_libnames"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.MotifSqliteLibrary.get_libnames">[docs]</a>    <span class="k">def</span> <span class="nf">get_libnames</span><span class="p">():</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get dictionary of valid registered library names / paths. Only library</span>
+<span class="sd">        names registered in this corresponding function in children classes</span>
+<span class="sd">        can be loaded.</span>
+
+<span class="sd">        :return: Dictionary of names / pathes for each valid sqlite3 database</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">libnames</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;ideal_helices&quot;</span>   <span class="p">:</span> <span class="s2">&quot;/motif_libraries_new/ideal_helices.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;ideal_helices_reversed&quot;</span> <span class="p">:</span>  <span class="s2">&quot;/motif_libraries_new/ideal_helices_reversed.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;twoway&quot;</span>          <span class="p">:</span> <span class="s2">&quot;/motif_libraries_new/twoway.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;tcontact&quot;</span>        <span class="p">:</span> <span class="s2">&quot;/motif_libraries_new/tcontact.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;hairpin&quot;</span>         <span class="p">:</span> <span class="s2">&quot;/motif_libraries_new/hairpin.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nway&quot;</span>            <span class="p">:</span> <span class="s2">&quot;/motif_libraries_new/nway.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;unique_twoway&quot;</span>   <span class="p">:</span> <span class="s2">&quot;/motif_libraries_new/unique_twoway.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bp_steps&quot;</span>        <span class="p">:</span> <span class="s2">&quot;/motif_libraries_new/bp_steps.db&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">libnames</span></div></div>
+
+
+<div class="viewcode-block" id="MotifEnsembleSqliteLibrary"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.MotifEnsembleSqliteLibrary">[docs]</a><span class="k">class</span> <span class="nc">MotifEnsembleSqliteLibrary</span><span class="p">(</span><span class="n">SqliteLibrary</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Sqlite3 library for holding stringifed motif_ensemble.MotifEnsemble objects.</span>
+<span class="sd">    It is significantly faster then reloading each motif from file.</span>
+
+<span class="sd">    :examples:</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">motif_ensemble</span><span class="o">.</span><span class="n">str_to_motif_ensemble</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_libnames</span><span class="p">():</span>
+        <span class="n">libnames</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;bp_steps&quot;</span> <span class="p">:</span>  <span class="s2">&quot;/motif_ensemble_libraries/bp_steps.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;twoway&quot;</span>   <span class="p">:</span>  <span class="s2">&quot;/motif_ensemble_libraries/twoway.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;twoway_clusters&quot;</span> <span class="p">:</span> <span class="s2">&quot;motif_ensemble_libraries/twoway_clusters.db&quot;</span> <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">libnames</span></div>
+
+
+<span class="k">class</span> <span class="nc">MotifStateSqliteLibrary</span><span class="p">(</span><span class="n">SqliteLibrary</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_libnames</span><span class="p">():</span>
+        <span class="n">libnames</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;ideal_helices&quot;</span> <span class="p">:</span>  <span class="s2">&quot;/motif_state_libraries/ideal_helices.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;twoway&quot;</span>        <span class="p">:</span>  <span class="s2">&quot;/motif_state_libraries/twoway.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;unique_twoway&quot;</span> <span class="p">:</span>  <span class="s2">&quot;/motif_state_libraries/unique_twoway.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;bp_steps&quot;</span>      <span class="p">:</span>  <span class="s2">&quot;/motif_state_libraries/bp_steps.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;twoway&quot;</span>        <span class="p">:</span>  <span class="s2">&quot;/motif_state_libraries/twoway.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;nway&quot;</span>          <span class="p">:</span>  <span class="s2">&quot;/motif_state_libraries/nway.db&quot;</span><span class="p">,</span>
+
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">libnames</span>
+
+    <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">motif</span><span class="o">.</span><span class="n">str_to_motif_state</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_motif_state_ensemble</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">load_all</span><span class="p">()</span>
+        <span class="n">mes</span> <span class="o">=</span> <span class="n">motif_ensemble</span><span class="o">.</span><span class="n">MotifStateEnsemble</span><span class="p">()</span>
+        <span class="n">motif_states</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">energies</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">ms</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">motif_states</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ms</span><span class="p">)</span>
+        <span class="n">mes</span><span class="o">.</span><span class="n">setup</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">motif_states</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">motif_states</span><span class="p">]</span> <span class="p">)</span>
+        <span class="k">return</span> <span class="n">mes</span>
+
+
+<span class="k">class</span> <span class="nc">MotifStateEnsembleSqliteLibrary</span><span class="p">(</span><span class="n">SqliteLibrary</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_setup</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">motif_ensemble</span><span class="o">.</span><span class="n">str_to_motif_state_ensemble</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_libnames</span><span class="p">():</span>
+        <span class="n">libnames</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;bp_steps&quot;</span>      <span class="p">:</span>  <span class="s2">&quot;/motif_state_ensemble_libraries/bp_steps.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;all_bp_steps&quot;</span>  <span class="p">:</span>  <span class="s2">&quot;/motif_state_ensemble_libraries/all_bp_steps.db&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;twoway&quot;</span>        <span class="p">:</span>  <span class="s2">&quot;/motif_state_ensemble_libraries/twoway.db&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+
+        <span class="k">return</span> <span class="n">libnames</span>
+
+
+<span class="k">class</span> <span class="nc">MotifClusterSqliteLibrary</span><span class="p">(</span><span class="n">SqliteLibrary</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">libname</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">libname</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_libnames</span><span class="p">():</span>
+        <span class="n">libnames</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;twoways&quot;</span>      <span class="p">:</span>  <span class="s2">&quot;/motif_state_libraries/twoways_clusters.db&quot;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">libnames</span>
+
+    <span class="k">def</span> <span class="nf">_generate_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">motif</span><span class="o">.</span><span class="n">str_to_motif_array</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="build_sqlite_library"><a class="viewcode-back" href="../../auto/sqlite_library.html#rnamake.sqlite_library.build_sqlite_library">[docs]</a><span class="k">def</span> <span class="nf">build_sqlite_library</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="n">primary_key</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Builds a sqlite library to store various data. See setup scripts for</span>
+<span class="sd">    more info on use. It is unlikely to be necessary to need to build new</span>
+<span class="sd">    libraries. The length of each row must be the same length as keys.</span>
+
+<span class="sd">    :param path: the path of sqlite3 library you want to create</span>
+<span class="sd">    :param data: list of data to be stored in sqlite library</span>
+<span class="sd">    :param keys: name of columns for each row in sqlite library</span>
+<span class="sd">    :param primary_key: which of the keys specified will be the primary key,</span>
+<span class="sd">        for sqlite3 index purposes, this must be a unique key, different for</span>
+<span class="sd">        each row.</span>
+
+<span class="sd">    :type path: String</span>
+<span class="sd">    :type data: list</span>
+<span class="sd">    :type keys: list</span>
+<span class="sd">    :type primary_key: String</span>
+
+<span class="sd">    :return: None</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    ..  code-block:: python</span>
+
+<span class="sd">        # build test library</span>
+<span class="sd">        # each list is a row in sqlite db</span>
+<span class="sd">        &gt;&gt;&gt; data = [[&#39;the_word&#39;, 0], [&#39;the&#39;, 1], [&#39;hello&#39;, 2]]</span>
+<span class="sd">        # the name of each column</span>
+<span class="sd">        &gt;&gt;&gt; keys = [&#39;word&#39;, &#39;id&#39;]</span>
+<span class="sd">        &gt;&gt;&gt; sqlite_library.build_sqlite_library(&quot;test.db&quot;, data, keys, &#39;id&#39;)</span>
+
+<span class="sd">        # read library</span>
+<span class="sd">        &gt;&gt;&gt; import sqlite3</span>
+<span class="sd">        &gt;&gt;&gt; conn = sqlite3.connect(&quot;test.db&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; conn.execute(&quot;SELECT * from data_table WHERE word=\&#39;the_word\&#39;&quot;).fetchone()</span>
+<span class="sd">        (u&#39;the_word&#39;, u&#39;0&#39;)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SqliteLibraryException</span><span class="p">(</span><span class="s2">&quot;data must be longer then 0&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">keys</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">SqliteLibraryException</span><span class="p">(</span>
+            <span class="s2">&quot;length of each row must be the same length as keys&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">connection</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">insert_str</span> <span class="o">=</span> <span class="s2">&quot;INSERT INTO data_table(&quot;</span>
+    <span class="n">table_str</span> <span class="o">=</span> <span class="s2">&quot;CREATE TABLE data_table(&quot;</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="n">table_str</span> <span class="o">+=</span> <span class="n">key</span> <span class="o">+</span> <span class="s2">&quot; TEXT,&quot;</span>
+        <span class="n">insert_str</span> <span class="o">+=</span> <span class="n">key</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="n">keys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">insert_str</span> <span class="o">+=</span> <span class="s2">&quot;,&quot;</span>
+    <span class="n">table_str</span> <span class="o">+=</span> <span class="s2">&quot;PRIMARY KEY (&quot;</span><span class="o">+</span><span class="n">primary_key</span><span class="o">+</span><span class="s2">&quot;))&quot;</span>
+    <span class="n">insert_str</span> <span class="o">+=</span> <span class="s2">&quot;) VALUES (&quot;</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">keys</span><span class="p">:</span>
+        <span class="n">insert_str</span> <span class="o">+=</span> <span class="s2">&quot;?&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">!=</span> <span class="n">keys</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">insert_str</span> <span class="o">+=</span> <span class="s2">&quot;,&quot;</span>
+    <span class="n">insert_str</span> <span class="o">+=</span> <span class="s2">&quot;)&quot;</span>
+
+    <span class="n">connection</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">table_str</span><span class="p">)</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">executemany</span><span class="p">(</span><span class="n">insert_str</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
+    <span class="n">connection</span><span class="o">.</span><span class="n">commit</span><span class="p">()</span></div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

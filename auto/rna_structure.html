@@ -1,0 +1,436 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>RNA Structure &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../index.html"/>
+        <link rel="prev" title="Motif Type" href="motif_type.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motif_type.html">Motif Type</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">RNA Structure</a><ul class="simple">
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>RNA Structure</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto/rna_structure.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="rna-structure">
+<span id="id1"></span><h1>RNA Structure<a class="headerlink" href="#rna-structure" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.rna_structure"></span><dl class="class">
+<dt id="rnamake.rna_structure.RNAStructure">
+<em class="property">class </em><code class="descclassname">rnamake.rna_structure.</code><code class="descname">RNAStructure</code><span class="sig-paren">(</span><em>struct=None</em>, <em>basepairs=None</em>, <em>ends=None</em>, <em>name='assembled'</em>, <em>path='assembled'</em>, <em>mtype=99</em>, <em>score=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/rna_structure.html#RNAStructure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.rna_structure.RNAStructure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Complete container for representing a RNA. Contains both the 3D structure
+information but also includes basepair objects to represent the pairs
+between residues. RNAStructure is rarely called directly but serves as an
+abstract class for both Motif and Pose so for example use please see those
+classes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>structure</strong> (<a class="reference internal" href="structure.html#rnamake.structure.Structure" title="rnamake.structure.Structure"><em>structure.Structure</em></a>) &#8211; The 3D coordinate information</li>
+<li><strong>basepairs</strong> (<em>list of basepair.Basepairs</em>) &#8211; basepairing information for each residue pair</li>
+<li><strong>ends</strong> (<em>list of basepair.Basepairs</em>) &#8211; the basepairs at the end of chains. These define connection
+points to other RNAStructures</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; name of RNAStructure</li>
+<li><strong>path</strong> (<em>str</em>) &#8211; location of where RNAStructure where 3D information was loaded
+from either the pdb or directory.</li>
+<li><strong>mtype</strong> (<a class="reference internal" href="motif_type.html#module-rnamake.motif_type" title="rnamake.motif_type"><em>motif_type</em></a>) &#8211; The type of a motif, only needed for Motif.motif objects</li>
+<li><strong>score</strong> (<em>float</em>) &#8211; The score generated by motif_scorer.MotifScorer</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>structure</cite>: structure.Structure</dt>
+<dd>structure containing residue and chain information for
+The 3D coordinate information</dd>
+<dt><cite>basepairs</cite>: list of basepair.Basepairs</dt>
+<dd>Basepairs between residues</dd>
+<dt><cite>ends</cite>: list of baspir.Basepairs</dt>
+<dd>Basepair ends where RNA structures can be connected</dd>
+<dt><cite>mtype</cite>: motif_type</dt>
+<dd>The type of a motif, only needed for Motif.motif objects</dd>
+<dt><cite>name</cite>: str</dt>
+<dd>the name of the RNAStructure</dd>
+<dt><cite>path</cite>: str</dt>
+<dd>location of where RNAStructure originated from, this is just
+a place holder for converting from rna_structure.RNAStructure</dd>
+<dt><cite>score</cite> <span class="classifier-delimiter">:</span> <span class="classifier">float</span></dt>
+<dd>the score generated by motif_scorer.MotifScorer, estimates secondary
+structure stability</dd>
+<dt><cite>end_ids</cite>: list of strs</dt>
+<dd>strings indenifying the secondary structure and sequence
+in the perspective of a given basepair end</dd>
+<dt><cite>beads</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of residue.Bead objects</span></dt>
+<dd>keeps the beads required for steric clash calulations</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># load test structure</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">rnamake.unittests</span> <span class="kn">import</span> <span class="n">instances</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r_struct</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="n">rna_structure</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.rna_structure.RNAStructure.chains">
+<code class="descname">chains</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/rna_structure.html#RNAStructure.chains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.rna_structure.RNAStructure.chains" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for rnamake.structure.Structure.chain</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.rna_structure.RNAStructure.get_basepair">
+<code class="descname">get_basepair</code><span class="sig-paren">(</span><em>bp_uuid=None</em>, <em>res1=None</em>, <em>res2=None</em>, <em>uuid1=None</em>, <em>uuid2=None</em>, <em>name=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/rna_structure.html#RNAStructure.get_basepair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.rna_structure.RNAStructure.get_basepair" title="Permalink to this definition">¶</a></dt>
+<dd><p>locates a Basepair object based on residue objects or uuids if nothing
+is supplied you will get back all the basepairs in the motif. The way
+to make sure you will only get one basepair back is to supply BOTH
+res1 and res2 OR uuid1 and uuid2, I have left it open like this
+because it is sometimes useful to get all basepairs that a single
+residue is involved</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>res1</strong> (<em>Residue object</em>) &#8211; First residue</li>
+<li><strong>res2</strong> (<em>Residue object</em>) &#8211; Second residue</li>
+<li><strong>uuid1</strong> (<em>uuid object</em>) &#8211; First residue uuid</li>
+<li><strong>uuid2</strong> (<em>uuid object</em>) &#8211; Second residue uuid</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># load test structure</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">rnamake.unittests</span> <span class="kn">import</span> <span class="n">instances</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r_struct</span> <span class="o">=</span> <span class="n">instances</span><span class="o">.</span><span class="n">rna_structure</span><span class="p">()</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">r_struct</span><span class="o">.</span><span class="n">basepairs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="o">&lt;</span><span class="n">Basepair</span><span class="p">(</span><span class="n">A1</span><span class="o">-</span><span class="n">A24</span><span class="p">)</span><span class="o">&gt;</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r_struct</span><span class="o">.</span><span class="n">get_basepair</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">A1</span><span class="o">-</span><span class="n">A24</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.rna_structure.RNAStructure.get_beads">
+<code class="descname">get_beads</code><span class="sig-paren">(</span><em>excluded_ends=None</em>, <em>excluded_res=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/rna_structure.html#RNAStructure.get_beads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.rna_structure.RNAStructure.get_beads" title="Permalink to this definition">¶</a></dt>
+<dd><p>generates 3-bead model residue beads for all residues in current
+rna_structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>excluded_res</strong> (<em>List of residue.Residue objects</em>) &#8211; List of residue objects whose beads are not to be
+included. This is generally end residues that would instantly clash
+with residues they are being overlayed onto when performing motif
+aligning</li>
+<li><strong>excluded_ends</strong> (<em>List of  basepair.Basepair objects</em>) &#8211; List of ends where the resiudes be added to
+exclude list. This is just a fast way to remove residues at
+connection sites between RNA structures.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">steric beads for this structure</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">List of residue.Bead objects</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.rna_structure.RNAStructure.get_residue">
+<code class="descname">get_residue</code><span class="sig-paren">(</span><em>num=None</em>, <em>chain_id=None</em>, <em>i_code=None</em>, <em>uuid=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/rna_structure.html#RNAStructure.get_residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.rna_structure.RNAStructure.get_residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="structure.html#rnamake.structure.Structure.get_residue" title="rnamake.structure.Structure.get_residue"><code class="xref py py-func docutils literal"><span class="pre">rnamake.structure.Structure.get_residue()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.rna_structure.RNAStructure.residues">
+<code class="descname">residues</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/rna_structure.html#RNAStructure.residues"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.rna_structure.RNAStructure.residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>wrapper for <a class="reference internal" href="structure.html#rnamake.structure.Structure.residues" title="rnamake.structure.Structure.residues"><code class="xref py py-func docutils literal"><span class="pre">rnamake.structure.Structure.residues()</span></code></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.rna_structure.RNAStructure.to_pdb">
+<code class="descname">to_pdb</code><span class="sig-paren">(</span><em>fname='motif.pdb'</em>, <em>renumber=-1</em>, <em>close_chain=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/rna_structure.html#RNAStructure.to_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.rna_structure.RNAStructure.to_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>write structure to pdb file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<em>str</em>) &#8211; name of the file of the pdb file you want to write to</li>
+<li><strong>renumber</strong> (<em>int</em>) &#8211; what should the first residue be numbered. -1 is
+to NOT renumber, Default=-1.</li>
+<li><strong>close_chain</strong> (<em>int</em>) &#8211; fixes the phosphate backbone, takes a while, so
+default is 0 not to run</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.rna_structure.RNAStructure.to_pdb_str">
+<code class="descname">to_pdb_str</code><span class="sig-paren">(</span><em>renumber=-1</em>, <em>close_chain=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/rna_structure.html#RNAStructure.to_pdb_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.rna_structure.RNAStructure.to_pdb_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a PDB string formatted verision of this Structure object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>renumber</strong> (<em>int</em>) &#8211; what should the first residue be numbered. -1 is
+to NOT renumber, Default=-1.</li>
+<li><strong>close_chain</strong> (<em>int</em>) &#8211; fixes the phosphate backbone, takes a while, so
+default is 0 not to run</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.rna_structure.basepairs_from_x3dna">
+<code class="descclassname">rnamake.rna_structure.</code><code class="descname">basepairs_from_x3dna</code><span class="sig-paren">(</span><em>path</em>, <em>name</em>, <em>structure</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/rna_structure.html#basepairs_from_x3dna"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.rna_structure.basepairs_from_x3dna" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets x3dna data on basepairing information and then interwines it
+with the structural information stored in structure for simpler
+retreival of data</p>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+      
+        <a href="motif_type.html" class="btn btn-neutral" title="Motif Type" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

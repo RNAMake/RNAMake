@@ -1,0 +1,367 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.residue_type &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.residue_type</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.residue_type</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">settings</span>
+
+<span class="n">alt_names</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;O1P&quot;</span><span class="p">:</span> <span class="s2">&quot;OP1&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;O2P&quot;</span><span class="p">:</span> <span class="s2">&quot;OP2&quot;</span>
+<span class="p">}</span>
+
+<div class="viewcode-block" id="ResidueType"><a class="viewcode-back" href="../../auto/residue_type.html#rnamake.residue_type.ResidueType">[docs]</a><span class="k">class</span> <span class="nc">ResidueType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Simple class to hold the topology of the residue, currrently only holds</span>
+<span class="sd">    which atoms are included in the atomtype but might be later expanded to</span>
+<span class="sd">    include bonds and charges. This class should not be initiated by itself,</span>
+<span class="sd">    initiation occurs in ResidueTypeSet</span>
+
+<span class="sd">    :param name: residue name</span>
+<span class="sd">    :param atom_map: the position of where each atom should in a residue by</span>
+<span class="sd">        name</span>
+
+<span class="sd">    :type name: str</span>
+<span class="sd">    :type atom_map: dict</span>
+
+<span class="sd">    :attributes:</span>
+<span class="sd">    `name` : str</span>
+<span class="sd">        Residue name</span>
+<span class="sd">    `atom_map` : dict</span>
+<span class="sd">        The position of where each atom should in a residue by name</span>
+<span class="sd">    `alt_name` : list</span>
+<span class="sd">        Other names the residue can go by, ex. G is also GUA</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">,</span> <span class="s2">&quot;atom_map&quot;</span><span class="p">,</span> <span class="s2">&quot;alt_names&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">atom_map</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atom_map</span> <span class="o">=</span> <span class="n">atom_map</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alt_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="o">+</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;D&quot;</span><span class="o">+</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;ResidueType(name=&#39;</span><span class="si">%s</span><span class="s2">&#39;)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_correct_atom_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">alt_names</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">alt_names</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">]]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span></div>
+
+
+<div class="viewcode-block" id="ResidueTypeSet"><a class="viewcode-back" href="../../auto/residue_type.html#rnamake.residue_type.ResidueTypeSet">[docs]</a><span class="k">class</span> <span class="nc">ResidueTypeSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Holds all the ResidueType objects, for initiation of new residues. Do not</span>
+<span class="sd">    initiate a instantance of ResidueTypeSet, if you want a new ResidueType do</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt;import rnamake.residue_type</span>
+<span class="sd">        &gt;&gt;&gt;rnamake.residue_type.get_rtype(&quot;GUA&quot;)</span>
+<span class="sd">        &lt;ResidueType(name=&#39;GUA&#39;)&gt;</span>
+
+<span class="sd">    :attributes:</span>
+<span class="sd">    `residue_types` : list of ResidueTypes</span>
+<span class="sd">        Contains all residue types that are acceptable in rnamake</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;residue_types&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">residue_types</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">path</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">RESOURCES_PATH</span> <span class="o">+</span> <span class="s2">&quot;/residue_types&quot;</span>
+        <span class="n">type_files</span> <span class="o">=</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="n">path</span> <span class="o">+</span> <span class="s2">&quot;/*.rtype&quot;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">tf</span> <span class="ow">in</span> <span class="n">type_files</span><span class="p">:</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_rtype_name</span><span class="p">(</span><span class="n">tf</span><span class="p">)</span>
+            <span class="n">atom_map</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_atom_map_from_file</span><span class="p">(</span><span class="n">tf</span><span class="p">)</span>
+            <span class="n">rtype</span> <span class="o">=</span> <span class="n">ResidueType</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">atom_map</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">residue_types</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rtype</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_rtype_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        extract name from file type_file name.</span>
+<span class="sd">        :param type_file: file path of residue type file</span>
+<span class="sd">        :type type_file: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">name_spl</span> <span class="o">=</span> <span class="n">type_file</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+        <span class="n">type_file_name</span> <span class="o">=</span> <span class="n">name_spl</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">type_file_name</span><span class="p">[:</span><span class="o">-</span><span class="mi">6</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_atom_map_from_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">type_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        extracts the atom position for each atom for the Residue object atom</span>
+<span class="sd">        array for easy indexing</span>
+<span class="sd">        :param type_file: file path of residue type file</span>
+<span class="sd">        :type type_file: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">type_file</span><span class="p">)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="n">atom_names</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+        <span class="n">atom_map</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">atom_names</span><span class="p">):</span>
+            <span class="n">atom_map</span><span class="p">[</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="k">return</span> <span class="n">atom_map</span>
+
+<div class="viewcode-block" id="ResidueTypeSet.get_rtype_by_resname"><a class="viewcode-back" href="../../auto/residue_type.html#rnamake.residue_type.ResidueTypeSet.get_rtype_by_resname">[docs]</a>    <span class="k">def</span> <span class="nf">get_rtype_by_resname</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">resname</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get the ResidueType object for a given residue by name, this method</span>
+<span class="sd">        should not be called directly! Should call</span>
+<span class="sd">        rnamake.residue_type.get_rtype for simplicity</span>
+<span class="sd">        :param resname: name of residue that you want the ResidueType for</span>
+<span class="sd">        :type resname: str</span>
+
+<span class="sd">        .. code-block:: python</span>
+<span class="sd">            #get guanine residue type</span>
+<span class="sd">            &gt;&gt;&gt;rtype =  ResidueTypeSet()</span>
+<span class="sd">            &gt;&gt;&gt;rtype.get_rtype_by_resname(&quot;GUA&quot;)</span>
+<span class="sd">            &lt;ResidueType(name=&#39;GUA&#39;)&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">restype</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residue_types</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">resname</span> <span class="o">==</span> <span class="n">restype</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">restype</span>
+            <span class="k">if</span> <span class="n">resname</span> <span class="ow">in</span> <span class="n">restype</span><span class="o">.</span><span class="n">alt_names</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">restype</span>
+        <span class="k">return</span> <span class="bp">None</span></div></div>
+
+
+<div class="viewcode-block" id="get_rtype"><a class="viewcode-back" href="../../auto/residue_type.html#rnamake.residue_type.get_rtype">[docs]</a><span class="k">def</span> <span class="nf">get_rtype</span><span class="p">(</span><span class="n">resname</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a reference to a ResidueType by name. This is the only way you should</span>
+<span class="sd">    get a ResidueType reference</span>
+
+<span class="sd">    :param resname: the name of the residue you want the ResidueType</span>
+<span class="sd">    :type resname: str</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt;rnamake.residue_type.get_rtype(&quot;GUA&quot;)</span>
+<span class="sd">        &lt;ResidueType(name=&#39;GUA&#39;)&gt;</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">rtypes</span><span class="o">.</span><span class="n">get_rtype_by_resname</span><span class="p">(</span><span class="n">resname</span><span class="p">)</span></div>
+
+<span class="n">rtypes</span> <span class="o">=</span> <span class="n">ResidueTypeSet</span><span class="p">()</span>
+
+<span class="c1"># add alt names will at some point be phased out</span>
+<span class="n">gua</span> <span class="o">=</span> <span class="n">get_rtype</span><span class="p">(</span><span class="s2">&quot;GUA&quot;</span><span class="p">)</span>
+<span class="n">ade</span> <span class="o">=</span> <span class="n">get_rtype</span><span class="p">(</span><span class="s2">&quot;ADE&quot;</span><span class="p">)</span>
+<span class="n">ura</span> <span class="o">=</span> <span class="n">get_rtype</span><span class="p">(</span><span class="s2">&quot;URA&quot;</span><span class="p">)</span>
+<span class="n">cyt</span> <span class="o">=</span> <span class="n">get_rtype</span><span class="p">(</span><span class="s2">&quot;CYT&quot;</span><span class="p">)</span>
+
+<span class="n">gua</span><span class="o">.</span><span class="n">alt_names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s2">&quot;MIA GDP GTP M2G 1MG 7MG G7M QUO I YG&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+<span class="n">ade</span><span class="o">.</span><span class="n">alt_names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s2">&quot;A23 3DA 1MA 12A AET 2MA&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+<span class="n">ura</span><span class="o">.</span><span class="n">alt_names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s2">&quot;PSU H2U 5MU 4SU 5BU 5MC U3H 2MU 70U BRU DT&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+<span class="n">cyt</span><span class="o">.</span><span class="n">alt_names</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="s2">&quot;CBR CCC&quot;</span><span class="o">.</span><span class="n">split</span><span class="p">())</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

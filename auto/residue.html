@@ -1,0 +1,573 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Residue &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../index.html"/>
+        <link rel="next" title="Residue Type" href="residue_type.html"/>
+        <link rel="prev" title="Atom" href="atom.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">Graph</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite_library.html">Sqlite Library</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="atom.html">Atom</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Residue</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motif_type.html">Motif Type</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Residue</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto/residue.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="residue">
+<span id="id1"></span><h1>Residue<a class="headerlink" href="#residue" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.residue"></span><dl class="class">
+<dt id="rnamake.residue.Bead">
+<em class="property">class </em><code class="descclassname">rnamake.residue.</code><code class="descname">Bead</code><span class="sig-paren">(</span><em>center</em>, <em>btype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Bead"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Bead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Bead class stores information related to keeping track of steric clashes
+between residues during building. They are never used outside the Residue class</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>btype</strong> (<a class="reference internal" href="#rnamake.residue.BeadType" title="rnamake.residue.BeadType"><em>BeadType</em></a>) &#8211; type of the bead either Phos(Phosphate), Sugar or Base, of
+the atoms used generate the center</li>
+<li><strong>center</strong> (<em>numpy array</em>) &#8211; The geometric center of the group of atoms</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="rnamake.residue.Bead.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Bead.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Bead.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns a deep copy of current bead object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">copy of bead object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.residue.Bead" title="rnamake.residue.Bead">Bead</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Bead.type_name">
+<code class="descname">type_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Bead.type_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Bead.type_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns name of btype in string form</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">name of btype type</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.residue.BeadType">
+<em class="property">class </em><code class="descclassname">rnamake.residue.</code><code class="descname">BeadType</code><a class="reference internal" href="../_modules/rnamake/residue.html#BeadType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.BeadType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>BeadType is an ENUM type. This is to specify which center of atoms each bead
+represents.</p>
+<p>Phosphate (0):  P, OP1, OP2</p>
+<p>Sugar (1):  O5&#8217;,C5&#8217;,C4&#8217;,O4&#8217;,C3&#8217;,O3&#8217;,C1&#8217;,C2&#8217;,O2&#8217;</p>
+<p>Base  (2):  All remaining atoms</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.residue.Residue">
+<em class="property">class </em><code class="descclassname">rnamake.residue.</code><code class="descname">Residue</code><span class="sig-paren">(</span><em>rtype</em>, <em>name</em>, <em>num</em>, <em>chain_id</em>, <em>i_code=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Store residue information from pdb file, stores all Atom objects that
+belong to residue. Implementation is designed to be extremely lightweight.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rtype</strong> (<a class="reference internal" href="residue_type.html#rnamake.residue_type.ResidueType" title="rnamake.residue_type.ResidueType"><em>residue_type.ResidueType</em></a>) &#8211; residue type, stores information about residue</li>
+<li><strong>name</strong> (<em>str</em>) &#8211; residue name</li>
+<li><strong>num</strong> (<em>int</em>) &#8211; residue num</li>
+<li><strong>chain_id</strong> (<em>str</em>) &#8211; chain identification</li>
+<li><strong>i_code</strong> (<em>str</em>) &#8211; insertion code, optional argument if not supplied will be
+set to</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>atoms</cite> <span class="classifier-delimiter">:</span> <span class="classifier">atom.Atom</span></dt>
+<dd>holds all atoms that belong to this residue object</dd>
+<dt><cite>name</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>name of residue, ex. ADE, GUA etc</dd>
+<dt><cite>num</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>residue num</dd>
+<dt><cite>rtype</cite> <span class="classifier-delimiter">:</span> <span class="classifier">residue_type.ResidueType</span></dt>
+<dd>Information about residue type each nucleic acid has its own type</dd>
+<dt><cite>chain_id</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>chain indentification string, ex. &#8216;A&#8217; or &#8216;B&#8217;</dd>
+<dt><cite>i_code</cite>: str</dt>
+<dd>residue insertion code</dd>
+<dt><cite>uuid</cite> <span class="classifier-delimiter">:</span> <span class="classifier">uuid.uuid1</span></dt>
+<dd>the unique id to indentify residue</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># generating a new residue</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">rts</span> <span class="o">=</span> <span class="n">residue_type</span><span class="o">.</span><span class="n">ResidueTypeSet</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">rtype</span> <span class="o">=</span> <span class="n">rts</span><span class="o">.</span><span class="n">get_rtype_by_resname</span><span class="p">(</span><span class="s2">&quot;ADE&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">Residue</span><span class="p">(</span><span class="n">rtype</span><span class="p">,</span> <span class="s2">&quot;ADE&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span>
+<span class="n">A</span>
+
+<span class="c1">#using test residue</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">residue</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">r</span><span class="o">.</span><span class="n">name</span>
+<span class="n">G</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">a</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;C1&#39;&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">coords</span>
+<span class="p">[</span><span class="o">-</span><span class="mf">23.806</span> <span class="o">-</span><span class="mf">50.289</span>  <span class="mf">86.732</span><span class="p">]</span>
+
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span><span class="o">.</span><span class="n">get_beads</span><span class="p">()</span>
+<span class="p">[</span><span class="o">&lt;</span><span class="n">Bead</span><span class="p">(</span><span class="n">btype</span><span class="o">=</span><span class="s1">&#39;SUGAR&#39;</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="s1">&#39;-24.027 -48.5001111111 86.368&#39;</span><span class="p">)</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Bead</span><span class="p">(</span><span class="n">btype</span><span class="o">=</span><span class="s1">&#39;BASE&#39;</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="s1">&#39;-21.2186363636 -52.048 85.1157272727&#39;</span><span class="p">)</span><span class="o">&gt;</span><span class="p">]</span>
+
+<span class="c1">#a fast way of saving coordinate information to file</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span>
+<span class="s2">&quot;GUA,G,103,A,,N,N,N,O5&#39; -26.469 -47.756 84.669,C5&#39; -25.05 -47.579 84.775,C4&#39; -24.521 -48.156 86.068,O4&#39; -24.861 -49.568 86.118,C3&#39; -23.009 -48.119 86.281,O3&#39; -22.548 -46.872 86.808,C1&#39; -23.806 -50.289 86.732,C2&#39; -22.812 -49.259 87.269,O2&#39; -23.167 -48.903 88.592,N1 -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,&quot;</span>
+
+<span class="c1">#get PDB formmated coordinates back out</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">r</span><span class="o">.</span><span class="n">to_pdb_str</span><span class="p">()</span>
+<span class="n">ATOM</span>      <span class="mi">1</span> <span class="n">O5</span><span class="s1">&#39;  G   A 103     -26.469 -47.756  84.669  1.00  0.00</span>
+<span class="n">ATOM</span>      <span class="mi">2</span> <span class="n">C5</span><span class="s1">&#39;  G   A 103     -25.050 -47.579  84.775  1.00  0.00</span>
+<span class="n">ATOM</span>      <span class="mi">3</span> <span class="n">C4</span><span class="s1">&#39;  G   A 103     -24.521 -48.156  86.068  1.00  0.00</span>
+<span class="n">ATOM</span>      <span class="mi">4</span> <span class="n">O4</span><span class="s1">&#39;  G   A 103     -24.861 -49.568  86.118  1.00  0.00</span>
+<span class="n">ATOM</span>      <span class="mi">5</span> <span class="n">C3</span><span class="s1">&#39;  G   A 103     -23.009 -48.119  86.281  1.00  0.00</span>
+<span class="n">ATOM</span>      <span class="mi">6</span> <span class="n">O3</span><span class="s1">&#39;  G   A 103     -22.548 -46.872  86.808  1.00  0.00</span>
+<span class="o">.</span>
+<span class="o">.</span>
+<span class="o">.</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.residue.Residue.connected_to">
+<code class="descname">connected_to</code><span class="sig-paren">(</span><em>res</em>, <em>cutoff=3.0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.connected_to"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.connected_to" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if another residue is connected to this residue, returns 0
+if res is not connected to self, returns 1 if connection is going
+from 5&#8217; to 3&#8217; and returns -1 if connection is going from 3&#8217; to 5&#8217;</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>res</strong> (<a class="reference internal" href="#rnamake.residue.Residue" title="rnamake.residue.Residue"><em>Residue</em></a>) &#8211; another residue</li>
+<li><strong>cutoff</strong> (<em>int</em>) &#8211; distance to be considered connected, default: 3 Angstroms</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Residue.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>performs a deep copy of Residue object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.residue.Residue" title="rnamake.residue.Residue">Residue</a></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">residue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r_copy</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r_copy</span><span class="o">.</span><span class="n">name</span>
+<span class="go">G</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Residue.get_atom">
+<code class="descname">get_atom</code><span class="sig-paren">(</span><em>atom_name</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.get_atom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.get_atom" title="Permalink to this definition">¶</a></dt>
+<dd><p>get atom object by its name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atom_name</strong> (<em>str</em>) &#8211; name</td>
+</tr>
+</tbody>
+</table>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">residue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">a</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;C1&#39;&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">a</span><span class="o">.</span><span class="n">coords</span>
+<span class="go">[-23.806 -50.289  86.732]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Residue.get_beads">
+<code class="descname">get_beads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.get_beads"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.get_beads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates steric beads required for checking for steric clashes between
+motifs. Each residues has three beads modeled after the typical three
+bead models used in coarse grain modeling. The three beads are:</p>
+<p>Phosphate:  P, OP1, OP2</p>
+<p>Sugar    :  O5&#8217;,C5&#8217;,C4&#8217;,O4&#8217;,C3&#8217;,O3&#8217;,C1&#8217;,C2&#8217;,O2&#8217;</p>
+<p>Base     :  All remaining atoms</p>
+<p>if there are for example no phosphate atoms only 2 beads will be returned.</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">residue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">get_beads</span><span class="p">()</span>
+<span class="go">[&lt;Bead(btype=&#39;SUGAR&#39;, center=&#39;-24.027 -48.5001111111 86.368&#39;)&gt;, &lt;Bead(btype=&#39;BASE&#39;, center=&#39;-21.2186363636 -52.048 85.1157272727&#39;)&gt;]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Residue.new_uuid">
+<code class="descname">new_uuid</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.new_uuid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.new_uuid" title="Permalink to this definition">¶</a></dt>
+<dd><p>give residue a new unique indentifier code.
+There is probably no reason why you should call this unless writing a new,
+motif structure.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Residue.setup_atoms">
+<code class="descname">setup_atoms</code><span class="sig-paren">(</span><em>atoms</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.setup_atoms"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.setup_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>put atoms in correct positon in internal atom list, also corrects some
+named atom names to their correct name</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atoms</strong> (<em>list of Atom objects</em>) &#8211; list of atom objects that are to be part of this residue</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Residue.short_name">
+<code class="descname">short_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.short_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.short_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets letter of residue, i.e. A or G etc</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">letter for residue</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Residue.to_pdb">
+<code class="descname">to_pdb</code><span class="sig-paren">(</span><em>fname='residue.pdb'</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.to_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.to_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a PDB string formmated verision of this Residue object to file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fname</strong> (<em>str</em>) &#8211; filename of output PDB file, default=&#8221;chain.pdb&#8221;</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Residue.to_pdb_str">
+<code class="descname">to_pdb_str</code><span class="sig-paren">(</span><em>acount=1</em>, <em>return_acount=0</em>, <em>rnum=-1</em>, <em>chain_id=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.to_pdb_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.to_pdb_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns pdb formatted string of residue&#8217;s coordinate information</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>acount</strong> (<em>int</em>) &#8211; current atom index, default: 1</li>
+<li><strong>return_acount</strong> (<em>int</em>) &#8211; final atom index after current atoms, default: 0</li>
+<li><strong>rnum</strong> (<em>int</em>) &#8211; starting residue number, default: -1</li>
+<li><strong>chain_id</strong> (<em>str</em>) &#8211; the chain id of the chain, i.e. &#8220;A&#8221;, &#8220;B&#8221; etc</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">str</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">residue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">to_pdb_str</span><span class="p">()</span>
+<span class="go">ATOM      1 O5&#39;  G   A 103     -26.469 -47.756  84.669  1.00  0.00</span>
+<span class="go">ATOM      2 C5&#39;  G   A 103     -25.050 -47.579  84.775  1.00  0.00</span>
+<span class="go">ATOM      3 C4&#39;  G   A 103     -24.521 -48.156  86.068  1.00  0.00</span>
+<span class="go">ATOM      4 O4&#39;  G   A 103     -24.861 -49.568  86.118  1.00  0.00</span>
+<span class="go">ATOM      5 C3&#39;  G   A 103     -23.009 -48.119  86.281  1.00  0.00</span>
+<span class="go">ATOM      6 O3&#39;  G   A 103     -22.548 -46.872  86.808  1.00  0.00</span>
+<span class="go">.</span>
+<span class="go">.</span>
+<span class="go">.</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.residue.Residue.to_str">
+<code class="descname">to_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/residue.html#Residue.to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.residue.Residue.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>stringifes residue object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">stringified residue object</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">residue</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">r</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span>
+<span class="go">&quot;GUA,G,103,A,,N,N,N,O5&#39; -26.469 -47.756 84.669,C5&#39; -25.05 -47.579 84.775,C4&#39; -24.521 -48.156 86.068,O4&#39; -24.861 -49.568 86.118,C3&#39; -23.009 -48.119 86.281,O3&#39; -22.548 -46.872 86.808,C1&#39; -23.806 -50.289 86.732,C2&#39; -22.812 -49.259 87.269,O2&#39; -23.167 -48.903 88.592,N1 -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="residue_type.html" class="btn btn-neutral float-right" title="Residue Type" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="atom.html" class="btn btn-neutral" title="Atom" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

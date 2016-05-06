@@ -1,0 +1,1072 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Tree &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../index.html"/>
+        <link rel="next" title="Transform" href="transform.html"/>
+        <link rel="prev" title="Graph" href="graph.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="graph.html">Graph</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Tree</a><ul class="simple">
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Tree</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto/tree.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="tree">
+<span id="id1"></span><h1>Tree<a class="headerlink" href="#tree" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.tree"></span><dl class="class">
+<dt id="rnamake.tree.Tree">
+<em class="property">class </em><code class="descclassname">rnamake.tree.</code><code class="descname">Tree</code><a class="reference internal" href="../_modules/rnamake/tree.html#Tree"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.Tree" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>General implementation of a tree. Do not call directly!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>nodes</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of TreeNode objects</span></dt>
+<dd>all the nodes in the tree, used for fast access by index</dd>
+<dt><cite>level</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>the current tree level, used for quickly deleting sections of the tree</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>the current node index, always the length of the number of nodes in the tree</dd>
+<dt><cite>last_node</cite>: TreeNode object</dt>
+<dd>the last node added to the tree</dd>
+<dt><cite>current_node</cite>: TreeNode object</dt>
+<dd>the current node during iteration</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.tree.Tree.decrease_level">
+<code class="descname">decrease_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#Tree.decrease_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.Tree.decrease_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decreases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.Tree.get_node">
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#Tree.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.Tree.get_node" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<em>int</em>) &#8211; the node index that you want</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">TreeNode object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">exceptions.TreeIndexException</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">TreeDynamic</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">#get node of index &#39;0&#39; which is the first one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.Tree.next_level">
+<code class="descname">next_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#Tree.next_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.Tree.next_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.Tree.remove_node">
+<code class="descname">remove_node</code><span class="sig-paren">(</span><em>node=None</em>, <em>index=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#Tree.remove_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.Tree.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes a node with a given index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<a class="reference internal" href="#rnamake.tree.TreeNode" title="rnamake.tree.TreeNode"><em>TreeNode</em></a>) &#8211; the actual node object you want to remove</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; the index of the node you want to remove</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">exceptions.TreeIndexException, exceptions.TreeException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.Tree.remove_node_level">
+<code class="descname">remove_node_level</code><span class="sig-paren">(</span><em>level=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#Tree.remove_node_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.Tree.remove_node_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove all nodes with a given level, this is useful if you are unsure
+how many nodes have been added from a given point. if level is not
+specified level will be set to current level</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>level</strong> (<em>int</em>) &#8211; the node minimum node level you want to remove</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.tree.TreeDynamic">
+<em class="property">class </em><code class="descclassname">rnamake.tree.</code><code class="descname">TreeDynamic</code><a class="reference internal" href="../_modules/rnamake/tree.html#TreeDynamic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeDynamic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.tree.Tree" title="rnamake.tree.Tree"><code class="xref py py-class docutils literal"><span class="pre">rnamake.tree.Tree</span></code></a></p>
+<p>a Tree that has a dynamic number of children. i.e. each node does NOT
+have a predefined number of children. Each node starts with 0
+children and are added over time, there is no max to the number of
+children each node can have</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>nodes</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of TreeNode objects</span></dt>
+<dd>all the nodes in the tree, used for fast access by index</dd>
+<dt><cite>level</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>the current tree level, used for quickly deleting sections of the tree</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>the current node index, always the length of the number of nodes in the tree</dd>
+<dt><cite>last_node</cite>: TreeNode object</dt>
+<dd>the last node added to the tree</dd>
+<dt><cite>current_node</cite>: TreeNode object</dt>
+<dd>the current node during iteration</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">TreeDynamic</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">parent_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">parent_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">children</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.tree.TreeDynamic.add_data">
+<code class="descname">add_data</code><span class="sig-paren">(</span><em>data</em>, <em>parent_index=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeDynamic.add_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeDynamic.add_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>add a new element of data to the tree</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>can be anything</em>) &#8211; Item to be added to tree</li>
+<li><strong>parent_index</strong> (<em>int</em>) &#8211; index of node that this element should be connected too</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">index of added node</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">int</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">exceptions.TreeIndexException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeDynamic.decrease_level">
+<code class="descname">decrease_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeDynamic.decrease_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decreases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeDynamic.get_node">
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeDynamic.get_node" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<em>int</em>) &#8211; the node index that you want</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">TreeNode object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">exceptions.TreeIndexException</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">TreeDynamic</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">#get node of index &#39;0&#39; which is the first one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeDynamic.next_level">
+<code class="descname">next_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeDynamic.next_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeDynamic.remove_node">
+<code class="descname">remove_node</code><span class="sig-paren">(</span><em>node=None</em>, <em>index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeDynamic.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes a node with a given index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<a class="reference internal" href="#rnamake.tree.TreeNode" title="rnamake.tree.TreeNode"><em>TreeNode</em></a>) &#8211; the actual node object you want to remove</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; the index of the node you want to remove</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">exceptions.TreeIndexException, exceptions.TreeException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeDynamic.remove_node_level">
+<code class="descname">remove_node_level</code><span class="sig-paren">(</span><em>level=None</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeDynamic.remove_node_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove all nodes with a given level, this is useful if you are unsure
+how many nodes have been added from a given point. if level is not
+specified level will be set to current level</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>level</strong> (<em>int</em>) &#8211; the node minimum node level you want to remove</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.tree.TreeNode">
+<em class="property">class </em><code class="descclassname">rnamake.tree.</code><code class="descname">TreeNode</code><span class="sig-paren">(</span><em>data</em>, <em>index</em>, <em>level</em>, <em>n_children=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>An abstract class to define the behavior of a tree node or an element of
+data that has connectivity relationships to other elements of data of the
+same type. This class is never called directly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>anything</em>) &#8211; The element that you wish to store in the tree</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.tree.Tree.get_node" title="rnamake.tree.Tree.get_node"><code class="xref py py-func docutils literal"><span class="pre">Tree.get_node()</span></code></a></li>
+<li><strong>level</strong> (<em>int</em>) &#8211; A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</li>
+<li><strong>n_children</strong> (<em>int</em>) &#8211; The number of connections this node can have, in
+TreeDynamic this does nothing.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>data</cite> <span class="classifier-delimiter">:</span> <span class="classifier">anything</span></dt>
+<dd>The element of data being stored in tree</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.tree.Tree.get_node" title="rnamake.tree.Tree.get_node"><code class="xref py py-func docutils literal"><span class="pre">Tree.get_node()</span></code></a></dd>
+<dt><cite>level</cite>: int</dt>
+<dd>A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</dd>
+<dt><cite>children</cite>: list of TreeNodes</dt>
+<dd>Nodes whose parent is this node</dd>
+<dt><cite>parent</cite>: TreeNode</dt>
+<dd>the parent of the current node</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.tree.TreeNode.available_children_pos">
+<code class="descname">available_children_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNode.available_children_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNode.available_children_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets all of the children positions that are not filled yet for this
+node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of end positions not yet filled</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of ints</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNode.available_pos">
+<code class="descname">available_pos</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNode.available_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNode.available_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks to see if a child position is filled or not. returns 0 is filled
+or not available and 1 if its avialable to be used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pos</strong> &#8211; the position in children list you want to check</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the avialability of the position</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNode.parent_end_index">
+<code class="descname">parent_end_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNode.parent_end_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNode.parent_end_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the position of this node in the children list of the parent.
+i.e. what number child is this not in reference to the parent. will
+return -1 if this node has no parent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the child position this node is in reference to its parent</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNode.parent_index">
+<code class="descname">parent_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNode.parent_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNode.parent_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the node index of parent if parent is None returns -1</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">node index of parent</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.tree.TreeNodeDynamic">
+<em class="property">class </em><code class="descclassname">rnamake.tree.</code><code class="descname">TreeNodeDynamic</code><span class="sig-paren">(</span><em>data</em>, <em>index</em>, <em>level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNodeDynamic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNodeDynamic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.tree.TreeNode" title="rnamake.tree.TreeNode"><code class="xref py py-class docutils literal"><span class="pre">rnamake.tree.TreeNode</span></code></a></p>
+<p>A TreeNode container that is specific for TreeDynamic trees. That is
+it can be connected to an unlimited number of other nodes. There is no
+reason to instantiate this class outside TreeDynamic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>anything</em>) &#8211; The element that you wish to store in the tree</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.tree.Tree.get_node" title="rnamake.tree.Tree.get_node"><code class="xref py py-func docutils literal"><span class="pre">Tree.get_node()</span></code></a></li>
+<li><strong>level</strong> (<em>int</em>) &#8211; A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>data</cite> <span class="classifier-delimiter">:</span> <span class="classifier">anything</span></dt>
+<dd>The element of data being stored in tree</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.tree.Tree.get_node" title="rnamake.tree.Tree.get_node"><code class="xref py py-func docutils literal"><span class="pre">Tree.get_node()</span></code></a></dd>
+<dt><cite>level</cite>: int</dt>
+<dd>A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</dd>
+<dt><cite>children</cite>: list of TreeNodes</dt>
+<dd>Nodes whose parent is this node</dd>
+<dt><cite>parent</cite>: TreeNode</dt>
+<dd>the parent of the current node</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeDynamic.add_child">
+<code class="descname">add_child</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNodeDynamic.add_child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNodeDynamic.add_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds a new node as a child to the current node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="#rnamake.tree.TreeNodeDynamic" title="rnamake.tree.TreeNodeDynamic"><em>TreeNodeDynamic</em></a>) &#8211; the node you want to as a child to this node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeDynamic.available_children_pos">
+<code class="descname">available_children_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeNodeDynamic.available_children_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets all of the children positions that are not filled yet for this
+node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of end positions not yet filled</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of ints</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeDynamic.available_pos">
+<code class="descname">available_pos</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeNodeDynamic.available_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks to see if a child position is filled or not. returns 0 is filled
+or not available and 1 if its avialable to be used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pos</strong> &#8211; the position in children list you want to check</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the avialability of the position</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeDynamic.parent_end_index">
+<code class="descname">parent_end_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeNodeDynamic.parent_end_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the position of this node in the children list of the parent.
+i.e. what number child is this not in reference to the parent. will
+return -1 if this node has no parent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the child position this node is in reference to its parent</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeDynamic.parent_index">
+<code class="descname">parent_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeNodeDynamic.parent_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the node index of parent if parent is None returns -1</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">node index of parent</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeDynamic.remove_child">
+<code class="descname">remove_child</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNodeDynamic.remove_child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNodeDynamic.remove_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes a node as a child from the current ndoe</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="#rnamake.tree.TreeNodeDynamic" title="rnamake.tree.TreeNodeDynamic"><em>TreeNodeDynamic</em></a>) &#8211; the node want to remove as a child to this node. must
+already be a child</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.tree.TreeNodeStatic">
+<em class="property">class </em><code class="descclassname">rnamake.tree.</code><code class="descname">TreeNodeStatic</code><span class="sig-paren">(</span><em>data</em>, <em>index</em>, <em>level</em>, <em>n_children</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNodeStatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNodeStatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.tree.TreeNode" title="rnamake.tree.TreeNode"><code class="xref py py-class docutils literal"><span class="pre">rnamake.tree.TreeNode</span></code></a></p>
+<p>A TreeNode container that is specific for TreeStatic trees. That is
+it can be connected to an unlimited number of other nodes. There is no
+reason to instantiate this class outside TreeStatic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>anything</em>) &#8211; The element that you wish to store in the tree</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.tree.Tree.get_node" title="rnamake.tree.Tree.get_node"><code class="xref py py-func docutils literal"><span class="pre">Tree.get_node()</span></code></a></li>
+<li><strong>level</strong> (<em>int</em>) &#8211; A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</li>
+<li><strong>n_children</strong> (<em>int</em>) &#8211; The number of connections this node can have, in
+TreeDynamic this does nothing.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>data</cite> <span class="classifier-delimiter">:</span> <span class="classifier">anything</span></dt>
+<dd>The element of data being stored in tree</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.tree.Tree.get_node" title="rnamake.tree.Tree.get_node"><code class="xref py py-func docutils literal"><span class="pre">Tree.get_node()</span></code></a></dd>
+<dt><cite>level</cite>: int</dt>
+<dd>A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</dd>
+<dt><cite>children</cite>: list of TreeNodes</dt>
+<dd>Nodes whose parent is this node</dd>
+<dt><cite>parent</cite>: TreeNode</dt>
+<dd>the parent of the current node</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeStatic.add_child">
+<code class="descname">add_child</code><span class="sig-paren">(</span><em>node</em>, <em>pos</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNodeStatic.add_child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNodeStatic.add_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds a new node a a child at a specific position in this nodes child&#8217;s
+list.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<a class="reference internal" href="#rnamake.tree.TreeNodeStatic" title="rnamake.tree.TreeNodeStatic"><em>TreeNodeStatic</em></a>) &#8211; the node you want to add as a child of this node</li>
+<li><strong>pos</strong> (<em>int</em>) &#8211; the position in this nodes children&#8217;s list you want to
+place this new child</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeStatic.available_children_pos">
+<code class="descname">available_children_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeNodeStatic.available_children_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets all of the children positions that are not filled yet for this
+node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of end positions not yet filled</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of ints</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeStatic.available_pos">
+<code class="descname">available_pos</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeNodeStatic.available_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks to see if a child position is filled or not. returns 0 is filled
+or not available and 1 if its avialable to be used.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pos</strong> &#8211; the position in children list you want to check</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">the avialability of the position</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeStatic.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNodeStatic.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNodeStatic.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>deep copies tree node and also tries to deep copy data. Will work if
+data element has a function copy().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a deep copy of node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.tree.TreeNodeStatic" title="rnamake.tree.TreeNodeStatic">TreeNodeStatic</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeStatic.parent_end_index">
+<code class="descname">parent_end_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeNodeStatic.parent_end_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the position of this node in the children list of the parent.
+i.e. what number child is this not in reference to the parent. will
+return -1 if this node has no parent.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the child position this node is in reference to its parent</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeStatic.parent_index">
+<code class="descname">parent_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeNodeStatic.parent_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets the node index of parent if parent is None returns -1</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">node index of parent</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeNodeStatic.remove_child">
+<code class="descname">remove_child</code><span class="sig-paren">(</span><em>node</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeNodeStatic.remove_child"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeNodeStatic.remove_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a child at a specific position in child list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>node</strong> (<a class="reference internal" href="#rnamake.tree.TreeNodeStatic" title="rnamake.tree.TreeNodeStatic"><em>TreeNodeStatic</em></a>) &#8211; the node to remove</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.tree.TreeStatic">
+<em class="property">class </em><code class="descclassname">rnamake.tree.</code><code class="descname">TreeStatic</code><a class="reference internal" href="../_modules/rnamake/tree.html#TreeStatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeStatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.tree.Tree" title="rnamake.tree.Tree"><code class="xref py py-class docutils literal"><span class="pre">rnamake.tree.Tree</span></code></a></p>
+<p>A Tree that has a static number of children. i.e. each node has
+a predefined number of children. Each node starts with 0
+children and are added over time, there is no max to the number of
+children each node can have</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>nodes</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of TreeNode objects</span></dt>
+<dd>all the nodes in the tree, used for fast access by index</dd>
+<dt><cite>level</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>the current tree level, used for quickly deleting sections of the tree</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>the current node index, always the length of the number of nodes in the tree</dd>
+<dt><cite>last_node</cite>: TreeNode object</dt>
+<dd>the last node added to the tree</dd>
+<dt><cite>current_node</cite>: TreeNode object</dt>
+<dd>the current node during iteration</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.tree.TreeStatic.add_data">
+<code class="descname">add_data</code><span class="sig-paren">(</span><em>data</em>, <em>n_children=1</em>, <em>parent_index=-1</em>, <em>parent_child_index=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/tree.html#TreeStatic.add_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.tree.TreeStatic.add_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new node to the tree given specfied data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>anything</em>) &#8211; element to add to tree</li>
+<li><strong>n_children</strong> (<em>int</em>) &#8211; number of children the node can have in max</li>
+<li><strong>parent_index</strong> (<em>int</em>) &#8211; index of parent to connect to, optional</li>
+<li><strong>parent_child_index</strong> (<em>int</em>) &#8211; child position to connect to parent, optional</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">index of new node</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">int</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">exceptions.TreeIndexException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeStatic.decrease_level">
+<code class="descname">decrease_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeStatic.decrease_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decreases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeStatic.get_node">
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeStatic.get_node" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<em>int</em>) &#8211; the node index that you want</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">TreeNode object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">exceptions.TreeIndexException</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">TreeDynamic</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">#get node of index &#39;0&#39; which is the first one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">t</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeStatic.next_level">
+<code class="descname">next_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeStatic.next_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeStatic.remove_node">
+<code class="descname">remove_node</code><span class="sig-paren">(</span><em>node=None</em>, <em>index=None</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeStatic.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes a node with a given index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node</strong> (<a class="reference internal" href="#rnamake.tree.TreeNode" title="rnamake.tree.TreeNode"><em>TreeNode</em></a>) &#8211; the actual node object you want to remove</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; the index of the node you want to remove</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">exceptions.TreeIndexException, exceptions.TreeException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.tree.TreeStatic.remove_node_level">
+<code class="descname">remove_node_level</code><span class="sig-paren">(</span><em>level=None</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.tree.TreeStatic.remove_node_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove all nodes with a given level, this is useful if you are unsure
+how many nodes have been added from a given point. if level is not
+specified level will be set to current level</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>level</strong> (<em>int</em>) &#8211; the node minimum node level you want to remove</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="transform.html" class="btn btn-neutral float-right" title="Transform" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="graph.html" class="btn btn-neutral" title="Graph" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

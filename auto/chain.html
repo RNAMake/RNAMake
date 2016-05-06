@@ -1,0 +1,448 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Chain &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../index.html"/>
+        <link rel="next" title="Structure" href="structure.html"/>
+        <link rel="prev" title="Residue Type" href="residue_type.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">Graph</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite_library.html">Sqlite Library</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue_type.html">Residue Type</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Chain</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdb_parser.html">PDB_Parser</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Chain</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto/chain.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="chain">
+<span id="id1"></span><h1>Chain<a class="headerlink" href="#chain" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.chain"></span><dl class="class">
+<dt id="rnamake.chain.Chain">
+<em class="property">class </em><code class="descclassname">rnamake.chain.</code><code class="descname">Chain</code><span class="sig-paren">(</span><em>residues=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/chain.html#Chain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.chain.Chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Stored chain information from pdb file. Stores all residues in chain.
+Implementation is designed to be extremely lightweight. To connect residues
+into chains it highly adviced that you use
+<a class="reference internal" href="#rnamake.chain.connect_residues_into_chains" title="rnamake.chain.connect_residues_into_chains"><code class="xref py py-func docutils literal"><span class="pre">connect_residues_into_chains()</span></code></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>residues</strong> (<em>list of residue.Residue objects</em>) &#8211; the residues that are to be included in this chain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>residues</cite> <span class="classifier-delimiter">:</span> <span class="classifier">List of Residue objects</span></dt>
+<dd>The list of residues that belong to this chain will always be in
+5&#8217; to 3&#8217; order</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">chain</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<span class="go">&lt;Residue(&#39;G103 chain A&#39;)&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">last</span><span class="p">()</span>
+<span class="go">&lt;Residue(&#39;C260 chain A&#39;)&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<span class="go">157</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">subchain</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+<span class="go">9</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<span class="go">&lt;Residue(&#39;A104 chain A&#39;)&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cs2</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">subchain</span><span class="p">(</span><span class="n">start_res</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">end_res</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="mi">15</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cs2</span><span class="p">)</span>
+<span class="go">6</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">to_pdb_str</span><span class="p">()</span>
+<span class="go">ATOM      1 O5&#39;  G   A 103     -26.469 -47.756  84.669  1.00  0.00</span>
+<span class="go">ATOM      2 C5&#39;  G   A 103     -25.050 -47.579  84.775  1.00  0.00</span>
+<span class="go">ATOM      3 C4&#39;  G   A 103     -24.521 -48.156  86.068  1.00  0.00</span>
+<span class="go">ATOM      4 O4&#39;  G   A 103     -24.861 -49.568  86.118  1.00  0.00</span>
+<span class="go">ATOM      5 C3&#39;  G   A 103     -23.009 -48.119  86.281  1.00  0.00</span>
+<span class="go">ATOM      6 O3&#39;  G   A 103     -22.548 -46.872  86.808  1.00  0.00</span>
+<span class="go">ATOM      7 C1&#39;  G   A 103     -23.806 -50.289  86.732  1.00  0.00</span>
+<span class="go">ATOM      8 C2&#39;  G   A 103     -22.812 -49.259  87.269  1.00  0.00</span>
+<span class="go">.</span>
+<span class="go">.</span>
+<span class="go">.</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.chain.Chain.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/chain.html#Chain.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.chain.Chain.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a deepcopy of the this chain object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Chain object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.chain.Chain.first">
+<code class="descname">first</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/chain.html#Chain.first"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.chain.Chain.first" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns residue at 5&#8217; end of chain</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">first residue in chain</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="residue.html#rnamake.residue.Residue" title="rnamake.residue.Residue">residue.Residue</a></td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">rnamake.unittests.instances</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">rnamake</span><span class="o">.</span><span class="n">unittests</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">chain</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<span class="go">&lt;Residue(&#39;G103 chain A&#39;)&gt;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.chain.Chain.last">
+<code class="descname">last</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/chain.html#Chain.last"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.chain.Chain.last" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns 3&#8217; end of chain</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.chain.Chain.subchain">
+<code class="descname">subchain</code><span class="sig-paren">(</span><em>start=None</em>, <em>end=None</em>, <em>start_res=None</em>, <em>end_res=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/chain.html#Chain.subchain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.chain.Chain.subchain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates a new chain from a subsection of the residues in the current
+chain.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>start</strong> (<em>int</em>) &#8211; start position in residues object list, default:None</li>
+<li><strong>end</strong> (<em>int</em>) &#8211; end position in residues object list, default:None</li>
+<li><strong>start_res</strong> &#8211; The 5&#8217; residue of sub chain, default:None</li>
+<li><strong>end_res</strong> &#8211; The 3&#8217; resiude of sub chain, default:None</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Chain object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">subchain</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cs</span><span class="p">)</span>
+<span class="go">9</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cs</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+<span class="go">&lt;Residue(&#39;A104 chain A&#39;)&gt;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cs2</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">subchain</span><span class="p">(</span><span class="n">start_res</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="mi">10</span><span class="p">],</span> <span class="n">end_res</span><span class="o">=</span><span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">[</span><span class="mi">15</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">cs2</span><span class="p">)</span>
+<span class="go">6</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.chain.Chain.to_pdb">
+<code class="descname">to_pdb</code><span class="sig-paren">(</span><em>fname='chain.pdb'</em>, <em>rnum=-1</em>, <em>chain_id=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/chain.html#Chain.to_pdb"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.chain.Chain.to_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>Writes a PDB string formmated verision of this Chain object to file</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fname</strong> (<em>str</em>) &#8211; filename of output PDB file, default=&#8221;chain.pdb&#8221;</li>
+<li><strong>rnum</strong> (<em>int</em>) &#8211; starting residue number, default: -1</li>
+<li><strong>chain_id</strong> (<em>str</em>) &#8211; the chain id of the chain, i.e. &#8220;A&#8221;, &#8220;B&#8221; etc</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.chain.Chain.to_pdb_str">
+<code class="descname">to_pdb_str</code><span class="sig-paren">(</span><em>acount=1</em>, <em>return_acount=0</em>, <em>rnum=-1</em>, <em>chain_id=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/chain.html#Chain.to_pdb_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.chain.Chain.to_pdb_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a PDB string formatted verision of this Chain object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>acount</strong> (<em>int</em>) &#8211; current atom index, default: 1</li>
+<li><strong>return_acount</strong> (<em>int</em>) &#8211; final atom index after current atoms, default: 0</li>
+<li><strong>rnum</strong> (<em>int</em>) &#8211; starting residue number, default: -1</li>
+<li><strong>chain_id</strong> (<em>str</em>) &#8211; the chain id of the chain, i.e. &#8220;A&#8221;, &#8220;B&#8221; etc</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">str</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.chain.Chain.to_str">
+<code class="descname">to_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/chain.html#Chain.to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.chain.Chain.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stringifes Chain object</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">str</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.chain.connect_residues_into_chains">
+<code class="descclassname">rnamake.chain.</code><code class="descname">connect_residues_into_chains</code><span class="sig-paren">(</span><em>residues</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/chain.html#connect_residues_into_chains"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.chain.connect_residues_into_chains" title="Permalink to this definition">¶</a></dt>
+<dd><p>takes all residues and puts into the correct order in chains checking
+for physical connection between O5&#8217; and P atoms between residues</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>residues</strong> (<em>List of Residue objects</em>) &#8211; residue objects that belong in this structure</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">List of Chain objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="structure.html" class="btn btn-neutral float-right" title="Structure" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="residue_type.html" class="btn btn-neutral" title="Residue Type" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

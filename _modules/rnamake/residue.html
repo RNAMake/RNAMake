@@ -1,0 +1,717 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.residue &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.residue</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.residue</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">residue_type</span><span class="o">,</span> <span class="nn">util</span><span class="o">,</span> <span class="nn">basic_io</span><span class="o">,</span> <span class="nn">exceptions</span>
+
+<span class="c1"># TODO work on removing this stuff, ResidueState is going into MotifState module</span>
+<span class="c1"># This stuff is getting removed. but need now</span>
+<span class="c1">###############################################################################</span>
+
+<span class="k">class</span> <span class="nc">ResidueState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beads</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ResidueState</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">ResidueStateType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">NORM</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">END</span> <span class="o">=</span>  <span class="mi">1</span>
+
+<span class="k">class</span> <span class="nc">ResidueState2Bead</span><span class="p">(</span><span class="n">ResidueState</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">sugar</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">ResidueStateType</span><span class="o">.</span><span class="n">NORM</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">uuid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sugar</span> <span class="o">=</span> <span class="n">sugar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beads</span> <span class="o">=</span> <span class="p">[</span><span class="n">sugar</span><span class="p">,</span> <span class="n">base</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sugar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sugar</span><span class="p">)</span>
+        <span class="n">base</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ResidueState2Bead</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">sugar</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">points_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beads</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beads</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sugar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beads</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">ResidueState3Bead</span><span class="p">(</span><span class="n">ResidueState</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">uuid</span><span class="p">,</span> <span class="n">sugar</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">phos</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="n">ResidueStateType</span><span class="o">.</span><span class="n">NORM</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">uuid</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sugar</span> <span class="o">=</span> <span class="n">sugar</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="n">base</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phos</span> <span class="o">=</span> <span class="n">phos</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beads</span> <span class="o">=</span> <span class="p">[</span><span class="n">sugar</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">phos</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">sugar</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sugar</span><span class="p">)</span>
+        <span class="n">base</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">base</span><span class="p">)</span>
+        <span class="n">phos</span>  <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">phos</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">ResidueState3Bead</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span> <span class="n">sugar</span><span class="p">,</span> <span class="n">base</span><span class="p">,</span> <span class="n">phos</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">points_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beads</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beads</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beads</span><span class="p">,</span> <span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sugar</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beads</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">base</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beads</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">beads</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+
+<span class="k">def</span> <span class="nf">get_residue_state</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="n">ResidueStateType</span><span class="o">.</span><span class="n">NORM</span><span class="p">):</span>
+    <span class="n">phos_atoms</span><span class="p">,</span> <span class="n">sugar_atoms</span><span class="p">,</span> <span class="n">base_atoms</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="k">if</span>   <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">phos_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">:</span>
+            <span class="n">sugar_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">base_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ResidueState3Bead</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">uuid</span><span class="p">,</span>
+                             <span class="n">util</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">sugar_atoms</span><span class="p">),</span>
+                             <span class="n">util</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">base_atoms</span><span class="p">),</span>
+                             <span class="n">util</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">phos_atoms</span><span class="p">),</span>
+                             <span class="nb">type</span><span class="p">)</span>
+
+<span class="c1">###############################################################################</span>
+
+<div class="viewcode-block" id="BeadType"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.BeadType">[docs]</a><span class="k">class</span> <span class="nc">BeadType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    BeadType is an ENUM type. This is to specify which center of atoms each bead</span>
+<span class="sd">    represents.</span>
+
+<span class="sd">    Phosphate (0):  P, OP1, OP2\n</span>
+<span class="sd">    Sugar (1):  O5&#39;,C5&#39;,C4&#39;,O4&#39;,C3&#39;,O3&#39;,C1&#39;,C2&#39;,O2&#39;\n</span>
+<span class="sd">    Base  (2):  All remaining atoms</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">PHOS</span> <span class="o">=</span> <span class="mi">0</span>   <span class="c1"># P, OP1, OP2</span>
+    <span class="n">SUGAR</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># O5&#39;, C5&#39;, C4&#39;, O4&#39;, C3&#39;, O3&#39;, C1&#39;, C2&#39;, O2&#39;</span>
+    <span class="n">BASE</span> <span class="o">=</span> <span class="mi">2</span>   <span class="c1"># All remaining</span></div>
+
+
+<div class="viewcode-block" id="Bead"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Bead">[docs]</a><span class="k">class</span> <span class="nc">Bead</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Bead class stores information related to keeping track of steric clashes</span>
+<span class="sd">    between residues during building. They are never used outside the Residue class</span>
+
+<span class="sd">    :param btype: type of the bead either Phos(Phosphate), Sugar or Base, of</span>
+<span class="sd">        the atoms used generate the center</span>
+<span class="sd">    :type btype: BeadType</span>
+
+<span class="sd">    :param center: The geometric center of the group of atoms</span>
+<span class="sd">    :type center: numpy array</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;center&quot;</span><span class="p">,</span> <span class="s2">&quot;btype&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">center</span><span class="p">,</span> <span class="n">btype</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">btype</span> <span class="o">=</span> <span class="n">center</span><span class="p">,</span> <span class="n">btype</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">center</span> <span class="o">=</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">point_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Bead(btype=&#39;</span><span class="si">%s</span><span class="s2">&#39;, center=&#39;</span><span class="si">%s</span><span class="s2">&#39;)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">type_name</span><span class="p">(),</span> <span class="n">center</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Bead.copy"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Bead.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns a deep copy of current bead object</span>
+
+<span class="sd">        :returns: copy of bead object</span>
+<span class="sd">        :rtype: Bead</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">Bead</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">center</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">btype</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Bead.type_name"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Bead.type_name">[docs]</a>    <span class="k">def</span> <span class="nf">type_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns name of btype in string form</span>
+
+<span class="sd">        :returns: name of btype type</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">btype</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;PHOSPHATE&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">btype</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;SUGAR&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">btype</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;BASE&quot;</span></div></div>
+
+
+<div class="viewcode-block" id="Residue"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue">[docs]</a><span class="k">class</span> <span class="nc">Residue</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Store residue information from pdb file, stores all Atom objects that</span>
+<span class="sd">    belong to residue. Implementation is designed to be extremely lightweight.</span>
+
+<span class="sd">    :param rtype: residue type, stores information about residue</span>
+<span class="sd">    :type rtype: residue_type.ResidueType</span>
+
+<span class="sd">    :param name: residue name</span>
+<span class="sd">    :type name: str</span>
+
+<span class="sd">    :param num: residue num</span>
+<span class="sd">    :type num: int</span>
+
+<span class="sd">    :param chain_id: chain identification</span>
+<span class="sd">    :type chain_id: str</span>
+
+<span class="sd">    :param i_code: insertion code, optional argument if not supplied will be</span>
+<span class="sd">        set to</span>
+<span class="sd">    :type i_code: str</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `atoms` : atom.Atom</span>
+<span class="sd">        holds all atoms that belong to this residue object</span>
+<span class="sd">    `name` : str</span>
+<span class="sd">        name of residue, ex. ADE, GUA etc</span>
+<span class="sd">    `num` : int</span>
+<span class="sd">        residue num</span>
+<span class="sd">    `rtype` : residue_type.ResidueType</span>
+<span class="sd">        Information about residue type each nucleic acid has its own type</span>
+<span class="sd">    `chain_id` : str</span>
+<span class="sd">        chain indentification string, ex. &#39;A&#39; or &#39;B&#39;</span>
+<span class="sd">    `i_code`: str</span>
+<span class="sd">        residue insertion code</span>
+<span class="sd">    `uuid` : uuid.uuid1</span>
+<span class="sd">        the unique id to indentify residue</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        # generating a new residue</span>
+<span class="sd">        &gt;&gt;&gt; rts = residue_type.ResidueTypeSet()</span>
+<span class="sd">        &gt;&gt;&gt; rtype = rts.get_rtype_by_resname(&quot;ADE&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; r = Residue(rtype, &quot;ADE&quot;, 1, &quot;A&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print r.name</span>
+<span class="sd">        A</span>
+
+<span class="sd">        #using test residue</span>
+<span class="sd">        &gt;&gt;&gt; import rnamake.unittests.instances</span>
+<span class="sd">        &gt;&gt;&gt; r = rnamake.unittests.instances.residue()</span>
+<span class="sd">        &gt;&gt;&gt; print r.name</span>
+<span class="sd">        G</span>
+
+<span class="sd">        &gt;&gt;&gt; a = r.get_atom(&quot;C1&#39;&quot;)</span>
+<span class="sd">        &gt;&gt;&gt; print a.coords</span>
+<span class="sd">        [-23.806 -50.289  86.732]</span>
+
+<span class="sd">        &gt;&gt;&gt; r.get_beads()</span>
+<span class="sd">        [&lt;Bead(btype=&#39;SUGAR&#39;, center=&#39;-24.027 -48.5001111111 86.368&#39;)&gt;, &lt;Bead(btype=&#39;BASE&#39;, center=&#39;-21.2186363636 -52.048 85.1157272727&#39;)&gt;]</span>
+
+<span class="sd">        #a fast way of saving coordinate information to file</span>
+<span class="sd">        &gt;&gt;&gt; r.to_str()</span>
+<span class="sd">        &quot;GUA,G,103,A,,N,N,N,O5&#39; -26.469 -47.756 84.669,C5&#39; -25.05 -47.579 84.775,C4&#39; -24.521 -48.156 86.068,O4&#39; -24.861 -49.568 86.118,C3&#39; -23.009 -48.119 86.281,O3&#39; -22.548 -46.872 86.808,C1&#39; -23.806 -50.289 86.732,C2&#39; -22.812 -49.259 87.269,O2&#39; -23.167 -48.903 88.592,N1 -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,&quot;</span>
+
+<span class="sd">        #get PDB formmated coordinates back out</span>
+<span class="sd">        &gt;&gt;&gt; r.to_pdb_str()</span>
+<span class="sd">        ATOM      1 O5&#39;  G   A 103     -26.469 -47.756  84.669  1.00  0.00</span>
+<span class="sd">        ATOM      2 C5&#39;  G   A 103     -25.050 -47.579  84.775  1.00  0.00</span>
+<span class="sd">        ATOM      3 C4&#39;  G   A 103     -24.521 -48.156  86.068  1.00  0.00</span>
+<span class="sd">        ATOM      4 O4&#39;  G   A 103     -24.861 -49.568  86.118  1.00  0.00</span>
+<span class="sd">        ATOM      5 C3&#39;  G   A 103     -23.009 -48.119  86.281  1.00  0.00</span>
+<span class="sd">        ATOM      6 O3&#39;  G   A 103     -22.548 -46.872  86.808  1.00  0.00</span>
+<span class="sd">        .</span>
+<span class="sd">        .</span>
+<span class="sd">        .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;rtype&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;name&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;num&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;chain_id&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;i_code&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;uuid&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;atoms&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rtype</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">chain_id</span><span class="p">,</span> <span class="n">i_code</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span> <span class="o">=</span> <span class="n">rtype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num</span> <span class="o">=</span> <span class="n">num</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span> <span class="o">=</span> <span class="n">chain_id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">i_code</span> <span class="o">=</span> <span class="n">i_code</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
+        <span class="c1"># fix pickle bug</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">i_code</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;Residue(&#39;</span><span class="si">%s%d%s</span><span class="s2"> chain </span><span class="si">%s</span><span class="s2">&#39;)&gt;&quot;</span> <span class="o">%</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_code</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Residue.short_name"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.short_name">[docs]</a>    <span class="k">def</span> <span class="nf">short_name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;gets letter of residue, i.e. A or G etc</span>
+
+<span class="sd">        :return: letter for residue</span>
+<span class="sd">        :rtype: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Residue.setup_atoms"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.setup_atoms">[docs]</a>    <span class="k">def</span> <span class="nf">setup_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atoms</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        put atoms in correct positon in internal atom list, also corrects some</span>
+<span class="sd">        named atom names to their correct name</span>
+
+<span class="sd">        :param atoms: list of atom objects that are to be part of this residue</span>
+<span class="sd">        :type atoms: list of Atom objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span><span class="o">.</span><span class="n">atom_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">atoms</span><span class="p">:</span>
+            <span class="n">name_change</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span><span class="o">.</span><span class="n">get_correct_atom_name</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">name_change</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name_change</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span><span class="o">.</span><span class="n">atom_map</span><span class="p">:</span>
+                <span class="n">pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span><span class="o">.</span><span class="n">atom_map</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span></div>
+
+<div class="viewcode-block" id="Residue.get_atom"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.get_atom">[docs]</a>    <span class="k">def</span> <span class="nf">get_atom</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">atom_name</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get atom object by its name</span>
+
+<span class="sd">        :param atom_name: name</span>
+<span class="sd">        :type atom_name: str</span>
+
+<span class="sd">        Examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; r = rnamake.unittests.instances.residue()</span>
+<span class="sd">            &gt;&gt;&gt; a = r.get_atom(&quot;C1&#39;&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; print a.coords</span>
+<span class="sd">            [-23.806 -50.289  86.732]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span><span class="o">.</span><span class="n">atom_map</span><span class="p">[</span><span class="n">atom_name</span><span class="p">]</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">index</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">ResidueException</span><span class="p">(</span><span class="s2">&quot;cannot find atom&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Residue.connected_to"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.connected_to">[docs]</a>    <span class="k">def</span> <span class="nf">connected_to</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">3.0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine if another residue is connected to this residue, returns 0</span>
+<span class="sd">        if res is not connected to self, returns 1 if connection is going</span>
+<span class="sd">        from 5&#39; to 3&#39; and returns -1 if connection is going from 3&#39; to 5&#39;</span>
+
+<span class="sd">        :param res: another residue</span>
+<span class="sd">        :param cutoff: distance to be considered connected, default: 3 Angstroms</span>
+
+<span class="sd">        :type res: Residue</span>
+<span class="sd">        :type cutoff: int</span>
+
+<span class="sd">        :rtype: int</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># 5&#39; to 3&#39;</span>
+        <span class="n">o3_atom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;O3&#39;&quot;</span><span class="p">)</span>
+        <span class="n">p_atom</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">o3_atom</span> <span class="ow">and</span> <span class="n">p_atom</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">util</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">o3_atom</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">p_atom</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">:</span>
+                <span class="k">return</span> <span class="mi">1</span>
+
+        <span class="c1"># 3&#39; to 5&#39;</span>
+        <span class="n">p_atom</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;P&quot;</span><span class="p">)</span>
+        <span class="n">o3_atom</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;O3&#39;&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">o3_atom</span> <span class="ow">and</span> <span class="n">p_atom</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">util</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="n">o3_atom</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">p_atom</span><span class="o">.</span><span class="n">coords</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">cutoff</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">return</span> <span class="mi">0</span></div>
+
+<div class="viewcode-block" id="Residue.get_beads"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.get_beads">[docs]</a>    <span class="k">def</span> <span class="nf">get_beads</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generates steric beads required for checking for steric clashes between</span>
+<span class="sd">        motifs. Each residues has three beads modeled after the typical three</span>
+<span class="sd">        bead models used in coarse grain modeling. The three beads are:</span>
+
+<span class="sd">        Phosphate:  P, OP1, OP2\n</span>
+<span class="sd">        Sugar    :  O5&#39;,C5&#39;,C4&#39;,O4&#39;,C3&#39;,O3&#39;,C1&#39;,C2&#39;,O2&#39;\n</span>
+<span class="sd">        Base     :  All remaining atoms</span>
+
+<span class="sd">        if there are for example no phosphate atoms only 2 beads will be returned.</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; import rnamake.unittests.instances</span>
+<span class="sd">            &gt;&gt;&gt; r = rnamake.unittests.instances.residue()</span>
+<span class="sd">            &gt;&gt;&gt; r.get_beads()</span>
+<span class="sd">            [&lt;Bead(btype=&#39;SUGAR&#39;, center=&#39;-24.027 -48.5001111111 86.368&#39;)&gt;, &lt;Bead(btype=&#39;BASE&#39;, center=&#39;-21.2186363636 -52.048 85.1157272727&#39;)&gt;]</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">phos_atoms</span><span class="p">,</span> <span class="n">sugar_atoms</span><span class="p">,</span> <span class="n">base_atoms</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="p">[]</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="n">phos_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">:</span>
+                <span class="n">sugar_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">base_atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+
+        <span class="n">beads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">types</span> <span class="o">=</span> <span class="p">[</span><span class="n">BeadType</span><span class="o">.</span><span class="n">PHOS</span><span class="p">,</span> <span class="n">BeadType</span><span class="o">.</span><span class="n">SUGAR</span><span class="p">,</span> <span class="n">BeadType</span><span class="o">.</span><span class="n">BASE</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">alist</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="n">phos_atoms</span><span class="p">,</span> <span class="n">sugar_atoms</span><span class="p">,</span> <span class="n">base_atoms</span><span class="p">]):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">alist</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">beads</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Bead</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="n">alist</span><span class="p">),</span> <span class="n">types</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span>
+
+        <span class="k">return</span> <span class="n">beads</span></div>
+
+<div class="viewcode-block" id="Residue.copy"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        performs a deep copy of Residue object</span>
+
+<span class="sd">        :rtype: Residue</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; import rnamake.unittests.instances</span>
+<span class="sd">            &gt;&gt;&gt; r = rnamake.unittests.instances.residue()</span>
+<span class="sd">            &gt;&gt;&gt; r_copy = r.copy()</span>
+<span class="sd">            &gt;&gt;&gt; r_copy.name</span>
+<span class="sd">            G</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">copied_r</span> <span class="o">=</span> <span class="n">Residue</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">rtype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span>
+        <span class="n">copied_r</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">))]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">copied_r</span><span class="o">.</span><span class="n">atoms</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">a</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+        <span class="n">copied_r</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span>
+        <span class="k">return</span> <span class="n">copied_r</span></div>
+
+<div class="viewcode-block" id="Residue.new_uuid"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.new_uuid">[docs]</a>    <span class="k">def</span> <span class="nf">new_uuid</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        give residue a new unique indentifier code.</span>
+<span class="sd">        There is probably no reason why you should call this unless writing a new,</span>
+<span class="sd">        motif structure.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Residue.to_str"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        stringifes residue object</span>
+
+<span class="sd">        :returns: stringified residue object</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; import rnamake.unittests.instances</span>
+<span class="sd">            &gt;&gt;&gt; r = rnamake.unittests.instances.residue()</span>
+<span class="sd">            &gt;&gt;&gt; r.to_str()</span>
+<span class="sd">            &quot;GUA,G,103,A,,N,N,N,O5&#39; -26.469 -47.756 84.669,C5&#39; -25.05 -47.579 84.775,C4&#39; -24.521 -48.156 86.068,O4&#39; -24.861 -49.568 86.118,C3&#39; -23.009 -48.119 86.281,O3&#39; -22.548 -46.872 86.808,C1&#39; -23.806 -50.289 86.732,C2&#39; -22.812 -49.259 87.269,O2&#39; -23.167 -48.903 88.592,N1 -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,&quot;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">num</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">i_code</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;N,&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">s</span> <span class="o">+=</span> <span class="n">a</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Residue.to_pdb_str"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.to_pdb_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_pdb_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acount</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_acount</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">rnum</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">chain_id</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns pdb formatted string of residue&#39;s coordinate information</span>
+
+<span class="sd">        :param acount: current atom index, default: 1</span>
+<span class="sd">        :param return_acount: final atom index after current atoms, default: 0</span>
+<span class="sd">        :param rnum: starting residue number, default: -1</span>
+<span class="sd">        :param chain_id: the chain id of the chain, i.e. &quot;A&quot;, &quot;B&quot; etc</span>
+
+<span class="sd">        :type  acount: int</span>
+<span class="sd">        :type  return_acount: int</span>
+<span class="sd">        :type  rnum: int</span>
+<span class="sd">        :type  chain_id: str</span>
+
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; import rnamake.unittests.instances</span>
+<span class="sd">            &gt;&gt;&gt; r = rnamake.unittests.instances.residue()</span>
+<span class="sd">            &gt;&gt;&gt; r.to_pdb_str()</span>
+<span class="sd">            ATOM      1 O5&#39;  G   A 103     -26.469 -47.756  84.669  1.00  0.00</span>
+<span class="sd">            ATOM      2 C5&#39;  G   A 103     -25.050 -47.579  84.775  1.00  0.00</span>
+<span class="sd">            ATOM      3 C4&#39;  G   A 103     -24.521 -48.156  86.068  1.00  0.00</span>
+<span class="sd">            ATOM      4 O4&#39;  G   A 103     -24.861 -49.568  86.118  1.00  0.00</span>
+<span class="sd">            ATOM      5 C3&#39;  G   A 103     -23.009 -48.119  86.281  1.00  0.00</span>
+<span class="sd">            ATOM      6 O3&#39;  G   A 103     -22.548 -46.872  86.808  1.00  0.00</span>
+<span class="sd">            .</span>
+<span class="sd">            .</span>
+<span class="sd">            .</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">num</span>
+        <span class="n">cid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">chain_id</span>
+        <span class="k">if</span> <span class="n">rnum</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">num</span> <span class="o">=</span> <span class="n">rnum</span>
+        <span class="k">if</span> <span class="n">chain_id</span> <span class="o">!=</span> <span class="s2">&quot;&quot;</span><span class="p">:</span>
+            <span class="n">cid</span> <span class="o">=</span> <span class="n">chain_id</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">PDBLINE_GE100K</span> <span class="o">%</span> \
+                 <span class="p">(</span><span class="s1">&#39;ATOM&#39;</span><span class="p">,</span> <span class="n">acount</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">rtype</span><span class="o">.</span><span class="n">name</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cid</span><span class="p">,</span>
+                  <span class="n">num</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">a</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">a</span><span class="o">.</span><span class="n">coords</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="mf">1.00</span><span class="p">,</span>
+                  <span class="mf">0.00</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+            <span class="n">acount</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">if</span> <span class="n">return_acount</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="n">acount</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Residue.to_pdb"><a class="viewcode-back" href="../../auto/residue.html#rnamake.residue.Residue.to_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">to_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;residue.pdb&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Writes a PDB string formmated verision of this Residue object to file</span>
+
+<span class="sd">        :param fname: filename of output PDB file, default=&quot;chain.pdb&quot;</span>
+
+<span class="sd">        :type  fname: str</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_pdb_str</span><span class="p">()</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

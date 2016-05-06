@@ -1,0 +1,587 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.structure &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.structure</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.structure</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+
+<span class="kn">import</span> <span class="nn">pdb_parser</span>
+<span class="kn">import</span> <span class="nn">chain</span>
+<span class="kn">import</span> <span class="nn">util</span>
+<span class="kn">import</span> <span class="nn">exceptions</span>
+
+<div class="viewcode-block" id="Structure"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure">[docs]</a><span class="k">class</span> <span class="nc">Structure</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Stores 3D structure information from a pdb file. Stores all chains,</span>
+<span class="sd">    residues and atoms objects. Implementation is designed to be extremely</span>
+<span class="sd">    lightweight and capable of performing fast transformations. to load a PDB</span>
+<span class="sd">    formated file into a Structure object use</span>
+<span class="sd">    :func:`structure_from_pdb`</span>
+
+<span class="sd">    :param chains: chains that belong to this structure, optional</span>
+<span class="sd">    :type chains: list of chain.Chain objects</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `chains` : list of chain.Chain</span>
+<span class="sd">        These chain belong to the current structure</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    ..  code-block:: python</span>
+
+<span class="sd">        # load structure from pdb formatted file</span>
+<span class="sd">        &gt;&gt;&gt; import rnamake.unittests.files</span>
+<span class="sd">        &gt;&gt;&gt; s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)</span>
+
+<span class="sd">        # load structure from test instance</span>
+<span class="sd">        &gt;&gt;&gt; import rnamake.unittests.instances</span>
+<span class="sd">        &gt;&gt;&gt; s = rnamake.unittests.instances.structure()</span>
+
+<span class="sd">        # get specific residue</span>
+<span class="sd">        &gt;&gt;&gt; r = s.get_residue(num=106)</span>
+<span class="sd">        &gt;&gt;&gt; print r</span>
+<span class="sd">        &lt;Residue(&#39;U106 chain A&#39;)&gt;</span>
+
+<span class="sd">        # get residue using its unique indentifer</span>
+<span class="sd">        &gt;&gt;&gt;s.get_residue(uuid=r.uuid)</span>
+<span class="sd">        &lt;Residue(&#39;U106 chain A&#39;)&gt;</span>
+
+<span class="sd">        &gt;&gt;&gt; s.chains()</span>
+<span class="sd">        [&lt;Chain( First: &lt;Residue(&#39;G103 chain A&#39;)&gt;</span>
+<span class="sd">                Last:  &lt;Residue(&#39;C260 chain A&#39;)&gt;</span>
+<span class="sd">                Size: 157)&gt;]</span>
+
+<span class="sd">        &gt;&gt;&gt; len(s.get_beads())</span>
+<span class="sd">        470</span>
+
+<span class="sd">        # exclude beads from first residue. This can be useful if you only</span>
+<span class="sd">        # need sterics from a part of the structure</span>
+<span class="sd">        &gt;&gt;&gt; len(s.get_beads(excluded_res=[s.residues()[0]]))</span>
+<span class="sd">        468</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">chains</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">chains</span> <span class="o">=</span> <span class="n">chains</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">chains</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;N/A&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&quot;&quot;&lt;Structure(name: </span><span class="si">%s</span><span class="s2">, #chains: </span><span class="si">%s</span><span class="s2">, #residues: </span><span class="si">%s</span><span class="s2">, #atoms: </span><span class="si">%s</span><span class="s2">)&gt;&quot;&quot;&quot;</span> <span class="o">%</span>\
+               <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">()),</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">()))</span>
+
+<div class="viewcode-block" id="Structure.get_beads"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.get_beads">[docs]</a>    <span class="k">def</span> <span class="nf">get_beads</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">excluded_res</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        generates 3-bead model residue beads for all residues in current</span>
+<span class="sd">        structure.</span>
+
+<span class="sd">        :param excluded_res: List of residue objects whose beads are not to be</span>
+<span class="sd">            included. This is generally end residues that would instantly clash</span>
+<span class="sd">            with residues they are being overlayed onto when performing motif</span>
+<span class="sd">            aligning</span>
+<span class="sd">        :type excluded_res: List of Residue objects</span>
+
+<span class="sd">        :return: List of Bead objects</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            # load structure from pdb formatted file</span>
+<span class="sd">            &gt;&gt;&gt; import rnamake.unittests.files</span>
+<span class="sd">            &gt;&gt;&gt; s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)</span>
+
+<span class="sd">            &gt;&gt;&gt; len(s.get_beads())</span>
+<span class="sd">            470</span>
+
+<span class="sd">            &gt;&gt;&gt; s.get_beads()[0]</span>
+<span class="sd">            &lt;Bead(btype=&#39;SUGAR&#39;, center=&#39;-24.027 -48.5001111111 86.368&#39;)&gt;</span>
+
+<span class="sd">            # exclude beads from first residue. This can be useful if you only</span>
+<span class="sd">            # need sterics from a part of the structure</span>
+<span class="sd">            &gt;&gt;&gt; len(s.get_beads(excluded_res=[s.residues()[0]]))</span>
+<span class="sd">            468</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">excluded_res</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">excluded_res</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="n">beads</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">excluded_res</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">beads</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">r</span><span class="o">.</span><span class="n">get_beads</span><span class="p">())</span>
+        <span class="k">return</span> <span class="n">beads</span></div>
+
+<div class="viewcode-block" id="Structure.get_residue"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.get_residue">[docs]</a>    <span class="k">def</span> <span class="nf">get_residue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">chain_id</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">i_code</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">uuid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        find a residue based on residue num, chain_id, insert_code and uuid</span>
+<span class="sd">        will return an error if more then one residue matches search to avoid</span>
+<span class="sd">        confusion. Will return None is nothing matches search.</span>
+
+<span class="sd">        :param num: residue number</span>
+<span class="sd">        :param chain_id: what chain the residue belongs to</span>
+<span class="sd">        :param i_code: the insertation code of the residue</span>
+<span class="sd">        :param uuid: the unique indentifier that each residue is given</span>
+
+<span class="sd">        :type num: int</span>
+<span class="sd">        :type chain_id: str</span>
+<span class="sd">        :type i_code: str</span>
+<span class="sd">        :type uuid: uuid</span>
+
+<span class="sd">        :return: Residue object</span>
+<span class="sd">        :rtype: residue.Residue</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">              # load structure from pdb formatted file</span>
+<span class="sd">              &gt;&gt;&gt; import rnamake.unittests.files</span>
+<span class="sd">              &gt;&gt;&gt; s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)</span>
+
+<span class="sd">              # get specific residue</span>
+<span class="sd">              &gt;&gt;&gt; r = s.get_residue(num=106)</span>
+<span class="sd">              &gt;&gt;&gt; print r</span>
+<span class="sd">              &lt;Residue(&#39;U106 chain A&#39;)&gt;</span>
+
+<span class="sd">              # get residue using its unique indentifer</span>
+<span class="sd">              &gt;&gt;&gt;s.get_residue(uuid=r.uuid)</span>
+<span class="sd">              &lt;Residue(&#39;U106 chain A&#39;)&gt;</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1">#nothing specified</span>
+        <span class="k">if</span> <span class="n">num</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">chain_id</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">i_code</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">uuid</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">StructureException</span><span class="p">(</span><span class="s2">&quot;called get_residue wiht no &quot;</span>
+                                                <span class="s2">&quot;arguments&quot;</span><span class="p">)</span>
+
+        <span class="n">found</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">uuid</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">uuid</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">uuid</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">num</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">num</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">num</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">i_code</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">i_code</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">i_code</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">if</span> <span class="n">chain_id</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">chain_id</span> <span class="o">!=</span> <span class="n">r</span><span class="o">.</span><span class="n">chain_id</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">found</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">StructureException</span><span class="p">(</span>
+                <span class="s2">&quot;found multiple residues in get_residue(), narrow &quot;</span> <span class="o">+</span>
+                <span class="s2">&quot;your search&quot;</span><span class="p">)</span>
+
+        <span class="c1"># TODO maybe add warning here?</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">found</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+
+        <span class="k">return</span> <span class="n">found</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Structure.residues"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.residues">[docs]</a>    <span class="k">def</span> <span class="nf">residues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concats all residue objects from all Chain objects intos a unified</span>
+<span class="sd">        list to be able to easily iterate through.</span>
+
+<span class="sd">        :return: List of Residue objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">residues</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">:</span>
+            <span class="n">residues</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">residues</span></div>
+
+<div class="viewcode-block" id="Structure.atoms"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.atoms">[docs]</a>    <span class="k">def</span> <span class="nf">atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Concats all Atom objects from all Residue objects intos a unified</span>
+<span class="sd">        list to be able to easily iterate through.</span>
+
+<span class="sd">        :return: List of Residue objects</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">r</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">atoms</span></div>
+
+<div class="viewcode-block" id="Structure.to_str"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Stringifes Structure object</span>
+
+<span class="sd">        :return: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">:</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">c</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;:&quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Structure.to_pdb_str"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.to_pdb_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_pdb_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">renumber</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a PDB string formatted verision of this Structure object.</span>
+
+<span class="sd">        :param renumber: what should the first residue be numbered. -1 is</span>
+<span class="sd">            to NOT renumber, Default=-1.</span>
+<span class="sd">        :type renumber: int</span>
+
+<span class="sd">        :return: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">acount</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="n">c_names</span> <span class="o">=</span> <span class="s2">&quot;ABCDEFGHIJKLM&quot;</span>
+        <span class="n">rnum</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="n">chain_id</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">renumber</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">chain_id</span> <span class="o">=</span> <span class="s2">&quot;A&quot;</span>
+            <span class="n">rnum</span> <span class="o">=</span> <span class="mi">1</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">):</span>
+            <span class="n">c_str</span><span class="p">,</span> <span class="n">acount</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">to_pdb_str</span><span class="p">(</span><span class="n">acount</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">rnum</span><span class="p">,</span> <span class="n">chain_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">renumber</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="c1">#    chain_id = c_names[i+1]</span>
+                <span class="n">rnum</span> <span class="o">+=</span> <span class="nb">len</span><span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">residues</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">c_str</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="s2">&quot;TER</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Structure.to_pdb"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.to_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">to_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;structure.pdb&quot;</span><span class="p">,</span> <span class="n">renumber</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        write structure to pdb file</span>
+
+<span class="sd">        :param fname: name of the file of the pdb file you want to write to</span>
+<span class="sd">        :param renumber: what should the first residue be numbered. -1 is</span>
+<span class="sd">            to NOT renumber, Default=-1.</span>
+
+<span class="sd">        :type fname: str</span>
+<span class="sd">        :type renumber: int</span>
+
+<span class="sd">        :return: None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">to_pdb_str</span><span class="p">(</span><span class="n">renumber</span><span class="p">))</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Structure.copy"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a deep copy of this structure</span>
+
+<span class="sd">        :returns: copy of Structure object</span>
+<span class="sd">        :rtype: Structure</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">chains</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">chains</span><span class="p">:</span>
+            <span class="n">cc</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">chains</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">cc</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">Structure</span><span class="p">(</span><span class="n">chains</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Structure.transform"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.transform">[docs]</a>    <span class="k">def</span> <span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Transforms atomic coordinates based on a rotation and translation</span>
+
+<span class="sd">        :param t: Transformation to be performed on atoms</span>
+<span class="sd">        :type t: transform.Transformation</span>
+
+<span class="sd">        :return: None</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            # load structure from test instance</span>
+<span class="sd">            &gt;&gt;&gt; import rnamake.unittests.instances</span>
+<span class="sd">            &gt;&gt;&gt; s = rnamake.unittests.instances.structure()</span>
+
+<span class="sd">            &gt;&gt;&gt; import rnamake.util</span>
+<span class="sd">            &gt;&gt;&gt; rnamake.util.center(s.atoms())</span>
+<span class="sd">            array([ -8.49624784, -59.88166488,  80.1866473 ])</span>
+
+<span class="sd">            # load indenity transform (no changes)</span>
+<span class="sd">            &gt;&gt;&gt; t = rnamake.unittests.instances.transform_indentity()</span>
+<span class="sd">            &gt;&gt;&gt; s.transform(t)</span>
+<span class="sd">            &gt;&gt;&gt; rnamake.util.center(s.atoms())</span>
+<span class="sd">            array([ -8.49624784, -59.88166488,  80.1866473 ])</span>
+
+<span class="sd">            # load random transform, write pdbs to disk</span>
+<span class="sd">            &gt;&gt;&gt; t = rnamake.unittests.instances.transform_random()</span>
+<span class="sd">            &gt;&gt;&gt; s.to_pdb(&quot;org.pdb&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; s.transform(t)</span>
+<span class="sd">            &gt;&gt;&gt; s.to_pdb(&quot;transformed.pdb&quot;)</span>
+
+<span class="sd">        .. figure:: ../_static/img/transform_test.png</span>
+<span class="sd">            :align:   center</span>
+
+<span class="sd">            Result of example above, Red original, Blue transformed.</span>
+
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+
+
+        <span class="n">r_T</span> <span class="o">=</span> <span class="n">t</span><span class="o">.</span><span class="n">rotation</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">():</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">coords</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">a</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span> <span class="n">r_T</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span><span class="o">.</span><span class="n">translation</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Structure.move"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.Structure.move">[docs]</a>    <span class="k">def</span> <span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">p</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Moves atomic coordinates based on a specified translation. If you do</span>
+<span class="sd">        not supply and np.array and instead give it a list it will not work!</span>
+
+<span class="sd">        :param p: Amount to 3D space to displace each atom</span>
+<span class="sd">        :type p: numpy.array</span>
+
+<span class="sd">        :return: None</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; import rnamake.unittests.instances</span>
+<span class="sd">            &gt;&gt;&gt; import numpy as np</span>
+
+<span class="sd">            # print out original and moved structure of P4-P6 domain</span>
+<span class="sd">            &gt;&gt;&gt; s = rnamake.unittests.instances.structure()</span>
+<span class="sd">            &gt;&gt;&gt; s.to_pdb(&quot;org.pdb&quot;)</span>
+<span class="sd">            &gt;&gt;&gt; s.move(np.array([50, 0, 0]))</span>
+<span class="sd">            &gt;&gt;&gt; s.to_pdb(&quot;moved.pdb&quot;)</span>
+
+<span class="sd">        .. figure:: ../_static/img/move_test.png</span>
+<span class="sd">            :align:   center</span>
+
+<span class="sd">            Result of example above, Red original, Blue moved.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">():</span>
+            <span class="n">a</span><span class="o">.</span><span class="n">coords</span> <span class="o">+=</span> <span class="n">p</span></div></div>
+
+
+<div class="viewcode-block" id="structure_from_pdb"><a class="viewcode-back" href="../../auto/structure.html#rnamake.structure.structure_from_pdb">[docs]</a><span class="k">def</span> <span class="nf">structure_from_pdb</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Processes a PDB formatted into Structure object. Uses pdb_parser module</span>
+<span class="sd">    to accomplish this.</span>
+
+<span class="sd">    :param pdb_path: path to PDB formatted file</span>
+<span class="sd">    :type pdb_path: str</span>
+
+<span class="sd">    :return: Structure object</span>
+<span class="sd">    :rtype: Structure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">residues</span> <span class="o">=</span> <span class="n">pdb_parser</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">)</span>
+    <span class="n">chains</span> <span class="o">=</span> <span class="n">chain</span><span class="o">.</span><span class="n">connect_residues_into_chains</span><span class="p">(</span><span class="n">residues</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">Structure</span><span class="p">(</span><span class="n">chains</span><span class="p">)</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">filename</span><span class="p">(</span><span class="n">pdb_path</span><span class="p">[:</span><span class="o">-</span><span class="mi">4</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">s</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,570 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Sqlite Library &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../index.html"/>
+        <link rel="next" title="Atom" href="atom.html"/>
+        <link rel="prev" title="Transform" href="transform.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">Graph</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Transform</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">Sqlite Library</a><ul class="simple">
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdb_parser.html">PDB_Parser</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Sqlite Library</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto/sqlite_library.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="sqlite-library">
+<span id="id1"></span><h1>Sqlite Library<a class="headerlink" href="#sqlite-library" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.sqlite_library"></span><dl class="class">
+<dt id="rnamake.sqlite_library.MotifEnsembleSqliteLibrary">
+<em class="property">class </em><code class="descclassname">rnamake.sqlite_library.</code><code class="descname">MotifEnsembleSqliteLibrary</code><span class="sig-paren">(</span><em>libname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#MotifEnsembleSqliteLibrary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.MotifEnsembleSqliteLibrary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.sqlite_library.SqliteLibrary" title="rnamake.sqlite_library.SqliteLibrary"><code class="xref py py-class docutils literal"><span class="pre">rnamake.sqlite_library.SqliteLibrary</span></code></a></p>
+<p>Sqlite3 library for holding stringifed motif_ensemble.MotifEnsemble objects.
+It is significantly faster then reloading each motif from file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="rnamake.sqlite_library.MotifEnsembleSqliteLibrary.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>**options</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.sqlite_library.MotifEnsembleSqliteLibrary.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets row for sqlite3 database with specific variables specified in
+options. Will at most return 1 item even if multiple items meet
+selection criteria.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>options</strong> &#8211; sqlite3 select columns and values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unstringified data from database</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.sqlite_library.MotifEnsembleSqliteLibrary.get_multi">
+<code class="descname">get_multi</code><span class="sig-paren">(</span><em>**options</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.sqlite_library.MotifEnsembleSqliteLibrary.get_multi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets row for sqlite3 database with specific variables specified in
+options. Same as get() except will return an list of all items that
+meet the selection criteria.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>options</strong> &#8211; sqlite3 select columns and values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unstringified data from database</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.sqlite_library.MotifEnsembleSqliteLibrary.get_random">
+<code class="descname">get_random</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.sqlite_library.MotifEnsembleSqliteLibrary.get_random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a random row of data from sqlite3 database. Mostly used for
+testing purposes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">random row of unstringified data from database file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.sqlite_library.MotifEnsembleSqliteLibrary.load_all">
+<code class="descname">load_all</code><span class="sig-paren">(</span><em>limit=99999</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.sqlite_library.MotifEnsembleSqliteLibrary.load_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads all data from database into memory. This has to be done if one
+wants to iterate over all the rows in database. Can set a limit with
+limit=N, will only load that many elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>limit</strong> &#8211; the max number of database rows that should be loaded</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.sqlite_library.MotifSqliteLibrary">
+<em class="property">class </em><code class="descclassname">rnamake.sqlite_library.</code><code class="descname">MotifSqliteLibrary</code><span class="sig-paren">(</span><em>libname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#MotifSqliteLibrary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.MotifSqliteLibrary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.sqlite_library.SqliteLibrary" title="rnamake.sqlite_library.SqliteLibrary"><code class="xref py py-class docutils literal"><span class="pre">rnamake.sqlite_library.SqliteLibrary</span></code></a></p>
+<p>Sqlite3 library for holding stringifed motif.Motif objects. It is
+significantly faster then reloading each motif from file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># gets all twoway junctions</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mlib</span> <span class="o">=</span> <span class="n">sqlite_library</span><span class="o">.</span><span class="n">MotifSqliteLibrary</span><span class="p">(</span><span class="s2">&quot;ideal_helices&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">mlib</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s2">&quot;HELIX.IDEAL.2&quot;</span><span class="p">)</span>
+<span class="o">&lt;</span><span class="n">Motif</span><span class="p">(</span>
+            <span class="n">structure</span><span class="o">=</span><span class="s1">&#39;&lt;Structure(name: N/A, #chains: 2, #residues: 8, #atoms: 172)&gt;&#39;</span><span class="p">,</span>
+            <span class="n">ends</span><span class="o">=</span><span class="s1">&#39;2&#39;</span><span class="p">)</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.sqlite_library.MotifSqliteLibrary.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>**options</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.sqlite_library.MotifSqliteLibrary.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets row for sqlite3 database with specific variables specified in
+options. Will at most return 1 item even if multiple items meet
+selection criteria.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>options</strong> &#8211; sqlite3 select columns and values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unstringified data from database</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="rnamake.sqlite_library.MotifSqliteLibrary.get_libnames">
+<em class="property">static </em><code class="descname">get_libnames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#MotifSqliteLibrary.get_libnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.MotifSqliteLibrary.get_libnames" title="Permalink to this definition">¶</a></dt>
+<dd><p>get dictionary of valid registered library names / paths. Only library
+names registered in this corresponding function in children classes
+can be loaded.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Dictionary of names / pathes for each valid sqlite3 database</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.sqlite_library.MotifSqliteLibrary.get_multi">
+<code class="descname">get_multi</code><span class="sig-paren">(</span><em>**options</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.sqlite_library.MotifSqliteLibrary.get_multi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets row for sqlite3 database with specific variables specified in
+options. Same as get() except will return an list of all items that
+meet the selection criteria.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>options</strong> &#8211; sqlite3 select columns and values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unstringified data from database</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.sqlite_library.MotifSqliteLibrary.get_random">
+<code class="descname">get_random</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.sqlite_library.MotifSqliteLibrary.get_random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a random row of data from sqlite3 database. Mostly used for
+testing purposes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">random row of unstringified data from database file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.sqlite_library.MotifSqliteLibrary.load_all">
+<code class="descname">load_all</code><span class="sig-paren">(</span><em>limit=99999</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.sqlite_library.MotifSqliteLibrary.load_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads all data from database into memory. This has to be done if one
+wants to iterate over all the rows in database. Can set a limit with
+limit=N, will only load that many elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>limit</strong> &#8211; the max number of database rows that should be loaded</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.sqlite_library.SqliteLibrary">
+<em class="property">class </em><code class="descclassname">rnamake.sqlite_library.</code><code class="descname">SqliteLibrary</code><span class="sig-paren">(</span><em>libname</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#SqliteLibrary"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.SqliteLibrary" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A wrapper for sqlite3 library, makes it simpler to do repeated sqlite3
+calls with a set database file. This is a base class and should not be
+called directly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>data</cite> <span class="classifier-delimiter">:</span> <span class="classifier">Dictionary of stored data</span></dt>
+<dd>Holds data already queryed from database file so dont have to do an
+extra query.</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.sqlite_library.SqliteLibrary.get">
+<code class="descname">get</code><span class="sig-paren">(</span><em>**options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#SqliteLibrary.get"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.SqliteLibrary.get" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets row for sqlite3 database with specific variables specified in
+options. Will at most return 1 item even if multiple items meet
+selection criteria.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>options</strong> &#8211; sqlite3 select columns and values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unstringified data from database</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="rnamake.sqlite_library.SqliteLibrary.get_libnames">
+<em class="property">static </em><code class="descname">get_libnames</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#SqliteLibrary.get_libnames"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.SqliteLibrary.get_libnames" title="Permalink to this definition">¶</a></dt>
+<dd><p>get dictionary of valid registered library names / paths. Only library
+names registered in this corresponding function in children classes
+can be loaded.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Dictionary of names / pathes for each valid sqlite3 database</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">dict</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.sqlite_library.SqliteLibrary.get_multi">
+<code class="descname">get_multi</code><span class="sig-paren">(</span><em>**options</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#SqliteLibrary.get_multi"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.SqliteLibrary.get_multi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets row for sqlite3 database with specific variables specified in
+options. Same as get() except will return an list of all items that
+meet the selection criteria.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>options</strong> &#8211; sqlite3 select columns and values</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">unstringified data from database</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.sqlite_library.SqliteLibrary.get_random">
+<code class="descname">get_random</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#SqliteLibrary.get_random"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.SqliteLibrary.get_random" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets a random row of data from sqlite3 database. Mostly used for
+testing purposes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">random row of unstringified data from database file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.sqlite_library.SqliteLibrary.load_all">
+<code class="descname">load_all</code><span class="sig-paren">(</span><em>limit=99999</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#SqliteLibrary.load_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.SqliteLibrary.load_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads all data from database into memory. This has to be done if one
+wants to iterate over all the rows in database. Can set a limit with
+limit=N, will only load that many elements.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>limit</strong> &#8211; the max number of database rows that should be loaded</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rnamake.sqlite_library.build_sqlite_library">
+<code class="descclassname">rnamake.sqlite_library.</code><code class="descname">build_sqlite_library</code><span class="sig-paren">(</span><em>path</em>, <em>data</em>, <em>keys</em>, <em>primary_key</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/sqlite_library.html#build_sqlite_library"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.sqlite_library.build_sqlite_library" title="Permalink to this definition">¶</a></dt>
+<dd><p>Builds a sqlite library to store various data. See setup scripts for
+more info on use. It is unlikely to be necessary to need to build new
+libraries. The length of each row must be the same length as keys.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>path</strong> (<em>String</em>) &#8211; the path of sqlite3 library you want to create</li>
+<li><strong>data</strong> (<em>list</em>) &#8211; list of data to be stored in sqlite library</li>
+<li><strong>keys</strong> (<em>list</em>) &#8211; name of columns for each row in sqlite library</li>
+<li><strong>primary_key</strong> (<em>String</em>) &#8211; which of the keys specified will be the primary key,
+for sqlite3 index purposes, this must be a unique key, different for
+each row.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">None</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># build test library</span>
+<span class="c1"># each list is a row in sqlite db</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">data</span> <span class="o">=</span> <span class="p">[[</span><span class="s1">&#39;the_word&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;the&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="s1">&#39;hello&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">]]</span>
+<span class="c1"># the name of each column</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">keys</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;word&#39;</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">]</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">sqlite_library</span><span class="o">.</span><span class="n">build_sqlite_library</span><span class="p">(</span><span class="s2">&quot;test.db&quot;</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">keys</span><span class="p">,</span> <span class="s1">&#39;id&#39;</span><span class="p">)</span>
+
+<span class="c1"># read library</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">import</span> <span class="nn">sqlite3</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span> <span class="o">=</span> <span class="n">sqlite3</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="s2">&quot;test.db&quot;</span><span class="p">)</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">conn</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="s2">&quot;SELECT * from data_table WHERE word=&#39;the_word&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">fetchone</span><span class="p">()</span>
+<span class="p">(</span><span class="s1">u&#39;the_word&#39;</span><span class="p">,</span> <span class="s1">u&#39;0&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="atom.html" class="btn btn-neutral float-right" title="Atom" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="transform.html" class="btn btn-neutral" title="Transform" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

@@ -1,0 +1,1404 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Graph &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../index.html"/>
+        <link rel="next" title="Tree" href="tree.html"/>
+        <link rel="prev" title="Welcome to RNAMake’s documentation!" href="../index.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="">Graph</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>Graph</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto/graph.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="graph">
+<span id="id1"></span><h1>Graph<a class="headerlink" href="#graph" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.graph"></span><dl class="class">
+<dt id="rnamake.graph.Graph">
+<em class="property">class </em><code class="descclassname">rnamake.graph.</code><code class="descname">Graph</code><a class="reference internal" href="../_modules/rnamake/graph.html#Graph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.Graph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>General implementation of a undirected graph. Do not call directly!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>nodes</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of GraphNode objects</span></dt>
+<dd>all the nodes in the tree, used for fast access by index</dd>
+<dt><cite>connections</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of GraphConnection objects</span></dt>
+<dd>all the connections between two different nodes in the graph</dd>
+<dt><cite>level</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>the current graph level, used for quickly deleting sections of the graph</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>the current node index, always the length of the number of nodes in teh graph</dd>
+<dt><cite>last_node</cite>: GraphNode object</dt>
+<dd>the last node added to the graph</dd>
+<dt><cite>current_node</cite>: GraphNode object</dt>
+<dd>the current node during iteration</dd>
+<dt><cite>queue</cite>: PriorityQueue object</dt>
+<dd>tracks which nodes to visit turning iteration</dd>
+<dt><cite>seen</cite>: List of GraphNode Objects</dt>
+<dd>tracks which nodes have alaready been visited during iteration</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.graph.Graph.decrease_level">
+<code class="descname">decrease_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#Graph.decrease_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.Graph.decrease_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decreases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.Graph.get_node">
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#Graph.get_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.Graph.get_node" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<em>int</em>) &#8211; the node index that you want</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">GraphNode object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">exceptions.GraphIndexException</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">#get node of index &#39;0&#39; which is the first one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.Graph.increase_level">
+<code class="descname">increase_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#Graph.increase_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.Graph.increase_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.Graph.oldest_node">
+<code class="descname">oldest_node</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#Graph.oldest_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.Graph.oldest_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the node with the lowest index. Only used a few examples may
+deprecated in next verision.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">GraphNode object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">oldest_node</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.graph.GraphConnection">
+<em class="property">class </em><code class="descclassname">rnamake.graph.</code><code class="descname">GraphConnection</code><span class="sig-paren">(</span><em>node_1</em>, <em>node_2</em>, <em>end_index_1</em>, <em>end_index_2</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphConnection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphConnection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>A simple class to store a connection between two nodes in Graph classes.
+Never needs to be called outside Graph classes.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>node_1</strong> (<a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode"><em>GraphNode</em></a>) &#8211; first node in the connection, order doesn&#8217;t matter</li>
+<li><strong>node_2</strong> (<a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode"><em>GraphNode</em></a>) &#8211; second node in the connection</li>
+<li><strong>end_index_1</strong> (<em>int</em>) &#8211; connection position in node 1</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Param_end_index_2:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first">connection position in node 2</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>node_1</cite>: GraphNode</dt>
+<dd>first node in the connection, order doesn&#8217;t matter</dd>
+<dt><cite>node_2</cite>: GraphNode</dt>
+<dd>second node in the connection</dd>
+<dt><cite>end_index_1</cite>: int</dt>
+<dd>connection position in node 1</dd>
+<dt><cite>end_index_2</cite>: int</dt>
+<dd>connection position in node 2</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.graph.GraphConnection.disconnect">
+<code class="descname">disconnect</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphConnection.disconnect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphConnection.disconnect" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes connection, gets each node to remove this connection from their
+connection lists.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphConnection.end_index">
+<code class="descname">end_index</code><span class="sig-paren">(</span><em>n_index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphConnection.end_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphConnection.end_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>get the end index of a given node specified by its index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n_index</strong> (<em>int</em>) &#8211; index of the node you want to find its end_index in
+this connection</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">end index of specified node in this connection</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphConnection.partner">
+<code class="descname">partner</code><span class="sig-paren">(</span><em>n_index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphConnection.partner"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphConnection.partner" title="Permalink to this definition">¶</a></dt>
+<dd><p>get other node in the connection.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n_index</strong> (<em>int</em>) &#8211; index of node you know but want to find the other node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">other node</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode">GraphNode</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.graph.GraphDynamic">
+<em class="property">class </em><code class="descclassname">rnamake.graph.</code><code class="descname">GraphDynamic</code><a class="reference internal" href="../_modules/rnamake/graph.html#GraphDynamic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphDynamic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.graph.Graph" title="rnamake.graph.Graph"><code class="xref py py-class docutils literal"><span class="pre">rnamake.graph.Graph</span></code></a></p>
+<p>a Graph with dynamic connections between nodes. i.e. each node does NOT
+have a predefined number of connections. Each node starts with 0
+connections and are added over time, there is no max to the number of
+connections each node can have</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>nodes</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of GraphNode objects</span></dt>
+<dd>all the nodes in the tree, used for fast access by index</dd>
+<dt><cite>connections</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of GraphConnection objects</span></dt>
+<dd>all the connections between two different nodes in the graph</dd>
+<dt><cite>level</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>the current graph level, used for quickly deleting sections of the graph</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>the current node index, always the length of the number of nodes in teh graph</dd>
+<dt><cite>last_node</cite>: GraphNode object</dt>
+<dd>the last node added to the graph</dd>
+<dt><cite>current_node</cite>: GraphNode object</dt>
+<dd>the current node during iteration</dd>
+<dt><cite>queue</cite>: PriorityQueue object</dt>
+<dd>tracks which nodes to visit turning iteration</dd>
+<dt><cite>seen</cite>: List of GraphNode Objects</dt>
+<dd>tracks which nodes have alaready been visited during iteration</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">GraphDynamic</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">parent_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">parent_index</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">connections</span><span class="p">)</span>
+<span class="go">3</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.graph.GraphDynamic.add_data">
+<code class="descname">add_data</code><span class="sig-paren">(</span><em>data</em>, <em>parent_index=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphDynamic.add_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphDynamic.add_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>add a new peice of data to the graph</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>can be anything</em>) &#8211; Item to be added to graph</li>
+<li><strong>parent_index</strong> (<em>int</em>) &#8211; index of node that this element should be connected too</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">index of added node</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">int</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last">exceptions.GraphIndexException</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphDynamic.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>i</em>, <em>j</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphDynamic.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphDynamic.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a connection between two nodes. Since this is a Dynamic Graph this
+cannot fail. i and j can be the same</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i</strong> (<em>int</em>) &#8211; index of node 1 to connect</li>
+<li><strong>j</strong> (<em>int</em>) &#8211; index of node 2 to connect</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphDynamic.decrease_level">
+<code class="descname">decrease_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphDynamic.decrease_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decreases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphDynamic.get_node">
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphDynamic.get_node" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<em>int</em>) &#8211; the node index that you want</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">GraphNode object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">exceptions.GraphIndexException</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">#get node of index &#39;0&#39; which is the first one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphDynamic.increase_level">
+<code class="descname">increase_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphDynamic.increase_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphDynamic.oldest_node">
+<code class="descname">oldest_node</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphDynamic.oldest_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the node with the lowest index. Only used a few examples may
+deprecated in next verision.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">GraphNode object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">oldest_node</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.graph.GraphNode">
+<em class="property">class </em><code class="descclassname">rnamake.graph.</code><code class="descname">GraphNode</code><span class="sig-paren">(</span><em>data</em>, <em>index</em>, <em>level</em>, <em>n_connections=0</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>An abstract class to define the behavior of a graph node or an element of
+data that has connectivity relationships to other elements of data of the
+same type. This class is never called directly.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>anything</em>) &#8211; The element that you wish to store in the graph</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.graph.Graph.get_node" title="rnamake.graph.Graph.get_node"><code class="xref py py-func docutils literal"><span class="pre">Graph.get_node()</span></code></a></li>
+<li><strong>level</strong> (<em>int</em>) &#8211; A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</li>
+<li><strong>n_connections</strong> (<em>int</em>) &#8211; The number of connections this node can have, in
+GraphDynamic this does nothing.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>data</cite> <span class="classifier-delimiter">:</span> <span class="classifier">anything</span></dt>
+<dd>The element of data being stored in graph</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.graph.Graph.get_node" title="rnamake.graph.Graph.get_node"><code class="xref py py-func docutils literal"><span class="pre">Graph.get_node()</span></code></a></dd>
+<dt><cite>level</cite>: int</dt>
+<dd>A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</dd>
+<dt><cite>connections</cite>: list of GraphConnections</dt>
+<dd>the connections the node has with other nodes</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.graph.GraphNode.available_children_pos">
+<code class="descname">available_children_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNode.available_children_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNode.available_children_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets all of the connection positions that are not filled yet for this
+node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of end positions not yet filled</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of ints</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNode.available_pos">
+<code class="descname">available_pos</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNode.available_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNode.available_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>check to see if specific connection position is filled</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pos</strong> (<em>int</em>) &#8211; position to check within interal connctions member</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">returns 1 if not filled and 0 is filled</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNode.connected">
+<code class="descname">connected</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNode.connected"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNode.connected" title="Permalink to this definition">¶</a></dt>
+<dd><p>check to see if another node is connected to this one. If so will
+return the GraphConnection object that they share. If not will return
+None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode"><em>GraphNode</em></a>) &#8211; other GraphNode object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Will return GraphConnection they share if connected if not
+will return None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.graph.GraphConnection" title="rnamake.graph.GraphConnection">GraphConnection</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNode.parent">
+<code class="descname">parent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNode.parent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNode.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A way to find the oldest node the current node is connected to. This is
+usually the parent node but this is not always 100% true. If is
+connected to no other nodes will return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the oldest node the current one is connected too</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode">GraphNode</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNode.parent_index">
+<code class="descname">parent_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNode.parent_index"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNode.parent_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the end index of the connected node that is the oldest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">end index of oldest connected node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.graph.GraphNodeDynamic">
+<em class="property">class </em><code class="descclassname">rnamake.graph.</code><code class="descname">GraphNodeDynamic</code><span class="sig-paren">(</span><em>data</em>, <em>index</em>, <em>level</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNodeDynamic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNodeDynamic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode"><code class="xref py py-class docutils literal"><span class="pre">rnamake.graph.GraphNode</span></code></a></p>
+<p>A GraphNode container that is specific for GraphDyanmic graphs. That is
+it can be connected to an unlimited number of other nodes. There is no
+reason to instantiate this class outside GraphDynamic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>anything</em>) &#8211; The element that you wish to store in the graph</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.graph.Graph.get_node" title="rnamake.graph.Graph.get_node"><code class="xref py py-func docutils literal"><span class="pre">Graph.get_node()</span></code></a></li>
+<li><strong>level</strong> (<em>int</em>) &#8211; A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>data</cite> <span class="classifier-delimiter">:</span> <span class="classifier">anything</span></dt>
+<dd>The element of data being stored in graph</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.graph.Graph.get_node" title="rnamake.graph.Graph.get_node"><code class="xref py py-func docutils literal"><span class="pre">Graph.get_node()</span></code></a></dd>
+<dt><cite>level</cite>: int</dt>
+<dd>A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</dd>
+<dt><cite>connections</cite>: list of GraphConnections</dt>
+<dd>the connections the node has with other nodes</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeDynamic.add_connection">
+<code class="descname">add_connection</code><span class="sig-paren">(</span><em>c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNodeDynamic.add_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNodeDynamic.add_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>adds a connection to another graph node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<a class="reference internal" href="#rnamake.graph.GraphConnection" title="rnamake.graph.GraphConnection"><em>GraphConnection</em></a>) &#8211; a connection to another node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeDynamic.available_children_pos">
+<code class="descname">available_children_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeDynamic.available_children_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets all of the connection positions that are not filled yet for this
+node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of end positions not yet filled</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of ints</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeDynamic.available_pos">
+<code class="descname">available_pos</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeDynamic.available_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>check to see if specific connection position is filled</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pos</strong> (<em>int</em>) &#8211; position to check within interal connctions member</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">returns 1 if not filled and 0 is filled</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeDynamic.connected">
+<code class="descname">connected</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeDynamic.connected" title="Permalink to this definition">¶</a></dt>
+<dd><p>check to see if another node is connected to this one. If so will
+return the GraphConnection object that they share. If not will return
+None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode"><em>GraphNode</em></a>) &#8211; other GraphNode object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Will return GraphConnection they share if connected if not
+will return None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.graph.GraphConnection" title="rnamake.graph.GraphConnection">GraphConnection</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeDynamic.parent">
+<code class="descname">parent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeDynamic.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A way to find the oldest node the current node is connected to. This is
+usually the parent node but this is not always 100% true. If is
+connected to no other nodes will return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the oldest node the current one is connected too</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode">GraphNode</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeDynamic.parent_index">
+<code class="descname">parent_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeDynamic.parent_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the end index of the connected node that is the oldest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">end index of oldest connected node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeDynamic.remove_connection">
+<code class="descname">remove_connection</code><span class="sig-paren">(</span><em>c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNodeDynamic.remove_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNodeDynamic.remove_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes a connection to another node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<a class="reference internal" href="#rnamake.graph.GraphConnection" title="rnamake.graph.GraphConnection"><em>GraphConnection</em></a>) &#8211; a connection to another node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.graph.GraphNodeStatic">
+<em class="property">class </em><code class="descclassname">rnamake.graph.</code><code class="descname">GraphNodeStatic</code><span class="sig-paren">(</span><em>data</em>, <em>index</em>, <em>level</em>, <em>n_children</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNodeStatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNodeStatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode"><code class="xref py py-class docutils literal"><span class="pre">rnamake.graph.GraphNode</span></code></a></p>
+<p>A GraphNode container that is specific for GraphStatic graphs. That is
+it can be connected to an unlimited number of other nodes. There is no
+reason to instantiate this class outside GraphStatic.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>anything</em>) &#8211; The element that you wish to store in the graph</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.graph.Graph.get_node" title="rnamake.graph.Graph.get_node"><code class="xref py py-func docutils literal"><span class="pre">Graph.get_node()</span></code></a></li>
+<li><strong>level</strong> (<em>int</em>) &#8211; A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</li>
+<li><strong>n_connections</strong> (<em>int</em>) &#8211; The number of connections this node can have.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>data</cite> <span class="classifier-delimiter">:</span> <span class="classifier">anything</span></dt>
+<dd>The element of data being stored in graph</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>The way for you to find this element of data again through
+<a class="reference internal" href="#rnamake.graph.Graph.get_node" title="rnamake.graph.Graph.get_node"><code class="xref py py-func docutils literal"><span class="pre">Graph.get_node()</span></code></a></dd>
+<dt><cite>level</cite>: int</dt>
+<dd>A way of grouping nodes together, increasing the level and
+then removing all nodes of a given level is a quick way to batch
+remove nodes</dd>
+<dt><cite>connections</cite>: list of GraphConnections</dt>
+<dd>the connections the node has with other nodes</dd>
+</dl>
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeStatic.add_connection">
+<code class="descname">add_connection</code><span class="sig-paren">(</span><em>c</em>, <em>pos</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNodeStatic.add_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNodeStatic.add_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a new connection at a specific position in connection list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>c</strong> (<a class="reference internal" href="#rnamake.graph.GraphConnection" title="rnamake.graph.GraphConnection"><em>GraphConnection</em></a>) &#8211; the new connection</li>
+<li><strong>pos</strong> (<em>int</em>) &#8211; the position to be added</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeStatic.available_children_pos">
+<code class="descname">available_children_pos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeStatic.available_children_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>gets all of the connection positions that are not filled yet for this
+node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of end positions not yet filled</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list of ints</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeStatic.available_pos">
+<code class="descname">available_pos</code><span class="sig-paren">(</span><em>pos</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeStatic.available_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>check to see if specific connection position is filled</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pos</strong> (<em>int</em>) &#8211; position to check within interal connctions member</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">returns 1 if not filled and 0 is filled</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeStatic.connected">
+<code class="descname">connected</code><span class="sig-paren">(</span><em>n</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeStatic.connected" title="Permalink to this definition">¶</a></dt>
+<dd><p>check to see if another node is connected to this one. If so will
+return the GraphConnection object that they share. If not will return
+None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>n</strong> (<a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode"><em>GraphNode</em></a>) &#8211; other GraphNode object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Will return GraphConnection they share if connected if not
+will return None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.graph.GraphConnection" title="rnamake.graph.GraphConnection">GraphConnection</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeStatic.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNodeStatic.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNodeStatic.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>deep copies graph node and also tries to deep copy data. Will work if
+data element has a function copy().</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a deep copy of node</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.graph.GraphNodeStatic" title="rnamake.graph.GraphNodeStatic">GraphNodeStatic</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeStatic.parent">
+<code class="descname">parent</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeStatic.parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A way to find the oldest node the current node is connected to. This is
+usually the parent node but this is not always 100% true. If is
+connected to no other nodes will return None.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the oldest node the current one is connected too</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.graph.GraphNode" title="rnamake.graph.GraphNode">GraphNode</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeStatic.parent_index">
+<code class="descname">parent_index</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphNodeStatic.parent_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the end index of the connected node that is the oldest.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">end index of oldest connected node.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">int</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphNodeStatic.remove_connection">
+<code class="descname">remove_connection</code><span class="sig-paren">(</span><em>c</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphNodeStatic.remove_connection"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphNodeStatic.remove_connection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a connection at a specific position in connection list</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>c</strong> (<a class="reference internal" href="#rnamake.graph.GraphConnection" title="rnamake.graph.GraphConnection"><em>GraphConnection</em></a>) &#8211; the connection to remove</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.graph.GraphStatic">
+<em class="property">class </em><code class="descclassname">rnamake.graph.</code><code class="descname">GraphStatic</code><a class="reference internal" href="../_modules/rnamake/graph.html#GraphStatic"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphStatic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#rnamake.graph.Graph" title="rnamake.graph.Graph"><code class="xref py py-class docutils literal"><span class="pre">rnamake.graph.Graph</span></code></a></p>
+<p>a Graph with static connections between nodes. i.e. each node HAS a
+predefined number of connections. This is useful for constructing graphs
+of Motifs and Secondary Structure elements which have predefined ends.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>nodes</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of GraphNode objects</span></dt>
+<dd>all the nodes in the tree, used for fast access by index</dd>
+<dt><cite>connections</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of GraphConnection objects</span></dt>
+<dd>all the connections between two different nodes in the graph</dd>
+<dt><cite>level</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>the current graph level, used for quickly deleting sections of the graph</dd>
+<dt><cite>index</cite>: int</dt>
+<dd>the current node index, always the length of the number of nodes in teh graph</dd>
+<dt><cite>last_node</cite>: GraphNode object</dt>
+<dd>the last node added to the graph</dd>
+<dt><cite>current_node</cite>: GraphNode object</dt>
+<dd>the current node during iteration</dd>
+<dt><cite>queue</cite>: PriorityQueue object</dt>
+<dd>tracks which nodes to visit turning iteration</dd>
+<dt><cite>seen</cite>: List of GraphNode Objects</dt>
+<dd>tracks which nodes have alaready been visited during iteration</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">GraphStatic</span><span class="p">()</span>
+<span class="go"># legend</span>
+<span class="go"># N0 = Node 0</span>
+<span class="go"># N0C0 = Connection 0 of Node 0</span>
+<span class="go"># add first node with 2 possible connection</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_children</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">#          N0</span>
+<span class="go">#    N0C0 /  \  N0C1</span>
+<span class="go">#        /    \</span>
+<span class="go">#     None     None</span>
+<span class="go"># add new node, connected to node 0. This new node: node 1 is connected</span>
+<span class="go"># to node 0 using the connnection in the 0th position on both node 0 and</span>
+<span class="go"># node 1. Do not need to specifiy parent_index=0 since adds to last node</span>
+<span class="go"># without specifying</span>
+<span class="go"># g.add_data(1, parent_index=0, parent_pos=0, child_pos=0, n_children=2)</span>
+<span class="go"># means the same thing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">parent_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">child_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_children</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">#          N0</span>
+<span class="go">#    N0C0 /  \  N0C1</span>
+<span class="go">#    N1C0/    \</span>
+<span class="go">#       N1   None</span>
+<span class="go">#   N1C1|</span>
+<span class="go">#       |</span>
+<span class="go">#      None</span>
+<span class="go"># add new node, connected to node 0.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">parent_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">parent_pos</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">child_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_children</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">#          N0</span>
+<span class="go">#    N0C0 /  \  N0C1</span>
+<span class="go">#    N1C0/    \ N2C0</span>
+<span class="go">#       N1    N2</span>
+<span class="go">#   N1C1|      |N2C1</span>
+<span class="go">#       |      |</span>
+<span class="go">#      None   None</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="go">#          N0</span>
+<span class="go">#    N0C0 /  \  N0C1</span>
+<span class="go">#    N1C0/    \ N2C0</span>
+<span class="go">#       N1----N2</span>
+<span class="go">#      N1C1  N2C1</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.add_data">
+<code class="descname">add_data</code><span class="sig-paren">(</span><em>data</em>, <em>parent_index=-1</em>, <em>parent_pos=-1</em>, <em>child_pos=-1</em>, <em>n_children=1</em>, <em>orphan=0</em>, <em>index=-1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphStatic.add_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphStatic.add_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new node to the graph given specfied data.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>data</strong> (<em>anything</em>) &#8211; element to add to graph</li>
+<li><strong>parent_index</strong> (<em>int</em>) &#8211; index of parent to connect to, optional</li>
+<li><strong>parent_pos</strong> (<em>int</em>) &#8211; connection position to connect to parent, optional</li>
+<li><strong>child_pos</strong> (<em>int</em>) &#8211; connection position on new node to be created, optional</li>
+<li><strong>n_children</strong> (<em>int</em>) &#8211; number of connections new node will have, optional</li>
+<li><strong>orphan</strong> (<em>int</em>) &#8211; whether node will not be connected to any other node.
+default new nodes are connected to the last node added. if orphan=1
+this will not happen</li>
+<li><strong>index</strong> (<em>int</em>) &#8211; overrides internal index and set node to specific index
+value, this is rarely used other then copying an entire graph</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">index of new node</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">int</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first">exceptions.GraphIndexException, exceptions.GraphInvalidEndException,
+exceptions.GraphException</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">GraphStatic</span><span class="p">()</span>
+<span class="go"># legend</span>
+<span class="go"># N0 = Node 0</span>
+<span class="go"># N0C0 = Connection 0 of Node 0</span>
+<span class="go"># add first node with 2 possible connection</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_children</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">#          N0</span>
+<span class="go">#    N0C0 /  \  N0C1</span>
+<span class="go">#        /    \</span>
+<span class="go">#     None     None</span>
+<span class="go"># add new node, connected to node 0. This new node: node 1 is connected</span>
+<span class="go"># to node 0 using the connnection in the 0th position on both node 0 and</span>
+<span class="go"># node 1. Do not need to specifiy parent_index=0 since adds to last node</span>
+<span class="go"># without specifying</span>
+<span class="go"># g.add_data(1, parent_index=0, parent_pos=0, child_pos=0, n_children=2)</span>
+<span class="go"># means the same thing</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">parent_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">child_pos</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_children</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="go">#          N0</span>
+<span class="go">#    N0C0 /  \  N0C1</span>
+<span class="go">#    N1C0/    \</span>
+<span class="go">#       N1   None</span>
+<span class="go">#   N1C1|</span>
+<span class="go">#       |</span>
+<span class="go">#      None</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.check_pos_is_value">
+<code class="descname">check_pos_is_value</code><span class="sig-paren">(</span><em>n</em>, <em>pos</em>, <em>error=1</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphStatic.check_pos_is_value"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphStatic.check_pos_is_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks to see if a given node has a free end to connect to</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference internal" href="#rnamake.graph.GraphNodeStatic" title="rnamake.graph.GraphNodeStatic"><em>GraphNodeStatic</em></a>) &#8211; the node to check</li>
+<li><strong>pos</strong> (<em>int</em>) &#8211; the end position to check</li>
+<li><strong>error</strong> (<em>int</em>) &#8211; whether an error should be returned if end is not free,
+default=1, will error</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">free end pos</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.connect">
+<code class="descname">connect</code><span class="sig-paren">(</span><em>i</em>, <em>j</em>, <em>i_pos</em>, <em>j_pos</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphStatic.connect"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphStatic.connect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Connects two nodes together given a specific end index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>i</strong> &#8211; index of node i</li>
+<li><strong>j</strong> &#8211; index of node j</li>
+<li><strong>i_pos</strong> &#8211; end pos of node i</li>
+<li><strong>j_pos</strong> &#8211; end pos of node j</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphStatic.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphStatic.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>creates a deep copy of the graph tries to create a copy of the
+data held in each node</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">copy of graph</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#rnamake.graph.GraphStatic" title="rnamake.graph.GraphStatic">GraphStatic</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.decrease_level">
+<code class="descname">decrease_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphStatic.decrease_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decreases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.get_availiable_pos">
+<code class="descname">get_availiable_pos</code><span class="sig-paren">(</span><em>n</em>, <em>pos</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphStatic.get_availiable_pos"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphStatic.get_availiable_pos" title="Permalink to this definition">¶</a></dt>
+<dd><p>checks to see if a given node has a free end position will return
+and error if it doesn&#8217;t</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>n</strong> (<a class="reference internal" href="#rnamake.graph.GraphNodeStatic" title="rnamake.graph.GraphNodeStatic"><em>GraphNodeStatic</em></a>) &#8211; the graph node in question</li>
+<li><strong>pos</strong> (<em>int</em>) &#8211; the end position (connection point)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">returns a list of positions if successful</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.get_node">
+<code class="descname">get_node</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphStatic.get_node" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<em>int</em>) &#8211; the node index that you want</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">GraphNode object</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">exceptions.GraphIndexException</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="go">#get node of index &#39;0&#39; which is the first one</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span> <span class="n">g</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">data</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.increase_level">
+<code class="descname">increase_level</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphStatic.increase_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Increases the level of nodes to be added. default level is 0. This is
+useful when removing or adding a set of nodes. Think of level as a
+grouping mechanism</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.oldest_node">
+<code class="descname">oldest_node</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#rnamake.graph.GraphStatic.oldest_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns the node with the lowest index. Only used a few examples may
+deprecated in next verision.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">GraphNode object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Examples:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">Graph</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">add_data</span><span class="p">(</span><span class="mi">15</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">oldest_node</span><span class="p">()</span><span class="o">.</span><span class="n">data</span>
+<span class="go">10</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.remove_node">
+<code class="descname">remove_node</code><span class="sig-paren">(</span><em>index</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphStatic.remove_node"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphStatic.remove_node" title="Permalink to this definition">¶</a></dt>
+<dd><p>removes a node with a given index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>index</strong> (<em>int</em>) &#8211; the index of the node you want to remove</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body">exceptions.GraphIndexException</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.graph.GraphStatic.remove_node_level">
+<code class="descname">remove_node_level</code><span class="sig-paren">(</span><em>level=None</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/graph.html#GraphStatic.remove_node_level"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.graph.GraphStatic.remove_node_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>remove all nodes with a given level, this is useful if you are unsure
+how many nodes have been added from a given point. if level is not
+specified level will be set to current level</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>level</strong> (<em>int</em>) &#8211; the node minimum node level you want to remove</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="tree.html" class="btn btn-neutral float-right" title="Tree" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="../index.html" class="btn btn-neutral" title="Welcome to RNAMake’s documentation!" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

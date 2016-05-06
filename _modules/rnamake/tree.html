@@ -1,0 +1,836 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.tree &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.tree</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.tree</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">exceptions</span>
+
+<span class="c1"># TODO should be moved into Tree</span>
+<span class="k">def</span> <span class="nf">transverse_tree</span><span class="p">(</span><span class="n">tree</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">__iter__</span><span class="p">()</span>
+    <span class="n">tree</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">next</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span>
+        <span class="k">yield</span> <span class="nb">next</span>
+
+<div class="viewcode-block" id="Tree"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.Tree">[docs]</a><span class="k">class</span> <span class="nc">Tree</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    General implementation of a tree. Do not call directly!</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `nodes` : list of TreeNode objects</span>
+<span class="sd">        all the nodes in the tree, used for fast access by index</span>
+<span class="sd">    `level` : int</span>
+<span class="sd">        the current tree level, used for quickly deleting sections of the tree</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        the current node index, always the length of the number of nodes in the tree</span>
+<span class="sd">    `last_node`: TreeNode object</span>
+<span class="sd">        the last node added to the tree</span>
+<span class="sd">    `current_node`: TreeNode object</span>
+<span class="sd">        the current node during iteration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># iterator stuff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">None</span>
+
+<div class="viewcode-block" id="Tree.get_node"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.Tree.get_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param index: the node index that you want</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :return: TreeNode object</span>
+<span class="sd">        :raises: exceptions.TreeIndexException</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; t = TreeDynamic()</span>
+<span class="sd">            &gt;&gt;&gt; t.add_data(10)</span>
+<span class="sd">            #get node of index &#39;0&#39; which is the first one</span>
+<span class="sd">            &gt;&gt;&gt; print t.get_node(0).data</span>
+<span class="sd">            10</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">n</span>
+
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">TreeIndexException</span><span class="p">(</span>
+            <span class="n">index</span><span class="p">,</span>
+            <span class="s2">&quot;node </span><span class="si">%d</span><span class="s2"> was requested but does not exist&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">index</span><span class="p">))</span></div>
+
+    <span class="c1"># TODO this is not behaving properly, should be removing all children too</span>
+    <span class="c1"># tree does not work with there are gaps in it like a graph</span>
+<div class="viewcode-block" id="Tree.remove_node"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.Tree.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        removes a node with a given index</span>
+
+<span class="sd">        :param node: the actual node object you want to remove</span>
+<span class="sd">        :param index: the index of the node you want to remove</span>
+
+<span class="sd">        :type node: TreeNode</span>
+<span class="sd">        :type index: int</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        :raises: exceptions.TreeIndexException, exceptions.TreeException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">index</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">node</span> <span class="ow">is</span> <span class="bp">None</span> <span class="ow">and</span> <span class="n">index</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">TreeException</span><span class="p">(</span>
+                <span class="s2">&quot;need to include node or index in remove_node&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">node</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">remove_child</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">==</span> <span class="n">node</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">parent</span></div>
+
+<div class="viewcode-block" id="Tree.remove_node_level"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.Tree.remove_node_level">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        remove all nodes with a given level, this is useful if you are unsure</span>
+<span class="sd">        how many nodes have been added from a given point. if level is not</span>
+<span class="sd">        specified level will be set to current level</span>
+
+<span class="sd">        :param level: the node minimum node level you want to remove</span>
+<span class="sd">        :type level: int</span>
+<span class="sd">        :return: None</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">removed</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">level</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                    <span class="n">removed</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">break</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">removed</span><span class="p">:</span>
+                <span class="k">break</span></div>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="c1"># TODO this is really bad need to just call connections.__iter__()</span>
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span> <span class="o">==</span> <span class="n">node</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">node</span>
+
+<div class="viewcode-block" id="Tree.next_level"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.Tree.next_level">[docs]</a>    <span class="k">def</span> <span class="nf">next_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Increases the level of nodes to be added. default level is 0. This is</span>
+<span class="sd">        useful when removing or adding a set of nodes. Think of level as a</span>
+<span class="sd">        grouping mechanism</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Tree.decrease_level"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.Tree.decrease_level">[docs]</a>    <span class="k">def</span> <span class="nf">decrease_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decreases the level of nodes to be added. default level is 0. This is</span>
+<span class="sd">        useful when removing or adding a set of nodes. Think of level as a</span>
+<span class="sd">        grouping mechanism</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">-=</span> <span class="mi">1</span></div></div>
+
+
+<div class="viewcode-block" id="TreeDynamic"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeDynamic">[docs]</a><span class="k">class</span> <span class="nc">TreeDynamic</span><span class="p">(</span><span class="n">Tree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    a Tree that has a dynamic number of children. i.e. each node does NOT</span>
+<span class="sd">    have a predefined number of children. Each node starts with 0</span>
+<span class="sd">    children and are added over time, there is no max to the number of</span>
+<span class="sd">    children each node can have</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `nodes` : list of TreeNode objects</span>
+<span class="sd">        all the nodes in the tree, used for fast access by index</span>
+<span class="sd">    `level` : int</span>
+<span class="sd">        the current tree level, used for quickly deleting sections of the tree</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        the current node index, always the length of the number of nodes in the tree</span>
+<span class="sd">    `last_node`: TreeNode object</span>
+<span class="sd">        the last node added to the tree</span>
+<span class="sd">    `current_node`: TreeNode object</span>
+<span class="sd">        the current node during iteration</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt; t = TreeDynamic()</span>
+<span class="sd">        &gt;&gt;&gt; t.add_data(0)</span>
+<span class="sd">        &gt;&gt;&gt; t.add_data(1)</span>
+<span class="sd">        &gt;&gt;&gt; t.add_data(2, parent_index=0)</span>
+<span class="sd">        &gt;&gt;&gt; t.add_data(3, parent_index=0)</span>
+
+<span class="sd">        &gt;&gt;&gt; len(t.get_node(0).children)</span>
+<span class="sd">        3</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TreeDynamic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+    <span class="c1"># TODO parent adding should be done inside adding a child, should not be</span>
+    <span class="c1"># a seperate step</span>
+<div class="viewcode-block" id="TreeDynamic.add_data"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeDynamic.add_data">[docs]</a>    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        add a new element of data to the tree</span>
+
+<span class="sd">        :param data: Item to be added to tree</span>
+<span class="sd">        :param parent_index: index of node that this element should be connected too</span>
+
+<span class="sd">        :type data: can be anything</span>
+<span class="sd">        :type parent_index: int</span>
+
+<span class="sd">        :return: index of added node</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :raises: exceptions.TreeIndexException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">TreeNodeDynamic</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span>
+        <span class="k">if</span> <span class="n">parent_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">parent_index</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span></div></div>
+
+
+<div class="viewcode-block" id="TreeStatic"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeStatic">[docs]</a><span class="k">class</span> <span class="nc">TreeStatic</span><span class="p">(</span><span class="n">Tree</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A Tree that has a static number of children. i.e. each node has</span>
+<span class="sd">    a predefined number of children. Each node starts with 0</span>
+<span class="sd">    children and are added over time, there is no max to the number of</span>
+<span class="sd">    children each node can have</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `nodes` : list of TreeNode objects</span>
+<span class="sd">        all the nodes in the tree, used for fast access by index</span>
+<span class="sd">    `level` : int</span>
+<span class="sd">        the current tree level, used for quickly deleting sections of the tree</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        the current node index, always the length of the number of nodes in the tree</span>
+<span class="sd">    `last_node`: TreeNode object</span>
+<span class="sd">        the last node added to the tree</span>
+<span class="sd">    `current_node`: TreeNode object</span>
+<span class="sd">        the current node during iteration</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TreeStatic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+    <span class="c1"># TODO decide what the correct order of where n_children should be its</span>
+    <span class="c1"># different from this same function in graph.GraphStatic implementation</span>
+<div class="viewcode-block" id="TreeStatic.add_data"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeStatic.add_data">[docs]</a>    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">n_children</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">parent_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">parent_child_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new node to the tree given specfied data.</span>
+
+<span class="sd">        :param data: element to add to tree</span>
+<span class="sd">        :param n_children: number of children the node can have in max</span>
+<span class="sd">        :param parent_index: index of parent to connect to, optional</span>
+<span class="sd">        :param parent_child_index:  child position to connect to parent, optional</span>
+
+<span class="sd">        :type data: anything</span>
+<span class="sd">        :type n_children: int</span>
+<span class="sd">        :type parent_index: int</span>
+<span class="sd">        :type parent_child_index: int</span>
+
+<span class="sd">        :return: index of new node</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        :raises: exceptions.TreeIndexException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">TreeNodeStatic</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">,</span> <span class="n">n_children</span><span class="p">)</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span>
+
+        <span class="k">if</span> <span class="n">parent_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">parent_index</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parent_child_index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">all_pos</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">available_children_pos</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">TreeEndIndexException</span><span class="p">(</span>
+                        <span class="n">parent</span><span class="p">,</span>
+                        <span class="n">parent_child_index</span><span class="p">,</span>
+                        <span class="sd">&quot;&quot;&quot;cannot add new node to parent %d since it has not</span>
+<span class="sd">                           available ends to add children&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+
+                <span class="n">parent_child_index</span> <span class="o">=</span> <span class="n">all_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">parent</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">parent_child_index</span><span class="p">)</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">parent</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="o">-</span><span class="mi">1</span></div>
+
+    <span class="c1"># TODO get rid of this function is useless and bad</span>
+    <span class="k">def</span> <span class="nf">get_available_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">avail_pos</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">available_children_pos</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">avail_pos</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">available_pos</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;tree pos is not available&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">pos</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ts</span> <span class="o">=</span> <span class="n">TreeStatic</span><span class="p">()</span>
+        <span class="n">new_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">new_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">parent_index</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parent_index</span><span class="p">()</span>
+            <span class="n">pei</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">parent_end_index</span><span class="p">()</span>
+            <span class="k">if</span> <span class="n">parent_index</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">new_nodes</span><span class="p">[</span><span class="n">parent_index</span><span class="p">]</span><span class="o">.</span><span class="n">add_child</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">pei</span><span class="p">)</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="n">new_nodes</span><span class="p">[</span><span class="n">parent_index</span><span class="p">]</span>
+
+        <span class="n">ts</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">new_nodes</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">ts</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="n">ts</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">last_node</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span>
+        <span class="n">ts</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span>
+        <span class="k">return</span> <span class="n">ts</span></div>
+
+
+<div class="viewcode-block" id="TreeNode"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNode">[docs]</a><span class="k">class</span> <span class="nc">TreeNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An abstract class to define the behavior of a tree node or an element of</span>
+<span class="sd">    data that has connectivity relationships to other elements of data of the</span>
+<span class="sd">    same type. This class is never called directly.</span>
+
+<span class="sd">    :param data: The element that you wish to store in the tree</span>
+<span class="sd">    :param index: The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Tree.get_node`</span>
+<span class="sd">    :param level: A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    :param n_children: The number of connections this node can have, in</span>
+<span class="sd">        TreeDynamic this does nothing.</span>
+
+<span class="sd">    :type data: anything</span>
+<span class="sd">    :type index: int</span>
+<span class="sd">    :type level: int</span>
+<span class="sd">    :type n_children: int</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `data` : anything</span>
+<span class="sd">        The element of data being stored in tree</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Tree.get_node`</span>
+<span class="sd">    `level`: int</span>
+<span class="sd">        A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    `children`: list of TreeNodes</span>
+<span class="sd">        Nodes whose parent is this node</span>
+<span class="sd">    `parent`: TreeNode</span>
+<span class="sd">        the parent of the current node</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span> <span class="s2">&quot;children&quot;</span><span class="p">,</span> <span class="s2">&quot;parent&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">n_children</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span> <span class="o">=</span> <span class="p">[</span> <span class="bp">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_children</span><span class="p">)]</span>
+
+<div class="viewcode-block" id="TreeNode.available_children_pos"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNode.available_children_pos">[docs]</a>    <span class="k">def</span> <span class="nf">available_children_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets all of the children positions that are not filled yet for this</span>
+<span class="sd">        node</span>
+
+<span class="sd">        :return: a list of end positions not yet filled</span>
+<span class="sd">        :rtype: list of ints</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">pos</span></div>
+
+<div class="viewcode-block" id="TreeNode.parent_index"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNode.parent_index">[docs]</a>    <span class="k">def</span> <span class="nf">parent_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the node index of parent if parent is None returns -1</span>
+
+<span class="sd">        :return: node index of parent</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">index</span></div>
+
+<div class="viewcode-block" id="TreeNode.available_pos"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNode.available_pos">[docs]</a>    <span class="k">def</span> <span class="nf">available_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks to see if a child position is filled or not. returns 0 is filled</span>
+<span class="sd">        or not available and 1 if its avialable to be used.</span>
+
+<span class="sd">        :param pos: the position in children list you want to check</span>
+<span class="sd">        :return: the avialability of the position</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">pos</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="TreeNode.parent_end_index"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNode.parent_end_index">[docs]</a>    <span class="k">def</span> <span class="nf">parent_end_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the position of this node in the children list of the parent.</span>
+<span class="sd">        i.e. what number child is this not in reference to the parent. will</span>
+<span class="sd">        return -1 if this node has no parent.</span>
+
+<span class="sd">        :return: the child position this node is in reference to its parent</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TreeNodeDynamic"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNodeDynamic">[docs]</a><span class="k">class</span> <span class="nc">TreeNodeDynamic</span><span class="p">(</span><span class="n">TreeNode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A TreeNode container that is specific for TreeDynamic trees. That is</span>
+<span class="sd">    it can be connected to an unlimited number of other nodes. There is no</span>
+<span class="sd">    reason to instantiate this class outside TreeDynamic.</span>
+
+<span class="sd">    :param data: The element that you wish to store in the tree</span>
+<span class="sd">    :param index: The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Tree.get_node`</span>
+<span class="sd">    :param level: A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+
+<span class="sd">    :type data: anything</span>
+<span class="sd">    :type index: int</span>
+<span class="sd">    :type level: int</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `data` : anything</span>
+<span class="sd">        The element of data being stored in tree</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Tree.get_node`</span>
+<span class="sd">    `level`: int</span>
+<span class="sd">        A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    `children`: list of TreeNodes</span>
+<span class="sd">        Nodes whose parent is this node</span>
+<span class="sd">    `parent`: TreeNode</span>
+<span class="sd">        the parent of the current node</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span> <span class="s2">&quot;children&quot;</span><span class="p">,</span> <span class="s2">&quot;parent&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TreeNodeDynamic.add_child"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNodeDynamic.add_child">[docs]</a>    <span class="k">def</span> <span class="nf">add_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        adds a new node as a child to the current node</span>
+
+<span class="sd">        :param node: the node you want to as a child to this node</span>
+<span class="sd">        :type node: TreeNodeDynamic</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="TreeNodeDynamic.remove_child"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNodeDynamic.remove_child">[docs]</a>    <span class="k">def</span> <span class="nf">remove_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        removes a node as a child from the current ndoe</span>
+
+<span class="sd">        :param node: the node want to remove as a child to this node. must</span>
+<span class="sd">            already be a child</span>
+<span class="sd">        :type node: TreeNodeDynamic</span>
+
+<span class="sd">        :return:</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">TreeException</span><span class="p">(</span>
+                <span class="s2">&quot;cannot remove child from node as it is not a child&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="TreeNodeStatic"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNodeStatic">[docs]</a><span class="k">class</span> <span class="nc">TreeNodeStatic</span><span class="p">(</span><span class="n">TreeNode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A TreeNode container that is specific for TreeStatic trees. That is</span>
+<span class="sd">    it can be connected to an unlimited number of other nodes. There is no</span>
+<span class="sd">    reason to instantiate this class outside TreeStatic.</span>
+
+<span class="sd">    :param data: The element that you wish to store in the tree</span>
+<span class="sd">    :param index: The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Tree.get_node`</span>
+<span class="sd">    :param level: A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    :param n_children: The number of connections this node can have, in</span>
+<span class="sd">        TreeDynamic this does nothing.</span>
+
+<span class="sd">    :type data: anything</span>
+<span class="sd">    :type index: int</span>
+<span class="sd">    :type level: int</span>
+<span class="sd">    :type n_children: int</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `data` : anything</span>
+<span class="sd">        The element of data being stored in tree</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Tree.get_node`</span>
+<span class="sd">    `level`: int</span>
+<span class="sd">        A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    `children`: list of TreeNodes</span>
+<span class="sd">        Nodes whose parent is this node</span>
+<span class="sd">    `parent`: TreeNode</span>
+<span class="sd">        the parent of the current node</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span> <span class="s2">&quot;children&quot;</span><span class="p">,</span> <span class="s2">&quot;parent&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">n_children</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">n_children</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TreeNodeStatic.add_child"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNodeStatic.add_child">[docs]</a>    <span class="k">def</span> <span class="nf">add_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        adds a new node a a child at a specific position in this nodes child&#39;s</span>
+<span class="sd">        list.</span>
+
+<span class="sd">        :param node: the node you want to add as a child of this node</span>
+<span class="sd">        :param pos: the position in this nodes children&#39;s list you want to</span>
+<span class="sd">            place this new child</span>
+
+<span class="sd">        :type node: TreeNodeStatic</span>
+<span class="sd">        :type pos: int</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+             <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">TreeEndIndexException</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span>
+                <span class="sd">&quot;&quot;&quot;attempted to add a new child to node: %d at endpos</span>
+<span class="sd">                    %d but thats lower then zero not allowed&quot;&quot;&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pos</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">TreeEndIndexException</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span>
+                 <span class="sd">&quot;&quot;&quot;attempted to add a new child to node: %d at endpos</span>
+<span class="sd">                    %d that is larger then the number of children</span>
+<span class="sd">                    this node has &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pos</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">TreeEndIndexException</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span>
+                <span class="sd">&quot;&quot;&quot;attempted to add a new child to node: %d at endpos</span>
+<span class="sd">                    %d but it is full&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pos</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span></div>
+
+<div class="viewcode-block" id="TreeNodeStatic.remove_child"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNodeStatic.remove_child">[docs]</a>    <span class="k">def</span> <span class="nf">remove_child</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a child at a specific position in child list</span>
+
+<span class="sd">        :param node: the node to remove</span>
+<span class="sd">        :type node: TreeNodeStatic</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">node</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">TreeException</span><span class="p">(</span>
+                <span class="s2">&quot;cannot remove child from node as it is not a child&quot;</span><span class="p">)</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span></div>
+
+<div class="viewcode-block" id="TreeNodeStatic.copy"><a class="viewcode-back" href="../../auto/tree.html#rnamake.tree.TreeNodeStatic.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        deep copies tree node and also tries to deep copy data. Will work if</span>
+<span class="sd">        data element has a function copy().</span>
+
+<span class="sd">        :return: a deep copy of node</span>
+<span class="sd">        :rtype: TreeNodeStatic</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">new_data</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">TreeNodeStatic</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">children</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">c</span></div></div>
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

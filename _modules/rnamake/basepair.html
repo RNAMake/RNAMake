@@ -1,0 +1,722 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.basepair &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.basepair</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.basepair</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">util</span>
+<span class="kn">import</span> <span class="nn">basic_io</span>
+<span class="kn">import</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">motif</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
+<span class="kn">import</span> <span class="nn">exceptions</span>
+
+
+<div class="viewcode-block" id="Basepair"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair">[docs]</a><span class="k">class</span> <span class="nc">Basepair</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    :param res1: First residue in basepair</span>
+<span class="sd">    :param res2: Second residue in basepair</span>
+<span class="sd">    :param r: Reference frame of basepair</span>
+<span class="sd">    :param bp_type: X3dna basepair type, default &quot;c...&quot;</span>
+
+<span class="sd">    :type res1: residue.Residue</span>
+<span class="sd">    :type res2: residue.Residue</span>
+<span class="sd">    :type r: np.array</span>
+<span class="sd">    :type bp_type: str</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `res1` : residue.Residue</span>
+<span class="sd">        First residue in basepair</span>
+<span class="sd">    `res2` : residue.Residue</span>
+<span class="sd">        Second residue in basepair</span>
+<span class="sd">    `bp_type`: str</span>
+<span class="sd">        X3dna basepair type</span>
+<span class="sd">    `atoms`: list of atom.Atoms</span>
+<span class="sd">        All atoms from both res1 and res2. Grouped together for easy manipulation</span>
+<span class="sd">    `bp_state`: BasepairState</span>
+<span class="sd">        Contains the orientation, origin and sugar. This is all information</span>
+<span class="sd">        required to align to this basepair and can be used independently from</span>
+<span class="sd">        the reset of the basepair.</span>
+<span class="sd">    `uuid`: uuid.uuid1()</span>
+<span class="sd">        unique id to indentify this basepair when locating it in a motif or</span>
+<span class="sd">        pose</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    ..  code-block:: python</span>
+
+<span class="sd">        # build basepair from stratch</span>
+<span class="sd">        &gt;&gt;&gt; from rnamake.unittests import instances</span>
+<span class="sd">        &gt;&gt;&gt; from rnamake import basepair</span>
+<span class="sd">        &gt;&gt;&gt; import numpy as np</span>
+<span class="sd">        &gt;&gt;&gt; s = instances.structure()</span>
+<span class="sd">        &gt;&gt;&gt; b = basepair.Basepair(s.get_residue(num=103),</span>
+<span class="sd">                                  s.get_residue(num=104),</span>
+<span class="sd">                                  np.eye(3))</span>
+<span class="sd">        &gt;&gt;&gt; print b</span>
+<span class="sd">        &lt;Basepair(A103-A104)&gt;</span>
+
+<span class="sd">        # loading test basepair</span>
+<span class="sd">        &gt;&gt;&gt; b = instances.basepair()</span>
+<span class="sd">        &gt;&gt;&gt; print b</span>
+<span class="sd">        &lt;Basepair(A13-A12)&gt;</span>
+
+<span class="sd">        # primary axis of orientation, used to align to this basepair</span>
+<span class="sd">        &gt;&gt;&gt; print b.r()</span>
+<span class="sd">        [[  1.00000001e+00   1.00000001e-04  -9.99999990e-09]</span>
+<span class="sd">         [ -1.00000002e-04   1.00000001e+00  -9.99999990e-05]</span>
+<span class="sd">         [ -1.99999995e-08   9.99999955e-05   1.00000000e+00]]</span>
+
+<span class="sd">        # center of mass of basepair</span>
+<span class="sd">        &gt;&gt;&gt; print b.d()</span>
+<span class="sd">        [ 0.1956032   0.69256601  0.0930465 ]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;res1&quot;</span><span class="p">,</span> <span class="s2">&quot;res2&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;bp_type&quot;</span><span class="p">,</span> <span class="s2">&quot;atoms&quot;</span><span class="p">,</span> <span class="s2">&quot;bp_state&quot;</span><span class="p">,</span> <span class="s2">&quot;uuid&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res1</span><span class="p">,</span> <span class="n">res2</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">bp_type</span><span class="o">=</span><span class="s2">&quot;c...&quot;</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span> <span class="o">=</span> <span class="n">res1</span><span class="p">,</span> <span class="n">res2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">atoms</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_atoms</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bp_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_state</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bp_type</span> <span class="o">=</span> <span class="n">bp_type</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="n">uuid</span><span class="o">.</span><span class="n">uuid1</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+          <span class="k">return</span> <span class="s2">&quot;&lt;Basepair(&quot;</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">chain_id</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span> <span class="o">+</span>\
+            <span class="s2">&quot;-&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">chain_id</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;)&gt;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">_get_atoms</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        helper function to collect all non null atoms from both resiudes in</span>
+<span class="sd">        basepair</span>
+
+<span class="sd">        :return: all atoms that belong to basepair</span>
+<span class="sd">        :rtype: list of atom.Atoms</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">atoms</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">atoms</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">a</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">atoms</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">atoms</span>
+
+    <span class="k">def</span> <span class="nf">_get_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        helper function to setup basepair state object that keeps track of the</span>
+<span class="sd">        rotation, center and c1&#39; sugar atoms used to align to this basepair</span>
+
+<span class="sd">        :param r: orientation matrix defining principle axes of coordinate</span>
+<span class="sd">            system</span>
+<span class="sd">        :type r: np.array</span>
+
+<span class="sd">        :return: basepair state object for this basepair</span>
+<span class="sd">        :rtype: BasepairState</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">d</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="n">sugars</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;C1&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;C1&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">BasepairState</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">sugars</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Basepair.residues"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.residues">[docs]</a>    <span class="k">def</span> <span class="nf">residues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns both residues for easy iteration</span>
+
+<span class="sd">        :returns: both residues in base</span>
+<span class="sd">        :rtype: list of residue.Residues</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Basepair.c1_prime_coords"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.c1_prime_coords">[docs]</a>    <span class="k">def</span> <span class="nf">c1_prime_coords</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the c1&#39; atom coordinates for both residues. These coordinates are</span>
+<span class="sd">        used to fine tune the alignment between basepairs</span>
+
+<span class="sd">        :return: list of c1&#39; coords</span>
+<span class="sd">        :rtype: list of np.arrays</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;C1&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;C1&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="Basepair.partner"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.partner">[docs]</a>    <span class="k">def</span> <span class="nf">partner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">res</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get the other basepairing partner of a residue will throw an error</span>
+<span class="sd">        if the supplied residue is not contained within this basepair</span>
+
+<span class="sd">        :param res: the residue that you want to get the partner of</span>
+<span class="sd">        :type res: Residue object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">res</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span>
+        <span class="k">elif</span> <span class="n">res</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">res1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">BasepairException</span><span class="p">(</span>
+                <span class="s2">&quot;called get_partner with residue not in this not in this &quot;</span>
+                <span class="s2">&quot;basepair&quot;</span><span class="p">)</span></div>
+
+    <span class="c1"># TODO make sure smaller number is actually first, doesnt always work</span>
+<div class="viewcode-block" id="Basepair.name"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.name">[docs]</a>    <span class="k">def</span> <span class="nf">name</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get name of basepair: which is the combined name of both residues</span>
+<span class="sd">        seperated by a &quot;-&quot;. The residue with the lower res number should</span>
+<span class="sd">        come first</span>
+
+<span class="sd">        :return: name of basepair</span>
+<span class="sd">        :rtype: str</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        ..  code-block:: python</span>
+
+<span class="sd">            # build basepair from stratch</span>
+<span class="sd">            &gt;&gt;&gt; from rnamake.unittests import instances</span>
+<span class="sd">            &gt;&gt;&gt; b = instances.basepair()</span>
+<span class="sd">            &gt;&gt;&gt; print b.res1</span>
+<span class="sd">            &lt;Residue(&#39;G13 chain A&#39;)&gt;</span>
+
+<span class="sd">            &gt;&gt;&gt; print b.res2</span>
+<span class="sd">            &lt;Residue(&#39;C12 chain A&#39;)&gt;</span>
+
+<span class="sd">            &gt;&gt;&gt; print b.name()</span>
+<span class="sd">            A12-A13</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">str1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">chain_id</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span>
+        <span class="n">str2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">chain_id</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">str1</span> <span class="o">&lt;</span> <span class="n">str2</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">str1</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">str2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">str2</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">str1</span></div>
+
+<div class="viewcode-block" id="Basepair.flip"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.flip">[docs]</a>    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        wrapper for BasepairState flip. There is probably no reasons to ever</span>
+<span class="sd">        call this. See the implementation in BasepairState</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bp_state</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="Basepair.copy"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a deep copy of this basepair object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cbp</span> <span class="o">=</span> <span class="n">Basepair</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bp_state</span><span class="o">.</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">cbp</span><span class="o">.</span><span class="n">bp_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bp_state</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">cbp</span><span class="o">.</span><span class="n">bp_state</span><span class="o">.</span><span class="n">sugars</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;C1&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">,</span>
+                               <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">get_atom</span><span class="p">(</span><span class="s2">&quot;C1&#39;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">coords</span><span class="p">]</span>
+        <span class="n">cbp</span><span class="o">.</span><span class="n">bp_type</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bp_type</span>
+        <span class="n">cbp</span><span class="o">.</span><span class="n">uuid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">uuid</span>
+        <span class="k">return</span> <span class="n">cbp</span></div>
+
+<div class="viewcode-block" id="Basepair.state"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.state">[docs]</a>    <span class="k">def</span> <span class="nf">state</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the state of this basepair and makes sure that the</span>
+<span class="sd">        center and sugar positions are updated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bp_state</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bp_state</span><span class="o">.</span><span class="n">sugars</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">c1_prime_coords</span><span class="p">()</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bp_state</span></div>
+
+<div class="viewcode-block" id="Basepair.r"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.r">[docs]</a>    <span class="k">def</span> <span class="nf">r</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the orientation matrix of this basepair which is stored in the</span>
+<span class="sd">        the BasepairState instance.</span>
+
+<span class="sd">        :return: orientation matrix of basepair</span>
+<span class="sd">        :rtype: np.array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bp_state</span><span class="o">.</span><span class="n">r</span></div>
+
+<div class="viewcode-block" id="Basepair.d"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.d">[docs]</a>    <span class="k">def</span> <span class="nf">d</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets the center of the atoms in this basepair.</span>
+
+<span class="sd">        :return: center of mass of basepair</span>
+<span class="sd">        :rtype: np.array</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="n">util</span><span class="o">.</span><span class="n">center</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">atoms</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="Basepair.to_str"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        stringify basepair object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">str1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">chain_id</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res1</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span>
+        <span class="n">str2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">chain_id</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">num</span><span class="p">)</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">res2</span><span class="o">.</span><span class="n">i_code</span><span class="p">)</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="n">str1</span><span class="o">+</span><span class="s2">&quot;-&quot;</span><span class="o">+</span><span class="n">str2</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bp_state</span><span class="o">.</span><span class="n">to_str</span><span class="p">()</span> <span class="o">+</span> <span class="s2">&quot;,&quot;</span> <span class="o">+</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">bp_type</span>
+        <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Basepair.to_pdb_str"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.to_pdb_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_pdb_str</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">acount</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">return_acount</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a PDB string formatted verision of this Basepair object.</span>
+
+<span class="sd">        :param acount: current atom index, default: 1</span>
+<span class="sd">        :param return_acount: final atom index after current atoms, default: 0</span>
+
+<span class="sd">        :type  acount: int</span>
+<span class="sd">        :type  return_acount: int</span>
+
+<span class="sd">        :return: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">residues</span><span class="p">():</span>
+            <span class="n">r_str</span><span class="p">,</span> <span class="n">acount</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">to_pdb_str</span><span class="p">(</span><span class="n">acount</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">s</span> <span class="o">+=</span> <span class="n">r_str</span>
+        <span class="k">if</span> <span class="n">return_acount</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span><span class="p">,</span> <span class="n">acount</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="Basepair.to_pdb"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.Basepair.to_pdb">[docs]</a>    <span class="k">def</span> <span class="nf">to_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fname</span><span class="o">=</span><span class="s2">&quot;basepair.pdb&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        write basepair object to pdb file</span>
+
+<span class="sd">        :param fname&quot; the file you want to write the basepair too</span>
+<span class="sd">        :type fname: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span> <span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_pdb_str</span><span class="p">()</span> <span class="p">)</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span></div></div>
+
+
+<div class="viewcode-block" id="BasepairState"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.BasepairState">[docs]</a><span class="k">class</span> <span class="nc">BasepairState</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A small container class to hold the &quot;State&quot; of a basepair for finding</span>
+<span class="sd">    matches in the database. The critical features are:</span>
+
+<span class="sd">    :params r: Reference Frame of basepair</span>
+<span class="sd">    :type r: np.array</span>
+<span class="sd">    :params d: Center of mass of basepair</span>
+<span class="sd">    :type d: np.array</span>
+<span class="sd">    :params sugars: C1` atom coords for both residues in basepair</span>
+<span class="sd">    :type sugars: List of Np.Arrays</span>
+
+<span class="sd">    :attributes:</span>
+<span class="sd">    `r` : np.Matrix</span>
+<span class="sd">        Reference Frame of basepair</span>
+<span class="sd">    `d` : Np.Array</span>
+<span class="sd">        Center of mass of basepair</span>
+<span class="sd">    `sugars` : List of Np.Arrays</span>
+<span class="sd">        C1` atom coords for both residues in basepair</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    ..  code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt; from rnamake.unittests import instances</span>
+<span class="sd">        &gt;&gt;&gt; bp_state_1 = instances.basepairstate_random()</span>
+<span class="sd">        &gt;&gt;&gt; bp_state_2 = instances.basepairstate_random()</span>
+
+<span class="sd">        # get rotation and translation defining the transformation between the</span>
+<span class="sd">        # two states</span>
+<span class="sd">        &gt;&gt;&gt; r, t = bp_state_1.get_transforming_r_and_t_w_state(bp_state_2)</span>
+<span class="sd">        &gt;&gt;&gt; t += bp_state_1.d</span>
+
+<span class="sd">        # align end2 to end1, notice this is two steps, this is done so</span>
+<span class="sd">        # r and t can be applied to many states at the same time so they can</span>
+<span class="sd">        # be all aligned together</span>
+<span class="sd">        &gt;&gt;&gt; new_r, new_d, new_sug = bp_state_2.get_transformed_state(r, t)</span>
+<span class="sd">        &gt;&gt;&gt; bp_state_2.set(new_r, new_d, new_sug)</span>
+
+<span class="sd">        # both the orientation matrix and origins are nearly indentical now</span>
+<span class="sd">        &gt;&gt;&gt; print bp_state_1.r</span>
+<span class="sd">        [[-0.43155336  0.24291737  0.86876513]</span>
+<span class="sd">         [-0.61066224 -0.78751428 -0.08314381]</span>
+<span class="sd">         [ 0.66396787 -0.56640305  0.4881949 ]]</span>
+<span class="sd">        &gt;&gt;&gt; print bp_state_2.r</span>
+<span class="sd">        [[-0.43155336  0.24291737  0.86876513]</span>
+<span class="sd">         [-0.61066224 -0.78751428 -0.08314381]</span>
+<span class="sd">         [ 0.66396787 -0.56640305  0.4881949 ]]</span>
+
+<span class="sd">        &gt;&gt;&gt; print bp_state_1.d</span>
+<span class="sd">        [  5.45492979  45.17079568  43.80163295]</span>
+<span class="sd">        &gt;&gt;&gt; print bp_state_2.d</span>
+<span class="sd">        [  5.45492979  45.17079568  43.80163295]</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;r&quot;</span><span class="p">,</span> <span class="s2">&quot;d&quot;</span><span class="p">,</span> <span class="s2">&quot;sugars&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">sugars</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sugars</span> <span class="o">=</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">sugars</span>
+
+    <span class="k">def</span> <span class="nf">flip</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+
+<div class="viewcode-block" id="BasepairState.get_transforming_r_and_t"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.BasepairState.get_transforming_r_and_t">[docs]</a>    <span class="k">def</span> <span class="nf">get_transforming_r_and_t</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">,</span> <span class="n">sugars</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get a rotation matrix and translation that describes the tranformation</span>
+<span class="sd">        between the rotation, translation to THIS BasepairState.</span>
+
+<span class="sd">        :param r: Another orientation matrix from another basepair</span>
+<span class="sd">        :param t: The origin of another basepair</span>
+<span class="sd">        :param sugars: the c1&#39; coords of another basepair</span>
+
+<span class="sd">        :type r: np.array</span>
+<span class="sd">        :type t: np.array</span>
+<span class="sd">        :type sugars: list of two np.arrays</span>
+
+<span class="sd">        :return: rotation and translation that defines transformation betwen</span>
+<span class="sd">            both states</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">r1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">r</span>
+        <span class="n">r2</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="n">r_trans</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">unitarize</span><span class="p">(</span><span class="n">r1</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">r2</span><span class="p">))</span>
+        <span class="n">t_trans</span> <span class="o">=</span> <span class="o">-</span><span class="n">t</span>
+
+        <span class="n">new_sugars_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">sugars</span><span class="p">,</span> <span class="n">r_trans</span><span class="o">.</span><span class="n">T</span><span class="p">)</span> <span class="o">+</span> <span class="n">t_trans</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">d</span>
+
+        <span class="k">if</span> <span class="n">sugars</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="p">(((</span><span class="bp">self</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">new_sugars_2</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span>
+                     <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">new_sugars_2</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">diff</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="n">r_trans</span><span class="p">,</span> <span class="n">t_trans</span><span class="o">+</span><span class="n">diff</span></div>
+
+<div class="viewcode-block" id="BasepairState.get_transforming_r_and_t_w_state"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.BasepairState.get_transforming_r_and_t_w_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_transforming_r_and_t_w_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        wrapper for get_transforming_r_and_t using another basepair state</span>
+<span class="sd">        instead of specifying each component explicitly.</span>
+
+<span class="sd">        :param state: the basepair state you would like to get a transformation</span>
+<span class="sd">            to align to the basepair state calling this function</span>
+<span class="sd">        :type state: BasepairState</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_transforming_r_and_t</span><span class="p">(</span><span class="n">state</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">d</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">sugars</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="BasepairState.get_transformed_state"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.BasepairState.get_transformed_state">[docs]</a>    <span class="k">def</span> <span class="nf">get_transformed_state</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">t</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get new orientation, origin and sugar coordinates after transforming</span>
+<span class="sd">        with suplied rotation and translation.</span>
+
+<span class="sd">        :param r: supplied rotation matrix</span>
+<span class="sd">        :param t: supplied translation</span>
+
+<span class="sd">        :type r: np.array</span>
+<span class="sd">        :type t: np.array</span>
+
+<span class="sd">        :return: new orientation, origin and sugar coorindates of this basepair</span>
+<span class="sd">            state after transformation</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">r_T</span> <span class="o">=</span> <span class="n">r</span><span class="o">.</span><span class="n">T</span>
+
+        <span class="n">new_r</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">unitarize</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">r_T</span><span class="p">))</span>
+        <span class="n">new_sugars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sugars</span><span class="p">,</span> <span class="n">r_T</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span>
+        <span class="n">new_origin</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">,</span> <span class="n">r_T</span><span class="p">)</span> <span class="o">+</span> <span class="n">t</span>
+
+        <span class="k">return</span> <span class="n">new_r</span><span class="p">,</span> <span class="n">new_origin</span><span class="p">,</span> <span class="n">new_sugars</span></div>
+
+<div class="viewcode-block" id="BasepairState.set"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.BasepairState.set">[docs]</a>    <span class="k">def</span> <span class="nf">set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">sug</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        sets a new orientation matrx, origin and new c1&#39; sugar coordinates,</span>
+<span class="sd">        overriding the existing values stored in this instance.</span>
+
+<span class="sd">        :param r: new orientation matrix</span>
+<span class="sd">        :param d: new origin point</span>
+<span class="sd">        :param sug: new c1&#39; sugar coordinates</span>
+
+<span class="sd">        :type r: np.array</span>
+<span class="sd">        :type d: np.array</span>
+<span class="sd">        :type sug: list of 2 np.arrays</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">r</span> <span class="o">=</span> <span class="n">r</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">d</span> <span class="o">=</span> <span class="n">d</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sugars</span> <span class="o">=</span> <span class="n">sug</span></div>
+
+<div class="viewcode-block" id="BasepairState.copy"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.BasepairState.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns a deep copy of this BasepairState object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="n">BasepairState</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
+                             <span class="p">[</span><span class="n">coord</span><span class="p">[:]</span> <span class="k">for</span> <span class="n">coord</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sugars</span><span class="p">])</span></div>
+
+<div class="viewcode-block" id="BasepairState.diff"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.BasepairState.diff">[docs]</a>    <span class="k">def</span> <span class="nf">diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        calculate the difference between this basepair and another. Difference</span>
+<span class="sd">        is defined currently as euclidean distance between their origins and</span>
+<span class="sd">        two times the matrix difference between the orientations of both</span>
+<span class="sd">        states.</span>
+
+<span class="sd">        :param state: the other state to compare the difference too</span>
+<span class="sd">        :type state: BasepairState</span>
+
+<span class="sd">        :return: difference between the states</span>
+<span class="sd">        :rtype: float</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">diff</span>  <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">d</span><span class="p">)</span>
+        <span class="n">diff</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rot_diff</span><span class="p">(</span><span class="n">state</span><span class="p">)</span> <span class="o">*</span> <span class="mi">2</span>
+        <span class="c1">#diff += self._sugar_diff(state)</span>
+        <span class="k">return</span> <span class="n">diff</span></div>
+
+    <span class="k">def</span> <span class="nf">_rot_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">r_diff</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">matrix_distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+        <span class="n">r_diff_2</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">matrix_distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">,</span> <span class="n">state</span><span class="o">.</span><span class="n">r</span><span class="p">)</span>
+        <span class="n">state</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">r_diff</span> <span class="o">&gt;</span> <span class="n">r_diff_2</span><span class="p">:</span>
+            <span class="n">r_diff</span> <span class="o">=</span> <span class="n">r_diff_2</span>
+        <span class="k">return</span> <span class="n">r_diff</span>
+
+    <span class="k">def</span> <span class="nf">_sugar_diff</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="n">diff_1</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">state</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> \
+                 <span class="n">util</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">state</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">diff_2</span> <span class="o">=</span> <span class="n">util</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">state</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> \
+                 <span class="n">util</span><span class="o">.</span><span class="n">distance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">state</span><span class="o">.</span><span class="n">sugars</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">diff_1</span> <span class="o">&gt;</span> <span class="n">diff_2</span><span class="p">:</span>
+            <span class="n">diff_1</span> <span class="o">=</span> <span class="n">diff_2</span>
+        <span class="k">return</span> <span class="n">diff_1</span>
+
+<div class="viewcode-block" id="BasepairState.to_str"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.BasepairState.to_str">[docs]</a>    <span class="k">def</span> <span class="nf">to_str</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        converts basepairstate into a string</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">s</span> <span class="o">=</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">point_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">d</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;;&quot;</span> <span class="o">+</span> \
+            <span class="n">basic_io</span><span class="o">.</span><span class="n">matrix_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">r</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;;&quot;</span> <span class="o">+</span>\
+            <span class="n">basic_io</span><span class="o">.</span><span class="n">matrix_to_str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sugars</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">s</span></div></div>
+
+
+<div class="viewcode-block" id="str_to_basepairstate"><a class="viewcode-back" href="../../auto/basepair.html#rnamake.basepair.str_to_basepairstate">[docs]</a><span class="k">def</span> <span class="nf">str_to_basepairstate</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    convert stringified basepair back to a basepair object see</span>
+<span class="sd">    basepairstate.to_str()</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">spl</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">)</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">str_to_point</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">str_to_matrix</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">sugars</span> <span class="o">=</span> <span class="n">basic_io</span><span class="o">.</span><span class="n">str_to_matrix</span><span class="p">(</span><span class="n">spl</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">BasepairState</span><span class="p">(</span><span class="n">r</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">sugars</span><span class="p">)</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

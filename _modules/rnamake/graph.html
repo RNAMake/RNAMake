@@ -1,0 +1,1216 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.graph &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.graph</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.graph</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">exceptions</span>
+<span class="kn">import</span> <span class="nn">priority_queue</span>
+
+
+<span class="c1"># TODO this is actually not a great system should probably be a member of Graph</span>
+<span class="k">def</span> <span class="nf">transverse_graph</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">directed</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">__iter__</span><span class="p">()</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">graph</span><span class="o">.</span><span class="n">directed</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="nb">next</span> <span class="o">=</span> <span class="n">graph</span><span class="o">.</span><span class="n">next</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span>
+        <span class="k">yield</span> <span class="nb">next</span>
+
+
+<span class="c1"># TODO using a priority queue is not enough to assume connectivity will be</span>
+<span class="c1"># followed correctly. Need to inforce that connectivity will go from</span>
+<span class="c1"># motif that is aligned to one that is not and not build connections between</span>
+<span class="c1"># ends 1 of two different motifs such at the end of a build path possibly need</span>
+<span class="c1"># seperate class that is a DirectedGraph instead of just Graph</span>
+<span class="c1"># see /rnamake/unittests/resources/motif_graph/test_added.mg to see this issue</span>
+<div class="viewcode-block" id="Graph"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.Graph">[docs]</a><span class="k">class</span> <span class="nc">Graph</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    General implementation of a undirected graph. Do not call directly!</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `nodes` : list of GraphNode objects</span>
+<span class="sd">        all the nodes in the tree, used for fast access by index</span>
+<span class="sd">    `connections` : list of GraphConnection objects</span>
+<span class="sd">        all the connections between two different nodes in the graph</span>
+<span class="sd">    `level` : int</span>
+<span class="sd">        the current graph level, used for quickly deleting sections of the graph</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        the current node index, always the length of the number of nodes in teh graph</span>
+<span class="sd">    `last_node`: GraphNode object</span>
+<span class="sd">        the last node added to the graph</span>
+<span class="sd">    `current_node`: GraphNode object</span>
+<span class="sd">        the current node during iteration</span>
+<span class="sd">    `queue`: PriorityQueue object</span>
+<span class="sd">        tracks which nodes to visit turning iteration</span>
+<span class="sd">    `seen`: List of GraphNode Objects</span>
+<span class="sd">        tracks which nodes have alaready been visited during iteration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[],</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c1"># iterator stuff</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">priority_queue</span><span class="o">.</span><span class="n">PriorityQueue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seen</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directed</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">__iter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="n">avail_pos</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">available_children_pos</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">avail_pos</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="n">n</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">seen</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">current_node</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">queue</span> <span class="o">=</span> <span class="n">priority_queue</span><span class="o">.</span><span class="n">PriorityQueue</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">directed</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">return</span> <span class="bp">self</span>
+
+    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">StopIteration</span>
+
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">connections</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+            <span class="n">partner</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">partner</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">end_index</span><span class="p">(</span><span class="n">partner</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">directed</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">partner</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">partner</span><span class="p">,</span> <span class="n">partner</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">seen</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">partner</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">empty</span><span class="p">()</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">seen</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">empty</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">None</span>
+
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">seen</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">seen</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="n">n</span>
+                    <span class="k">break</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
+
+
+        <span class="k">return</span> <span class="n">node</span>
+
+<div class="viewcode-block" id="Graph.get_node"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.Graph.get_node">[docs]</a>    <span class="k">def</span> <span class="nf">get_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        :param index: the node index that you want</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :return: GraphNode object</span>
+<span class="sd">        :raises: exceptions.GraphIndexException</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; g = Graph()</span>
+<span class="sd">            &gt;&gt;&gt; g.add_data(10)</span>
+<span class="sd">            #get node of index &#39;0&#39; which is the first one</span>
+<span class="sd">            &gt;&gt;&gt; print g.get_node(0).data</span>
+<span class="sd">            10</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">n</span>
+
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphIndexException</span><span class="p">(</span>
+            <span class="n">index</span><span class="p">,</span>
+           <span class="s2">&quot;node </span><span class="si">%d</span><span class="s2"> was requested but does not exist&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="Graph.oldest_node"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.Graph.oldest_node">[docs]</a>    <span class="k">def</span> <span class="nf">oldest_node</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        returns the node with the lowest index. Only used a few examples may</span>
+<span class="sd">        deprecated in next verision.</span>
+
+<span class="sd">        :returns: GraphNode object</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; g = Graph()</span>
+<span class="sd">            &gt;&gt;&gt; g.add_data(10)</span>
+<span class="sd">            &gt;&gt;&gt; g.add_data(5)</span>
+<span class="sd">            &gt;&gt;&gt; g.add_data(15)</span>
+<span class="sd">            &gt;&gt;&gt; g.oldest_node().data</span>
+<span class="sd">            10</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="n">node</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                <span class="n">node</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="k">return</span> <span class="n">node</span></div>
+
+<div class="viewcode-block" id="Graph.increase_level"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.Graph.increase_level">[docs]</a>    <span class="k">def</span> <span class="nf">increase_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Increases the level of nodes to be added. default level is 0. This is</span>
+<span class="sd">        useful when removing or adding a set of nodes. Think of level as a</span>
+<span class="sd">        grouping mechanism</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="Graph.decrease_level"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.Graph.decrease_level">[docs]</a>    <span class="k">def</span> <span class="nf">decrease_level</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Decreases the level of nodes to be added. default level is 0. This is</span>
+<span class="sd">        useful when removing or adding a set of nodes. Think of level as a</span>
+<span class="sd">        grouping mechanism</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphException</span><span class="p">(</span><span class="s2">&quot;cannot decrease level anymore is &quot;</span>
+                                            <span class="s2">&quot;already 0&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">-=</span> <span class="mi">1</span></div></div>
+
+
+<span class="c1"># TODO this could probably just be Graph doesnt need to be its own class</span>
+<div class="viewcode-block" id="GraphDynamic"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphDynamic">[docs]</a><span class="k">class</span> <span class="nc">GraphDynamic</span><span class="p">(</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    a Graph with dynamic connections between nodes. i.e. each node does NOT</span>
+<span class="sd">    have a predefined number of connections. Each node starts with 0</span>
+<span class="sd">    connections and are added over time, there is no max to the number of</span>
+<span class="sd">    connections each node can have</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `nodes` : list of GraphNode objects</span>
+<span class="sd">        all the nodes in the tree, used for fast access by index</span>
+<span class="sd">    `connections` : list of GraphConnection objects</span>
+<span class="sd">        all the connections between two different nodes in the graph</span>
+<span class="sd">    `level` : int</span>
+<span class="sd">        the current graph level, used for quickly deleting sections of the graph</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        the current node index, always the length of the number of nodes in teh graph</span>
+<span class="sd">    `last_node`: GraphNode object</span>
+<span class="sd">        the last node added to the graph</span>
+<span class="sd">    `current_node`: GraphNode object</span>
+<span class="sd">        the current node during iteration</span>
+<span class="sd">    `queue`: PriorityQueue object</span>
+<span class="sd">        tracks which nodes to visit turning iteration</span>
+<span class="sd">    `seen`: List of GraphNode Objects</span>
+<span class="sd">        tracks which nodes have alaready been visited during iteration</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt; g = GraphDynamic()</span>
+<span class="sd">        &gt;&gt;&gt; g.add_data(0)</span>
+<span class="sd">        &gt;&gt;&gt; g.add_data(1)</span>
+<span class="sd">        &gt;&gt;&gt; g.add_data(2, parent_index=0)</span>
+<span class="sd">        &gt;&gt;&gt; g.add_data(3, parent_index=0)</span>
+
+<span class="sd">        &gt;&gt;&gt; len(g.get_node(0).connections)</span>
+<span class="sd">        3</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GraphDynamic.add_data"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphDynamic.add_data">[docs]</a>    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        add a new peice of data to the graph</span>
+
+<span class="sd">        :param data: Item to be added to graph</span>
+<span class="sd">        :param parent_index: index of node that this element should be connected too</span>
+
+<span class="sd">        :type data: can be anything</span>
+<span class="sd">        :type parent_index: int</span>
+
+<span class="sd">        :return: index of added node</span>
+<span class="sd">        :rtype: int</span>
+
+<span class="sd">        :raises: exceptions.GraphIndexException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span>
+        <span class="k">if</span> <span class="n">parent_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">parent_index</span><span class="p">)</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">GraphNodeDynamic</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="n">GraphConnection</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="GraphDynamic.connect"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphDynamic.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a connection between two nodes. Since this is a Dynamic Graph this</span>
+<span class="sd">        cannot fail. i and j can be the same</span>
+
+<span class="sd">        :param i: index of node 1 to connect</span>
+<span class="sd">        :param j: index of node 2 to connect</span>
+
+<span class="sd">        :type i: int</span>
+<span class="sd">        :type j: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">n1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">n2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">GraphConnection</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">n1</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">n1</span> <span class="o">!=</span> <span class="n">n2</span><span class="p">:</span>
+            <span class="n">n2</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="GraphStatic"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphStatic">[docs]</a><span class="k">class</span> <span class="nc">GraphStatic</span><span class="p">(</span><span class="n">Graph</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    a Graph with static connections between nodes. i.e. each node HAS a</span>
+<span class="sd">    predefined number of connections. This is useful for constructing graphs</span>
+<span class="sd">    of Motifs and Secondary Structure elements which have predefined ends.</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `nodes` : list of GraphNode objects</span>
+<span class="sd">        all the nodes in the tree, used for fast access by index</span>
+<span class="sd">    `connections` : list of GraphConnection objects</span>
+<span class="sd">        all the connections between two different nodes in the graph</span>
+<span class="sd">    `level` : int</span>
+<span class="sd">        the current graph level, used for quickly deleting sections of the graph</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        the current node index, always the length of the number of nodes in teh graph</span>
+<span class="sd">    `last_node`: GraphNode object</span>
+<span class="sd">        the last node added to the graph</span>
+<span class="sd">    `current_node`: GraphNode object</span>
+<span class="sd">        the current node during iteration</span>
+<span class="sd">    `queue`: PriorityQueue object</span>
+<span class="sd">        tracks which nodes to visit turning iteration</span>
+<span class="sd">    `seen`: List of GraphNode Objects</span>
+<span class="sd">        tracks which nodes have alaready been visited during iteration</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    .. code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt; g = graph.GraphStatic()</span>
+<span class="sd">        # legend</span>
+<span class="sd">        # N0 = Node 0</span>
+<span class="sd">        # N0C0 = Connection 0 of Node 0</span>
+<span class="sd">        # add first node with 2 possible connection</span>
+<span class="sd">        &gt;&gt;&gt; g.add_data(0, n_children=2)</span>
+<span class="sd">        #          N0</span>
+<span class="sd">        #    N0C0 /  \  N0C1</span>
+<span class="sd">        #        /    \\</span>
+<span class="sd">        #     None     None</span>
+<span class="sd">        # add new node, connected to node 0. This new node: node 1 is connected</span>
+<span class="sd">        # to node 0 using the connnection in the 0th position on both node 0 and</span>
+<span class="sd">        # node 1. Do not need to specifiy parent_index=0 since adds to last node</span>
+<span class="sd">        # without specifying</span>
+<span class="sd">        # g.add_data(1, parent_index=0, parent_pos=0, child_pos=0, n_children=2)</span>
+<span class="sd">        # means the same thing</span>
+<span class="sd">        &gt;&gt;&gt; g.add_data(1, parent_pos=0, child_pos=0, n_children=2)</span>
+<span class="sd">        #          N0</span>
+<span class="sd">        #    N0C0 /  \  N0C1</span>
+<span class="sd">        #    N1C0/    \\</span>
+<span class="sd">        #       N1   None</span>
+<span class="sd">        #   N1C1|</span>
+<span class="sd">        #       |</span>
+<span class="sd">        #      None</span>
+<span class="sd">        # add new node, connected to node 0.</span>
+<span class="sd">        &gt;&gt;&gt; g.add_data(2, parent_index=0, parent_pos=1, child_pos=0, n_children=2)</span>
+<span class="sd">        #          N0</span>
+<span class="sd">        #    N0C0 /  \  N0C1</span>
+<span class="sd">        #    N1C0/    \ N2C0</span>
+<span class="sd">        #       N1    N2</span>
+<span class="sd">        #   N1C1|      |N2C1</span>
+<span class="sd">        #       |      |</span>
+<span class="sd">        #      None   None</span>
+<span class="sd">        &gt;&gt;&gt; g.connect(1, 2, 1, 1)</span>
+<span class="sd">        #          N0</span>
+<span class="sd">        #    N0C0 /  \  N0C1</span>
+<span class="sd">        #    N1C0/    \ N2C0</span>
+<span class="sd">        #       N1----N2</span>
+<span class="sd">        #      N1C1  N2C1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GraphStatic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="GraphStatic.add_data"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphStatic.add_data">[docs]</a>    <span class="k">def</span> <span class="nf">add_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">parent_index</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">parent_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">child_pos</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_children</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">orphan</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">index</span><span class="o">=-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Adds a new node to the graph given specfied data.</span>
+
+<span class="sd">        :param data: element to add to graph</span>
+<span class="sd">        :param parent_index: index of parent to connect to, optional</span>
+<span class="sd">        :param parent_pos:  connection position to connect to parent, optional</span>
+<span class="sd">        :param child_pos:  connection position on new node to be created, optional</span>
+<span class="sd">        :param n_children: number of connections new node will have, optional</span>
+<span class="sd">        :param orphan: whether node will not be connected to any other node.</span>
+<span class="sd">            default new nodes are connected to the last node added. if orphan=1</span>
+<span class="sd">            this will not happen</span>
+<span class="sd">        :param index: overrides internal index and set node to specific index</span>
+<span class="sd">            value, this is rarely used other then copying an entire graph</span>
+
+<span class="sd">        :type data: anything</span>
+<span class="sd">        :type parent_index: int</span>
+<span class="sd">        :type parent_pos: int</span>
+<span class="sd">        :type child_pos: int</span>
+<span class="sd">        :type n_children: int</span>
+<span class="sd">        :type orphan: int</span>
+<span class="sd">        :type index: int</span>
+
+<span class="sd">        :return: index of new node</span>
+<span class="sd">        :rtype: int</span>
+
+<span class="sd">        :raises: exceptions.GraphIndexException, exceptions.GraphInvalidEndException,</span>
+<span class="sd">            exceptions.GraphException</span>
+
+<span class="sd">        :examples:</span>
+
+<span class="sd">        .. code-block:: python</span>
+
+<span class="sd">            &gt;&gt;&gt; g = graph.GraphStatic()</span>
+<span class="sd">            # legend</span>
+<span class="sd">            # N0 = Node 0</span>
+<span class="sd">            # N0C0 = Connection 0 of Node 0</span>
+<span class="sd">            # add first node with 2 possible connection</span>
+<span class="sd">            &gt;&gt;&gt; g.add_data(0, n_children=2)</span>
+<span class="sd">            #          N0</span>
+<span class="sd">            #    N0C0 /  \  N0C1</span>
+<span class="sd">            #        /    \\</span>
+<span class="sd">            #     None     None</span>
+<span class="sd">            # add new node, connected to node 0. This new node: node 1 is connected</span>
+<span class="sd">            # to node 0 using the connnection in the 0th position on both node 0 and</span>
+<span class="sd">            # node 1. Do not need to specifiy parent_index=0 since adds to last node</span>
+<span class="sd">            # without specifying</span>
+<span class="sd">            # g.add_data(1, parent_index=0, parent_pos=0, child_pos=0, n_children=2)</span>
+<span class="sd">            # means the same thing</span>
+<span class="sd">            &gt;&gt;&gt; g.add_data(1, parent_pos=0, child_pos=0, n_children=2)</span>
+<span class="sd">            #          N0</span>
+<span class="sd">            #    N0C0 /  \  N0C1</span>
+<span class="sd">            #    N1C0/    \\</span>
+<span class="sd">            #       N1   None</span>
+<span class="sd">            #   N1C1|</span>
+<span class="sd">            #       |</span>
+<span class="sd">            #      None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">given_index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">given_index</span> <span class="o">=</span> <span class="n">index</span>
+            <span class="n">found</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">index</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
+                    <span class="n">found</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">break</span>
+            <span class="k">if</span> <span class="n">found</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphIndexException</span><span class="p">(</span>
+                    <span class="n">index</span><span class="p">,</span>
+                    <span class="s2">&quot;specified index: </span><span class="si">%d</span><span class="s2"> cannot be used as it already&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">+</span>\
+                    <span class="s2">&quot; assigned to a node&quot;</span><span class="p">)</span>
+
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span>
+        <span class="k">if</span> <span class="n">parent_index</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">parent_index</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">orphan</span><span class="p">:</span>
+            <span class="n">parent</span> <span class="o">=</span> <span class="bp">None</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="n">GraphNodeStatic</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">given_index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">,</span> <span class="n">n_children</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parent_pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">avail_ends</span> <span class="o">=</span> <span class="n">parent</span><span class="o">.</span><span class="n">available_children_pos</span><span class="p">()</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">avail_ends</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphInvalidEndException</span><span class="p">(</span>
+                        <span class="n">parent</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span>
+                        <span class="s2">&quot;cannot add new node with parent </span><span class="si">%d</span><span class="s2"> &quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">+</span>\
+                        <span class="s2">&quot; have no free ends to connect to&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">parent_pos</span> <span class="o">=</span> <span class="n">avail_ends</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="n">c</span> <span class="o">=</span> <span class="n">GraphConnection</span><span class="p">(</span><span class="n">parent</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">parent_pos</span><span class="p">,</span> <span class="n">child_pos</span><span class="p">)</span>
+            <span class="n">parent</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">parent_pos</span><span class="p">)</span>
+            <span class="n">n</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">child_pos</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="n">n</span>
+        <span class="k">return</span> <span class="n">given_index</span></div>
+
+<div class="viewcode-block" id="GraphStatic.connect"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphStatic.connect">[docs]</a>    <span class="k">def</span> <span class="nf">connect</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">i_pos</span><span class="p">,</span> <span class="n">j_pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Connects two nodes together given a specific end index</span>
+
+<span class="sd">        :param i: index of node i</span>
+<span class="sd">        :param j: index of node j</span>
+<span class="sd">        :param i_pos: end pos of node i</span>
+<span class="sd">        :param j_pos: end pos of node j</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">n2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">GraphConnection</span><span class="p">(</span><span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">,</span> <span class="n">i_pos</span><span class="p">,</span> <span class="n">j_pos</span><span class="p">)</span>
+        <span class="n">n1</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">i_pos</span><span class="p">)</span>
+        <span class="n">n2</span><span class="o">.</span><span class="n">add_connection</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">j_pos</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphStatic.remove_node"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphStatic.remove_node">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        removes a node with a given index</span>
+
+<span class="sd">        :param index: the index of the node you want to remove</span>
+<span class="sd">        :type index: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        :raises: exceptions.GraphIndexException</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">n</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_node</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">c</span><span class="o">.</span><span class="n">disconnect</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="GraphStatic.remove_node_level"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphStatic.remove_node_level">[docs]</a>    <span class="k">def</span> <span class="nf">remove_node_level</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        remove all nodes with a given level, this is useful if you are unsure</span>
+<span class="sd">        how many nodes have been added from a given point. if level is not</span>
+<span class="sd">        specified level will be set to current level</span>
+
+<span class="sd">        :param level: the node minimum node level you want to remove</span>
+<span class="sd">        :type level: int</span>
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">level</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span>
+
+        <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">while</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">removed</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">nodes</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">level</span> <span class="o">==</span> <span class="n">level</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+                    <span class="n">removed</span> <span class="o">=</span> <span class="mi">1</span>
+                    <span class="k">break</span>
+            <span class="n">nodes</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">removed</span><span class="p">:</span>
+                <span class="k">break</span></div>
+
+    <span class="c1"># TODO rework this function, is badly named and confusing</span>
+<div class="viewcode-block" id="GraphStatic.check_pos_is_value"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphStatic.check_pos_is_value">[docs]</a>    <span class="k">def</span> <span class="nf">check_pos_is_value</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span> <span class="n">error</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks to see if a given node has a free end to connect to</span>
+
+<span class="sd">        :param n: the node to check</span>
+<span class="sd">        :param pos: the end position to check</span>
+<span class="sd">        :param error: whether an error should be returned if end is not free,</span>
+<span class="sd">            default=1, will error</span>
+
+<span class="sd">        :type n: GraphNodeStatic</span>
+<span class="sd">        :type pos: int</span>
+<span class="sd">        :type error: int</span>
+
+<span class="sd">        :return: free end pos</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">avail_pos</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">available_children_pos</span><span class="p">()</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">avail_pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphException</span><span class="p">(</span>
+                    <span class="s2">&quot;cannot add connection to node has no available ends&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">avail_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">available_pos</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphException</span><span class="p">(</span>
+                    <span class="s2">&quot;graph pos is not available: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">+</span>
+                     <span class="s2">&quot; on node: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="p">)</span>
+            <span class="k">elif</span> <span class="n">n</span><span class="o">.</span><span class="n">available_pos</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="k">return</span> <span class="n">pos</span></div>
+
+    <span class="c1"># TODO rename this function, badly named, what is the difference between</span>
+    <span class="c1"># this and check_pos_is_value?</span>
+<div class="viewcode-block" id="GraphStatic.get_availiable_pos"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphStatic.get_availiable_pos">[docs]</a>    <span class="k">def</span> <span class="nf">get_availiable_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        checks to see if a given node has a free end position will return</span>
+<span class="sd">        and error if it doesn&#39;t</span>
+
+<span class="sd">        :param n: the graph node in question</span>
+<span class="sd">        :param pos: the end position (connection point)</span>
+
+<span class="sd">        :type n: GraphNodeStatic</span>
+<span class="sd">        :type pos: int</span>
+
+<span class="sd">        :return: returns a list of positions if successful</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+            <span class="n">avail_pos</span> <span class="o">=</span> <span class="n">n</span><span class="o">.</span><span class="n">available_children_pos</span><span class="p">()</span>
+            <span class="k">return</span> <span class="n">avail_pos</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">available_pos</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphException</span><span class="p">(</span>
+                    <span class="s2">&quot;graph pos is not available: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">pos</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot; &quot;</span> <span class="o">+</span> <span class="n">n</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">return</span> <span class="p">[</span><span class="n">pos</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="GraphStatic.copy"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphStatic.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        creates a deep copy of the graph tries to create a copy of the</span>
+<span class="sd">        data held in each node</span>
+
+<span class="sd">        :return: copy of graph</span>
+<span class="sd">        :rtype: GraphStatic</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">gs</span> <span class="o">=</span> <span class="n">GraphStatic</span><span class="p">()</span>
+        <span class="n">new_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span>
+            <span class="n">new_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">nodes</span> <span class="o">=</span> <span class="n">new_nodes</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">node_1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">node_2</span><span class="o">.</span><span class="n">index</span>
+            <span class="n">ni</span><span class="p">,</span> <span class="n">nj</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">end_index_1</span><span class="p">,</span> <span class="n">c</span><span class="o">.</span><span class="n">end_index_2</span>
+            <span class="n">gs</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">ni</span><span class="p">,</span> <span class="n">nj</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">last_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">gs</span><span class="o">.</span><span class="n">last_node</span> <span class="o">=</span> <span class="n">gs</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">last_node</span><span class="o">.</span><span class="n">index</span><span class="p">]</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span>
+        <span class="n">gs</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span>
+        <span class="k">return</span> <span class="n">gs</span></div></div>
+
+
+<div class="viewcode-block" id="GraphNode"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNode">[docs]</a><span class="k">class</span> <span class="nc">GraphNode</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An abstract class to define the behavior of a graph node or an element of</span>
+<span class="sd">    data that has connectivity relationships to other elements of data of the</span>
+<span class="sd">    same type. This class is never called directly.</span>
+
+<span class="sd">    :param data: The element that you wish to store in the graph</span>
+<span class="sd">    :param index: The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Graph.get_node`</span>
+<span class="sd">    :param level: A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    :param n_connections: The number of connections this node can have, in</span>
+<span class="sd">        GraphDynamic this does nothing.</span>
+
+<span class="sd">    :type data: anything</span>
+<span class="sd">    :type index: int</span>
+<span class="sd">    :type level: int</span>
+<span class="sd">    :type n_connections: int</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `data` : anything</span>
+<span class="sd">        The element of data being stored in graph</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Graph.get_node`</span>
+<span class="sd">    `level`: int</span>
+<span class="sd">        A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    `connections`: list of GraphConnections</span>
+<span class="sd">        the connections the node has with other nodes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span> <span class="s2">&quot;connections&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">n_connections</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span> <span class="o">=</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span> <span class="o">=</span> <span class="p">[</span><span class="bp">None</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_connections</span><span class="p">)]</span>
+
+<div class="viewcode-block" id="GraphNode.available_children_pos"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNode.available_children_pos">[docs]</a>    <span class="k">def</span> <span class="nf">available_children_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        gets all of the connection positions that are not filled yet for this</span>
+<span class="sd">        node</span>
+
+<span class="sd">        :return: a list of end positions not yet filled</span>
+<span class="sd">        :rtype: list of ints</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">pos</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="n">pos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">pos</span></div>
+
+<div class="viewcode-block" id="GraphNode.available_pos"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNode.available_pos">[docs]</a>    <span class="k">def</span> <span class="nf">available_pos</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        check to see if specific connection position is filled</span>
+
+<span class="sd">        :param pos: position to check within interal connctions member</span>
+<span class="sd">        :type pos: int</span>
+
+<span class="sd">        :return: returns 1 if not filled and 0 is filled</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">pos</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        <span class="k">return</span> <span class="mi">1</span></div>
+
+<div class="viewcode-block" id="GraphNode.parent"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNode.parent">[docs]</a>    <span class="k">def</span> <span class="nf">parent</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        A way to find the oldest node the current node is connected to. This is</span>
+<span class="sd">        usually the parent node but this is not always 100% true. If is</span>
+<span class="sd">        connected to no other nodes will return None.</span>
+
+<span class="sd">        :return: the oldest node the current one is connected too</span>
+<span class="sd">        :rtype: GraphNode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="n">n</span> <span class="o">=</span> <span class="n">c</span><span class="o">.</span><span class="n">partner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">n</span>
+
+        <span class="k">return</span> <span class="bp">None</span></div>
+
+    <span class="c1"># TODO incorrectly named should be parent_end_index!</span>
+<div class="viewcode-block" id="GraphNode.parent_index"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNode.parent_index">[docs]</a>    <span class="k">def</span> <span class="nf">parent_index</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Gets the end index of the connected node that is the oldest.</span>
+
+<span class="sd">        :return: end index of oldest connected node.</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">parent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parent</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">parent</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">partner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="n">parent</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">c</span><span class="o">.</span><span class="n">end_index</span><span class="p">(</span><span class="n">parent</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span></div>
+
+<div class="viewcode-block" id="GraphNode.connected"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNode.connected">[docs]</a>    <span class="k">def</span> <span class="nf">connected</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        check to see if another node is connected to this one. If so will</span>
+<span class="sd">        return the GraphConnection object that they share. If not will return</span>
+<span class="sd">        None.</span>
+
+<span class="sd">        :param n: other GraphNode object</span>
+<span class="sd">        :type n: GraphNode</span>
+
+<span class="sd">        :return: Will return GraphConnection they share if connected if not</span>
+<span class="sd">            will return None</span>
+<span class="sd">        :rtype: GraphConnection</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">c</span><span class="o">.</span><span class="n">partner</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">)</span> <span class="o">==</span> <span class="n">n</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">c</span>
+        <span class="k">return</span> <span class="bp">None</span></div></div>
+
+
+<div class="viewcode-block" id="GraphNodeDynamic"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNodeDynamic">[docs]</a><span class="k">class</span> <span class="nc">GraphNodeDynamic</span><span class="p">(</span><span class="n">GraphNode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A GraphNode container that is specific for GraphDyanmic graphs. That is</span>
+<span class="sd">    it can be connected to an unlimited number of other nodes. There is no</span>
+<span class="sd">    reason to instantiate this class outside GraphDynamic.</span>
+
+<span class="sd">    :param data: The element that you wish to store in the graph</span>
+<span class="sd">    :param index: The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Graph.get_node`</span>
+<span class="sd">    :param level: A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+
+<span class="sd">    :type data: anything</span>
+<span class="sd">    :type index: int</span>
+<span class="sd">    :type level: int</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `data` : anything</span>
+<span class="sd">        The element of data being stored in graph</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Graph.get_node`</span>
+<span class="sd">    `level`: int</span>
+<span class="sd">        A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    `connections`: list of GraphConnections</span>
+<span class="sd">        the connections the node has with other nodes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span> <span class="s2">&quot;connections&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphNodeDynamic.add_connection"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNodeDynamic.add_connection">[docs]</a>    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        adds a connection to another graph node</span>
+
+<span class="sd">        :param c: a connection to another node</span>
+<span class="sd">        :type c: GraphConnection</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">c</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphNodeDynamic.remove_connection"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNodeDynamic.remove_connection">[docs]</a>    <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        removes a connection to another node</span>
+
+<span class="sd">        :param c: a connection to another node</span>
+<span class="sd">        :type c: GraphConnection</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphException</span><span class="p">(</span>
+                <span class="s2">&quot;cannot remove connection not in node&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">c</span><span class="p">)</span></div></div>
+
+
+<div class="viewcode-block" id="GraphNodeStatic"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNodeStatic">[docs]</a><span class="k">class</span> <span class="nc">GraphNodeStatic</span><span class="p">(</span><span class="n">GraphNode</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A GraphNode container that is specific for GraphStatic graphs. That is</span>
+<span class="sd">    it can be connected to an unlimited number of other nodes. There is no</span>
+<span class="sd">    reason to instantiate this class outside GraphStatic.</span>
+
+<span class="sd">    :param data: The element that you wish to store in the graph</span>
+<span class="sd">    :param index: The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Graph.get_node`</span>
+<span class="sd">    :param level: A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    :param n_connections: The number of connections this node can have.</span>
+
+<span class="sd">    :type data: anything</span>
+<span class="sd">    :type index: int</span>
+<span class="sd">    :type level: int</span>
+<span class="sd">    :type n_connections: int</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `data` : anything</span>
+<span class="sd">        The element of data being stored in graph</span>
+<span class="sd">    `index`: int</span>
+<span class="sd">        The way for you to find this element of data again through</span>
+<span class="sd">        :func:`Graph.get_node`</span>
+<span class="sd">    `level`: int</span>
+<span class="sd">        A way of grouping nodes together, increasing the level and</span>
+<span class="sd">        then removing all nodes of a given level is a quick way to batch</span>
+<span class="sd">        remove nodes</span>
+<span class="sd">    `connections`: list of GraphConnections</span>
+<span class="sd">        the connections the node has with other nodes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">,</span> <span class="s2">&quot;index&quot;</span><span class="p">,</span> <span class="s2">&quot;level&quot;</span><span class="p">,</span> <span class="s2">&quot;connections&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">n_children</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">n_children</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphNodeStatic.add_connection"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNodeStatic.add_connection">[docs]</a>    <span class="k">def</span> <span class="nf">add_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">pos</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Add a new connection at a specific position in connection list</span>
+
+<span class="sd">        :param c: the new connection</span>
+<span class="sd">        :param pos: the position to be added</span>
+
+<span class="sd">        :type c: GraphConnection</span>
+<span class="sd">        :type pos: int</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphInvalidEndException</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span>
+                <span class="sd">&quot;&quot;&quot;attempted to add a new connection to node: %d at endpos</span>
+<span class="sd">                    %d but thats lower then zero not allowed&quot;&quot;&quot;</span>
+                    <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pos</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">pos</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphInvalidEndException</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span>
+                 <span class="sd">&quot;&quot;&quot;attempted to add a new connection to node: %d at endpos</span>
+<span class="sd">                    %d that is larger then the number of connections</span>
+<span class="sd">                    this node has &quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pos</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphInvalidEndException</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">,</span> <span class="n">pos</span><span class="p">,</span>
+                <span class="sd">&quot;&quot;&quot;attempted to add a new connection to node: %d at endpos</span>
+<span class="sd">                    %d but it is full&quot;&quot;&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pos</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span></div>
+
+<div class="viewcode-block" id="GraphNodeStatic.remove_connection"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNodeStatic.remove_connection">[docs]</a>    <span class="k">def</span> <span class="nf">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">c</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Remove a connection at a specific position in connection list</span>
+
+<span class="sd">        :param c: the connection to remove</span>
+<span class="sd">        :type c: GraphConnection</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="n">c</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphException</span><span class="p">(</span>
+                <span class="s2">&quot;cannot remove connection not in node&quot;</span><span class="p">)</span>
+
+        <span class="n">i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span></div>
+
+<div class="viewcode-block" id="GraphNodeStatic.copy"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphNodeStatic.copy">[docs]</a>    <span class="k">def</span> <span class="nf">copy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        deep copies graph node and also tries to deep copy data. Will work if</span>
+<span class="sd">        data element has a function copy().</span>
+
+<span class="sd">        :return: a deep copy of node</span>
+<span class="sd">        :rtype: GraphNodeStatic</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">new_data</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">new_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span>
+
+        <span class="n">c</span> <span class="o">=</span> <span class="n">GraphNodeStatic</span><span class="p">(</span><span class="n">new_data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">level</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">connections</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">c</span></div></div>
+
+
+<span class="c1">#TODO rename connection position from end. Not general enough</span>
+<div class="viewcode-block" id="GraphConnection"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphConnection">[docs]</a><span class="k">class</span> <span class="nc">GraphConnection</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A simple class to store a connection between two nodes in Graph classes.</span>
+<span class="sd">    Never needs to be called outside Graph classes.</span>
+
+<span class="sd">    :param node_1: first node in the connection, order doesn&#39;t matter</span>
+<span class="sd">    :param node_2: second node in the connection</span>
+<span class="sd">    :param end_index_1: connection position in node 1</span>
+<span class="sd">    :param_end_index_2: connection position in node 2</span>
+
+<span class="sd">    :type node_1: GraphNode</span>
+<span class="sd">    :type node_2: GraphNode</span>
+<span class="sd">    :type end_index_1: int</span>
+<span class="sd">    :type end_index_2: int</span>
+
+<span class="sd">    :attributes:</span>
+
+<span class="sd">    `node_1`: GraphNode</span>
+<span class="sd">        first node in the connection, order doesn&#39;t matter</span>
+<span class="sd">    `node_2`: GraphNode</span>
+<span class="sd">        second node in the connection</span>
+<span class="sd">    `end_index_1`: int</span>
+<span class="sd">        connection position in node 1</span>
+<span class="sd">    `end_index_2`: int</span>
+<span class="sd">        connection position in node 2</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;node_1&quot;</span><span class="p">,</span> <span class="s2">&quot;node_2&quot;</span><span class="p">,</span> <span class="s2">&quot;end_index_1&quot;</span><span class="p">,</span> <span class="s2">&quot;end_index_2&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node_1</span><span class="p">,</span> <span class="n">node_2</span><span class="p">,</span> <span class="n">end_index_1</span><span class="p">,</span> <span class="n">end_index_2</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_2</span> <span class="o">=</span> <span class="n">node_1</span><span class="p">,</span> <span class="n">node_2</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">end_index_1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_index_2</span> <span class="o">=</span> <span class="n">end_index_1</span><span class="p">,</span> <span class="n">end_index_2</span>
+
+    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;GraphConnection(node_1: </span><span class="si">%d</span><span class="s2"> node_2: </span><span class="si">%d</span><span class="s2"> end_1: </span><span class="si">%d</span><span class="s2"> end_2: </span><span class="si">%d</span><span class="s2">)&quot;</span> \
+               <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">node_1</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_2</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_index_1</span><span class="p">,</span>
+                  <span class="bp">self</span><span class="o">.</span><span class="n">end_index_2</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GraphConnection.partner"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphConnection.partner">[docs]</a>    <span class="k">def</span> <span class="nf">partner</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get other node in the connection.</span>
+
+<span class="sd">        :param n_index: index of node you know but want to find the other node</span>
+<span class="sd">        :type n_index: int</span>
+
+<span class="sd">        :return: other node</span>
+<span class="sd">        :rtype: GraphNode</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span>   <span class="n">n_index</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_1</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_2</span>
+        <span class="k">elif</span> <span class="n">n_index</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_2</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphException</span><span class="p">(</span>
+                <span class="s2">&quot;cannot call partner with node not in connection, index: &quot;</span> <span class="o">+</span>\
+                <span class="n">n_index</span> <span class="o">+</span> <span class="s2">&quot; if this is not a number you messed up&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphConnection.end_index"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphConnection.end_index">[docs]</a>    <span class="k">def</span> <span class="nf">end_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_index</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        get the end index of a given node specified by its index</span>
+
+<span class="sd">        :param n_index: index of the node you want to find its end_index in</span>
+<span class="sd">            this connection</span>
+<span class="sd">        :type n_index: int</span>
+
+<span class="sd">        :return: end index of specified node in this connection</span>
+<span class="sd">        :rtype: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span>   <span class="n">n_index</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_1</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_index_1</span>
+        <span class="k">elif</span> <span class="n">n_index</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">node_2</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_index_2</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">GraphException</span><span class="p">(</span>
+                <span class="s2">&quot;cannot call end_index with node not in connection&quot;</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="GraphConnection.disconnect"><a class="viewcode-back" href="../../auto/graph.html#rnamake.graph.GraphConnection.disconnect">[docs]</a>    <span class="k">def</span> <span class="nf">disconnect</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        removes connection, gets each node to remove this connection from their</span>
+<span class="sd">        connection lists.</span>
+
+<span class="sd">        :return: None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_1</span><span class="o">.</span><span class="n">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">node_2</span><span class="o">.</span><span class="n">remove_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

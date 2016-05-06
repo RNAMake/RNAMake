@@ -1,0 +1,340 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>rnamake.motif_type &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../../index.html"/>
+        <link rel="up" title="Module code" href="../index.html"/> 
+
+  
+  <script src="../../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/graph.html">Graph</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/tree.html">Tree</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/transformations.html">Transformations</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/x3dna.html">X3dna</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/secondary_structure.html">Secondary Structure</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/motif_type.html">Motif Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../auto/rna_structure.html">RNA Structure</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../../index.html">Docs</a> &raquo;</li>
+      
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+      
+    <li>rnamake.motif_type</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for rnamake.motif_type</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">exceptions</span>
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Basic type information for motifs for looking up in databases and libraries</span>
+
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|  Motif Type       | Value | Description                                 |</span>
+<span class="sd">+===================+=======+=============================================+</span>
+<span class="sd">|   TWOWAY          | 0     | Twoway junctions                            |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   NWAY            | 1     | Junctions with more then two ends           |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   HAIRPIN         | 2     | Motif with only one end                     |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   TCONTACT_HP_HP  | 3     | Tertiary contact between two hairpins,      |</span>
+<span class="sd">|                   |       | two ends                                    |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   TCONTACT_H_HP   | 4     | Tertiary contact between one hairpin and    |</span>
+<span class="sd">|                   |       | one helix, three ends                       |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   TCONTACT_H_H    | 5     | Tertiary contact between two helices,       |</span>
+<span class="sd">|                   |       | four ends                                   |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   TWOWAY_SEGMENTS | 8     | Segments of multiple motifs with two ends   |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   HELIX           | 9     | RNA with only GC/AU pairs                   |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   SSTRAND         | 10    | Single stranded RNA                         |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   TCONTACT        | 11    | General tertiary contact                    |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   UNKNOWN         | 99    | Motif with unassigned motif type            |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">|   ALL             | 999   | Place holder type for iteration of motifs   |</span>
+<span class="sd">+-------------------+-------+---------------------------------------------+</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="n">TWOWAY</span>            <span class="o">=</span> <span class="mi">0</span>
+<span class="n">NWAY</span>              <span class="o">=</span> <span class="mi">1</span>
+<span class="n">HAIRPIN</span>           <span class="o">=</span> <span class="mi">2</span>
+<span class="n">TCONTACT_HP_HP</span>    <span class="o">=</span> <span class="mi">3</span>
+<span class="n">TCONTACT_H_HP</span>     <span class="o">=</span> <span class="mi">4</span>
+<span class="n">TCONTACT_H_H</span>      <span class="o">=</span> <span class="mi">5</span>
+<span class="n">TWOWAY_SEGMENTS</span>   <span class="o">=</span> <span class="mi">8</span>
+<span class="n">HELIX</span>             <span class="o">=</span> <span class="mi">9</span>
+<span class="n">SSTRAND</span>           <span class="o">=</span> <span class="mi">10</span>
+<span class="n">TCONTACT</span>          <span class="o">=</span> <span class="mi">11</span>
+<span class="n">UNKNOWN</span>           <span class="o">=</span> <span class="mi">99</span>
+<span class="n">ALL</span>               <span class="o">=</span> <span class="mi">999</span>
+
+<span class="n">type_to_str_dict</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">TWOWAY</span>            <span class="p">:</span> <span class="s1">&#39;TWOWAY&#39;</span><span class="p">,</span>
+    <span class="n">NWAY</span>              <span class="p">:</span> <span class="s1">&#39;NWAY&#39;</span><span class="p">,</span>
+    <span class="n">HAIRPIN</span>           <span class="p">:</span> <span class="s1">&#39;HAIRPIN&#39;</span><span class="p">,</span>
+    <span class="n">TCONTACT</span>          <span class="p">:</span> <span class="s1">&#39;TCONTACT&#39;</span><span class="p">,</span>
+    <span class="n">TCONTACT_HP_HP</span>    <span class="p">:</span> <span class="s1">&#39;TCONTACT_HP_HP&#39;</span><span class="p">,</span>
+    <span class="n">TCONTACT_H_HP</span>     <span class="p">:</span> <span class="s1">&#39;TCONTACT_H_HP&#39;</span><span class="p">,</span>
+    <span class="n">TCONTACT_H_H</span>      <span class="p">:</span> <span class="s1">&#39;TCONTACT_H_H&#39;</span><span class="p">,</span>
+    <span class="n">TWOWAY_SEGMENTS</span>   <span class="p">:</span> <span class="s1">&#39;TWOWAY_SEGMENTS&#39;</span><span class="p">,</span>
+    <span class="n">HELIX</span>             <span class="p">:</span> <span class="s1">&#39;HELIX&#39;</span><span class="p">,</span>
+    <span class="n">UNKNOWN</span>           <span class="p">:</span> <span class="s1">&#39;UNKNOWN&#39;</span><span class="p">,</span>
+    <span class="n">ALL</span>               <span class="p">:</span> <span class="s1">&#39;ALL&#39;</span>
+<span class="p">}</span>
+
+<span class="n">str_to_type_dict</span> <span class="o">=</span> <span class="p">{</span>
+   <span class="s1">&#39;TWOWAY&#39;</span>           <span class="p">:</span> <span class="n">TWOWAY</span><span class="p">,</span>
+   <span class="s1">&#39;NWAY&#39;</span>             <span class="p">:</span> <span class="n">NWAY</span><span class="p">,</span>
+   <span class="s1">&#39;HAIRPIN&#39;</span>          <span class="p">:</span> <span class="n">HAIRPIN</span><span class="p">,</span>
+   <span class="s1">&#39;TCONTACT_HP_HP&#39;</span>   <span class="p">:</span> <span class="n">TCONTACT_HP_HP</span><span class="p">,</span>
+   <span class="s1">&#39;TCONTACT_H_HP&#39;</span>    <span class="p">:</span> <span class="n">TCONTACT_H_HP</span><span class="p">,</span>
+   <span class="s1">&#39;TCONTACT_H_H&#39;</span>     <span class="p">:</span> <span class="n">TCONTACT_H_H</span><span class="p">,</span>
+   <span class="s1">&#39;TWOWAY_SEGMENTS&#39;</span>  <span class="p">:</span> <span class="n">TWOWAY_SEGMENTS</span><span class="p">,</span>
+   <span class="s1">&#39;HELIX&#39;</span>            <span class="p">:</span> <span class="n">HELIX</span><span class="p">,</span>
+   <span class="s1">&#39;UNKNOWN&#39;</span>          <span class="p">:</span> <span class="n">UNKNOWN</span><span class="p">,</span>
+   <span class="s1">&#39;ALL&#39;</span>              <span class="p">:</span> <span class="n">ALL</span>
+<span class="p">}</span>
+
+
+<div class="viewcode-block" id="type_to_str"><a class="viewcode-back" href="../../auto/motif_type.html#rnamake.motif_type.type_to_str">[docs]</a><span class="k">def</span> <span class="nf">type_to_str</span><span class="p">(</span><span class="n">mtype</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    convery motif_type enum value into a string for each printing</span>
+
+<span class="sd">    :param mtype: motif type value</span>
+<span class="sd">    :type mtype: motif_type</span>
+<span class="sd">    :return: return string name of motif_type from type_to_str_dict</span>
+<span class="sd">    :rtype: string</span>
+
+<span class="sd">    :examples:</span>
+
+<span class="sd">    ..  code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt; import motif_type</span>
+<span class="sd">        &gt;&gt;&gt; motif_type.type_to_str(motif_type.TWOWAY)</span>
+<span class="sd">        TWOWAY</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">mtype</span> <span class="ow">in</span> <span class="n">type_to_str_dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">type_to_str_dict</span><span class="p">[</span><span class="n">mtype</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">MotifTypeException</span><span class="p">(</span><span class="s2">&quot;MotifType not recognized: &quot;</span> <span class="o">+</span> <span class="n">mtype</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="str_to_type"><a class="viewcode-back" href="../../auto/motif_type.html#rnamake.motif_type.str_to_type">[docs]</a><span class="k">def</span> <span class="nf">str_to_type</span><span class="p">(</span><span class="n">type_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    converts string to its corresponding motif_type</span>
+
+<span class="sd">    :param type_name: name of motif_type enum</span>
+<span class="sd">    :return: corresponding motif_type enum</span>
+<span class="sd">    :rtype: motif_type</span>
+
+<span class="sd">    ..  code-block:: python</span>
+
+<span class="sd">        &gt;&gt;&gt; import motif_type</span>
+<span class="sd">        &gt;&gt;&gt; motif_type.str_to_type(&#39;TWOWAY&#39;)</span>
+<span class="sd">        0</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">type_name</span> <span class="ow">in</span> <span class="n">str_to_type_dict</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">str_to_type_dict</span><span class="p">[</span><span class="n">type_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">exceptions</span><span class="o">.</span><span class="n">MotifTypeException</span><span class="p">(</span><span class="s2">&quot;motif_type name not recognized&quot;</span><span class="p">)</span></div>
+
+
+
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../../_static/jquery.js"></script>
+      <script type="text/javascript" src="../../_static/underscore.js"></script>
+      <script type="text/javascript" src="../../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>

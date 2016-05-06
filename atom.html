@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Atom &mdash; RNAMake 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="RNAMake 0.1 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to RNAMake’s documentation!" href="index.html" />
+   
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body role="document">  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="atom">
+<span id="id1"></span><h1>Atom<a class="headerlink" href="#atom" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.atom"></span><dl class="class">
+<dt id="rnamake.atom.Atom">
+<em class="property">class </em><code class="descclassname">rnamake.atom.</code><code class="descname">Atom</code><span class="sig-paren">(</span><em>name</em>, <em>coords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rnamake/atom.html#Atom"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.atom.Atom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Stores atomic information from pdb file, design is to be extremely
+lightweight only storing the atom name and coordinates.</p>
+<dl class="docutils">
+<dt><cite>name</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>Atomic name</dd>
+<dt><cite>coords</cite> <span class="classifier-delimiter">:</span> <span class="classifier">Numpy array</span></dt>
+<dd>Atomic coordinates</dd>
+</dl>
+<p>Examples</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;a = Atom(&quot;P&quot;,[1.0,2.0,3.0])</span>
+<span class="go">&gt;&gt;&gt;a.name</span>
+<span class="go">P</span>
+
+<span class="go">&gt;&gt;&gt;a.coords</span>
+<span class="go">[1.0 2.0 3.0]</span>
+
+<span class="go">&gt;&gt;&gt;print a</span>
+<span class="go">&lt;Atom(name =&#39;P&#39;, coords=&#39;1.0 2.0 3.0&#39;)&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.atom.Atom.copy">
+<code class="descname">copy</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rnamake/atom.html#Atom.copy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.atom.Atom.copy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Deep copies the current atom instance.
+returns an Atom object</p>
+<p>Examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;a = Atom(&quot;P&quot;,[1.0,2.0,3.0])</span>
+<span class="go">&gt;&gt;&gt;a_copy = a.copy()</span>
+<span class="go">&gt;&gt;&gt;print a_copy.name</span>
+<span class="go">P</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.atom.Atom.to_pdb_str">
+<code class="descname">to_pdb_str</code><span class="sig-paren">(</span><em>acount=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/rnamake/atom.html#Atom.to_pdb_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.atom.Atom.to_pdb_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>prints the current atom to a pdb string</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>acount</strong> (<em>int</em>) &#8211; the atom number of the atom in pdb file</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;a = Atom(&quot;P&quot;,[1.0,2.0,3.0])</span>
+<span class="go">&gt;&gt;&gt;a.to_pdb_str()</span>
+<span class="go">ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P</span>
+
+<span class="go">&gt;&gt;&gt;a.to_pdb_str(10)</span>
+<span class="go">ATOM     10  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.atom.Atom.to_str">
+<code class="descname">to_str</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/rnamake/atom.html#Atom.to_str"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.atom.Atom.to_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>returns string version of atom
+.. doctest:</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="go">&gt;&gt;&gt;atom = atom.Atom(&quot;H1&quot;, np.array([0, 1, 2]))</span>
+<span class="go">&gt;&gt;&gt;string = atom.to_str()</span>
+<span class="go">&quot;H1 0.0 1.0 2.0&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper"><div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to RNAMake&#8217;s documentation!</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/atom.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2016, Joseph Yesselman, Rhiju Das.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.3.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.7</a>
+      
+      |
+      <a href="_sources/atom.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

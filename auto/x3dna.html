@@ -1,0 +1,377 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>X3dna &mdash; RNAMake 0.1 documentation</title>
+  
+
+  
+  
+
+  
+
+  
+  
+    
+
+  
+
+  
+  
+    <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+
+  
+
+  
+    <link rel="top" title="RNAMake 0.1 documentation" href="../index.html"/>
+        <link rel="next" title="Atom" href="atom.html"/>
+        <link rel="prev" title="Sqlite Library" href="sqlite_library.html"/> 
+
+  
+  <script src="../_static/js/modernizr.min.js"></script>
+
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search">
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> RNAMake
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.1
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+                <ul>
+<li class="toctree-l1"><a class="reference internal" href="graph.html">Graph</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="transform.html">Transform</a></li>
+<li class="toctree-l1"><a class="reference internal" href="sqlite_library.html">Sqlite Library</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="">X3dna</a><ul class="simple">
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="atom.html">Atom</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue.html">Residue</a></li>
+<li class="toctree-l1"><a class="reference internal" href="residue_type.html">Residue Type</a></li>
+<li class="toctree-l1"><a class="reference internal" href="chain.html">Chain</a></li>
+<li class="toctree-l1"><a class="reference internal" href="structure.html">Structure</a></li>
+<li class="toctree-l1"><a class="reference internal" href="basepair.html">Basepair</a></li>
+<li class="toctree-l1"><a class="reference internal" href="pdb_parser.html">PDB_Parser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motif_type.html">Motif Type</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" role="navigation" aria-label="top navigation">
+        <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+        <a href="../index.html">RNAMake</a>
+      </nav>
+
+
+      
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+      
+    <li>X3dna</li>
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/auto/x3dna.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="x3dna">
+<span id="id1"></span><h1>X3dna<a class="headerlink" href="#x3dna" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul class="simple">
+</ul>
+</div>
+<span class="target" id="module-rnamake.x3dna"></span><dl class="class">
+<dt id="rnamake.x3dna.Basepair">
+<em class="property">class </em><code class="descclassname">rnamake.x3dna.</code><code class="descname">Basepair</code><span class="sig-paren">(</span><em>res1</em>, <em>res2</em>, <em>r</em>, <em>d</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/x3dna.html#Basepair"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.x3dna.Basepair" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Container for basepairs from ref_frames and dssr files produced
+by x3dna. Should not be instantiated outside x3dna.X3dna class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>res1</cite> <span class="classifier-delimiter">:</span> <span class="classifier">Residue</span></dt>
+<dd>first residue in basepair</dd>
+<dt><cite>res2</cite> <span class="classifier-delimiter">:</span> <span class="classifier">Residue</span></dt>
+<dd>second residue in basepair</dd>
+<dt><cite>r</cite> <span class="classifier-delimiter">:</span> <span class="classifier">np.array</span></dt>
+<dd>rotation matrix describing principle axies of orientation of basepair</dd>
+<dt><cite>d</cite> <span class="classifier-delimiter">:</span> <span class="classifier">np.array</span></dt>
+<dd>center point of basepair</dd>
+<dt><cite>bp_type</cite>: str</dt>
+<dd>x3dna dssr basepair type, see x3dna for more details</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.x3dna.Motif">
+<em class="property">class </em><code class="descclassname">rnamake.x3dna.</code><code class="descname">Motif</code><span class="sig-paren">(</span><em>residues</em>, <em>mtype</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/x3dna.html#Motif"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.x3dna.Motif" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Container for motif residues from dssr files produceed by x3dna. Should not
+be instantiated outside x3dna.X3dna class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>residues</cite> <span class="classifier-delimiter">:</span> <span class="classifier">list of Residue objects</span></dt>
+<dd>residues that belong to same motif</dd>
+<dt><cite>mtype</cite>: motif_type enum</dt>
+<dd>the enum type of the given motif</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.x3dna.Residue">
+<em class="property">class </em><code class="descclassname">rnamake.x3dna.</code><code class="descname">Residue</code><span class="sig-paren">(</span><em>num</em>, <em>chain_id</em>, <em>i_code=''</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/x3dna.html#Residue"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.x3dna.Residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>Container for residues from ref_frames and dssr files produced
+by x3dna. Should not be instantiated outside x3dna.X3dna class.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Attributes:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+<dl class="docutils">
+<dt><cite>num</cite> <span class="classifier-delimiter">:</span> <span class="classifier">int</span></dt>
+<dd>residue number</dd>
+<dt><cite>chain_id</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>residue chain id</dd>
+<dt><cite>i_code</cite> <span class="classifier-delimiter">:</span> <span class="classifier">str</span></dt>
+<dd>residue insertion code</dd>
+</dl>
+</dd></dl>
+
+<dl class="class">
+<dt id="rnamake.x3dna.X3dna">
+<em class="property">class </em><code class="descclassname">rnamake.x3dna.</code><code class="descname">X3dna</code><a class="reference internal" href="../_modules/rnamake/x3dna.html#X3dna"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.x3dna.X3dna" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">object</span></code></p>
+<p>a simple wrapper for interfacing with the x3dna package for determining the
+basepairing in a pdb structure. Please support the author of x3dna directory
+and cite his work and register on his site: <a class="reference external" href="http://x3dna.org/">http://x3dna.org/</a></p>
+<p>Data is returned as a list of X3DNA basepair objects which are simplistic
+containers for storing which residues are contained in a basepair and
+what the reference frame and type of the basepair is. These are different
+from basepair.Basepair objects which store the actual atomic information
+of a basepair</p>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rnamake.unittests</span> <span class="kn">import</span> <span class="n">files</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">rnamake</span> <span class="kn">import</span> <span class="n">x3dna</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">x3dna</span><span class="o">.</span><span class="n">X3dna</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">basepairs</span> <span class="o">=</span> <span class="n">x</span><span class="o">.</span><span class="n">get_basepairs</span><span class="p">(</span><span class="n">files</span><span class="o">.</span><span class="n">P4P6_PDB_PATH</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">len</span><span class="p">(</span><span class="n">basepairs</span><span class="p">)</span>
+<span class="go">79</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">basepairs</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+<span class="go">&lt;X3DNA Basepair(A131 A192 cW-W)&gt;</span>
+</pre></div>
+</div>
+<dl class="method">
+<dt id="rnamake.x3dna.X3dna.generate_dssr_file">
+<code class="descname">generate_dssr_file</code><span class="sig-paren">(</span><em>pdb_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/x3dna.html#X3dna.generate_dssr_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.x3dna.X3dna.generate_dssr_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>runs x3dna&#8217;s dssr which assigns the secondary structure and each of
+the motifs in a RNA structure</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pdb_name</strong> (<em>str</em>) &#8211; the pdb you want to run without the .pdb extension</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.x3dna.X3dna.generate_ref_frame">
+<code class="descname">generate_ref_frame</code><span class="sig-paren">(</span><em>pdb_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/x3dna.html#X3dna.generate_ref_frame"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.x3dna.X3dna.generate_ref_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>runs x3dna/find_pair and x3dna/analyze to get the basepairing
+information of a given pdb and it is updated to a ref_frames.dat
+file which can be parsed by get_basepair_info if necessary</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pdb_path</strong> (<em>str</em>) &#8211; the pdb you want to run without the .pdb extension</td>
+</tr>
+</tbody>
+</table>
+<div class="highlight-python"><div class="highlight"><pre><span></span><span class="c1"># after running should be a &quot;ref_frames.dat&quot; in current dir</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">rnamake</span> <span class="kn">import</span> <span class="n">x3dna</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span> <span class="o">=</span> <span class="n">x3dna</span><span class="o">.</span><span class="n">X3dna</span><span class="p">()</span>
+<span class="o">&gt;&gt;&gt;</span> <span class="n">x</span><span class="o">.</span><span class="n">generate_ref_frame</span><span class="p">(</span><span class="s2">&quot;test.pdb&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="rnamake.x3dna.X3dna.get_basepairs">
+<code class="descname">get_basepairs</code><span class="sig-paren">(</span><em>pdb_path</em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/rnamake/x3dna.html#X3dna.get_basepairs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#rnamake.x3dna.X3dna.get_basepairs" title="Permalink to this definition">¶</a></dt>
+<dd><p>generates and/or collects the information from the ref_frame.dat
+file and dssr output file to determine the basepairing between
+residues and what type each basepair is. Returns a list of basepair
+X3DNA objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pdb_path</strong> (<em>str</em>) &#8211; path to the pdb file</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="atom.html" class="btn btn-neutral float-right" title="Atom" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="sqlite_library.html" class="btn btn-neutral" title="Sqlite Library" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2016, Joseph Yesselman, Rhiju Das.
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/snide/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  
+
+    <script type="text/javascript">
+        var DOCUMENTATION_OPTIONS = {
+            URL_ROOT:'../',
+            VERSION:'0.1',
+            COLLAPSE_INDEX:false,
+            FILE_SUFFIX:'.html',
+            HAS_SOURCE:  true
+        };
+    </script>
+      <script type="text/javascript" src="../_static/jquery.js"></script>
+      <script type="text/javascript" src="../_static/underscore.js"></script>
+      <script type="text/javascript" src="../_static/doctools.js"></script>
+      <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+  
+
+  
+  
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+  
+
+  
+  
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.StickyNav.enable();
+      });
+  </script>
+   
+
+</body>
+</html>
