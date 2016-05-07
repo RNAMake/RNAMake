@@ -29,6 +29,7 @@ Utilities
    auto/sqlite_library
    auto/x3dna
    auto/util
+   auto/io
 
 Secondary Structure
 -------------------
