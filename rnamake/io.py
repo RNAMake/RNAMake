@@ -1,17 +1,24 @@
 import numpy as np
+
 import atom
 import residue
 import residue_type
 import chain
 import structure
 
+# TODO going to phase out this module in general and move each function to its
+# respective module with the class its creating
+
 def str_to_atom(s):
     """
     converts string to atom.Atom object format "AtomName X Y Z"
+
     :params s: string containing atom elements
-    :type   s: string
+    :type s: str
+
     .. code-block:: python
-        >>>str_to_atom("P 1.0 2.0 3.0")
+
+        >>> str_to_atom("P 1.0 2.0 3.0")
         <Atom(name='P', coords='1.0 2.0 3.0')>
     """
     spl = s.split()
@@ -21,7 +28,15 @@ def str_to_atom(s):
 
 def str_to_residue(s):
     """
-    creates an residue from string generated from r.to_str()
+    creates an residue from string generated from
+    :func:`rnamake.residue.Residue.to_str`
+
+    :param s: string containing stringifed residue
+    :type s: str
+
+    :returns: unstringifed residue object
+    :rtype: residue.Residue
+
     """
     spl = s.split(",")
     rtype = residue_type.get_rtype(spl[0])
@@ -37,7 +52,14 @@ def str_to_residue(s):
 
 def str_to_chain(s):
     """
-    creates a chain from string generated from chain.to_str()
+    creates an chain from string generated from
+    :func:`rnamake.chain.Chain.to_str`
+
+    :param s: string containing stringifed chain
+    :type s: str
+
+    :returns: unstringifed chain object
+    :rtype: chain.Chain
     """
     spl = s.split(";")
     c = chain.Chain()
@@ -50,6 +72,17 @@ def str_to_chain(s):
 
 
 def str_to_structure(s):
+    """
+    creates an structure from string generated from
+    :func:`rnamake.structure.Structure.to_str`
+
+    :param s: string containing stringifed structure
+    :type s: str
+
+    :returns: unstringifed structure object
+    :rtype: structure.Structure
+    """
+
     spl = s.split(":")
     struct = structure.Structure()
     chains = []
