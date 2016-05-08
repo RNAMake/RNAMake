@@ -62,15 +62,24 @@ AtomUnittest::test_copy() {
     
     return 1;
 }
+    
+int
+AtomUnittest::test_to_str() {
+    auto a = std::make_shared<Atom>("H1", Point(0, 1, 2));
+    auto s = a->to_str();
+    failUnless(s != "H1 0.0 1.0 2.0", "did not get correct string");
+    
+    return 1;
+}
 
 int
 AtomUnittest::run() {
-    
-    if (test_creation() == 0)    {  std::cout << "test_creation failed" << std::endl; }
-    if (test_to_pdb_str() == 0)  {  std::cout << "test_to_pdb_str failed" << std::endl; }
-    if (test_str_to_atom() == 0) {  std::cout << "test_str_to_atom failed" << std::endl; }
-    if (test_copy() == 0)        {  std::cout << "test_copy failed" << std::endl; }
-    
+    test_creation();
+    test_to_pdb_str();
+    test_str_to_atom();
+    test_copy();
+    test_to_str();
+
     return 1;
 }
 
@@ -83,6 +92,8 @@ AtomUnittest::run_all() {
     func_map["test_to_pdb_str" ] = &AtomUnittest::test_to_pdb_str;
     func_map["test_str_to_atom"] = &AtomUnittest::test_str_to_atom;
     func_map["test_copy"       ] = &AtomUnittest::test_copy;
+    func_map["test_to_str"     ] = &AtomUnittest::test_to_str;
+
     
     int failed = 0;
     for(auto const & kv : func_map) {

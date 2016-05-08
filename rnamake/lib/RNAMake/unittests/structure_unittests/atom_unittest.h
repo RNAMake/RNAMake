@@ -30,7 +30,13 @@ public:
 public:
     
     int
+    size() { return 5; }
+    
+    int
     test_creation();
+    
+    int
+    test_to_str();
     
     int
     test_to_pdb_str();

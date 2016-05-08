@@ -7,6 +7,8 @@
 //
 
 #include "util/file_io.h"
+#include "instances/structure_instances.hpp"
+
 
 #include "is_equal.hpp"
 #include "unittest.h"
@@ -26,18 +28,21 @@ residues_(ResidueOPs()){
     }
 }
     
-void
-ResidueUnittest::test_bead_creation() {
-    auto b =  Bead( Point(1, 2, 3), BASE);
-}
-
 
 void
 ResidueUnittest::test_get_atom() {
     auto r = residues_[0];
     auto name = String("C1'");
     auto a = r->get_atom(name);
+
+    std::function<void()> f = []() {
+        auto r_test = instances::residue();
+        r_test->get_atom("fake");
+    };
+    
+    failUnlessThrows<ResidueException>(f, "did not throw error for non existant atom");
 }
+    
 
 void
 ResidueUnittest::test_connected_to() {
@@ -96,6 +101,15 @@ ResidueUnittest::test_memory_management() {
         auto r = Residue(line, rts);
     }
 }
+
+    
+void
+ResidueUnittest::test_bead_creation() {
+    auto b =  Bead( Point(1, 2, 3), BASE);
+    failUnless(b.center() == Point(1, 2, 3), "did not build properly");
+}
+    
+
 
     
 int

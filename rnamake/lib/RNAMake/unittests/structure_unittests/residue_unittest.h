@@ -26,6 +26,9 @@ public:
     
 public:
     
+    int
+    size() { return 7; }
+    
     void
     test_bead_creation();
     

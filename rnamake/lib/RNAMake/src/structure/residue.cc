@@ -43,7 +43,7 @@ Residue::setup_atoms(
         count++;
     }
     
-    if(count == 0) { throw "Residue has zero atoms something wrong"; }
+    if(count == 0) { throw ResidueException("Residue has zero atoms something wrong"); }
 }
 
 Beads
