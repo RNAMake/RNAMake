@@ -6,4 +6,4 @@
 //  Copyright © 2016 Joseph Yesselman. All rights reserved.
 //
 
-#include "structure_instances.hpp"
+#include "instances/structure_instances.hpp"

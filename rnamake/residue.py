@@ -283,7 +283,7 @@ class Residue(object):
         """
         get atom object by its name
 
-        :param atom_name: name
+        :param atom_name: name of atom
         :type atom_name: str
 
         Examples:
@@ -490,7 +490,7 @@ class Residue(object):
         """
         Writes a PDB string formmated verision of this Residue object to file
 
-        :param fname: filename of output PDB file, default="chain.pdb"
+        :param fname: filename of output PDB file, default="residue.pdb"
 
         :type  fname: str
         :return: None

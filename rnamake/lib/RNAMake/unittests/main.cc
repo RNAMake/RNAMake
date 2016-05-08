@@ -53,7 +53,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::motif_state_search::MotifStateSearchUnittest test;
+    unittests::ResidueUnittest test;
     test.run();
 
     return 0;

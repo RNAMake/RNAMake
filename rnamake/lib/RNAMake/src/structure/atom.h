@@ -149,12 +149,12 @@ private:
     
 };
 
-/*
+/**
  * Shared pointer typedef for Atom. Only use shared pointers!
  */
 typedef std::shared_ptr<Atom> AtomOP;
 
-/*
+/**
  * Typedef of a vector of shared pointer atoms, only used this.
  */
 typedef std::vector<AtomOP> AtomOPs;

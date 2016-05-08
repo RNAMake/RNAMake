@@ -30,6 +30,7 @@ Utilities
    auto/x3dna
    auto/util
    auto/io
+   auto/basic_io
 
 Secondary Structure
 -------------------
