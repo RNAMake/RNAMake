@@ -407,7 +407,7 @@ public:
      * @param   r   another residue to check if its the same
      */
     bool
-    operator ==(const Residue& r) const {
+    operator ==(Residue const & r) const {
         return uuid_ == r.uuid_;
     }
 

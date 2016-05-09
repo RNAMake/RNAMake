@@ -21,12 +21,13 @@ PathBuilderNewApp::setup_options() {
     add_option("pdb", String(""), OptionType::STRING, false);
     add_option("start_bp", String(""), OptionType::STRING, false);
     add_option("end_bp", String(""), OptionType::STRING, false);
+    add_cl_options(optimizer_.options(), "search");
 
+    
     //add_option("f", String(""), OptionType::STRING, true);
     //add_option("break_point", String(""), OptionType::STRING, true);
     //add_option("connections", String(""), OptionType::STRING, false);
     //add_option("o", String("sequences.dat"), OptionType::STRING, false);
-    //add_cl_options(optimizer_.options(), "optimizer");
 }
 
 void
@@ -35,7 +36,7 @@ PathBuilderNewApp::parse_command_line(
     const char ** argv) {
     
     Application::parse_command_line(argc, argv);
-    //cl_parser_.assign_options(cl_options_, optimizer_.options(), "optimizer");
+    cl_parser_.assign_options(cl_options_, optimizer_.options(), "search");
 }
 
 void

@@ -2,8 +2,42 @@ import secondary_structure
 import secondary_structure_graph
 import graph
 import motif_type
+import exceptions
+
 
 class SecondaryStructureChainGraph(object):
+    """
+    A graph data structure to store connectivity between residues based on
+    their sequence and dot_bracket notation
+
+    Nodes have 3 possible connections connection 0 is to the residue before the
+    current one going from 5' to 3'. So if the current node has the first
+    residue in it would have no connection at position 0. Likewise if it was the
+    last residue in a chain it would have no connection at position 1. All
+    other residues will have always have both connection 0 and 1 filled. Just to
+    clarify all non-paired nodes can have more then one residue in them. The
+    node will has as many residues that are unpaired in it.
+
+    Where connections are located
+
+    ^ 5' (0)\n
+    \|\n
+    N -- pair (2)\n
+    \|\n
+    v 3' (1)\n
+
+    Example
+
+    +----------+-+-+----+-+-+--------+-+-+-+-+
+    | Sequence |G|G|AA  |C|C|UUCG    |G|G|C|C|
+    +----------+-+-+----+-+-+--------+-+-+-+-+
+    | Structure|(|(|. . |(|(|. . . . |)|)|)|)|
+    +----------+-+-+----+-+-+--------+-+-+-+-+
+    | Node     |0|1| 2  |3|4|   5    |6|7|8|9|
+    +----------+-+-+----+-+-+--------+-+-+-+-+
+
+    """
+
     def __init__(self):
         self.graph = graph.GraphStatic()
 
@@ -31,15 +65,20 @@ class SecondaryStructureChainGraph(object):
 
         return s
 
+    def __len__(self):
+        return len(self.graph)
+
     def add_chain(self, data, parent_index=-1, orphan=0):
         parent = self.graph.last_node
         if parent_index != -1:
             parent = self.graph.get_node(parent_index)
 
         if parent is None:
-            return self.graph.add_data(data, -1, -1, -1, 3)
+            return self.graph.add_data(data, n_children=3)
 
-        return self.graph.add_data(data, parent_index, 1, 0, 3, orphan=orphan)
+        return self.graph.add_data(data, parent_index,
+                                   parent_pos=1, child_pos=0,
+                                   n_children=3, orphan=orphan)
 
     def get_node_by_res(self, res):
         for i, n in enumerate(self.graph):
@@ -54,7 +93,7 @@ class SecondaryStructureChainGraph(object):
 
 class NodeType(object):
     UNPAIRED = 0
-    PAIRED    = 1
+    PAIRED = 1
 
 
 class NodeData(object):
@@ -62,15 +101,192 @@ class NodeData(object):
         self.residues, self.type = residues, type
 
 
+# TODO add the ability to parse "{" and "}"
 class SecondaryStructureParser(object):
+    """
+    Parses sequence and dot bracket notation for secondary structure. Can
+    can take parsed information and build many different data structures with
+    it.
 
-    def parse(self, sequence=None, dot_bracket=None, structure=None):
-        if sequence is not None and dot_bracket is not None:
-            self.structure = secondary_structure.Structure(sequence=sequence, dot_bracket=dot_bracket)
+    :attributes:
+
+    `structure`: secondary_structure.Structure
+        secondary_structure structure to hold sequence and secondary
+        structure.
+    `residues`: list of secondary_structure.Residues
+        residues from structure kept as seperate variable for quick referencing
+    `pairs`: list of secondary_structure.Basepairs
+        keeps track of all pairs found in secondary structure
+
+    :examples:
+
+    ..  code-block:: python
+
+        >>> from rnamake import secondary_structure_parser
+        # get parser
+        >>> p = secondary_structure_parser.SecondaryStructureParser()
+
+        # most simple parse, builds a SecondaryStructureChainGraph which
+        # keeps track of the position of each element, its sequence, what
+        # its connected to and what its paired too.
+        >>> g = p.parse("GG+CC", "((+))")
+        >>> print g
+        index: 0 sequence:G 5prime: N 3prime: 1 pair: 3
+        index: 1 sequence:G 5prime: 0 3prime: N pair: 2
+        index: 2 sequence:C 5prime: N 3prime: 3 pair: 1
+        index: 3 sequence:C 5prime: 2 3prime: N pair: 0
+
+        # can also parse into more complex things
+        >>> p.reset()
+        >>> m = p.parse_to_motif("GAG+CC", "(.(+))")
+        >>> print m
+        <secondary_structure.Motif( GAG&CC (.(&)) )
+pars
+    """
+
+    def __init__(self):
+        self.structure = secondary_structure.Structure()
+        self.residues = []
+        self.pairs = []
+
+    def reset(self):
+        """
+        resets class so it can be used again afterwards.
+
+        :return: None
+        """
+
+        self.structure = secondary_structure.Structure()
+        self.residues = []
+        self.pairs = []
+
+    def _setup(self, sequence, dot_bracket, structure):
+        """
+        helper class for checking to make sure arguments to :func:`parse` are
+        useable.
+
+        :param sequence: sequence of secondary structure to parse
+        :param dot_bracket: corresponding structure of given sequence
+        :param structure: structure object that can be supplied instead of
+            sequence and dot_bracket
+
+        :type sequence: str
+        :type dot_bracket: str
+        :type structure: secondary_structure.Structure
+
+        :return: None
+        """
+
+        # catch nothing supplied
+        if sequence is None and dot_bracket is None and structure is None:
+            raise exceptions.SecondaryStructureParserException(
+                "no arguments supplied to parser, need to supply sequence and "
+                "dot_bracket or a existing secondary_structure.Structure")
+
+        # supplied sequence and dot_bracket
+        elif sequence is not None and dot_bracket is not None:
+            try:
+                self.structure = secondary_structure.Structure(
+                    sequence=sequence, dot_bracket=dot_bracket)
+
+            # incorrect secondary structure
+            except exceptions.SecondaryStructureException as e:
+                raise exceptions.SecondaryStructureParserException(
+                    "cannot parse secondary structure, error in "
+                    "secondary_structure:" + e.message)
+
+        # catch mismatch of arguments
+        elif (sequence is not None and dot_bracket is None) or \
+                (sequence is None and dot_bracket is not None):
+            raise exceptions.SecondaryStructureParserException(
+                "incorrect arguments supplied, must suppled BOTH sequence and "
+                "dot_bracket secondary structure")
+
         else:
             self.structure = structure
 
         self.residues = self.structure.residues()
+
+    def _add_unpaired_residues_to_graph(self, g, res, is_start_res):
+        """
+        adds a stretch of unpaired residues to the graph, a helper function
+        to :func:`parser`
+
+        :param g: the current secondary setructure graph being built
+        :param res: unpaired residues to be added to graph
+        :param is_start_res: whether this is a start of a chain
+
+        :type g: SecondaryStructureChainGraph
+        :type res: list of secondary_structure.Residues
+        :type is_start_res: int
+
+        :return: None
+        """
+
+        parent_index = g.get_node_by_res(self._previous_res(res[0]))
+        new_data = NodeData(res, NodeType.UNPAIRED)
+        g.add_chain(new_data, parent_index, is_start_res)
+
+    def _add_paired_res_to_graph(self, g, r, is_start_res):
+        """
+        adds a basepairing residue to the graph, a helper function to
+        :func:`parser`
+
+        :param g: the current secondary setructure graph being built
+        :param r: current paired residue
+        :param is_start_res: whether this residue is the start of a chian
+
+        :type g: SecondaryStructureChainGraph
+        :type res: secondary_structure.Residue
+        :type is_start_res: int
+
+        :return: None
+        """
+
+        pair_res = self._get_bracket_pair(r)
+        new_data = NodeData([r], NodeType.PAIRED)
+        parent_index = g.get_node_by_res(self._previous_res(r))
+        self.pairs.append(secondary_structure.Basepair(r, pair_res))
+        g.add_chain(new_data, parent_index, is_start_res)
+
+    def _get_previous_pair(self, r):
+        """
+        finds the basepair created when the corresponding "(" element was
+        detected.
+
+        :param r: residue with a ")" structure
+        :type r: secondary_structure.Residue
+
+        :return: the basepair that the residue is apart of
+        :rtype: secondary_structure.Basepair
+        """
+
+        pair = None
+        for p in self.pairs:
+            if p.res2 == r:
+                pair = p
+                break
+
+        if pair is None:
+            raise exceptions.SecondaryStructureParserException(
+                "cannot parse secondary structure: \n%s\n%s\n"
+                % (self.structure.sequence(), self.structure.dot_bracket()) + \
+                "position: %d has no matching pair " % r.num)
+
+        return pair
+
+    def parse(self, sequence=None, dot_bracket=None, structure=None):
+        """
+        parses 
+
+        :param sequence:
+        :param dot_bracket:
+        :param structure:
+        :return:
+        """
+
+
+        self._setup(sequence, dot_bracket, structure)
 
         g = SecondaryStructureChainGraph()
 
@@ -83,38 +299,26 @@ class SecondaryStructureParser(object):
 
             elif r.dot_bracket == "(":
                 if len(res) > 0:
-                    parent_index = g.get_node_by_res(self._previous_res(res[0]))
-                    new_data = NodeData(res, NodeType.UNPAIRED)
-                    g.add_chain(new_data, parent_index, is_start_res)
+                    self._add_unpaired_residues_to_graph(g, res, is_start_res)
                     res = []
-                pair_res = self._get_bracket_pair(r)
-                new_data = NodeData([r], NodeType.PAIRED)
-                parent_index = g.get_node_by_res(self._previous_res(r))
-                self.pairs.append(secondary_structure.Basepair(r, pair_res))
-                g.add_chain(new_data, parent_index, is_start_res)
+
+                self._add_paired_res_to_graph(g, r, is_start_res)
 
             elif r.dot_bracket == ")":
                 if len(res) > 0:
-                    parent_index = g.get_node_by_res(self._previous_res(res[0]))
-                    new_data = NodeData(res, NodeType.UNPAIRED)
-                    g.add_chain(new_data, parent_index, is_start_res)
+                    self._add_unpaired_residues_to_graph(g, res, is_start_res)
                     res = []
-                pair = None
-                for p in self.pairs:
-                    if p.res2 == r:
-                        pair = p
-                        break
+
+                pair = self._get_previous_pair(r)
+
                 new_data = NodeData([r], NodeType.PAIRED)
                 parent_index = g.get_node_by_res(self._previous_res(r))
                 pos = g.add_chain(new_data, parent_index, is_start_res)
                 pair_res_pos = g.get_node_by_res(pair.res1)
                 g.pair_res(pair_res_pos, pos)
 
-
-        #if len(res) > 0:
-        #    parent_index = g.get_node_by_res(self._previous_res(res[0]))
-        #    new_data = NodeData(res, NodeType.UNPAIRED)
-        #    g.add_chain(new_data, parent_index, is_start_res)
+        if len(res) > 0:
+            self._add_unpaired_residues_to_graph(g, res, 0)
 
         return g
 
@@ -123,7 +327,7 @@ class SecondaryStructureParser(object):
         motifs = []
         self.seen_nodes = []
         for i, n in enumerate(g.graph):
-            #single stranded motifs
+            # single stranded motifs
             #if i == 0 or n == g.graph.last_node:
             #    chain = secondary_structure.Chain(n.data.residues)
 
@@ -198,7 +402,7 @@ class SecondaryStructureParser(object):
             if bps_count == 2:
                 break
 
-        #print current, last_node, len(chain.residues)
+        # print current, last_node, len(chain.residues)
 
         return chain, last_node.connections[2].partner(last_node.index)
 
@@ -257,19 +461,16 @@ class SecondaryStructureParser(object):
         else:
             m.mtype = motif_type.NWAY
 
-
-
         return m
 
     def _generate_motif(self, n):
         start = n
-        chain, next_n= self._walk_nodes(start)
+        chain, next_n = self._walk_nodes(start)
         chains = [chain]
 
         if len(chain.residues) > 0 and next is None:
             struct = secondary_structure.Structure(chains)
             return self._build_motif(struct)
-
 
         while next_n != start:
             chain, next_n = self._walk_nodes(next_n)
@@ -289,14 +490,14 @@ class SecondaryStructureParser(object):
         if i == 0:
             return None
         else:
-            return self.residues[i-1]
+            return self.residues[i - 1]
 
     def _next_res(self, r):
         i = self.residues.index(r)
         if i == len(self.residues):
             return None
         else:
-            return self.residues[i+1]
+            return self.residues[i + 1]
 
     def _start_of_chain(self, r):
         for c in self.structure.chains:
@@ -328,5 +529,5 @@ class SecondaryStructureParser(object):
                 if bracket_count == 0:
                     return r
 
-        raise ValueError("cannot find pair")
+        raise exceptions.SecondaryStructureParserException("cannot find pair")
 

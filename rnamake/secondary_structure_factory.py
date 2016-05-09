@@ -5,7 +5,10 @@ import util
 
 class MotiftoSecondaryStructure(object):
     def __init__(self):
-        self.reset()
+        self.chains = []
+        self.open_chains = []
+        self.seen_res = {}
+        self.seen_bp = {}
 
     def reset(self):
         self.chains = []

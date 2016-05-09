@@ -34,6 +34,7 @@ Basic type information for motifs for looking up in databases and libraries
 +-------------------+-------+---------------------------------------------+
 |   ALL             | 999   | Place holder type for iteration of motifs   |
 +-------------------+-------+---------------------------------------------+
+
 """
 
 TWOWAY            = 0
