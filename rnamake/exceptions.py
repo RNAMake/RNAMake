@@ -25,41 +25,57 @@ class TreeIndexException(TreeException):
         self.n_index = n_index
         super(self.__class__, self).__init__(message)
 
+
 class TreeEndIndexException(TreeException):
     def __init__(self, n, n_index, message):
         self.n = n
         self.n_index = n_index
         super(self.__class__, self).__init__(message)
 
+
 class SqliteLibraryException(Exception):
     pass
+
 
 class MotifTypeException(Exception):
     pass
 
+
 class X3dnaException(Exception):
     pass
+
 
 class SecondaryStructureException(Exception):
     pass
 
+
+class SecondaryStructureParserException(Exception):
+    pass
+
+
 class ResidueException(Exception):
     pass
+
 
 class ChainException(Exception):
     pass
 
+
 class StructureException(Exception):
     pass
+
 
 class RNAStructureException(Exception):
     pass
 
+
 class BasepairException(Exception):
     pass
 
+
 class PDBParserException(Exception):
     pass
+
 
 class MotifClustersException(Exception):
     pass

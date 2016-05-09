@@ -391,13 +391,25 @@ class Structure(object):
 
     __slots__ = ["chains"]
 
+    # TODO refactor __init__ must be a cleaner way
     def __init__(self, chains=None, sequence="", dot_bracket=""):
         self.chains = []
         if chains is not None:
             self.chains = chains
 
-        if len(sequence) != 0 and len(dot_bracket) != 0:
+        elif len(sequence) != 0 and len(dot_bracket) != 0:
            self.chains = self._setup_chains(sequence, dot_bracket)
+
+        elif chains is None and len(sequence) == 0 and \
+            len(dot_bracket) == 0:
+            pass
+
+        else:
+            raise exceptions.SecondaryStructureException(
+                "invalid initiation of secondary_structure.Structure: supply "
+                " chains or sequence and dot_bracket")
+
+
 
     def _setup_chains(self, sequence, dot_bracket):
         """

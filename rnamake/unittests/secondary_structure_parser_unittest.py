@@ -1,6 +1,7 @@
 import unittest
 import glob
-from rnamake import secondary_structure_parser, settings, util
+
+from rnamake import secondary_structure_parser, settings, util, exceptions
 
 def add_new_testcase(seq, db, g):
     path = settings.UNITTEST_PATH + "/resources/secondary_structure/"
@@ -11,48 +12,52 @@ def add_new_testcase(seq, db, g):
     f.close()
 
 
+class SecondaryStructureChainGraph(unittest.TestCase):
+    def test_creation(self):
+        secondary_structure_parser.SecondaryStructureChainGraph()
+
+
 class SecondaryStructureParserUnittest(unittest.TestCase):
 
     def test_creation(self):
-        parser = secondary_structure_parser.SecondaryStructureParser()
+        p = secondary_structure_parser.SecondaryStructureParser()
 
-    def _test_parse(self):
-        path = settings.UNITTEST_PATH + "/resources/secondary_structure/"
-        files = glob.glob(path+"/*")
-        for f_name in files:
-            f = open(f_name)
-            lines = f.readlines()
-            f.close()
+        with self.assertRaises(exceptions.SecondaryStructureParserException):
+            p.parse()
 
-            name = util.filename(f_name)
+        with self.assertRaises(exceptions.SecondaryStructureParserException):
+            p.parse("GG+CC", "(((+))")
 
-            seq, db, expected_g = lines[0].rstrip(), lines[1].rstrip(), lines[2:]
-            expected_g = "".join(expected_g)
-            parser = secondary_structure_parser.SecondaryStructureParser()
-            g = parser.parse(seq, db)
-            if str(g) != expected_g:
-                self.fail("failed case: " + name + " in test parse")
+        with self.assertRaises(exceptions.SecondaryStructureParserException):
+            p.parse("GG+CC")
 
-    def test_parse_new(self):
-        parser = secondary_structure_parser.SecondaryStructureParser()
-        #seq = "GGAAGACAAGACAACC"
-        #ss  = "((..(.)..(.)..))"
-        seq = "GG+CC"
-        ss  = "((+))"
+        with self.assertRaises(exceptions.SecondaryStructureParserException):
+            p.parse(dot_bracket="((+))")
 
-        g = parser.parse(seq, ss)
-        #print g
+    def test_parse(self):
+        p = secondary_structure_parser.SecondaryStructureParser()
 
-        #add_new_testcase(seq, ss, g)
+        with self.assertRaises(exceptions.SecondaryStructureParserException):
+            p.parse("GG+CC", "()+))")
+
+        p.reset()
+        g = p.parse("GGG+CC", ".((+))")
+        self.failUnless(len(g) == 5, "did not parse left unpaired correctly")
+
+        p.reset()
+        g = p.parse("GG+CCAA", "((+))..")
+        # 5 nodes not 5 residues
+        self.failUnless(len(g) == 5, "did not parse left unpaired correctly")
+
 
     def test_parse_to_motifs(self):
         parser = secondary_structure_parser.SecondaryStructureParser()
-        #seq = "GGAAGACAAGACAACC"
-        #ss  = "((..(.)..(.)..))"
-        seq = "GG+CC"
-        ss  = "((+))"
+        seq = "GGAAGACAAGACAACC"
+        ss  = "((..(.)..(.)..))"
+        #seq = "GG+CC"
+        #ss  = "((+))"
         motifs = parser.parse_to_motifs(seq, ss)
-        print motifs
+        #print motifs
         #if len(motifs) != 4:
         #    self.fail("did not get the right number of motifs")
 

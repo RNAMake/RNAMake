@@ -39,6 +39,7 @@ Secondary Structure
    :maxdepth: 2
 
    auto/secondary_structure
+   auto/secondary_structure_parser
 
 
 3D Structure
