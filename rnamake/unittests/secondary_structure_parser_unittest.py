@@ -41,6 +41,10 @@ class SecondaryStructureParserUnittest(unittest.TestCase):
             p.parse("GG+CC", "()+))")
 
         p.reset()
+        with self.assertRaises(exceptions.SecondaryStructureParserException):
+            p.parse("GG+CC", "(.+))")
+
+        p.reset()
         g = p.parse("GGG+CC", ".((+))")
         self.failUnless(len(g) == 5, "did not parse left unpaired correctly")
 
@@ -52,14 +56,30 @@ class SecondaryStructureParserUnittest(unittest.TestCase):
 
     def test_parse_to_motifs(self):
         parser = secondary_structure_parser.SecondaryStructureParser()
-        seq = "GGAAGACAAGACAACC"
-        ss  = "((..(.)..(.)..))"
-        #seq = "GG+CC"
-        #ss  = "((+))"
+
+        # motifs seperated by shared basepair
+        motifs = parser.parse_to_motifs("GGAGG+CAACCC", "((.((+)..)))")
+        self.failUnless(len(motifs) == 3, "did not get the correct number of motifs")
+
+        parser.reset()
+        # three way junction
+        motifs = parser.parse_to_motifs("GGAAGACAAGACAACC", "((..(.)..(.)..))")
+        self.failUnless(len(motifs) == 4, "did not get the correct number of motifs")
+
+        parser.reset()
+        # five way junction
+        seq = "GGAAGACAAGACAAGACAAGACCC"
+        ss  = "((..(.)..(.)..(.)..(.)))"
         motifs = parser.parse_to_motifs(seq, ss)
-        #print motifs
-        #if len(motifs) != 4:
-        #    self.fail("did not get the right number of motifs")
+        self.failUnless(len(motifs) == 6, "did not get the correct number of motifs")
+
+        # pseudoknot
+        seq = "UUCCGAAGCUCAACGGGAAAAUGAGCU"
+        ss  = "(((((.((((((.)))))...))))))"
+        motifs = parser.parse_to_motifs(seq, ss)
+        print motifs
+
+
 
     def test_parse_to_motif_graph(self):
         parser = secondary_structure_parser.SecondaryStructureParser()

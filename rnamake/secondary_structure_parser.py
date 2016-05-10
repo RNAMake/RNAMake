@@ -277,15 +277,24 @@ pars
 
     def parse(self, sequence=None, dot_bracket=None, structure=None):
         """
-        parses 
+        parses a sequence and secondary structure into a
+        :class:`SecondaryStructureChainGraph`. This graph can then easily be
+        converted into to other data structures.
 
-        :param sequence:
-        :param dot_bracket:
-        :param structure:
-        :return:
+        :param sequence: sequence of secondary structure to parse
+        :param dot_bracket: corresponding structure of given sequence
+        :param structure: structure object that can be supplied instead of
+            sequence and dot_bracket
+
+        :type sequence: str
+        :type dot_bracket: str
+        :type structure: secondary_structure.Structure
+
+        :return: parsed structure
+        :rtype: SecondaryStructureChainGraph
         """
 
-
+        # checks to make sure arguments supplied are cogent.
         self._setup(sequence, dot_bracket, structure)
 
         g = SecondaryStructureChainGraph()

@@ -74,6 +74,11 @@ public: //merger wrappers
         return merger_.get_structure();
     }
     
+    sstruct::PoseOP
+    secondary_structure() {
+        return merger_.secondary_structure();
+    }
+    
     inline
     void
     to_pdb(
