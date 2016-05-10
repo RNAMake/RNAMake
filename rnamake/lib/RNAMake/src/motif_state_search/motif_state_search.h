@@ -105,13 +105,13 @@ public:
     void
     selector(MotifStateSelectorOP const & selector) { selector_ = selector; }
     
+    void
+    update_var_options();
+    
 protected:
     
     void
     setup_options();
-    
-    void
-    update_var_options();
     
 private:
     

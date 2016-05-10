@@ -15,10 +15,17 @@
 #include "motif_state_search/motif_state_search.h"
 #include "motif_data_structures/motif_graph.h"
 
+struct EndStateInfo {
+    String name;
+    int n_pos;
+};
+
 
 class PathBuilderNewApp : public Application {
 public:
-    PathBuilderNewApp() : Application()
+    PathBuilderNewApp() : Application(),
+    search_(MotifStateSearch()),
+    mg_(MotifGraph())
     {}
     
     ~PathBuilderNewApp() {}
@@ -44,6 +51,7 @@ private:
 private:
     MotifStateSearch search_;
     MotifGraph mg_;
+    EndStateInfo start_, end_;
     
 };
 

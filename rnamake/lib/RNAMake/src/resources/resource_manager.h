@@ -20,6 +20,7 @@
 #include "resources/motif_state_ensemble_sqlite_library.h"
 #include "resources/added_motif_library.h"
 
+
 class ResourceManagerException : public std::runtime_error {
 public:
     ResourceManagerException(
@@ -99,6 +100,18 @@ private:
 
     
 };
+
+inline
+MotifOP
+get_motif_from_resource_manager(
+    String const & name = dummy_name,
+    String const & end_id = dummy_end_id,
+    String const & end_name = dummy_name,
+    String const & id = dummy_id) {
+    
+    return ResourceManager::getInstance().get_motif(name, end_id, end_name, id);
+    
+}
 
 
 #endif /* defined(__RNAMake__resource_manager__) */

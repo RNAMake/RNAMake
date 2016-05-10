@@ -16,6 +16,8 @@
 #include "structure/residue.h"
 #include "structure/residue_type_set.h"
 
+#include "unittest.h"
+
 namespace unittests {
 
 class ResidueUnittest : public Unittest {
