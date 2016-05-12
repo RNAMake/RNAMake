@@ -82,7 +82,9 @@ class Chain(object):
         :returns: first residue in chain
         :rtype: residue.Residue
 
-       v
+        :examples:
+
+        ..  code-block:: python
 
             >>> import rnamake.unittests.instances
             >>> c = rnamake.unittests.instances.chain()

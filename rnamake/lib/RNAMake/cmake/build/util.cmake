@@ -6,6 +6,7 @@ set(util_files
 	../../src/util/motif_type.cc
 	../../src/util/settings.cc
 	../../src/util/sqlite3_connection.cc
+	../../src/util/steric_lookup.cpp
 	../../src/util/uuid.cc
 	../../src/util/x3dna.cc
 )

@@ -48,6 +48,13 @@ private:
     void
     _setup_from_motif();
     
+    void
+    _setup_from_mg();
+    
+    void
+    _iterate_sterics(
+        Points const &);
+    
 private:
     MotifStateSearch search_;
     MotifGraph mg_;

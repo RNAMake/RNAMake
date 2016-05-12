@@ -91,6 +91,9 @@ class Residue(object):
         return Residue(self.name, self.dot_bracket, self.num, self.chain_id,
                        self.uuid, self.i_code)
 
+    def new_uuid(self):
+        self.uuid = uuid.uuid1()
+
 
 class Chain(object):
     """
@@ -408,8 +411,6 @@ class Structure(object):
             raise exceptions.SecondaryStructureException(
                 "invalid initiation of secondary_structure.Structure: supply "
                 " chains or sequence and dot_bracket")
-
-
 
     def _setup_chains(self, sequence, dot_bracket):
         """
@@ -935,6 +936,18 @@ class Motif(RNAStructure):
         for ei in self.end_ids:
             s += ei + " "
         return s
+
+    def new_res_uuids(self):
+        """
+        creates new unique indenfiers for all residues, basepairs and for the
+        motif itself
+        """
+
+        self.id = uuid.uuid1()
+        for i, r in enumerate(self.residues()):
+            r.new_uuid()
+        for bp in self.basepairs:
+            bp.uuid = uuid.uuid1()
 
 
 class Pose(RNAStructure):

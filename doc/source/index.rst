@@ -39,6 +39,7 @@ Secondary Structure
    :maxdepth: 2
 
    auto/secondary_structure
+   auto/secondary_structure_graph
    auto/secondary_structure_parser
 
 

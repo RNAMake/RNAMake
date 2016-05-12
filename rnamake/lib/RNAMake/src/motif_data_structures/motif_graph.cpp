@@ -160,13 +160,13 @@ MotifGraph::_setup_from_str(String const & s) {
             max_index = std::stoi(n_spl[2]);
         }
 
-
     }
-    
+
     graph_.index(max_index+1);
     
     auto con_spl = split_str_by_delimiter(spl[1], "|");
     for(auto const & c_str : con_spl) {
+        if(c_str.length() < 4) { break; }
         auto c_spl = split_str_by_delimiter(c_str, ",");
         graph_.connect(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
                        std::stoi(c_spl[2]), std::stoi(c_spl[3]));

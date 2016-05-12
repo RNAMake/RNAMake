@@ -122,15 +122,17 @@ class Segmenter(object):
                 for j, res2 in enumerate(res):
                     if i >= j:
                         continue
-                    sc = c.subchain(start_res=res1, end_res=res2)
-                    if sc is None:
+                    try:
+                        sc = c.subchain(start_res=res1, end_res=res2)
+                    except:
                         continue
                     dist = len(sc.residues)
                     pairs.append(Pair(res1, res2, dist))
-                sc1 = c.subchain(start_res=res1, end_res=c.last())
-                sc2 = c.subchain(start_res=c.first(), end_res=res1)
-                if sc1 is None:
+                try:
+                    sc1 = c.subchain(start_res=res1, end_res=c.last())
+                except:
                     continue
+                sc2 = c.subchain(start_res=c.first(), end_res=res1)
                 if res1 != c.last() and c.last() not in res:
                     end_pairs.append(Pair(res1, c.last(), len(sc1.residues)))
                 if res1 != c.first() and c.first() not in res:
@@ -244,7 +246,6 @@ class Segmenter(object):
 
         pair_search = PairSearch()
         solutions = pair_search.search(res, pairs, end_pairs)
-
         for s in solutions:
             subchains = []
             sub_res = []

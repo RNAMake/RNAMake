@@ -53,6 +53,7 @@ set(unittests_files
 	../../unittests/thermo_fluctuation_unittests/thermo_fluc_simulation_unittest.cpp
 	../../unittests/tool_unittests/tool_unittests.cpp
 	../../unittests/util_unittests/sqlite3_connection_unittest.cc
+	../../unittests/util_unittests/steric_lookup_unittest.cpp
 	../../unittests/util_unittests/uuid_unittest.cc
 	../../unittests/util_unittests/x3dna_unittest.cc
 	../../unittests/vienna_unittests/vienna_unittest.cpp
