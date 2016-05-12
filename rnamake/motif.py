@@ -179,6 +179,7 @@ class Motif(rna_structure.RNAStructure):
 
         raise ValueError("no end id: " + id + " in motif: " + self.name)
 
+    # TODO rename since it updates all unique indenfiers
     def new_res_uuids(self):
         self.id = uuid.uuid1()
         for i, r in enumerate(self.residues()):

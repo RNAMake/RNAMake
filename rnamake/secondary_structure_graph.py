@@ -48,6 +48,39 @@ def graph_from_pose(p, start_m=None):
 
 
 class SecondaryStructureGraph(object):
+    """
+    A simple implementation of a motif graph for secondary structure objects
+    instead of its coresponding :class:`motif_graph.MotifGraph` counterpart
+    with motifs with 3D coordinates. Generally I have been following this
+    general strategy of have a secondary structure verision of almost
+    everything withs its corresponding 3D coordinate object. This makes it easy
+    to build from secondary structure directly into 3D coordinates.
+
+    :attributes:
+
+    `graph`: graph.GraphStatic
+        graph to hold secondary_structure.Motif objects
+
+    :examples:
+
+    ..  code-block:: python
+
+        >>> from rnamake import secondary_structure_graph
+        >>> from rnamake.unittests import instances
+        >>> g = secondary_structure_graph.SecondaryStructureGraph()
+        >>> ss_m = instances.secondary_structure_motif()
+        >>> print ss_m
+        <secondary_structure.Motif( GGGGGGGGGGGG&CCCCCCCCCCCC ((((((((((((&)))))))))))) )
+
+        >>> g.add_motif(ss_m)
+        0
+
+        >>> len(g)
+        1
+
+
+    """
+
     def __init__(self):
         self.graph = graph.GraphStatic()
 
@@ -55,15 +88,32 @@ class SecondaryStructureGraph(object):
         return len(self.graph)
 
     def add_motif(self, m, parent_index=-1, parent_end_index=-1, m_end_index=0,
-                  parent_end_name=None):
+                  parent_end_name=None, new_uuids=1):
+
+        """
+        adds a secondary structure
+
+        :param m:
+        :param parent_index:
+        :param parent_end_index:
+        :param m_end_index:
+        :param parent_end_name:
+        :param new_uuids:
+
+
+        :return:
+        """
 
         parent = self.graph.last_node
         if parent_index != -1:
             parent = self.graph.get_node(parent_index)
 
         m_copy = m.copy()
+
+        if new_uuids:
+            m_copy.new_res_uuids()
+
         if parent is None:
-            # do I need to create new res ids?
             pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends))
             return pos
 

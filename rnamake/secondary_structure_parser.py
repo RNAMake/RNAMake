@@ -141,7 +141,7 @@ class SecondaryStructureParser(object):
         >>> m = p.parse_to_motif("GAG+CC", "(.(+))")
         >>> print m
         <secondary_structure.Motif( GAG&CC (.(&)) )
-pars
+
     """
 
     def __init__(self):
@@ -332,15 +332,28 @@ pars
         return g
 
     def parse_to_motifs(self, sequence=None, dot_bracket=None, structure=None):
+        """
+        parses secondary structure into individual motifs. Helices are
+        individual basepair steps of 2 basepairs. Currently will not correctly
+        parse single stranded motifs on the 5' and 3' end
+
+        :param sequence: sequence of secondary structure to parse
+        :param dot_bracket: corresponding structure of given sequence
+        :param structure: structure object that can be supplied instead of
+            sequence and dot_bracket
+
+        :type sequence: str
+        :type dot_bracket: str
+        :type structure: secondary_structure.Structure
+
+        :return: motifs contained in secondary structure
+        :rtype: list of secondary_structure.Motifs
+        """
+
         g = self.parse(sequence, dot_bracket, structure)
         motifs = []
         self.seen_nodes = []
         for i, n in enumerate(g.graph):
-            # single stranded motifs
-            #if i == 0 or n == g.graph.last_node:
-            #    chain = secondary_structure.Chain(n.data.residues)
-
-
             if n.connections[1] is None:
                 continue
             if n.data.type == NodeType.UNPAIRED:
@@ -355,6 +368,24 @@ pars
         return motifs
 
     def parse_to_motif_graph(self, sequence=None, dot_bracket=None, structure=None):
+        """
+        parses secondary structure into a graph of connected secondary structure
+        motif objects. Useful if one needs to perserve the connection between
+        motifs.
+
+        :param sequence: sequence of secondary structure to parse
+        :param dot_bracket: corresponding structure of given sequence
+        :param structure: structure object that can be supplied instead of
+            sequence and dot_bracket
+
+        :type sequence: str
+        :type dot_bracket: str
+        :type structure: secondary_structure.Structure
+
+        :return: secondary structure motif graph with all motifs in it
+        :rtype: :class:`secondary_structure_graph.SecondaryStructureGraph`
+        """
+
         motifs = self.parse_to_motifs(sequence, dot_bracket, structure)
         ssg = secondary_structure_graph.SecondaryStructureGraph()
 
@@ -366,7 +397,7 @@ pars
             seen_motifs[current] = 1
 
             pos = ssg.add_motif(current, parent_index, parent_end_index,
-                                m_end_index=current_end_index)
+                                m_end_index=current_end_index, new_uuids=0)
             for m in motifs:
                 if m in seen_motifs:
                     continue

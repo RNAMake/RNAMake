@@ -21,9 +21,12 @@ PathBuilderNewApp::setup_options() {
     add_option("pdb", String(""), OptionType::STRING, false);
     add_option("start_bp", String(""), OptionType::STRING, false);
     add_option("end_bp", String(""), OptionType::STRING, false);
+    add_option("mg", String(""), OptionType::STRING, false);
+    
     add_option("out", String("default.out"), OptionType::STRING, false);
     add_option("no_sterics", 0, OptionType::BOOL, false);
     add_option("write_pdbs", 0, OptionType::BOOL, false);
+    add_option("iterate_sterics", 0, OptionType::BOOL, false);
     
     add_cl_options(search_.options(), "search");
     
@@ -42,36 +45,45 @@ PathBuilderNewApp::parse_command_line(
 void
 PathBuilderNewApp::run() {
     
-    if(get_string_option("pdb") != "") {
-        _setup_from_motif();
-    }
+    if(get_string_option("pdb") != "")     { _setup_from_motif(); }
+    else if(get_string_option("mg") != "") { _setup_from_mg(); }
     
     else {
         throw std::runtime_error("not implemented please specify with -pdb");
     }
-
+    
     auto write_pdbs = get_bool_option("write_pdbs");
     if(write_pdbs) {
-        mg_.to_pdb("scaffold.pdb");
+        //mg_.to_pdb("scaffold.pdb");
+        mg_.write_pdbs();
     }
     
     if(get_bool_option("no_sterics")) {
         search_.set_option_value("sterics", false);
     }
     
+    
     auto start = mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
     auto end = mg_.get_node(end_.n_pos)->data()->get_basepair(end_.name)[0]->state();
-
+    
     search_.setup(start, end);
     
     auto beads = Points();
-    for(auto const & n : mg_) {
+    for(auto & n : mg_) {
+        n->data()->get_beads(n->data()->ends());
         for(auto const & b : n->data()->beads()) {
+            if(b.btype() == BeadType::PHOS) { continue; }
             beads.push_back(b.center());
         }
     }
     
+    if(get_bool_option("iterate_sterics")) {
+        _iterate_sterics(beads);
+        exit(0);
+    }
+    
     search_.beads(beads);
+    std::cout << beads.size() << std::endl;
     
 
     std::ofstream out;
@@ -90,12 +102,85 @@ PathBuilderNewApp::run() {
        
         
         if(write_pdbs) {
-            mt->to_pdb("solution."+std::to_string(i) + ".pdb");
+            mt->to_pdb("solution."+std::to_string(i) + ".pdb", 1);
         }
         
     }
     
     out.close();
+
+    
+}
+
+
+void
+PathBuilderNewApp::_iterate_sterics(Points const & beads) {
+    
+    bool done = false;
+    
+    auto start = mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
+    auto end = mg_.get_node(end_.n_pos)->data()->get_basepair(end_.name)[0]->state();
+    
+    auto keep_beads = Points();
+    auto seen_beads = std::map<int, int>();
+    int found = 0;
+    
+    int count = -1;
+    while(! done) {
+        count++;
+        found = 0;
+        auto search = MotifStateSearch();
+        search.set_option_value("accept_score", 20);
+        search.setup(start, end);
+        search.beads(keep_beads);
+        
+        auto sol = search.next();
+        auto mst = sol->to_mst();
+        mst->to_motif_tree()->to_pdb("sol."+std::to_string(count) + ".pdb");
+        auto sol_beads = Points();
+        for(auto const & n : *mst) {
+            for(auto const & b : n->data()->cur_state->beads()) {
+                sol_beads.push_back(b);
+            }
+        }
+        
+        float dist = 0;
+        int i = -1;
+        for(auto const & b1 : beads) {
+            i++;
+            if(seen_beads.find(i) != seen_beads.end()) {
+                continue;
+            }
+            for(auto const & b2 : sol_beads) {
+                dist = b1.distance(b2);
+                if(dist < 2.5) {
+                    found = 1;
+                    keep_beads.push_back(b1);
+                    seen_beads[i] = 1;
+                    break;
+                }
+            }
+            
+        }
+        
+        std::cout << keep_beads.size() << std::endl;
+        if(found == 0) { break; }
+        
+        
+    }
+    
+}
+
+
+void
+PathBuilderNewApp::_setup_from_mg() {
+    
+    auto lines = get_lines_from_file(get_string_option("mg"));
+    mg_ =  MotifGraph(lines[0], MotifGraphStringType::MG);
+    auto spl = split_str_by_delimiter(lines[1], " ");
+    start_ = EndStateInfo{spl[0], std::stoi(spl[1])};
+    spl = split_str_by_delimiter(lines[2], " ");
+    end_ = EndStateInfo{spl[0], std::stoi(spl[1])};
 
     
 }

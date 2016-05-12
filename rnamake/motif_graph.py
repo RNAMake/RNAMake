@@ -184,7 +184,8 @@ class MotifGraph(base.Base):
 
     #ADD FUNCTIONS      #######################################################
     def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
-                  parent_end_name=None, m_name=None, m_end_name=None):
+                  parent_end_name=None, m_name=None, m_end_name=None,
+                  orphan=0):
         if m is None and m_name is not None:
             if m_end_name is not None:
                 m = rm.manager.get_motif(name=m_name, end_name=m_end_name)
@@ -195,11 +196,12 @@ class MotifGraph(base.Base):
         if parent_index != -1:
             parent = self.graph.get_node(parent_index)
 
-        if parent is None:
+        if parent is None or orphan:
             m_copy = m.copy()
             m_copy.get_beads(m_copy.ends)
             m_copy.new_res_uuids()
-            pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends))
+            pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends),
+                                      orphan=orphan)
             self.aligned[pos] = 0
             self.merger.add_motif(m_copy)
             return pos

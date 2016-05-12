@@ -29,7 +29,7 @@ Basepair::to_pdb_str() const {
     String s;
     int acount = 1;
     for (auto const & r : residues()) {
-        r->to_pdb_str(acount);
+        s += r->to_pdb_str(acount);
     }
     return s;
 }

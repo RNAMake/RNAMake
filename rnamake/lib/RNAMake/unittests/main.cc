@@ -18,6 +18,7 @@
 #include "util_unittests/sqlite3_connection_unittest.h"
 #include "util_unittests/x3dna_unittest.h"
 #include "util_unittests/uuid_unittest.h"
+#include "util_unittests/steric_lookup_unittest.hpp"
 
 #include "secondary_structure_unittests/structure_unittest.h"
 #include "secondary_structure_unittests/motif_unittest.h"
@@ -53,7 +54,7 @@
 
 int main(int argc, const char * argv[]) {
     
-    unittests::ResidueUnittest test;
+    StericLookupUnittest test;
     test.run();
 
     return 0;
