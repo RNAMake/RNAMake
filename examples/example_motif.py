@@ -3,14 +3,18 @@ import rnamake.resource_manager as rm
 import rnamake.motif_type as motif_type
 import rnamake.motif as motif
 
-from rnamake import settings
+from rnamake import util
+
+import os
+
+file_path = util.base_dir(os.path.realpath(__file__))
 
 ##############################################################################
 # LOADING MOTIFS                                                             #
 ##############################################################################
 # motifs are the main objects of rnamake. They can be loaded in multiple ways
 # from a preformated motif directory
-path = settings.base_dir + '/examples/'
+path = file_path
 
 m1 = mf.factory.motif_from_file(path+"resources/TWOWAY.1GID.4")
 
