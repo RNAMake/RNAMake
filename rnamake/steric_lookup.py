@@ -35,7 +35,7 @@ class StericLookup(object):
             rounded.append(pos)
         final = []
         for a in self.additions:
-            final.append([a[0]+rounded[0], a[1]+rounded[1], a[2]+rounded[2]])
+            final.ap ``pend([a[0]+rounded[0], a[1]+rounded[1], a[2]+rounded[2]])
         final_strs = []
         for a in final:
             poss = []
