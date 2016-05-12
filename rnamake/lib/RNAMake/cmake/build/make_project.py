@@ -4,6 +4,13 @@ import fnmatch
 
 from rnamake import util
 
+# make sure these directories exist
+if not os.path.isdir("../../bin"):
+    os.mkdir("../../bin")
+
+if not os.path.isdir("../../bin/unittests"):
+    os.mkdir("../../bin/unittests")
+
 libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer instances"
 #libs = "base math data_structure util secondary_structure structure"
 lib_paths = libs.split()
