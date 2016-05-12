@@ -18,7 +18,7 @@ endif()
 if( ${COMPILER} STREQUAL gcc )
 	set(compile_flags
 	-std=c++14
-	-g
+    -w
 	)
 endif()
 

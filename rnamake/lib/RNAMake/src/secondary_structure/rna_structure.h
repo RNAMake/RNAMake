@@ -10,6 +10,8 @@
 #define __RNAMake__sec_rna_structure__
 
 #include <stdio.h>
+#include <algorithm>
+
 
 //RNAMake
 #include "secondary_structure/basepair.h"

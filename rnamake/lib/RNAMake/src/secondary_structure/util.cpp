@@ -7,6 +7,7 @@
 //
 
 #include <queue>
+#include <algorithm>
 
 //RNAMake Headers
 #include "secondary_structure/util.h"

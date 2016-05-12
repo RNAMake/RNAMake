@@ -3,15 +3,19 @@ import rnamake.resource_manager as rm
 import rnamake.motif_type as motif_type
 import rnamake.motif as motif
 
+from rnamake import settings
+
 ##############################################################################
 # LOADING MOTIFS                                                             #
 ##############################################################################
 # motifs are the main objects of rnamake. They can be loaded in multiple ways
 # from a preformated motif directory
-m1 = mf.factory.motif_from_file("resources/TWOWAY.1GID.4")
+path = settings.base_dir + '/examples/'
+
+m1 = mf.factory.motif_from_file(path+"resources/TWOWAY.1GID.4")
 
 #from a pdb
-m2 = mf.factory.motif_from_file("resources/motif.pdb")
+m2 = mf.factory.motif_from_file(path+"resources/motif.pdb")
 
 #from the resource manager
 m3 = rm.manager.get_motif(name="HELIX.IDEAL")
