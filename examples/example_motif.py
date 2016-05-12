@@ -14,7 +14,7 @@ m1 = mf.factory.motif_from_file("resources/TWOWAY.1GID.4")
 m2 = mf.factory.motif_from_file("resources/motif.pdb")
 
 #from the resource manager
-m3 = rm.manager.get_motif("HELIX.IDEAL")
+m3 = rm.manager.get_motif(name="HELIX.IDEAL")
 
 #the resource manager can load any motif that is the libraries that rnamake
 #contains. It can also get other resources that we will dicuss later.
