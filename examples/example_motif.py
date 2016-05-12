@@ -80,3 +80,10 @@ m1.to_pdb("aligned.pdb")
 m3.to_pdb("aligned_to.pdb")
 
 
+print "##############################################################################"
+print "expected files: "
+print " test_output.pdb =>  example of printing out of a motif"
+print " aligned.pdb => the motif aligned by its end"
+print " aligned_to.pdb => motif that served as reference for aligned.pdb to align to"
+
+
