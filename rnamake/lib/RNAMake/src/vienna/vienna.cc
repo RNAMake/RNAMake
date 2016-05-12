@@ -8,6 +8,8 @@
 
 #include <iostream>
 #include <float.h>
+#include <string.h>
+
 #include "vienna.h"
 #include "pair_mat.h"
 

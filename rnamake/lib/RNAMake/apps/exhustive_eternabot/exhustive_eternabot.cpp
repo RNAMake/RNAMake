@@ -72,7 +72,8 @@ ExhustiveEternabot::run() {
     auto best_seq = p_->sequence();
     auto best_helix = String("");
     
-    auto out = std::ofstream(out_name_);
+    std::ofstream out;
+    out.open(out_name_);
     out << "sequence,score,a_basic_test,clean_plot,berex_test,num_of_yellow,direction_of_gc," << std::endl;
     
     int i = 0;

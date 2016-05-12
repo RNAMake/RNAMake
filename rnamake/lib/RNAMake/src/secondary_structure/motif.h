@@ -10,6 +10,7 @@
 #define __RNAMake__ss_motif__
 
 #include <stdio.h>
+#include <algorithm>
 
 #include "util/motif_type.h"
 #include "secondary_structure/chain.h"

@@ -10,9 +10,11 @@
 #define __RNAMake__cl_option_unittest__
 
 #include <stdio.h>
+#include <string.h>
 
 #include "base/string.h"
 #include "unittest.h"
+
 
 struct CommandLineArgs {
     char ** argv_;

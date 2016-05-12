@@ -18,6 +18,7 @@
 
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 
 //RNAMake Headers
 #include "base/types.h"

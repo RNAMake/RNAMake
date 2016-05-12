@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <memory>
+#include <algorithm>
 
 //RNAMake
 #include "structure/structure.h"
