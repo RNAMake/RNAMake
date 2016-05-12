@@ -61,3 +61,14 @@ print "#########################################################################
 print "m.sequence() => ", m1.sequence()
 print "m.secondary_structure() => ", m1.dot_bracket()
 print "m.mtype => ", motif_type.type_to_str(m3.mtype)
+
+m1 = rm.manager.get_motif(name="TWOWAY.1GID.4")
+
+print "##############################################################################"
+print "aligning one motif to another"
+
+motif.align_motif(m3.ends[1].state(), m1.ends[0], m1)
+m1.to_pdb("aligned.pdb")
+m3.to_pdb("aligned_to.pdb")
+
+
