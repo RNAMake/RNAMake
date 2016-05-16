@@ -144,6 +144,7 @@ ThermoFlucSimulationDevel::run() {
         out_all.open(record_all_file_);
         int last = 0;
         int c = 1;
+        out_all << "fstart_d,fstart_r,";
         for(int a = 2; a < sampler_.mst()->size(); a++) {
             if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
                 last = a;
@@ -154,6 +155,7 @@ ThermoFlucSimulationDevel::run() {
         }
         
         c = 1;
+        out_all << "cstart_d,cstart_r,";
         for(int a = last+1; a < sampler_.mst()->size(); a++) {
             out_all << "c" << c << "_d," << "c" << c << "_r,";
             c += 1;
@@ -213,6 +215,7 @@ ThermoFlucSimulationDevel::run() {
         if(record_state_) {
             int last = 0;
             for(int a = 2; a < sampler_.mst()->size(); a++) {
+                
                 if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
                     last = a;
                     break;
@@ -233,22 +236,40 @@ ThermoFlucSimulationDevel::run() {
         
         if(record_all_) {
             int last = 0;
+            int first = 1;
+
             for(int a = 2; a < sampler_.mst()->size(); a++) {
                 if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
                     last = a;
                     break;
                 }
+                
+                if(first) {
+                    out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[0]->d()) <<  ",";
+                    out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[0]->r()) <<  ",";
+                }
+                
                 out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->d()) <<  ",";
                 out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->r()) <<  ",";
+                first = 0;
             }
+            first = 1;
             
             for(int a = last+1; a < sampler_.mst()->size(); a++) {
                 if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
                     last = a;
                     break;
                 }
+                
+                if(first) {
+                    out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[0]->d()) <<  ",";
+                    out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[0]->r()) <<  ",";
+                }
+                
                 out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->d()) <<  ",";
-                out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->r()) <<  ",";            }
+                out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->r()) <<  ",";
+                first = 0;
+            }
             
             out_all << score_ << std::endl;
         }
