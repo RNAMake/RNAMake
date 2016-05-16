@@ -22,7 +22,7 @@ MotifStateSearch::setup_options() {
     options_.add_option("accept_score", 10, OptionType::FLOAT);
     options_.add_option("min_ss_score", 10000, OptionType::FLOAT);
     options_.add_option("max_steps", 1000000000, OptionType::FLOAT);
-    options_.add_option("verbose", false, OptionType::BOOL);
+    options_.add_option("verbose", true, OptionType::BOOL);
     options_.lock_option_adding();
     
     update_var_options();
@@ -184,7 +184,16 @@ MotifStateSearch::_search() {
                         }
                     }
                     if(clash) { continue; }
-                                        
+                    
+                    if(using_lookup_) {
+                        for(auto const & p : test_node_->cur_state()->beads()) {
+                            //std::cout << p << " " << ms_and_type.motif_state->name() <<  std::endl;
+                            clash = lookup_.clash(p);
+                            if(clash) { break; }
+                        }
+                        if(clash) { continue; }
+                    }
+                    
                     current_2 = test_node_->parent();
                     while (current_2 != nullptr) {
                         for(auto const & b1 : test_node_->cur_state()->beads()) {

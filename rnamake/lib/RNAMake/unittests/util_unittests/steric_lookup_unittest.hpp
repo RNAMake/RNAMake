@@ -38,6 +38,13 @@ public:
     
     int
     test_add_point_3();
+    
+    int
+    test_add_points();
+    
+    int
+    test_add_points_2();
+    
 
 public:
     

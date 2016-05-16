@@ -13,6 +13,7 @@
 
 //RNAMake Headers
 #include "base/option.h"
+#include "util/steric_lookup.hpp"
 #include "motif/motif_state_aligner.h"
 #include "motif_state_search/motif_state_selector.h"
 #include "motif_state_search/motif_state_search_scorer.h"
@@ -30,6 +31,8 @@ public:
     solutions_(MotifStateSearchSolutionOPs()),
     beads_(Points()),
     aligner_(MotifStateAligner()),
+    lookup_(StericLookup()),
+    using_lookup_(0),
     options_(Options("MotifStateSearchOptions")) {
         setup_options();
     }
@@ -99,6 +102,14 @@ public:
     
     inline
     void
+    lookup(
+        StericLookup const & sl) {
+        using_lookup_ = 1;
+        lookup_ = sl;
+    }
+    
+    inline
+    void
     scorer(MotifStateSearchScorerOP const & scorer) { scorer_ = scorer; }
     
     inline
@@ -131,6 +142,7 @@ private:
     MotifStateSearchNodeOP test_node_;
     MotifStateAligner aligner_;
     MotifStateandTypes possible_children_;
+    StericLookup lookup_;
     Points beads_;
     int no_more_solutions_;
     Options options_;
@@ -139,6 +151,7 @@ private:
     int max_node_level_, min_size_, max_size_, max_solutions_;
     int sol_count_, min_node_level_;
     float accept_score_, min_ss_score_, max_steps_;
+    int using_lookup_;
     
 };
 

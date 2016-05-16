@@ -48,6 +48,10 @@ public:
     float
     score() { return score_; }
     
+    inline
+    MotifStateSearchNodeOPs const &
+    path() { return path_; }
+    
 private:
     
     void

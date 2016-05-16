@@ -2,7 +2,6 @@ import uuid
 import motif_type
 import exceptions
 
-
 class Residue(object):
     """
     An extremely stripped down container object for use for keeping track of
@@ -88,8 +87,8 @@ class Residue(object):
         :rtype: secondary_structure.Residue
         """
 
-        return Residue(self.name, self.dot_bracket, self.num, self.chain_id,
-                       self.uuid, self.i_code)
+        return Factory.get_residue(self.name, self.dot_bracket, self.num,
+                                   self.chain_id, self.uuid, self.i_code)
 
     def new_uuid(self):
         self.uuid = uuid.uuid1()
@@ -392,7 +391,7 @@ class Structure(object):
         <SecondaryStructureResidue('G1 chain A')>
     """
 
-    __slots__ = ["chains"]
+    __slots__ = ["chains", "rtype"]
 
     # TODO refactor __init__ must be a cleaner way
     def __init__(self, chains=None, sequence="", dot_bracket=""):
@@ -445,8 +444,8 @@ class Structure(object):
                     sequence[i] + " is not a valid secondary_structure element")
 
             if sequence[i] != "&" and sequence[i] != "+" and sequence[i] != "-":
-                r = Residue(sequence[i], dot_bracket[i], count,
-                            chains_ids[chain_i], uuid.uuid1())
+                r = Factory.get_residue(sequence[i], dot_bracket[i], count,
+                                        chains_ids[chain_i], uuid.uuid1())
                 residues.append(r)
                 count += 1
             else:
@@ -1191,6 +1190,30 @@ class Pose(RNAStructure):
             struc = Structure(chains)
             m = Motif(struc, bps, ends)
             self.helices.append(m)
+
+
+class Factory(object):
+    residue   = Residue
+    basepair  = Basepair
+    chain     = Chain
+    structure = Structure
+    motif     = Motif
+    pose      = Pose
+
+    @staticmethod
+    def get_residue(name, dot_bracket, num, chain_id, uuid, i_code=""):
+        return Factory.residue(name, dot_bracket, num, chain_id, uuid, i_code)
+
+    @staticmethod
+    def get_basepair(res1, res2, bp_type = None):
+        return Factory.basepair(res1, res2, bp_type)
+
+    @staticmethod
+    def get_pose(structure=None, basepairs=None, ends=None,
+                 name="assembled", path="assembled", score=0, end_ids=None,
+                 r_struct=None):
+        return Factory.pose(structure, basepairs, ends, name, path,
+                             score, end_ids, r_struct)
 
 
 def str_to_residue(s):

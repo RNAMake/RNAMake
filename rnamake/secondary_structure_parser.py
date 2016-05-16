@@ -246,7 +246,7 @@ class SecondaryStructureParser(object):
         pair_res = self._get_bracket_pair(r)
         new_data = NodeData([r], NodeType.PAIRED)
         parent_index = g.get_node_by_res(self._previous_res(r))
-        self.pairs.append(secondary_structure.Basepair(r, pair_res))
+        self.pairs.append(secondary_structure.Factory.get_basepair(r, pair_res))
         g.add_chain(new_data, parent_index, is_start_res)
 
     def _get_previous_pair(self, r):
@@ -411,6 +411,22 @@ class SecondaryStructureParser(object):
         return ssg
 
     def parse_to_motif(self, sequence=None, dot_bracket=None, structure=None):
+        """
+        parses secondary structure into a secondary structure motif
+
+        :param sequence: sequence of secondary structure to parse
+        :param dot_bracket: corresponding structure of given sequence
+        :param structure: structure object that can be supplied instead of
+            sequence and dot_bracket
+
+        :type sequence: str
+        :type dot_bracket: str
+        :type structure: secondary_structure.Structure
+
+        :return: secondary structure motif graph with all motifs in it
+        :rtype: :class:`secondary_structure.Motif`
+        """
+
         g = self.parse(sequence, dot_bracket, structure)
         struct = self.structure
         return self._build_motif(struct)
@@ -462,7 +478,7 @@ class SecondaryStructureParser(object):
             if bp.res1 in chain_ends and bp.res2 in chain_ends:
                 ends.append(bp)
 
-        p = secondary_structure.Pose(struct, bps, ends)
+        p = secondary_structure.Factory.get_pose(struct, bps, ends)
 
         for end in p.ends:
             p.end_ids.append(secondary_structure.assign_end_id_new(p, end))
@@ -490,7 +506,7 @@ class SecondaryStructureParser(object):
         for end in m.ends:
             m.end_ids.append(secondary_structure.assign_end_id_new(m, end))
 
-        if len(m.residues()) == 4:
+        if len(m.residues()) == 4 and len(m.basepairs) == 2:
             m.mtype = motif_type.HELIX
             spl = m.end_ids[0].split("_")
             m.name = spl[0][0] + spl[2][1] + "=" + spl[0][1] + spl[2][0]

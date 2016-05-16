@@ -7,7 +7,10 @@
 //
 
 #include "util/steric_lookup.hpp"
+#include "resources/motif_sqlite_library.h"
+#include "resources/resource_manager.h"
 #include "steric_lookup_unittest.hpp"
+#include <iomanip>
 
 
 Point const &
@@ -170,14 +173,129 @@ StericLookupUnittest::test_add_point_3() {
     return 0;
 }
 
+int
+StericLookupUnittest::test_add_points() {
+    auto m = get_motif_from_resource_manager("HELIX.IDEAL.10");
+    auto points = Points();
+    for(auto const & b : m->get_beads()) {
+        points.push_back(b.center());
+    }
+    
+    auto sl = StericLookup();
+    sl.add_points(points);
+    
+    float dist = 0;
+    auto test_p = Point(0,0,0);
+    int clash = 0;
+    int false_count = 0;
+    int miss_count = 0;
+    int normal = 0;
+    for(int i = 0; i < 100000; i++) {
+        clash = 0;
+        float closest = 10000;
+        test_p = rand_point(10);
+        
+        for(auto const & p : points) {
+            dist = test_p.distance(p);
+            if(dist < 2.5) {
+                clash = 1;
+            }
+            if(dist < closest) {
+                closest = dist;
+            }
+        }
+        
+        if(clash == 1 && sl.clash(test_p) == 0 ) {
+            miss_count += 1;
+        }
+        
+        else if(clash == 0 && sl.clash(test_p) == 1) {
+            std::cout << clash << " " << closest << std::endl;
+            false_count += 1;
+            
+        }
+        
+        else {
+            normal += 1;
+        }
+        
+    }
+    
+    std::cout << false_count << " " << miss_count << " " << normal << std::endl;
 
+    
+    
+    return 0;
+}
+
+int
+StericLookupUnittest::test_add_points_2() {
+    auto mlib = MotifSqliteLibrary("twoway");
+    mlib.load_all();
+    
+    
+    int fail_count = 0, total = 0;
+    for(auto const & m1 : mlib) {
+        auto points1 = Points();
+        for(auto const & b : m1->get_beads(m1->ends()[1])) {
+            if(b.btype() == BeadType::PHOS) { continue; }
+            points1.push_back(b.center());
+        }
+        auto sl = StericLookup();
+        sl.add_points(points1);
+        
+        for(auto const & m2 : mlib) {
+            auto m_aligned = get_aligned_motif(m1->ends()[1], m2->ends()[0], m2);
+            auto points2 = Points();
+
+            for(auto const & b : m_aligned->get_beads(m_aligned->ends()[0])) {
+                if(b.btype() == BeadType::PHOS) { continue; }
+                points2.push_back(b.center());
+            }
+            
+            int clash = 0;
+            int sl_clash = sl.clash(points2);
+            float dist;
+            
+            for(auto const & p1 : points1) {
+                for(auto const & p2 : points2) {
+                    dist = p1.distance(p2);
+                    if (dist < 2.5) {
+                        clash = 1;
+                        break;
+                    }
+                }
+            }
+            
+            if(sl_clash != clash) {
+                std::cout << "fail " << sl_clash << " " << clash << std::endl;
+                fail_count += 1;
+            }
+            total += 1;
+            
+            
+        }
+    }
+    
+    std::cout << fail_count << " " << total << std::endl;
+    
+    return 0;
+}
 
 int
 StericLookupUnittest::run() {
-    test_creation();
+    std::map<double, int> test;
+    test[100000.0000000001] = 1;
+    //std::cout << (test.find(100000.0000000002) != test.end()) << std::endl;
+    
+    
+   
+    //test_creation();
     //test_add_point();
-    test_add_point_2();
-    test_add_point_3();
+    //test_add_point_2();
+    //test_add_point_3();
+    test_add_points();
+    //test_add_points_2();
     return 0;
 }
 

@@ -87,6 +87,8 @@ MotifStateSelectorOP
 default_selector() {
     auto selector = std::make_shared<MotifStateSelector>(MSS_HelixFlank());
     selector->add("unique_twoway");
+    
+
     //selector->add("twoway");
     return selector;
 }
