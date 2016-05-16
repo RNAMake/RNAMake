@@ -13,6 +13,7 @@
 #include "util/settings.h"
 #include "util/basic_io.hpp"
 #include "util/file_io.h"
+#include "util/steric_lookup.hpp"
 #include "resources/resource_manager.h"
 #include "motif/motif_factory.h"
 
@@ -66,23 +67,50 @@ PathBuilderNewApp::run() {
     auto start = mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
     auto end = mg_.get_node(end_.n_pos)->data()->get_basepair(end_.name)[0]->state();
     
+    //auto selector = std::make_shared<MotifStateSelector>();
+    //selector->add("unique_twoway");
+    //selector->add("ideal_helices_min");
+    //selector->connect("unique_twoway", "ideal_helices_min");
+    
     search_.setup(start, end);
+    //search_.selector(selector);
+    
+    int count = 0;
+    float dist = 0;
     
     auto beads = Points();
     for(auto & n : mg_) {
         n->data()->get_beads(n->data()->ends());
         for(auto const & b : n->data()->beads()) {
             if(b.btype() == BeadType::PHOS) { continue; }
+            
+            dist = b.center().distance(start->d());
+            /*if(dist < 40) {
+                continue;
+            }*/
             beads.push_back(b.center());
+            
         }
+        
+       
     }
+    
+    auto sl = StericLookup();
+    points_to_pdb("beads.pdb", beads);
+    mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->to_pdb("start.pdb");
+    mg_.get_node(end_.n_pos)->data()->get_basepair(end_.name)[0]->to_pdb("end.pdb");
+    
+    //exit(0);
+    sl.add_points(beads);
     
     if(get_bool_option("iterate_sterics")) {
         _iterate_sterics(beads);
         exit(0);
     }
     
-    search_.beads(beads);
+    //search_.beads(beads);
+    search_.lookup(sl);
+    
     std::cout << beads.size() << std::endl;
     
 
@@ -94,6 +122,8 @@ PathBuilderNewApp::run() {
     while(! search_.finished()) {
         i++;
         auto sol = search_.next();
+        //std::cout << sol->path().size() << std::endl;
+        //exit(0);
         auto mt = sol->to_motif_tree();
         auto ss = mt->secondary_structure();
         

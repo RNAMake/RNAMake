@@ -41,11 +41,8 @@ StericLookup::_setup_additions() {
             for(auto const & z : add) {
                 p = Point(x,y,z);
                 dist = p.distance(origin);
-                if (dist < 2.9 ) {
+                if (dist < 2.65 ) {
                     additions_.push_back(p);
-                }
-                if (dist <= 0.5) {
-                    check_additions_.push_back(p);
                 }
             }
         }
@@ -62,12 +59,25 @@ StericLookup::add_point(
     
     auto gp = Point();
     double k;
+
     for(auto const & add : additions_) {
         gp = rounded_ + add;
-        k = gp.x()*18397 + gp.y()*20483 + gp.z()*29303;
+        k = double(gp.x()*0.001)+ (double)(gp.y())*0.000000001+ double(gp.z()*100000);
+
         bhash_[k] = 1;
     }
 
+    
+}
+
+
+void
+StericLookup::add_points(
+    Points const & points) {
+    
+    for(auto const & p : points) {
+        add_point(p);
+    }
     
 }
 
@@ -79,11 +89,25 @@ StericLookup::clash(
     rounded_.y (round(p.y() / grid_size_)*grid_size_);
     rounded_.z (round(p.z() / grid_size_)*grid_size_);
     
-    double k = rounded_.x()*18397 + rounded_.y()*20483 + rounded_.z()*29303;
+    double k = double(rounded_.x()*0.001)+ (double)(rounded_.y())*0.000000001+ double(rounded_.z()*100000);
+
     
     if(bhash_.find(k) != bhash_.end()) { return 1; }
-    else                              { return 0; }
+    else                               { return 0; }
 
+}
+
+int
+StericLookup::clash(
+    Points const & points) {
+    
+    int is_clash = 0;
+    for(auto const & p : points) {
+        is_clash = clash(p);
+        if(is_clash) { return is_clash; }
+    }
+    
+    return 0;
     
 }
 

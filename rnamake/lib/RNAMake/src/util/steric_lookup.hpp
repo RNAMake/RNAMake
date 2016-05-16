@@ -25,9 +25,17 @@ public:
     add_point(
         Point const &);
     
+    void
+    add_points(
+        Points const &);
+    
     int
     clash(
         Point const &);
+    
+    int
+    clash(
+        Points const &);
     
     int
     better_clash(

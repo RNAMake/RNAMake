@@ -91,10 +91,10 @@ class SecondaryStructureGraph(object):
                   parent_end_name=None, new_uuids=1):
 
         """
-        adds a secondary structure
+        adds a secondary structure motif to this graph.
 
-        :param m:
-        :param parent_index:
+        :param m: the motif to add to this graph
+        :param parent_index: the index of the parent node you wish to add
         :param parent_end_index:
         :param m_end_index:
         :param parent_end_name:
@@ -108,7 +108,7 @@ class SecondaryStructureGraph(object):
         if parent_index != -1:
             parent = self.graph.get_node(parent_index)
 
-        m_copy = m.copy()
+        m_copy = m
 
         if new_uuids:
             m_copy.new_res_uuids()

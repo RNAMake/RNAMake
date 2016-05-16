@@ -1,5 +1,4 @@
 
-
 class Residue(object):
     def __init__(self, name, num, chain_id, i_code=""):
         self.name = name,
