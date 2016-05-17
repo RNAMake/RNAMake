@@ -18,5 +18,4 @@ class BuildPathWrapperNew(wrapper.Wrapper):
         self.add_cmd_option("write_pdbs", False, required=False)
         self.add_cmd_option("search::accept_score", 10, required=False)
         self.add_cmd_option("search::max_node_level", 12, required=False)
-
-        #self.add_cmd_option("search::max_solutions", 1, required=False)
+        self.add_cmd_option("search::max_solutions", 1, required=False)
