@@ -75,6 +75,15 @@ public:
         btype_ ( btype )
     {}
     
+    
+    inline
+    Bead(
+        String const & s) {
+        auto spl = split_str_by_delimiter(s, ",");
+        center_ = vector_from_str(spl[0]);
+        btype_ = BeadType(std::stoi(spl[1]));
+    }
+    
     /**
      * Copy constructor
      * @param   b   Bead object copying from

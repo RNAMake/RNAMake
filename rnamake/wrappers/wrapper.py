@@ -55,10 +55,7 @@ class Wrapper(object):
         subprocess.call(cmd, shell=True)
 
     def __is_required_option(self, name):
-        if name in self.__required_cmd_options:
-            return 1
-        else:
-            return 0
+        return self.__required_cmd_options[name]
 
     def __is_default_option(self, name):
         if name in self.__default_cmd_options:

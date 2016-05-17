@@ -72,6 +72,14 @@ id_(Uuid())
         ss_res[i]->uuid(r->uuid());
         i++;
     }
+    
+    if(spl.size() > 10) {
+        auto bead_spl = split_str_by_delimiter(spl[10], ";");
+        for(auto const & b_spl : bead_spl) {
+            if(b_spl.length() < 5) { continue; }
+            beads_.push_back(Bead(b_spl));
+        }
+    }
 }
 
 Motif::Motif(
