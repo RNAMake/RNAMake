@@ -95,7 +95,7 @@ PathBuilderNewApp::run() {
        
     }
     
-    std::Cout << 
+    std::cout <<
     
     auto sl = StericLookup();
     points_to_pdb("beads.pdb", beads);
