@@ -47,7 +47,7 @@ class Wrapper(object):
             if opt.otype == OptionType.STRING:
                 s += "\"" + opt.value + "\" "
             if opt.otype == OptionType.NUMBER:
-                s += str(opt.value)
+                s += str(opt.value) + " "
         return s
 
     def run(self, **options):
