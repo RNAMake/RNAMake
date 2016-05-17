@@ -53,9 +53,9 @@ class Option(object):
             raise OptionException("attemped to set value to incorrect type")
 
         #True and False are counted as ints for some reason
-        if self.__otype == OptionType.NUMBER and \
-           (new_value == True or new_value == False):
-            raise OptionException("attemped to set value to incorrect type")
+        #if self.__otype == OptionType.NUMBER and \
+        #   (new_value == True or new_value == False):
+        #    raise OptionException("attemped to set value to incorrect type")
 
         if self.__otype == OptionType.BOOL and \
            not isinstance(new_value, bool):
