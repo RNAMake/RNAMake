@@ -95,8 +95,6 @@ PathBuilderNewApp::run() {
        
     }
     
-    std::cout <<
-    
     auto sl = StericLookup();
     points_to_pdb("beads.pdb", beads);
     mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->to_pdb("start.pdb");
@@ -113,7 +111,7 @@ PathBuilderNewApp::run() {
     //search_.beads(beads);
     search_.lookup(sl);
     
-    std::cout << beads.size() << std::endl;
+    std::cout << "num of beads: " << beads.size() << std::endl;
     
 
     std::ofstream out;

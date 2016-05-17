@@ -16,3 +16,4 @@ class BuildPathWrapperNew(wrapper.Wrapper):
 
         self.add_cmd_option("mg", "", required=True)
         self.add_cmd_option("write_pdbs", False, required=False)
+        self.add_cmd_option("search::accept_score", 10, required=False)

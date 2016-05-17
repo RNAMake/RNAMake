@@ -96,6 +96,8 @@ class Motif(rna_structure.RNAStructure):
         s += "&"
         s += self.secondary_structure.to_str()
         s += "&"
+        s += basic_io.beads_to_str(self.beads)
+        s += "&"
         return s
 
     def transform(self, t):
