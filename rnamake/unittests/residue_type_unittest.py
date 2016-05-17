@@ -5,6 +5,7 @@ import rnamake.atom
 import rnamake.residue_type
 
 class ResidueTypeUnittest(unittest.TestCase):
+
     def test_creation(self):
         try:
             rtypes = rnamake.residue_type.rtypes

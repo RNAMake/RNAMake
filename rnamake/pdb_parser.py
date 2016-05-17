@@ -5,7 +5,7 @@ import exceptions
 import user_warnings
 
 # TODO handle no chain id!
-def parse(pdb_file):
+def parse(pdb_file, protein=0, rna=1):
     """
     very minimalistc pdb parser, currently does not support multiple MODELS
     in NMR structures but works well for what I need at the moment will be
@@ -111,10 +111,18 @@ def parse(pdb_file):
             continue
         spl = key.split()
         rtype = residue_type.get_rtype(spl[0])
+
         if rtype is None:
             user_warnings.warn("restype " + spl[0] + ": is unknown",
                                 user_warnings.PDBFormatWarning)
             continue
+
+        if protein == 0 and rtype.set_type == residue_type.SetType.PROTEIN:
+            continue
+
+        if rna == 0 and rtype.set_type == residue_type.SetType.RNA:
+            continue
+
         icode = ""
         if len(spl) > 3:
             icode = spl[3]

@@ -80,7 +80,7 @@ PathBuilderNewApp::run() {
     
     auto beads = Points();
     for(auto & n : mg_) {
-        n->data()->get_beads(n->data()->ends());
+        //n->data()->get_beads(n->data()->ends());
         for(auto const & b : n->data()->beads()) {
             if(b.btype() == BeadType::PHOS) { continue; }
             
@@ -94,6 +94,8 @@ PathBuilderNewApp::run() {
         
        
     }
+    
+    std::Cout << 
     
     auto sl = StericLookup();
     points_to_pdb("beads.pdb", beads);

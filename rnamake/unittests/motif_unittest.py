@@ -6,24 +6,22 @@ import rnamake.settings
 import rnamake.motif_type
 import rnamake.transform
 import rnamake.motif_factory
-import rnamake.sqlite_library as sqlite_library
 import rnamake.util as util
 import numerical
 import numpy as np
 from rnamake import secondary_structure_factory as ssf
+from rnamake import basic_io
+
+import files
 
 
 class MotifUnittest(unittest.TestCase):
 
     def setUp(self):
-        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
+        path = files.P4P6_PDB_PATH
         self.motif = rnamake.motif_factory.factory.motif_from_file(path)
         #path = rnamake.settings.RESOURCES_PATH + "/motifs/helices/HELIX.IDEAL"
         #self.motif_2 = rnamake.motif_factory.factory.motif_from_file(path)
-
-    def test_creation(self):
-        path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
-        m = rnamake.motif_factory.factory.motif_from_file(path)
 
     def test_create_pdb(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
@@ -120,6 +118,12 @@ class MotifUnittest(unittest.TestCase):
         pass
         #m = rm.manager.get_motif(name="HELIX.IDEAL")
 
+    def test_protein_beads(self):
+        path = files.GROUP_2_INTRON_PDB_PATH
+        m = rnamake.motif_factory.factory.motif_from_file(path, include_protein=1)
+
+        beads = m.protein_beads
+        basic_io.beads_to_pdb("test.pdb", beads)
 
 
 def main():

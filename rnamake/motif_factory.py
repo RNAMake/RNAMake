@@ -1,4 +1,5 @@
 import os
+
 import motif_scorer
 import motif
 import structure
@@ -12,6 +13,7 @@ import secondary_structure_factory
 import settings
 import rna_structure
 import motif_type
+import pdb_parser
 
 
 class MotifFactory(object):
@@ -124,7 +126,7 @@ class MotifFactory(object):
 
         m.secondary_structure = ss
 
-    def motif_from_file(self, path):
+    def motif_from_file(self, path, include_protein=0):
         filename = util.filename(path)
         # is a motif directory
         if os.path.isdir(path):
@@ -147,6 +149,14 @@ class MotifFactory(object):
         self._setup_secondary_structure(m)
         #except:
         #    print "did not parse secondary_structure", m.name
+
+        if include_protein:
+            p_residues = pdb_parser.parse(path, protein=1, rna=0)
+            beads = []
+            for r in p_residues:
+                a = r.get_atom("CA")
+                beads.append(residue.Bead(a.coords, residue.BeadType.BASE))
+            m.protein_beads = beads
 
         return m
 

@@ -84,6 +84,7 @@ class RNAStructure(object):
         self.path = path
         self.score = score
         self.ends = ends
+        self.protein_beads = []
         if self.ends is None:
             self.ends = []
         self.beads = []
@@ -275,7 +276,7 @@ class RNAStructure(object):
         if excluded_res:
             excluded.extend(excluded_res)
 
-        self.beads = self.structure.get_beads(excluded)
+        self.beads = self.structure.get_beads(excluded) + self.protein_beads
         return self.beads
 
     def get_end_index(self, name=None, id=None):

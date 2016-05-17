@@ -1,10 +1,18 @@
 import glob
-import settings
+import os
+
+import settings, util
+
 
 alt_names = {
     "O1P": "OP1",
     "O2P": "OP2"
 }
+
+class SetType(object):
+    RNA = 0,
+    PROTEIN = 1
+
 
 class ResidueType(object):
 
@@ -30,12 +38,16 @@ class ResidueType(object):
         Other names the residue can go by, ex. G is also GUA
     """
 
-    __slots__ = ["name", "atom_map", "alt_names"]
+    __slots__ = ["name", "atom_map", "alt_names", "set_type"]
 
-    def __init__(self, name, atom_map):
+    def __init__(self, name, atom_map, set_type):
         self.atom_map = atom_map
+        self.set_type = set_type
         self.name = name
-        self.alt_names = [name[0], "r"+name[0], "D"+name[0]]
+        if self.set_type == SetType.RNA:
+            self.alt_names = [name[0], "r"+name[0], "D"+name[0]]
+        else:
+            self.alt_names = []
 
     def __repr__(self):
         return "<ResidueType(name='%s')>" % (self.name)
@@ -70,12 +82,28 @@ class ResidueTypeSet(object):
         self.residue_types = []
 
         path = settings.RESOURCES_PATH + "/residue_types"
-        type_files = glob.glob(path + "/*.rtype")
-        for tf in type_files:
-            name = self._get_rtype_name(tf)
-            atom_map = self._get_atom_map_from_file(tf)
-            rtype = ResidueType(name, atom_map)
-            self.residue_types.append(rtype)
+        files =  glob.glob(path + "/*")
+        for f in files:
+            if os.path.isfile(f):
+                continue
+            rtype_files = glob.glob(f + "/*")
+            set_type_name = self._get_set_type(f)
+            set_type = None
+            if set_type_name == "RNA":
+                set_type = SetType.RNA
+            elif set_type_name == "PROTEIN":
+                set_type = SetType.PROTEIN
+
+            for tf in rtype_files:
+                name = self._get_rtype_name(tf)
+                atom_map = self._get_atom_map_from_file(tf)
+                rtype = ResidueType(name, atom_map, set_type)
+                self.residue_types.append(rtype)
+
+
+    def _get_set_type(self, type_dir):
+        name = util.filename(type_dir)
+        return name
 
     def _get_rtype_name(self, type_file):
         """
