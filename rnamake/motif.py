@@ -65,6 +65,7 @@ class Motif(rna_structure.RNAStructure):
         self.secondary_structure = secondary_structure.Motif()
         self.block_end_add = 0
         self.id = uuid.uuid1()
+        self.protein_beads = []
 
         if r_struct is not None:
             self.__dict__.update(r_struct.__dict__)

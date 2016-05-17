@@ -92,7 +92,7 @@ class PdbParserUnittest(unittest.TestCase):
 
         self._are_residues_the_same(new_residues, old_residues)
 
-    def test_parse_compare_all(self):
+    def _test_parse_compare_all(self):
         #this test can take a while, default set to not run
         #if util.UnittestState == util.UnittestType.BASIC:
         #    self.skipTest("test_parse_compare_all is not a basic test")
