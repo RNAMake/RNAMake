@@ -322,7 +322,6 @@ MotifGraph::add_motif(
     
     for(auto const & p : avail_pos) {
         if(p == parent->data()->block_end_add()) { continue; }
-        //std::cout << parent_index << " " << parent->index() << " " << p << " " << parent->data()->block_end_add() << std::endl;
         auto m_added = get_aligned_motif(parent->data()->ends()[p], m->ends()[0], m);
         if(sterics_ && _steric_clash(m_added)) { continue; }
         
@@ -352,10 +351,11 @@ MotifGraph::add_motif_tree(
     }
     auto parent_end_index = parent->data()->end_index(parent_end_name);
     int i = 0;
+    int pos = 0;
     for(auto const & n : *mt) {
         auto m = ResourceManager::getInstance().get_motif(n->data()->name(), n->data()->end_ids()[0]);
-        if(i == 0) { add_motif(n->data(), parent_index, parent_end_index); }
-        else       { add_motif(n->data()); }
+        if(i == 0) { pos = add_motif(n->data(), parent_index, parent_end_index); }
+        else       { pos = add_motif(n->data()); }
         i++;
     }
     

@@ -56,30 +56,24 @@ public:
     ~SequenceOptimizer() {}
     
 public:
-    
-    SequenceOptimizerResultOP
-    optimize(
-        MotifGraphOP &,
-        int,
-        int,
-        int,
-        int);
+
     
     OptimizedSequenceOPs
     get_optimized_sequences(
-        MotifGraphOP & mg,
-        int node_i,
-        int node_j,
-        int end_i,
-        int end_j);
-    
-    OptimizedSequenceOPs
-    get_optimized_sequences_2(
         MotifGraphOP & mg,
         Uuid const & uuid_1,
         Uuid const & uuid_2,
         int end_i,
         int end_j);
+    
+    /*OptimizedSequenceOPs
+    get_optimized_sequences_section(
+        MotifGraphOP & mg,
+        MotifGraphOP & section,
+        Uuid const & uuid_2,
+        int end_i,
+        int end_j);*/
+    
     
     String
     get_final_sequence(

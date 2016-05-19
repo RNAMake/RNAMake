@@ -71,11 +71,11 @@ int main(int argc, const char * argv[]) {
             
         }
         
-        auto seq_opt = SequenceOptimizer();
+        /*auto seq_opt = SequenceOptimizer();
         auto sols = seq_opt.get_optimized_sequences(mg, free_end_node, tetraloop_node, 0, 2);
         for(auto const & sol : sols) {
             out << i << " " << sol->close_distance << " " << sol->eternabot_score << " " << sol->sequence << std::endl;
-        }
+        }*/
         i++;
 
     }

@@ -162,6 +162,11 @@ public: // setters
     void
     res2(ResidueOP const & nres2) { res2_ = nres2;}
     
+    
+    inline
+    void
+    bp_type(String const & nbp_type) { bp_type_ = nbp_type; }
+    
 public:
     
     String const

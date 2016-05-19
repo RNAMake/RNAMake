@@ -67,12 +67,15 @@ PathBuilderNewApp::run() {
     auto start = mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
     auto end = mg_.get_node(end_.n_pos)->data()->get_basepair(end_.name)[0]->state();
     
+    
     //auto selector = std::make_shared<MotifStateSelector>();
     //selector->add("unique_twoway");
     //selector->add("ideal_helices_min");
     //selector->connect("unique_twoway", "ideal_helices_min");
     
+    //search_.setup(end, start);
     search_.setup(start, end);
+
     //search_.selector(selector);
     
     int count = 0;

@@ -136,6 +136,13 @@ public: // setters
         structure_ = s;
     }
     
+    inline
+    void
+    block_end_add(
+        int nblock_end_add) {
+        block_end_add_ = nblock_end_add;
+    }
+    
    
     
 private:

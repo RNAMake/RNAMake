@@ -46,9 +46,10 @@ class SqliteLibraryUnittest(unittest.TestCase):
         motifs1 = mlib.get_multi(name=m.name)
         motifs2 = mlib.get_multi(end_id=m.end_ids[0])
 
+    #TODO check all move to intergration
     def test_end_orientation(self):
         mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
-        mlib.load_all()
+        mlib.load_all(10)
 
         for i,m in enumerate(mlib.all()):
             res = m.residues()

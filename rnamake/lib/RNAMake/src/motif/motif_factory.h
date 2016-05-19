@@ -46,6 +46,10 @@ public:
         ResidueOPs &,
         BasepairOPs const &);
     
+    MotifOP
+    motif_from_bps(
+        BasepairOPs const &);
+    
     void
     standardize_motif(
         MotifOP &);

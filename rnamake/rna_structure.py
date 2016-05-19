@@ -461,11 +461,11 @@ def ends_from_basepairs(structure, basepairs):
     :rtype: list of basepair.Basepairs
     """
 
-    chain_ends = []
+    chain_ends_uuids = []
     for c in structure.chains:
-        chain_ends.append(c.first())
+        chain_ends_uuids.append(c.first().uuid)
         if len(c) > 1:
-            chain_ends.append(c.last())
+            chain_ends_uuids.append(c.last().uuid)
 
     ends = []
     for bp in basepairs:
@@ -474,10 +474,10 @@ def ends_from_basepairs(structure, basepairs):
         if not (util.gu_bp(bp) or util.wc_bp(bp)):
             continue
 
-        if bp.res1 in chain_ends and bp.res2 in chain_ends:
+        if bp.res1.uuid in chain_ends_uuids and bp.res2.uuid in chain_ends_uuids:
             ends.append(bp)
 
-        return ends
+    return ends
 
 
 def get_chain_end_map(chains, end):

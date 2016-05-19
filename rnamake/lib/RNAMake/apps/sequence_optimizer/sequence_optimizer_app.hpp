@@ -34,6 +34,10 @@ public:
     void
     run();
     
+private:
+    void
+    run_from_mg();
+    
     
 private:
     

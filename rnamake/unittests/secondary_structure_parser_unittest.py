@@ -53,7 +53,6 @@ class SecondaryStructureParserUnittest(unittest.TestCase):
         # 5 nodes not 5 residues
         self.failUnless(len(g) == 5, "did not parse left unpaired correctly")
 
-
     def test_parse_to_motifs(self):
         parser = secondary_structure_parser.SecondaryStructureParser()
 
@@ -77,9 +76,7 @@ class SecondaryStructureParserUnittest(unittest.TestCase):
         seq = "UUCCGAAGCUCAACGGGAAAAUGAGCU"
         ss  = "(((((.((((((.)))))...))))))"
         motifs = parser.parse_to_motifs(seq, ss)
-        print motifs
-
-
+        #print motifs
 
     def test_parse_to_motif_graph(self):
         parser = secondary_structure_parser.SecondaryStructureParser()

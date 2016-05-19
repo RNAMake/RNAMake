@@ -4,7 +4,9 @@ from rnamake import resource_manager as rm
 import build
 
 class MotifStateMergerUnittest(unittest.TestCase):
+    pass
 
+    """
     def test_creation(self):
         ms = rm.manager.get_state(name="HELIX.IDEAL.2")
         mst = motif_state_tree.MotifStateTree()
@@ -49,6 +51,8 @@ class MotifStateMergerUnittest(unittest.TestCase):
         merger = motif_state_merger.MotifStateMerger()
         merger.merge(mst)
         ss = merger.secondary_structure()
+
+    """
 
 def main():
     unittest.main()
