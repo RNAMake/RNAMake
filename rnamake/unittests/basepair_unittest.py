@@ -49,13 +49,6 @@ class BasepairUnittest(unittest.TestCase):
         struct = structure.structure_from_pdb(path)
         residues = struct.residues()
 
-        try:
-            partner = bp.partner(residues[-1])
-            self.fail()
-        except ValueError:
-            pass
-        except:
-            self.fail("got an error I did not expect")
 
     def test_state(self):
         bp = self.basepair
@@ -85,6 +78,7 @@ class BasepairUnittest(unittest.TestCase):
         bp = self.basepair
         s = bp.to_pdb_str()
 
+
 class BasepairStateUnittest(unittest.TestCase):
 
     def test_copy(self):
@@ -100,111 +94,6 @@ class BasepairStateUnittest(unittest.TestCase):
         cbpstate.sugars[0][0] += 1
         if bpstate.sugars[0][0] == cbpstate.sugars[0][0]:
             self.fail("sugars did not deep copy")
-
-    def test_align(self):
-        m = instances.motif()
-        end1 = m.ends[0].state()
-        end2 = m.ends[1].state()
-
-        for i in range(100):
-            r, t = end1.get_transforming_r_and_t_w_state(end2)
-            t += end1.d
-
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
-
-            diff = end1.diff(end2)
-            if diff > 0.001:
-                self.fail("did not align properly")
-
-        end1 = m.ends[1].state()
-        end2 = m.ends[0].state()
-
-        for i in range(100):
-            r, t = end1.get_transforming_r_and_t_w_state(end2)
-            t += end1.d
-
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
-
-            diff = end1.diff(end2)
-            print diff
-            if diff > 0.01:
-                self.fail("did not align properly")
-
-    def test_align_2(self):
-        m = instances.motif()
-        end1 = m.ends[0].state()
-        end2 = m.ends[1].state()
-
-        for i in range(100):
-            trans = transformations.random_rotation_matrix()
-            rand_r = trans[:3,:3]
-            rand_t = np.array([random.randint(0, 10),
-                               random.randint(0, 10),
-                               random.randint(0, 10)])
-            new_r, new_d, new_sug = end2.get_transformed_state(rand_r, rand_t)
-            end2.set(new_r, new_d, new_sug)
-
-            r, t = end1.get_transforming_r_and_t_w_state(end2)
-            t += end1.d
-
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
-
-            diff = end1.diff(end2)
-            print diff
-            if diff > 0.001:
-                self.fail("did not align properly")
-
-    def test_align_3(self):
-        m = instances.motif()
-        end1 = m.ends[0].state()
-        end2 = m.ends[0].state()
-
-        for i in range(100):
-            r, t = end1.get_transforming_r_and_t_w_state(end2)
-            t += end1.d
-
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
-
-            diff = end1.diff(end2)
-            if diff > 0.001:
-                self.fail("did not align properly")
-
-    def test_align_4(self):
-        m = instances.motif()
-        end1 = m.ends[0].state()
-        end2 = instances.basepairstate_random()
-
-        for i in range(100):
-            r, t = end1.get_transforming_r_and_t_w_state(end2)
-            t += end1.d
-
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
-
-            diff = end1.diff(end2)
-            if diff > 0.001:
-                self.fail("did not align properly")
-
-    def test_align_5(self):
-
-        for i in range(100):
-            m = instances.motif()
-            end1 = instances.basepairstate_random()
-            end2 = instances.basepairstate_random()
-
-            r, t = end1.get_transforming_r_and_t_w_state(end2)
-            t += end1.d
-
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
-
-            diff = end1.diff(end2)
-            if diff > 0.001:
-                self.fail("did not align properly")
 
 
 def main():

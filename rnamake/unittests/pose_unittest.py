@@ -107,7 +107,7 @@ class PoseUnittest(unittest.TestCase):
             f.write("ENDMDL\n")
         f.close()
 
-    def test_load_as_mg2(self):
+    def _test_load_as_mg2(self):
          #p = pf.factory.pose_from_file_new("/Users/josephyesselman/projects/RNAMake.projects/claw/tRNA.pdb")
          #p = pf.factory.pose_from_file_new("/Users/josephyesselman/projects/REDESIGN/examples/example_2/p4p6/p4p6.pdb")
         p = pf.factory.pose_from_file_new("/Users/josephyesselman/projects/DasLabBot/tests/runs/v1/1LNG/1LNG.pdb")

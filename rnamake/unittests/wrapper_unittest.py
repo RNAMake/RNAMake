@@ -33,7 +33,7 @@ class BuildPathWrapper(unittest.TestCase):
         w.set_cmd_option("mg", "~/projects/RNAMake.projects/tecto_rna_22_bp/base_mg.top")
         cmd = w.get_command()
         if cmd != "./Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/path_builder -mg \"~/projects/RNAMake.projects/tecto_rna_22_bp/base_mg.top\"":
-            print "made it"
+            pass
 
     def _test_run(self):
         w = build_path_wrapper.BuildPathWrapper()

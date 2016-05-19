@@ -56,6 +56,29 @@ MotifFactory::motif_from_res(
     return m;
 }
 
+MotifOP
+MotifFactory::motif_from_bps(
+    BasepairOPs const & bps) {
+    
+    auto res = ResidueOPs();
+    for(auto const & bp : bps) {
+        res.push_back(bp->res1());
+        res.push_back(bp->res2());
+    }
+    
+    auto chains = ChainOPs();
+    connect_residues_into_chains(res, chains);
+    auto structure = std::make_shared<Structure>(chains);
+    auto ends = BasepairOPs();
+    ends.push_back(bps[0]);
+    ends.push_back(bps.back());
+    //auto ends = _setup_basepair_ends(structure, bps);
+    auto m = std::make_shared<Motif>(structure, bps, ends);
+    _setup_secondary_structure(m);
+    return m;
+    
+}
+
 
 void
 MotifFactory::standardize_motif(

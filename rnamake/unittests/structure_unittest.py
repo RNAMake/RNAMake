@@ -22,7 +22,8 @@ class StructureUnittest(unittest.TestCase):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
         rnamake.structure.structure_from_pdb(path)
 
-    def test_build_chains_all(self):
+    # TODO move to integration
+    def _test_build_chains_all(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/build_chains.dat"
 
         f = open(path)

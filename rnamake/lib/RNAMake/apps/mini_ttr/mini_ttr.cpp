@@ -122,8 +122,8 @@ MiniTTR::optimize_sequence(MotifGraph & org_mg) {
         }
     }
 
-    auto r = optimizer_.optimize(mg, free_end_node, tetraloop_node, 1, 2);
-    std::cout << r->score << std::endl;
+    //auto r = optimizer_.optimize(mg, free_end_node, tetraloop_node, 1, 2);
+    //std::cout << r->score << std::endl;
     //r->motif_tree->write_pdbs();
     //r->motif_tree->to_pdb("final.pdb");
     

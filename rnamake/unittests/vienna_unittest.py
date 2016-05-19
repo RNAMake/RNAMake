@@ -20,7 +20,8 @@ class ViennaUnittest(unittest.TestCase):
         v = vienna.Vienna()
         results = v.fold(random_sequence())
 
-    def test_fold_exhustive(self):
+    # TODO move to intergration
+    def _test_fold_exhustive(self):
         v = vienna.Vienna()
         for i in range(100):
             results = v.fold(random_sequence())

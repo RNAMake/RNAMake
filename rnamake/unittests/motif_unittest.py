@@ -12,23 +12,13 @@ import numpy as np
 from rnamake import secondary_structure_factory as ssf
 from rnamake import basic_io
 
-import files
+import files, instances
 
 
 class MotifUnittest(unittest.TestCase):
 
     def setUp(self):
-        path = files.P4P6_PDB_PATH
-        self.motif = rnamake.motif_factory.factory.motif_from_file(path)
-        #path = rnamake.settings.RESOURCES_PATH + "/motifs/helices/HELIX.IDEAL"
-        #self.motif_2 = rnamake.motif_factory.factory.motif_from_file(path)
-
-    def test_create_pdb(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        try:
-            m = rnamake.motif_factory.factory.motif_from_file(path)
-        except:
-            self.fail("did not generate motif correctly")
+        self.motif = instances.motif()
 
     def test_state_1(self):
         ms1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
@@ -82,14 +72,14 @@ class MotifUnittest(unittest.TestCase):
 
         beads = m.get_beads([m.basepairs[0]])
         diff = org_count - len(beads)
-        if diff != 5:
+        if diff != 6:
             self.fail("did not exclude ends properly")
 
     def test_to_str(self):
         m = self.motif
         s = m.to_str()
         m1 = rnamake.motif.str_to_motif(s)
-        if len(m1.residues()) != 157:
+        if len(m1.residues()) != 24:
             self.fail("did not copy all residues correctly")
 
     def test_copy(self):
@@ -111,19 +101,12 @@ class MotifUnittest(unittest.TestCase):
         m = rm.manager.get_motif(name="HELIX.IDEAL")
         end_id = m.end_index_with_id('GG_LL_CC_RR')
 
-    def test_align(self):
-        pass
-
-    def test_get_secondary_structure(self):
-        pass
-        #m = rm.manager.get_motif(name="HELIX.IDEAL")
-
-    def test_protein_beads(self):
+    def _test_protein_beads(self):
         path = files.GROUP_2_INTRON_PDB_PATH
         m = rnamake.motif_factory.factory.motif_from_file(path, include_protein=1)
 
         beads = m.protein_beads
-        basic_io.beads_to_pdb("test.pdb", beads)
+        #basic_io.beads_to_pdb("test.pdb", beads)
 
 
 def main():
