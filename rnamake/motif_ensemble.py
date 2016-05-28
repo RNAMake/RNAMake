@@ -178,3 +178,9 @@ def motif_state_to_motif_state_ensemble(ms):
     mse = MotifStateEnsemble()
     mse.setup(ms.end_ids[0], [ms], [1])
     return mse
+
+
+def motif_sub_for_motif_state_ensemble(org_m, new_m, mlib,
+                                       extra_mse_file="test.dat",
+                                       base_dir=""):
+    pass
