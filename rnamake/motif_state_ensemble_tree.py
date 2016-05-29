@@ -68,16 +68,16 @@ class MotifStateEnsembleTree(object):
             extra_mes = {}
 
         for i, n in enumerate(mt.tree.nodes):
+            found_supplied = rm.manager.has_supplied_motif_ensemble(
+                                            n.data.name, n.data.ends[0].name())
             if n.data.mtype == motif_type.HELIX and len(n.data.residues()) == 4:
                 mse = rm.manager.get_motif_state_ensemble(name=n.data.end_ids[0])
+            elif found_supplied:
+                me = rm.manager.get_supplied_motif_ensemble(n.data.name,
+                                                            n.data.ends[0].name())
+                mse = me.get_state()
             else:
-                if n.index in extra_mes:
-                    mse = extra_mes[n.index]
-                else:
-                    m = n.data
-                #m.name = "unknown."+str(i)+".pdb"
-                #rm.manager.add_motif(motif=m)
-                    mse = motif_ensemble.motif_state_to_motif_state_ensemble(m.get_state())
+                mse = motif_ensemble.motif_state_to_motif_state_ensemble(n.data.get_state())
 
             #mse.update_res_uuids(n.data.residues())
 
@@ -207,3 +207,25 @@ class MotifStateEnsembleTreeEnumerator(object):
         df.to_csv("test.csv")
 
 
+
+def build_motif_sub_for_motif_state_ensemble(org_m, new_motifs, mlib,
+                                             extra_mse_file="test.dat"):
+
+    f = open(extra_mse_file, "w")
+
+    for i, end in enumerate(org_m.ends):
+        all_ms = []
+        all_scores = []
+
+        for new_m in new_motifs:
+            mi = mlib.get(name=new_m.name, end_name=new_m.ends[i].name())
+            all_ms.append(mi)
+            all_scores.append(1)
+
+        me = motif_ensemble.MotifEnsemble()
+        me.setup(org_m.end_ids[i], all_ms, all_scores)
+        org_m_key = org_m.name + "-" + end.name()
+
+        f.write(org_m_key + "!!" + me.to_str() + "\n")
+    f.flush()
+    f.close()

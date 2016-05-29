@@ -2,6 +2,7 @@ import motif
 import motif_factory
 import sqlite_library
 import motif_type
+import motif_ensemble
 import settings
 import util
 
@@ -41,6 +42,7 @@ class MotifLibrary(object):
 
     def get_multi(self, **options):
         return self._find_motifs(**options)
+
 
 class ResourceManager(object):
     def __init__(self):
@@ -171,6 +173,32 @@ class ResourceManager(object):
 
     def register_motif(self, m):
         self.added_motifs.add_motif(m)
+
+    def register_extra_motif_ensembles(self, f_name):
+        f = open(f_name)
+        lines = f.readlines()
+        f.close()
+
+        for l in lines:
+            spl = l.split("!!")
+            self.extra_me[spl[0]] = motif_ensemble.str_to_motif_ensemble(spl[1])
+
+    def has_supplied_motif_ensemble(self, m_name, end_name):
+        key = m_name + "-" + end_name
+
+        if key in self.extra_me:
+            return 1
+        else:
+            return 0
+
+    def get_supplied_motif_ensemble(self, m_name, end_name):
+        key = m_name + "-" + end_name
+
+        if key not in self.extra_me:
+            raise ValueError("no supplied motif ensemble exists")
+
+        return self.extra_me[key]
+
 
 manager = ResourceManager()
 
