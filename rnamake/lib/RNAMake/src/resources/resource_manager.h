@@ -15,6 +15,7 @@
 #include "base/types.h"
 #include "motif/motif_factory.h"
 #include "motif/motif_state.h"
+#include "motif/motif_ensemble.h"
 #include "resources/motif_sqlite_library.h"
 #include "resources/motif_state_sqlite_library.h"
 #include "resources/motif_state_ensemble_sqlite_library.h"
@@ -70,6 +71,11 @@ public:
     register_extra_motif_state_ensembles(
         String const &);
     
+    MotifStateEnsembleOP
+    get_registered_extra_motif_state_ensemble(
+        String const &,
+        String const &);
+    
     int
     has_supplied_motif_state_ensemble(
         String const &,
@@ -96,6 +102,7 @@ protected:
         }
         
         extra_mses_ = std::map<String, String>();
+        extra_mes_ = std::map<String, MotifEnsembleOP>();
     
     }
     
@@ -110,6 +117,7 @@ private:
     std::map<String, MotifStateSqliteLibraryOP> ms_libs_;
     std::map<String, MotifStateEnsembleSqliteLibraryOP> mse_libs_;
     std::map<String, String> extra_mses_;
+    std::map<String, MotifEnsembleOP> extra_mes_;
     MotifFactory mf_;
     AddedMotifLibrary added_motifs_;
 
