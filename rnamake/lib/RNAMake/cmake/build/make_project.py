@@ -77,8 +77,11 @@ f.close()
 fsum = open("unittest_apps.cmake", "w")
 
 f = open("unittests.txt")
-"""for l in f.readlines():
+
+for l in f.readlines():
     spl = l.split()
+    if len(spl) < 2:
+        continue
     symlink = spl[0]+"_symlink"
     fsum.write("add_executable("+l.rstrip()+")\n")
     fsum.write("target_link_libraries("+spl[0]+" ${link_libraries})\n")
@@ -86,7 +89,8 @@ f = open("unittests.txt")
     #fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND  -E create_symlink ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
     fsum.write("\n\n")
 
-fsum.close()"""
+fsum.close()
+"""
 for path in unittest_apps:
     fname = util.filename(path)
     if fname == "all_tests.cc" or fname == "main.cpp":
@@ -109,4 +113,5 @@ for path in unittest_apps:
 
 
 f.close()
+"""
 
