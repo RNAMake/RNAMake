@@ -79,6 +79,7 @@ ResourceManager::get_motif_state_ensemble(
     
 }
 
+
 void
 ResourceManager::add_motif(
     String const & path) {
@@ -120,13 +121,27 @@ ResourceManager::has_supplied_motif_state_ensemble(
     String const & end_name) {
     
     String key = name + "-" + end_name;
-    if(extra_mses_.find(key) != extra_mses_.end()) {
+    if(extra_mes_.find(key) != extra_mes_.end()) {
         return 1;
     }
     else {
         return 0;
     }
     
+}
+
+MotifStateEnsembleOP
+ResourceManager::get_registered_extra_motif_state_ensemble(
+    String const & name,
+    String const & end_name) {
+    
+    String key = name + "-" + end_name;
+    
+    if(extra_mes_.find(key) == extra_mes_.end()) {
+        throw std::runtime_error("cannot get registered motif_state_ensemble");
+    }
+    
+    return extra_mes_[key]->get_state();
 }
 
 
@@ -137,8 +152,11 @@ ResourceManager::register_extra_motif_state_ensembles(
     Strings lines = get_lines_from_file(f_name);
     for(auto const & l : lines) {
         if (l.size() < 10) { break; }
-        Strings spl = split_str_by_delimiter(l, " ");
-        extra_mses_[spl[0]] = spl[1];
+        Strings spl = split_str_by_delimiter(l, "!!");
+        //extra_mses_[spl[0]] = spl[1];
+    
+        auto me = std::make_shared<MotifEnsemble>(spl[1]);
+        extra_mes_[spl[0]] = me;
     }
     
 }

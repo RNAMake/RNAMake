@@ -81,8 +81,9 @@ private:
     int block_end_add_;
     MotifEnsembleMemberOPs members_;
     
-    
 };
+
+typedef std::shared_ptr<MotifEnsemble> MotifEnsembleOP;
 
 
 

@@ -89,9 +89,8 @@ MotifStateEnsembleTree::setup_from_mt(
                             n->data()->name(),
                             n->data()->ends()[0]->name());
             if(found) {
-                mse = ResourceManager::getInstance().get_motif_state_ensemble(
+                mse = ResourceManager::getInstance().get_registered_extra_motif_state_ensemble(
                                                             n->data()->name(),
-                                                            "",
                                                             n->data()->ends()[0]->name());
             }
             
