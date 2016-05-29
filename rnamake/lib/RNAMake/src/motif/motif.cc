@@ -43,7 +43,6 @@ Motif::Motif(
     block_end_add_ = std::stoi(spl[3]);
     mtype_ = static_cast<MotifType>(std::stoi(spl[4]));
     structure_ = StructureOP( new Structure(str_to_structure(spl[5], rts)));
-    std::cout << name_ << std::endl;
     Strings basepair_str = split_str_by_delimiter(spl[6], "@");
     for (auto const & bp_str : basepair_str) {
         Strings bp_spl = split_str_by_delimiter(bp_str, ",");
