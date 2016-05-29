@@ -8,6 +8,7 @@
 //
 
 #include "thermo_fluctuation/thermo_fluc_simulation_devel.h"
+#include <sys/stat.h>
 
 void
 ThermoFlucSimulationDevel::setup_options() {
@@ -199,8 +200,11 @@ ThermoFlucSimulationDevel::run() {
             
             if(bound_pdb_ > bound_pdb_count) {
                 try {
-                    sampler_.mst()->to_motif_tree()->to_pdb("bound."+std::to_string(bound_pdb_count)+
-                                                            ".pdb");
+                    const int dir_err = mkdir(String("nodes_" + std::to_string(bound_pdb_count)).c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+                    sampler_.mst()->write_pdbs("nodes_" + std::to_string(bound_pdb_count) + "/nodes");
+                 
+                    //sampler_.mst()->to_motif_tree()->to_pdb("bound."+std::to_string(bound_pdb_count)+
+                     //                                       ".pdb");
                     bound_pdb_count++;
                 }
                 catch(...) {}
