@@ -1,19 +1,1 @@
-tree_memory_test ../../unittests/memory_tests/tree_memory_test.cc
-graph_memory_test ../../unittests/memory_tests/graph_memory_test.cc
-all_tests ../../unittests/all_tests.cc
-bead_speed_test ../../unittests/speed_tests/beads_vs_points.cpp
-test ../../unittests/main.cc
-graph_iterator_test ../../unittests/speed_tests/graph_iterator_test.cpp
-
-option_unittest ../../unittests/apps/option_unittest_app.cpp
 atom_unittest ../../unittests_new/atom_unittest.cpp
-atom_unittest_2 ../../unittests_new/atom_unittest_2.cpp
-atom_unittest_3 ../../unittests_new/atom_unittest_3.cpp
-atom_unittest_4 ../../unittests_new/atom_unittest_4.cpp
-atom_unittest_5 ../../unittests_new/atom_unittest_5.cpp
-atom_unittest_6 ../../unittests_new/atom_unittest_6.cpp
-atom_unittest_7 ../../unittests_new/atom_unittest_7.cpp
-atom_unittest_8 ../../unittests_new/atom_unittest_8.cpp
-atom_unittest_9 ../../unittests_new/atom_unittest_9.cpp
-
-

@@ -28,7 +28,7 @@ for p in lib_paths:
 
 matches = []
 unittest_apps = []
-for root, dirnames, filenames in os.walk('../../unittests'):
+for root, dirnames, filenames in os.walk('../../unittests_new'):
     for filename in fnmatch.filter(filenames, '*.c*'):
         path = os.path.join(root, filename)
         f = open(path)
@@ -36,7 +36,7 @@ for root, dirnames, filenames in os.walk('../../unittests'):
         for l in f.readlines():
             if len(l) < 8:
                 continue
-            if l[:8] == 'int main':
+            if l[:9] == 'TEST_CASE':
                 unittest_apps.append((os.path.join(root, filename)))
                 fail = 1
                 break
