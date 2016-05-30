@@ -18,6 +18,21 @@
 #include "structure/residue.h"
 #include "structure/residue_type_set.h"
 
+/*
+ * Exception for chain
+ */
+class ChainException : public std::runtime_error {
+public:
+    /**
+     * Standard constructor for ChainException
+     * @param   message   Error message for chain
+     */
+    ChainException(String const & message):
+    std::runtime_error(message)
+    {}
+};
+
+
 class Chain {
 public:
     Chain() {}
@@ -62,19 +77,37 @@ public:
     
     inline
     ResidueOP const &
-    first() { return residues_[0]; }
+    first() {
+        
+        if(residues_.size() == 0) {
+            throw ChainException("cannot call first there are no "
+                                 "residues in chain");
+        }
+        
+        return residues_[0];
+    }
     
     inline
     ResidueOP const &
-    last() { return residues_.back(); }
+    last() {
+        
+        if(residues_.size() == 0) {
+            throw ChainException("cannot call last there are no "
+                                 "residues in chain");
+        }
+        
+        return residues_.back();
+    }
     
     inline
     ChainOP
     subchain(int start, int end) {
-        if(start < 0) { throw "start cannot be less then 0"; }
-        if(start == end) { throw "start and end cannot be the same value"; }
-        if(end > residues().size()) { throw "end is greater then chain length"; }
-        if(start > end) { throw "start is greater then end"; }
+        
+        if(start < 0) { throw ChainException("start cannot be less then 0"); }
+        if(start == end) { throw ChainException("start and end cannot be the same value"); }
+        if(end > residues().size()) { throw ChainException("end is greater then chain length"); }
+        if(start > end) { throw ChainException("start is greater then end"); }
+        
         return ChainOP(new Chain(ResidueOPs(residues_.begin() + start, residues_.begin() + end)));
     }
     
@@ -84,8 +117,15 @@ public:
         ResidueOP const & r1,
         ResidueOP const & r2) {
         
-        if(std::find(residues_.begin(), residues_.end(), r1) == residues_.end()) { return nullptr; }
-        if(std::find(residues_.begin(), residues_.end(), r2) == residues_.end()) { return nullptr; }
+        if(std::find(residues_.begin(), residues_.end(), r1) == residues_.end()) {
+            throw ChainException("starting residue is not part of chain, cannot"
+                                 "create subchain");
+        
+        }
+        if(std::find(residues_.begin(), residues_.end(), r2) == residues_.end()) {
+            throw ChainException("end residue is not part of chain, cannot"
+                                 "create subchain");
+        }
 
         int start = (int)(std::find(residues_.begin(), residues_.end(), r1) - residues_.begin());
         int end   = (int)(std::find(residues_.begin(), residues_.end(), r2) - residues_.begin());

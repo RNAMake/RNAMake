@@ -32,7 +32,6 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         REQUIRE(a->name() == "C1'");
         
         REQUIRE_THROWS_AS(r->get_atom("fake"), ResidueException);
-        
     }
     
     SECTION("are residues detecting connections properly") {
