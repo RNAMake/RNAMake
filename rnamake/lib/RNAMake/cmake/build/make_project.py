@@ -31,6 +31,10 @@ unittest_apps = []
 for root, dirnames, filenames in os.walk('../../unittests_new'):
     for filename in fnmatch.filter(filenames, '*.c*'):
         path = os.path.join(root, filename)
+        if filename == "all.cpp":
+            unittest_apps.append((os.path.join(root, filename)))
+            continue
+
         f = open(path)
         fail = 0
         for l in f.readlines():
@@ -78,7 +82,7 @@ fsum = open("unittest_apps.cmake", "w")
 
 f = open("unittests.txt")
 
-for l in f.readlines():
+"""for l in f.readlines():
     spl = l.split()
     if len(spl) < 2:
         continue
@@ -89,8 +93,8 @@ for l in f.readlines():
     #fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND  -E create_symlink ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
     fsum.write("\n\n")
 
-fsum.close()
-"""
+fsum.close()"""
+
 for path in unittest_apps:
     fname = util.filename(path)
     if fname == "all_tests.cc" or fname == "main.cpp":
@@ -113,5 +117,4 @@ for path in unittest_apps:
 
 
 f.close()
-"""
 

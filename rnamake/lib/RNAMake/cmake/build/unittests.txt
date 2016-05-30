@@ -1,1 +1,1 @@
-atom_unittest ../../unittests_new/atom_unittest.cpp
+atom_unittest ../../unittests_new/structure/atom_unittest.cpp

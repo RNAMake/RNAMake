@@ -482,7 +482,7 @@ public: // getters
      * getter for the one letter residue type
      */
     inline
-    String const &
+    String
     short_name() const { return rtype_.short_name(); }
     
     /**

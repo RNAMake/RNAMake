@@ -100,7 +100,6 @@ class ResidueTypeSet(object):
                 rtype = ResidueType(name, atom_map, set_type)
                 self.residue_types.append(rtype)
 
-
     def _get_set_type(self, type_dir):
         name = util.filename(type_dir)
         return name
