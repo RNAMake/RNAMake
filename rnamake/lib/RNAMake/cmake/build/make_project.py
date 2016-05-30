@@ -31,7 +31,8 @@ unittest_apps = []
 for root, dirnames, filenames in os.walk('../../unittests_new'):
     for filename in fnmatch.filter(filenames, '*.c*'):
         path = os.path.join(root, filename)
-        if filename == "all.cpp":
+        #print filename
+        if filename == "all_unittests.cpp":
             unittest_apps.append((os.path.join(root, filename)))
             continue
 
