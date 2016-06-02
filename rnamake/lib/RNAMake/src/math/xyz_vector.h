@@ -73,6 +73,24 @@ public: // Creation
 	y_( t ),
 	z_( t )
 	{}
+    
+    inline
+    xyzVector( String const & s) {
+        auto spl = split_str_by_delimiter(s, " ");
+        assert(spl.size() >= 3);
+        x_ = (Value)std::stod(spl[0]);
+        y_ = (Value)std::stod(spl[1]);
+        z_ = (Value)std::stod(spl[2]);
+    }
+    
+public:
+    
+    inline
+    String
+    to_str() {
+        return std::to_string(x_) + " " + std::to_string(y_) + " " +
+               std::to_string(z_);
+    }
 	
 public: // Assignment
 	
@@ -188,17 +206,7 @@ public: // Assignment
 	
 public: // Methods
 	
-	
-	/// @brief Clear
-	inline
-	xyzVector &
-	clear()
-	{
-		x_ = y_ = z_ = Value( 0 );
-		return *this;
-	}
-	
-	
+		
 	/// @brief Zero
 	inline
 	xyzVector &
@@ -523,92 +531,31 @@ public: // Methods
 						 );
 	}
 	
-	
-	/// @brief Midpoint of 2 xyzVectors
-	friend
-	inline
-	xyzVector
-	midpoint( xyzVector const & a, xyzVector const & b )
-	{
-		return xyzVector(
-						 Value( 0.5 * ( a.x_ + b.x_ ) ),
-						 Value( 0.5 * ( a.y_ + b.y_ ) ),
-						 Value( 0.5 * ( a.z_ + b.z_ ) )
-						 );
-	}
-	
-	/// @brief Angle between two vectors (in radians on [ 0, pi ])
-	friend
-	inline
-	Value
-	angle_of( xyzVector const & a, xyzVector const & b )
-	{
-		Value const mag = a.length() * b.length();
-		
-		return std::acos( a.dot( b ) / mag );
-	}
-	
+
 public: // Properties: accessors
 	
 	
 	/// @brief Value x const
 	inline
 	Value const &
-	x() const
-	{
-		return x_;
-	}
-	
-	/// @brief Value x
-	inline
-	Value &
-	x()
-	{
-		return x_;
-	}
-	
+	x() const { return x_; }
 	
 	/// @brief Value y const
 	inline
 	Value const &
-	y() const
-	{
-		return y_;
-	}
+	y() const { return y_; }
 	
-	
-	/// @brief Value y
-	inline
-	Value &
-	y()
-	{
-		return y_;
-	}
-	
-	
+
 	/// @brief Value z const
 	inline
 	Value const &
-	z() const
-	{
-		return z_;
-	}
+    z() const { return z_; }
 	
-	
-	/// @brief Value z
-	inline
-	Value &
-	z()
-	{
-		return z_;
-	}
-	
-	
+    
 	/// @brief Length
 	inline
 	Value
-	length() const
-	{
+	length() const {
 		return std::sqrt( ( x_ * x_ ) + ( y_ * y_ ) + ( z_ * z_ ) );
 	}
 	
@@ -616,8 +563,7 @@ public: // Properties: accessors
 	/// @brief Length squared
 	inline
 	Value
-	length_squared() const
-	{
+	length_squared() const {
 		return ( x_ * x_ ) + ( y_ * y_ ) + ( z_ * z_ );
 	}
 	
@@ -625,8 +571,7 @@ public: // Properties: accessors
 	/// @brief Norm
 	inline
 	Value
-	norm() const
-	{
+	norm() const {
 		return std::sqrt( ( x_ * x_ ) + ( y_ * y_ ) + ( z_ * z_ ) );
 	}
 	
@@ -634,8 +579,7 @@ public: // Properties: accessors
 	/// @brief Norm squared
 	inline
 	Value
-	norm_squared() const
-	{
+	norm_squared() const {
 		return ( x_ * x_ ) + ( y_ * y_ ) + ( z_ * z_ );
 	}
 	
@@ -643,8 +587,7 @@ public: // Properties: accessors
 	/// @brief Magnitude
 	inline
 	Value
-	magnitude() const
-	{
+	magnitude() const {
 		return std::sqrt( ( x_ * x_ ) + ( y_ * y_ ) + ( z_ * z_ ) );
 	}
 	
@@ -652,8 +595,7 @@ public: // Properties: accessors
 	/// @brief Magnitude squared
 	inline
 	Value
-	magnitude_squared() const
-	{
+	magnitude_squared() const {
 		return ( x_ * x_ ) + ( y_ * y_ ) + ( z_ * z_ );
 	}
 	
@@ -664,28 +606,19 @@ public: // Properties: value assignment
 	/// @brief x assignment
 	inline
 	void
-	x( Value const & x_a )
-	{
-		x_ = x_a;
-	}
+	x( Value const & x_a ) { x_ = x_a; }
 	
 	
 	/// @brief y assignment
 	inline
 	void
-	y( Value const & y_a )
-	{
-		y_ = y_a;
-	}
+    y( Value const & y_a ) { y_ = y_a; }
 	
 	
 	/// @brief z assignment
 	inline
 	void
-	z( Value const & z_a )
-	{
-		z_ = z_a;
-	}
+	z( Value const & z_a ) { z_ = z_a; }
 		
 	
 public: // Indexers
@@ -754,164 +687,6 @@ public: // Comparison
 	}
 	
 	
-	/// @brief xyzVector < xyzVector
-	friend
-	inline
-	bool
-	operator <( xyzVector const & a, xyzVector const & b )
-	{
-		return ( a.x_ < b.x_ ) && ( a.y_ < b.y_ ) && ( a.z_ < b.z_ );
-	}
-	
-	
-	/// @brief xyzVector <= xyzVector
-	friend
-	inline
-	bool
-	operator <=( xyzVector const & a, xyzVector const & b )
-	{
-		return ( a.x_ <= b.x_ ) && ( a.y_ <= b.y_ ) && ( a.z_ <= b.z_ );
-	}
-	
-	
-	/// @brief xyzVector >= xyzVector
-	friend
-	inline
-	bool
-	operator >=( xyzVector const & a, xyzVector const & b )
-	{
-		return ( a.x_ >= b.x_ ) && ( a.y_ >= b.y_ ) && ( a.z_ >= b.z_ );
-	}
-	
-	
-	/// @brief xyzVector > xyzVector
-	friend
-	inline
-	bool
-	operator >( xyzVector const & a, xyzVector const & b )
-	{
-		return ( a.x_ > b.x_ ) && ( a.y_ > b.y_ ) && ( a.z_ > b.z_ );
-	}
-	
-	
-	/// @brief xyzVector == Value
-	friend
-	inline
-	bool
-	operator ==( xyzVector const & v, Value const & t )
-	{
-		return ( v.x_ == t ) && ( v.y_ == t ) && ( v.z_ == t );
-	}
-	
-	
-	/// @brief xyzVector != Value
-	friend
-	inline
-	bool
-	operator !=( xyzVector const & v, Value const & t )
-	{
-		return ( v.x_ != t ) || ( v.y_ != t ) || ( v.z_ != t );
-	}
-	
-	
-	/// @brief xyzVector < Value
-	friend
-	inline
-	bool
-	operator <( xyzVector const & v, Value const & t )
-	{
-		return ( v.x_ < t ) && ( v.y_ < t ) && ( v.z_ < t );
-	}
-	
-	
-	/// @brief xyzVector <= Value
-	friend
-	inline
-	bool
-	operator <=( xyzVector const & v, Value const & t )
-	{
-		return ( v.x_ <= t ) && ( v.y_ <= t ) && ( v.z_ <= t );
-	}
-	
-	
-	/// @brief xyzVector >= Value
-	friend
-	inline
-	bool
-	operator >=( xyzVector const & v, Value const & t )
-	{
-		return ( v.x_ >= t ) && ( v.y_ >= t ) && ( v.z_ >= t );
-	}
-	
-	
-	/// @brief xyzVector > Value
-	friend
-	inline
-	bool
-	operator >( xyzVector const & v, Value const & t )
-	{
-		return ( v.x_ > t ) && ( v.y_ > t ) && ( v.z_ > t );
-	}
-	
-	
-	/// @brief Value == xyzVector
-	friend
-	inline
-	bool
-	operator ==( Value const & t, xyzVector const & v )
-	{
-		return ( t == v.x_ ) && ( t == v.y_ ) && ( t == v.z_ );
-	}
-	
-	
-	/// @brief Value != xyzVector
-	friend
-	inline
-	bool
-	operator !=( Value const & t, xyzVector const & v )
-	{
-		return ( t != v.x_ ) || ( t != v.y_ ) || ( t != v.z_ );
-	}
-	
-	
-	/// @brief Value < xyzVector
-	friend
-	inline
-	bool
-	operator <( Value const & t, xyzVector const & v )
-	{
-		return ( t < v.x_ ) && ( t < v.y_ ) && ( t < v.z_ );
-	}
-	
-	
-	/// @brief Value <= xyzVector
-	friend
-	inline
-	bool
-	operator <=( Value const & t, xyzVector const & v )
-	{
-		return ( t <= v.x_ ) && ( t <= v.y_ ) && ( t <= v.z_ );
-	}
-	
-	
-	/// @brief Value >= xyzVector
-	friend
-	inline
-	bool
-	operator >=( Value const & t, xyzVector const & v )
-	{
-		return ( t >= v.x_ ) && ( t >= v.y_ ) && ( t >= v.z_ );
-	}
-	
-	
-	/// @brief Value > xyzVector
-	friend
-	inline
-	bool
-	operator >( Value const & t, xyzVector const & v )
-	{
-		return ( t > v.x_ ) && ( t > v.y_ ) && ( t > v.z_ );
-	}
 	
 private: // Methods
 	
@@ -920,10 +695,7 @@ private: // Methods
 	inline
 	static
 	Value
-	square( Value const & t )
-	{
-		return t * t;
-	}
+	square( Value const & t ) { return t * t; }
 	
 private: // Fields
 	
@@ -955,20 +727,11 @@ operator <<( std::ostream & stream, std::vector<xyzVector< T > > const & v ) {
 
 
 
-typedef xyzVector<float> Vector;
+typedef xyzVector<double> Vector;
 typedef std::vector<Vector> Vectors;
 
-typedef xyzVector<float> Point;
+typedef xyzVector<double> Point;
 typedef std::vector<Point> Points;
-
-inline
-void
-sqr_distance(
-	Vector const & v1,
-	Vector const & v2,
-	float & result) {
-	result = (v1.x()-v2.x())*(v1.x()-v2.x()) + (v1.y()-v2.y())*(v1.y()-v2.y()) + (v1.z()-v2.z())*(v1.z()-v2.z());
-}
 
 
 inline
@@ -978,7 +741,7 @@ vector_from_str(
 	std::string const & s) {
 	
 	std::vector<std::string> values = split_str_by_delimiter(s," ");
-	std::vector<float> point;
+	std::vector<double> point;
 	
 	for (std::vector<std::string>::iterator i = values.begin();
 		 i != values.end(); ++i) {
@@ -1019,7 +782,7 @@ vectors_from_str(
 	std::string const & s) {
 	
 	std::vector<std::string> values = split_str_by_delimiter(s," ");
-	std::vector<float> point;
+	std::vector<double> point;
 	
 	Vectors vecs;
 	
@@ -1029,7 +792,7 @@ vectors_from_str(
 		if(point.size() == 3) {
 			Vector vec(point);
 			vecs.push_back(vec);
-			point = std::vector<float>();
+			point = std::vector<double>();
 		}
 	}
 	

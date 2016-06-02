@@ -8,7 +8,6 @@
 
 //RNAMake Headers
 #include "math/xyz_vector.h"
-#include "util/file_io.h"
 #include "structure/atom.h"
 
 String

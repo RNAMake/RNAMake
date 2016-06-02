@@ -7,12 +7,12 @@
 //
 
 #include "follow_path.h"
-#include "util/file_io.h"
+#include "base/settings.h"
+#include "base/file_io.h"
 #include "util/basic_io.hpp"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_topology.h"
 #include "motif_data_structures/motif_graph.h"
-#include "util/settings.h"
 
 void
 PathBuilder::setup_options() {

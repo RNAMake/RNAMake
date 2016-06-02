@@ -457,6 +457,38 @@ public: // Methods: basic mathematical
 			-zx_, -zy_, -zz_);
 
 	}
+    
+    inline const
+    xyzMatrix
+    get_unitarize() const {
+        
+        
+        auto m = xyzMatrix(xx_, xy_, xz_,
+                           yx_, yy_, yz_,
+                           zx_, zy_, zz_);
+        
+        //R[0] /= math.sqrt(R[0].dot(R[0]))
+        double dot = sqrt(xx_*xx_ + xy_*xy_ + xz_*xz_);
+        m.xx_ /= dot; m.xy_ /= dot; m.xz_ /= dot;
+        //R[1] -= R[1].dot(R[0]) * R[0]
+        dot = yx_*m.xx_ + yy_*m.xy_ + yz_*m.xz_;
+        m.yx_ -= dot*m.xx_; m.yy_ -= dot*m.xy_; m.yz_ -= dot*m.xz_;
+        //R[1] /= math.sqrt(R[1].dot(R[1]))
+        dot = sqrt(m.yx_*m.yx_ + m.yy_*m.yy_ + m.yz_*m.yz_);
+        m.yx_ /= dot; m.yy_ /= dot; m.yz_ /= dot;
+        //R[2] -= R[2].dot(R[0]) * R[0]
+        dot = m.zx_*m.xx_ + m.zy_*m.xy_ + m.zz_*m.xz_;
+        m.zx_ -= dot*m.xx_; m.zy_ -= dot*m.xy_; m.zz_ -= dot*m.xz_;
+        //R[2] -= R[2].dot(R[1]) * R[1]
+        dot = m.zx_*m.yx_ + m.zy_*m.yy_ + m.zz_*m.yz_;
+        m.zx_ -= dot*m.yx_; m.zy_ -= dot*m.yy_; m.zz_ -= dot*m.yz_;
+        //R[2] /= math.sqrt(R[2].dot(R[2]))
+        dot = sqrt(m.zx_*m.zx_ + m.zy_*m.zy_ + m.zz_*m.zz_);
+        m.zx_ /= dot; m.zy_ /= dot; m.zz_ /= dot;
+
+        
+        return m;
+    }
 	
 public: // Properties: scalars
 	
@@ -726,7 +758,7 @@ private:
 	
 };
 
-typedef xyzMatrix<float> Matrix;
+typedef xyzMatrix<double> Matrix;
 typedef std::vector<Matrix> Matrices;
 
 inline
@@ -736,7 +768,7 @@ matrix_from_str(
 	std::string const & s) {
 	
     std::vector<std::string> values = split_str_by_delimiter(s," ");
-	std::vector<float> point;
+	std::vector<double> point;
 	Matrix m(0);
 	int j = 0;
 	for (std::vector<std::string>::iterator i = values.begin();
@@ -745,7 +777,7 @@ matrix_from_str(
 		point.push_back(atof(i->c_str()));
 		if (point.size() == 3) {
 			m.row(j,point);
-			point = std::vector<float>();
+			point = std::vector<double>();
 			j += 1;
 
 		}

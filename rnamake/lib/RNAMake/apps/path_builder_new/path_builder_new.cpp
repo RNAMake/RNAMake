@@ -9,10 +9,9 @@
 #include "path_builder_new.hpp"
 
 
-#include "util/file_io.h"
-#include "util/settings.h"
+#include "base/file_io.h"
+#include "base/settings.h"
 #include "util/basic_io.hpp"
-#include "util/file_io.h"
 #include "util/steric_lookup.hpp"
 #include "resources/resource_manager.h"
 #include "motif/motif_factory.h"

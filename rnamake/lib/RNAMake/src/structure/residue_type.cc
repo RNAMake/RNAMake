@@ -76,9 +76,10 @@ ResidueType::extend_res_specific_altnames() {
         
     }
     
-    for ( auto const & name : alt_names_ ){
+    for ( auto const & name : alt_names ){
         alt_names_.push_back(name);
     }
+    
     
 }
 

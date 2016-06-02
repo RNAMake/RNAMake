@@ -11,7 +11,7 @@
 #include "motif/motif_factory.h"
 #include "structure/chain.h"
 #include "secondary_structure/util.h"
-#include "util/file_io.h"
+#include "base/file_io.h"
 #include "util/x3dna.h"
 
 

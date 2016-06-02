@@ -72,7 +72,7 @@ public:
     Beads
     get_beads(
         ResidueOPs const & excluded_res) {
-        Beads beads;
+        auto beads = Beads();
         int found = 0;
         for ( auto const & r : residues()) {
             found = 0;
@@ -85,6 +85,13 @@ public:
             }
         }
         return beads;
+    }
+    
+    inline
+    Beads
+    get_beads() {
+        auto res = ResidueOPs();
+        return get_beads(res);
     }
     
     ResidueOP const

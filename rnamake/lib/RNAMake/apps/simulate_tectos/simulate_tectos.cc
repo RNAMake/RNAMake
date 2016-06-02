@@ -7,7 +7,7 @@
 //
 
 #include "base/cl_option.h"
-#include "util/settings.h"
+#include "base/settings.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_tree.h"
 #include "thermo_fluctuation/thermo_fluc_simulation.h"

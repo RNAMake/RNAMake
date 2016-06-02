@@ -13,8 +13,8 @@
 
 #include "base/option.h"
 #include "base/cl_option.h"
+#include "base/settings.h"
 
-#include "util/settings.h"
 #include "motif/motif.h"
 #include "motif_data_structures/motif_graph.h"
 #include "motif_state_search/motif_state_search.h"

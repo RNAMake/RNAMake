@@ -8,8 +8,8 @@
 
 #include "thermo_simulation.hpp"
 
-#include "util/file_io.h"
-#include "util/settings.h"
+#include "base/file_io.h"
+#include "base/settings.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_topology.h"
 #include "motif_data_structures/motif_graph.h"

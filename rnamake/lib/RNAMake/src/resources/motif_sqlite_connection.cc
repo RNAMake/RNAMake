@@ -7,7 +7,7 @@
 //
 
 
-#include "util/settings.h"
+#include "base/settings.h"
 #include "resources/motif_sqlite_connection.h"
 
 

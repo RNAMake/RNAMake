@@ -8,9 +8,9 @@
 
 #include "follow_path_process.h"
 #include "base/cl_option.h"
-#include "util/file_io.h"
+#include "base/file_io.h"
+#include "base/settings.h"
 #include "util/basic_io.hpp"
-#include "util/settings.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_topology.h"
 #include "motif_data_structures/motif_graph.h"

@@ -14,9 +14,9 @@
 
 int
 are_floats_equal(
-	float const a,
-	float const b,
-    float tol) {
+	double const a,
+	double const b,
+    double tol) {
 	if (fabs(a - b) < tol) { return 1; }
 	else					 { return 0; }
 }
