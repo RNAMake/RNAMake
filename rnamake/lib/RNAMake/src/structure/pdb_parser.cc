@@ -23,7 +23,7 @@ PDBParser::parse(String const & pdb_file) {
     String atomname, resname, resnum, chid, alt;
     Point coords;
     String sx, sy, sz;
-    float x, y, z;
+    double x, y, z;
     
     Strings atomnames, resnames, chainids, icodes, resnums;
     Points coordinates;
@@ -47,9 +47,9 @@ PDBParser::parse(String const & pdb_file) {
             sz       = trim(sz);
             
             
-            x        = std::stof(sx);
-            y        = std::stof(sy);
-            z        = std::stof(sz);
+            x        = std::stod(sx);
+            y        = std::stod(sy);
+            z        = std::stod(sz);
             coords   = Point(x, y, z);
             
             resnum  = line.substr(22, 4);

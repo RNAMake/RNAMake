@@ -24,6 +24,7 @@ def write_application_cmake_file():
     fsum.close()
     f.close()
 
+
 def get_unittests_for_dir(d_name):
     unittest_apps = []
 
@@ -47,12 +48,38 @@ def get_unittests_for_dir(d_name):
     return unittest_apps
 
 
+def get_integration_tests_for_dir(d_name):
+    intergration_apps = []
+
+    if not os.path.isdir('../../unittests_new/integration/'+d_name):
+        return []
+
+    for root, dirnames, filenames in os.walk('../../unittests_new/integration/'+d_name):
+        for filename in fnmatch.filter(filenames, '*.c*'):
+            path = os.path.join(root, filename)
+
+            f = open(path)
+            fail = 0
+            for l in f.readlines():
+                if len(l) < 8:
+                    continue
+                if l[:9] == 'TEST_CASE':
+                    intergration_apps.append((os.path.join(root, filename)))
+                    fail = 1
+                    break
+
+    return intergration_apps
+
+
 # make sure these directories exist
 if not os.path.isdir("../../bin"):
     os.mkdir("../../bin")
 
 if not os.path.isdir("../../bin/unittests"):
     os.mkdir("../../bin/unittests")
+
+if not os.path.isdir("../../bin/integration"):
+    os.mkdir("../../bin/integration")
 
 #libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer instances"
 libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
@@ -104,6 +131,19 @@ for p in lib_paths:
         f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
         f.write("\n\n")
 
+    integration_apps = get_integration_tests_for_dir(p)
+    for inte_app in integration_apps:
+        fname = util.filename(inte_app)
+        spl = fname.split(".")
+        prog_name = spl[0]
+
+        symlink = prog_name+"_symlink"
+        f.write("add_executable("+ prog_name + " " + inte_app +")\n")
+        f.write("target_link_libraries("+prog_name+" %s)\n" % p)
+        f.write("add_custom_target("+symlink+" ALL)\n")
+        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/integration/"+spl[0]+" "+ spl[0]+")\n")
+        f.write("\n\n")
+
     #compile unittests for this lib
 
     #f.write("target_link_libraries ( " + )
@@ -114,63 +154,3 @@ f.write("target_link_libraries(all_libs %s)\n\n" % (depends['all_libs']))
 f.close()
 
 write_application_cmake_file()
-
-"""
-matches = []
-unittest_apps = []
-for root, dirnames, filenames in os.walk('../../unittests_new'):
-    for filename in fnmatch.filter(filenames, '*.c*'):
-        path = os.path.join(root, filename)
-
-        f = open(path)
-        fail = 0
-        for l in f.readlines():
-            if len(l) < 8:
-                continue
-            if l[:9] == 'TEST_CASE':
-                unittest_apps.append((os.path.join(root, filename)))
-                fail = 1
-                break
-        if fail:
-            continue
-        matches.append(os.path.join(root, filename))
-
-
-f = open("unittests.cmake", "w")
-f.write("set(unittests_files\n")
-for m in matches:
-    f.write("\t"+m+"\n")
-f.write(")\n")
-
-"""
-
-
-exit()
-
-fsum = open("unittest_apps.cmake", "w")
-
-f = open("unittests.txt")
-
-for path in unittest_apps:
-    fname = util.filename(path)
-    if fname == "all_tests.cc" or fname == "main.cpp":
-        continue
-
-    spl = fname.split(".")
-    if spl[0][-3:] == "app":
-        prog_name = spl[0][:-4]
-    elif fname == "main.cc":
-        prog_name = "test"
-    else:
-        prog_name = spl[0]
-
-    symlink = prog_name+"_symlink"
-    fsum.write("add_executable("+ prog_name + " " + path +")\n")
-    fsum.write("target_link_libraries("+prog_name+" ${link_libraries})\n")
-    fsum.write("add_custom_target("+symlink+" ALL)\n")
-    fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
-    fsum.write("\n\n")
-
-
-f.close()
-
