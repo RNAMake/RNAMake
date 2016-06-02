@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 //RNAMake Headers
-#include "util/settings.h"
+#include "base/settings.h"
 #include "resources/sqlite_library.h"
 
 

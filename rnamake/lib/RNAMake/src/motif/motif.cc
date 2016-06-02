@@ -14,8 +14,8 @@
 #include <algorithm>
 
 //RNAMake Headers
-#include "util/file_io.h"
-#include "util/settings.h"
+#include "base/file_io.h"
+#include "base/settings.h"
 #include "util/x3dna.h"
 #include "structure/residue_type_set_manager.h"
 #include "structure/chain.h"

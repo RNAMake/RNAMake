@@ -18,9 +18,9 @@
 
 //RNAMake Headers
 #include "base/string.h"
+#include "base/settings.h"
 #include "math/xyz_vector.h"
 #include "math/xyz_matrix.h"
-#include "util/settings.h"
 
 class X3dnaException : public std::runtime_error {
 public:

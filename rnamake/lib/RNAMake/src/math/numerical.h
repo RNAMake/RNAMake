@@ -17,9 +17,9 @@
 
 int
 are_floats_equal(
-	float const a,
-	float const b,
-    float tol= 0.001);
+	double const a,
+	double const b,
+    double tol= 0.001);
 
 int
 are_xyzVector_equal(

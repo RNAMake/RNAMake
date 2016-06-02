@@ -53,11 +53,6 @@ public:
     
     inline
     String
-    const &
-    name() const { return name_; }
-    
-    inline
-    String
     short_name() const { return name_.substr(0,1); }
     
     inline
@@ -77,6 +72,18 @@ public:
     inline
     int
     size() { return (int)atom_map_.size(); }
+    
+public: //getters
+    
+    inline
+    String
+    const &
+    name() const { return name_; }
+
+    inline
+    SetType
+    set_type() const { return set_type_; }
+    
     
 private:
     

@@ -11,7 +11,7 @@
 
 //RNAMake Headers
 #include "structure/residue_type_set.h"
-#include "util/settings.h"
+#include "base/settings.h"
 #include "base/types.h"
 
 ResidueTypeSet::ResidueTypeSet():

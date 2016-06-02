@@ -7,7 +7,7 @@
 //
 
 #include <string.h>
-#include "util/settings.h"
+#include "base/settings.h"
 #include "util/sqlite3_connection.h"
 
 

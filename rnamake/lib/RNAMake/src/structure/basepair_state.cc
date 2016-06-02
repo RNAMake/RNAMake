@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Joseph Yesselman. All rights reserved.
 //
 
-#include "util/settings.h"
-#include "util/file_io.h"
+#include "base/settings.h"
+#include "base/file_io.h"
 #include "structure/basepair_state.h"
 
 BasepairState

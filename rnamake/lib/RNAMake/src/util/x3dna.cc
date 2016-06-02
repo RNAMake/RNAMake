@@ -9,8 +9,8 @@
 #include <map>
 
 //RNAMake Headers
+#include "base/file_io.h"
 #include "util/x3dna.h"
-#include "util/file_io.h"
 
 X3dna::X3dna() {
     String env = "X3DNA="+x3dna_path();
@@ -126,7 +126,7 @@ X3dna::_get_dssr_file_path(String const & pdb_path) {
 
 Point
 X3dna::_convert_strings_to_point(Strings const & spl) {
-    std::vector<float> f;
+    std::vector<double> f;
     for (auto const & s : spl) {
         if(s.length() > 1) {
             f.push_back(std::stof(s));

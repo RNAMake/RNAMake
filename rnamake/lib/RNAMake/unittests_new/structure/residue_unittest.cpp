@@ -3,13 +3,13 @@
 
 //headers for testing
 #include "../common.hpp"
-#include "../is_equal.hpp"
-#include "../settings.hpp"
 
 //RNAMake Headers
-#include "util/file_io.h"
+#include "base/file_io.h"
+#include "base/settings.h"
 #include "structure/residue.h"
 #include "structure/residue_type_set.h"
+#include "structure/is_equal.hpp"
 
 
 TEST_CASE( "Test Residues for Structure", "[Residue]" ) {

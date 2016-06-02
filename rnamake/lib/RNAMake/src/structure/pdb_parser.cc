@@ -10,13 +10,13 @@
 
 //RNAMake Headers
 #include "base/string.h"
+#include "base/file_io.h"
 #include "math/xyz_vector.h"
-#include "util/file_io.h"
 #include "structure/pdb_parser.h"
 
 ResidueOPs const &
 PDBParser::parse(String const & pdb_file) {
-    residues_.resize(0);
+    residues_ = ResidueOPs();
     
     Strings lines = get_lines_from_file(pdb_file);
     String startswith;
@@ -101,6 +101,9 @@ PDBParser::parse(String const & pdb_file) {
         spl = split_str_by_delimiter(kv.first, " ");
         if(!rts_.contains_rtype(spl[0])) { continue; }
         rtype = rts_.get_rtype_by_resname(spl[0]);
+        
+        if(rtype.set_type() == SetType::PROTEIN) { continue; }
+        
         icode = "";
         if(spl.size() > 3) { icode = spl[3]; }
         r = ResidueOP(new Residue(rtype, spl[0], std::stoi(spl[1]), spl[2], icode));

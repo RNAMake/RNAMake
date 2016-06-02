@@ -9,8 +9,8 @@
 #include "path_builder.hpp"
 
 #include "base/cl_option.h"
-#include "util/file_io.h"
-#include "util/settings.h"
+#include "base/file_io.h"
+#include "base/settings.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_graph.h"
 #include "motif_state_search/motif_state_search.h"
