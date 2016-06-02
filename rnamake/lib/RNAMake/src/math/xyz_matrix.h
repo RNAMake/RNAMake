@@ -147,10 +147,42 @@ public: //creation
 	zx_( t ), zy_( t ), zz_( t )
 	{}
 	
+    
+    inline
+    xyzMatrix(
+        String const & s) {
+        
+        auto v = split_str_by_delimiter(s," ");
+        assert(v.size() > 8);
+        xx_ = std::stod(v[0]);
+        xy_ = std::stod(v[1]);
+        xz_ = std::stod(v[2]);
+        yx_ = std::stod(v[3]);
+        yy_ = std::stod(v[4]);
+        yz_ = std::stod(v[5]);
+        zx_ = std::stod(v[6]);
+        zy_ = std::stod(v[7]);
+        zz_ = std::stod(v[8]);
+    }
+    
 	/// @brief Destructor
 	inline
 	~xyzMatrix()
 	{}
+    
+public:
+    
+    inline
+    String
+    to_str() {
+        return std::to_string(xx_) + " " + std::to_string(xy_) + " " + \
+               std::to_string(xz_) + " " + std::to_string(yx_) + " " + \
+               std::to_string(yy_) + " " + std::to_string(yz_) + " " + \
+               std::to_string(zx_) + " " + std::to_string(zy_) + " " + \
+               std::to_string(zz_);
+
+        
+    }
 
 public:
 	
@@ -408,6 +440,7 @@ public: // Methods: basic mathematical
 						 );
 	}
 
+public:
 	/// @brief Transpose
 	inline
 	xyzMatrix &
@@ -489,6 +522,29 @@ public: // Methods: basic mathematical
         
         return m;
     }
+    
+    inline
+    void
+    unitarize() {
+        double dot = sqrt(xx_*xx_ + xy_*xy_ + xz_*xz_);
+        xx_ /= dot; xy_ /= dot; xz_ /= dot;
+        //R[1] -= R[1].dot(R[0]) * R[0]
+        dot = yx_*xx_ + yy_*xy_ + yz_*xz_;
+        yx_ -= dot*xx_; yy_ -= dot*xy_; yz_ -= dot*xz_;
+        //R[1] /= math.sqrt(R[1].dot(R[1]))
+        dot = sqrt(yx_*yx_ + yy_*yy_ + yz_*yz_);
+        yx_ /= dot; yy_ /= dot; yz_ /= dot;
+        //R[2] -= R[2].dot(R[0]) * R[0]
+        dot = zx_*xx_ + zy_*xy_ + zz_*xz_;
+        zx_ -= dot*xx_; zy_ -= dot*xy_; zz_ -= dot*xz_;
+        //R[2] -= R[2].dot(R[1]) * R[1]
+        dot = zx_*yx_ + zy_*yy_ + zz_*yz_;
+        zx_ -= dot*yx_; zy_ -= dot*yy_; zz_ -= dot*yz_;
+        //R[2] /= math.sqrt(R[2].dot(R[2]))
+        dot = sqrt(zx_*zx_ + zy_*zy_ + zz_*zz_);
+        zx_ /= dot; zy_ /= dot; zz_ /= dot;
+    }
+    
 	
 public: // Properties: scalars
 	
@@ -496,163 +552,50 @@ public: // Properties: scalars
 	/// @brief Value xx const
 	inline
 	Value const &
-	xx() const
-	{
-		return xx_;
-	}
-	
-	
-	/// @brief Value xx
-	inline
-	Value &
-	xx()
-	{
-		return xx_;
-	}
+	xx() const { return xx_; }
 	
 	
 	/// @brief Value xy const
 	inline
 	Value const &
-	xy() const
-	{
-		return xy_;
-	}
-	
-	
-	/// @brief Value xy
-	inline
-	Value &
-	xy()
-	{
-		return xy_;
-	}
+	xy() const { return xy_; }
 	
 	
 	/// @brief Value xz const
 	inline
 	Value const &
-	xz() const
-	{
-		return xz_;
-	}
-	
-	
-	/// @brief Value xz
-	inline
-	Value &
-	xz()
-	{
-		return xz_;
-	}
-	
-	
+    xz() const { return xz_; }
+
 	/// @brief Value yx const
 	inline
 	Value const &
-	yx() const
-	{
-		return yx_;
-	}
-	
-	
-	/// @brief Value yx
-	inline
-	Value &
-	yx()
-	{
-		return yx_;
-	}
-	
+    yx() const { return yx_; }
 	
 	/// @brief Value yy const
 	inline
 	Value const &
-	yy() const
-	{
-		return yy_;
-	}
-	
-	
-	/// @brief Value yy
-	inline
-	Value &
-	yy()
-	{
-		return yy_;
-	}
-	
+	yy() const { return yy_; }
 	
 	/// @brief Value yz const
 	inline
 	Value const &
-	yz() const
-	{
-		return yz_;
-	}
-	
-	
-	/// @brief Value yz
-	inline
-	Value &
-	yz()
-	{
-		return yz_;
-	}
-	
+	yz() const { return yz_; }
 	
 	/// @brief Value zx const
 	inline
 	Value const &
-	zx() const
-	{
-		return zx_;
-	}
-	
-	
-	/// @brief Value zx
-	inline
-	Value &
-	zx()
-	{
-		return zx_;
-	}
-	
+	zx() const { return zx_; }
 	
 	/// @brief Value zy const
 	inline
 	Value const &
-	zy() const
-	{
-		return zy_;
-	}
-	
-	
-	/// @brief Value zy
-	inline
-	Value &
-	zy()
-	{
-		return zy_;
-	}
-	
+	zy() const { return zy_; }
 	
 	/// @brief Value zz const
 	inline
 	Value const &
-	zz() const
-	{
-		return zz_;
-	}
+	zz() const { return zz_; }
 	
-	
-	/// @brief Value zz
-	inline
-	Value &
-	zz()
-	{
-		return zz_;
-	}
 	
 public: // Properties: value assignment
 	
