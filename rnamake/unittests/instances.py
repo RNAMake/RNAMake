@@ -6,7 +6,6 @@ from rnamake import transform, transformations
 
 
 def motif():
-    rts = residue_type.ResidueTypeSet()
     path = rnamake.settings.MOTIF_DIRS + "base.motif"
     return rnamake.motif.file_to_motif(path, rts)
 
