@@ -1,13 +1,14 @@
 import numpy as np
-from rnamake import settings, residue, chain, structure
+from rnamake import settings, io
 from rnamake.unittests import files
 import rnamake.structure
+import rnamake.motif
 from rnamake import transform, transformations
 
 
 def motif():
     path = rnamake.settings.MOTIF_DIRS + "base.motif"
-    return rnamake.motif.file_to_motif(path, rts)
+    return rnamake.motif.file_to_motif(path)
 
 
 def residue():
@@ -16,7 +17,7 @@ def residue():
     l = f.readline()
     f.close()
 
-    return residue.Residue.from_str(l)
+    return io.str_to_residue(l)
 
 
 def chain():
@@ -25,7 +26,7 @@ def chain():
     l = f.readline()
     f.close()
 
-    return chain.Chain.from_str(l)
+    return io.str_to_chain(l)
 
 
 def structure():
