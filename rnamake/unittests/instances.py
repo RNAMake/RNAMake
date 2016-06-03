@@ -45,3 +45,19 @@ def transform_random():
     return transform.Transform(r, d)
 
 
+def basepair():
+    return motif().ends[0]
+
+
+def baspairstate():
+    return basepair().state()
+
+
+def basepairstate_random():
+    bp_state = baspairstate()
+    t = transform_random()
+    new_r, new_d, new_sug = bp_state.get_transformed_state(t.rotation(), t.translation())
+    bp_state.set(new_r, new_d, new_sug)
+
+    return bp_state
+
