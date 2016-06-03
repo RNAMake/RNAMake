@@ -101,11 +101,12 @@ public:
         calculate_r_T();
         
 		//calculate transforming rotation matrix and store it in r_state (result state)
-		dot(r_T_,o_state.r_,r_state.r_);
-		r_state.calculate_r_T();
-		
+        dot(r_T_, o_state.r_, r_state.r_);
+        r_state.r_.unitarize();
+        r_state.calculate_r_T();
+        
 		//rotate sugars to new position and store them in r_state
-		dot_vectors(r_state.r_T_,o_state.sugars_,r_state.sugars_);
+		dot_vectors(r_state.r_T_, o_state.sugars_, r_state.sugars_);
 		
 		diff_ = -o_state.d() + d_;
 		int i;
@@ -130,6 +131,7 @@ public:
 		BasepairState & r_state) {
 		
 		dot        (r_, o_state.r_T_, r_state.r_);
+        r_state.r_.unitarize();
 		dot_vector (o_state.r_T_, d_, r_state.d_);
 		dot_vectors(o_state.r_T_, sugars_, r_state.sugars_);
 

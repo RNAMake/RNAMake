@@ -13,10 +13,9 @@ class BasepairStateAlignmentUnittests(unittest.TestCase):
 
     def test_align(self):
         m = instances.motif()
-        end1 = m.ends[0].state()
-        end2 = m.ends[1].state()
+        end1 = m.ends[0].state().copy()
+        end2 = m.ends[1].state().copy()
 
-        print end1.to_str() + "|" + end2.to_str()
 
         for i in range(100):
             r, t = end1.get_transforming_r_and_t_w_state(end2)
@@ -26,11 +25,15 @@ class BasepairStateAlignmentUnittests(unittest.TestCase):
             end2.set(new_r, new_d, new_sug)
 
             diff = end1.diff(end2)
+
+            print end1.sugars
+            print end2.sugars
+            exit()
             if diff > 0.001:
                 self.fail("did not align properly")
 
-        end1 = m.ends[1].state()
-        end2 = m.ends[0].state()
+        end1 = m.ends[1].state().copy()
+        end2 = m.ends[0].state().copy()
 
         for i in range(100):
             r, t = end1.get_transforming_r_and_t_w_state(end2)
