@@ -242,6 +242,20 @@ public: //getters
     OptionType const &
     type() const { return type_; }
     
+public:
+    
+    inline
+    String
+    type_name() {
+        if     (type_ == OptionType::BOOL)  { return "BOOL";   }
+        else if(type_ == OptionType::INT)   { return "INT";    }
+        else if(type_ == OptionType::STRING){ return "STRING"; }
+        else if(type_ == OptionType::FLOAT) { return "FLOAT";  }
+        else  {
+            throw OptionException("unknown option type");
+        }
+    }
+    
 protected:
     String name_;
     String s_val_;
