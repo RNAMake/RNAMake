@@ -16,6 +16,8 @@ class BasepairStateAlignmentUnittests(unittest.TestCase):
         end1 = m.ends[0].state()
         end2 = m.ends[1].state()
 
+        print end1.to_str() + "|" + end2.to_str()
+
         for i in range(100):
             r, t = end1.get_transforming_r_and_t_w_state(end2)
             t += end1.d

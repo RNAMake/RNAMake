@@ -82,7 +82,7 @@ get_bpstate_rotation_diff(
 
 
 int
-are_BasepairStates_equal(
+are_basepair_states_equal(
     BasepairState const & a,
     BasepairState const & b) {
     
