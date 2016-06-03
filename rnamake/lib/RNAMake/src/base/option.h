@@ -21,10 +21,10 @@
 #include "base/types.h"
 
 enum class OptionType {
-    BOOL,
-    INT,
-    STRING,
-    FLOAT
+    BOOL = 1,
+    INT = 2,
+    STRING = 3,
+    FLOAT = 4
 };
 
 
@@ -55,14 +55,56 @@ public:
         float const & value,
         OptionType const & type):
     name_(name),
-    type_(type) { f_val_ = value; }
+    type_(type) {
+        
+        f_val_ = value;
+    
+        if(type != OptionType::FLOAT) {
+            throw OptionException("supplied a float option but with the wrong type");
+        }
+    }
     
     Option(
         String const & name,
         String const & value,
         OptionType const & type):
     name_(name),
-    type_(type) { s_val_ = value; }
+    type_(type) {
+        s_val_ = value;
+    
+        if(type_ != OptionType::STRING) {
+            throw OptionException("supplied a string option but with the wrong type");
+        }
+        
+    }
+    
+    Option(
+           String const & name,
+           char const * value,
+           OptionType const & type):
+    name_(name),
+    type_(type) {
+        s_val_ = String(value);
+        
+        if(type_ != OptionType::STRING) {
+            throw OptionException("supplied a string option but with the wrong type");
+        }
+        
+    }
+    
+    Option(
+        char const * name,
+        char const * value,
+        OptionType const & type):
+    name_(String(name)),
+    type_(type){
+
+        s_val_ = String(value);
+        
+        if(type_ != OptionType::STRING) {
+            throw OptionException("supplied a string option but with the wrong type");
+        }
+    }
  
     Option(
         String const & name,
@@ -75,6 +117,7 @@ public:
             throw OptionException("calling wrong constructor for Option");
         }
         
+    
         b_val_ = value;
         
     }
@@ -95,6 +138,10 @@ public:
         else if(type_ == OptionType::BOOL) {
             b_val_ = bool(value);
         }
+        
+        else if(type_ == OptionType::STRING) {
+            throw OptionException("calling wrong constructor for Option");
+        }
     }
     
     virtual
@@ -113,7 +160,7 @@ public:
         }
         
         if(type_ == OptionType::INT) {
-            return i_val_;
+            return (float)i_val_;
         }
         
         return f_val_;
@@ -173,6 +220,9 @@ public:
     value(String const &);
     
     void
+    value(char const * c_str) { return value(String(c_str)); }
+    
+    void
     value(float const &);
     
     void
@@ -208,19 +258,16 @@ typedef std::shared_ptr<Option> OptionOP;
 class Options {
 public:
     Options():
-    name_("DefaultOptions"),
     options_(std::vector<OptionOP>()),
     locked_(false)
     {}
     
     Options(String const & name):
-    name_(name),
     options_(std::vector<OptionOP>()),
     locked_(false)
     {}
     
     Options(Options const & opts):
-    name_(opts.name_),
     locked_(opts.locked_),
     options_(std::vector<OptionOP>()) {
         for(auto const & opt : opts.options_) {
@@ -268,6 +315,7 @@ public:
         
     }
     
+    
     inline
     float
     get_int(String const & name) {
@@ -283,7 +331,7 @@ public:
     }
     
     inline
-    String
+    String const &
     get_string(String const & name) {
         auto opt = _find_option(name);
         return opt->get_string();
