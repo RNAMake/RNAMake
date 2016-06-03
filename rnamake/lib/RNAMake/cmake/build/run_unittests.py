@@ -12,6 +12,7 @@ for test in unittests:
 
     # everything passed
     if len(lines) == 3:
+        print test, lines[1],
         continue
     else:
         subprocess.call(test, shell=True)

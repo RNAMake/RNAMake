@@ -138,7 +138,6 @@ TEST_CASE( "Test Options for storing options for classes", "[Options]" ) {
             names += opt->name() + " ";
         }
         
-        std::cout << names << std::endl;
         auto expected = String("test test2 test3 ");
         REQUIRE(names == expected);
 

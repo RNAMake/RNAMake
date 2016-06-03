@@ -37,8 +37,13 @@ public:
         bool required):
     Option(name, value, type),
     required_(required),
-    filled_(false)
-    {}
+    filled_(false) {
+        if(type_ == OptionType::BOOL && b_val_ == true) {
+            throw CommandLineOptionException("boolean options must start as false");
+        }
+        
+    
+    }
     
     CommandLineOption(
         Option const & opt):
@@ -97,9 +102,14 @@ public:
         String const & name,
         T const & value,
         OptionType const & type,
-        bool required) {
+        bool required=false) {
+
+        if(has_option(name)) {
+            throw CommandLineOptionException("cannot add new option " + name + " it already exists");
+        }
         
         auto opt = std::make_shared<CommandLineOption>(name, value, type, required);
+        
         options_.push_back(opt);
     }
     
@@ -188,7 +198,8 @@ private:
     void
     _set_option(
         CommandLineOptionOP const &,
-        String const &);
+        String const &,
+        bool);
     
 private:
     std::vector<CommandLineOptionOP> options_;
