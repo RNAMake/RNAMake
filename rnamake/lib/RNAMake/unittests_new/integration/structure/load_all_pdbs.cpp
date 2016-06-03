@@ -18,6 +18,7 @@ TEST_CASE( "Load all PDBs", "[PDBParser]" ) {
         
         auto base = String("/Users/josephyesselman/projects/REDESIGN/resources/non-redundant-rnas/");
         
+        auto fail = 0;
         for(auto const & l : lines) {
             auto spl = split_str_by_delimiter(l, " ");
             if(spl.size() < 2) { continue; }
@@ -35,9 +36,12 @@ TEST_CASE( "Load all PDBs", "[PDBParser]" ) {
             
             if(spl[1].length() != seq.length()) {
                 std::cout << spl[0] << " " << spl[1] << " " << seq << std::endl;
-                exit(0);
+                fail = 1;
             }
         }
+        
+        REQUIRE(fail == 0);
+        
     }
 }
 

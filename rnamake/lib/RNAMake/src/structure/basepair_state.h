@@ -56,18 +56,35 @@ public:
     diff_sugars_( Vectors(2) )
     { transpose(r_, r_T_); }
 
+    inline
+    BasepairState(String const & s):
+    r_T_( Matrix(0) ),
+    diff_ ( Vector(0.0) ),
+    diff_sugars_( Vectors(2) )
+    {
+        auto spl = split_str_by_delimiter(s, ";");
+        if(spl.size() < 3) {
+            throw "cannot load BasepairState from String, not the right number of elements\n";
+        }
+        
+        d_ = Point(spl[0]);
+        r_ = Matrix(spl[1]);
+        sugars_ = vectors_from_str(spl[2]);
+        transpose(r_, r_T_);
+    }
+    
     
 	~BasepairState()
 	{}
     
+public:
+    
+    inline
     BasepairState
     copy() const {
-        //Point d = d_;
-        //Matrix r = r_;
-        //Points sugars = sugars_;
         return BasepairState(d_, r_, sugars_);
     }
-
+    
 	
 public:
 	inline
@@ -156,10 +173,11 @@ public:
     
 public:
     
+    inline
     String const
     to_str() const{
-        String s = vector_to_str(d_) + ";" + matrix_to_str(r_) + ";" + vector_to_str(sugars_[0]) + vector_to_str(sugars_[1]);
-        return s;
+        return d_.to_str() + ";" + r_.to_str() + ";" + sugars_[0].to_str() + " " +\
+               sugars_[1].to_str();
     }
 	
 	
@@ -362,9 +380,9 @@ new_score_function_new(
 
 
 int
-are_BasepairStates_equal(
-    BasepairState const,
-    BasepairState const);
+are_basepair_states_equal(
+    BasepairState const &,
+    BasepairState const & );
 
 
 

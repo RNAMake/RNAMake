@@ -86,8 +86,8 @@ public: // Creation
 public:
     
     inline
-    String
-    to_str() {
+    String const
+    to_str() const {
         return std::to_string(x_) + " " + std::to_string(y_) + " " +
                std::to_string(z_);
     }

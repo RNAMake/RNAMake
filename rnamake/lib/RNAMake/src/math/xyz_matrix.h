@@ -173,8 +173,8 @@ public: //creation
 public:
     
     inline
-    String
-    to_str() {
+    String const
+    to_str() const {
         return std::to_string(xx_) + " " + std::to_string(xy_) + " " + \
                std::to_string(xz_) + " " + std::to_string(yx_) + " " + \
                std::to_string(yy_) + " " + std::to_string(yz_) + " " + \
