@@ -1,1 +1,0 @@
-set(libraries base math)
