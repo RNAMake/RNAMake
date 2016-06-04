@@ -71,7 +71,7 @@ public: //option wrappers
         }
         
         for(auto const & opt : opts) {
-            auto name = prefix + "::" + opt->name();
+            auto name = prefix + "." + opt->name();
             
             if     (opt->type() == OptionType::STRING) {
                 cl_options_.add_option(name, opt->get_string(), OptionType::STRING, false);

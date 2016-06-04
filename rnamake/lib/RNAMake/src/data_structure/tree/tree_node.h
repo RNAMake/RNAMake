@@ -59,6 +59,13 @@ public: //Vitrual functions need to be implemented in derived clases
     remove_child(
         TreeNodeOP<DataType> const &) = 0;
     
+    
+    virtual
+    inline
+    bool
+    leaf() = 0;
+    
+    
 public:
     inline
     Ints
@@ -85,7 +92,7 @@ public:
     unset_children() {
         for(auto & c : children_) { c = nullptr; }
     }
-    
+
     
 public: //getters
     inline
@@ -194,6 +201,13 @@ public:
         
     }
     
+    inline
+    bool
+    leaf() {
+        if(this->children_.size() == 0) { return true; }
+        else { return false; }
+    }
+    
 };
 
 template <typename DataType>
@@ -244,6 +258,16 @@ public:
         
         throw TreeException("tried to remove child but is not present in node");
         
+    }
+    
+    inline
+    bool
+    leaf() {
+        for(auto const & c : this->children_) {
+            if(c != nullptr) { return false; }
+        }
+        
+        return true;
     }
 };
 
