@@ -76,12 +76,19 @@ X3dna::generate_dssr_file(String const & path) {
 }
 
 String
-X3dna::_get_ref_frame_path(String const & pdb_name) {
+X3dna::_get_ref_frame_path(
+    String const & pdb_name,
+    bool force_build_files) {
     
     String basedir = base_dir(pdb_name);
     String ref_frames_path = "";
+    if(force_build_files) {
+        generate_ref_frame(pdb_name);
+        ref_frames_path = "ref_frames.dat";
+    }
+    
     // is pdb
-    if     (file_exists(basedir + "/ref_frames.dat")) {
+    else if(file_exists(basedir + "/ref_frames.dat")) {
         ref_frames_path = basedir + "/ref_frames.dat";
     }
     // is directory
@@ -252,8 +259,11 @@ X3dna::_parse_dssr_res_str(String const & res_str) {
 }
 
 X3Basepairs const &
-X3dna::get_basepairs(String const & pdb_path) {
-    String ref_frames_path = _get_ref_frame_path(pdb_path);
+X3dna::get_basepairs(
+    String const & pdb_path,
+    bool force_build_files) {
+    
+    String ref_frames_path = _get_ref_frame_path(pdb_path, force_build_files);
     String dssr_file_path  = _get_dssr_file_path(pdb_path);
     
     _parse_ref_frame_file(ref_frames_path);

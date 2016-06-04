@@ -115,7 +115,8 @@ public:
     generate_dssr_file(String const &);
     
     X3Basepairs const &
-    get_basepairs(String const &);
+    get_basepairs(String const & pdb_path,
+                  bool force_build_files = false);
     
     X3Motifs
     get_motifs(String const &);
@@ -123,7 +124,8 @@ public:
 private:
     
     String
-    _get_ref_frame_path(String const &);
+    _get_ref_frame_path(String const & pdb_path,
+                        bool force_build_files = false);
     
     String
     _get_dssr_file_path(String const &);
