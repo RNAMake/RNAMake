@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include "base/settings.h"
+#include "base/file_io.h"
 #include "util/sqlite3_connection.h"
 
 
@@ -16,16 +17,25 @@ Sqlite3Connection::Sqlite3Connection(
     
     zErrMsg_ = 0;
     ic_ = 0;
+    if(! file_exists(path)) {
+        throw Sqlite3ConnectionException(
+            "Can't open sqlite3 database " + path + " it does not exist");
+    }
+    
     rc_ = sqlite3_open(path.c_str(), &db_);
     if( rc_ ){
-        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db_));
-        exit(0);
+        throw Sqlite3ConnectionException("Can't open sqlite3 database " + path);
     }
+    
+    setup_ = 1;
 
 }
 
 void
 Sqlite3Connection::query(String const & query_statement) {
+    if(setup_ == 0) {
+        throw Sqlite3ConnectionException("Cannot call query if no database file is supplied!");
+    }
     
     rc_ = sqlite3_prepare_v2(db_,
                              query_statement.c_str(),
@@ -44,4 +54,23 @@ Sqlite3Connection::count() {
     return count;
 }
 
+
+
+Strings
+Sqlite3Connection::fetch_one(String const & query_statement) {
+    query(query_statement);
+    
+    auto results = Strings();
+    
+    int col = sqlite3_column_count(stmt_);
+    
+    for(int i = 0; i < col; i++) {
+        results.push_back(String(reinterpret_cast<const char*>(sqlite3_column_text(stmt_,i))));
+    }
+    
+    sqlite3_finalize(stmt_);
+    return results;
+    
+    
+}
 

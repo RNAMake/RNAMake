@@ -21,7 +21,7 @@ CommandLineParser::assign_options(
         
         if(prefix.length() > 0) {
             if(name.find(prefix) == 0) {
-                name = name.substr(prefix.size() + 2);
+                name = name.substr(prefix.size() + 1);
             }
         }
         

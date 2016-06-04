@@ -69,12 +69,37 @@ public:
         n->parent(nullptr);
         n->unset_children();
         nodes_.erase(std::remove(nodes_.begin(), nodes_.end(), n), nodes_.end());
-        last_node_ = nodes_.back();
+        if(nodes_.size() > 0) {
+            last_node_ = nodes_.back();
+        }
+        else {
+            last_node_ = nullptr;
+        }
     }
-
+    
     inline
     void
     remove_node(int pos) { return remove_node(get_node(pos)); }
+    
+    inline
+    void
+    remove_level(
+        int level) {
+    
+        int pos = 0;
+        int removed = 1;
+        while(removed) {
+            removed = 0;
+            for(auto const & n : nodes_) {
+                if(n->level() >= level && n->leaf()) {
+                    remove_node(n);
+                    removed = 1;
+                    break;
+                }
+            }
+        }
+        
+    }
     
     inline
     void
@@ -109,7 +134,7 @@ template <typename DataType>
 class TreeDynamic : public Tree<DataType> {
 public:
     TreeDynamic(): Tree<DataType>() {}
-    
+
     ~TreeDynamic() {
         for(int i = 0; i < this->nodes_.size(); i++){
             this->nodes_[i]->unset_children();
