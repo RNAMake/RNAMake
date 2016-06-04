@@ -13,6 +13,7 @@
 #include <sstream>
 #include <memory>
 #include <stdexcept>
+#include <cassert>
 
 #include "base/types.h"
 #include "base/string.h"
@@ -74,6 +75,10 @@ public:
         String const & s) {
         
         Strings spl = split_str_by_delimiter(s, ",");
+        if(spl.size() < 4) {
+            throw SecondaryStructureException("cannot build sstruct::Residue from str: " + s);
+        }
+        
         name_         = spl[0];
         dot_bracket_  = spl[1];
         num_          = std::stoi(spl[2]);
@@ -81,6 +86,16 @@ public:
         uuid_         = Uuid();
         if(spl.size() == 5) {
             i_code_ = spl[4];
+        }
+        
+        if     (name_ == "A") { res_type_ = 0; }
+        else if(name_ == "C") { res_type_ = 1; }
+        else if(name_ == "G") { res_type_ = 2; }
+        else if(name_ == "U") { res_type_ = 3; }
+        else if(name_ == "T") { res_type_ = 3; }
+        else if(name_ == "N") { res_type_ = -1; }
+        else {
+            throw SecondaryStructureException("in sstruct::Residue encountered a unknown name");
         }
 
     }
