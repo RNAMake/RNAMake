@@ -14,6 +14,7 @@
 
 //RNAMake Headers
 #include "secondary_structure/rna_structure.h"
+#include "secondary_structure/pose.h"
 
 namespace sstruct {
 
@@ -24,5 +25,9 @@ assign_end_id(
     BasepairOP const &);
 
 
+void
+fill_basepairs_in_ss(PoseOP &);
+    
+    
 }
 #endif /* defined(__RNAMake__util__) */
