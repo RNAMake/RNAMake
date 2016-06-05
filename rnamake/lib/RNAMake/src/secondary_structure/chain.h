@@ -49,6 +49,17 @@ public:
     
 public:
     
+    typedef typename ResidueOPs::iterator iterator;
+    typedef typename ResidueOPs::const_iterator const_iterator;
+    
+    iterator begin() { return residues_.begin(); }
+    iterator end()   { return residues_.end(); }
+    
+    const_iterator begin() const { return residues_.begin(); }
+    const_iterator end()   const { return residues_.end(); }
+    
+public:
+    
 
     inline
     ResidueOP const &
@@ -67,15 +78,12 @@ public:
     inline
     ResidueOP const &
     last() {
-        try {
-            return residues_.back();
-        }
-        catch(std::out_of_range e) {
+        if(residues_.size() == 0) {
             throw SecondaryStructureException("called last() on a chain without any residues in it");
         }
-        catch(...) {
-            throw std::runtime_error("unexpected error in chain.last()");
-        }
+     
+        return residues_.back();
+
     }
     
     inline

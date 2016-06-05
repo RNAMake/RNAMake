@@ -30,13 +30,25 @@ Structure::_setup_chains(
     
     ResidueOPs res;
     int count = 1;
-    String chain_ids = "ABCDEFGHIKLMNO";
+    String chain_ids = "ABCDEFGHIJKLMNOPQRSTUVWXZ";
+    auto valid_seq = String("AGUCTN&+-");
+    auto valid_ss = String("[{(.)}]");
     int i = -1, ci = 0;
     for(auto & s : sequence) {
         i++;
         if(s != '&' && s != '+') {
             String name = "", db = "", chain_id = "";
             name += s; db += dot_bracket[i]; chain_id += chain_ids[ci];
+            if(valid_seq.find(name) == std::string::npos) {
+                throw SecondaryStructureException(
+                    name + " is not a valid name for a residue valid names are: AGUCTN");
+            }
+            
+            if(valid_ss.find(db) == std::string::npos) {
+                throw SecondaryStructureException(
+                    db + " is not a valid structure element for a residue valid elements are: [{(.)}]");
+            }
+            
             auto r = std::make_shared<Residue>(name, db, count, chain_id, Uuid());
             res.push_back(r);
             count++;
@@ -45,6 +57,9 @@ Structure::_setup_chains(
             ci += 1;
             chains_.push_back(std::make_shared<Chain>(res));
             res = ResidueOPs();
+            
+            // unlikely but hit max chains
+            if(ci == chain_ids.length()-1) { ci = 0; }
         }
     }
     
