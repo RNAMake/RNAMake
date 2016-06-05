@@ -52,7 +52,7 @@ MotifFactoryUnittest::run() {
     if (test_creation() == 0)            { std::cout << "test_creation failed" << std::endl;  }
     if (test_load() == 0)                { std::cout << "test_load failed" << std::endl;  }
     if (test_standardize_motif() == 0)   { std::cout << "test_standardize_motif failed" << std::endl;  }
-    if (test_can_align_motif_to_end() == 0)   { std::cout << "test_can_align_motif_to_end failed" << std::endl;  }
+    xif (test_can_align_motif_to_end() == 0)   { std::cout << "test_can_align_motif_to_end failed" << std::endl;  }
 
     return 0;
 }
