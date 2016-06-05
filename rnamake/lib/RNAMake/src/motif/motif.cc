@@ -189,6 +189,7 @@ align_motif(
     transpose(ref_bp_state->r(), ref_T);
     Matrix r;
     dot(ref_T, motif_end->r(), r);
+    r.unitarize();
     Point trans = -motif_end->d();
     Transform t(r, trans);
     motif->transform(t);
