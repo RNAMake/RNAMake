@@ -113,22 +113,5 @@ Pose::replace_sequence(
 }
 
 
-Pose
-Pose::sub_structure(
-    int start,
-    int end) {
-
-    auto chains = ChainOPs();
-    for(auto const & c : this->chains()) {
-        for(auto const & r : c->residues()) {
-            
-        }
-        
-    }
-    
-    
-    return Pose();
-    
-}
 }
 

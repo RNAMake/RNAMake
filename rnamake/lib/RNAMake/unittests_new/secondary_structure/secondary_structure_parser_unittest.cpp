@@ -5,7 +5,6 @@
 #include "../common.hpp"
 
 //RNAMake Headers
-#include "util/uuid.h"
 #include "secondary_structure/secondary_structure_parser.h"
 
 TEST_CASE( "Test Parsing secondary structure into objects", "[SSParser]" ) {

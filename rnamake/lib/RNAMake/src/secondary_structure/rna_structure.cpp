@@ -71,9 +71,18 @@ RNAStructure::replace_sequence(
         seq2 += s;
     }
     
-    //std::cout << seq << std::endl;
-    //std::cout << sequence() << std::endl;
-    //std::cout << seq2 << std::endl;
+    if(spl.size() != chains().size()) {
+        throw SecondaryStructureException(
+            "cannot replace sequence with one with a differnt number of chains: \n org: " +
+            sequence() + "\n new: " + seq);
+    }
+    
+    if(seq2.length() != residues().size()) {
+        throw SecondaryStructureException(
+            "cannot replace sequence with a different length sequence: \n org: " + sequence() +
+            "\n new: " + seq );
+    }
+    
     
     assert(seq2.length() == residues().size() && "cannot replace sequence with a different length sequence");
     int i = 0;
