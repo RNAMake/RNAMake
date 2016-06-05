@@ -127,7 +127,10 @@ typedef std::shared_ptr<SecondaryStructureChainGraph> SecondaryStructureChainGra
 class SecondaryStructureParser {
 public:
     SecondaryStructureParser():
-    seen_(std::map<SSNodeOP, int>())
+    seen_(std::map<SSNodeOP, int>()),
+    structure_(StructureOP()),
+    residues_(ResidueOPs()),
+    pairs_(BasepairOPs())
     {}
     
     ~SecondaryStructureParser() {}
@@ -153,8 +156,32 @@ public:
     parse_to_pose(
         String const &,
         String const &);
+    
+    void
+    reset() {
+        structure_ = StructureOP();
+        residues_ = ResidueOPs();
+        pairs_ = BasepairOPs();
+    }
+    
 
 private:
+    
+    void
+    _add_unpaired_residues_to_graph(
+        SecondaryStructureChainGraphOP &,
+        ResidueOPs const &,
+        int);
+    
+    void
+    _add_paired_res_to_graph(
+        SecondaryStructureChainGraphOP &,
+        ResidueOP const &,
+        int);
+    
+    BasepairOP
+    _get_previous_pair(
+        ResidueOP const &);
     
     ResidueOP
     _previous_res(
@@ -189,7 +216,7 @@ private:
             else if(start) {}
             else { continue; }
             
-            if(r->dot_bracket() == "(") { bracket_count += 1; }
+            if     (r->dot_bracket() == "(") { bracket_count += 1; }
             else if(r->dot_bracket() == ")") {
                 bracket_count -= 1;
                 if(bracket_count == 0) { return r; }

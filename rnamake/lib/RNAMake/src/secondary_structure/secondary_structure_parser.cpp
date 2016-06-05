@@ -26,41 +26,25 @@ SecondaryStructureParser::parse(
     int is_start_res = 0;
     for(auto const & r : residues_) {
         is_start_res = _start_of_chain(r);
-        if(r->dot_bracket() == ".") {
-            res.push_back(r);
-        }
+        if(r->dot_bracket() == ".") { res.push_back(r); }
         
         else if(r->dot_bracket() == "(") {
             if(res.size() > 0) {
-                int parent_index = g->get_node_by_res(_previous_res(res[0]));
-                auto new_data = NodeData(res, NodeType::UNPAIRED);
-                g->add_chain(new_data, parent_index, is_start_res);
+                _add_unpaired_residues_to_graph(g, res, is_start_res);
                 res = ResidueOPs();
             }
-            auto pair_res = _get_bracket_pair(r);
-            int parent_index = g->get_node_by_res(_previous_res(r));
-            //std::cout << r->num() << r->dot_bracket() << " " << pair_res->num() << " " << pair_res->dot_bracket() << std::endl;
-            auto pair = std::make_shared<Basepair>(r, pair_res, Uuid());
-            pairs_.push_back(pair);
-            auto new_data = NodeData(ResidueOPs{r}, NodeType::PAIRED);
-            g->add_chain(new_data, parent_index, is_start_res);
-            
+           
+            _add_paired_res_to_graph(g, r, is_start_res);
         }
         
         else if(r->dot_bracket() == ")") {
             if(res.size() > 0) {
-                int parent_index = g->get_node_by_res(_previous_res(res[0]));
-                auto new_data = NodeData(res, NodeType::UNPAIRED);
-                g->add_chain(new_data, parent_index, is_start_res);
+                _add_unpaired_residues_to_graph(g, res, is_start_res);
                 res = ResidueOPs();
             }
-            BasepairOP pair = nullptr;
-            for(auto const & p : pairs_) {
-                if(p->res2()->uuid() == r->uuid()) {
-                    pair = p;
-                    break;
-                }
-            }
+            
+            
+            auto pair = _get_previous_pair(r);
             auto new_data = NodeData(ResidueOPs{r}, NodeType::PAIRED);
             int parent_index = g->get_node_by_res(_previous_res(r));
             int pair_res_pos = g->get_node_by_res(pair->res1());
@@ -73,8 +57,62 @@ SecondaryStructureParser::parse(
         }
     }
     
+    if(res.size() > 0) { _add_unpaired_residues_to_graph(g, res, 0); }
+    
     
     return g;
+}
+    
+void
+SecondaryStructureParser::_add_unpaired_residues_to_graph(
+    SecondaryStructureChainGraphOP & g,
+    ResidueOPs const & res,
+    int is_start_res) {
+    
+    auto parent_index = g->get_node_by_res(_previous_res(res[0]));
+    auto new_data = NodeData(res, NodeType::UNPAIRED);
+    g->add_chain(new_data, parent_index, is_start_res);
+
+}
+
+    
+void
+SecondaryStructureParser::_add_paired_res_to_graph(
+    SecondaryStructureChainGraphOP & g,
+    ResidueOP const & r,
+    int is_start_res) {
+    
+    auto pair_res = _get_bracket_pair(r);
+    int parent_index = g->get_node_by_res(_previous_res(r));
+    auto pair = std::make_shared<Basepair>(r, pair_res, Uuid());
+    pairs_.push_back(pair);
+    auto new_data = NodeData(ResidueOPs{r}, NodeType::PAIRED);
+    g->add_chain(new_data, parent_index, is_start_res);
+    
+}
+    
+    
+BasepairOP
+SecondaryStructureParser::_get_previous_pair(
+    ResidueOP const & r)  {
+    
+    BasepairOP pair = nullptr;
+    for(auto const & p : pairs_) {
+        if(p->res2()->uuid() == r->uuid()) {
+            pair = p;
+            break;
+        }
+    }
+
+    if(pair == nullptr) {
+        throw SecondaryStructureException(
+            "cannot parse secondary structure: \n" + structure_->sequence() + "\n" +
+            structure_->dot_bracket() + "\n position: " + std::to_string(r->num()) +
+            " has no matching pair");
+    }
+    
+    return pair;
+    
 }
 
 
