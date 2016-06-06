@@ -20,6 +20,20 @@
 #include "motif/motif.h"
 
 
+/*
+ * Exception for Motif Factory
+ */
+class MotifFactoryException : public std::runtime_error {
+public:
+    /**
+     * Standard constructor for MotifFactoryException
+     * @param   message   Error message for Motif Factory
+     */
+    MotifFactoryException(String const & message):
+    std::runtime_error(message)
+    {}
+};
+
 class MotifFactory {
 public:
     MotifFactory():
@@ -39,7 +53,8 @@ public:
     
     MotifOP
     motif_from_file(
-        String const & path);
+        String const & path,
+        bool rebuild_x3dna = true);
     
     MotifOP
     motif_from_res(
@@ -84,7 +99,8 @@ private:
     BasepairOPs
     _setup_basepairs(
         String const &,
-        StructureOP const &);
+        StructureOP const &,
+        bool);
     
     
     void

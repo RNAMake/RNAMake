@@ -86,14 +86,12 @@ class MotifFactory(object):
         c2 = util.center(self.ref_motif.ends[0].atoms)
         closest = None
         best = 10000
-        best_i = -1
         for i, end in enumerate(m.ends):
             c1 = util.center(end.atoms)
             dist = util.distance(c1, c2)
             if dist < best:
                 best = dist
                 closest = end
-                best_i = i
 
         updated_ends = [ closest ]
         for i, end in enumerate(m.ends):
@@ -108,8 +106,8 @@ class MotifFactory(object):
                     break
 
             if flip_res:
-                updated_ends[i].res1,updated_ends[i].res2 = \
-                    updated_ends[i].res2,updated_ends[i].res1
+                updated_ends[i].res1, updated_ends[i].res2 = \
+                    updated_ends[i].res2, updated_ends[i].res1
 
         m.ends = updated_ends
 

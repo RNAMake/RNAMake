@@ -17,14 +17,28 @@
 
 MotifOP
 MotifFactory::motif_from_file(
-    String const & path) {
+    String const & path,
+    bool rebuild_x3dna) {
+    
+    
+    if(! file_exists(path)) {
+        throw MotifFactoryException("cannot generate motif from file " + path + " does not exist");
+    }
     
     parser_ = MotiftoSecondaryStructure();
     auto fname = filename(path);
     auto pdb_path = path;
     StructureOP structure;
     if(is_dir(path)) {
+        rebuild_x3dna = false;
+        
         pdb_path = path + "/" + fname + ".pdb";
+        if(! file_exists(pdb_path)) {
+            throw MotifFactoryException(
+                "cannot generate motif from directory " + path + " it exists but there is no pdb "
+                " in it expected: dir_name/dir_name.pdb");
+        }
+
         structure = std::make_shared<Structure>(pdb_path);
     }
     else {
@@ -32,11 +46,18 @@ MotifFactory::motif_from_file(
         fname = fname.substr(0, -4);
     }
     
-    auto basepairs = _setup_basepairs(pdb_path, structure);
+    auto basepairs = _setup_basepairs(pdb_path, structure, rebuild_x3dna);
     auto ends = _setup_basepair_ends(structure, basepairs);
     auto m = std::make_shared<Motif>(structure, basepairs, ends);
     m->name(fname);
     m->path(path);
+    
+    //clean up x3dna generated files if they were created
+    try {
+        std::remove("ref_frames.dat");
+        std::remove(String(fname + "_dssr.out").c_str());
+    } catch(...) {}
+    
     _setup_secondary_structure(m);
     
     return m;
@@ -139,11 +160,12 @@ MotifFactory::align_motif_to_common_frame(
 BasepairOPs
 MotifFactory::_setup_basepairs(
     String const & path,
-    StructureOP const & structure) {
+    StructureOP const & structure,
+    bool rebuild_x3dna) {
     
-    BasepairOPs basepairs;
-    X3dna x3dna_parser;
-    X3Basepairs x_basepairs = x3dna_parser.get_basepairs(path);
+    auto basepairs = BasepairOPs();
+    auto x3dna_parser = X3dna();
+    auto x_basepairs = x3dna_parser.get_basepairs(path, rebuild_x3dna);
     ResidueOP res1, res2;
     BasepairOP bp;
     for(auto const & xbp : x_basepairs) {
