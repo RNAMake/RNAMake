@@ -109,14 +109,21 @@ X3dna::_get_ref_frame_path(
 }
 
 String
-X3dna::_get_dssr_file_path(String const & pdb_path) {
+X3dna::_get_dssr_file_path(
+    String const & pdb_path,
+    bool force_build_files) {
     String basedir = base_dir(pdb_path);
     String fname = filename(pdb_path);
     fname = fname.substr(0, fname.length()-4);
     String dssr_name = fname + "_dssr.out";
     String dssr_file_path = "";
     
-    if     (file_exists(basedir + "/" + dssr_name)) {
+    if(force_build_files) {
+        generate_dssr_file(pdb_path);
+        dssr_file_path = dssr_name;
+    }
+    
+    else if(file_exists(basedir + "/" + dssr_name)) {
         dssr_file_path = basedir + "/" + dssr_name;
     }
     
@@ -264,7 +271,7 @@ X3dna::get_basepairs(
     bool force_build_files) {
     
     String ref_frames_path = _get_ref_frame_path(pdb_path, force_build_files);
-    String dssr_file_path  = _get_dssr_file_path(pdb_path);
+    String dssr_file_path  = _get_dssr_file_path(pdb_path, force_build_files);
     
     _parse_ref_frame_file(ref_frames_path);
     std::map<String, Strings> sections = _divide_dssr_file_into_sections(dssr_file_path);

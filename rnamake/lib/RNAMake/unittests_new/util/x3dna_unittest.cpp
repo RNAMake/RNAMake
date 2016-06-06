@@ -78,7 +78,10 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
             auto basepairs = x.get_basepairs(m_path, true);
             
             REQUIRE(file_exists("ref_frames.dat"));
+            REQUIRE(file_exists("p4p6_dssr.out"));
+            
             std::remove("ref_frames.dat");
+            std::remove("p4p6_dssr.out");
 
         }
     }

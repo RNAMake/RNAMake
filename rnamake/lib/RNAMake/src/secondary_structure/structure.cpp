@@ -78,8 +78,8 @@ Structure::get_residue(
     for( auto & c : chains_) {
         for (auto & r : c->residues() ){
             if (num == r->num() &&
-                chain_id.compare(r->chain_id()) == 0 &&
-                i_code.compare(r->i_code()) == 0) {
+                chain_id == r->chain_id()  &&
+                i_code == r->i_code()) {
                 return r;
             }
         }

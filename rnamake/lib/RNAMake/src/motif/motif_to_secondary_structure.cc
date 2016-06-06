@@ -19,6 +19,7 @@ MotiftoSecondaryStructure::to_secondary_structure(
     BasepairOPs bps;
     sstruct::ChainOPs ss_chains;
     
+    reset();
     for(auto const & c : motif->chains()) { chains_.push_back(c); }
     open_chains_.push(chains_[0]);
     chains_.erase(chains_.begin());
@@ -82,10 +83,12 @@ MotiftoSecondaryStructure::to_secondary_structure(
     }
     
     auto struc = std::make_shared<sstruct::Structure>(ss_chains);
+    for(auto const & r : struc->residues()) {
+    }
+    
     return _setup_basepairs_and_ends(struc, motif);
-;
-}
 
+}
 
 ChainOP
 MotiftoSecondaryStructure::_get_next_chain(
@@ -160,6 +163,10 @@ MotiftoSecondaryStructure::_setup_basepairs_and_ends(
         auto bp = kv.second;
         auto res1 = struc->get_residue(bp->res1()->uuid());
         auto res2 = struc->get_residue(bp->res2()->uuid());
+        
+        if(res1 == nullptr || res2 == nullptr) {
+            throw std::runtime_error("did not properly find residues for basepairs in ss");
+        }
         ss_bps.push_back(std::make_shared<sstruct::Basepair>(res1, res2, bp->uuid()));
     }
     

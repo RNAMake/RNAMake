@@ -128,7 +128,8 @@ private:
                         bool force_build_files = false);
     
     String
-    _get_dssr_file_path(String const &);
+    _get_dssr_file_path(String const & pdb_path,
+                        bool force_build_files = false);
     
     Point
     _convert_strings_to_point(Strings const &);
