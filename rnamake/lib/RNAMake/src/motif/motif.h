@@ -257,6 +257,10 @@ public: // setters
     ends(
         BasepairOPs const & ends) { ends_ = ends; }
     
+    inline
+    void
+    block_end_add(int n_block) { block_end_add_ = n_block; }
+    
 protected:
     Beads beads_;
     float score_;
