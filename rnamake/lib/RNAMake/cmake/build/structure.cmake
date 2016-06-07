@@ -3,6 +3,7 @@ set(structure_files
 	../../src/structure/basepair.cc
 	../../src/structure/basepair_state.cc
 	../../src/structure/chain.cc
+	../../src/structure/is_equal.cpp
 	../../src/structure/pdb_parser.cc
 	../../src/structure/residue.cc
 	../../src/structure/residue_type.cc

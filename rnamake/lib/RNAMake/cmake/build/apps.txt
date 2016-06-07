@@ -1,2 +1,3 @@
 simulate_tectos ../../apps/simulate_tectos/simulate_tectos.cc 
 simulate_tectos_devel ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc 
+sample_helix ../../apps/sample_helix/sample_helix.cpp
