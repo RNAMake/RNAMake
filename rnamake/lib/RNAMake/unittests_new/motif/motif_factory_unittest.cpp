@@ -48,10 +48,53 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         REQUIRE(dist < 1.0);
         REQUIRE(r_dist < 0.001);
         REQUIRE(m->ends()[1]->uuid() == aligned_m->ends()[0]->uuid());
-        //REQUIRE(m->sequence() != aligned_m->sequence());
+        REQUIRE(m->sequence() == aligned_m->sequence());
         
-        std::cout << aligned_m->ends()[0]->res1()->name() << std::endl;
+        aligned_m = mf.align_motif_to_common_frame(m, 0);
+        mf.standardize_motif(aligned_m);
+        
+        REQUIRE(m->sequence() != aligned_m->sequence());
+    }
+    
+    SECTION("test generating motifs from basepairs") {
+        auto path = motif_dirs() + "helices/HELIX.IDEAL";
+        auto m = mf.motif_from_file(path);
+        auto bps = m->basepairs();
+        
+        auto m_bps = mf.motif_from_bps(bps);
+        
+        REQUIRE(m_bps->ends().size() == 2);
+        REQUIRE(m_bps->sequence() == "GG&CC");
+        REQUIRE(m_bps->dot_bracket() == "((&))");
+        REQUIRE(m_bps->chains().size() == 2);
+        REQUIRE(m_bps->end_ids().size() == 2);
+        
+        SECTION("will not have two basepair ends should throw error as user is not expecting this") {
+        
+            bps[1]->bp_type("c...");
+            REQUIRE_THROWS_AS(m_bps = mf.motif_from_bps(bps), MotifFactoryException);
+        
+        }
+        
+        m_bps = mf.motif_from_bps(BasepairOPs{bps[0]});
+        REQUIRE(m_bps->ends().size() == 1);
         
     }
     
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

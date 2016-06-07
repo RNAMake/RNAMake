@@ -72,6 +72,12 @@ MotifFactory::motif_from_res(
     connect_residues_into_chains(res, chains);
     auto structure = std::make_shared<Structure>(chains);
     auto ends = _setup_basepair_ends(structure, bps);
+    
+    if(ends.size() != 2 && bps.size() >= 2) {
+        throw MotifFactoryException(
+            "unexpected number of ends when generating a motif from residues");
+    }
+    
     auto m = std::make_shared<Motif>(structure, bps, ends);
     _setup_secondary_structure(m);
     return m;
@@ -90,10 +96,13 @@ MotifFactory::motif_from_bps(
     auto chains = ChainOPs();
     connect_residues_into_chains(res, chains);
     auto structure = std::make_shared<Structure>(chains);
-    auto ends = BasepairOPs();
-    ends.push_back(bps[0]);
-    ends.push_back(bps.back());
-    //auto ends = _setup_basepair_ends(structure, bps);
+    auto ends = _setup_basepair_ends(structure, bps);
+    
+    if(ends.size() != 2 && bps.size() >= 2) {
+        throw MotifFactoryException(
+            "unexpected number of ends when generating a motif from basepairs");
+    }
+    
     auto m = std::make_shared<Motif>(structure, bps, ends);
     _setup_secondary_structure(m);
     return m;
@@ -172,7 +181,7 @@ MotifFactory::_setup_basepairs(
         res1 = structure->get_residue(xbp.res1.num, xbp.res1.chain_id, xbp.res1.i_code);
         res2 = structure->get_residue(xbp.res2.num, xbp.res2.chain_id, xbp.res2.i_code);
         if (res1 == nullptr || res2 == nullptr) {
-            throw std::runtime_error("cannot find residues in basepair during setup");
+            throw MotifFactoryException("cannot find residues in basepair during setup");
         }
         
         bp = BasepairOP(new Basepair(res1, res2, xbp.r, xbp.bp_type));
