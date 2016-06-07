@@ -58,6 +58,27 @@ public:
         }
     }
     
+    inline
+    MotifState(
+        String const & s) {
+        
+        auto spl = split_str_by_delimiter(s, "|");
+        name_ = spl[0];
+        score_ = std::stof(spl[1]);
+        size_ = std::stoi(spl[2]);
+        block_end_add_ = std::stoi(spl[3]);
+        beads_ = vectors_from_str(spl[4]);
+        end_names_ = split_str_by_delimiter(spl[5], ",");
+        end_ids_ = split_str_by_delimiter(spl[6], ",");
+        end_states_ = BasepairStateOPs();
+        for(int i = 7; i < spl.size(); i++) {
+            auto bp_state = std::make_shared<BasepairState>(spl[i]);
+            end_states_.push_back(bp_state);
+        }
+
+        
+    }
+    
     
     ~MotifState() {}
 
@@ -144,10 +165,6 @@ private:
 
 typedef std::shared_ptr<MotifState> MotifStateOP;
 typedef std::vector<MotifStateOP>   MotifStateOPs;
-
-MotifState
-str_to_motif_state(
-    String const &);
 
 
 inline
