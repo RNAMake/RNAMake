@@ -26,6 +26,7 @@ struct MotifEnsembleMember {
     float energy;
 };
 
+
 typedef std::shared_ptr<MotifEnsembleMember> MotifEnsembleMemberOP;
 typedef std::vector<MotifEnsembleMemberOP>   MotifEnsembleMemberOPs;
 
