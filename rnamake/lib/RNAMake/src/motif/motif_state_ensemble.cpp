@@ -22,7 +22,7 @@ rng_(RandomNumberGenerator()) {
     block_end_add_ = std::stoi(spl[1]);
     for(int i = 2; i < spl.size(); i++) {
         auto spl2 = split_str_by_delimiter(spl[i], "#");
-        auto ms = std::make_shared<MotifState>(str_to_motif_state(spl2[0]));
+        auto ms = std::make_shared<MotifState>(spl2[0]);
         auto energy = std::stof(spl2[1]);
         auto mem = std::make_shared<MotifStateEnsembleMember>(ms, energy);
         members_.push_back(mem);
