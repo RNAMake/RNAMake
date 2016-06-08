@@ -12,7 +12,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     auto path = motif_dirs() + "base.motif";
     auto m = file_to_motif(path);
     path = motif_dirs() + "ref.motif";
-    auto ref_m = file_to_motif(path);;
+    auto ref_m = file_to_motif(path);
     auto rts = ResidueTypeSet();
     
     REQUIRE(m->ends().size() == 2);

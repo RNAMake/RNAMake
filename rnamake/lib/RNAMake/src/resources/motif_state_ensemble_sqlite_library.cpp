@@ -41,7 +41,7 @@ MotifStateEnsembleSqliteLibrary::get(
         
     }
     
-    return std::make_shared<MotifStateEnsemble>(data_[row->id]->copy());
+    return std::make_shared<MotifStateEnsemble>(*data_[row->id]);
     
 }
 
@@ -65,7 +65,7 @@ MotifStateEnsembleSqliteLibrary::get_multi(
             
         }
         
-        motif_state_ensembles.push_back(std::make_shared<MotifStateEnsemble>(data_[row->id]->copy()));
+        motif_state_ensembles.push_back(std::make_shared<MotifStateEnsemble>(*data_[row->id]));
         row = connection_.next();
     }
     

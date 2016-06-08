@@ -42,11 +42,11 @@ MotifStateSqliteLibrary::get(
     }
     
     if(data_.find(row->id) == data_.end() ) {
-        data_[row->id] = std::make_shared<MotifState>(str_to_motif_state(row->data));
+        data_[row->id] = std::make_shared<MotifState>(row->data);
                                                  
     }
     
-    return std::make_shared<MotifState>(data_[row->id]->copy());
+    return std::make_shared<MotifState>(*data_[row->id]);
     
 }
 
@@ -68,11 +68,11 @@ MotifStateSqliteLibrary::get_multi(
     
     while(row->data.length() != 0) {
         if(data_.find(row->id) == data_.end()) {
-            data_[row->id] = std::make_shared<MotifState>(str_to_motif_state(row->data));
+            data_[row->id] = std::make_shared<MotifState>(row->data);
 
         }
         
-        motif_states.push_back(std::make_shared<MotifState>(data_[row->id]->copy()));
+        motif_states.push_back(std::make_shared<MotifState>(*data_[row->id]));
         row = connection_.next();
     }
     
