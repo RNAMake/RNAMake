@@ -13,6 +13,22 @@
 
 #include "base/types.h"
 
+/*
+ * Exception for sqlite library
+ */
+class SqliteLibraryException : public std::runtime_error {
+public:
+    /**
+     * Standard constructor for SqliteLibraryException
+     * @param   message   Error message for sqlite libraries
+     */
+    SqliteLibraryException(String const & message):
+    std::runtime_error(message)
+    {}
+};
+
+
+
 class SqliteLibrary {
 public:
     SqliteLibrary()

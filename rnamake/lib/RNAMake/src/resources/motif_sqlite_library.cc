@@ -34,14 +34,16 @@ MotifSqliteLibrary::get(
     String const & end_name,
     String const & id) {
     
-    String query = _generate_query(name, end_id, end_name, id);
+    auto query = _generate_query(name, end_id, end_name, id);
     connection_.query(query);
     auto row = connection_.next();
-    connection_.clear();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
+
+    connection_.clear();
+
     
     if(data_.find(row->id) == data_.end() ) {
         data_[row->id] = std::make_shared<Motif>(row->data,
@@ -59,15 +61,15 @@ MotifSqliteLibrary::get_multi(
     String const & end_name,
     String const & id) {
     
-    MotifOPs motifs;
-    String query = _generate_query(name, end_id, end_name, id);
+    auto motifs = MotifOPs();
+    auto query = _generate_query(name, end_id, end_name, id);
     connection_.query(query);
     auto row = connection_.next();
-    connection_.clear();
 
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
+
     
     while(row->data.length() != 0) {
         if(data_.find(row->id) == data_.end()) {
@@ -78,6 +80,8 @@ MotifSqliteLibrary::get_multi(
         motifs.push_back(std::make_shared<Motif>(*data_[row->id]));
         row = connection_.next();
     }
+    
+    connection_.clear();
 
     return motifs;
     
@@ -105,7 +109,7 @@ MotifSqliteLibrary::contains(
 
 MotifOP
 MotifSqliteLibrary::get_random() {
-    int pos = rng_.randrange(max_size_);
+    int pos = 1 +rng_.randrange(max_size_-1);
     return get("", "", "", std::to_string(pos));
     
 }
@@ -115,7 +119,7 @@ MotifSqliteLibrary::load_all(
     int limit) {
     
     int count = 0;
-    for(int i = 0; i < max_size_; i++) {
+    for(int i = 1; i < max_size_; i++) {
         get("", "", "", std::to_string(i));
         if (count > limit) { break; }
         count++;

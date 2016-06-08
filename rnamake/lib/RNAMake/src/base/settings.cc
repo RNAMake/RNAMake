@@ -52,7 +52,7 @@ x3dna_path() {
 
 String
 unittest_resource_dir() {
-    return base_dir() + "/rnamake/lib/RNAMake/unittests_new/resources/";
+    return base_dir() + "/rnamake/lib/RNAMake/unittests_new/unittest_resources/";
 }
 
 

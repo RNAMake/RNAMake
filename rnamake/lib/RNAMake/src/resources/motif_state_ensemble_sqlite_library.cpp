@@ -33,7 +33,7 @@ MotifStateEnsembleSqliteLibrary::get(
     auto row = connection_.next();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
     
     if(data_.find(row->id) == data_.end() ) {
@@ -56,7 +56,7 @@ MotifStateEnsembleSqliteLibrary::get_multi(
     auto row = connection_.next();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
     
     while(row->data.length() != 0) {
@@ -100,7 +100,7 @@ MotifStateEnsembleSqliteLibrary::load_all(
     int limit) {
     
     int count = 0;
-    for(int i = 0; i < max_size_; i++) {
+    for(int i = 1; i < max_size_; i++) {
         get("", std::to_string(i));
         if (count > limit) { break; }
         count++;
