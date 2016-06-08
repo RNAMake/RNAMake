@@ -35,11 +35,7 @@ public:
     data_(std::make_shared<MotifEnsembleSqliteData>())
     {}
     
-    ~MotifEnsembleSqliteConnection() {
-        delete zErrMsg_;
-        sqlite3_close(db_);
-    }
-    
+
 public:
     
     MotifEnsembleSqliteDataOP const &

@@ -38,13 +38,15 @@ MotifStateSqliteLibrary::get(
     auto row = connection_.next();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
     
     if(data_.find(row->id) == data_.end() ) {
         data_[row->id] = std::make_shared<MotifState>(row->data);
                                                  
     }
+    
+    connection_.clear();
     
     return std::make_shared<MotifState>(*data_[row->id]);
     
@@ -63,7 +65,7 @@ MotifStateSqliteLibrary::get_multi(
     auto row = connection_.next();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
     
     while(row->data.length() != 0) {
@@ -75,6 +77,8 @@ MotifStateSqliteLibrary::get_multi(
         motif_states.push_back(std::make_shared<MotifState>(*data_[row->id]));
         row = connection_.next();
     }
+    
+    connection_.clear();
     
     return motif_states;
     

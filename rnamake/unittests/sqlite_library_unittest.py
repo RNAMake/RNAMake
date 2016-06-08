@@ -35,10 +35,11 @@ class SqliteLibraryUnittest(unittest.TestCase):
             mlib.get(name="fake")
 
     def test_load_all(self):
-        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
-        mlib.load_all(limit=10)
-        if  len(mlib.data) == 0:
-            self.fail("something wrong with load_all()")
+        for k,v in sqlite_library.MotifSqliteLibrary.get_libnames().iteritems():
+            mlib = sqlite_library.MotifSqliteLibrary(k)
+            mlib.load_all(limit=10)
+            if  len(mlib.data) == 0:
+                self.fail("something wrong with load_all()")
 
     def test_get_multi(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
