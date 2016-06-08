@@ -25,7 +25,7 @@ MotifStateEnsembleTree::add_ensemble(
     }
     
     if(parent == nullptr) {
-        return tree_.add_data(std::make_shared<MotifStateEnsemble>(ensemble->copy()),
+        return tree_.add_data(std::make_shared<MotifStateEnsemble>(*ensemble),
                               ensemble->num_end_states());
     }
     
@@ -34,7 +34,7 @@ MotifStateEnsembleTree::add_ensemble(
     for(auto const & p : avail_pos) {
         if(p == parent->data()->block_end_add()) { continue; }
         
-        return tree_.add_data(std::make_shared<MotifStateEnsemble>(ensemble->copy()),
+        return tree_.add_data(std::make_shared<MotifStateEnsemble>(*ensemble),
                               ensemble->num_end_states(),
                               parent->index(),
                               p);

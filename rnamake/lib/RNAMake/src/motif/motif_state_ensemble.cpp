@@ -16,7 +16,6 @@ block_end_add_(0),
 members_(MotifStateEnsembleMemberOPs()),
 rng_(RandomNumberGenerator()) {
     
-    MotifStateEnsemble mes;
     auto spl = split_str_by_delimiter(s, "{");
     id_ = spl[0];
     block_end_add_ = std::stoi(spl[1]);
@@ -29,13 +28,18 @@ rng_(RandomNumberGenerator()) {
     }
 }
 
-void
-MotifStateEnsemble::setup(
-    String const & nid,
+MotifStateEnsemble::MotifStateEnsemble(
     MotifStateOPs const & motif_states,
     Floats const & energies) {
     
-    id_ = nid;
+    if(motif_states.size() != energies.size()) {
+        throw MotifStateEnsembleException("must supply the same number of motif_states and energies");
+    }
+    
+    if(motif_states.size() == 0) {
+        throw MotifStateEnsembleException("must supply at least one motif state to ensemble");
+    }
+    
     for(int i = 0; i < motif_states.size(); i++) {
         auto member = std::make_shared<MotifStateEnsembleMember>(motif_states[i], energies[i]);
         members_.push_back(member);
@@ -43,19 +47,10 @@ MotifStateEnsemble::setup(
     
     std::sort(members_.begin(), members_.end(), MotifStateEnsembleMember_LessThanKey());
     block_end_add_ = members_[0]->motif_state->block_end_add();
+    id_ = members_[0]->motif_state->end_ids()[0];
+
 }
 
-MotifStateEnsemble
-MotifStateEnsemble::copy() {
-    MotifStateEnsemble mes_copy;
-    mes_copy.id_ = id_;
-    mes_copy.block_end_add_ = block_end_add_;
-    for(auto const & mem : members_) {
-        auto mem_copy = std::make_shared<MotifStateEnsembleMember>(mem->copy());
-        mes_copy.members_.push_back(mem_copy);
-    }
-    return mes_copy;
-}
 
 String
 MotifStateEnsemble::to_str() {
