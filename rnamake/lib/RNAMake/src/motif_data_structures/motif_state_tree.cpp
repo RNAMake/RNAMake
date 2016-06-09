@@ -118,9 +118,9 @@ MotifStateTree::setup_from_mt(
     int parent_index = 1000, parent_end_index = -1;
     for(auto const & n : *mt) {
         i++;
-        auto ms = ResourceManager::getInstance().get_state(n->data()->name(),
-                                                           n->data()->end_ids()[0],
-                                                           n->data()->ends()[0]->name());
+        auto ms = RM::instance().motif_state(n->data()->name(),
+                                             n->data()->end_ids()[0],
+                                             n->data()->ends()[0]->name());
         if(i == 0) {
             add_state(ms);
         }
@@ -152,11 +152,10 @@ MotifStateTree::to_motif_tree() {
         i++;
         MotifOP m;
         if(n->data()->ref_state->name() != "") {
-            m = ResourceManager::getInstance().get_motif(n->data()->ref_state->name(),
-                                                         n->data()->ref_state->end_ids()[0]);
+            m = RM::instance().motif(n->data()->ref_state->name(), n->data()->ref_state->end_ids()[0]);
         }
         else {
-            m = ResourceManager::getInstance().get_motif("", n->data()->ref_state->end_ids()[0]);
+            m = RM::instance().motif("", n->data()->ref_state->end_ids()[0]);
         }
         
         if(i == 0) {

@@ -22,7 +22,7 @@ options_(Options("MotifTreeOptions"))  {
     for(auto const & e : node_spl) {
         i++;
         auto n_spl = split_str_by_delimiter(e, ",");
-        auto m = ResourceManager::getInstance().get_motif(n_spl[0], n_spl[2], n_spl[1]);
+        auto m = RM::instance().motif(n_spl[0], n_spl[2], n_spl[1]);
         if(i == 0) {
             add_motif(m);
         }
@@ -95,7 +95,7 @@ MotifTree::add_motif(
     
     auto m = MotifOP();
     try {
-        m = ResourceManager::getInstance().get_motif(m_name);
+        m = RM::instance().motif(m_name);
     }
     catch(ResourceManagerException const & e) {
         throw MotifTreeException("failed to retrieve motif by name in add_motif: "
@@ -114,7 +114,7 @@ MotifTree::add_motif(
     
     auto m = MotifOP();
     try {
-        m = ResourceManager::getInstance().get_motif(m_name, "", m_end_name);
+        m = RM::instance().motif(m_name, "", m_end_name);
     }
     catch(ResourceManagerException const & e) {
         throw MotifTreeException("failed to retrieve motif by name in add_motif: "

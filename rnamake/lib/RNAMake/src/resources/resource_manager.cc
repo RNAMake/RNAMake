@@ -9,17 +9,14 @@
 #include "resources/resource_manager.h"
 
 MotifOP
-ResourceManager::get_motif(
+RM::motif(
     String const & name,
     String const & end_id,
-    String const & end_name,
-    String const & id) {
-    
-    //return mlibs_["ideal_helices"]->get(name);
+    String const & end_name) {
     
     for(auto const & kv : mlibs_) {
-        if(kv.second->contains(name, end_id, end_name, id)) {
-            return kv.second->get(name, end_id, end_name, id);
+        if(kv.second->contains(name, end_id, end_name)) {
+            return kv.second->get(name, end_id, end_name);
         }
     }
     
@@ -27,20 +24,21 @@ ResourceManager::get_motif(
         return added_motifs_.get(name, end_id, end_name);
     }
     
-    throw ResourceManagerException("cannot find motif: " + name);
+    throw ResourceManagerException(
+        "cannot find motif in resource manager with search: "
+        "name=" + name + " end_id=" + end_id + " end_name= " + end_name);
     
 }
 
 MotifStateOP
-ResourceManager::get_state(
+RM::motif_state(
     String const & name,
     String const & end_id,
-    String const & end_name,
-    String const & id) {
+    String const & end_name) {
 
     for(auto const & kv : ms_libs_) {
-        if(kv.second->contains(name, end_id, end_name, id)) {
-            return kv.second->get(name, end_id, end_name, id);
+        if(kv.second->contains(name, end_id, end_name)) {
+            return kv.second->get(name, end_id, end_name);
         }
     }
     
@@ -48,30 +46,32 @@ ResourceManager::get_state(
         return added_motifs_.get(name, end_id, end_name)->get_state();
     }
     
-    throw ResourceManagerException("cannot find state: ");
+    throw ResourceManagerException(
+        "cannot find motif state in resource manager with search: "
+        "name=" + name + " end_id=" + end_id + " end_name= " + end_name);
 }
 
 MotifStateEnsembleOP
-ResourceManager::get_motif_state_ensemble(
-    String const & name,
-    String const & id) {
+RM::motif_state_ensemble(
+    String const & name) {
     
     for(auto const & kv : mse_libs_) {
-        if(kv.second->contains(name, id)) {
-            return kv.second->get(name, id);
+        if(kv.second->contains(name)) {
+            return kv.second->get(name);
         }
     }
     
-    throw ResourceManagerException("cannot find motif_state_ensemble");
-    
-    
+    throw ResourceManagerException(
+        "cannot find motif state ensemble in resource manager with search: "
+        "name=" + name);
 }
 
 void
-ResourceManager::add_motif(
+RM::add_motif(
     String const & path) {
     
     auto m = mf_.motif_from_file(path);
+    int added = 0;
     MotifOPs motifs;
     std::map<Uuid, String, UuidCompare> end_ids;
     for( int i = 0; i < m->ends().size(); i++) {
@@ -81,6 +81,12 @@ ResourceManager::add_motif(
         if(m_added == nullptr) { continue; }
         motifs.push_back(m_added);
         end_ids[m_added->ends()[0]->uuid()] = m_added->end_ids()[0];
+    }
+    
+    if(motifs.size() == 0) {
+        throw ResourceManagerException(
+            "attempted to add motif from path " + path + " unforunately it has no viable "
+            "basepair ends to be build from ");
     }
     
     for(auto & m : motifs) {

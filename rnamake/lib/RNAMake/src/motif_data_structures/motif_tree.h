@@ -31,7 +31,7 @@ public:
     MotifTree():
     tree_(TreeStatic<MotifOP>()),
     merger_(MotifMerger()),
-    options_(Options("MotifTreeOptions"))    
+    options_(Options())    
     { setup_options(); }
     
     MotifTree(

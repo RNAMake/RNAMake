@@ -142,8 +142,8 @@ bp_name_from_sequence(
 
 int main(int argc, const char * argv[]) {
     String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
-    ResourceManager::getInstance().add_motif(base_path+"GAAA_tetraloop");
-    ResourceManager::getInstance().add_motif(base_path+"GGAA_tetraloop");
+    RM::instance().add_motif(base_path+"GAAA_tetraloop");
+    RM::instance().add_motif(base_path+"GGAA_tetraloop");
 
     try {
         

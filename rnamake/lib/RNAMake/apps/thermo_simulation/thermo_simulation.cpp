@@ -45,8 +45,8 @@ int main(int argc, const char * argv[]) {
     
     //load tectos
     auto tecto_dir = String(base_dir()+"/rnamake/lib/RNAMake/apps/simulate_tectos");
-    ResourceManager::getInstance().add_motif(tecto_dir+"/resources/GAAA_tetraloop");
-    ResourceManager::getInstance().add_motif(tecto_dir+"/resources/GGAA_tetraloop");
+    RM::instance().add_motif(tecto_dir+"/resources/GAAA_tetraloop");
+    RM::instance().add_motif(tecto_dir+"/resources/GGAA_tetraloop");
     
     auto app = ThermoSimulationApp();
     app.setup_options();

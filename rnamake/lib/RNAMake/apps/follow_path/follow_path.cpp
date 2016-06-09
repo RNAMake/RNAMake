@@ -287,7 +287,7 @@ int main(int argc, const char * argv[]) {
 
     //load TTR
     auto ttr_dir = String(base_dir()+"/rnamake/lib/RNAMake/apps/mini_ttr");
-    ResourceManager::getInstance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
+    RM::instance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
 
     if(cmd_opts.get_bool("full_path")) {
         auto pb = PathBuilder();

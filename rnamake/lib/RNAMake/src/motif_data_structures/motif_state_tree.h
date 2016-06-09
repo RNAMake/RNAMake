@@ -83,9 +83,9 @@ public:
         int i = -1;
         for(auto const & n : *mt) {
             i++;
-            auto ms = ResourceManager::getInstance().get_state(n->data()->name(),
-                                                               n->data()->end_ids()[0],
-                                                               n->data()->ends()[0]->name());
+            auto ms = RM::instance().motif_state(n->data()->name(),
+                                                 n->data()->end_ids()[0],
+                                                 n->data()->ends()[0]->name());
             
             if(i == 0) {
                 add_state(ms);

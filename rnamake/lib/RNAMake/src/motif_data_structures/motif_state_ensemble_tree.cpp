@@ -80,12 +80,11 @@ MotifStateEnsembleTree::setup_from_mt(
         i++;
         MotifStateEnsembleOP mse;
         try {
-            mse = ResourceManager::getInstance().get_motif_state_ensemble(n->data()->end_ids()[0]);
+            mse = RM::instance().motif_state_ensemble(n->data()->end_ids()[0]);
         }
         //cannot find ensemble build one from motif
         catch(ResourceManagerException const & e) {
-            auto m = ResourceManager::getInstance().get_motif(n->data()->name(),
-                                                              n->data()->end_ids()[0]);
+            auto m = RM::instance().motif(n->data()->name(), n->data()->end_ids()[0]);
             mse = std::make_shared<MotifStateEnsemble>(m->get_state());
         }
         
