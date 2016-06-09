@@ -33,9 +33,8 @@ parse_command_line(
 int main(int argc, const char * argv[]) {
     auto cmd_opts = parse_command_line(argc, argv);
     auto ttr_dir = String(base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr");
-    ResourceManager::getInstance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
-    ResourceManager::getInstance().add_motif(ttr_dir+"/resources/GGAA_tetraloop");
-
+    RM::instance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
+    RM::instance().add_motif(ttr_dir+"/resources/GGAA_tetraloop");
     
     auto lines = get_lines_from_file(cmd_opts.get_string("mg"));
     if(lines.size() < 3) {

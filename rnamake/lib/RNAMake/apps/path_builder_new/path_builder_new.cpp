@@ -230,7 +230,7 @@ PathBuilderNewApp::_setup_from_motif() {
             "-end_bp respectively when using -pdb option");
     }
 
-    ResourceManager::getInstance().add_motif(get_string_option("pdb"));
+    RM::instance().add_motif(get_string_option("pdb"));
 
     auto m = MotifOP(nullptr);
 

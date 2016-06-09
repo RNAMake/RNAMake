@@ -30,33 +30,30 @@ public:
 };
 
 
-class ResourceManager {
+class RM { //RM for ResourceManager
 public:
-    static ResourceManager & getInstance() {
-        static ResourceManager instance;
+    static RM & instance() {
+        static RM instance;
         return instance;
     }
     
 public:
     
     MotifOP
-    get_motif(
+    motif(
         String const & name = dummy_name,
         String const & end_id = dummy_end_id,
-        String const & end_name = dummy_name,
-        String const & id = dummy_id);
+        String const & end_name = dummy_name);
     
     MotifStateOP
-    get_state(
+    motif_state(
         String const & name = dummy_name,
         String const & end_id = dummy_end_id,
-        String const & end_name = dummy_name,
-        String const & id = dummy_id);
+        String const & end_name = dummy_name);
     
     MotifStateEnsembleOP
-    get_motif_state_ensemble(
-        String const & name = dummy_name,
-        String const & id = dummy_id);
+    motif_state_ensemble(
+        String const & name = dummy_name);
     
     void
     add_motif(
@@ -64,7 +61,7 @@ public:
     
     
 protected:
-    ResourceManager() { //Prevent construction
+    RM() { //Prevent construction
         mf_ = MotifFactory();
         added_motifs_ = AddedMotifLibrary();
         mlibs_ = std::map<String, MotifSqliteLibraryOP>();
@@ -85,11 +82,11 @@ protected:
     
     }
     
-    ResourceManager(ResourceManager const &); //Prevent construction
-    void operator= (ResourceManager const &);
+    RM(RM const &); //Prevent construction
+    void operator= (RM const &);
     
 private:
-    ~ResourceManager() {}
+    ~RM() {}
     
 private:
     std::map<String, MotifSqliteLibraryOP> mlibs_;
@@ -106,10 +103,9 @@ MotifOP
 get_motif_from_resource_manager(
     String const & name = dummy_name,
     String const & end_id = dummy_end_id,
-    String const & end_name = dummy_name,
-    String const & id = dummy_id) {
+    String const & end_name = dummy_name) {
     
-    return ResourceManager::getInstance().get_motif(name, end_id, end_name, id);
+    return RM::instance().motif(name, end_id, end_name);
     
 }
 

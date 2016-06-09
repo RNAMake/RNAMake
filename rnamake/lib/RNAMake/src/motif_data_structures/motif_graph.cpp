@@ -28,7 +28,7 @@ aligned_(std::map<int, int>())
     auto pos = 0;
     for(auto const & n_spl : node_spl) {
         sspl = split_str_by_delimiter(n_spl, ",");
-        auto m = ResourceManager::getInstance().get_motif(sspl[0], sspl[2], sspl[1]);
+        auto m = RM::instance().motif(sspl[0], sspl[2], sspl[1]);
 
         if(i == 0 ) {
             pos = add_motif(m);
@@ -87,10 +87,10 @@ MotifGraph::_setup_from_top_str(String const & s) {
         sspl = split_str_by_delimiter(n_spl, ",");
         auto m = MotifOP(nullptr);
         try {
-            m = ResourceManager::getInstance().get_motif(sspl[0], "", sspl[1]);
+            m = RM::instance().motif(sspl[0], "", sspl[1]);
         } catch(...) { }
         if(m == nullptr) {
-            m = ResourceManager::getInstance().get_motif(sspl[0]);
+            m = RM::instance().motif(sspl[0]);
   
         }
         m->get_beads(m->ends());
@@ -252,7 +252,7 @@ MotifGraph::add_motif(
     
     auto m = MotifOP();
     try {
-        m = ResourceManager::getInstance().get_motif(m_name, "", m_end_name);
+        m = RM::instance().motif(m_name, "", m_end_name);
     }
     catch(ResourceManagerException const & e) {
         throw MotifGraphException("failed to retrieve motif by name in add_motif: "
@@ -270,7 +270,7 @@ MotifGraph::add_motif(
 
     auto m = MotifOP();
     try {
-        m = ResourceManager::getInstance().get_motif(m_name);
+        m = RM::instance().motif(m_name);
     }
     catch(ResourceManagerException const & e) {
         throw MotifGraphException("failed to retrieve motif by name in add_motif: "
@@ -353,7 +353,7 @@ MotifGraph::add_motif_tree(
     int i = 0;
     int pos = 0;
     for(auto const & n : *mt) {
-        auto m = ResourceManager::getInstance().get_motif(n->data()->name(), n->data()->end_ids()[0]);
+        auto m = RM::instance().motif(n->data()->name(), n->data()->end_ids()[0]);
         if(i == 0) { pos = add_motif(n->data(), parent_index, parent_end_index); }
         else       { pos = add_motif(n->data()); }
         i++;
@@ -620,7 +620,7 @@ MotifGraph::replace_ideal_helices() {
             }
             
             remove_motif(n->index());
-            auto h = ResourceManager::getInstance().get_motif("HELIX.IDEAL");
+            auto h = RM::instance().motif("HELIX.IDEAL");
             int pos = 0;
             if(parent == nullptr) {
                 pos = _add_motif_to_graph(h);
@@ -698,7 +698,7 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
         if(n->data()->name() == new_name) {
             continue;
         }
-        auto m = ResourceManager::getInstance().get_motif(new_name);
+        auto m = RM::instance().motif(new_name);
         m->id(n->data()->id());
         auto org_res = n->data()->residues();
         auto new_res = m->residues();

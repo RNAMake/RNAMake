@@ -64,12 +64,11 @@ graph_to_tree(
                     name = spl[1] + "=" + spl[0];
                 }
                 
-                m = ResourceManager::getInstance().get_motif(name);
+                m = RM::instance().motif(name);
             }
             
             else {
-                m  = ResourceManager::getInstance().get_motif(name, "",
-                                                              current->data()->ends()[0]->name());
+                m = RM::instance().motif(name, "", current->data()->ends()[0]->name());
             }
             mt->add_motif(m);
             mt->get_node(0)->data()->id(current->data()->id());
@@ -116,11 +115,10 @@ graph_to_tree(
             if(current->data()->name()[2] == '=' && c_end_index == 1) {
                 auto spl = split_str_by_delimiter(current->data()->name(), "=");
                 auto name = spl[1] + "=" + spl[0];
-                m = ResourceManager::getInstance().get_motif(name);
+                m = RM::instance().motif(name);
             }
             else {
-                m  = ResourceManager::getInstance().get_motif(current->data()->name(),
-                                                              "", c_end_name);
+                m = RM::instance().motif(current->data()->name(), "", c_end_name);
             }
             
             seen_connections[std::to_string(p_index) + " " + std::to_string(index)] = 1;
