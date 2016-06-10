@@ -101,9 +101,14 @@ class MotifFactory(object):
         for i, end in enumerate(updated_ends):
             flip_res = 0
             for c in m.chains():
-                if c.first() == end.res2:
+                if c.first().uuid == end.res2.uuid:
                     flip_res = 1
                     break
+                if c.last().uuid == end.res1.uuid:
+                    flip_res = 1
+                    break
+
+            #print end.name(), flip_res
 
             if flip_res:
                 updated_ends[i].res1, updated_ends[i].res2 = \

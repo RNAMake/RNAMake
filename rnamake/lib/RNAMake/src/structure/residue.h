@@ -95,6 +95,15 @@ public:
     btype_(b.btype_)
     {}
     
+public:
+    
+    inline
+    double
+    distance(
+        Bead const & b) const {
+        return b.center_.distance(center_);
+    }
+    
 public: //accessors
     
     /**
