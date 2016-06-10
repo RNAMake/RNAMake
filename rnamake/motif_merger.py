@@ -119,7 +119,11 @@ class MotifMerger(object):
                 if uuid2 == end.uuid:
                     remove.append(uuid1)
             for r in remove:
-                del self.bp_overrides[r]
+                self.bp_overrides.pop(r, None)
+
+        for bp in m.basepairs:
+            if bp.uuid in self.all_bps:
+                self.all_bps.pop(bp.uuid, None)
 
         remove = []
         for n in self.chain_graph.nodes:

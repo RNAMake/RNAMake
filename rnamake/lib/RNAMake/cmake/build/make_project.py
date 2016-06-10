@@ -128,7 +128,7 @@ for p in lib_paths:
         f.write("add_executable("+ prog_name + " " + unit_app +")\n")
         f.write("target_link_libraries("+prog_name+" %s)\n" % p)
         f.write("add_custom_target("+symlink+" ALL)\n")
-        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/unittests/"+spl[0]+" "+ spl[0]+")\n")
+        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/unittests/"+prog_name+")\n")
         f.write("\n\n")
 
     integration_apps = get_integration_tests_for_dir(p)
@@ -141,7 +141,7 @@ for p in lib_paths:
         f.write("add_executable("+ prog_name + " " + inte_app +")\n")
         f.write("target_link_libraries("+prog_name+" %s)\n" % p)
         f.write("add_custom_target("+symlink+" ALL)\n")
-        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/integration/"+spl[0]+" "+ spl[0]+")\n")
+        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/integration/"+prog_name+")\n")
         f.write("\n\n")
 
     #compile unittests for this lib
