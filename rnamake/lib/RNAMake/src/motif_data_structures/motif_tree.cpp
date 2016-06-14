@@ -13,21 +13,41 @@ MotifTree::MotifTree(
     String const & s):
 tree_(TreeStatic<MotifOP>()),
 merger_(MotifMerger()),
-options_(Options("MotifTreeOptions"))  {
+connections_(MotifConnections()),
+options_(Options())  {
     setup_options();
+    
+    set_option_value("sterics", false);
     
     auto spl = split_str_by_delimiter(s, "|");
     auto node_spl = split_str_by_delimiter(spl[0], " ");
     int i = -1;
+    int pos = 0;
     for(auto const & e : node_spl) {
         i++;
         auto n_spl = split_str_by_delimiter(e, ",");
-        auto m = RM::instance().motif(n_spl[0], n_spl[2], n_spl[1]);
+        auto m = MotifOP(nullptr);
+        
+        try {
+            m = RM::instance().motif(n_spl[0], n_spl[2], n_spl[1]);
+        }
+        catch(ResourceManagerException const & e) {
+            throw MotifTreeException(
+                String("could not get motif did you forget to add it to the resource manager: ") +
+                e.what());
+        }
+            
         if(i == 0) {
-            add_motif(m);
+            pos = add_motif(m);
         }
         else {
-            add_motif(m, std::stoi(n_spl[3]), std::stoi(n_spl[4]));
+            pos = add_motif(m, std::stoi(n_spl[3]), std::stoi(n_spl[4]));
+        }
+        
+        if(pos == -1) {
+            throw MotifTreeException(
+                "failed to add " + m->name() + " pos " + std::to_string(i) + " in the tree "
+                "during rebuild from string");
         }
         
     }
@@ -37,10 +57,12 @@ options_(Options("MotifTreeOptions"))  {
     auto connection_spl = split_str_by_delimiter(spl[1], " ");
     for(auto const & c_str : connection_spl) {
         auto c_spl = split_str_by_delimiter(c_str, ",");
-        auto mc = std::make_shared<MotifConnection>(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
-                                                    c_spl[2], c_spl[3]);
-        connections_.push_back(mc);
+        connections_.add_connection(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
+                                    c_spl[2], c_spl[3]);
     }
+    
+    set_option_value("sterics", true);
+
 }
 
 void
@@ -59,71 +81,23 @@ MotifTree::update_var_options() {
 
 int
 MotifTree::add_motif(
-    String const & m_name,
-    int parent_index,
-    String const & p_end_name) {
- 
-    
-    auto parent = last_node();
-    if(parent_index != -1) {
-        parent = get_node(parent_index);
-    }
-    auto parent_end_index = parent->data()->end_index(p_end_name);
-    return add_motif(m_name, parent_index, parent_end_index);
-    
-}
-
-int
-MotifTree::add_motif(
     MotifOP const & m,
     int parent_index,
     String parent_end_name) {
     
-    auto parent = last_node();
-    if(parent_index != -1) {
-        parent = get_node(parent_index);
-    }
-    auto parent_end_index = parent->data()->end_index(parent_end_name);
-    return add_motif(m, parent_index, parent_end_index);
-}
-
-int
-MotifTree::add_motif(
-    String const & m_name,
-    int parent_index,
-    int parent_end_index) {
+    auto parent = _get_parent(m->name(), parent_index);
+    auto parent_end_index = -1;
     
-    auto m = MotifOP();
-    try {
-        m = RM::instance().motif(m_name);
+    try{
+        parent_end_index = parent->data()->end_index(parent_end_name);
     }
-    catch(ResourceManagerException const & e) {
-        throw MotifTreeException("failed to retrieve motif by name in add_motif: "
-                                   + String(e.what()));
+    catch(RNAStructureException) {
+        throw MotifTreeException(
+            "cannot find parent_end_name: " + parent_end_name + " cannot add motif: " + m->name());
     }
     
     return add_motif(m, parent_index, parent_end_index);
 }
-
-int
-MotifTree::add_motif(
-    String const & m_name,
-    String const & m_end_name,
-    int parent_index,
-    int parent_end_index) {
-    
-    auto m = MotifOP();
-    try {
-        m = RM::instance().motif(m_name, "", m_end_name);
-    }
-    catch(ResourceManagerException const & e) {
-        throw MotifTreeException("failed to retrieve motif by name in add_motif: "
-                                 + String(e.what()));
-    }
-    
-    return add_motif(m, parent_index, parent_end_index);
-}
-
 
 int
 MotifTree::add_motif(
@@ -131,19 +105,7 @@ MotifTree::add_motif(
     int parent_index,
     int parent_end_index) {
     
-    auto parent = tree_.last_node();
-    
-    //catch out of bounds node index
-    try {
-        if(parent_index != -1) {
-            parent = tree_.get_node(parent_index);
-        }
-    }
-    catch(TreeException e) {
-        throw MotifTreeException("could not add motif: " + m->name() + " with parent: "
-                                  + std::to_string(parent_index) + "there is no node with" +
-                                  "that index");
-    }
+    auto parent = _get_parent(m->name(), parent_index);
     
     if(parent == nullptr) {
         auto m_copy = std::make_shared<Motif>(*m);
@@ -154,19 +116,47 @@ MotifTree::add_motif(
         return pos;
     }
     
-    Ints avail_pos;
-    try {
-        avail_pos = tree_.get_available_pos(parent, parent_end_index);
+    auto avail_pos = Ints();
+    if(parent_end_index != -1) {
+        int avail = parent->available_pos(parent_end_index);
+        if(!avail) {
+            throw MotifTreeException(
+                "could not add motif: " + m->name() + " with parent: " + std::to_string(parent_index) +
+                " since the parent_end_index supplied " + std::to_string(parent_end_index) +
+                " is filled");
+        }
+        else {
+            auto name = parent->data()->ends()[parent_end_index]->name();
+            if(connections_.in_connection(parent->index(), name)) {
+                throw MotifTreeException(
+                    "could not add motif: " + m->name() + " with parent: " + std::to_string(parent_index) +
+                    " since the parent_end_index supplied " + std::to_string(parent_end_index) +
+                    " is in a connection");
+            }
+            
+            avail_pos.push_back(parent_end_index);
+        }
     }
-    catch(TreeException e) {
-        throw MotifTreeException("could not add motif: " + m->name() + " with parent: "
-                                  + std::to_string(parent_index));
+    
+    else {
+        avail_pos = parent->available_children_pos();
+        if(avail_pos.size() == 1 && avail_pos[0] == parent->data()->block_end_add()) {
+            throw MotifTreeException(
+                "could not add motif: " + m->name() + " with parent: " + std::to_string(parent_index) +
+                " since it has no free ends to add too");
+        }
+        
     }
+    
     
     for(auto const & p : avail_pos) {
         if(p == parent->data()->block_end_add()) { continue; }
         auto m_added = get_aligned_motif(parent->data()->ends()[p], m->ends()[0], m);
         if(sterics_ && _steric_clash(m_added)) { continue; }
+        if(connections_.in_connection(parent->index(),
+                                      parent->data()->ends()[p]->name())) {
+            continue;
+        }
         
         m_added->new_res_uuids();
         int pos = tree_.add_data(m_added, (int)m_added->ends().size(), parent->index(), p);
@@ -189,8 +179,23 @@ MotifTree::add_connection(
     String const & i_bp_name,
     String const & j_bp_name) {
     
-    auto node_i = tree_.get_node(i);
-    auto node_j = tree_.get_node(j);
+    auto node_i = TreeNodeOP<MotifOP>(nullptr);
+    auto node_j = TreeNodeOP<MotifOP>(nullptr);
+
+    try {  node_i = tree_.get_node(i); }
+    catch(TreeException) {
+        throw MotifTreeException(
+            "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
+            std::to_string(i) +" does not exist");
+    }
+    
+    try {  node_j = tree_.get_node(j); }
+    catch(TreeException) {
+        throw MotifTreeException(
+            "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
+            std::to_string(j) +" does not exist");
+    }
+    
     auto name_i = String("");
     auto name_j = String("");
     auto ei = -1;
@@ -198,12 +203,31 @@ MotifTree::add_connection(
     
     if (i_bp_name != "") {
         ei = node_i->data()->end_index(i_bp_name);
-        assert(node_i->available_pos(ei) && "cannot add_connection");
+        
+        if(!node_i->available_pos(ei)) {
+            throw MotifTreeException(
+                "cannot add connection between nodes " + std::to_string(i) + " and " +
+                std::to_string(j) + " as specified end for i is filled: " + i_bp_name);
+        }
+        
+        if(connections_.in_connection(i, i_bp_name)) {
+            throw MotifTreeException(
+                "cannot add connection between nodes " + std::to_string(i) + " and " +
+                std::to_string(j) + " as specified end for is already in connection: " + i_bp_name);
+        }
+        
         name_i = i_bp_name;
     }
     else {
         auto node_i_indexes = node_i->available_children_pos();
-        assert(node_i_indexes.size() != 1 && "cannot add_connection no available spots");
+        
+        if(node_i_indexes.size() == 1) {
+            throw MotifTreeException(
+                "cannot add connection between nodes " + std::to_string(i) + " and " +
+                std::to_string(j) + " as no ends are available for : " + std::to_string(i));
+        }
+
+        
         ei = node_i_indexes[1];
         name_i = node_i->data()->ends()[ei]->name();
     }
@@ -211,19 +235,49 @@ MotifTree::add_connection(
     
     if (j_bp_name != "") {
         ej = node_j->data()->end_index(j_bp_name);
-        assert(node_j->available_pos(ej) && "cannot add_connection");
+
+        if(!node_j->available_pos(ej)) {
+            throw MotifTreeException(
+                "cannot add connection between nodes " + std::to_string(i) + " and " +
+                    std::to_string(j) + " as specified end for j is filled: " + j_bp_name);
+        }
+        
+        if(connections_.in_connection(j, j_bp_name)) {
+            throw MotifTreeException(
+                "cannot add connection between nodes " + std::to_string(j) + " and " +
+                std::to_string(j) + " as specified end for is already in connection: " + j_bp_name);
+        }
         name_j = j_bp_name;
     }
     else {
         auto node_j_indexes = node_j->available_children_pos();
-        assert(node_j_indexes.size() != 1 && "cannot add_connection no available spots");
+        
+        if(node_j_indexes.size() == 1) {
+            throw MotifTreeException(
+                "cannot add connection between nodes " + std::to_string(i) + " and " +
+                std::to_string(j) + " as no ends are available for : " + std::to_string(j));
+        }
         ej = node_j_indexes[1];
         name_j = node_j->data()->ends()[ej]->name();
     }
     
     
-    auto connection = std::make_shared<MotifConnection>(i, j, name_i, name_j);
-    connections_.push_back(connection);
+    if(connections_.in_connection(i, node_i->data()->ends()[ei]->name())) {
+        throw MotifTreeException(
+            "cannot add connection between nodes " + std::to_string(i) + " and " +
+            std::to_string(j) + "as only end available for " + std::to_string(i) +
+            " is already in a connection already");
+    }
+    
+    if(connections_.in_connection(j, node_j->data()->ends()[ej]->name())) {
+        throw MotifTreeException(
+            "cannot add connection between nodes " + std::to_string(i) + " and " +
+            std::to_string(j) + "as only end available for " + std::to_string(j) +
+            " is already in a connection already");
+    }
+    
+    
+    connections_.add_connection(i, j, name_i, name_j);
     
     merger_.connect_motifs(node_i->data(), node_j->data(),
                            node_i->data()->ends()[ei],
@@ -234,11 +288,8 @@ MotifTree::add_connection(
 
 void
 MotifTree::write_pdbs(String const & fname) {
-    std::stringstream ss;
     for( auto const & n : tree_) {
-        ss << fname << "." << n->index() << ".pdb";
-        n->data()->to_pdb(ss.str());
-        ss.str("");
+        n->data()->to_pdb(fname + "." + std::to_string(n->index()) + ".pdb");
     }
 }
 

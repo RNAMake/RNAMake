@@ -18,6 +18,21 @@
 #include "structure/basepair.h"
 #include "structure/residue.h"
 
+
+/*
+ * Exception for RNA Structure
+ */
+class RNAStructureException : public std::runtime_error {
+public:
+    /**
+     * Standard constructor for RNAStructureException
+     * @param   message   Error message for rna structure
+     */
+    RNAStructureException(String const & message):
+    std::runtime_error(message)
+    {}
+};
+
 class RNAStructure {
 public:
     RNAStructure()

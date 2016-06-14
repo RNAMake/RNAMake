@@ -11,6 +11,11 @@
 
 void
 MotifMerger::add_motif(MotifOP const & m) {
+    if(motifs_.find(m->id()) != motifs_.end()) {
+        throw MotifMergerException("a motif with this id already exists in merger cannot add");
+    }
+    
+    
     auto new_chains = ChainOPs(m->chains().size());
     int i =0;
     for(auto const & c : m->chains()) {
@@ -40,8 +45,15 @@ MotifMerger::add_motif(
     BasepairOP const & parent_end) {
     
     add_motif(m);
-    _link_motifs(m, m_end, parent, parent_end);
-    
+    try {
+        _link_motifs(m, m_end, parent, parent_end);
+    }
+    catch(GraphException const & e ){
+        throw MotifMergerException(
+            "cannot add motif: " + m->name() + " with basepair " + m_end->name() + " with parent: " +
+             parent->name() + " and parent basepair " + parent_end->name());
+                                   
+    }
     
 }
 
@@ -142,7 +154,9 @@ MotifMerger::_connect_chains(
         a_node->data().prime3_override = 1;
         res_overrides_[a_node->data().c->last()->uuid()] = d_node->data().c->first()->uuid();
     }
+    
     graph_.connect(d_node->index(), a_node->index(), d_i, a_i);
+ 
 }
 
 
@@ -223,7 +237,6 @@ MotifMerger::remove_motif(MotifOP const & m) {
         }
     }
     
-    
     for(auto const & r : remove) {
         for(auto const & c : r->connections()) {
             if(c == nullptr) { continue; }
@@ -260,8 +273,10 @@ MotifMerger::remove_motif(MotifOP const & m) {
 void
 MotifMerger::update_motif(MotifOP const & m) {
     
+    int found = 0;
     for(auto const & n : graph_.nodes()) {
         if(n->data().m_id != m->id()) { continue; }
+        found = 1;
         auto res = n->data().c->residues();
         auto new_res = ResidueOPs();
         for(auto const & r : res) {
@@ -272,6 +287,11 @@ MotifMerger::update_motif(MotifOP const & m) {
             new_res.push_back(new_r);
         }
         n->data().c = std::make_shared<Chain>(new_res);
+    }
+    
+    if(!found) {
+        throw MotifMergerException(
+            "went to update motif: " + m->name() + " but it does not exist in merger");
     }
     
     for(auto const & bp : m->basepairs()) {
