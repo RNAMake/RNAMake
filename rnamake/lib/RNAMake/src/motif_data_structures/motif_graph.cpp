@@ -215,19 +215,6 @@ MotifGraph::update_var_options() {
     clash_radius_         = options_.get_int("clash_radius");
 }
 
-int
-MotifGraph::add_motif(
-    String const & m_name,
-    int parent_index,
-    String const & p_end_name) {
-    
-    auto parent = graph_.last_node();
-    if(parent_index != -1) {
-        parent = graph_.get_node(parent_index);
-    }
-    auto parent_end_index = parent->data()->end_index(p_end_name);
-    return add_motif(m_name, parent_index, parent_end_index);
-}
 
 int
 MotifGraph::add_motif(
@@ -240,43 +227,6 @@ MotifGraph::add_motif(
         parent = graph_.get_node(parent_index);
     }
     auto parent_end_index = parent->data()->end_index(p_end_name);
-    return add_motif(m, parent_index, parent_end_index);
-}
-
-int
-MotifGraph::add_motif(
-    String const & m_name,
-    String const & m_end_name,
-    int parent_index,
-    int parent_end_index) {
-    
-    auto m = MotifOP();
-    try {
-        m = RM::instance().motif(m_name, "", m_end_name);
-    }
-    catch(ResourceManagerException const & e) {
-        throw MotifGraphException("failed to retrieve motif by name in add_motif: "
-                                 + String(e.what()));
-    }
-    
-    return add_motif(m, parent_index, parent_end_index);
-}
-
-int
-MotifGraph::add_motif(
-    String const & m_name,
-    int parent_index,
-    int parent_end_index) {
-
-    auto m = MotifOP();
-    try {
-        m = RM::instance().motif(m_name);
-    }
-    catch(ResourceManagerException const & e) {
-        throw MotifGraphException("failed to retrieve motif by name in add_motif: "
-                                   + String(e.what()));
-    }
-    
     return add_motif(m, parent_index, parent_end_index);
 }
 

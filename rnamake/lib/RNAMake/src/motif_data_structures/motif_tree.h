@@ -31,6 +31,7 @@ public:
     MotifTree():
     tree_(TreeStatic<MotifOP>()),
     merger_(MotifMerger()),
+    connections_(MotifConnections()),
     options_(Options())    
     { setup_options(); }
     
@@ -57,7 +58,15 @@ public: //tree wrappers
     
     inline
     TreeNodeOP<MotifOP> const &
-    get_node(int i) { return tree_.get_node(i); }
+    get_node(int i) {
+        try {
+            return tree_.get_node(i);
+        }
+        catch(TreeException) {
+            throw MotifTreeException(
+                "cannot get node: " + std::to_string(i) + " in MotifTree it does not exist");
+        }
+    }
     
     inline
     TreeNodeOP<MotifOP> const &
@@ -71,12 +80,23 @@ public: //merger wrappers
     inline
     RNAStructureOP const &
     get_structure() {
-        return merger_.get_structure();
+        try { return merger_.get_structure(); }
+        catch(MotifMergerException) {
+            throw MotifTreeException(
+                "cannot produce merged structure it is likely you have created a ring with no start"
+                "call write_pdbs() to see what the topology would look like");
+        }
     }
     
     sstruct::PoseOP
     secondary_structure() {
-        return merger_.secondary_structure();
+        try { return merger_.secondary_structure(); }
+        catch(MotifMergerException) {
+            throw MotifTreeException(
+                "cannot produce merged secondary structure it is likely you have created a ring "
+                "with no start, call write_pdbs() to see what the topology would look like");
+        }
+
     }
     
     inline
@@ -84,7 +104,13 @@ public: //merger wrappers
     to_pdb(
         String const fname = "test.pdb",
         int renumber = -1) {
-        return merger_.to_pdb(fname, renumber);
+        
+        try { return merger_.to_pdb(fname, renumber); }
+        catch(MotifMergerException) {
+            throw MotifTreeException(
+                "cannot produce merged structure for a pdb it is likely you have created a ring "
+                "with no start, call write_pdbs() to see what the topology would look like");
+        }
         
     }
     
@@ -131,30 +157,37 @@ public: //add motif interface
         int parent_index,
         String parent_end_name);
     
-    int
-    add_motif(
-        String const & m_name,
-        int parent_index = -1,
-        int parent_end_index = -1);
-    
-    int
-    add_motif(
-        String const & m_name,
-        String const & m_end_name,
-        int parent_index = -1,
-        int parent_end_index = -1);
-    
-    int
-    add_motif(
-        String const &,
-        int,
-        String const &);
 
-public:
+private: // add motif helper functions
     
+    TreeNodeOP<MotifOP>
+    _get_parent(
+        String const & m_name,
+        int parent_index = -1) {
+        
+        auto parent = tree_.last_node();
+        
+        //catch non existant parent
+        try {
+            if(parent_index != -1) { parent = tree_.get_node(parent_index); }
+        }
+        catch(TreeException e) {
+            throw MotifTreeException("could not add motif: " + m_name + " with parent: "
+                                     + std::to_string(parent_index) + "there is no node with" +
+                                     "that index");
+        }
+        
+        return parent;
+    }
+    
+    
+
     int
     _steric_clash(
         MotifOP const &);
+    
+
+public:
     
     void
     add_connection(
@@ -175,7 +208,28 @@ public:
                 return n;
             }
         }
-        throw std::runtime_error("could not find node by id");
+        throw MotifTreeException("could not find node by id");
+    }
+    
+    void
+    remove_node(
+        int i=-1) {
+        
+        if(i == -1) {
+            i = last_node()->index();
+        }
+        
+        try {
+            auto n = get_node(i);
+            tree_.remove_node(n);
+            merger_.remove_motif(n->data());
+            connections_.remove_connections_to(i);
+        
+        }
+        catch(MotifTreeException) {
+            throw MotifTreeException(
+                "cannot remove node with index: " + std::to_string(i) + " as it does not exist");
+        }
     }
     
 private:
@@ -188,7 +242,7 @@ private:
 private:
     TreeStatic<MotifOP> tree_;
     MotifMerger merger_;
-    MotifConnectionOPs connections_;
+    MotifConnections connections_;
     bool sterics_;
     float clash_radius_;
     Options options_;

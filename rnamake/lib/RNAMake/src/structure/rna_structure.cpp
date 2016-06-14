@@ -100,7 +100,9 @@ RNAStructure::end_index(String const & end_name) {
     for(int i = 0; i < ends_.size(); i++) {
         if(ends_[i]->name() == end_name) { return i; }
     }
-    assert("could not find end with name");
+    
+    throw RNAStructureException("could not find a end basepair with name: " + end_name);
+    
     return -1;
 }
 

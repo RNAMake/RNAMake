@@ -41,7 +41,7 @@ public:
     merger_(MotifMerger()),
     clash_radius_(2.5),
     sterics_(1),
-    options_(Options("MotifGraphOptions")),
+    options_(Options()),
     aligned_(std::map<int, int>())
     {  setup_options(); }
     
@@ -141,26 +141,7 @@ public: //add motif interface
         MotifOP const & m,
         int parent_index = -1,
         int parent_end_index = -1);
-    
-    int
-    add_motif(
-        String const & m_name,
-        int parent_index = -1,
-        int parent_end_index = 1);
-    
-    int
-    add_motif(
-        String const & m_name,
-        String const & m_end_name,
-        int parent_index = -1,
-        int parent_end_index = 1);
-    
-    int
-    add_motif(
-        String const &,
-        int,
-        String const &);
-    
+
     int
     add_motif(
         MotifOP const &,
