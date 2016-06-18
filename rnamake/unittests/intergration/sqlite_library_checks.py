@@ -11,7 +11,7 @@ class IdealHelicesUnittests(unittest.TestCase):
         self.rts = residue_type.ResidueTypeSet()
 
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
-        self.base_motif = motif.file_to_motif(path, self.rts)
+        self.base_motif = motif.file_to_motif(path)
 
     def test_correct_build(self):
 
@@ -38,7 +38,7 @@ class IdealReverseHelicesUnittests(unittest.TestCase):
         self.rts = residue_type.ResidueTypeSet()
 
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
-        self.base_motif = motif.file_to_motif(path, self.rts)
+        self.base_motif = motif.file_to_motif(path)
 
     def test_correct_build(self):
 
@@ -70,7 +70,7 @@ class BasicLibrariesUnittests(unittest.TestCase):
         self.rts = residue_type.ResidueTypeSet()
 
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
-        self.base_motif = motif.file_to_motif(path, self.rts)
+        self.base_motif = motif.file_to_motif(path)
 
     def _test_correct_build(self, mlib):
 
@@ -116,7 +116,7 @@ class BPStepsUnittests(unittest.TestCase):
 
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
         self.rts = residue_type.ResidueTypeSet()
-        self.base_motif = motif.file_to_motif(path, self.rts)
+        self.base_motif = motif.file_to_motif(path)
 
 
     def _test_correct_build(self, me):

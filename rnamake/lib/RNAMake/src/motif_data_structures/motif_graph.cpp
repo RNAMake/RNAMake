@@ -13,56 +13,15 @@
 #include "structure/residue_type_set_manager.h"
 #include "motif_data_structures/motif_graph.h"
 
-MotifGraph::MotifGraph(String const & s):
-graph_(GraphStatic<MotifOP>()),
-merger_(std::make_shared<MotifMerger>()),
-clash_radius_(2.5),
-options_(Options()),
-sterics_(0),
-aligned_(std::map<int, int>())
-{
-    auto spl = split_str_by_delimiter(s, "&");
-    auto node_spl = split_str_by_delimiter(spl[0], "|");
-    Strings sspl;
-    int i = 0;
-    auto pos = 0;
-    for(auto const & n_spl : node_spl) {
-        sspl = split_str_by_delimiter(n_spl, ",");
-        auto m = RM::instance().motif(sspl[0], sspl[2], sspl[1]);
-
-        if(i == 0 ) {
-            pos = add_motif(m);
-        }
-        else {
-            pos = add_motif(m, std::stoi(sspl[3]), sspl[4]);
-        }
-        assert(pos != -1 && "cannot build motif_graph from topology");
-        i++;
-    }
-    
-    setup_options();
-    
-    if(spl.size() == 2) { return; }
-    
-    auto connection_spl = split_str_by_delimiter(spl[2], "|");
-    for(auto const & c_spl : connection_spl) {
-        sspl = split_str_by_delimiter(c_spl, " ");
-        add_connection(std::stoi(sspl[0]), std::stoi(sspl[1]), sspl[2], sspl[3]);
-    }
-}
-
-
 MotifGraph::MotifGraph(
     String const & s,
-    MotifGraphStringType const & s_type) {
+    MotifGraphStringType const & s_type) : MotifGraph() {
 
-    setup_options();
-    merger_ = std::make_shared<MotifMerger>();
-    if      (s_type == MotifGraphStringType::OLD) { std::cout << "wrong" << std::endl;  }
-    else if (s_type == MotifGraphStringType::MG)  { _setup_from_str(s); }
+    if      (s_type == MotifGraphStringType::MG)  { _setup_from_str(s); }
     else if (s_type == MotifGraphStringType::TOP) { _setup_from_top_str(s); }
-    
-    //get_structure();
+    else {
+        throw MotifGraphException("cannot destringify motif graph wrong string type");
+    }
 }
 
 void
@@ -300,8 +259,6 @@ MotifGraph::_add_motif_tree(
         i++;
     }
 }
-
-
 
 void
 MotifGraph::add_connection(
