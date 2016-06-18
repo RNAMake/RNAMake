@@ -15,6 +15,7 @@
 #include "base/types.h"
 #include "base/settings.h"
 #include "base/file_io.h"
+#include "structure/pdb_parser.h"
 #include "motif/motif_to_secondary_structure.h"
 #include "motif/motif_scorer.h"
 #include "motif/motif.h"
@@ -37,7 +38,8 @@ public:
 class MotifFactory {
 public:
     MotifFactory():
-    parser_(MotiftoSecondaryStructure()) {
+    parser_(MotiftoSecondaryStructure()),
+    pdb_parser_(PDBParser()) {
         auto path = motif_dirs() + "ref.motif";
         ref_motif_ = file_to_motif(path);
         path = motif_dirs() + "base.motif";
@@ -54,7 +56,8 @@ public:
     MotifOP
     motif_from_file(
         String const & path,
-        bool rebuild_x3dna = true);
+        bool rebuild_x3dna = true,
+        bool include_protein = false);
     
     MotifOP
     motif_from_res(
@@ -119,6 +122,7 @@ private:
     
 private:
     MotiftoSecondaryStructure parser_;
+    PDBParser pdb_parser_;
     MotifScorer scorer_;
     MotifOP ref_motif_, base_motif_, added_helix_;
     float clash_radius_;

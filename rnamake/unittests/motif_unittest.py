@@ -79,7 +79,7 @@ class MotifUnittest(unittest.TestCase):
         m = self.motif
         s = m.to_str()
         m1 = rnamake.motif.str_to_motif(s)
-        if len(m1.residues()) != 24:
+        if len(m1.residues()) != 10:
             self.fail("did not copy all residues correctly")
 
     def test_copy(self):

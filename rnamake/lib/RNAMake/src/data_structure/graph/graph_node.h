@@ -111,9 +111,10 @@ public:
     }
     
     inline
-    GraphNodeOP<DataType> const &
+    GraphNodeOP<DataType>
     parent() {
         for(auto const & c : connections_) {
+            if(c == nullptr) { continue; }
             if(c->partner(index_)->index_ < index_) { return c->partner(index_); }
         }
         return nullptr;

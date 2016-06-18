@@ -38,7 +38,7 @@ public:
     
     MotifGraph():
     graph_(GraphStatic<MotifOP>()),
-    merger_(MotifMerger()),
+    merger_(std::make_shared<MotifMerger>()),
     clash_radius_(2.5),
     sterics_(1),
     options_(Options()),
@@ -52,7 +52,7 @@ public:
     
     MotifGraph(
         MotifGraph const & mg):
-    options_(Options("MotifGraphOptions")),
+    options_(Options()),
     graph_(GraphStatic<MotifOP>(mg.graph_)) {
         auto motifs = MotifOPs();
         // dear god this is horrible but cant figure out a better way to do a copy
@@ -61,11 +61,11 @@ public:
             motifs.push_back(graph_.get_node(n->index())->data());
         }
         options_ = Options(mg.options_);
-        merger_ = MotifMerger(mg.merger_, motifs);
+        merger_ = std::make_shared<MotifMerger>(*mg.merger_, motifs);
         
     }
 
-    ~MotifGraph() {}
+    ~MotifGraph() { }
 
 public: //iterators
     
@@ -86,7 +86,6 @@ public:
     void
     remove_level(int level);
     
-    
     void
     replace_ideal_helices();
     
@@ -96,7 +95,7 @@ public:
     
     sstruct::PoseOP
     designable_secondary_structure() {
-        auto ss = merger_.secondary_structure();
+        auto ss = merger_->secondary_structure();
         auto ss_r = sstruct::ResidueOP(nullptr);
         
         for(auto const & n : graph_) {
@@ -148,23 +147,92 @@ public: //add motif interface
         int,
         String const &);
 
+private: //add motif helpers
+    
+    GraphNodeOP<MotifOP>
+    _get_parent(
+        String const & m_name,
+        int parent_index) {
+        
+        auto parent = graph_.last_node();
+        
+        //catch non existant parent
+        try {
+            if(parent_index != -1) { parent = graph_.get_node(parent_index); }
+        }
+        catch(GraphException e) {
+            throw MotifGraphException(
+                "could not add motif: " + m_name + " with parent: " +
+                std::to_string(parent_index) + "there is no node with that index");
+        }
+        
+        return parent;
+    }
+    
+    int
+    inline
+    _add_orphan_motif_to_graph(
+        MotifOP const & m) {
+        
+        auto m_copy = std::make_shared<Motif>(*m);
+        m_copy->get_beads(m_copy->ends());
+        m_copy->new_res_uuids();
+        int pos = graph_.add_data(m_copy, -1, -1, -1, (int)m_copy->ends().size());
+        merger_->add_motif(m_copy);
+        aligned_[pos] = 0;
+        return pos;
+    }
+    
+    int
+    inline
+    _add_motif_to_graph_new(
+        MotifOP const & m,
+        GraphNodeOP<MotifOP> const & parent,
+        int parent_end_index,
+        bool sterics) {
+        
+        auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
+                                         m->ends()[0], m);
+        
+        if(sterics && _steric_clash(m_added)) { return -1; }
+        
+        m_added->new_res_uuids();
+        int pos = graph_.add_data(m_added, parent->index(), parent_end_index,
+                                  0, (int)m_added->ends().size());
+        
+        if(pos != -1) {
+            merger_->add_motif(m_added, m_added->ends()[0],
+                              parent->data(), parent->data()->ends()[parent_end_index]);
+        }
+        
+        aligned_[pos] = 1;
+        return pos;
+
+    }
+    
+    int
+    _add_motif_to_graph(
+        MotifOP const & m,
+        int parent_index = -1,
+        int parent_end_index = -1);
+    
+    void
+    _add_motif_tree(
+        MotifTreeOP const &,
+        int,
+        int);
+    
 public:
     
     void
     add_motif_tree(
         MotifTreeOP const & mt,
-        int parent_index = -1);
+        int parent_index = -1,
+        int parent_end_index = -1);
     
     void
     add_motif_tree(
         MotifTreeOP const &,
-        int,
-        String const &);
-    
-
-    void
-    add_connection(
-        int,
         int,
         String const &);
     
@@ -177,13 +245,17 @@ public:
     
     
     BasepairOP const &
-    get_end(int);
+    get_available_end(int);
     
     BasepairOP const &
-    get_end(
+    get_available_end(
         int,
         String const &);
     
+    BasepairOP 
+    get_available_end(
+        String const &,
+        String const &);
     
     GraphNodeOPs<MotifOP>
     unaligned_nodes();
@@ -229,23 +301,39 @@ public: //Motif Merger Wrappers
     inline
     RNAStructureOP const &
     get_structure() {
-        return merger_.get_structure();
+        try {  return merger_->get_structure(); }
+        catch(MotifMergerException) {
+            throw MotifGraphException(
+                "cannot produce merged structure it is likely you have created a ring with no start"
+                "call write_pdbs() to see what the topology would look like");
+        }
     }
     
+    sstruct::PoseOP
+    secondary_structure() {
+        try { return merger_->secondary_structure(); }
+        catch(MotifMergerException) {
+            throw MotifGraphException(
+                "cannot produce merged secondary structure it is likely you have created a ring "
+                "with no start, call write_pdbs() to see what the topology would look like");
+        }
+        
+    }
     
     inline
     void
     to_pdb(
         String const fname = "test.pdb",
         int renumber = -1) {
-        return merger_.to_pdb(fname, renumber);
+        
+        try { return merger_->to_pdb(fname, renumber); }
+        catch(MotifMergerException) {
+            throw MotifGraphException(
+                "cannot produce merged structure for a pdb it is likely you have created a ring "
+                "with no start, call write_pdbs() to see what the topology would look like");
+        }
+        
     }
-    
-    sstruct::PoseOP
-    secondary_structure() {
-        return merger_.secondary_structure();
-    }
-    
     
 public: //Options Wrappers
 
@@ -283,12 +371,6 @@ private:
     _steric_clash(
         MotifOP const &);
     
-    int
-    _add_motif_to_graph(
-        MotifOP const & m,
-        int parent_index = -1,
-        int parent_end_index = -1);
-    
     void
     _align_motifs_all_motifs();
     
@@ -308,7 +390,7 @@ private:
     
 private:
     GraphStatic<MotifOP> graph_;
-    MotifMerger merger_;
+    MotifMergerOP merger_;
     Options options_;
     std::map<int, int> aligned_;
     //options

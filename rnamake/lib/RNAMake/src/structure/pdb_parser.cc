@@ -15,7 +15,11 @@
 #include "structure/pdb_parser.h"
 
 ResidueOPs const &
-PDBParser::parse(String const & pdb_file) {
+PDBParser::parse(
+    String const & pdb_file,
+    int protein,
+    int rna) {
+    
     residues_ = ResidueOPs();
     
     Strings lines = get_lines_from_file(pdb_file);
@@ -102,8 +106,9 @@ PDBParser::parse(String const & pdb_file) {
         if(!rts_.contains_rtype(spl[0])) { continue; }
         rtype = rts_.get_rtype_by_resname(spl[0]);
         
-        if(rtype.set_type() == SetType::PROTEIN) { continue; }
-        
+        if(!protein && rtype.set_type() == SetType::PROTEIN) { continue; }
+        if(!rna && rtype.set_type() == SetType::RNA) { continue; }
+ 
         icode = "";
         if(spl.size() > 3) { icode = spl[3]; }
         r = ResidueOP(new Residue(rtype, spl[0], std::stoi(spl[1]), spl[2], icode));

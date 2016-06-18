@@ -96,7 +96,7 @@ class Motif(rna_structure.RNAStructure):
         s += "&"
         s += self.secondary_structure.to_str()
         s += "&"
-        s += basic_io.beads_to_str(self.beads)
+        s += basic_io.beads_to_str(self.protein_beads)
         s += "&"
         return s
 
@@ -132,6 +132,7 @@ class Motif(rna_structure.RNAStructure):
         cmotif.end_ids   = list(self.end_ids)
         cmotif.secondary_structure = self.secondary_structure.copy()
         cmotif.block_end_add = self.block_end_add
+        cmotif.protein_beads = [b.copy() for b in self.protein_beads]
 
         for bp in self.basepairs:
             new_res1 = cmotif.get_residue(uuid=bp.res1.uuid)
@@ -304,6 +305,12 @@ def str_to_motif(s):
     ss_res = m.secondary_structure.residues()
     for i, r in enumerate(m.residues()):
         ss_res[i].uuid = r.uuid
+    for b_str in spl[10].split(";"):
+        b_spl = b_str.split(",")
+        if len(b_spl) < 2:
+            continue
+        b = residue.Bead(basic_io.str_to_point(b_spl[0]), int(b_spl[1]))
+        m.protein_beads.append(b)
     return m
 
 

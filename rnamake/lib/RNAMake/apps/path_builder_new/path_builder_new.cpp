@@ -8,13 +8,14 @@
 
 #include "path_builder_new.hpp"
 
-
+#include "base/backtrace.hpp"
 #include "base/file_io.h"
 #include "base/settings.h"
 #include "util/basic_io.hpp"
 #include "util/steric_lookup.hpp"
 #include "resources/resource_manager.h"
 #include "motif/motif_factory.h"
+
 
 void
 PathBuilderNewApp::setup_options() {
@@ -26,7 +27,6 @@ PathBuilderNewApp::setup_options() {
     add_option("out", String("default.out"), OptionType::STRING, false);
     add_option("no_sterics", 0, OptionType::BOOL, false);
     add_option("write_pdbs", 0, OptionType::BOOL, false);
-    add_option("iterate_sterics", 0, OptionType::BOOL, false);
     
     add_cl_options(search_.options(), "search");
     
@@ -54,8 +54,8 @@ PathBuilderNewApp::run() {
     
     auto write_pdbs = get_bool_option("write_pdbs");
     if(write_pdbs) {
-        //mg_.to_pdb("scaffold.pdb");
-        mg_.write_pdbs();
+        mg_.to_pdb("scaffold.pdb");
+        //mg_.write_pdbs();
     }
     
     if(get_bool_option("no_sterics")) {
@@ -65,17 +65,9 @@ PathBuilderNewApp::run() {
     
     auto start = mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
     auto end = mg_.get_node(end_.n_pos)->data()->get_basepair(end_.name)[0]->state();
-    
-    
-    //auto selector = std::make_shared<MotifStateSelector>();
-    //selector->add("unique_twoway");
-    //selector->add("ideal_helices_min");
-    //selector->connect("unique_twoway", "ideal_helices_min");
-    
-    //search_.setup(end, start);
-    search_.setup(start, end);
 
-    //search_.selector(selector);
+    
+    search_.setup(start, end);
     
     int count = 0;
     float dist = 0;
@@ -85,32 +77,18 @@ PathBuilderNewApp::run() {
         //n->data()->get_beads(n->data()->ends());
         for(auto const & b : n->data()->beads()) {
             if(b.btype() == BeadType::PHOS) { continue; }
-            
-            dist = b.center().distance(start->d());
-            /*if(dist < 40) {
-                continue;
-            }*/
             beads.push_back(b.center());
             
         }
+        
+        for(auto const & b : n->data()->protein_beads()) { beads.push_back(b.center()); }
         
        
     }
     
     auto sl = StericLookup();
-    points_to_pdb("beads.pdb", beads);
-    mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->to_pdb("start.pdb");
-    mg_.get_node(end_.n_pos)->data()->get_basepair(end_.name)[0]->to_pdb("end.pdb");
-    
-    //exit(0);
     sl.add_points(beads);
-    
-    if(get_bool_option("iterate_sterics")) {
-        _iterate_sterics(beads);
-        exit(0);
-    }
-    
-    //search_.beads(beads);
+ 
     search_.lookup(sl);
     
     std::cout << "num of beads: " << beads.size() << std::endl;
@@ -141,65 +119,6 @@ PathBuilderNewApp::run() {
     
     out.close();
 
-    
-}
-
-
-void
-PathBuilderNewApp::_iterate_sterics(Points const & beads) {
-    
-    bool done = false;
-    
-    auto start = mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
-    auto end = mg_.get_node(end_.n_pos)->data()->get_basepair(end_.name)[0]->state();
-    
-    auto keep_beads = Points();
-    auto seen_beads = std::map<int, int>();
-    int found = 0;
-    
-    int count = -1;
-    while(! done) {
-        count++;
-        found = 0;
-        auto search = MotifStateSearch();
-        search.set_option_value("accept_score", 20);
-        search.setup(start, end);
-        search.beads(keep_beads);
-        
-        auto sol = search.next();
-        auto mst = sol->to_mst();
-        mst->to_motif_tree()->to_pdb("sol."+std::to_string(count) + ".pdb");
-        auto sol_beads = Points();
-        for(auto const & n : *mst) {
-            for(auto const & b : n->data()->cur_state->beads()) {
-                sol_beads.push_back(b);
-            }
-        }
-        
-        float dist = 0;
-        int i = -1;
-        for(auto const & b1 : beads) {
-            i++;
-            if(seen_beads.find(i) != seen_beads.end()) {
-                continue;
-            }
-            for(auto const & b2 : sol_beads) {
-                dist = b1.distance(b2);
-                if(dist < 2.5) {
-                    found = 1;
-                    keep_beads.push_back(b1);
-                    seen_beads[i] = 1;
-                    break;
-                }
-            }
-            
-        }
-        
-        std::cout << keep_beads.size() << std::endl;
-        if(found == 0) { break; }
-        
-        
-    }
     
 }
 
@@ -292,25 +211,20 @@ PathBuilderNewApp::_setup_from_motif() {
     start_ = EndStateInfo{start_bp_name, 0};
     end_ = EndStateInfo{end_bp_name, 0};
     
-   
-
-    
-    
 
     
 }
 
 int main(int argc, const char * argv[]) {
+    std::set_terminate(print_backtrace);
+
+    //auto m = RM::instance().motif("HELIX.IDEAL.222");
+
     
     auto app = PathBuilderNewApp();
-    try {
-        app.setup_options();
-        app.parse_command_line(argc, argv);
-        app.run();
-    }
-    catch(std::runtime_error const & e) {
-        std::cout << e.what() << std::endl;
-    }
+    app.setup_options();
+    app.parse_command_line(argc, argv);
+    app.run();
     return 0;
     
 }

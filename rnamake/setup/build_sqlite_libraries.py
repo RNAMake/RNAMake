@@ -274,8 +274,6 @@ class BuildSqliteLibraries(object):
 
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
         sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
-        path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/all_bp_steps.db"
-        sqlite_library.build_sqlite_library(path, all_mes_data, all_mes_keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps.db"
         sqlite_library.build_sqlite_library(path, motif_data, motif_keys, 'id')
 
@@ -333,8 +331,8 @@ class BuildSqliteLibraries(object):
             #print i, lowest.score, lowest.name
             #lowest.to_pdb("m."+str(i)+".pdb")
 
-            motif_arrays.append(motif.MotifArray(c.motifs))
-            motif_array_names.append(lowest.name)
+            #motif_arrays.append(motif.MotifArray(c.motifs))
+            #motif_array_names.append(lowest.name)
 
             data.append([lowest.to_str(), lowest.name,
                         lowest.ends[0].name(), lowest.end_ids[0], count])
@@ -365,8 +363,8 @@ class BuildSqliteLibraries(object):
         path = settings.RESOURCES_PATH +"/motif_libraries_new/unique_twoway.db"
         sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
-        path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/twoway_clusters.db"
-        sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
+        #path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/twoway_clusters.db"
+        #sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
 
     def build_ss_and_seq_libraries(self):
         libnames = ["twoway", "tcontact", "hairpin", "nway"]
@@ -482,8 +480,8 @@ class BuildSqliteLibraries(object):
 #setup_start_motif()
 builder = BuildSqliteLibraries()
 
-#builder.build_ideal_helices()
-builder.build_basic_libraries()
+builder.build_ideal_helices()
+#builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()

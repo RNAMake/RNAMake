@@ -160,6 +160,11 @@ public: //getters
     float const &
     score() const { return score_; }
     
+    inline
+    Beads const &
+    protein_beads() { return protein_beads_; }
+
+    
 public: //setters
     
     inline
@@ -184,13 +189,17 @@ public: //setters
     void
     ends(BasepairOPs const & ends) { ends_ = ends; }
     
+    inline
+    void
+    protein_beads(Beads const & beads) { protein_beads_ = beads; }
+    
     
 protected:
     StructureOP structure_;
     BasepairOPs basepairs_, ends_;
     String name_, path_;
     Strings end_ids_;
-    Beads beads_;
+    Beads beads_, protein_beads_;
     float score_;
     
 };

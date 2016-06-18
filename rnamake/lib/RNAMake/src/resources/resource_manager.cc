@@ -68,17 +68,29 @@ RM::motif_state_ensemble(
 
 void
 RM::add_motif(
-    String const & path) {
+    String const & path,
+    String name) {
     
     auto m = mf_.motif_from_file(path);
+    
+    if(name != "") { m->name(name); }
+    
     int added = 0;
     MotifOPs motifs;
     std::map<Uuid, String, UuidCompare> end_ids;
     for( int i = 0; i < m->ends().size(); i++) {
         auto m_added = mf_.can_align_motif_to_end(m, i);
-        if(m_added == nullptr) { continue; }
+        if(m_added == nullptr) {
+            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
+            std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
+            continue;
+        }
         m_added = mf_.align_motif_to_common_frame(m_added, i);
-        if(m_added == nullptr) { continue; }
+        if(m_added == nullptr) {
+            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
+            std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
+            continue; }
+        
         motifs.push_back(m_added);
         end_ids[m_added->ends()[0]->uuid()] = m_added->end_ids()[0];
     }

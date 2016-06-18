@@ -288,17 +288,29 @@ class MotifMerger(object):
 
         for n in nodes:
             for r in end.residues():
-                if n.data.c.first().uuid == r.uuid and end_nodes[0] == None:
+                if n.data.c.first().uuid == r.uuid and end_nodes[0] is None:
                     end_nodes[0] = n
+                    continue
                 elif n.data.c.first().uuid == r.uuid:
-                    raise ValueError("cannot build chain map two residues are assigned"
-                                     "to 5' chain")
+                    if len(end_nodes[0].data.c) == 1 and end_nodes[1] is None:
+                        end_nodes[1] = end_nodes[0]
+                        end_nodes[0] = n
+                        continue
+                    elif len(n.data.c) == 1:
+                        pass
+                    else:
+                        raise ValueError("cannot build chain map two residues are assigned"
+                                         "to 5' chain")
 
-                if n.data.c.last().uuid == r.uuid and end_nodes[1] == None:
+                if n.data.c.last().uuid == r.uuid and end_nodes[1] is None:
                     end_nodes[1] = n
                 elif n.data.c.last().uuid == r.uuid:
-                    raise ValueError("cannot build chain map two residues are assigned"
-                                     "to 3' chain")
+                    if len(end_nodes[1].data.c) == 1 and end_nodes[0] is None:
+                        end_nodes[0] = end_nodes[1]
+                        end_nodes[1] = n
+                    else:
+                        raise ValueError("cannot build chain map two residues are assigned"
+                                         "to 3' chain")
 
         if end_nodes[0] is None or end_nodes[1] is None:
             raise ValueError("did not build map properly, both chains are not found")

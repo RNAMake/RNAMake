@@ -1,6 +1,7 @@
 
 //headers for testing
 #include "../common.hpp"
+#include "../tools/motif_tree_builder.hpp"
 
 //RNAMake Headers
 #include "base/settings.h"
@@ -92,7 +93,7 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         
         mt.add_connection(1, 2, "", "");
         auto s = mt.get_structure();
-        //REQUIRE(s->chains().size() == 1);
+        REQUIRE(s->chains().size() == 1);
         
         REQUIRE_THROWS_AS(mt.add_motif(m, -1, 1), MotifTreeException);
         REQUIRE(mt.add_motif(m) == -1);
@@ -100,6 +101,45 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         REQUIRE_THROWS_AS(mt.add_connection(1, 2, "", ""), MotifTreeException);
         REQUIRE_THROWS_AS(mt.add_connection(1, 2, "", m->ends()[0]->name()), MotifTreeException);
 
+    }
+    
+    SECTION("test building random motif trees") {
+        auto g = helix_and_two_way();
+        REQUIRE(g->size() == 2);
+        
+        auto builder = MotifTreeBuilder();
+        auto mt = builder.build();
+        REQUIRE(mt->size() == 2);
+        REQUIRE(mt->get_node(0)->data()->mtype() == HELIX);
+        REQUIRE(mt->get_node(1)->data()->mtype() == TWOWAY);
+        
+        auto mt2 = builder.build(3);
+        REQUIRE(mt2->size() == 6);
+        REQUIRE(mt2->get_node(2)->data()->mtype() == HELIX);
+
+    }
+    
+    SECTION("test building random motif tree capped with hairpin") {
+        
+        auto builder = MotifTreeBuilder(helix_and_two_way_and_hairpin());
+        auto mt = builder.build();
+        
+        REQUIRE(mt->size() == 4);
+        
+    }
+    
+    SECTION("test more complex builds of random motif trees") {
+        auto g = std::make_shared<BuilderGraph>();
+        g->add_node(HELIX, 2);
+        g->add_node(NWAY, 3);
+        g->add_node(HELIX, 2, 1, 1);
+        g->add_node(HELIX, 2, 1, 2);
+        
+        auto builder = MotifTreeBuilder(g);
+        auto mt = builder.build(2);
+        REQUIRE(mt->size() == 8);
+    
+        
     }
     
 

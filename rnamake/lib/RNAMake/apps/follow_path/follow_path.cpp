@@ -66,7 +66,7 @@ PathBuilder::build() {
         
         if(lines2.size() > 3) {
             spl = split_str_by_delimiter(lines2[2], " ");
-            end_bp = mg->get_end(std::stoi(spl[0]), spl[1])->state();
+            end_bp = mg->get_available_end(std::stoi(spl[0]), spl[1])->state();
         }
     }
     

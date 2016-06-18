@@ -57,7 +57,8 @@ public:
     
     void
     add_motif(
-        String const &);
+        String const & path,
+        String name = "");
     
     
 protected:

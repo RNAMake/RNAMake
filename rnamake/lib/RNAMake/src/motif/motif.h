@@ -110,7 +110,7 @@ public: //getters
     inline
     Uuid const &
     id() { return id_; }
-    
+
     
 public: // setters
     

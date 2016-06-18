@@ -105,7 +105,7 @@ public:
         for(auto const & m : motifs) { update_motif(m); }
     }
     
-    ~MotifMerger() {}
+    ~MotifMerger() { }
     
 public:
     void
@@ -209,6 +209,8 @@ private:
     RNAStructureOP rna_structure_;
     
 };
+
+typedef std::shared_ptr<MotifMerger> MotifMergerOP;
 
 #endif /* defined(__RNAMake__motif_merger__) */
 
