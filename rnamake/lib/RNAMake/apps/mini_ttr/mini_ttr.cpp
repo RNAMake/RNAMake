@@ -34,8 +34,8 @@ parse_command_line(
 void
 MiniTTR::run() {
     //mg_.replace_ideal_helices();
-    auto end = mg_.get_end(2);
-    auto start  = mg_.get_end(3);
+    auto end = mg_.get_available_end(2);
+    auto start  = mg_.get_available_end(3);
     //auto end_pos = mg_.get_end(2);
     mg_.increase_level();
     
@@ -59,7 +59,7 @@ MiniTTR::run() {
         }
         auto mt = sol->to_motif_tree();
         mg_.add_motif_tree(mt, 3);
-        mg_.add_connection(2, mg_.last_node()->index(), end->name());
+        mg_.add_connection(2, mg_.last_node()->index(), end->name(), "");
         //mg_.write_pdbs();
         if(opt_seq_) {
             optimize_sequence(mg_);
@@ -86,7 +86,7 @@ MiniTTR::run() {
         mg_.add_motif_tree(mt, 3);
 
         
-        mg_.add_connection(2, mg_.last_node()->index(), end->name());
+        mg_.add_connection(2, mg_.last_node()->index(), end->name(), "");
         out << mg_.topology_to_str() << std::endl;
         try{
             mg_.to_pdb("test."+ std::to_string(count) + ".pdb", 1);
@@ -137,8 +137,8 @@ MiniTTRPathFollow::run() {
     auto path_points = vectors_from_str(lines[0]);
     auto scorer = std::make_shared<MSS_PathFollow>(path_points);
     
-    auto end = mg_.get_end(0, "A222-A251");
-    auto start  = mg_.get_end(mg_.last_node()->index());
+    auto end = mg_.get_available_end(0, "A222-A251");
+    auto start  = mg_.get_available_end(mg_.last_node()->index());
     auto end_pos = mg_.last_node()->index();
     
     auto beads = mg_.beads();
@@ -172,7 +172,7 @@ MiniTTRPathFollow::run() {
         mg_.write_pdbs();
         mg_.to_pdb("r.pdb", 1);
         exit(0);
-        auto start_2 = mg_.get_end(mg_.last_node()->index());
+        auto start_2 = mg_.get_available_end(mg_.last_node()->index());
         
         auto search_2 = MotifStateSearch();
         search_2.set_option_value("accept_score", 10.0f);
@@ -188,7 +188,7 @@ MiniTTRPathFollow::run() {
         auto sol_2 = search_2.next();
         auto mt2 = sol_2->to_motif_tree();
         mg_.add_motif_tree(mt2, mg_.last_node()->index());
-        mg_.add_connection(0, mg_.last_node()->index(), end->name());
+        mg_.add_connection(0, mg_.last_node()->index(), end->name(), "");
 
         mg_.to_pdb("full_path.pdb", 1);
         mg_.write_pdbs();

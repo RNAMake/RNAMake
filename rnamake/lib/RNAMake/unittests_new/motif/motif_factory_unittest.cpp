@@ -81,6 +81,14 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         
     }
     
+    SECTION("Loading in proteins with RNA") {
+        auto path = base_dir() + "/rnamake/unittests/resources/pdbs/5g2x.pdb";
+        auto m = mf.motif_from_file(path, false, true);
+        REQUIRE(m->protein_beads().size() != 0);
+        
+        
+    }
+    
 }
 
 

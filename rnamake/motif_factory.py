@@ -187,6 +187,7 @@ class MotifFactory(object):
 
 
             m_added.ends[i].flip()
+            m.ends[i].flip()
 
             m2_added = motif.get_aligned_motif(m_added.ends[i],
                                                self.added_helix.ends[0],
@@ -200,7 +201,7 @@ class MotifFactory(object):
         if fail:
             return None
         else:
-            return m_added
+            return m
 
     def align_motif_to_common_frame(self, m, ei):
         m_added = motif.get_aligned_motif(self.ref_motif.ends[0], m.ends[ei], m)
@@ -224,7 +225,7 @@ class MotifFactory(object):
         chains = chain.connect_residues_into_chains(res)
         m.structure.chains = chains
         m.basepairs = bps
-        m.ends = [bps[0], bps[-1]]
+        m.ends = self._setup_basepair_ends(m.structure, m.basepairs)
         self._setup_secondary_structure(m)
         return m
 

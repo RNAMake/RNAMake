@@ -23,6 +23,12 @@ MotifStateSearch::setup_options() {
     options_.add_option("min_ss_score", 10000, OptionType::FLOAT);
     options_.add_option("max_steps", 1000000000, OptionType::FLOAT);
     options_.add_option("verbose", true, OptionType::BOOL);
+    
+    //for making a movie
+    options_.add_option("save_midpoints", false, OptionType::BOOL);
+    options_.add_option("save_midpoints_file", "midpoints.dat", OptionType::STRING);
+    options_.add_option("save_midpoints_freq", 100, OptionType::INT);
+    
     options_.lock_option_adding();
     
     update_var_options();
@@ -67,13 +73,13 @@ MotifStateSearch::reset() {
 
 MotifStateSearchSolutionOP
 MotifStateSearch::next() {
+
     auto sol = _search();
     if(sol == nullptr) {
         no_more_solutions_ = 1;
         return nullptr;
     }
     sol_count_++;
-    //solutions_.push_back(sol);
     return sol;
     
 }
@@ -106,6 +112,12 @@ MotifStateSearch::_search() {
     float best = 1000000000;
     MotifStateSearchSolutionOP best_sol;
     
+    std::ofstream midpoint_file;
+    auto midpoints = get_bool_option("save_midpoints");
+    int midpoint_freq = get_int_option("save_midpoints_freq");
+    
+    if(midpoints) { midpoint_file.open(get_string_option("save_midpoints_file")); }
+    
     while(! queue_.empty() ) {
         current = queue_.top();
         queue_.pop();
@@ -118,6 +130,12 @@ MotifStateSearch::_search() {
                 std::cout << "reached max steps" << std::endl;
             }
             return best_sol;
+        }
+        
+        if(midpoints && steps % midpoint_freq == 0) {
+            auto sol = MotifStateSearchSolution(current, score);
+            midpoint_file << sol.to_motif_tree()->topology_to_str() << std::endl;
+            
         }
         
         score = scorer_->accept_score(current);
@@ -222,6 +240,10 @@ MotifStateSearch::_search() {
     if(verbose_) {
         std::cout << "ran out of options" << std::endl;
     }
+    
+    if(midpoints) { midpoint_file.close(); }
+
+    
     return best_sol;
 
 }

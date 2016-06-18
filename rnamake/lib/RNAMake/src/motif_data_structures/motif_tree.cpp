@@ -116,38 +116,7 @@ MotifTree::add_motif(
         return pos;
     }
     
-    auto avail_pos = Ints();
-    if(parent_end_index != -1) {
-        int avail = parent->available_pos(parent_end_index);
-        if(!avail) {
-            throw MotifTreeException(
-                "could not add motif: " + m->name() + " with parent: " + std::to_string(parent_index) +
-                " since the parent_end_index supplied " + std::to_string(parent_end_index) +
-                " is filled");
-        }
-        else {
-            auto name = parent->data()->ends()[parent_end_index]->name();
-            if(connections_.in_connection(parent->index(), name)) {
-                throw MotifTreeException(
-                    "could not add motif: " + m->name() + " with parent: " + std::to_string(parent_index) +
-                    " since the parent_end_index supplied " + std::to_string(parent_end_index) +
-                    " is in a connection");
-            }
-            
-            avail_pos.push_back(parent_end_index);
-        }
-    }
-    
-    else {
-        avail_pos = parent->available_children_pos();
-        if(avail_pos.size() == 1 && avail_pos[0] == parent->data()->block_end_add()) {
-            throw MotifTreeException(
-                "could not add motif: " + m->name() + " with parent: " + std::to_string(parent_index) +
-                " since it has no free ends to add too");
-        }
-        
-    }
-    
+    auto avail_pos = _get_available_parent_end_pos(m->name(), parent, parent_end_index);
     
     for(auto const & p : avail_pos) {
         if(p == parent->data()->block_end_add()) { continue; }

@@ -76,10 +76,10 @@ public:
          }*/
         
         mg_ = MotifGraph();
-        mg_.add_motif("HELIX.IDEAL.2");
+        /*mg_.add_motif("HELIX.IDEAL.2");
         mg_.add_motif("GAAA_tetraloop", "A229-A245");
         mg_.add_motif("HELIX.IDEAL.3", -1, "A149-A154");
-        mg_.add_motif("HELIX.IDEAL.3", 1, "A222-A251");
+        mg_.add_motif("HELIX.IDEAL.3", 1, "A222-A251");*/
         mg_.write_pdbs();
         
         mg_.set_option_value("sterics", false);
@@ -168,8 +168,8 @@ public:
         
         mg_ = MotifGraph();
         mg_.set_option_value("sterics", false);
-        mg_.add_motif("GAAA_tetraloop", "A229-A245");
-        mg_.add_motif("HELIX.IDEAL.6", -1, "A149-A154");
+        /*mg_.add_motif("GAAA_tetraloop", "A229-A245");
+        mg_.add_motif("HELIX.IDEAL.6", -1, "A149-A154");*/
     }
     
     void

@@ -18,7 +18,8 @@
 MotifOP
 MotifFactory::motif_from_file(
     String const & path,
-    bool rebuild_x3dna) {
+    bool rebuild_x3dna,
+    bool include_protein) {
     
     
     if(! file_exists(path)) {
@@ -59,6 +60,19 @@ MotifFactory::motif_from_file(
     } catch(...) {}
     
     _setup_secondary_structure(m);
+    
+    if(include_protein) {
+        auto res = pdb_parser_.parse(pdb_path, true, false);
+        auto beads = Beads();
+        for(auto const & r : res) {
+            try{
+                auto bead = Bead(r->get_atom("CA")->coords(), BeadType::BASE);
+                beads.push_back(bead);
+            } catch(...) { continue; }
+        }
+        m->protein_beads(beads);
+        
+    }
     
     return m;
 }

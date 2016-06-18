@@ -77,7 +77,7 @@ id_(Uuid())
         auto bead_spl = split_str_by_delimiter(spl[10], ";");
         for(auto const & b_spl : bead_spl) {
             if(b_spl.length() < 5) { continue; }
-            beads_.push_back(Bead(b_spl));
+            protein_beads_.push_back(Bead(b_spl));
         }
     }
 }

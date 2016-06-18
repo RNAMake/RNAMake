@@ -61,3 +61,10 @@ def basepairstate_random():
 
     return bp_state
 
+
+def secondary_structure_motif():
+    return motif().secondary_structure
+
+
+def secondary_structure_chain():
+    return secondary_structure_motif().chains()[0]

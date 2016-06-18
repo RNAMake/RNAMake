@@ -103,6 +103,12 @@ public: //getters
     }
     
     inline
+    GraphConnectionOPs<DataType> const &
+    connections() const {
+        return connections_;
+    }
+    
+    inline
     GraphNodeOP<DataType> const &
     last_node() { return last_node_; }
     
@@ -405,7 +411,7 @@ public:
             given_index = index;
         }
         
-        GraphNodeOP<DataType> parent = this->last_node_;
+        auto parent = this->last_node_;
         auto n = std::make_shared<GraphNodeStatic<DataType>>(data, given_index, this->level_,
                                                              n_children);
      

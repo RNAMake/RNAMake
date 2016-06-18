@@ -92,10 +92,19 @@ MotifMerger::_get_end_nodes(
         for(auto const & r : end->residues()) {
             if(n->data().c->first()->uuid() == r->uuid() && end_nodes[0] == nullptr) {
                 end_nodes[0] = n;
+                continue;
             }
             else if(n->data().c->first()->uuid() == r->uuid() ) {
-                throw MotifMergerException("cannot build chain map two residues are assigned \
-                                           to 5' chain");
+                if (end_nodes[0]->data().c->length() == 1 && end_nodes[1] == nullptr) {
+                    end_nodes[1] = end_nodes[0];
+                    end_nodes[0] = n;
+                }
+                else if(n->data().c->length() == 1) {}
+                else {
+                
+                    throw MotifMergerException("cannot build chain map two residues are assigned "
+                                               "to 5' chain");
+                }
             }
             
             if(n->data().c->last()->uuid() == r->uuid() && end_nodes[1] == nullptr) {
@@ -103,8 +112,15 @@ MotifMerger::_get_end_nodes(
             }
             
             else if(n->data().c->last()->uuid() == r->uuid()) {
-                throw MotifMergerException("cannot build chain map two residues are assigned \
-                                           to 3' chain");
+                if(end_nodes[1]->data().c->length() == 1 && end_nodes[0] == nullptr)  {
+                    end_nodes[0] = end_nodes[1];
+                    end_nodes[1] = n;
+                }
+                
+                else {
+                    throw MotifMergerException("cannot build chain map two residues are assigned "
+                                               "to 3' chain");
+                }
             }
         }
     }
@@ -164,12 +180,14 @@ void
 MotifMerger::_build_structure() {
     auto starts = ChainNodes();
     for(auto const & n : graph_.nodes()) {
+        
         if(n->available_pos(0)) { starts.push_back(n); }
     }
-    
+        
     if(starts.size() == 0 and graph_.nodes().size() > 0) {
         throw MotifMergerException("no place to start in chain graph to build structure");
     }
+
     
     auto chains = ChainOPs();
     auto cur = ChainNode();

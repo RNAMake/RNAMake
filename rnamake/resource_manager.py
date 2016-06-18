@@ -147,17 +147,33 @@ class ResourceManager(object):
         raise ValueError("could not find motif state ensemble with options:"+\
                          self._args_to_str(options))
 
-    def add_motif(self, path=None, motif=None):
+    def add_motif(self, path=None, motif=None, name=None, include_protein=0,
+                  align=1):
         if path:
-            m = motif_factory.factory.motif_from_file(path)
+            m = motif_factory.factory.motif_from_file(path,
+                                                      include_protein=include_protein)
         else:
             m = motif
+
+        if name is not None:
+            m.name = name
+
+        if len(m.ends) == 0:
+            self.added_motifs.add_motif(m)
+            return
+
         motifs = []
         end_ids = {}
         for i in range(len(m.ends)):
             m_added = motif_factory.factory.can_align_motif_to_end(m, i)
             if m_added is None:
                 continue
+            if not align:
+                motif_factory.factory.standardize_motif(m_added)
+                motifs.append(m_added)
+                end_ids[m_added.ends[0].uuid] = m_added.end_ids[0]
+                break
+
             m_added = motif_factory.factory.align_motif_to_common_frame(m_added, i)
             if m_added is None:
                 continue
@@ -167,8 +183,11 @@ class ResourceManager(object):
         #fix minor changes between ids
         for m in motifs:
             for i, end in enumerate(m.ends):
-                end_id = end_ids[end.uuid]
-                m.end_ids[i] = end_id
+                try :
+                    end_id = end_ids[end.uuid]
+                    m.end_ids[i] = end_id
+                except:
+                    pass
             self.added_motifs.add_motif(m)
 
     def register_motif(self, m):

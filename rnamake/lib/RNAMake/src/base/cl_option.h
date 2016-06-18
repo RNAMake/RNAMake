@@ -39,7 +39,7 @@ public:
     required_(required),
     filled_(false) {
         if(type_ == OptionType::BOOL && b_val_ == true) {
-            throw CommandLineOptionException("boolean options must start as false");
+            //throw CommandLineOptionException("boolean options must start as false");
         }
         
     
