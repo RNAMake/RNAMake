@@ -74,7 +74,6 @@ PathBuilderNewApp::run() {
     
     auto beads = Points();
     for(auto & n : mg_) {
-        //n->data()->get_beads(n->data()->ends());
         for(auto const & b : n->data()->beads()) {
             if(b.btype() == BeadType::PHOS) { continue; }
             beads.push_back(b.center());
@@ -82,8 +81,6 @@ PathBuilderNewApp::run() {
         }
         
         for(auto const & b : n->data()->protein_beads()) { beads.push_back(b.center()); }
-        
-       
     }
     
     auto sl = StericLookup();
@@ -217,9 +214,6 @@ PathBuilderNewApp::_setup_from_motif() {
 
 int main(int argc, const char * argv[]) {
     std::set_terminate(print_backtrace);
-
-    //auto m = RM::instance().motif("HELIX.IDEAL.222");
-
     
     auto app = PathBuilderNewApp();
     app.setup_options();
