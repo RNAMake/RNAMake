@@ -197,6 +197,19 @@ class Motif(rna_structure.RNAStructure):
         ss = ssf.factory.secondary_structure_from_motif(self)
         return ss
 
+    def copy_uuids_from_motif(self, m):
+        self.id = m.id
+
+        for r in m.residues():
+            r_self = self.get_residue(r.num, r.chain_id, r.i_code)
+            r_self.uuid = r.uuid
+
+        for bp in m.basepairs:
+            bps_self = self.get_basepair(uuid1=bp.res1.uuid, uuid2=bp.res2.uuid)
+            bps_self[0].uuid = bp.uuid
+
+
+
 class MotifState(object):
     __slots__ = ['name', 'end_names', 'end_ids', 'end_states',
                  'beads', 'score', 'size', 'block_end_add', 'residues']
@@ -420,5 +433,14 @@ def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
     if len(org_state.beads) > 0:
         cur_state.beads = np.dot(org_state.beads, r.T) + t
 
-
+def clash_between_motifs(m1, m2, clash_radius=settings.CLASH_RADIUS):
+    for b1 in m1.beads:
+        for b2 in m2.beads:
+            if b1.btype == residue.BeadType.PHOS or \
+               b2.btype == residue.BeadType.PHOS:
+                continue
+            dist = util.distance(b1.center, b2.center)
+            if dist < clash_radius:
+                return 1
+    return 0
 

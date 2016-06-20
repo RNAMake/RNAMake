@@ -77,5 +77,21 @@ class PDBParserException(Exception):
     pass
 
 
+class ResourceManagerException(Exception):
+    pass
+
+
 class MotifClustersException(Exception):
+    pass
+
+
+class MotifTreeException(Exception):
+    pass
+
+
+class MotifGraphException(Exception):
+    pass
+
+
+class MotifTopologyException(Exception):
     pass

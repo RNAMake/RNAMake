@@ -1,8 +1,120 @@
+import collections
 
 import motif_graph
 import motif_tree
 import motif_type
 import resource_manager as rm
+import exceptions
+
+
+class GraphtoTree(object):
+
+    def __init__(self):
+        self.mt = motif_tree.MotifTree()
+        self.seen_nodes = {}
+        self.seen_connections = {}
+
+    class _GraphtoTreeNode(object):
+        def __init__(self, parent, parent_end_index, node):
+            self.parent = parent
+            self.parent_end_index = parent_end_index
+            self.node = node
+            self.motif = node.data.copy()
+
+    def _get_start_node(self, start):
+        pass
+
+    def _get_new_nodes(self, current):
+        new_nodes = []
+        for c in current.node.connections:
+            if c is None:
+                continue
+            partner = c.partner(current.node.index)
+            # check to see if motif is already in tree
+            try:
+                n = self.mt.get_node_by_id(partner.data.id)
+            except:
+                parent_end_index = c.end_index(current.node.index)
+                node_end_index = c.end_index(partner.index)
+                new_n = self._GraphtoTreeNode(current.node, parent_end_index,
+                                              partner)
+                new_n.motif = self._reorient_motif(new_n.motif, node_end_index)
+                new_nodes.append(new_n)
+
+        return new_nodes
+
+    def _reorient_motif(self, m, end_index):
+        # nothing needs to be done
+        if end_index == 0:
+            return m
+
+        if m.mtype != motif_type.HELIX:
+            try:
+                new_m = rm.manager.get_motif(name=m.name,
+                                             end_name=m.ends[end_index].name())
+
+            except exceptions.ResourceManagerException as e:
+                raise exceptions.MotifTopologyException(
+                    "cannot convert graph to tree because: " + e.message)
+
+            new_m.copy_uuids_from_motif(m)
+            return new_m
+
+        else:
+            if m.name[:5] == "HELIX":
+                new_m = rm.manager.get_motif(name=m.name, end_name=m.ends[1].name())
+                new_m.copy_uuids_from_motif(m)
+                return new_m
+
+            else:
+                spl = m.name.split("=")
+                new_name = spl[1] + "=" + spl[0]
+                new_m = rm.manager.get_motif(name=new_name)
+                new_m.id = m.id
+                return new_m
+
+
+    def convert(self, mg, start=None, start_bp_name=None, last_end=None):
+        self.mt = motif_tree.MotifTree()
+        self.mt.option('sterics', 0)
+
+        if start is None:
+            not_aligned = mg.get_not_aligned_nodes()
+            if len(not_aligned) == 0 :
+                raise RuntimeError("cannot convert graph to tree no starting point")
+            start = not_aligned[0]
+            start_n = self._GraphtoTreeNode(None, None, start)
+        else:
+            start_n = self._GraphtoTreeNode(None, None, start)
+            if start_bp_name is not None:
+                ei = 0
+                for i, end in enumerate(start.data.ends):
+                    if end.name() == start_bp_name:
+                        ei = i
+                        break
+                start_n.motf = self._reorient_motif(start_n.motif, ei)
+
+        open = [ start_n ]
+
+        while len(open) > 0:
+            current = open.pop(0)
+            if current.parent is None:
+                self.mt.add_motif(current.motif)
+            else:
+                new_parent_index = self.mt.get_node_by_id(current.parent.data.id).index
+                self.mt.add_motif(current.motif, parent_index=new_parent_index)
+
+            new_nodes = self._get_new_nodes(current)
+            open.extend(new_nodes)
+
+
+
+
+        return self.mt
+
+
+
+
 
 def graph_to_tree(mg, start=None, last_end=None):
         if start is None:

@@ -9,6 +9,7 @@ import graph
 import resource_manager as rm
 import motif_merger
 import copy
+import exceptions
 import steric_lookup
 
 def motif_graph_from_topology(s):
@@ -72,12 +73,10 @@ class MotifGraph(base.Base):
         max_index = 0
         for i, n_spl in enumerate(node_spl[:-1]):
             sspl = n_spl.split(",")
-            m = None
             if rm.manager.motif_exists(name=sspl[0], end_name=sspl[1]):
                 m = rm.manager.get_motif(name=sspl[0], end_name=sspl[1])
             m_copy = m.copy()
             m_copy.get_beads(m_copy.ends)
-            m_copy.new_res_uuids()
             pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends),
                                       orphan=1, index=int(sspl[2]))
             self.aligned[int(sspl[2])] = int(sspl[3])
@@ -193,6 +192,12 @@ class MotifGraph(base.Base):
             else:
                 m = rm.manager.get_motif(name=m_name)
 
+        for n in self.graph.nodes:
+            if n.data.id == m.id:
+                raise exceptions.MotifGraphException(
+                    "cannot add motif: " + m.name + " to graph as its uuid is "
+                    "already present in the graph")
+
         parent = self.graph.last_node
         if parent_index != -1:
             parent = self.graph.get_node(parent_index)
@@ -200,7 +205,6 @@ class MotifGraph(base.Base):
         if parent is None or orphan:
             m_copy = m.copy()
             m_copy.get_beads(m_copy.ends)
-            m_copy.new_res_uuids()
             pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends),
                                       orphan=orphan)
             self.aligned[pos] = 0
@@ -220,8 +224,6 @@ class MotifGraph(base.Base):
             if self.option('sterics'):
                 if self._steric_clash(m_added):
                     continue
-
-            m_added.new_res_uuids()
 
             pos = self.graph.add_data(m_added, parent.index, p, 0, len(m_added.ends))
             self.aligned[pos] = 1
@@ -329,7 +331,6 @@ class MotifGraph(base.Base):
         for i in r[::-1]:
             if self.graph.nodes[i].level >= level:
                 self.remove_motif(self.graph.nodes[i].index)
-                del self.aligned[self.graph.nodes[i].index]
 
     #GRAPH WRAPPER      #######################################################
     def increase_level(self):
@@ -503,29 +504,6 @@ class MotifGraph(base.Base):
         self._align_motifs_all_motifs()
 
     #GETTERS            #######################################################
-    def leafs(self):
-        leaf_nodes = []
-        for n in self.graph:
-            f_conn = 0
-            for c in n.connections:
-                if c is None:
-                    f_conn += 1
-            if f_conn == 0:
-                continue
-            leaf_nodes.append(n)
-        return leaf_nodes
-
-    def leafs_and_ends(self):
-        leaf_nodes = []
-        for n in self.graph.nodes:
-            f_conn = 0
-            for i, c in enumerate(n.connections):
-                if n.index == 0 and i == 0 and n.data.mtype != motif_type.HAIRPIN:
-                    continue
-                if c is not None:
-                    continue
-                leaf_nodes.append([n, i])
-        return leaf_nodes
 
     def get_beads(self, exclude_phos=1):
         pass
@@ -573,6 +551,21 @@ class MotifGraph(base.Base):
             if n.data.name == m_name:
                 return n.index
         return -1
+
+    def get_not_aligned_nodes(self):
+        not_aligned = []
+        for n in self.graph:
+            if self.aligned[n.index] == 0:
+                not_aligned.append(n)
+        return not_aligned
+
+    def get_node_by_id(self, uuid):
+        for n in self.graph.nodes:
+            if n.data.id == uuid:
+                return n
+        raise exceptions.MotifGraphException("cannot find node with id")
+
+
 
     #MISC               #######################################################
     def _align_motifs_all_motifs(self):

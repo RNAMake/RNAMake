@@ -251,6 +251,17 @@ class MotifSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
         super(self.__class__, self).__init__(libname)
 
+    def get(self, **options):
+        m = super(self.__class__, self).get(**options)
+        m.new_res_uuids()
+        return m
+
+    def get_multi(self, **options):
+        motifs = super(self.__class__, self).get_multi(**options)
+        for m in motifs:
+            m.new_res_uuids()
+        return motifs
+
     def _generate_data(self, s):
         """
         Converts string to motif.Motif object

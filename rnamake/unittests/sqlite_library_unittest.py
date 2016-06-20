@@ -101,6 +101,12 @@ class SqliteLibraryUnittest(unittest.TestCase):
 
         os.remove("test.db")
 
+    def test_new_res_uuids(self):
+        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+        m1 = mlib.get(name="HELIX.IDEAL")
+        m2 = mlib.get(name="HELIX.IDEAL")
+        self.failIf(m1.id == m2.id)
+
 def main():
     unittest.main()
 
