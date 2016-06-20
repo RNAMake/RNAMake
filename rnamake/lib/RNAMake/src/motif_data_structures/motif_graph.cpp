@@ -34,16 +34,9 @@ MotifGraph::_setup_from_top_str(String const & s) {
     int max_index = 0;
     for(auto const & n_spl : node_spl) {
         sspl = split_str_by_delimiter(n_spl, ",");
-        auto m = MotifOP(nullptr);
-        try {
-            m = RM::instance().motif(sspl[0], "", sspl[1]);
-        } catch(...) { }
-        if(m == nullptr) {
-            m = RM::instance().motif(sspl[0]);
-  
-        }
+        auto m = RM::instance().motif(sspl[0], "", sspl[1]);
+
         m->get_beads(m->ends());
-        m->new_res_uuids();
         graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1,
                         std::stoi(sspl[2]));
         aligned_[std::stoi(sspl[2])] = std::stoi(sspl[3]);
@@ -108,8 +101,8 @@ MotifGraph::_setup_from_str(String const & s) {
         m->get_beads(m->ends()[0]);
         graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1, std::stoi(n_spl[1]));
         aligned_[std::stoi(n_spl[1])] = std::stoi(n_spl[2]);
-        if(std::stoi(n_spl[2]) > max_index) {
-            max_index = std::stoi(n_spl[2]);
+        if(std::stoi(n_spl[1]) > max_index) {
+            max_index = std::stoi(n_spl[1]);
         }
 
     }
@@ -188,6 +181,14 @@ MotifGraph::add_motif(
     MotifOP const & m,
     int parent_index,
     int parent_end_index) {
+    
+    for(auto const & n : graph_.nodes()) {
+        if(n->data()->id() == m->id()) {
+            throw MotifGraphException(
+                "cannot add motif there is already a motif in this graph with its unique "
+                " indentifier");
+        }
+    }
     
     auto parent = _get_parent(m->name(), parent_index);
 
@@ -549,14 +550,20 @@ MotifGraph::replace_ideal_helices() {
             }
 
             remove_motif(n->index());
-            auto h = RM::instance().motif("HELIX.IDEAL");
             int pos = 0;
-            if(parent == nullptr) { pos = _add_orphan_motif_to_graph(h); }
-            else                  { pos = _add_motif_to_graph_new(h, parent, parent_end_index, false); }
+            if(parent == nullptr) {
+                auto h = RM::instance().motif("HELIX.IDEAL");
+                pos = _add_orphan_motif_to_graph(h);
+            }
+            else                  {
+                auto h = RM::instance().motif("HELIX.IDEAL");
+                pos = _add_motif_to_graph_new(h, parent, parent_end_index, false);
+            }
 
             
             int old_pos = pos;
             for(int j = 0; j < count; j++) {
+                auto h = RM::instance().motif("HELIX.IDEAL");
                 pos = _add_motif_to_graph(h, old_pos, 1);
                 aligned_[pos] = 1;
                 old_pos = pos;
@@ -586,7 +593,6 @@ MotifGraph::_add_motif_to_graph(
     auto parent = graph_.get_node(parent_index);
     auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
                                      m->ends()[0], m);
-    m_added->new_res_uuids();
     int pos = graph_.add_data(m_added, parent->index(), parent_end_index, 0,
                               (int)m_added->ends().size());
     merger_->add_motif(m_added, m_added->ends()[0], parent->data(),

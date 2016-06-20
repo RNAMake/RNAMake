@@ -3,6 +3,7 @@ import collections
 import motif_graph
 import motif_tree
 import motif_type
+import motif
 import resource_manager as rm
 import exceptions
 
@@ -21,8 +22,20 @@ class GraphtoTree(object):
             self.node = node
             self.motif = node.data.copy()
 
-    def _get_start_node(self, start):
-        pass
+    def _get_start_node(self, mg, start, start_end_index):
+        if start is None:
+            not_aligned = mg.get_not_aligned_nodes()
+            if len(not_aligned) == 0 :
+                raise RuntimeError("cannot convert graph to tree no starting point")
+            start = not_aligned[0]
+            start_n = self._GraphtoTreeNode(None, None, start)
+        else:
+            start_n = self._GraphtoTreeNode(None, None, start)
+            if start_end_index is not None:
+                new_motif = self._reorient_motif(start_n.motif, start_end_index)
+                start_n.motif = new_motif
+
+        return start_n
 
     def _get_new_nodes(self, current):
         new_nodes = []
@@ -39,9 +52,25 @@ class GraphtoTree(object):
                 new_n = self._GraphtoTreeNode(current.node, parent_end_index,
                                               partner)
                 new_n.motif = self._reorient_motif(new_n.motif, node_end_index)
+                new_n.parent_end_index = self._get_new_parent_end_index(current.node, c)
                 new_nodes.append(new_n)
 
         return new_nodes
+
+    def _get_new_parent_end_index(self, parent, c):
+
+        if parent.data.mtype != motif_type.HELIX:
+            parent_end_index = c.end_index(parent.index)
+            parent_end_name = parent.data.ends[parent_end_index].name()
+            tree_parent = self.mt.get_node_by_id(parent.data.id)
+
+            for i, end in enumerate(tree_parent.data.ends):
+                if end.name() == parent_end_name:
+                    return i
+
+        # helices always go end 0 to 1
+        else:
+            return 1
 
     def _reorient_motif(self, m, end_index):
         # nothing needs to be done
@@ -62,7 +91,7 @@ class GraphtoTree(object):
 
         else:
             if m.name[:5] == "HELIX":
-                new_m = rm.manager.get_motif(name=m.name, end_name=m.ends[1].name())
+                new_m = rm.manager.get_motif(name=m.name)
                 new_m.copy_uuids_from_motif(m)
                 return new_m
 
@@ -73,46 +102,56 @@ class GraphtoTree(object):
                 new_m.id = m.id
                 return new_m
 
-
-    def convert(self, mg, start=None, start_bp_name=None, last_end=None):
+    def convert(self, mg, start=None, start_end_index=None, last_node=None):
         self.mt = motif_tree.MotifTree()
         self.mt.option('sterics', 0)
 
-        if start is None:
-            not_aligned = mg.get_not_aligned_nodes()
-            if len(not_aligned) == 0 :
-                raise RuntimeError("cannot convert graph to tree no starting point")
-            start = not_aligned[0]
-            start_n = self._GraphtoTreeNode(None, None, start)
-        else:
-            start_n = self._GraphtoTreeNode(None, None, start)
-            if start_bp_name is not None:
-                ei = 0
-                for i, end in enumerate(start.data.ends):
-                    if end.name() == start_bp_name:
-                        ei = i
-                        break
-                start_n.motf = self._reorient_motif(start_n.motif, ei)
+        start_n = self._get_start_node(mg, start, start_end_index)
 
-        open = [ start_n ]
+        open_nodes = [ start_n ]
+        last_node_to_add = None
 
-        while len(open) > 0:
-            current = open.pop(0)
+        while len(open_nodes) > 0:
+            current = open_nodes.pop(0)
+
+            if last_node == current.node:
+                last_node_to_add = current
+                continue
+
             if current.parent is None:
                 self.mt.add_motif(current.motif)
             else:
-                new_parent_index = self.mt.get_node_by_id(current.parent.data.id).index
-                self.mt.add_motif(current.motif, parent_index=new_parent_index)
-
+                new_parent_index = self.mt.get_node_by_id(
+                                    current.parent.data.id).index
+                self.mt.add_motif(current.motif, parent_index=new_parent_index,
+                                  parent_end_index = current.parent_end_index)
             new_nodes = self._get_new_nodes(current)
-            open.extend(new_nodes)
+
+            # check for duplicates
+            for n1 in new_nodes:
+                found = 0
+                for n2 in open_nodes:
+                    if n2.node.index == n1.node.index:
+                        found = 1
+                        break
+                    if last_node_to_add is not None:
+                        if last_node_to_add.node.index == n1.index:
+                            found = 1
+                            break
+
+                if not found:
+                    open_nodes.append(n1)
 
 
+        if last_node_to_add is not None:
+            new_parent_index = self.mt.get_node_by_id(
+                last_node_to_add.parent.data.id).index
+            self.mt.add_motif(last_node_to_add.motif,
+                              parent_index=new_parent_index,
+                              parent_end_index=last_node_to_add.parent_end_index)
 
-
+        self.mt.option('sterics', 1)
         return self.mt
-
-
 
 
 

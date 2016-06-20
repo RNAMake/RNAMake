@@ -176,7 +176,6 @@ private: //add motif helpers
         
         auto m_copy = std::make_shared<Motif>(*m);
         m_copy->get_beads(m_copy->ends());
-        m_copy->new_res_uuids();
         int pos = graph_.add_data(m_copy, -1, -1, -1, (int)m_copy->ends().size());
         merger_->add_motif(m_copy);
         aligned_[pos] = 0;
@@ -196,7 +195,6 @@ private: //add motif helpers
         
         if(sterics && _steric_clash(m_added)) { return -1; }
         
-        m_added->new_res_uuids();
         int pos = graph_.add_data(m_added, parent->index(), parent_end_index,
                                   0, (int)m_added->ends().size());
         
@@ -243,7 +241,6 @@ public:
         String const &,
         String const &);
     
-    
     BasepairOP const &
     get_available_end(int);
     
@@ -260,18 +257,6 @@ public:
     GraphNodeOPs<MotifOP>
     unaligned_nodes();
     
-    inline
-    GraphNodeOP<MotifOP> const &
-    get_node_by_id(
-        Uuid const & uuid) {
-        for(auto const & n : graph_.nodes()) {
-            if(n->data()->id() == uuid) {
-                return n;
-            }
-        }
-        throw std::runtime_error("could not find node by id");
-    }
-
     
 public: //Graph Wrappers
     inline
@@ -294,8 +279,42 @@ public: //Graph Wrappers
     GraphNodeOP<MotifOP> const &
     get_node(int i) { return graph_.get_node(i); }
     
-
-
+    inline
+    GraphNodeOP<MotifOP> const &
+    get_node(Uuid const & uuid) {
+        for(auto const & n : graph_) {
+            if(n->data()->id() == uuid) {
+                return n;
+            }
+        }
+        throw MotifGraphException("cannot get node with uuid no motif has it in this tree");
+    }
+    
+    inline
+    GraphNodeOP<MotifOP>
+    get_node(String const & m_name) {
+        auto node = GraphNodeOP<MotifOP>(nullptr);
+        for(auto const & n : graph_) {
+            if(n->data()->name() == m_name) {
+                if(node != nullptr) {
+                    throw MotifGraphException(
+                        "cannot get node with name: " + m_name + " there is more then one motif "
+                        "with this name");
+                }
+                
+                node = n;
+            }
+        }
+        
+        if(node == nullptr) {
+            throw MotifGraphException(
+                "cannot get node with name: " + m_name + " there is no motif in the tree with "
+                "this name");
+        }
+        
+        return node;
+    }
+    
 public: //Motif Merger Wrappers
     
     inline

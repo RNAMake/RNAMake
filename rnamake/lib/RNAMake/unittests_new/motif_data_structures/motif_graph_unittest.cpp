@@ -16,27 +16,34 @@
 
 TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
 
-    auto m = RM::instance().motif("HELIX.IDEAL.2");
     
     SECTION("test adding motifs") {
         auto mg = MotifGraph();
-        mg.add_motif(m);
-        mg.add_motif(m);
-        mg.add_motif(m);
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+
+        mg.add_motif(m1);
+        mg.add_motif(m2);
+        mg.add_motif(m3);
 
         REQUIRE(mg.size() == 3);
     }
     
     SECTION("test removing motifs") {
         auto mg = MotifGraph();
-        mg.add_motif(m);
-        mg.add_motif(m);
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        
+        mg.add_motif(m1);
+        mg.add_motif(m2);
         
         mg.remove_motif(1);
         REQUIRE(mg.size() == 1);
         
-        mg.add_motif(m);
-        mg.add_motif(m);
+        mg.add_motif(m2);
+        mg.add_motif(m3);
         mg.remove_level(0);
         REQUIRE(mg.size() == 0);
         
@@ -44,8 +51,10 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test getting nodes") {
         auto mg = MotifGraph();
-        mg.add_motif(m);
-        mg.add_motif(m);
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        mg.add_motif(m1);
+        mg.add_motif(m2);
         
         REQUIRE_NOTHROW(mg.get_node(0));
         REQUIRE_THROWS(mg.get_node(10));
@@ -181,13 +190,16 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test get end for easy building ") {
         auto base_path = base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+
         RM::instance().add_motif(base_path+"GAAA_tetraloop", "ttr");
         
         auto mg = MotifGraph();
         auto ttr_m = RM::instance().motif("ttr", "", "A229-A245");
-        mg.add_motif(m);
+        mg.add_motif(m1);
         mg.add_motif(ttr_m);
-        mg.add_motif(m);
+        mg.add_motif(m2);
         
         REQUIRE(mg.size() == 3);
         
@@ -210,27 +222,30 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test connecting motifs") {
         auto mg = MotifGraph();
-        auto m = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
         auto nway = RM::instance().motif("NWAY.1GID.0");
-        mg.add_motif(m);
+        mg.add_motif(m1);
         mg.add_motif(nway);
-        mg.add_motif(m);
+        mg.add_motif(m2);
 
         mg.add_connection(1, 2, "", "");
         auto s = mg.get_structure();
         REQUIRE(s->chains().size() == 1);
 
-        REQUIRE_THROWS_AS(mg.add_motif(m, -1, 1), MotifGraphException);
-        REQUIRE(mg.add_motif(m) == -1);
+        REQUIRE_THROWS_AS(mg.add_motif(m3, -1, 1), MotifGraphException);
+        REQUIRE(mg.add_motif(m3) == -1);
         
         REQUIRE_THROWS_AS(mg.add_connection(1, 2, "", ""), MotifGraphException);
-        REQUIRE_THROWS_AS(mg.add_connection(1, 2, "", m->ends()[0]->name()), MotifGraphException);
+        REQUIRE_THROWS_AS(mg.add_connection(1, 2, "", m1->ends()[0]->name()), MotifGraphException);
         
     }
     
     SECTION("test adding motif tree to motif graph") {
         
         auto g = std::make_shared<BuilderGraph>();
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
         g->add_node(HELIX, 2);
         g->add_node(NWAY, 3);
         g->add_node(HELIX, 2, 1, 1);
@@ -240,13 +255,13 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto mt = builder.build();
         
         auto mg = MotifGraph();
-        mg.add_motif(m);
+        mg.add_motif(m1);
         REQUIRE_NOTHROW(mg.add_motif_tree(mt));
         REQUIRE(mg.size() == 5);
         REQUIRE(mg.get_node(2)->data()->mtype() == MotifType::NWAY);
         
         auto mg2 = MotifGraph();
-        mg2.add_motif(m);
+        mg2.add_motif(m1);
         REQUIRE_NOTHROW(mg2.add_motif_tree(mt, 0, "A1-A8"));
         REQUIRE(mg2.size() == 5);
 
