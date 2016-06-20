@@ -47,6 +47,10 @@ def motif_graph_from_topology(s):
 
 
 class MotifGraph(base.Base):
+    class _MotifGraphBuildPoint(object):
+        def __init__(self, node, end_index):
+            self.node = node
+            self.end_index = end_index
 
     #SETUP FUNCTIONS ##########################################################
     def __init__(self, mg_str="", top_str=""):
@@ -134,8 +138,8 @@ class MotifGraph(base.Base):
                                 orphan=1, index=int(n_spl[1]))
             self.aligned[int(n_spl[1])] = int(n_spl[2])
 
-            if int(n_spl[2]) > max_index:
-                max_index = int(n_spl[2])
+            if int(n_spl[1]) > max_index:
+                max_index = int(n_spl[1])
 
         self.graph.index = max_index+1
 
@@ -342,8 +346,27 @@ class MotifGraph(base.Base):
     def last_node(self):
         return self.graph.last_node
 
-    def get_node(self, i):
-        return self.graph.get_node(i)
+    def get_node(self, i=None, uuid=None, m_name=None):
+        if i is not None:
+            return self.graph.get_node(i)
+
+        node = None
+        for n in self.graph.nodes:
+            if n.data.id == uuid:
+                return n
+            if n.data.name == m_name:
+                if node is not None:
+                    raise exceptions.MotifGraphException(
+                        "cannot get node with motif name: " + m_name + " there "
+                        "are more then one")
+                node = n
+        if node is None:
+            raise exceptions.MotifGraphException(
+                "could not find node with uuid " + str(uuid) + " and m_name: "
+                + m_name)
+
+        return node
+
 
     #MERGER WRAPPER     #######################################################
     def secondary_structure(self):
@@ -505,6 +528,15 @@ class MotifGraph(base.Base):
 
     #GETTERS            #######################################################
 
+    def get_build_points(self):
+        build_points = []
+        for n in self.graph.nodes:
+            for i, c in enumerate(n.connections):
+                if c is None and i != 0:
+                    build_points.append(self._MotifGraphBuildPoint(n, i))
+
+        return build_points
+
     def get_beads(self, exclude_phos=1):
         pass
 
@@ -564,8 +596,6 @@ class MotifGraph(base.Base):
             if n.data.id == uuid:
                 return n
         raise exceptions.MotifGraphException("cannot find node with id")
-
-
 
     #MISC               #######################################################
     def _align_motifs_all_motifs(self):

@@ -20,28 +20,34 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     SECTION("test adding motifs to tree") {
         auto mt = MotifTree();
         
-        auto m = RM::instance().motif("HELIX.IDEAL.2");
-        REQUIRE_NOTHROW(mt.add_motif(m));
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        REQUIRE_NOTHROW(mt.add_motif(m1));
         REQUIRE(mt.size() == 1);
         
-        REQUIRE_NOTHROW(mt.add_motif(m));
+        REQUIRE_NOTHROW(mt.add_motif(m2));
         REQUIRE(mt.size() == 2);
         
-        REQUIRE_THROWS_AS(mt.add_motif(m, 10), MotifTreeException);
-        REQUIRE_THROWS_AS(mt.add_motif(m, 0), MotifTreeException);
-        REQUIRE_THROWS_AS(mt.add_motif(m, 0, 10), MotifTreeException);
+        REQUIRE_THROWS_AS(mt.add_motif(m3, 10), MotifTreeException);
+        REQUIRE_THROWS_AS(mt.add_motif(m3, 0), MotifTreeException);
+        REQUIRE_THROWS_AS(mt.add_motif(m3, 0, 10), MotifTreeException);
         
+        SECTION("make sure motifs with the same uuid are rejected") {
+            REQUIRE_THROWS_AS(mt.add_motif(m1), MotifTreeException);
+        }
         
-        REQUIRE_THROWS_AS(mt.add_motif(m, -1, "FAKE_END"), MotifTreeException);
+        REQUIRE_THROWS_AS(mt.add_motif(m3, -1, "FAKE_END"), MotifTreeException);
         
     }
     
     SECTION("make sure weird chain topologies are caught") {
-        auto hairpin = RM::instance().motif("HAIRPIN.4P95.2");
+        auto hairpin1 = RM::instance().motif("HAIRPIN.4P95.2");
+        auto hairpin2 = RM::instance().motif("HAIRPIN.4P95.2");
         auto mt = MotifTree();
         mt.set_option_value("sterics", false);
-        mt.add_motif(hairpin);
-        mt.add_motif(hairpin);
+        mt.add_motif(hairpin1);
+        mt.add_motif(hairpin2);
 
         REQUIRE_THROWS_AS(mt.get_structure(), MotifTreeException);
         REQUIRE_THROWS_AS(mt.secondary_structure(), MotifTreeException);
@@ -51,26 +57,43 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     
     SECTION("test getting nodes") {
         auto mt = MotifTree();
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.3");
+        auto m4 = RM::instance().motif("HELIX.IDEAL.3");
+        mt.add_motif(m1);
+        mt.add_motif(m2);
+        mt.add_motif(m3);
+
+        REQUIRE_NOTHROW(mt.get_node(0));
+        REQUIRE_NOTHROW(mt.get_node(m1->id()));
+        REQUIRE_NOTHROW(mt.get_node("HELIX.IDEAL.3"));
+
         REQUIRE_THROWS_AS(mt.get_node(10), MotifTreeException);
+        REQUIRE_THROWS_AS(mt.get_node("HELIX.IDEAL.2"), MotifTreeException);
+        REQUIRE_THROWS_AS(mt.get_node("FAKE"), MotifTreeException);
+        REQUIRE_THROWS_AS(mt.get_node(m4->id()), MotifTreeException);
     }
     
     SECTION("test remove motifs from tree") {
         
         auto mt = MotifTree();
-        auto m = RM::instance().motif("HELIX.IDEAL.2");
-
-        mt.add_motif(m);
-        mt.add_motif(m);
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        mt.add_motif(m1);
+        mt.add_motif(m2);
         REQUIRE_NOTHROW(mt.remove_node(1));
         REQUIRE_THROWS_AS(mt.remove_node(1), MotifTreeException);
     }
     
     SECTION("test loading motif tree from topology str") {
         auto mt = MotifTree();
-        auto m = RM::instance().motif("HELIX.IDEAL.2");
-        mt.add_motif(m);
-        mt.add_motif(m);
-        mt.add_motif(m);
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        mt.add_motif(m1);
+        mt.add_motif(m2);
+        mt.add_motif(m3);
         
         auto str = mt.topology_to_str();
         auto mt2 = MotifTree(str);
@@ -79,27 +102,29 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         auto s = mt2.get_structure();
         
         REQUIRE(s->chains().size() == 2);
-        REQUIRE(s->residues().size() > m->residues().size());
+        REQUIRE(s->residues().size() > m1->residues().size());
         
     }
     
     SECTION("test connecting nodes") {
         auto mt = MotifTree();
-        auto m = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
         auto nway = RM::instance().motif("NWAY.1GID.0");
-        mt.add_motif(m);
+        mt.add_motif(m1);
         mt.add_motif(nway);
-        mt.add_motif(m);
+        mt.add_motif(m2);
         
         mt.add_connection(1, 2, "", "");
         auto s = mt.get_structure();
         REQUIRE(s->chains().size() == 1);
         
-        REQUIRE_THROWS_AS(mt.add_motif(m, -1, 1), MotifTreeException);
-        REQUIRE(mt.add_motif(m) == -1);
+        REQUIRE_THROWS_AS(mt.add_motif(m3, -1, 1), MotifTreeException);
+        REQUIRE(mt.add_motif(m3) == -1);
         
         REQUIRE_THROWS_AS(mt.add_connection(1, 2, "", ""), MotifTreeException);
-        REQUIRE_THROWS_AS(mt.add_connection(1, 2, "", m->ends()[0]->name()), MotifTreeException);
+        REQUIRE_THROWS_AS(mt.add_connection(1, 2, "", m1->ends()[0]->name()), MotifTreeException);
 
     }
     
@@ -142,5 +167,27 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         
     }
     
-
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

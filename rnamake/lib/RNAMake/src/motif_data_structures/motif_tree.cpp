@@ -105,12 +105,19 @@ MotifTree::add_motif(
     int parent_index,
     int parent_end_index) {
     
+    for(auto const & n : tree_) {
+        if(n->data()->id() == m->id()) {
+            throw MotifTreeException(
+                "cannot add motif there is already a motif in this tree with its unique "
+                " indentifier");
+        }
+    }
+    
     auto parent = _get_parent(m->name(), parent_index);
     
     if(parent == nullptr) {
         auto m_copy = std::make_shared<Motif>(*m);
         m_copy->get_beads(m_copy->ends());
-        m_copy->new_res_uuids();
         int pos = tree_.add_data(m_copy, (int)m_copy->ends().size(), -1, -1);
         merger_.add_motif(m_copy);
         return pos;
@@ -127,7 +134,6 @@ MotifTree::add_motif(
             continue;
         }
         
-        m_added->new_res_uuids();
         int pos = tree_.add_data(m_added, (int)m_added->ends().size(), parent->index(), p);
         if(pos != -1) {
             merger_.add_motif(m_added, m_added->ends()[0], parent->data(), parent->data()->ends()[p]);

@@ -70,6 +70,44 @@ public: //tree wrappers
     
     inline
     TreeNodeOP<MotifOP> const &
+    get_node(Uuid const & uuid) {
+        for(auto const & n : tree_) {
+            if(n->data()->id() == uuid) {
+                return n;
+            }
+        }
+        throw MotifTreeException(
+            "cannot get node with uuid no motif has it in this tree");
+    }
+    
+    inline
+    TreeNodeOP<MotifOP> 
+    get_node(String const & m_name) {
+        auto node = TreeNodeOP<MotifOP>(nullptr);
+        for(auto const & n : tree_) {
+            if(n->data()->name() == m_name) {
+                if(node != nullptr) {
+                    throw MotifTreeException(
+                        "cannot get node with name: " + m_name + " there is more then one motif "
+                        "with this name");
+                }
+                
+                node = n;
+            }
+        }
+        
+        if(node == nullptr) {
+            throw MotifTreeException(
+                "cannot get node with name: " + m_name + " there is no motif in the tree with "
+                "this name");
+        }
+        
+        return node;
+    }
+    
+    
+    inline
+    TreeNodeOP<MotifOP> const &
     last_node() { return tree_.last_node(); }
     
     void
@@ -238,19 +276,7 @@ public:
     
     String
     topology_to_str();
-    
-    inline
-    TreeNodeOP<MotifOP>  const &
-    get_node_by_id(
-        Uuid const & uuid) {
-        for(auto const & n : tree_) {
-            if(n->data()->id() == uuid) {
-                return n;
-            }
-        }
-        throw MotifTreeException("could not find node by id");
-    }
-    
+
     void
     remove_node(
         int i=-1) {
