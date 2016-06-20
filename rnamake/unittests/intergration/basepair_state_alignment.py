@@ -26,9 +26,6 @@ class BasepairStateAlignmentUnittests(unittest.TestCase):
 
             diff = end1.diff(end2)
 
-            print end1.sugars
-            print end2.sugars
-            exit()
             if diff > 0.001:
                 self.fail("did not align properly")
 

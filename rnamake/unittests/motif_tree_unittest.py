@@ -15,9 +15,10 @@ class MotifTreeUnittest(unittest.TestCase):
 
     def test_add_motif(self):
         mt = motif_tree.MotifTree()
-        m = rm.manager.get_motif(name="HELIX.IDEAL.2")
-        mt.add_motif(m)
-        mt.add_motif(m)
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        mt.add_motif(m1)
+        mt.add_motif(m2)
         if len(mt) != 2:
             self.fail("did not add motifs properly")
 
@@ -32,9 +33,10 @@ class MotifTreeUnittest(unittest.TestCase):
 
     def test_remove_node(self):
         mt = motif_tree.MotifTree()
-        m = rm.manager.get_motif(name="HELIX.IDEAL.2")
-        mt.add_motif(m)
-        mt.add_motif(m)
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        mt.add_motif(m1)
+        mt.add_motif(m2)
         mt.remove_node(1)
         if len(mt) != 1:
             self.fail("did not remove node correctly")
@@ -79,9 +81,10 @@ class MotifTreeUnittest(unittest.TestCase):
 
     def test_get_residues(self):
         mt = motif_tree.MotifTree()
-        m = rm.manager.get_motif(name="HELIX.IDEAL.2")
-        mt.add_motif(m)
-        mt.add_motif(m)
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        mt.add_motif(m1)
+        mt.add_motif(m2)
         res = []
         for n in mt:
             res.extend(n.data.residues())
@@ -91,9 +94,10 @@ class MotifTreeUnittest(unittest.TestCase):
 
     def test_secondary_structure(self):
         mt = motif_tree.MotifTree()
-        m = rm.manager.get_motif(name="HELIX.IDEAL.2")
-        mt.add_motif(m)
-        mt.add_motif(m)
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        mt.add_motif(m1)
+        mt.add_motif(m2)
         ss = mt.secondary_structure()
         if ss.sequence() != "GGGGGGG&CCCCCCC":
             self.fail("did not get correct sequence")

@@ -3,6 +3,8 @@ import rnamake.resource_manager as rm
 import rnamake.settings as settings
 import rnamake.motif_tree as motif_tree
 
+from rnamake import exceptions
+
 class ResourceManagerUnittest(unittest.TestCase):
 
     def test_creation(self):
@@ -11,13 +13,8 @@ class ResourceManagerUnittest(unittest.TestCase):
     def test_get_motif(self):
         m = rm.manager.get_motif(name="HELIX.IDEAL")
 
-        try:
-            m = rm.manager.get_motif(name="test")
-            self.fail()
-        except ValueError:
-            pass
-        except:
-            self.fail("unexpected error")
+        with self.assertRaises(exceptions.ResourceManagerException):
+            rm.manager.get_motif(name="test")
 
     def test_get_motif_step(self):
         m = rm.manager.get_motif(end_id="GG_LL_CC_RR")

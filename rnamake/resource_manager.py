@@ -5,6 +5,7 @@ import motif_type
 import motif_ensemble
 import settings
 import util
+import exceptions
 
 class MotifLibrary(object):
     def __init__(self):
@@ -38,11 +39,14 @@ class MotifLibrary(object):
 
     def get(self, **options):
         motifs = self._find_motifs(**options)
+        motifs[0].new_res_uuids()
         return motifs[0]
 
     def get_multi(self, **options):
-        return self._find_motifs(**options)
-
+        motifs = self._find_motifs(**options)
+        for m in motifs:
+            m.new_res_uuids()
+        return motifs
 
 class ResourceManager(object):
     def __init__(self):
@@ -94,7 +98,8 @@ class ResourceManager(object):
         #                                                       m.ends[0].name())
         #    raise ValueError(s)
 
-        raise ValueError("cannot find motif: " + self._args_to_str(options))
+        raise exceptions.ResourceManagerException(
+            "cannot find motif: " + self._args_to_str(options))
 
     def motif_exists(self, **options):
         for mlib in self.mlibs.itervalues():

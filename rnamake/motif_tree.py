@@ -11,6 +11,7 @@ import secondary_structure_factory as ssfactory
 import secondary_structure
 import motif_merger
 import motif_connection
+import exceptions
 
 def motif_tree_from_topology_str(s):
     mt = MotifTree()
@@ -32,6 +33,7 @@ def motif_tree_from_topology_str(s):
 
     return mt
 
+
 def motif_tree_from_ss_tree(sst):
     mt = MotifTree()
     for n in sst.tree:
@@ -43,7 +45,6 @@ def motif_tree_from_ss_tree(sst):
             raise ValueError("not implemented")
 
     return mt
-
 
 
 class MotifTree(base.Base):
@@ -141,6 +142,12 @@ m
             else:
                 m = rm.manager.get_motif(name=m_name)
 
+        for n in self.tree.nodes:
+            if n.data.id == m.id:
+                raise exceptions.MotifTreeException(
+                    "cannot add motif: " + m.name + " to graph as its uuid is "
+                    "already present in the graph")
+
         parent = self.tree.last_node
         if parent_index != -1:
             parent = self.tree.get_node(parent_index)
@@ -167,15 +174,12 @@ m
                 if self._steric_clash(m_added):
                     continue
 
-            m_added.new_res_uuids()
-
             pos =  self.tree.add_data(m_added, len(m_added.ends), parent.index, p)
             self.merger.add_motif(m_added, m_added.ends[0],
                                   parent.data, parent.data.ends[p])
             return pos
 
         return -1
-
 
     def add_motif_tree(self, mt, parent_index=-1, parent_end_name=""):
         if parent_index == -1:
@@ -214,7 +218,6 @@ m
                                               n.data)
             n.data = m_added
             self.merger.update_motif(n.data)
-
 
     def get_node(self, i):
         return self.tree.get_node(i)
@@ -370,6 +373,12 @@ m
 
     def residues(self):
         return self.merger.get_structure().residues()
+
+    def get_node_by_id(self, uuid):
+        for n in self.tree.nodes:
+            if n.data.id == uuid:
+                return n
+        raise exceptions.MotifTreeException("cannot find node with id")
 
 
 
