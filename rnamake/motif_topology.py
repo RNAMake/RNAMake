@@ -12,8 +12,6 @@ class GraphtoTree(object):
 
     def __init__(self):
         self.mt = motif_tree.MotifTree()
-        self.seen_nodes = {}
-        self.seen_connections = {}
 
     class _GraphtoTreeNode(object):
         def __init__(self, parent, parent_end_index, node):
@@ -67,6 +65,8 @@ class GraphtoTree(object):
             for i, end in enumerate(tree_parent.data.ends):
                 if end.name() == parent_end_name:
                     return i
+
+            raise RuntimeError("did not find original end something went really wrong")
 
         # helices always go end 0 to 1
         else:

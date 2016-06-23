@@ -160,6 +160,16 @@ Motif::new_res_uuids() {
     for(auto & bp : basepairs()) { bp->uuid(Uuid()); }
 }
 
+void
+Motif::copy_uuids_from_motif(
+    Motif const & m) {
+    
+    id_ = m.id_;
+    for(auto const & r : m.residues()) {
+        
+    }
+}
+
 MotifStateOP
 Motif::get_state() {
     auto beads = get_beads(ends_[0]);
