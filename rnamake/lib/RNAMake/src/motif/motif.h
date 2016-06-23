@@ -86,6 +86,10 @@ public:
     void
     new_res_uuids();
     
+    void
+    copy_uuids_from_motif(
+        Motif const &);
+    
 public: //wrappers from secondary structure
     
     String
@@ -110,6 +114,10 @@ public: //getters
     inline
     Uuid const &
     id() { return id_; }
+    
+    inline
+    String
+    end_name(int i) { return ends_[i]->name(); }
 
     
 public: // setters

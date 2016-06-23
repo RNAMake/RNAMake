@@ -14,6 +14,67 @@
 
 
 MotifTreeOP
+GraphtoTree::convert(
+    MotifGraphOP const & mg,
+    GraphNodeOP<MotifOP> start,
+    int start_end_index,
+    GraphNodeOP<MotifOP> last_node) {
+    
+    mt_ = std::make_shared<MotifTree>();
+    mt_->set_option_value("sterics", false);
+    
+    
+    return mt_;
+    
+}
+
+GraphtoTree::_GraphtoTreeNodeOP
+GraphtoTree::_get_start_node(
+    MotifGraphOP const & mg,
+    GraphNodeOP<MotifOP> const & start,
+    int start_end_index) {
+    
+    auto start_n = _GraphtoTreeNodeOP(nullptr);
+    if(start == nullptr) {
+        auto not_aligned = mg->unaligned_nodes();
+        if(not_aligned.size() == 0) {
+            throw MotifTopologyException("cannot convert graph to tree no starting point");
+        }
+        auto start = not_aligned[0];
+        start_n = std::make_shared<_GraphtoTreeNode>(nullptr, 0, start, start->data());
+    }
+    else {
+        start_n = std::make_shared<_GraphtoTreeNode>(nullptr, 0, start, start->data());
+
+    }
+    
+    
+    return start_n;
+    
+}
+
+MotifOP
+GraphtoTree::_get_reoriented_motif(
+    MotifOP const & m,
+    int end_index) {
+    
+    // dont need to do anything already oriented
+    if(end_index == 0) { return m; }
+    
+    if(m->mtype() != MotifType::HELIX) {
+        try {
+            auto new_m = RM::instance().motif(m->name(), "", m->end_name(end_index));
+            return new_m;
+        }
+        catch(ResourceManagerException const & e) {
+            throw MotifTopologyException("cannot convert graph to tree because " + e.what());
+        }
+    }
+    
+}
+
+
+MotifTreeOP
 graph_to_tree(
     MotifGraphOP const & mg,
     GraphNodeOP<MotifOP> start,
