@@ -97,6 +97,7 @@ MotifStateEnsembleTree::setup_from_mt(
             else {
                 auto m = ResourceManager::getInstance().get_motif(n->data()->name(),
                                                                   n->data()->end_ids()[0]);
+                
                 mse = std::make_shared<MotifStateEnsemble>(m->get_state());
             }
             
