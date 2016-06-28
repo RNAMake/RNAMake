@@ -114,4 +114,35 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
         
     }
     
+    SECTION("test copying uuids from one motif to another") {
+        auto path = motif_dirs() + "base.motif";
+        auto m1 = file_to_motif(path);
+        auto m2 = file_to_motif(path);
+
+        REQUIRE(m1->id() != m2->id());
+        m1->copy_uuids_from_motif(*m2);
+        
+        REQUIRE(m1->id() == m2->id());
+        
+        int i = 0;
+        for(auto const & bp : m1->basepairs()) {
+            REQUIRE(bp->uuid() == m2->basepairs()[i]->uuid());
+            i++;
+        }
+        
+        i = 0;
+        for(auto const & r : m1->residues()) {
+            REQUIRE(r->uuid() == m2->residues()[i]->uuid());
+            i++;
+        }
+        
+    }
+    
 }
+
+
+
+
+
+
+

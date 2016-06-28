@@ -111,6 +111,8 @@ class PoseFactory(object):
     def _convert_x3dna_to_motif(self, xm, p):
         res = []
         for xr in xm.residues:
+            #if xr is None:
+            #    continue
             r = p.get_residue(num=xr.num, chain_id=xr.chain_id, i_code=xr.i_code)
             res.append(r)
         basepairs = []

@@ -102,7 +102,7 @@ MiniTTR::run() {
 void
 MiniTTR::optimize_sequence(MotifGraph & org_mg) {
     auto str = org_mg.topology_to_str();
-    auto mg = std::make_shared<MotifGraph>(str);
+    auto mg = std::make_shared<MotifGraph>(str, MotifGraphStringType::OLD);
     mg->replace_ideal_helices();
     
     int free_end_node = 0;

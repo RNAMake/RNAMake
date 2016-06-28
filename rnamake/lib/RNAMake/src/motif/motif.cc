@@ -166,7 +166,13 @@ Motif::copy_uuids_from_motif(
     
     id_ = m.id_;
     for(auto const & r : m.residues()) {
-        
+        auto this_r = get_residue(r->num(), r->chain_id(), r->i_code());
+        this_r->uuid(r->uuid());
+    }
+    
+    for(auto const & bp : m.basepairs()) {
+        auto this_bp = get_basepair(bp->res1()->uuid(), bp->res2()->uuid())[0];
+        this_bp->uuid(bp->uuid());
     }
 }
 

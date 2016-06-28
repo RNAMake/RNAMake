@@ -96,11 +96,11 @@ public: //wrappers from structure
     
     inline
     AtomOPs const
-    atoms() { return structure_->atoms(); }
+    atoms() const { return structure_->atoms(); }
     
     inline
     ResidueOPs const
-    residues() { return structure_->residues(); }
+    residues() const { return structure_->residues(); }
     
     ChainOPs const &
     chains() { return structure_->chains(); }

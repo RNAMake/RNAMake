@@ -105,7 +105,7 @@ public:
         Uuid const &);
 
     ResidueOPs const
-    residues();
+    residues() const;
     
     inline
     AtomOPs const

@@ -17,9 +17,10 @@ TEST_CASE( "Test collecting command line options", "[CLOptions]" ) {
         
     }
     
+    //this isnt working out in the real world need to rethink it
     SECTION("boolean commandline options must start at false") {
-        REQUIRE_THROWS_AS(CommandLineOption("test", true, OptionType::BOOL, false),
-                          CommandLineOptionException);
+        //REQUIRE_THROWS_AS(CommandLineOption("test", true, OptionType::BOOL, false),
+        //                  CommandLineOptionException);
     }
     
     SECTION("test parsing command line") {

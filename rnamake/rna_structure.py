@@ -5,6 +5,7 @@ import structure
 import util
 import chain_closure
 import exceptions
+import user_warnings
 
 import os
 
@@ -429,8 +430,9 @@ def basepairs_from_x3dna(path, name, structure):
                 not_found = xbp.res1
             else:
                 not_found = xbp.res2
-            raise exceptions.RNAStructureException(
-                "cannot find residues in basepair: " + not_found)
+            raise user_warnings.RNAStructureWarning(
+                "cannot find residues in basepair: " + not_found + " "
+                "this residue should NOT be a normal nucleotide etc: A,G,C,U")
 
         bp = basepair.Basepair(res1, res2, xbp.r, xbp.bp_type)
         basepairs.append(bp)
