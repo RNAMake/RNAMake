@@ -402,6 +402,8 @@ class X3dna(object):
             res = []
             for res_str in spl[2].split(","):
                 res_obj = self._parse_dssr_res_str(res_str)
+                if res_obj is None:
+                    continue
                 res.append(res_obj)
 
             count = 0
@@ -429,13 +431,18 @@ class X3dna(object):
             if int(spl[0]) == 1 and len(res) > 0:
                 motifs.append(Motif(res, motif_type.HELIX))
                 res = []
-            res.append(self._parse_dssr_res_str(spl[1]))
-            res.append(self._parse_dssr_res_str(spl[2]))
+            r1 = self._parse_dssr_res_str(spl[1])
+            r2 = self._parse_dssr_res_str(spl[2])
+            if r1 is not None:
+                res.append(r1)
+            if r2 is not None:
+                res.append(r2)
 
         if len(res) > 0:
             motifs.append(Motif(res, motif_type.HELIX))
 
         return motifs
+
 
 class Motif(object):
     """

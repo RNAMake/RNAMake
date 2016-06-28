@@ -433,6 +433,7 @@ def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
     if len(org_state.beads) > 0:
         cur_state.beads = np.dot(org_state.beads, r.T) + t
 
+
 def clash_between_motifs(m1, m2, clash_radius=settings.CLASH_RADIUS):
     for b1 in m1.beads:
         for b2 in m2.beads:

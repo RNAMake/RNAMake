@@ -25,5 +25,14 @@ warnings.formatwarning = warning_on_one_line
 class RNAMakeWarning(UserWarning):
     class_name = __name__
 
-class PDBFormatWarning (RNAMakeWarning):
+
+class PDBFormatWarning(RNAMakeWarning):
+    pass
+
+
+class RNAStructureWarning(RNAMakeWarning):
+    pass
+
+
+class MotifWarning(RNAMakeWarning):
     pass

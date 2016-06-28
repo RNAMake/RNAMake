@@ -64,11 +64,21 @@ GraphtoTree::_get_reoriented_motif(
     if(m->mtype() != MotifType::HELIX) {
         try {
             auto new_m = RM::instance().motif(m->name(), "", m->end_name(end_index));
+            new_m->copy_uuids_from_motif(*m);
             return new_m;
         }
         catch(ResourceManagerException const & e) {
-            throw MotifTopologyException("cannot convert graph to tree because " + e.what());
+            throw MotifTopologyException(String("cannot convert graph to tree because ") + e.what());
         }
+    }
+    
+    else {
+        if(m->name().substr(0, 5) == "HELIX") {
+            std::cout << "made it" << std::endl;
+        }
+        
+        return m;
+        
     }
     
 }

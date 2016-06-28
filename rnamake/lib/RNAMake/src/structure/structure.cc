@@ -31,7 +31,7 @@ Structure::renumber() {
 }
 
 ResidueOPs const
-Structure::residues() {
+Structure::residues() const {
     ResidueOPs residues;
     for (auto & c : chains_) {
         for (auto r : c->residues()) {

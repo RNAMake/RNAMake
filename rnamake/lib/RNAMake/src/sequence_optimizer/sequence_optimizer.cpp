@@ -79,7 +79,7 @@ SequenceOptimizer::get_optimized_sequences(
     auto end_state_2 = BasepairStateOP();
     auto end_state_2_flip = BasepairStateOP();
     
-    auto node_1 = mg->get_node_by_id(uuid_1);
+    auto node_1 = mg->get_node(uuid_1);
     
     for(auto const & r : designer_results_) {
         i++;
@@ -95,8 +95,8 @@ SequenceOptimizer::get_optimized_sequences(
                             node_1->data()->ends()[end_1]);
         
         
-        end_state_1 = mt_->get_node_by_id(uuid_1)->data()->ends()[end_1]->state();
-        end_state_2 = mt_->get_node_by_id(uuid_2)->data()->ends()[end_2]->state();
+        end_state_1 = mt_->get_node(uuid_1)->data()->ends()[end_1]->state();
+        end_state_2 = mt_->get_node(uuid_2)->data()->ends()[end_2]->state();
         end_state_2->flip();
         end_state_2_flip = std::make_shared<BasepairState>(end_state_2->copy());
         end_state_2->flip();
