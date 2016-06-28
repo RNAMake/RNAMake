@@ -23,7 +23,27 @@ GraphtoTree::convert(
     mt_ = std::make_shared<MotifTree>();
     mt_->set_option_value("sterics", false);
     
+    auto start_node = _get_start_node(mg, start, start_end_index);
+    auto last_node_to_add = _GraphtoTreeNodeOP(nullptr);
+    auto current = _GraphtoTreeNodeOP(nullptr);
+    auto open_nodes = std::queue<_GraphtoTreeNodeOP>();
+    auto new_nodes = _GraphtoTreeNodeOPs();
+    open_nodes.push(start_node);
     
+    while( open_nodes.size() > 0) {
+        current = open_nodes.front();
+        open_nodes.pop();
+        
+        if(current->parent == nullptr) {
+            mt_->add_motif(current->motif);
+        }
+        else {
+            auto new_parent_index = mt_->get_node(current->parent->data()->id())->index();
+            mt_->add_motif(current->motif, new_parent_index, current->parent_end_index);
+        }
+    }
+    
+    mt_->set_option_value("sterics", false);
     return mt_;
     
 }
@@ -45,6 +65,7 @@ GraphtoTree::_get_start_node(
     }
     else {
         start_n = std::make_shared<_GraphtoTreeNode>(nullptr, 0, start, start->data());
+        start_n->motif = _get_reoriented_motif(start->data(), start_end_index);
 
     }
     
@@ -68,18 +89,66 @@ GraphtoTree::_get_reoriented_motif(
             return new_m;
         }
         catch(ResourceManagerException const & e) {
-            throw MotifTopologyException(String("cannot convert graph to tree because ") + e.what());
+            throw MotifTopologyException(
+                String("cannot convert graph to tree because ") + e.what());
         }
     }
     
     else {
         if(m->name().substr(0, 5) == "HELIX") {
-            std::cout << "made it" << std::endl;
+            auto new_m = RM::instance().motif(m->name());
+            new_m->copy_uuids_from_motif(*m);
+            return new_m;
+
+            
         }
         
-        return m;
+        else {
+            auto spl = split_str_by_delimiter(m->name(), "=");
+            auto new_name = spl[1] + "=" + spl[0];
+            auto new_m = RM::instance().motif(m->name());
+            //since each basepair step has a different motif to represent it
+            //these are likly two different motifs cannot do copy_uuids_from_motif
+            new_m->id(m->id());
+            return new_m;
+        }
         
     }
+    
+}
+
+
+GraphtoTree::_GraphtoTreeNodeOPs
+GraphtoTree::_get_new_nodes(
+    GraphtoTree::_GraphtoTreeNodeOP const & current) {
+    
+    auto new_nodes = _GraphtoTreeNodeOPs();
+    auto partner = GraphNodeOP<MotifOP>();
+    auto n = GraphNodeOP<MotifOP>();
+    auto found = 1;
+    
+    for(auto const & c : current->node->connections()) {
+        if(c == nullptr) { continue; }
+        
+        found = 1;
+        partner = c->partner(current->node->index());
+        // check to see if motif is already in tree
+        try {
+            n = mt_->get_node(partner->data()->id());
+        } catch(...) { found = 0; }
+        
+        
+        if(found) { continue; }
+        
+        auto parent_end_index = c->end_index(current->node->index());
+        auto node_end_index = c->end_index(partner->index());
+        auto new_n = std::make_shared<_GraphtoTreeNode>(current->node, parent_end_index,
+                                                        partner, partner->data());
+        
+        
+     }
+    
+    return new_nodes;
     
 }
 
