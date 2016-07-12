@@ -16,9 +16,9 @@
 #define MAX3( A, B, C ) ( MAX2( ( MAX2( ( A ), ( B ) ) ), ( C ) ) )
 #define GASCONST 1.98717 /* in [cal/K] */
 
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
+#include <cmath>
+#include <cstdio>
+#include <cstring>
 
 // RNAMake Headers
 #include "base/types.h"
@@ -163,9 +163,9 @@ struct plist {
 	int type;
 };
 
-typedef std::vector< bondT > bondTs;
-typedef std::vector< sect > sects;
-typedef std::vector< plist > plists;
+using bondTs = std::vector<bondT>;
+using sects = std::vector<sect>;
+using plists = std::vector<plist>;
 
 class Vienna {
   public:

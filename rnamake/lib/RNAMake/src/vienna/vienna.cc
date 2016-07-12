@@ -6,9 +6,9 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include <float.h>
+#include <cfloat>
 #include <iostream>
-#include <string.h>
+#include <cstring>
 
 #include "pair_mat.h"
 #include "vienna.h"
@@ -36,8 +36,8 @@ namespace vienna {
 float Vienna::fold( String const &string ) {
 	actual_size_ = (int)string.length();
 
-	for ( int i = 0; i < S1.size(); i++ ) {
-		S1[ i ] = 0;
+	for (short & i : S1) {
+		i = 0;
 	}
 
 	encode_sequence( string, S, 0 );
@@ -1697,9 +1697,9 @@ int Vienna::fill_arrays( String const &string ) {
 	switch ( dangle_model ) {
 	/* dont use dangling end and mismatch contributions at all */
 	case 0:
-		for ( j = TURN + 2; j <= length; j++ ) {
+		for ( int j = TURN + 2; j <= length; j++ ) {
 			f5[ j ] = f5[ j - 1 ];
-			for ( i = j - TURN - 1; i > 1; i-- ) {
+			for ( int i = j - TURN - 1; i > 1; i-- ) {
 
 				type = ptype[ indx[ j ] + i ];
 				if ( !type )
@@ -1719,9 +1719,9 @@ int Vienna::fill_arrays( String const &string ) {
 
 	/* always use dangles on both sides */
 	case 2:
-		for ( j = TURN + 2; j < length; j++ ) {
+		for ( int j = TURN + 2; j < length; j++ ) {
 			f5[ j ] = f5[ j - 1 ];
-			for ( i = j - TURN - 1; i > 1; i-- ) {
+			for ( int i = j - TURN - 1; i > 1; i-- ) {
 
 				type = ptype[ indx[ j ] + i ];
 				if ( !type )
@@ -1739,7 +1739,7 @@ int Vienna::fill_arrays( String const &string ) {
 			f5[ j ] = MIN2( f5[ j ], en + E_ExtLoop( type, -1, S1[ j + 1 ] ) );
 		}
 		f5[ length ] = f5[ length - 1 ];
-		for ( i = length - TURN - 1; i > 1; i-- ) {
+		for ( int i = length - TURN - 1; i > 1; i-- ) {
 
 			type = ptype[ indx[ length ] + i ];
 			if ( !type )
@@ -1760,9 +1760,9 @@ int Vienna::fill_arrays( String const &string ) {
 
 	/* normal dangles, aka dangle_model = 1 || 3 */
 	default:
-		for ( j = TURN + 2; j <= length; j++ ) {
+		for ( int j = TURN + 2; j <= length; j++ ) {
 			f5[ j ] = f5[ j - 1 ];
-			for ( i = j - TURN - 1; i > 1; i-- ) {
+			for ( int i = j - TURN - 1; i > 1; i-- ) {
 
 				type = ptype[ indx[ j ] + i ];
 				if ( type ) {
@@ -1796,7 +1796,7 @@ int Vienna::fill_arrays( String const &string ) {
 		}
 	}
 
-	s = NULL;
+	s = nullptr;
 
 	return f5[ length ];
 }
