@@ -33,7 +33,7 @@ static int pair[ MAXALPHA + 1 ][ MAXALPHA + 1 ];
 static int rtype[ 8 ] = {0, 2, 1, 4, 3, 6, 5, 7};
 static int energy_set = 0;
 static int noGU = 0;
-static char *nonstandards = NULL;
+static char *nonstandards = nullptr;
 
 static int encode_char( char c ) {
 	/* return numerical representation of base used e.g. in pair[][] */
@@ -43,7 +43,7 @@ static int encode_char( char c ) {
 	else {
 		const char *pos;
 		pos = strchr( Law_and_Order, c );
-		if ( pos == NULL )
+		if ( pos == nullptr )
 			code = 0;
 		else
 			code = (int)( pos - Law_and_Order );
@@ -57,7 +57,7 @@ static int encode_char( char c ) {
 
 extern char *nonstandards;
 extern void nrerror( const char message[] );
-static void make_pair_matrix( void ) {
+static void make_pair_matrix( ) {
 	int i, j;
 
 	if ( energy_set == 0 ) {
@@ -72,7 +72,7 @@ static void make_pair_matrix( void ) {
 		}
 		if ( noGU )
 			pair[ 3 ][ 4 ] = pair[ 4 ][ 3 ] = 0;
-		if ( nonstandards != NULL ) {
+		if ( nonstandards != nullptr ) {
 			for ( i = 0; i < (int)strlen( nonstandards ); i += 2 )
 				pair[ encode_char( nonstandards[ i ] ) ]
 					[ encode_char( nonstandards[ i + 1 ] ) ] = 7;

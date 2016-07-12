@@ -9,8 +9,7 @@
 #ifndef __RNAMake__energy_par__
 #define __RNAMake__energy_par__
 
-#include <stdio.h>
-
+#include <cstdio>
 #define INF 10000000
 #define NBPAIRS 7
 #define MAXLOOP 30
