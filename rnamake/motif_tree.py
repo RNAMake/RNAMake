@@ -460,7 +460,7 @@ class MotifTree(base.Base):
         if parent is None:
             return []
 
-        if parent_end_index != -1 and parent_end_name != "":
+        if parent_end_index != -1 and parent_end_name is not None:
             raise exceptions.MotifTreeException(
                 "cannot supply parent_end_index and parent_end_name together")
 
