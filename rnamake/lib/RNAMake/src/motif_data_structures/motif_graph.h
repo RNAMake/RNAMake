@@ -35,6 +35,23 @@ public:
 
 class MotifGraph {
 public:
+    struct _MotifGraphBuildPoint {
+        _MotifGraphBuildPoint(
+            GraphNodeOP<MotifOP> const & nnode,
+            int nend_index ):
+        node(nnode),
+        end_index(nend_index)
+        {}
+        
+        GraphNodeOP<MotifOP> node;
+        int end_index;
+    };
+    
+    typedef std::shared_ptr<_MotifGraphBuildPoint> _MotifGraphBuildPointOP;
+    typedef std::vector<_MotifGraphBuildPointOP> _MotifGraphBuildPointOPs;
+    
+    
+public:
     
     MotifGraph():
     graph_(GraphStatic<MotifOP>()),
@@ -176,7 +193,7 @@ private: //add motif helpers
         
         auto m_copy = std::make_shared<Motif>(*m);
         m_copy->get_beads(m_copy->ends());
-        int pos = graph_.add_data(m_copy, -1, -1, -1, (int)m_copy->ends().size());
+        int pos = graph_.add_data(m_copy, -1, -1, -1, (int)m_copy->ends().size(), 1);
         merger_->add_motif(m_copy);
         aligned_[pos] = 0;
         return pos;
@@ -257,6 +274,8 @@ public:
     GraphNodeOPs<MotifOP>
     unaligned_nodes();
     
+    _MotifGraphBuildPointOPs
+    get_build_points();
     
 public: //Graph Wrappers
     inline

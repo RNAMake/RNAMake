@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <iomanip>      // std::setw
+
 #include "motif_data_structures/motif_tree.h"
 #include "resources/resource_manager.h"
 
@@ -302,6 +304,55 @@ MotifTree::topology_to_str() {
 }
 
 
+String
+MotifTree::to_pretty_str() {
+    
+    auto printer = MotifTreePrinter();
+    return printer.print_tree(*this);
+    
+    
+    String s = "";
+    int h = 1;
+    auto levels = std::map<int, int>();
+    auto node_pos = std::map<int, int>();
+    for(auto const & n : tree_) {
+        if(levels.size() == 0) {
+            levels[n->index()] = 1;
+            continue;
+        }
+        else {
+            auto parent_level = levels[n->parent_index()];
+            levels[n->index()] = parent_level + 1;
+            if(parent_level + 1 > h) {
+                h = parent_level + 1;
+            }
+        }
+    }
+    
+    int current_level = 1;
+    int level = 10;
+    int nodesInThisLevel = 1;
+    int branchLen = 2*((int)pow(2.0,h)-1) - (3-level)*(int)pow(2.0,h-1);
+    int nodeSpaceLen = 2 + (level+1)*(int)pow(2.0,h);
+    int startLen = branchLen + (10-level);
+    
+    std::cout << std::setw(startLen);
+    //std::cout << "";
+    //std::cout << std::setfill('_');
+    //std::cout << std::setw(branchLen+2);
+    //std::cout << get_node(0)->index() << " - ";
+    std::cout << get_node(0)->data()->name()  << std::endl;
+    
+    
+    auto done = false;
+    while(!done) {
+        
+        break;
+    }
+    
+    
+    return s;
+}
 
 
 

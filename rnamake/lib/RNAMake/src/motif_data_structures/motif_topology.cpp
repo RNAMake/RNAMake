@@ -28,20 +28,48 @@ GraphtoTree::convert(
     auto current = _GraphtoTreeNodeOP(nullptr);
     auto open_nodes = std::queue<_GraphtoTreeNodeOP>();
     auto new_nodes = _GraphtoTreeNodeOPs();
+    auto seen_nodes = std::map<int, int>();
     open_nodes.push(start_node);
-    
+    seen_nodes[start_node->node->index()] = 1;
+
     while( open_nodes.size() > 0) {
         current = open_nodes.front();
         open_nodes.pop();
+        
+    
+        if(last_node == current->node) {
+            last_node_to_add = current;
+            continue;
+        }
         
         if(current->parent == nullptr) {
             mt_->add_motif(current->motif);
         }
         else {
             auto new_parent_index = mt_->get_node(current->parent->data()->id())->index();
-            mt_->add_motif(current->motif, new_parent_index, current->parent_end_index);
+            auto pos = mt_->add_motif(current->motif, new_parent_index, current->parent_end_index);
+            if(pos == -1) {
+                continue;
+            }
         }
+        
+        new_nodes = _get_new_nodes(current);
+        for(auto const & n : new_nodes) {
+            if(seen_nodes.find(n->node->index()) == seen_nodes.end()) {
+                seen_nodes[n->node->index()] = 1;
+                open_nodes.push(n);
+            }
+        }
+        
     }
+    
+    if(last_node_to_add != nullptr) {
+        auto new_parent_index = mt_->get_node(last_node_to_add->parent->data()->id())->index();
+        mt_->add_motif(last_node_to_add->motif,
+                       new_parent_index,
+                       last_node_to_add->parent_end_index);
+    }
+    
     
     mt_->set_option_value("sterics", false);
     return mt_;
@@ -68,7 +96,6 @@ GraphtoTree::_get_start_node(
         start_n->motif = _get_reoriented_motif(start->data(), start_end_index);
 
     }
-    
     
     return start_n;
     
@@ -124,7 +151,7 @@ GraphtoTree::_get_new_nodes(
     
     auto new_nodes = _GraphtoTreeNodeOPs();
     auto partner = GraphNodeOP<MotifOP>();
-    auto n = GraphNodeOP<MotifOP>();
+    auto n = TreeNodeOP<MotifOP>();
     auto found = 1;
     
     for(auto const & c : current->node->connections()) {
@@ -144,11 +171,43 @@ GraphtoTree::_get_new_nodes(
         auto node_end_index = c->end_index(partner->index());
         auto new_n = std::make_shared<_GraphtoTreeNode>(current->node, parent_end_index,
                                                         partner, partner->data());
+        new_n->motif = _get_reoriented_motif(new_n->motif, node_end_index);
+        new_n->parent_end_index = _get_new_parent_end_index(current->node, c);
+    
+        new_nodes.push_back(new_n);
         
         
      }
     
     return new_nodes;
+    
+}
+
+int
+GraphtoTree::_get_new_parent_end_index(
+    GraphNodeOP<MotifOP> const & parent,
+    GraphConnectionOP<MotifOP> const & c) {
+ 
+    if(parent->data()->mtype() != MotifType::HELIX) {
+        auto parent_end_index = c->end_index(parent->index());
+        auto parent_end_name = parent->data()->end_name(parent_end_index);
+        auto tree_parent = mt_->get_node(parent->data()->id());
+        
+        int i = -1;
+        for(auto const & end : tree_parent->data()->ends()) {
+            i++;
+            if(end->name() == parent_end_name) {
+                return i;
+            }
+        }
+        
+        throw std::runtime_error("did not find original end something went really wrong");
+    }
+    
+    //helices always go end 0 to 1
+    else {
+        return 1;
+    }
     
 }
 

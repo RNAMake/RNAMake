@@ -537,6 +537,14 @@ class MotifGraph(base.Base):
 
         return build_points
 
+    def leafs_and_ends(self):
+        build_points = []
+        for n in self.graph.nodes:
+             for i, c in enumerate(n.connections):
+                if c is None and i != 0:
+                    build_points.append([n, i])
+        return build_points
+
     def get_beads(self, exclude_phos=1):
         pass
 

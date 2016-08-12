@@ -49,7 +49,7 @@ private:
     };
     
     typedef std::shared_ptr<_GraphtoTreeNode> _GraphtoTreeNodeOP;
-    typedef std::vector<_GraphtoTreeNode> _GraphtoTreeNodeOPs;
+    typedef std::vector<_GraphtoTreeNodeOP> _GraphtoTreeNodeOPs;
     
     
 public:
@@ -78,7 +78,7 @@ private:
     
     int
     _get_new_parent_end_index(
-        _GraphtoTreeNodeOP const &,
+        GraphNodeOP<MotifOP> const &,
         GraphConnectionOP<MotifOP> const &);
     
 private:

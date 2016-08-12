@@ -69,8 +69,9 @@ class ThermoFlucSampler(base.Base):
         self.states[node_num] = self.last_state_pos
         self.mst.replace_state(node_num, state)
 
-    def to_pdb(self, name="test.pdb"):
-        self.mst.to_pdb(name)
+    def to_pdb(self, name="test.pdb", renumber=-1, close_chain=0):
+        self.mst.to_motif_tree().to_pdb(name, renumber=renumber,
+                                        close_chain=close_chain)
 
     def to_pdb_str(self, renumber=-1, close_chain=0):
         return self.mst.to_motif_tree().to_pdb_str(renumber=renumber,
