@@ -97,7 +97,14 @@ MotifGraph::_setup_from_str(String const & s) {
         auto n_spl = split_str_by_delimiter(n_str, "^");
         auto m = std::make_shared<Motif>(n_spl[0],
                                          ResidueTypeSetManager::getInstance().residue_type_set());
-                
+        
+        try {
+            auto m2 = RM::instance().motif(m->name());
+        } catch(ResourceManagerException const & e) {
+            RM::instance().add_motif(m);
+        }
+        
+        
         m->get_beads(m->ends()[0]);
         graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1, std::stoi(n_spl[1]));
         aligned_[std::stoi(n_spl[1])] = std::stoi(n_spl[2]);
@@ -569,6 +576,7 @@ MotifGraph::replace_ideal_helices() {
                 old_pos = pos;
             }
             
+      
             if(other != nullptr) {
                 graph_.connect(pos, other->index(), 1, other_end_index);
                 auto node = graph_.get_node(pos);
@@ -576,6 +584,7 @@ MotifGraph::replace_ideal_helices() {
                                        node->data()->ends()[1],
                                        other->data()->ends()[other_end_index]);
             }
+            
         }
     }
     
@@ -647,6 +656,22 @@ MotifGraph::unaligned_nodes() {
         if(kv.second == 0) { nodes.push_back(get_node(kv.first)); }
     }
     return nodes;
+}
+
+
+MotifGraph::_MotifGraphBuildPointOPs
+MotifGraph::get_build_points() {
+    auto build_points = _MotifGraphBuildPointOPs();
+    for(auto const & n : graph_.nodes()) {
+        int i = -1;
+        for(auto c : n->connections()) {
+            i++;
+            if(c == nullptr && i != 0) {
+                build_points.push_back(std::make_shared<_MotifGraphBuildPoint>(n, i));
+            }
+        }
+    }
+    return build_points;
 }
 
 void

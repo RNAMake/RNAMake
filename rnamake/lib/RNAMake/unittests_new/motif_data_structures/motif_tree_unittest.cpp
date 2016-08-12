@@ -17,6 +17,23 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         REQUIRE(mt.get_bool_option("sterics") == false);
     }
     
+    SECTION("test pretty printing tree") {
+        auto mt2 = MotifTree();
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        auto nway = RM::instance().motif("NWAY.1GID.0");
+
+        mt2.add_motif(m1);
+        mt2.add_motif(nway);
+        mt2.add_motif(m2);
+        mt2.add_motif(m3, 1);
+
+        
+        std::cout << mt2.to_pretty_str() << std::endl;
+        
+    }
+    
     SECTION("test adding motifs to tree") {
         auto mt = MotifTree();
         

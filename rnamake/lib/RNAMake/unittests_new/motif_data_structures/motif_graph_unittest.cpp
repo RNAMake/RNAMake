@@ -163,7 +163,6 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         }
         
         auto s = mg2->get_structure();
-        
     }
     
     SECTION("test replacing helices with new sequence") {

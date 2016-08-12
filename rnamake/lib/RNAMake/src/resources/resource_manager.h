@@ -60,6 +60,10 @@ public:
         String const & path,
         String name = "");
     
+    void
+    add_motif(
+        MotifOP const &);
+    
     
 protected:
     RM() { //Prevent construction

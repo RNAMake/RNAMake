@@ -6,6 +6,7 @@ import rnamake.resource_manager as rm
 import rnamake.secondary_structure_factory as ssfactory
 import rnamake.motif_type as motif_type
 import rnamake.eternabot.sequence_designer as sequence_designer
+from rnamake import exceptions
 import util
 
 class MotifTreeUnittest(unittest.TestCase):
@@ -13,7 +14,7 @@ class MotifTreeUnittest(unittest.TestCase):
     def test_creation(self):
         mt = motif_tree.MotifTree()
 
-    def test_add_motif(self):
+    def test_add_motif_merger(self):
         mt = motif_tree.MotifTree()
         m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
         m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
@@ -30,6 +31,46 @@ class MotifTreeUnittest(unittest.TestCase):
 
         if len(mt.merger.bp_overrides.values()) != 1:
             self.fail("did not create the correct number of bp overrides")
+
+    def test_add_motif_2(self):
+        mt = motif_tree.MotifTree()
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        mt.add_motif(m1)
+
+        #can never use parent_end_index=0 for a tree as that is where that node
+        #is already connected to another node
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_motif(m2, parent_end_index=0)
+
+        #supplied parent_end_index and parent_end_name
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_motif(m2, parent_end_index=1, parent_end_name="A1-A8")
+
+        #must supply a motif or motif name
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_motif()
+
+        #motif not found in resource manager
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_motif(m_name="FAKE")
+
+        #catches invalid parent_index
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_motif(m2, parent_index=2)
+
+        #invalid parent_end_index, has only 0 and 1
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_motif(m2, parent_end_index=3)
+
+        #invalid parent_end_name, is the name of end 0
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_motif(m2, parent_end_name="A4-A5")
+
+        #invalid parent_end_name, cannot be found as an end in motif
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_motif(m2, parent_end_name="FAKE")
+
 
     def test_remove_node(self):
         mt = motif_tree.MotifTree()
@@ -160,6 +201,47 @@ class MotifTreeUnittest(unittest.TestCase):
 
         mt.get_node(0).data.name = "test"
         #print mt_copy.get_node(0)
+
+    def test_pretty_print(self):
+        mt = motif_tree.MotifTree();
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2");
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2");
+        m3 = rm.manager.get_motif(name="HELIX.IDEAL.2");
+        m4 = rm.manager.get_motif(name="HELIX.IDEAL.2");
+        nway = rm.manager.get_motif(name="NWAY.1GID.0");
+
+        mt.add_motif(m1);
+        mt.add_motif(nway);
+        mt.add_motif(m2);
+        mt.add_motif(m3, 1);
+        mt.add_motif(m4)
+
+
+        #print mt.to_pretty_str()
+
+    def _get_sub_motif_tree(self):
+        mt = motif_tree.MotifTree();
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2");
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2");
+        m3 = rm.manager.get_motif(name="HELIX.IDEAL.2");
+        nway = rm.manager.get_motif(name="NWAY.1GID.0");
+        mt.add_motif(m1);
+        mt.add_motif(nway);
+        mt.add_motif(m2);
+        mt.add_motif(m3, 1);
+
+        return mt
+
+    def test_print_pretty_2(self):
+        mt = motif_tree.MotifTree();
+        mt.option('sterics', 0)
+        mt.add_motif_tree(self._get_sub_motif_tree())
+        mt.add_motif_tree(self._get_sub_motif_tree())
+        mt.add_motif_tree(self._get_sub_motif_tree(), parent_index=2,
+                          parent_end_name="A1-A8")
+        print mt.to_pretty_str()
+        mt.write_pdbs()
+
 
 def main():
     unittest.main()
