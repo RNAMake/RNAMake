@@ -71,7 +71,6 @@ class MotifTreeUnittest(unittest.TestCase):
         with self.assertRaises(exceptions.MotifTreeException):
             mt.add_motif(m2, parent_end_name="FAKE")
 
-
     def test_remove_node(self):
         mt = motif_tree.MotifTree()
         m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
@@ -88,13 +87,15 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt.merger.bp_overrides.values()) != 0:
             self.fail(("did not remove bp overrides"))
 
-    #TODO fix
-    def _test_remove_node_2(self):
+    def test_remove_node_2(self):
         mt = motif_tree.MotifTree()
-        m = rm.manager.get_motif(name="HELIX.IDEAL.2")
-        mt.add_motif(m)
-        mt.add_motif(m)
-        mt.add_motif(m)
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m3 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+
+        mt.add_motif(m1)
+        mt.add_motif(m2)
+        mt.add_motif(m3)
 
         mt.remove_node(1)
         if len(mt) != 2:
@@ -145,22 +146,6 @@ class MotifTreeUnittest(unittest.TestCase):
 
         if ss.dot_bracket() != "(((((((&)))))))":
             self.fail("did not get correct dot bracket")
-
-    #TODO fix
-    def _test_complex(self):
-        rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
-        mt = motif_tree.MotifTree()
-        mt.add_motif(m_name="tetraloop_receptor_min",
-                     m_end_name="A228-A246")
-
-        mt.add_motif(m_name="HELIX.IDEAL.20",
-                     parent_end_name="A221-A252")
-
-        mt.add_motif(m_name="tetraloop_receptor_min",
-                     m_end_name="A146-A157")
-
-        if len(mt.merger.get_structure().chains()) != 4:
-            raise ValueError("did nto get the correct number of chains")
 
     def test_topology_to_str(self):
         builder = build.BuildMotifTree()
@@ -241,6 +226,16 @@ class MotifTreeUnittest(unittest.TestCase):
                           parent_end_name="A1-A8")
         print mt.to_pretty_str()
         mt.write_pdbs()
+
+    def test_get_build_points(self):
+        mt = motif_tree.MotifTree()
+        mt.add_motif(m_name="HELIX.IDEAL.2")
+
+        build_points = mt.get_build_points()
+
+        self.failUnless(len(build_points) == 1)
+        self.failUnless(build_points[0].node.index == 0)
+        self.failUnless(build_points[0].end_index == 1)
 
 
 def main():

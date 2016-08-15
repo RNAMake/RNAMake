@@ -201,7 +201,7 @@ class MotifFactory(object):
         if fail:
             return None
         else:
-            return m
+            return m_added
 
     def align_motif_to_common_frame(self, m, ei):
         m_added = motif.get_aligned_motif(self.ref_motif.ends[0], m.ends[ei], m)

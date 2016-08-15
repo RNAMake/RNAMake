@@ -33,6 +33,14 @@ class MotifGraphUnittest(unittest.TestCase):
         mt = builder.build(2)
         mg = motif_graph.MotifGraph()
 
+
+        mg2 = motif_graph.MotifGraph()
+        mg2.option('sterics', 0)
+
+        mg2.add_motif(m_name="HELIX.IDEAL.3")
+        mg2.add_motif(m_name="TWOWAY.4OO8.1")
+        mg2.write_pdbs()
+
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 

@@ -223,6 +223,7 @@ class MotifStateTree(base.Base):
 
         n.data.ref_state = new_state
         n.data.cur_state = new_state.copy()
+
         for n in tree.transverse_tree(self.tree, i):
             parent = n.parent
             if parent is None:
