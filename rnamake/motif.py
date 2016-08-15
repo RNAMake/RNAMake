@@ -69,6 +69,7 @@ class Motif(rna_structure.RNAStructure):
 
         if r_struct is not None:
             self.__dict__.update(r_struct.__dict__)
+            self.secondary_structure = ssf.factory.secondary_structure_from_motif(self)
 
     def __repr__(self):
         """

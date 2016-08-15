@@ -8,6 +8,7 @@ import exceptions
 import user_warnings
 
 import os
+import numpy as np
 
 
 class RNAStructure(object):
@@ -90,6 +91,34 @@ class RNAStructure(object):
             self.ends = []
         self.beads = []
         self.end_ids = []
+
+    def copy(self):
+        rna_struct = RNAStructure()
+        rna_struct.name      = self.name
+        rna_struct.path      = self.path
+        rna_struct.score     = self.score
+        rna_struct.mtype     = self.mtype
+        rna_struct.structure = self.structure.copy()
+        rna_struct.beads     = [b.copy() for b in self.beads]
+        rna_struct.end_ids   = list(self.end_ids)
+        rna_struct.protein_beads = [b.copy() for b in self.protein_beads]
+
+        for bp in self.basepairs:
+            new_res1 = rna_struct.get_residue(uuid=bp.res1.uuid)
+            new_res2 = rna_struct.get_residue(uuid=bp.res2.uuid)
+            # hopefully this doesnt happen anymore
+            if new_res1 is None or new_res2 is None:
+                raise ValueError("could not find a residue during copy")
+            new_r = np.copy(bp.bp_state.r)
+            new_bp = basepair.Basepair(new_res1, new_res2, new_r, bp.bp_type)
+            new_bp.uuid = bp.uuid
+            rna_struct.basepairs.append(new_bp)
+
+        for end in self.ends:
+            index = self.basepairs.index(end)
+            rna_struct.ends.append(rna_struct.basepairs[index])
+
+        return rna_struct
 
     def to_pdb_str(self, renumber=-1, close_chain=0):
         """

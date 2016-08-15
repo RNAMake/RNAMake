@@ -238,6 +238,65 @@ class ThermoFlucRelax(base.Base):
         #print end_state_1.diff(end_state_2)
         #outputer.to_pdb()
 
+    def run_with_target(self, mset, ni_1, ei_1, target_bp):
+        self.sampler.setup(mset)
+        steps = 0
+
+        end_state_1 = self.sampler.mst.get_node(ni_1).data.cur_state.end_states[ei_1]
+        cur_diff = end_state_1.diff(target_bp)
+        new_diff = 0
+        self.best = self.sampler.mst.copy()
+        best_diff = 10000
+
+        #print len(self.sampler.mst)
+        #self.sampler.mst.add_connection(0, 16, "A149-A154")
+        #outputer = motif_outputer.MotifOutputer()
+
+        while steps < self.max_steps:
+
+            #print steps
+            r = self.sampler.next()
+
+            """if steps % 10 == 0:
+                try:
+                    mst2 = self.sampler.mst.copy()
+                    p = mst2.to_pose()
+                    outputer.add_motif(p, 0)
+
+                except:
+                    pass"""
+            steps += 1
+
+            if steps % 100 == 0:
+                self.kBT *= 0.5
+
+            if r == 0:
+                continue
+
+            end_state_1 = self.sampler.mst.get_node(ni_1).data.cur_state.end_states[ei_1]
+            new_diff = end_state_1.diff(target_bp)
+
+            #if steps % 10 == 0:
+            #print cur_diff, new_diff, best_diff, steps
+            if cur_diff < 1:
+                break
+
+            if new_diff < best_diff:
+                best_diff = new_diff
+                self.best = self.sampler.mst.copy()
+
+            if new_diff < cur_diff:
+                cur_diff = new_diff
+                continue
+
+            score = math.exp((cur_diff - new_diff) / self.kBT)
+            dice_roll = random.random()
+            if dice_roll < score:
+                cur_diff = new_diff
+                continue
+
+            self.sampler.undo()
+
 
     def to_pdb(self, name="test.pdb"):
         self.best.to_pdb(name)
