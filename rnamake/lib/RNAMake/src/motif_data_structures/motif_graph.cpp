@@ -98,14 +98,17 @@ MotifGraph::_setup_from_str(String const & s) {
         auto m = std::make_shared<Motif>(n_spl[0],
                                          ResidueTypeSetManager::getInstance().residue_type_set());
         
-        try {
+        /*try {
             auto m2 = RM::instance().motif(m->name());
         } catch(ResourceManagerException const & e) {
             RM::instance().add_motif(m);
+        }*/
+
+    
+
+        if(m->ends().size() > 1) {
+            m->get_beads(m->ends()[0]);
         }
-        
-        
-        m->get_beads(m->ends()[0]);
         graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1, std::stoi(n_spl[1]));
         aligned_[std::stoi(n_spl[1])] = std::stoi(n_spl[2]);
         if(std::stoi(n_spl[1]) > max_index) {

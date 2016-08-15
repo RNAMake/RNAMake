@@ -367,7 +367,6 @@ class MotifGraph(base.Base):
 
         return node
 
-
     #MERGER WRAPPER     #######################################################
     def secondary_structure(self):
         return self.merger.secondary_structure()

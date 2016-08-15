@@ -54,8 +54,8 @@ PathBuilderNewApp::run() {
     
     auto write_pdbs = get_bool_option("write_pdbs");
     if(write_pdbs) {
-        mg_.to_pdb("scaffold.pdb");
-        //mg_.write_pdbs();
+        //mg_.to_pdb("scaffold.pdb");
+        mg_.write_pdbs();
     }
     
     if(get_bool_option("no_sterics")) {
@@ -124,6 +124,7 @@ void
 PathBuilderNewApp::_setup_from_mg() {
     
     auto lines = get_lines_from_file(get_string_option("mg"));
+    //std::cout << "made it" << std::endl;
     mg_ =  MotifGraph(lines[0], MotifGraphStringType::MG);
     auto spl = split_str_by_delimiter(lines[1], " ");
     start_ = EndStateInfo{spl[0], std::stoi(spl[1])};

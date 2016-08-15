@@ -67,11 +67,22 @@ class MotifTree(base.Base):
 
     .. code-block:: python
 
-        >>> mt = MotifTree()
-        >>> mlib = MotifLibrary()
-        >>> mt.add_motif(mlib.get_motif("HELIX.IDEAL"))
-        >>> mt.add_motif(mlib.get_motif("HELIX.IDEAL"))
+        >>> from rnamake import motif_tree
+        >>> from rnamake.unittests import instances
+        >>> mt = motif_tree.MotifTree()
 
+        #add motif by name, first motif added so its index is 0
+        >>> print mt.add_motif(m_name="HELIX.IDEAL.2")
+        0
+
+        #add motif by object
+        >>> m = instances.motif()
+        >>> print mt.add_motif(m)
+        1
+
+        #now contains two motifs
+        >>>print len(mt)
+        2
     """
 
     class _MotifTreePrinter(object):
@@ -302,6 +313,12 @@ class MotifTree(base.Base):
             return s
 
 
+    class _MotifTreeBuildPoint(object):
+        def __init__(self, node, end_index):
+            self.node = node
+            self.end_index = end_index
+
+
     def __init__(self, **options):
         self.setup_options_and_constraints()
         self.options.dict_set(options)
@@ -522,7 +539,9 @@ class MotifTree(base.Base):
                   parent_end_name=None, m_name=None, m_end_name=None):
 
         """
-        interface to add a motif to the current tree.
+        interface to add a motif to the current tree. Motifs can be added as a
+        motif object with variable m or by namw with m_name. returns the
+        node index upon adding and -1 if it failed to add.
 
         :param m: a motif object to add to tree
         :type m: Motif object
@@ -537,7 +556,42 @@ class MotifTree(base.Base):
             end available
         :type parent_end_index: int
 
-        :param parent_end_name:
+        :param parent_end_name: the name of the end of the parent you wish to
+            align too.
+        :type parent_end_name: str
+
+        :param m_name: the name of the motif you would like to add to the tree
+            this name is used to retrieve a motif object from the resource
+            manager. Cannot be supplied in addition to m
+        :type m_name: str
+
+        :param m_end_name: the end of the motif being added to be aligned to
+            the parent. Used in conjunction with m_name
+        :type m_end_name: str
+
+        :return: node index of motif in tree. -1 if failed to add
+        :rtype: int
+
+        :examples:
+
+        .. code-block:: python
+
+            >>> from rnamake import motif_tree
+            >>> from rnamake.unittests import instances
+            >>> mt = motif_tree.MotifTree()
+
+            #add motif by name, first motif added so its index is 0
+            >>> print mt.add_motif(m_name="HELIX.IDEAL.2")
+            0
+
+            #add motif by object
+            >>> m = instances.motif()
+            >>> print mt.add_motif(m)
+            1
+
+            #now contains two motifs
+            >>>print len(mt)
+            2
 
         """
 
@@ -571,6 +625,25 @@ class MotifTree(base.Base):
         return -1
 
     def add_motif_tree(self, mt, parent_index=-1, parent_end_name=None):
+        """
+        add entire motif tree with all the motifs in that tree to this motif
+        tree.
+
+        :param mt: MotifTree object you wish to add
+        :type mt: MotifTree
+
+         :param parent_index: the index associated with the parent you want to
+            align to. Default is -1 which will use the last motif added if one
+            has been added.
+        :type parent_index: int
+
+        :param parent_end_name: the name of the end of the parent you wish to
+            align too.
+        :type parent_end_name: str
+
+        :return: None
+        """
+
         parent = self._get_parent_node(parent_index)
         parent_avail_ends = self._get_parent_available_ends(
                                 parent, -1, parent_end_name)
@@ -582,23 +655,39 @@ class MotifTree(base.Base):
 
         index_hash = {}
         for i, n in enumerate(mt):
-            m = rm.manager.get_motif(name=n.data.name, end_name=n.data.ends[0].name())
+            m = n.data
             if i == 0:
                 j = self.add_motif(m, parent_index, parent_end_index)
             else:
                 pi = index_hash[n.parent_index()]
                 j = self.add_motif(m, pi, parent_end_index=n.parent_end_index())
                 if j == -1:
-                    self.write_pdbs()
-                    print m.name, self.option('sterics')
-                    raise ValueError("cannot add_motif_tree")
+                    raise exceptions.MotifTreeException(
+                        "failed to add a motif in add_motif_tree to the current "
+                        "motif tree it is likely a steric clash, consider "
+                        "turning off sterics")
 
             index_hash[n.index] = j
 
     def replace_motif(self, pos, new_motif):
+        """
+        replaces the motif at a specific node with a new motif and updates the
+        oriention of each motif. The new motif has the same number of basepair
+        ends as the motif it is replacing. Does not check sterics upon swaping
+        new motif
+
+        :param pos: node position of the motif you wish to replace
+        :type pos: int
+
+        :param new_motif: motif to be inserted into tree
+        :type new_motif: Motif
+
+        """
+
         node = self.get_node(pos)
         if len(new_motif.ends) != len(node.data.ends):
-            raise ValueError("attmped to replace a motif with a different number of ends")
+            raise exceptions.MotifTreeException(
+                "attmpted to replace a motif with a different number of ends")
 
         new_motif = new_motif.copy()
         self.merger.replace_motif(node.data, new_motif)
@@ -616,9 +705,67 @@ class MotifTree(base.Base):
             self.merger.update_motif(n.data)
 
     def get_node(self, i):
+        """
+        gets a node that stores the motif and connection information
+        from the current tree
+
+        :param i: index of node requested
+        :type i: int
+
+        :return: TreeNode with index of desired motif
+        :rtype: TreeNode
+        """
+
         return self.tree.get_node(i)
 
+    def get_build_points(self):
+        """
+        gets the available nodes with their respective nodes that can accept
+        new children. Returns in the format of _MotifTreeBuildPoint objects.
+        Which store both the node and end index that is available.
+
+        :examples:
+
+        .. code-block:: python
+
+            >>> from rnamake import motif_tree
+            >>> mt = motif_tree.MotifTree()
+            >>> mt.add_motif(m_name="HELIX.IDEAL.2")
+
+            >>> build_points = mt.get_build_points()
+            >>> len(build_points)
+            1
+
+            >>> print build_points[0].node
+            <rnamake.tree.TreeNodeStatic object at 0x1051c95d0>
+            >>> print build_points[0].end_index
+            1
+            >>> mt.add_motif(m_name="HELIX.IDEAL.2",
+            >>>              parent_index=build_points[0].node.index,
+            >>>              parent_end_index=build_points[0].end_index)
+            1
+        """
+
+        build_points = []
+        for n in self.tree:
+            for i, c in enumerate(n.children):
+                if c is None and i != 0:
+                    build_points.append(self._MotifTreeBuildPoint(n, i))
+
+        return build_points
+
     def write_pdbs(self,name="node"):
+        """
+        writes out a pdb for each node in the motif tree. for example if
+        there are two motifs in the current motif tree you would get:
+        node.0.pdb and node.1.pdb produced upon calling this function
+
+        :param name: optional but will be the beginning of each pdb filename.
+        :type name: str
+
+        :return: None
+        """
+
         for n in self.tree:
             n.data.to_pdb(name+"."+str(n.index)+".pdb")
 
@@ -626,8 +773,10 @@ class MotifTree(base.Base):
         """
         remove a node from the current motif tree. Note there is no checks
         to see whether the node you are removing is a leaf. Thus you could
-        be removing a section of the tree. call node.is_leaf() if you would
-        like to check this
+        be removing a section of the tree.
+
+
+
         """
         if i == -1:
             i = self.tree.last_node.index
