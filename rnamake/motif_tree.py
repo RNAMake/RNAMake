@@ -775,7 +775,22 @@ class MotifTree(base.Base):
         to see whether the node you are removing is a leaf. Thus you could
         be removing a section of the tree.
 
+        :param i: the index of the node you want to remove. If none is
+            specified will remove last node added
+        :type i: int
 
+        :examples:
+
+        .. code-block:: python
+
+            >>> from rnamake import motif_tree
+            >>> mt = motif_tree.MotifTree()
+            >>> mt.add_motif(m_name="HELIX.IDEAL.2")
+            >>> len(mt)
+            1
+            >>> mt.remove_node()
+            >>> len(mt)
+            0
 
         """
         if i == -1:
@@ -786,6 +801,34 @@ class MotifTree(base.Base):
         self.merger.remove_motif(n.data)
 
     def remove_node_level(self, level=None):
+        """
+        remove all nodes of a given level. The initial level of all nodes
+        is 0 unless. This can be adjusted with
+        :func:`MotifTree.increase_level` and func:`MotifTree.decrease_level`
+        This allows for quick removal of multiple motifs at the same time.
+
+        :param level:
+
+        :examples:
+
+        .. code-block:: python
+
+            >>> from rnamake import motif_tree
+            >>> mt = motif_tree.MotifTree()
+            >>> mt.add_motif(m_name="HELIX.IDEAL.2")
+            >>> mt.increase_level()
+
+            # add a bunch of motifs
+            >>> for i in range(10):
+            >>>     mt.add_motif(m_name="HELIX.IDEAL.2")
+
+            # all new motifs can be at once as they are all in the same level
+            >>> mt.remove_node_level(1)
+            >>> len(mt)
+            1
+
+        """
+
         if level is None:
             level = self.level
 
@@ -796,13 +839,14 @@ class MotifTree(base.Base):
         self.last_node = self.nodes[-1]
 
     def last_node(self):
+        """
+        wrapper to get the last node in self.tree
+
+        :return: last node in self.tree
+        :rtype: TreeNode
+        """
+
         return self.tree.last_node
-
-    def to_pose(self, chain_closure=0):
-
-        pose = self.merger.merge(self.tree)
-        self.merger.reset()
-        return pose
 
     def secondary_structure(self):
         return self.merger.secondary_structure()
@@ -819,6 +863,9 @@ class MotifTree(base.Base):
                     r_ss.name = "N"
 
         return ss
+
+    def get_structure(self):
+        return self.merger.get_structure()
 
     def to_pdb(self, fname="mt.pdb", renumber=-1, close_chain=0):
         self.merger.get_structure().to_pdb(fname, renumber=renumber,
@@ -903,6 +950,10 @@ class MotifTree(base.Base):
                 return n
         raise exceptions.MotifTreeException("cannot find node with id")
 
+    def increase_level(self):
+        self.tree.increase_level()
 
+    def decrease_level(self):
+        self.tree.decrease_level()
 
 

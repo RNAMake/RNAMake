@@ -5,8 +5,7 @@ import rnamake.motif_tree as motif_tree
 import rnamake.resource_manager as rm
 import rnamake.secondary_structure_factory as ssfactory
 import rnamake.motif_type as motif_type
-import rnamake.eternabot.sequence_designer as sequence_designer
-from rnamake import exceptions
+from rnamake import exceptions, motif
 import util
 
 class MotifTreeUnittest(unittest.TestCase):
@@ -224,8 +223,8 @@ class MotifTreeUnittest(unittest.TestCase):
         mt.add_motif_tree(self._get_sub_motif_tree())
         mt.add_motif_tree(self._get_sub_motif_tree(), parent_index=2,
                           parent_end_name="A1-A8")
-        print mt.to_pretty_str()
-        mt.write_pdbs()
+        #print mt.to_pretty_str()
+        #mt.write_pdbs()
 
     def test_get_build_points(self):
         mt = motif_tree.MotifTree()
@@ -236,6 +235,17 @@ class MotifTreeUnittest(unittest.TestCase):
         self.failUnless(len(build_points) == 1)
         self.failUnless(build_points[0].node.index == 0)
         self.failUnless(build_points[0].end_index == 1)
+
+    def test_get_structure(self):
+        mt = motif_tree.MotifTree()
+        mt.add_motif(m_name="HELIX.IDEAL.2")
+        mt.add_motif(m_name="HELIX.IDEAL.2")
+        rna_struct = mt.get_structure()
+        m = motif.Motif(r_struct=rna_struct)
+
+        mt2 = motif_tree.MotifTree()
+        mt2.add_motif(m)
+        self.failUnless(len(mt2) == 1)
 
 
 def main():

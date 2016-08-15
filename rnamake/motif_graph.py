@@ -70,6 +70,13 @@ class MotifGraph(base.Base):
     def __len__(self):
         return len(self.graph)
 
+    def __iter__(self):
+        self.graph.__iter__()
+        return self
+
+    def next(self):
+        return self.graph.next()
+
     def _setup_from_top_str(self, s):
         self.option('sterics', 0)
         spl = s.split("&")
@@ -133,7 +140,10 @@ class MotifGraph(base.Base):
         for i, n_str in enumerate(node_spl[:-1]):
             n_spl = n_str.split("^")
             m = motif.str_to_motif(n_spl[0])
-            m.get_beads([m.ends[0]])
+            if len(m.ends) > 0:
+                m.get_beads([m.ends[0]])
+            else:
+                m.get_beads()
             self.graph.add_data(m, -1, -1, -1, len(m.ends),
                                 orphan=1, index=int(n_spl[1]))
             self.aligned[int(n_spl[1])] = int(n_spl[2])
