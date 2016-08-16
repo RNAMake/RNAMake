@@ -174,7 +174,8 @@ class MotifTree(base.Base):
                         self.node_pos[children[0].index] = parent_pos - self.branch_length / extra
                         self.node_pos[children[1].index] = parent_pos + self.branch_length / extra
                 else:
-                    pass
+                    raise exceptions.MotifTreeException(
+                        "Greater then two children is not supported for pretty_printing")
 
         def _print_pos(self):
             """
@@ -319,6 +320,7 @@ class MotifTree(base.Base):
             self.end_index = end_index
 
 
+    #SETUP FUNCTIONS ##########################################################
     def __init__(self, **options):
         self.setup_options_and_constraints()
         self.options.dict_set(options)
@@ -372,6 +374,7 @@ class MotifTree(base.Base):
         self.options = option.Options(options)
         self.constraints = {}
 
+    #ADD FUNCTIONS      #######################################################
     def _validate_arguments_to_add_motif(self, m, m_name):
         """
         makes sure the add_motif function is called correctly
@@ -669,6 +672,45 @@ class MotifTree(base.Base):
 
             index_hash[n.index] = j
 
+    def add_connection(self, i, j, i_bp_name="", j_bp_name=""):
+        node_i = self.get_node(i)
+        node_j = self.get_node(j)
+
+        node_i_indexes = []
+        node_j_indexes = []
+        if i_bp_name != "":
+            ei = node_i.data.get_end_index(i_bp_name)
+            if not node_i.available_pos(ei):
+                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                                 "using bp: " + i_bp_name + "as its not available")
+            node_i_indexes.append(ei)
+        else:
+            node_i_indexes = node_i.available_children_pos()
+            node_i_indexes.remove(0)
+
+        if j_bp_name != "":
+            ei = node_j.data.get_end_index(j_bp_name)
+            if not node_j.available_pos(ei):
+                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                                 "using bp: " + j_bp_name + "as its not available")
+            node_j_indexes.append(ei)
+        else:
+            node_j_indexes = node_j.available_children_pos()
+            node_j_indexes.remove(0)
+
+        if len(node_i_indexes) > 1 or len(node_j_indexes) > 1:
+            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                             "its unclear which ends to attach")
+        if len(node_i_indexes) == 0 or len(node_j_indexes) == 0:
+            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
+                             " one node has no available ends")
+
+        self.connections.append(motif_connection.MotifConnection(i, j,
+                                                                 i_bp_name, j_bp_name))
+        self.merger.connect_motifs(node_i.data, node_j.data,
+                                   node_i.data.ends[node_i_indexes[0]],
+                                   node_j.data.ends[node_j_indexes[0]])
+
     def replace_motif(self, pos, new_motif):
         """
         replaces the motif at a specific node with a new motif and updates the
@@ -704,71 +746,7 @@ class MotifTree(base.Base):
             n.data = m_added
             self.merger.update_motif(n.data)
 
-    def get_node(self, i):
-        """
-        gets a node that stores the motif and connection information
-        from the current tree
-
-        :param i: index of node requested
-        :type i: int
-
-        :return: TreeNode with index of desired motif
-        :rtype: TreeNode
-        """
-
-        return self.tree.get_node(i)
-
-    def get_build_points(self):
-        """
-        gets the available nodes with their respective nodes that can accept
-        new children. Returns in the format of _MotifTreeBuildPoint objects.
-        Which store both the node and end index that is available.
-
-        :examples:
-
-        .. code-block:: python
-
-            >>> from rnamake import motif_tree
-            >>> mt = motif_tree.MotifTree()
-            >>> mt.add_motif(m_name="HELIX.IDEAL.2")
-
-            >>> build_points = mt.get_build_points()
-            >>> len(build_points)
-            1
-
-            >>> print build_points[0].node
-            <rnamake.tree.TreeNodeStatic object at 0x1051c95d0>
-            >>> print build_points[0].end_index
-            1
-            >>> mt.add_motif(m_name="HELIX.IDEAL.2",
-            >>>              parent_index=build_points[0].node.index,
-            >>>              parent_end_index=build_points[0].end_index)
-            1
-        """
-
-        build_points = []
-        for n in self.tree:
-            for i, c in enumerate(n.children):
-                if c is None and i != 0:
-                    build_points.append(self._MotifTreeBuildPoint(n, i))
-
-        return build_points
-
-    def write_pdbs(self,name="node"):
-        """
-        writes out a pdb for each node in the motif tree. for example if
-        there are two motifs in the current motif tree you would get:
-        node.0.pdb and node.1.pdb produced upon calling this function
-
-        :param name: optional but will be the beginning of each pdb filename.
-        :type name: str
-
-        :return: None
-        """
-
-        for n in self.tree:
-            n.data.to_pdb(name+"."+str(n.index)+".pdb")
-
+    #REMOVE FUNCTIONS   #######################################################
     def remove_node(self, i=-1):
         """
         remove a node from the current motif tree. Note there is no checks
@@ -838,6 +816,21 @@ class MotifTree(base.Base):
                 self.remove_node(self.nodes[i])
         self.last_node = self.nodes[-1]
 
+    #TREE WRAPPER      ########################################################
+    def get_node(self, i):
+        """
+        gets a node that stores the motif and connection information
+        from the current tree
+
+        :param i: index of node requested
+        :type i: int
+
+        :return: TreeNode with index of desired motif
+        :rtype: TreeNode
+        """
+
+        return self.tree.get_node(i)
+
     def last_node(self):
         """
         wrapper to get the last node in self.tree
@@ -848,10 +841,38 @@ class MotifTree(base.Base):
 
         return self.tree.last_node
 
+    def increase_level(self):
+        self.tree.increase_level()
+
+    def decrease_level(self):
+        self.tree.decrease_level()
+
+    def get_node_by_id(self, uuid):
+        for n in self.tree.nodes:
+            if n.data.id == uuid:
+                return n
+        raise exceptions.MotifTreeException("cannot find node with id")
+
+    #MERGER WRAPPER     #######################################################
     def secondary_structure(self):
+        """
+        gets secondary structure information for the entire tree
+
+        :return: secondary structure pose for entire motif tree
+        :rtype: secondary_structure.Pose
+        """
+
         return self.merger.secondary_structure()
 
     def designable_secondary_structure(self):
+        """
+        gets secondary structure with N's for positions that can be filled
+        in. These are places where residues are contained in ideal helices.
+
+        :return: designable secondary structure pose for entire motif tree
+        :rtype: secondary_structure.Pose
+        """
+
         ss = self.merger.secondary_structure()
 
         for n in self.tree.nodes:
@@ -865,8 +886,16 @@ class MotifTree(base.Base):
         return ss
 
     def get_structure(self):
+        """
+        wrapper for merger object ot get rna_structure.RNAStructure object
+        for entire tree.
+
+        :return:
+        """
+
         return self.merger.get_structure()
 
+    #OUTPUTING          #######################################################
     def to_pdb(self, fname="mt.pdb", renumber=-1, close_chain=0):
         self.merger.get_structure().to_pdb(fname, renumber=renumber,
                                            close_chain=close_chain)
@@ -889,44 +918,57 @@ class MotifTree(base.Base):
             s += c.to_str() + " "
         return s
 
-    def add_connection(self, i, j, i_bp_name="", j_bp_name=""):
-        node_i = self.get_node(i)
-        node_j = self.get_node(j)
+    def write_pdbs(self,name="node"):
+        """
+        writes out a pdb for each node in the motif tree. for example if
+        there are two motifs in the current motif tree you would get:
+        node.0.pdb and node.1.pdb produced upon calling this function
 
-        node_i_indexes = []
-        node_j_indexes = []
-        if i_bp_name != "":
-            ei = node_i.data.get_end_index(i_bp_name)
-            if not node_i.available_pos(ei):
-                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                                 "using bp: " + i_bp_name + "as its not available")
-            node_i_indexes.append(ei)
-        else:
-            node_i_indexes = node_i.available_children_pos()
-            node_i_indexes.remove(0)
+        :param name: optional but will be the beginning of each pdb filename.
+        :type name: str
 
-        if j_bp_name != "":
-            ei = node_j.data.get_end_index(j_bp_name)
-            if not node_j.available_pos(ei):
-                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                                 "using bp: " + j_bp_name + "as its not available")
-            node_j_indexes.append(ei)
-        else:
-            node_j_indexes = node_j.available_children_pos()
-            node_j_indexes.remove(0)
+        :return: None
+        """
 
-        if len(node_i_indexes) > 1 or len(node_j_indexes) > 1:
-            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                             "its unclear which ends to attach")
-        if len(node_i_indexes) == 0 or len(node_j_indexes) == 0:
-            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                             " one node has no available ends")
+        for n in self.tree:
+            n.data.to_pdb(name+"."+str(n.index)+".pdb")
 
-        self.connections.append(motif_connection.MotifConnection(i, j,
-                                                                 i_bp_name, j_bp_name))
-        self.merger.connect_motifs(node_i.data, node_j.data,
-                                   node_i.data.ends[node_i_indexes[0]],
-                                   node_j.data.ends[node_j_indexes[0]])
+    #GETTERS            #######################################################
+    def get_build_points(self):
+        """
+        gets the available nodes with their respective nodes that can accept
+        new children. Returns in the format of _MotifTreeBuildPoint objects.
+        Which store both the node and end index that is available.
+
+        :examples:
+
+        .. code-block:: python
+
+            >>> from rnamake import motif_tree
+            >>> mt = motif_tree.MotifTree()
+            >>> mt.add_motif(m_name="HELIX.IDEAL.2")
+
+            >>> build_points = mt.get_build_points()
+            >>> len(build_points)
+            1
+
+            >>> print build_points[0].node
+            <rnamake.tree.TreeNodeStatic object at 0x1051c95d0>
+            >>> print build_points[0].end_index
+            1
+            >>> mt.add_motif(m_name="HELIX.IDEAL.2",
+            >>>              parent_index=build_points[0].node.index,
+            >>>              parent_end_index=build_points[0].end_index)
+            1
+        """
+
+        build_points = []
+        for n in self.tree:
+            for i, c in enumerate(n.children):
+                if c is None and i != 0:
+                    build_points.append(self._MotifTreeBuildPoint(n, i))
+
+        return build_points
 
     def leafs_and_ends(self):
         leaf_nodes = []
@@ -943,17 +985,4 @@ class MotifTree(base.Base):
 
     def residues(self):
         return self.merger.get_structure().residues()
-
-    def get_node_by_id(self, uuid):
-        for n in self.tree.nodes:
-            if n.data.id == uuid:
-                return n
-        raise exceptions.MotifTreeException("cannot find node with id")
-
-    def increase_level(self):
-        self.tree.increase_level()
-
-    def decrease_level(self):
-        self.tree.decrease_level()
-
 

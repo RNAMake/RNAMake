@@ -52,6 +52,236 @@ class MotifGraph(base.Base):
             self.node = node
             self.end_index = end_index
 
+
+    class _MotifGraphPrinter(object):
+        """
+        A small private class to handle pretty printing a tree for visual
+        inspection of the connectivity of the tree
+
+        :param mt: the MotifTree instance to print out
+        :type mt: MotifTree
+
+        :attributes:
+
+        `mt` : MotifTree
+            The MotifTree instance to print out
+        `levels` : Dict of key and values of ints
+            Keeps track of which nodes are at each level in the tree. i.e.
+            how many levels of seperation between the first node and the current
+            node
+        `node_pos` : Dict of key and values of ints
+            Keeps track of the horizontal position of each node on the screen.
+            A value of 10 would be 10 spaces from the left.
+        `branch_length` : int
+            The initial spacing between nodes from the same parent. For example
+            if a parent had a node_pos of 100 and the branch_length was 25.
+            Then child one would be at pos 75 and the other would be at 125.
+        `start_pos` : int
+            The horizontal position of the first node on the screen.
+        `node_per_level` : Dict of key and values of ints
+            Keeps track of how many nodes inhabit each level
+        """
+
+        def __init__(self, mg):
+            self.mg = mg
+            self.levels = {}
+            self.node_pos = {}
+            self.branch_length = 25
+            self.start_pos = 100
+            self.nodes_per_level = {}
+
+            self._setup_node_positions()
+
+        def _assign_node_levels(self):
+            """
+            calculates and stores the node level of each node in the mt. The
+            head node has a level of 1 and its children have a level of 2 and
+            so on.
+            """
+            for n in self.mt:
+                if len(self.levels) == 0:
+                    self.levels[n.index] = 1
+                else:
+                    parent_level = self.levels[n.parent_index()]
+                    self.levels[n.index] = parent_level + 1
+
+        def _setup_node_positions(self):
+            """
+            Setups up the horizontal position of each node on the screen.
+            Position is prograted from the start_pos with the first node. If
+            the node only has one child, that child retains the same position,
+            but if it has two the children will be seperated by 2* the branch
+            length.
+            """
+
+            self._assign_node_levels()
+
+            self.nodes_per_level = defaultdict(int)
+            for n in self.mt:
+                self.nodes_per_level[self.levels[n.index]] += 1
+
+            for i, n in enumerate(self.mt):
+                if i == 0:
+                    self.node_pos[n.index] = self.start_pos
+
+                children = []
+                for c in n.children:
+                    if c is not None:
+                        children.append(c)
+                if len(children) == 1:
+                    self.node_pos[children[0].index] = self.node_pos[n.index]
+                elif len(children) == 2:
+                    level = self.levels[n.index]
+                    nodes_per_level = self.nodes_per_level[level+1]
+                    extra = nodes_per_level - 2
+                    parent_pos = self.node_pos[n.index]
+                    if extra == 0:
+                        self.node_pos[children[0].index] = parent_pos - self.branch_length
+                        self.node_pos[children[1].index] = parent_pos + self.branch_length
+                    else:
+                        self.node_pos[children[0].index] = parent_pos - self.branch_length / extra
+                        self.node_pos[children[1].index] = parent_pos + self.branch_length / extra
+                else:
+                    raise exceptions.MotifTreeException(
+                        "Greater then two children is not supported for pretty_printing")
+
+        def _print_pos(self):
+            """
+            used for testing purposes, prints out the position of where each
+            node will appear
+            """
+
+            nodes_per_level = defaultdict(list)
+            for n in self.mt:
+                nodes_per_level[self.levels[n.index]].append(n)
+
+            level = 1
+            found = 1
+            s = "\n"
+            while found:
+                if level not in nodes_per_level:
+                    break
+
+                node_level = nodes_per_level[level]
+                nodes_and_pos = []
+                for n in node_level:
+                    nodes_and_pos.append([n, self.node_pos[n.index]])
+
+                nodes_and_pos.sort(key=lambda x: x[1])
+                current_pos = 0
+                for n, pos in nodes_and_pos:
+                    diff = pos - current_pos
+                    cur_s = '%'+str(diff)+'s'
+                    s += cur_s % (n.index)
+                    current_pos = pos
+                s += "\n"
+
+                level += 1
+            return s
+
+        def _print_level(self, nodes):
+            """
+            creates a string of formatted information of each node in on the
+            current level.
+
+            :param nodes: the nodes on the current level
+            :type nodes: list of Tree nodes
+            """
+            nodes_and_pos = []
+            for n in nodes:
+                nodes_and_pos.append([n, self.node_pos[n.index]])
+
+            s = ""
+            nodes_and_pos.sort(key=lambda x: x[1])
+
+            strings  = []
+            for n, pos in nodes_and_pos:
+                strs = []
+                if n.parent is not None:
+                    parent_end_index = n.parent_end_index()
+                    parent_end_name = n.parent.data.ends[parent_end_index].name()
+                    strs.append("|")
+                    strs.append("E" + str(parent_end_index) +  " - " + \
+                                parent_end_name)
+                    strs.append("|")
+
+                strs.append("N" + str(n.index) + " - " + n.data.name)
+                strs.append("|  - " + n.data.ends[0].name())
+                strings.append(strs)
+
+            transposed_strings = []
+            for i in range(len(strings[0])):
+                transposed = []
+                for strs in strings:
+                    transposed.append(strs[i])
+                transposed_strings.append(transposed)
+
+
+            for strs in transposed_strings:
+                current_pos = 0
+                j = 0
+                for n, pos in nodes_and_pos:
+                    diff = pos - current_pos
+                    cur_s = '%'+str(diff)+'s'
+                    s += cur_s % ("")
+                    s += strs[j]
+                    current_pos = pos + len(strs[j])
+                    j += 1
+
+                s+= "\n"
+
+            current_pos = 0
+            hit = 0
+            for n, pos in nodes_and_pos:
+                children = []
+                for c in n.children:
+                    if c is not None:
+                        children.append(c)
+                if len(children) > 1:
+                    hit = 1
+                    min = self.node_pos[children[0].index]
+                    max = self.node_pos[children[-1].index]
+
+                    diff = min+1 - current_pos
+                    cur_s = '%'+str(diff)+'s'
+                    s += cur_s % ("")
+                    for i in range(max-min-1):
+                        s += "_"
+                    current_pos = max
+
+            if hit:
+                s += "\n"
+
+            return s
+
+        def print_tree(self):
+            """
+            Actually generates the formatted string for the entire tree. This
+            is the only function that should be called in the normal use of
+            this class
+
+            :returns: formatted string of entire tree
+            :rtype: str
+            """
+
+            nodes_per_level = defaultdict(list)
+            for n in self.mt:
+                nodes_per_level[self.levels[n.index]].append(n)
+
+            found = 1
+            level = 1
+            s = "\n"
+            while found:
+                if level not in nodes_per_level:
+                    break
+
+                node_level = nodes_per_level[level]
+                s += self._print_level(node_level)
+
+                level += 1
+            return s
+
+
     #SETUP FUNCTIONS ##########################################################
     def __init__(self, mg_str="", top_str=""):
         super(self.__class__, self).__init__()
@@ -434,6 +664,9 @@ class MotifGraph(base.Base):
         s += " FAF "
         s += con_str
         return s
+
+    def to_pretty_str(self):
+        pass
 
     #DESIGNING          #######################################################
     def designable_secondary_structure(self):
