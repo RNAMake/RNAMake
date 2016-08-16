@@ -310,6 +310,9 @@ class MotifGraphUnittest(unittest.TestCase):
         #for n in graph.transverse_graph(mg.graph, 0):
         #    print n.index
 
+    def test_print_pretty(self):
+        pass
+
 
 def main():
     unittest.main()
