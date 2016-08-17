@@ -713,6 +713,25 @@ class GraphNode(object):
 
         return -1
 
+    def parent_end_index(self):
+        """
+        Gets the end index of the connected node that is the oldest.
+
+        :return: end index of oldest connected node.
+        :rtype: int
+        """
+
+        parent = self.parent()
+        if parent is None:
+            return -1
+        for c in self.connections:
+            if c is None:
+                continue
+            if c.partner(self.index) == parent.index:
+                return c.end_index(parent.index)
+
+        return -1
+
     def connected(self, n):
         """
         check to see if another node is connected to this one. If so will

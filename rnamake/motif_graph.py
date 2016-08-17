@@ -12,39 +12,7 @@ import copy
 import exceptions
 import steric_lookup
 
-def motif_graph_from_topology(s):
-    spl = s.split("&")
-    node_spl = spl[0].split("|")
-    mg = MotifGraph()
-    mg.option('sterics', 0)
-    for i, n_spl in enumerate(node_spl[:-1]):
-        sspl = n_spl.split(",")
-        if rm.manager.motif_exists(name=sspl[0], end_name=sspl[1], end_id=sspl[2]):
-            m = rm.manager.get_motif(name=sspl[0], end_name=sspl[1], end_id=sspl[2])
-        elif rm.manager.motif_exists(name=sspl[0], end_id=sspl[2]):
-            m = rm.manager.get_motif(name=sspl[0], end_id=sspl[2])
-            print "warning: cannot find exact motif"
-        elif rm.manager.motif_exists(name=sspl[0]):
-            m = rm.manager.get_motif(name=sspl[0])
-            print "warning: cannot find exact motif"
-        else:
-            print sspl
-            raise ValueError("cannot find motif")
-
-        pos = mg.add_motif(m, parent_index=int(sspl[3]), parent_end_name=sspl[4])
-        #print pos, sspl
-        if pos == -1:
-            raise ValueError("cannot get mg from topology failed to add motif")
-
-    if len(spl) == 1:
-        return mg
-    connection_spl = spl[1].split("|")
-    for c_spl in connection_spl[:-1]:
-        sspl = c_spl.split()
-        mg.add_connection(int(sspl[0]), int(sspl[1]), sspl[2], sspl[3])
-
-    return mg
-
+from collections import defaultdict
 
 class MotifGraph(base.Base):
     class _MotifGraphBuildPoint(object):
@@ -84,6 +52,7 @@ class MotifGraph(base.Base):
 
         def __init__(self, mg):
             self.mg = mg
+            self.nodes = []
             self.levels = {}
             self.node_pos = {}
             self.branch_length = 25
@@ -98,12 +67,24 @@ class MotifGraph(base.Base):
             head node has a level of 1 and its children have a level of 2 and
             so on.
             """
-            for n in self.mt:
+
+            nodes = self.mg.get_not_aligned_nodes()
+
+            if len(nodes) == 0:
+                raise exceptions.MotifGraphException(
+                  "cannot find a place to start printing in motif_graph"
+                  " to_pretty_str")
+
+            start = nodes[0].index
+            i = 0
+            for n in graph.transverse_graph(self.mg.graph, start, directed=0):
                 if len(self.levels) == 0:
                     self.levels[n.index] = 1
                 else:
-                    parent_level = self.levels[n.parent_index()]
-                    self.levels[n.index] = parent_level + 1
+                    c = n.connections[0]
+                    parent = c.partner(n.index)
+                    self.levels[n.index] = self.levels[parent.index] + 1
+                self.nodes.append(n)
 
         def _setup_node_positions(self):
             """
@@ -117,17 +98,19 @@ class MotifGraph(base.Base):
             self._assign_node_levels()
 
             self.nodes_per_level = defaultdict(int)
-            for n in self.mt:
+            for n in self.nodes:
                 self.nodes_per_level[self.levels[n.index]] += 1
 
-            for i, n in enumerate(self.mt):
+            for i, n in enumerate(self.nodes):
                 if i == 0:
                     self.node_pos[n.index] = self.start_pos
 
                 children = []
-                for c in n.children:
+                for i, c in enumerate(n.connections):
+                    if i == 0:
+                        continue
                     if c is not None:
-                        children.append(c)
+                        children.append(c.partner(n.index))
                 if len(children) == 1:
                     self.node_pos[children[0].index] = self.node_pos[n.index]
                 elif len(children) == 2:
@@ -141,7 +124,7 @@ class MotifGraph(base.Base):
                     else:
                         self.node_pos[children[0].index] = parent_pos - self.branch_length / extra
                         self.node_pos[children[1].index] = parent_pos + self.branch_length / extra
-                else:
+                elif len(children) > 2:
                     raise exceptions.MotifTreeException(
                         "Greater then two children is not supported for pretty_printing")
 
@@ -197,9 +180,9 @@ class MotifGraph(base.Base):
             strings  = []
             for n, pos in nodes_and_pos:
                 strs = []
-                if n.parent is not None:
+                if n.parent() is not None:
                     parent_end_index = n.parent_end_index()
-                    parent_end_name = n.parent.data.ends[parent_end_index].name()
+                    parent_end_name = n.parent().data.ends[parent_end_index].name()
                     strs.append("|")
                     strs.append("E" + str(parent_end_index) +  " - " + \
                                 parent_end_name)
@@ -234,9 +217,11 @@ class MotifGraph(base.Base):
             hit = 0
             for n, pos in nodes_and_pos:
                 children = []
-                for c in n.children:
+                for i, c in enumerate(n.connections):
+                    if i == 0:
+                        continue
                     if c is not None:
-                        children.append(c)
+                        children.append(c.partner(n.index))
                 if len(children) > 1:
                     hit = 1
                     min = self.node_pos[children[0].index]
@@ -254,7 +239,7 @@ class MotifGraph(base.Base):
 
             return s
 
-        def print_tree(self):
+        def print_graph(self):
             """
             Actually generates the formatted string for the entire tree. This
             is the only function that should be called in the normal use of
@@ -265,7 +250,7 @@ class MotifGraph(base.Base):
             """
 
             nodes_per_level = defaultdict(list)
-            for n in self.mt:
+            for n in self.nodes:
                 nodes_per_level[self.levels[n.index]].append(n)
 
             found = 1
@@ -666,7 +651,8 @@ class MotifGraph(base.Base):
         return s
 
     def to_pretty_str(self):
-        pass
+        printer = self._MotifGraphPrinter(self)
+        return printer.print_graph()
 
     #DESIGNING          #######################################################
     def designable_secondary_structure(self):
@@ -769,7 +755,6 @@ class MotifGraph(base.Base):
         self._align_motifs_all_motifs()
 
     #GETTERS            #######################################################
-
     def get_build_points(self):
         build_points = []
         for n in self.graph.nodes:
