@@ -297,7 +297,6 @@ class ThermoFlucRelax(base.Base):
 
             self.sampler.undo()
 
-
     def to_pdb(self, name="test.pdb"):
         self.best.to_pdb(name)
 

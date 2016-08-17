@@ -604,6 +604,10 @@ class MotifTree(base.Base):
 
         if m is None and m_name is not None:
             m = self._get_motif_from_manager(m_name, m_end_name)
+        else:
+            if not rm.manager.contains_motif(name=m.name,
+                                             end_name=m.ends[0].name()):
+                rm.manager.register_motif(m)
 
         if parent is None:
             m_copy = m.copy()

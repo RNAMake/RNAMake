@@ -13,11 +13,11 @@ import util
 
 
 class MotifStateEnsembleTree(object):
-    def __init__(self, mt=None, mst=None, extra_mes=None):
+    def __init__(self, mt=None, mst=None):
         self.tree = tree.TreeStatic()
         self.connections = []
         if mt is not None:
-            self._setup_from_mt2(mt, extra_mes)
+            self._setup_from_mt(mt)
         if mst is not None:
             self._setup_from_mst(mst)
 
@@ -63,10 +63,7 @@ class MotifStateEnsembleTree(object):
 
         return mst
 
-    def _setup_from_mt2(self, mt, extra_mes):
-        if extra_mes is None:
-            extra_mes = {}
-
+    def _setup_from_mt(self, mt):
         for i, n in enumerate(mt.tree.nodes):
             found_supplied = rm.manager.has_supplied_motif_ensemble(
                                             n.data.name, n.data.ends[0].name())
@@ -79,8 +76,6 @@ class MotifStateEnsembleTree(object):
             else:
                 mse = motif_ensemble.motif_state_to_motif_state_ensemble(n.data.get_state())
 
-            #mse.update_res_uuids(n.data.residues())
-
             if i == 0:
                 self.add_ensemble(mse)
             else:
@@ -88,29 +83,6 @@ class MotifStateEnsembleTree(object):
 
         for c in mt.connections:
             self.connections.append(c.copy())
-
-    def _setup_from_mt(self, mt):
-        for i, n in enumerate(mt.graph.nodes):
-            try:
-                mse = rm.manager.get_motif_state_ensemble(name=n.data.end_ids[0])
-            except ValueError:
-                m = rm.manager.get_motif(name=n.data.name, end_id=n.data.end_ids[0])
-                mse = motif_ensemble.motif_state_to_motif_state_ensemble(m.get_state())
-
-            if i == 0:
-                self.add_ensemble(mse)
-            else:
-                parent_index = 1000
-                parent_end_index = -1
-                for c in n.connections:
-                    if c is None:
-                        continue
-                    if c.partner(n.index).index < parent_index:
-                        parent_index =  c.partner(n.index).index
-                        parent_end_index = c.end_index(c.partner(n.index).index)
-                if parent_index == 1000:
-                    raise ValueError("did not convert motif_tree to motif state tree properly")
-                self.add_ensemble(mse, parent_index, parent_end_index)
 
     def _setup_from_mst(self, mst):
         for i, n in enumerate(mst.tree.nodes):
