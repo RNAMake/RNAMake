@@ -160,31 +160,21 @@ class MotifStateTree(base.Base):
         self.connections.append(motif_connection.MotifConnection(i, j, name_i, name_j))
 
     def to_motif_tree(self):
-        #TODO add end names to avoid palendroms
         mt = motif_tree.MotifTree(sterics=self.option('sterics'))
         for i, n in enumerate(self.tree.nodes):
-            if n.data.ref_state.name != "":
-                if n.data.ref_state.end_names[0] != "":
-                    m = rm.manager.get_motif(name=n.data.ref_state.name,
-                                             end_name = n.data.ref_state.end_names[0],
-                                             end_id=n.data.ref_state.end_ids[0])
-                else:
-                    m = rm.manager.get_motif(name=n.data.ref_state.name,
-                                             end_id=n.data.ref_state.end_ids[0])
-            else:
-                m = rm.manager.get_motif(end_id=n.data.ref_state.end_ids[0])
+            m = rm.manager.get_motif(name=n.data.ref_state.name,
+                                     end_name = n.data.ref_state.end_names[0])
 
             if i == 0:
                 motif.align_motif(n.data.cur_state.end_states[0],
                                   m.ends[0],
                                   m)
-                mt.add_motif(m)
-                continue
+                j = mt.add_motif(m)
+            else:
+                parent_index = n.parent_index()
+                parent_end_index = n.parent_end_index()
+                j = mt.add_motif(m, parent_index, parent_end_index)
 
-            parent_index = n.parent_index()
-            parent_end_index = n.parent_end_index()
-
-            j = mt.add_motif(m, parent_index, parent_end_index)
             if j == -1:
                 raise ValueError("cannot convert mst to mt in to_motif_tree")
 

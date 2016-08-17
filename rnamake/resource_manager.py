@@ -101,7 +101,7 @@ class ResourceManager(object):
         raise exceptions.ResourceManagerException(
             "cannot find motif: " + self._args_to_str(options))
 
-    def motif_exists(self, **options):
+    def contains_motif(self, **options):
         for mlib in self.mlibs.itervalues():
             if mlib.contains(**options):
                 return 1
@@ -196,6 +196,11 @@ class ResourceManager(object):
             self.added_motifs.add_motif(m)
 
     def register_motif(self, m):
+        if m.name == "":
+            raise exceptions.ResourceManagerException(
+                "attempted to register motif with no name this will make it "
+                "extremely unlikely you will be able to retrieve it properly!")
+
         self.added_motifs.add_motif(m)
 
     def register_extra_motif_ensembles(self, f_name):

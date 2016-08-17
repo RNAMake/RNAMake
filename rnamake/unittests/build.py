@@ -42,7 +42,7 @@ class BuildMotifTree(object):
             if i != -1:
                 pos += 1
             else:
-                print "fail",m.name
+                #print "fail",m.name
                 return mt
         return mt
 
@@ -102,7 +102,7 @@ class BuildMotifGraph(object):
             if i != -1:
                 pos += 1
             else:
-                print "fail",m.name
+                #print "fail",m.name
                 return mg
         return mg
 

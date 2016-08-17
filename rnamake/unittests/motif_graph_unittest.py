@@ -313,7 +313,7 @@ class MotifGraphUnittest(unittest.TestCase):
     def test_pretty_str(self):
         builder = build.BuildMotifGraph()
         mg = builder.build(3)
-        print mg.to_pretty_str()
+        mg.to_pretty_str()
 
 
 def main():

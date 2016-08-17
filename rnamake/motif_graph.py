@@ -299,8 +299,14 @@ class MotifGraph(base.Base):
         max_index = 0
         for i, n_spl in enumerate(node_spl[:-1]):
             sspl = n_spl.split(",")
-            if rm.manager.motif_exists(name=sspl[0], end_name=sspl[1]):
+            if rm.manager.contains_motif(name=sspl[0], end_name=sspl[1]):
                 m = rm.manager.get_motif(name=sspl[0], end_name=sspl[1])
+            else:
+                raise exceptions.MotifGraphException(
+                    "Unknown motif name: " + sspl[0] + " end_name: " + sspl[1] +\
+                    " did you forget to add your custom motifs to the resource "
+                    "manager ")
+
             m_copy = m.copy()
             m_copy.get_beads(m_copy.ends)
             pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends),
@@ -420,6 +426,10 @@ class MotifGraph(base.Base):
                 m = rm.manager.get_motif(name=m_name, end_name=m_end_name)
             else:
                 m = rm.manager.get_motif(name=m_name)
+        else:
+            if not rm.manager.contains_motif(name=m.name,
+                                             end_name=m.ends[0].name()):
+                rm.manager.register_motif(m)
 
         for n in self.graph.nodes:
             if n.data.id == m.id:
