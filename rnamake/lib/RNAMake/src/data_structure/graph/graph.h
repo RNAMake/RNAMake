@@ -48,7 +48,7 @@ public:
     const_iterator begin() const;
     const_iterator end() const;
     
-    iterator transverse(GraphNodeOP<DataType> const &);
+    iterator transverse(GraphNodeOP<DataType> const &) const;
     
 public:
     
@@ -155,8 +155,7 @@ private:
     
     GraphIterator(
         GraphNodeOPs<DataType> const & nodes):
-    nodes_(nodes)
-    {
+    nodes_(nodes) {
         if(nodes_.size() == 0) {
             current_ = nullptr;
             return;
@@ -218,7 +217,7 @@ Graph<DataType>::end()  {
 template <typename DataType>
 typename Graph<DataType>::iterator
 Graph<DataType>::transverse(
-    GraphNodeOP<DataType> const & node) {
+    GraphNodeOP<DataType> const & node) const {
     return iterator(node);
     
 }

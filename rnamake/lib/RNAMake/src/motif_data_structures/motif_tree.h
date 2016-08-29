@@ -136,7 +136,6 @@ private:
             return s;
         }
         
-        
         void
         _setup_node_positions(
             MotifTree const & mt) {

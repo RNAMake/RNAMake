@@ -106,8 +106,8 @@ class MotifGraph(base.Base):
                     self.node_pos[n.index] = self.start_pos
 
                 children = []
-                for i, c in enumerate(n.connections):
-                    if i == 0:
+                for j, c in enumerate(n.connections):
+                    if j == 0:
                         continue
                     if c is not None:
                         children.append(c.partner(n.index))
