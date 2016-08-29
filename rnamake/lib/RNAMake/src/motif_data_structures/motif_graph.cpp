@@ -652,8 +652,8 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
     
 }
 
-GraphNodeOPs<MotifOP>
-MotifGraph::unaligned_nodes() {
+GraphNodeOPs<MotifOP> const
+MotifGraph::unaligned_nodes() const {
     auto nodes = GraphNodeOPs<MotifOP>();
     for(auto const & kv : aligned_) {
         if(kv.second == 0) { nodes.push_back(get_node(kv.first)); }
