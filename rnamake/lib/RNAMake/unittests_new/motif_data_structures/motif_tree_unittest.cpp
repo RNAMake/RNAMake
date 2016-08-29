@@ -25,12 +25,43 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         auto nway = RM::instance().motif("NWAY.1GID.0");
 
         mt2.add_motif(m1);
+        mt2.add_motif(m2);
+        //mt2.add_motif(m3, 1);
+        //mt2.add_motif(nway);
+
+        auto s = mt2.to_pretty_str();
+        
+        auto path = unittest_resource_dir() + "motif_tree/pretty_str_1.dat";
+        auto lines = get_lines_from_file(path);
+        
+        auto spl = split_str_by_delimiter(s, "\n");
+        for(int i = 1; i < spl.size(); i++) {
+            REQUIRE(spl[i] == lines[i-1]);
+        }
+        
+    }
+    
+    SECTION("test pretty printing tree with branching") {
+        auto mt2 = MotifTree();
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        auto nway = RM::instance().motif("NWAY.1GID.0");
+        
+        mt2.add_motif(m1);
         mt2.add_motif(nway);
         mt2.add_motif(m2);
         mt2.add_motif(m3, 1);
-
         
-        std::cout << mt2.to_pretty_str() << std::endl;
+        auto s = mt2.to_pretty_str();
+        
+        auto path = unittest_resource_dir() + "motif_tree/pretty_str_2.dat";
+        auto lines = get_lines_from_file(path);
+        
+        auto spl = split_str_by_delimiter(s, "\n");
+        for(int i = 1; i < spl.size(); i++) {
+            REQUIRE(spl[i] == lines[i-1]);
+        }
         
     }
     
