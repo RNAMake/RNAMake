@@ -173,7 +173,7 @@ class MotifTree(base.Base):
                     else:
                         self.node_pos[children[0].index] = parent_pos - self.branch_length / extra
                         self.node_pos[children[1].index] = parent_pos + self.branch_length / extra
-                else:
+                elif len(children) > 2:
                     raise exceptions.MotifTreeException(
                         "Greater then two children is not supported for pretty_printing")
 
@@ -899,6 +899,9 @@ class MotifTree(base.Base):
 
         return self.merger.get_structure()
 
+    def residues(self):
+        return self.merger.get_structure().residues()
+
     #OUTPUTING          #######################################################
     def to_pdb(self, fname="mt.pdb", renumber=-1, close_chain=0):
         self.merger.get_structure().to_pdb(fname, renumber=renumber,
@@ -987,6 +990,4 @@ class MotifTree(base.Base):
                 leaf_nodes.append([n, i])
         return leaf_nodes
 
-    def residues(self):
-        return self.merger.get_structure().residues()
 

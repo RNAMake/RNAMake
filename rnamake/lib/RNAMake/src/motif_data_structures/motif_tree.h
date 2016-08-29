@@ -28,13 +28,20 @@ public:
 
 class MotifTree  {
 private:
+    
     class MotifTreePrinter {
     public:
         inline
-        MotifTreePrinter():
+        MotifTreePrinter(
+            MotifTree const & mt):
         levels_(std::map<int, int>()),
-        node_pos_(std::map<int, int>())
-        {}
+        node_pos_(std::map<int, int>()),
+        nodes_per_level_(std::map<int, int>()),
+        branch_length_(25),
+        start_pos_(100) {
+            
+            _setup_node_positions(mt);
+        }
         
         ~MotifTreePrinter() {}
         
@@ -42,209 +49,173 @@ private:
         String
         print_tree(
             MotifTree const & mt) {
-            auto s = String("");
+            auto nodes_per_level = std::map<int, TreeNodeOPs<MotifOP>>();
+            for(auto const & n : mt) {
+                nodes_per_level[levels_[n->index()]].push_back(n);
+            }
             
-            _assign_node_levels(mt);
-            return s;
-            
-            int c_level = 1;
-            while(1) {
-                auto node_level = TreeNodeOPs<MotifOP>();
-                for(auto const & n : mt) {
-                    if(levels_[n->index()] == c_level) {
-                        node_level.push_back(n);
-                    }
-                }
-                
-                if(c_level == 1) {                }
-                
-                if(node_level.size() == 0) { break; }
-                
-                //_print_node_level(node_level);
-                
-                c_level++;
-    
+            int found = 1, level = 1;
+            auto s = String("\n");
+
+            while(found) {
+                if(nodes_per_level.find(level) == nodes_per_level.end()) { break; }
+                auto node_level = nodes_per_level[level];
+                s += _print_level(node_level);
+                level += 1;
                 
             }
             
             return s;
         }
-        
         
     private:
-        void
-        _assign_node_levels(
-            MotifTree const & mt) {
+        String
+        _print_level(TreeNodeOPs<MotifOP> const & nodes) {
+            auto s = String("");
+            auto strings = std::vector<Strings>();
             
-            max_level_ = 0;
-            
-            for(auto const & n : mt) {
-                if(levels_.size() == 0) {
-                    levels_[n->index()] = 1;
-                    continue;
+            for(auto const & n : nodes) {
+                auto strs = Strings();
+                if(n->parent() != nullptr) {
+                    auto parent_end_index = n->parent_end_index();
+                    auto parent_end_name = n->parent()->data()->ends()[parent_end_index]->name();
+                    strs.push_back("|");
+                    strs.push_back("E" + std::to_string(parent_end_index) + " - " + parent_end_name);
+                    strs.push_back("|");
                 }
-                else {
-                    auto parent_level = levels_[n->parent_index()];
-                    levels_[n->index()] = parent_level + 1;
-                    if(parent_level + 1 > max_level_) {
-                        max_level_ = parent_level + 1;
-                    }
-                }
+                
+                strs.push_back("N" + std::to_string(n->index()) + " - " + n->data()->name());
+                strs.push_back("|  - " + n->data()->ends()[0]->name());
+                strings.push_back(strs);
             }
             
-            int c_level = 1;
-            int max_node_level = 0;
-            while(1) {
-                int node_level = 0;
-                for(auto const & n : mt) {
-                    if(levels_[n->index()] == c_level) { node_level++; }
+            auto transposed_strings = std::vector<Strings>();
+            for(int i = 0; i < strings[0].size(); i++) {
+                auto transposed = Strings();
+                for(auto const & strs: strings) {
+                    transposed.push_back(strs[i]);
                 }
-                
-                if(max_node_level < node_level) { max_node_level = node_level; }
-                
-                c_level++;
-
-                if(node_level == 0) { break; }
-                
+                transposed_strings.push_back(transposed);
             }
             
-            
-            int branchLen = 10*max_node_level;
-            int startLen = 20*max_node_level;
-            c_level = 1;
-            
-            int found = 1;
-            
-            while(found) {
-                found = 0;
-                for(auto const & n : mt) {
-                    if(levels_[n->index()] == c_level) {
-                        found = 1;
-                        if(c_level == 1) {
-                            node_pos_[n->index()] = startLen;
-                        }
-                        auto children = TreeNodeOPs<MotifOP>();
-                        for(auto const & c : n->children()) {
-                            if(c != nullptr) { children.push_back(c); }
-                        }
-
-                        if(children.size() == 1) {
-                            
-                        }
-                    
-                    }
+            for(auto const & strs : transposed_strings) {
+                int current_pos = 0;
+                int j = 0;
+                for(auto const & n : nodes) {
+                    int pos = node_pos_[n->index()];
+                    int diff = pos - current_pos;
+                    for(int i = 0; i < diff; i++) { s += " "; }
+                    s += strs[j];
+                    current_pos = pos + strs[j].length();
+                    j += 1;
                 }
-                
-                c_level++;
-                
-                
+                s += "\n";
             }
             
-            
-        }
-        
-        void
-        _print_node_level(
-            TreeNodeOPs<MotifOP> const & nodes) {
-            
-            auto all_children = std::vector<TreeNodeOPs<MotifOP>>();
-           
+            int current_pos = 0;
+            int hit = 0;
             for(auto const & n : nodes) {
                 auto children = TreeNodeOPs<MotifOP>();
                 for(auto const & c : n->children()) {
                     if(c != nullptr) { children.push_back(c); }
                 }
-                all_children.push_back(children);
-            }
-            
-            //have to do one line at a time for all nodes
-            //print index and name of node
-            for(int i = 0; i < nodes.size(); i++ ) {
-                auto pos = node_pos_[nodes[i]->index()];
-                if(all_children[i].size() < 2) {
-                    std::cout << std::setw(pos);
-                    std::cout << nodes[i]->index() << " - " << nodes[i]->data()->name();
-                }
-                else {
-                    std::cout << std::setw(pos-21) << "";
-                    std::cout << std::setfill('_') << std::setw(20) << "";
-                    std::cout << nodes[i]->index() << " - " << nodes[i]->data()->name();
-                    std::cout << std::setfill('_') << std::setw(20) << "";
-                    std::cout << std::setfill(' ');
-                }
                 
-            }
-            std::cout << std::endl;
-     
-            //print end_name of 0 index
-            for(int i = 0; i < nodes.size(); i++ ) {
-                auto pos = node_pos_[nodes[i]->index()];
-                if(all_children[i].size() < 2) {
-                    std::cout << std::setw(pos) << "";
-                    std::cout <<" - " << nodes[i]->data()->ends()[0]->name();
-                }
-                if(all_children[i].size() == 2) {
-                    std::cout << std::setw(pos-20) << "|";
-                    std::cout << std::setw(pos+20) << "|";
-                }
-                
-            }
-            
-            std::cout << std::endl;
-            
-            //print first connection line
-            for(int i = 0; i < nodes.size(); i++ ) {
-                auto pos = node_pos_[nodes[i]->index()];
-                if(all_children[i].size() == 1) {
-                    std::cout << std::setw(pos) <<"|";
-                }
-                if(all_children[i].size() == 2) {
-                    std::cout << std::setw(pos-20) << "|";
-                    std::cout << std::setw(pos+20) << "|";
-                }
-                
-            }
-            
-            std::cout << std::endl;
-            
-            //print first second line
-            for(int i = 0; i < nodes.size(); i++ ) {
-                auto pos = node_pos_[nodes[i]->index()];
-                if(all_children[i].size() == 1) {
-                    std::cout << std::setw(pos-1) << "";
-                    std::cout << "| - ";
-                    std::cout << all_children[i][0]->parent_end_index() << " - ";
-                    std::cout << nodes[i]->data()->end_name(all_children[i][0]->parent_end_index());
-                    
-                }
-                
-            }
-            
-            std::cout << std::endl;
-
-            for(auto const & n : nodes) {
-                auto children = TreeNodeOPs<MotifOP>();
-                for(auto const & c : n->children()) {
-                    if(c != nullptr) {
-                        children.push_back(c);
-                    }
-                }
-                
-                auto pos = node_pos_[n->index()];
-                if(children.size() == 1) {
-                    std::cout << std::setw(pos);
-                    std::cout << "|";
-                    node_pos_[children[0]->index()] = pos;
+                if(children.size() > 1) {
+                    hit = 1;
+                    auto min = node_pos_[children[0]->index()];
+                    auto max = node_pos_[children.back()->index()];
+                    auto diff = min+1 - current_pos;
+                    for(int i = 0; i < diff; i++) { s += " "; }
+                    for(int i = 0; i < max-min-1; i++) { s += "_"; }
+                    current_pos = max;
                 }
             }
-            std::cout << std::endl;
-
+            
+            if(hit) { s += "\n"; }
+            
+            return s;
         }
         
+        
+        void
+        _setup_node_positions(
+            MotifTree const & mt) {
+            
+            _assign_node_levels(mt);
+            
+            for(auto const & n : mt) {
+                auto n_level = levels_[n->index()];
+                if(nodes_per_level_.find(n_level) == nodes_per_level_.end()) {
+                    nodes_per_level_[n_level] = 0;
+                }
+                nodes_per_level_[n_level] += 1;
+            }
+            
+            int i = -1;
+            for(auto const & n : mt) {
+                i++;
+                if(i == 0) {
+                    node_pos_[n->index()] = start_pos_;
+                }
+                
+                auto children = TreeNodeOPs<MotifOP>();
+                for(auto const & c : n->children()) {
+                    if(c != nullptr) { children.push_back(c); }
+                }
+                
+                if(children.size() == 1) {
+                    node_pos_[children[0]->index()] = node_pos_[n->index()];
+                }
+                else if(children.size() == 2) {
+                    auto level = levels_[n->index()];
+                    auto nodes_per_level = nodes_per_level_[level+1];
+                    auto extra = nodes_per_level - 2;
+                    auto parent_pos = node_pos_[n->index()];
+                    if(extra == 0) {
+                        node_pos_[children[0]->index()] = parent_pos - branch_length_;
+                        node_pos_[children[1]->index()] = parent_pos + branch_length_;
+                    }
+                    else {
+                        node_pos_[children[0]->index()] = parent_pos - branch_length_ / extra;
+                        node_pos_[children[1]->index()] = parent_pos + branch_length_ / extra;
+                    }
+                }
+                else if(children.size() > 2) {
+                    throw MotifTreeException(
+                        "Greater then two children is not supported for pretty_printing");
+                }
+                
+            }
+        }
+        
+        void
+        _assign_node_levels(
+            MotifTree const & mt) {
+            
+            for(auto const & n : mt) {
+                if(levels_.size() == 0) {
+                    levels_[n->index()] = 1;
+                }
+                else {
+                    auto parent_level = levels_[n->parent_index()];
+                    levels_[n->index()] = parent_level + 1;
+                }
+            }
+        }
+        
+        
+        
+        
+        
+        
     private:
-        int max_level_;
         std::map<int, int> levels_;
         std::map<int, int> node_pos_;
+        std::map<int, int> nodes_per_level_;
+        int branch_length_;
+        int start_pos_;
+        
+        
     };
     
 public:
@@ -272,10 +243,7 @@ public: //iterators
     const_iterator begin() const { return tree_.begin(); }
     const_iterator end()   const { return tree_.end(); }
     
-public:
-    String
-    to_pretty_str();
-    
+   
     
 public: //tree wrappers
     
@@ -521,6 +489,12 @@ public:
             throw MotifTreeException(
                 "cannot remove node with index: " + std::to_string(i) + " as it does not exist");
         }
+    }
+    
+    String
+    to_pretty_str() {
+        auto printer = MotifTreePrinter(*this);
+        return printer.print_tree(*this);
     }
     
 private:
