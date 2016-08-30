@@ -46,7 +46,16 @@ GraphtoTree::convert(
             mt_->add_motif(current->motif);
         }
         else {
-            auto new_parent_index = mt_->get_node(current->parent->data()->id())->index();
+            auto parent = mt_->get_node(current->parent->data()->id());
+            auto new_parent_index = parent->index();
+            
+            //currently a hack to make sure that if we start building not at an end and trying to add
+            //somethign on the 0th end of a HELIX this stops it
+            if(parent->data()->mtype() == MotifType::HELIX && parent->children()[1] != nullptr) {
+                seen_nodes.erase(current->node->index());
+                continue;
+            }
+            
             auto pos = mt_->add_motif(current->motif, new_parent_index, current->parent_end_index);
             if(pos == -1) {
                 continue;
@@ -55,6 +64,8 @@ GraphtoTree::convert(
         
         new_nodes = _get_new_nodes(current);
         for(auto const & n : new_nodes) {
+            if(n == last_node_to_add) { continue; }
+            
             if(seen_nodes.find(n->node->index()) == seen_nodes.end()) {
                 seen_nodes[n->node->index()] = 1;
                 open_nodes.push(n);
@@ -174,9 +185,10 @@ GraphtoTree::_get_new_nodes(
         new_n->motif = _get_reoriented_motif(new_n->motif, node_end_index);
         new_n->parent_end_index = _get_new_parent_end_index(current->node, c);
     
+        //if(new_n->parent_end_index != 0) { continue; }
+        
         new_nodes.push_back(new_n);
-        
-        
+
      }
     
     return new_nodes;

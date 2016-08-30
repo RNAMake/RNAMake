@@ -44,7 +44,7 @@ private:
         }
         
         ~MotifTreePrinter() {}
-        
+  
     public:
         String
         print_tree(
@@ -73,8 +73,25 @@ private:
         _print_level(TreeNodeOPs<MotifOP> const & nodes) {
             auto s = String("");
             auto strings = std::vector<Strings>();
-            
+
+            //sort nodes by pos, using a lambda statement and std::pair
+            //probably can be cleaned up
+            auto pairs = std::vector<std::pair<TreeNodeOP<MotifOP>, int>>();
             for(auto const & n : nodes) {
+                auto p = std::pair<TreeNodeOP<MotifOP>, int>(n, node_pos_[n->index()]);
+                pairs.push_back(p);
+            }
+            
+            std::sort(pairs.begin(), pairs.end(),
+                      [](std::pair<TreeNodeOP<MotifOP>, int> const & p1,
+                         std::pair<TreeNodeOP<MotifOP>, int> const & p2) {
+                          return p1.second < p2.second; });
+            
+            
+            auto sorted_nodes = TreeNodeOPs<MotifOP>();
+            for(auto const & p : pairs) { sorted_nodes.push_back(p.first); }
+            
+            for(auto const & n : sorted_nodes) {
                 auto strs = Strings();
                 if(n->parent() != nullptr) {
                     auto parent_end_index = n->parent_end_index();
@@ -101,7 +118,7 @@ private:
             for(auto const & strs : transposed_strings) {
                 int current_pos = 0;
                 int j = 0;
-                for(auto const & n : nodes) {
+                for(auto const & n : sorted_nodes) {
                     int pos = node_pos_[n->index()];
                     int diff = pos - current_pos;
                     for(int i = 0; i < diff; i++) { s += " "; }
@@ -114,7 +131,7 @@ private:
             
             int current_pos = 0;
             int hit = 0;
-            for(auto const & n : nodes) {
+            for(auto const & n : sorted_nodes) {
                 auto children = TreeNodeOPs<MotifOP>();
                 for(auto const & c : n->children()) {
                     if(c != nullptr) { children.push_back(c); }
@@ -201,10 +218,6 @@ private:
                 }
             }
         }
-        
-        
-        
-        
         
         
     private:
@@ -402,7 +415,7 @@ private: // add motif helper functions
             if(parent_index != -1) { parent = tree_.get_node(parent_index); }
         }
         catch(TreeException e) {
-            throw MotifTreeException("could not add motif: " + m_name + " with parent: "
+            throw MotifTreeException("could not add motif: " + m_name + " with parent index: "
                                      + std::to_string(parent_index) + "there is no node with" +
                                      "that index");
         }
@@ -422,15 +435,15 @@ private: // add motif helper functions
             int avail = parent->available_pos(parent_end_index);
             if(!avail) {
                 throw MotifTreeException(
-                    "could not add motif: " + m_name+ " with parent: " + std::to_string(parent->index()) +
+                    "could not add motif: " + m_name+ " with parent index: " + std::to_string(parent->index()) +
                     " since the parent_end_index supplied " + std::to_string(parent_end_index) +
-                                         " is filled");
+                    " is filled");
             }
             else {
                 auto name = parent->data()->ends()[parent_end_index]->name();
                 if(connections_.in_connection(parent->index(), name)) {
                     throw MotifTreeException(
-                        "could not add motif: " + m_name + " with parent: " + std::to_string(parent->index()) +
+                        "could not add motif: " + m_name + " with parent index: " + std::to_string(parent->index()) +
                         " since the parent_end_index supplied " + std::to_string(parent_end_index) +
                         " is in a connection");
                 }

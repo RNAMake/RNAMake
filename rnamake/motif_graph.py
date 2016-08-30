@@ -110,7 +110,15 @@ class MotifGraph(base.Base):
                     if j == 0:
                         continue
                     if c is not None:
-                        children.append(c.partner(n.index))
+                        child = c.partner(n.index)
+                        if child.connections[0] != c:
+                            continue
+
+                        if child.index in self.node_pos:
+                            continue
+                        else:
+                            children.append(child)
+
                 if len(children) == 1:
                     self.node_pos[children[0].index] = self.node_pos[n.index]
                 elif len(children) == 2:
