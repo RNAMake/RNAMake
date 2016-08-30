@@ -315,6 +315,15 @@ class MotifGraphUnittest(unittest.TestCase):
         mg = builder.build(3)
         mg.to_pretty_str()
 
+    def test_pretty_str_2(self):
+        mg_file = settings.UNITTEST_PATH + "resources/motif_graph/mini_ttr.mg"
+        f = open(mg_file)
+        lines = f.readlines()
+        f.close()
+        mg = motif_graph.MotifGraph(mg_str=lines[0])
+        print mg.to_pretty_str()
+        mg.write_pdbs()
+
 
 def main():
     unittest.main()

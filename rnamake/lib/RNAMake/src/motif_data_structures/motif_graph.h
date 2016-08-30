@@ -99,7 +99,25 @@ private:
             auto s = String("");
             auto strings = std::vector<Strings>();
             
+            //sort nodes by pos, using a lambda statement and std::pair
+            //probably can be cleaned up
+            auto pairs = std::vector<std::pair<GraphNodeOP<MotifOP>, int>>();
             for(auto const & n : nodes) {
+                auto p = std::pair<GraphNodeOP<MotifOP>, int>(n, node_pos_[n->index()]);
+                pairs.push_back(p);
+            }
+            
+            std::sort(pairs.begin(), pairs.end(),
+                      [](std::pair<GraphNodeOP<MotifOP>, int> const & p1,
+                         std::pair<GraphNodeOP<MotifOP>, int> const & p2) {
+                          return p1.second < p2.second; });
+            
+            
+            auto sorted_nodes = GraphNodeOPs<MotifOP>();
+            for(auto const & p : pairs) { sorted_nodes.push_back(p.first); }
+
+            
+            for(auto const & n : sorted_nodes) {
                 auto strs = Strings();
                 if(n->parent() != nullptr) {
                     auto parent_end_index = n->parent_end_index();
@@ -126,7 +144,7 @@ private:
             for(auto const & strs : transposed_strings) {
                 int current_pos = 0;
                 int j = 0;
-                for(auto const & n : nodes) {
+                for(auto const & n : sorted_nodes) {
                     int pos = node_pos_[n->index()];
                     int diff = pos - current_pos;
                     for(int i = 0; i < diff; i++) { s += " "; }
@@ -139,7 +157,7 @@ private:
             
             int current_pos = 0;
             int hit = 0;
-            for(auto const & n : nodes) {
+            for(auto const & n : sorted_nodes) {
                 auto children = GraphNodeOPs<MotifOP>();
                 int j = -1;
                 for(auto const & c : n->connections()) {
@@ -193,7 +211,11 @@ private:
                     j++;
                     if(j == 0) { continue; }
                     if(c != nullptr) {
-                        children.push_back(c->partner(n->index()));
+                        auto child = c->partner(n->index());
+                        if(child->connections()[0] != c) { continue; }
+                        if(node_pos_.find(child->index()) != node_pos_.end()) { continue; }
+                        
+                        children.push_back(child);
                     }
                 }
                 
@@ -405,7 +427,7 @@ private: //add motif helpers
         }
         catch(GraphException e) {
             throw MotifGraphException(
-                "could not add motif: " + m_name + " with parent: " +
+                "could not add motif: " + m_name + " with parent index: " +
                 std::to_string(parent_index) + "there is no node with that index");
         }
         
