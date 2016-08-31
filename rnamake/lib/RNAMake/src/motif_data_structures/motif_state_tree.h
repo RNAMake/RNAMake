@@ -33,6 +33,7 @@ public:
 };
 
 struct MSTNodeData {
+public:
     inline
     MSTNodeData(
         MotifStateOP const & nref_state):
@@ -47,6 +48,7 @@ struct MSTNodeData {
     cur_state(std::make_shared<MotifState>(*ndata.cur_state))
     {}
     
+public:
     inline
     BasepairStateOP const &
     get_end_state(
@@ -94,7 +96,8 @@ public:
             else {
                 int j = add_state(ms, n->parent_index(), n->parent_end_index());
                 if(j == -1) {
-                    throw MotifStateTreeException("could not convert motif tree to motif state tree");
+                    throw MotifStateTreeException(
+                        "could not convert motif tree to motif state tree");
                 }
             }
             
