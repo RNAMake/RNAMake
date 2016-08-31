@@ -33,6 +33,8 @@ def motif_state_tree_from_topology(mtt, sterics=1):
     return mst
 
 class MotifStateTree(base.Base):
+
+    #SETUP FUNCTIONS ##########################################################
     def __init__(self, mt=None, **options):
         self.setup_options_and_constraints()
         self.options.dict_set(options)
@@ -43,6 +45,13 @@ class MotifStateTree(base.Base):
         if mt is not None:
             self._setup_from_mt(mt)
 
+    def __len__(self):
+        return len(self.tree)
+
+    def __iter__(self):
+        self.tree.__iter__()
+        return self
+
     def setup_options_and_constraints(self):
         options = { 'sterics'              : 1}
 
@@ -51,9 +60,9 @@ class MotifStateTree(base.Base):
 
     def _setup_from_mt(self, mt):
         for i, n in enumerate(mt.tree.nodes):
-            ms = rm.manager.get_state(name=n.data.name, end_id=n.data.end_ids[0],
+            ms = rm.manager.get_state(name=n.data.name,
+                                      end_id=n.data.end_ids[0],
                                       end_name=n.data.ends[0].name())
-            #ms.update_res_uuids(n.data.residues())
 
             if i == 0:
                 self.add_state(ms)
@@ -68,6 +77,10 @@ class MotifStateTree(base.Base):
         for c in mt.connections:
             self.connections.append(c.copy())
 
+    def copy(self):
+        return str_to_motif_state_tree(self.topology_to_str(), sterics=0)
+
+    #ADD FUNCTIONS      #######################################################
     def add_state(self, state, parent_index=-1, parent_end_index=-1,
                   parent_end_name=None):
         parent = self.tree.last_node
@@ -159,6 +172,54 @@ class MotifStateTree(base.Base):
 
         self.connections.append(motif_connection.MotifConnection(i, j, name_i, name_j))
 
+    def replace_state(self, i, new_state):
+        n = self.get_node(i)
+        if len(new_state.end_states) !=  len(n.data.ref_state.end_states):
+            raise ValueError(
+                "attempted to replace a state with a different number of ends")
+
+        n.data.ref_state = new_state
+        n.data.cur_state = new_state.copy()
+
+        for n in tree.transverse_tree(self.tree, i):
+            parent = n.parent
+            if parent is None:
+                continue
+            pei = n.parent_end_index()
+
+            motif.get_aligned_motif_state(parent.data.cur_state.end_states[pei],
+                                          n.data.cur_state,
+                                          n.data.ref_state)
+
+    #REMOVE FUNCTIONS   #######################################################
+    def remove_node(self, i):
+        self.tree.remove_node(index=i)
+
+        for c in self.connections:
+            if c.i == i or c.j == i:
+                self.connections.remove(c)
+
+    def remove_node_level(self, level=None):
+        self.tree.remove_node_level(level)
+
+        for c in self.connections:
+            if len(self.tree) > c.i or len(self.tree) > c.j:
+                self.connections.remove(c)
+
+    #TREE WRAPPER      ########################################################
+    def get_node(self, i):
+        return self.tree.get_node(i)
+
+    def last_node(self):
+        return self.tree.last_node
+
+    def next_level(self):
+        self.tree.level += 1
+
+    def next(self):
+        return self.tree.next()
+
+    #MOTIF TREE WRAPPER      ##################################################
     def to_motif_tree(self):
         mt = motif_tree.MotifTree(sterics=self.option('sterics'))
         for i, n in enumerate(self.tree.nodes):
@@ -194,36 +255,10 @@ class MotifStateTree(base.Base):
         mt = self.to_motif_tree()
         return mt.designable_secondary_structure()
 
-    def to_pose(self):
-        return self.to_motif_tree().to_pose()
-
     def write_pdbs(self, name="nodes"):
         self.to_motif_tree().write_pdbs(name)
 
-    def get_node(self, i):
-        return self.tree.get_node(i)
-
-    def replace_state(self, i, new_state):
-        n = self.get_node(i)
-        if len(new_state.end_states) !=  len(n.data.ref_state.end_states):
-            raise ValueError("attempted to replace a state with a different number of ends")
-
-        old_state = n.data.ref_state
-
-
-        n.data.ref_state = new_state
-        n.data.cur_state = new_state.copy()
-
-        for n in tree.transverse_tree(self.tree, i):
-            parent = n.parent
-            if parent is None:
-                continue
-            pei = n.parent_end_index()
-
-            motif.get_aligned_motif_state(parent.data.cur_state.end_states[pei],
-                                          n.data.cur_state,
-                                          n.data.ref_state)
-
+    #MISC              ########################################################
     def _steric_clash(self, new_data):
         for n in self.tree.nodes[::-1]:
             for b1 in n.data.cur_state.beads:
@@ -232,39 +267,6 @@ class MotifStateTree(base.Base):
                     if dist < self.clash_radius:
                         return 1
         return 0
-
-    def last_node(self):
-        return self.tree.last_node
-
-    def remove_node(self, i):
-        self.tree.remove_node(index=i)
-
-        for c in self.connections:
-            if c.i == i or c.j == i:
-                self.connections.remove(c)
-
-    def remove_node_level(self, level=None):
-        self.tree.remove_node_level(level)
-
-        for c in self.connections:
-            if len(self.tree) > c.i or len(self.tree) > c.j:
-                self.connections.remove(c)
-
-    def next_level(self):
-        self.tree.level += 1
-
-    def __len__(self):
-        return len(self.tree)
-
-    def __iter__(self):
-        self.tree.__iter__()
-        return self
-
-    def next(self):
-        return self.tree.next()
-
-    def copy(self):
-        return str_to_motif_state_tree(self.topology_to_str(), sterics=0)
 
     def topology_to_str(self):
         s = ""
@@ -276,12 +278,6 @@ class MotifStateTree(base.Base):
             s += c.to_str() + " "
         return s
 
-    def get_residue(self, uuid):
-        for n in self.tree:
-            for r in n.data.cur_state.residues:
-                if r.uuid == uuid:
-                    return r
-        return None
 
 class NodeData(object):
     def __init__(self, ref_state):

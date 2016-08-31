@@ -321,8 +321,8 @@ class MotifGraphUnittest(unittest.TestCase):
         lines = f.readlines()
         f.close()
         mg = motif_graph.MotifGraph(mg_str=lines[0])
-        print mg.to_pretty_str()
-        mg.write_pdbs()
+        #print mg.to_pretty_str()
+        #mg.write_pdbs()
 
 
 def main():

@@ -153,27 +153,19 @@ class Motif(rna_structure.RNAStructure):
         return cmotif
 
     def get_state(self):
-        end_res = self.ends[0].residues()
-        res_states = []
-        for r in self.residues():
-            if r in end_res:
-                res_states.append(residue.get_residue_state(r,
-                                                    residue.ResidueStateType.END))
-            else:
-                res_states.append(residue.get_residue_state(r))
-        beads = []
-        for r in res_states:
-            if r.type != residue.ResidueStateType.END:
-                beads.extend(r.beads)
+        beads = self.get_beads(excluded_ends=[self.ends[0]])
+        centers = []
+        for b in beads:
+            if b.btype != residue.BeadType.PHOS:
+                centers.append(b.center)
 
         ends = [None for x in self.ends]
         end_names = []
         for i, end in enumerate(self.ends):
             ends[i] = end.state()
             end_names.append(end.name())
-        return MotifState(self.name, end_names, self.end_ids, ends, beads,
-                          self.score, len(self.residues()), self.block_end_add,
-                          res_states)
+        return MotifState(self.name, end_names, self.end_ids, ends, centers,
+                          self.score, len(self.residues()), self.block_end_add)
 
     def end_index_with_id(self, id):
         for i, end_id in enumerate(self.end_ids):
@@ -213,24 +205,22 @@ class Motif(rna_structure.RNAStructure):
 
 class MotifState(object):
     __slots__ = ['name', 'end_names', 'end_ids', 'end_states',
-                 'beads', 'score', 'size', 'block_end_add', 'residues']
+                 'beads', 'score', 'size', 'block_end_add', 'uuid']
 
     def __init__(self, name, end_names, end_ids, end_states,
-                 beads, score, size, block_end_add, residues):
+                 beads, score, size, block_end_add, m_uuid=None):
         self.name, self.end_states, self.beads = name, end_states, beads
         self.score, self.size = score, size
         self.end_names, self.end_ids = end_names, end_ids
         self.block_end_add = block_end_add
-        self.residues = residues
+        self.uuid = m_uuid
+        if self.uuid is None:
+            self.uuid = uuid.uuid1()
 
     def to_str(self):
         s = self.name + "|" + str(self.score) + "|" + str(self.size) + "|"
         s += str(self.block_end_add) + "|"
         s += basic_io.points_to_str(self.beads) + "|"
-        #for r in self.residues:
-        #    s += r.to_str()
-        #    s += "E"
-        #s += "|"
         s += ",".join(self.end_names) + "|"
         s += ",".join(self.end_ids) + "|"
         for state in self.end_states:
@@ -256,18 +246,11 @@ class MotifState(object):
 
     def copy(self):
         end_states = [end.copy() for end in self.end_states]
-        residues = [r.copy() for r in self.residues]
-        beads = []
-        for r in residues:
-            if r.type != residue.ResidueStateType.END:
-                beads.extend(r.beads)
-        #print "beads", len(beads)
-        return MotifState(self.name, self.end_names, self.end_ids, end_states,
-                          self.beads, self.score, self.size, self.block_end_add, residues)
+        beads = np.copy(self.beads)
 
-    def update_res_uuids(self, res):
-        for i, r in enumerate(res):
-            self.residues[i].uuid = r.uuid
+        return MotifState(self.name, self.end_names, self.end_ids, end_states,
+                          beads, self.score, self.size, self.block_end_add,
+                          self.uuid)
 
 
 def file_to_motif(path):
@@ -333,23 +316,14 @@ def str_to_motif_state(s):
     name, score, size = spl[0], float(spl[1]), float(spl[2])
     block_end_add = int(spl[3])
     residues = []
-    #beads = basic_io.str_to_points(spl[4])
-    res_str = spl[4].split("E")
-    beads = []
-    for r_str in res_str[:-1]:
-        r_spl = r_str.split(",")
-        points = basic_io.str_to_points(r_spl[0])
-        r = residue.ResidueState2Bead(None, points[0], points[1], int(r_spl[1]))
-        residues.append(r)
-        if r.type != residue.ResidueStateType.END:
-            beads.extend(r.beads)
+    beads = basic_io.str_to_points(spl[4])
     end_names = spl[5].split(",")
     end_ids = spl[6].split(",")
     end_states = []
     for i in range(7, len(spl)-1):
             end_states.append(basepair.str_to_basepairstate(spl[i]))
 
-    return MotifState(name, end_names, end_ids, end_states, beads, score, size, block_end_add, residues)
+    return MotifState(name, end_names, end_ids, end_states, beads, score, size, block_end_add)
 
 
 def align_motif(ref_bp_state, motif_end, motif, sterics=1):
