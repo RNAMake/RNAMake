@@ -390,6 +390,21 @@ def align_motif_state(ref_bp_state, org_state):
         org_state.end_states[i].set(new_r,new_d,new_sug)
 
 
+def get_aligned_motif_state_single(ref_bp_state, ms):
+    r, t = ref_bp_state.get_transforming_r_and_t_w_state(ms.end_states[0])
+    t += ref_bp_state.d
+
+    ms_copy = ms.copy()
+
+    for i, s in enumerate(ms.end_states):
+        new_r, new_d, new_sug = s.get_transformed_state(r, t)
+        ms_copy.end_states[i].set(new_r, new_d, new_sug)
+
+    if len(ms_copy.beads) > 0:
+        ms_copy.beads = np.dot(ms.beads, r.T) + t
+
+    return ms_copy
+
 def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
     r, t = ref_bp_state.get_transforming_r_and_t_w_state(org_state.end_states[0])
     t += ref_bp_state.d
@@ -398,13 +413,6 @@ def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
         new_r, new_d, new_sug = s.get_transformed_state(r, t)
         cur_state.end_states[i].set(new_r, new_d, new_sug)
 
-    """cur_state.beads = []
-    r_T = r.T
-    for r in cur_state.residues:
-        r.update(r_T, t)
-        if r.type != residue.ResidueStateType.END:
-            cur_state.beads.extend(r.beads)
-    """
     if len(org_state.beads) > 0:
         cur_state.beads = np.dot(org_state.beads, r.T) + t
 
