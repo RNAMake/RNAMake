@@ -81,6 +81,10 @@ class ResourceManagerException(Exception):
     pass
 
 
+class MotifStateException(Exception):
+    pass
+
+
 class MotifClustersException(Exception):
     pass
 

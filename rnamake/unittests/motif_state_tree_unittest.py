@@ -1,13 +1,7 @@
 import unittest
-import rnamake.motif as motif
-import rnamake.motif_tree as motif_tree
-import rnamake.motif_factory as motif_factory
-import rnamake.motif_state_tree as motif_state_tree
+from rnamake import motif, motif_tree, motif_state_tree, settings, exceptions
 import rnamake.resource_manager as rm
 import rnamake.util as util
-import rnamake.settings as settings
-import rnamake.basic_io as basic_io
-import rnamake.eternabot.sequence_designer as sequence_designer
 import build
 
 class MotifStateTreeUnittest(unittest.TestCase):
@@ -17,38 +11,76 @@ class MotifStateTreeUnittest(unittest.TestCase):
         builder = build.BuildMotifTree()
         mt = builder.build(10)
         mst = motif_state_tree.MotifStateTree(mt)
-        if len(mst) != 10:
+        if len(mt) != len(mst):
             self.fail("did not build mst properly")
 
-        #for n in mt:
-        #    print n.data.name
-
-        #print mt.last_node().data.ends[0].d()
-        #print mst.last_node().data.cur_state.end_states[0].d
-
-    #TODO fix
-    def _test_align(self):
-        path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
-        rm.manager.add_motif(path)
-        m  = rm.manager.get_motif(name="tetraloop_receptor_min", end_name="A228-A246")
-        bp_state = m.ends[1].state()
-        test_state = rm.manager.ms_libs["ideal_helices"].get(name='HELIX.IDEAL.3')
-        d1 = bp_state.d
-        #rint d1
-        motif.align_motif_state(bp_state, test_state)
-        d2 = test_state.end_states[0].d
-        if util.distance(d1, d2) > 0.5:
-            self.fail("did not align motif state properly")
-
-    def _test_change_sequence(self):
+    def test_copy(self):
         builder = build.BuildMotifTree()
-        mt = builder.build()
-        mst = motif_state_tree.MotifStateTree(mt)
-        ss = mst.designable_secondary_structure()
-        designer = sequence_designer.SequenceDesigner()
-        results = designer.design(ss.dot_bracket(), ss.sequence())
-        ss.replace_sequence(results[0].sequence)
-        connectivity = ss.motif_topology_from_end(ss.ends[0])
+        mt = builder.build(3)
+        mst = motif_state_tree.MotifStateTree(mt=mt)
+        mst_copy = mst.copy()
+        self.failUnless(len(mst) == len(mst_copy))
+
+    def _get_sub_tree(self):
+        mt = motif_tree.MotifTree()
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m3 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        nway = rm.manager.get_motif(name="NWAY.1GID.0")
+        mt.add_motif(m1)
+        mt.add_motif(nway)
+        mt.add_motif(m2)
+        mt.add_motif(m3, 1)
+        return mt
+
+    def test_add_mst(self):
+        mt = self._get_sub_tree()
+        mt2 = self._get_sub_tree()
+
+        mst = motif_state_tree.MotifStateTree(mt=mt)
+        mst2 = motif_state_tree.MotifStateTree(mt=mt2)
+        mst.add_mst(mst2)
+        self.failUnless(len(mst) == 8)
+
+
+    def test_add_motif(self):
+        mst = motif_state_tree.MotifStateTree()
+        ms1 = rm.manager.get_state(name="HELIX.IDEAL.2")
+        ms2 = rm.manager.get_state(name="HELIX.IDEAL.2")
+        mst.add_state(ms1)
+
+        # can only add the motif state with teh same unique indenitifer twice
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state(ms1)
+
+        # can never use parent_end_index=0 for a tree as that is where that node
+        # is already connected to another node
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state(ms2, parent_end_index=0)
+        # supplied parent_end_index and parent_end_name
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state(ms2, parent_end_index=1, parent_end_name="A1-A8")
+
+        # must supply a motif or motif name
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state()
+        # motif not found in resource manager
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state(m_name="FAKE")
+        # catches invalid parent_index
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state(ms2, parent_index=2)
+        # invalid parent_end_index, has only 0 and 1
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state(ms2, parent_end_index=3)
+
+        # invalid parent_end_name, is the name of end 0
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state(ms2, parent_end_name="A4-A5")
+
+        # invalid parent_end_name, cannot be found as an end in motif
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state(ms2, parent_end_name="FAKE")
 
     def _test_topology_to_str(self):
         builder = build.BuildMotifTree()

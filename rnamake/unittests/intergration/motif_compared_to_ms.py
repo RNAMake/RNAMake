@@ -1,5 +1,6 @@
 import unittest
-from rnamake import sqlite_library, settings, motif, residue_type, util
+from rnamake import sqlite_library, settings, motif, residue_type, util, motif_state_tree
+from rnamake.unittests import build
 
 
 class BasicLibrariesUnittests(unittest.TestCase):
@@ -36,7 +37,6 @@ class BasicLibrariesUnittests(unittest.TestCase):
                 self.fail(m.name + " did not give the same answer as its state")
 
 
-
     def test_correct_build_twoway(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
         mlib.load_all()
@@ -52,7 +52,20 @@ class BasicLibrariesUnittests(unittest.TestCase):
         self._test_correct_build(mlib, ms_lib)
 
 
+class LargeBuildUnittests(unittest.TestCase):
 
+    def test_large_random_builds(self):
+        for i in range(100):
+            builder = build.BuildMotifTree()
+            mt = builder.build(10)
+
+            mst = motif_state_tree.MotifStateTree(mt=mt)
+            mt_end= mt.last_node().data.ends[1].state()
+            mst_end = mst.last_node().data.cur_state.end_states[1]
+
+            diff = mst_end.diff(mt_end)
+            if diff > 0.1:
+                self.fail(" did not give the same answer as its state")
 
 def main():
     unittest.main()

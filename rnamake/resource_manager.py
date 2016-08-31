@@ -135,7 +135,8 @@ class ResourceManager(object):
         if self.added_motifs.contains(**options):
             return self.added_motifs.get(**options).get_state()
 
-        raise ValueError("cannot find motif state: "+ self._args_to_str(options))
+        raise exceptions.ResourceManagerException(
+            "cannot find motif state: "+ self._args_to_str(options))
 
     def get_motif_ensemble(self, ss_id):
         for me_lib in self.me_libs.itervalues():

@@ -668,11 +668,12 @@ class MotifTree(base.Base):
             else:
                 pi = index_hash[n.parent_index()]
                 j = self.add_motif(m, pi, parent_end_index=n.parent_end_index())
-                if j == -1:
-                    raise exceptions.MotifTreeException(
-                        "failed to add a motif in add_motif_tree to the current "
-                        "motif tree it is likely a steric clash, consider "
-                        "turning off sterics")
+
+            if j == -1:
+                raise exceptions.MotifTreeException(
+                    "failed to add a motif in add_motif_tree to the current "
+                    "motif tree it is likely a steric clash, consider "
+                    "turning off sterics")
 
             index_hash[n.index] = j
 
