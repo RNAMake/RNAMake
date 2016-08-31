@@ -93,5 +93,9 @@ class MotifGraphException(Exception):
     pass
 
 
+class MotifStateTreeException(Exception):
+    pass
+
+
 class MotifTopologyException(Exception):
     pass

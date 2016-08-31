@@ -1,3 +1,5 @@
+from collections import namedtuple
+
 import base
 import option
 import motif
@@ -9,7 +11,7 @@ import settings
 import basic_io
 import motif_tree_topology
 import motif_connection
-from collections import namedtuple
+import exceptions
 
 def motif_state_tree_from_topology(mtt, sterics=1):
     mst = MotifStateTree(sterics=sterics)
@@ -59,11 +61,12 @@ class MotifStateTree(base.Base):
         self.constraints = {}
 
     def _setup_from_mt(self, mt):
+        self.option('sterics', mt.option('sterics'))
         for i, n in enumerate(mt.tree.nodes):
             ms = rm.manager.get_state(name=n.data.name,
                                       end_id=n.data.end_ids[0],
                                       end_name=n.data.ends[0].name())
-
+            ms.uuid = n.data.id
             if i == 0:
                 self.add_state(ms)
             else:

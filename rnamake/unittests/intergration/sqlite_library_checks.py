@@ -12,6 +12,7 @@ class IdealHelicesUnittests(unittest.TestCase):
 
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
         self.base_motif = motif.file_to_motif(path)
+        self.added_motif = motif.file_to_motif(path)
 
     def test_correct_build(self):
 
@@ -22,7 +23,7 @@ class IdealHelicesUnittests(unittest.TestCase):
         for m in self.mlib.all():
 
             mg.add_motif(m)
-            mg.add_motif(self.base_motif)
+            mg.add_motif(self.added_motif)
 
             if len(mg) != 3:
                 self.fail(m.name + " did not build correctly")
@@ -39,6 +40,7 @@ class IdealReverseHelicesUnittests(unittest.TestCase):
 
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
         self.base_motif = motif.file_to_motif(path)
+        self.added_motif = motif.file_to_motif(path)
 
     def test_correct_build(self):
 
@@ -48,8 +50,7 @@ class IdealReverseHelicesUnittests(unittest.TestCase):
 
         for m in self.mlib.all():
             mg.add_motif(m)
-            mg.add_motif(self.base_motif)
-
+            mg.add_motif(self.added_motif)
             if len(mg) != 3:
                 self.fail(m.name + " did not build correctly")
 
@@ -71,6 +72,7 @@ class BasicLibrariesUnittests(unittest.TestCase):
 
         path = settings.RESOURCES_PATH + "/motifs/base.motif"
         self.base_motif = motif.file_to_motif(path)
+        self.added_motif = motif.file_to_motif(path)
 
     def _test_correct_build(self, mlib):
 
@@ -81,8 +83,8 @@ class BasicLibrariesUnittests(unittest.TestCase):
                 self.fail("clash")
 
             for i in range(1,len(m1.ends)):
-                m2 = motif.get_aligned_motif(m1.ends[i], self.base_motif.ends[0],
-                                             self.base_motif)
+                m2 = motif.get_aligned_motif(m1.ends[i], self.added_motif.ends[0],
+                                             self.added_motif)
 
                 if motif.clash_between_motifs(m1, m2):
                     self.fail("clash")
