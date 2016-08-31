@@ -84,26 +84,174 @@ class MotifStateTree(base.Base):
         return str_to_motif_state_tree(self.topology_to_str(), sterics=0)
 
     #ADD FUNCTIONS      #######################################################
-    def add_state(self, state, parent_index=-1, parent_end_index=-1,
-                  parent_end_name=None):
+    def _validate_arguments_to_add_state(self, ms, m_name):
+        """
+        makes sure the add_motif function is called correctly
+
+        :param m: motif to add to tree
+        :type m: Motif object
+
+        :param m_name: name of motif to add
+        :type m_name: str
+
+        :return: None
+        """
+
+        if ms is not None and m_name is not None:
+            raise exceptions.MotifStateTreeException(
+                "cannot supply both a state and motif name to add a state to "
+                "a motif state tree")
+
+        if ms is None and m_name is None:
+            raise exceptions.MotifStateTreeException(
+                "must supply a motif state object or motif name to add_state")
+
+        if ms is not None:
+            for n in self.tree.nodes:
+                if n.data.ref_state.uuid == ms.uuid:
+                    raise exceptions.MotifStateTreeException(
+                        "cannot add state: " + ms.name + " to tree as its uuid is " +
+                        "already present in the tree")
+
+    def _get_parent_node(self, parent_index):
+        """
+        gets node that serve as the parent of the current motif being added
+        to the tree.
+
+        :param parent_index: the tree index corresponding to the requested motif
+        :type parent_index: int
+
+        :return: tree node of parent
+        :rtype: TreeNode
+        """
+
         parent = self.tree.last_node
+
         if parent_index != -1:
-            parent = self.tree.get_node(parent_index)
+            try:
+                parent = self.tree.get_node(parent_index)
+            except exceptions.TreeIndexException:
+                raise exceptions.MotifStateTreeException(
+                    "parent_index supplied: " + str(parent_index) + " does not " +
+                    "exist in current motif state tree")
+
+        return parent
+
+    def _get_parent_available_ends(self, parent, parent_end_index,
+                                   parent_end_name):
+        """
+        Gets the available ends of the parent that the current motif can align
+        to. If either parent_end_index or parent_end_name are specified, checks
+        to see if that position is available.
+
+        :param parent: the TreeNode of parent
+        :type parent: TreeNode
+
+        :param parent_end_index: which end this motif will be aligned to on
+            parent
+        :type parent_end_index: int
+
+        :param parent_end_name: the name instead of the index of the end the
+            current motif will align to
+        :type parent_end_name: str
+
+        :return: list of available parent end indexes that meet the specified
+            constraints
+        :rtype: list of ints
+        """
+
+        if parent is None:
+            return []
+
+        if parent_end_index != -1 and parent_end_name is not None:
+            raise exceptions.MotifStateTreeException(
+                "cannot supply parent_end_index and parent_end_name together")
+
+        elif parent_end_name is not None:
+            try:
+                parent_end_index = parent.data.get_end_index(name=parent_end_name)
+            except:
+                raise exceptions.MotifStateTreeException(
+                    "cannot find parent_end_name: " + parent_end_name + " in "
+                    "parent motif: " + parent.data.name())
+
+            if parent_end_index == parent.data.block_end_add():
+                raise exceptions.MotifStateTreeException(
+                    "cannot add state: to tree as the parent_end_name" +
+                    " supplied is blocked see class MotifState")
+
+            available = parent.available_pos(parent_end_index)
+            if not available:
+                raise exceptions.MotifStateTreeException(
+                    "cannot add state to tree as the end " +
+                    "you are trying to add it to is already filled or does "
+                    "not exist")
+
+            return [parent_end_index]
+
+        elif parent_end_index != -1:
+            if parent_end_index == parent.data.block_end_add():
+                raise exceptions.MotifStateTreeException(
+                    "cannot add state: to tree as the parent_end_index" +
+                    " supplied is blocked see class MotifState")
+
+            available = parent.available_pos(parent_end_index)
+            if not available:
+                raise exceptions.MotifStateTreeException(
+                    "cannot add state to tree as the end " +
+                    "you are trying to add it to is already filled or does "
+                    "not exist")
+            return [parent_end_index]
+
+        else:
+            avail_pos = parent.available_children_pos()
+            avail_pos.remove(0)
+            return avail_pos
+
+    def _get_state_from_manager(self, m_name, m_end_name):
+        """
+        helper function for add_motif should not be called directly. calls
+        resource manager to get motif to be added to tree by the name of
+        the motif.
+
+        :param m_name: name of the motif to add to the tree
+        :type m_name: str
+
+        :param m_end_name: name of the basepair end of the motif to align by.
+        :type m_end_name: str
+
+        """
+
+        try:
+            if m_end_name is not None:
+                state = rm.manager.get_state(name=m_name, end_name=m_end_name)
+            else:
+                state = rm.manager.get_state(name=m_name)
+        except exceptions.ResourceManagerException as e:
+            raise exceptions.MotifStateTreeException(
+                "cannot add state to tree, state cannot be found in resource "
+                "manager")
+
+        return state
+
+    def add_state(self, state=None, parent_index=-1, parent_end_index=-1,
+                  parent_end_name=None, m_name=None, m_end_name=None):
+
+        self._validate_arguments_to_add_state(state, m_name)
+
+        parent = self._get_parent_node(parent_index)
 
         if parent is None:
             n_data = NodeData(state)
             return self.tree.add_data(n_data, len(state.end_states), -1, -1)
 
-        if parent_end_name is not None:
-            parent_end = parent.data.cur_state.get_end_state(parent_end_name)
-            parent_end_index = parent.data.cur_state.end_states.index(parent_end)
+        if state is None and m_name is not None:
+            state = self._get_state_from_manager(m_name, m_end_name)
 
-        avail_pos = self.tree.get_available_pos(parent, parent_end_index)
+        avail_pos = self._get_parent_available_ends(parent, parent_end_index,
+                                                    parent_end_name)
 
         for p in avail_pos:
-            if p == parent.data.ref_state.block_end_add:
-                continue
-
             n_data = NodeData(state)
             motif.get_aligned_motif_state(parent.data.cur_state.end_states[p],
                                           n_data.cur_state,
@@ -118,16 +266,32 @@ class MotifStateTree(base.Base):
 
     def add_mst(self, mst,  parent_index=-1, parent_end_index=-1,
                   parent_end_name=None):
+
+        parent = self._get_parent_node(parent_index)
+        parent_avail_ends = self._get_parent_available_ends(
+                                parent, parent_end_index, parent_end_name)
+
+        if len(parent_avail_ends) > 1 or len(parent_avail_ends) == 0:
+            parent_end_index = -1
+        else:
+            parent_end_index = parent_avail_ends[0]
+
         index_dict = {}
         for i, n in enumerate(mst):
             if i == 0:
-                j = self.add_state(n.data.ref_state, parent_index=parent_index,
-                                   parent_end_index=parent_end_index,
-                                   parent_end_name=parent_end_name)
+                j = self.add_state(n.data.ref_state,
+                                   parent_index, parent_end_index)
             else:
                 ind = index_dict[n.parent_index()]
                 pei = n.parent_end_index()
-                j = self.add_state(n.data.ref_state, parent_index=ind, parent_end_index=pei)
+                j = self.add_state(n.data.ref_state,
+                                   parent_index=ind,
+                                   parent_end_index=pei)
+            if j == -1:
+                raise exceptions.MotifStateTreeException(
+                    "failed to add a state in add_mst to the current "
+                    "motif tree it is likely a steric clash, consider "
+                    "turning off sterics")
 
             index_dict[n.index] = j
 
@@ -287,8 +451,18 @@ class NodeData(object):
         self.ref_state = ref_state
         self.cur_state = ref_state.copy()
 
-    def get_end_state(self, name):
-        return self.cur_state.get_end_state(name)
+    def get_end_state(self, name=None, id=None):
+        return self.cur_state.get_end_state(name, id)
+
+    def get_end_index(self, name=None, id=None):
+        return self.cur_state.get_end_index(name, id)
+
+    def name(self):
+        return self.cur_state.name
+
+    def block_end_add(self):
+        return self.cur_state.block_end_add
+
 
 def str_to_motif_state_tree(s, sterics=1):
     spl = s.split("|")

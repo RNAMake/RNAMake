@@ -205,14 +205,14 @@ class MotifTreeUnittest(unittest.TestCase):
 
     def _get_sub_motif_tree(self):
         mt = motif_tree.MotifTree();
-        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2");
-        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2");
-        m3 = rm.manager.get_motif(name="HELIX.IDEAL.2");
-        nway = rm.manager.get_motif(name="NWAY.1GID.0");
-        mt.add_motif(m1);
-        mt.add_motif(nway);
-        mt.add_motif(m2);
-        mt.add_motif(m3, 1);
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m3 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        nway = rm.manager.get_motif(name="NWAY.1GID.0")
+        mt.add_motif(m1)
+        mt.add_motif(nway)
+        mt.add_motif(m2)
+        mt.add_motif(m3, 1)
 
         return mt
 

@@ -205,13 +205,15 @@ class MotifStateSearchSolution(object):
         mst = motif_state_tree.MotifStateTree()
         mst.option('sterics', 0)
         for i, n in enumerate(self.path):
-            n.cur_state.name = n.ref_state.name
-            n.cur_state.end_ids = n.ref_state.end_ids
-            n.cur_state.end_names = n.ref_state.end_names
+            new_ms = n.cur_state.copy()
+            new_ms.name = n.ref_state.name
+            new_ms.end_ids = n.ref_state.end_ids
+            new_ms.end_names = n.ref_state.end_names
+            new_ms.new_uuids()
             if i == 0:
-                mst.add_state(n.cur_state)
+                mst.add_state(new_ms)
             else:
-                j = mst.add_state(n.cur_state, -1, n.parent_end_index)
+                j = mst.add_state(new_ms, -1, n.parent_end_index)
                 if j == -1:
                     raise ValueError("something went horribly wrong, cannot build solution")
         return mst

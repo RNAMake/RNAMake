@@ -2,6 +2,7 @@ import itertools
 import numpy as np
 import uuid
 
+import exceptions
 import x3dna
 import structure
 import basepair
@@ -227,6 +228,28 @@ class MotifState(object):
             s += state.to_str() + "|"
         return s
 
+    def get_end_index(self, name=None, id=None):
+        if name is None and id is None:
+            raise exceptions.MotifStateException(
+                "need to supply either the end name or end id to get the index")
+
+        if name is not None and id is not None:
+            raise exceptions.MotifStateException(
+                "cannot supply both end name and end id")
+
+        for i in range(len(self.end_states)):
+            if name == self.end_names[i]:
+                return i
+            if id == self.end_ids[i]:
+                return i
+
+        raise exceptions.MotifStateException(
+            "cannot find end state with name: " + name + " or id: " + id)
+
+    def get_end_state(self, name=None, id=None):
+        index = self.get_end_index(name, id)
+        return self.end_states[index]
+
     def get_end_state(self, name):
         for i, n in enumerate(self.end_names):
             if i == self.block_end_add:
@@ -251,6 +274,9 @@ class MotifState(object):
         return MotifState(self.name, self.end_names, self.end_ids, end_states,
                           beads, self.score, self.size, self.block_end_add,
                           self.uuid)
+
+    def new_uuids(self):
+        self.uuid = uuid.uuid1()
 
 
 def file_to_motif(path):

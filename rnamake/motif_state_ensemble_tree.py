@@ -46,7 +46,8 @@ class MotifStateEnsembleTree(object):
         mst = motif_state_tree.MotifStateTree(sterics=0)
 
         for i, n in enumerate(self.tree.nodes):
-            state = n.data.members[0].motif_state
+            state = n.data.members[0].motif_state.copy()
+            state.new_uuids()
             if i == 0:
                 mst.add_state(state)
                 continue
