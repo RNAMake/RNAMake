@@ -81,6 +81,34 @@ class MotifStateTreeUnittest(unittest.TestCase):
         with self.assertRaises(exceptions.MotifStateTreeException):
             mst.add_state(ms2, parent_end_name="FAKE")
 
+    def test_add_connection(self):
+        mst = motif_state_tree.MotifStateTree()
+        ms1 = rm.manager.get_state(name="HELIX.IDEAL.2")
+        ms2 = rm.manager.get_state(name="HELIX.IDEAL.2")
+        ms3 = rm.manager.get_state(name="HELIX.IDEAL.2")
+        nway = rm.manager.get_state(name="NWAY.1GID.0")
+        mst.add_state(ms1)
+        mst.add_state(nway)
+        mst.add_state(ms2)
+
+        # try connecting through 0th end position
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_connection(1, 2, "A138-A180")
+
+        # try connecting thru an already used end position
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_connection(1, 2, "A138-A180")
+
+        mst.add_connection(1, 2)
+        rna_struc = mst.get_structure()
+        self.failUnless(len(rna_struc.chains()) == 1)
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_state(ms3, parent_end_index=1)
+
+        self.failUnless(mst.add_state(ms3) == -1)
+        with self.assertRaises(exceptions.MotifStateTreeException):
+            mst.add_connection(1, 2)
+
     def _test_topology_to_str(self):
         builder = build.BuildMotifTree()
         mt = builder.build()
