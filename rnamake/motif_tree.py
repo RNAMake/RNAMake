@@ -543,8 +543,10 @@ class MotifTree(base.Base):
 
             final_avail_pos = []
             for p in avail_pos:
-                parent_end_name = parent.data.ends[parent_end_index].name()
+                parent_end_name = parent.data.ends[p].name()
                 if self.connections.in_connection(parent.index, parent_end_name):
+                    continue
+                if p == parent.data.block_end_add:
                     continue
                 final_avail_pos.append(p)
 
