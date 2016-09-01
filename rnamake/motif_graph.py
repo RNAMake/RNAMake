@@ -426,47 +426,196 @@ class MotifGraph(base.Base):
         return mg
 
     #ADD FUNCTIONS      #######################################################
-    def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
-                  parent_end_name=None, m_name=None, m_end_name=None,
-                  orphan=0):
-        if m is None and m_name is not None:
+    def _validate_arguments_to_add_motif(self, m, m_name):
+        """
+        makes sure the add_motif function is called correctly
+
+        :param m: motif to add to graph
+        :type m: Motif object
+
+        :param m_name: name of motif to add
+        :type m_name: str
+
+        :return: None
+        """
+
+        if m is not None and m_name is not None:
+            raise exceptions.MotifGraphException(
+                "cannot supply both a motif and motif name to add a motif to "
+                "a motif graph")
+
+        if m is None and m_name is None:
+            raise exceptions.MotifGraphException(
+                "must supply a motif object or motif name to add_motif")
+
+        if m is not None:
+            for n in self.graph.nodes:
+                if n.data.id == m.id:
+                    raise exceptions.MotifGraphException(
+                        "cannot add motif: " + m.name + " to graph as its uuid is " +
+                        "already present in the graph")
+
+    def _get_motif_from_manager(self, m_name, m_end_name):
+        """
+        helper function for add_motif should not be called directly. calls
+        resource manager to get motif to be added to tree by the name of
+        the motif.
+
+        :param m_name: name of the motif to add to the tree
+        :type m_name: str
+
+        :param m_end_name: name of the basepair end of the motif to align by.
+        :type m_end_name: str
+
+        """
+
+        try:
             if m_end_name is not None:
                 m = rm.manager.get_motif(name=m_name, end_name=m_end_name)
             else:
                 m = rm.manager.get_motif(name=m_name)
+        except exceptions.ResourceManagerException as e:
+            raise exceptions.MotifGraphException(
+                "cannot add motif to graph, motif cannot be found in resource "
+                "manager")
+
+        return m
+
+    def _get_parent_node(self, parent_index):
+        """
+        gets node that serve as the parent of the current motif being added
+        to the tree.
+
+        :param parent_index: the tree index corresponding to the requested motif
+        :type parent_index: int
+
+        :return: tree node of parent
+        :rtype: TreeNode
+        """
+
+        parent = self.graph.last_node
+
+        if parent_index != -1:
+            try:
+                parent = self.graph.get_node(parent_index)
+            except exceptions.GraphIndexException:
+                raise exceptions.MotifGraphException(
+                    "parent_index supplied: " + str(parent_index) + " does not " +
+                    "exist in current motif graph")
+
+        return parent
+
+    def _get_parent_available_ends(self, parent, parent_end_index,
+                                   parent_end_name):
+        """
+        Gets the available ends of the parent that the current motif can align
+        to. If either parent_end_index or parent_end_name are specified, checks
+        to see if that position is available.
+
+        :param parent: the GraphNode of parent
+        :type parent: GraphNode
+
+        :param parent_end_index: which end this motif will be aligned to on
+            parent
+        :type parent_end_index: int
+
+        :param parent_end_name: the name instead of the index of the end the
+            current motif will align to
+        :type parent_end_name: str
+
+        :return: list of available parent end indexes that meet the specified
+            constraints
+        :rtype: list of ints
+        """
+
+        if parent is None:
+            return []
+
+        if parent_end_index != -1 and parent_end_name is not None:
+            raise exceptions.MotifGraphException(
+                "cannot supply parent_end_index and parent_end_name together")
+
+        elif parent_end_name is not None:
+            parent_ends = parent.data.get_basepair(name=parent_end_name)
+            if len(parent_ends) == 0:
+                raise exceptions.MotifGraphException(
+                    "cannot find parent_end_name: " + parent_end_name + " in "
+                    "parent motif: " + parent.data.name)
+            if len(parent_ends) > 1:
+                raise exceptions.MotifGraphException(
+                    "more then one end was found with parent_end_name: " +
+                    parent_end_name + " in parent motif: " + parent.data.name)
+
+            parent_end = parent_ends[0]
+            parent_end_index = parent.data.ends.index(parent_end)
+
+            if parent_end_index == parent.data.block_end_add:
+                raise exceptions.MotifGraphException(
+                    "cannot add motif: to tree as the parent_end_name" +
+                    " supplied is blocked see class Motif")
+
+            available = parent.available_pos(parent_end_index)
+            if not available:
+                raise exceptions.MotifGraphException(
+                    "cannot add motif to tree as the end " +
+                    "you are trying to add it to is already filled or does "
+                    "not exist")
+
+            return [parent_end_index]
+
+        elif parent_end_index != -1:
+            if parent_end_index == parent.data.block_end_add:
+                raise exceptions.MotifGraphException(
+                    "cannot add motif: to tree as the parent_end_index" +
+                    " supplied is blocked see class Motif")
+
+            available = parent.available_pos(parent_end_index)
+            if not available:
+                raise exceptions.MotifGraphException(
+                    "cannot add motif to tree as the end " +
+                    "you are trying to add it to is already filled or does "
+                    "not exist")
+
+            return [parent_end_index]
+
+        else:
+            avail_pos = parent.available_children_pos()
+
+            final_avail_pos = []
+            for p in avail_pos:
+                if p == parent.data.block_end_add:
+                    continue
+                final_avail_pos.append(p)
+
+            return final_avail_pos
+
+    def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
+                  parent_end_name=None, m_name=None, m_end_name=None,
+                  orphan=0):
+
+        self._validate_arguments_to_add_motif(m, m_name)
+        parent = self._get_parent_node(parent_index)
+
+        if m is None and m_name is not None:
+            m = self._get_motif_from_manager(m_name, m_end_name)
         else:
             if not rm.manager.contains_motif(name=m.name,
                                              end_name=m.ends[0].name()):
                 rm.manager.register_motif(m)
 
-        for n in self.graph.nodes:
-            if n.data.id == m.id:
-                raise exceptions.MotifGraphException(
-                    "cannot add motif: " + m.name + " to graph as its uuid is "
-                    "already present in the graph")
-
-        parent = self.graph.last_node
-        if parent_index != -1:
-            parent = self.graph.get_node(parent_index)
-
         if parent is None or orphan:
             m_copy = m.copy()
-            m_copy.get_beads(m_copy.ends)
+            m_copy.get_beads([m_copy.ends[0]])
             pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends),
                                       orphan=orphan)
             self.aligned[pos] = 0
             self.merger.add_motif(m_copy)
             return pos
 
-        if parent_end_name is not None:
-            parent_end = parent.data.get_basepair(name=parent_end_name)[0]
-            parent_end_index = parent.data.ends.index(parent_end)
-
-        avail_pos = self.graph.get_availiable_pos(parent, parent_end_index)
+        avail_pos = self._get_parent_available_ends(parent, parent_end_index,
+                                                    parent_end_name)
 
         for p in avail_pos:
-            if p == parent.data.block_end_add:
-                continue
             m_added = motif.get_aligned_motif(parent.data.ends[p], m.ends[0], m)
             if self.option('sterics'):
                 if self._steric_clash(m_added):
@@ -506,47 +655,58 @@ class MotifGraph(base.Base):
 
             index_hash[n.index] = j
 
-    def add_connection(self, i, j, i_bp_name=None, j_bp_name=None):
+    def _get_connection_end(self, node, bp_name):
+        node_end_index = -1
+
+        if bp_name != "":
+            ei = node.data.get_end_index(bp_name)
+            if ei == node.data.block_end_add:
+                raise exceptions.MotifGraphException(
+                    "cannot add connection with " + str(node.index) + " and "
+                    "end name " + bp_name + " as the end is blocked")
+
+            if not node.available_pos(ei):
+                raise exceptions.MotifGraphException(
+                    "cannot add connection with " + str(node.index) + " and "
+                    "end name " + bp_name + " as this end is not available")
+
+            node_end_index = ei
+        else:
+            node_indexes = node.available_children_pos()
+
+            if len(node_indexes) > 1:
+                raise exceptions.MotifGraphException(
+                    "cannot connect nodes " + str(node.index) + " its unclear "
+                    " which ends to attach")
+
+            if len(node_indexes) == 0:
+                raise exceptions.MotifGraphException(
+                    "cannot connect nodes " + str(node.index) + " there are "
+                    "no ends free ends to attach too")
+
+            node_end_index = node_indexes[0]
+        return node_end_index
+
+    def add_connection(self, i, j, i_bp_name="", j_bp_name=""):
         node_i = self.get_node(i)
         node_j = self.get_node(j)
 
-        node_i_indexes = []
-        node_j_indexes = []
-        if i_bp_name is not None:
-            ei = node_i.data.get_end_index(i_bp_name)
-            if not node_i.available_pos(ei):
-                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                                 "using bp: " + i_bp_name + "as its not available")
-            node_i_indexes.append(ei)
-        else:
-            node_i_indexes = node_i.available_children_pos()
+        node_i_ei = self._get_connection_end(node_i, i_bp_name)
+        node_j_ei = self._get_connection_end(node_j, j_bp_name)
 
-        if j_bp_name is not None:
-            ei = node_j.data.get_end_index(j_bp_name)
-            if not node_j.available_pos(ei):
-                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                                 "using bp: " + j_bp_name + "as its not available")
-            node_j_indexes.append(ei)
-        else:
-            node_j_indexes = node_j.available_children_pos()
+        node_i_end_name = node_i.data.ends[node_i_ei].name()
+        node_j_end_name = node_j.data.ends[node_j_ei].name()
 
-        if len(node_i_indexes) > 1 or len(node_j_indexes) > 1:
-            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                             "its unclear which ends to attach")
-        if len(node_i_indexes) == 0 or len(node_j_indexes) == 0:
-            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                             " one node has no available ends")
-
-        self.graph.connect(i, j, node_i_indexes[0], node_j_indexes[0])
+        self.graph.connect(i, j, node_i_ei, node_j_ei)
         self.merger.connect_motifs(node_i.data, node_j.data,
-                                   node_i.data.ends[node_i_indexes[0]],
-                                   node_j.data.ends[node_j_indexes[0]])
+                                   node_i.data.ends[node_i_ei],
+                                   node_j.data.ends[node_j_ei])
 
     def _add_motif_to_graph(self, m, parent=None, parent_end_index=None):
         if parent is None:
             m_copy = m.copy()
             m_copy.new_res_uuids()
-            m_copy.get_beads(m_copy.ends)
+            m_copy.get_beads([m_copy.ends[0]])
 
             pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends), orphan=1)
             self.merger.add_motif(m_copy)

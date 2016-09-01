@@ -347,6 +347,11 @@ class MotifStateSqliteLibrary(SqliteLibrary):
     def _generate_data(self, s):
         return motif.str_to_motif_state(s)
 
+    def get(self, **options):
+        m = super(self.__class__, self).get(**options)
+        m.new_uuids()
+        return m
+
     def to_motif_state_ensemble(self):
         self.load_all()
         mes = motif_ensemble.MotifStateEnsemble()

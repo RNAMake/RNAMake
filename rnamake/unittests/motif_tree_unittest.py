@@ -247,6 +247,37 @@ class MotifTreeUnittest(unittest.TestCase):
         mt2.add_motif(m)
         self.failUnless(len(mt2) == 1)
 
+    def test_connections(self):
+        mt = motif_tree.MotifTree()
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m3 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        nway = rm.manager.get_motif(name="NWAY.1GID.0")
+        mt.add_motif(m1)
+        mt.add_motif(nway)
+        mt.add_motif(m2)
+
+        # try connecting through 0th end position
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_connection(1, 2, "A138-A180")
+
+        # try connecting thru an already used end position
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_connection(1, 2, "A141-A162")
+
+        mt.add_connection(1, 2)
+        rna_struc = mt.get_structure()
+        self.failUnless(len(rna_struc.chains()) == 1)
+
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_motif(m3, parent_end_index=1)
+
+        self.failUnless(mt.add_motif(m3) == -1)
+
+        with self.assertRaises(exceptions.MotifTreeException):
+            mt.add_connection(1, 2)
+
+
 
 def main():
     unittest.main()
