@@ -125,13 +125,9 @@ class MotifStateSearch(base.Base):
                         if self.lookup is not None:
                             if self.lookup.clash(self.test_node.cur_state.beads):
                                 continue
-                    #print "test", len(self.test_node.cur_state.beads)
                     child = self.test_node.copy()
-                    #print "made it"
                     child.score = score
                     child.update()
-                    #print "child", len(child.cur_state.beads)
-                    #exit()
                     if child.size > max_size:
                         continue
                     child.ntype = types[i]

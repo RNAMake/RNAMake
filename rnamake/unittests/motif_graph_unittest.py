@@ -1,13 +1,8 @@
 import unittest
-import rnamake.motif_graph as motif_graph
-import rnamake.motif_type as motif_type
-import rnamake.graph as graph
-import rnamake.util as util
-import rnamake.eternabot.sequence_designer as sd
-import rnamake.resource_manager as rm
-from rnamake import motif_topology, secondary_structure_graph, settings
+from rnamake import motif_graph, util, exceptions
+from rnamake import motif_topology, settings
+from rnamake import resource_manager as rm
 import build
-import numerical
 import secondary_structure_tools
 import is_equal
 
@@ -25,8 +20,47 @@ class MotifGraphUnittest(unittest.TestCase):
         for n in mt.tree.nodes:
             mg.add_motif(n.data)
 
-        if len(mg.graph) != 3:
+        if len(mg) != len(mt):
             self.fail("did not get the right number of motifs")
+
+    def test_add_motif_2(self):
+        mt = motif_graph.MotifGraph()
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        mt.add_motif(m1)
+
+        # can never use parent_end_index=0 for a graph as that is where that node
+        # is already connected to another node
+        with self.assertRaises(exceptions.MotifGraphException):
+            mt.add_motif(m2, parent_end_index=0)
+
+        # supplied parent_end_index and parent_end_name
+        with self.assertRaises(exceptions.MotifGraphException):
+            mt.add_motif(m2, parent_end_index=1, parent_end_name="A1-A8")
+
+        # must supply a motif or motif name
+        with self.assertRaises(exceptions.MotifGraphException):
+            mt.add_motif()
+
+        # motif not found in resource manager
+        with self.assertRaises(exceptions.MotifGraphException):
+            mt.add_motif(m_name="FAKE")
+
+        # catches invalid parent_index
+        with self.assertRaises(exceptions.MotifGraphException):
+            mt.add_motif(m2, parent_index=2)
+
+        # invalid parent_end_index, has only 0 and 1
+        with self.assertRaises(exceptions.MotifGraphException):
+            mt.add_motif(m2, parent_end_index=3)
+
+        # invalid parent_end_name, is the name of end 0
+        with self.assertRaises(exceptions.MotifGraphException):
+            mt.add_motif(m2, parent_end_name="A4-A5")
+
+        # invalid parent_end_name, cannot be found as an end in motif
+        with self.assertRaises(exceptions.MotifGraphException):
+            mt.add_motif(m2, parent_end_name="FAKE")
 
     def test_remove(self):
         builder = build.BuildMotifTree()
@@ -44,6 +78,36 @@ class MotifGraphUnittest(unittest.TestCase):
 
         if len(mg) != 1:
             self.fail("did not remove motif correctly")
+
+    def test_add_connection(self):
+        mg = motif_graph.MotifGraph()
+        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        m3 = rm.manager.get_motif(name="HELIX.IDEAL.2")
+        nway = rm.manager.get_motif(name="NWAY.1GID.0")
+        mg.add_motif(m1)
+        mg.add_motif(nway)
+        mg.add_motif(m2)
+
+        # try connecting through 0th end position
+        with self.assertRaises(exceptions.MotifGraphException):
+            mg.add_connection(1, 2, "A138-A180")
+
+        # try connecting thru an already used end position
+        with self.assertRaises(exceptions.MotifGraphException):
+            mg.add_connection(1, 2, "A141-A162")
+
+        mg.add_connection(1, 2)
+        rna_struc = mg.get_structure()
+        self.failUnless(len(rna_struc.chains()) == 1)
+
+        with self.assertRaises(exceptions.MotifGraphException):
+            mg.add_motif(m3, parent_end_index=1)
+
+        self.failUnless(mg.add_motif(m3) == -1)
+
+        with self.assertRaises(exceptions.MotifGraphException):
+            mg.add_connection(1, 2)
 
     def test_copy(self):
         builder = build.BuildMotifTree()
@@ -85,18 +149,6 @@ class MotifGraphUnittest(unittest.TestCase):
         if len(new_mg.merger.get_structure().chains()) != 2:
             self.fail("does not have the right number of chains")
 
-    def test_get_pose(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build(3)
-        mg = motif_graph.MotifGraph()
-
-        for n in mt.tree.nodes:
-            mg.add_motif(n.data)
-
-        new_mg = mg.copy()
-        new_mg.replace_ideal_helices()
-        ss = new_mg.designable_secondary_structure()
-
     def test_secondary_structure(self):
         builder = build.BuildMotifTree()
         mt = builder.build(3)
@@ -125,20 +177,7 @@ class MotifGraphUnittest(unittest.TestCase):
             mg.add_motif(n.data)
 
         mg.replace_ideal_helices()
-        #mg.write_pdbs()
-        #for i, c in enumerate(mg.structure.chains()):
-        #    c.to_pdb("c."+str(i)+".pdb")
-
-        #mg.structure.to_pdb("test.pdb")
-        #mg.write_pdbs()
         ss = mg.designable_secondary_structure()
-
-        #designer = sd.SequenceDesigner()
-        #r = designer.design(ss.dot_bracket(), ss.sequence())
-        #ss.replace_sequence(r[0].sequence)
-        #mg.replace_helix_sequence(ss)
-        #mg.write_pdbs("new")
-        #mg.merger.to_pdb("test.pdb")
 
     def test_designable_secondary_structure_2(self):
         builder = build.BuildMotifTree()
@@ -315,7 +354,7 @@ class MotifGraphUnittest(unittest.TestCase):
         mg = builder.build(3)
         mg.to_pretty_str()
 
-    def test_pretty_str_2(self):
+    def _test_pretty_str_2(self):
         mg_file = settings.UNITTEST_PATH + "resources/motif_graph/mini_ttr.mg"
         f = open(mg_file)
         lines = f.readlines()
@@ -323,6 +362,8 @@ class MotifGraphUnittest(unittest.TestCase):
         mg = motif_graph.MotifGraph(mg_str=lines[0])
         #print mg.to_pretty_str()
         #mg.write_pdbs()
+
+
 
 
 def main():

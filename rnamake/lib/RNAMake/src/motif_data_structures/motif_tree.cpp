@@ -119,7 +119,7 @@ MotifTree::add_motif(
     
     if(parent == nullptr) {
         auto m_copy = std::make_shared<Motif>(*m);
-        m_copy->get_beads(m_copy->ends());
+        m_copy->get_beads(m_copy->ends()[0]);
         int pos = tree_.add_data(m_copy, (int)m_copy->ends().size(), -1, -1);
         merger_.add_motif(m_copy);
         return pos;
@@ -138,7 +138,8 @@ MotifTree::add_motif(
         
         int pos = tree_.add_data(m_added, (int)m_added->ends().size(), parent->index(), p);
         if(pos != -1) {
-            merger_.add_motif(m_added, m_added->ends()[0], parent->data(), parent->data()->ends()[p]);
+            merger_.add_motif(m_added, m_added->ends()[0],
+                              parent->data(), parent->data()->ends()[p]);
         }
         return pos;
     }

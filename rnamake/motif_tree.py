@@ -328,7 +328,7 @@ class MotifTree(base.Base):
 
         self.tree = tree.TreeStatic()
         self.merger = motif_merger.MotifMerger()
-        self.connections = []
+        self.connections = motif_connection.MotifConnections()
 
     def __len__(self):
         return len(self.tree)
@@ -510,6 +510,11 @@ class MotifTree(base.Base):
                     "you are trying to add it to is already filled or does "
                     "not exist")
 
+            if self.connections.in_connection(parent.index, parent_end_name):
+                raise exceptions.MotifTreeException(
+                    "cannot add motif to tree as the end " +
+                    "you are trying to add it to is in a connection")
+
             return [parent_end_index]
 
         elif parent_end_index != -1:
@@ -524,12 +529,26 @@ class MotifTree(base.Base):
                     "cannot add motif to tree as the end " +
                     "you are trying to add it to is already filled or does "
                     "not exist")
+            parent_end_name = parent.data.ends[parent_end_index].name()
+
+            if self.connections.in_connection(parent.index, parent_end_name):
+                raise exceptions.MotifTreeException(
+                    "cannot add motif to tree as the end " +
+                    "you are trying to add it to is in a connection")
             return [parent_end_index]
 
         else:
             avail_pos = parent.available_children_pos()
             avail_pos.remove(0)
-            return avail_pos
+
+            final_avail_pos = []
+            for p in avail_pos:
+                parent_end_name = parent.data.ends[parent_end_index].name()
+                if self.connections.in_connection(parent.index, parent_end_name):
+                    continue
+                final_avail_pos.append(p)
+
+            return final_avail_pos
 
     def _steric_clash(self, m):
         for n in self.tree:
@@ -599,7 +618,6 @@ class MotifTree(base.Base):
         """
 
         self._validate_arguments_to_add_motif(m, m_name)
-
         parent = self._get_parent_node(parent_index)
 
         if m is None and m_name is not None:
@@ -677,44 +695,68 @@ class MotifTree(base.Base):
 
             index_hash[n.index] = j
 
+    def _get_connection_end(self, node, bp_name):
+
+        node_end_index = -1
+
+        if bp_name != "":
+            ei = node.data.get_end_index(bp_name)
+            if ei == node.data.block_end_add:
+                raise exceptions.MotifTreeException(
+                    "cannot add connection with " + str(node.index) + " and "
+                    "end name " + bp_name + " as the end is blocked")
+
+            if not node.available_pos(ei):
+                raise exceptions.MotifTreeException(
+                    "cannot add connection with " + str(node.index) + " and "
+                    "end name " + bp_name + " as this end is not available")
+
+            if self.connections.in_connection(node.index, bp_name):
+                raise exceptions.MotifTreeException(
+                    "cannot add connection with " + node.index + " and end "
+                    "name " + bp_name + " as this end is already in a "
+                    "connection")
+
+            node_end_index = ei
+        else:
+            node_indexes = node.available_children_pos()
+            node_indexes.remove(0)
+
+            if len(node_indexes) > 1:
+                raise exceptions.MotifTreeException(
+                    "cannot connect nodes " + str(node.index) + " its unclear "
+                    " which ends to attach")
+
+            if len(node_indexes) == 0:
+                raise exceptions.MotifTreeException(
+                    "cannot connect nodes " + str(node.index) + " there are "
+                    "no ends free ends to attach too")
+
+            node_index_name = node.data.ends[node_indexes[0]].name()
+            if self.connections.in_connection(node.index, node_index_name):
+                raise exceptions.MotifTreeException(
+                    "cannot add connection with " + str(node.index) + " and end "
+                    "name " + node_index_name + " as this end is already in a "
+                    "connection")
+
+            node_end_index = node_indexes[0]
+
+        return node_end_index
+
     def add_connection(self, i, j, i_bp_name="", j_bp_name=""):
         node_i = self.get_node(i)
         node_j = self.get_node(j)
 
-        node_i_indexes = []
-        node_j_indexes = []
-        if i_bp_name != "":
-            ei = node_i.data.get_end_index(i_bp_name)
-            if not node_i.available_pos(ei):
-                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                                 "using bp: " + i_bp_name + "as its not available")
-            node_i_indexes.append(ei)
-        else:
-            node_i_indexes = node_i.available_children_pos()
-            node_i_indexes.remove(0)
+        node_i_ei = self._get_connection_end(node_i, i_bp_name)
+        node_j_ei = self._get_connection_end(node_j, j_bp_name)
 
-        if j_bp_name != "":
-            ei = node_j.data.get_end_index(j_bp_name)
-            if not node_j.available_pos(ei):
-                raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                                 "using bp: " + j_bp_name + "as its not available")
-            node_j_indexes.append(ei)
-        else:
-            node_j_indexes = node_j.available_children_pos()
-            node_j_indexes.remove(0)
+        node_i_end_name = node_i.data.ends[node_i_ei].name()
+        node_j_end_name = node_j.data.ends[node_j_ei].name()
 
-        if len(node_i_indexes) > 1 or len(node_j_indexes) > 1:
-            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                             "its unclear which ends to attach")
-        if len(node_i_indexes) == 0 or len(node_j_indexes) == 0:
-            raise ValueError("cannot connect nodes " + str(i) + " " + str(j) +
-                             " one node has no available ends")
-
-        self.connections.append(motif_connection.MotifConnection(i, j,
-                                                                 i_bp_name, j_bp_name))
+        self.connections.add_connection(i, j, node_i_end_name, node_j_end_name)
         self.merger.connect_motifs(node_i.data, node_j.data,
-                                   node_i.data.ends[node_i_indexes[0]],
-                                   node_j.data.ends[node_j_indexes[0]])
+                                   node_i.data.ends[node_i_ei],
+                                   node_j.data.ends[node_j_ei])
 
     def replace_motif(self, pos, new_motif):
         """

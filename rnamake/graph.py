@@ -878,8 +878,8 @@ class GraphNodeStatic(GraphNode):
             raise exceptions.GraphInvalidEndException(
                 self, pos,
                 """attempted to add a new connection to node: %d at endpos
-                    %d but thats lower then zero not allowed"""
-                    % (self.index, pos))
+                    %d but thats lower then zero not allowed""" %\
+                    (self.index, pos))
 
         if pos >= len(self.connections):
             raise exceptions.GraphInvalidEndException(

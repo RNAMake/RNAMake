@@ -42,7 +42,6 @@ class MotifStateTreeUnittest(unittest.TestCase):
         mst.add_mst(mst2)
         self.failUnless(len(mst) == 8)
 
-
     def test_add_motif(self):
         mst = motif_state_tree.MotifStateTree()
         ms1 = rm.manager.get_state(name="HELIX.IDEAL.2")
@@ -110,6 +109,7 @@ class MotifStateTreeUnittest(unittest.TestCase):
         mst.replace_state(2, rstate)
 
         mt2 = motif_tree.MotifTree()
+        mt2.option('sterics', 0)
         for n in mst:
             m = rm.manager.get_motif(name=n.data.cur_state.name,
                                      end_name=n.data.cur_state.end_names[0])
@@ -121,11 +121,11 @@ class MotifStateTreeUnittest(unittest.TestCase):
         if util.distance(d1, d2) > 0.1:
             self.fail("did not properly replace state")
 
-
-
-
-
-
+    def test_pretty_str(self):
+        builder = build.BuildMotifTree()
+        mt = builder.build(3)
+        mst = motif_state_tree.MotifStateTree(mt)
+        s = mst.to_pretty_str()
 
 
 def main():

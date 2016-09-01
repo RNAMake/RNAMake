@@ -89,6 +89,10 @@ class MotifClustersException(Exception):
     pass
 
 
+class MotifConnectionException(Exception):
+    pass
+
+
 class MotifTreeException(Exception):
     pass
 
