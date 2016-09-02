@@ -142,7 +142,7 @@ class Tree(object):
 
         return node
 
-    def next_level(self):
+    def increase_level(self):
         """
         Increases the level of nodes to be added. default level is 0. This is
         useful when removing or adding a set of nodes. Think of level as a

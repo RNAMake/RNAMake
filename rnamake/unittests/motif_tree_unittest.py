@@ -118,7 +118,21 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt) != 0:
             self.fail("did not remove node correctly")
 
-        #mt.merger.get_structure().to_pdb("test.pdb", renumber=1)
+    def test_remove_node_level(self):
+        mt = motif_tree.MotifTree()
+        mt.add_motif(m_name="HELIX.IDEAL.2")
+        mt.increase_level()
+        mt.add_motif(m_name="HELIX.IDEAL.2")
+        mt.add_motif(m_name="HELIX.IDEAL.2")
+
+        mt.remove_node_level()
+        self.failUnless(len(mt) == 1)
+
+        mt.add_motif(m_name="HELIX.IDEAL.2")
+        mt.add_motif(m_name="HELIX.IDEAL.2")
+
+        mt.remove_node_level(level=0)
+        self.failUnless(len(mt) == 0)
 
     def test_get_residues(self):
         mt = motif_tree.MotifTree()

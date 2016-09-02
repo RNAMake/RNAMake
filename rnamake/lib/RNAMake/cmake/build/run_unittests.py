@@ -15,6 +15,7 @@ for test in unittests:
         print test, lines[1],
         continue
     else:
+        print test, ": FAIL"
         subprocess.call(test, shell=True)
 
 

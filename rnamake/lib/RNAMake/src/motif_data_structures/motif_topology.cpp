@@ -56,6 +56,11 @@ GraphtoTree::convert(
                 continue;
             }
             
+            //can happen sometimes if you build from the middle of the graph
+            if(current->parent_end_index == 0) {
+                continue;
+            }
+            
             auto pos = mt_->add_motif(current->motif, new_parent_index, current->parent_end_index);
             if(pos == -1) {
                 continue;
