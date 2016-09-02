@@ -546,8 +546,6 @@ class MotifTree(base.Base):
                 parent_end_name = parent.data.ends[p].name()
                 if self.connections.in_connection(parent.index, parent_end_name):
                     continue
-                if p == parent.data.block_end_add:
-                    continue
                 final_avail_pos.append(p)
 
             return final_avail_pos
@@ -715,9 +713,9 @@ class MotifTree(base.Base):
 
             if self.connections.in_connection(node.index, bp_name):
                 raise exceptions.MotifTreeException(
-                    "cannot add connection with " + node.index + " and end "
-                    "name " + bp_name + " as this end is already in a "
-                    "connection")
+                    "cannot add connection with " + str(node.index) +
+                    " and end name " + bp_name + " as this end is "
+                    "already in a connection")
 
             node_end_index = ei
         else:
@@ -737,9 +735,8 @@ class MotifTree(base.Base):
             node_index_name = node.data.ends[node_indexes[0]].name()
             if self.connections.in_connection(node.index, node_index_name):
                 raise exceptions.MotifTreeException(
-                    "cannot add connection with " + str(node.index) + " and end "
-                    "name " + node_index_name + " as this end is already in a "
-                    "connection")
+                    "cannot connect nodes " + str(node.index) + " there are "
+                    "no ends free ends to attach too")
 
             node_end_index = node_indexes[0]
 
@@ -857,13 +854,13 @@ class MotifTree(base.Base):
         """
 
         if level is None:
-            level = self.level
+            level = self.tree.level
 
-        r = range(1, len(self.nodes))
+        r = range(1, len(self.tree.nodes))
         for i in r[::-1]:
-            if self.nodes[i].level >= level:
-                self.remove_node(self.nodes[i])
-        self.last_node = self.nodes[-1]
+            n = self.tree.nodes[i]
+            if self.tree.nodes[i].level >= level:
+                self.remove_node(self.tree.nodes[i].index)
 
     #TREE WRAPPER      ########################################################
     def get_node(self, i):

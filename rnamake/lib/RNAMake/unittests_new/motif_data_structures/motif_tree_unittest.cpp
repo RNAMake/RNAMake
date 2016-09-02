@@ -78,12 +78,14 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         REQUIRE(mt.size() == 2);
         
         REQUIRE_THROWS_AS(mt.add_motif(m3, 10), MotifTreeException);
-        REQUIRE_THROWS_AS(mt.add_motif(m3, 0), MotifTreeException);
+        //REQUIRE_THROWS_AS(mt.add_motif(m3, 0), MotifTreeException);
         REQUIRE_THROWS_AS(mt.add_motif(m3, 0, 10), MotifTreeException);
         
         SECTION("make sure motifs with the same uuid are rejected") {
             REQUIRE_THROWS_AS(mt.add_motif(m1), MotifTreeException);
         }
+        
+        REQUIRE_THROWS_AS(mt.add_motif(m3, -1, "A4-A5"), MotifTreeException);
         
         REQUIRE_THROWS_AS(mt.add_motif(m3, -1, "FAKE_END"), MotifTreeException);
         
@@ -132,6 +134,30 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         mt.add_motif(m2);
         REQUIRE_NOTHROW(mt.remove_node(1));
         REQUIRE_THROWS_AS(mt.remove_node(1), MotifTreeException);
+    }
+    
+    SECTION("test remove node levels from tree") {
+        auto mt = MotifTree();
+        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+
+        mt.add_motif(m1);
+        mt.increase_level();
+        mt.add_motif(m2);
+        mt.add_motif(m3);
+        mt.remove_node_level();
+        
+        REQUIRE(mt.size() == 1);
+        
+        mt.add_motif(m2);
+        mt.add_motif(m3);
+        
+        mt.remove_node_level(0);
+        
+        REQUIRE(mt.size() == 0);
+
+        
     }
     
     SECTION("test loading motif tree from topology str") {

@@ -122,6 +122,10 @@ public: //getters
     TreeNodeOP<DataType> const &
     last_node() { return last_node_; }
     
+    inline
+    int
+    level() { return level_; }
+    
     
 protected:
     TreeNodeOPs<DataType> nodes_;

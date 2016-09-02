@@ -318,6 +318,15 @@ public: //tree wrappers
     void
     write_pdbs(String const & fname = "nodes");
     
+    
+    inline
+    void
+    increase_level() { tree_.increase_level(); }
+    
+    inline
+    void
+    decrease_level() { tree_.decrease_level(); }
+    
 public: //merger wrappers
     
     inline
@@ -342,20 +351,6 @@ public: //merger wrappers
 
     }
     
-    inline
-    void
-    to_pdb(
-        String const fname = "test.pdb",
-        int renumber = -1) {
-        
-        try { return merger_.to_pdb(fname, renumber); }
-        catch(MotifMergerException) {
-            throw MotifTreeException(
-                "cannot produce merged structure for a pdb it is likely you have created a ring "
-                "with no start, call write_pdbs() to see what the topology would look like");
-        }
-        
-    }
     
 public: //option wrappers
     
@@ -386,8 +381,20 @@ public: //option wrappers
     }
 
     
-public: //add motif interface
+public: //adding functions
     
+    TreeNodeOP<MotifOP>
+    _get_parent(int);
+    
+    Ints
+    _get_available_parent_end_pos(
+        TreeNodeOP<MotifOP> const &,
+        int);
+    
+    int
+    _steric_clash(
+        MotifOP const &);
+
     int
     add_motif(
         MotifOP const & m,
@@ -400,77 +407,10 @@ public: //add motif interface
         int parent_index,
         String parent_end_name);
     
-
-private: // add motif helper functions
-    
-    TreeNodeOP<MotifOP>
-    _get_parent(
-        String const & m_name,
-        int parent_index) {
-        
-        auto parent = tree_.last_node();
-        
-        //catch non existant parent
-        try {
-            if(parent_index != -1) { parent = tree_.get_node(parent_index); }
-        }
-        catch(TreeException e) {
-            throw MotifTreeException("could not add motif: " + m_name + " with parent index: "
-                                     + std::to_string(parent_index) + "there is no node with" +
-                                     "that index");
-        }
-        
-        return parent;
-    }
-    
-    Ints
-    _get_available_parent_end_pos(
-        String const & m_name,
-        TreeNodeOP<MotifOP> const & parent,
-        int parent_end_index) {
-        
-        auto avail_pos = Ints();
-        
-        if(parent_end_index != -1) {
-            int avail = parent->available_pos(parent_end_index);
-            if(!avail) {
-                throw MotifTreeException(
-                    "could not add motif: " + m_name+ " with parent index: " + std::to_string(parent->index()) +
-                    " since the parent_end_index supplied " + std::to_string(parent_end_index) +
-                    " is filled");
-            }
-            else {
-                auto name = parent->data()->ends()[parent_end_index]->name();
-                if(connections_.in_connection(parent->index(), name)) {
-                    throw MotifTreeException(
-                        "could not add motif: " + m_name + " with parent index: " + std::to_string(parent->index()) +
-                        " since the parent_end_index supplied " + std::to_string(parent_end_index) +
-                        " is in a connection");
-                }
-                
-                avail_pos.push_back(parent_end_index);
-            }
-        }
-        
-        else {
-            avail_pos = parent->available_children_pos();
-            if(avail_pos.size() == 1 && avail_pos[0] == parent->data()->block_end_add()) {
-                throw MotifTreeException(
-                    "could not add motif: " + m_name + " with parent: " + std::to_string(parent->index()) +
-                    " since it has no free ends to add too");
-            }
-            
-        }
-        
-        return avail_pos;
-
-    }
-    
     int
-    _steric_clash(
-        MotifOP const &);
-
-public:
+    _get_connection_end(
+        TreeNodeOP<MotifOP> const &,
+        String const &);
     
     void
     add_connection(
@@ -479,29 +419,35 @@ public:
         String const &,
         String const &);
     
+
+public: //removal functions
+    
+    void
+    remove_node(int i=-1);
+    
+    void
+    remove_node_level(int level=-1);
+    
+
+public: //outputing functions
+    
+    inline
+    void
+    to_pdb(
+        String const fname = "test.pdb",
+        int renumber = -1) {
+        
+        try { return merger_.to_pdb(fname, renumber); }
+        catch(MotifMergerException) {
+            throw MotifTreeException(
+                "cannot produce merged structure for a pdb it is likely you have created a ring "
+                "with no start, call write_pdbs() to see what the topology would look like");
+        }
+        
+    }
+    
     String
     topology_to_str();
-
-    void
-    remove_node(
-        int i=-1) {
-        
-        if(i == -1) {
-            i = last_node()->index();
-        }
-        
-        try {
-            auto n = get_node(i);
-            tree_.remove_node(n);
-            merger_.remove_motif(n->data());
-            connections_.remove_connections_to(i);
-        
-        }
-        catch(MotifTreeException) {
-            throw MotifTreeException(
-                "cannot remove node with index: " + std::to_string(i) + " as it does not exist");
-        }
-    }
     
     String
     to_pretty_str() {
@@ -509,7 +455,7 @@ public:
         return printer.print_tree(*this);
     }
     
-private:
+private: //private option functions
     void
     setup_options();
     
