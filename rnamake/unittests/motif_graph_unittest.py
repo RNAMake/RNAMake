@@ -140,10 +140,11 @@ class MotifGraphUnittest(unittest.TestCase):
         dist_1 = util.distance(d1, ds_2[0])
         dist_2 = util.distance(d1, ds_2[1])
 
-
         if dist_1 > 1 and dist_2 > 1 :
             mg.write_pdbs("org")
             new_mg.write_pdbs()
+            mg.to_pdb("test.pdb", renumber=1, close_chain=1)
+            new_mg.to_pdb("test_2.pdb", renumber=1, close_chain=1)
             self.fail("replacing ideal helices messed up graph")
 
         if len(new_mg.merger.get_structure().chains()) != 2:

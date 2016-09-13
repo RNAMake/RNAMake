@@ -157,6 +157,69 @@ MotifTree::_steric_clash(MotifOP const & m) {
 }
 
 int
+MotifTree::_get_connection_end(
+    TreeNodeOP<MotifOP> const & node,
+    String const & bp_name) {
+    
+    int node_end_index = -1;
+    
+    if(bp_name != "") {
+        auto ei = node->data()->end_index(bp_name);
+        
+        if(!node->available_pos(ei)) {
+            throw MotifTreeException(
+                "cannot add connection with " + std::to_string(node->index()) + " and "
+                "end name " + bp_name + " as the end is blocked");
+        }
+        
+        if(ei == node->data()->block_end_add()) {
+            throw MotifTreeException(
+                "cannot add connection with " + std::to_string(node->index()) + " and "
+                "end name " + bp_name + " as the end is blocked");
+        }
+        
+        if(connections_.in_connection(node->index(), bp_name)) {
+            throw MotifTreeException(
+                "cannot add connection with " + std::to_string(node->index()) +
+                " and end name " + bp_name + " as this end is "
+                "already in a connection");
+        }
+        node_end_index = ei;
+        
+    }
+    
+    else {
+        auto node_indexes = node->available_children_pos();
+        node_indexes.erase(node_indexes.begin(),node_indexes.begin()+1);
+        
+        if(node_indexes.size() > 1) {
+            throw MotifTreeException(
+                "cannot connect nodes " + std::to_string(node->index()) + " its unclear "
+                " which ends to attach as there is more then one possibility");
+        }
+        
+        if(node_indexes.size() == 0) {
+            throw MotifTreeException(
+                "cannot connect nodes " + std::to_string(node->index())  + " there are "
+                "no ends free ends to attach too");
+        }
+        
+        auto node_index_name = node->data()->end_name(node_indexes[0]);
+        if(connections_.in_connection(node->index(), node_index_name)) {
+            throw MotifTreeException(
+                "cannot connect nodes " + std::to_string(node->index())  + " there are "
+                "no ends free ends to attach too");
+        }
+        
+        node_end_index = node_indexes[0];
+        
+    }
+    
+    return node_end_index;
+    
+}
+
+int
 MotifTree::add_motif(
     MotifOP const & m,
     int parent_index,
@@ -217,69 +280,6 @@ MotifTree::add_motif(
     
     
     return -1;
-    
-}
-
-int
-MotifTree::_get_connection_end(
-    TreeNodeOP<MotifOP> const & node,
-    String const & bp_name) {
-    
-    int node_end_index = -1;
-    
-    if(bp_name != "") {
-        auto ei = node->data()->end_index(bp_name);
-        
-        if(!node->available_pos(ei)) {
-            throw MotifTreeException(
-                "cannot add connection with " + std::to_string(node->index()) + " and "
-                "end name " + bp_name + " as the end is blocked");
-        }
-        
-        if(ei == node->data()->block_end_add()) {
-            throw MotifTreeException(
-                "cannot add connection with " + std::to_string(node->index()) + " and "
-                "end name " + bp_name + " as the end is blocked");
-        }
-            
-        if(connections_.in_connection(node->index(), bp_name)) {
-            throw MotifTreeException(
-                "cannot add connection with " + std::to_string(node->index()) +
-                " and end name " + bp_name + " as this end is "
-                "already in a connection");
-        }
-        node_end_index = ei;
-
-    }
-    
-    else {
-        auto node_indexes = node->available_children_pos();
-        node_indexes.erase(node_indexes.begin(),node_indexes.begin()+1);
-
-        if(node_indexes.size() > 1) {
-            throw MotifTreeException(
-                "cannot connect nodes " + std::to_string(node->index()) + " its unclear "
-                " which ends to attach as there is more then one possibility");
-        }
-        
-        if(node_indexes.size() == 0) {
-            throw MotifTreeException(
-                "cannot connect nodes " + std::to_string(node->index())  + " there are "
-                "no ends free ends to attach too");
-        }
-        
-        auto node_index_name = node->data()->end_name(node_indexes[0]);
-        if(connections_.in_connection(node->index(), node_index_name)) {
-            throw MotifTreeException(
-                "cannot connect nodes " + std::to_string(node->index())  + " there are "
-                "no ends free ends to attach too");
-        }
-        
-        node_end_index = node_indexes[0];
-
-    }
-    
-    return node_end_index;
     
 }
 
