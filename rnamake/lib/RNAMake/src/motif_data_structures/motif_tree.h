@@ -318,7 +318,6 @@ public: //tree wrappers
     void
     write_pdbs(String const & fname = "nodes");
     
-    
     inline
     void
     increase_level() { tree_.increase_level(); }
@@ -381,7 +380,7 @@ public: //option wrappers
     }
 
     
-public: //adding functions
+private: //adding functions helpers
     
     TreeNodeOP<MotifOP>
     _get_parent(int);
@@ -394,7 +393,16 @@ public: //adding functions
     int
     _steric_clash(
         MotifOP const &);
+    
+    int
+    _get_connection_end(
+        TreeNodeOP<MotifOP> const &,
+        String const &);
 
+
+public: //adding functions
+
+    
     int
     add_motif(
         MotifOP const & m,
@@ -406,11 +414,6 @@ public: //adding functions
         MotifOP const & m,
         int parent_index,
         String parent_end_name);
-    
-    int
-    _get_connection_end(
-        TreeNodeOP<MotifOP> const &,
-        String const &);
     
     void
     add_connection(

@@ -37,7 +37,7 @@ class TreeUnittest(unittest.TestCase):
     def test_remove_node_level(self):
         t = tree.TreeDynamic()
         t.add_data(0)
-        t.next_level()
+        t.increase_level()
         t.add_data(1)
         t.add_data(2)
         t.remove_node_level()

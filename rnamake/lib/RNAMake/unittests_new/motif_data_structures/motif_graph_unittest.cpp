@@ -24,10 +24,10 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto m3 = RM::instance().motif("HELIX.IDEAL.2");
 
         mg.add_motif(m1);
-        mg.add_motif(m2);
-        mg.add_motif(m3);
 
-        REQUIRE(mg.size() == 3);
+        REQUIRE(mg.size() == 1);
+        
+        REQUIRE_THROWS_AS(mg.add_motif(m2, -1, 0), MotifGraphException);
     }
     
     SECTION("test removing motifs") {

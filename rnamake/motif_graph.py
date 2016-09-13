@@ -589,6 +589,26 @@ class MotifGraph(base.Base):
 
             return final_avail_pos
 
+    def _add_motif_to_graph(self, m, parent, parent_end_index):
+        m.new_res_uuids()
+
+        if parent is None:
+            pos = self.graph.add_data(m, -1, -1, -1, len(m.ends), orphan=1)
+            if pos != -1:
+                self.merger.add_motif(m)
+                self.aligned[pos] = 0
+            return pos
+
+        else:
+            pos = self.graph.add_data(m, parent.index, parent_end_index,
+                                      0, len(m.ends))
+
+            if pos != -1:
+                self.merger.add_motif(m, m.ends[0],
+                                      parent.data, parent.data.ends[parent_end_index])
+                self.aligned[pos] = 1
+            return pos
+
     def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
                   parent_end_name=None, m_name=None, m_end_name=None,
                   orphan=0):
@@ -606,11 +626,8 @@ class MotifGraph(base.Base):
         if parent is None or orphan:
             m_copy = m.copy()
             m_copy.get_beads([m_copy.ends[0]])
-            pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends),
-                                      orphan=orphan)
-            self.aligned[pos] = 0
-            self.merger.add_motif(m_copy)
-            return pos
+
+            return self._add_motif_to_graph(m_copy, None, None)
 
         avail_pos = self._get_parent_available_ends(parent, parent_end_index,
                                                     parent_end_name)
@@ -621,11 +638,7 @@ class MotifGraph(base.Base):
                 if self._steric_clash(m_added):
                     continue
 
-            pos = self.graph.add_data(m_added, parent.index, p, 0, len(m_added.ends))
-            self.aligned[pos] = 1
-            self.merger.add_motif(m_added, m_added.ends[0],
-                                  parent.data, parent.data.ends[p])
-            return pos
+            return self._add_motif_to_graph(m_added, parent, p)
 
         return -1
 
@@ -702,27 +715,6 @@ class MotifGraph(base.Base):
                                    node_i.data.ends[node_i_ei],
                                    node_j.data.ends[node_j_ei])
 
-    def _add_motif_to_graph(self, m, parent=None, parent_end_index=None):
-        if parent is None:
-            m_copy = m.copy()
-            m_copy.new_res_uuids()
-            m_copy.get_beads([m_copy.ends[0]])
-
-            pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends), orphan=1)
-            self.merger.add_motif(m_copy)
-            return pos
-
-        else:
-            m_added = motif.get_aligned_motif(parent.data.ends[parent_end_index],
-                                              m.ends[0],
-                                              m)
-            m_added.new_res_uuids()
-            pos = self.graph.add_data(m_added, parent.index, parent_end_index,
-                                      0, len(m_added.ends))
-            self.merger.add_motif(m_added, m_added.ends[0],
-                                  parent.data, parent.data.ends[parent_end_index])
-            return pos
-
     #REMOVE FUNCTIONS   #######################################################
     def remove_motif(self, pos):
         n = self.graph.get_node(pos)
@@ -738,6 +730,110 @@ class MotifGraph(base.Base):
         for i in r[::-1]:
             if self.graph.nodes[i].level >= level:
                 self.remove_motif(self.graph.nodes[i].index)
+
+    #DESIGNING          #######################################################
+    def designable_secondary_structure(self):
+        ss = self.merger.secondary_structure()
+
+        for n in self.graph.nodes:
+            if n.data.name != "HELIX.IDEAL":
+                continue
+            for r in n.data.residues():
+                r_ss = ss.get_residue(uuid=r.uuid)
+                if r_ss is not None:
+                    r_ss.name = "N"
+
+        return ss
+
+    def replace_ideal_helices(self):
+        found = 1
+        while found:
+            found = 0
+            for n in self.graph.nodes:
+                if n.data.mtype != motif_type.HELIX:
+                    continue
+                if len(n.data.residues()) == 4:
+                    continue
+
+                found = 1
+
+                parent = None
+                parent_end_index = None
+                other = None
+                other_end_index = None
+                if n.connections[0] is not None:
+                    parent = n.connections[0].partner(n.index)
+                    parent_end_index = n.connections[0].end_index(parent.index)
+                if n.connections[1] is not None:
+                    other = n.connections[1].partner(n.index)
+                    other_end_index = n.connections[1].end_index(other.index)
+
+                name_spl = n.data.name.split(".")
+                if len(name_spl) == 3:
+                    count = int(name_spl[2])
+                else:
+                    count = 1
+                i = n.index
+                self.remove_motif(i)
+
+                h = rm.manager.get_motif(name="HELIX.IDEAL")
+                if parent is None:
+                    h.get_beads([h.ends[0]])
+                    pos = self._add_motif_to_graph(h, None, None)
+                else:
+                    m_added = motif.get_aligned_motif(parent.data.ends[parent_end_index],
+                                                      h.ends[0], h)
+                    pos = self._add_motif_to_graph(m_added, parent, parent_end_index)
+
+
+                for j in range(0, count):
+                    h = rm.manager.get_motif(name="HELIX.IDEAL")
+                    parent =  self.graph.get_node(pos)
+                    m_added = motif.get_aligned_motif(parent.data.ends[1], h.ends[0], h)
+                    pos = self._add_motif_to_graph(m_added, parent, 1)
+
+                if other:
+                    self.graph.connect(pos, other.index, 1, other_end_index)
+                    node = self.graph.get_node(pos)
+                    self.merger.connect_motifs(node.data, other.data,
+                                              node.data.ends[1],
+                                             other.data.ends[other_end_index])
+                    self.aligned[other.index] = 1
+
+                break
+
+    def replace_helix_sequence(self, ss):
+
+        for n in self.graph.nodes:
+            if n.data.mtype != motif_type.HELIX:
+                continue
+            ss_m = ss.motif(n.data.id)
+            spl = ss_m.end_ids[0].split("_")
+            new_name = spl[0][0] + spl[2][1] + "=" + spl[0][1] + spl[2][0]
+            if new_name == n.data.name:
+                continue
+
+            m = rm.manager.get_motif(name=new_name)
+            m.id = n.data.id
+            org_res = n.data.residues()
+            new_res = m.residues()
+
+            for i in range(len(org_res)):
+                new_res[i].uuid = org_res[i].uuid
+
+            for i in range(len(n.data.basepairs)):
+                m.basepairs[i].uuid = n.data.basepairs[i].uuid
+
+            n.data = m
+
+        self._align_motifs_all_motifs()
+
+    def replace_motifs(self, motifs):
+        for i, m in motifs.iteritems():
+            self.merger.replace_motif(self.get_node(i).data, m)
+            self.get_node(i).data = m
+
+        self._align_motifs_all_motifs()
 
     #GRAPH WRAPPER      #######################################################
     def increase_level(self):
@@ -831,106 +927,6 @@ class MotifGraph(base.Base):
     def to_pretty_str(self):
         printer = self._MotifGraphPrinter(self)
         return printer.print_graph()
-
-    #DESIGNING          #######################################################
-    def designable_secondary_structure(self):
-        ss = self.merger.secondary_structure()
-
-        for n in self.graph.nodes:
-            if n.data.name != "HELIX.IDEAL":
-                continue
-            for r in n.data.residues():
-                r_ss = ss.get_residue(uuid=r.uuid)
-                if r_ss is not None:
-                    r_ss.name = "N"
-
-        return ss
-
-    def replace_ideal_helices(self):
-        found = 1
-        while found:
-            found = 0
-            for n in self.graph.nodes:
-                if n.data.mtype != motif_type.HELIX:
-                    continue
-                if len(n.data.residues()) == 4:
-                    continue
-
-                found = 1
-
-                parent = None
-                parent_end_index = None
-                other = None
-                other_end_index = None
-                if n.connections[0] is not None:
-                    parent = n.connections[0].partner(n.index)
-                    parent_end_index = n.connections[0].end_index(parent.index)
-                if n.connections[1] is not None:
-                    other = n.connections[1].partner(n.index)
-                    other_end_index = n.connections[1].end_index(other.index)
-
-                name_spl = n.data.name.split(".")
-                if len(name_spl) == 3:
-                    count = int(name_spl[2])
-                else:
-                    count = 1
-                i = n.index
-                self.remove_motif(i)
-
-                h = rm.manager.get_motif(name="HELIX.IDEAL")
-                if parent is None:
-                    pos = self._add_motif_to_graph(h)
-                    self.aligned[pos] = 0
-
-                else:
-                    pos = self._add_motif_to_graph(h, parent, parent_end_index)
-                    self.aligned[pos] = 1
-
-                for j in range(0, count):
-                    pos = self._add_motif_to_graph(h, self.graph.get_node(pos), 1)
-                    self.aligned[pos] = 1
-
-                if other:
-                    self.graph.connect(pos, other.index, 1, other_end_index)
-                    node = self.graph.get_node(pos)
-                    # self.structure.connect(self.graph.get_node(pos), other)
-                    self.merger.connect_motifs(node.data, other.data,
-                                              node.data.ends[1],
-                                             other.data.ends[other_end_index])
-                    self.aligned[other.index] = 1
-
-    def replace_helix_sequence(self, ss):
-
-        for n in self.graph.nodes:
-            if n.data.mtype != motif_type.HELIX:
-                continue
-            ss_m = ss.motif(n.data.id)
-            spl = ss_m.end_ids[0].split("_")
-            new_name = spl[0][0] + spl[2][1] + "=" + spl[0][1] + spl[2][0]
-            if new_name == n.data.name:
-                continue
-
-            m = rm.manager.get_motif(name=new_name)
-            m.id = n.data.id
-            org_res = n.data.residues()
-            new_res = m.residues()
-
-            for i in range(len(org_res)):
-                new_res[i].uuid = org_res[i].uuid
-
-            for i in range(len(n.data.basepairs)):
-                m.basepairs[i].uuid = n.data.basepairs[i].uuid
-
-            n.data = m
-
-        self._align_motifs_all_motifs()
-
-    def replace_motifs(self, motifs):
-        for i, m in motifs.iteritems():
-            self.merger.replace_motif(self.get_node(i).data, m)
-            self.get_node(i).data = m
-
-        self._align_motifs_all_motifs()
 
     #GETTERS            #######################################################
     def get_build_points(self):

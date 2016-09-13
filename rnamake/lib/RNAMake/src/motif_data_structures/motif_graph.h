@@ -291,36 +291,19 @@ private:
     };
 
     
-public:
+public: //construction
     
-    MotifGraph():
-    graph_(GraphStatic<MotifOP>()),
-    merger_(std::make_shared<MotifMerger>()),
-    clash_radius_(2.5),
-    sterics_(1),
-    options_(Options()),
-    aligned_(std::map<int, int>())
-    {  setup_options(); }
-    
-    MotifGraph(String const &);
-    
-    MotifGraph(String const &,
-               MotifGraphStringType const &);
+    MotifGraph();
     
     MotifGraph(
-        MotifGraph const & mg):
-    options_(Options()),
-    graph_(GraphStatic<MotifOP>(mg.graph_)) {
-        auto motifs = MotifOPs();
-        // dear god this is horrible but cant figure out a better way to do a copy
-        for(auto const & n : mg.graph_.nodes()) {
-            graph_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
-            motifs.push_back(graph_.get_node(n->index())->data());
-        }
-        options_ = Options(mg.options_);
-        merger_ = std::make_shared<MotifMerger>(*mg.merger_, motifs);
-        
-    }
+        String const &);
+    
+    MotifGraph(
+        String const &,
+        MotifGraphStringType const &);
+    
+    MotifGraph(
+        MotifGraph const &);
 
     ~MotifGraph() { }
 
@@ -335,149 +318,23 @@ public: //iterators
     const_iterator begin() const { return graph_.begin(); }
     const_iterator end()   const { return graph_.end(); }
     
-public:
-
-    void
-    remove_motif(int);
-    
-    void
-    remove_level(int level);
-    
-    void
-    replace_ideal_helices();
-    
-    void
-    replace_helical_sequence(sstruct::PoseOP const &);
-    
-    
-    sstruct::PoseOP
-    designable_secondary_structure() {
-        auto ss = merger_->secondary_structure();
-        auto ss_r = sstruct::ResidueOP(nullptr);
-        
-        for(auto const & n : graph_) {
-            if(n->data()->name() != "HELIX.IDEAL") { continue;}
-            for(auto const & r : n->data()->residues()) {
-                ss_r= ss->get_residue(r->uuid());
-                if(ss_r != nullptr) {
-                    ss_r->name("N");
-                }
-            }
-        }
-        
-        return ss;
-    }
-    
-    void
-    write_pdbs(String const & fname = "nodes");
-    
-    inline
-    Beads
-    beads() {
-        Beads beads;
-        for(auto const & n : graph_.nodes()) {
-            std::copy(n->data()->beads().begin(),
-                      n->data()->beads().end(),
-                      std::inserter(beads, beads.end()));
-        }
-        return beads;
-    }
-    
-    String
-    topology_to_str();
-    
-    String
-    to_str();
-    
-    
-    
-    String
-    to_pretty_str() {
-        auto printer = MotifGraphPrinter(*this);
-        return printer.print_graph(*this);
-    }
-
-    
-public: //add motif interface
-    
-    int
-    add_motif(
-        MotifOP const & m,
-        int parent_index = -1,
-        int parent_end_index = -1);
-
-    int
-    add_motif(
-        MotifOP const &,
-        int,
-        String const &);
-
-private: //add motif helpers
+private://add function helpers
     
     GraphNodeOP<MotifOP>
     _get_parent(
-        String const & m_name,
-        int parent_index) {
-        
-        auto parent = graph_.last_node();
-        
-        //catch non existant parent
-        try {
-            if(parent_index != -1) { parent = graph_.get_node(parent_index); }
-        }
-        catch(GraphException e) {
-            throw MotifGraphException(
-                "could not add motif: " + m_name + " with parent index: " +
-                std::to_string(parent_index) + "there is no node with that index");
-        }
-        
-        return parent;
-    }
-    
-    int
-    inline
-    _add_orphan_motif_to_graph(
-        MotifOP const & m) {
-        
-        auto m_copy = std::make_shared<Motif>(*m);
-        m_copy->get_beads(m_copy->ends());
-        int pos = graph_.add_data(m_copy, -1, -1, -1, (int)m_copy->ends().size(), 1);
-        merger_->add_motif(m_copy);
-        aligned_[pos] = 0;
-        return pos;
-    }
-    
-    int
-    inline
-    _add_motif_to_graph_new(
-        MotifOP const & m,
-        GraphNodeOP<MotifOP> const & parent,
-        int parent_end_index,
-        bool sterics) {
-        
-        auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
-                                         m->ends()[0], m);
-        
-        if(sterics && _steric_clash(m_added)) { return -1; }
-        
-        int pos = graph_.add_data(m_added, parent->index(), parent_end_index,
-                                  0, (int)m_added->ends().size());
-        
-        if(pos != -1) {
-            merger_->add_motif(m_added, m_added->ends()[0],
-                              parent->data(), parent->data()->ends()[parent_end_index]);
-        }
-        
-        aligned_[pos] = 1;
-        return pos;
-
-    }
+        String const &,
+        int);
     
     int
     _add_motif_to_graph(
-        MotifOP const & m,
-        int parent_index = -1,
-        int parent_end_index = -1);
+        MotifOP &,
+        GraphNodeOP<MotifOP> const &,
+        int);
+
+    Ints
+    _get_available_parent_end_pos(
+        GraphNodeOP<MotifOP> const &,
+        int);
     
     void
     _add_motif_tree(
@@ -485,7 +342,26 @@ private: //add motif helpers
         int,
         int);
     
-public:
+    int
+    _steric_clash(
+        MotifOP const &);
+    
+    void
+    _align_motifs_all_motifs();
+
+public: //add functions
+    
+    int
+    add_motif(
+        MotifOP const & m,
+        int parent_index = -1,
+        int parent_end_index = -1);
+    
+    int
+    add_motif(
+        MotifOP const &,
+        int,
+        String const &);
     
     void
     add_motif_tree(
@@ -505,27 +381,17 @@ public:
         int,
         String const &,
         String const &);
+
+public: //remove functions
+
+    void
+    remove_motif(int);
     
-    BasepairOP const &
-    get_available_end(int);
+    void
+    remove_level(int level);
     
-    BasepairOP const &
-    get_available_end(
-        int,
-        String const &);
     
-    BasepairOP 
-    get_available_end(
-        String const &,
-        String const &);
-    
-    GraphNodeOPs<MotifOP> const
-    unaligned_nodes() const;
-    
-    _MotifGraphBuildPointOPs
-    get_build_points();
-    
-public: //Graph Wrappers
+public: //graph wrappers
     inline
     size_t
     size() { return graph_.size(); }
@@ -575,12 +441,90 @@ public: //Graph Wrappers
         
         if(node == nullptr) {
             throw MotifGraphException(
-                "cannot get node with name: " + m_name + " there is no motif in the tree with "
-                "this name");
+                        "cannot get node with name: " + m_name + " there is no motif in the tree with "
+                        "this name");
         }
         
         return node;
     }
+
+
+public: //designing functions
+    void
+    replace_ideal_helices();
+    
+    void
+    replace_helical_sequence(sstruct::PoseOP const &);
+    
+    
+    sstruct::PoseOP
+    designable_secondary_structure() {
+        auto ss = merger_->secondary_structure();
+        auto ss_r = sstruct::ResidueOP(nullptr);
+        
+        for(auto const & n : graph_) {
+            if(n->data()->name() != "HELIX.IDEAL") { continue;}
+            for(auto const & r : n->data()->residues()) {
+                ss_r= ss->get_residue(r->uuid());
+                if(ss_r != nullptr) {
+                    ss_r->name("N");
+                }
+            }
+        }
+        
+        return ss;
+    }
+    
+    
+public: // outputing functions
+    void
+    write_pdbs(String const & fname = "nodes");
+    
+    String
+    topology_to_str();
+    
+    String
+    to_str();
+    
+    String
+    to_pretty_str() {
+        auto printer = MotifGraphPrinter(*this);
+        return printer.print_graph(*this);
+    }
+
+public:
+    
+    inline
+    Beads
+    beads() {
+        Beads beads;
+        for(auto const & n : graph_.nodes()) {
+            std::copy(n->data()->beads().begin(),
+                      n->data()->beads().end(),
+                      std::inserter(beads, beads.end()));
+        }
+        return beads;
+    }
+    
+    BasepairOP const &
+    get_available_end(int);
+    
+    BasepairOP const &
+    get_available_end(
+        int,
+        String const &);
+    
+    BasepairOP 
+    get_available_end(
+        String const &,
+        String const &);
+    
+    GraphNodeOPs<MotifOP> const
+    unaligned_nodes() const;
+    
+    _MotifGraphBuildPointOPs
+    get_build_points();
+    
     
     
 public: //Motif Merger Wrappers
@@ -650,14 +594,6 @@ public: //Options Wrappers
         update_var_options();
     }
 
-    
-private:
-    int
-    _steric_clash(
-        MotifOP const &);
-    
-    void
-    _align_motifs_all_motifs();
     
 private:
     void
