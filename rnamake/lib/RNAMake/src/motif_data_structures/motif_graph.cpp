@@ -202,7 +202,7 @@ MotifGraph::_get_parent(
     try {
         if(parent_index != -1) { parent = graph_.get_node(parent_index); }
     }
-    catch(GraphException e) {
+    catch(GraphException const & e) {
         throw MotifGraphException(
             "could not add motif: " + m_name + " with parent index: " +
             std::to_string(parent_index) + "there is no node with that index");
@@ -296,6 +296,56 @@ MotifGraph::_steric_clash(MotifOP const & m) {
     return 0;
 }
 
+int
+MotifGraph::_get_connection_end(
+    GraphNodeOP<MotifOP> const & node,
+    String const & bp_name) {
+    
+    int node_end_index = -1;
+    
+    if(bp_name != "") {
+        auto ei = node->data()->end_index(bp_name);
+        
+        if(!node->available_pos(ei)) {
+            throw MotifGraphException(
+                "cannot add connection with " + std::to_string(node->index()) + " and "
+                "end name " + bp_name + " as the end is blocked");
+        }
+        
+        if(ei == node->data()->block_end_add()) {
+            throw MotifGraphException(
+                "cannot add connection with " + std::to_string(node->index()) + " and "
+                "end name " + bp_name + " as the end is blocked");
+        }
+
+        node_end_index = ei;
+        
+    }
+    
+    else {
+        auto node_indexes = node->available_children_pos();
+        
+        if(node_indexes.size() > 1) {
+            throw MotifGraphException(
+                "cannot connect nodes " + std::to_string(node->index()) + " its unclear "
+                " which ends to attach as there is more then one possibility");
+        }
+        
+        if(node_indexes.size() == 0) {
+            throw MotifGraphException(
+                "cannot connect nodes " + std::to_string(node->index())  + " there are "
+                "no ends free ends to attach too");
+        }
+        
+        auto node_index_name = node->data()->end_name(node_indexes[0]);
+        node_end_index = node_indexes[0];
+        
+    }
+    
+    return node_end_index;
+    
+}
+
 void
 MotifGraph::_align_motifs_all_motifs() {
     int start = -1;
@@ -339,7 +389,8 @@ MotifGraph::add_motif(
     auto parent_end_index = 0;
     
     if(parent == nullptr) {
-        
+        throw MotifGraphException(
+            "cannot add motif: " + m->name() + " as there are no open parents to add too");
     }
     
     try {
@@ -349,6 +400,12 @@ MotifGraph::add_motif(
         throw MotifGraphException(
             "cannot find parent_end_name: " + p_end_name + " in "
             "parent motif: " + parent->data()->name());
+    }
+    
+    if(parent_end_index == m->block_end_add()) {
+        throw MotifGraphException(
+            "cannot add motif: to graph as the parent_end_name"
+            " supplied is blocked see class Motif");
     }
     
     return add_motif(m, parent_index, parent_end_index);
@@ -447,68 +504,36 @@ MotifGraph::add_connection(
     String const & i_bp_name,
     String const & j_bp_name) {
     
-    auto node_i = graph_.get_node(i);
-    auto node_j = graph_.get_node(j);
+    auto node_i = GraphNodeOP<MotifOP>(nullptr);
+    auto node_j = GraphNodeOP<MotifOP>(nullptr);
     
-    auto name_i = String("");
-    auto name_j = String("");
-    auto ei = -1;
-    auto ej = -1;
-
-    
-    if (i_bp_name != "") {
-        ei = node_i->data()->end_index(i_bp_name);
-        
-        if(!node_i->available_pos(ei)) {
-            throw MotifGraphException(
-                "cannot add connection between nodes " + std::to_string(i) + " and " +
-                std::to_string(j) + " as specified end for i is filled: " + i_bp_name);
-        }
-        
-        name_i = i_bp_name;
-    }
-    else {
-        auto node_i_indexes = node_i->available_children_pos();
-
-        if(node_i_indexes.size() == 0) {
-            throw MotifGraphException(
-                "cannot add connection between nodes " + std::to_string(i) + " and " +
-                std::to_string(j) + " as no ends are available for : " + std::to_string(i));
-        }
-        ei = node_i_indexes[0];
-        name_i = node_i->data()->ends()[ei]->name();
+    try {  node_i = graph_.get_node(i); }
+    catch(TreeException) {
+        throw MotifTreeException(
+            "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
+            std::to_string(i) +" does not exist");
     }
     
-    if (j_bp_name != "") {
-        ej = node_j->data()->end_index(j_bp_name);
-
-        if(!node_j->available_pos(ej)) {
-            throw MotifGraphException(
-                "cannot add connection between nodes " + std::to_string(i) + " and " +
-                std::to_string(j) + " as specified end for j is filled: " + j_bp_name);
-        }
-        
-        name_j = j_bp_name;
+    try {  node_j = graph_.get_node(j); }
+    catch(TreeException) {
+        throw MotifTreeException(
+            "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
+            std::to_string(j) +" does not exist");
     }
-    else {
-        auto node_j_indexes = node_j->available_children_pos();
-
-        if(node_j_indexes.size() == 0) {
-            throw MotifGraphException(
-                "cannot add connection between nodes " + std::to_string(i) + " and " +
-                std::to_string(j) + " as no ends are available for : " + std::to_string(j));
-        }
-        
-        ej = node_j_indexes[0];
-        name_j = node_j->data()->ends()[ej]->name();
-    }
-        
-    graph_.connect(i, j, ei, ej);
+    
+    auto node_i_ei = _get_connection_end(node_i, i_bp_name);
+    auto node_j_ei = _get_connection_end(node_j, j_bp_name);
+    
+    auto node_i_end_name = node_i->data()->end_name(node_i_ei);
+    auto node_j_end_name = node_j->data()->end_name(node_j_ei);
+    
+    
+    graph_.connect(i, j, node_i_ei, node_j_ei);
     
     merger_->connect_motifs(node_i->data(), node_j->data(),
-                           node_i->data()->ends()[ei],
-                           node_j->data()->ends()[ej]);
-    
+                            node_i->data()->ends()[node_i_ei],
+                            node_j->data()->ends()[node_j_ei]);
+
 }
 
 

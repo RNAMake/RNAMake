@@ -346,6 +346,12 @@ private://add function helpers
     _steric_clash(
         MotifOP const &);
     
+    
+    int
+    _get_connection_end(
+        GraphNodeOP<MotifOP> const &,
+        String const &);
+    
     void
     _align_motifs_all_motifs();
 
