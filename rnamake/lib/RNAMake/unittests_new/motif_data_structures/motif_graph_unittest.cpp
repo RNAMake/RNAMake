@@ -16,18 +16,35 @@
 
 TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
 
-    
     SECTION("test adding motifs") {
         auto mg = MotifGraph();
         auto m1 = RM::instance().motif("HELIX.IDEAL.2");
         auto m2 = RM::instance().motif("HELIX.IDEAL.2");
         auto m3 = RM::instance().motif("HELIX.IDEAL.2");
-
+        
+        SECTION("cannot find end if there is not parent") {
+            REQUIRE_THROWS_AS(mg.add_motif(m1, -1, "A1-A8"), MotifGraphException);
+        }
+        
         mg.add_motif(m1);
 
         REQUIRE(mg.size() == 1);
         
+        // can never use parent_end_index=0 for a graph as that is where that node
+        // is already connected to another node
         REQUIRE_THROWS_AS(mg.add_motif(m2, -1, 0), MotifGraphException);
+        
+        // catches invalid parent_index
+        REQUIRE_THROWS_AS(mg.add_motif(m2, 2), MotifGraphException);
+        
+        // invalid parent_end_index, has only 0 and 1
+        REQUIRE_THROWS_AS(mg.add_motif(m2, -1, 3), MotifGraphException);
+        
+        // invalid parent_end_name, is the name of end 0
+        REQUIRE_THROWS_AS(mg.add_motif(m2, -1, "A4-A5"), MotifGraphException);
+        
+        // invalid parent_end_name, cannot be found as an end in motif
+        REQUIRE_THROWS_AS(mg.add_motif(m2, -1, "FAKE"), MotifGraphException);
     }
     
     SECTION("test removing motifs") {
@@ -229,6 +246,12 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         mg.add_motif(nway);
         mg.add_motif(m2);
 
+        // try connecting through 0th end position
+        REQUIRE_THROWS_AS(mg.add_connection(1, 2, "A138-A180", ""), MotifGraphException);
+        
+        // try connecting thru an already used end position
+        REQUIRE_THROWS_AS(mg.add_connection(1, 2, "A141-A162", ""), MotifGraphException);
+        
         mg.add_connection(1, 2, "", "");
         auto s = mg.get_structure();
         REQUIRE(s->chains().size() == 1);

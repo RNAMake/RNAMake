@@ -551,7 +551,7 @@ class MotifGraph(base.Base):
 
             if parent_end_index == parent.data.block_end_add:
                 raise exceptions.MotifGraphException(
-                    "cannot add motif: to tree as the parent_end_name" +
+                    "cannot add motif: to graph as the parent_end_name" +
                     " supplied is blocked see class Motif")
 
             available = parent.available_pos(parent_end_index)
