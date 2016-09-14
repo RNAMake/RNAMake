@@ -14,6 +14,7 @@
 #include "base/types.h"
 #include "math/xyz_vector.h"
 #include "math/xyz_matrix.h"
+#include "util/uuid.h"
 #include "structure/basepair_state.fwd.h"
 #include "structure/basepair_state.h"
 
@@ -37,7 +38,30 @@ public:
     beads_(beads),
     score_(score),
     size_(size),
-    block_end_add_(block_end_add)
+    block_end_add_(block_end_add),
+    uuid_(Uuid())
+    {}
+    
+    inline
+    MotifState(
+        String const & name,
+        Strings const & end_names,
+        Strings const & end_ids,
+        BasepairStateOPs const & end_states,
+        Points const & beads,
+        float const & score,
+        int const & size,
+        int const & block_end_add,
+        Uuid const & uuid):
+    name_(name),
+    end_names_(end_names),
+    end_ids_(end_ids),
+    end_states_(end_states),
+    beads_(beads),
+    score_(score),
+    size_(size),
+    block_end_add_(block_end_add),
+    uuid_(uuid)
     {}
     
     inline
@@ -50,7 +74,8 @@ public:
     beads_(ms.beads_),
     score_(ms.score_),
     size_(ms.size_),
-    block_end_add_(ms.block_end_add_) {
+    block_end_add_(ms.block_end_add_),
+    uuid_(ms.uuid_) {
         int i = 0;
         for(auto const & bp_state : ms.end_states_) {
             end_states_[i] = std::make_shared<BasepairState>(*bp_state);
@@ -75,6 +100,7 @@ public:
             auto bp_state = std::make_shared<BasepairState>(spl[i]);
             end_states_.push_back(bp_state);
         }
+        uuid_ = Uuid();
 
         
     }
@@ -160,6 +186,7 @@ private:
     float score_;
     int size_;
     int block_end_add_;
+    Uuid uuid_;
     
 };
 
