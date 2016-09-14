@@ -65,45 +65,9 @@ typedef TreeNodeOP<MSTNodeDataOP> MotifStateTreeNodeOP;
 class MotifStateTree {
 public:
     
-    MotifStateTree() {
-        tree_ = TreeStatic<MSTNodeDataOP>();
-        aligner_ = MotifStateAligner();
-        queue_ = std::queue<MotifStateTreeNodeOP>();
-        options_ = Options("MotifTreeStateOptions");
-        setup_options();
-    }
+    MotifStateTree();
     
-    MotifStateTree(
-        MotifTreeOP const & mt) {
-        
-        tree_ = TreeStatic<MSTNodeDataOP>();
-        aligner_ = MotifStateAligner();
-        queue_ = std::queue<MotifStateTreeNodeOP>();
-        options_ = Options("MotifTreeStateOptions");
-        setup_options();
-        
-        int i = -1;
-        for(auto const & n : *mt) {
-            i++;
-            auto ms = RM::instance().motif_state(n->data()->name(),
-                                                 n->data()->end_ids()[0],
-                                                 n->data()->ends()[0]->name());
-            
-            if(i == 0) {
-                add_state(ms);
-            }
-            
-            else {
-                int j = add_state(ms, n->parent_index(), n->parent_end_index());
-                if(j == -1) {
-                    throw MotifStateTreeException(
-                        "could not convert motif tree to motif state tree");
-                }
-            }
-            
-        }
-        
-    }
+    MotifStateTree(MotifTreeOP const &);
     
     MotifStateTree(
         MotifStateTree const & mst):

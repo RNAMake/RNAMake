@@ -577,12 +577,20 @@ MotifGraph::replace_ideal_helices() {
             
             auto parent = GraphNodeOP<MotifOP>(nullptr);
             auto parent_end_index = 0;
+            auto other  = GraphNodeOP<MotifOP>(nullptr);
+            auto other_end_index = 0;
             
             if(n->connections()[0] != nullptr) {
                 parent = n->connections()[0]->partner(n->index());
                 parent_end_index = n->connections()[0]->end_index(parent->index());
             }
-                      auto name_spl = split_str_by_delimiter(n->data()->name(), ".");
+            
+            if(n->connections()[1] != nullptr) {
+                other = n->connections()[1]->partner(n->index());
+                other_end_index = n->connections()[1]->end_index(other->index());
+            }
+
+            auto name_spl = split_str_by_delimiter(n->data()->name(), ".");
             int count = 1;
             if(name_spl.size() == 3) {
                 count = std::stoi(name_spl[2]);
@@ -612,14 +620,7 @@ MotifGraph::replace_ideal_helices() {
                 old_pos = pos;
             }
             
-            auto other  = GraphNodeOP<MotifOP>(nullptr);
-            auto other_end_index = 0;
-            
-            if(n->connections()[1] != nullptr) {
-                other = n->connections()[1]->partner(n->index());
-                other_end_index = n->connections()[1]->end_index(other->index());
-            }
-
+      
             if(other != nullptr) {
                 graph_.connect(pos, other->index(), 1, other_end_index);
                 auto node = graph_.get_node(pos);

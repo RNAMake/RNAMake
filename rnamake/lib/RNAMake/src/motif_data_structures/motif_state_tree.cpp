@@ -9,6 +9,46 @@
 #include "motif_data_structures/motif_state_tree.h"
 #include "resources/resource_manager.h"
 
+
+MotifStateTree::MotifStateTree():
+    tree_(TreeStatic<MSTNodeDataOP>()),
+    aligner_(MotifStateAligner()),
+    queue_(std::queue<MotifStateTreeNodeOP>()),
+    options_(Options()) {
+    setup_options();
+}
+
+MotifStateTree::MotifStateTree(
+    MotifTreeOP const & mt):
+    MotifStateTree() {
+    
+    int i = -1;
+    for(auto const & n : *mt) {
+        i++;
+        auto ms = RM::instance().motif_state(n->data()->name(),
+                                             n->data()->end_ids()[0],
+                                             n->data()->ends()[0]->name());
+        
+        if(i == 0) {
+            add_state(ms);
+        }
+        
+        else {
+            int j = add_state(ms, n->parent_index(), n->parent_end_index());
+            if(j == -1) {
+                throw MotifStateTreeException(
+                    "could not convert motif tree to motif state tree");
+            }
+        }
+        
+    }
+    
+}
+
+
+//add functions ////////////////////////////////////////////////////////////////////////////////////
+
+
 void
 MotifStateTree::setup_options() {
     options_.add_option("sterics", true, OptionType::BOOL);
