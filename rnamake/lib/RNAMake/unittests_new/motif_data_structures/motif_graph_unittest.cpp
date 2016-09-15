@@ -137,16 +137,27 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto builder = MotifGraphBuilder();
         auto mg = builder.build(5);
         
-        auto mg2 = std::make_shared<MotifGraph>(*mg);
+        auto mg_copy = std::make_shared<MotifGraph>(*mg);
         
-        REQUIRE(mg->size() == mg2->size());
+        REQUIRE(mg->size() == mg_copy->size());
         
         for(int i = 0; i < mg->size(); i++) {
             auto atoms1 = mg->get_node(i)->data()->atoms();
-            auto atoms2 = mg2->get_node(i)->data()->atoms();
+            auto atoms2 = mg_copy->get_node(i)->data()->atoms();
             REQUIRE(are_atom_vectors_equal(atoms1, atoms2));
             
         }
+        
+        for(auto const & n : *mg_copy) {
+            int count = 0;
+            for(auto const & c : n->connections()) {
+                if(c != nullptr) { count++; }
+            }
+            REQUIRE(count != 0);
+        }
+        
+        auto rna_struct = mg_copy->get_structure();
+        REQUIRE(rna_struct->chains().size() == 2);
 
         
         

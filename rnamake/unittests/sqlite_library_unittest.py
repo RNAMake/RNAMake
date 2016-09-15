@@ -107,6 +107,21 @@ class SqliteLibraryUnittest(unittest.TestCase):
         m2 = mlib.get(name="HELIX.IDEAL")
         self.failIf(m1.id == m2.id)
 
+    def _test_get_all_bulges(self):
+        mlib = sqlite_library.MotifSqliteLibrary("twoway")
+        mlib.load_all()
+
+        seen = []
+        for m in mlib.all():
+            if len(m.residues()) != 5:
+                continue
+            if m.name in seen:
+                continue
+            seen.append(m.name)
+
+            m.to_pdb(m.name + ".pdb")
+
+
 def main():
     unittest.main()
 

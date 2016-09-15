@@ -25,9 +25,7 @@ Motif::Motif(
     String const & s,
     ResidueTypeSet const & rts):
 RNAStructure(),
-id_(Uuid())
-
-{
+id_(Uuid()) {
  
     if(s.length() < 10) {
         throw "tried to construct Motif object from string, with a string too short";
@@ -191,7 +189,7 @@ Motif::get_state() {
         end_names.push_back(end->name());
     }
     MotifState ms(name_, end_names, end_ids_, end_states, bead_centers, score_,
-                  (int)residues().size(), block_end_add_);
+                  (int)residues().size(), block_end_add_, id_);
     return std::make_shared<MotifState>(ms);
 }
 
@@ -239,7 +237,7 @@ get_aligned_motif(
     BasepairOP const & motif_end,
     MotifOP const & motif) {
     
-    int motif_end_index = motif->end_index(motif_end);
+    int motif_end_index = motif->get_end_index(motif_end);
     auto m_copy = std::make_shared<Motif>(*motif);
     auto new_motif_end = m_copy->ends()[motif_end_index];
     //align_motif(ref_bp->state(), motif_end, m_copy);

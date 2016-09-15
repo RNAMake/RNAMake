@@ -189,17 +189,6 @@ class MotifTreeUnittest(unittest.TestCase):
         #mt.write_pdbs()
         #mt.to_pdb("test_new.pdb", renumber=1)
 
-    def test_copy(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build(10)
-        mt_copy = mt.copy()
-
-        if len(mt) != len(mt_copy):
-            self.fail("did not copy the right number of nodes")
-
-        mt.get_node(0).data.name = "test"
-        #print mt_copy.get_node(0)
-
     def test_pretty_print(self):
         mt = motif_tree.MotifTree();
         m1 = rm.manager.get_motif(name="HELIX.IDEAL.2");
@@ -291,6 +280,13 @@ class MotifTreeUnittest(unittest.TestCase):
         with self.assertRaises(exceptions.MotifTreeException):
             mt.add_connection(1, 2)
 
+    def test_copy(self):
+        mt = self._get_sub_motif_tree()
+        mt_copy = mt.copy()
+        mt.add_connection(2, 3)
+
+        self.failUnless(len(mt) == len(mt_copy))
+        self.failUnless(len(mt.connections.connections) == 1)
 
 
 def main():

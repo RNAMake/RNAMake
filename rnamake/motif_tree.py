@@ -365,7 +365,8 @@ class MotifTree(base.Base):
         new_tree = self.tree.copy()
         mt.tree = new_tree
         mt.merger = self.merger.copy([n.data for n in new_tree.nodes])
-        mt.connections = [c.copy() for c in self.connections]
+        mt.connections = self.connections.copy()
+
         return mt
 
     def setup_options_and_constraints(self):
@@ -856,11 +857,18 @@ class MotifTree(base.Base):
         if level is None:
             level = self.tree.level
 
-        r = range(1, len(self.tree.nodes))
-        for i in r[::-1]:
-            n = self.tree.nodes[i]
-            if self.tree.nodes[i].level >= level:
-                self.remove_node(self.tree.nodes[i].index)
+        while 1:
+            found = 0
+            r = range(0, len(self.tree.nodes))
+            for i in r[::-1]:
+                n = self.tree.nodes[i]
+                if n.level >= level:
+                    self.remove_node(n.index)
+                    found = 1
+                    break
+            if found == 0:
+                break
+
 
     #TREE WRAPPER      ########################################################
     def get_node(self, i):

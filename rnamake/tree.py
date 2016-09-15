@@ -135,10 +135,12 @@ class Tree(object):
 
         node = self.current_node
 
-        if len(self.nodes)-1 == node.index:
+        index = self.nodes.index(node)
+
+        if len(self.nodes)-1 == index:
             self.current_node = None
         else:
-            self.current_node = self.nodes[node.index + 1]
+            self.current_node = self.nodes[index + 1]
 
         return node
 

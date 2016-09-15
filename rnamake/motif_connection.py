@@ -28,6 +28,12 @@ class MotifConnections(object):
     def __iter__(self):
         return iter(self.connections)
 
+    def copy(self):
+        mcs_copy = MotifConnections()
+        for c in self.connections:
+            mcs_copy.add_connection(c.i, c.j, c.name_i, c.name_j)
+        return mcs_copy
+
     def add_connection(self, i, j, name_i, name_j):
         c = MotifConnection(i, j, name_i, name_j)
         self.connections.append(c)

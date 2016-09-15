@@ -80,5 +80,18 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         
     }
     
+    SECTION("test getting motif end information") {
+        REQUIRE_NOTHROW(ms->get_end_index("A5-A6"));
+        REQUIRE_THROWS_AS(ms->get_end_index("FAKE"), MotifStateException);
+        
+        REQUIRE_NOTHROW(ms->get_end_state("A5-A6"));
+        REQUIRE_THROWS_AS(ms->get_end_state("FAKE"), MotifStateException);
 
+        auto end = ms->end_states()[0];
+        
+        REQUIRE(ms->get_end_index(end) == 0 );  
+        
+    }
+    
+    
 }

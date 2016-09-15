@@ -324,6 +324,7 @@ public:
             auto c = std::make_shared<GraphConnection<DataType>>(parent, n, 0, 0);
             parent->add_connection(c);
             n->add_connection(c);
+            this->connections_.push_back(c);
         }
     
         this->nodes_.push_back(n);
@@ -383,7 +384,6 @@ public:
         
         this->level_ = g.level_;
         this->index_ = g.index_;
-        
     }
     
     ~GraphStatic() {

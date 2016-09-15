@@ -48,7 +48,9 @@ MotifStateSqliteLibrary::get(
     
     connection_.clear();
     
-    return std::make_shared<MotifState>(*data_[row->id]);
+    auto state =  std::make_shared<MotifState>(*data_[row->id]);
+    state->new_uuids();
+    return state;
     
 }
 
@@ -75,6 +77,7 @@ MotifStateSqliteLibrary::get_multi(
         }
         
         motif_states.push_back(std::make_shared<MotifState>(*data_[row->id]));
+        motif_states.back()->new_uuids();
         row = connection_.next();
     }
     

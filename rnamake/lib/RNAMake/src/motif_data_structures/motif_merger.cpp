@@ -183,7 +183,7 @@ MotifMerger::_build_structure() {
         
         if(n->available_pos(0)) { starts.push_back(n); }
     }
-        
+    
     if(starts.size() == 0 and graph_.nodes().size() > 0) {
         throw MotifMergerException("no place to start in chain graph to build structure");
     }

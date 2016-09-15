@@ -176,15 +176,16 @@ MotifGraph::MotifGraph(
     MotifGraph const & mg):
     options_(Options()),
     graph_(GraphStatic<MotifOP>(mg.graph_)) {
+        
     auto motifs = MotifOPs();
     // dear god this is horrible but cant figure out a better way to do a copy
     for(auto const & n : mg.graph_.nodes()) {
         graph_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
         motifs.push_back(graph_.get_node(n->index())->data());
     }
+        
     options_ = Options(mg.options_);
     merger_ = std::make_shared<MotifMerger>(*mg.merger_, motifs);
-    
 }
 
 
@@ -304,7 +305,7 @@ MotifGraph::_get_connection_end(
     int node_end_index = -1;
     
     if(bp_name != "") {
-        auto ei = node->data()->end_index(bp_name);
+        auto ei = node->data()->get_end_index(bp_name);
         
         if(!node->available_pos(ei)) {
             throw MotifGraphException(
@@ -394,7 +395,7 @@ MotifGraph::add_motif(
     }
     
     try {
-        parent_end_index = parent->data()->end_index(p_end_name);
+        parent_end_index = parent->data()->get_end_index(p_end_name);
     }
     catch (RNAStructureException const & e) {
         throw MotifGraphException(
@@ -454,7 +455,7 @@ MotifGraph::add_motif_tree(
     String const & parent_end_name) {
     
     auto parent = _get_parent("motif_tree", parent_index);
-    auto parent_end_index = parent->data()->end_index(parent_end_name);
+    auto parent_end_index = parent->data()->get_end_index(parent_end_name);
     _add_motif_tree(mt, parent_index, parent_end_index);
 }
 
@@ -765,7 +766,7 @@ MotifGraph::get_available_end(
     String const & end_name) {
     
     auto n = graph_.get_node(pos);
-    auto end_index = n->data()->end_index(end_name);
+    auto end_index = n->data()->get_end_index(end_name);
     if(!n->available_pos(end_index)) {
         throw MotifGraphException(
             "attempting to get end with pos " + std::to_string(pos) + "and end_name " + end_name +
@@ -818,7 +819,7 @@ MotifGraph::get_available_end(
         
     }
     
-    auto end_index = node->data()->end_index(end_name);
+    auto end_index = node->data()->get_end_index(end_name);
     if(!node->available_pos(end_index)) {
         throw MotifGraphException(
             "attempting to get end with m_name " + m_name + "and end_name " + end_name +

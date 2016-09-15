@@ -18,6 +18,20 @@
 #include "structure/basepair_state.fwd.h"
 #include "structure/basepair_state.h"
 
+/*
+* Exception for MotifState
+*/
+class MotifStateException : public std::runtime_error {
+public:
+    /**
+     * Standard constructor for MotifStateException
+     * @param   message   Error message for motif state
+     */
+    MotifStateException(String const & message):
+    std::runtime_error(message)
+    {}
+};
+
 
 class MotifState {
 public:
@@ -110,8 +124,6 @@ public:
 
 public:
     
-    MotifState
-    copy();
     
     String
     to_str();
@@ -121,14 +133,14 @@ public:
         String const &);
     
     int
-    end_index_with_id(
-        String const &);
-    
-    int
-    end_index(
+    get_end_index(
         BasepairStateOP const &);
     
-public:
+    int
+    get_end_index(
+        String const &);
+    
+public: // getters
     
     inline
     String const &
@@ -162,6 +174,11 @@ public:
     int const &
     block_end_add() { return block_end_add_; }
     
+    inline
+    Uuid const &
+    uuid() { return uuid_; }
+    
+    
 public:
     inline
     void
@@ -175,6 +192,12 @@ public:
     void
     beads(
         Points const & beads) { beads_ = beads; }
+    
+    inline
+    void
+    new_uuids() {
+        uuid_ = Uuid();
+    }
     
     
 private:

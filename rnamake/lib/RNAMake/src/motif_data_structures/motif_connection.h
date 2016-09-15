@@ -75,9 +75,10 @@ typedef std::vector<MotifConnectionOP>   MotifConnectionOPs;
 
 class MotifConnections {
 public:
-    MotifConnections():
-    connections_(MotifConnectionOPs())
-    {}
+    MotifConnections();
+    
+    MotifConnections(
+        MotifConnections const &);
     
     ~MotifConnections() {}
     
