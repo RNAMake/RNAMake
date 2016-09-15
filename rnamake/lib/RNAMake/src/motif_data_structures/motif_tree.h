@@ -230,17 +230,15 @@ private:
         
     };
     
-public:
+public: // constructors 
     
-    MotifTree():
-    tree_(TreeStatic<MotifOP>()),
-    merger_(MotifMerger()),
-    connections_(MotifConnections()),
-    options_(Options())    
-    { setup_options(); }
+    MotifTree();
     
     MotifTree(
         String const &);
+    
+    MotifTree(
+        MotifTree const &);
     
     ~MotifTree() {}
     

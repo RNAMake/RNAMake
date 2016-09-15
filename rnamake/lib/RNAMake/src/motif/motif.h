@@ -99,6 +99,7 @@ public: //wrappers from secondary structure
     dot_bracket() { return secondary_structure_->dot_bracket(); }
     
 public: //getters
+    
     inline
     MotifType const &
     mtype() { return mtype_; }

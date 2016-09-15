@@ -250,23 +250,6 @@ class MotifState(object):
         index = self.get_end_index(name, id)
         return self.end_states[index]
 
-    def get_end_state(self, name):
-        for i, n in enumerate(self.end_names):
-            if i == self.block_end_add:
-                continue
-            if n == name:
-                return self.end_states[i]
-        raise ValueError("cannot get end state of name: " + name)
-
-    def end_index_with_id(self, id):
-        for i, end_id in enumerate(self.end_ids):
-            if i == self.block_end_add:
-                continue
-            if id == end_id:
-                return i
-
-        raise ValueError("no matching end id in motif")
-
     def copy(self):
         end_states = [end.copy() for end in self.end_states]
         beads = np.copy(self.beads)

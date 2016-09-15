@@ -20,7 +20,7 @@
 namespace sstruct {
  
 class Motif : public RNAStructure {
-public:
+public: // RNA Structure Constructors
     
     Motif():
     RNAStructure()
@@ -43,6 +43,8 @@ public:
         float score):
     RNAStructure(structure, basepairs, ends, end_ids, name, path, score)
     {}
+    
+public: // Motif specific constructors
 
     Motif(
         Motif const & m) {

@@ -50,15 +50,7 @@ public:
     virtual
     ~RNAStructure() {}
     
-public:
-    int
-    end_index(
-        BasepairOP const &);
-    
-    int
-    end_index(
-        String const &);
-    
+public: // get specific basepairs
     BasepairOPs
     get_basepair(
         String const &);
@@ -77,6 +69,8 @@ public:
         Uuid const &,
         Uuid const &);
     
+    
+public: // get steric beads
     Beads const &
     get_beads(
         BasepairOPs const &);
@@ -85,12 +79,33 @@ public:
     get_beads(
         BasepairOP const &);
     
+    inline
     Beads const &
     get_beads() {
         ResidueOPs res;
         beads_ = structure_->get_beads(res);
         return beads_;
     }
+    
+public: //get end information
+    int
+    get_end_index(
+        BasepairOP const &);
+    
+    int
+    get_end_index(
+        String const &);
+    
+public: //output functions
+    
+    String const
+    to_pdb_str(
+        int rnumber = -1);
+    
+    void
+    to_pdb(
+        String const,
+        int renumber = -1);
     
 public: //wrappers from structure
     
@@ -120,15 +135,6 @@ public: //wrappers from structure
         Uuid const & uuid) {
         return structure_->get_residue(uuid);
     }
-    
-    String const
-    to_pdb_str(
-        int rnumber = -1);
-    
-    void
-    to_pdb(
-        String const,
-        int renumber = -1);
     
     
 public: //getters

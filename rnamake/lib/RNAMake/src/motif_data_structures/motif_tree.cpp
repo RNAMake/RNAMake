@@ -11,6 +11,13 @@
 #include "motif_data_structures/motif_tree.h"
 #include "resources/resource_manager.h"
 
+MotifTree::MotifTree():
+tree_(TreeStatic<MotifOP>()),
+merger_(MotifMerger()),
+connections_(MotifConnections()),
+options_(Options())
+{ setup_options(); }
+
 MotifTree::MotifTree(
     String const & s):
 tree_(TreeStatic<MotifOP>()),
@@ -67,9 +74,22 @@ options_(Options())  {
 
 }
 
+MotifTree::MotifTree(
+    MotifTree const & mt):
+tree_(TreeStatic<MotifOP>(mt.tree_)) {
+    auto motifs = MotifOPs();
+    // dear god this is horrible but cant figure out a better way to do a copy
+    for(auto const & n : mt) {
+        tree_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
+        motifs.push_back(tree_.get_node(n->index())->data());
+    }
+    options_ = Options(mt.options_);
+    merger_ = MotifMerger(mt.merger_, motifs);
+    connections_ = MotifConnections(mt.connections_);
+}
+
 
 //add functions ////////////////////////////////////////////////////////////////////////////////////
-
 
 
 TreeNodeOP<MotifOP>
@@ -97,6 +117,8 @@ MotifTree::_get_available_parent_end_pos(
     int parent_end_index) {
     
     auto avail_pos = Ints();
+    
+    if(parent == nullptr) { return avail_pos; }
     
     if(parent_end_index != -1) {
         int avail = parent->available_pos(parent_end_index);
@@ -164,7 +186,7 @@ MotifTree::_get_connection_end(
     int node_end_index = -1;
     
     if(bp_name != "") {
-        auto ei = node->data()->end_index(bp_name);
+        auto ei = node->data()->get_end_index(bp_name);
         
         if(!node->available_pos(ei)) {
             throw MotifTreeException(
@@ -229,7 +251,7 @@ MotifTree::add_motif(
     auto parent_end_index = -1;
     
     try{
-        parent_end_index = parent->data()->end_index(parent_end_name);
+        parent_end_index = parent->data()->get_end_index(parent_end_name);
     }
     catch(RNAStructureException) {
         throw MotifTreeException(

@@ -11,6 +11,8 @@
 //RNAMake Headers
 #include "structure/rna_structure.h"
 
+// get basepair functions //////////////////////////////////////////////////////////////////////////
+
 
 BasepairOPs
 RNAStructure::get_basepair(Uuid const & bp_uuid) {
@@ -48,6 +50,25 @@ RNAStructure::get_basepair(
     return bps;
 }
 
+BasepairOPs
+RNAStructure::get_basepair(
+    String const & name) {
+    Strings name_spl = split_str_by_delimiter(name, "-");
+    String alt_name = name_spl[1] + "-" + name_spl[0];
+    for(auto const & bp : basepairs_) {
+        if(name.compare(bp->name()) == 0 || alt_name.compare(bp->name()) == 0) {
+            return BasepairOPs{ bp };
+        }
+    }
+    
+    throw "could not find basepair with name " + name;
+    
+}
+
+
+// get beads functions /////////////////////////////////////////////////////////////////////////////
+
+
 Beads const &
 RNAStructure::get_beads(
     BasepairOPs const & excluded_ends) {
@@ -72,31 +93,22 @@ RNAStructure::get_beads(
     return beads_;
 }
 
-BasepairOPs
-RNAStructure::get_basepair(
-    String const & name) {
-    Strings name_spl = split_str_by_delimiter(name, "-");
-    String alt_name = name_spl[1] + "-" + name_spl[0];
-    for(auto const & bp : basepairs_) {
-        if(name.compare(bp->name()) == 0 || alt_name.compare(bp->name()) == 0) {
-            return BasepairOPs{ bp };
-        }
-    }
-    
-    throw "could not find basepair with name " + name;
-    
-}
+
+// get end infomation functions ////////////////////////////////////////////////////////////////////
+
 
 int
-RNAStructure::end_index(BasepairOP const & end) {
-    assert(std::find(ends_.begin(), ends_.end(), end) != ends_.end() &&
-           "end is not in internal array");
+RNAStructure::get_end_index(BasepairOP const & end) {
+    if(std::find(ends_.begin(), ends_.end(), end) == ends_.end()) {
+        throw RNAStructureException("cannot find end: " + end->name() + " in ends ");
+    }
+    
     int pos = (int)(std::find(ends_.begin(), ends_.end(), end) - ends_.begin());
     return pos;
 }
 
 int
-RNAStructure::end_index(String const & end_name) {
+RNAStructure::get_end_index(String const & end_name) {
     for(int i = 0; i < ends_.size(); i++) {
         if(ends_[i]->name() == end_name) { return i; }
     }
@@ -105,6 +117,10 @@ RNAStructure::end_index(String const & end_name) {
     
     return -1;
 }
+
+
+// output functions ////////////////////////////////////////////////////////////////////////////////
+
 
 String const
 RNAStructure::to_pdb_str(
@@ -118,6 +134,9 @@ RNAStructure::to_pdb(
     int renumber) {
     return structure_->to_pdb(fname, renumber);
 }
+
+
+// non member functions ////////////////////////////////////////////////////////////////////////////
 
 
 std::unique_ptr<BasepairOPs>

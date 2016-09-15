@@ -256,7 +256,12 @@ class MotifStateTree(base.Base):
             self.connections.append(c.copy())
 
     def copy(self):
-        return str_to_motif_state_tree(self.topology_to_str(), sterics=0)
+        mst = MotifStateTree()
+        new_tree = self.tree.copy()
+        mst.tree = new_tree
+        mst.connections = self.connections.copy()
+        return mst
+        #return str_to_motif_state_tree(self.topology_to_str(), sterics=0)
 
     #ADD FUNCTIONS      #######################################################
     def _validate_arguments_to_add_state(self, ms, m_name):

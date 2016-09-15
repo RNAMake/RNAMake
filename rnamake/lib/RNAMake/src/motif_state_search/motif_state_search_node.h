@@ -37,7 +37,7 @@ public:
             ss_score_ += parent_->ss_score_;
             size_ += parent_->size_;
         }
-        cur_state_ = std::make_shared<MotifState>(ref_state_->copy());
+        cur_state_ = std::make_shared<MotifState>(*ref_state_);
         score_ = 1000;
     }
     
@@ -61,7 +61,7 @@ public:
     MotifStateSearchNode
     copy() {
         MotifStateSearchNode new_n(ref_state_, parent_, parent_end_index_, ntype_);
-        new_n.cur_state_ = std::make_shared<MotifState>(cur_state_->copy());
+        new_n.cur_state_ = std::make_shared<MotifState>(*cur_state_);
         new_n.score_ = score_;
         new_n.ss_score_ = ss_score_;
         new_n.level_ = level_;

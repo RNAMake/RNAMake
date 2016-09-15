@@ -15,11 +15,13 @@ class MotifStateTreeUnittest(unittest.TestCase):
             self.fail("did not build mst properly")
 
     def test_copy(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build(3)
-        mst = motif_state_tree.MotifStateTree(mt=mt)
+        mst = self._get_sub_tree()
         mst_copy = mst.copy()
+        mst.add_connection(2, 3)
+
         self.failUnless(len(mst) == len(mst_copy))
+        self.failUnless(len(mst.connections.connections) == 1)
+
 
     def _get_sub_tree(self):
         mt = motif_tree.MotifTree()
@@ -42,7 +44,7 @@ class MotifStateTreeUnittest(unittest.TestCase):
         mst.add_mst(mst2)
         self.failUnless(len(mst) == 8)
 
-    def test_add_motif(self):
+    def test_add_state(self):
         mst = motif_state_tree.MotifStateTree()
         ms1 = rm.manager.get_state(name="HELIX.IDEAL.2")
         ms2 = rm.manager.get_state(name="HELIX.IDEAL.2")
@@ -56,6 +58,7 @@ class MotifStateTreeUnittest(unittest.TestCase):
         # is already connected to another node
         with self.assertRaises(exceptions.MotifStateTreeException):
             mst.add_state(ms2, parent_end_index=0)
+
         # supplied parent_end_index and parent_end_name
         with self.assertRaises(exceptions.MotifStateTreeException):
             mst.add_state(ms2, parent_end_index=1, parent_end_name="A1-A8")
@@ -63,12 +66,15 @@ class MotifStateTreeUnittest(unittest.TestCase):
         # must supply a motif or motif name
         with self.assertRaises(exceptions.MotifStateTreeException):
             mst.add_state()
+
         # motif not found in resource manager
         with self.assertRaises(exceptions.MotifStateTreeException):
             mst.add_state(m_name="FAKE")
+
         # catches invalid parent_index
         with self.assertRaises(exceptions.MotifStateTreeException):
             mst.add_state(ms2, parent_index=2)
+
         # invalid parent_end_index, has only 0 and 1
         with self.assertRaises(exceptions.MotifStateTreeException):
             mst.add_state(ms2, parent_end_index=3)
