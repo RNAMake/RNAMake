@@ -61,3 +61,15 @@ MotifStateEnsemble::to_str() {
     return s;
 }
 
+// non-member functions     ////////////////////////////////////////////////////////////////////////
+
+
+MotifStateEnsembleOP
+motif_state_to_motif_state_ensemble(
+    MotifStateOP const & ms) {
+    
+    auto motif_states = MotifStateOPs{ms};
+    auto energies = Floats{1.0f};
+    return std::make_shared<MotifStateEnsemble>(motif_states, energies);
+    
+}

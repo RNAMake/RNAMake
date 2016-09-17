@@ -12,18 +12,17 @@
 #include "resources/resource_manager.h"
 
 MotifTree::MotifTree():
-tree_(TreeStatic<MotifOP>()),
-merger_(MotifMerger()),
-connections_(MotifConnections()),
-options_(Options())
-{ setup_options(); }
+    tree_(TreeStatic<MotifOP>()),
+    merger_(std::make_shared<MotifMerger>()),
+    connections_(MotifConnections()),
+    options_(Options()) { setup_options(); }
 
 MotifTree::MotifTree(
     String const & s):
-tree_(TreeStatic<MotifOP>()),
-merger_(MotifMerger()),
-connections_(MotifConnections()),
-options_(Options())  {
+    tree_(TreeStatic<MotifOP>()),
+    merger_(std::make_shared<MotifMerger>()),
+    connections_(MotifConnections()),
+    options_(Options())  {
     setup_options();
     
     set_option_value("sterics", false);
@@ -76,7 +75,7 @@ options_(Options())  {
 
 MotifTree::MotifTree(
     MotifTree const & mt):
-tree_(TreeStatic<MotifOP>(mt.tree_)) {
+    tree_(TreeStatic<MotifOP>(mt.tree_)) {
     auto motifs = MotifOPs();
     // dear god this is horrible but cant figure out a better way to do a copy
     for(auto const & n : mt) {
@@ -84,7 +83,7 @@ tree_(TreeStatic<MotifOP>(mt.tree_)) {
         motifs.push_back(tree_.get_node(n->index())->data());
     }
     options_ = Options(mt.options_);
-    merger_ = MotifMerger(mt.merger_, motifs);
+    merger_ = std::make_shared<MotifMerger>(*mt.merger_, motifs);
     connections_ = MotifConnections(mt.connections_);
 }
 
@@ -282,7 +281,7 @@ MotifTree::add_motif(
         auto m_copy = std::make_shared<Motif>(*m);
         m_copy->get_beads(m_copy->ends()[0]);
         int pos = tree_.add_data(m_copy, (int)m_copy->ends().size(), -1, -1);
-        merger_.add_motif(m_copy);
+        merger_->add_motif(m_copy);
         return pos;
     }
     
@@ -294,7 +293,7 @@ MotifTree::add_motif(
         
         int pos = tree_.add_data(m_added, (int)m_added->ends().size(), parent->index(), p);
         if(pos != -1) {
-            merger_.add_motif(m_added, m_added->ends()[0],
+            merger_->add_motif(m_added, m_added->ends()[0],
                               parent->data(), parent->data()->ends()[p]);
         }
         return pos;
@@ -338,7 +337,7 @@ MotifTree::add_connection(
     
     connections_.add_connection(i, j, node_i_end_name, node_j_end_name);
     
-    merger_.connect_motifs(node_i->data(), node_j->data(),
+    merger_->connect_motifs(node_i->data(), node_j->data(),
                            node_i->data()->ends()[node_i_ei],
                            node_j->data()->ends()[node_j_ei]);
     
@@ -359,7 +358,7 @@ MotifTree::remove_node(
     try {
         auto n = get_node(i);
         tree_.remove_node(n);
-        merger_.remove_motif(n->data());
+        merger_->remove_motif(n->data());
         connections_.remove_connections_to(i);
         
     }

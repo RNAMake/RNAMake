@@ -13,6 +13,7 @@
 
 //RNAMake Headers
 #include "motif/motif.h"
+#include "motif/motif_state_ensemble.h"
 
 /*
  * Exception for motif ensemble
@@ -133,13 +134,17 @@ public:
         return s;
     }
     
+    MotifStateEnsembleOP
+    get_state();
+    
 private:
     String id_;
     int block_end_add_;
     MotifEnsembleMemberOPs members_;
     
-    
 };
+
+typedef std::shared_ptr<MotifEnsemble> MotifEnsembleOP;
 
 
 

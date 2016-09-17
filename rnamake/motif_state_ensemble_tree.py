@@ -21,6 +21,16 @@ class MotifStateEnsembleTree(object):
         if mst is not None:
             self._setup_from_mst(mst)
 
+    def __len__(self):
+        return len(self.tree)
+
+    def __iter__(self):
+        self.tree.__iter__()
+        return self
+
+    def next(self):
+        return self.tree.next()
+
     def add_ensemble(self, ensemble, parent_index=-1, parent_end_index=-1):
         parent = self.tree.last_node
         if parent_index != -1:
@@ -97,16 +107,6 @@ class MotifStateEnsembleTree(object):
             else:
                 self.add_ensemble(mse, n.parent_index(), n.parent_end_index())
 
-    def __len__(self):
-        return len(self.tree)
-
-    def __iter__(self):
-        self.tree.__iter__()
-        return self
-
-    def next(self):
-        return self.tree.next()
-
     def get_node(self, i):
         return self.tree.get_node(i)
 
@@ -178,7 +178,6 @@ class MotifStateEnsembleTreeEnumerator(object):
 
 
         df.to_csv("test.csv")
-
 
 
 def build_motif_sub_for_motif_state_ensemble(org_m, new_motifs, mlib,

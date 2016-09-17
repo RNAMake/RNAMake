@@ -55,6 +55,10 @@ public: //wrappers for current state
     get_end_state(String const & name) { return cur_state->get_end_state(name); }
     
     inline
+    BasepairStateOP
+    get_end_state(int i) { return cur_state->end_states()[i]; }
+    
+    inline
     int
     get_end_index(String const & name) { return cur_state->get_end_index(name); }
     
@@ -89,6 +93,8 @@ public:
     MotifStateTree(MotifTreeOP const &);
     
     MotifStateTree(MotifStateTree const & );
+    
+    MotifStateTree(String const &);
     
     ~MotifStateTree() {}
     
@@ -180,6 +186,14 @@ public: // add functions
         int i,
         MotifStateOP const &);
 
+public: //removal functions
+    
+    void
+    remove_node(int i=-1);
+    
+    void
+    remove_node_level(int level=-1);
+    
 public: // outputting functions
     
     MotifTreeOP
@@ -201,6 +215,10 @@ public: // getters
         }
         return centers;
     }
+    
+    inline
+    MotifConnections const &
+    connections() { return connections_; }
     
 public: //motif tree wrappers
     
@@ -252,7 +270,6 @@ public: //option wrappers
     inline
     bool
     get_bool_option(String const & name) { return options_.get_bool(name); }
-    
     
     template<typename T>
     void

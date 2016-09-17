@@ -7,9 +7,6 @@ import rnamake.motif_tree as motif_tree
 from rnamake import sqlite_library
 from rnamake import motif_graph, motif_topology, motif_state_ensemble_tree
 
-import pandas as pd
-import numpy as np
-
 class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
     def test_creation(self):
@@ -32,7 +29,8 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mset.add_ensemble(mse)
 
         mst = mset.to_mst()
-        mst.write_pdbs()
+        print mst.get_node(0).data.name()
+        #mst.write_pdbs()
 
     def _test_enumerator(self):
         lib = sqlite_library.MotifStateEnsembleSqliteLibrary("all_bp_steps")
@@ -78,7 +76,6 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mst = mset.to_mst()
 
         self.failUnless(mst.get_node(1).data.cur_state.name == m2.name)
-
 
         os.remove("test.dat")
 

@@ -15,9 +15,6 @@ MotifStateEnsembleSqliteLibrary::get_libnames() {
     libnames["all_bp_steps"]   = "/motif_state_ensemble_libraries/all_bp_steps.db";
     libnames["bp_steps"]       = "/motif_state_ensemble_libraries/bp_steps.db";
     libnames["twoway"]         = "/motif_state_ensemble_libraries/twoway.db";
-    libnames["tcontact"]       = "/motif_state_ensemble_libraries/tcontact.db";
-    libnames["hairpin"]        = "/motif_state_ensemble_libraries/hairpin.db";
-    libnames["nway"]           = "/motif_state_ensemble_libraries/nway.db";
     
     return libnames;
 }

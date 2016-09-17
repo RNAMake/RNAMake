@@ -12,6 +12,84 @@
 #include "util/cartesian_product.h"
 #include "math/xyz_matrix.h"
 
+MotifStateEnsembleTree::MotifStateEnsembleTree():
+    connections_(MotifConnections()),
+    tree_( TreeStatic<MotifStateEnsembleOP>()){}
+
+MotifStateEnsembleTree::MotifStateEnsembleTree(
+    MotifTreeOP const & mt):
+    MotifStateEnsembleTree() {
+    
+    int i = -1, j = -1;
+    int parent_index = -1, parent_end_index = -1;
+    for(auto const & n : *mt) {
+        i++;
+        
+        auto mse = MotifStateEnsembleOP();
+        auto found_supplied = RM::instance().has_supplied_motif_ensemble(
+                                    n->data()->name(), n->data()->end_name(0));
+        
+
+        if(n->data()->mtype() == MotifType::HELIX) {
+            if(n->data()->residues().size() > 4) {
+                throw MotifStateTreeEnsembleException(
+                    "helix: " + n->data()->name() + " has more then 2 basepairs "
+                    "must be broken up into basepair steps before being converted "
+                    "into motif state ensemble");
+            }
+            
+            
+            try {
+                mse = RM::instance().motif_state_ensemble(n->data()->end_ids()[0]);
+            }
+            catch(ResourceManagerException const & e) {
+                throw MotifStateTreeEnsembleException(
+                    "cannot find motif state ensemble for a basepair with id: " +
+                    n->data()->end_ids()[0] + " is this a WC basepair?");
+            }
+        }
+        
+        // extra motif ensemble supplied by user
+        else if(found_supplied) {
+            mse = RM::instance().get_supplied_motif_ensemble(
+                                    n->data()->name(), n->data()->end_name(0))->get_state();
+        }
+        
+        else {
+            mse = motif_state_to_motif_state_ensemble(n->data()->get_state());
+        }
+        
+    
+        if(i == 0) {
+            add_ensemble(mse);
+        }
+        else {
+            parent_index = n->parent()->index();
+            parent_end_index = n->parent_end_index();
+            if(parent_end_index == -1) {
+                MotifStateTreeEnsembleException(
+                    "cannot setup_from_mt in MotifStateEnsembleTree");
+            }
+            j = add_ensemble(mse, parent_index, parent_end_index);
+            if(j == -1) {
+                MotifStateTreeEnsembleException("failed to add ensemble in setup_from_mt");
+            }
+        }
+    }
+        
+    for(auto const & c : mt->connections()) {
+        connections_.add_connection(c->i(), c->j(), c->name_i(), c->name_j());
+        
+    }
+}
+
+
+MotifStateEnsembleTree::MotifStateEnsembleTree(
+    MotifStateTreeOP const & mst):
+    MotifStateEnsembleTree(mst->to_motif_tree()) {}
+
+//add functions ////////////////////////////////////////////////////////////////////////////////////
+
 
 int
 MotifStateEnsembleTree::add_ensemble(
@@ -54,6 +132,7 @@ MotifStateEnsembleTree::to_mst() {
     for(auto const & n : tree_) {
         i++;
         auto state = n->data()->most_populated();
+        state->new_uuids();
         if(i == 0) {
             mst->add_state(state);
             continue;
@@ -66,49 +145,13 @@ MotifStateEnsembleTree::to_mst() {
             std::runtime_error("can not build motif state tree from mset");
         }
     }
+    mst->set_option_value("sterics", true);
     
     return mst;
 }
 
-void
-MotifStateEnsembleTree::setup_from_mt(
-    MotifTreeOP const & mt) {
-    
-    int i = -1, j = -1;
-    int parent_index = -1, parent_end_index = -1;
-    for(auto const & n : *mt) {
-        i++;
-        MotifStateEnsembleOP mse;
-        try {
-            mse = RM::instance().motif_state_ensemble(n->data()->end_ids()[0]);
-        }
-        //cannot find ensemble build one from motif
-        catch(ResourceManagerException const & e) {
-            auto m = RM::instance().motif(n->data()->name(), n->data()->end_ids()[0]);
-            mse = std::make_shared<MotifStateEnsemble>(m->get_state());
-        }
-        
-        if(i == 0) {
-            add_ensemble(mse);
-        }
-        else {
-            parent_index = n->parent()->index();
-            parent_end_index = n->parent_end_index();
-            if(parent_end_index == -1) {
-                std::runtime_error("cannot setup_from_mt in MotifStateEnsembleTree");
-            }
-            j = add_ensemble(mse, parent_index, parent_end_index);
-            if(j == -1) {
-                std::runtime_error("failed to add ensemble in setup_from_mt");
-            }
-        }
-        
-        
-    }
-    
 
-}
-
+//enumerator  functions ////////////////////////////////////////////////////////////////////////////
 
 void
 MotifStateEnsembleTreeEnumerator::record(
