@@ -15,6 +15,7 @@
 #include "base/types.h"
 #include "motif/motif_factory.h"
 #include "motif/motif_state.h"
+#include "motif/motif_ensemble.h"
 #include "resources/motif_sqlite_library.h"
 #include "resources/motif_state_sqlite_library.h"
 #include "resources/motif_state_ensemble_sqlite_library.h"
@@ -31,13 +32,25 @@ public:
 
 
 class RM { //RM for ResourceManager
+protected:
+    
+    RM();
+    
+    RM(RM const &); //Prevent construction
+    void operator= (RM const &);
+    
+private:
+
+    ~RM() {}
+    
 public:
+    
     static RM & instance() {
         static RM instance;
         return instance;
     }
-    
-public:
+
+public: // getting functions
     
     MotifOP
     motif(
@@ -55,48 +68,37 @@ public:
     motif_state_ensemble(
         String const & name = dummy_name);
     
+public: // adding functions
+
     void
     add_motif(
         String const & path,
         String name = "");
     
     void
-    add_motif(
+    register_motif(
         MotifOP const &);
     
+    void
+    register_extra_motif_ensembles(
+        String const &);
     
-protected:
-    RM() { //Prevent construction
-        mf_ = MotifFactory();
-        added_motifs_ = AddedMotifLibrary();
-        mlibs_ = std::map<String, MotifSqliteLibraryOP>();
-        ms_libs_ = std::map<String, MotifStateSqliteLibraryOP>();
-        mse_libs_ = std::map<String, MotifStateEnsembleSqliteLibraryOP>();
-        
-        for(auto const & kv : MotifSqliteLibrary::get_libnames()) {
-            mlibs_[kv.first] = std::make_shared<MotifSqliteLibrary>(kv.first);
-        }
-        
-        for(auto const & kv : MotifStateSqliteLibrary::get_libnames()) {
-            ms_libs_[kv.first] = std::make_shared<MotifStateSqliteLibrary>(kv.first);
-        }
-        
-        for(auto const & kv : MotifStateEnsembleSqliteLibrary::get_libnames()) {
-            mse_libs_[kv.first] = std::make_shared<MotifStateEnsembleSqliteLibrary>(kv.first);
-        }
+    int
+    has_supplied_motif_ensemble(
+        String const &,
+        String const &);
     
-    }
+    MotifEnsembleOP const & 
+    get_supplied_motif_ensemble(
+        String const &,
+        String const &);
     
-    RM(RM const &); //Prevent construction
-    void operator= (RM const &);
-    
-private:
-    ~RM() {}
     
 private:
     std::map<String, MotifSqliteLibraryOP> mlibs_;
     std::map<String, MotifStateSqliteLibraryOP> ms_libs_;
     std::map<String, MotifStateEnsembleSqliteLibraryOP> mse_libs_;
+    std::map<String, MotifEnsembleOP> extra_me_;
     MotifFactory mf_;
     AddedMotifLibrary added_motifs_;
 

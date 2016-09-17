@@ -6,4 +6,19 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "motif_ensemble.h"
+#include "motif/motif_ensemble.h"
+
+
+MotifStateEnsembleOP
+MotifEnsemble::get_state() {
+    auto motif_states = MotifStateOPs();
+    auto energies = Floats();
+    
+    for(auto const & mem : members_) {
+        motif_states.push_back(mem->motif->get_state());
+        energies.push_back(mem->energy);
+    }
+    
+    return std::make_shared<MotifStateEnsemble>(motif_states, energies);
+    
+}

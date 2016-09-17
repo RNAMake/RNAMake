@@ -253,6 +253,8 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         mt2.add_motif(m2);
         mt2.add_motif(m3, 1);
 
+        mt2.write_pdbs();
+        
         mt2.add_connection(2, 3, "", "");
         
         auto mt_copy = MotifTree(mt2);
@@ -261,8 +263,6 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         
         auto m4 = RM::instance().motif("HELIX.IDEAL.2");
         REQUIRE(mt_copy.add_motif(m4) == -1);
-        
-        std::cout << mt_copy.to_pretty_str() << std::endl;
         
         auto rna_struct = mt_copy.get_structure();
         REQUIRE(rna_struct->chains().size() == 1);

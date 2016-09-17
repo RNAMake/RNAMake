@@ -34,11 +34,11 @@ private:
         inline
         MotifTreePrinter(
             MotifTree const & mt):
-        levels_(std::map<int, int>()),
-        node_pos_(std::map<int, int>()),
-        nodes_per_level_(std::map<int, int>()),
-        branch_length_(25),
-        start_pos_(100) {
+            levels_(std::map<int, int>()),
+            node_pos_(std::map<int, int>()),
+            nodes_per_level_(std::map<int, int>()),
+            branch_length_(25),
+            start_pos_(100) {
             
             _setup_node_positions(mt);
         }
@@ -253,131 +253,6 @@ public: //iterators
     const_iterator begin() const { return tree_.begin(); }
     const_iterator end()   const { return tree_.end(); }
     
-   
-    
-public: //tree wrappers
-    
-    size_t
-    size() { return tree_.size(); }
-    
-    inline
-    TreeNodeOP<MotifOP> const &
-    get_node(int i) {
-        try {
-            return tree_.get_node(i);
-        }
-        catch(TreeException) {
-            throw MotifTreeException(
-                "cannot get node: " + std::to_string(i) + " in MotifTree it does not exist");
-        }
-    }
-    
-    inline
-    TreeNodeOP<MotifOP> const &
-    get_node(Uuid const & uuid) {
-        for(auto const & n : tree_) {
-            if(n->data()->id() == uuid) {
-                return n;
-            }
-        }
-        throw MotifTreeException(
-            "cannot get node with uuid no motif has it in this tree");
-    }
-    
-    inline
-    TreeNodeOP<MotifOP> 
-    get_node(String const & m_name) {
-        auto node = TreeNodeOP<MotifOP>(nullptr);
-        for(auto const & n : tree_) {
-            if(n->data()->name() == m_name) {
-                if(node != nullptr) {
-                    throw MotifTreeException(
-                        "cannot get node with name: " + m_name + " there is more then one motif "
-                        "with this name");
-                }
-                
-                node = n;
-            }
-        }
-        
-        if(node == nullptr) {
-            throw MotifTreeException(
-                "cannot get node with name: " + m_name + " there is no motif in the tree with "
-                "this name");
-        }
-        
-        return node;
-    }
-    
-    inline
-    TreeNodeOP<MotifOP> const &
-    last_node() { return tree_.last_node(); }
-    
-    void
-    write_pdbs(String const & fname = "nodes");
-    
-    inline
-    void
-    increase_level() { tree_.increase_level(); }
-    
-    inline
-    void
-    decrease_level() { tree_.decrease_level(); }
-    
-public: //merger wrappers
-    
-    inline
-    RNAStructureOP const &
-    get_structure() {
-        try { return merger_.get_structure(); }
-        catch(MotifMergerException) {
-            throw MotifTreeException(
-                "cannot produce merged structure it is likely you have created a ring with no start"
-                "call write_pdbs() to see what the topology would look like");
-        }
-    }
-    
-    sstruct::PoseOP
-    secondary_structure() {
-        try { return merger_.secondary_structure(); }
-        catch(MotifMergerException) {
-            throw MotifTreeException(
-                "cannot produce merged secondary structure it is likely you have created a ring "
-                "with no start, call write_pdbs() to see what the topology would look like");
-        }
-
-    }
-    
-    
-public: //option wrappers
-    
-    inline
-    float
-    get_int_option(String const & name) { return options_.get_int(name); }
-    
-    inline
-    float
-    get_float_option(String const & name) { return options_.get_float(name); }
-    
-    inline
-    String
-    get_string_option(String const & name) { return options_.get_string(name); }
-    
-    inline
-    bool
-    get_bool_option(String const & name) { return options_.get_bool(name); }
-    
-    
-    template<typename T>
-    void
-    set_option_value(
-        String const & name,
-        T const & val) {
-        options_.set_value(name, val);
-        update_var_options();
-    }
-
-    
 private: //adding functions helpers
     
     TreeNodeOP<MotifOP>
@@ -438,7 +313,7 @@ public: //outputing functions
         String const fname = "test.pdb",
         int renumber = -1) {
         
-        try { return merger_.to_pdb(fname, renumber); }
+        try { return merger_->to_pdb(fname, renumber); }
         catch(MotifMergerException) {
             throw MotifTreeException(
                 "cannot produce merged structure for a pdb it is likely you have created a ring "
@@ -456,6 +331,135 @@ public: //outputing functions
         return printer.print_tree(*this);
     }
     
+    
+public: //getters
+    
+    MotifConnections const &
+    connections() { return connections_; }
+    
+    
+public: //tree wrappers
+    
+    size_t
+    size() { return tree_.size(); }
+    
+    inline
+    TreeNodeOP<MotifOP> const &
+    get_node(int i) {
+        try {
+            return tree_.get_node(i);
+        }
+        catch(TreeException) {
+            throw MotifTreeException(
+                "cannot get node: " + std::to_string(i) + " in MotifTree it does not exist");
+        }
+    }
+    
+    inline
+    TreeNodeOP<MotifOP> const &
+    get_node(Uuid const & uuid) {
+        for(auto const & n : tree_) {
+            if(n->data()->id() == uuid) {
+                return n;
+            }
+        }
+        throw MotifTreeException(
+            "cannot get node with uuid no motif has it in this tree");
+    }
+    
+    inline
+    TreeNodeOP<MotifOP>
+    get_node(String const & m_name) {
+        auto node = TreeNodeOP<MotifOP>(nullptr);
+        for(auto const & n : tree_) {
+            if(n->data()->name() == m_name) {
+                if(node != nullptr) {
+                    throw MotifTreeException(
+                        "cannot get node with name: " + m_name + " there is more then one motif "
+                        "with this name");
+                }
+                
+                node = n;
+            }
+        }
+        
+        if(node == nullptr) {
+            throw MotifTreeException(
+                    "cannot get node with name: " + m_name + " there is no motif in the tree with "
+                    "this name");
+        }
+        
+        return node;
+    }
+    
+    inline
+    TreeNodeOP<MotifOP> const &
+    last_node() { return tree_.last_node(); }
+    
+    void
+    write_pdbs(String const & fname = "nodes");
+    
+    inline
+    void
+    increase_level() { tree_.increase_level(); }
+    
+    inline
+    void
+    decrease_level() { tree_.decrease_level(); }
+    
+public: //merger wrappers
+    
+    inline
+    RNAStructureOP const &
+    get_structure() {
+        try { return merger_->get_structure(); }
+        catch(MotifMergerException) {
+            throw MotifTreeException(
+                "cannot produce merged structure it is likely you have created a ring with no start"
+                "call write_pdbs() to see what the topology would look like");
+        }
+    }
+    
+    sstruct::PoseOP
+    secondary_structure() {
+        try { return merger_->secondary_structure(); }
+        catch(MotifMergerException) {
+            throw MotifTreeException(
+                "cannot produce merged secondary structure it is likely you have created a ring "
+                "with no start, call write_pdbs() to see what the topology would look like");
+        }
+        
+    }
+    
+    
+public: //option wrappers
+    
+    inline
+    float
+    get_int_option(String const & name) { return options_.get_int(name); }
+    
+    inline
+    float
+    get_float_option(String const & name) { return options_.get_float(name); }
+    
+    inline
+    String
+    get_string_option(String const & name) { return options_.get_string(name); }
+    
+    inline
+    bool
+    get_bool_option(String const & name) { return options_.get_bool(name); }
+    
+    
+    template<typename T>
+    void
+    set_option_value(
+        String const & name,
+        T const & val) {
+        options_.set_value(name, val);
+        update_var_options();
+    }
+    
 private: //private option functions
     void
     setup_options();
@@ -465,7 +469,7 @@ private: //private option functions
     
 private:
     TreeStatic<MotifOP> tree_;
-    MotifMerger merger_;
+    MotifMergerOP merger_;
     MotifConnections connections_;
     bool sterics_;
     float clash_radius_;

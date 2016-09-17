@@ -49,7 +49,7 @@ MotifStateTree::MotifStateTree(
     aligner_(MotifStateAligner()),
     queue_(std::queue<MotifStateTreeNodeOP>()),
     options_(Options(mst.options_)),
-    connections_(MotifConnections()),
+    connections_(MotifConnections(mst.connections_)),
     tree_(TreeStatic<MSTNodeDataOP>(mst.tree_)) {
     
     for(auto const & n : mst) {
@@ -57,6 +57,59 @@ MotifStateTree::MotifStateTree(
     }
     
     update_var_options();
+}
+
+MotifStateTree::MotifStateTree(
+    String const & s):
+    MotifStateTree() {
+     
+    set_option_value("sterics", false);
+    
+    auto spl = split_str_by_delimiter(s, "|");
+    auto node_spl = split_str_by_delimiter(spl[0], " ");
+    int i = -1;
+    int pos = 0;
+    for(auto const & e : node_spl) {
+        i++;
+        auto n_spl = split_str_by_delimiter(e, ",");
+        auto ms = MotifStateOP(nullptr);
+        
+        try {
+            ms = RM::instance().motif_state(n_spl[0], n_spl[2], n_spl[1]);
+        }
+        catch(ResourceManagerException const & e) {
+            throw MotifStateTreeException(
+                String("could not get state did you forget to add it to the resource manager: ") +
+                e.what());
+        }
+        
+        if(i == 0) {
+            pos = add_state(ms);
+        }
+        else {
+            pos = add_state(ms, std::stoi(n_spl[3]), std::stoi(n_spl[4]));
+        }
+        
+        if(pos == -1) {
+            throw MotifStateTreeException(
+                "failed to add " + ms->name() + " pos " + std::to_string(i) + " in the tree "
+                "during rebuild from string");
+        }
+        
+    }
+    
+    if(spl.size() == 1) { return; }
+    
+    auto connection_spl = split_str_by_delimiter(spl[1], " ");
+    for(auto const & c_str : connection_spl) {
+        auto c_spl = split_str_by_delimiter(c_str, ",");
+        connections_.add_connection(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
+                                    c_spl[2], c_spl[3]);
+    }
+    
+    set_option_value("sterics", true);
+
+    
 }
 
 
@@ -414,6 +467,52 @@ MotifStateTree::replace_state(
         }
         
     }
+}
+
+
+
+//removal functions ////////////////////////////////////////////////////////////////////////////////
+
+
+
+void
+MotifStateTree::remove_node(
+    int i) {
+    
+    if(i == -1) {
+        i = last_node()->index();
+    }
+    
+    try {
+        auto n = get_node(i);
+        tree_.remove_node(n);
+        connections_.remove_connections_to(i);
+    }
+    catch(MotifStateTreeException) {
+        throw MotifStateTreeException(
+            "cannot remove node with index: " + std::to_string(i) + " as it does not exist");
+    }
+}
+
+void
+MotifStateTree::remove_node_level(
+    int level) {
+    
+    if(level == -1) { level = tree_.level(); }
+    
+    auto remove = std::vector<MotifStateTreeNodeOP>();
+    for(auto const & n : tree_) {
+        if(n->level() >= level) {
+            remove.push_back(n);
+        }
+    }
+    
+    std::reverse(remove.begin(), remove.end());
+    
+    for(auto const & n : remove) {
+        remove_node(n->index());
+    }
+    
 }
 
 

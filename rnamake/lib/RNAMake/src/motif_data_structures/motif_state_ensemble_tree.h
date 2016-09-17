@@ -18,11 +18,19 @@
 #include "motif/motif_state_ensemble.h"
 #include "motif_data_structures/motif_tree.h"
 #include "motif_data_structures/motif_state_tree.h"
+#include "motif_data_structures/motif_connection.h"
+
+class MotifStateTreeEnsembleException : public std::runtime_error {
+public:
+    MotifStateTreeEnsembleException(
+        String const & message):
+    std::runtime_error(message)
+    {}
+};
 
 typedef TreeNodeOP<MotifStateEnsembleOP> MotifStateEnsembleTreeNodeOP;
 
 const double _EPS = 2.22044604925e-16 * 4.0;
-
 
 //assumes 3x3 matrices
 inline
@@ -59,17 +67,30 @@ calc_euler(
 
 class MotifStateEnsembleTree {
 public:
-    MotifStateEnsembleTree():
-    tree_( TreeStatic<MotifStateEnsembleOP>()){}
+    
+    MotifStateEnsembleTree();
+    
+    MotifStateEnsembleTree(
+        MotifTreeOP const &);
+    
+    MotifStateEnsembleTree(
+        MotifStateTreeOP const &);
     
     ~MotifStateEnsembleTree() {}
     
-public:
+public: //iterators
     
-    void
-    setup_from_mt(
-        MotifTreeOP const &);
+    typedef typename TreeStatic<MotifStateEnsembleOP>::iterator iterator;
+    typedef typename TreeStatic<MotifStateEnsembleOP>::const_iterator const_iterator;
     
+    iterator begin() { return tree_.begin(); }
+    iterator end()   { return tree_.end(); }
+    
+    const_iterator begin() const { return tree_.begin(); }
+    const_iterator end()   const { return tree_.end(); }
+    
+public: // add functions
+        
     int
     add_ensemble(
         MotifStateEnsembleOP const & ensemble,
@@ -79,7 +100,7 @@ public:
     MotifStateTreeOP
     to_mst();
     
-    
+
 public:
 
     size_t
@@ -91,7 +112,6 @@ public:
         return tree_.get_node(i);
     }
     
-public:
     inline
     MotifStateEnsembleTreeNodeOP const &
     last_node() { return tree_.last_node(); }
@@ -99,6 +119,7 @@ public:
 
 private:
     TreeStatic<MotifStateEnsembleOP> tree_;
+    MotifConnections connections_;
 
 };
 

@@ -22,7 +22,6 @@ class MotifStateTreeUnittest(unittest.TestCase):
         self.failUnless(len(mst) == len(mst_copy))
         self.failUnless(len(mst.connections.connections) == 1)
 
-
     def _get_sub_tree(self):
         mt = motif_tree.MotifTree()
         m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")

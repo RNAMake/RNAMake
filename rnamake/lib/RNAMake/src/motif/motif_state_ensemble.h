@@ -71,8 +71,6 @@ struct MotifStateEnsembleMember_LessThanKey {
 };
 
 
-
-
 class MotifStateEnsemble {
 public:
     
@@ -181,6 +179,10 @@ private:
 typedef std::shared_ptr<MotifStateEnsemble> MotifStateEnsembleOP;
 typedef std::vector<MotifStateEnsembleOP>   MotifStateEnsembleOPs;
 
+
+MotifStateEnsembleOP
+motif_state_to_motif_state_ensemble(
+    MotifStateOP const &);
 
 #endif /* defined(__RNAMake__motif_state_ensemble__) */
 
