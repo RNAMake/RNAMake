@@ -531,14 +531,13 @@ class BuildSqliteLibraries(object):
 #setup_start_motif()
 builder = BuildSqliteLibraries()
 
-builder.build_ideal_helices_old()
-exit()
+#builder.build_ideal_helices_old()
 #builder.build_basic_libraries()
-#builder.build_helix_ensembles()
+builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
-builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_motif_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
 #builder.build_trimmed_ideal_helix_library()
 
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
