@@ -154,6 +154,8 @@ class BuildSqliteLibraries(object):
                 if len(res) != 4:
                     continue
                 m_bps = motif_factory.factory.motif_from_bps(bps)
+                if len(m_bps.end_ids) != 2:
+                    continue
                 if len(m_bps.end_ids[0]) != 11:
                     continue
                 matched = 0
@@ -247,7 +249,7 @@ class BuildSqliteLibraries(object):
                 clustered_motifs.append(m)
 
                 pop = float(len(c_motifs.motifs)) / float(len(aligned_motifs))
-                m.to_pdb(dir_name + "/" + m.name + ".pdb")
+                #m.to_pdb(dir_name + "/" + m.name + ".pdb")
 
                 f.write(m.name + " " + str(pop) + "\n")
 
@@ -406,8 +408,8 @@ class BuildSqliteLibraries(object):
 
 builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
-builder.build_basic_libraries()
-#builder.build_helix_ensembles()
+#builder.build_basic_libraries()
+builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()
