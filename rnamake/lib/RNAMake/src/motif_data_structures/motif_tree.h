@@ -337,6 +337,9 @@ public: //getters
     MotifConnections const &
     connections() { return connections_; }
     
+    Beads
+    beads();
+    
     
 public: //tree wrappers
     

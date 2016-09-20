@@ -14,7 +14,7 @@
 void
 MotifStateSearch::setup_options() {
     options_.add_option("sterics", true, OptionType::BOOL);
-    options_.add_option("max_node_level", 12, OptionType::INT);
+    options_.add_option("max_node_level", 100, OptionType::INT);
     options_.add_option("min_node_level", 0, OptionType::INT);
     options_.add_option("min_size", 0, OptionType::INT);
     options_.add_option("max_size", 1000000, OptionType::INT);
@@ -23,6 +23,7 @@ MotifStateSearch::setup_options() {
     options_.add_option("min_ss_score", 10000, OptionType::FLOAT);
     options_.add_option("max_steps", 1000000000, OptionType::FLOAT);
     options_.add_option("verbose", true, OptionType::BOOL);
+    options_.add_option("return_best", false, OptionType::BOOL);
     
     //for making a movie
     options_.add_option("save_midpoints", false, OptionType::BOOL);
@@ -184,13 +185,9 @@ MotifStateSearch::_search() {
                 aligner_.get_aligned_motif_state(end,
                                                  test_node_->cur_state(),
                                                  test_node_->ref_state());
-                //test_node_->calc_center();
-                //test_node_->level(current->level() + 1);
                 test_node_->update();
                 
                 score = scorer_->score(test_node_);
-                //std::cout << score << " " << current->score() << std::endl;
-                //score = path_score;
                 if(score > current->score()) { continue; }
                 
                 if(sterics_) {
@@ -247,77 +244,6 @@ MotifStateSearch::_search() {
     return best_sol;
 
 }
-
-MotifStateSearchSolutionOPs
-MotifStateSearch::search(
-    BasepairStateOP const & start,
-    BasepairStateOP const & end) {
-
-    auto start_n = _start_node(start);
-    auto test_node = std::make_shared<MotifStateSearchNode>(start_n->copy());
-    MotifStateSearchNodeOP current, child;
-    queue_.push(start_n);
-    scorer_->set_target(end);
-    
-    float score;
-    int i = 0;
-    int steps = 0;
-    int j = 0;
-    int pos;
-    
-    while(! queue_.empty() ) {
-        current = queue_.top();
-        queue_.pop();
-        
-        if(steps % 1000 == 0) {
-        //std::cout << steps << " " << current->level() << " " << current->score() << std::endl;
-        }
-        
-        steps += 1;
-        score = scorer_->accept_score(current);
-        if(score < accept_score_) {
-            auto s = std::make_shared<MotifStateSearchSolution>(current, score);
-            solutions_.push_back(s);
-            if(solutions_.size() >= max_solutions_) { return solutions_; }
-        }
-        
-        if(current->level()+1 > max_node_level_) { continue; }
-        
-        possible_children_ = selector_->get_children_ms(current);
-        pos = possible_children_.pos();
-        test_node->parent(current);
-        i = -1;
-                
-        for(auto const & end : current->cur_state()->end_states()) {
-            i++;
-            if(i == 0) { continue; }
-            j = -1;
-            for(auto const & ms_and_type : possible_children_.motif_states_and_types()) {
-                j++;
-                
-                if(j >= pos) { break; }
-                test_node->replace_ms(ms_and_type.motif_state,
-                                      ms_and_type.type);
-                
-                aligner_.get_aligned_motif_state(end,
-                                                 test_node->cur_state(),
-                                                 test_node->ref_state());
-                
-                score = scorer_->score(test_node);
-                if(score > current->score()) { continue; }
-                child = std::make_shared<MotifStateSearchNode>(test_node->copy());
-                child->update();
-                child->score(score);
-                queue_.push(child);
-            }
-        }
-        
-    }
-    
-    return solutions_;
-    
-}
-
 
 
 MotifStateSearchNodeOP
