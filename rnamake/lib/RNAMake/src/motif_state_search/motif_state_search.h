@@ -33,18 +33,13 @@ public:
     aligner_(MotifStateAligner()),
     lookup_(StericLookup()),
     using_lookup_(0),
-    options_(Options("MotifStateSearchOptions")) {
+    options_(Options()) {
         setup_options();
     }
     
     ~MotifStateSearch() {}
     
 public:
-    
-    MotifStateSearchSolutionOPs
-    search(
-        BasepairStateOP const &,
-        BasepairStateOP const &);
     
     void
     setup(

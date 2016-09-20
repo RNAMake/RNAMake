@@ -420,6 +420,22 @@ MotifTree::topology_to_str() {
 
 
 
+//getters //////////////////////////////////////////////////////////////////////////////////////////
+
+
+Beads
+MotifTree::beads() {
+    auto beads = Beads();
+    for(auto const & n : tree_) {
+        for(auto b : n->data()->beads()) {
+            beads.push_back(b);
+        }
+    }
+    return beads;
+}
+
+
+
 //private option functions /////////////////////////////////////////////////////////////////////////
 
 
