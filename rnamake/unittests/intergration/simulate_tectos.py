@@ -71,7 +71,7 @@ class SimulateTectos(base.Base):
         mt.add_motif(m, parent_end_name="A22-A7")
 
         for i in range(2, len(flow_motif_names)):
-            m = rm.manager.get_motif(name=flow_motif_names[1])
+            m = rm.manager.get_motif(name=flow_motif_names[i])
             mt.add_motif(m)
 
         m = rm.manager.get_motif(name="GAAA_tetraloop", end_name="A149-A154")
@@ -80,10 +80,9 @@ class SimulateTectos(base.Base):
         mt.add_motif(m, parent_end_name="A222-A251")
 
         for i in range(2, len(chip_motif_names)):
-            m = rm.manager.get_motif(name=chip_motif_names[1])
+            m = rm.manager.get_motif(name=chip_motif_names[i])
             mt.add_motif(m)
 
-        mt.write_pdbs()
         mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt=mt)
         return mset
 
