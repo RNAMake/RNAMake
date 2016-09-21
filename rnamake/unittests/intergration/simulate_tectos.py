@@ -71,6 +71,7 @@ class SimulateTectos(base.Base):
         for i in range(2, len(chip_motif_names)):
             mt.add_motif(m_name=chip_motif_names[i])
 
+        mt.write_pdbs("new")
         mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt=mt)
         return mset
 
