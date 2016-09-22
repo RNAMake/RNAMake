@@ -20,6 +20,9 @@ tfs_(ThermoFlucSimulation())
 {}
 
 
+// application setups functions ////////////////////////////////////////////////////////////////////
+
+
 void
 SimulateTectosApp::setup_options() {
     add_option("fseq", "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", OptionType::STRING);
@@ -27,6 +30,7 @@ SimulateTectosApp::setup_options() {
     add_option("cseq", "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG",  OptionType::STRING);
     add_option("css",  "(((((((..((((((((((((....))))))))))))...)))))))",  OptionType::STRING);
     add_option("s", 1000000, OptionType::INT);
+    add_option("start_pose", false, OptionType::BOOL);
     
     add_cl_options(tfs_.options(), "simulation");
     
@@ -43,6 +47,9 @@ SimulateTectosApp::parse_command_line(
     tfs_.update_var_options();
 }
 
+
+// run functions ///////////////////////////////////////////////////////////////////////////////////
+
 void
 SimulateTectosApp::run() {
     
@@ -52,33 +59,26 @@ SimulateTectosApp::run() {
     auto css  = get_string_option("css");
     
     auto mset = get_mset_old(fseq, fss, cseq, css);
+    
+    if(get_bool_option("start_pose")) {
+        auto mt = mset->to_mst()->to_motif_tree();
+        std::cout << "outputing starting pose: start_pose.pdb" << std::endl;
+        mt->to_pdb("start_pose.pdb", 1);
+    }
+    
+    
+    auto steric_node_str = String("");
+    auto last_node_index = mset->last_node()->index();
+    steric_node_str += std::to_string(last_node_index) + "," + std::to_string(last_node_index-1);
+    steric_node_str += ":1";
+    
     tfs_.set_option_value("steps", get_int_option("s"));
-    tfs_.set_option_value("steric_nodes", "22,21:1");
+    tfs_.set_option_value("steric_nodes", steric_node_str);
     tfs_.setup(mset, 1, mset->last_node()->index(), 1, 1);
     auto count = tfs_.run();
     std::cout << count << std::endl;
 
 }
-
-
-
-/*SimulateTectosApp::SimulateTectosApp(
-    String const & fseq,
-    String const & fss,
-    String const & cseq,
-    String const & css) {
-    
-    auto mset = get_mset_old(fseq, fss, cseq, css);
-    exit(0);
-    ThermoFlucSimulation tfs;
-    tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
-    tfs.option("steps", 1000000);
-    tfs.option("cutoff", 4.5f);
-    //tfs.option("cutoff", 5.0f);
-
-    int count = tfs.run();
-    std::cout << count << std::endl;
-}*/
 
 
 MotifStateEnsembleTreeOP
@@ -163,6 +163,10 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
 }
  
 
+
+// non-member functions ////////////////////////////////////////////////////////////////////////////
+
+
 String
 bp_name_from_sequence(
     String const & seq) {
@@ -182,6 +186,9 @@ bp_name_from_sequence(
     return name_rna;
     
 }
+
+
+// main ////////////////////////////////////////////////////////////////////////////////////////////
 
 
 int main(int argc, const char * argv[]) {
