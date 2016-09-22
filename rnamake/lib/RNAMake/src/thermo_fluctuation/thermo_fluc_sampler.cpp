@@ -30,12 +30,14 @@ int
 ThermoFlucSampler::next() {
     
     node_num_ = rng_.randrange((int)mst_->size());
-    
+    if(node_num_ == mst_->size()) { node_num_--; }
+
     mset_node_ = mset_->get_node(node_num_);
     mst_node_  = mst_->get_node(node_num_);
     pos_ = states_[node_num_];
     mem_pos_ = rng_.randrange(mset_node_->data()->size());
-    
+    if(mem_pos_ == mset_node_->data()->size()) { mem_pos_--; }
+
     energy_ = mset_node_->data()->get_member(pos_)->energy;
     new_mem_ = mset_node_->data()->get_member(mem_pos_);
     

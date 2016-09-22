@@ -59,7 +59,7 @@ public:
             if(n->index() == index) { return n; }
         }
         
-        throw TreeException("cannot find node with index");
+        throw TreeException("cannot find node with index: " + std::to_string(index));
     }
     
     inline
