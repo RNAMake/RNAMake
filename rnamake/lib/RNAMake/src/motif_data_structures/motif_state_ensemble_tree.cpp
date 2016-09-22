@@ -56,7 +56,7 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
         }
         
         else {
-            mse = motif_state_to_motif_state_ensemble(n->data()->get_state());
+            mse = std::make_shared<MotifStateEnsemble>(n->data()->get_state());
         }
         
     

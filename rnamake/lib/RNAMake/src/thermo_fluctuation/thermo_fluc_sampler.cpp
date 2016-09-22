@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "thermo_fluc_sampler.h"
+#include "thermo_fluctuation/thermo_fluc_sampler.h"
 
 void
 ThermoFlucSampler::setup(
@@ -29,17 +29,15 @@ ThermoFlucSampler::sample(
 int
 ThermoFlucSampler::next() {
     
-    node_num_ = 1 + rng_.randrange((int)mst_->size()-1);
-    /*std::cout << node_num_ << std::endl;
-    if(node_num_ == 22) {
-        std::cout << "made it" << std::endl;
-    }*/
+    node_num_ = rng_.randrange((int)mst_->size());
+    
     mset_node_ = mset_->get_node(node_num_);
     mst_node_  = mst_->get_node(node_num_);
     pos_ = states_[node_num_];
+    mem_pos_ = rng_.randrange(mset_node_->data()->size());
     
     energy_ = mset_node_->data()->get_member(pos_)->energy;
-    new_mem_ = mset_node_->data()->get_random_member();
+    new_mem_ = mset_node_->data()->get_member(mem_pos_);
     
     accept_ = mc_.accept(energy_, new_mem_->energy);
         
@@ -62,11 +60,11 @@ ThermoFlucSampler::update(
     last_state_ = mst_node_->data()->ref_state;
     last_num_ = node_num;
     mst_->replace_state(node_num, new_mem->motif_state);
-    //std::cout << node_num << " " << mst_->get_node(node_num)->data()->cur_state->end_states()[1]->d() << std::endl;
 }
 
 void
 ThermoFlucSampler::to_pdb(
-    String fname) {
-    mst_->to_motif_tree()->to_pdb(fname);
+    String fname,
+    int renumber) {
+    mst_->to_motif_tree()->to_pdb(fname, renumber);
 }

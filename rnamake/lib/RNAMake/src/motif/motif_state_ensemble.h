@@ -12,7 +12,6 @@
 #include <stdio.h>
 #include <algorithm>
 
-#include "util/random_number_generator.h"
 #include "motif/motif_state.h"
 
 /*
@@ -78,8 +77,7 @@ public:
         MotifStateOP const & ms):
     id_(ms->end_ids()[0]),
     block_end_add_(ms->block_end_add()),
-    members_(MotifStateEnsembleMemberOPs()),
-    rng_(RandomNumberGenerator()) {
+    members_(MotifStateEnsembleMemberOPs()) {
         
         members_.push_back(std::make_shared<MotifStateEnsembleMember>(ms, 1));
     }
@@ -89,8 +87,7 @@ public:
         MotifStateEnsemble const & mse):
     id_(mse.id_),
     block_end_add_(mse.block_end_add_),
-    members_(MotifStateEnsembleMemberOPs()),
-    rng_(RandomNumberGenerator()) {
+    members_(MotifStateEnsembleMemberOPs()) {
         
         for(auto const & mem : mse.members_) {
             auto new_mem = std::make_shared<MotifStateEnsembleMember>(*mem);
@@ -112,12 +109,6 @@ public:
     
     String
     to_str();
-    
-    inline
-    MotifStateEnsembleMemberOP const &
-    get_random_member() {
-        return members_[rng_.randrange((int)members_.size()-1) ];
-    }
     
     inline
     int
@@ -172,17 +163,12 @@ private:
     String id_;
     int block_end_add_;
     MotifStateEnsembleMemberOPs members_;
-    RandomNumberGenerator rng_;
     
 };
 
 typedef std::shared_ptr<MotifStateEnsemble> MotifStateEnsembleOP;
 typedef std::vector<MotifStateEnsembleOP>   MotifStateEnsembleOPs;
 
-
-MotifStateEnsembleOP
-motif_state_to_motif_state_ensemble(
-    MotifStateOP const &);
 
 #endif /* defined(__RNAMake__motif_state_ensemble__) */
 
