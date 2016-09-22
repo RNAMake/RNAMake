@@ -53,6 +53,7 @@ SimulateTectosApp::run() {
     
     auto mset = get_mset_old(fseq, fss, cseq, css);
     tfs_.set_option_value("steps", get_int_option("s"));
+    tfs_.set_option_value("steric_nodes", "22,21:1");
     tfs_.setup(mset, 1, mset->last_node()->index(), 1, 1);
     auto count = tfs_.run();
     std::cout << count << std::endl;

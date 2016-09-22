@@ -68,6 +68,48 @@ ThermoFlucSimulation::setup(
             " does not have a " + std::to_string(ei2_) + " end");
     }
     
+    //parse sterics information
+    if(get_string_option("steric_nodes") == "") { return; }
+    auto steric_node_str = get_string_option("steric_nodes");
+    auto spl = split_str_by_delimiter(steric_node_str, ":");
+    if(spl.size() != 2) {
+        throw ThermoFlucSimulationException(
+            "incorrect format for steric_nodes option, must be in the form NodeSet1:NodeSet2,"
+            " example: '22,21:1' which check sterics of nodes 22 and 21 against node 1");
+    }
+    
+    auto node_set_1 = split_str_by_delimiter(spl[0], ",");
+    for(auto const & n_num : node_set_1) {
+        auto n_index = std::stoi(n_num);
+        
+        try {
+            sampler_.mst()->get_node(n_index);
+        }
+        catch(TreeException const & e) {
+            throw ThermoFlucSimulationException(
+                "cannot setup sterics for simulation, specified node: " + std::to_string(n_index) +
+                " does not exist");
+        }
+        
+        check_nodes_1_.push_back(n_index);
+    }
+    
+    auto node_set_2 = split_str_by_delimiter(spl[1], ",");
+    for(auto const & n_num : node_set_2) {
+        auto n_index = std::stoi(n_num);
+        
+        try {
+            sampler_.mst()->get_node(n_index);
+        }
+        catch(TreeException const & e) {
+            throw ThermoFlucSimulationException(
+                "cannot setup sterics for simulation, specified node: " + std::to_string(n_index) +
+                " does not exist");
+        }
+        
+        check_nodes_2_.push_back(n_index);
+    }
+    
 
 
     
@@ -95,7 +137,7 @@ ThermoFlucSimulation::run() {
         r = sampler_.next();
 
         clash = _check_sterics();
-        if(clash) { continue; }
+        if(clash) { steps++; continue; }
         
         end_state_1_ = sampler_.mst()->get_node(ni1_)->data()->get_end_state(ei1_);
         end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->get_end_state(ei2_);
