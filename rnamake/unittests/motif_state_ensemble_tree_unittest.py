@@ -29,7 +29,7 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mset.add_ensemble(mse)
 
         mst = mset.to_mst()
-        print mst.get_node(0).data.name()
+        #print mst.get_node(0).data.name()
         #mst.write_pdbs()
 
     def _test_enumerator(self):

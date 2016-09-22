@@ -24,7 +24,7 @@ bp_name_from_sequence(
 class SimulateTectosAppException : public std::runtime_error {
 public:
     SimulateTectosAppException(
-        String const & message) :
+        String const & message):
     std::runtime_error(message)
     {}
 };
@@ -35,7 +35,7 @@ public:
     
     SimulateTectosApp();
     
-public:
+public: // application setups functions
     void
     setup_options();
     
@@ -44,12 +44,13 @@ public:
         int,
         const char **);
     
+public:
+    
     void
     run();
 
-private:
+private: // run helper functions
     
-    //old code for comparision
     MotifStateEnsembleTreeOP
     get_mset_old(
         String const &,
