@@ -11,10 +11,9 @@
 
 MotifStateEnsemble::MotifStateEnsemble(
     String const & s):
-id_(""),
-block_end_add_(0),
-members_(MotifStateEnsembleMemberOPs()),
-rng_(RandomNumberGenerator()) {
+    id_(""),
+    block_end_add_(0),
+    members_(MotifStateEnsembleMemberOPs()) {
     
     auto spl = split_str_by_delimiter(s, "{");
     id_ = spl[0];
@@ -62,14 +61,3 @@ MotifStateEnsemble::to_str() {
 }
 
 // non-member functions     ////////////////////////////////////////////////////////////////////////
-
-
-MotifStateEnsembleOP
-motif_state_to_motif_state_ensemble(
-    MotifStateOP const & ms) {
-    
-    auto motif_states = MotifStateOPs{ms};
-    auto energies = Floats{1.0f};
-    return std::make_shared<MotifStateEnsemble>(motif_states, energies);
-    
-}
