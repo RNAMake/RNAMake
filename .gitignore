@@ -72,6 +72,9 @@ _sources/auto/
 #Project specific
 rnamake/resources/motifs
 rnamake/unittests/*.pdb
+rnamake/unittests/dot.ps
+rnamake/unittests/rna.ps
+rnamake/unittests/rnafold_dump
 rnamake/unittests/intergration/*.pdb
 
 # Auto-generated build files
