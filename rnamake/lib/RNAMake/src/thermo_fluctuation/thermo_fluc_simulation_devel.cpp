@@ -10,7 +10,7 @@
 #include "thermo_fluctuation/thermo_fluc_simulation_devel.h"
 #include <sys/stat.h>
 
-void
+/*void
 ThermoFlucSimulationDevel::setup_options() {
     options_ = Options();
     options_.add_option(Option("temperature", 298.15f));
@@ -294,4 +294,4 @@ ThermoFlucSimulationDevel::run() {
     }
     
     return count;
-}
+}*/

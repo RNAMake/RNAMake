@@ -8,7 +8,7 @@ struct CommandLineArgs {
     int argc;
     
     CommandLineArgs(
-                    String const & s) {
+        String const & s) {
         
         Strings spl = split_str_by_delimiter(s, " ");
         argv_ = new char*[spl.size()+1];
