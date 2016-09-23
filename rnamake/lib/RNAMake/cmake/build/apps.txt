@@ -1,9 +1,4 @@
 simulate_tectos ../../apps/simulate_tectos/simulate_tectos.cc 
-<<<<<<< HEAD
-simulate_tectos_devel ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc 
-sample_helix ../../apps/sample_helix/sample_helix.cpp
-p5abc ../../apps/p5abc/p5abc.cpp
-=======
 #mini_ttr ../../apps/mini_ttr/mini_ttr.cpp 
 #exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp
 #eternabot_app ../../apps/eternabot/eternabot.cpp
@@ -13,4 +8,3 @@ p5abc ../../apps/p5abc/p5abc.cpp
 path_builder_new ../../apps/path_builder_new/path_builder_new.cpp
 #sequence_optimizer_app ../../apps/sequence_optimizer/sequence_optimizer_app.cpp
 #thermo_simulation ../../apps/thermo_simulation/thermo_simulation.cpp
->>>>>>> devel

@@ -248,7 +248,6 @@ class Segmenter(object):
         pairs, end_pairs = self._get_pairs(m, res)
         pair_search = PairSearch()
         solutions = pair_search.search(res, pairs, end_pairs)
-        print len(solutions)
 
         for s in solutions:
             subchains = []
