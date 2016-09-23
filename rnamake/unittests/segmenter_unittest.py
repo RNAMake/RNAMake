@@ -15,9 +15,18 @@ class SegmenterUnittest(unittest.TestCase):
         p = pf.factory.pose_from_file(path)
         twoways = p.motifs(motif_type.TWOWAY)
         for i, t in enumerate(twoways):
+            print len(t.ends)
+            exit()
             s = rnamake.segmenter.Segmenter()
             segments = s.apply(p, t.ends)
             self.failUnless(len(t.residues()) == len(segments.removed.residues()))
+
+        nways = p.motifs(motif_type.NWAY)
+        for i, t in enumerate(nways):
+            s = rnamake.segmenter.Segmenter()
+            segments = s.apply(p, t.ends)
+            self.failUnless(len(t.residues()) == len(segments.removed.residues()))
+
 
 
 def main():

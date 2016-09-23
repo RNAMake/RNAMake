@@ -459,9 +459,26 @@ def basepairs_from_x3dna(path, name, structure):
                 not_found = xbp.res1
             else:
                 not_found = xbp.res2
-            raise user_warnings.RNAStructureWarning(
-                "cannot find residues in basepair: " + not_found + " "
-                "this residue should NOT be a normal nucleotide etc: A,G,C,U")
+            user_warnings.RNAStructureWarning(
+                "cannot find residues in basepair: " + str(not_found) + " "
+                "this residue should NOT be a normal nucleotide etc: A,G,C,U\n")
+            continue
+
+        try:
+            res1.get_atom("C1'")
+        except exceptions.ResidueException:
+            user_warnings.RNAStructureWarning(
+                str(res1) + " has no C1' residue cannot have it in a basepair "
+                "is required for alignment\n")
+            continue
+
+        try:
+            res2.get_atom("C1'")
+        except exceptions.ResidueException:
+            user_warnings.RNAStructureWarning(
+                str(res2) + " has no C1' residue cannot have it in a basepair "
+                "is required for alignment\n")
+            continue
 
         bp = basepair.Basepair(res1, res2, xbp.r, xbp.bp_type)
         basepairs.append(bp)

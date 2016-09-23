@@ -7,6 +7,7 @@ import motif_type
 import structure
 import motif
 import motif_factory
+import exceptions
 
 
 class Pair(object):
@@ -141,8 +142,9 @@ class Segmenter(object):
 
     def _get_subchain(self, m, pair):
         for c in m.chains():
-            sc = c.subchain(start_res=pair.res1, end_res=pair.res2)
-            if sc is None:
+            try:
+                sc = c.subchain(start_res=pair.res1, end_res=pair.res2)
+            except exceptions.ChainException:
                 continue
             return sc
         raise ValueError("cannot create subchain")
@@ -246,6 +248,7 @@ class Segmenter(object):
         pairs, end_pairs = self._get_pairs(m, res)
         pair_search = PairSearch()
         solutions = pair_search.search(res, pairs, end_pairs)
+        print len(solutions)
 
         for s in solutions:
             subchains = []

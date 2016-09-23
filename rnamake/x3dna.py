@@ -4,6 +4,7 @@ import os
 import re
 import numpy as np
 import util
+import shutil
 
 import motif_type, exceptions
 
@@ -161,6 +162,7 @@ class X3dna(object):
                     m = p.search(l)
                     bps = m.groups()
                 else:
+                    print l
                     raise exceptions.X3dnaException(
                         "did not parse 3DNA ref frame correctly")
                 continue
@@ -200,6 +202,9 @@ class X3dna(object):
 
         if os.path.isdir(path):
             ref_frames_path = path + "/ref_frames.dat"
+            if not os.path.isfile(ref_frames_path):
+                self.generate_ref_frame(path + "/" + filename + ".pdb")
+
         else:
             base_dir = util.base_dir(path)
             filename = filename[:-4]
@@ -227,6 +232,9 @@ class X3dna(object):
 
         if os.path.isdir(path):
             dssr_file_path = path + "/" + filename + "_dssr.out"
+            if not os.path.isfile(dssr_file_path):
+                self.generate_dssr_file(path + "/" + filename + ".pdb")
+                shutil.move(filename + "_dssr.out", path + "/")
         else:
             base_dir = util.base_dir(path)
             filename = filename[:-4]
@@ -327,7 +335,10 @@ class X3dna(object):
         dssr_file_path = self._get_dssr_file_path(pdb_path)
 
         basepairs = self._parse_ref_frame_file(ref_frames_path)
-        section = self._divide_dssr_file_into_sections(dssr_file_path)['bases']
+        try:
+            section = self._divide_dssr_file_into_sections(dssr_file_path)['bases']
+        except:
+            return []
 
         for l in section:
             spl = re.split("\s+",l)
@@ -531,3 +542,4 @@ class Residue(object):
     def __ne__(self, res):
          return not (self.num == res.num and self.chain_id == res.chain_id \
                      and self.i_code == res.i_code)
+

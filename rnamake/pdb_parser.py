@@ -65,11 +65,11 @@ def parse(pdb_file, protein=0, rna=1):
                                                 'line {0}.'.format(line))
 
             if len(atomname) == 0:
-                user_warnings.warn("line " + str(line_num) + ": no atomname detected",
+                user_warnings.warn("line " + str(line_num) + ": no atomname detected\n",
                                    user_warnings.PDBFormatWarning)
 
             if len(resname) == 0:
-                user_warnings.warn("line " + str(line_num) + ": no resname detected",
+                user_warnings.warn("line " + str(line_num) + ": no resname detected\n",
                                    user_warnings.PDBFormatWarning)
 
             atomnames.append(atomname)
@@ -113,7 +113,7 @@ def parse(pdb_file, protein=0, rna=1):
         rtype = residue_type.get_rtype(spl[0])
 
         if rtype is None:
-            user_warnings.warn("restype " + spl[0] + ": is unknown",
+            user_warnings.warn("restype " + spl[0] + ": is unknown\n",
                                 user_warnings.PDBFormatWarning)
             continue
 
