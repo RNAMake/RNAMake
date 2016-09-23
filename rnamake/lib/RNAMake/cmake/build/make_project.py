@@ -71,15 +71,17 @@ def get_integration_tests_for_dir(d_name):
     return intergration_apps
 
 
+c_dir = settings.LIB_PATH + "/lib/RNAMake/"
+
 # make sure these directories exist
-if not os.path.isdir("../../bin"):
-    os.mkdir("../../bin")
+if not os.path.isdir(c_dir + "bin"):
+    os.mkdir(c_dir + "bin")
 
-if not os.path.isdir("../../bin/unittests"):
-    os.mkdir("../../bin/unittests")
+if not os.path.isdir(c_dir + "bin/unittests"):
+    os.mkdir(c_dir + "bin/unittests")
 
-if not os.path.isdir("../../bin/integration"):
-    os.mkdir("../../bin/integration")
+if not os.path.isdir(c_dir + "bin/integration"):
+    os.mkdir(c_dir + "bin/integration")
 
 #libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer instances"
 libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
