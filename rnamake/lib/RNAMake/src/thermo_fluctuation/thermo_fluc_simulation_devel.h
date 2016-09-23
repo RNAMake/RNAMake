@@ -9,7 +9,7 @@
 #ifndef __RNAMake__thermo_fluc_simulation_devel__
 #define __RNAMake__thermo_fluc_simulation_devel__
 
-#include <stdio.h>
+/*#include <stdio.h>
 
 #include "base/types.h"
 #include "base/base.h"
@@ -85,6 +85,6 @@ private:
     int steps_, record_, record_state_, record_all_;
     int bound_pdb_;
 };
-
+*/
 
 #endif /* defined(__RNAMake__thermo_fluc_simulation_devel__) */
