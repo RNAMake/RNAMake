@@ -1,0 +1,130 @@
+****************************************************************************
+         DSSR: a software program for Defining the Secondary
+         Structures of RNA from three-dimensional coordinates
+        v1.0.1-2014jan31, by Xiang-Jun Lu (xiangjun@x3dna.org)
+
+   This program is actively maintained and developed. As always, I
+   greatly appreciate your feedback! Please report all DSSR-related
+   issues on the 3DNA Forum (http://forum.x3dna.org/). I strive to
+   respond promptly to *any* questions posted there.
+
+****************************************************************************
+Note: Each nucleotide is identified by model:chainId.name#, where the
+      'model:' portion is omitted if no model number is available as
+      is normally the case for X-ray crystal structures in the PDB. So
+      a common example would be like A.G19, meaning G #19 on chain A.
+      One-letter base names for modified nucleotides are put in lower
+      case (e.g., 'c' for 5MC). For further information about the
+      output notation, please run DSSR with the '-note' option. More
+      details can be found in the DSSR user manual. Questions and
+      suggestions are always welcome on the 3DNA Forum.
+
+Command: x3dna-dssr -i=fmn_min.pdb -o=fmn_min_dssr.out
+Date and time: Tue Aug  5 11:48:34 2014
+File name: fmn_min.pdb
+    no. of DNA/RNA chains: 1 [A=17]
+    no. of nucleotides:    17
+    no. of atoms:          607
+    no. of waters:         0
+    no. of metals:         0
+
+****************************************************************************
+List of 8 base pairs
+      nt1              nt2             bp  name         Saenger    LW DSSR
+   1 A.U7             A.A29            U-A WC           20-XX     cWW cW-W
+   2 A.A8             A.G28            A-G              08-VIII   cWW cW-W
+   3 A.G9             A.G27            G-G              00-n/a    cW. cW-.
+   4 A.G10            A.U12            G+U              00-n/a    cSH cm+M
+   5 A.U12            A.A25            U-A rHoogsteen   24-XXIV   tWH tW-M
+   6 A.A13            A.G24            A-G Sheared      11-XI     tHS tM-m
+   7 A.U14            A.A23            U-A WC           20-XX     cWW cW-W
+   8 A.G15            A.C22            G-C WC           19-XIX    cWW cW-W
+
+****************************************************************************
+List of 1 multiplet
+   1 nts=3 GUA A.G10,A.U12,A.A25
+
+****************************************************************************
+List of 2 helices
+  Note: a helix is defined by base-stacking interactions, regardless of bp
+        type and backbone connectivity, and may contain more than one stem.
+      helix#number[stems-contained] bps=number-of-base-pairs in the helix
+      bp-type: '|' for a canonical WC/wobble pair, '.' otherwise
+      helix-form: classification of a dinucleotide step comprising the bp
+        above the given designation and the bp that follows it. Types
+        include 'A', 'B' or 'Z' for the common A-, B- and Z-form helices,
+        '.' for an unclassified step, and 'x' for a step without a
+        continuous backbone.
+      --------------------------------------------------------------------
+  helix#1[0] bps=3
+      strand-1 5'-UAG-3'
+       bp-type    |..
+      strand-2 3'-AGG-5'
+      helix-form  ..
+   1 A.U7             A.A29            U-A WC           20-XX     cWW cW-W
+   2 A.A8             A.G28            A-G              08-VIII   cWW cW-W
+   3 A.G9             A.G27            G-G              00-n/a    cW. cW-.
+  --------------------------------------------------------------------------
+  helix#2[1] bps=4
+      strand-1 5'-UAUG-3'
+       bp-type    ..||
+      strand-2 3'-AGAC-5'
+      helix-form  ...
+   1 A.U12            A.A25            U-A rHoogsteen   24-XXIV   tWH tW-M
+   2 A.A13            A.G24            A-G Sheared      11-XI     tHS tM-m
+   3 A.U14            A.A23            U-A WC           20-XX     cWW cW-W
+   4 A.G15            A.C22            G-C WC           19-XIX    cWW cW-W
+
+****************************************************************************
+List of 1 stem
+  Note: a stem is defined as a helix consisting of only canonical WC/wobble
+        pairs, with a continuous backbone.
+      stem#number[#helix-number containing this stem]
+      Other terms are defined as in the above Helix section.
+      --------------------------------------------------------------------
+  stem#1[#2] bps=2
+      strand-1 5'-UG-3'
+       bp-type    ||
+      strand-2 3'-AC-5'
+      helix-form  .
+   1 A.U14            A.A23            U-A WC           20-XX     cWW cW-W
+   2 A.G15            A.C22            G-C WC           19-XIX    cWW cW-W
+
+****************************************************************************
+List of 1 lone WC/wobble pair
+  Note: lone WC/wobble pairs are assigned negative indices to differentiate
+        them from the stem numbers, which are positive.
+        --------------------------------------------------------------------
+  -1 A.U7             A.A29            U-A WC           20-XX     cWW cW-W
+
+****************************************************************************
+Note: for the various types of loops listed below, numbers within the first
+      set of brackets are the number of loop nts, and numbers in the second
+      set of brackets are the identities of the stems (positive number) or
+      lone WC/wobble pairs (negative numbers) to which they are linked.
+
+****************************************************************************
+List of 1 internal loop
+   1 asymmetric internal loop: nts=15; [6,5]; linked by [#-1,#1]
+     nts=15 UAGGAUAUAGAAGGA A.U7,A.A8,A.G9,A.G10,A.A11,A.U12,A.A13,A.U14,A.A23,A.G24,A.A25,A.A26,A.G27,A.G28,A.A29
+       nts=6 AGGAUA A.A8,A.G9,A.G10,A.A11,A.U12,A.A13
+       nts=5 GAAGG A.G24,A.A25,A.A26,A.G27,A.G28
+
+****************************************************************************
+Secondary structures in dot-bracket notation (dbn) as a whole and per chain
+>fmn_min nts=17 [whole]
+UAGGAUAUG&CAGAAGGA
+(......((&)).....)
+>fmn_min-A #1 nts=17 [chain] RNA*
+UAGGAUAUGCAGAAGGA
+(......(()).....)
+
+****************************************************************************
+List of 7 additional files
+   1 dssr-stems.pdb -- MODEL/ENDMDL delineated stems
+   2 dssr-helices.pdb -- MODEL/ENDMDL delineated helices (pseudo/coaxial)
+   3 dssr-pairs.pdb -- MODEL/ENDMDL delineated base pairs
+   4 dssr-multiplets.pdb -- MODEL/ENDMDL delineated multiplets
+   5 dssr-2ndstrs.ct -- secondary structures in the connect format
+   6 dssr-2ndstrs.dbn -- secondary structures in the dot-bracket notation
+   7 dssr-torsions.dat -- Backbone torsion angles and suite names

@@ -1,3 +1,7 @@
+.idea/
+.buildinfo
+doc/Makefile
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -5,6 +9,8 @@ __pycache__/
 RNAMake.xcodeproj/
 # C extensions
 *.so
+*.o
+*.dylib
 
 # Distribution / packaging
 .Python
@@ -58,10 +64,16 @@ target/
 .ropeproject
 *.swp
 
+#Documentation
+doc/source/auto/
+rnamake/lib/RNAMake/html/
+_sources/auto/
+
 #Project specific
 rnamake/resources/motifs
-rnamake/unittests/*.pdbs
+rnamake/unittests/*.pdb
+rnamake/unittests/intergration/*.pdb
 
 # Auto-generated build files
-rnamake/lib/RNAMake/cmake/build/cmake_install.cmake
-rnamake/lib/RNAMake/cmake/build_gcc/cmake_install.cmake
+rnamake/lib/RNAMake/cmake/
+rnamake/lib/RNAMake/bin/

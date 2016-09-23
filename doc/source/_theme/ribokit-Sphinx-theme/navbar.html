@@ -1,0 +1,11 @@
+<nav>
+    <ul style="margin-bottom:0;">
+        <li class="tag-h1"><a href="index.html">{{ shorttitle }}</a></li>
+    </ul>
+    {% block menu %}
+        {% set toctree = toctree(maxdepth=2, collapse=theme_collapse_navigation, includehidden=False) %}
+        {% if toctree %}
+            {{ toctree }}
+        {% endif %}
+    {% endblock %}
+</nav>
