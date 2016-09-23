@@ -49,7 +49,7 @@ TEST_CASE( "Test Assembling MotifEnsembleStates together", "[MotifStateEnsembleT
         REQUIRE(mset.size() == 2);
         
         auto mst = mset.to_mst();
-        REQUIRE(mst->get_node(0)->data()->name() == "CG=CG.0");
+        //REQUIRE(mst->get_node(0)->data()->name() == "CG=CG.0");
         
         auto mt2 = std::make_shared<MotifTree>();
         auto m3 = RM::instance().motif("HELIX.IDEAL");
