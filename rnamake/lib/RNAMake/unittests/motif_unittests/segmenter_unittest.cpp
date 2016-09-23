@@ -12,13 +12,18 @@
 
 int
 SegmenterUnittest::test_creation() {
-    Segmenter s;
+    /*Segmenter s;
     PoseFactory pf;
     /*String path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
     auto p = pf.pose_from_file(path);
     auto bp1 = p->get_basepair("A112-A208")[0];
     auto bp2 = p->get_basepair("A132-A191")[0];
+<<<<<<< HEAD
     s.apply(p, BasepairOPs { bp1, bp2} );*/
+=======
+    s.apply(p, BasepairOPs { bp1, bp2} );*/ 
+
+>>>>>>> devel
     return 1;
 }
 

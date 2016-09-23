@@ -41,6 +41,9 @@ public:
     int
     test_contains();
     
+    void
+    test_memory();
+    
 public:
     
     int

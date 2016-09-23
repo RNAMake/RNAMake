@@ -12,15 +12,19 @@
 
 ResidueType::ResidueType(
     String const & name,
-    StringIntMap const & atom_map):
-    name_ (name),
-    atom_map_ ( atom_map) {
+    StringIntMap const & atom_map,
+    SetType const & set_type):
+name_ (name),
+atom_map_ ( atom_map),
+set_type_(set_type) {
     
     alt_names_ = Strings();
-    alt_names_.push_back(name_.substr(0,1));
-    alt_names_.push_back("r" + name_.substr(0,1));
-    alt_names_.push_back("D" + name_.substr(0,1));
-    extend_res_specific_altnames();
+    if(set_type_ == SetType::RNA) {
+        alt_names_.push_back(name_.substr(0,1));
+        alt_names_.push_back("r" + name_.substr(0,1));
+        alt_names_.push_back("D" + name_.substr(0,1));
+        extend_res_specific_altnames();
+    }
         
     atom_alt_names_ = StringStringMap();
     atom_alt_names_["O1P"] = "OP1";
@@ -64,13 +68,18 @@ ResidueType::extend_res_specific_altnames() {
     else if ( name_.compare("URA") == 0 ) {
         alt_names = split_str_by_delimiter("PSU H2U 5MU 4SU 5BU 5MC U3H 2MU 70U BRU DT", " ");
     }
-    else {
+    else if ( name_.compare("CYT") == 0) {
         alt_names = split_str_by_delimiter("CBR CCC", " ");
     }
     
-    for ( auto const & name : alt_names_ ){
+    else {
+        
+    }
+    
+    for ( auto const & name : alt_names ){
         alt_names_.push_back(name);
     }
+    
     
 }
 

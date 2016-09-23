@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Joseph Yesselman. All rights reserved.
 //
 
-#include "util/settings.h"
-#include "util/file_io.h"
+#include "base/settings.h"
+#include "base/file_io.h"
 #include "structure/basepair_state.h"
 
 BasepairState
@@ -82,7 +82,7 @@ get_bpstate_rotation_diff(
 
 
 int
-are_BasepairStates_equal(
+are_basepair_states_equal(
     BasepairState const & a,
     BasepairState const & b) {
     

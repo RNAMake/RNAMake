@@ -90,7 +90,6 @@ class Strategy(strategy_template.Strategy):
                     if(pair == "GC" or pair == "CG"):
                         cap_score += 1 / 3.0
 
-
         if(stack_count > 0):
             cap_score = float(cap_score)/stack_count
 

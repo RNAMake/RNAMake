@@ -27,7 +27,9 @@ public:
 public:
     
     ResidueOPs const &
-    parse(String const &);
+    parse(String const & pdb_file,
+          int protein=0,
+          int rna=1);
     
 
 private:

@@ -12,11 +12,9 @@ StringStringMap
 MotifStateEnsembleSqliteLibrary::get_libnames() {
     StringStringMap libnames;
     
+    libnames["all_bp_steps"]   = "/motif_state_ensemble_libraries/all_bp_steps.db";
     libnames["bp_steps"]       = "/motif_state_ensemble_libraries/bp_steps.db";
     libnames["twoway"]         = "/motif_state_ensemble_libraries/twoway.db";
-    libnames["tcontact"]       = "/motif_state_ensemble_libraries/tcontact.db";
-    libnames["hairpin"]        = "/motif_state_ensemble_libraries/hairpin.db";
-    libnames["nway"]           = "/motif_state_ensemble_libraries/nway.db";
     
     return libnames;
 }
@@ -32,7 +30,7 @@ MotifStateEnsembleSqliteLibrary::get(
     auto row = connection_.next();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
     
     if(data_.find(row->id) == data_.end() ) {
@@ -40,7 +38,7 @@ MotifStateEnsembleSqliteLibrary::get(
         
     }
     
-    return std::make_shared<MotifStateEnsemble>(data_[row->id]->copy());
+    return std::make_shared<MotifStateEnsemble>(*data_[row->id]);
     
 }
 
@@ -55,7 +53,7 @@ MotifStateEnsembleSqliteLibrary::get_multi(
     auto row = connection_.next();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
     
     while(row->data.length() != 0) {
@@ -64,7 +62,7 @@ MotifStateEnsembleSqliteLibrary::get_multi(
             
         }
         
-        motif_state_ensembles.push_back(std::make_shared<MotifStateEnsemble>(data_[row->id]->copy()));
+        motif_state_ensembles.push_back(std::make_shared<MotifStateEnsemble>(*data_[row->id]));
         row = connection_.next();
     }
     
@@ -99,7 +97,7 @@ MotifStateEnsembleSqliteLibrary::load_all(
     int limit) {
     
     int count = 0;
-    for(int i = 0; i < max_size_; i++) {
+    for(int i = 1; i < max_size_; i++) {
         get("", std::to_string(i));
         if (count > limit) { break; }
         count++;

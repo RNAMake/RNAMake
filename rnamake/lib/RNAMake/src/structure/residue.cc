@@ -43,7 +43,7 @@ Residue::setup_atoms(
         count++;
     }
     
-    if(count == 0) { throw "Residue has zero atoms something wrong"; }
+    if(count == 0) { throw ResidueException("Residue has zero atoms something wrong"); }
 }
 
 Beads
@@ -58,25 +58,12 @@ Residue::get_beads() const {
         else             { base_atoms.push_back(a);  }
     }
     Beads beads;
-    if(phos_atoms.size() > 0)  { beads.push_back(Bead(center(phos_atoms), PHOS)); }
-    if(sugar_atoms.size() > 0) { beads.push_back(Bead(center(sugar_atoms), SUGAR)); }
-    if(base_atoms.size() > 0)  { beads.push_back(Bead(center(base_atoms), BASE)); }
+    if(phos_atoms.size() > 0)  { beads.push_back(Bead(center(phos_atoms),  BeadType::PHOS)); }
+    if(sugar_atoms.size() > 0) { beads.push_back(Bead(center(sugar_atoms), BeadType::SUGAR)); }
+    if(base_atoms.size() > 0)  { beads.push_back(Bead(center(base_atoms),  BeadType::BASE)); }
     return beads;
 }
 
-Residue
-Residue::copy() const {
-    Residue copied_r (rtype_, name_, num_, chain_id_, i_code_);
-    copied_r.atoms_ = AtomOPs(atoms_.size());
-    int i = -1;
-    for(auto const & a : atoms_) {
-        i++;
-        if(a  == nullptr) { continue; }
-        copied_r.atoms_[i] = AtomOP( new Atom( a->copy()));
-    }
-    copied_r.uuid_ = uuid_;
-    return copied_r;
-}
 
 String
 Residue::to_str() const {
@@ -91,13 +78,24 @@ Residue::to_str() const {
 
 String
 Residue::to_pdb_str(
-    int & acount) const {
+    int & acount,
+    int rnum,
+    String const & chain_id) const {
 
+    int num = num_;
+    if(rnum != -1) {
+        num = rnum;
+    }
+    String cid = chain_id_;
+    if(chain_id != "") {
+        cid = chain_id;
+    }
+    
     String s;
     for(auto const & a : atoms_) {
         if( a == nullptr) { continue; }
         char buffer [200];
-        std::sprintf(buffer, "%-6s%5d %-4s%1s%-4s%1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s\n", "ATOM", acount, a->name().c_str(), "", short_name().c_str(), chain_id_.c_str(), num_, "",  a->coords()[0], a->coords()[1], a->coords()[2], 1.00, 0.00, "", "");
+        std::sprintf(buffer, "%-6s%5d %-4s%1s%-4s%1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s\n", "ATOM", acount, a->name().c_str(), "", short_name().c_str(), cid.c_str(), num, "",  a->coords()[0], a->coords()[1], a->coords()[2], 1.00, 0.00, "", "");
         s += String(buffer);
         acount++;
     }
@@ -113,30 +111,6 @@ Residue::to_pdb(
     String s = to_pdb_str(i);
     out << s << std::endl;
     out.close();
-}
-
-
-Residue
-str_to_residue(
-    String const & s,
-    ResidueTypeSet const & rts) {
-    Strings spl = split_str_by_delimiter(s, ",");
-    ResidueType rtype = rts.get_rtype_by_resname(spl[0]);
-    Residue r(rtype, spl[1], std::stoi(spl[2].c_str()), spl[3], spl[4]);
-    AtomOPs atoms;
-    int i = 5;
-    while ( i < spl.size() ) {
-        if( spl[i].length() == 1) {
-            atoms.push_back( nullptr );
-        }
-        else {
-            AtomOP aop ( new Atom ( str_to_atom(spl[i]) ));
-            atoms.push_back(aop);
-        }
-        i++;
-    }
-    r.setup_atoms(atoms);
-    return r;
 }
 
 

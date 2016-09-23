@@ -1,16 +1,18 @@
 import unittest
+from rnamake import structure, transformations
 import rnamake.basepair
-import rnamake.motif_factory as mf
-import util
+
+import util, instances
 import numpy as np
 import copy
+import random
 
 
 class BasepairUnittest(unittest.TestCase):
 
     def setUp(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        struct = mf.factory.get_structure(path)
+        struct = structure.structure_from_pdb(path)
         r = np.eye(3)
         bp = rnamake.basepair.Basepair(struct.get_residue(num=103),
                                        struct.get_residue(num=104),
@@ -20,7 +22,7 @@ class BasepairUnittest(unittest.TestCase):
 
     def test_creation(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        struct = mf.factory.get_structure(path)
+        struct = structure.structure_from_pdb(path)
         r = np.eye(3)
         try:
             bp = rnamake.basepair.Basepair(struct.get_residue(num=103),
@@ -32,10 +34,10 @@ class BasepairUnittest(unittest.TestCase):
     def test_residues(self):
         residues = self.basepair.residues()
         if len(residues) != 2:
-            self.fail()
+            self.fail("did not list residues correctly")
 
         if residues[0] != self.basepair.res1:
-            self.fail()
+            self.fail("did not order residues correctly")
 
     def test_partner(self):
         bp = self.basepair
@@ -44,30 +46,9 @@ class BasepairUnittest(unittest.TestCase):
             self.fail()
 
         path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        struct = mf.factory.get_structure(path)
+        struct = structure.structure_from_pdb(path)
         residues = struct.residues()
 
-        try:
-            partner = bp.partner(residues[-1])
-            self.fail()
-        except ValueError:
-            pass
-        except:
-            self.fail("got an error I did not expect")
-
-    def test_state_copy(self):
-        bpstate = rnamake.basepair.BasepairState(np.eye(3),
-                                                 np.array([1, 0, 0]),
-                                                 [[1, 0, 0], [0, 1, 0]])
-
-        cbpstate = bpstate.copy()
-        cbpstate.r[0][0] += 1
-        if bpstate.r[0][0] == cbpstate.r[0][0]:
-            self.fail()
-
-        cbpstate.sugars[0][0] += 1
-        if bpstate.sugars[0][0] == cbpstate.sugars[0][0]:
-            self.fail("sugars did not deep copy")
 
     def test_state(self):
         bp = self.basepair
@@ -96,6 +77,23 @@ class BasepairUnittest(unittest.TestCase):
     def test_pdb_str(self):
         bp = self.basepair
         s = bp.to_pdb_str()
+
+
+class BasepairStateUnittest(unittest.TestCase):
+
+    def test_copy(self):
+        bpstate = rnamake.basepair.BasepairState(np.eye(3),
+                                                 np.array([1, 0, 0]),
+                                                 [[1, 0, 0], [0, 1, 0]])
+
+        cbpstate = bpstate.copy()
+        cbpstate.r[0][0] += 1
+        if bpstate.r[0][0] == cbpstate.r[0][0]:
+            self.fail()
+
+        cbpstate.sugars[0][0] += 1
+        if bpstate.sugars[0][0] == cbpstate.sugars[0][0]:
+            self.fail("sugars did not deep copy")
 
 
 def main():

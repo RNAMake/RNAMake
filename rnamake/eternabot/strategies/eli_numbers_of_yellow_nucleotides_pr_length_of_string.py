@@ -41,7 +41,8 @@ class Strategy(strategy_template.Strategy):
                 elif(self.lower_length_[stack_len]>yellow_cnt):
                     penalty += self.lower_length_[stack_len] - yellow_cnt
         if(count == 0):
-            return UNSCORABLE
+            return 100
+
 
         return 100 - params[0] * penalty/len(sequence)
 

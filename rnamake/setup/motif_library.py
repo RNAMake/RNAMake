@@ -92,6 +92,12 @@ def ideal_helix_lib():
         mlib.get_motif("HELIX.IDEAL."+str(i))
     return mlib
 
+def le_helix_lib():
+    mlib = MotifLibrary(motif_type.HELIX)
+    for i in range(0,21):
+        mlib.get_motif("HELIX.LE."+str(i))
+    return mlib
+
 
 lib_paths = {
     motif_type.TWOWAY   : "two_ways",

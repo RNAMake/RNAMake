@@ -6,7 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "util/settings.h"
+#include "base/settings.h"
 #include "resources/motif_ensemble_sqlite_connection.h"
 
 

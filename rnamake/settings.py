@@ -1,4 +1,5 @@
 import os
+import platform
 
 file_path = os.path.realpath(__file__)
 spl = file_path.split("/")
@@ -9,7 +10,16 @@ RESOURCES_PATH = LIB_PATH + "/resources/"
 UNITTEST_PATH = LIB_PATH + "/unittests/"
 MOTIF_DIRS = RESOURCES_PATH + "motifs/"
 ETERNABOT_PATH = LIB_PATH + "/eternabot/"
-VIENNA_BIN = RESOURCES_PATH + "vienna/osx/"
-X3DNA_PATH = RESOURCES_PATH + "x3dna/osx/"
+
+OS = None
+if platform.system() == 'Linux':
+    OS = 'linux'
+elif platform.system() == 'Darwin':
+    OS = 'osx'
+else:
+    raise SystemError(platform.system() + " is not supported currently")
+
+VIENNA_BIN = RESOURCES_PATH + "vienna/%s/" % (OS)
+X3DNA_PATH = RESOURCES_PATH + "x3dna/%s/" % (OS)
 PRECOMPUTED_PATH = RESOURCES_PATH + "precomputed/"
-CLASH_RADIUS = 2.9
+CLASH_RADIUS = 2.5

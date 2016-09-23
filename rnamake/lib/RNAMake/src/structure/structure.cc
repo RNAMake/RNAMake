@@ -15,16 +15,6 @@
 #include "structure/chain.fwd.h"
 
 
-
-Structure
-Structure::copy() {
-    ChainOPs chains;
-    for (auto const & c : chains_) {
-        chains.push_back(ChainOP(new Chain(c->copy())));
-    }
-    return Structure(chains);
-}
-
 void
 Structure::renumber() {
     int i = 1, j = 0;
@@ -41,7 +31,7 @@ Structure::renumber() {
 }
 
 ResidueOPs const
-Structure::residues() {
+Structure::residues() const {
     ResidueOPs residues;
     for (auto & c : chains_) {
         for (auto r : c->residues()) {
@@ -78,14 +68,26 @@ Structure::get_residue(
     return ResidueOP(NULL);
 }
 
-
-
 String
-Structure::to_pdb_str() {
+Structure::to_pdb_str(
+    int renumber) {
+    
+    int rnum = -1;
+    String chain_id = "";
+    
+    if(renumber != -1) {
+        rnum = 1;
+        chain_id = "A";
+    }
+    
     int acount = 1;
     String s;
     for (auto const & c : chains_) {
-        s += c->to_pdb_str(acount);
+        s += c->to_pdb_str(acount, rnum, chain_id);
+        if(renumber != -1) {
+            rnum += (int)c->residues().size();
+        }
+        s += "TER\n";
     }
     return s;
 }
@@ -101,25 +103,13 @@ Structure::to_str() {
 
 void
 Structure::to_pdb(
-    String const fname) {
+    String const fname,
+    int renumber) {
     std::ofstream out;
     out.open(fname.c_str());
-    String s = to_pdb_str();
+    String s = to_pdb_str(renumber);
     out << s << std::endl;
     out.close();
 }
 
-
-Structure
-str_to_structure(
-    String const & s,
-    ResidueTypeSet const & rts) {
-    ChainOPs chains;
-    Strings spl = split_str_by_delimiter(s, ":");
-    for( auto const & c_str : spl) {
-        Chain c = str_to_chain(c_str, rts);
-        chains.push_back(ChainOP(new Chain(c)));
-    }
-    return Structure(chains);
-}
 

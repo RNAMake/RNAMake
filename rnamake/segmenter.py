@@ -7,6 +7,7 @@ import motif_type
 import structure
 import motif
 import motif_factory
+import exceptions
 
 
 class Pair(object):
@@ -122,15 +123,17 @@ class Segmenter(object):
                 for j, res2 in enumerate(res):
                     if i >= j:
                         continue
-                    sc = c.subchain(start_res=res1, end_res=res2)
-                    if sc is None:
+                    try:
+                        sc = c.subchain(start_res=res1, end_res=res2)
+                    except:
                         continue
                     dist = len(sc.residues)
                     pairs.append(Pair(res1, res2, dist))
-                sc1 = c.subchain(start_res=res1, end_res=c.last())
-                sc2 = c.subchain(start_res=c.first(), end_res=res1)
-                if sc1 is None:
+                try:
+                    sc1 = c.subchain(start_res=res1, end_res=c.last())
+                except:
                     continue
+                sc2 = c.subchain(start_res=c.first(), end_res=res1)
                 if res1 != c.last() and c.last() not in res:
                     end_pairs.append(Pair(res1, c.last(), len(sc1.residues)))
                 if res1 != c.first() and c.first() not in res:
@@ -139,8 +142,9 @@ class Segmenter(object):
 
     def _get_subchain(self, m, pair):
         for c in m.chains():
-            sc = c.subchain(start_res=pair.res1, end_res=pair.res2)
-            if sc is None:
+            try:
+                sc = c.subchain(start_res=pair.res1, end_res=pair.res2)
+            except exceptions.ChainException:
                 continue
             return sc
         raise ValueError("cannot create subchain")
@@ -215,7 +219,7 @@ class Segmenter(object):
         m.structure.chains = chains
 
     def _get_segments(self, m, res, bps, cutpoints):
-        removed = self._get_pose(m, res[:], bps)
+        removed = motif_factory.factory.motif_from_res(res, bps)
         cutpoint_name = ""
         for c in cutpoints:
             cutpoint_name += c.name + str(c.num) + c.chain_id
@@ -230,7 +234,8 @@ class Segmenter(object):
         for bp in m.basepairs:
             if bp.res1 in other_res and bp.res2 in other_res:
                 other_bps.append(bp)
-        remaining = self._get_pose(m, other_res, other_bps)
+        #remaining = self._get_pose(m, other_res, other_bps)
+        remaining = motif_factory.factory.motif_from_res(other_res, other_bps)
         remaining.name = m.name + ".remaining." + cutpoint_name
         segments = Segments(remaining, removed)
         return segments
@@ -241,9 +246,9 @@ class Segmenter(object):
             res.extend(bp.residues())
 
         pairs, end_pairs = self._get_pairs(m, res)
-
         pair_search = PairSearch()
         solutions = pair_search.search(res, pairs, end_pairs)
+        print len(solutions)
 
         for s in solutions:
             subchains = []
@@ -255,6 +260,8 @@ class Segmenter(object):
             basepairs = []
             missed_bps = 0
             for bp in m.basepairs:
+                if bp.bp_type != "cW-W":
+                    continue
                 if   bp.res1 in sub_res and bp.res2 in sub_res:
                     basepairs.append(bp)
                 elif bp.res1 in sub_res and bp.res2 not in sub_res:

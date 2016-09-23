@@ -6,6 +6,8 @@ import math
 import basepair
 import util
 import motif_outputer
+import basic_io
+import numpy as np
 
 class ThermoFlucSampler(base.Base):
     def __init__(self, **options):
@@ -34,7 +36,7 @@ class ThermoFlucSampler(base.Base):
             self.next()
 
     def next(self):
-        node_num  = random.randint(2, len(self.mset)-1)
+        node_num  = random.randint(0, len(self.mset)-1)
         mset_node = self.mset.get_node(node_num)
         mst_node  = self.mst.get_node(node_num)
         pos       = self.states[node_num]
@@ -42,8 +44,8 @@ class ThermoFlucSampler(base.Base):
         energy    = mset_node.data.members[pos].energy
         new_mem   = mset_node.data.get_random_member()
 
-        if new_mem.energy < energy:
-            return self.update(node_num, new_mem)
+        #if new_mem.energy < energy:
+        return self.update(node_num, new_mem)
 
         score = math.exp((energy - new_mem.energy) / self.kBT)
         dice_roll = random.random()
@@ -67,14 +69,109 @@ class ThermoFlucSampler(base.Base):
         self.states[node_num] = self.last_state_pos
         self.mst.replace_state(node_num, state)
 
-    def to_pdb(self, name="test.pdb"):
-        self.mst.to_pdb(name)
+    def to_pdb(self, name="test.pdb", renumber=-1, close_chain=0):
+        self.mst.to_motif_tree().to_pdb(name, renumber=renumber,
+                                        close_chain=close_chain)
+
+    def to_pdb_str(self, renumber=-1, close_chain=0):
+        return self.mst.to_motif_tree().to_pdb_str(renumber=renumber,
+                                                   close_chain=close_chain)
+
+
+class ThermoFlucFolding(base.Base):
+    def __init__(self, **options):
+        self.setup_options_and_constraints()
+        self.options.dict_set(options)
+        self.mset = None
+        self.mst = None
+        self.sampler = ThermoFlucSampler()
+        self.clash_radius = 2.0
+        self.movie = 0
+        self.movie_path = "movie.pdb"
+        self.mt = None
+
+    def setup_options_and_constraints(self):
+        options = { 'temperature' : 298.15,
+                    'steps'       : 100 }
+
+        self.options = option.Options(options)
+        self.constraints = {}
+
+    def setup(self, mset, mt):
+        self.sampler.setup(mset)
+        self.mt = mt
+        self.contacts = np.zeros((len(self.mt.residues()), len(self.mt.residues())))
+
+    def run(self):
+        if self.movie:
+            f = open(self.movie_path, "w")
+            f.write("MODEL 1\n")
+            f.write(self.sampler.to_pdb_str(renumber=1, close_chain=1))
+            f.write("ENDMDL\n")
+
+        count = 2
+        pos = 0
+        max_steps = self.option('steps')
+        for i in range(max_steps):
+            if self.sampler.next() == 0:
+                continue
+
+            clash = self._check_sterics()
+            if clash:
+                self.sampler.undo()
+                continue
+            pos = (i / 10) + 1
+            #print i
+
+            self._find_residue_contacts()
+            if count-1 <= pos and self.movie:
+                f.write("MODEL "+str(count)+"\n")
+                f.write(self.sampler.to_pdb_str(renumber=1, close_chain=1))
+                f.write("ENDMDL\n")
+                count += 1
+
+        if self.movie:
+            f.close()
+
+    def _find_residue_contacts(self):
+        res = self.mt.residues()
+        dist = 0
+        for i in range(0, len(res)):
+            for j in range(i+2, len(res)):
+                mst_ri = self.sampler.mst.get_residue(res[i].uuid)
+                mst_rj = self.sampler.mst.get_residue(res[j].uuid)
+                if len(self.mt.merger.get_structure().get_basepair(res1=res[i], res2=res[j])) > 0:
+                    continue
+                for b1 in mst_ri.beads:
+                    for b2 in mst_rj.beads:
+                        dist = util.distance(b1, b2)
+                        if dist < 5:
+                            self.contacts[i][j] += 1
+
+    def _check_sterics(self):
+
+        nodes = self.sampler.mst.tree.nodes
+        centers = [util.center_points(n.data.cur_state.beads) for n in nodes]
+
+        for i in range(0, len(nodes)):
+            center_i = centers[i]
+            for j in range(i+1, len(nodes)):
+                center_j = centers[j]
+                dist = util.distance(center_i, center_j)
+                if dist > 40:
+                    continue
+                for b1 in nodes[i].data.cur_state.beads:
+                    for b2 in nodes[j].data.cur_state.beads:
+                        b_dist = util.distance(b1, b2)
+                        if b_dist < self.clash_radius:
+                            return 1
+        return 0
 
 
 class ThermoFlucRelax(base.Base):
     def __init__(self):
-        self.sampler = ThermoFlucSampler(temperature=298.0)
-        self.max_steps = 10000
+        self.sampler = ThermoFlucSampler(temperature=1000.0)
+        self.max_steps = 1000
         kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
         self.kBT = kB * 10
 
@@ -88,7 +185,8 @@ class ThermoFlucRelax(base.Base):
         cur_diff = scorer.score(end_state_1, end_state_2)
         new_diff = 0
         self.best = self.sampler.mst.copy()
-        best_diff = cur_diff
+
+        best_diff = 10000
 
         #print len(self.sampler.mst)
         #self.sampler.mst.add_connection(0, 16, "A149-A154")
@@ -109,7 +207,7 @@ class ThermoFlucRelax(base.Base):
                     pass"""
             steps += 1
 
-            if steps % 1000 == 0:
+            if steps % 100 == 0:
                 self.kBT *= 0.5
 
             if r == 0:
@@ -119,8 +217,7 @@ class ThermoFlucRelax(base.Base):
             end_state_2 = self.sampler.mst.get_node(ni_2).data.cur_state.end_states[ei_2]
             new_diff = scorer.score(end_state_1, end_state_2)
 
-            if steps % 10 == 0:
-                print cur_diff, new_diff, best_diff, steps
+
             if new_diff < best_diff:
                 best_diff = new_diff
                 self.best = self.sampler.mst.copy()
@@ -139,6 +236,64 @@ class ThermoFlucRelax(base.Base):
         #print end_state_1.diff(end_state_2)
         #outputer.to_pdb()
 
+    def run_with_target(self, mset, ni_1, ei_1, target_bp):
+        self.sampler.setup(mset)
+        steps = 0
+
+        end_state_1 = self.sampler.mst.get_node(ni_1).data.cur_state.end_states[ei_1]
+        cur_diff = end_state_1.diff(target_bp)
+        new_diff = 0
+        self.best = self.sampler.mst.copy()
+        best_diff = 10000
+
+        #print len(self.sampler.mst)
+        #self.sampler.mst.add_connection(0, 16, "A149-A154")
+        #outputer = motif_outputer.MotifOutputer()
+
+        while steps < self.max_steps:
+
+            #print steps
+            r = self.sampler.next()
+
+            """if steps % 10 == 0:
+                try:
+                    mst2 = self.sampler.mst.copy()
+                    p = mst2.to_pose()
+                    outputer.add_motif(p, 0)
+
+                except:
+                    pass"""
+            steps += 1
+
+            if steps % 100 == 0:
+                self.kBT *= 0.5
+
+            if r == 0:
+                continue
+
+            end_state_1 = self.sampler.mst.get_node(ni_1).data.cur_state.end_states[ei_1]
+            new_diff = end_state_1.diff(target_bp)
+
+            #if steps % 10 == 0:
+            #print cur_diff, new_diff, best_diff, steps
+            if cur_diff < 1:
+                break
+
+            if new_diff < best_diff:
+                best_diff = new_diff
+                self.best = self.sampler.mst.copy()
+
+            if new_diff < cur_diff:
+                cur_diff = new_diff
+                continue
+
+            score = math.exp((cur_diff - new_diff) / self.kBT)
+            dice_roll = random.random()
+            if dice_roll < score:
+                cur_diff = new_diff
+                continue
+
+            self.sampler.undo()
 
     def to_pdb(self, name="test.pdb"):
         self.best.to_pdb(name)
@@ -150,6 +305,7 @@ class ThermoFlucRelax(base.Base):
 class ThermoFlucScorer(object):
     def __init__(self):
         pass
+
 
 class FrameScorer(ThermoFlucScorer):
     def __init__(self):

@@ -10,216 +10,150 @@
 #define __RNAMake__ss_motif__
 
 #include <stdio.h>
+#include <algorithm>
 
+#include "util/motif_type.h"
 #include "secondary_structure/chain.h"
 #include "secondary_structure/basepair.h"
+#include "secondary_structure/rna_structure.h"
 
 namespace sstruct {
  
-class Motif {
-public:
+class Motif : public RNAStructure {
+public: // RNA Structure Constructors
     
     Motif():
-    chains_(ChainOPs()),
-    end_ids_(Strings()),
-    ends_(BasepairOPs()),
-    basepairs_(BasepairOPs()),
-    name_(String()),
-    type_("UNKNOWN")
+    RNAStructure()
     {}
     
     Motif(
-        String const & type,
-        BasepairOPs const & ends,
-        ChainOPs const & chains):
-    chains_(chains),
-    end_ids_(Strings()),
-    ends_(ends),
-    basepairs_(BasepairOPs()),
-    name_(String()),
-    type_(type)
+        StructureOP const & structure,
+        BasepairOPs const & basepairs,
+        BasepairOPs const & ends):
+    RNAStructure(structure, basepairs, ends)
     {}
+    
+    Motif(
+        StructureOP const & structure,
+        BasepairOPs const & basepairs,
+        BasepairOPs const & ends,
+        Strings const & end_ids,
+        String const & name,
+        String const & path,
+        float score):
+    RNAStructure(structure, basepairs, ends, end_ids, name, path, score)
+    {}
+    
+public: // Motif specific constructors
 
+    Motif(
+        Motif const & m) {
+        structure_ = std::make_shared<Structure>(*m.structure_);
+        basepairs_ = BasepairOPs(m.basepairs_.size());
+        ends_      = BasepairOPs(m.ends_.size());
+        int i = 0;
+        for(auto const & bp : m.basepairs_) {
+            auto new_bp = std::make_shared<Basepair>(structure_->get_residue(bp->res1()->uuid()),
+                                                     structure_->get_residue(bp->res2()->uuid()),
+                                                     bp->uuid());
+            basepairs_[i] = new_bp;
+            i++;
+        }
+        
+        i = 0;
+        for(auto const & end : m.ends_) {
+            int pos = (int)(std::find(m.basepairs_.begin(),
+                                      m.basepairs_.end(), end) - m.basepairs_.begin());
+            ends_[i] = basepairs_[pos];
+            i++;
+
+        }
+        
+        mtype_   = m.mtype_;
+        name_    = m.name_;
+        path_    = m.path_;
+        end_ids_ = m.end_ids_;
+    
+    }
+    
+    Motif(
+        String const & s) {
+        auto spl = split_str_by_delimiter(s, "!");
+        mtype_      = static_cast<MotifType>(std::stoi(spl[0]));
+        name_       = spl[1];
+        path_       = spl[2];
+        structure_  = std::make_shared<Structure>(spl[3]);
+        basepairs_  = BasepairOPs();
+        ends_       = BasepairOPs();
+        end_ids_    = split_str_by_delimiter(spl[6], " ");
+        auto res = structure_->residues();
+        for(auto const & bp_str : split_str_by_delimiter(spl[4], "@")) {
+            auto res_is = split_str_by_delimiter(bp_str, " ");
+            auto res1   = res[std::stoi(res_is[0])];
+            auto res2   = res[std::stoi(res_is[1])];
+            auto bp     = std::make_shared<Basepair>(res1, res2, Uuid());
+            basepairs_.push_back(bp);
+        }
+        for(auto const & end_i : split_str_by_delimiter(spl[5], " ") ) {
+            ends_.push_back(basepairs_[std::stoi(end_i)]);
+        }
+    }
+    
     
     ~Motif() {}
     
-    
 public:
-    
-    inline
-    ResidueOPs
-    residues() {
-        ResidueOPs res;
-        for(auto const & c : chains_) {
-            for(auto const & r : c->residues()) {
-                res.push_back(r);
-            }
-        }
-        return res;
-    }
-    
-    inline
     String
-    sequence() {
-        String seq;
-        int i = 0;
-        for (auto const & c : chains_) {
-            seq += c->sequence();
-            if(i+1 != chains_.size()) { seq += "&"; }
-            i++;
-        }
-        return seq;
-    }
-    
-    inline
-    String
-    dot_bracket() {
-        String db;
-        int i = 0;
-        for (auto const & c : chains_) {
-            db += c->dot_bracket();
-            if(i+1 != chains_.size()) { db += "&"; }
-            i++;
-        }
-        return db;
-    }
-    
-    inline
-    ResidueOP
-    get_residue(
-        int num,
-        String const & chain_id,
-        String i_code = "") const {
-        
-        for(auto & c : chains_) {
-            for (auto & r : c->residues() ){
-                if (num == r->num() && chain_id == r->chain_id() && i_code == r->i_code()) {
-                    return r;
-                }
-            }
-        }
-        return nullptr;
-        
-    }
-
-    inline
-    ResidueOP
-    get_residue(
-        Uuid const & uuid) const {
-        
-        for(auto & c : chains_) {
-            for (auto & r : c->residues() ){
-                if (r->uuid() == uuid) {
-                    return r;
-                }
-            }
-        }
-        return nullptr;
-
-    }
-    
-    inline
-    BasepairOP
-    get_bp(
-        ResidueOP const & r1,
-        ResidueOP const & r2) const {
+    to_str() {
+        auto s = String("");
+        s.append(std::to_string(mtype_) + "!" + name_ + "!" + path_ + "!");
+        s.append(structure_->to_str() + "!");
+        auto res = structure_->residues();
         
         for(auto const & bp : basepairs_) {
-            if     (r1 == bp->res1() && r2 == bp->res2()) { return bp; }
-            else if(r2 == bp->res1() && r1 == bp->res2()) { return bp; }
+            int res1_pos = (int)(std::find(res.begin(), res.end(), bp->res1()) - res.begin());
+            int res2_pos = (int)(std::find(res.begin(), res.end(), bp->res2()) - res.begin());
+            s.append(std::to_string(res1_pos) + " " + std::to_string(res2_pos) + "@");
         }
-        
-        return nullptr;
-    }
-    
-    inline
-    BasepairOP
-    get_bp(
-        ResidueOP const & r) {
-        
-        for(auto const & bp : basepairs_) {
-            if(r == bp->res1() || r == bp->res2()) { return bp; }
-        }
-        return nullptr;
-    }
-    
-    virtual
-    String
-    to_str() const {
-        std::stringstream ss;
-        ss << type_ << ";";
-        for(auto const & c : chains_) {
-            for(auto const & r : c->residues()) {
-                ss << r->num() << "|" << r->chain_id() << "|" << r->i_code() << "_";
-            }
-            ss << ",";
-        }
-        ss << ";";
-        for(auto const & bp : basepairs_) {
-            ss << bp->res1()->num() << "|" << bp->res1()->chain_id() << "|" << bp->res1()->i_code() << "_";
-            ss << bp->res2()->num() << "|" << bp->res2()->chain_id() << "|" << bp->res2()->i_code() << ",";
-        }
-        ss << ";";
+        s.append("!");
         for(auto const & end : ends_) {
-            ss << end->res1()->num() << "|" << end->res1()->chain_id() << "|" << end->res1()->i_code() << "_";
-            ss << end->res2()->num() << "|" << end->res2()->chain_id() << "|" << end->res2()->i_code() << ",";
+            int bp_pos = (int)(std::find(basepairs_.begin(), basepairs_.end(), end) -
+                               basepairs_.begin());
+            s.append(std::to_string(bp_pos) + " ");
+        }
+        s.append("!");
+        for(auto const & ei : end_ids_) {
+            s.append(ei + " ");
         }
         
-        return ss.str();
+        return s;
     }
-    
-    
  
 public: //getters
     
     inline
-    ChainOPs const &
-    chains() { return chains_; }
+    MotifType const &
+    mtype() { return mtype_; }
     
     inline
-    BasepairOPs const &
-    basepairs() { return basepairs_; }
+    Uuid const &
+    id() { return id_; }
     
-    inline
-    BasepairOPs const &
-    ends() { return ends_; }
-    
-    inline
-    String const &
-    type() { return type_; }
-    
-    inline
-    String const &
-    name() { return name_; }
-    
-    inline
-    Strings const &
-    end_ids() { return end_ids_; }
-    
+
 public: //setters
     
     inline
     void
-    basepairs(BasepairOPs const & nbasepairs) { basepairs_ = nbasepairs; }
+    mtype(MotifType const & mtype) { mtype_ = mtype; }
     
     inline
     void
-    ends(BasepairOPs const & nends) { ends_ = nends; }
-    
-    inline
-    void
-    name(String const & name) { name_ = name; }
-    
-    inline
-    void
-    end_ids(Strings const & end_ids) { end_ids_ = end_ids; }
+    id(Uuid const & uuid) { id_ = uuid; }
     
     
-protected:
-    ChainOPs chains_;
-    BasepairOPs basepairs_, ends_;
-    Strings end_ids_;
-    String type_, name_;
+private:
+    MotifType mtype_;
+    Uuid id_;
     
 };
     

@@ -16,6 +16,15 @@ class TreeUnittest(unittest.TestCase):
         t.add_data(1, 2, 0, 0)
         t.add_data(2, 2, 0, 1)
 
+        t = tree.TreeDynamic()
+        t.add_data(0)
+        t.add_data(1)
+        t.add_data(2, parent_index=0)
+        t.add_data(3, parent_index=0)
+
+        self.failIf(len(t.get_node(0).children) != 3,
+                    "node does not have the correct number of children")
+
     def test_remove(self):
         t = tree.TreeDynamic()
         t.add_data(0)
@@ -28,7 +37,7 @@ class TreeUnittest(unittest.TestCase):
     def test_remove_node_level(self):
         t = tree.TreeDynamic()
         t.add_data(0)
-        t.next_level()
+        t.increase_level()
         t.add_data(1)
         t.add_data(2)
         t.remove_node_level()

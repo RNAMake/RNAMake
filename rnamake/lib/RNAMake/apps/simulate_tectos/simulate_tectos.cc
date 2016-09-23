@@ -7,191 +7,221 @@
 //
 
 #include "base/cl_option.h"
-#include "util/settings.h"
-#include "secondary_structure/ss_tree.h"
+#include "base/settings.h"
+#include "base/backtrace.hpp"
+#include "secondary_structure/secondary_structure_parser.h"
 #include "resources/resource_manager.h"
-#include "motif/motif_tree.h"
-#include "thermo_fluctuation/thermo_fluc_simulation.h"
+#include "motif_data_structures/motif_tree.h"
 #include "simulate_tectos.h"
 
-Options
-parse_command_line(
+
+SimulateTectosApp::SimulateTectosApp() : Application(),
+tfs_(ThermoFlucSimulation())
+{}
+
+
+// application setups functions ////////////////////////////////////////////////////////////////////
+
+
+void
+SimulateTectosApp::setup_options() {
+    add_option("fseq", "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", OptionType::STRING);
+    add_option("fss",  "((((((....((((((((((((....))))))))))))....))))))", OptionType::STRING);
+    add_option("cseq", "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG",  OptionType::STRING);
+    add_option("css",  "(((((((..((((((((((((....))))))))))))...)))))))",  OptionType::STRING);
+    add_option("s", 1000000, OptionType::INT);
+    add_option("start_pose", false, OptionType::BOOL);
+    
+    add_cl_options(tfs_.options(), "simulation");
+    
+}
+
+void
+SimulateTectosApp::parse_command_line(
     int argc,
     const char ** argv) {
     
-    CL_Options cl_opts;
-    cl_opts.add_option("fseq", "", STRING_TYPE,
-                       "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", false);
-    cl_opts.add_option("fss" , "", STRING_TYPE,
-                       "((((((....((((((((((((....))))))))))))....))))))", false);
-    cl_opts.add_option("cseq", "", STRING_TYPE,
-                       "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG", false);
-    cl_opts.add_option("css" , "", STRING_TYPE,
-                       "(((((((..((((((((((((....))))))))))))...)))))))", false);
-    cl_opts.add_option("s", "steps", FLOAT_TYPE, "1000000", false);
-    cl_opts.add_option("extra_mse", "", STRING_TYPE, "", false);
 
-    return cl_opts.parse_command_line(argc, argv);
+    Application::parse_command_line(argc, argv);
     
+    cl_parser_.assign_options(cl_options_, tfs_.options(), "simulation");
+    tfs_.update_var_options();
 }
 
-SimulateTectos::SimulateTectos(
-    String const & fseq,
-    String const & fss,
-    String const & cseq,
-    String const & css) {
+
+// run functions ///////////////////////////////////////////////////////////////////////////////////
+
+void
+SimulateTectosApp::run() {
+    
+    auto fseq = get_string_option("fseq");
+    auto fss  = get_string_option("fss");
+    auto cseq = get_string_option("cseq");
+    auto css  = get_string_option("css");
     
     auto mset = get_mset_old(fseq, fss, cseq, css);
-    ThermoFlucSimulation tfs;
-    tfs.setup(mset, 1, mset->last_node()->index(), 1, 1);
-    tfs.option("steps", 1000000);
-    tfs.option("cutoff", 4.5f);
-    //tfs.option("cutoff", 5.0f);
-
-    int count = tfs.run();
+    
+    if(get_bool_option("start_pose")) {
+        auto mt = mset->to_mst()->to_motif_tree();
+        std::cout << "outputing starting pose: start_pose.pdb" << std::endl;
+        mt->to_pdb("start_pose.pdb", 1);
+    }
+    
+    
+    auto steric_node_str = String("");
+    auto last_node_index = mset->last_node()->index();
+    steric_node_str += std::to_string(last_node_index) + "," + std::to_string(last_node_index-1);
+    steric_node_str += ":1";
+    
+    tfs_.set_option_value("steps", get_int_option("s"));
+    tfs_.set_option_value("steric_nodes", steric_node_str);
+    tfs_.setup(mset, 1, mset->last_node()->index(), 1, 1);
+    auto count = tfs_.run();
     std::cout << count << std::endl;
-}
 
+}
 
 
 MotifStateEnsembleTreeOP
-SimulateTectos::get_mset_old(
+SimulateTectosApp::get_mset_old(
     String const & fseq,
     String const & fss,
     String const & cseq,
     String const & css) {
     
+    auto ggaa_ttr = RM::instance().motif("GGAA_tetraloop", "", "A14-A15");
+    auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
+    
+    auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
+    auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
+
     auto mt = std::make_shared<MotifTree>();
-    mt->option("sterics", 0);
-    mt->add_motif(ResourceManager::getInstance().get_motif("GC=GC"));
-    mt->add_motif(ResourceManager::getInstance().get_motif("GGAA_tetraloop", "", "A14-A15"));
-    auto flow_motif_names = get_motifs_from_seq_and_ss(fseq, fss);
-    auto chip_motif_names = get_motifs_from_seq_and_ss(cseq, css);
-    mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_names[1]),
-                  -1, -1, "A7-A22");
-    for(int i = 2; i < flow_motif_names.size(); i++) {
-        mt->add_motif(ResourceManager::getInstance().get_motif(flow_motif_names[i]));
+    mt->set_option_value("sterics", false);
+    auto m = RM::instance().motif("GC=GC");
+    mt->add_motif(m);
+    mt->add_motif(ggaa_ttr);
+    mt->add_motif(flow_motifs[1], 1, "A22-A7");
+    for(int i = 2; i < flow_motifs.size(); i++) {
+        mt->add_motif(flow_motifs[i]);
     }
-    mt->add_motif(ResourceManager::getInstance().get_motif("GAAA_tetraloop", "", "A149-A154"));
-    mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_names[1]),
-                  -1, -1, "A222-A251");
-    
-    for(int i = 2; i < chip_motif_names.size(); i++) {
-        mt->add_motif(ResourceManager::getInstance().get_motif(chip_motif_names[i]));
+
+    mt->add_motif(gaaa_ttr);
+    mt->add_motif(chip_motifs[1], -1, "A222-A251");
+    for(int i = 2; i < chip_motifs.size(); i++) {
+        mt->add_motif(chip_motifs[i]);
     }
-    
-    MotifStateEnsembleTreeOP mset = std::make_shared<MotifStateEnsembleTree>();
-    mset->setup_from_mt(mt);
+
+    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
     return mset;
 }
 
-Strings
-SimulateTectos::get_motifs_from_seq_and_ss(
+MotifOPs
+SimulateTectosApp::get_motifs_from_seq_and_ss(
     String const & seq,
     String const & ss) {
     
-    sstruct::SS_Tree ss_tree(seq, ss);
-    sstruct::SS_TreeNodeOP current = nullptr;
-    sstruct::SS_TreeNodeOPs required_nodes;
-    for(auto const & n : ss_tree) {
-        if(n->data()->type() == sstruct::SS_NodeData::SS_Type::SS_BULGE) {
-            current = n;
-            break;
+    auto parser = sstruct::SecondaryStructureParser();
+    auto ss_motifs = parser.parse_to_motifs(seq, ss);
+    auto motifs = MotifOPs();
+    
+    auto start = 0;
+    auto motif = MotifOP(nullptr);
+    for(auto const & m : ss_motifs) {
+        if(m->mtype() == MotifType::TWOWAY && start == 0) {
+            start = 1;
+            continue;
         }
-    }
-    
-    if(current == nullptr) {
-        throw std::runtime_error("cannot find start node in get_motifs_from_seq_and_ss");
-    }
-    
-    current = current->children()[0];
-    while(current->data()->type() != sstruct::SS_NodeData::SS_Type::SS_HAIRPIN) {
-        required_nodes.push_back(current);
-        current = current->children()[0];
+        
+        if(m->mtype() == MotifType::HAIRPIN) { break; }
+        if(!start) { continue; }
+        
+        //basepair step
+        if(m->mtype() == MotifType::HELIX) {
+            auto name = bp_name_from_sequence(m->sequence());
+            motif = RM::instance().motif(name);
+            motifs.push_back(motif);
+        }
+        else if(m->mtype() == MotifType::TWOWAY) {
+            auto end_id = m->end_ids()[0];
+            try {
+                motif = RM::instance().motif("", end_id);
+            }
+            catch(ResourceManagerException const & e) {
+                throw SimulateTectosAppException(
+                    "cannot find a motif that corresponds to the sequence: " + motif->sequence() +
+                    " and secondary structure: " + motif->dot_bracket() + "for the simulation");
+            }
+            motifs.push_back(motif);
+            
+        }
+        else {
+            throw SimulateTectosAppException(
+                "motif_type: " + type_to_str(m->mtype()) + " is not supported in tecto "
+                "simulations currently only TWOWAY/HELIX are supported");
+        }
     }
 
-    Strings motif_names;
-    String motif_name, motif_name_rna;
-    String seq1, seq2;
-    for(int i = 1; i < required_nodes.size(); i++) {
-        if(required_nodes[i]->data()->type()   != sstruct::SS_NodeData::SS_Type::SS_BP ||
-           required_nodes[i-1]->data()->type() != sstruct::SS_NodeData::SS_Type::SS_BP) {
-            String seq1, seq2, ss1, ss2;
-            seq1 = required_nodes[i-1]->data()->ss_chains()[0]->sequence() +
-                   required_nodes[i]->data()->ss_chains()[0]->sequence()   +
-                   required_nodes[i+1]->data()->ss_chains()[0]->sequence();
-            
-            seq2 = required_nodes[i+1]->data()->ss_chains()[1]->sequence() +
-                   required_nodes[i]->data()->ss_chains()[1]->sequence()   +
-                   required_nodes[i-1]->data()->ss_chains()[1]->sequence();
-            
-            ss1 = "L";
-            for(int j = 0; j < required_nodes[i]->data()->ss_chains()[0]->length(); j++) {
-                ss1 += "U";
-            }
-            ss1 += "L";
-            ss2 = "R";
-            for(int j = 0; j < required_nodes[i]->data()->ss_chains()[1]->length(); j++) {
-                ss2 += "U";
-            }
-            ss2 += "R";
-            String end_id = seq1 + "_" + ss1 + "_" + seq2 + "_" + ss2;
-            std::cout << end_id << std::endl;
-            auto m2 = ResourceManager::getInstance().get_motif("TWOWAY.1JID.0");
-            std::cout << m2->end_ids()[0] << std::endl;
-            
-            auto m = ResourceManager::getInstance().get_motif("", end_id);
-            motif_names.push_back(m->name());
-            i += 1;
-            continue;
-            
-            //throw std::runtime_error("old method does not have non helical motifs implemented yet!!!!!");
-        }
-        
-        seq1 = required_nodes[i-1]->data()->sequence();
-        seq2 = required_nodes[i]->data()->sequence();
-        motif_name = "";
-        motif_name.push_back(seq1[0]); motif_name.push_back(seq1[2]);
-        motif_name.push_back('=');
-        motif_name.push_back(seq2[0]); motif_name.push_back(seq2[2]);
-        motif_name_rna = "";
-        for(auto const & e : motif_name) {
-            if(e == 'T' ) { motif_name_rna += 'U'; }
-            else          { motif_name_rna += e;   }
-        }
-        motif_names.push_back(motif_name_rna);
-        
-    }
-    
-    return motif_names;
+    return motifs;
 }
+ 
+
+
+// non-member functions ////////////////////////////////////////////////////////////////////////////
+
+
+String
+bp_name_from_sequence(
+    String const & seq) {
+    
+    auto name = String("");
+    auto name_rna = String("");
+    name += seq[0]; name += seq[4];
+    name += "=";
+    name += seq[1]; name += seq[3];
+    
+    //hacky way to convert Ts to Us
+    for(auto const & e : name) {
+        if(e == 'T' ) { name_rna += 'U'; }
+        else          { name_rna += e;   }
+    }
+
+    return name_rna;
+    
+}
+
+
+// main ////////////////////////////////////////////////////////////////////////////////////////////
 
 
 
 int main(int argc, const char * argv[]) {
+    //must add this for all apps!
+    std::set_terminate(print_backtrace);
+    
+    //load extra motifs being used
     String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
-    ResourceManager::getInstance().add_motif(base_path+"GAAA_tetraloop");
-    ResourceManager::getInstance().add_motif(base_path+"GGAA_tetraloop");
+    RM::instance().add_motif(base_path+"GAAA_tetraloop");
+    RM::instance().add_motif(base_path+"GGAA_tetraloop");
+    
+    auto app = SimulateTectosApp();
+    app.setup_options();
+    app.parse_command_line(argc, argv);
+    app.run();
 
-    try {
-        
-        Options opts = parse_command_line(argc, argv);
-        
-        if(opts.option<String>("extra_mse").length() > 0) {
-            ResourceManager::getInstance().register_extra_motif_state_ensembles(
-                                                opts.option<String>("extra_mse"));
-        }
-        
-        SimulateTectos st(opts.option<String>("fseq"),
-                          opts.option<String>("fss"),
-                          opts.option<String>("cseq"),
-                          opts.option<String>("css"));
-                                              
-    } catch(std::runtime_error e) {
-        std::cerr << "caught runtime exception: " << e.what() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    
-    
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

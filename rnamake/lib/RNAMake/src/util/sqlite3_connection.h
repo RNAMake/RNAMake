@@ -17,35 +17,39 @@
 //RNAMake Libraries
 #include "base/types.h"
 
-/*static
-int
-callback(void *NotUsed, int argc, char **argv, char **azColName){
-    int i;
-    for(i=0; i<argc; i++){
-        printf("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-    }
-    printf("\n");
-    return 0;
-}*/
+class Sqlite3ConnectionException : public std::runtime_error {
+public:
+    Sqlite3ConnectionException(String const & message):
+    std::runtime_error(message)
+    {}
+};
+
 
 class Sqlite3Connection {
 public:
-    Sqlite3Connection() {}
+    Sqlite3Connection():
+    setup_(0){}
     
     Sqlite3Connection(String const &);
     
     ~Sqlite3Connection() {
-        delete zErrMsg_;
-        sqlite3_close(db_);
+        if(setup_) {
+            delete zErrMsg_;
+            sqlite3_close(db_);
+        }
     }
     
 public:
     
     void
-    query(String const);
+    query(String const &);
     
     int
     count();
+    
+    Strings
+    fetch_one(String const & );
+    
     
     
 public: //getters
@@ -54,12 +58,12 @@ public: //getters
 protected:
     int rc_;
     int ic_;
+    int setup_;
     String query_statement_;
-    std::string db_name_;
+    String db_name_;
     sqlite3* db_;
     sqlite3_stmt* stmt_;
     char* zErrMsg_;
-    int transaction_;
 
     
 };

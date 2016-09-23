@@ -15,6 +15,15 @@
 #include "util/monte_carlo.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
 
+
+class ThermoFlucSamplerException : public std::runtime_error {
+public:
+    ThermoFlucSamplerException(
+        String const & message) :
+    std::runtime_error(message)
+    {}
+};
+
 class ThermoFlucSampler {
 public:
     ThermoFlucSampler():
@@ -42,7 +51,8 @@ public:
     
     void
     to_pdb(
-        String fname = "test.pdb");
+        String fname = "test.pdb",
+        int renumber = -1);
     
 private:
     
@@ -52,9 +62,6 @@ private:
         MotifStateEnsembleMemberOP const &);
     
 
-    
-    
-    
     
 public: // getters
     
@@ -69,7 +76,13 @@ public: // getters
 public: // setters
     inline
     void
-    temperature(float const & temp) { temperature_ = temp; }
+    temperature(float const & temp) {
+        if(temp < 0) {
+            throw ThermoFlucSamplerException(
+                "cannot set temperature lower then 0");
+        }
+        
+        temperature_ = temp; }
     
 private:
     float temperature_;
@@ -78,7 +91,7 @@ private:
     MotifStateEnsembleTreeOP mset_;
     MotifStateTreeOP mst_;
     Ints states_;
-    int node_num_, pos_, accept_;
+    int node_num_, pos_, mem_pos_, accept_;
     float energy_;
     MotifStateEnsembleTreeNodeOP mset_node_;
     MotifStateTreeNodeOP mst_node_;

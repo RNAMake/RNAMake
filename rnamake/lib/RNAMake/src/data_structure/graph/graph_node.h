@@ -13,6 +13,8 @@
 #include <iostream>
 #include <stdexcept>
 #include <algorithm>
+#include <queue>
+#include <cxxabi.h>
 
 #include "base/types.h"
 #include "data_structure/graph/graph_node.fwd.h"
@@ -26,11 +28,40 @@ public:
     
 };
 
+template <typename DataType>
+struct GraphNodeCompare {
+    bool
+    operator () (
+        GraphNodeOP<DataType> const & node1,
+        GraphNodeOP<DataType> const & node2) {
+        
+        if (node1->index() > node2->index()) { return true;  }
+        else     							 { return false; }
+    }
+};
+
+
+template <typename DataType>
+using GraphNodeQueue = std::priority_queue<GraphNodeOP<DataType>,
+                                           GraphNodeOPs<DataType>,
+                                           GraphNodeCompare<DataType> >;
+
 
 template <typename DataType>
 class GraphNode {
 
 public:
+    inline
+    GraphNode(
+        int index,
+        int level,
+        size_t n_connections = 0):
+    data_(DataType()),
+    level_(level),
+    index_(index),
+    connections_(GraphConnectionOPs<DataType>(n_connections))
+    {}
+    
     GraphNode(
         DataType const & data,
         int index,
@@ -80,9 +111,10 @@ public:
     }
     
     inline
-    GraphNodeOP<DataType> const &
+    GraphNodeOP<DataType>
     parent() {
         for(auto const & c : connections_) {
+            if(c == nullptr) { continue; }
             if(c->partner(index_)->index_ < index_) { return c->partner(index_); }
         }
         return nullptr;
@@ -113,6 +145,17 @@ public:
         }
     }
     
+    inline
+    GraphConnectionOP<DataType>
+    connected(
+        GraphNodeOP<DataType> const & n) {
+        for(auto const & c : connections_) {
+            if(c == nullptr) { continue; }
+            if(c->partner(index_) == n) { return c; }
+        }
+        return nullptr;
+    }
+    
     
 public: //getters
     inline
@@ -128,8 +171,19 @@ public: //getters
     data() const { return data_; }
     
     inline
+    DataType &
+    data() { return data_; }
+    
+    inline
     GraphConnectionOPs<DataType> const &
-    connections() { return connections_; }
+    connections() const { return connections_; }
+    
+public: //setters
+    
+    //cant find away around this
+    inline
+    void
+    index(int index) { index_ = index; }
     
     
 protected:
@@ -194,6 +248,11 @@ public:
         int level,
         int n_children):
     GraphNode<DataType>(data, index, level, n_children) {}
+    
+    inline
+    GraphNodeStatic(
+        GraphNode<DataType> const & n):
+    GraphNode<DataType>(n.index(), n.level(), (int)n.connections().size()) {}
     
 public:
     
@@ -287,6 +346,14 @@ public:
     inline
     GraphNodeOP<DataType> const &
     node_2() { return node_2_; }
+    
+    inline
+    int
+    end_index_1() { return end_index_1_; }
+    
+    inline
+    int
+    end_index_2() { return end_index_2_; }
     
     
     

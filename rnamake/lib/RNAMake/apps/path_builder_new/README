@@ -1,0 +1,23 @@
+Builds a path out of RNA from one basepair to another. 
+
+./path_builder_new -pdb ~/Downloads/4v9d_26A_nointermittent-1.pdb -end_bp A1449-A1454 -start_bp C2856-C2861
+
+options:
+
+-pdb : the pdb that contains the scaffold structure 
+-start_bp : the name of the basepair you will be building from
+-end_bp : the name of the basepair you are building too
+-write_pdbs : bool switch, controls whether pdbs of the solutions will be generated. 
+	make sure to also open the scaffold.pdb so solutions are in proper orienation
+-no_sterics : bool switch, shuts off strikes
+-out : controls the file to output results to, default: “default.out”
+
+search options
+-search::accept_score : (float) controls what is considered a solution, default 10
+-search::max_solutions : (int) the max number of solutions, default 1
+-search::max_size : (int) the max number of residues that can be in a solution default : 1000000
+-search::max_node_level : (int) the max number of motifs that can be included default : 12
+-search::min_node_level : (int) the minimum number of motifs that can be included default : 0
+
+
+ 

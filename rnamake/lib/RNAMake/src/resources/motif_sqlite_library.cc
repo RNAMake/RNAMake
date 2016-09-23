@@ -15,6 +15,7 @@ MotifSqliteLibrary::get_libnames() {
     StringStringMap libnames;
     
     libnames["ideal_helices"]  = "/motif_libraries_new/ideal_helices.db";
+    libnames["ideal_helices_reversed"]  = "/motif_libraries_new/ideal_helices_reversed.db";
     libnames["twoway"]         = "/motif_libraries_new/twoway.db";
     libnames["tcontact"]       = "/motif_libraries_new/tcontact.db";
     libnames["hairpin"]        = "/motif_libraries_new/hairpin.db";
@@ -33,20 +34,25 @@ MotifSqliteLibrary::get(
     String const & end_name,
     String const & id) {
     
-    String query = _generate_query(name, end_id, end_name, id);
+    auto query = _generate_query(name, end_id, end_name, id);
     connection_.query(query);
     auto row = connection_.next();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
+
+    connection_.clear();
+
     
     if(data_.find(row->id) == data_.end() ) {
         data_[row->id] = std::make_shared<Motif>(row->data,
                                                  ResidueTypeSetManager::getInstance().residue_type_set());
     }
     
-    return std::make_shared<Motif>(data_[row->id]->copy());
+    auto m = std::make_shared<Motif>(*data_[row->id]);
+    m->new_res_uuids();
+    return m;
     
 }
 
@@ -57,14 +63,15 @@ MotifSqliteLibrary::get_multi(
     String const & end_name,
     String const & id) {
     
-    MotifOPs motifs;
-    String query = _generate_query(name, end_id, end_name, id);
+    auto motifs = MotifOPs();
+    auto query = _generate_query(name, end_id, end_name, id);
     connection_.query(query);
     auto row = connection_.next();
-    
+
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
+
     
     while(row->data.length() != 0) {
         if(data_.find(row->id) == data_.end()) {
@@ -72,10 +79,16 @@ MotifSqliteLibrary::get_multi(
                                                      ResidueTypeSetManager::getInstance().residue_type_set());
         }
         
-        motifs.push_back(std::make_shared<Motif>(data_[row->id]->copy()));
+        motifs.push_back(std::make_shared<Motif>(*data_[row->id]));
         row = connection_.next();
     }
     
+    connection_.clear();
+    
+    for(auto const & m : motifs) {
+        m->new_res_uuids();
+    }
+
     return motifs;
     
 }
@@ -89,10 +102,11 @@ MotifSqliteLibrary::contains(
     
     String query = _generate_query(name, end_id, end_name, id);
     connection_.query(query);
-    auto row = connection_.next();
+    auto row = connection_.contains();
+    int length = (int)row->data.length();
     
-    if(row->data.length() == 0) { return 0; }
-    else                        { return 1; }
+    if(length == 0)  { return 0; }
+    else             { return 1; }
 
     
 }
@@ -101,7 +115,7 @@ MotifSqliteLibrary::contains(
 
 MotifOP
 MotifSqliteLibrary::get_random() {
-    int pos = rng_.randrange(max_size_);
+    int pos = 1 +rng_.randrange(max_size_-1);
     return get("", "", "", std::to_string(pos));
     
 }
@@ -111,7 +125,7 @@ MotifSqliteLibrary::load_all(
     int limit) {
     
     int count = 0;
-    for(int i = 0; i < max_size_; i++) {
+    for(int i = 1; i < max_size_; i++) {
         get("", "", "", std::to_string(i));
         if (count > limit) { break; }
         count++;
