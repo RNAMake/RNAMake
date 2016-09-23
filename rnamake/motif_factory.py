@@ -14,6 +14,7 @@ import settings
 import rna_structure
 import motif_type
 import pdb_parser
+import exceptions
 
 
 class MotifFactory(object):
@@ -144,6 +145,10 @@ class MotifFactory(object):
 
         r_struct = rna_structure.RNAStructure(s, basepairs, ends, filename,
                                               path, motif_type.UNKNOWN)
+
+        #if len(r_struct.residues()) == 0:
+        #    raise exceptions.MotifFactoryException(
+        #   )
 
         m           = motif.Motif(r_struct)
         m.score     = self.scorer.score(m)
