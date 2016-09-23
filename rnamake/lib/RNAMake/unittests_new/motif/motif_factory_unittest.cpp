@@ -57,7 +57,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
     
     SECTION("test generating motifs from basepairs") {
-        auto path = motif_dirs() + "helices/HELIX.IDEAL";
+        auto path = base_dir() + "/rnamake/unittests/resources/motifs/HELIX.IDEAL";
         auto m = mf.motif_from_file(path);
         auto bps = m->basepairs();
         

@@ -14,6 +14,9 @@ for test in unittests:
     if len(lines) == 3:
         print test, lines[1],
         continue
+    elif lines[0:3] == "All":
+        print test, lines[1],
+        continue
     else:
         print test, ": FAIL"
         subprocess.call(test, shell=True)
