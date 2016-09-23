@@ -1,0 +1,51 @@
+<div id="banner">
+  <div class="banner-inner">
+    <span id="logo"><span class="octicon octicon-mark-github"></span></span>
+
+    {% if theme_github_repo %}
+      <a href="https://github.com/{{ theme_github_repo }}" target="_blank" class="button fork"><strong>View On GitHub</strong></a>
+    {% endif %}
+
+    {% include "searchbox.html" %}
+
+    {% if theme_display_version %}
+      {%- set nav_version = version %}
+      {% if READTHEDOCS and current_version %}
+        {%- set nav_version = current_version %}
+      {% endif %}
+      {% if nav_version %}
+        <div class="version"><span>{{ nav_version }}</span></div>
+      {% endif %}
+    {% endif %}
+
+    {% if (next or prev) and pagename != "index" %}
+      <div class="downloads">
+        <span style="text-transform: none; font-size: 120%;"><u>{{ pagename }}</u></span>
+        <ul>
+          {% if parents %}
+            <li><a href="{{ parents[0].link|e }}" class="button">&#x21E7;</a></li>
+          {% else %}
+            <li><a href="index.html" class="button">&#x21E7;</a></li>
+          {% endif %}
+          {% if prev and prev.link != "index.html" %}
+            <li><a href="{{ prev.link|e }}" class="button">&#x21E6;</a></li>
+          {% endif %}
+          {% if next %}
+            <li><a href="{{ next.link|e }}" class="button">&#x21E8;</a></li>
+          {% endif %}
+        </ul>
+      </div>
+  {% else %}
+    {% if theme_github_repo %}
+      <div class="downloads">
+        <span>Downloads</span>
+        <ul>
+          <li><a href="https://github.com/{{ theme_github_repo }}/zipball/master" target="_blank" class="button">ZIP</a></li>
+          <li><a href="https://github.com/{{ theme_github_repo }}/tarball/master" target="_blank" class="button">TAR</a></li>
+        </ul>
+      </div>
+    {% endif %}
+  {% endif %}
+  </div>
+</div>
+
