@@ -16,24 +16,50 @@
 #include "math/transform.h"
 #include "math/xyz_matrix.h"
 #include "structure/chain.fwd.h"
+#include "structure/chain.h"
 #include "structure/residue.h"
+#include "structure/pdb_parser.h"
 
 class Structure {
 public:
-    
-    
-public:
+    inline
     Structure():
     chains_ (ChainOPs())
     {}
     
+    inline
     Structure(
         ChainOPs const & chains):
     chains_ (chains)
     {}
     
-    Structure
-    copy();
+    Structure(
+        String const & path) {
+        PDBParser pdb_parser;
+        auto residues = pdb_parser.parse(path);
+        chains_ = ChainOPs();
+        connect_residues_into_chains(residues, chains_);
+    }
+    
+    Structure(
+        Structure const & s) {
+        chains_ = ChainOPs(s.chains_.size());
+        int i = 0;
+        for (auto const & c : s.chains_) {
+            chains_[i] = std::make_shared<Chain>(*c);
+            i++;
+        }
+    }
+    
+    Structure(
+        String const & s,
+        ResidueTypeSet const & rts) {
+        chains_ = ChainOPs();
+        Strings spl = split_str_by_delimiter(s, ":");
+        for( auto const & c_str : spl) {
+            chains_.push_back(std::make_shared<Chain>(c_str, rts));
+        }
+    }
     
     ~Structure() {}
     
@@ -46,7 +72,7 @@ public:
     Beads
     get_beads(
         ResidueOPs const & excluded_res) {
-        Beads beads;
+        auto beads = Beads();
         int found = 0;
         for ( auto const & r : residues()) {
             found = 0;
@@ -61,6 +87,13 @@ public:
         return beads;
     }
     
+    inline
+    Beads
+    get_beads() {
+        auto res = ResidueOPs();
+        return get_beads(res);
+    }
+    
     ResidueOP const
     get_residue(
         int const & ,
@@ -72,7 +105,7 @@ public:
         Uuid const &);
 
     ResidueOPs const
-    residues();
+    residues() const;
     
     inline
     AtomOPs const
@@ -108,14 +141,17 @@ public:
         }
     }
     
-      String
-    to_pdb_str();
+    String
+    to_pdb_str(
+        int renumber = -1);
     
     String
     to_str();
     
     void
-    to_pdb(String const);
+    to_pdb(
+        String const,
+        int renumber = -1);
     
 public: // getters
     
@@ -131,11 +167,6 @@ private:
     Points org_coords_;
     
 };
-
-Structure
-str_to_structure(
-    String const &,
-    ResidueTypeSet const & rts);
 
 typedef std::shared_ptr<Structure> StructureOP;
 

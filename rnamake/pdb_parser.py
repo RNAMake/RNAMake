@@ -1,27 +1,37 @@
-import sys
-import logging
 import atom
 import residue
 import residue_type
+import exceptions
+import user_warnings
 
-logging.basicConfig()
-logger = logging.getLogger(__name__)
-
-class PDBParserError(Exception):
-    pass
-
-
-def parse(pdb_file):
+# TODO handle no chain id!
+def parse(pdb_file, protein=0, rna=1):
     """
     very minimalistc pdb parser, currently does not support multiple MODELS
     in NMR structures but works well for what I need at the moment will be
     expanded in future versions. Currently returns an array of Residue object
-    this is because it will mostly be called in in Structure object
+    this is because it will mostly be called in in Structure object. Also does
+    not parse specified connectivity in CONECT statements. If one is interested
+    in parsing into a Structure object, please use structure_from_pdb in the
+    structure module.
+
+    :param pdb_file: The path to the PDB formatted file you wish to parse
+    :type pdb_file: str
+
+    :return: List of residue.Residue objects
+
+    :examples:
 
     .. code-block:: python
-        >>>parser = PDBParser
-        >>>residues = parser.parse("p4p6.pdb")
 
+        >>>import rnamake.unittests.files
+        >>>residues = parse(rnamake.unittests.files.P4P6_PDB_PATH)
+        >>>len(residues)
+        157
+
+        #Not yet sorted into chains, residue 106 is the first in this chain
+        >>>residues[0]
+        <Residue('G250 chain A')>
     """
 
     try:
@@ -29,7 +39,8 @@ def parse(pdb_file):
         lines = f.readlines()
         f.close()
     except IOError:
-        raise IOError("cannot parse pdb file: " + pdb_file + " as it does not exist")
+        raise exceptions.PDBParserException("cannot parse pdb file: " +
+                                            pdb_file + " as it does not exist")
 
     coordinates = []
     atomnames = []
@@ -38,7 +49,7 @@ def parse(pdb_file):
     chainids = []
     icodes = []
 
-    for line in lines:
+    for line_num, line in enumerate(lines):
         startswith = line[0:6]
         if startswith == 'ATOM  ' or startswith == 'HETATM':
             atomname = line[12:16].strip()
@@ -46,12 +57,20 @@ def parse(pdb_file):
             chid = line[21]
             alt = line[16]
             try:
-                coords = [ float(line[30:38]),
-                           float(line[38:46]),
-                           float(line[46:54]) ]
+                coords = [float(line[30:38]),
+                          float(line[38:46]),
+                          float(line[46:54])]
             except:
-                raise PDBParserError('invalid or missing coordinate(s) at '
-                                         'line {0}.'.format(line))
+                raise exceptions.PDBParserError('invalid or missing coordinate(s) at '
+                                                'line {0}.'.format(line))
+
+            if len(atomname) == 0:
+                user_warnings.warn("line " + str(line_num) + ": no atomname detected\n",
+                                   user_warnings.PDBFormatWarning)
+
+            if len(resname) == 0:
+                user_warnings.warn("line " + str(line_num) + ": no resname detected\n",
+                                   user_warnings.PDBFormatWarning)
 
             atomnames.append(atomname)
             resnames.append(resname)
@@ -61,8 +80,13 @@ def parse(pdb_file):
             coordinates.append(coords)
 
         # TODO handle multiple models at some point
-        elif startswith == 'ENDMDL' or startswith[:3] == 'END':
-             break
+        elif startswith == 'MODEL':
+            raise exceptions.PDBParserException(pdb_file + " contains NMR MODELS " +
+                                                "most likely this is not being parsed " +
+                                                "properly")
+
+        elif startswith[:3] == 'END':
+            break
 
     residue_atoms = {}
     for i in range(len(atomnames)):
@@ -87,9 +111,18 @@ def parse(pdb_file):
             continue
         spl = key.split()
         rtype = residue_type.get_rtype(spl[0])
+
         if rtype is None:
-            #logger.warning(spl[0] + " has no residue type, is being skipped")
+            user_warnings.warn("restype " + spl[0] + ": is unknown\n",
+                                user_warnings.PDBFormatWarning)
             continue
+
+        if protein == 0 and rtype.set_type == residue_type.SetType.PROTEIN:
+            continue
+
+        if rna == 0 and rtype.set_type == residue_type.SetType.RNA:
+            continue
+
         icode = ""
         if len(spl) > 3:
             icode = spl[3]

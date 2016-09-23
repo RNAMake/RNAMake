@@ -30,9 +30,14 @@ AddedMotifLibrary::get(
     String const & end_id,
     String const & end_name) {
     
+    if(name == "" && end_id == "" && end_name == "") {
+        throw AddedMotifLibraryException(
+            "must specify atleast one thing to get, either name, end_id or end_name");
+    }
+    
     auto motifs =  _find_motifs(name, end_id, end_name);
     if(motifs.size() == 0) {
-        throw std::runtime_error("called get in AddedMotifLibrary but returned no motifs");
+        throw AddedMotifLibraryException("called get in AddedMotifLibrary but returned no motifs");
     }
     return motifs[0];
     

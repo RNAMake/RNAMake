@@ -12,13 +12,14 @@ if( ${COMPILER} STREQUAL clang )
 	set(compile_flags 
 		-Wno-c++11-extensions
         -std=gnu++1y
+        -g
 	)
 endif()
 
 if( ${COMPILER} STREQUAL gcc )
 	set(compile_flags
-	-std=c++11
-	-g
+	-std=c++14
+    -w
 	)
 endif()
 

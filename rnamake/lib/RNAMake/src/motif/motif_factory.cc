@@ -10,33 +10,69 @@
 
 #include "motif/motif_factory.h"
 #include "structure/chain.h"
-#include "util/file_io.h"
+#include "secondary_structure/util.h"
+#include "base/file_io.h"
 #include "util/x3dna.h"
 
 
 MotifOP
 MotifFactory::motif_from_file(
-    String const & path) {
+    String const & path,
+    bool rebuild_x3dna,
+    bool include_protein) {
+    
+    
+    if(! file_exists(path)) {
+        throw MotifFactoryException("cannot generate motif from file " + path + " does not exist");
+    }
     
     parser_ = MotiftoSecondaryStructure();
     auto fname = filename(path);
     auto pdb_path = path;
     StructureOP structure;
     if(is_dir(path)) {
-        structure = sf_.get_structure(path + "/" + fname + ".pdb");
+        rebuild_x3dna = false;
+        
         pdb_path = path + "/" + fname + ".pdb";
+        if(! file_exists(pdb_path)) {
+            throw MotifFactoryException(
+                "cannot generate motif from directory " + path + " it exists but there is no pdb "
+                " in it expected: dir_name/dir_name.pdb");
+        }
+
+        structure = std::make_shared<Structure>(pdb_path);
     }
     else {
-        structure = sf_.get_structure(path);
+        structure = std::make_shared<Structure>(path);
         fname = fname.substr(0, -4);
     }
     
-    auto basepairs = _setup_basepairs(pdb_path, structure);
+    auto basepairs = _setup_basepairs(pdb_path, structure, rebuild_x3dna);
     auto ends = _setup_basepair_ends(structure, basepairs);
     auto m = std::make_shared<Motif>(structure, basepairs, ends);
     m->name(fname);
     m->path(path);
+    
+    //clean up x3dna generated files if they were created
+    try {
+        std::remove("ref_frames.dat");
+        std::remove(String(fname + "_dssr.out").c_str());
+    } catch(...) {}
+    
     _setup_secondary_structure(m);
+    
+    if(include_protein) {
+        auto res = pdb_parser_.parse(pdb_path, true, false);
+        auto beads = Beads();
+        for(auto const & r : res) {
+            try{
+                auto bead = Bead(r->get_atom("CA")->coords(), BeadType::BASE);
+                beads.push_back(bead);
+            } catch(...) { continue; }
+        }
+        m->protein_beads(beads);
+        
+    }
     
     return m;
 }
@@ -46,12 +82,45 @@ MotifFactory::motif_from_res(
     ResidueOPs & res,
     BasepairOPs const & bps) {
     
-    auto chains = sf_.build_chains(res);
+    auto chains = ChainOPs();
+    connect_residues_into_chains(res, chains);
     auto structure = std::make_shared<Structure>(chains);
     auto ends = _setup_basepair_ends(structure, bps);
+    
+    if(ends.size() != 2 && bps.size() >= 2) {
+        throw MotifFactoryException(
+            "unexpected number of ends when generating a motif from residues");
+    }
+    
     auto m = std::make_shared<Motif>(structure, bps, ends);
     _setup_secondary_structure(m);
     return m;
+}
+
+MotifOP
+MotifFactory::motif_from_bps(
+    BasepairOPs const & bps) {
+    
+    auto res = ResidueOPs();
+    for(auto const & bp : bps) {
+        res.push_back(bp->res1());
+        res.push_back(bp->res2());
+    }
+    
+    auto chains = ChainOPs();
+    connect_residues_into_chains(res, chains);
+    auto structure = std::make_shared<Structure>(chains);
+    auto ends = _setup_basepair_ends(structure, bps);
+    
+    if(ends.size() != 2 && bps.size() >= 2) {
+        throw MotifFactoryException(
+            "unexpected number of ends when generating a motif from basepairs");
+    }
+    
+    auto m = std::make_shared<Motif>(structure, bps, ends);
+    _setup_secondary_structure(m);
+    return m;
+    
 }
 
 
@@ -114,18 +183,19 @@ MotifFactory::align_motif_to_common_frame(
 BasepairOPs
 MotifFactory::_setup_basepairs(
     String const & path,
-    StructureOP const & structure) {
+    StructureOP const & structure,
+    bool rebuild_x3dna) {
     
-    BasepairOPs basepairs;
-    X3dna x3dna_parser;
-    X3Basepairs x_basepairs = x3dna_parser.get_basepairs(path);
+    auto basepairs = BasepairOPs();
+    auto x3dna_parser = X3dna();
+    auto x_basepairs = x3dna_parser.get_basepairs(path, rebuild_x3dna);
     ResidueOP res1, res2;
     BasepairOP bp;
     for(auto const & xbp : x_basepairs) {
         res1 = structure->get_residue(xbp.res1.num, xbp.res1.chain_id, xbp.res1.i_code);
         res2 = structure->get_residue(xbp.res2.num, xbp.res2.chain_id, xbp.res2.i_code);
         if (res1 == nullptr || res2 == nullptr) {
-            throw "cannot find residues in basepair during setup";
+            throw MotifFactoryException("cannot find residues in basepair during setup");
         }
         
         bp = BasepairOP(new Basepair(res1, res2, xbp.r, xbp.bp_type));
@@ -171,13 +241,14 @@ MotifFactory::_setup_secondary_structure(
     for(auto const & end : m->ends()) {
         auto res1 = ss->get_residue(end->res1()->uuid());
         auto res2 = ss->get_residue(end->res2()->uuid());
-        auto ss_end = ss->get_bp(res1, res2);
+        auto ss_end = ss->get_basepair(res1, res2)[0];
         end_ids[i] = sstruct::assign_end_id(ss, ss_end);
+        i++;
     }
     
     ss->end_ids(end_ids);
     m->end_ids(end_ids);
-    m->secondary_structure(ss);
+    m->secondary_structure(std::static_pointer_cast<sstruct::Motif>(ss));
     
     
 }
@@ -205,7 +276,7 @@ MotifFactory::_align_chains(
         if(c != closest) { updated_chains.push_back(c); }
     }
     
-    m->structure(std::make_shared<Structure>(Structure(updated_chains)));
+    m->structure(std::make_shared<Structure>(updated_chains));
 }
 
 void

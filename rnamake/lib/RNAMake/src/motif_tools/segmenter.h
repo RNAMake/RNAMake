@@ -73,6 +73,7 @@ typedef std::shared_ptr<Segments> SegmentsOP;
     int score;
 };
 
+<<<<<<< HEAD
 class PairSearchNodeSearch {
 public:
     
@@ -86,6 +87,9 @@ public:
 };
 
 */
+=======
+
+>>>>>>> devel
 class Segmenter {
 public:
     Segmenter() {}

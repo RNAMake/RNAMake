@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__resource_manager__
-#define __RNAMake__resource_manager__
+#ifndef __RNAMake__rtsm_resource_manager__
+#define __RNAMake__rtsm_resource_manager__
 
 #include <stdio.h>
 

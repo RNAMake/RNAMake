@@ -3,30 +3,27 @@ import os
 import shutil
 import rnamake.x3dna
 
+from rnamake import exceptions
+
+import files
+
 class X3dnaUnittest(unittest.TestCase):
 
     def test_generate_ref_frame(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        x3dna = rnamake.x3dna.X3dna()
-        x3dna.generate_ref_frame(path)
+        x = rnamake.x3dna.X3dna()
+        x.generate_ref_frame(files.P4P6_PDB_PATH)
         if not os.path.isfile("ref_frames.dat"):
             self.fail("ref_frames.dat file should of been generated")
         if os.path.isfile("bestpairs.pdb"):
             self.fail("extra files should of been deleted")
 
         path = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6_2"
-        try:
-            x3dna.generate_ref_frame(path)
-            self.fail()
-        except IOError:
-            pass
-        except:
-            self.fail("got an unexpected error")
+        with self.assertRaises(exceptions.X3dnaException):
+            x.generate_ref_frame(path)
 
         # clean up
         if not os.path.isfile("ref_frames.dat"):
             self.fail("did not produce ref_frames.dat")
-
         os.remove("ref_frames.dat")
 
     def test_generate_dssr_file(self):
@@ -102,8 +99,8 @@ class X3dnaUnittest(unittest.TestCase):
         path1 = rnamake.settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
         path = rnamake.settings.UNITTEST_PATH + "p4p6.pdb"
         shutil.copy(path1, path)
-        x3dna = rnamake.x3dna.X3dna()
-        basepairs = x3dna.get_basepairs(path)
+        x = rnamake.x3dna.X3dna()
+        basepairs = x.get_basepairs(path)
         os.remove("ref_frames.dat")
         os.remove('p4p6_dssr.out')
         os.remove("p4p6.pdb")

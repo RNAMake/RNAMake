@@ -56,18 +56,35 @@ public:
     diff_sugars_( Vectors(2) )
     { transpose(r_, r_T_); }
 
+    inline
+    BasepairState(String const & s):
+    r_T_( Matrix(0) ),
+    diff_ ( Vector(0.0) ),
+    diff_sugars_( Vectors(2) )
+    {
+        auto spl = split_str_by_delimiter(s, ";");
+        if(spl.size() < 3) {
+            throw "cannot load BasepairState from String, not the right number of elements\n";
+        }
+        
+        d_ = Point(spl[0]);
+        r_ = Matrix(spl[1]);
+        sugars_ = vectors_from_str(spl[2]);
+        transpose(r_, r_T_);
+    }
+    
     
 	~BasepairState()
 	{}
     
+public:
+    
+    inline
     BasepairState
     copy() const {
-        //Point d = d_;
-        //Matrix r = r_;
-        //Points sugars = sugars_;
         return BasepairState(d_, r_, sugars_);
     }
-
+    
 	
 public:
 	inline
@@ -84,11 +101,12 @@ public:
         calculate_r_T();
         
 		//calculate transforming rotation matrix and store it in r_state (result state)
-		dot(r_T_,o_state.r_,r_state.r_);
-		r_state.calculate_r_T();
-		
+        dot(r_T_, o_state.r_, r_state.r_);
+        r_state.r_.unitarize();
+        r_state.calculate_r_T();
+        
 		//rotate sugars to new position and store them in r_state
-		dot_vectors(r_state.r_T_,o_state.sugars_,r_state.sugars_);
+		dot_vectors(r_state.r_T_, o_state.sugars_, r_state.sugars_);
 		
 		diff_ = -o_state.d() + d_;
 		int i;
@@ -113,6 +131,7 @@ public:
 		BasepairState & r_state) {
 		
 		dot        (r_, o_state.r_T_, r_state.r_);
+        r_state.r_.unitarize();
 		dot_vector (o_state.r_T_, d_, r_state.d_);
 		dot_vectors(o_state.r_T_, sugars_, r_state.sugars_);
 
@@ -136,7 +155,7 @@ public:
     diff(
         BasepairStateOP const & state) {
         float diff = d_.distance(state->d());
-        diff += _rot_diff(state);
+        diff += _rot_diff(state)*2;
         return diff;
     }
     
@@ -156,10 +175,11 @@ public:
     
 public:
     
+    inline
     String const
     to_str() const{
-        String s = vector_to_str(d_) + ";" + matrix_to_str(r_) + ";" + vector_to_str(sugars_[0]) + vector_to_str(sugars_[1]);
-        return s;
+        return d_.to_str() + ";" + r_.to_str() + ";" + sugars_[0].to_str() + " " +\
+               sugars_[1].to_str();
     }
 	
 	
@@ -333,11 +353,38 @@ new_score_function(
 	return d_diff + scale*r_diff;
 }
 
+inline
+const
+float
+new_score_function_new(
+    BasepairStateOP const & current,
+    BasepairStateOP const & end,
+    BasepairStateOP const & endflip) {
+    
+    float d_diff = (current->sugars()[0].distance(end->sugars()[1]) +
+                    current->sugars()[1].distance(end->sugars()[0]))*0.50;
+    
+    if(d_diff > 25) { return d_diff; }
+    
+    float r_diff      = current->r().difference(end->r());
+    float r_diff_flip = current->r().difference(endflip->r());
+    
+    if(r_diff > r_diff_flip) {
+        r_diff = r_diff_flip;
+    }
+    
+    float scale = (log(150/d_diff) - 1);
+    if (scale > 2) { scale = 2; }
+    if (scale < 0) { scale = 0; }
+    
+    return d_diff + scale*r_diff;
+}
+
 
 int
-are_BasepairStates_equal(
-    BasepairState const,
-    BasepairState const);
+are_basepair_states_equal(
+    BasepairState const &,
+    BasepairState const & );
 
 
 

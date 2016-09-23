@@ -9,7 +9,7 @@
 #include <stdexcept>
 
 //RNAMake Headers
-#include "util/settings.h"
+#include "base/settings.h"
 #include "resources/sqlite_library.h"
 
 
@@ -19,7 +19,14 @@ SqliteLibrary::_get_path(
     
     name_ = libname;
     if(libnames_.find(libname) == libnames_.end()) {
-        throw std::runtime_error("cannot find library type in sqlite_library: " + libname);
+        auto options = String("");
+        for(auto const & kv : libnames_) {
+            options += kv.first + " ";
+        }
+        
+        throw SqliteLibraryException(
+            "cannot find library type in sqlite_library: " + libname + 
+            " valid options are: " + options );
     }
     return resources_path()+libnames_[libname];
     

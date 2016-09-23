@@ -11,22 +11,21 @@ class SegmenterUnittest(unittest.TestCase):
         s = rnamake.segmenter.Segmenter()
 
     def test_apply(self):
-        s = rnamake.segmenter.Segmenter()
         path = rnamake.settings.UNITTEST_PATH + "/resources/motifs/p4p6"
         p = pf.factory.pose_from_file(path)
-        nways = p.motifs(motif_type.NWAY)
-        for t in nways:
+        twoways = p.motifs(motif_type.TWOWAY)
+        for i, t in enumerate(twoways):
+            s = rnamake.segmenter.Segmenter()
             segments = s.apply(p, t.ends)
-            segments.remaining.to_pdb("remaining.pdb")
-            segments.removed.to_pdb("removed.pdb")
+            self.failUnless(len(t.residues()) == len(segments.removed.residues()))
 
-    def random_cuts(self):
-        s = rnamake.segmenter.Segmenter()
-        path = rnamake.settings.UNITTEST_PATH + "/resources/motifs/p4p6"
-        p = pf.factory.pose_from_file(path)
-        end1 = p.get_basepair(name='A111-A209')[0]
-        end2 = p.get_basepair(name='A118-A203')[0]
-        segments = s.apply(p, [end1, end2])
+        nways = p.motifs(motif_type.NWAY)
+        for i, t in enumerate(nways):
+            s = rnamake.segmenter.Segmenter()
+            segments = s.apply(p, t.ends)
+            self.failUnless(len(t.residues()) == len(segments.removed.residues()))
+
+
 
 def main():
     unittest.main()

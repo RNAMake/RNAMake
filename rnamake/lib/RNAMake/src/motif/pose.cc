@@ -10,12 +10,12 @@
 #include "motif/pose.h"
 
 Pose::Pose(MotifOP const & m) {
-    structure_ = m->structure();
+    /*structure_ = m->structure();
     basepairs_ = m->basepairs();
     secondary_structure_ = m->secondary_structure();
     ends_ = m->ends();
     designable_ = std::map<Uuid, int, UuidCompare> ();
-    path_ = m->path();
+    path_ = m->path();*/
 }
 
 Pose::Pose(

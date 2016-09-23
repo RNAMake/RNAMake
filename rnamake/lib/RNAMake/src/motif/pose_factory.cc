@@ -89,7 +89,7 @@ void
 PoseFactory::_add_secondary_structure_motifs(
     PoseOP & p) {
     
-    auto ss = p->secondary_structure();
+    /*auto ss = p->secondary_structure();
     int i = 0;
     String type_name;
     std::map<String, sstruct::MotifOPs> ss_motif_map;
@@ -109,7 +109,7 @@ PoseFactory::_add_secondary_structure_motifs(
         for(auto const & bp : m->basepairs()) {
             auto res1 = ss->get_residue(bp->res1()->uuid());
             auto res2 = ss->get_residue(bp->res2()->uuid());
-            auto ss_bp = ss->get_bp(res1, res2);
+            auto ss_bp = ss->get_basepair(res1, res2);
             if(ss_bp == nullptr) { continue; }
             ss_bps.push_back(ss_bp);
         }
@@ -117,7 +117,7 @@ PoseFactory::_add_secondary_structure_motifs(
         for(auto const & end : m->ends()) {
             auto res1 = ss->get_residue(end->res1()->uuid());
             auto res2 = ss->get_residue(end->res2()->uuid());
-            auto ss_bp = ss->get_bp(res1, res2);
+            auto ss_bp = ss->get_basepair(res1, res2);
             if(ss_bp == nullptr) {
                 std::runtime_error("cannot find ss end in PoseFactory::_add_secondary_structure_motifs");
             }
@@ -127,7 +127,7 @@ PoseFactory::_add_secondary_structure_motifs(
         }
         type_name = type_to_str(m->mtype());
         auto ss_motif = std::make_shared<sstruct::Motif>(type_name, ss_ends, ss_chains);
-        ss_motif->basepairs(ss_bps);
+        //ss_motif->basepairs(ss_bps);
         ss_motif->name(m->name());
         ss_motif->end_ids(ss_end_ids);
         
@@ -137,9 +137,9 @@ PoseFactory::_add_secondary_structure_motifs(
         
         ss_motif_map[type_name].push_back(ss_motif);
         ss_motif_map["ALL"].push_back(ss_motif);
-    }
+    }*/
     
-    p->set_ss_motifs(ss_motif_map);
+    //p->set_ss_motifs(ss_motif_map);
     
 }
 

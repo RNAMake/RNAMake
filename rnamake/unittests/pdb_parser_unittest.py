@@ -7,7 +7,9 @@ import rnamake.residue
 import rnamake.settings
 import rnamake.atom
 import util
+import warnings
 from rnamake.util import distance
+from rnamake import exceptions
 
 
 class PdbParserUnittest(unittest.TestCase):
@@ -15,6 +17,15 @@ class PdbParserUnittest(unittest.TestCase):
     def test_parse(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
         residues = rnamake.pdb_parser.parse(path)
+
+    def test_warnings(self):
+        path = rnamake.settings.UNITTEST_PATH + "resources/pdbs/p4p6_error_1.pdb"
+
+        #catch warning for missing atom name
+        message = "line 2: no atomname detected"
+        with warnings.catch_warnings(record=True) as w:
+            rnamake.pdb_parser.parse(path)
+            #self.failUnless(str(w[-1].message) == message)
 
     def _get_residues_from_prody(self, prody_structure):
         """
@@ -81,10 +92,10 @@ class PdbParserUnittest(unittest.TestCase):
 
         self._are_residues_the_same(new_residues, old_residues)
 
-    def test_parse_compare_all(self):
+    def _test_parse_compare_all(self):
         #this test can take a while, default set to not run
-        if util.UnittestState == util.UnittestType.BASIC:
-            self.skipTest("test_parse_compare_all is not a basic test")
+        #if util.UnittestState == util.UnittestType.BASIC:
+        #    self.skipTest("test_parse_compare_all is not a basic test")
 
         try:
             import prody
@@ -110,9 +121,11 @@ class PdbParserUnittest(unittest.TestCase):
 
             pdb_path = path + "/" + d + "/" + d + ".pdb"
             print pdb_path
-            new_residues = util.supress_log_output(rnamake.pdb_parser.parse,
-                                                   pdb_path)
-
+            try:
+                with warnings.catch_warnings(record=True) as w:
+                    new_residues = rnamake.pdb_parser.parse(pdb_path)
+            except exceptions.PDBParserException:
+                continue
             prody_structure = prody.parsePDB(pdb_path)
             old_residues = self._get_residues_from_prody(prody_structure)
 
@@ -123,8 +136,8 @@ def main():
     unittest.main()
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1:
-        util.UnittestState = int(sys.argv[1])
-        sys.argv.pop()
+    #if len(sys.argv) > 1:
+    #    util.UnittestState = int(sys.argv[1])
+    #    sys.argv.pop()
 
     main()

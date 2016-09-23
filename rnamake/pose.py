@@ -3,8 +3,10 @@ import motif_type
 import x3dna
 import eternabot.sequence_designer as sequence_designer
 import secondary_structure
+import rna_structure
+import motif_graph
 
-class Pose(motif.Motif):
+class Pose(rna_structure.RNAStructure):
     """
     Poses are for loading for RNA structures that have multiple motifs.
     Like motifs poses store 3D coordinates as well as 3DNA parameters but
@@ -104,3 +106,10 @@ class Pose(motif.Motif):
     def to_motif(self):
         m = super(self.__class__, self).copy()
         return m
+
+class PoseNew(rna_structure.RNAStructure):
+    def __init__(self, m=None):
+        self.mgraph = motif_graph.MotifGraph()
+
+        if m is not None:
+            self.__dict__.update(m.__dict__)

@@ -18,9 +18,9 @@
 
 //RNAMake Headers
 #include "base/string.h"
+#include "base/settings.h"
 #include "math/xyz_vector.h"
 #include "math/xyz_matrix.h"
-#include "util/settings.h"
 
 class X3dnaException : public std::runtime_error {
 public:
@@ -115,7 +115,8 @@ public:
     generate_dssr_file(String const &);
     
     X3Basepairs const &
-    get_basepairs(String const &);
+    get_basepairs(String const & pdb_path,
+                  bool force_build_files = false);
     
     X3Motifs
     get_motifs(String const &);
@@ -123,10 +124,12 @@ public:
 private:
     
     String
-    _get_ref_frame_path(String const &);
+    _get_ref_frame_path(String const & pdb_path,
+                        bool force_build_files = false);
     
     String
-    _get_dssr_file_path(String const &);
+    _get_dssr_file_path(String const & pdb_path,
+                        bool force_build_files = false);
     
     Point
     _convert_strings_to_point(Strings const &);

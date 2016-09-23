@@ -1,16 +1,11 @@
 import unittest
+import os
 import random
-import rnamake.motif_state_ensemble_tree as motif_state_ensemble_tree
 import rnamake.resource_manager as rm
-import rnamake.motif_type as motif_type
-import rnamake.util as util
-import rnamake.basic_io as basic_io
-import rnamake.settings as settings
-import rnamake.motif as motif
 import rnamake.motif_tree as motif_tree
-import rnamake.motif_type as motif_type
-import rnamake.motif_tree_topology as motif_tree_topology
-import build
+
+from rnamake import sqlite_library
+from rnamake import motif_graph, motif_topology, motif_state_ensemble_tree
 
 class MotifStateEnsembleTreeUnittest(unittest.TestCase):
 
@@ -34,43 +29,55 @@ class MotifStateEnsembleTreeUnittest(unittest.TestCase):
         mset.add_ensemble(mse)
 
         mst = mset.to_mst()
-        mst.write_pdbs()
+        #print mst.get_node(0).data.name()
+        #mst.write_pdbs()
 
-    def test_setup_from_mt(self):
-        builder = build.BuildSecondaryStructure()
-        ss = builder.build_helix(20)
-        con = ss.motif_topology_from_end()
-        mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt = motif_tree.motif_tree_from_topology(mtt)
-        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
+    def _test_enumerator(self):
+        lib = sqlite_library.MotifStateEnsembleSqliteLibrary("all_bp_steps")
+        mtst = motif_state_ensemble_tree.MotifStateEnsembleTree()
+        mtst.add_ensemble(lib.get(name="GG_LL_CC_RR"))
+        mtst.add_ensemble(lib.get(name="GG_LL_CC_RR"))
+        enumerator = motif_state_ensemble_tree.MotifStateEnsembleTreeEnumerator(mtst)
+        enumerator.record()
 
-    def test_setup_from_mt_2(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build_no_ideal_helices()
-        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
+    def test_setup_from_mt_4(self):
+        mg = motif_graph.MotifGraph()
+        mg.add_motif(m_name="HELIX.IDEAL.20")
+        mg.replace_ideal_helices()
+        mt = motif_topology.graph_to_tree(mg)
+        mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
+
+        mst = mset.to_mst()
+        #for r in mt.residues():
+        #    print mst.get_residue(r.uuid)
+
+    def test_motif_sub(self):
+        mlib = sqlite_library.MotifSqliteLibrary("twoway")
+        m1 = mlib.get_random()
+        m2 = mlib.get_random()
+        while len(m1.sequence()) == len(m2.sequence()):
+            m2 = mlib.get_random()
+
+        motif_state_ensemble_tree.build_motif_sub_for_motif_state_ensemble(m1, [m2], mlib)
+        rm.manager.register_extra_motif_ensembles("test.dat")
+
+        r = rm.manager.has_supplied_motif_ensemble(m1.name, m1.ends[0].name())
+        self.failUnless(r == 1, "did not find sub")
+
+        r = rm.manager.has_supplied_motif_ensemble(m1.name, m1.ends[1].name())
+        self.failUnless(r == 1, "did not find sub")
+
+        mt = motif_tree.MotifTree()
+        mt.add_motif(m_name="HELIX.IDEAL")
+        mt.add_motif(m1)
+        mt.add_motif(m_name="HELIX.IDEAL")
+
+        mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt=mt)
         mst = mset.to_mst()
 
-    def test_setup_from_mt_3(self):
-        rm.manager.add_motif("resources/motifs/tetraloop_receptor_min")
-        mt = motif_tree.MotifTree()
-        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
-                                          end_name="A228-A246"))
-        mt.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.20"), parent_end_name="A221-A252")
-        mt.add_motif(rm.manager.get_motif(name="tetraloop_receptor_min",
-                                          end_name="A228-A246"))
+        self.failUnless(mst.get_node(1).data.cur_state.name == m2.name)
 
-        ss = mt.designable_secondary_structure()
-        build.fill_basepairs_in_ss(ss)
-
-        conn =  ss.motif_topology_from_end(ss.ends[0])
-        mtt = motif_tree_topology.MotifTreeTopology(conn)
-        mt2 = motif_tree.motif_tree_from_topology(mtt)
-
-        mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt2)
-
-
-
-
+        os.remove("test.dat")
 
 
 def main():

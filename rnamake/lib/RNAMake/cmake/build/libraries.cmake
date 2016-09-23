@@ -1,1 +1,0 @@
-set(libraries base math data_structure util secondary_structure structure motif resources motif_data_structures thermo_fluctuation motif_state_search unittests)

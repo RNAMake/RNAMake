@@ -21,6 +21,7 @@
 #include "resources/motif_state_ensemble_sqlite_library.h"
 #include "resources/added_motif_library.h"
 
+
 class ResourceManagerException : public std::runtime_error {
 public:
     ResourceManagerException(
@@ -30,99 +31,90 @@ public:
 };
 
 
-class ResourceManager {
+class RM { //RM for ResourceManager
+protected:
+    
+    RM();
+    
+    RM(RM const &); //Prevent construction
+    void operator= (RM const &);
+    
+private:
+
+    ~RM() {}
+    
 public:
-    static ResourceManager & getInstance() {
-        static ResourceManager instance;
+    
+    static RM & instance() {
+        static RM instance;
         return instance;
     }
-    
-public:
+
+public: // getting functions
     
     MotifOP
-    get_motif(
-        String const & name = dummy_name,
-        String const & end_id = dummy_end_id,
-        String const & end_name = dummy_name,
-        String const & id = dummy_id);
-    
-    MotifStateOP
-    get_state(
-        String const & name = dummy_name,
-        String const & end_id = dummy_end_id,
-        String const & end_name = dummy_name,
-        String const & id = dummy_id);
-    
-    MotifStateEnsembleOP
-    get_motif_state_ensemble(
+    motif(
         String const & name = dummy_name,
         String const & end_id = dummy_end_id,
         String const & end_name = dummy_name);
     
+    MotifStateOP
+    motif_state(
+        String const & name = dummy_name,
+        String const & end_id = dummy_end_id,
+        String const & end_name = dummy_name);
+    
+    MotifStateEnsembleOP
+    motif_state_ensemble(
+        String const & name = dummy_name);
+    
+public: // adding functions
+
     void
     add_motif(
-        String const &);
+        String const & path,
+        String name = "");
     
     void
     register_motif(
         MotifOP const &);
     
     void
-    register_extra_motif_state_ensembles(
-        String const &);
-    
-    MotifStateEnsembleOP
-    get_registered_extra_motif_state_ensemble(
-        String const &,
+    register_extra_motif_ensembles(
         String const &);
     
     int
-    has_supplied_motif_state_ensemble(
+    has_supplied_motif_ensemble(
         String const &,
         String const &);
     
-protected:
-    ResourceManager() { //Prevent construction
-        mf_ = MotifFactory();
-        added_motifs_ = AddedMotifLibrary();
-        mlibs_ = std::map<String, MotifSqliteLibraryOP>();
-        ms_libs_ = std::map<String, MotifStateSqliteLibraryOP>();
-        mse_libs_ = std::map<String, MotifStateEnsembleSqliteLibraryOP>();
-        
-        for(auto const & kv : MotifSqliteLibrary::get_libnames()) {
-            mlibs_[kv.first] = std::make_shared<MotifSqliteLibrary>(kv.first);
-        }
-        
-        for(auto const & kv : MotifStateSqliteLibrary::get_libnames()) {
-            ms_libs_[kv.first] = std::make_shared<MotifStateSqliteLibrary>(kv.first);
-        }
-        
-        for(auto const & kv : MotifStateEnsembleSqliteLibrary::get_libnames()) {
-            mse_libs_[kv.first] = std::make_shared<MotifStateEnsembleSqliteLibrary>(kv.first);
-        }
-        
-        extra_mses_ = std::map<String, String>();
-        extra_mes_ = std::map<String, MotifEnsembleOP>();
+    MotifEnsembleOP const & 
+    get_supplied_motif_ensemble(
+        String const &,
+        String const &);
     
-    }
-    
-    ResourceManager(ResourceManager const &); //Prevent construction
-    void operator= (ResourceManager const &);
-    
-private:
-    ~ResourceManager() {}
     
 private:
     std::map<String, MotifSqliteLibraryOP> mlibs_;
     std::map<String, MotifStateSqliteLibraryOP> ms_libs_;
     std::map<String, MotifStateEnsembleSqliteLibraryOP> mse_libs_;
-    std::map<String, String> extra_mses_;
-    std::map<String, MotifEnsembleOP> extra_mes_;
+    std::map<String, MotifEnsembleOP> extra_me_;
     MotifFactory mf_;
     AddedMotifLibrary added_motifs_;
 
     
 };
+
+inline
+MotifOP
+get_motif_from_resource_manager(
+    String const & name = dummy_name,
+    String const & end_id = dummy_end_id,
+    String const & end_name = dummy_name) {
+    
+    return RM::instance().motif(name, end_id, end_name);
+    
+}
 
 
 #endif /* defined(__RNAMake__resource_manager__) */

@@ -11,12 +11,23 @@
 
 //RNAMake Headers
 #include "structure/residue_type_set.h"
-#include "util/settings.h"
+#include "base/settings.h"
 #include "base/types.h"
 
-ResidueTypeSet::ResidueTypeSet() {
-    residue_types_ = ResidueTypes();
-    String path = resources_path() + "/residue_types/";
+ResidueTypeSet::ResidueTypeSet():
+residue_types_(ResidueTypes()) {
+    String base_path = resources_path() + "/residue_types/";
+    
+    _read_rtypes_from_dir(base_path+"RNA/", SetType::RNA);
+    _read_rtypes_from_dir(base_path+"PROTEIN/", SetType::PROTEIN);
+}
+
+
+void
+ResidueTypeSet::_read_rtypes_from_dir(
+    String const & path,
+    SetType const & set_type) {
+    
     DIR *pDIR;
     struct dirent *entry;
     pDIR=opendir(path.c_str());
@@ -26,12 +37,11 @@ ResidueTypeSet::ResidueTypeSet() {
         
         String name = _get_rtype_name(path + fname);
         StringIntMap atom_map = _get_atom_map_from_file(path + fname);
-        ResidueType rtype ( name, atom_map);
+        ResidueType rtype ( name, atom_map, set_type);
         residue_types_.push_back(rtype);
     }
     delete pDIR;
     delete entry;
-    
 }
 
 String
@@ -72,7 +82,7 @@ ResidueTypeSet::get_rtype_by_resname(
         if(restype.match_name(resname)) { return restype; }
     }
     
-    throw("(cannot find residue with name :"+resname);
+    throw ResidueTypeException("cannot find residue with name :"+resname);
 }
 
 

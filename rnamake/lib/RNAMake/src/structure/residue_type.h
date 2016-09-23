@@ -16,12 +16,29 @@
 #include "base/types.h"
 #include "structure/atom.h"
 
+/*
+ * Exception for residue type
+ */
+class ResidueTypeException : public std::runtime_error {
+public:
+    /**
+     * Standard constructor for ResidueException
+     * @param   message   Error message for residue type
+     */
+    ResidueTypeException(String const & message):
+    std::runtime_error(message)
+    {}
+};
+
+enum SetType {  RNA, PROTEIN };
+
 class ResidueType {
 public:
     ResidueType() {}
     ResidueType(
         String const &,
-        StringIntMap const &);
+        StringIntMap const &,
+        SetType const & set_type);
     
     ~ResidueType() {}
 
@@ -36,13 +53,7 @@ public:
     
     inline
     String
-    const &
-    name() const { return name_; }
-    
-    inline
-    String
-    const &
-    short_name() const { return alt_names_[0]; }
+    short_name() const { return name_.substr(0,1); }
     
     inline
     int
@@ -62,6 +73,18 @@ public:
     int
     size() { return (int)atom_map_.size(); }
     
+public: //getters
+    
+    inline
+    String
+    const &
+    name() const { return name_; }
+
+    inline
+    SetType
+    set_type() const { return set_type_; }
+    
+    
 private:
     
     void
@@ -72,6 +95,7 @@ private:
     StringIntMap atom_map_;
     Strings alt_names_;
     StringStringMap atom_alt_names_;
+    SetType set_type_;
 
 };
 

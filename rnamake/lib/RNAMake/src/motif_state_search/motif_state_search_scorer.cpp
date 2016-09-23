@@ -29,6 +29,10 @@ MotifStateSearchScorer::accept_score(
         if(i == 0) { continue; }
         
         score_ = state->d().distance(target_->d());
+        
+        //score_ = (state->sugars()[0].distance(target_->sugars()[1]) +
+        //          state->sugars()[1].distance(target_->sugars()[0]))*0.50;
+        
         r_diff_       = state->r().difference(target_->r());
         r_diff_flip_  = state->r().difference(target_flip_->r());
     

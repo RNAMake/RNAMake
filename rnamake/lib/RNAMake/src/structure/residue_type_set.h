@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "residue_type.h"
 
+
 class ResidueTypeSet {
 public:
     ResidueTypeSet();
@@ -33,6 +34,11 @@ private:
     StringIntMap
     _get_atom_map_from_file(
         String const &);
+    
+    void
+    _read_rtypes_from_dir(
+        String const &,
+        SetType const &);
     
     
     

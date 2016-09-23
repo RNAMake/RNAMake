@@ -12,8 +12,22 @@
 #include <stdio.h>
 #include <algorithm>
 
-#include "util/random_number_generator.h"
 #include "motif/motif_state.h"
+
+/*
+ * Exception for motif state ensemble
+ */
+class MotifStateEnsembleException : public std::runtime_error {
+public:
+    /**
+     * Standard constructor for MotifStateEnsembleException
+     * @param   message   Error message for motif state ensembles
+     */
+    MotifStateEnsembleException(String const & message):
+    std::runtime_error(message)
+    {}
+};
+
 
 struct MotifStateEnsembleMember {
     inline
@@ -25,11 +39,11 @@ struct MotifStateEnsembleMember {
     {}
     
     inline
-    MotifStateEnsembleMember
-    copy() {
-        return MotifStateEnsembleMember(std::make_shared<MotifState>(motif_state->copy()),
-                                        energy);
-    }
+    MotifStateEnsembleMember(
+        MotifStateEnsembleMember const & msem):
+    motif_state(std::make_shared<MotifState>(*msem.motif_state)),
+    energy(msem.energy)
+    {}
     
     inline
     String
@@ -58,22 +72,33 @@ struct MotifStateEnsembleMember_LessThanKey {
 
 class MotifStateEnsemble {
 public:
-    MotifStateEnsemble():
-    id_(""),
-    block_end_add_(0),
-    members_(MotifStateEnsembleMemberOPs()),
-    rng_(RandomNumberGenerator())
-    {}
     
     MotifStateEnsemble(
         MotifStateOP const & ms):
     id_(ms->end_ids()[0]),
     block_end_add_(ms->block_end_add()),
-    members_(MotifStateEnsembleMemberOPs()),
-    rng_(RandomNumberGenerator()) {
+    members_(MotifStateEnsembleMemberOPs()) {
         
         members_.push_back(std::make_shared<MotifStateEnsembleMember>(ms, 1));
     }
+    
+    
+    MotifStateEnsemble(
+        MotifStateEnsemble const & mse):
+    id_(mse.id_),
+    block_end_add_(mse.block_end_add_),
+    members_(MotifStateEnsembleMemberOPs()) {
+        
+        for(auto const & mem : mse.members_) {
+            auto new_mem = std::make_shared<MotifStateEnsembleMember>(*mem);
+            members_.push_back(new_mem);
+        }
+        
+    }
+    
+    MotifStateEnsemble(
+        MotifStateOPs const &,
+        Floats const &);
     
     MotifStateEnsemble(
         String const &);
@@ -82,36 +107,29 @@ public:
     
 public:
     
-    void
-    setup(
-        String const &,
-        MotifStateOPs const &,
-        Floats const &);
-    
-    MotifStateEnsemble
-    copy();
-    
     String
     to_str();
     
     inline
-    MotifStateEnsembleMemberOP const &
-    get_random_member() {
-        return members_[rng_.randrange((int)members_.size()-1) ];
-    }
-    
-    inline
     int
-    num_end_states() { return (int)members_[0]->motif_state->end_states().size(); }
+    num_end_states() {
+        return (int)members_[0]->motif_state->end_states().size(); }
     
     inline
     MotifStateOP const &
-    most_populated() { return members_[0]->motif_state; }
+    most_populated() {
+        return members_[0]->motif_state; }
     
     inline
     MotifStateEnsembleMemberOP const &
     get_member(
         int i) {
+        if(i >= members_.size()) {
+            throw MotifStateEnsembleException(
+                "cannot get member " + std::to_string(i) + " it does not exist, size of members is"
+                " " + std::to_string(members_.size()));
+        }
+        
         return members_[i];
     }
     
@@ -129,10 +147,15 @@ public:
     
 public:
     
+    size_t
+    size() { return members_.size(); }
+    
+public:
+    
     inline
     int
     block_end_add() { return block_end_add_; }
-
+    
     inline
     String
     id() { return id_; }
@@ -141,7 +164,6 @@ private:
     String id_;
     int block_end_add_;
     MotifStateEnsembleMemberOPs members_;
-    RandomNumberGenerator rng_;
     
 };
 

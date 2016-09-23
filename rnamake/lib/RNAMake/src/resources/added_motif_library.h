@@ -14,6 +14,21 @@
 #include "motif/motif.h"
 #include "resources/motif_sqlite_library.h"
 
+/*
+ * Exception for added motif library
+ */
+class AddedMotifLibraryException : public std::runtime_error {
+public:
+    /**
+     * Standard constructor for AddedMotifLibraryException
+     * @param   message   Error message for added motif library
+     */
+    AddedMotifLibraryException(String const & message):
+    std::runtime_error(message)
+    {}
+};
+
+
 class AddedMotifLibrary {
 public:
     AddedMotifLibrary():
@@ -27,6 +42,10 @@ public:
     void
     add_motif(
         MotifOP const & m) {
+        if(_find_motifs(m->name(), m->end_ids()[0], m->ends()[0]->name()).size() != 0) {
+            throw AddedMotifLibraryException("trying to add the same motif twice to library");
+        }
+        
         motifs_.push_back(m);
     }
     

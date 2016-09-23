@@ -13,6 +13,7 @@ import rnamake.resource_manager as rm
 import rnamake.pose_factory as pf
 import rnamake.transformations as trans
 import rnamake.util as util
+from rnamake import motif_topology, thermo_fluc_sampler, motif_graph, motif_tree, secondary_structure_tree
 
 class ThermoFlucSamplerUnittest(unittest.TestCase):
 
@@ -30,16 +31,15 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
     def test_sample(self):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(5)
-        con = ss.motif_topology_from_end()
-        mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt = motif_tree.motif_tree_from_topology(mtt)
+        sst = secondary_structure_tree.tree_from_pose(ss)
+        mt = motif_tree.motif_tree_from_ss_tree(sst)
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
 
         tfs = rnamake.thermo_fluc_sampler.ThermoFlucSampler()
         tfs.setup(mset)
         tfs.sample(100)
 
-    def test_relaxer(self):
+    def _test_relaxer(self):
         s = rnamake.segmenter.Segmenter()
         path = rnamake.settings.UNITTEST_PATH + "/resources/motifs/p4p6"
         p = pf.factory.pose_from_file(path)
@@ -73,9 +73,8 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
     def test_update(self):
         builder = build.BuildSecondaryStructure()
         ss = builder.build_helix(5)
-        con = ss.motif_topology_from_end()
-        mtt = motif_tree_topology.MotifTreeTopology(con)
-        mt = motif_tree.motif_tree_from_topology(mtt)
+        sst = secondary_structure_tree.tree_from_pose(ss)
+        mt = motif_tree.motif_tree_from_ss_tree(sst)
         mset =  motif_state_ensemble_tree.MotifStateEnsembleTree(mt)
 
         tfs = rnamake.thermo_fluc_sampler.ThermoFlucSampler()
@@ -87,39 +86,100 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
             tfs.next()
             #print n.data.cur_state.end_states[0].d
 
-    def _test_interia_rmsd(self):
-        motif = rm.manager.get_motif(name='HELIX.IDEAL.3')
-        Ix = 1.94917
-        Iy = 12.3736
-        Iz = 330.499
+    def get_moment_tensor(self, coords):
+        sum = np.zeros([3,3])
+        center = util.center_points(coords)
+        for c in coords:
+            diff = c - center
+            c_T = diff[np.newaxis].T
+            c = diff[np.newaxis]
+            sum +=  c_T.dot(c)
+        #sum /= len(coords)
+        eig, vec = lin.eig(sum)
+        print eig
+        print vec
 
+    def get_moment(self, coords):
+        center = util.center_points(coords)
+        I = [0,0,0]
+        for c in coords:
+            I += (c - center) ** 2
+        print I / len(coords)
+
+    def get_moment_2(self, coords):
+        center = util.center_points(coords)
+        i_x = 0
+        i_y = 0
+        i_z = 0
+        for c in coords:
+            i_x += (c[1] - center[1] ) ** 2 + (c[2] - center[2]) ** 2
+            i_y += (c[0] - center[0] ) ** 2 + (c[2] - center[2]) ** 2
+            i_z += (c[0] - center[0] ) ** 2 + (c[1] - center[1]) ** 2
+
+        return [i_x, i_y, i_z ]
+
+    def _test_interia_rmsd_2(self):
+        motif = rm.manager.get_motif(name='HELIX.IDEAL')
+        """Ix = 1.94917
+        Iy = 12.3736
+        Iz = 330.499"""
+
+        #Ix= 6.20066117
+
+        #Ix = 9.606
+        #Iy = 1.94979491
+        #Iz = 0.02840045
+        Ix = 182.52865437
+        Iy = 37.048271
+        Iz = 219.525299703
+
+        It = np.eye(3)
+        It[0][0] = Ix
+        It[1][1] = Iy
+        It[2][2] = Iz
+         #motif.ends[0].flip()
         r1 = motif.ends[0].r()
         r2 = motif.ends[1].r()
         r = util.unitarize(r1.T.dot(r2))
         e = trans.euler_from_matrix(r)
-
-        x = math.atan2(r[2][1], r[2][2])
-        y = math.atan2(-r[2][0], math.sqrt(r[2][1]*r[2][1] + r[2][2]*r[2][2]))
-        z = math.atan2(r[1][0], r[0,0])
-
         g = e[2]
         b = e[1]
         a = e[0]
 
-
-        t = motif.ends[0].d() - motif.ends[1].d()
-        #t = [0, 0, 10]
-
-        #g, b, a = 1.57, 0, 0
+        t = lin.norm(motif.ends[0].base_d() - motif.ends[1].base_d())
 
         k = (1 - (math.cos(g) * math.cos(a) * math.cos(b)) + (math.sin(a) * math.sin(g)) )
         l = (1 + (math.sin(g) * math.sin(a) * math.cos(b)) - (math.cos(a) * math.cos(g)) )
         m = (1 - math.cos(b))
 
-        print k,l, m
+        #motif.ends[0].flip()
+        r1 = motif.ends[0].r()
+        r2 = motif.ends[1].r()
+        r = util.unitarize(r1.T.dot(r2))
+        t = lin.norm(motif.ends[0].base_d() - motif.ends[1].base_d())
+        coords = []
+        for i, a in enumerate( motif.ends[0].res1.atoms):
+            if i < 12:
+                continue
+            coords.append(a.coords)
+        for i, a in enumerate( motif.ends[0].res2.atoms):
+            if i < 12:
+                continue
+            coords.append(a.coords)
+        #self.get_moment_2(coords)
+        #exit()
+        #self.get_moment_tensor(coords)
+        #exit()
+        N = len(coords) - 10
+        print math.sqrt(t**2), math.sqrt(2*(Ix + Iy + Iz)), math.sqrt(2*(Ix*k)), math.sqrt(2*(Iy*l)), math.sqrt(2*(Iz*m)), -math.sqrt(2*np.trace(r.dot(It)))
+        #rmsd = math.sqrt(((t**2 + 2*(Ix +Iy + Iz) - 2*np.trace(r.dot(It))))/N)
+        #rmsd = math.sqrt(t**2 + 2*(Ix +Iy + Iz) - 2*np.trace(r.dot(It)))
+        #rmsd = math.sqrt(t**2 + 2*(Ix +Iy + Iz) - 2*np.trace(r.dot(It)))
+        rmsd = math.sqrt(t**2 + 2*((Ix*k) + (Iy*l) + (Iz*m)))
 
-        print Ix*k, Iy*l, Iz*m, lin.norm(t)
-        rmsd = math.sqrt( 2 * ( (Ix * k) + (Iy * l) + (Iz * m) )  + lin.norm(t) ** 2 )
+
+        #print Ix*k, Iy*l, Iz*m, lin.norm(t)
+        #rmsd = math.sqrt( 2 * ( (Ix * k) + (Iy * l) + (Iz * m) )  + lin.norm(t) ** 2 )
 
         #print  motif.ends[0].res1
         #print  motif.ends[1].res2
@@ -129,16 +189,105 @@ class ThermoFlucSamplerUnittest(unittest.TestCase):
         for i, a in enumerate(motif.ends[0].res1.atoms):
             if a is None:
                 continue
+            if i < 12:
+                continue
             dist_squared +=  util.distance(a.coords, motif.ends[1].res2.atoms[i].coords) ** 2
             count += 1
         for i, a in enumerate(motif.ends[0].res2.atoms):
             if a is None:
+                continue
+            if i < 12:
+                continue
+            dist_squared +=  util.distance(a.coords, motif.ends[1].res1.atoms[i].coords) ** 2
+            count += 1
+        dist_squared = dist_squared / count
+        print rmsd
+        print math.sqrt(dist_squared) - math.sqrt(t**2)
+        print math.sqrt(dist_squared)
+
+    def _test_interia_rmsd(self):
+        motif = rm.manager.get_motif(name='HELIX.IDEAL')
+        Ix = 18.52865437
+        Iy = 3.048271
+        Iz = 21.525299703
+
+        r1 = motif.ends[0].r()
+        r2 = motif.ends[1].r()
+        r = util.unitarize(r1.T.dot(r2))
+        e = trans.euler_from_matrix(r)
+
+        g = e[2]
+        b = e[1]
+        a = e[0]
+
+        #print r
+        #print a,b,g
+
+
+        t = lin.norm(motif.ends[0].base_d() - motif.ends[1].base_d())
+        #t = [0, 0, 10]
+
+        #g, b, a = 1.57, 0, 0
+
+        k = (1 - (math.cos(g) * math.cos(a) * math.cos(b)) + (math.sin(a) * math.sin(g)) )
+        l = (1 + (math.sin(g) * math.sin(a) * math.cos(b)) - (math.cos(a) * math.cos(g)) )
+        m = (1 - math.cos(b))
+
+        #print k,l, m
+        #exit()
+
+        print Ix*k, Iy*l, Iz*m, t
+        rmsd = math.sqrt( 2 * ( (Ix * k) + (Iy * l) + (Iz * m) )  + t ** 2 )
+
+        #print  motif.ends[0].res1
+        #print  motif.ends[1].res2
+
+        dist_squared = 0
+        count = 0
+        for i, a in enumerate(motif.ends[0].res1.atoms):
+            if a is None:
+                continue
+            if i < 12:
+                continue
+            dist_squared +=  util.distance(a.coords, motif.ends[1].res2.atoms[i].coords) ** 2
+            count += 1
+        for i, a in enumerate(motif.ends[0].res2.atoms):
+            if a is None:
+                continue
+            if i < 12:
                 continue
             dist_squared +=  util.distance(a.coords, motif.ends[1].res1.atoms[i].coords) ** 2
             count += 1
         dist_squared = dist_squared / count
         print rmsd
         print math.sqrt(dist_squared)
+
+    def _test_folding(self):
+        builder = build.BuildMotifGraph()
+        #mg = builder.build(3)
+        mg = motif_graph.MotifGraph()
+        mg.add_motif(m_name="HELIX.IDEAL.12")
+        mg.add_motif(m_name="TWOWAY.1GID.2")
+        mg.add_motif(m_name="HELIX.IDEAL.12")
+        mg.replace_ideal_helices()
+
+        mt = motif_topology.graph_to_tree(mg, mg.last_node())
+        mt.to_pdb("test.pdb", renumber=1)
+        mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt=mt)
+
+        tff = thermo_fluc_sampler.ThermoFlucFolding()
+        tff.setup(mset, mt)
+        tff.option('steps', 10)
+        #tff.movie = 1
+        tff.run()
+
+        #df = pd.DataFrame(tff.contacts)
+        #sns.heatmap(df)
+        #sns.plt.show()
+
+
+
+
 
 
 

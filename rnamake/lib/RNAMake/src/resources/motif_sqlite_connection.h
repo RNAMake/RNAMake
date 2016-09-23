@@ -33,20 +33,26 @@ class MotifSqliteConnection : public Sqlite3Connection {
 public:
     MotifSqliteConnection() {}
     
-    MotifSqliteConnection(String const & path):
-    Sqlite3Connection(path),
+    MotifSqliteConnection(String const & path): Sqlite3Connection(path),
     data_(std::make_shared<MotifSqliteData>())
     {}
     
-    ~MotifSqliteConnection() {
-        delete zErrMsg_;
-        sqlite3_close(db_);
-    }
     
 public:
     
     MotifSqliteDataOP const &
     next();
+    
+    MotifSqliteDataOP const &
+    contains();
+    
+    inline
+    void
+    clear() {
+        if(rc_ == SQLITE_ROW || rc_ == SQLITE_DONE) {
+            sqlite3_finalize(stmt_);
+        }
+    }
     
 private:
     MotifSqliteDataOP data_;

@@ -14,6 +14,7 @@ MotifStateSqliteLibrary::get_libnames() {
     StringStringMap libnames;
     
     libnames["ideal_helices"]  = "/motif_state_libraries/ideal_helices.db";
+    libnames["ideal_helices_min"]  = "/motif_state_libraries/ideal_helices_min.db";
     libnames["twoway"]         = "/motif_state_libraries/twoway.db";
     libnames["tcontact"]       = "/motif_state_libraries/tcontact.db";
     libnames["hairpin"]        = "/motif_state_libraries/hairpin.db";
@@ -37,15 +38,19 @@ MotifStateSqliteLibrary::get(
     auto row = connection_.next();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
     
     if(data_.find(row->id) == data_.end() ) {
-        data_[row->id] = std::make_shared<MotifState>(str_to_motif_state(row->data));
+        data_[row->id] = std::make_shared<MotifState>(row->data);
                                                  
     }
     
-    return std::make_shared<MotifState>(data_[row->id]->copy());
+    connection_.clear();
+    
+    auto state =  std::make_shared<MotifState>(*data_[row->id]);
+    state->new_uuids();
+    return state;
     
 }
 
@@ -62,18 +67,21 @@ MotifStateSqliteLibrary::get_multi(
     auto row = connection_.next();
     
     if(row->data.length() == 0) {
-        throw std::runtime_error("query returned no rows");
+        throw SqliteLibraryException(query + ": returned no rows");
     }
     
     while(row->data.length() != 0) {
         if(data_.find(row->id) == data_.end()) {
-            data_[row->id] = std::make_shared<MotifState>(str_to_motif_state(row->data));
+            data_[row->id] = std::make_shared<MotifState>(row->data);
 
         }
         
-        motif_states.push_back(std::make_shared<MotifState>(data_[row->id]->copy()));
+        motif_states.push_back(std::make_shared<MotifState>(*data_[row->id]));
+        motif_states.back()->new_uuids();
         row = connection_.next();
     }
+    
+    connection_.clear();
     
     return motif_states;
     

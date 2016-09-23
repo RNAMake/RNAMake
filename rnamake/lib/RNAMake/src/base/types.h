@@ -14,13 +14,15 @@
 #include <vector>
 #include <map>
 
-typedef std::vector<int> Ints;
-typedef std::vector<char> Chars;
-typedef std::vector<short> Shorts;
-typedef std::vector<float> Floats;
-typedef std::string String;
-typedef std::vector<String> Strings;
-typedef std::shared_ptr<String> StringOP;
+using Ints = std::vector<int>;
+using Chars = std::vector<char>;
+using Shorts = std::vector<short>;
+using Floats = std::vector<float>;
+
+using String = std::string;
+using StringOP = std::shared_ptr<String>;
+
+using Strings = std::vector<String>;
 
 typedef std::map<String, int> StringIntMap;
 typedef std::map<String, float> StringFloatMap;

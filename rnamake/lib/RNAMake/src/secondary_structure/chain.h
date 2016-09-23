@@ -19,24 +19,48 @@ class Chain {
 public:
     Chain() {}
     
+    inline
     Chain(
-        ResidueOPs residues):
+        ResidueOPs const & residues):
     residues_(residues)
     {}
     
-public:
-    
     inline
-    Chain
-    copy() {
-        ResidueOPs res;
-        for (auto const & r : residues_) {
-            auto r_copy = std::make_shared<Residue>(r->copy());
-            res.push_back(r_copy);
+    Chain(
+        Chain const & c) {
+        residues_ = ResidueOPs(c.residues_.size());
+        int i = 0;
+        for(auto const & r : c.residues_) {
+            residues_[i] = std::make_shared<Residue>(*r);
+            i++;
         }
-        return Chain(res);
     }
     
+    Chain(
+        String const & s) {
+        residues_ = ResidueOPs();
+        Strings spl = split_str_by_delimiter(s, ";");
+        for(auto const & r_str : spl) {
+            if(r_str.length() < 3) { continue; }
+            auto r = std::make_shared<Residue>(r_str);
+            residues_.push_back(r);
+        }
+    }
+    
+public:
+    
+    typedef typename ResidueOPs::iterator iterator;
+    typedef typename ResidueOPs::const_iterator const_iterator;
+    
+    iterator begin() { return residues_.begin(); }
+    iterator end()   { return residues_.end(); }
+    
+    const_iterator begin() const { return residues_.begin(); }
+    const_iterator end()   const { return residues_.end(); }
+    
+public:
+    
+
     inline
     ResidueOP const &
     first() {
@@ -54,15 +78,12 @@ public:
     inline
     ResidueOP const &
     last() {
-        try {
-            return residues_.back();
-        }
-        catch(std::out_of_range e) {
+        if(residues_.size() == 0) {
             throw SecondaryStructureException("called last() on a chain without any residues in it");
         }
-        catch(...) {
-            throw std::runtime_error("unexpected error in chain.last()");
-        }
+     
+        return residues_.back();
+
     }
     
     inline
@@ -108,11 +129,7 @@ private:
     
     
 };
-    
-Chain
-str_to_chain(String const &);
 
-    
 typedef std::shared_ptr<Chain> ChainOP;
 typedef std::vector<ChainOP> ChainOPs;
     

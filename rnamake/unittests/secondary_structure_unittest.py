@@ -1,130 +1,199 @@
 import unittest
-import build
-import rnamake.sqlite_library as sqlite_library
-import rnamake.secondary_structure as secondary_structure
-import rnamake.resource_manager as rm
-import rnamake.motif_tree as motif_tree
-import rnamake.motif_factory as motif_factory
-import rnamake.ss_tree as ss_tree
+import uuid
+import instances
+
+
+from rnamake import secondary_structure, motif_tree, exceptions
+
+from rnamake import secondary_structure_factory as ssf
+from rnamake import resource_manager as rm
 import rnamake.secondary_structure_factory as ssfactory
-import rnamake.motif_tree as motif_tree
-import rnamake.setup.motif_library as motif_library
-import rnamake.motif_type as motif_type
-import rnamake.motif_tree_topology as motif_tree_topology
-import rnamake.settings as settings
 
-class SecondaryStructureUnittest(unittest.TestCase):
-
-    def _test_assign_secondary_structure(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build()
-        #for n in mt:
-        #    print n.data.name
-
-        p = mt.to_pose()
-        #print p.secondary_structure()
-        #print p.sequence()
-        #mt.write_pdbs()
+class ResidueUnittest(unittest.TestCase):
 
     def test_creation(self):
-        ss = secondary_structure.SecondaryStructure("AGCU+AGCU","((((+))))")
+        secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
+
+    def test_copy(self):
+        r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
+        r_copy = r.copy()
+
+        r.dot_bracket = ")"
+        self.failIf(r.dot_bracket == r_copy.dot_bracket, "should not be equal")
+
+    def test_to_str(self):
+        r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
+        s = r.to_str()
+        r_copy = secondary_structure.str_to_residue(s)
+        self.failIf(r.name != r_copy.name)
+        self.failIf(r.dot_bracket != r_copy.dot_bracket)
+
+
+class ChainUnittest(unittest.TestCase):
+
+    def test_creation(self):
+        secondary_structure.Chain()
+
+    def test_copy(self):
+        c = instances.secondary_structure_chain()
+        c_copy = c.copy()
+
+        self.failIf(len(c) != len(c_copy), "copied chain is not the right size")
+        for i, r in enumerate(c):
+            self.failIf(r.uuid != c_copy.residues[i].uuid,
+                        "did not get correct uuid")
+
+    def test_first_and_last(self):
+        """test first and last functions, should return the first and last
+           residues of the chain respectively.
+
+           Also tests whether an empty chain will return exception when calling
+           either
+        """
+        c = instances.secondary_structure_chain()
+        if c.residues[0]  != c.first() or \
+           c.residues[-1] != c.last():
+            self.fail()
+
+        chain_2 = secondary_structure.Chain()
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            chain_2.first()
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            chain_2.last()
+
+    def test_to_str(self):
+        r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
+        s = r.to_str()
+        r_copy = secondary_structure.str_to_residue(s)
+
+
+class StructureUnittest(unittest.TestCase):
+
+    def test_creation(self):
+        secondary_structure.Structure(sequence="AGCU+AGCU",
+                                      dot_bracket="((((+))))")
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            secondary_structure.Structure(sequence="AGCU+AGCU",
+                                          dot_bracket="^((((+))))")
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            secondary_structure.Structure(sequence="KGCU+AGCU",
+                                          dot_bracket="((((+))))")
+
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            secondary_structure.Structure(sequence="GCU+AGCU",
+                                          dot_bracket="((((+))))")
+
+
+        seq = ""
+        db = ""
+        for i in range(100):
+            seq += "A&"
+            db += ".A"
+
+        #recycles chain ids does not run out of letters
+        secondary_structure.Structure(sequence=seq, dot_bracket=db)
 
     def test_find_residue(self):
-        ss = secondary_structure.SecondaryStructure("AGCU+AGCU","((((+))))")
+        ss = secondary_structure.Structure(sequence="AGCU+AGCU",
+                                           dot_bracket="((((+))))")
         r = ss.get_residue(1, "A")
         if r is None:
-            self.fail("did not find a known residue, finde_residue not working")
+            self.fail("did not find a known residue, find_residue not working")
 
         r2 = ss.get_residue(uuid=r.uuid)
         if r2 is None:
-            self.fail("did not find a known residue, finde_residue not working")
+            self.fail("did not find a known residue, find_residue not working")
 
-    def test_to_str(self):
-        builder = build.BuildSecondaryStructure()
-        ss = builder.build_helix(10)
-        s = ss.to_str()
-        ss1 = secondary_structure.str_to_secondary_structure(s)
-
-        if len(ss.residues()) != len(ss1.residues()):
-            self.fail("did not recover all residues from str_to_secondary_structure")
-
-        if len(ss.elements["BP_STEP"]) != len(ss1.elements["BP_STEP"]):
-            self.fail("did not get all basepair steps again")
+        with self.assertRaises(exceptions.SecondaryStructureException):
+            ss.get_residue(chain_id="A")
 
     def test_copy(self):
-        builder = build.BuildSecondaryStructure()
-        ss = builder.build_helix(2)
+        ss = secondary_structure.Structure(sequence="AGCU+AGCU",
+                                           dot_bracket="((((+))))")
+        c_ss = ss.copy()
+        for r in ss.residues():
+            if c_ss.get_residue(uuid=r.uuid) is None:
+                self.fail("cannot find residue in copy")
 
-        ss_copy = ss.copy()
+    def test_to_str(self):
+        ss = secondary_structure.Structure(sequence="AGCU+AGCU",
+                                           dot_bracket="((((+))))")
 
-        if len(ss.basepairs) != len(ss_copy.basepairs):
-            self.fail("did not get the right number of basepairs")
+        s = ss.to_str()
+        c_ss = secondary_structure.str_to_structure(s)
+        for r in ss.residues():
+            if c_ss.get_residue(r.num, r.chain_id) is None:
+                self.fail("cannot find residue in to_str")
 
-    def test_parse(self):
-        seq = "UG&CA&CGACACAG"
-        db  = "((&))&(......)"
-        ss = ssfactory.factory.get_structure(seq, db)
 
-    def test_parse_nway(self):
-        mlib = motif_library.MotifLibrary(motif_type.NWAY)
-        m = mlib.get_motif("NWAY.1XPE.0")
-        parser = ssfactory.MotiftoSecondaryStructure()
-        ss = parser.to_secondary_structure(m)
+class MotifUnittest(unittest.TestCase):
 
-    def test_motif_topology_from_end(self):
-        builder = build.BuildSecondaryStructure()
-        ss = builder.build_helix(10)
-        connectivity = ss.motif_topology_from_end(ss.ends[0])
+    def test_creation(self):
+        m = secondary_structure.Motif()
+        m1 = ssf.factory.motif("AGCU+AGCU", "((((+))))")
+        if len(m1.residues()) != 8:
+            self.fail("did not get the correct number of residues")
 
-    def test_ss_id_to_ss(self):
-        ss = ssfactory.ss_id_to_secondary_structure('GAUUUGAG_LLLLLLLL_CUCAAAUC_RRRRRRRR')
+        if len(m1.chains()) != 2:
+            self.fail("did not get the correct number of chains")
 
-    def test_add_motif(self):
-        seq1 = 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG'
-        seq2 = 'CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG'
+    def test_copy(self):
+        m = ssf.factory.motif("AGCU+AGCU", "((((+))))")
+        m_copy = m.copy()
 
-        db1  = '(((((((..((((((((((((....))))))))))))...)))))))'
-        db2  = '((((((....((((((((((((....))))))))))))....))))))'
+        for r in m.residues():
+            if m_copy.get_residue(uuid=r.uuid) is None:
+                self.fail("did not find residue in motif copy")
 
-        ss = ssfactory.factory.get_structure(seq1 +"+" + seq2, db1 + "+" + db2, to_RNA=1)
+    def test_to_str(self):
+        m = ssf.factory.motif("AGCU+AGCU", "((((+))))")
+        #print m.to_str()
+        m1 = secondary_structure.str_to_motif(m.to_str())
 
-        rm.manager.add_motif('resources/motifs/GAAA_tetraloop.pdb')
-        rm.manager.add_motif('resources/motifs/GGAA_tetraloop.pdb')
-        m1 = rm.manager.get_motif(name='GAAA_tetraloop')
-        m2 = rm.manager.get_motif(name='GGAA_tetraloop')
-        ss.add_motif(m1.secondary_structure, m1.name)
-        ss.add_motif(m2.secondary_structure, m2.name)
-        ss_m = ss.motif('GGAA_tetraloop')
-        last_end = None
-        for i, end in enumerate(ss_m.ends):
-            if ss_m.end_ids[i] == 'GGGAAC_LUUUUR_CCUGUGUC_LLULUULL_GAAUCUGG_RRUURURR':
-                last_end = end
-                break
-        conn = ss.motif_topology_from_end(ss.ends[1], last_end=last_end)
-        mtt = motif_tree_topology.MotifTreeTopology(conn)
-        mt = motif_tree.motif_tree_from_topology(mtt, sterics=0)
-        #mt.write_pdbs()
+    def test_copy_w_res(self):
+        m = ssf.factory.motif("AGCU+AGCU", "((((+))))")
+        res = {r.uuid  : r for r in m.residues()}
+        bps = {bp.uuid : bp for bp in m.basepairs}
+        m_copy = m.copy_w_res(res, bps)
 
-    def _test_complex(self):
-        seq = "GGGCUUGUAGCUCAGGUGGUUAGAGCGCACCCCUGAUAAGGGUGAGGUCGGUGGUUCAAGUCCACUCAGGCCCAC"
-        db  = "(((((((..((((.....[...)))).(((((.......))))).....(((((..]....)))))))))))).."
+        for r in m.residues():
+            if m_copy.get_residue(uuid=r.uuid) != r:
+                self.fail("did not copy_w_res correctly")
 
-        ss = ssfactory.factory.get_structure(seq, db)
 
-        for m in ss.motifs('ALL'):
-            print m.type, m.sequence()
+class PoseUnittest(unittest.TestCase):
 
-    def _test_complex(self):
-        path = settings.UNITTEST_PATH + "/resources/seq_ss.txt"
-        f = open(path)
-        lines = f.readlines()
-        f.close()
+    def test_creation(self):
+        p = secondary_structure.Pose()
 
-        for l in lines:
-            name,seq,db = l.split()
-            #print name, len(seq), len(db)
-            ss = ssfactory.factory.get_structure(seq, db)
-            #print ss
+        p1 = ssf.factory.pose("AGCU+AGCU", "((((+))))")
+        if len(p1.motifs) != 3:
+            self.fail("did not get the right number of motifs")
+
+    def test_copy(self):
+        p = ssf.factory.pose("AGCU+AGCU", "((((+))))")
+        p_copy = p.copy()
+        if len(p_copy.motifs) != 3:
+            self.fail("did not get the right number of motifs")
+
+    def test_to_str(self):
+        p = ssf.factory.pose("AGCU+AGCU", "((((+))))")
+        s = p.to_str()
+        p1 = secondary_structure.str_to_pose(s)
+
+        if len(p1.motifs) != 3:
+            self.fail("did not convert from string properly")
+
+    def test_get_helices(self):
+        p = ssf.factory.pose("AGCUAGG+CCAGCU",
+                             "((((.((+))))))")
+        p.build_helices()
+        self.failIf(len(p.helices) != 2, "did not build the right number of helices")
+
 
 def main():
     unittest.main()
