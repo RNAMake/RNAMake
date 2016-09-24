@@ -1,7 +1,13 @@
 import unittest
+import os
+from rnamake import settings
 from rnamake.wrappers import wrapper, build_path_wrapper
 
 class WrapperUnittest(unittest.TestCase):
+    def setUp(self):
+        path = settings.LIB_PATH + "/rnamake/lib/RNAMake/cmake/build/path_builder"
+        if not os.path.isfile(path):
+            self.skipTest("executable not available")
 
     def test_creation(self):
         path = "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/path_builder"
@@ -16,6 +22,11 @@ class WrapperUnittest(unittest.TestCase):
 
 
 class BuildPathWrapper(unittest.TestCase):
+    def setUp(self):
+        path = settings.LIB_PATH + "/rnamake/lib/RNAMake/cmake/build/path_builder"
+        if not os.path.isfile(path):
+            self.skipTest("executable not available")
+
     def test_creation(self):
         w = build_path_wrapper.BuildPathWrapper()
 

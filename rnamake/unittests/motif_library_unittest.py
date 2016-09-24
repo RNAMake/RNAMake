@@ -6,11 +6,11 @@ import rnamake.settings
 
 class MotifLibraryUnittest(unittest.TestCase):
 
-    def test_creation(self):
-
-        if not os.path.isdir(rnamake.settings.MOTIF_DIRS):
+    def setUp(self):
+        if not os.path.isdir(rnamake.settings.MOTIF_DIRS + "/helices/"):
             self.skipTest("do not have the motif pdb files")
 
+    def test_creation(self):
         mtype = rnamake.motif_type.TWOWAY
         mlib = motif_library.MotifLibrary(mtype)
         if len(mlib.motif_paths) == 0:
@@ -30,10 +30,6 @@ class MotifLibraryUnittest(unittest.TestCase):
             self.fail("did not load motifs paths properly")
 
     def test_get_motif(self):
-        if not os.path.isdir(rnamake.settings.MOTIF_DIRS):
-            self.skipTest("do not have the motif pdb files")
-
-
         mtype = rnamake.motif_type.HELIX
         mlib = motif_library.MotifLibrary(mtype)
         m = mlib.get_motif("HELIX.IDEAL")
@@ -47,19 +43,12 @@ class MotifLibraryUnittest(unittest.TestCase):
             self.fail("did not get the error I expected")
 
     def test_get_motif_2(self):
-        if not os.path.isdir(rnamake.settings.MOTIF_DIRS):
-            self.skipTest("do not have the motif pdb files")
-
         mtype = rnamake.motif_type.HELIX
         mlib = motif_library.MotifLibrary(mtype)
         m = mlib.get_motif("HELIX.IDEAL")
         m1 = mlib.get_motif("HELIX.IDEAL")
 
     def test_score(self):
-        if not os.path.isdir(rnamake.settings.MOTIF_DIRS):
-            self.skipTest("do not have the motif pdb files")
-
-
         mtype = rnamake.motif_type.HELIX
         mlib = motif_library.MotifLibrary(mtype)
         m = mlib.get_motif("HELIX.IDEAL")

@@ -149,75 +149,6 @@ class Segmenter(object):
             return sc
         raise ValueError("cannot create subchain")
 
-    def _get_pose(self, org_pose, res, bps):
-        copied_res = [r.copy() for r in res]
-        uuids = {r.uuid : r for r in copied_res}
-        chains = []
-        c_res = []
-        for c in org_pose.chains():
-            c_res = []
-            for r in c.residues:
-                if r.uuid in uuids:
-                    c_res.append(uuids[r.uuid])
-                elif len(c_res) > 0:
-                    chains.append(chain.Chain(c_res))
-                    c_res = []
-        if len(c_res) > 0:
-            chains.append(chain.Chain(c_res))
-
-        struct = structure.Structure(chains)
-        basepairs = []
-
-        for bp in bps:
-            new_res1 = uuids[bp.res1.uuid]
-            new_res2 = uuids[bp.res2.uuid]
-            new_r = np.copy(bp.bp_state.r)
-            new_bp = basepair.Basepair(new_res1, new_res2, new_r, bp.bp_type)
-            new_bp.uuid = bp.uuid
-            basepairs.append(new_bp)
-        motifs = []
-        for m in org_pose.motifs(motif_type.ALL):
-            fail = 0
-            for r in m.residues():
-                if r.uuid not in uuids:
-                    fail = 1
-                    break
-            if fail:
-                continue
-            motifs.append(m)
-
-        p = pose_factory.factory.pose_from_motif_tree_old(struct, basepairs, motifs, {})
-        return p
-
-    def _get_motif(self, org_pose, res, bps):
-        copied_res = [r.copy() for r in res]
-        uuids = {r.uuid : r for r in copied_res}
-        chains = []
-        c_res = []
-        for c in org_pose.chains():
-            c_res = []
-            for r in c.residues:
-                if r.uuid in uuids:
-                    c_res.append(uuids[r.uuid])
-                elif len(c_res) > 0:
-                    chains.append(chain.Chain(c_res))
-                    c_res = []
-        if len(c_res) > 0:
-            chains.append(chain.Chain(c_res))
-
-        basepairs = []
-
-        for bp in bps:
-            new_res1 = uuids[bp.res1.uuid]
-            new_res2 = uuids[bp.res2.uuid]
-            new_r = np.copy(bp.bp_state.r)
-            new_bp = basepair.Basepair(new_res1, new_res2, new_r, bp.bp_type)
-            new_bp.uuid = bp.uuid
-            basepairs.append(new_bp)
-
-        m = motif.Motif()
-        m.structure.chains = chains
-
     def _get_segments(self, m, res, bps, cutpoints):
         removed = motif_factory.factory.motif_from_res(res, bps)
         cutpoint_name = ""
@@ -246,6 +177,7 @@ class Segmenter(object):
             res.extend(bp.residues())
 
         pairs, end_pairs = self._get_pairs(m, res)
+        print len(end_pairs)
         pair_search = PairSearch()
         solutions = pair_search.search(res, pairs, end_pairs)
 

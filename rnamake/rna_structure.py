@@ -465,7 +465,8 @@ def basepairs_from_x3dna(path, name, structure):
             continue
 
         try:
-            res1.get_atom("C1'")
+            if res1.get_atom("C1'") is None:
+                continue
         except exceptions.ResidueException:
             user_warnings.RNAStructureWarning(
                 str(res1) + " has no C1' residue cannot have it in a basepair "
@@ -473,7 +474,8 @@ def basepairs_from_x3dna(path, name, structure):
             continue
 
         try:
-            res2.get_atom("C1'")
+            if res2.get_atom("C1'") is None:
+                continue
         except exceptions.ResidueException:
             user_warnings.RNAStructureWarning(
                 str(res2) + " has no C1' residue cannot have it in a basepair "
