@@ -9,10 +9,10 @@
 #include "structure/chain.h"
 #include "motif_tools/segmenter.h"
 
-/*
+
 void
 Segmenter::_get_pairs(
-    PoseOP const & m,
+    MotifOP const & m,
     ResidueOPs const & res) {
     
     pairs_ = PairOPs();
@@ -34,31 +34,30 @@ Segmenter::_get_pairs(
                 if(sc == nullptr) { continue; }
                 dist = (int)sc->length();
                 pairs_.push_back(std::make_shared<Pair>(res1, res2, dist));
-                sc1 = c->subchain(res1, c->last());
-                sc2 = c->subchain(c->first(), res1);
-                if(sc1 == nullptr) { continue; }
-                if(res1 != c->last() &&
-                   std::find(res.begin(), res.end(), c->last()) == res.end()) {
-                    auto pair = std::make_shared<Pair>(res1, c->last(), sc1->length());
-                    end_pairs_.push_back(pair);
-                }
-                if(res1 != c->first() &&
-                   std::find(res.begin(), res.end(), c->first()) == res.end()) {
-                    auto pair = std::make_shared<Pair>(res1, c->first(), sc2->length());
-                    end_pairs_.push_back(pair);
-                }
+            }
+            sc1 = c->subchain(res1, c->last());
+            sc2 = c->subchain(c->first(), res1);
+            if(sc1 == nullptr) { continue; }
+            if(res1 != c->last() &&
+               std::find(res.begin(), res.end(), c->last()) == res.end()) {
+                auto pair = std::make_shared<Pair>(res1, c->last(), sc1->length());
+                end_pairs_.push_back(pair);
+            }
+            if(res1 != c->first() &&
+               std::find(res.begin(), res.end(), c->first()) == res.end()) {
+                auto pair = std::make_shared<Pair>(res1, c->first(), sc2->length());
+                end_pairs_.push_back(pair);
             }
         }
     }
 }
-*/
 
 SegmentsOP
 Segmenter::apply(
-    PoseOP const & m,
+    MotifOP const & m,
     BasepairOPs const & bps) {
     
-    /*ResidueOPs res;
+    ResidueOPs res;
     for(auto const & bp : bps) {
         for(auto const & r : bp->residues()) {
             res.push_back(r);
@@ -66,6 +65,22 @@ Segmenter::apply(
     }
     
     _get_pairs(m, res);
-    */
+    auto pair_search = PairSearch();
+    auto sols = pair_search.search(res, pairs_, end_pairs_);
+
+    
+    
     return nullptr;
 }
+
+
+
+
+
+
+
+
+
+
+
+

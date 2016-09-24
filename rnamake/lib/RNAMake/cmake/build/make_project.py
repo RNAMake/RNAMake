@@ -84,7 +84,7 @@ if not os.path.isdir(c_dir + "bin/integration"):
     os.mkdir(c_dir + "bin/integration")
 
 #libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer instances"
-libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
+libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
 lib_paths = libs.split()
 
 depends = {
@@ -97,6 +97,7 @@ depends = {
     'eternabot' : 'vienna secondary_structure',
     'structure' : 'util',
     'motif' : 'structure secondary_structure',
+    'motif_tools' : 'motif',
     'resources' : 'motif',
     'motif_data_structures' : 'resources data_structure',
     'thermo_fluctuation' : 'motif_data_structures',

@@ -121,6 +121,7 @@ class MotifFactory(object):
         ss = secondary_structure_factory.factory.secondary_structure_from_motif(m)
         ss.end_ids = ["" for x in m.ends]
         m.end_ids = ["" for x in m.ends]
+        #print m.name, len(m.ends)
         for i, end in enumerate(m.ends):
             res1 = ss.get_residue(uuid=end.res1.uuid)
             res2 = ss.get_residue(uuid=end.res2.uuid)
