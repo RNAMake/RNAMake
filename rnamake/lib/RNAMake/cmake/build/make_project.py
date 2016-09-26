@@ -3,6 +3,7 @@ import fnmatch
 
 from rnamake import util, settings
 
+BIN_PATH = settings.LIB_PATH + "/lib/RNAMake/bin/"
 CMAKE_PATH = settings.LIB_PATH + "/lib/RNAMake/cmake/build/"
 
 def write_application_cmake_file():
@@ -18,7 +19,7 @@ def write_application_cmake_file():
         fsum.write("add_executable("+l.rstrip()+")\n")
         fsum.write("target_link_libraries("+spl[0]+" all_libs)\n")
         fsum.write("add_custom_target("+symlink+" ALL)\n")
-        fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink ../../bin/"+spl[0]+" "+ spl[0]+")\n")
+        fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink "+BIN_PATH+spl[0]+" "+ spl[0]+")\n")
         fsum.write("\n\n")
 
     fsum.close()
@@ -131,7 +132,7 @@ for p in lib_paths:
         f.write("add_executable("+ prog_name + " " + unit_app +")\n")
         f.write("target_link_libraries("+prog_name+" %s)\n" % p)
         f.write("add_custom_target("+symlink+" ALL)\n")
-        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/unittests/"+prog_name+")\n")
+        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " " + BIN_PATH + "unittests/"+prog_name+")\n")
         f.write("\n\n")
 
     integration_apps = get_integration_tests_for_dir(p)
@@ -144,7 +145,7 @@ for p in lib_paths:
         f.write("add_executable("+ prog_name + " " + inte_app +")\n")
         f.write("target_link_libraries("+prog_name+" %s)\n" % p)
         f.write("add_custom_target("+symlink+" ALL)\n")
-        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " ../../bin/integration/"+prog_name+")\n")
+        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " " + BIN_PATH +  "integration/"+prog_name+")\n")
         f.write("\n\n")
 
     #compile unittests for this lib
