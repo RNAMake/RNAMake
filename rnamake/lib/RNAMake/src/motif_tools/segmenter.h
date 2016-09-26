@@ -220,7 +220,6 @@ private:
     ResidueOPs res_;
 };
 
-
 class Segmenter {
 public:
     Segmenter():
