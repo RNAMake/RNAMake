@@ -20,6 +20,8 @@ TEST_CASE( "Test Segmenting RNA Structures", "[Segmenter]" ) {
     auto segmenter = Segmenter();
     auto segments = segmenter.apply(m, bps);
     
+    REQUIRE(segments->removed->ends().size() == 2);
+    
     
     
     
