@@ -270,23 +270,23 @@ X3dna::get_basepairs(
     String const & pdb_path,
     bool force_build_files) {
     
-    String ref_frames_path = _get_ref_frame_path(pdb_path, force_build_files);
-    String dssr_file_path  = _get_dssr_file_path(pdb_path, force_build_files);
+    auto ref_frames_path = _get_ref_frame_path(pdb_path, force_build_files);
+    auto dssr_file_path  = _get_dssr_file_path(pdb_path, force_build_files);
     
     _parse_ref_frame_file(ref_frames_path);
-    std::map<String, Strings> sections = _divide_dssr_file_into_sections(dssr_file_path);
-    Strings section = sections["base"];
+    auto sections = _divide_dssr_file_into_sections(dssr_file_path);
+    auto section = sections["base"];
     int found = 0;
     
     for(auto const & l : section) {
         if(l.length() < 3) { continue; }
-        Strings spl = _split_over_white_space(l);
-        Strings spl2 = split_str_by_delimiter(spl[1], ".");
+        auto spl = _split_over_white_space(l);
+        auto spl2 = split_str_by_delimiter(spl[1], ".");
         if(spl2.size() == 1) {continue; }
         if(spl.size() < 6) { continue; }
-        X3Residue res1 = _parse_dssr_res_str(spl[1]);
-        X3Residue res2 = _parse_dssr_res_str(spl[2]);
-        String bp_type = "c...";
+        auto res1 = _parse_dssr_res_str(spl[1]);
+        auto res2 = _parse_dssr_res_str(spl[2]);
+        auto bp_type = String("c...");
         //TODO look into why this is happening, sometimes will error out if I dont do this check
         if(spl.size() > 6) {
             
