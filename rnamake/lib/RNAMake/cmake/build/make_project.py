@@ -28,10 +28,10 @@ def write_application_cmake_file():
 def get_unittests_for_dir(d_name):
     unittest_apps = []
 
-    if not os.path.isdir('../../unittests_new/'+d_name):
+    if not os.path.isdir('../../unittests/'+d_name):
         return []
 
-    for root, dirnames, filenames in os.walk('../../unittests_new/'+d_name):
+    for root, dirnames, filenames in os.walk('../../unittests/'+d_name):
         for filename in fnmatch.filter(filenames, '*.c*'):
             path = os.path.join(root, filename)
 
