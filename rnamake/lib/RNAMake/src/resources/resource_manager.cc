@@ -96,6 +96,17 @@ RM::motif_state_ensemble(
 
 // add functions  //////////////////////////////////////////////////////////////////////////////////
 
+RNAStructureOP
+RM::get_structure(
+    String const & path,
+    String name) {
+    
+    auto m = mf_.motif_from_file(path);
+    if(name != "") { m->name(name); }
+    
+    return m;
+}
+
 
 void
 RM::add_motif(
@@ -120,7 +131,8 @@ RM::add_motif(
         if(m_added == nullptr) {
             std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
             std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
-            continue; }
+            continue;
+        }
         
         motifs.push_back(m_added);
         end_ids[m_added->ends()[0]->uuid()] = m_added->end_ids()[0];

@@ -44,7 +44,7 @@ MotifFactory::motif_from_file(
     }
     else {
         structure = std::make_shared<Structure>(path);
-        fname = fname.substr(0, -4);
+        fname = fname.substr(0, fname.length()-4);
     }
     
     auto basepairs = _setup_basepairs(pdb_path, structure, rebuild_x3dna);

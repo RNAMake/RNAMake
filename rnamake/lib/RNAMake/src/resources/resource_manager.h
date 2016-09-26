@@ -70,6 +70,11 @@ public: // getting functions
     
 public: // adding functions
 
+    RNAStructureOP
+    get_structure(
+        String const & path,
+        String name = "");
+    
     void
     add_motif(
         String const & path,
