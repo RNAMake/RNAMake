@@ -87,7 +87,7 @@ MotifFactory::motif_from_res(
     auto structure = std::make_shared<Structure>(chains);
     auto ends = _setup_basepair_ends(structure, bps);
     
-    if(ends.size() != 2 && bps.size() >= 2) {
+    if(ends.size() == 0 && bps.size() >= 2) {
         throw MotifFactoryException(
             "unexpected number of ends when generating a motif from residues");
     }
@@ -221,7 +221,7 @@ MotifFactory::_setup_basepair_ends(
     for( auto const & bp : basepairs ) {
         for (auto const & ce1 : chain_ends) {
             for(auto const & ce2 : chain_ends) {
-                if(bp->bp_type().compare("cW-W") == 0 && bp->res1() == ce1 && bp->res2() == ce2) {
+                if(bp->bp_type() == "cW-W" && bp->res1() == ce1 && bp->res2() == ce2) {
                     ends.push_back(bp);
                 }
             }
