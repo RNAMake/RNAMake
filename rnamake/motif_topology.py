@@ -150,6 +150,46 @@ class GraphtoTree(object):
                               parent_index=new_parent_index,
                               parent_end_index=last_node_to_add.parent_end_index)
 
+        # add missing connections
+        for n in mg:
+            for c in n.connections:
+                if c is None:
+                    continue
+                n_id = n.data.id
+                partner = c.partner(n.index)
+                pn_id = partner.data.id
+
+                try:
+                    mt_n1 = self.mt.get_node_by_id(n_id)
+                    mt_n2 = self.mt.get_node_by_id(pn_id)
+                except exceptions.MotifTreeException:
+                    continue
+
+                if mt_n1.parent == mt_n2:
+                    continue
+                if mt_n2.parent == mt_n1:
+                    continue
+
+                n1_ei = c.end_index(n.index)
+                if n.data.mtype == motif_type.HELIX:
+                    n1_ei = 1
+
+                n1_end_name = n.data.ends[n1_ei].name()
+
+                if self.mt.connections.in_connection(mt_n1.index, n1_end_name):
+                    continue
+
+
+                n2_ei = c.end_index(partner.index)
+                if partner.data.mtype == motif_type.HELIX:
+                    n2_ei = 1
+
+                n2_end_name = partner.data.ends[n2_ei].name()
+                self.mt.add_connection(mt_n1.index, mt_n2.index,
+                                      n1_end_name, n2_end_name)
+
+
+
         self.mt.option('sterics', 1)
         return self.mt
 

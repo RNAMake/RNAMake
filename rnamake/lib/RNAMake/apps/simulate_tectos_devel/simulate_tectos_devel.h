@@ -12,29 +12,43 @@
 #include <stdio.h>
 
 //RNAMake Headers
-#include "base/base.h"
-#include "base/cl_option.h"
+#include "base/application.hpp"
+#include "thermo_fluctuation/thermo_fluc_simulation_devel.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
 
 
-struct MotifInfo {
-    String name, end_id, end_name;
+
+class SimulateTectosAppException : public std::runtime_error {
+public:
+    SimulateTectosAppException(
+        String const & message):
+    std::runtime_error(message)
+    {}
 };
 
-typedef std::vector<MotifInfo> MotifInfos;
+
+String
+bp_name_from_sequence(
+    String const &);
 
 
-
-class SimulateTectos {
+class SimulateTectosApp : public Application {
 public:
-    SimulateTectos(
-        Options &);
+    SimulateTectosApp();
+    
+public: // application setups functions
+    void
+    setup_options();
+    
+    void
+    parse_command_line(
+        int,
+        const char **);
     
 public:
     
     void
     run();
-
 private:
     
     //old code for comparision
@@ -66,11 +80,14 @@ private:
         String const &,
         String const &);
     
-    MotifInfos
+    MotifOPs
     get_motifs_from_seq_and_ss(
         String const &,
         String const &);
     
+    
+private:
+    ThermoFlucSimulationDevel tfs_;
     
     
     

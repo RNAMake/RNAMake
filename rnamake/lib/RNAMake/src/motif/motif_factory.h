@@ -82,6 +82,10 @@ public:
         MotifOP const &,
         int);
     
+    void
+    standardize_rna_structure_ends(
+        MotifOP &);
+
     BasepairOPs
     _setup_basepair_ends(
         StructureOP const &,

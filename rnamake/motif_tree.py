@@ -702,10 +702,6 @@ class MotifTree(base.Base):
 
         if bp_name != "":
             ei = node.data.get_end_index(bp_name)
-            if ei == node.data.block_end_add:
-                raise exceptions.MotifTreeException(
-                    "cannot add connection with " + str(node.index) + " and "
-                    "end name " + bp_name + " as the end is blocked")
 
             if not node.available_pos(ei):
                 raise exceptions.MotifTreeException(
@@ -868,7 +864,6 @@ class MotifTree(base.Base):
                     break
             if found == 0:
                 break
-
 
     #TREE WRAPPER      ########################################################
     def get_node(self, i):

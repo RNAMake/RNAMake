@@ -10,42 +10,6 @@
 #include "thermo_fluctuation/thermo_fluc_simulation_devel.h"
 #include <sys/stat.h>
 
-/*void
-ThermoFlucSimulationDevel::setup_options() {
-    options_ = Options();
-    options_.add_option(Option("temperature", 298.15f));
-    options_.add_option(Option("steps", 100000));
-    options_.add_option(Option("record", 0));
-    options_.add_option(Option("record_file", "test.out"));
-    options_.add_option(Option("cutoff", 5.0f));
-    options_.add_option(Option("steric_radius", 2.2f));
-    options_.add_option(Option("d_weight", 1.0f));
-    options_.add_option(Option("r_weight", 1.0f));
-    options_.add_option(Option("record_state", 0));
-    options_.add_option(Option("record_all", 0));
-    options_.add_option(Option("record_all_file", "test_all.out"));
-    options_.add_option(Option("bound_pdb", 0));
-    
-    update_var_options();
-}
-
-void
-ThermoFlucSimulationDevel::update_var_options() {
-    temperature_    = options_.option<float>("temperature");
-    steps_          = options_.option<int>("steps");
-    record_         = options_.option<int>("record");
-    record_state_   = options_.option<int>("record_state");
-    record_all_     = options_.option<int>("record_all");
-    record_all_file_= options_.option<String>("record_all_file");
-    record_file_    = options_.option<String>("record_file");
-    cutoff_         = options_.option<float>("cutoff");
-    steric_radius_  = options_.option<float>("steric_radius");
-    bound_pdb_      = options_.option<int>("bound_pdb");
-    
-    std::dynamic_pointer_cast<FrameScorerDevel>(scorer_)->weight_d(options_.option<float>("d_weight"));
-    std::dynamic_pointer_cast<FrameScorerDevel>(scorer_)->weight_r(options_.option<float>("r_weight"));
-
-}
 
 void
 ThermoFlucSimulationDevel::setup(
@@ -56,12 +20,87 @@ ThermoFlucSimulationDevel::setup(
     int ei2) {
     
     sampler_.setup(mset);
-    sampler_.temperature(option<float>("temperature"));
+    sampler_.temperature(get_float_option("temperature"));
     
     ni1_ = ni1;
     ni2_ = ni2;
     ei1_ = ei1;
     ei2_ = ei2;
+    
+    // make sure node information that is given is correct
+    try {
+        sampler_.mst()->get_node(ni1_);
+    }
+    catch(TreeException const & e) {
+        throw ThermoFlucSimulationException(
+            "cannot setup thermo fluc simulation as there is no node with index: " +
+            std::to_string(ni1_) + " in given tree");
+    }
+    
+    try {
+        sampler_.mst()->get_node(ni2_);
+    }
+    catch(TreeException const & e) {
+        throw ThermoFlucSimulationException(
+            "cannot setup thermo fluc simulation as there is no node with index: " +
+            std::to_string(ni2_) + " in given tree");
+    }
+    
+    if(sampler_.mst()->get_node(ni1_)->data()->cur_state->end_states().size() <= ei1_) {
+        throw ThermoFlucSimulationException(
+            "cannot setup thermo fluc simulation as node: " + std::to_string(ni1_) +
+            " does not have a " + std::to_string(ei1_) + " end");
+    }
+    
+    if(sampler_.mst()->get_node(ni2_)->data()->cur_state->end_states().size() <= ei2_) {
+        throw ThermoFlucSimulationException(
+            "cannot setup thermo fluc simulation as node: " + std::to_string(ni2_) +
+            " does not have a " + std::to_string(ei2_) + " end");
+    }
+    
+    //parse sterics information
+    if(get_string_option("steric_nodes") == "") { return; }
+    auto steric_node_str = get_string_option("steric_nodes");
+    auto spl = split_str_by_delimiter(steric_node_str, ":");
+    if(spl.size() != 2) {
+        throw ThermoFlucSimulationException(
+            "incorrect format for steric_nodes option, must be in the form NodeSet1:NodeSet2,"
+            " example: '22,21:1' which check sterics of nodes 22 and 21 against node 1");
+    }
+    
+    auto node_set_1 = split_str_by_delimiter(spl[0], ",");
+    for(auto const & n_num : node_set_1) {
+        auto n_index = std::stoi(n_num);
+        
+        try {
+            sampler_.mst()->get_node(n_index);
+        }
+        catch(TreeException const & e) {
+            throw ThermoFlucSimulationException(
+                "cannot setup sterics for simulation, specified node: " + std::to_string(n_index) +
+                " does not exist");
+        }
+        
+        check_nodes_1_.push_back(n_index);
+    }
+    
+    auto node_set_2 = split_str_by_delimiter(spl[1], ",");
+    for(auto const & n_num : node_set_2) {
+        auto n_index = std::stoi(n_num);
+        
+        try {
+            sampler_.mst()->get_node(n_index);
+        }
+        catch(TreeException const & e) {
+            throw ThermoFlucSimulationException(
+                "cannot setup sterics for simulation, specified node: " + std::to_string(n_index) +
+                " does not exist");
+        }
+        
+        check_nodes_2_.push_back(n_index);
+    }
+    
+
 }
 
 
@@ -69,7 +108,7 @@ String
 ThermoFlucSimulationDevel::static_run() {
     
 
-    float d_weight = options_.option<float>("d_weight");
+    /*float d_weight = options_.option<float>("d_weight");
     float r_weight = options_.option<float>("r_weight");
     
     String results;
@@ -84,9 +123,10 @@ ThermoFlucSimulationDevel::static_run() {
     if(r_diff_ < r_diff_flip_) { r_diff_ = r_diff_flip_; }
     r_diff_ *= r_weight;
 
-    results += std::to_string(frame_score_) + " " + std::to_string(r_diff_) + " " + std::to_string(frame_score_ + r_diff_);
+    results += std::to_string(frame_score_) + " " + std::to_string(r_diff_) + " " + std::to_string(frame_score_ + r_diff_);*/
     
-    return results;
+    //return results;
+    return String("");
 }
 
 int
@@ -98,24 +138,10 @@ ThermoFlucSimulationDevel::run() {
     int clash = 0;
     int bound_pdb_count = 0;
     
-    //std::cout << record_all_file_ << std::endl;
-    
-    if(check_nodes_.size() == 0 && check_nodes_2_.size() == 0) {
-        check_nodes_ = { 22, 21 };
-        check_nodes_2_ = { 1 };
-    }
-    
-    //fixes if length of tecto changes, need to come up with better system!
-    
-    if(check_nodes_.size() == 2) {
-        check_nodes_[0] = sampler_.mst()->last_node()->index();
-        check_nodes_[1] = sampler_.mst()->last_node()->index()-1;
-    }
-        
     std::ofstream out, out_state, out_all;
     if(record_) {
         out.open(record_file_);
-        out << "d1,r1,d2,r2,cutoff";
+        out << "d1,r1,d2,r2,cutoff,score";
         out << std::endl;
     }
     
@@ -169,36 +195,23 @@ ThermoFlucSimulationDevel::run() {
     while (steps < steps_) {
         r = sampler_.next();
         //if(r == 0) { continue; }
-        
-        clash = 0;
-        for(auto const & i : check_nodes_) {
-            for(auto const & j : check_nodes_2_) {
-                for(auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
-                    for(auto const & b1 : sampler_.mst()->get_node(j)->data()->cur_state->beads()) {
-                        if(b1.distance(b2) < steric_radius_) { clash = 1; }
-                    }
-                    
-                    if(clash) { break; }
-                }
-                if(clash) { break; }
-            }
-            if(clash) { break; }
-        }
+
+        clash = _check_sterics();
         
         if(clash) {
-            //steps++;
+            steps++;
             continue;
         }
         
-        end_state_1_ = sampler_.mst()->get_node(ni1_)->data()->cur_state->end_states()[ei1_];
-        end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->cur_state->end_states()[ei2_];
+        end_state_1_ = sampler_.mst()->get_node(ni1_)->data()->get_end_state(ei1_);
+        end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->get_end_state(ei2_);
         
         score_ = scorer_->score(end_state_1_, end_state_2_);
         if(score_ < cutoff_) {            
             
             count += 1;
             
-            if(bound_pdb_ > bound_pdb_count) {
+            /*if(bound_pdb_ > bound_pdb_count) {
                 try {
                     const int dir_err = mkdir(String("nodes_" + std::to_string(bound_pdb_count)).c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
                     sampler_.mst()->write_pdbs("nodes_" + std::to_string(bound_pdb_count) + "/nodes");
@@ -208,11 +221,11 @@ ThermoFlucSimulationDevel::run() {
                     bound_pdb_count++;
                 }
                 catch(...) {}
-            }
+            }*/
         }
         
         if(record_) {
-            out << vector_to_str(end_state_1_->d()) << "," << matrix_to_str(end_state_1_->r()) << "," <<vector_to_str(end_state_2_->d()) << "," << matrix_to_str(end_state_2_->r()) << "," << cutoff_;
+            out << vector_to_str(end_state_1_->d()) << "," << matrix_to_str(end_state_1_->r()) << "," <<vector_to_str(end_state_2_->d()) << "," << matrix_to_str(end_state_2_->r()) << "," << cutoff_ << "," << score_;
             out << std::endl;
         }
         
@@ -294,4 +307,55 @@ ThermoFlucSimulationDevel::run() {
     }
     
     return count;
-}*/
+}
+
+
+void
+ThermoFlucSimulationDevel::setup_options() {
+    options_.add_option("temperature", 298.15f, OptionType::FLOAT);
+    options_.add_option("steps", 100000, OptionType::INT);
+    options_.add_option("cutoff", 4.5f, OptionType::FLOAT);
+    options_.add_option("steric_nodes", "", OptionType::STRING);
+    options_.add_option("record", false, OptionType::BOOL);
+    options_.add_option("record_file", "test.out", OptionType::STRING);
+    options_.lock_option_adding();
+    
+    /*options_.add_option(Option("temperature", 298.15f));
+     options_.add_option(Option("steps", 100000));
+     options_.add_option(Option("record", 0));
+     options_.add_option(Option("record_file", "test.out"));
+     options_.add_option(Option("cutoff", 5.0f));
+     options_.add_option(Option("steric_radius", 2.2f));
+     options_.add_option(Option("d_weight", 1.0f));
+     options_.add_option(Option("r_weight", 1.0f));
+     options_.add_option(Option("record_state", 0));
+     options_.add_option(Option("record_all", 0));
+     options_.add_option(Option("record_all_file", "test_all.out"));
+     options_.add_option(Option("bound_pdb", 0));*/
+    
+    update_var_options();
+}
+
+void
+ThermoFlucSimulationDevel::update_var_options() {
+    temperature_   = options_.get_float("temperature");
+    steps_         = options_.get_int("steps");
+    cutoff_        = options_.get_float("cutoff");
+    record_        = options_.get_bool("record");
+    record_file_   = options_.get_string("record_file");
+    
+    /*temperature_    = options_.option<float>("temperature");
+    steps_          = options_.option<int>("steps");
+    record_         = options_.option<int>("record");
+    record_state_   = options_.option<int>("record_state");
+    record_all_     = options_.option<int>("record_all");
+    record_all_file_= options_.option<String>("record_all_file");
+    record_file_    = options_.option<String>("record_file");
+    cutoff_         = options_.option<float>("cutoff");
+    steric_radius_  = options_.option<float>("steric_radius");
+    bound_pdb_      = options_.option<int>("bound_pdb");
+    
+    std::dynamic_pointer_cast<FrameScorerDevel>(scorer_)->weight_d(options_.option<float>("d_weight"));
+    std::dynamic_pointer_cast<FrameScorerDevel>(scorer_)->weight_r(options_.option<float>("r_weight"));
+    */
+}

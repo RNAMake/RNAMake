@@ -414,6 +414,7 @@ def get_aligned_motif_state_single(ref_bp_state, ms):
 
     return ms_copy
 
+
 def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
     r, t = ref_bp_state.get_transforming_r_and_t_w_state(org_state.end_states[0])
     t += ref_bp_state.d

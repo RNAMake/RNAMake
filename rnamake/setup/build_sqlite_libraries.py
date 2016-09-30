@@ -13,6 +13,8 @@ import os
 import numpy as np
 import shutil
 
+from rnamake import motif_tree
+
 def test_align():
     mlib = sqlite_library.MotifLibrarySqlite(libname="ideal_helices")
     m1 = mlib.get_motif("HELIX.IDEAL.12")
@@ -338,8 +340,33 @@ class BuildSqliteLibraries(object):
         path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps.db"
         sqlite_library.build_sqlite_library(path, motif_data, motif_keys, 'id')
 
+    def build_le_helix_lib(self):
+
+
+        mt = motif_tree.MotifTree()
+
+        for i in range(20):
+            if m is None:
+                continue
+
+
+
+            data = []
+            keys = ['data', 'name', 'end_name', 'end_id', 'id']
+            for i, s in enumerate(succeses):
+                m, ei = s
+                m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
+                #print m_added.name, m_added.ends[0].name(), m_added.end_ids[0]
+
+                data.append([m_added.to_str(), m_added.name,
+                            m_added.ends[0].name(), m_added.end_ids[0], i])
+
+            path = settings.RESOURCES_PATH +"/motif_libraries_new/le_helices.db"
+            sqlite_library.build_sqlite_library(path, data, keys, 'id')
+
     def build_motif_state_libraries(self):
         for libname in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
+            print libname
             data = []
             keys = ['data', 'name', 'end_name', 'end_id', 'id']
 
@@ -545,11 +572,11 @@ builder = BuildSqliteLibraries()
 
 #builder.build_ideal_helices_old()
 #builder.build_basic_libraries()
-builder.build_helix_ensembles()
-builder.build_ss_and_seq_libraries()
-builder.build_unique_twoway_library()
+#builder.build_helix_ensembles()
+#builder.build_ss_and_seq_libraries()
+#builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
 
 #builder.build_trimmed_ideal_helix_library()
 

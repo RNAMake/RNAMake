@@ -104,7 +104,7 @@ depends = {
     'thermo_fluctuation' : 'motif_data_structures',
     'motif_state_search' : 'motif_data_structures',
     'sequence_optimizer' : 'motif_data_structures eternabot',
-    'all_libs' : 'thermo_fluctuation motif_state_search sequence_optimizer'
+    'all_libs' : 'motif_tools thermo_fluctuation motif_state_search sequence_optimizer'
 }
 
 f = open("build.cmake", "w")

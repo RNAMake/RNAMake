@@ -165,6 +165,12 @@ class Chain(object):
 
         return Chain(self.residues[start:end])
 
+    def contain_res(self, r):
+        if r in self.residues:
+            return 1
+        else:
+            return 0
+
     def copy(self):
         """
         Creates a deepcopy of the this chain object.

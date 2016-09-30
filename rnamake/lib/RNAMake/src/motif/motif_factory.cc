@@ -88,6 +88,8 @@ MotifFactory::motif_from_res(
     auto ends = _setup_basepair_ends(structure, bps);
     
     if(ends.size() == 0 && bps.size() >= 2) {
+        std::cout << ends.size() << " " << bps.size() << " " << chains.size() << std::endl;
+        structure->to_pdb("test.pdb");
         throw MotifFactoryException(
             "unexpected number of ends when generating a motif from residues");
     }
@@ -170,6 +172,20 @@ MotifFactory::can_align_motif_to_end(
     
 }
 
+
+void
+MotifFactory::standardize_rna_structure_ends(
+    MotifOP & m) {
+    
+    m->get_beads(m->ends());
+    for(auto const & end : m->ends()) {
+        auto m_added = get_aligned_motif(end, added_helix_->ends()[0], added_helix_);
+        if(_steric_clash(m, m_added) == 0) { continue; }
+        else { end->flip(); }
+    }
+     
+}
+
 MotifOP
 MotifFactory::align_motif_to_common_frame(
     MotifOP const & m,
@@ -221,7 +237,9 @@ MotifFactory::_setup_basepair_ends(
     for( auto const & bp : basepairs ) {
         for (auto const & ce1 : chain_ends) {
             for(auto const & ce2 : chain_ends) {
-                if(bp->bp_type() == "cW-W" && bp->res1() == ce1 && bp->res2() == ce2) {
+                if(bp->bp_type() == "cW-W" &&
+                   bp->res1()->uuid() == ce1->uuid() &&
+                   bp->res2()->uuid() == ce2->uuid()) {
                     ends.push_back(bp);
                 }
             }

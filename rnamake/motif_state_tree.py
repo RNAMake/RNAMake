@@ -252,8 +252,7 @@ class MotifStateTree(base.Base):
                 if j == -1:
                     raise ValueError("could not convert motif tree to motif state tree")
 
-        for c in mt.connections:
-            self.connections.append(c.copy())
+        self.connections = mt.connections.copy()
 
     def copy(self):
         mst = MotifStateTree()
@@ -558,14 +557,22 @@ class MotifStateTree(base.Base):
 
         self.connections.add_connection(i, j, node_i_end_name, node_j_end_name)
 
-    def replace_state(self, i, new_state):
+    def replace_state(self, i, new_state, keep_uuid=1):
         n = self.get_node(i)
         if len(new_state.end_states) !=  len(n.data.ref_state.end_states):
             raise ValueError(
                 "attempted to replace a state with a different number of ends")
 
+        if keep_uuid:
+            uuid = n.data.ref_state.uuid
+
         n.data.ref_state = new_state
         n.data.cur_state = new_state.copy()
+
+        if keep_uuid:
+            n.data.ref_state.uuid = uuid
+            n.data.cur_state.uuid = uuid
+
 
         for n in tree.transverse_tree(self.tree, i):
             parent = n.parent
@@ -593,8 +600,15 @@ class MotifStateTree(base.Base):
                 self.connections.remove(c)
 
     #TREE WRAPPER      ########################################################
-    def get_node(self, i):
-        return self.tree.get_node(i)
+    def get_node(self, i=None, uuid=None):
+        if i is not None:
+            return self.tree.get_node(i)
+        elif uuid is not None:
+            for n in self.tree:
+                if n.data.cur_state.uuid == uuid:
+                    return n
+            raise exceptions.MotifStateTreeException(
+                "cannot find motif state with uuid")
 
     def last_node(self):
         return self.tree.last_node
@@ -695,6 +709,9 @@ class NodeData(object):
 
     def end_name(self, i):
         return self.cur_state.end_names[i]
+
+    def update_state(self):
+        pass
 
 
 def str_to_motif_state_tree(s, sterics=1):
