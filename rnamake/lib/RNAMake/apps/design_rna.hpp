@@ -11,8 +11,18 @@
 
 #include <stdio.h>
 #include "base/application.hpp"
+#include "util/steric_lookup.hpp"
 #include "motif_state_search/motif_state_search.h"
 #include "motif_data_structures/motif_graph.h"
+
+class DesignRNAAppException : public std::runtime_error {
+public:
+    DesignRNAAppException(
+        String const & message):
+    std::runtime_error(message)
+    {}
+};
+
 
 struct EndStateInfo {
     String name;
@@ -23,7 +33,9 @@ struct EndStateInfo {
 class DesignRNAApp : public Application {
 public:
     DesignRNAApp() : Application(),
-    search_(MotifStateSearch())
+    search_(MotifStateSearch()),
+    mg_(MotifGraph()),
+    lookup_(StericLookup())
     {}
     
     ~DesignRNAApp() {}
@@ -44,6 +56,9 @@ public:
 private:
     
     void
+    _setup_sterics();
+    
+    void
     _setup_from_pdb();
     
     void
@@ -53,6 +68,8 @@ private:
     MotifStateSearch search_;
     MotifGraph mg_;
     EndStateInfo start_, end_;
+    StericLookup lookup_;
+    
     
 };
 

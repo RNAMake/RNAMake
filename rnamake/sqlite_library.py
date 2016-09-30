@@ -289,6 +289,7 @@ class MotifSqliteLibrary(SqliteLibrary):
         libnames = {
             "ideal_helices"   : "/motif_libraries_new/ideal_helices.db",
             "ideal_helices_reversed" :  "/motif_libraries_new/ideal_helices_reversed.db",
+            "le_helices"      : "/motif_libraries_new/le_helices.db",
             "twoway"          : "/motif_libraries_new/twoway.db",
             "tcontact"        : "/motif_libraries_new/tcontact.db",
             "hairpin"         : "/motif_libraries_new/hairpin.db",
@@ -339,6 +340,7 @@ class MotifStateSqliteLibrary(SqliteLibrary):
             "bp_steps"      :  "/motif_state_libraries/bp_steps.db",
             "twoway"        :  "/motif_state_libraries/twoway.db",
             "nway"          :  "/motif_state_libraries/nway.db",
+            "hairpin"       :  "/motif_state_libraries/hairpin.db"
 
         }
 

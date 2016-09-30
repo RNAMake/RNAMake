@@ -13,7 +13,7 @@
 
 void
 Segmenter::_get_pairs(
-    MotifOP const & m,
+    RNAStructureOP const & m,
     ResidueOPs const & res) {
     
     pairs_ = PairOPs();
@@ -56,7 +56,7 @@ Segmenter::_get_pairs(
 
 ChainOP
 Segmenter::_get_subchain(
-    MotifOP const & m,
+    RNAStructureOP const & m,
     PairOP const & pair) {
     
     for(auto const & c : m->chains()) {
@@ -74,47 +74,56 @@ Segmenter::_get_subchain(
 
 SegmentsOP
 Segmenter::_get_segments(
-    MotifOP const & m,
+    RNAStructureOP const & m,
     ResidueOPs & res,
     BasepairOPs const & bps,
-    ResidueOPs const & cutpoints) {
-
-    auto removed = mf_.motif_from_res(res, bps);
-    removed->name(m->name() + ".removed");
+    ResidueOPs const & cutpoints,
+    BasepairOPs const & cut_bps) {
 
     auto other_res = ResidueOPs();
     for(auto const & r : cutpoints) { other_res.push_back(r); }
-    auto other_bps = BasepairOPs();
-    
     for(auto const & r : m->residues()) {
-        if(std::find(res.begin(), res.end(), r) == res.end()) {
-            other_res.push_back(r);
+        int found = 0;
+        for(auto const & r2 : res) {
+            if(r->uuid() == r2->uuid()) {
+                found = 1; break;
+            }
         }
+        if(found == 0) { other_res.push_back(r); }
+        
     }
     
+    auto res_uuids = std::map<Uuid, int, UuidCompare>();
+    
+    for(auto const & r : other_res) {
+        res_uuids[r->uuid()] = 1;
+    }
+    
+    auto removed = mf_.motif_from_res(res, bps);
+    removed->name(m->name() + ".removed");
+    mf_.standardize_rna_structure_ends(removed);
+
+    auto other_bps = BasepairOPs();
+    
     for(auto const & bp : m->basepairs()) {
-        if(std::find(bps.begin(), bps.end(), bp) == bps.end()) {
+        if(res_uuids.find(bp->res1()->uuid()) != res_uuids.end() &&
+           res_uuids.find(bp->res2()->uuid()) != res_uuids.end()) {
             other_bps.push_back(bp);
         }
     }
-
-    auto remaining = MotifOP();
-    try {
-        remaining = mf_.motif_from_res(other_res, other_bps);
-        remaining->name(m->name() + ".remaining");
-    }
-    catch(MotifFactoryException const & e) {
-        if(res.size() > 6) { throw e; }
-    }
     
-    return std::make_shared<Segments>(Segments{removed, remaining});
+    auto remaining = mf_.motif_from_res(other_res, other_bps);
+    remaining->name(m->name() + ".remaining");
+    mf_.standardize_rna_structure_ends(remaining);
+
+    return std::make_shared<Segments>(removed, remaining);
     
 }
 
 
 SegmentsOP
 Segmenter::apply(
-    MotifOP const & m,
+    RNAStructureOP const & m,
     BasepairOPs const & bps) {
     
     ResidueOPs res;
@@ -161,10 +170,10 @@ Segmenter::apply(
         }
         
         if(missed_bps > 2) { continue; }
-        return _get_segments(m, sub_res_array, basepairs, res);
+        return _get_segments(m, sub_res_array, basepairs, res, bps);
     }
     
-    return nullptr;
+    throw SegmenterException("failed to segment rna structure");
 }
 
 

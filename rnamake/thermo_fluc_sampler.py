@@ -313,6 +313,7 @@ class FrameScorer(ThermoFlucScorer):
 
     def score(self, state_1, state_2):
         frame_score = util.distance(state_1.d, state_2.d)
+        r_diff = 1000
         r_diff = util.matrix_distance(state_1.r, state_2.r)
         state_2.flip()
         r_diff_flip = util.matrix_distance(state_1.r, state_2.r)

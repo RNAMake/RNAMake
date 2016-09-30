@@ -1,4 +1,5 @@
 simulate_tectos ../../apps/simulate_tectos/simulate_tectos.cc 
+simulate_tectos_devel ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc
 design_rna ../../apps/design_rna.cpp
 #mini_ttr ../../apps/mini_ttr/mini_ttr.cpp 
 #exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp

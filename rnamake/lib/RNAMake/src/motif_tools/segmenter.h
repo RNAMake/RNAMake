@@ -54,6 +54,13 @@ struct Pair {
 };
 
 struct Segments {
+    inline
+    Segments(
+        MotifOP const & nremoved,
+        MotifOP const & nremaining):
+        removed(nremoved),
+        remaining(nremaining) {}
+    
     MotifOP removed, remaining;
 };
 
@@ -230,27 +237,28 @@ public:
 public:
     SegmentsOP
     apply(
-        MotifOP const &,
+        RNAStructureOP const &,
         BasepairOPs const &);
     
 private:
     
     ChainOP
     _get_subchain(
-        MotifOP const &,
+        RNAStructureOP const &,
         PairOP const &);
     
     void
     _get_pairs(
-        MotifOP const &,
+        RNAStructureOP const &,
         ResidueOPs const &);
     
     SegmentsOP
     _get_segments(
-        MotifOP const &,
+        RNAStructureOP const &,
         ResidueOPs &,
         BasepairOPs const &,
-        ResidueOPs const &);
+        ResidueOPs const &,
+        BasepairOPs const &);
     
 private:
     
