@@ -34,7 +34,7 @@ class SequenceOptimizerUnittests(unittest.TestCase):
         solutions = so.get_optimized_sequences(mt,mt.last_node().data.ends[0],
                                                mt.last_node().index, 0)
 
-    def test_minittr(self):
+    def _test_minittr(self):
         path = settings.UNITTEST_PATH + "/test_problems/mini_ttr/"
         f = open(path+"sol.mg")
         lines = f.readlines()
@@ -56,6 +56,7 @@ class SequenceOptimizerUnittests(unittest.TestCase):
                                                mt.get_node(4).index, 1)
 
         print len(solutions)
+
 
 
 def main():

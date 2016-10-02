@@ -177,7 +177,7 @@ class Segmenter(object):
             res.extend(bp.residues())
 
         pairs, end_pairs = self._get_pairs(m, res)
-        print len(end_pairs)
+        #print len(end_pairs)
         pair_search = PairSearch()
         solutions = pair_search.search(res, pairs, end_pairs)
 
