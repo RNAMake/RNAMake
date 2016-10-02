@@ -60,6 +60,13 @@ private:
         String const &);
     
     MotifStateEnsembleTreeOP
+    get_mset_new_receptor(
+        String const &,
+        String const &,
+        String const &,
+        String const &);
+    
+    MotifStateEnsembleTreeOP
     get_mset_old_full_seq(
         String const &,
         String const &,

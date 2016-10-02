@@ -434,6 +434,24 @@ public: //merger wrappers
         
     }
     
+    sstruct::PoseOP
+    designable_secondary_structure() {
+        auto ss = merger_->secondary_structure();
+        auto ss_r = sstruct::ResidueOP(nullptr);
+        
+        for(auto const & n : tree_) {
+            if(n->data()->name() != "HELIX.IDEAL") { continue;}
+            for(auto const & r : n->data()->residues()) {
+                ss_r= ss->get_residue(r->uuid());
+                if(ss_r != nullptr) {
+                    ss_r->name("N");
+                }
+            }
+        }
+        
+        return ss;
+    }
+    
     
 public: //option wrappers
     

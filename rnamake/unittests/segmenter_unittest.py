@@ -17,7 +17,6 @@ class SegmenterUnittest(unittest.TestCase):
         for i, t in enumerate(twoways):
             s = rnamake.segmenter.Segmenter()
             segments = s.apply(p, t.ends)
-            exit()
             self.failUnless(len(t.residues()) == len(segments.removed.residues()))
 
         nways = p.motifs(motif_type.NWAY)

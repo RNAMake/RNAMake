@@ -10,6 +10,7 @@
 #include "base/cl_option.h"
 #include "base/settings.h"
 #include "base/backtrace.hpp"
+#include "structure/residue_type_set_manager.h"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_tree.h"
@@ -525,7 +526,6 @@ SimulateTectosApp::run() {
     auto css  = get_string_option("css");
     
     auto mset = get_mset_old(fseq, fss, cseq, css);
-    
     if(get_bool_option("start_pose")) {
         auto mt = mset->to_mst()->to_motif_tree();
         std::cout << "outputing starting pose: start_pose.pdb" << std::endl;
@@ -579,6 +579,40 @@ SimulateTectosApp::get_mset_old(
     
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
     return mset;
+}
+
+MotifStateEnsembleTreeOP
+SimulateTectosApp::get_mset_new_receptor(
+    String const & fseq,
+    String const & fss,
+    String const & cseq,
+    String const & css) {
+    
+    auto ggaa_ttr = RM::instance().motif("new_ggaa_tetraloop", "", "A13-A16");
+    auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
+    
+    auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
+    auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
+    
+    auto mt = std::make_shared<MotifTree>();
+    mt->set_option_value("sterics", false);
+    auto m = RM::instance().motif("GC=GC");
+    mt->add_motif(m);
+    mt->add_motif(ggaa_ttr);
+    mt->add_motif(flow_motifs[1], 1, "A22-A7");
+    for(int i = 2; i < flow_motifs.size(); i++) {
+        mt->add_motif(flow_motifs[i]);
+    }
+    
+    mt->add_motif(gaaa_ttr);
+    mt->add_motif(chip_motifs[1], -1, "A222-A251");
+    for(int i = 2; i < chip_motifs.size(); i++) {
+        mt->add_motif(chip_motifs[i]);
+    }
+    
+    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    return mset;
+    
 }
 
 MotifOPs
@@ -668,6 +702,10 @@ int main(int argc, const char * argv[]) {
     String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
     RM::instance().add_motif(base_path+"GAAA_tetraloop");
     RM::instance().add_motif(base_path+"GGAA_tetraloop");
+    auto lines = get_lines_from_file(base_path+"new_ggaa_tetraloop.motif");
+    auto new_ggaa_tetraloop = std::make_shared<Motif>(lines[0],
+                                                      ResidueTypeSetManager::getInstance().residue_type_set());
+    RM::instance().add_motif(new_ggaa_tetraloop);
     
     auto app = SimulateTectosApp();
     app.setup_options();

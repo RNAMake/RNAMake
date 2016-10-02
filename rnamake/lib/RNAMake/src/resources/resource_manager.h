@@ -81,6 +81,11 @@ public: // adding functions
         String name = "");
     
     void
+    add_motif(
+        MotifOP const & m,
+        String name = "");
+    
+    void
     register_motif(
         MotifOP const &);
     

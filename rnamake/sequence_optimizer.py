@@ -19,9 +19,6 @@ class OptimizedSequence(object):
 
 class SequenceOptimizer3D(base.Base):
     def __init__(self, **options):
-        self.opt_nodes = []
-        self.bps = {}
-        self.seqs = []
         self.setup_options_and_constraints()
         self.options.dict_set(options)
         self.sequence_designer = sequence_designer.SequenceDesigner()
@@ -32,6 +29,7 @@ class SequenceOptimizer3D(base.Base):
                     'eterna_cutoff' : -1}
 
         self.options = option.Options(options)
+
 
     class _DesignableBP(object):
         def __init__(self, bp):

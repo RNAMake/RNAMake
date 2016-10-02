@@ -260,10 +260,6 @@ class MotifTreeUnittest(unittest.TestCase):
         mt.add_motif(nway)
         mt.add_motif(m2)
 
-        # try connecting through 0th end position
-        with self.assertRaises(exceptions.MotifTreeException):
-            mt.add_connection(1, 2, "A138-A180")
-
         # try connecting thru an already used end position
         with self.assertRaises(exceptions.MotifTreeException):
             mt.add_connection(1, 2, "A141-A162")
