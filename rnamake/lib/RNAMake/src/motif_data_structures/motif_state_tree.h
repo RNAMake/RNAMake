@@ -78,6 +78,16 @@ public: //wrappers for current state
     Uuid const &
     uuid() { return cur_state->uuid(); }
     
+public: //wrappers to set some values
+    
+    inline
+    void
+    uuid(Uuid const & uuid) {
+        cur_state->uuid(uuid);
+        ref_state->uuid(uuid);
+    }
+    
+    
 public:
     MotifStateOP ref_state, cur_state;
     
@@ -243,6 +253,43 @@ public: //tree wrapers
     get_node(
         int i) {
         return tree_.get_node(i);
+    }
+
+    inline
+    MotifStateTreeNodeOP const &
+    get_node(Uuid const & uuid) {
+        for(auto const & n : tree_) {
+            if(n->data()->uuid() == uuid) {
+                return n;
+            }
+        }
+        throw MotifTreeException(
+            "cannot get node with uuid no motif has it in this tree");
+    }
+    
+    inline
+    MotifStateTreeNodeOP
+    get_node(String const & m_name) {
+        auto node = MotifStateTreeNodeOP(nullptr);
+        for(auto const & n : tree_) {
+            if(n->data()->name() == m_name) {
+                if(node != nullptr) {
+                    throw MotifStateTreeException(
+                        "cannot get node with name: " + m_name + " there is more then one state "
+                        "with this name");
+                }
+                
+                node = n;
+            }
+        }
+        
+        if(node == nullptr) {
+            throw MotifStateTreeException(
+                "cannot get node with name: " + m_name + " there is no state in the tree with "
+                "this name");
+        }
+        
+        return node;
     }
     
     inline

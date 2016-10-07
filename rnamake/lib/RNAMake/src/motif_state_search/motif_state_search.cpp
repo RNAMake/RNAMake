@@ -144,15 +144,19 @@ MotifStateSearch::_search() {
         if(score < best) {
             best = score;
             best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
+            
             if(verbose_) {
-                std::cout << best << " " << accept_score_ << " " << current->level() << " " << steps << " " << max_steps_ << std::endl;
+                std::cout << "MOTIF STATE SEARCH: best_score=" << best << " motifs_in_solution=";
+                std::cout << current->level()-1 << " steps=" << steps << std::endl;
+                
+                //::cout << best << " " << accept_score_ << " " << current->level() << " " << steps << " " << max_steps_ << std::endl;
             }
         }
         
         if(score < accept_score_ && current->ss_score() < min_ss_score_ &&
            current->level() > min_node_level_) {
             if(verbose_) {
-                std::cout << "found a solution" << std::endl;
+                std::cout << "MOTIF STATE SEARCH: found a solution!" << std::endl;
             }
             auto s = std::make_shared<MotifStateSearchSolution>(current, score);
             return s;

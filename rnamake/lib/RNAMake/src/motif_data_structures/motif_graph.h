@@ -481,6 +481,13 @@ public: //designing functions
         return ss;
     }
     
+    inline
+    String
+    designable_sequence() {
+        return designable_secondary_structure()->sequence();
+    }
+    
+    
     
 public: // outputing functions
     void
@@ -571,6 +578,19 @@ public: //Motif Merger Wrappers
         }
         
     }
+    
+    inline
+    String
+    sequence() {
+        return secondary_structure()->sequence();
+    }
+    
+    inline
+    String
+    dot_bracket() {
+        return secondary_structure()->dot_bracket();
+    }
+    
     
 public: //Options Wrappers
     

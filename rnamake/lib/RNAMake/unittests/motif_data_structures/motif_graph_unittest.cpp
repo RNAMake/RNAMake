@@ -132,7 +132,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         s = mg.get_structure();
         
     }
-    
+
     SECTION("test copying motif graph") {
         auto builder = MotifGraphBuilder();
         auto mg = builder.build(5);
@@ -158,6 +158,12 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         
         auto rna_struct = mg_copy->get_structure();
         REQUIRE(rna_struct->chains().size() == 2);
+   
+        mg->replace_ideal_helices();
+        auto mg_copy_2 = std::make_shared<MotifGraph>(*mg);
+        auto dss = mg_copy_2->designable_secondary_structure();
+        sstruct::fill_basepairs_in_ss(dss);
+        mg_copy_2->replace_helical_sequence(dss);
 
         
         

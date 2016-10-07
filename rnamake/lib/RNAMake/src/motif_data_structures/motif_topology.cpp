@@ -39,8 +39,17 @@ GraphtoTree::convert(
     
         if(last_node == current->node) {
             last_node_to_add = current;
+            auto parent = mt_->get_node(current->parent->data()->id());
             continue;
         }
+        
+        int found = 0;
+        try {
+            mt_->get_node(current->motif->id());
+            found = 1;
+        } catch(MotifTreeException const & e) { }
+        
+        if(found) { continue; }
         
         if(current->parent == nullptr) {
             mt_->add_motif(current->motif);
@@ -69,10 +78,16 @@ GraphtoTree::convert(
         
         new_nodes = _get_new_nodes(current);
         for(auto const & n : new_nodes) {
-            if(n == last_node_to_add) { continue; }
+            //if(n == last_node_to_add) { continue; }
+            int found = 0;
+            try {
+                mt_->get_node(n->motif->id());
+                found = 1;
+            } catch(MotifTreeException const & e) { }
+            
+            if(found) { continue; }
             
             if(seen_nodes.find(n->node->index()) == seen_nodes.end()) {
-                seen_nodes[n->node->index()] = 1;
                 open_nodes.push(n);
             }
         }
@@ -84,6 +99,45 @@ GraphtoTree::convert(
         mt_->add_motif(last_node_to_add->motif,
                        new_parent_index,
                        last_node_to_add->parent_end_index);
+    }
+    
+    // get all connections that need to added as extra connections to preserve topology
+    for(auto const & n : *mg) {
+        for(auto const c : n->connections()) {
+            if(c == nullptr) { continue; }
+            auto n_id = n->data()->id();
+            auto partner = c->partner(n->index());
+            auto pn_id = partner->data()->id();
+            
+            auto mt_n1 = TreeNodeOP<MotifOP>(nullptr);
+            auto mt_n2 = TreeNodeOP<MotifOP>(nullptr);
+            try {
+                mt_n1 = mt_->get_node(n_id);
+                mt_n2 = mt_->get_node(pn_id);
+            }
+            catch(MotifTreeException const & e) { continue; }
+            
+            if(mt_n1->parent() == mt_n2) { continue; }
+            if(mt_n2->parent() == mt_n1) { continue; }
+            
+            auto n1_ei = c->end_index(n->index());
+            if(n->data()->mtype() == MotifType::HELIX) { n1_ei = 1; }
+            
+            auto n1_end_name = n->data()->end_name(n1_ei);
+            
+            if(mt_->connections().in_connection(mt_n1->index(), n1_end_name)) { continue; }
+            
+            auto n2_ei = c->end_index(partner->index());
+            if(partner->data()->mtype() == MotifType::HELIX) { n2_ei = 1; }
+
+            auto n2_end_name = partner->data()->end_name(n2_ei);
+
+            if(mt_->connections().in_connection(mt_n2->index(), n2_end_name)) { continue; }
+            
+            //std::cout << mt_n1->index() << " " << mt_n2->index() << " " << n1_end_name << " " << n2_end_name << std::endl;
+            mt_->add_connection(mt_n1->index(), mt_n2->index(), n1_end_name, n2_end_name);
+            
+        }
     }
     
     

@@ -39,6 +39,7 @@ public:
         return 0;
     }
     
+    
 private:
     float temperature_;
     float score_;

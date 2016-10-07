@@ -187,18 +187,6 @@ MotifTree::_get_connection_end(
     if(bp_name != "") {
         auto ei = node->data()->get_end_index(bp_name);
         
-        if(!node->available_pos(ei)) {
-            throw MotifTreeException(
-                "cannot add connection with " + std::to_string(node->index()) + " and "
-                "end name " + bp_name + " as the end is blocked");
-        }
-        
-        if(ei == node->data()->block_end_add()) {
-            throw MotifTreeException(
-                "cannot add connection with " + std::to_string(node->index()) + " and "
-                "end name " + bp_name + " as the end is blocked");
-        }
-        
         if(connections_.in_connection(node->index(), bp_name)) {
             throw MotifTreeException(
                 "cannot add connection with " + std::to_string(node->index()) +
@@ -364,7 +352,7 @@ MotifTree::remove_node(
     }
     catch(MotifTreeException) {
         throw MotifTreeException(
-                                 "cannot remove node with index: " + std::to_string(i) + " as it does not exist");
+            "cannot remove node with index: " + std::to_string(i) + " as it does not exist");
     }
 }
 

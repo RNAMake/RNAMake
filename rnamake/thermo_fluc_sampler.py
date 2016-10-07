@@ -376,6 +376,7 @@ class ThermoFlucSimulation(base.Base):
 
             if score < 5:
                 count += 1
+                self.sampler.to_pdb("test."+str(count)+".pdb", renumber=1, close_chain=1)
                 #d_diff = util.distance(end_state_1.d, end_state_2.d)
                 #r_diff = end_state_1._rot_diff(end_state_2)
                 #f.write(str(d_diff) + " " + str(r_diff) + "\n")

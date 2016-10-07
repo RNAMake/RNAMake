@@ -34,7 +34,7 @@ class DesignRNAApp : public Application {
 public:
     DesignRNAApp() : Application(),
     search_(MotifStateSearch()),
-    mg_(MotifGraph()),
+    mg_(std::make_shared<MotifGraph>()),
     lookup_(StericLookup())
     {}
     
@@ -66,7 +66,7 @@ private:
     
 private:
     MotifStateSearch search_;
-    MotifGraph mg_;
+    MotifGraphOP mg_;
     EndStateInfo start_, end_;
     StericLookup lookup_;
     

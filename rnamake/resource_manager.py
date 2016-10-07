@@ -176,7 +176,7 @@ class ResourceManager(object):
                 continue
             if not align:
                 motif_factory.factory.standardize_motif(m_added)
-                motifs.append(m_added)
+                motifs.append(m)
                 end_ids[m_added.ends[0].uuid] = m_added.end_ids[0]
                 break
 

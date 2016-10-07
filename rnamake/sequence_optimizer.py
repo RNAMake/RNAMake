@@ -30,7 +30,6 @@ class SequenceOptimizer3D(base.Base):
 
         self.options = option.Options(options)
 
-
     class _DesignableBP(object):
         def __init__(self, bp):
             self.bp = bp
@@ -138,6 +137,7 @@ class SequenceOptimizer3D(base.Base):
                 last_score = new_score
             else:
                 self._update_designable_bp(d_bp, mst, d_bp.last_state)
+                d_bp.revert_state()
                 continue
 
 

@@ -8,13 +8,14 @@ import motif_ensemble
 import motif_type
 import resource_manager as rm
 import transformations as t
+import motif_connection
 import util
 
 
 class MotifStateEnsembleTree(object):
     def __init__(self, mt=None, mst=None):
         self.tree = tree.TreeStatic()
-        self.connections = []
+        self.connections = motif_connection.MotifConnections()
         if mt is not None:
             self._setup_from_mt(mt)
         if mst is not None:
@@ -68,8 +69,7 @@ class MotifStateEnsembleTree(object):
             if j == -1:
                 raise ValueError("can not build motif state tree from mset")
 
-        for c in self.connections:
-            mst.connections.append(c.copy())
+        mst.connections = self.connections.copy()
 
         return mst
 
@@ -91,9 +91,7 @@ class MotifStateEnsembleTree(object):
             else:
                 self.add_ensemble(mse, n.parent_index(), n.parent_end_index())
 
-        for c in mt.connections:
-            self.connections.append(c.copy())
-
+        self.connections = mt.connections.copy()
     def _setup_from_mst(self, mst):
         for i, n in enumerate(mst.tree.nodes):
             try:

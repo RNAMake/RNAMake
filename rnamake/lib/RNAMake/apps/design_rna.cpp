@@ -11,11 +11,22 @@
 #include "base/backtrace.hpp"
 #include "resources/resource_manager.h"
 #include "motif_tools/segmenter.h"
+#include "motif_data_structures/motif_topology.h"
+#include "sequence_optimizer/sequence_optimizer_3d.hpp"
 
 
 
 void
 DesignRNAApp::setup_options() {
+    
+    add_option("designs", 1, OptionType::INT, false);
+    add_option("seqs_per_design", 1, OptionType::INT, false);
+    add_option("sol_pdbs", false, OptionType::BOOL, false);
+    add_option("full_pdbs", false, OptionType::BOOL, false);
+    add_option("out_file", "default.out", OptionType::STRING, false);
+    add_option("score_file", "default.scores", OptionType::STRING, false);
+    add_option("verbose", false, OptionType::BOOL, false);
+    
     // start from pdb
     add_option("pdb", String(""), OptionType::STRING, false);
     add_option("start_bp", String(""), OptionType::STRING, false);
@@ -35,11 +46,10 @@ DesignRNAApp::parse_command_line(
 
 }
 
-
 void
 DesignRNAApp::_setup_sterics() {
     auto beads = Points();
-    for(auto & n : mg_) {
+    for(auto & n : *mg_) {
         for(auto const & b : n->data()->beads()) {
             if(b.btype() == BeadType::PHOS) { continue; }
             beads.push_back(b.center());
@@ -50,7 +60,6 @@ DesignRNAApp::_setup_sterics() {
     }
     lookup_.add_points(beads);
 }
-
 
 void
 DesignRNAApp::_setup_from_pdb() {
@@ -115,9 +124,11 @@ DesignRNAApp::_setup_from_pdb() {
     segments->remaining->to_pdb("remaining.pdb");
     segments->removed->to_pdb("removed.pdb");
     
+    RM::instance().register_motif(segments->remaining);
+    
     //auto new_struc = std::make_shared<RNAStructure>(*struc);
     segments->remaining->block_end_add(-1);
-    mg_.add_motif(segments->remaining);
+    mg_->add_motif(segments->remaining);
     start_ = EndStateInfo{start_bp_name, 0};
     end_ = EndStateInfo{end_bp_name, 0};
 }
@@ -127,25 +138,76 @@ DesignRNAApp::run() {
     
     if(get_string_option("pdb") != "") { _setup_from_pdb(); }
     
-    auto start = mg_.get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
-    auto end = mg_.get_node(end_.n_pos)->data()->get_basepair(end_.name)[0]->state();
+    auto start = mg_->get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
+    
+    auto end_bp = mg_->get_node(end_.n_pos)->data()->get_basepair(end_.name)[0];
+    auto end = end_bp->state();
+
     _setup_sterics();
     
     search_.setup(start, end);
     search_.lookup(lookup_);
+    search_.set_option_value("max_solutions", 10000);
+    search_.set_option_value("verbose", get_bool_option("verbose"));
     
-    auto sols = std::vector<MotifTreeOP>();
+    auto so = SequenceOptimizer3D();
+    so.set_option_value("verbose", get_bool_option("verbose"));
     
-    int i = -1;
+    auto end_n_uuid = mg_->get_node(end_.n_pos)->data()->id();
+    mg_->increase_level();
+    
+    auto out = std::ofstream(get_string_option("score_file"));
+    out << "design_num,design_score,design_sequence,design_structure,opt_num,";
+    out << "opt_sequence,opt_score,eterna_score" << std::endl;
+    
+    int design_num = 0;
     while(! search_.finished()) {
-        i++;
         auto sol = search_.next();
         
         auto mt = sol->to_motif_tree();
-        sols.push_back(mt);
+        mg_->add_motif_tree(mt, start_.n_pos, start_.name);
+        mg_->add_connection(end_.n_pos, mg_->last_node()->index(), end_.name, "");
+        mg_->replace_ideal_helices();
+        
+        auto c = GraphtoTree();
+        auto d_mt = c.convert(mg_, nullptr, -1, mg_->last_node());
+        d_mt->set_option_value("sterics", false);
+        
+        auto sols = so.get_optimized_sequences(d_mt, end_bp, d_mt->last_node()->index(), 1);
+
+        if(sols.size() > 0) {
+            int opt_num = 0;
+            for(auto const & s : sols) {
+                out << design_num << "," << sol->score() << "," <<  mg_->designable_sequence() << ",";
+                out << opt_num << "," << s->sequence << "," << s->dist_score << "," << s->eterna_score;
+                out << std::endl;
+                
+                opt_num++;
+                
+                auto copy_mg = std::make_shared<MotifGraph>(*mg_);
+                //auto copy_mg = MotifGraph(*mg_);
+                auto dss = copy_mg->designable_secondary_structure();
+                dss->replace_sequence(s->sequence);
+                copy_mg->replace_helical_sequence(dss);
+                copy_mg->write_pdbs();
+                
+                exit(0);
+            }
+            
+            design_num++;
+            
+            if(design_num >= get_int_option("designs")) {
+                exit(0);
+            }
+        }
+        
+        mg_->remove_level(1);
+        
+        
         
     }
     
+    out.close();
     
     
 }
