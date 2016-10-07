@@ -23,17 +23,21 @@ MotifStateTree::MotifStateTree(
     MotifTreeOP const & mt):
     MotifStateTree() {
     
+    set_option_value("sterics", mt->get_bool_option("sterics"));
+    
     int i = -1;
     for(auto const & n : *mt) {
         i++;
         auto ms = RM::instance().motif_state(n->data()->name(),
                                              n->data()->end_ids()[0],
                                              n->data()->ends()[0]->name());
+        ms->uuid(n->data()->id());
         if(i == 0) {
             add_state(ms);
         }
         else {
             int j = add_state(ms, n->parent_index(), n->parent_end_index());
+            //std::cout << ms->name() << " " << n->parent_index() << " " << n->parent_end_index() << std::endl;
             if(j == -1) {
                 throw MotifStateTreeException(
                     "could not convert motif tree to motif state tree");
@@ -447,6 +451,7 @@ MotifStateTree::replace_state(
     auto old_state = n->data()->ref_state;
     n->data()->ref_state = new_state;
     n->data()->cur_state = std::make_shared<MotifState>(*new_state);
+    n->data()->uuid(old_state->uuid());
     
     queue_.push(n);
     MotifStateTreeNodeOP current, parent;

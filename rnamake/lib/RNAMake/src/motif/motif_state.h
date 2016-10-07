@@ -178,6 +178,12 @@ public: // getters
     Uuid const &
     uuid() { return uuid_; }
     
+public: //setters
+  
+    inline
+    void
+    uuid(Uuid const & uuid) { uuid_ = uuid; }
+    
     
 public:
     inline
@@ -198,6 +204,7 @@ public:
     new_uuids() {
         uuid_ = Uuid();
     }
+    
     
     
 private:

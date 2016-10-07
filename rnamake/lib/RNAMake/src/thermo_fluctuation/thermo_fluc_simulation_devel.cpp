@@ -197,6 +197,7 @@ ThermoFlucSimulationDevel::run() {
         //if(r == 0) { continue; }
 
         clash = _check_sterics();
+        //clash = 0;
         
         if(clash) {
             steps++;
@@ -207,7 +208,7 @@ ThermoFlucSimulationDevel::run() {
         end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->get_end_state(ei2_);
         
         score_ = scorer_->score(end_state_1_, end_state_2_);
-        if(score_ < cutoff_) {            
+        if(score_ < cutoff_) {
             
             count += 1;
             

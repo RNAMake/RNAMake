@@ -94,6 +94,11 @@ public: //iterators
     const_iterator end()   const { return connections_.end(); }
     
 public:
+    
+    inline
+    size_t
+    size() const { return connections_.size(); }
+    
     void
     add_connection(
         int i,
@@ -127,7 +132,7 @@ public:
     bool
     in_connection(
         int index,
-        String const & name) {
+        String const & name) const {
         
         for(auto const & c : connections_) {
             if(index == c->i() && name == c->name_i()) { return true; }

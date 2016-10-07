@@ -14,8 +14,10 @@
 #include "base/types.h"
 #include "base/option.h"
 #include "util/random_number_generator.h"
-#include "eternabot/sequence_designer.h"
+#include "eternabot/scorer.h"
 #include "motif_data_structures/motif_tree.h"
+#include "motif_data_structures/motif_state_tree.h"
+
 
 class SequenceOptimizer3D : public OptionClass {
 public:
@@ -35,9 +37,35 @@ private:
     typedef std::vector<OptimizedSequenceOP> OptimizedSequenceOPs;
     
     struct DesignableBP {
+        inline
+        DesignableBP(
+            sstruct::BasepairOP const & nbp):
+            bp(nbp),
+            last_state(Strings{"", ""}),
+            m_id_bot(nullptr),
+            m_id_top(nullptr)
+            {}
+        
+        void
+        update_state(
+            Strings const & bp_name) {
+            last_state[0] = bp->res1()->name();
+            last_state[1] = bp->res2()->name();
+            bp->res1()->name(bp_name[0]);
+            bp->res2()->name(bp_name[1]);
+        }
+        
+        void
+        revert_state() {
+            bp->res1()->name(last_state[0]);
+            bp->res2()->name(last_state[1]);
+        }
+        
+        
         sstruct::BasepairOP bp;
-        String last_state;
+        Strings last_state;
         std::shared_ptr<Uuid> m_id_bot, m_id_top;
+        
     };
     
     typedef std::shared_ptr<DesignableBP> DesignableBPOP;
@@ -51,6 +79,13 @@ public:
         BasepairOP const &,
         int,
         int);
+    
+private:
+    void
+    _update_designable_bp(
+        DesignableBPOP const &,
+        MotifStateTreeOP &,
+        Strings const &);
     
 public: //option wrappers
     
@@ -93,8 +128,12 @@ protected:
     
 private:
     Options options_;
-    eternabot::SequenceDesigner sequence_designer_;
+    eternabot::Scorer scorer_;
     RandomNumberGenerator rng_;
+    // option vars
+    int solutions_;
+    float cutoff_, eterna_cutoff_;
+    bool verbose_;
     
     
 };

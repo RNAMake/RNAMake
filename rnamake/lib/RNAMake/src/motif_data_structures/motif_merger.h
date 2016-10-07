@@ -103,7 +103,6 @@ public:
         }
         
         for(auto const & m : motifs) { update_motif(m); }
-        
       }
     
     ~MotifMerger() { }

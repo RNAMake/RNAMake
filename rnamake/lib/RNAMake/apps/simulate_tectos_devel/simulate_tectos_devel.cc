@@ -37,6 +37,9 @@ SimulateTectosApp::setup_options() {
     add_option("r", false, OptionType::BOOL);
     add_option("record_file", "test.out", OptionType::STRING);
 
+    //new ggaa loop
+    add_option("ggaa_model", "", OptionType::STRING);
+    
     add_cl_options(tfs_.options(), "simulation");
     
 }
@@ -525,11 +528,10 @@ SimulateTectosApp::run() {
     auto cseq = get_string_option("cseq");
     auto css  = get_string_option("css");
     
-    auto mset = get_mset_old(fseq, fss, cseq, css);
+    auto mset = get_mset_new_receptor(fseq, fss, cseq, css);
     if(get_bool_option("start_pose")) {
         auto mt = mset->to_mst()->to_motif_tree();
         std::cout << "outputing starting pose: start_pose.pdb" << std::endl;
-        mt->to_pdb("start_pose.pdb", 1);
     }
     
     
@@ -538,10 +540,12 @@ SimulateTectosApp::run() {
     steric_node_str += std::to_string(last_node_index) + "," + std::to_string(last_node_index-1);
     steric_node_str += ":1";
     
+    auto end_index = mset->to_mst()->get_node(1)->data()->get_end_index("A1-A6");
+    
     tfs_.set_option_value("steps", get_int_option("s"));
     tfs_.set_option_value("steric_nodes", steric_node_str);
     tfs_.set_option_value("record", get_bool_option("r"));
-    tfs_.setup(mset, 1, mset->last_node()->index(), 1, 1);
+    tfs_.setup(mset, 1, mset->last_node()->index(), end_index, 1);
     auto count = tfs_.run();
     std::cout << count << std::endl;
     
@@ -587,6 +591,23 @@ SimulateTectosApp::get_mset_new_receptor(
     String const & fss,
     String const & cseq,
     String const & css) {
+    
+    if(get_string_option("ggaa_model") == "") {
+        String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
+        auto lines = get_lines_from_file(base_path+"new_ggaa_tetraloop.motif");
+        auto new_ggaa_tetraloop = std::make_shared<Motif>(
+                lines[0],
+                ResidueTypeSetManager::getInstance().residue_type_set());
+        RM::instance().add_motif(new_ggaa_tetraloop);
+    }
+    else {
+        auto lines = get_lines_from_file(get_string_option("ggaa_model"));
+        auto new_ggaa_tetraloop = std::make_shared<Motif>(
+            lines[0],
+            ResidueTypeSetManager::getInstance().residue_type_set());
+        RM::instance().add_motif(new_ggaa_tetraloop);
+
+    }
     
     auto ggaa_ttr = RM::instance().motif("new_ggaa_tetraloop", "", "A13-A16");
     auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
@@ -702,10 +723,7 @@ int main(int argc, const char * argv[]) {
     String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
     RM::instance().add_motif(base_path+"GAAA_tetraloop");
     RM::instance().add_motif(base_path+"GGAA_tetraloop");
-    auto lines = get_lines_from_file(base_path+"new_ggaa_tetraloop.motif");
-    auto new_ggaa_tetraloop = std::make_shared<Motif>(lines[0],
-                                                      ResidueTypeSetManager::getInstance().residue_type_set());
-    RM::instance().add_motif(new_ggaa_tetraloop);
+
     
     auto app = SimulateTectosApp();
     app.setup_options();

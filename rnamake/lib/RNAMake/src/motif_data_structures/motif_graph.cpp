@@ -186,6 +186,7 @@ MotifGraph::MotifGraph(
         
     options_ = Options(mg.options_);
     merger_ = std::make_shared<MotifMerger>(*mg.merger_, motifs);
+    aligned_ = mg.aligned_;
 }
 
 
@@ -351,7 +352,10 @@ void
 MotifGraph::_align_motifs_all_motifs() {
     int start = -1;
     for(auto const kv : aligned_) {
-        if(kv.second == 0) { start = kv.first; }
+        if(kv.second == 0) {
+            start = kv.first;
+            break;
+        }
     }
     
     auto n = GraphNodeOP<MotifOP>();
@@ -364,6 +368,7 @@ MotifGraph::_align_motifs_all_motifs() {
             merger_->update_motif(n->data());
             continue;
         }
+        
         if(n->connections()[0] == nullptr) { continue; }
         auto c = n->connections()[0];
         auto parent = c->partner(n->index());
@@ -615,7 +620,7 @@ MotifGraph::replace_ideal_helices() {
             for(int j = 0; j < count; j++) {
                 auto h = RM::instance().motif("HELIX.IDEAL");
                 auto parent = get_node(old_pos);
-                auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
+                auto m_added = get_aligned_motif(parent->data()->ends()[1],
                                                  h->ends()[0], h);
                 pos = _add_motif_to_graph(m_added, parent, 1);
                 old_pos = pos;
