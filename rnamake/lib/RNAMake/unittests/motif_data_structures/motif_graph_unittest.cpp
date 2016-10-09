@@ -217,6 +217,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         mg2->replace_ideal_helices();
 
         dss = mg2->designable_secondary_structure();
+        
         sstruct::fill_basepairs_in_ss(dss);
 
         REQUIRE_NOTHROW(mg2->replace_helical_sequence(dss));

@@ -115,7 +115,29 @@ Segmenter::_get_segments(
     auto remaining = mf_.motif_from_res(other_res, other_bps);
     remaining->name(m->name() + ".remaining");
     mf_.standardize_rna_structure_ends(remaining);
+    
+    for(auto const & c : remaining->chains()) {
+        std::cout << c->first()->num() << " " << c->last()->num() << std::endl;
+    }
 
+    int flip_res = 0;;
+    for(auto & end : remaining->ends()) {
+        flip_res = 0;
+        for (auto const & c : remaining->chains()) {
+            if(c->first() == end->res2()) {
+                flip_res = 1;
+                break;
+            }
+        }
+        
+        if(!flip_res) { continue; }
+        
+        auto temp = end->res1();
+        end->res1(end->res2());
+        end->res2(temp);
+    }
+    
+    
     return std::make_shared<Segments>(removed, remaining);
     
 }

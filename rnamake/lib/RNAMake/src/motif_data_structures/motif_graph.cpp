@@ -358,6 +358,11 @@ MotifGraph::_align_motifs_all_motifs() {
         }
     }
     
+    if(start == -1) {
+        throw MotifGraphException(
+            "could not find start position in graph to perform alignment!");
+    }
+    
     auto n = GraphNodeOP<MotifOP>();
     for(auto it = graph_.transverse(graph_.get_node(start));
         it != graph_.end();
@@ -656,6 +661,7 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
         auto new_name = String();
         new_name += spl[0][0]; new_name += spl[2][1]; new_name += "=";
         new_name += spl[0][1]; new_name += spl[2][0];
+        //std::cout << ss_m->end_ids()[0] << " " << ss_m->sequence() << " " << new_name << std::endl;
         if(n->data()->name() == new_name) {
             continue;
         }

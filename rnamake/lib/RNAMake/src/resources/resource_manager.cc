@@ -103,6 +103,24 @@ RM::get_structure(
     
     auto m = mf_.motif_from_file(path);
     if(name != "") { m->name(name); }
+
+    int flip_res = 0;;
+    for(auto & end : m->ends()) {
+        flip_res = 0;
+        for (auto const & c : m->chains()) {
+            if(c->first() == end->res2()) {
+                flip_res = 1;
+                break;
+            }
+        }
+        
+        if(!flip_res) { continue; }
+        
+        auto temp = end->res1();
+        end->res1(end->res2());
+        end->res2(temp);
+    }
+    
     
     return m;
 }

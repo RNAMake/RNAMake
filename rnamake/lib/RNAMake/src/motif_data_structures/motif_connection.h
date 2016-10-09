@@ -57,6 +57,17 @@ public: // getters
     String const &
     name_j() { return name_j_; }
     
+public: // setters
+    
+    inline
+    void
+    name_i(String const & name) { name_i_ = name; }
+    
+    inline
+    void
+    name_j(String const & name) { name_j_ = name; }
+    
+    
 public:
     
     String
@@ -139,6 +150,28 @@ public:
             if(index == c->j() && name == c->name_j()) { return true; }
         }
         return false;
+    }
+    
+    void
+    update_connection_name(
+        int index,
+        String const & name,
+        String const & new_name) {
+        
+        for(auto & c : connections_) {
+            if(index == c->i() && name == c->name_i()) {
+                c->name_i(new_name);
+                return;
+            }
+            if(index == c->j() && name == c->name_j()) {
+                c->name_j(new_name);
+                return;
+            }
+        }
+        
+        throw std::runtime_error(
+            "cannot replace name in connection, original connection does not exist");
+        
         
     }
     

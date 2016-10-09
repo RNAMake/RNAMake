@@ -45,7 +45,8 @@ SequenceOptimizer3D::get_optimized_sequences(
     
     auto sols = OptimizedSequenceOPs();
     auto ss = mt->designable_secondary_structure();
-    
+    auto mst = std::make_shared<MotifStateTree>(mt);
+
     auto designable_bps = DesignableBPOPs();
     for(auto const & bp : ss->basepairs()) {
         auto bp_name = bp->res1()->name()+bp->res2()->name();
@@ -69,15 +70,29 @@ SequenceOptimizer3D::get_optimized_sequences(
         d_bp->bp->res2()->name(state[1]);
     }
     
-    auto mst = std::make_shared<MotifStateTree>(mt);
     for(auto const & m : ss->motifs()) {
         if(m->name() != "HELIX.IDEAL") { continue; }
         auto n = mst->get_node(m->id());
-        auto name = m->ends()[0]->res1()->name()+m->ends()[0]->res2()->name()+"=";
+        auto name = String("");
+        int found = 0;
+        for(auto const & m2 : ss->motifs()) {
+            if(m == m2) { continue; }
+            for(auto const & end : m2->ends()) {
+                if(end == m->ends()[0] && m2->mtype() != MotifType::HELIX) {
+                    name = m->ends()[0]->res2()->name()+m->ends()[0]->res1()->name()+"=";
+                    found = 1;
+                    break;
+                }
+            }
+        }
+        
+        if(!found) {
+            name = m->ends()[0]->res1()->name()+m->ends()[0]->res2()->name()+"=";
+        }
         name +=     m->ends()[1]->res1()->name()+m->ends()[1]->res2()->name();
         mst->replace_state(n->index(), RM::instance().motif_state(name));
-        auto n2 = mst->get_node(m->id());
     }
+      
     
     auto target_state = target_bp->state();
     auto last_score = target_state->diff(mst->get_node(ni)->data()->get_end_state(ei));
@@ -124,15 +139,19 @@ SequenceOptimizer3D::get_optimized_sequences(
         eterna_score = scorer_.score_secondary_structure(ss);
         if(eterna_score > eterna_cutoff_) {
             
+            auto s1 = mst->to_motif_tree()->secondary_structure()->sequence();
+            mst->write_pdbs("org");
             sols.push_back(std::make_shared<OptimizedSequence>(
-                            OptimizedSequence{ss->sequence(), new_score, eterna_score}));
+                            OptimizedSequence{s1, new_score, eterna_score}));
             
+            //std::cout << mst->to_motif_tree()->secondary_structure()->sequence() << std::endl;
             if(verbose_) {
                 std::cout << "SEQUENCE OPTIMIZER: found solution! score=" << new_score;
                 std::cout << " eterna_score=" << eterna_score << std::endl;
             }
             
             if(sols.size() >= solutions_) { return sols; }
+            return sols;
         }
         
     }

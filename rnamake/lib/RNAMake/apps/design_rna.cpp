@@ -123,6 +123,7 @@ DesignRNAApp::_setup_from_pdb() {
 
     segments->remaining->to_pdb("remaining.pdb");
     segments->removed->to_pdb("removed.pdb");
+    segments->remaining->mtype(MotifType::TWOWAY);
     
     RM::instance().register_motif(segments->remaining);
     
@@ -151,11 +152,12 @@ DesignRNAApp::run() {
     search_.set_option_value("verbose", get_bool_option("verbose"));
     
     auto so = SequenceOptimizer3D();
-    so.set_option_value("verbose", get_bool_option("verbose"));
+    //so.set_option_value("verbose", get_bool_option("verbose"));
+    //so.set_option_value("cutoff", 2.0f);
     
     auto end_n_uuid = mg_->get_node(end_.n_pos)->data()->id();
     mg_->increase_level();
-    
+
     auto out = std::ofstream(get_string_option("score_file"));
     out << "design_num,design_score,design_sequence,design_structure,opt_num,";
     out << "opt_sequence,opt_score,eterna_score" << std::endl;
@@ -165,6 +167,7 @@ DesignRNAApp::run() {
         auto sol = search_.next();
         
         auto mt = sol->to_motif_tree();
+
         mg_->add_motif_tree(mt, start_.n_pos, start_.name);
         mg_->add_connection(end_.n_pos, mg_->last_node()->index(), end_.name, "");
         mg_->replace_ideal_helices();
@@ -185,7 +188,6 @@ DesignRNAApp::run() {
                 opt_num++;
                 
                 auto copy_mg = std::make_shared<MotifGraph>(*mg_);
-                //auto copy_mg = MotifGraph(*mg_);
                 auto dss = copy_mg->designable_secondary_structure();
                 dss->replace_sequence(s->sequence);
                 copy_mg->replace_helical_sequence(dss);

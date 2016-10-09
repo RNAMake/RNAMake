@@ -152,6 +152,10 @@ class BuildSqliteLibraries(object):
         types = [motif_type.TWOWAY, motif_type.NWAY, motif_type.HAIRPIN,
                  motif_type.TCONTACT]
         #types = [motif_type.TWOWAY]
+
+        #
+        bad_keys = "TWOWAY.2GDI.4-X20-X45 TWOWAY.1S72.46-02097-02647 TWOWAY.2GDI.6-Y20-Y45".split()
+
         for t in types:
             count = 0
             mlib = motif_library.MotifLibrary(t)
@@ -175,6 +179,10 @@ class BuildSqliteLibraries(object):
                     if m_added is None:
                         continue
                     else:
+                        key = m_added.name + "-" + m_added.ends[0].name()
+                        if key in bad_keys:
+                            continue
+
                         #print m_added.name, m_added.ends[ei].name()
                         succeses.append([m_added, ei])
 
@@ -275,19 +283,7 @@ class BuildSqliteLibraries(object):
                 aligned_motifs.append(m_a)
 
             motifs_and_energies = []
-            """sum = open(c.end_id + ".scores", "w")
-            for m in aligned_motifs:
-                m.to_pdb("motif.pdb")
-                subprocess.call("rna_score -s motif.pdb", shell=True)
-                f = open("default.out")
-                lines = f.readlines()
-                f.close()
-                energy_spl = lines[3].split()
-                os.remove("default.out")
-                motifs_and_energies.append([m, float(energy_spl[1])])
-                sum.write(energy_spl[1] + "\n")
 
-            sum.close()"""
 
             f = open(c.end_id + ".scores")
             lines = f.readlines()
@@ -326,14 +322,17 @@ class BuildSqliteLibraries(object):
             me.setup(c.end_id, clustered_motifs, energies)
             mes_data.append([me.to_str(), me.id, count])
 
+
+            print c.end_id
+            print  me.members[0].motif.ends[0].res1.name, me.members[0].motif.ends[0].res2.name
+            me.members[0].motif.to_pdb(c.end_id+".pdb")
+
             motif = me.members[0].motif
             motif.name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
 
             motif_data.append([motif.to_str(), motif.name, motif.ends[0].name(),
                                me.id, count])
             count += 1
-
-
 
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
         sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
@@ -571,7 +570,7 @@ class BuildSqliteLibraries(object):
 builder = BuildSqliteLibraries()
 
 #builder.build_ideal_helices_old()
-#builder.build_basic_libraries()
+builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
