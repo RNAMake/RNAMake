@@ -1,6 +1,6 @@
 from rnamake.eternabot import sequence_designer
 import resource_manager as rm
-import motif_state_tree, monte_carlo
+import motif_state_tree, monte_carlo, motif_type
 from rnamake import basepair
 from eternabot import sequence_designer
 import base
@@ -97,10 +97,22 @@ class SequenceOptimizer3D(base.Base):
                 continue
 
             n = mst.get_node(uuid=m.id)
-            name =  m.ends[0].res1.name+m.ends[0].res2.name+"="
+            name = ""
+            found = 0
+            for m2 in ss.motifs:
+                for end in m2.ends:
+                    if end == m.ends[0] and m2.mtype != motif_type.HELIX:
+                        name = m.ends[0].res2.name+m.ends[0].res1.name+"="
+                        found = 1
+                        break
+
+            if not found:
+                name =  m.ends[0].res1.name+m.ends[0].res2.name+"="
+
             name += m.ends[1].res1.name+m.ends[1].res2.name
             mst.replace_state(n.index, rm.manager.get_state(name=name))
-
+        mst.write_pdbs()
+        exit()
         target_state = target_bp.state()
         target_state_flip = target_bp.state()
         target_state_flip.flip()
@@ -114,7 +126,7 @@ class SequenceOptimizer3D(base.Base):
         best = 1000
         cutoff = self.option('cutoff')
         solutions = []
-        for i in range(1,5000):
+        for i in range(1,1000):
             if i % 500 == 0:
                 print i, best
                 for j, s in enumerate(best_states):

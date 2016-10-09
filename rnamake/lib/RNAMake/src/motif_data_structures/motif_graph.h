@@ -469,7 +469,8 @@ public: //designing functions
         auto ss_r = sstruct::ResidueOP(nullptr);
         
         for(auto const & n : graph_) {
-            if(n->data()->name() != "HELIX.IDEAL") { continue;}
+            if(n->data()->name() != "HELIX.IDEAL") { continue; }
+            
             for(auto const & r : n->data()->residues()) {
                 ss_r= ss->get_residue(r->uuid());
                 if(ss_r != nullptr) {

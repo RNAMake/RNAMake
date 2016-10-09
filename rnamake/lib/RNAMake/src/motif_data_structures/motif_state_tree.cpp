@@ -45,6 +45,10 @@ MotifStateTree::MotifStateTree(
         }
         
     }
+        
+    for(auto const & c : mt->connections()) {
+        connections_.add_connection(c->i(), c->j(), c->name_i(), c->name_j());
+    }
     
 }
 
@@ -452,6 +456,16 @@ MotifStateTree::replace_state(
     n->data()->ref_state = new_state;
     n->data()->cur_state = std::make_shared<MotifState>(*new_state);
     n->data()->uuid(old_state->uuid());
+    
+    for(int i = 0; i < new_state->end_states().size(); i++) {
+        if(connections_.in_connection(n->index(), old_state->end_names()[i])) {
+            connections_.update_connection_name(n->index(),
+                                                old_state->end_names()[i],
+                                                new_state->end_names()[i]);
+        }
+
+    }
+    
     
     queue_.push(n);
     MotifStateTreeNodeOP current, parent;

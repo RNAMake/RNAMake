@@ -22,13 +22,14 @@ class SequenceOptimizerUnittests(unittest.TestCase):
         so = sequence_optimizer.SequenceOptimizer3D()
         so.get_optimized_sequences(mt, build_points[0].node.data.ends[1])
 
-    def _test_init_2(self):
+    def test_init_2(self):
         builder = build.BuildMotifGraph()
         mg = builder.build(5)
         mg.add_motif(m_name="HAIRPIN.1C0A.0")
         mg.replace_ideal_helices()
         c = motif_topology.GraphtoTree()
         mt = c.convert(mg)
+        mt.write_pdbs()
 
         so = sequence_optimizer.SequenceOptimizer3D()
         solutions = so.get_optimized_sequences(mt,mt.last_node().data.ends[0],
