@@ -49,16 +49,16 @@ private:
         void
         update_state(
             Strings const & bp_name) {
-            last_state[0] = bp->res1()->name();
-            last_state[1] = bp->res2()->name();
-            bp->res1()->name(bp_name[0]);
-            bp->res2()->name(bp_name[1]);
+            last_state[1] = bp->res1()->name();
+            last_state[0] = bp->res2()->name();
+            bp->res1()->name(bp_name[1]);
+            bp->res2()->name(bp_name[0]);
         }
         
         void
         revert_state() {
-            bp->res1()->name(last_state[0]);
-            bp->res2()->name(last_state[1]);
+            bp->res1()->name(last_state[1]);
+            bp->res2()->name(last_state[0]);
         }
         
         

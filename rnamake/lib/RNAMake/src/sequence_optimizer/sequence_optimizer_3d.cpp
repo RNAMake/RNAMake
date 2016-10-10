@@ -89,10 +89,10 @@ SequenceOptimizer3D::get_optimized_sequences(
         if(!found) {
             name = m->ends()[0]->res1()->name()+m->ends()[0]->res2()->name()+"=";
         }
-        name +=     m->ends()[1]->res1()->name()+m->ends()[1]->res2()->name();
+        name +=     m->ends()[1]->res2()->name()+m->ends()[1]->res1()->name();
         mst->replace_state(n->index(), RM::instance().motif_state(name));
     }
-      
+    
     
     auto target_state = target_bp->state();
     auto last_score = target_state->diff(mst->get_node(ni)->data()->get_end_state(ei));
@@ -140,7 +140,16 @@ SequenceOptimizer3D::get_optimized_sequences(
         if(eterna_score > eterna_cutoff_) {
             
             auto s1 = mst->to_motif_tree()->secondary_structure()->sequence();
-            mst->write_pdbs("org");
+            auto s2 = ss->sequence();
+            
+            for(int i = 0; i < s2.length(); i++) {
+                if(s1[i] != s2[i]) {
+                    throw std::runtime_error(
+                        "sequences are out of sync: something went really wrong in sequence "
+                        "optimization");
+                }
+            }
+            
             sols.push_back(std::make_shared<OptimizedSequence>(
                             OptimizedSequence{s1, new_score, eterna_score}));
             
@@ -151,7 +160,6 @@ SequenceOptimizer3D::get_optimized_sequences(
             }
             
             if(sols.size() >= solutions_) { return sols; }
-            return sols;
         }
         
     }

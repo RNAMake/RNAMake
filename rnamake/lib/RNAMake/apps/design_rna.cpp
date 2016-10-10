@@ -152,15 +152,17 @@ DesignRNAApp::run() {
     search_.set_option_value("verbose", get_bool_option("verbose"));
     
     auto so = SequenceOptimizer3D();
-    //so.set_option_value("verbose", get_bool_option("verbose"));
-    //so.set_option_value("cutoff", 2.0f);
+    so.set_option_value("verbose", get_bool_option("verbose"));
     
     auto end_n_uuid = mg_->get_node(end_.n_pos)->data()->id();
     mg_->increase_level();
 
-    auto out = std::ofstream(get_string_option("score_file"));
-    out << "design_num,design_score,design_sequence,design_structure,opt_num,";
-    out << "opt_sequence,opt_score,eterna_score" << std::endl;
+    auto sf_out = std::ofstream(get_string_option("score_file"));
+    sf_out << "design_num,design_score,design_sequence,design_structure,opt_num,";
+    sf_out << "opt_sequence,opt_score,eterna_score" << std::endl;
+    
+    auto out = std::ofstream(get_string_option("out_file"));
+    
     
     int design_num = 0;
     while(! search_.finished()) {
@@ -181,9 +183,9 @@ DesignRNAApp::run() {
         if(sols.size() > 0) {
             int opt_num = 0;
             for(auto const & s : sols) {
-                out << design_num << "," << sol->score() << "," <<  mg_->designable_sequence() << ",";
-                out << opt_num << "," << s->sequence << "," << s->dist_score << "," << s->eterna_score;
-                out << std::endl;
+                sf_out << design_num << "," << sol->score() << "," <<  mg_->designable_sequence() << ",";
+                sf_out << opt_num << "," << s->sequence << "," << s->dist_score << "," << s->eterna_score;
+                sf_out << std::endl;
                 
                 opt_num++;
                 
@@ -191,14 +193,19 @@ DesignRNAApp::run() {
                 auto dss = copy_mg->designable_secondary_structure();
                 dss->replace_sequence(s->sequence);
                 copy_mg->replace_helical_sequence(dss);
-                copy_mg->write_pdbs();
                 
-                exit(0);
+                out << copy_mg->to_str() << std::endl;
             }
             
             design_num++;
             
             if(design_num >= get_int_option("designs")) {
+                std::cout << "DESIGN RNA: generated " << get_int_option("designs") << " ";
+                std::cout << "design(s)! if you would like more please specify how many you ";
+                std::cout << "would like with -designs #Num" << std::endl;
+                sf_out.close();
+                out.close();
+                
                 exit(0);
             }
         }
@@ -209,6 +216,7 @@ DesignRNAApp::run() {
         
     }
     
+    sf_out.close();
     out.close();
     
     

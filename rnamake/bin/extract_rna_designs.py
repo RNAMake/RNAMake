@@ -15,9 +15,9 @@ def parse_args():
 
 args = parse_args()
 
-df = pd.read_csv(args.f)
-#print df['mg_str'][0]
+f = open(args.f)
+lines = f.readlines()
+f.close()
 
-for i,r in df.iterrows():
-    mg = motif_graph.MotifGraph(mg_str=r['mg_str'])
-    print len(mg)
+mg = motif_graph.MotifGraph(mg_str=lines[0])
+mg.to_pdb("test.pdb", renumber=1)
