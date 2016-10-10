@@ -143,6 +143,7 @@ MotifGraph::_setup_from_str(String const & s) {
         if(kv.second == 0) { start = kv.first; }
     }
     
+    auto seen_connections = std::map<String, int>();
     auto n = GraphNodeOP<MotifOP>();
     for(auto it = graph_.transverse(graph_.get_node(start));
         it != graph_.end();
@@ -161,9 +162,27 @@ MotifGraph::_setup_from_str(String const & s) {
         auto c = n->connections()[0];
         auto parent = c->partner(n->index());
         auto parent_end_index = c->end_index(parent->index());
+        seen_connections[std::to_string(n->index()) + " " + std::to_string(parent->index())] = 1;
         merger_->add_motif(n->data(), n->data()->ends()[0],
                           parent->data(), parent->data()->ends()[parent_end_index]);
         
+    }
+    
+    // catch connections not used in alignement for for chain connections
+    for(auto const & n : graph_) {
+        for(auto const & c : n->connections()) {
+            if(c != nullptr) { continue; }
+            auto partner = c->partner(n->index());
+            auto key1 = std::to_string(n->index()) + " " + std::to_string(partner->index());
+            auto key2 = std::to_string(partner->index()) + " " + std::to_string(n->index());
+            if(seen_connections.find(key1) != seen_connections.end()) { continue; }
+            if(seen_connections.find(key2) != seen_connections.end()) { continue; }
+            auto end1 = n->data()->ends()[c->end_index(n->index())];
+            auto end2 = partner->data()->ends()[c->end_index(partner->index())];
+            merger_->connect_motifs(n->data(), partner->data(), end1, end2);
+            seen_connections[key1] = 1;
+            
+        }
     }
     
     options_.set_value("sterics", true);

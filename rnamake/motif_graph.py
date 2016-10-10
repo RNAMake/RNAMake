@@ -397,6 +397,7 @@ class MotifGraph(base.Base):
             raise ValueError("cannot find a place to start in rebuilding motif_graph"
                              " from string")
 
+        seen_connections = {}
         for n in graph.transverse_graph(self.graph, start):
             if n.index == start:
                 self.merger.add_motif(n.data)
@@ -407,9 +408,24 @@ class MotifGraph(base.Base):
             c = n.connections[0]
             parent = c.partner(n.index)
             parent_end_index = c.end_index(parent.index)
-
+            seen_connections[str(n.index) + " " + str(parent.index)] = 1
             self.merger.add_motif(n.data, n.data.ends[0],
                                   parent.data, parent.data.ends[parent_end_index])
+
+        # catch connections not used in alignment for chain connections
+        for n in self.graph:
+            for c in n.connections:
+                if c is None:
+                    continue
+                partner = c.partner(n.index)
+                key1 = str(n.index) + " " + str(partner.index)
+                key2 = str(partner.index) + " " + str(n.index)
+                if key1 in seen_connections or key2 in seen_connections:
+                    continue
+                end1 = n.data.ends[c.end_index(n.index)]
+                end2 = partner.data.ends[c.end_index(partner.index)]
+                self.merger.connect_motifs(n.data, partner.data, end1, end2)
+                seen_connections[key1] = 1
 
     def setup_options_and_constraints(self):
         options = {'sterics': 1}

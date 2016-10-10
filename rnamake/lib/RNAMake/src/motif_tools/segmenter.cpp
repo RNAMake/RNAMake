@@ -116,10 +116,6 @@ Segmenter::_get_segments(
     remaining->name(m->name() + ".remaining");
     mf_.standardize_rna_structure_ends(remaining);
     
-    for(auto const & c : remaining->chains()) {
-        std::cout << c->first()->num() << " " << c->last()->num() << std::endl;
-    }
-
     int flip_res = 0;;
     for(auto & end : remaining->ends()) {
         flip_res = 0;
