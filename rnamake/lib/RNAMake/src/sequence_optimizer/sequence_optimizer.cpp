@@ -10,6 +10,7 @@
 #include "motif_data_structures/motif_topology.h"
 #include "sequence_optimizer/sequence_optimizer.h"
 
+/*
 void
 SequenceOptimizer::setup_options() {
     options_.add_option("sub_sequence", String(""), OptionType::STRING);
@@ -131,7 +132,7 @@ SequenceOptimizer::get_final_sequence(
     return full_seq;
     
 }
-
+*/
 
 
 

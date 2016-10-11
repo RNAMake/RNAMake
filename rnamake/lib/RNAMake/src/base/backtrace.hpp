@@ -84,10 +84,12 @@ print_backtrace() {
         << std::endl;
     }
     
-    
     size_t const callstack_size = 128;
     void* callstack[callstack_size];
-    int i, frames = backtrace(callstack, callstack_size);
+    const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
+    int i = 0;
+    int frames = backtrace(callstack, nMaxFrames);
+    std::cout << frames << std::endl;
     char** strs = backtrace_symbols(callstack, frames);
     //std::cerr << utility::CSI_Magenta; // set color of cerr to magenta
     for ( i = 3; i < frames; ++i ) {

@@ -171,7 +171,7 @@ MotifGraph::_setup_from_str(String const & s) {
     // catch connections not used in alignement for for chain connections
     for(auto const & n : graph_) {
         for(auto const & c : n->connections()) {
-            if(c != nullptr) { continue; }
+            if(c == nullptr) { continue; }
             auto partner = c->partner(n->index());
             auto key1 = std::to_string(n->index()) + " " + std::to_string(partner->index());
             auto key2 = std::to_string(partner->index()) + " " + std::to_string(n->index());

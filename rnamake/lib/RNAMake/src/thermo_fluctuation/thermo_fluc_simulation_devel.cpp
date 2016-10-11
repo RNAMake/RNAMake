@@ -137,7 +137,7 @@ ThermoFlucSimulationDevel::run() {
     int count = 0;
     int clash = 0;
     int bound_pdb_count = 0;
-    
+        
     std::ofstream out, out_state, out_all;
     if(record_) {
         out.open(record_file_);

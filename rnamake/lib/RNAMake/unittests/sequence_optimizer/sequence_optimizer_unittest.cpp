@@ -23,14 +23,15 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         mg->add_motif(m);
         mg->replace_ideal_helices();
     
-        auto c = GraphtoTree();
+        /*auto c = GraphtoTree();
         auto mt = c.convert(mg);
     
         auto so = SequenceOptimizer3D();
+        so.set_option_value("verbose", false);
         auto sols = so.get_optimized_sequences(mt, mt->last_node()->data()->ends()[0],
                                                mt->last_node()->index(), 0);
     
-        REQUIRE(sols.size() > 0);
+        REQUIRE(sols.size() > 0);*/
     }
     
     
@@ -39,7 +40,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         auto base_path = base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
         RM::instance().add_motif(base_path+"GAAA_tetraloop");
         
-        auto path = base_dir() + "/rnamake/unittests/test_problems/mini_ttr/sol.mg";
+        /*auto path = base_dir() + "/rnamake/unittests/test_problems/mini_ttr/sol.mg";
         auto lines = get_lines_from_file(path);
         auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
         mg->replace_ideal_helices();
@@ -51,10 +52,11 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         mt->set_option_value("sterics", false);
         
         auto so = SequenceOptimizer3D();
+        so.set_option_value("verbose", false);
         auto sols = so.get_optimized_sequences(mt, mt->last_node()->data()->ends()[0],
-                                               mt->get_node(4)->index(), 1);
+                                               mt->get_node(4)->index(), 1);*/
 
-        std::cout << sols.size() << std::endl;
+        //std::cout << sols.size() << std::endl;
         
         
     }

@@ -32,13 +32,8 @@ struct EndStateInfo {
 
 class DesignRNAApp : public Application {
 public:
-    DesignRNAApp() : Application(),
-    search_(MotifStateSearch()),
-    mg_(std::make_shared<MotifGraph>()),
-    lookup_(StericLookup())
-    {}
-    
-    ~DesignRNAApp() {}
+
+    DesignRNAApp();
     
 public:
     

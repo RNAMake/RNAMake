@@ -105,7 +105,7 @@ struct pf_paramT {
     double  expdangle3[NBPAIRS+1][5];
     double  expint11[NBPAIRS+1][NBPAIRS+1][5][5];
     double  expint21[NBPAIRS+1][NBPAIRS+1][5][5][5];
-    double  expint22[NBPAIRS+1][NBPAIRS+1][5][5][5][5];
+    float  expint22[NBPAIRS+1][NBPAIRS+1][5][5][5][5];
     double  expninio[5][MAXLOOP+1];
     double  lxc;
     double  expMLbase;
