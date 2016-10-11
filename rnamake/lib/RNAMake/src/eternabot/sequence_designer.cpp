@@ -9,7 +9,7 @@
 #include "sequence_designer.h"
 
 namespace eternabot {
-    
+ /*
 void
 SequenceDesigner::setup_options() {
     options_.add_option("designs", 1, OptionType::INT);
@@ -193,7 +193,7 @@ SequenceDesigner::_row_of_gc_bps(
     else                 { return false; }
 }
 
-    
+ */   
 }
 
 

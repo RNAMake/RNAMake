@@ -19,7 +19,7 @@
 #include "motif_data_structures/motif_state_tree.h"
 
 
-class SequenceOptimizer3D : public OptionClass {
+class SequenceOptimizer3D  {
 public:
     
     SequenceOptimizer3D();
@@ -125,7 +125,7 @@ public: //option wrappers
 protected:
     void
     setup_options();
-    
+
 private:
     Options options_;
     eternabot::Scorer scorer_;

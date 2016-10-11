@@ -84,7 +84,7 @@ RNAStructure::replace_sequence(
     }
     
     
-    assert(seq2.length() == residues().size() && "cannot replace sequence with a different length sequence");
+    //assert(seq2.length() == residues().size() && "cannot replace sequence with a different length sequence");
     int i = 0;
     for(auto & r : residues()) {
         r->name(String(1, seq2[i]));

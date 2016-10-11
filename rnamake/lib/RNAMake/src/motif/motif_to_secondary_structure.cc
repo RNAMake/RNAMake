@@ -68,7 +68,7 @@ MotiftoSecondaryStructure::to_secondary_structure(
             }
             
             if(saved_bp != nullptr) { seen_bp_[saved_bp->uuid()] = saved_bp; }
-            ss_res.push_back(std::make_shared<sstruct::Residue>(r->name(), ss, r->num(),
+            ss_res.push_back(std::make_shared<sstruct::Residue>(r->short_name(), ss, r->num(),
                                                                 r->chain_id(), r->uuid(),
                                                                 r->i_code()));
         }

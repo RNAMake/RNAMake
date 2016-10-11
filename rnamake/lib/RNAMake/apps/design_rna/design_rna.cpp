@@ -6,15 +6,19 @@
 //  Copyright © 2016 Joseph Yesselman. All rights reserved.
 //
 
-#include "design_rna.hpp"
 
 #include "base/backtrace.hpp"
 #include "resources/resource_manager.h"
 #include "motif_tools/segmenter.h"
 #include "motif_data_structures/motif_topology.h"
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "design_rna.hpp"
 
-
+DesignRNAApp::DesignRNAApp() : Application(),
+search_(MotifStateSearch()),
+mg_(std::make_shared<MotifGraph>()),
+lookup_(StericLookup())
+{}
 
 void
 DesignRNAApp::setup_options() {
@@ -26,6 +30,7 @@ DesignRNAApp::setup_options() {
     add_option("out_file", "default.out", OptionType::STRING, false);
     add_option("score_file", "default.scores", OptionType::STRING, false);
     add_option("verbose", false, OptionType::BOOL, false);
+    add_option("pdbs", false, OptionType::BOOL, false);
     
     // start from pdb
     add_option("pdb", String(""), OptionType::STRING, false);
@@ -33,6 +38,7 @@ DesignRNAApp::setup_options() {
     add_option("end_bp", String(""), OptionType::STRING, false);
 
     add_cl_options(search_.options(), "search");
+
 }
 
 void
@@ -136,7 +142,6 @@ DesignRNAApp::_setup_from_pdb() {
 
 void
 DesignRNAApp::run() {
-    
     if(get_string_option("pdb") != "") { _setup_from_pdb(); }
     
     auto start = mg_->get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
@@ -151,12 +156,14 @@ DesignRNAApp::run() {
     search_.set_option_value("max_solutions", 10000);
     search_.set_option_value("verbose", get_bool_option("verbose"));
     
-    auto so = SequenceOptimizer3D();
-    so.set_option_value("verbose", get_bool_option("verbose"));
-    
     auto end_n_uuid = mg_->get_node(end_.n_pos)->data()->id();
     mg_->increase_level();
-
+    
+    auto so = SequenceOptimizer3D();
+    so.set_option_value("verbose", get_bool_option("verbose"));
+    so.set_option_value("cutoff", 100.0f);
+    
+    
     auto sf_out = std::ofstream(get_string_option("score_file"));
     sf_out << "design_num,design_score,design_sequence,design_structure,opt_num,";
     sf_out << "opt_sequence,opt_score,eterna_score" << std::endl;
@@ -165,6 +172,7 @@ DesignRNAApp::run() {
     
     
     int design_num = 0;
+    int solution_count = 0;
     while(! search_.finished()) {
         auto sol = search_.next();
         
@@ -193,8 +201,14 @@ DesignRNAApp::run() {
                 auto dss = copy_mg->designable_secondary_structure();
                 dss->replace_sequence(s->sequence);
                 copy_mg->replace_helical_sequence(dss);
+                copy_mg->write_pdbs();
+                exit(0);
                 
                 out << copy_mg->to_str() << std::endl;
+                if(get_bool_option("pdbs")) {
+                    copy_mg->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
+                    solution_count++;
+                }
             }
             
             design_num++;
@@ -224,12 +238,14 @@ DesignRNAApp::run() {
 
 
 int main(int argc, const char * argv[]) {
+    //must add this for all apps!
     std::set_terminate(print_backtrace);
     
     auto app = DesignRNAApp();
     app.setup_options();
     app.parse_command_line(argc, argv);
     app.run();
+    
     return 0;
     
 }

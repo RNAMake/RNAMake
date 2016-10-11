@@ -14,7 +14,6 @@ SequenceOptimizer3D::SequenceOptimizer3D():
 scorer_(eternabot::Scorer()),
 rng_(RandomNumberGenerator()) { setup_options(); }
 
-
 void
 SequenceOptimizer3D::_update_designable_bp(
     DesignableBPOP const & d_bp,
@@ -149,6 +148,7 @@ SequenceOptimizer3D::get_optimized_sequences(
                         "optimization");
                 }
             }
+            mst->write_pdbs("org");
             
             sols.push_back(std::make_shared<OptimizedSequence>(
                             OptimizedSequence{s1, new_score, eterna_score}));
@@ -163,10 +163,6 @@ SequenceOptimizer3D::get_optimized_sequences(
         }
         
     }
-    
-    
-    
-    
     
     return sols;
     

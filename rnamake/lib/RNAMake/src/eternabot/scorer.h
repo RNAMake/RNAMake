@@ -23,6 +23,7 @@ namespace eternabot {
 
 class Scorer {
 public:
+    
     Scorer() :
     generator_( FeatureGenerator() ),
     strategies_( StrategyOPs() ),
@@ -46,9 +47,9 @@ public:
     }
     
     ~Scorer() {}
-    
+
 public:
-    
+
     void
     setup(sstruct::PoseOP const &);
     
@@ -60,14 +61,13 @@ public:
     Floats const &
     scores() { return scores_; }
     
-    
 private:
     FeatureGenerator generator_;
     FeaturesOP features_;
     StrategyOPs strategies_;
     Floats weights_, scores_;
     float mean_, stdev_, total_score_;
-    
+
 };
 
 }

@@ -14,7 +14,7 @@
 #include "eternabot/sequence_designer.h"
 #include "motif_data_structures/motif_graph.h"
 #include "motif_data_structures/motif_tree.h"
-
+/*
 struct SequenceOptimizerResult {
     inline
     SequenceOptimizerResult(
@@ -65,16 +65,7 @@ public:
         Uuid const & uuid_2,
         int end_i,
         int end_j);
-    
-    /*OptimizedSequenceOPs
-    get_optimized_sequences_section(
-        MotifGraphOP & mg,
-        MotifGraphOP & section,
-        Uuid const & uuid_2,
-        int end_i,
-        int end_j);*/
-    
-    
+       
     String
     get_final_sequence(
         String const &,
@@ -135,7 +126,7 @@ private:
     int end_;
     int solutions_;
 };
-
+*/
 #endif /* defined(__RNAMake__sequence_optimizer__) */
 
 

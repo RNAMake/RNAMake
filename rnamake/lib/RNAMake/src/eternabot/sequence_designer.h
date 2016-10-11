@@ -16,7 +16,7 @@
 #include "eternabot/scorer.h"
 
 namespace eternabot {
-
+/*
 struct SequenceDesignerResult {
     String sequence;
     float score;
@@ -113,7 +113,7 @@ private:
     float temperature_;
     
     
-};
+};*/
     
 }
 
