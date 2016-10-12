@@ -92,6 +92,7 @@ class MotifStateEnsembleTree(object):
                 self.add_ensemble(mse, n.parent_index(), n.parent_end_index())
 
         self.connections = mt.connections.copy()
+
     def _setup_from_mst(self, mst):
         for i, n in enumerate(mst.tree.nodes):
             try:
