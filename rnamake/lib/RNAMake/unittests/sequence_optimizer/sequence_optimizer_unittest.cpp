@@ -23,7 +23,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         mg->add_motif(m);
         mg->replace_ideal_helices();
     
-        /*auto c = GraphtoTree();
+        auto c = GraphtoTree();
         auto mt = c.convert(mg);
     
         auto so = SequenceOptimizer3D();
@@ -31,7 +31,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         auto sols = so.get_optimized_sequences(mt, mt->last_node()->data()->ends()[0],
                                                mt->last_node()->index(), 0);
     
-        REQUIRE(sols.size() > 0);*/
+        REQUIRE(sols.size() > 0);
     }
     
     

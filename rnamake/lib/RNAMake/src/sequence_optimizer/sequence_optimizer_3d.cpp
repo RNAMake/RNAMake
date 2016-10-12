@@ -143,6 +143,8 @@ SequenceOptimizer3D::get_optimized_sequences(
             
             for(int i = 0; i < s2.length(); i++) {
                 if(s1[i] != s2[i]) {
+                    std::cout << s1 << std::endl;
+                    std::cout << s2 << std::endl;
                     throw std::runtime_error(
                         "sequences are out of sync: something went really wrong in sequence "
                         "optimization");
