@@ -93,6 +93,12 @@ SequenceOptimizer3D::get_optimized_sequences(
     }
     
     
+    auto s1 = mst->to_motif_tree()->secondary_structure()->sequence();
+    auto s2 = ss->sequence();
+    std::cout << s1 << std::endl;
+    std::cout << s2 << std::endl;
+    exit(0);
+    
     auto target_state = target_bp->state();
     auto last_score = target_state->diff(mst->get_node(ni)->data()->get_end_state(ei));
     auto new_score = 0.0f;
