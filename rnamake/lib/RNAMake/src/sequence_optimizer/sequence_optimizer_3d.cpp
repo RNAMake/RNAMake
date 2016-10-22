@@ -18,19 +18,30 @@ void
 SequenceOptimizer3D::_update_designable_bp(
     DesignableBPOP const & d_bp,
     MotifStateTreeOP & mst,
-    Strings const & new_bp_state) {
+    Strings const & new_bp_state,
+    sstruct::PoseOP const & ss) {
     
     if(d_bp->m_id_bot != nullptr ) {
+        auto m = ss->motif(*d_bp->m_id_bot);
+        auto s = m->sequence();
+        auto name = String("");
+        name.push_back(s[0]); name.push_back(s[4]);
+        name.push_back('=');
+        name.push_back(s[1]); name.push_back(s[3]);
+        
         auto n = mst->get_node(*d_bp->m_id_bot);
-        auto spl = split_str_by_delimiter(n->data()->name(), "=");
-        auto new_name = new_bp_state[0]+new_bp_state[1]+"="+spl[1];
-        mst->replace_state(n->index(), RM::instance().motif_state(new_name));
+        mst->replace_state(n->index(), RM::instance().motif_state(name));
     }
     if(d_bp->m_id_top != nullptr) {
+        auto m = ss->motif(*d_bp->m_id_top);
+        auto s = m->sequence();
+        auto name = String("");
+        name.push_back(s[0]); name.push_back(s[4]);
+        name.push_back('=');
+        name.push_back(s[1]); name.push_back(s[3]);
+        
         auto n = mst->get_node(*d_bp->m_id_top);
-        auto spl = split_str_by_delimiter(n->data()->name(), "=");
-        auto new_name = spl[0]+"="+new_bp_state[0]+new_bp_state[1];
-        mst->replace_state(n->index(), RM::instance().motif_state(new_name));
+        mst->replace_state(n->index(), RM::instance().motif_state(name));
     }
     
 }
@@ -69,34 +80,44 @@ SequenceOptimizer3D::get_optimized_sequences(
         d_bp->bp->res2()->name(state[1]);
     }
     
+        
+    
     for(auto const & m : ss->motifs()) {
         if(m->name() != "HELIX.IDEAL") { continue; }
-        auto n = mst->get_node(m->id());
+        auto n = mt->get_node(m->id());
         auto name = String("");
-        int found = 0;
-        for(auto const & m2 : ss->motifs()) {
-            if(m == m2) { continue; }
-            for(auto const & end : m2->ends()) {
-                if(end == m->ends()[0] && m2->mtype() != MotifType::HELIX) {
-                    name = m->ends()[0]->res2()->name()+m->ends()[0]->res1()->name()+"=";
-                    found = 1;
-                    break;
-                }
-            }
+
+        if(n->parent()->data()->name() != "HELIX.IDEAL") {
+            auto pei = n->parent_end_index();
+            auto end = n->parent()->data()->ends()[pei];
+            //name = end->res2()->name()+end->res1()->name()+"=";
+            //name = m->ends()[0]->res1()->name()+m->ends()[0]->res2()->name()+"=";
         }
+
+        else {
+            //name = m->ends()[0]->res1()->name()+m->ends()[0]->res2()->name()+"=";
+        }
+        auto n_mst = mst->get_node(m->id());
+        //name += m->ends()[1]->res1()->name()+m->ends()[1]->res2()->name();
         
-        if(!found) {
-            name = m->ends()[0]->res1()->name()+m->ends()[0]->res2()->name()+"=";
-        }
-        name +=     m->ends()[1]->res2()->name()+m->ends()[1]->res1()->name();
-        mst->replace_state(n->index(), RM::instance().motif_state(name));
+        auto s = m->sequence();
+        name.push_back(s[0]); name.push_back(s[4]);
+        name.push_back('=');
+        name.push_back(s[1]); name.push_back(s[3]);
+
+        mst->replace_state(n_mst->index(), RM::instance().motif_state(name));
     }
     
-    
+
     auto s1 = mst->to_motif_tree()->secondary_structure()->sequence();
     auto s2 = ss->sequence();
-    std::cout << s1 << std::endl;
-    std::cout << s2 << std::endl;
+    for(int i = 0; i < s2.length(); i++) {
+        if(s1[i] != s2[i]) {
+            std::cout << i+1 << " " << s1[i] << " " << s2[i] << std::endl;
+        }
+    }
+    
+    mst->write_pdbs();
     exit(0);
     
     auto target_state = target_bp->state();
@@ -119,7 +140,7 @@ SequenceOptimizer3D::get_optimized_sequences(
         new_bp_state = possible_bps[rng_.randrange(possible_bps.size())];
         d_bp->update_state(new_bp_state);
         
-        _update_designable_bp(d_bp, mst, new_bp_state);
+        _update_designable_bp(d_bp, mst, new_bp_state, ss);
         
         new_score = target_state->diff(mst->get_node(ni)->data()->get_end_state(ei));
 
@@ -127,8 +148,8 @@ SequenceOptimizer3D::get_optimized_sequences(
             last_score = new_score;
         }
         else {
-            _update_designable_bp(d_bp, mst, d_bp->last_state);
             d_bp->revert_state();
+            _update_designable_bp(d_bp, mst, d_bp->last_state, ss);
             continue;
         }
                 
@@ -147,17 +168,16 @@ SequenceOptimizer3D::get_optimized_sequences(
             auto s1 = mst->to_motif_tree()->secondary_structure()->sequence();
             auto s2 = ss->sequence();
             
-            for(int i = 0; i < s2.length(); i++) {
-                if(s1[i] != s2[i]) {
-                    std::cout << s1 << std::endl;
-                    std::cout << s2 << std::endl;
-                    throw std::runtime_error(
-                        "sequences are out of sync: something went really wrong in sequence "
-                        "optimization");
+            for(int j = 0; j < s2.length(); j++) {
+                if(s1[j] != s2[j]) {
+                    std::cout << s1[j] << " " << s2[j] << std::endl;
+                    //throw std::runtime_error(
+                    //    "sequences are out of sync: something went really wrong in sequence "
+                    //    "optimization");
                 }
             }
-            mst->write_pdbs("org");
             
+
             sols.push_back(std::make_shared<OptimizedSequence>(
                             OptimizedSequence{s1, new_score, eterna_score}));
             

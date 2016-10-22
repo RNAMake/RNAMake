@@ -131,6 +131,7 @@ DesignRNAApp::_setup_from_pdb() {
     segments->removed->to_pdb("removed.pdb");
     segments->remaining->mtype(MotifType::TWOWAY);
     
+
     RM::instance().register_motif(segments->remaining);
     
     //auto new_struc = std::make_shared<RNAStructure>(*struc);
@@ -179,12 +180,18 @@ DesignRNAApp::run() {
         auto mt = sol->to_motif_tree();
 
         mg_->add_motif_tree(mt, start_.n_pos, start_.name);
+        auto last_node = mg_->last_node();
         mg_->add_connection(end_.n_pos, mg_->last_node()->index(), end_.name, "");
         mg_->replace_ideal_helices();
         
         auto c = GraphtoTree();
-        auto d_mt = c.convert(mg_, nullptr, -1, mg_->last_node());
+        auto d_mt = c.convert(mg_, nullptr, -1, last_node);
         d_mt->set_option_value("sterics", false);
+        std::cout << d_mt->size() << " " << mg_->size() << std::endl;
+        d_mt->write_pdbs();
+        mg_->write_pdbs("org");
+        
+        exit(0);
         
         auto sols = so.get_optimized_sequences(d_mt, end_bp, d_mt->last_node()->index(), 1);
 
@@ -201,14 +208,15 @@ DesignRNAApp::run() {
                 auto dss = copy_mg->designable_secondary_structure();
                 dss->replace_sequence(s->sequence);
                 copy_mg->replace_helical_sequence(dss);
-                copy_mg->write_pdbs();
-                exit(0);
+
                 
-                out << copy_mg->to_str() << std::endl;
+                out << mg_->to_str() << std::endl;
                 if(get_bool_option("pdbs")) {
                     copy_mg->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
                     solution_count++;
                 }
+                
+                break;
             }
             
             design_num++;

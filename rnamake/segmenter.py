@@ -150,6 +150,11 @@ class Segmenter(object):
         raise ValueError("cannot create subchain")
 
     def _get_segments(self, m, res, bps, cutpoints):
+        other_res = cutpoints[:]
+        for r in m.residues():
+            if r not in res:
+                other_res.append(r)
+
         removed = motif_factory.factory.motif_from_res(res, bps)
         cutpoint_name = ""
         for c in cutpoints:
@@ -157,15 +162,12 @@ class Segmenter(object):
             if c != cutpoints[-1]:
                 cutpoint_name += "-"
         removed.name = m.name + ".removed." + cutpoint_name
-        other_res = cutpoints[:]
         other_bps = []
-        for r in m.residues():
-            if r not in res:
-                other_res.append(r)
+
         for bp in m.basepairs:
             if bp.res1 in other_res and bp.res2 in other_res:
                 other_bps.append(bp)
-        #remaining = self._get_pose(m, other_res, other_bps)
+
         remaining = motif_factory.factory.motif_from_res(other_res, other_bps)
         remaining.name = m.name + ".remaining." + cutpoint_name
         segments = Segments(remaining, removed)

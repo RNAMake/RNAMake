@@ -400,7 +400,7 @@ public: //tree wrappers
     last_node() { return tree_.last_node(); }
     
     void
-    write_pdbs(String const & fname = "nodes");
+    write_pdbs(String const & fname = "node");
     
     inline
     void

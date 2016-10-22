@@ -39,7 +39,7 @@ GraphtoTree::convert(
     
         if(last_node == current->node) {
             last_node_to_add = current;
-            auto parent = mt_->get_node(current->parent->data()->id());
+            //auto parent = mt_->get_node(current->parent->data()->id());
             continue;
         }
         
@@ -51,12 +51,14 @@ GraphtoTree::convert(
         
         if(found) { continue; }
         
+        
         if(current->parent == nullptr) {
             mt_->add_motif(current->motif);
         }
         else {
             auto parent = mt_->get_node(current->parent->data()->id());
             auto new_parent_index = parent->index();
+            
             
             //currently a hack to make sure that if we start building not at an end and trying to add
             //somethign on the 0th end of a HELIX this stops it
@@ -66,7 +68,7 @@ GraphtoTree::convert(
             }
             
             //can happen sometimes if you build from the middle of the graph
-            if(current->parent_end_index == 0) {
+            if(current->parent_end_index == parent->data()->block_end_add()) {
                 continue;
             }
             

@@ -364,7 +364,25 @@ class MotifGraphUnittest(unittest.TestCase):
         #print mg.to_pretty_str()
         #mg.write_pdbs()
 
+    def test_ss_convert(self):
+        mg = motif_graph.MotifGraph()
+        mg.add_motif(m_name="HELIX.IDEAL.6")
+        mg.add_motif(m_name="TWOWAY.1GID.12")
+        mg.add_motif(m_name="HELIX.IDEAL.6")
+        mg.replace_ideal_helices()
 
+        for n in mg:
+            m = n.data
+            name = m.ends[0].res1.name+m.ends[0].res2.name+"="
+            name += m.ends[1].res1.name+m.ends[1].res2.name
+            print name, m.sequence()
+
+        ss = mg.secondary_structure()
+        print "made it"
+        for m in ss.motifs:
+            name = m.ends[0].res1.name+m.ends[0].res2.name+"="
+            name += m.ends[1].res1.name+m.ends[1].res2.name
+            print name, m.sequence()
 
 
 def main():
