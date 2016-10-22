@@ -20,7 +20,9 @@ Basepair::copy() {
 String const
 Basepair::to_str() const {
     std::stringstream ss;
-    ss << name() << "," << bp_state_->to_str() << "," << bp_type_ << ",0," << flipped_;
+    ss << res1_->chain_id() << res1_->num() << res1_->i_code() << "-";
+    ss << res2_->chain_id() << res2_->num() << res2_->i_code();
+    ss << "," << bp_state_->to_str() << "," << bp_type_ << ",0," << flipped_;
     return ss.str();
 }
 

@@ -22,7 +22,7 @@ class SequenceOptimizerUnittests(unittest.TestCase):
         so = sequence_optimizer.SequenceOptimizer3D()
         so.get_optimized_sequences(mt, build_points[0].node.data.ends[1])
 
-    def test_init_2(self):
+    def _test_init_2(self):
         builder = build.BuildMotifGraph()
         mg = builder.build(5)
         mg.add_motif(m_name="HAIRPIN.1C0A.0")
@@ -58,6 +58,30 @@ class SequenceOptimizerUnittests(unittest.TestCase):
 
         print len(solutions)
 
+    def test_minittr_2(self):
+        path = "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build"
+        f = open(path+"/default.out.bak")
+        lines = f.readlines()
+        f.close()
+
+        mg = motif_graph.MotifGraph(mg_str=lines[0])
+
+        n1 = mg.get_node(0)
+        n2 = n1.connections[0].partner(n1.index)
+
+        c = motif_topology.GraphtoTree()
+        mt = c.convert(mg, last_node=n2)
+        mt.option('sterics', 0)
+
+        so = sequence_optimizer.SequenceOptimizer3D()
+
+        solutions = so.get_optimized_sequences(mt,mt.get_node(0).data.ends[0],
+                                               mt.last_node().index, 1)
+
+        dss = mg.designable_secondary_structure()
+        dss.replace_sequence(solutions[0].sequence)
+        mg.replace_helix_sequence(dss)
+        mg.write_pdbs()
 
 
 def main():

@@ -68,8 +68,8 @@ class SequenceOptimizer3D(base.Base):
 
     def get_optimized_sequences(self, mt, target_bp, ni, ei):
         org_ss = mt.secondary_structure()
-        org_score = self.sequence_designer.design(org_ss.dot_bracket(), org_ss.sequence())[0].score
-
+        #org_score = self.sequence_designer.design(org_ss.dot_bracket(), org_ss.sequence())[0].score
+        org_score = 0
         ss = mt.designable_secondary_structure()
         designable_bps = []
         for bp in ss.basepairs:
@@ -78,6 +78,8 @@ class SequenceOptimizer3D(base.Base):
                 designable_bps.append(self._DesignableBP(bp))
 
         possible_bps = ["AU", "UA", "GC", "CG"]
+
+        m = mt.get_node(0).data
 
         for d_bp in designable_bps:
             for m in ss.motifs:
@@ -88,30 +90,40 @@ class SequenceOptimizer3D(base.Base):
                 if m.ends[1] == d_bp.bp:
                     d_bp.m_id_top = m.id
             state = random.choice(possible_bps)
-            d_bp.bp.res1.name = state[0]
-            d_bp.bp.res2.name = state[1]
+            #d_bp.bp.res1.name = state[0]
+            #d_bp.bp.res2.name = state[1]
 
         mst = motif_state_tree.MotifStateTree(mt=mt)
         for m in ss.motifs:
+            n = mt.get_node_by_id(m.id)
+
             if m.name != "HELIX.IDEAL":
                 continue
 
-            n = mst.get_node(uuid=m.id)
             name = ""
-            found = 0
-            for m2 in ss.motifs:
-                for end in m2.ends:
-                    if end == m.ends[0] and m2.mtype != motif_type.HELIX:
-                        name = m.ends[0].res2.name+m.ends[0].res1.name+"="
-                        found = 1
-                        break
 
-            if not found:
+            if n.parent.data.name != "HELIX.IDEAL":
+                pei = n.parent_end_index()
+                end = n.parent.data.ends[pei]
+                name = end.res2.name+end.res1.name+"="
+                #name =  m.ends[0].res1.name+m.ends[0].res2.name+"="
+
+            else:
                 name =  m.ends[0].res1.name+m.ends[0].res2.name+"="
 
+
             name += m.ends[1].res1.name+m.ends[1].res2.name
-            mst.replace_state(n.index, rm.manager.get_state(name=name))
-        mst.write_pdbs()
+            n = mst.get_node(uuid=m.id)
+            print n.index, name, m.sequence()
+            #mst.replace_state(n.index, rm.manager.get_state(name=name))
+        exit()
+        s1 = mst.to_motif_tree().secondary_structure().sequence()
+        s2 = ss.sequence()
+
+        for j in range(len(s2)):
+            if s1[j] != s2[j]:
+                print j, s1[j], s2[j]
+
         exit()
         target_state = target_bp.state()
         target_state_flip = target_bp.state()
@@ -120,20 +132,20 @@ class SequenceOptimizer3D(base.Base):
         last_score = target_state.diff(mst.get_node(ni).data.cur_state.end_states[ei])
 
         mc = monte_carlo.MonteCarlo()
-        mc.temperature = 5
+        mc.temperature = 1
 
         best_states = []
         best = 1000
         cutoff = self.option('cutoff')
         solutions = []
-        for i in range(1,1000):
-            if i % 500 == 0:
+        for i in range(1,500):
+            """if i % 500 == 0:
                 print i, best
                 for j, s in enumerate(best_states):
                     name = s[1]
                     if name[2] == "=":
                         mst.replace_state(s[0], rm.manager.get_state(name=name))
-                mc.temperature *= 0.8
+                mc.temperature *= 0.8"""
 
             d_bp = random.choice(designable_bps)
 
@@ -144,7 +156,6 @@ class SequenceOptimizer3D(base.Base):
 
             new_score = target_state.diff(mst.get_node(ni).data.cur_state.end_states[ei])
 
-            #print last_score, new_score
             if mc.accept(last_score, new_score):
                 last_score = new_score
             else:
@@ -169,8 +180,19 @@ class SequenceOptimizer3D(base.Base):
             eterna_score = self.sequence_designer.design(ss.dot_bracket(),
                                                          ss.sequence())[0].score
             if eterna_score > org_score:
+                s1 = mst.to_motif_tree().secondary_structure().sequence()
+                s2 = ss.sequence()
+
+                for j in range(len(s2)):
+                    if s1[j] != s2[j]:
+                        print s1
+                        print s2
+                        exit()
+
                 solutions.append(
                     OptimizedSequence(ss.sequence(), new_score, eterna_score))
+                mst.write_pdbs("org")
+                return solutions
 
                 if len(solutions) > self.option('solutions'):
                     return solutions

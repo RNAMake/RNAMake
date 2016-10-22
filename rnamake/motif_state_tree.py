@@ -563,6 +563,7 @@ class MotifStateTree(base.Base):
             raise ValueError(
                 "attempted to replace a state with a different number of ends")
 
+        old_state = n.data.ref_state
         if keep_uuid:
             uuid = n.data.ref_state.uuid
 
@@ -572,6 +573,12 @@ class MotifStateTree(base.Base):
         if keep_uuid:
             n.data.ref_state.uuid = uuid
             n.data.cur_state.uuid = uuid
+
+        for i in range(len(old_state.end_names)):
+            if self.connections.in_connection(n.index, old_state.end_names[i]):
+                self.connections.update_connection_name(n.index,
+                                                        old_state.end_names[i],
+                                                        new_state.end_names[i])
 
 
         for n in tree.transverse_tree(self.tree, i):

@@ -234,7 +234,7 @@ public: //motif tree wrappers
     
     void
     write_pdbs(
-        String const & fname = "nodes") {
+        String const & fname = "node") {
         to_motif_tree()->write_pdbs(fname);
     }
     

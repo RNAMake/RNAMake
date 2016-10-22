@@ -65,6 +65,15 @@ class MotifConnections(object):
                 return 1
         return 0
 
+    def update_connection_name(self, index, name, new_name):
+        for c in self.connections:
+            if index == c.i and name == c.name_i:
+                c.name_i = new_name
+                return
+            if index == c.j and name == c.name_j:
+                c.name_j = new_name
+                return
+
 
 def str_to_motif_connection(s):
     spl = s.split(",")
