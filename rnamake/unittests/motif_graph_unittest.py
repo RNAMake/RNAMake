@@ -364,7 +364,7 @@ class MotifGraphUnittest(unittest.TestCase):
         #print mg.to_pretty_str()
         #mg.write_pdbs()
 
-    def test_ss_convert(self):
+    def _test_ss_convert(self):
         mg = motif_graph.MotifGraph()
         mg.add_motif(m_name="HELIX.IDEAL.6")
         mg.add_motif(m_name="TWOWAY.1GID.12")

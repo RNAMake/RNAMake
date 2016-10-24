@@ -100,7 +100,7 @@ SimulateTectosApp::get_mset_old(
     auto m = RM::instance().motif("GC=GC");
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
-    mt->add_motif(flow_motifs[1], 1, "A22-A7");
+    mt->add_motif(flow_motifs[1], 1, "A7-A22");
     for(int i = 2; i < flow_motifs.size(); i++) {
         mt->add_motif(flow_motifs[i]);
     }

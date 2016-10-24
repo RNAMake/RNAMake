@@ -184,13 +184,19 @@ class Basepair(object):
             A12-A13
         """
 
-        str1 = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
-        str2 = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
+        res1_name = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
+        res2_name = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
 
-        if str1 < str2:
-            return str1+"-"+str2
+        if self.res1.chain_id < self.res2.chain_id:
+            return res1_name+"-"+res2_name
+        if self.res1.chain_id > self.res2.chain_id:
+            return res2_name+"-"+res1_name
+
+        if self.res1.num < self.res2.num:
+            return res1_name+"-"+res2_name
         else:
-            return str2+"-"+str1
+            return res2_name+"-"+res1_name
+
 
     def flip(self):
         """

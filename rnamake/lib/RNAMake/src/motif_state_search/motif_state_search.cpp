@@ -128,7 +128,7 @@ MotifStateSearch::_search() {
         
         if(steps > max_steps_) {
             if(verbose_) {
-                std::cout << "reached max steps" << std::endl;
+                std::cout << "MOTIF STATE SEARCH: reached max steps" << std::endl;
             }
             return best_sol;
         }
@@ -239,7 +239,7 @@ MotifStateSearch::_search() {
         
     }
     if(verbose_) {
-        std::cout << "ran out of options" << std::endl;
+        std::cout << "MOTIF STATE SEARCH: ran out of options" << std::endl;
     }
     
     if(midpoints) { midpoint_file.close(); }

@@ -31,14 +31,18 @@ Segmenter::_get_pairs(
             for(auto const & res2 : res) {
                 j++;
                 if(i >= j) { continue; }
-                sc = c->subchain(res1, res2);
-                if(sc == nullptr) { continue; }
+                try {
+                    sc = c->subchain(res1, res2);
+                } catch(ChainException) {continue; }
                 dist = (int)sc->length();
                 pairs_.push_back(std::make_shared<Pair>(res1, res2, dist));
             }
-            sc1 = c->subchain(res1, c->last());
-            sc2 = c->subchain(c->first(), res1);
-            if(sc1 == nullptr) { continue; }
+            try {
+                sc1 = c->subchain(res1, c->last());
+            } catch(ChainException) { continue; }
+            try {
+                sc2 = c->subchain(c->first(), res1);
+            } catch(ChainException) { continue; }
             if(res1 != c->last() &&
                std::find(res.begin(), res.end(), c->last()) == res.end()) {
                 auto pair = std::make_shared<Pair>(res1, c->last(), sc1->length());

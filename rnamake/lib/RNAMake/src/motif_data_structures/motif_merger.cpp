@@ -342,7 +342,9 @@ MotifMerger::secondary_structure() {
                 }
                 auto ss_r = ss->get_residue(r_cur->uuid());
                 if(ss_r == nullptr) {
-                    throw MotifMergerException("could not find residue during ss build");
+                    throw MotifMergerException(
+                        "could not find residue during ss build: " + std::to_string(r->num()) +
+                        " in motif: " + m->name());
                 }
                 ss_res.push_back(ss_r);
             }
