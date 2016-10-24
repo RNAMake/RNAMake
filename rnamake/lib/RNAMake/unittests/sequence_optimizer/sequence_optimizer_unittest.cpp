@@ -17,7 +17,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     
     SECTION("simplest test, optimize sequence to look like ideals in random structure") {
     
-        auto builder = MotifGraphBuilder();
+        /*auto builder = MotifGraphBuilder();
         auto mg = builder.build(2);
         auto m = RM::instance().motif("HAIRPIN.1C0A.0");
         mg->add_motif(m);
@@ -31,7 +31,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         auto sols = so.get_optimized_sequences(mt, mt->last_node()->data()->ends()[0],
                                                mt->last_node()->index(), 0);
     
-        REQUIRE(sols.size() > 0);
+        REQUIRE(sols.size() > 0);*/
     }
     
     

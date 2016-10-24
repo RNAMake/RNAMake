@@ -7,6 +7,7 @@
 //
 
 #include <map>
+#include <list>
 
 //RNAMake Headers
 #include "resources/resource_manager.h"
@@ -383,7 +384,56 @@ MotifGraph::_align_motifs_all_motifs() {
     }
     
     auto n = GraphNodeOP<MotifOP>();
-    for(auto it = graph_.transverse(graph_.get_node(start));
+    auto open = std::list<GraphNodeOP<MotifOP>>();
+    auto aligned = std::map<int, int>();
+    open.push_back(graph_.get_node(start));
+    
+    while (open.size() > 0) {
+        n = open.front();
+        open.pop_front();
+                
+        int i = -1;
+        for(auto c : n->connections()) {
+            i++;
+            if(i == n->data()->block_end_add()) { continue; }
+            if(c == nullptr) { continue; }
+            
+            auto p = c->partner(n->index());
+            auto it = std::find(open.begin(), open.end(), p);
+            if(it != open.end()) { continue; }
+            
+            if(aligned.find(p->index()) != aligned.end()) { continue; }
+            open.push_back(p);
+            
+        }
+        
+        if(n->index() == start) {
+            merger_->update_motif(n->data());
+            aligned[n->index()] = 1;
+        }
+        else {
+            if(n->connections()[0] == nullptr) { continue; }
+            auto c = n->connections()[0];
+            auto parent = c->partner(n->index());
+            
+            //parent is not aligned yet
+            if(aligned.find(parent->index()) == aligned.end()) {
+                open.push_back(n);
+                continue;
+            }
+            
+            auto parent_end_index = c->end_index(parent->index());
+            auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
+                                             n->data()->ends()[0],
+                                             n->data());
+            n->data() = m_added;
+            merger_->update_motif(n->data());
+            aligned[n->index()] = 1;
+        }
+        
+    }
+    
+    /*for(auto it = graph_.transverse(graph_.get_node(start));
         it != graph_.end();
         ++it) {
         
@@ -392,6 +442,7 @@ MotifGraph::_align_motifs_all_motifs() {
             merger_->update_motif(n->data());
             continue;
         }
+        std::cout << n->index() << std::endl;
         
         if(n->connections()[0] == nullptr) { continue; }
         auto c = n->connections()[0];
@@ -402,7 +453,7 @@ MotifGraph::_align_motifs_all_motifs() {
                                          n->data());
         n->data() = m_added;
         merger_->update_motif(n->data());
-    }
+    }*/
 }
 
 

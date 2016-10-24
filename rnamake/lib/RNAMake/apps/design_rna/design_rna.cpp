@@ -131,7 +131,6 @@ DesignRNAApp::_setup_from_pdb() {
     segments->removed->to_pdb("removed.pdb");
     segments->remaining->mtype(MotifType::TWOWAY);
     
-
     RM::instance().register_motif(segments->remaining);
     
     //auto new_struc = std::make_shared<RNAStructure>(*struc);
@@ -162,20 +161,26 @@ DesignRNAApp::run() {
     
     auto so = SequenceOptimizer3D();
     so.set_option_value("verbose", get_bool_option("verbose"));
-    so.set_option_value("cutoff", 100.0f);
     
-    
-    auto sf_out = std::ofstream(get_string_option("score_file"));
+    std::ofstream out, sf_out;
+    sf_out.open(get_string_option("score_file"));
     sf_out << "design_num,design_score,design_sequence,design_structure,opt_num,";
     sf_out << "opt_sequence,opt_score,eterna_score" << std::endl;
     
-    auto out = std::ofstream(get_string_option("out_file"));
+    out.open(get_string_option("out_file"));
     
     
     int design_num = 0;
     int solution_count = 0;
     while(! search_.finished()) {
         auto sol = search_.next();
+        if(sol == nullptr) {
+            std::cout << "DESIGN RNA: cannot find anymore solutions!" << std::endl;
+            std::cout << "DESIGN RNA: generated " << design_num << " designs!" << std::endl;
+            sf_out.close();
+            out.close();
+            exit(0);
+        }
         
         auto mt = sol->to_motif_tree();
 
@@ -183,15 +188,12 @@ DesignRNAApp::run() {
         auto last_node = mg_->last_node();
         mg_->add_connection(end_.n_pos, mg_->last_node()->index(), end_.name, "");
         mg_->replace_ideal_helices();
+        mg_->write_pdbs();
+        mg_->to_pdb("test.pdb", 1);
         
         auto c = GraphtoTree();
         auto d_mt = c.convert(mg_, nullptr, -1, last_node);
         d_mt->set_option_value("sterics", false);
-        std::cout << d_mt->size() << " " << mg_->size() << std::endl;
-        d_mt->write_pdbs();
-        mg_->write_pdbs("org");
-        
-        exit(0);
         
         auto sols = so.get_optimized_sequences(d_mt, end_bp, d_mt->last_node()->index(), 1);
 
@@ -208,9 +210,8 @@ DesignRNAApp::run() {
                 auto dss = copy_mg->designable_secondary_structure();
                 dss->replace_sequence(s->sequence);
                 copy_mg->replace_helical_sequence(dss);
-
                 
-                out << mg_->to_str() << std::endl;
+                out << copy_mg->to_str() << std::endl;
                 if(get_bool_option("pdbs")) {
                     copy_mg->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
                     solution_count++;

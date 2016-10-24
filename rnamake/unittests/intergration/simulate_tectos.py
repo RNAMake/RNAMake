@@ -58,7 +58,7 @@ class SimulateTectos(base.Base):
         mt.option('sterics', 0)
         mt.add_motif(m_name="GC=GC")
         mt.add_motif(m_name="GGAA_tetraloop", m_end_name="A14-A15")
-        mt.add_motif(m_name=flow_motif_names[1], parent_end_name="A22-A7")
+        mt.add_motif(m_name=flow_motif_names[1], parent_end_name="A7-A22")
 
         for i in range(2, len(flow_motif_names)):
             mt.add_motif(m_name=flow_motif_names[i])

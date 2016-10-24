@@ -109,17 +109,6 @@ SequenceOptimizer3D::get_optimized_sequences(
     }
     
 
-    auto s1 = mst->to_motif_tree()->secondary_structure()->sequence();
-    auto s2 = ss->sequence();
-    for(int i = 0; i < s2.length(); i++) {
-        if(s1[i] != s2[i]) {
-            std::cout << i+1 << " " << s1[i] << " " << s2[i] << std::endl;
-        }
-    }
-    
-    mst->write_pdbs();
-    exit(0);
-    
     auto target_state = target_bp->state();
     auto last_score = target_state->diff(mst->get_node(ni)->data()->get_end_state(ei));
     auto new_score = 0.0f;
@@ -171,16 +160,18 @@ SequenceOptimizer3D::get_optimized_sequences(
             for(int j = 0; j < s2.length(); j++) {
                 if(s1[j] != s2[j]) {
                     std::cout << s1[j] << " " << s2[j] << std::endl;
-                    //throw std::runtime_error(
-                    //    "sequences are out of sync: something went really wrong in sequence "
-                    //    "optimization");
+                    throw std::runtime_error(
+                        "sequences are out of sync: something went really wrong in sequence "
+                        "optimization");
                 }
             }
             
 
             sols.push_back(std::make_shared<OptimizedSequence>(
                             OptimizedSequence{s1, new_score, eterna_score}));
+            mst->write_pdbs("org");
             
+            return sols;
             //std::cout << mst->to_motif_tree()->secondary_structure()->sequence() << std::endl;
             if(verbose_) {
                 std::cout << "SEQUENCE OPTIMIZER: found solution! score=" << new_score;
