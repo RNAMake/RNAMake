@@ -16,6 +16,31 @@ cd RNAMake
 sudo pip install -r requirements.txt
 ```
 
-
-to install call
+To install call
+```
 python setup.py 
+```
+
+Compile [optional]
+------- 
+
+to compile, make sure you have `cmake` and `ninja` installed with their binaries set up in your `$PATH`. Then run:
+```
+python compile.py 
+```
+
+
+Tests
+-----
+To run unit tests for python:
+```
+RNAMake/rnamake/unittests/run_unittests.sh
+```
+
+To run unit tests for C++ code:
+```
+cd RNAMAke/rnamake/lib/RNAMake/cmake/build/
+python run_unittests.py
+```
+
+
