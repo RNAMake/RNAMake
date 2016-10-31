@@ -1,7 +1,7 @@
 import unittest
 import os
 from rnamake import settings
-from rnamake.wrappers import wrapper, build_path_wrapper
+from rnamake.wrappers import wrapper, build_path_wrapper, simulate_tectos_wrapper
 
 class WrapperUnittest(unittest.TestCase):
     def setUp(self):
@@ -52,6 +52,15 @@ class BuildPathWrapper(unittest.TestCase):
         w.run(mg=mg_path)
 
 
+class SimulateTectosWrapper(unittest.TestCase):
+    def setUp(self):
+        path = settings.LIB_PATH + "/rnamake/lib/RNAMake/cmake/build/simulate_tectos_devel"
+        if not os.path.isfile(path):
+            self.skipTest("executable not available")
+
+    def test_creation(self):
+        w = simulate_tectos_wrapper.SimulateTectosWrapper()
+        
 
 
 def main():
