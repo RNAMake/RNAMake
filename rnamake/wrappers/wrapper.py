@@ -7,41 +7,50 @@ class WrapperException(Exception):
 
 class Wrapper(object):
 
-    __slots__ = ['__name',
-                 '__program_path',
-                 '__options',
-                 '__cmd_options',
-                 '__default_cmd_options',
-                 '__required_cmd_options']
+    __slots__ = ['_name',
+                 '_program_path',
+                 '_options',
+                 '_output',
+                 '_cmd_options',
+                 '_default_cmd_options',
+                 '_required_cmd_options']
 
     def __init__(self, program_path, **cmd_options):
-        self.__name = "Wrapper"
-        self.__program_path = program_path
-        if not os.path.exists(self.__program_path):
+        self._name = "Wrapper"
+        self._output = ""
+        self._program_path = program_path
+        if not os.path.exists(self._program_path):
             raise ValueError("program path : " + program_path + " does not exist")
-        self.__cmd_options = Options()
-        self.__default_cmd_options = {}
-        self.__required_cmd_options = {}
+        self._cmd_options = Options()
+        self._default_cmd_options = {}
+        self._required_cmd_options = {}
 
-        self.__options = Options()
-        self.__options.add("ignore_defaults", True)
+        self._options = Options()
+        self._options.add("ignore_defaults", True)
 
     def add_cmd_option(self, name, value, required=False):
-        self.__cmd_options.add(name, value)
-        self.__default_cmd_options[name] = value
-        self.__required_cmd_options[name] = required
+        self._cmd_options.add(name, value)
+        self._default_cmd_options[name] = value
+        self._required_cmd_options[name] = required
+
+    def get_cmd_option(self, name):
+        return self._cmd_options[name]
 
     def set_cmd_option(self, name, value):
-        self.__cmd_options[name] = value
+        self._cmd_options[name] = value
 
     def get_command(self, **options):
-        self.__cmd_options.dict_set(options)
+        self._cmd_options.dict_set(options)
 
-        s = self.__program_path + " "
-        for k, opt in self.__cmd_options:
-            if self.__is_required_option(k) and self.__is_default_option(k):
-                if self.__default_cmd_options[k] == opt.value:
+        s = self._program_path + " "
+        for k, opt in self._cmd_options:
+            if self._is_required_option(k) and self._is_default_option(k):
+                if self._default_cmd_options[k] == opt.value:
                     raise WrapperException("required option: " + k + " was not supplied")
+
+            if self._options['ignore_defaults'] and self._is_default_option(k) and \
+               opt.value == self._default_cmd_options[k]:
+                continue
 
             s += "-" + k + " "
             if opt.otype == OptionType.STRING:
@@ -52,13 +61,14 @@ class Wrapper(object):
 
     def run(self, **options):
         cmd = self.get_command(**options)
-        subprocess.call(cmd, shell=True)
+        self._output = subprocess.check_output(cmd, shell=True)
+        return self._output
 
-    def __is_required_option(self, name):
-        return self.__required_cmd_options[name]
+    def _is_required_option(self, name):
+        return self._required_cmd_options[name]
 
-    def __is_default_option(self, name):
-        if name in self.__default_cmd_options:
+    def _is_default_option(self, name):
+        if name in self._default_cmd_options:
             return 1
         else:
             return 0

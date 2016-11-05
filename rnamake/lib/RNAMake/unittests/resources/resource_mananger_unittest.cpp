@@ -59,7 +59,9 @@ TEST_CASE( "Test Resource Manager ", "[ResourceManager]" ) {
         auto m1 = RM::instance().motif("GAAA_tetraloop");
         REQUIRE(m1->name() == "GAAA_tetraloop");
         
-        
     }
+    
+    
+    
     
 }

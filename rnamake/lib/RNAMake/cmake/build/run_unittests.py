@@ -2,20 +2,19 @@
 
 import glob
 import subprocess
+import os
 
 unittests = glob.glob("../../bin/unittests/*")
 for test in unittests:
-    subprocess.call(test+" > out", shell=True)
-    f = open("out")
-    lines = f.readlines()
-    f.close()
+
+    lines = subprocess.check_output(test, shell=True).split("\n")
 
     # everything passed
-    if len(lines) == 3:
-        print test, lines[1],
+    if len(lines) < 6:
+        print test, lines[1]+"\n",
         continue
     elif lines[0:3] == "All":
-        print test, lines[1],
+        print test, lines[1]+"\n",
         continue
     else:
         print test, ": FAIL"

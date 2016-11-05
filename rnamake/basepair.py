@@ -100,6 +100,16 @@ class Basepair(object):
                 atoms.append(a)
         return atoms
 
+    def get_base_atoms(self):
+        atoms = []
+        for a in self.res1.atoms[12:]:
+            if a is not None:
+                atoms.append(a)
+        for a in self.res2.atoms[12:]:
+            if a is not None:
+                atoms.append(a)
+        return atoms
+
     def _get_state(self, r):
         """
         helper function to setup basepair state object that keeps track of the
@@ -157,7 +167,6 @@ class Basepair(object):
                 "called get_partner with residue not in this not in this "
                 "basepair")
 
-    # TODO make sure smaller number is actually first, doesnt always work
     def name(self):
         """
         get name of basepair: which is the combined name of both residues
@@ -294,6 +303,18 @@ class Basepair(object):
         f.write ( self.to_pdb_str() )
         f.close()
 
+    def transform(self, t):
+
+        r_T = t.rotation().T
+        for a in self.atoms:
+            a.coords = np.dot(a.coords, r_T) + t.translation()
+
+        transformed = np.dot(self.state().r, r_T)
+        self.state().r = transformed
+
+    def move(self, p):
+        for a in self.atoms:
+            a.coords += p
 
 class BasepairState(object):
     """
