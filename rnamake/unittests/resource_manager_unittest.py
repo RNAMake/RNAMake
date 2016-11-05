@@ -28,11 +28,6 @@ class ResourceManagerUnittest(unittest.TestCase):
         if m.name != 'tetraloop_receptor_min':
             self.fail('did not get correct motif back')
 
-    def test_motif(self):
-        m = rm.manager.get_motif(name="TWOWAY.3R1C.25")
-        for end in m.ends:
-            print end.name()
-
 
 def main():
     unittest.main()
