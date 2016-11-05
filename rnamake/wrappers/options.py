@@ -33,8 +33,8 @@ class Option(object):
 
     def __init__(self, value, otype):
         self.__otype =  otype
-        #explicitily calling @value.setter to make sure value is of correct
-        #type
+        # explicitily calling @value.setter to make sure value is of correct
+        # type
         self.value = value
 
     @property
@@ -93,9 +93,13 @@ class Options(object):
         for k,v in options.iteritems():
             self.add(k, v)
 
-    def dict_set(self, options):
+    def dict_set(self, options, error=1):
         for k,v in options.iteritems():
-            self[k] = v
+            try:
+                self[k] = v
+            except OptionException as e :
+                if error:
+                    raise e
 
     def add(self, name, value):
         if name in self.__options:
@@ -116,6 +120,12 @@ class Options(object):
 
     def valid_options(self):
         return self.__options.keys()
+
+    def get_dict(self):
+        opts = {}
+        for name, opt in self.__options.iteritems():
+            opts[name] = opt.value
+        return opts
 
     def __contains__(self, name):
         return name in self.__options

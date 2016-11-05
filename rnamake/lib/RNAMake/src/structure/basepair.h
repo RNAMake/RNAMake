@@ -94,15 +94,16 @@ public: // getters
     inline
     String const
     name() const {
-        auto name = String("");
         auto res1_name = res1_->chain_id()+std::to_string(res1_->num())+res1_->i_code();
         auto res2_name = res2_->chain_id()+std::to_string(res2_->num())+res2_->i_code();
-
+        
         if(res1_->chain_id() < res2_->chain_id()) { return res1_name+"-"+res2_name; }
-        if(res2_->chain_id() > res2_->chain_id()) { return res2_name+"-"+res1_name; }
+        if(res1_->chain_id() > res2_->chain_id()) { return res2_name+"-"+res1_name; }
         
         if(res1_->num() < res2_->num()) { return res1_name+"-"+res2_name; }
         else                            { return res2_name+"-"+res1_name; }
+        
+        return res1_name+"-"+res2_name;
     }
     
     inline

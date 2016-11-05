@@ -6,7 +6,7 @@
 TEST_CASE( "Test DesignRNA Application", "[DesignRNA]" ) {
     
     SECTION("test using pdbs") {
-        auto = CommandLineArgs("-pdb test.pdb");
+        auto cla = CommandLineArgs("-pdb test.pdb");
     }
     
     

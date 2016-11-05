@@ -168,7 +168,7 @@ TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
         mst->replace_state(2, new_state);
 
         auto mt2 = std::make_shared<MotifTree>();
-        for(auto const & n : *mst) {
+        for(auto const & n : *mst) {            
             auto m = RM::instance().motif(n->data()->name(), "", n->data()->end_name(0));
             mt2->add_motif(m);
         }
