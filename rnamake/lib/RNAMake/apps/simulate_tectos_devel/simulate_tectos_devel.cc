@@ -70,6 +70,12 @@ SimulateTectosApp::run() {
     auto css  = get_string_option("css");
     auto mset = MotifStateEnsembleTreeOP(nullptr);
     
+    if(get_string_option("extra_me") != "") {
+        std::cout << "SIMULATE_TECTOS: registered extra motif ensembles from file: ";
+        std::cout << get_string_option("extra_me") << std::endl;
+        RM::instance().register_extra_motif_ensembles(get_string_option("extra_me"));
+    }
+    
     if(get_bool_option("new_ggaa_model")) {
         mset = get_mset_new_receptor(fseq, fss, cseq, css);
     }
@@ -82,10 +88,6 @@ SimulateTectosApp::run() {
         auto mt = mset->to_mst()->to_motif_tree();
         mt->to_pdb("start_pose.pdb");
         std::cout << "SIMULATE_TECTOS: outputing starting pose: start_pose.pdb" << std::endl;
-    }
-    
-    if(get_string_option("extra_me") != "") {
-        RM::instance().register_extra_motif_ensembles(get_string_option("extra_me"));
     }
     
     auto steric_node_str = String("");

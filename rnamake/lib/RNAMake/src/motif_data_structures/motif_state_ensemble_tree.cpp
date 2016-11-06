@@ -29,7 +29,7 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
         auto mse = MotifStateEnsembleOP();
         auto found_supplied = RM::instance().has_supplied_motif_ensemble(
                                     n->data()->name(), n->data()->end_name(0));
-        
+                
 
         if(n->data()->mtype() == MotifType::HELIX) {
             if(n->data()->residues().size() > 4) {
@@ -52,6 +52,8 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
         
         // extra motif ensemble supplied by user
         else if(found_supplied) {
+            std::cout << "MOTIF STATE ENSEMBLE TREE: found supplied ensemble for name=";
+            std::cout << n->data()->name() << " endname=" << n->data()->end_name(0) << std::endl;
             mse = RM::instance().get_supplied_motif_ensemble(
                                     n->data()->name(), n->data()->end_name(0))->get_state();
         }

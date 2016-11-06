@@ -137,6 +137,10 @@ public:
     MotifStateEnsembleOP
     get_state();
     
+    MotifEnsembleMemberOPs const &
+    members() { return members_; }
+    
+    
 private:
     String id_;
     int block_end_add_;
