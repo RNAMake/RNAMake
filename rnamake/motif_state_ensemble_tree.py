@@ -178,6 +178,31 @@ class MotifStateEnsembleTreeEnumerator(object):
         df.to_csv("test.csv")
 
 
+
+def build_me_sub(org_m, new_motifs, extra_mse_file="test.dat"):
+    f = open(extra_mse_file, "w")
+
+    for i, end in enumerate(org_m.ends):
+        all_ms = []
+        all_scores = []
+
+        for new_m in new_motifs:
+            mi = rm.manager.get_motif(name=new_m.name, end_name=new_m.ends[i].name())
+
+            all_ms.append(mi)
+            all_scores.append(1)
+
+        me = motif_ensemble.MotifEnsemble()
+        me.setup(org_m.end_ids[i], all_ms, all_scores)
+        org_m_key = org_m.name + "-" + end.name()
+
+        f.write(org_m_key + "!!" + me.to_str() + "\n")
+
+
+    f.flush()
+    f.close()
+
+
 def build_motif_sub_for_motif_state_ensemble(org_m, new_motifs, mlib,
                                              extra_mse_file="test.dat"):
 

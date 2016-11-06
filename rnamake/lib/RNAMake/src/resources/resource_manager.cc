@@ -244,6 +244,12 @@ RM::register_extra_motif_ensembles(
         auto spl = split_str_by_delimiter(l, "!!");
         extra_me_[spl[0]] = std::make_shared<MotifEnsemble>(spl[1],
             ResidueTypeSetManager::getInstance().residue_type_set());
+        
+        for(auto const & mem : extra_me_[spl[0]]->members()) {
+            added_motifs_.add_motif(mem->motif);
+        }
+        
+        std::cout << "RESOURCE MANAGER: motif ensemble for " <<  spl[0] << " registered" << std::endl;
     }
     
 }
