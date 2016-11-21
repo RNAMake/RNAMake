@@ -319,14 +319,10 @@ ThermoFlucSimulationDevel::setup_options() {
     options_.add_option("steric_nodes", "", OptionType::STRING);
     options_.add_option("record", false, OptionType::BOOL);
     options_.add_option("record_file", "test.out", OptionType::STRING);
+    options_.add_option("steric_radius", 2.2f, OptionType::FLOAT);
     options_.lock_option_adding();
     
-    /*options_.add_option(Option("temperature", 298.15f));
-     options_.add_option(Option("steps", 100000));
-     options_.add_option(Option("record", 0));
-     options_.add_option(Option("record_file", "test.out"));
-     options_.add_option(Option("cutoff", 5.0f));
-     options_.add_option(Option("steric_radius", 2.2f));
+    /*
      options_.add_option(Option("d_weight", 1.0f));
      options_.add_option(Option("r_weight", 1.0f));
      options_.add_option(Option("record_state", 0));
@@ -344,16 +340,13 @@ ThermoFlucSimulationDevel::update_var_options() {
     cutoff_        = options_.get_float("cutoff");
     record_        = options_.get_bool("record");
     record_file_   = options_.get_string("record_file");
+    steric_radius_ = options_.get_float("steric_radius");
     
     /*temperature_    = options_.option<float>("temperature");
     steps_          = options_.option<int>("steps");
-    record_         = options_.option<int>("record");
     record_state_   = options_.option<int>("record_state");
     record_all_     = options_.option<int>("record_all");
     record_all_file_= options_.option<String>("record_all_file");
-    record_file_    = options_.option<String>("record_file");
-    cutoff_         = options_.option<float>("cutoff");
-    steric_radius_  = options_.option<float>("steric_radius");
     bound_pdb_      = options_.option<int>("bound_pdb");
     
     std::dynamic_pointer_cast<FrameScorerDevel>(scorer_)->weight_d(options_.option<float>("d_weight"));
