@@ -35,6 +35,7 @@ public:
         check_nodes_2_ = {  };
         record_state_ = 0;
         record_all_ = 0;
+        steric_radius_ = 2.2;
         setup_options();
         
     }
@@ -50,7 +51,7 @@ private:
             for(auto const & j : check_nodes_2_) {
                 for(auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
                     for(auto const & b1 : sampler_.mst()->get_node(j)->data()->cur_state->beads()) {
-                        if(b1.distance(b2) < 2.2) { clash_ = 1; }
+                        if(b1.distance(b2) < steric_radius_) { clash_ = 1; }
                     }
                     
                     if(clash_) { break; }
