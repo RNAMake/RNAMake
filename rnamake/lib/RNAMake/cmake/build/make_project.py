@@ -198,10 +198,10 @@ for p in ['apps']:
                 final_cc_files.append(cc_file)
 
         symlink = prog_name+"_symlink"
-        f.write("add_executable("+prog_name + " " + unit_app)
-        for fname in cpp_files:
+        f.write("add_executable("+prog_name + " " + unit_app + " ")
+        for fname in final_cc_files:
             f.write(act_prog_dir + "/" + fname + " ")
-
+        f.write(")\n")
 
         f.write("target_link_libraries("+prog_name+" %s)\n" % 'all_libs')
         f.write("add_custom_target("+symlink+" ALL)\n")
