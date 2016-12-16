@@ -76,6 +76,11 @@ rnamake/unittests/dot.ps
 rnamake/unittests/rna.ps
 rnamake/unittests/rnafold_dump
 rnamake/unittests/intergration/*.pdb
+rnamake/setup/twoways
+rnamake/setup/structure_motifs
+rnamake/setup/sectioned_motifs/
+rnamake/setup/score_files
+rnamake/lib/RNAMake/*.cmake
 
 # Auto-generated build files
 rnamake/lib/RNAMake/cmake/

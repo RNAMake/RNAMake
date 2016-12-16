@@ -169,7 +169,7 @@ SequenceOptimizer3D::get_optimized_sequences(
 
             sols.push_back(std::make_shared<OptimizedSequence>(
                             OptimizedSequence{s1, new_score, eterna_score}));
-            mst->write_pdbs("org");
+            //mst->write_pdbs("org");
             
             return sols;
             //std::cout << mst->to_motif_tree()->secondary_structure()->sequence() << std::endl;

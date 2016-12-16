@@ -12,12 +12,12 @@
 #include <stdio.h>
 
 #include "base/application.hpp"
-#include "sequence_optimizer/sequence_optimizer.h"
+#include "sequence_optimizer/sequence_optimizer_3d.hpp"
 
 class SequenceOptimizerApp : public Application {
 public:
     SequenceOptimizerApp() : Application(),
-    optimizer_(SequenceOptimizer()) {}
+    optimizer_(SequenceOptimizer3D()) {}
     
     ~SequenceOptimizerApp() {}
     
@@ -41,7 +41,8 @@ private:
     
 private:
     
-    SequenceOptimizer optimizer_;
+    SequenceOptimizer3D optimizer_;
+    
     
 };
 

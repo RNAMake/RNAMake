@@ -109,13 +109,12 @@ MotifGraph::_setup_from_str(String const & s) {
         auto m = std::make_shared<Motif>(n_spl[0],
                                          ResidueTypeSetManager::getInstance().residue_type_set());
         
-        /*try {
+        try {
             auto m2 = RM::instance().motif(m->name());
         } catch(ResourceManagerException const & e) {
-            RM::instance().add_motif(m);
-        }*/
+            RM::instance().register_motif(m);
+        }
 
-    
 
         if(m->ends().size() > 1) {
             m->get_beads(m->ends()[0]);
@@ -141,10 +140,11 @@ MotifGraph::_setup_from_str(String const & s) {
     
     int start = -1;
     for(auto const kv : aligned_) {
-        if(kv.second == 0) { start = kv.first; }
+        if(kv.second == 0) { start = kv.first; break; }
     }
     
     auto seen_connections = std::map<String, int>();
+    auto seen_nodes = std::map<int, int>();
     auto n = GraphNodeOP<MotifOP>();
     for(auto it = graph_.transverse(graph_.get_node(start));
         it != graph_.end();
@@ -152,14 +152,21 @@ MotifGraph::_setup_from_str(String const & s) {
         
         n = (*it);
         
-        if(n->index() == start) {
+        if(n->index() == start || n->data()->ends().size() == 1) {
             merger_->add_motif(n->data());
+            seen_nodes[n->index()] = 1;
+            continue;
+        }
+        
+        
+        auto parent_index = n->connections()[0]->partner(n->index())->index();
+        if(seen_nodes.find(parent_index) == seen_nodes.end()) {
             continue;
         }
         if(n->connections()[0] == nullptr) { std::cout << "no parent: " << n->index() << std::endl;
             continue;}
         
-        
+        seen_nodes[n->index()] = 1;
         auto c = n->connections()[0];
         auto parent = c->partner(n->index());
         auto parent_end_index = c->end_index(parent->index());
@@ -168,6 +175,33 @@ MotifGraph::_setup_from_str(String const & s) {
                           parent->data(), parent->data()->ends()[parent_end_index]);
         
     }
+    
+    // catch other alignment points ... need better way to do this
+    int added = 0;
+    while(1) {
+        added = 0;
+        for(auto const & n : graph_.nodes()) {
+            if(seen_nodes.find(n->index()) != seen_nodes.end()) { continue; }
+            
+            auto parent_index = n->connections()[0]->partner(n->index())->index();
+            if(seen_nodes.find(parent_index) == seen_nodes.end()) { continue; }
+            seen_nodes[n->index()] = 1;
+
+            auto c = n->connections()[0];
+            auto parent = c->partner(n->index());
+            auto parent_end_index = c->end_index(parent->index());
+            seen_connections[std::to_string(n->index()) + " " + std::to_string(parent->index())] = 1;
+            merger_->add_motif(n->data(), n->data()->ends()[0],
+                               parent->data(), parent->data()->ends()[parent_end_index]);
+            
+            added = 1;
+
+            
+        }
+        
+        if(!added) {break; }
+    }
+    
     
     // catch connections not used in alignement for for chain connections
     for(auto const & n : graph_) {

@@ -47,8 +47,7 @@ public:
           ResidueTypeSet const &);
     
     
-    Motif(
-        Motif const & m);
+    Motif(Motif const & m);
     
     ~Motif() {}
 
@@ -192,10 +191,10 @@ clash_between_motifs(
     double clash_radius = 2.7) {
     
     for(auto const & b1 : m1->beads()) {
-        if(b1.btype() == PHOS) { continue; }
+        if(b1.btype() == BeadType::PHOS) { continue; }
         for(auto const & b2 : m2->beads()) {
-            if(b2.btype() == PHOS) { continue; }
-            if(b1.distance(b2) < clash_radius) { return 1; }
+            if (b2.btype() == BeadType::PHOS) { continue; }
+            if (b1.distance(b2) < clash_radius) { return 1; }
         }
     }
     return 0;
