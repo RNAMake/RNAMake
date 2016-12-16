@@ -297,9 +297,9 @@ class BuildSqliteLibraries(object):
             clustered_motifs = []
             energies = []
             dir_name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
-            if not os.path.isdir(dir_name):
-                os.mkdir(dir_name)
-            f = open(dir_name + "/prob.dat", "w")
+            #if not os.path.isdir(dir_name):
+            #    os.mkdir(dir_name)
+            #f = open(dir_name + "/prob.dat", "w")
             for j, c_motifs in enumerate(m_clusters):
                 m = c_motifs.motifs[0]
                 m.mtype = motif_type.HELIX
@@ -311,12 +311,12 @@ class BuildSqliteLibraries(object):
                 pop = float(len(c_motifs.motifs)) / float(len(aligned_motifs))
                 #m.to_pdb(dir_name + "/" + m.name + ".pdb")
 
-                f.write(m.name + " " + str(pop) + "\n")
+                #f.write(m.name + " " + str(pop) + "\n")
 
                 energy = -kBT*math.log(pop)
                 energies.append(energy)
 
-            f.close()
+            #f.close()
 
             me = motif_ensemble.MotifEnsemble()
             me.setup(c.end_id, clustered_motifs, energies)

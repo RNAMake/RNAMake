@@ -160,7 +160,11 @@ class MotifFactory(object):
         #    print "did not parse secondary_structure", m.name
 
         if include_protein:
-            p_residues = pdb_parser.parse(path, protein=1, rna=0)
+            if os.path.isdir(path):
+                p_residues = pdb_parser.parse(path + "/" + filename + ".pdb",
+                                              protein=1, rna=0)
+            else:
+                p_residues = pdb_parser.parse(path, protein=1, rna=0)
             beads = []
             for r in p_residues:
                 a = r.get_atom("CA")

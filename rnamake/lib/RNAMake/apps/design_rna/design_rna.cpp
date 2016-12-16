@@ -23,19 +23,26 @@ lookup_(StericLookup())
 void
 DesignRNAApp::setup_options() {
     
+    //general options
     add_option("designs", 1, OptionType::INT, false);
     add_option("seqs_per_design", 1, OptionType::INT, false);
-    add_option("sol_pdbs", false, OptionType::BOOL, false);
-    add_option("full_pdbs", false, OptionType::BOOL, false);
     add_option("out_file", "default.out", OptionType::STRING, false);
     add_option("score_file", "default.scores", OptionType::STRING, false);
     add_option("verbose", false, OptionType::BOOL, false);
     add_option("pdbs", false, OptionType::BOOL, false);
     
+
+    //no sequence opt
+    add_option("only_ideal", false, OptionType::BOOL, false);
+    
+    
     // start from pdb
     add_option("pdb", String(""), OptionType::STRING, false);
     add_option("start_bp", String(""), OptionType::STRING, false);
     add_option("end_bp", String(""), OptionType::STRING, false);
+    
+    // start from motif graph
+    add_option("mg", String(""), OptionType::STRING, false);
 
     add_cl_options(search_.options(), "search");
 
@@ -140,9 +147,25 @@ DesignRNAApp::_setup_from_pdb() {
     end_ = EndStateInfo{end_bp_name, 0};
 }
 
+
+void
+DesignRNAApp::_setup_from_mg() {
+    
+    auto lines = get_lines_from_file(get_string_option("mg"));
+    //std::cout << "made it" << std::endl;
+    mg_ = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
+    mg_->set_option_value("sterics", false);
+    auto spl = split_str_by_delimiter(lines[1], " ");
+    start_ = EndStateInfo{spl[1], std::stoi(spl[0])};
+    spl = split_str_by_delimiter(lines[2], " ");
+    end_ = EndStateInfo{spl[1], std::stoi(spl[0])};
+}
+
+
 void
 DesignRNAApp::run() {
     if(get_string_option("pdb") != "") { _setup_from_pdb(); }
+    if(get_string_option("mg") != "" ) { _setup_from_mg(); }
     
     auto start = mg_->get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
     
@@ -161,10 +184,11 @@ DesignRNAApp::run() {
     
     auto so = SequenceOptimizer3D();
     so.set_option_value("verbose", get_bool_option("verbose"));
+    so.set_option_value("cutoff", 10.0f);
     
     std::ofstream out, sf_out;
     sf_out.open(get_string_option("score_file"));
-    sf_out << "design_num,design_score,design_sequence,design_structure,opt_num,";
+    sf_out << "design_num,design_score,design_sequence,design_structure,motifs_uses,opt_num,";
     sf_out << "opt_sequence,opt_score,eterna_score" << std::endl;
     
     out.open(get_string_option("out_file"));
@@ -174,7 +198,7 @@ DesignRNAApp::run() {
     int solution_count = 0;
     while(! search_.finished()) {
         auto sol = search_.next();
-        if(sol == nullptr) {
+        if(sol == nullptr || sol->path().size() == 0) {
             std::cout << "DESIGN RNA: cannot find anymore solutions!" << std::endl;
             std::cout << "DESIGN RNA: generated " << design_num << " designs!" << std::endl;
             sf_out.close();
@@ -182,14 +206,38 @@ DesignRNAApp::run() {
             exit(0);
         }
         
+        
         auto mt = sol->to_motif_tree();
 
         mg_->add_motif_tree(mt, start_.n_pos, start_.name);
         auto last_node = mg_->last_node();
         mg_->add_connection(end_.n_pos, mg_->last_node()->index(), end_.name, "");
         mg_->replace_ideal_helices();
-        mg_->write_pdbs();
-        mg_->to_pdb("test.pdb", 1);
+        
+        if(get_bool_option("only_ideal")) {
+            auto motif_names = String("");
+            for(auto const & n : *mt) {
+                motif_names += n->data()->name() + ";";
+            }
+            
+            
+            sf_out << design_num << "," << sol->score() << "," <<  mg_->designable_sequence();
+            sf_out << "," << mg_->secondary_structure()->dot_bracket() << ",";
+            sf_out << motif_names << std::endl;
+            
+            out << mg_->to_str() << std::endl;
+            
+            design_num++;
+
+            if(get_bool_option("pdbs")) {
+                mg_->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
+                solution_count++;
+            }
+            
+            mg_->remove_level(1);
+            continue;
+        }
+        
         
         auto c = GraphtoTree();
         auto d_mt = c.convert(mg_, nullptr, -1, last_node);
@@ -249,6 +297,11 @@ DesignRNAApp::run() {
 int main(int argc, const char * argv[]) {
     //must add this for all apps!
     std::set_terminate(print_backtrace);
+    
+    //load extra motifs being used
+    String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
+    //RM::instance().add_motif(base_path+"GAAA_tetraloop");
+    //RM::instance().add_motif(base_path+"GGAA_tetraloop");
     
     auto app = DesignRNAApp();
     app.setup_options();

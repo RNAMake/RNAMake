@@ -14,6 +14,7 @@ def get_cc_files_in_dir(path):
                     cpp_files.append(filename)
     return cpp_files
 
+
 def write_application_cmake_file():
 
     fsum = open(CMAKE_PATH+"apps.cmake", "w")
@@ -26,7 +27,8 @@ def write_application_cmake_file():
          continue
 
         spl = l.split()
-        app_dir = '../../apps/'+spl[0]+"/"
+        cc_path = util.base_dir(spl[1])
+        app_dir = cc_path
         cpp_files = get_cc_files_in_dir(app_dir)
 
         symlink = spl[0]+"_symlink"

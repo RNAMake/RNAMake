@@ -8,10 +8,6 @@
 
 #include <map>
 #include <assert.h>
-#include <unistd.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <algorithm>
 
 //RNAMake Headers
 #include "base/file_io.h"
@@ -31,7 +27,7 @@ id_(Uuid()) {
         throw "tried to construct Motif object from string, with a string too short";
     }
     
-    Strings spl    = split_str_by_delimiter(s, "&");
+    auto spl       = split_str_by_delimiter(s, "&");
     path_          = spl[0];
     name_          = spl[1];
     score_         = std::stof(spl[2]);
@@ -40,15 +36,15 @@ id_(Uuid()) {
     structure_     = std::make_shared<Structure>(spl[5], rts);
     auto basepair_str = split_str_by_delimiter(spl[6], "@");
     for (auto const & bp_str : basepair_str) {
-        Strings bp_spl = split_str_by_delimiter(bp_str, ",");
-        Strings res_spl = split_str_by_delimiter(bp_spl[0], "-");
-        String res1_id = res_spl[0].substr(0,1);
-        String res2_id = res_spl[1].substr(0,1);
-        int res1_num = std::stoi(res_spl[0].substr(1));
-        int res2_num = std::stoi(res_spl[1].substr(1));
-        ResidueOP res1 = structure_->get_residue(res1_num, res1_id, "");
-        ResidueOP res2 = structure_->get_residue(res2_num, res2_id, "");
-        BasepairState bpstate = str_to_basepairstate(bp_spl[1]);
+        auto bp_spl = split_str_by_delimiter(bp_str, ",");
+        auto res_spl = split_str_by_delimiter(bp_spl[0], "-");
+        auto res1_id = res_spl[0].substr(0,1);
+        auto res2_id = res_spl[1].substr(0,1);
+        auto res1_num = std::stoi(res_spl[0].substr(1));
+        auto res2_num = std::stoi(res_spl[1].substr(1));
+        auto res1 = structure_->get_residue(res1_num, res1_id, "");
+        auto res2 = structure_->get_residue(res2_num, res2_id, "");
+        auto bpstate = str_to_basepairstate(bp_spl[1]);
         //Hack to stop memory out of bounds
         //TODO look into why this is happening!
         if(bp_spl.size() == 2) { bp_spl.push_back("c..."); }
@@ -211,8 +207,8 @@ align_motif(
     motif->move(bp_pos_diff);
     
     //align sugars for better overlap
-    float dist1 = motif_end->res1()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
-    float dist2 = motif_end->res2()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
+    auto dist1 = motif_end->res1()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
+    auto dist2 = motif_end->res2()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
     
     motif->get_beads(motif_end);
     if (dist1 > 5 && dist2 > 5) { return; }
@@ -272,6 +268,7 @@ ref_motif() {
     Motif m ( line, ResidueTypeSetManager::getInstance().residue_type_set());
     return m;
 }
+
 
 
 

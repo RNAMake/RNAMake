@@ -392,14 +392,17 @@ class MotifGraph(base.Base):
         for k,v in self.aligned.iteritems():
             if v == 0:
                 start = k
+                break
 
         if start == -1:
             raise ValueError("cannot find a place to start in rebuilding motif_graph"
                              " from string")
 
+
         seen_connections = {}
         for n in graph.transverse_graph(self.graph, start):
-            if n.index == start:
+
+            if n.index == start or len(n.data.ends) == 1:
                 self.merger.add_motif(n.data)
                 continue
             if n.connections[0] is None:
@@ -723,16 +726,15 @@ class MotifGraph(base.Base):
         node_i_ei = self._get_connection_end(node_i, i_bp_name)
         node_j_ei = self._get_connection_end(node_j, j_bp_name)
 
-        node_i_end_name = node_i.data.ends[node_i_ei].name()
-        node_j_end_name = node_j.data.ends[node_j_ei].name()
-
         self.graph.connect(i, j, node_i_ei, node_j_ei)
         self.merger.connect_motifs(node_i.data, node_j.data,
                                    node_i.data.ends[node_i_ei],
                                    node_j.data.ends[node_j_ei])
 
     #REMOVE FUNCTIONS   #######################################################
-    def remove_motif(self, pos):
+    def remove_motif(self, pos=-1):
+        if pos == -1:
+            pos = self.last_node().index
         n = self.graph.get_node(pos)
         self.merger.remove_motif(n.data)
         self.graph.remove_node(pos)
