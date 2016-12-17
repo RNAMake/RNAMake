@@ -139,7 +139,7 @@ RNAStructure::to_pdb(
 // non member functions ////////////////////////////////////////////////////////////////////////////
 
 
-std::unique_ptr<BasepairOPs>
+std::shared_ptr<BasepairOPs>
 end_from_basepairs(
     StructureOP const & s,
     BasepairOPs const & bps) {
@@ -155,7 +155,7 @@ end_from_basepairs(
     auto res_map = std::map<Uuid, ResidueOP, UuidCompare>();
     for(auto const & r : chain_ends ) { res_map[r->uuid()] = r;}
 
-    auto ends = std::make_unique<BasepairOPs>();
+    auto ends = std::make_shared<BasepairOPs>();
     for(auto const & bp : bps) {
         if(bp->bp_type() != "cW-W") { continue; }
         if(res_map.find(bp->res1()->uuid()) != res_map.end() &&
@@ -168,13 +168,13 @@ end_from_basepairs(
     
 }
 
-std::unique_ptr<BasepairOPs>
+std::shared_ptr<BasepairOPs>
 subselect_basepairs_with_res(
     ResidueOPs const & res,
     BasepairOPs const & all_bps) {
     
     auto res_map = std::map<Uuid, ResidueOP, UuidCompare>();
-    auto bps = std::make_unique<BasepairOPs>();
+    auto bps = std::make_shared<BasepairOPs>();
     
     for(auto const & r : res ) { res_map[r->uuid()] = r;}
 
