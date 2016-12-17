@@ -213,12 +213,12 @@ protected:
 
 typedef std::shared_ptr<RNAStructure> RNAStructureOP;
 
-std::unique_ptr<BasepairOPs>
+std::shared_ptr<BasepairOPs>
 end_from_basepairs(
     StructureOP const &,
     BasepairOPs const &);
 
-std::unique_ptr<BasepairOPs>
+std::shared_ptr<BasepairOPs>
 subselect_basepairs_with_res(
     ResidueOPs const &,
     BasepairOPs const &);
