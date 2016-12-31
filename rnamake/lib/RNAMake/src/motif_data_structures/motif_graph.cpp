@@ -8,6 +8,7 @@
 
 #include <map>
 #include <list>
+#include <queue>          // std::queue
 
 //RNAMake Headers
 #include "resources/resource_manager.h"
@@ -17,10 +18,13 @@
 
 MotifGraph::MotifGraph():
     graph_(GraphStatic<MotifOP>()),
-    merger_(std::make_shared<MotifMerger>()),
+    merger_(nullptr),
     clash_radius_(2.5),
     sterics_(1),
     options_(Options()),
+    update_merger_(1),
+    update_align_list_(1),
+    align_list_(GraphNodeOPs<MotifOP>()),
     aligned_(std::map<int, int>()) {  setup_options(); }
 
 
@@ -65,36 +69,9 @@ MotifGraph::_setup_from_top_str(String const & s) {
         graph_.connect(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
                        std::stoi(c_spl[2]), std::stoi(c_spl[3]));
     }
-    
-    int start = -1;
-    for(auto const kv : aligned_) {
-        if(kv.second == 0) { start = kv.first; }
-    }
-    
-    auto n = GraphNodeOP<MotifOP>();
-    for(auto it = graph_.transverse(graph_.get_node(start));
-        it != graph_.end();
-        ++it) {
-        
-        n = (*it);
-        if(n->index() == start) {
-            merger_->add_motif(n->data());
-            continue;
-        }
-        if(n->connections()[0] == nullptr) { continue; }
-        auto c = n->connections()[0];
-        auto parent = c->partner(n->index());
-        auto parent_end_index = c->end_index(parent->index());
-        auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
-                                         n->data()->ends()[0],
-                                         n->data());
-        n->data() = m_added;
-        merger_->add_motif(n->data(), n->data()->ends()[0],
-                          parent->data(), parent->data()->ends()[parent_end_index]);
-    }
-    
+ 
     options_.set_value("sterics", true);
-
+    _align_motifs_all_motifs();
 }
 
 void
@@ -114,7 +91,6 @@ MotifGraph::_setup_from_str(String const & s) {
         } catch(ResourceManagerException const & e) {
             RM::instance().register_motif(m);
         }
-
 
         if(m->ends().size() > 1) {
             m->get_beads(m->ends()[0]);
@@ -138,90 +114,7 @@ MotifGraph::_setup_from_str(String const & s) {
         
     }
     
-    int start = -1;
-    for(auto const kv : aligned_) {
-        if(kv.second == 0) { start = kv.first; break; }
-    }
-    
-    auto seen_connections = std::map<String, int>();
-    auto seen_nodes = std::map<int, int>();
-    auto n = GraphNodeOP<MotifOP>();
-    for(auto it = graph_.transverse(graph_.get_node(start));
-        it != graph_.end();
-        ++it) {
-        
-        n = (*it);
-        
-        if(n->index() == start || n->data()->ends().size() == 1) {
-            merger_->add_motif(n->data());
-            seen_nodes[n->index()] = 1;
-            continue;
-        }
-        
-        
-        auto parent_index = n->connections()[0]->partner(n->index())->index();
-        if(seen_nodes.find(parent_index) == seen_nodes.end()) {
-            continue;
-        }
-        if(n->connections()[0] == nullptr) { std::cout << "no parent: " << n->index() << std::endl;
-            continue;}
-        
-        seen_nodes[n->index()] = 1;
-        auto c = n->connections()[0];
-        auto parent = c->partner(n->index());
-        auto parent_end_index = c->end_index(parent->index());
-        seen_connections[std::to_string(n->index()) + " " + std::to_string(parent->index())] = 1;
-        merger_->add_motif(n->data(), n->data()->ends()[0],
-                          parent->data(), parent->data()->ends()[parent_end_index]);
-        
-    }
-    
-    // catch other alignment points ... need better way to do this
-    int added = 0;
-    while(1) {
-        added = 0;
-        for(auto const & n : graph_.nodes()) {
-            if(seen_nodes.find(n->index()) != seen_nodes.end()) { continue; }
-            
-            auto parent_index = n->connections()[0]->partner(n->index())->index();
-            if(seen_nodes.find(parent_index) == seen_nodes.end()) { continue; }
-            seen_nodes[n->index()] = 1;
-
-            auto c = n->connections()[0];
-            auto parent = c->partner(n->index());
-            auto parent_end_index = c->end_index(parent->index());
-            seen_connections[std::to_string(n->index()) + " " + std::to_string(parent->index())] = 1;
-            merger_->add_motif(n->data(), n->data()->ends()[0],
-                               parent->data(), parent->data()->ends()[parent_end_index]);
-            
-            added = 1;
-
-            
-        }
-        
-        if(!added) {break; }
-    }
-    
-    
-    // catch connections not used in alignement for for chain connections
-    for(auto const & n : graph_) {
-        for(auto const & c : n->connections()) {
-            if(c == nullptr) { continue; }
-            auto partner = c->partner(n->index());
-            auto key1 = std::to_string(n->index()) + " " + std::to_string(partner->index());
-            auto key2 = std::to_string(partner->index()) + " " + std::to_string(n->index());
-            if(seen_connections.find(key1) != seen_connections.end()) { continue; }
-            if(seen_connections.find(key2) != seen_connections.end()) { continue; }
-            auto end1 = n->data()->ends()[c->end_index(n->index())];
-            auto end2 = partner->data()->ends()[c->end_index(partner->index())];
-            merger_->connect_motifs(n->data(), partner->data(), end1, end2);
-            seen_connections[key1] = 1;
-            
-        }
-    }
-    
     options_.set_value("sterics", true);
-
     
 }
 
@@ -231,16 +124,48 @@ MotifGraph::MotifGraph(
     options_(Options()),
     graph_(GraphStatic<MotifOP>(mg.graph_)) {
         
-    auto motifs = MotifOPs();
     // dear god this is horrible but cant figure out a better way to do a copy
     for(auto const & n : mg.graph_.nodes()) {
         graph_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
-        motifs.push_back(graph_.get_node(n->index())->data());
     }
         
     options_ = Options(mg.options_);
-    merger_ = std::make_shared<MotifMerger>(*mg.merger_, motifs);
     aligned_ = mg.aligned_;
+    update_merger_ = 1;
+    update_align_list_ = 1;
+}
+
+
+//setup helpers ////////////////////////////////////////////////////////////////////////////////////
+
+void
+MotifGraph::update_indexes(std::map<int, int> const & index_hash) {
+    auto invert_hash = std::map<int, int>();
+    for(auto const & kv : index_hash) {
+        invert_hash[kv.second] = kv.first;
+    }
+    
+    auto largest = 0;
+    auto new_aligned = std::map<int, int>();
+    auto nodes = GraphNodeOPs<MotifOP>();
+    for(auto const & kv : invert_hash) {
+        auto n = get_node(kv.first);
+        nodes.push_back(n);
+    }
+    
+    for(auto & n : nodes) {
+        auto new_i = invert_hash[n->index()];
+        auto aligned = aligned_[n->index()];
+        
+        if(new_i > largest) { largest = new_i; }
+        n->index(new_i);
+        new_aligned[new_i] = aligned;
+    }
+    
+    aligned_ = new_aligned;
+    update_merger_ = 1;
+    update_align_list_ = 1;
+    graph_.index(largest+1);
 }
 
 
@@ -316,18 +241,22 @@ MotifGraph::_add_motif_to_graph(
     if(parent == nullptr) {
         pos = graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1);
         if(pos != -1) {
-            merger_->add_motif(m);
             aligned_[pos] = 0;
+            update_align_list_ = 1;
+            update_merger_ = 1;
         }
     }
     
     else {
         pos = graph_.add_data(m, parent->index(), parent_end_index, 0,
                               (int)m->ends().size());
-        merger_->add_motif(m, m->ends()[0], parent->data(),
-                           parent->data()->ends()[parent_end_index]);
-
-        aligned_[pos] = 1;
+        
+        if(pos != -1) {
+            aligned_[pos] = 1;
+            update_align_list_ = 1;
+            update_merger_ = 1;
+        }
+        
 
     }
     
@@ -368,12 +297,6 @@ MotifGraph::_get_connection_end(
                 "end name " + bp_name + " as the end is blocked");
         }
         
-        if(ei == node->data()->block_end_add()) {
-            throw MotifGraphException(
-                "cannot add connection with " + std::to_string(node->index()) + " and "
-                "end name " + bp_name + " as the end is blocked");
-        }
-
         node_end_index = ei;
         
     }
@@ -404,92 +327,23 @@ MotifGraph::_get_connection_end(
 
 void
 MotifGraph::_align_motifs_all_motifs() {
-    int start = -1;
-    for(auto const kv : aligned_) {
-        if(kv.second == 0) {
-            start = kv.first;
-            break;
-        }
-    }
-    
-    if(start == -1) {
-        throw MotifGraphException(
-            "could not find start position in graph to perform alignment!");
-    }
-    
-    auto n = GraphNodeOP<MotifOP>();
-    auto open = std::list<GraphNodeOP<MotifOP>>();
-    auto aligned = std::map<int, int>();
-    open.push_back(graph_.get_node(start));
-    
-    while (open.size() > 0) {
-        n = open.front();
-        open.pop_front();
-                
-        int i = -1;
-        for(auto c : n->connections()) {
-            i++;
-            if(i == n->data()->block_end_add()) { continue; }
-            if(c == nullptr) { continue; }
-            
-            auto p = c->partner(n->index());
-            auto it = std::find(open.begin(), open.end(), p);
-            if(it != open.end()) { continue; }
-            
-            if(aligned.find(p->index()) != aligned.end()) { continue; }
-            open.push_back(p);
-            
-        }
+    _update_align_list();
+    auto non_aligned_nodes = unaligned_nodes();
+    for(auto & n : align_list_) {
+        if(std::find(non_aligned_nodes.begin(), non_aligned_nodes.end(), n) != non_aligned_nodes.end() ) { continue; }
         
-        if(n->index() == start) {
-            merger_->update_motif(n->data());
-            aligned[n->index()] = 1;
-        }
-        else {
-            if(n->connections()[0] == nullptr) { continue; }
-            auto c = n->connections()[0];
-            auto parent = c->partner(n->index());
-            
-            //parent is not aligned yet
-            if(aligned.find(parent->index()) == aligned.end()) {
-                open.push_back(n);
-                continue;
-            }
-            
-            auto parent_end_index = c->end_index(parent->index());
-            auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
-                                             n->data()->ends()[0],
-                                             n->data());
-            n->data() = m_added;
-            merger_->update_motif(n->data());
-            aligned[n->index()] = 1;
-        }
+        auto parent = n->connections()[0]->partner(n->index());
+        auto pei = n->connections()[0]->end_index(parent->index());
         
-    }
-    
-    /*for(auto it = graph_.transverse(graph_.get_node(start));
-        it != graph_.end();
-        ++it) {
-        
-        n = (*it);
-        if(n->index() == start) {
-            merger_->update_motif(n->data());
-            continue;
-        }
-        std::cout << n->index() << std::endl;
-        
-        if(n->connections()[0] == nullptr) { continue; }
-        auto c = n->connections()[0];
-        auto parent = c->partner(n->index());
-        auto parent_end_index = c->end_index(parent->index());
-        auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
+        auto m_added = get_aligned_motif(parent->data()->ends()[pei],
                                          n->data()->ends()[0],
                                          n->data());
         n->data() = m_added;
-        merger_->update_motif(n->data());
-    }*/
-}
+    }
+    
 
+  
+}
 
 
 //add functions ////////////////////////////////////////////////////////////////////////////////////
@@ -530,7 +384,8 @@ int
 MotifGraph::add_motif(
     MotifOP const & m,
     int parent_index,
-    int parent_end_index) {
+    int parent_end_index,
+    int orphan) {
     
     for(auto const & n : graph_.nodes()) {
         if(n->data()->id() == m->id()) {
@@ -542,7 +397,7 @@ MotifGraph::add_motif(
     
     auto parent = _get_parent(m->name(), parent_index);
 
-    if(parent == nullptr) {
+    if(parent == nullptr || orphan) {
         auto m_copy = std::make_shared<Motif>(*m);
         m_copy->get_beads(m_copy->ends()[0]);
         return _add_motif_to_graph(m_copy, nullptr, -1);
@@ -623,14 +478,14 @@ MotifGraph::add_connection(
     auto node_j = GraphNodeOP<MotifOP>(nullptr);
     
     try {  node_i = graph_.get_node(i); }
-    catch(TreeException) {
+    catch(GraphException) {
         throw MotifTreeException(
             "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
             std::to_string(i) +" does not exist");
     }
     
     try {  node_j = graph_.get_node(j); }
-    catch(TreeException) {
+    catch(GraphException) {
         throw MotifTreeException(
             "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
             std::to_string(j) +" does not exist");
@@ -644,11 +499,7 @@ MotifGraph::add_connection(
     
     
     graph_.connect(i, j, node_i_ei, node_j_ei);
-    
-    merger_->connect_motifs(node_i->data(), node_j->data(),
-                            node_i->data()->ends()[node_i_ei],
-                            node_j->data()->ends()[node_j_ei]);
-
+    update_merger_ = 1;
 }
 
 
@@ -658,9 +509,10 @@ MotifGraph::add_connection(
 void
 MotifGraph::remove_motif(int pos) {
     auto n = graph_.get_node(pos);
-    merger_->remove_motif(n->data());
     graph_.remove_node(pos);
     aligned_.erase(pos);
+    update_merger_ = 1;
+    update_align_list_ = 1;
 }
 
 void
@@ -711,17 +563,31 @@ MotifGraph::replace_ideal_helices() {
                 count = std::stoi(name_spl[2]);
             }
             
+            auto old_n_aligned = aligned_[n->index()];
+            auto old_n = n;
+            
             remove_motif(n->index());
             int pos = 0;
             auto h = RM::instance().motif("HELIX.IDEAL");
             if(parent == nullptr) {
                 h->get_beads(h->ends()[0]);
                 pos = _add_motif_to_graph(h, nullptr, -1);
+                
+                if(old_n_aligned == 0) {
+                    auto new_n = get_node(pos);
+                    auto m_added = get_aligned_motif(old_n->data()->ends()[0],
+                                                     new_n->data()->ends()[0],
+                                                     new_n->data());
+                    n->data() = m_added;
+                }
+
             }
-            else                  {
+            
+            else {
                 auto m_added = get_aligned_motif(parent->data()->ends()[parent_end_index],
                                                  h->ends()[0], h);
                 pos = _add_motif_to_graph(m_added, parent, parent_end_index);
+                
             }
             
             
@@ -739,15 +605,16 @@ MotifGraph::replace_ideal_helices() {
             if(other != nullptr) {
                 graph_.connect(pos, other->index(), 1, other_end_index);
                 auto node = graph_.get_node(pos);
-                merger_->connect_motifs(node->data(), other->data(),
-                                        node->data()->ends()[1],
-                                        other->data()->ends()[other_end_index]);
             }
+            
+            break;
             
         }
     }
     
     //re align all motifs
+    update_align_list_ = 1;
+    update_merger_ = 1;
     _align_motifs_all_motifs();
 }
 
@@ -761,15 +628,11 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
             throw MotifGraphException("could not find ss motif, cannot update helical sequence");
         }
         
-        auto spl = split_str_by_delimiter(ss_m->end_ids()[0], "_");
-        auto new_name = String();
-        new_name += spl[0][0]; new_name += spl[2][1]; new_name += "=";
-        new_name += spl[0][1]; new_name += spl[2][0];
         //std::cout << ss_m->end_ids()[0] << " " << ss_m->sequence() << " " << new_name << std::endl;
-        if(n->data()->name() == new_name) {
+        if(n->data()->end_ids()[0] == ss_m->end_ids()[0] && n->data()->name() != "HELIX.IDEAL") {
             continue;
         }
-        auto m = RM::instance().motif(new_name);
+        auto m = RM::instance().bp_step(ss_m->end_ids()[0]);
         m->id(n->data()->id());
         auto org_res = n->data()->residues();
         auto new_res = m->residues();
@@ -782,10 +645,16 @@ MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
             new_bps[i]->uuid(n->data()->basepairs()[i]->uuid());
         }
         
-        n->data() = m;
-        
+        if(aligned_[n->index()] == 0) {
+            auto m_added = get_aligned_motif(n->data()->ends()[0], m->ends()[0], m);
+            n->data() = m_added;
+        }
+        else {
+            n->data() = m;
+        }
     }
     
+    update_merger_ = 1;
     _align_motifs_all_motifs();
     
 }
@@ -855,6 +724,101 @@ MotifGraph::to_str() {
     s += con_str;
     return s;
     
+}
+
+
+//misc functions ///////////////////////////////////////////////////////////////////////////////////
+
+void
+MotifGraph::_update_align_list() {
+    if(!update_align_list_) { return; }
+    
+    auto non_aligned_nodes = unaligned_nodes();
+    auto open = std::queue<GraphNodeOP<MotifOP>>();
+    auto used_nodes = std::map<GraphNodeOP<MotifOP>, int>();
+
+    align_list_ = GraphNodeOPs<MotifOP>();
+    
+    for(auto const & start : non_aligned_nodes) {
+        open.push(start);
+        auto seen_nodes = std::map<GraphNodeOP<MotifOP>, int>();
+
+        while (!open.empty()) {
+            auto n = open.front();
+            open.pop();
+            
+            seen_nodes[n] = 1;
+            if(n->index() == start->index()) {
+                align_list_.push_back(n);
+            }
+            else {
+                // should this be block end?
+                if(n->connections()[0] == nullptr) { continue; }
+                auto c = n->connections()[0];
+                auto parent = c->partner(n->index());
+                if(used_nodes.find(parent) == used_nodes.end()) { continue; }
+                align_list_.push_back(n);
+            }
+            
+            used_nodes[n] = 1;
+            int i = -1;
+            for(auto const & c : n->connections()) {
+                i++;
+                if(i == n->data()->block_end_add() || c == nullptr) { continue; }
+                auto partner_n = c->partner(n->index());
+                if(seen_nodes.find(partner_n) != seen_nodes.end() ||
+                   used_nodes.find(partner_n) != used_nodes.end()) { continue; }
+                if(c->end_index(partner_n->index()) == partner_n->data()->block_end_add()) {
+                    open.push(partner_n);
+                }
+                else if(partner_n->data()->ends().size() == 1) {
+                    open.push(partner_n);
+                }
+            }
+        }
+    }
+    
+    update_align_list_ = 0;
+}
+
+void
+MotifGraph::_update_merger() {
+    if(!update_merger_) { return; }
+    
+    //make sure align list is up to date
+    _update_align_list();
+    merger_ = std::make_shared<MotifMerger>();
+    auto non_aligned_nodes = unaligned_nodes();
+    auto seen_connections = std::map<GraphConnectionOP<MotifOP>, int>();
+    
+    for(auto const & n : align_list_) {
+        if(std::find(non_aligned_nodes.begin(), non_aligned_nodes.end(), n) != non_aligned_nodes.end() ) {
+            merger_->add_motif(n->data());
+            continue;
+        }
+        
+        auto c = n->connections()[0];
+        auto parent = c->partner(n->index());
+        auto pei = c->end_index(parent->index());
+        seen_connections[c] = 1;
+        merger_->add_motif(n->data(), n->data()->ends()[0],
+                           parent->data(), parent->data()->ends()[pei]);
+        
+    }
+    
+    for(auto const & n : align_list_) {
+        for(auto const & c : n->connections()) {
+            if(c == nullptr) { continue; }
+            if(seen_connections.find(c) != seen_connections.end()) { continue; }
+            auto partner = c->partner(n->index());
+            auto end1 = n->data()->ends()[c->end_index(n->index())];
+            auto end2 = partner->data()->ends()[c->end_index(partner->index())];
+            merger_->connect_motifs(n->data(), partner->data(), end1, end2);
+            seen_connections[c] = 1;
+        }
+    }
+    
+    update_merger_ = 0;
 }
 
 
@@ -946,7 +910,6 @@ MotifGraph::get_available_end(
     
 }
 
-
 GraphNodeOPs<MotifOP> const
 MotifGraph::unaligned_nodes() const {
     auto nodes = GraphNodeOPs<MotifOP>();
@@ -955,7 +918,6 @@ MotifGraph::unaligned_nodes() const {
     }
     return nodes;
 }
-
 
 MotifGraph::_MotifGraphBuildPointOPs
 MotifGraph::get_build_points() {

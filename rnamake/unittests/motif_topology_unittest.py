@@ -24,6 +24,8 @@ class MotifTopologyUnittest(unittest.TestCase):
         dss = mg.designable_secondary_structure()
         build.fill_basepairs_in_ss(dss)
         mg.replace_helix_sequence(dss)
+        #print dss.sequence()
+        #print mg.sequence()
 
         c = motif_topology.GraphtoTree()
         bpoints = mg.get_build_points()
@@ -52,7 +54,7 @@ class MotifTopologyUnittest(unittest.TestCase):
 
         c = motif_topology.GraphtoTree()
         mt = c.convert(mg, last_node=last_node)
-        mt.write_pdbs()
+        #mt.write_pdbs()
 
 
 

@@ -14,9 +14,6 @@
 class MotifStateTree;
 typedef std::shared_ptr<MotifStateTree> MotifStateTreeOP;
 
-class MSTNodeData;
-typedef std::shared_ptr<MSTNodeData> MSTNodeDataOP;
-
 
 
 #endif /* motif_state_tree_fwd_h */

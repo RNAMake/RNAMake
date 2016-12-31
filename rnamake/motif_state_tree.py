@@ -12,6 +12,7 @@ import basic_io
 import motif_tree_topology
 import motif_connection
 import exceptions
+from motif_state_node import NodeData
 
 
 class MotifStateTree(base.Base):
@@ -503,11 +504,6 @@ class MotifStateTree(base.Base):
 
         if bp_name != "":
             ei = node.data.get_end_index(name=bp_name)
-            if ei == node.data.block_end_add():
-                raise exceptions.MotifStateTreeException(
-                    "cannot add connection with " + str(node.index) + " and "
-                    "end name " + bp_name + " as the end is blocked")
-
             if not node.available_pos(ei):
                 raise exceptions.MotifStateTreeException(
                     "cannot add connection with " + str(node.index) + " and "
@@ -697,28 +693,6 @@ class MotifStateTree(base.Base):
         return printer.print_tree()
 
 
-class NodeData(object):
-    def __init__(self, ref_state):
-        self.ref_state = ref_state
-        self.cur_state = ref_state.copy()
-
-    def get_end_state(self, name=None, id=None):
-        return self.cur_state.get_end_state(name, id)
-
-    def get_end_index(self, name=None, id=None):
-        return self.cur_state.get_end_index(name, id)
-
-    def name(self):
-        return self.cur_state.name
-
-    def block_end_add(self):
-        return self.cur_state.block_end_add
-
-    def end_name(self, i):
-        return self.cur_state.end_names[i]
-
-    def update_state(self):
-        pass
 
 
 def str_to_motif_state_tree(s, sterics=1):

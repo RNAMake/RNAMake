@@ -1,7 +1,8 @@
 import unittest
 
-from rnamake import motif_graph, motif_topology
-from rnamake import sequence_optimizer, settings
+from rnamake import motif_graph, motif_topology, motif_state_graph
+from rnamake import sequence_optimizer, settings, util
+import is_equal
 from rnamake import resource_manager as rm
 import build
 
@@ -10,32 +11,46 @@ class SequenceOptimizerUnittests(unittest.TestCase):
     def setUp(self):
         pass
 
-    def _test_init(self):
+    def test_simple_hairpin(self):
         mg = motif_graph.MotifGraph()
-        mg.add_motif(m_name="HELIX.IDEAL.10")
-        mg.replace_ideal_helices()
-
-        c = motif_topology.GraphtoTree()
-        mt = c.convert(mg)
-        build_points = mt.get_build_points()
+        for i in range(10):
+            mg.add_motif(m_name="HELIX.IDEAL")
+        mg.add_motif(m_name="HAIRPIN.1GID.0")
 
         so = sequence_optimizer.SequenceOptimizer3D()
-        so.get_optimized_sequences(mt, build_points[0].node.data.ends[1])
+        scorer = sequence_optimizer.ExternalTargetScorer(
+                    mg.get_node(9).data.ends[1].state().copy(), 8, 1)
+        sols = so.get_optimized_sequences(mg, scorer)
+        bp1 = mg.get_node(9).data.ends[1].copy()
+        mg.replace_helix_sequence(seq=sols[0].sequence)
 
-    def _test_init_2(self):
-        builder = build.BuildMotifGraph()
-        mg = builder.build(5)
-        mg.add_motif(m_name="HAIRPIN.1C0A.0")
-        mg.replace_ideal_helices()
-        c = motif_topology.GraphtoTree()
-        mt = c.convert(mg)
-        mt.write_pdbs()
+        self.failUnless(mg.sequence() == sols[0].sequence)
+        bp2 = mg.get_node(8).data.ends[1]
+        self.failUnless(abs(sols[0].dist_score - bp1.diff(bp2)) < 0.2)
 
+    def test_simple_hairpin_2(self):
+        mg = motif_graph.MotifGraph()
+        for i in range(10):
+            mg.add_motif(m_name="HELIX.IDEAL")
+        mg.add_motif(m_name="HAIRPIN.1GID.0")
         so = sequence_optimizer.SequenceOptimizer3D()
-        solutions = so.get_optimized_sequences(mt,mt.last_node().data.ends[0],
-                                               mt.last_node().index, 0)
+        scorer = sequence_optimizer.ExternalTargetScorer(
+                    mg.get_node(9).data.ends[1].state().copy(), 8, 1)
+        mg_opt = so.get_optimized_mg(mg, scorer)
 
-    def _test_minittr(self):
+        mg.replace_helix_sequence(seq=mg_opt.sequence())
+
+        for n in mg:
+            self.failUnless(n.data.name == mg_opt.get_node(n.index).data.name)
+
+        atoms1 = mg.get_structure().structure.atoms()
+        atoms2 = mg_opt.get_structure().structure.atoms()
+
+        for i in range(len(atoms1)):
+            diff = util.distance(atoms1[i].coords, atoms2[i].coords)
+            self.failUnless(diff < 0.1)
+
+    def test_minittr(self):
         path = settings.UNITTEST_PATH + "/test_problems/mini_ttr/"
         f = open(path+"sol.mg")
         lines = f.readlines()
@@ -43,45 +58,49 @@ class SequenceOptimizerUnittests(unittest.TestCase):
 
         mg = motif_graph.MotifGraph(mg_str=lines[0])
         mg.replace_ideal_helices()
-        n1 = mg.get_node(1)
-        n2 = n1.connections[1].partner(n1.index)
-
-        c = motif_topology.GraphtoTree()
-        mt = c.convert(mg, last_node=n2)
-        mt.option('sterics', 0)
-
+        scorer = sequence_optimizer.InternalTargetScorer(11, 1, 19, 1)
         so = sequence_optimizer.SequenceOptimizer3D()
+        mg_opt = so.get_optimized_mg(mg, scorer)
 
+        mg.replace_helix_sequence(seq=mg_opt.sequence())
 
-        solutions = so.get_optimized_sequences(mt,mt.last_node().data.ends[0],
-                                               mt.get_node(4).index, 1)
+        for n in mg:
+            self.failUnless(n.data.name == mg_opt.get_node(n.index).data.name)
 
-        print len(solutions)
+        atoms1 = mg.get_structure().structure.atoms()
+        atoms2 = mg_opt.get_structure().structure.atoms()
 
-    def test_minittr_2(self):
-        path = "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build"
-        f = open(path+"/default.out.bak")
-        lines = f.readlines()
+        for i in range(len(atoms1)):
+            diff = util.distance(atoms1[i].coords, atoms2[i].coords)
+            self.failUnless(diff < 0.1)
+
+    def test_chip_only(self):
+        base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
+        f = open(base_dir+"tecto_chip_only.mg")
+        l = f.readline()
         f.close()
 
-        mg = motif_graph.MotifGraph(mg_str=lines[0])
+        mg = motif_graph.MotifGraph(mg_str=l)
+        #for n in mg:
+        #    print n.index, n.data.name
 
-        n1 = mg.get_node(0)
-        n2 = n1.connections[0].partner(n1.index)
-
-        c = motif_topology.GraphtoTree()
-        mt = c.convert(mg, last_node=n2)
-        mt.option('sterics', 0)
-
+        scorer = sequence_optimizer.InternalTargetScorer(22, 1, 19, 1)
         so = sequence_optimizer.SequenceOptimizer3D()
+        so.option('return_lowest', 1)
+        so.option('max_steps', 100)
+        mg_opt = so.get_optimized_mg(mg, scorer)
 
-        solutions = so.get_optimized_sequences(mt,mt.get_node(0).data.ends[0],
-                                               mt.last_node().index, 1)
+        mg.replace_helix_sequence(seq=mg_opt.sequence())
 
-        dss = mg.designable_secondary_structure()
-        dss.replace_sequence(solutions[0].sequence)
-        mg.replace_helix_sequence(dss)
         mg.write_pdbs()
+        mg_opt.write_pdbs("opt")
+
+        self.failUnless(mg_opt.sequence() == mg.sequence())
+
+        for n in mg:
+            self.failUnless(n.data.name == mg_opt.get_node(n.index).data.name)
+
+
 
 
 def main():

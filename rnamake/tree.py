@@ -90,6 +90,9 @@ class Tree(object):
             node.parent.remove_child(node)
         self.nodes.remove(node)
         node.parent = None
+        for c in node.children:
+            if c is not None:
+                c.parent = None
 
         if self.last_node == node:
             self.last_node = node.parent

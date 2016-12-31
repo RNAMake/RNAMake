@@ -15,7 +15,7 @@ TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
     SECTION("test simple search") {
         auto mt = MotifTree();
         auto m1 = RM::instance().motif("HELIX.IDEAL.3");
-        auto m2 = RM::instance().motif("TWOWAY.2Y9H.0", "", "P7-P20");
+        auto m2 = RM::instance().motif("TWOWAY.2PN4.4");
         auto m3 = RM::instance().motif("HELIX.IDEAL.3");
         mt.add_motif(m1);
         mt.add_motif(m2);

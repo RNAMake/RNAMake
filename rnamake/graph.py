@@ -595,8 +595,9 @@ class GraphStatic(Graph):
             i, j = c.node_1.index, c.node_2.index
             ni, nj = c.end_index_1, c.end_index_2
             gs.connect(i, j, ni, nj)
+
         if self.last_node is not None:
-            gs.last_node = gs.nodes[self.last_node.index]
+            gs.last_node = gs.get_node(self.last_node.index)
         gs.level = self.level
         gs.index = self.index
         return gs

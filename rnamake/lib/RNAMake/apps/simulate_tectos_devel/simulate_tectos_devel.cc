@@ -59,8 +59,6 @@ SimulateTectosApp::parse_command_line(
     tfs_.update_var_options();
 }
 
-
-
 void
 SimulateTectosApp::run() {
     
@@ -77,10 +75,10 @@ SimulateTectosApp::run() {
     }
     
     if(get_bool_option("new_ggaa_model")) {
-        mset = get_mset_new_receptor(fseq, fss, cseq, css);
+        mset = get_mset_new_receptor(remove_Us(fseq), fss, remove_Us(cseq), css);
     }
     else {
-        mset = get_mset_old(fseq, fss, cseq, css);
+        mset = get_mset_old(remove_Us(fseq), fss, remove_Us(cseq), css);
     }
     
     
@@ -122,7 +120,7 @@ SimulateTectosApp::get_mset_old(
     
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto m = RM::instance().motif("GC=GC");
+    auto m = RM::instance().motif("", "GG_LL_CC_RR");
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
     mt->add_motif(flow_motifs[1], 1, "A7-A22");
@@ -177,7 +175,7 @@ SimulateTectosApp::get_mset_new_receptor(
     
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto m = RM::instance().motif("GC=GC");
+    auto m = RM::instance().motif("", "GG_LL_CC_RR");
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
     mt->add_motif(flow_motifs[1], 1, "A7-A22");
@@ -215,11 +213,10 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
         
         if(m->mtype() == MotifType::HAIRPIN) { break; }
         if(!start) { continue; }
-        
+                
         //basepair step
         if(m->mtype() == MotifType::HELIX) {
-            auto name = bp_name_from_sequence(m->sequence());
-            motif = RM::instance().motif(name);
+            motif = RM::instance().motif("", m->end_ids()[0]);
             motifs.push_back(motif);
         }
         else if(m->mtype() == MotifType::TWOWAY) {
@@ -229,8 +226,8 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
             }
             catch(ResourceManagerException const & e) {
                 throw SimulateTectosAppException(
-                    "cannot find a motif that corresponds to the sequence: " + motif->sequence() +
-                    " and secondary structure: " + motif->dot_bracket() + "for the simulation");
+                    "cannot find a motif that corresponds to the sequence: " + m->sequence() +
+                    " and secondary structure: " + m->dot_bracket() + "for the simulation");
             }
             motifs.push_back(motif);
             
@@ -251,22 +248,16 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
 
 
 String
-bp_name_from_sequence(
-     String const & seq) {
-    
-    auto name = String("");
-    auto name_rna = String("");
-    name += seq[0]; name += seq[4];
-    name += "=";
-    name += seq[1]; name += seq[3];
+remove_Us(String const & seq) {
+    auto seq_rna = String("");
     
     //hacky way to convert Ts to Us
-    for(auto const & e : name) {
-        if(e == 'T' ) { name_rna += 'U'; }
-        else          { name_rna += e;   }
+    for(auto const & e : seq) {
+        if(e == 'T' ) { seq_rna += 'U'; }
+        else          { seq_rna += e;   }
     }
     
-    return name_rna;
+    return seq_rna;
     
 }
 

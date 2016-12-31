@@ -51,6 +51,13 @@ public:
     }
 
 public: // getting functions
+    MotifOP
+    bp_step(
+        String const &);
+    
+    MotifStateOP
+    bp_step_state(
+        String const &);
     
     MotifOP
     motif(
@@ -101,6 +108,10 @@ public: // adding functions
     MotifEnsembleOP const & 
     get_supplied_motif_ensemble(
         String const &,
+        String const &);
+    
+    String
+    get_helix_name(
         String const &);
     
     

@@ -11,7 +11,7 @@
 
 
 MotifStateTree::MotifStateTree():
-    tree_(TreeStatic<MSTNodeDataOP>()),
+    tree_(TreeStatic<MSNodeDataOP>()),
     aligner_(MotifStateAligner()),
     queue_(std::queue<MotifStateTreeNodeOP>()),
     connections_(MotifConnections()),
@@ -59,10 +59,10 @@ MotifStateTree::MotifStateTree(
     queue_(std::queue<MotifStateTreeNodeOP>()),
     options_(Options(mst.options_)),
     connections_(MotifConnections(mst.connections_)),
-    tree_(TreeStatic<MSTNodeDataOP>(mst.tree_)) {
+    tree_(TreeStatic<MSNodeDataOP>(mst.tree_)) {
     
     for(auto const & n : mst) {
-        tree_.get_node(n->index())->data() = std::make_shared<MSTNodeData>(*n->data());
+        tree_.get_node(n->index())->data() = std::make_shared<MSNodeData>(*n->data());
     }
     
     update_var_options();
@@ -320,14 +320,14 @@ MotifStateTree::add_state(
     auto parent = _get_parent(parent_index);
     
     if(parent == nullptr) {
-        auto n_data = std::make_shared<MSTNodeData>(state);
+        auto n_data = std::make_shared<MSNodeData>(state);
         return tree_.add_data(n_data, (int)state->end_states().size(), -1, -1);
     }
     
     auto avail_pos = _get_available_parent_end_pos(parent, parent_end_index);
     
     for(auto const & p : avail_pos) {
-        auto n_data = std::make_shared<MSTNodeData>(state);
+        auto n_data = std::make_shared<MSNodeData>(state);
         
         get_aligned_motif_state(parent->data()->cur_state->end_states()[p],
                                 n_data->cur_state,

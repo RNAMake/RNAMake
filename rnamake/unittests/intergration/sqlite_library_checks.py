@@ -120,7 +120,6 @@ class BPStepsUnittests(unittest.TestCase):
         self.rts = residue_type.ResidueTypeSet()
         self.base_motif = motif.file_to_motif(path)
 
-
     def _test_correct_build(self, me):
 
         for mem in me.members:
@@ -139,14 +138,12 @@ class BPStepsUnittests(unittest.TestCase):
                 if motif.clash_between_motifs(self.base_motif, m2):
                     self.fail("clash")
 
-
     def test_correct_build_bps(self):
         me_lib = sqlite_library.MotifEnsembleSqliteLibrary("bp_steps")
         me_lib.load_all()
 
         for me in me_lib.all():
             self._test_correct_build(me)
-
 
 
 

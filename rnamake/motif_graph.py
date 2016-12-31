@@ -10,7 +10,6 @@ import resource_manager as rm
 import motif_merger
 import copy
 import exceptions
-import steric_lookup
 
 from collections import defaultdict
 
@@ -276,16 +275,17 @@ class MotifGraph(base.Base):
 
 
     #SETUP FUNCTIONS ##########################################################
-    def __init__(self, mg_str="", top_str=""):
+    def __init__(self, mg_str=""):
         super(self.__class__, self).__init__()
         self.setup_options_and_constraints()
         self.graph = graph.GraphStatic()
         self.clash_radius = settings.CLASH_RADIUS
-        self.merger = motif_merger.MotifMerger()
         self.aligned = {}
+        self.align_list = []
+        self.update_align_list = 1
 
-        if top_str != "":
-            self._setup_from_top_str(top_str)
+        self.merger = None
+        self.update_merger = 1
 
         if mg_str != "":
             self._setup_from_str(mg_str)
@@ -300,67 +300,6 @@ class MotifGraph(base.Base):
     def next(self):
         return self.graph.next()
 
-    def _setup_from_top_str(self, s):
-        self.option('sterics', 0)
-        spl = s.split("&")
-        node_spl = spl[0].split("|")
-        max_index = 0
-        for i, n_spl in enumerate(node_spl[:-1]):
-            sspl = n_spl.split(",")
-            if rm.manager.contains_motif(name=sspl[0], end_name=sspl[1]):
-                m = rm.manager.get_motif(name=sspl[0], end_name=sspl[1])
-            else:
-                raise exceptions.MotifGraphException(
-                    "Unknown motif name: " + sspl[0] + " end_name: " + sspl[1] +\
-                    " did you forget to add your custom motifs to the resource "
-                    "manager ")
-
-            m_copy = m.copy()
-            m_copy.get_beads(m_copy.ends)
-            pos = self.graph.add_data(m_copy, -1, -1, -1, len(m_copy.ends),
-                                      orphan=1, index=int(sspl[2]))
-            self.aligned[int(sspl[2])] = int(sspl[3])
-
-            if int(sspl[2]) > max_index:
-                max_index = int(sspl[2])
-
-        self.graph.index = max_index+1
-
-        con_spl = spl[1].split("|")
-        for c_str in con_spl[:-1]:
-            c_spl = c_str.split(",")
-            self.graph.connect(int(c_spl[0]), int(c_spl[1]),
-                               int(c_spl[2]), int(c_spl[3]))
-
-        start = -1
-        for k,v in self.aligned.iteritems():
-            if v == 0:
-                start = k
-
-        if start == -1:
-            raise ValueError("cannot find a place to start in rebuilding motif_graph"
-                             " from string")
-
-
-        for n in graph.transverse_graph(self.graph, start):
-            if n.index == start:
-                self.merger.add_motif(n.data)
-                continue
-            if n.connections[0] is None:
-                continue
-
-            c = n.connections[0]
-            parent = c.partner(n.index)
-            parent_end_index = c.end_index(parent.index)
-
-            m_added = motif.get_aligned_motif(parent.data.ends[parent_end_index],
-                                              n.data.ends[0],
-                                              n.data)
-            n.data = m_added
-
-            self.merger.add_motif(n.data, n.data.ends[0],
-                                  parent.data, parent.data.ends[parent_end_index])
-
     def _setup_from_str(self, s):
         self.option('sterics', 0)
         spl = s.split("FAF")
@@ -373,6 +312,14 @@ class MotifGraph(base.Base):
                 m.get_beads([m.ends[0]])
             else:
                 m.get_beads()
+
+            try:
+                rm.manager.get_motif(name=m.name,
+                                     end_name=m.ends[0].name())
+            except:
+                rm.manager.register_motif(m)
+
+
             self.graph.add_data(m, -1, -1, -1, len(m.ends),
                                 orphan=1, index=int(n_spl[1]))
             self.aligned[int(n_spl[1])] = int(n_spl[2])
@@ -388,48 +335,6 @@ class MotifGraph(base.Base):
             self.graph.connect(int(c_spl[0]), int(c_spl[1]),
                                int(c_spl[2]), int(c_spl[3]))
 
-        start = -1
-        for k,v in self.aligned.iteritems():
-            if v == 0:
-                start = k
-                break
-
-        if start == -1:
-            raise ValueError("cannot find a place to start in rebuilding motif_graph"
-                             " from string")
-
-
-        seen_connections = {}
-        for n in graph.transverse_graph(self.graph, start):
-
-            if n.index == start or len(n.data.ends) == 1:
-                self.merger.add_motif(n.data)
-                continue
-            if n.connections[0] is None:
-                continue
-
-            c = n.connections[0]
-            parent = c.partner(n.index)
-            parent_end_index = c.end_index(parent.index)
-            seen_connections[str(n.index) + " " + str(parent.index)] = 1
-            self.merger.add_motif(n.data, n.data.ends[0],
-                                  parent.data, parent.data.ends[parent_end_index])
-
-        # catch connections not used in alignment for chain connections
-        for n in self.graph:
-            for c in n.connections:
-                if c is None:
-                    continue
-                partner = c.partner(n.index)
-                key1 = str(n.index) + " " + str(partner.index)
-                key2 = str(partner.index) + " " + str(n.index)
-                if key1 in seen_connections or key2 in seen_connections:
-                    continue
-                end1 = n.data.ends[c.end_index(n.index)]
-                end2 = partner.data.ends[c.end_index(partner.index)]
-                self.merger.connect_motifs(n.data, partner.data, end1, end2)
-                seen_connections[key1] = 1
-
     def setup_options_and_constraints(self):
         options = {'sterics': 1}
 
@@ -440,9 +345,37 @@ class MotifGraph(base.Base):
         mg = MotifGraph()
         new_graph = self.graph.copy()
         mg.graph = new_graph
-        mg.merger = self.merger.copy([n.data for n in new_graph.nodes])
         mg.aligned = copy.deepcopy(self.aligned)
         return mg
+
+    def update_indexes(self, index_hash):
+        # super hacky, needs to be refactored
+
+        invert_hash = {}
+        for new_i, old_i in index_hash.iteritems():
+            invert_hash[old_i] = new_i
+
+        largest = 0
+        new_aligned = {}
+        nodes = []
+        for i in invert_hash.iterkeys():
+            n = self.get_node(i)
+            nodes.append(n)
+
+        for n in nodes:
+            new_i = invert_hash[n.index]
+            aligned = self.aligned[n.index]
+            #print new_i, old_i
+            if new_i > largest:
+                largest = new_i
+
+            n.index = new_i
+            new_aligned[new_i] = aligned
+
+        self.aligned = new_aligned
+        self.update_merger = 1
+        self.update_align_list = 1
+        self.graph.index = largest+1
 
     #ADD FUNCTIONS      #######################################################
     def _validate_arguments_to_add_motif(self, m, m_name):
@@ -614,8 +547,9 @@ class MotifGraph(base.Base):
         if parent is None:
             pos = self.graph.add_data(m, -1, -1, -1, len(m.ends), orphan=1)
             if pos != -1:
-                self.merger.add_motif(m)
                 self.aligned[pos] = 0
+                self.update_align_list = 1
+                self.update_merger = 1
             return pos
 
         else:
@@ -623,9 +557,9 @@ class MotifGraph(base.Base):
                                       0, len(m.ends))
 
             if pos != -1:
-                self.merger.add_motif(m, m.ends[0],
-                                      parent.data, parent.data.ends[parent_end_index])
                 self.aligned[pos] = 1
+                self.update_align_list = 1
+                self.update_merger = 1
             return pos
 
     def add_motif(self, m=None, parent_index=-1, parent_end_index=-1,
@@ -692,11 +626,6 @@ class MotifGraph(base.Base):
 
         if bp_name != "":
             ei = node.data.get_end_index(bp_name)
-            if ei == node.data.block_end_add:
-                raise exceptions.MotifGraphException(
-                    "cannot add connection with " + str(node.index) + " and "
-                    "end name " + bp_name + " as the end is blocked")
-
             if not node.available_pos(ei):
                 raise exceptions.MotifGraphException(
                     "cannot add connection with " + str(node.index) + " and "
@@ -727,18 +656,19 @@ class MotifGraph(base.Base):
         node_j_ei = self._get_connection_end(node_j, j_bp_name)
 
         self.graph.connect(i, j, node_i_ei, node_j_ei)
-        self.merger.connect_motifs(node_i.data, node_j.data,
-                                   node_i.data.ends[node_i_ei],
-                                   node_j.data.ends[node_j_ei])
+        self.update_merger = 1
 
     #REMOVE FUNCTIONS   #######################################################
     def remove_motif(self, pos=-1):
+        #TODO must update alignments! if something is being aligned and its parent
+        # is possible it is no longer being aligned!
         if pos == -1:
             pos = self.last_node().index
         n = self.graph.get_node(pos)
-        self.merger.remove_motif(n.data)
         self.graph.remove_node(pos)
         del self.aligned[pos]
+        self.update_merger = 1
+        self.update_align_list = 1
 
     def remove_node_level(self, level=None):
         if level is None:
@@ -751,6 +681,7 @@ class MotifGraph(base.Base):
 
     #DESIGNING          #######################################################
     def designable_secondary_structure(self):
+        self._update_merger()
         ss = self.merger.secondary_structure()
 
         for n in self.graph.nodes:
@@ -792,12 +723,24 @@ class MotifGraph(base.Base):
                 else:
                     count = 1
                 i = n.index
+                old_n_aligned = self.aligned[n.index]
                 self.remove_motif(i)
+                old_n = n
 
                 h = rm.manager.get_motif(name="HELIX.IDEAL")
                 if parent is None:
                     h.get_beads([h.ends[0]])
                     pos = self._add_motif_to_graph(h, None, None)
+
+                    if old_n_aligned == 0:
+                        # fix alignment for parentless nodes
+                        n = self.get_node(pos)
+                        m_added = motif.get_aligned_motif(old_n.data.ends[0],
+                                                           n.data.ends[0],
+                                                           n.data)
+                        n.data = m_added
+
+
                 else:
                     m_added = motif.get_aligned_motif(parent.data.ends[parent_end_index],
                                                       h.ends[0], h)
@@ -813,25 +756,27 @@ class MotifGraph(base.Base):
                 if other:
                     self.graph.connect(pos, other.index, 1, other_end_index)
                     node = self.graph.get_node(pos)
-                    self.merger.connect_motifs(node.data, other.data,
-                                              node.data.ends[1],
-                                             other.data.ends[other_end_index])
                     self.aligned[other.index] = 1
 
                 break
 
-    def replace_helix_sequence(self, ss):
+        self.update_merger = 1
+        self.update_align_list = 1
+        self._align_motifs_all_motifs()
+
+    def replace_helix_sequence(self, ss=None, seq=None):
+        if ss is None:
+            ss = self.designable_secondary_structure()
+            ss.replace_sequence(seq)
 
         for n in self.graph.nodes:
             if n.data.mtype != motif_type.HELIX:
                 continue
             ss_m = ss.motif(n.data.id)
-            spl = ss_m.end_ids[0].split("_")
-            new_name = spl[0][0] + spl[2][1] + "=" + spl[0][1] + spl[2][0]
-            if new_name == n.data.name:
+            if ss_m.end_ids[0] == n.data.end_ids[0] and n.data.name != "HELIX.IDEAL":
                 continue
 
-            m = rm.manager.get_motif(name=new_name)
+            m = rm.manager.get_bp_step(ss_m.end_ids[0])
             m.id = n.data.id
             org_res = n.data.residues()
             new_res = m.residues()
@@ -842,15 +787,26 @@ class MotifGraph(base.Base):
             for i in range(len(n.data.basepairs)):
                 m.basepairs[i].uuid = n.data.basepairs[i].uuid
 
-            n.data = m
 
+            if self.aligned[n.index] == 0:
+                m_added = motif.get_aligned_motif(n.data.ends[0], m.ends[0], m)
+                n.data = m_added
+            else:
+                n.data = m
+
+
+        self.update_merger = 1
         self._align_motifs_all_motifs()
 
-    def replace_motifs(self, motifs):
-        for i, m in motifs.iteritems():
-            self.merger.replace_motif(self.get_node(i).data, m)
-            self.get_node(i).data = m
+    def replace_motif(self, pos, new_motif):
+        node = self.get_node(pos)
+        if len(new_motif.ends) != len(node.data.ends):
+            raise exceptions.MotifGraphException(
+                "attempted to replace a motif with a different number of ends")
 
+        node.data = new_motif.copy()
+
+        self.update_merger = 1
         self._align_motifs_all_motifs()
 
     #GRAPH WRAPPER      #######################################################
@@ -886,10 +842,18 @@ class MotifGraph(base.Base):
 
     #MERGER WRAPPER     #######################################################
     def secondary_structure(self):
+        self._update_merger()
         return self.merger.secondary_structure()
 
     def get_structure(self):
+        self._update_merger()
         return self.merger.get_structure()
+
+    def sequence(self):
+        return self.secondary_structure().sequence()
+
+    def dot_bracket(self):
+        return self.secondary_structure().dot_bracket()
 
     #OUTPUTING          #######################################################
     def write_pdbs(self, name="node"):
@@ -897,6 +861,7 @@ class MotifGraph(base.Base):
             n.data.to_pdb(name + "." + str(n.index) + ".pdb")
 
     def to_pdb(self, name="test.pdb", renumber=-1, close_chain=0):
+        self._update_merger()
         return self.merger.get_structure().to_pdb(name, renumber=renumber,
                                                   close_chain=close_chain)
 
@@ -967,9 +932,6 @@ class MotifGraph(base.Base):
     def get_beads(self, exclude_phos=1):
         pass
 
-    def get_steric_lookup_table(self, exclude_phos=1):
-        pass
-
     def get_end(self, pos=-1, m_name="", m_end_name=""):
         n = None
         if pos != -1:
@@ -1005,12 +967,6 @@ class MotifGraph(base.Base):
             end = n.data.ends[avail_pos[0]]
             return end
 
-    def get_node_num(self, m_name):
-        for n in self.graph.nodes:
-            if n.data.name == m_name:
-                return n.index
-        return -1
-
     def get_not_aligned_nodes(self):
         not_aligned = []
         for n in self.graph:
@@ -1018,43 +974,70 @@ class MotifGraph(base.Base):
                 not_aligned.append(n)
         return not_aligned
 
-    def get_node_by_id(self, uuid):
-        for n in self.graph.nodes:
-            if n.data.id == uuid:
-                return n
-        raise exceptions.MotifGraphException("cannot find node with id")
-
     #MISC               #######################################################
+    def _get_align_list(self):
+        if not self.update_align_list:
+            return self.align_list
+
+        non_aligned_nodes = self.get_not_aligned_nodes()
+        self.align_list = []
+        used_nodes = {}
+        for start in non_aligned_nodes:
+            open = [start]
+            seen_nodes = {}
+
+            while open:
+                n = open.pop(0)
+                seen_nodes[n] = 1
+                if n.index == start.index:
+                    self.align_list.append(n)
+                    used_nodes[n] = 1
+                else:
+                    if n.connections[0] is None:
+                        continue
+                    c = n.connections[0]
+                    parent = c.partner(n.index)
+
+                    if parent not in used_nodes:
+                        continue
+
+                    self.align_list.append(n)
+
+                used_nodes[n] = 1
+                for i, c in enumerate(n.connections):
+                    if i == n.data.block_end_add or c is None:
+                        continue
+
+                    partner_n = c.partner(n.index)
+                    if partner_n in seen_nodes or partner_n in used_nodes:
+                        continue
+
+                    # if something goes wrong check this!
+                    if c.end_index(partner_n.index) == partner_n.data.block_end_add:
+                        open.append(partner_n)
+                    elif len(partner_n.data.ends) == 1:
+                        open.append(partner_n)
+
+
+        self.update_align_list = 0
+        return self.align_list
+
     def _align_motifs_all_motifs(self):
-        start = -1
-        for k,v in self.aligned.iteritems():
-            if v == 0:
-                start = k
+        non_aligned_nodes = self.get_not_aligned_nodes()
+        align_list = self.align_list
 
-        if start == -1:
-            raise ValueError("cannot find a place to start in rebuilding motif_graph"
-                             " from string")
-
-        i = 0
-        for n in graph.transverse_graph(self.graph, start, directed=0):
-
-            if n.index == start:
-                self.merger.update_motif(n.data)
-                continue
-            if n.connections[0] is None:
+        for n in align_list:
+            if n in non_aligned_nodes:
                 continue
 
 
-            i += 1
-            c = n.connections[0]
-            parent = c.partner(n.index)
-            parent_end_index = c.end_index(parent.index)
+            parent = n.connections[0].partner(n.index)
+            pei = n.connections[0].end_index(parent.index)
 
-            m_added = motif.get_aligned_motif(parent.data.ends[parent_end_index],
+            m_added = motif.get_aligned_motif(parent.data.ends[pei],
                                               n.data.ends[0],
                                               n.data)
             n.data = m_added
-            self.merger.update_motif(n.data)
 
     def _steric_clash(self, m):
         beads = m.beads
@@ -1075,9 +1058,51 @@ class MotifGraph(base.Base):
                 return 1
         return 0
 
+    def _update_merger(self):
+        if not self.update_merger:
+            return
+
+        self.merger = motif_merger.MotifMerger()
+
+        non_aligned_nodes = self.get_not_aligned_nodes()
+        align_list = self._get_align_list()
+        seen_connections = {}
+
+        for n in align_list:
+            if n in non_aligned_nodes:
+                self.merger.add_motif(n.data)
+                continue
+
+            c = n.connections[0]
+            parent = c.partner(n.index)
+            parent_end_index = c.end_index(parent.index)
+            seen_connections[c] = 1
+            self.merger.add_motif(n.data, n.data.ends[0],
+                                  parent.data, parent.data.ends[parent_end_index])
 
 
+        for n in align_list:
+            for c in n.connections:
+                if c is None:
+                    continue
+                if c in seen_connections:
+                    continue
+                partner = c.partner(n.index)
+                end1 = n.data.ends[c.end_index(n.index)]
+                end2 = partner.data.ends[c.end_index(partner.index)]
+                self.merger.connect_motifs(n.data, partner.data, end1, end2)
+                seen_connections[c] = 1
 
+        self.update_merger = 0
+
+
+def flip_alignment(m, ei):
+    m_copy = m.copy()
+    m_copy.ends[ei].flip()
+
+    new_m = rm.manager.get_motif(name=m.name, end_name=m.ends[ei].name())
+    m_aligned = motif.get_aligned_motif(m_copy.ends[ei], new_m.ends[0], new_m)
+    return m_aligned
 
 
 

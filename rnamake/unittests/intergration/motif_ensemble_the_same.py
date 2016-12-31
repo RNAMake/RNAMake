@@ -45,8 +45,6 @@ class MotifEnsembleTests(unittest.TestCase):
                 #self.failIf(diff > 0.1)
                 if diff > 0.1:
                     count += 1
-        print count
-
 
 
 

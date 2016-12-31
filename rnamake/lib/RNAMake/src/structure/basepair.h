@@ -75,6 +75,15 @@ public: // getters
     }
     
     inline
+    float
+    diff(Basepair & bp) {
+        auto diff = d().distance(bp.d());
+        diff += _rot_diff(bp)*2;
+        return diff;
+        
+    }
+    
+    inline
     ResidueOPs const
     residues() const {
         ResidueOPs res(2);
@@ -179,6 +188,21 @@ public:
     
     void
     to_pdb(String const) const;
+    
+private:
+    inline
+    float
+    _rot_diff(
+        Basepair & bp) {
+        auto r_diff = r().difference(bp.r());
+        bp.flip();
+        float r_diff_2 = r().difference(bp.r());
+        bp.flip();
+        
+        if( r_diff > r_diff_2) { r_diff = r_diff_2;}
+        
+        return r_diff;
+    }
     
     
 private:

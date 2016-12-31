@@ -13,14 +13,16 @@
 
 MotifTree::MotifTree():
     tree_(TreeStatic<MotifOP>()),
-    merger_(std::make_shared<MotifMerger>()),
+    merger_(nullptr),
+    update_merger_(1),
     connections_(MotifConnections()),
     options_(Options()) { setup_options(); }
 
 MotifTree::MotifTree(
     String const & s):
     tree_(TreeStatic<MotifOP>()),
-    merger_(std::make_shared<MotifMerger>()),
+    merger_(nullptr),
+    update_merger_(1),
     connections_(MotifConnections()),
     options_(Options())  {
     setup_options();
@@ -83,13 +85,12 @@ MotifTree::MotifTree(
         motifs.push_back(tree_.get_node(n->index())->data());
     }
     options_ = Options(mt.options_);
-    merger_ = std::make_shared<MotifMerger>(*mt.merger_, motifs);
     connections_ = MotifConnections(mt.connections_);
+    update_merger_ = 1;
 }
 
 
 //add functions ////////////////////////////////////////////////////////////////////////////////////
-
 
 TreeNodeOP<MotifOP>
 MotifTree::_get_parent(
@@ -269,7 +270,6 @@ MotifTree::add_motif(
         auto m_copy = std::make_shared<Motif>(*m);
         m_copy->get_beads(m_copy->ends()[0]);
         int pos = tree_.add_data(m_copy, (int)m_copy->ends().size(), -1, -1);
-        merger_->add_motif(m_copy);
         return pos;
     }
     
@@ -280,10 +280,6 @@ MotifTree::add_motif(
         if(sterics_ && _steric_clash(m_added)) { continue; }
         
         int pos = tree_.add_data(m_added, (int)m_added->ends().size(), parent->index(), p);
-        if(pos != -1) {
-            merger_->add_motif(m_added, m_added->ends()[0],
-                              parent->data(), parent->data()->ends()[p]);
-        }
         return pos;
     }
     
@@ -325,10 +321,6 @@ MotifTree::add_connection(
     
     connections_.add_connection(i, j, node_i_end_name, node_j_end_name);
     
-    merger_->connect_motifs(node_i->data(), node_j->data(),
-                           node_i->data()->ends()[node_i_ei],
-                           node_j->data()->ends()[node_j_ei]);
-    
 }
 
 
@@ -346,7 +338,6 @@ MotifTree::remove_node(
     try {
         auto n = get_node(i);
         tree_.remove_node(n);
-        merger_->remove_motif(n->data());
         connections_.remove_connections_to(i);
         
     }
@@ -406,6 +397,38 @@ MotifTree::topology_to_str() {
     return s;
 }
 
+
+//misc /////////////////////////////////////////////////////////////////////////////////////////////
+
+void
+MotifTree::_update_merger() {
+    if(! update_merger_) { return; }
+    
+    merger_ = std::make_shared<MotifMerger>();
+    
+    for(auto const & n : tree_) {
+        if(n->parent() == nullptr) {
+            merger_->add_motif(n->data());
+            continue;
+        }
+        
+        auto pei = n->parent_end_index();
+        merger_->add_motif(n->data(), n->data()->ends()[0],
+                           n->parent()->data(), n->parent()->data()->ends()[pei]);
+    }
+    
+    for(auto const & c : connections_) {
+        auto node_i = get_node(c->i());
+        auto node_j = get_node(c->j());
+        auto node_i_ei = node_i->data()->get_end_index(c->name_i());
+        auto node_j_ei = node_j->data()->get_end_index(c->name_j());
+        merger_->connect_motifs(node_i->data(), node_j->data(),
+                                node_i->data()->ends()[node_i_ei],
+                                node_j->data()->ends()[node_j_ei]);
+    }
+    
+    update_merger_ = 0;
+}
 
 
 //getters //////////////////////////////////////////////////////////////////////////////////////////

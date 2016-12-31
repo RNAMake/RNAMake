@@ -176,6 +176,7 @@ class BuildSqliteLibraries(object):
 
                 for ei in range(len(m.ends)):
                     m_added = motif_factory.factory.can_align_motif_to_end(m, ei)
+
                     if m_added is None:
                         continue
                     else:
@@ -192,6 +193,22 @@ class BuildSqliteLibraries(object):
                 m, ei = s
                 m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
                 #print m_added.name, m_added.ends[0].name(), m_added.end_ids[0]
+
+                # remove basepairs in between motifs
+                if t == motif_type.TWOWAY:
+                    """for c in m_added.secondary_structure.chains():
+                        for r in c.residues[1:-1]:
+                            r.dot_bracket = "."""
+
+                    remove = []
+                    for bp in m_added.basepairs:
+                        if bp not in m_added.ends and bp.bp_type == "cW-W":
+                            remove.append(bp)
+
+                    for r in remove:
+                        m_added.basepairs.remove(r)
+                    motif_factory.factory._setup_secondary_structure(m_added)
+                    #print m_added.dot_bracket()
 
                 data.append([m_added.to_str(), m_added.name,
                             m_added.ends[0].name(), m_added.end_ids[0], i])
@@ -323,10 +340,6 @@ class BuildSqliteLibraries(object):
             mes_data.append([me.to_str(), me.id, count])
 
 
-            print c.end_id
-            print  me.members[0].motif.ends[0].res1.name, me.members[0].motif.ends[0].res2.name
-            me.members[0].motif.to_pdb(c.end_id+".pdb")
-
             motif = me.members[0].motif
             motif.name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
 
@@ -337,6 +350,65 @@ class BuildSqliteLibraries(object):
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
         sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps.db"
+        sqlite_library.build_sqlite_library(path, motif_data, motif_keys, 'id')
+
+    def build_new_bp_steps(self):
+        mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
+        mlib.load_all()
+
+        motifs = []
+
+        motif_data = []
+        motif_keys = ['data', 'name', 'end_name', 'end_id', 'id']
+        count = 0
+
+        for m in mlib.all():
+            spl = m.name.split(".")
+            if len(spl) == 1:
+                motifs.append(m)
+
+        unique = []
+        unique_m = []
+
+        i = 0
+        for m in motifs:
+            name_spl = m.name.split("=")
+
+            if m.end_ids[0] in unique:
+                continue
+            if m.end_ids[1] in unique:
+                continue
+
+            old_name = m.name
+            unique.append( m.end_ids[0])
+            if not m.end_ids[1] in unique:
+                unique.append( m.end_ids[1])
+            #print m.end_ids
+
+            m.name = "BP."+str(i)
+
+            m_a = motif_factory.factory.can_align_motif_to_end(m, 1)
+            m_a = motif_factory.factory.align_motif_to_common_frame(m_a, 1)
+
+            motif_data.append([m.to_str(), m.name, m.ends[0].name(),
+                               m.end_ids[0], count])
+
+            count += 1
+
+            motif_data.append([m_a.to_str(), m_a.name, m_a.ends[0].name(),
+                               m_a.end_ids[0], count])
+
+            unique_m.append(m)
+            #print old_name, m.end_ids[0], m_a.end_ids[0]
+
+            count += 1
+            i += 1
+
+        print len(unique)
+        for m in unique_m:
+            print m.end_ids
+
+        path = settings.RESOURCES_PATH +"/motif_libraries_new/new_bp_steps.db"
         sqlite_library.build_sqlite_library(path, motif_data, motif_keys, 'id')
 
     def build_le_helix_lib(self):
@@ -420,7 +492,7 @@ class BuildSqliteLibraries(object):
 
             #motif_arrays.append(motif.MotifArray(c.motifs))
             #motif_array_names.append(lowest.name)
-
+            print lowest.name, lowest.dot_bracket()
             data.append([lowest.to_str(), lowest.name,
                         lowest.ends[0].name(), lowest.end_ids[0], count])
 
@@ -572,10 +644,11 @@ builder = BuildSqliteLibraries()
 #builder.build_ideal_helices_old()
 #builder.build_basic_libraries()
 #builder.build_helix_ensembles()
+#builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
-builder.build_unique_twoway_library()
+#builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
 
 #builder.build_trimmed_ideal_helix_library()
 

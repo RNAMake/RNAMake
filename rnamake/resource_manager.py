@@ -54,7 +54,7 @@ class ResourceManager(object):
         self.ms_libs,  self.extra_ms = {}, {}
         self.me_libs,  self.extra_me = {}, {}
         self.mse_libs, self.extra_mse = {}, {}
-        exclude = ['all_bp_steps']
+        exclude = ['all_bp_steps', 'bp_steps']
 
         for k in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
             if k in exclude:
@@ -72,8 +72,6 @@ class ResourceManager(object):
             self.me_libs[k] = sqlite_library.MotifEnsembleSqliteLibrary(k)
 
         for k in sqlite_library.MotifStateEnsembleSqliteLibrary.get_libnames().keys():
-            if k in exclude:
-                continue
             self.mse_libs[k] = sqlite_library.MotifStateEnsembleSqliteLibrary(k)
 
 
@@ -100,6 +98,14 @@ class ResourceManager(object):
 
         raise exceptions.ResourceManagerException(
             "cannot find motif: " + self._args_to_str(options))
+
+    def get_bp_step(self, end_id):
+        m = self.mlibs['new_bp_steps'].get(end_id=end_id)
+        return m
+
+    def get_bp_step_state(self, end_id):
+        m = self.get_bp_step(end_id)
+        return m.get_state()
 
     def contains_motif(self, **options):
         for mlib in self.mlibs.itervalues():
@@ -202,7 +208,7 @@ class ResourceManager(object):
                 "attempted to register motif with no name this will make it "
                 "extremely unlikely you will be able to retrieve it properly!")
 
-        self.added_motifs.add_motif(m)
+        self.added_motifs.add_motif(m.copy())
 
     def register_extra_motif_ensembles(self, f_name):
         f = open(f_name)

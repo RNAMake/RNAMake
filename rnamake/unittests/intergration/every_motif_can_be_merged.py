@@ -1,6 +1,6 @@
 import unittest
 
-from rnamake import sqlite_library, settings, motif, motif_merger, motif_factory
+from rnamake import sqlite_library, settings, motif, motif_merger
 
 
 class MotifMergerTwowayTests(unittest.TestCase):

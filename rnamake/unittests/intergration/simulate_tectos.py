@@ -1,5 +1,5 @@
 from rnamake import base, option, motif_state_ensemble_tree
-from rnamake import secondary_structure_parser, motif_type, motif_tree
+from rnamake import secondary_structure_parser, motif_type, motif_tree, exceptions
 from rnamake import resource_manager as rm
 
 class SimulateTectos(base.Base):
@@ -15,18 +15,23 @@ class SimulateTectos(base.Base):
                     'css'    : '(((((((..((((((((((((....))))))))))))...)))))))'}
         self.options = option.Options(options)
 
-    def _get_bp_name_from_seq(self, seq):
-        name = seq[0]+seq[4]+"="+seq[1]+seq[3]
-        return name
+    def _remove_Us(self, seq):
+        seq_rna = ""
+        for e in seq:
+            if e == 'T':
+                seq_rna += 'U'
+            else:
+                seq_rna += e
+        return seq_rna
 
-    def _get_m_names_from_seq_and_ss(self, seq, ss):
+    def _get_motifs_from_seq_and_ss(self, seq, ss):
         parser = secondary_structure_parser.SecondaryStructureParser()
         mg = parser.parse_to_motif_graph(seq, ss)
 
         start = 0
-        names = []
+        motifs = []
         for n in mg.graph.nodes:
-            if n.data.mtype == motif_type.TWOWAY:
+            if n.data.mtype == motif_type.TWOWAY and start == 0:
                 start = 1
                 continue
 
@@ -36,42 +41,59 @@ class SimulateTectos(base.Base):
             if not start:
                 continue
 
-            name = self._get_bp_name_from_seq(n.data.sequence())
-            new_name = ""
-            for e in name:
-                if e == "T":
-                    new_name += "U"
-                else:
-                    new_name += e
-            names.append(new_name)
-        return names
+            if n.data.mtype == motif_type.HELIX:
+                motif = rm.manager.get_motif(end_id=n.data.end_ids[0])
+                motifs.append(motif)
+            elif n.data.mtype == motif_type.TWOWAY:
+                try:
+                    motif = rm.manager.get_motif(end_id=n.data.end_ids[0])
+                    motifs.append(motifs)
+                except exceptions.ResourceManagerException:
+                    raise ValueError(
+                        "cannot find a motif that corresponds to the sequence: " +
+                        motif.sequence() + " and secondary structure: " +
+                        motif.dot_bracket() + " for the simulation")
+            else:
+                raise ValueError(
+                    "motif type: " + motif_type.type_to_str(n.data.mtype) + " is not "
+                    "supported in tecto simulations.")
 
+        return motifs
 
     def _get_mset(self):
-        flow_motif_names = self._get_m_names_from_seq_and_ss(self.option('fseq'),
-                                                             self.option('fss'))
+        fseq = self._remove_Us(self.option('fseq'))
+        fss  = self.option('fss')
 
-        chip_motif_names = self._get_m_names_from_seq_and_ss(self.option('cseq'),
-                                                             self.option('css'))
+        cseq = self._remove_Us(self.option('cseq'))
+        css  = self.option('css')
+
+        flow_motifs = self._get_motifs_from_seq_and_ss(fseq, fss)
+
+        chip_motifs = self._get_motifs_from_seq_and_ss(cseq, css)
 
         mt = motif_tree.MotifTree()
         mt.option('sterics', 0)
-        mt.add_motif(m_name="GC=GC")
+        m = rm.manager.get_motif(end_id="GG_LL_CC_RR")
+        mt.add_motif(m)
         mt.add_motif(m_name="GGAA_tetraloop", m_end_name="A14-A15")
-        mt.add_motif(m_name=flow_motif_names[1], parent_end_name="A7-A22")
+        mt.add_motif(flow_motifs[1], parent_end_name="A7-A22")
 
-        for i in range(2, len(flow_motif_names)):
-            mt.add_motif(m_name=flow_motif_names[i])
+        for i in range(2, len(flow_motifs)):
+            mt.add_motif(flow_motifs[i])
 
         mt.add_motif(m_name="GAAA_tetraloop", m_end_name="A149-A154")
-        mt.add_motif(m_name=chip_motif_names[1], parent_end_name="A222-A251")
+        mt.add_motif(chip_motifs[1], parent_end_name="A222-A251")
 
-        for i in range(2, len(chip_motif_names)):
-            mt.add_motif(m_name=chip_motif_names[i])
+        for i in range(2, len(chip_motifs)):
+            mt.add_motif(chip_motifs[i])
 
         mt.write_pdbs("new")
         mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt=mt)
         return mset
+
+    def run(self):
+        mset = self._get_mset()
+
 
 
 

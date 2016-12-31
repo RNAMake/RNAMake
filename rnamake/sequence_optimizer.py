@@ -1,7 +1,7 @@
 from rnamake.eternabot import sequence_designer
 import resource_manager as rm
-import motif_state_tree, monte_carlo, motif_type
-from rnamake import basepair
+import motif_state_tree, monte_carlo, motif_state_graph, motif_state_search_scorer
+import basepair, util
 from eternabot import sequence_designer
 import base
 import option
@@ -17,18 +17,40 @@ class OptimizedSequence(object):
         self.eterna_score = eterna_score
 
 
+class SequenceOptimizerScorer(object):
+    def __init__(self):
+        pass
+
+    def score(self, msg):
+        pass
+
+
+class ExternalTargetScorer(SequenceOptimizerScorer):
+    def __init__(self, target, ni, ei):
+        self.target = target
+        self.ni = ni
+        self.ei = ei
+
+    def score(self, msg):
+        state = msg.get_node(self.ni).data.cur_state.end_states[self.ei]
+        return self.target.diff(state)
+
+
+class InternalTargetScorer(SequenceOptimizerScorer):
+    def __init__(self, ni1, ei1, ni2, ei2):
+        self.ni1 = ni1
+        self.ni2 = ni2
+        self.ei1 = ei1
+        self.ei2 = ei2
+
+    def score(self, msg):
+        state1 = msg.get_node(self.ni1).data.cur_state.end_states[self.ei1]
+        state2 = msg.get_node(self.ni2).data.cur_state.end_states[self.ei2]
+
+        return state1.diff(state2)
+
+
 class SequenceOptimizer3D(base.Base):
-    def __init__(self, **options):
-        self.setup_options_and_constraints()
-        self.options.dict_set(options)
-        self.sequence_designer = sequence_designer.SequenceDesigner()
-
-    def setup_options_and_constraints(self):
-        options = { 'cutoff'       : 5,
-                    'solutions'    : 10,
-                    'eterna_cutoff' : -1}
-
-        self.options = option.Options(options)
 
     class _DesignableBP(object):
         def __init__(self, bp):
@@ -49,37 +71,50 @@ class SequenceOptimizer3D(base.Base):
         def name(self):
             return self.bp.res1.name+self.bp.res2.name
 
+    def __init__(self, **options):
+        self.setup_options_and_constraints()
+        self.options.dict_set(options)
+        self.sequence_designer = sequence_designer.SequenceDesigner()
+        self.scorer = None
 
-    def _update_designable_bp(self, d_bp, mst, new_bp_state):
-        d_bp.state = new_bp_state
+        self.target_state = None
+        self.target_state_flip = None
+        self.possible_bps = ["AU", "UA", "GC", "CG"]
 
+        self.steps = 0
+
+    def setup_options_and_constraints(self):
+        options = { 'cutoff'        : 5,
+                    'solutions'     : 1,
+                    'eterna_cutoff' : -1,
+                    'return_lowest' : 0,
+                    'verbose'       : 0,
+                    'max_steps'     : 500}
+
+        self.options = option.Options(options)
+
+    def set_scorer(self, scorer):
+        self.scorer = scorer
+
+    def _update_designable_bp(self, d_bp, msg, ss):
         if d_bp.m_id_bot is not None:
-            n = mst.get_node(uuid=d_bp.m_id_bot)
-            spl = n.data.cur_state.name.split("=")
-            new_name = new_bp_state + "=" + spl[1]
-            mst.replace_state(n.index, rm.manager.get_state(name=new_name))
+            ss.update_motif(d_bp.m_id_bot)
+            m = ss.motif(d_bp.m_id_bot)
+            n = msg.get_node(uuid=d_bp.m_id_bot)
+            msg.replace_state(n.index, rm.manager.get_bp_step_state(m.end_ids[0]))
 
         if d_bp.m_id_top is not None:
-            n = mst.get_node(uuid=d_bp.m_id_top)
-            spl = n.data.cur_state.name.split("=")
-            new_name = spl[0] + "=" + new_bp_state
-            mst.replace_state(n.index, rm.manager.get_state(name=new_name))
+            ss.update_motif(d_bp.m_id_top)
+            m = ss.motif(d_bp.m_id_top)
+            n = msg.get_node(uuid=d_bp.m_id_top)
+            msg.replace_state(n.index, rm.manager.get_bp_step_state(m.end_ids[0]))
 
-
-    def get_optimized_sequences(self, mt, target_bp, ni, ei):
-        org_ss = mt.secondary_structure()
-        #org_score = self.sequence_designer.design(org_ss.dot_bracket(), org_ss.sequence())[0].score
-        org_score = 0
-        ss = mt.designable_secondary_structure()
+    def _get_designable_bps(self, ss):
         designable_bps = []
         for bp in ss.basepairs:
             bp_name = bp.res1.name+bp.res2.name
             if bp_name == "NN":
                 designable_bps.append(self._DesignableBP(bp))
-
-        possible_bps = ["AU", "UA", "GC", "CG"]
-
-        m = mt.get_node(0).data
 
         for d_bp in designable_bps:
             for m in ss.motifs:
@@ -89,118 +124,176 @@ class SequenceOptimizer3D(base.Base):
                     d_bp.m_id_bot = m.id
                 if m.ends[1] == d_bp.bp:
                     d_bp.m_id_top = m.id
-            state = random.choice(possible_bps)
-            #d_bp.bp.res1.name = state[0]
-            #d_bp.bp.res2.name = state[1]
+            state = random.choice(self.possible_bps)
+            d_bp.bp.res1.name = state[0]
+            d_bp.bp.res2.name = state[1]
 
-        mst = motif_state_tree.MotifStateTree(mt=mt)
-        for m in ss.motifs:
-            n = mt.get_node_by_id(m.id)
+        return designable_bps
 
-            if m.name != "HELIX.IDEAL":
-                continue
-
-            name = ""
-
-            if n.parent.data.name != "HELIX.IDEAL":
-                pei = n.parent_end_index()
-                end = n.parent.data.ends[pei]
-                name = end.res2.name+end.res1.name+"="
-                #name =  m.ends[0].res1.name+m.ends[0].res2.name+"="
-
-            else:
-                name =  m.ends[0].res1.name+m.ends[0].res2.name+"="
-
-
-            name += m.ends[1].res1.name+m.ends[1].res2.name
-            n = mst.get_node(uuid=m.id)
-            print n.index, name, m.sequence()
-            #mst.replace_state(n.index, rm.manager.get_state(name=name))
-        exit()
-        s1 = mst.to_motif_tree().secondary_structure().sequence()
+    def _validate_sequence(self, msg, ss):
+        s1 = msg.to_motif_graph().secondary_structure().sequence()
         s2 = ss.sequence()
 
         for j in range(len(s2)):
             if s1[j] != s2[j]:
-                print j, s1[j], s2[j]
+                print s1
+                print s2
+                raise ValueError(
+                    "sequences are out of sync: something went really wrong in sequence "
+                    "optimization")
+        return s1
 
-        exit()
-        target_state = target_bp.state()
-        target_state_flip = target_bp.state()
-        target_state_flip.flip()
+    def _initiate_sequence_in_msg(self, msg, ss):
+        for m in ss.motifs:
+            ss.update_motif(m.id)
 
-        last_score = target_state.diff(mst.get_node(ni).data.cur_state.end_states[ei])
+        for m in ss.motifs:
+            n = msg.get_node(uuid=m.id)
+
+            if n.data.name() != "HELIX.IDEAL":
+                continue
+
+            msg.replace_state(n.index, rm.manager.get_bp_step_state(m.end_ids[0]))
+
+    def get_optimized_sequences(self, mg, scorer=None):
+        if scorer is not None:
+            self.set_scorer(scorer)
+
+        if self.scorer is None:
+            raise ValueError(
+                "cannot run get_optimized_sequences without scorer, either supply here "
+                "or use set_scorer")
+
+        org_ss = mg.secondary_structure()
+        org_score = 0
+        ss = mg.designable_secondary_structure()
+
+        if len(ss.chains()) > 1:
+            raise ValueError(
+                "cannot perform sequence optmization with more than one chain")
+
+        designable_bps = self._get_designable_bps(ss)
+
+        msg = motif_state_graph.MotifStateGraph(mg)
+        self._initiate_sequence_in_msg(msg, ss)
+        last_score = self.scorer.score(msg)
 
         mc = monte_carlo.MonteCarlo()
         mc.temperature = 1
 
         best_states = []
+        best_seq = ""
         best = 1000
         cutoff = self.option('cutoff')
         solutions = []
-        for i in range(1,500):
-            """if i % 500 == 0:
-                print i, best
-                for j, s in enumerate(best_states):
-                    name = s[1]
-                    if name[2] == "=":
-                        mst.replace_state(s[0], rm.manager.get_state(name=name))
-                mc.temperature *= 0.8"""
-
+        for i in range(1, self.option('max_steps')):
             d_bp = random.choice(designable_bps)
 
-            new_bp_state = random.choice(possible_bps)
+            new_bp_state = random.choice(self.possible_bps)
             d_bp.update_state(new_bp_state)
 
-            self._update_designable_bp(d_bp, mst, new_bp_state)
+            self._update_designable_bp(d_bp, msg, ss)
 
-            new_score = target_state.diff(mst.get_node(ni).data.cur_state.end_states[ei])
+            new_score = self.scorer.score(msg)
 
             if mc.accept(last_score, new_score):
                 last_score = new_score
             else:
-                self._update_designable_bp(d_bp, mst, d_bp.last_state)
                 d_bp.revert_state()
+                self._update_designable_bp(d_bp, msg, ss)
                 continue
 
-
             if best > new_score:
-                print best
+                if self.option('verbose'):
+                    print best, new_score
+                best_seq = ss.sequence()
                 best = new_score
-                best_states = []
-                for n in mst:
-                    best_states.append([n.index,
-                                        n.data.cur_state.name,
-                                        n.data.cur_state.end_names[0]])
-
 
             if cutoff < new_score:
                 continue
 
             eterna_score = self.sequence_designer.design(ss.dot_bracket(),
                                                          ss.sequence())[0].score
+
             if eterna_score > org_score:
-                s1 = mst.to_motif_tree().secondary_structure().sequence()
-                s2 = ss.sequence()
-
-                for j in range(len(s2)):
-                    if s1[j] != s2[j]:
-                        print s1
-                        print s2
-                        exit()
-
+                s = self._validate_sequence(msg, ss)
                 solutions.append(
-                    OptimizedSequence(ss.sequence(), new_score, eterna_score))
-                mst.write_pdbs("org")
-                return solutions
+                    OptimizedSequence(s, new_score, eterna_score))
 
-                if len(solutions) > self.option('solutions'):
+                if len(solutions) >= self.option('solutions'):
                     return solutions
 
+
+        if len(solutions) == 0 and self.option('return_lowest'):
+            return [OptimizedSequence(best_seq, best, -1)]
 
 
         return solutions
 
+    def get_optimized_mg(self, mg, scorer=None):
+        if scorer is not None:
+            self.set_scorer(scorer)
+
+        if self.scorer is None:
+            raise ValueError(
+                "cannot run get_optimized_sequences without scorer, either supply here "
+                "or use set_scorer")
+
+        org_ss = mg.secondary_structure()
+        org_score = 0
+        ss = mg.designable_secondary_structure()
+
+        if len(ss.chains()) > 1:
+            raise ValueError(
+                "cannot perform sequence optmization with more than one chain")
+
+        designable_bps = self._get_designable_bps(ss)
+
+        msg = motif_state_graph.MotifStateGraph(mg)
+        self._initiate_sequence_in_msg(msg, ss)
+        last_score = self.scorer.score(msg)
+
+        mc = monte_carlo.MonteCarlo()
+        mc.temperature = 1
+
+        best_states = []
+        best_seq = ""
+        best = 1000
+        cutoff = self.option('cutoff')
+        solutions = []
+        for i in range(1, self.option('max_steps')):
+            d_bp = random.choice(designable_bps)
+
+            new_bp_state = random.choice(self.possible_bps)
+            d_bp.update_state(new_bp_state)
+
+            self._update_designable_bp(d_bp, msg, ss)
+
+            new_score = self.scorer.score(msg)
+
+            if mc.accept(last_score, new_score):
+                last_score = new_score
+            else:
+                d_bp.revert_state()
+                self._update_designable_bp(d_bp, msg, ss)
+                continue
+
+            if best > new_score:
+                if self.option('verbose'):
+                    print best, new_score
+                best_seq = ss.sequence()
+                best = new_score
+
+            if cutoff < new_score:
+                continue
+
+            eterna_score = self.sequence_designer.design(ss.dot_bracket(),
+                                                         ss.sequence())[0].score
+
+            if eterna_score > org_score:
+                s = self._validate_sequence(msg, ss)
+                return msg.to_motif_graph()
 
 
-
+        if len(solutions) == 0 and self.option('return_lowest'):
+            return msg.to_motif_graph()

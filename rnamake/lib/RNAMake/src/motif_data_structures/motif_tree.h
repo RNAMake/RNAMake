@@ -313,7 +313,10 @@ public: //outputing functions
         String const fname = "test.pdb",
         int renumber = -1) {
         
-        try { return merger_->to_pdb(fname, renumber); }
+        try {
+            _update_merger();
+            return merger_->to_pdb(fname, renumber);
+        }
         catch(MotifMergerException) {
             throw MotifTreeException(
                 "cannot produce merged structure for a pdb it is likely you have created a ring "
@@ -331,6 +334,10 @@ public: //outputing functions
         return printer.print_tree(*this);
     }
     
+public: // misc
+    
+    void
+    _update_merger();
     
 public: //getters
     
@@ -415,7 +422,10 @@ public: //merger wrappers
     inline
     RNAStructureOP const &
     get_structure() {
-        try { return merger_->get_structure(); }
+        try {
+            _update_merger();
+            return merger_->get_structure();
+        }
         catch(MotifMergerException) {
             throw MotifTreeException(
                 "cannot produce merged structure it is likely you have created a ring with no start"
@@ -425,7 +435,10 @@ public: //merger wrappers
     
     sstruct::PoseOP
     secondary_structure() {
-        try { return merger_->secondary_structure(); }
+        try {
+            _update_merger();
+            return merger_->secondary_structure();
+        }
         catch(MotifMergerException) {
             throw MotifTreeException(
                 "cannot produce merged secondary structure it is likely you have created a ring "
@@ -494,6 +507,7 @@ private:
     MotifConnections connections_;
     bool sterics_;
     float clash_radius_;
+    int update_merger_;
     Options options_;
 };
 

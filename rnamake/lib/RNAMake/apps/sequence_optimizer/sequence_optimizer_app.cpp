@@ -43,15 +43,8 @@ SequenceOptimizerApp::run() {
             mg = std::make_shared<MotifGraph>(l, MotifGraphStringType::MG);
         }
         catch(...) { break; }*/
-        
-        auto c = GraphtoTree();
-        auto d_mt = c.convert(mg, nullptr, -1, nullptr);
-        d_mt->set_option_value("sterics", false);
-        
-        d_mt->write_pdbs();
-        
-        exit(0);
 
+        
     }
     
     

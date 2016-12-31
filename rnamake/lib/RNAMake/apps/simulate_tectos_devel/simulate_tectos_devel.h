@@ -28,8 +28,7 @@ public:
 
 
 String
-bp_name_from_sequence(
-    String const &);
+remove_Us(String const &);
 
 
 class SimulateTectosApp : public Application {

@@ -40,7 +40,8 @@ ResidueTypeSet::_read_rtypes_from_dir(
         ResidueType rtype ( name, atom_map, set_type);
         residue_types_.push_back(rtype);
     }
-    delete pDIR;
+    closedir(pDIR);
+    //delete pDIR;
     delete entry;
 }
 

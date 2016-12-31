@@ -13,14 +13,12 @@ class SequenceReplacementUnittest(unittest.TestCase):
         dist2 = util.distance(bp1.res1.get_atom("C1'").coords, bp2.res2.get_atom("C1'").coords)
 
         if dist1 < dist2:
-            print "made it 1"
             if bp1.res1.name != bp2.res1.name or bp1.res2.name != bp2.res2.name:
                 self.fail("do not have the same residue in place")
         else:
-            print bp1.res1.name+bp1.res2.name, bp2.res1.name+bp2.res2.name
+            #print bp1.res1.name+bp1.res2.name, bp2.res1.name+bp2.res2.name
             if bp1.res1.name != bp2.res2.name or bp1.res2.name != bp2.res1.name:
                 self.fail("do not have the same residue in place")
-
 
     def test_twoways(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
@@ -47,8 +45,8 @@ class SequenceReplacementUnittest(unittest.TestCase):
             build.fill_basepairs_in_ss(dss)
             mg.replace_helix_sequence(dss)
 
-            print m.name, m.ends[0].name()
-            mg.write_pdbs()
+            #print m.name, m.ends[0].name()
+            #mg.write_pdbs()
 
             bp1 = mg.get_node(2).data.ends[1]
             bp2 = mg.get_node(3).data.ends[0]

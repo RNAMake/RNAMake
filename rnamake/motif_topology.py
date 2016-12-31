@@ -77,7 +77,7 @@ class GraphtoTree(object):
         if end_index == 0:
             return m
 
-        if m.mtype != motif_type.HELIX:
+        if m.name[:5] != "HELIX":
             try:
                 new_m = rm.manager.get_motif(name=m.name,
                                              end_name=m.ends[end_index].name())
@@ -90,17 +90,10 @@ class GraphtoTree(object):
             return new_m
 
         else:
-            if m.name[:5] == "HELIX":
-                new_m = rm.manager.get_motif(name=m.name)
-                new_m.copy_uuids_from_motif(m)
-                return new_m
+            new_m = rm.manager.get_motif(name=m.name)
+            new_m.copy_uuids_from_motif(m)
+            return new_m
 
-            else:
-                spl = m.name.split("=")
-                new_name = spl[1] + "=" + spl[0]
-                new_m = rm.manager.get_motif(name=new_name)
-                new_m.id = m.id
-                return new_m
 
     def convert(self, mg, start=None, start_end_index=None, last_node=None):
         self.mt = motif_tree.MotifTree()

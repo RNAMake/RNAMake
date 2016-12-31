@@ -14,8 +14,8 @@
 
 X3dna::X3dna() {
     String env = "X3DNA="+x3dna_path();
-    char * s = strdup(env.c_str());
-    putenv(s);
+    s_ = strdup(env.c_str());
+    putenv(s_);
     
     bin_path_ = x3dna_path()+"/bin/";
 }
@@ -45,6 +45,7 @@ X3dna::generate_ref_frame(String const & path) {
         try { std::remove(f.c_str()); }
         catch(String const & e) {}
     }
+    delete s;
     
 }
 
@@ -72,6 +73,7 @@ X3dna::generate_dssr_file(String const & path) {
         try { std::remove(f.c_str()); }
         catch(String const & e) {}
     }
+    delete s;
 
 }
 
