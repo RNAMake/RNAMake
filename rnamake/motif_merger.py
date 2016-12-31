@@ -5,6 +5,7 @@ import secondary_structure_factory as ssf
 import secondary_structure
 import util
 import graph
+import user_warnings
 
 
 class ChainNodeData(object):
@@ -21,6 +22,13 @@ class ChainNodeData(object):
         if self.prime3_override:
             res.pop()
         return res
+
+
+class MotifMergerType(object):
+    # sequence matters for these motifs
+    SPECIFIC_SEQUENCE = 0
+    # sequence does not matter such as idealized helices
+    NON_SPECIFIC_SEQUENCE = 1
 
 
 class MotifMerger(object):
@@ -107,9 +115,6 @@ class MotifMerger(object):
         self.motifs[m.id] = m
         self.rebuild_structure = 1
 
-    def connect_motifs(self, m1, m2, m1_end, m2_end):
-        self._link_motifs(m1, m2, m1_end, m2_end)
-
     def remove_motif(self, m):
         for end in m.ends:
             if end.uuid in self.bp_overrides:
@@ -148,38 +153,8 @@ class MotifMerger(object):
         del self.motifs[m.id]
         self.rebuild_structure = 1
 
-    def update_motif(self, m):
-        found = 0
-        for n in self.chain_graph.nodes:
-            if n.data.m_id != m.id:
-                continue
-            res = n.data.c.residues
-            new_res = []
-            for r in res:
-                new_r = m.get_residue(uuid=r.uuid)
-                if new_r is None:
-                    raise ValueError("could not find corresponding res by uuid")
-                new_res.append(new_r)
-            if len(new_res) == 0:
-                print "warning did not find any res to update"
-            n.data.c.residues = new_res
-
-
-        for bp in m.basepairs:
-            self.all_bps[bp.uuid] = bp
-        self.motifs[m.id] = m
-        self.rebuild_structure = 1
-
-    def replace_motif(self, old_m, new_m):
-        #assume chains are added in order
-        count = 0
-        for n in self.chain_graph.nodes:
-            if n.data.m_id != old_m.id:
-                continue
-            n.data.m_id = new_m.id
-            n.data.c = new_m.chains()[count]
-            count += 1
-        self.rebuild_structure = 1
+    def connect_motifs(self, m1, m2, m1_end, m2_end):
+        self._link_motifs(m1, m2, m1_end, m2_end)
 
     def secondary_structure(self):
         ss = ssf.factory.secondary_structure_from_motif(self.get_structure())
@@ -212,9 +187,10 @@ class MotifMerger(object):
                 ss_bp = ss.get_basepair(uuid=correct_bp.uuid)
                 if ss_bp is None:
                     raise ValueError("could not find basepair during ss build")
+                ss_bps.append(ss_bp)
             ss_rna_struct = secondary_structure.RNAStructure(
                                 ss_struct, ss_bps, [], m.name, m.path,
-                                m.score, m.end_ids)
+                                m.score, m.end_ids[:])
             ss_ends = []
             for end in m.ends:
                 correct_bp = end
@@ -247,38 +223,73 @@ class MotifMerger(object):
         else:
             return None
 
+    def _assign_merger_type(self, m):
+        if m.mtype != motif_type.HELIX:
+            return MotifMergerType.SPECIFIC_SEQUENCE
+        else:
+            if m.name[0:5] == "HELIX":
+                return MotifMergerType.NON_SPECIFIC_SEQUENCE
+            else:
+                return MotifMergerType.SPECIFIC_SEQUENCE
+
     def _link_motifs(self, m1, m2, m1_end, m2_end):
         m1_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m1_end)
         m2_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m2_end)
 
-        if m2.mtype == motif_type.HELIX and m1.mtype != motif_type.HELIX:
-            self._link_chains(m1_end_nodes, m2_end_nodes)
+        mm_type_1 = self._assign_merger_type(m1)
+        mm_type_2 = self._assign_merger_type(m2)
+
+        if mm_type_2 == MotifMergerType.NON_SPECIFIC_SEQUENCE and \
+           mm_type_1 == MotifMergerType.SPECIFIC_SEQUENCE:
+            self._link_chains(m1_end_nodes, m2_end_nodes, mm_type_1, mm_type_2)
             self.bp_overrides[m2_end.uuid] = m1_end.uuid
         else:
-            self._link_chains(m2_end_nodes, m1_end_nodes)
+            self._link_chains(m2_end_nodes, m1_end_nodes, mm_type_2, mm_type_1)
             self.bp_overrides[m1_end.uuid] = m2_end.uuid
 
-    def _link_chains(self, dominant_nodes, auxiliary_nodes):
+    def _link_chains(self, dominant_nodes, auxiliary_nodes, mm_type_1, mm_type_2):
         if dominant_nodes[0] == dominant_nodes[1]:
-            self._connect_chains(dominant_nodes[0], auxiliary_nodes[0], 1, 0)
-            self._connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1)
+            self._connect_chains(dominant_nodes[0], auxiliary_nodes[0], 1, 0,
+                                 mm_type_1, mm_type_2)
+            self._connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1,
+                                 mm_type_1, mm_type_2)
 
         elif auxiliary_nodes[0] == auxiliary_nodes[1]:
             #print "did this happen check to make sure it worked!!!"
-            self._connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0)
-            self._connect_chains(dominant_nodes[0], auxiliary_nodes[0], 0, 1)
+            self._connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0,
+                                 mm_type_1, mm_type_2)
+            self._connect_chains(dominant_nodes[0], auxiliary_nodes[0], 0, 1,
+                                mm_type_1, mm_type_2)
 
         else:
-            self._connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0)
-            self._connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1)
+            self._connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0,
+                                mm_type_1, mm_type_2)
+            self._connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1,
+                                mm_type_1, mm_type_2)
 
-    def _connect_chains(self, d_node, a_node, d_i, a_i):
+    def _connect_chains(self, d_node, a_node, d_i, a_i, mm_type_1, mm_type_2):
         if a_i == 0:
             a_node.data.prime5_override = 1
+            if mm_type_1 == MotifMergerType.SPECIFIC_SEQUENCE and \
+               mm_type_2 == MotifMergerType.SPECIFIC_SEQUENCE:
+                if a_node.data.c.first().name != d_node.data.c.last().name:
+                    user_warnings.warn(
+                        'overriding residues of two different types, this is likely to '
+                        'produce a merged structure that is wrong!!',
+                        user_warnings.MotifMergerWarning)
+
             self.res_overrides[a_node.data.c.first().uuid] = \
                 d_node.data.c.last().uuid
         else:
             a_node.data.prime3_override = 1
+            if mm_type_1 == MotifMergerType.SPECIFIC_SEQUENCE and \
+               mm_type_2 == MotifMergerType.SPECIFIC_SEQUENCE:
+                if a_node.data.c.last().name != d_node.data.c.first().name:
+                    user_warnings.warn(
+                        'overriding residues of two different types, this is likely to '
+                        'produce a merged structure that is wrong!!',
+                        user_warnings.MotifMergerWarning)
+
             self.res_overrides[a_node.data.c.last().uuid] = \
                 d_node.data.c.first().uuid
         self.chain_graph.connect(d_node.index, a_node.index, d_i, a_i)

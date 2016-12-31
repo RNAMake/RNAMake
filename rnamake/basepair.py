@@ -206,7 +206,6 @@ class Basepair(object):
         else:
             return res2_name+"-"+res1_name
 
-
     def flip(self):
         """
         wrapper for BasepairState flip. There is probably no reasons to ever
@@ -315,6 +314,20 @@ class Basepair(object):
     def move(self, p):
         for a in self.atoms:
             a.coords += p
+
+    def diff(self, bp):
+        diff = util.distance(self.d(), bp.d())
+        diff += self._rot_diff(bp) * 2
+        return diff
+
+    def _rot_diff(self, bp):
+        r_diff = util.matrix_distance(self.r(), bp.r())
+        bp.flip()
+        r_diff_2 = util.matrix_distance(self.r(), bp.r())
+        bp.flip()
+        if r_diff > r_diff_2:
+            r_diff = r_diff_2
+        return r_diff
 
 class BasepairState(object):
     """

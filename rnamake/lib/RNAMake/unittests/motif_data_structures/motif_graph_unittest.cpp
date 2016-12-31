@@ -78,38 +78,14 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         
     }
     
-    SECTION("test stringifying the topology of a motif graph") {
-        auto builder = MotifGraphBuilder();
-        auto mg = builder.build(5);
-        
-        REQUIRE(mg->size() == 10);
-        auto s = mg->topology_to_str();
-        
-        auto mg2 = std::make_shared<MotifGraph>(s, MotifGraphStringType::TOP);
-        
-        REQUIRE(mg->size() == mg2->size());
-        
-        for(int i = 0; i < mg->size(); i++) {
-            auto atoms1 = mg->get_node(i)->data()->atoms();
-            auto atoms2 = mg2->get_node(i)->data()->atoms();
-            REQUIRE(are_atom_vectors_equal(atoms1, atoms2));
-            
-        }
-        
-        auto struc = mg2->get_structure();
-        REQUIRE(struc->chains().size() == 2);
-        
-    }
-    
     SECTION("test stringifying the motif graph yeilds indentical motifs when reloaded") {
         auto builder = MotifGraphBuilder();
         auto mg = builder.build(5);
         auto s = mg->to_str();
         
         auto mg2 = std::make_shared<MotifGraph>(s, MotifGraphStringType::MG);
-
         REQUIRE(mg->size() == mg2->size());
-        
+
         for(int i = 0; i < mg->size(); i++) {
             auto atoms1 = mg->get_node(i)->data()->atoms();
             auto atoms2 = mg2->get_node(i)->data()->atoms();
@@ -138,7 +114,6 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto mg = builder.build(5);
         
         auto mg_copy = std::make_shared<MotifGraph>(*mg);
-        
         REQUIRE(mg->size() == mg_copy->size());
         
         for(int i = 0; i < mg->size(); i++) {
@@ -147,7 +122,6 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
             REQUIRE(are_atom_vectors_equal(atoms1, atoms2));
             
         }
-        
         for(auto const & n : *mg_copy) {
             int count = 0;
             for(auto const & c : n->connections()) {
@@ -158,7 +132,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         
         auto rna_struct = mg_copy->get_structure();
         REQUIRE(rna_struct->chains().size() == 2);
-   
+        
         mg->replace_ideal_helices();
         auto mg_copy_2 = std::make_shared<MotifGraph>(*mg);
         auto dss = mg_copy_2->designable_secondary_structure();
@@ -200,6 +174,28 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         
         REQUIRE(s->chains().size() == 2);
     }
+  
+    SECTION("test replacing idealized helices 2") {
+        auto mg = std::make_shared<MotifGraph>();
+        auto m = RM::instance().motif("HELIX.IDEAL.6");
+        m->move(Point(40, 0, 0));
+        mg->add_motif(m);
+        
+        auto new_mg = std::make_shared<MotifGraph>(*mg);
+        new_mg->replace_ideal_helices();
+        
+        auto struc1 = mg->get_structure();
+        auto struc2 = new_mg->get_structure();
+        
+        auto d1 = struc1->ends()[1]->d();
+        auto ds_2 = Points{struc1->ends()[0]->d(), struc1->ends()[1]->d()};
+        
+        auto dist_1 = d1.distance(ds_2[0]);
+        auto dist_2 = d1.distance(ds_2[1]);
+        auto min = dist_1 < dist_2 ? dist_1 : dist_2;
+        
+        REQUIRE(min < 0.1);
+    }
     
     SECTION("test replacing helices with new sequence") {
         auto mg = MotifGraph();
@@ -221,7 +217,33 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         sstruct::fill_basepairs_in_ss(dss);
 
         REQUIRE_NOTHROW(mg2->replace_helical_sequence(dss));
+        REQUIRE(mg2->sequence() == dss->sequence());
+        
+    }
+    
+    SECTION("test replacing helices with new sequence 2") {
+        auto mg = std::make_shared<MotifGraph>();
+        auto m = RM::instance().motif("HELIX.IDEAL.6");
+        m->move(Point(40, 0, 0));
+        mg->add_motif(m);
+        mg->replace_ideal_helices();
+        
+        auto new_mg = std::make_shared<MotifGraph>(*mg);
+        auto dss = new_mg->designable_secondary_structure();
+        sstruct::fill_basepairs_in_ss(dss);
+        new_mg->replace_helical_sequence(dss);
 
+        auto struc1 = mg->get_structure();
+        auto struc2 = new_mg->get_structure();
+        
+        auto d1 = struc1->ends()[1]->d();
+        auto ds_2 = Points{struc1->ends()[0]->d(), struc1->ends()[1]->d()};
+        
+        auto dist_1 = d1.distance(ds_2[0]);
+        auto dist_2 = d1.distance(ds_2[1]);
+        auto min = dist_1 < dist_2 ? dist_1 : dist_2;
+        
+        REQUIRE(min < 10);
     }
     
     SECTION("test get end for easy building ") {

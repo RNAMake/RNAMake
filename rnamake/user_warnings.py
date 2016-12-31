@@ -36,3 +36,7 @@ class RNAStructureWarning(RNAMakeWarning):
 
 class MotifWarning(RNAMakeWarning):
     pass
+
+
+class MotifMergerWarning(RNAMakeWarning):
+    pass

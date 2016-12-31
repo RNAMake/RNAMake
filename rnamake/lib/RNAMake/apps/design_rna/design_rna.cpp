@@ -30,6 +30,7 @@ DesignRNAApp::setup_options() {
     add_option("score_file", "default.scores", OptionType::STRING, false);
     add_option("verbose", false, OptionType::BOOL, false);
     add_option("pdbs", false, OptionType::BOOL, false);
+    add_option("show_sections", false, OptionType::BOOL, false);
     
 
     //no sequence opt
@@ -134,8 +135,10 @@ DesignRNAApp::_setup_from_pdb() {
     std::cout << "DESIGN RNA: removed rna segment=removed.pdb" << std::endl;
     std::cout << "DESIGN RNA: remaining rna segment=remaining.pdb" << std::endl;
 
-    segments->remaining->to_pdb("remaining.pdb");
-    segments->removed->to_pdb("removed.pdb");
+    if(get_bool_option("show_sections")) {
+        segments->remaining->to_pdb("remaining.pdb");
+        segments->removed->to_pdb("removed.pdb");
+    }
     segments->remaining->mtype(MotifType::TWOWAY);
     
     RM::instance().register_motif(segments->remaining);
@@ -184,7 +187,7 @@ DesignRNAApp::run() {
     
     auto so = SequenceOptimizer3D();
     so.set_option_value("verbose", get_bool_option("verbose"));
-    so.set_option_value("cutoff", 10.0f);
+    so.set_option_value("cutoff", 5.0f);
     
     std::ofstream out, sf_out;
     sf_out.open(get_string_option("score_file"));
@@ -192,7 +195,6 @@ DesignRNAApp::run() {
     sf_out << "opt_sequence,opt_score,eterna_score" << std::endl;
     
     out.open(get_string_option("out_file"));
-    
     
     int design_num = 0;
     int solution_count = 0;
@@ -210,9 +212,12 @@ DesignRNAApp::run() {
         auto mt = sol->to_motif_tree();
 
         mg_->add_motif_tree(mt, start_.n_pos, start_.name);
-        auto last_node = mg_->last_node();
         mg_->add_connection(end_.n_pos, mg_->last_node()->index(), end_.name, "");
         mg_->replace_ideal_helices();
+
+        auto end_node = mg_->get_node(end_.n_pos);
+        auto end_i = end_node->data()->get_end_index(end_.name);
+        auto partner = end_node->connections()[end_i]->partner(end_node->index());
         
         if(get_bool_option("only_ideal")) {
             auto motif_names = String("");
@@ -238,13 +243,9 @@ DesignRNAApp::run() {
             continue;
         }
         
+        auto scorer = std::make_shared<ExternalTargetScorer>(end_bp->state(), partner->index(), 1);
+        auto sols = so.get_optimized_sequences(mg_, scorer);
         
-        auto c = GraphtoTree();
-        auto d_mt = c.convert(mg_, nullptr, -1, last_node);
-        d_mt->set_option_value("sterics", false);
-        
-        auto sols = so.get_optimized_sequences(d_mt, end_bp, d_mt->last_node()->index(), 1);
-
         if(sols.size() > 0) {
             int opt_num = 0;
             for(auto const & s : sols) {
@@ -258,8 +259,8 @@ DesignRNAApp::run() {
                 auto dss = copy_mg->designable_secondary_structure();
                 dss->replace_sequence(s->sequence);
                 copy_mg->replace_helical_sequence(dss);
-                
                 out << copy_mg->to_str() << std::endl;
+                
                 if(get_bool_option("pdbs")) {
                     copy_mg->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
                     solution_count++;

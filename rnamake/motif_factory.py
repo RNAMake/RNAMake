@@ -174,11 +174,12 @@ class MotifFactory(object):
         return m
 
     def can_align_motif_to_end(self, m, ei):
-        m_added = motif.get_aligned_motif(self.base_motif.ends[1], m.ends[ei], m)
+        m_copy = m.copy()
+        m_added = motif.get_aligned_motif(self.base_motif.ends[1], m_copy.ends[ei], m_copy)
 
         if self._steric_clash(self.base_motif, m_added):
-            m.ends[ei].flip()
-            m_added = motif.get_aligned_motif(self.base_motif.ends[1], m.ends[ei], m)
+            m_copy.ends[ei].flip()
+            m_added = motif.get_aligned_motif(self.base_motif.ends[1], m_copy.ends[ei], m_copy)
 
             if self._steric_clash(self.base_motif, m_added):
                 return None
@@ -197,7 +198,7 @@ class MotifFactory(object):
 
 
             m_added.ends[i].flip()
-            m.ends[i].flip()
+            m_copy.ends[i].flip()
 
             m2_added = motif.get_aligned_motif(m_added.ends[i],
                                                self.added_helix.ends[0],

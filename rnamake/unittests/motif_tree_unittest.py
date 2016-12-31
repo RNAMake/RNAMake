@@ -22,7 +22,7 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt) != 2:
             self.fail("did not add motifs properly")
 
-        if len(mt.merger.get_structure().residues()) != 14:
+        if len(mt.get_structure().residues()) != 14:
             self.fail("merger did not result in the right number of residues")
 
         if len(mt.merger.res_overrides.values()) != 2:
@@ -31,7 +31,7 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt.merger.bp_overrides.values()) != 1:
             self.fail("did not create the correct number of bp overrides")
 
-    def test_add_motif_2(self):
+    def test_add_motif(self):
         mt = motif_tree.MotifTree()
         m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
         m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
@@ -80,6 +80,7 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt) != 1:
             self.fail("did not remove node correctly")
 
+        mt.get_structure()
         if len(mt.merger.res_overrides.values()) != 0:
             self.fail(("did not remove residue overrides"))
 
@@ -100,11 +101,11 @@ class MotifTreeUnittest(unittest.TestCase):
         if len(mt) != 2:
             self.fail("did not remove node correctly")
 
-        if len(mt.merger.get_structure().chains()) != 4:
+        if len(mt.get_structure().chains()) != 4:
             print len(mt.merger.get_structure().chains())
             self.fail("did not get the correct number of chains")
 
-        if len(mt.merger.get_structure().ends) != 4:
+        if len(mt.get_structure().ends) != 4:
             self.fail("did not get the correct number of ends")
 
         #mt.merger.get_structure().to_pdb("test.pdb", renumber=1)
@@ -143,6 +144,7 @@ class MotifTreeUnittest(unittest.TestCase):
         res = []
         for n in mt:
             res.extend(n.data.residues())
+        mt.get_structure()
         for r in res:
             if mt.merger.get_residue(r.uuid) is None:
                 self.fail("could not find residue")

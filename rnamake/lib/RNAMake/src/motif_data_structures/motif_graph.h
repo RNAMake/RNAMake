@@ -307,6 +307,11 @@ public: //construction
 
     ~MotifGraph() { }
 
+public: //setup helpers
+    
+    void
+    update_indexes(std::map<int, int> const &);
+    
 public: //iterators
     
     typedef typename GraphStatic<MotifOP>::iterator iterator;
@@ -361,7 +366,8 @@ public: //add functions
     add_motif(
         MotifOP const & m,
         int parent_index = -1,
-        int parent_end_index = -1);
+        int parent_end_index = -1,
+        int orphan = 0);
     
     int
     add_motif(
@@ -426,7 +432,7 @@ public: //graph wrappers
                 return n;
             }
         }
-        throw MotifGraphException("cannot get node with uuid no motif has it in this tree");
+        throw MotifGraphException("cannot get node with uuid no motif has it in this graph");
     }
     
     inline
@@ -447,12 +453,16 @@ public: //graph wrappers
         
         if(node == nullptr) {
             throw MotifGraphException(
-                        "cannot get node with name: " + m_name + " there is no motif in the tree with "
-                        "this name");
+                    "cannot get node with name: " + m_name + " there is no motif in the tree with "
+                    "this name");
         }
         
         return node;
     }
+    
+    inline
+    void
+    set_index(int index) { graph_.index(index); }
 
 
 public: //designing functions
@@ -462,9 +472,17 @@ public: //designing functions
     void
     replace_helical_sequence(sstruct::PoseOP const &);
     
+    inline
+    void
+    replace_helical_sequence(String const & seq) {
+        auto dss = designable_secondary_structure();
+        dss->replace_sequence(seq);
+        replace_helical_sequence(dss);
+    }
     
     sstruct::PoseOP
     designable_secondary_structure() {
+        _update_merger();
         auto ss = merger_->secondary_structure();
         auto ss_r = sstruct::ResidueOP(nullptr);
         
@@ -505,8 +523,16 @@ public: // outputing functions
         auto printer = MotifGraphPrinter(*this);
         return printer.print_graph(*this);
     }
+    
+public: // misc functions
+    
+    void
+    _update_align_list();
+    
+    void
+    _update_merger();
 
-public:
+public: // getters
     
     inline
     Beads
@@ -539,6 +565,13 @@ public:
     _MotifGraphBuildPointOPs
     get_build_points();
     
+    // this is bad
+    std::map<int, int>
+    aligned() { return aligned_; }
+    
+    GraphConnectionOPs<MotifOP> const &
+    connections() { return graph_.connections(); }
+    
     
     
 public: //Motif Merger Wrappers
@@ -546,7 +579,10 @@ public: //Motif Merger Wrappers
     inline
     RNAStructureOP const &
     get_structure() {
-        try {  return merger_->get_structure(); }
+        try {
+            _update_merger();
+            return merger_->get_structure();
+        }
         catch(MotifMergerException) {
             throw MotifGraphException(
                 "cannot produce merged structure it is likely you have created a ring with no start"
@@ -556,7 +592,10 @@ public: //Motif Merger Wrappers
     
     sstruct::PoseOP
     secondary_structure() {
-        try { return merger_->secondary_structure(); }
+        try {
+            _update_merger();
+            return merger_->secondary_structure();
+        }
         catch(MotifMergerException) {
             throw MotifGraphException(
                 "cannot produce merged secondary structure it is likely you have created a ring "
@@ -571,7 +610,10 @@ public: //Motif Merger Wrappers
         String const fname = "test.pdb",
         int renumber = -1) {
         
-        try { return merger_->to_pdb(fname, renumber); }
+        try {
+            _update_merger();
+            return merger_->to_pdb(fname, renumber);
+        }
         catch(MotifMergerException) {
             throw MotifGraphException(
                 "cannot produce merged structure for a pdb it is likely you have created a ring "
@@ -641,6 +683,9 @@ private:
     MotifMergerOP merger_;
     Options options_;
     std::map<int, int> aligned_;
+    GraphNodeOPs<MotifOP> align_list_;
+    int update_merger_;
+    int update_align_list_;
     //options
     float clash_radius_;
     bool sterics_;

@@ -105,7 +105,7 @@ public:
     
     X3dna();
     
-    ~X3dna() {}
+    ~X3dna() { delete s_; }
 
 public:
     void
@@ -159,7 +159,7 @@ private:
 private:
     String bin_path_;
     X3Basepairs basepairs_;
-    
+    char * s_;
 };
 
 

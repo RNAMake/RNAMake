@@ -39,9 +39,9 @@ def motif_tree_from_topology_str(s):
 def motif_tree_from_ss_tree(sst):
     mt = MotifTree()
     for n in sst.tree:
-        #mt.add_motif()
+        m = rm.manager.get_motif(end_id=n.data.end_ids[0])
         if n.data.mtype == motif_type.HELIX:
-            mt.add_motif(m_name=n.data.name, parent_index=n.parent_index(),
+            mt.add_motif(m, parent_index=n.parent_index(),
                          parent_end_index=n.parent_end_index())
         else:
             raise ValueError("not implemented")
@@ -327,7 +327,9 @@ class MotifTree(base.Base):
         self.clash_radius = settings.CLASH_RADIUS
 
         self.tree = tree.TreeStatic()
-        self.merger = motif_merger.MotifMerger()
+        self.merger = None
+        self.update_merger = 1
+
         self.connections = motif_connection.MotifConnections()
 
     def __len__(self):
@@ -364,7 +366,6 @@ class MotifTree(base.Base):
         mt = MotifTree()
         new_tree = self.tree.copy()
         mt.tree = new_tree
-        mt.merger = self.merger.copy([n.data for n in new_tree.nodes])
         mt.connections = self.connections.copy()
 
         return mt
@@ -631,7 +632,7 @@ class MotifTree(base.Base):
         if parent is None:
             m_copy = m.copy()
             m_copy.get_beads([m_copy.ends[0]])
-            self.merger.add_motif(m_copy)
+            self.update_merger = 1
             return self.tree.add_data(m_copy, len(m_copy.ends), -1, -1)
 
         avail_pos = self._get_parent_available_ends(parent, parent_end_index,
@@ -644,8 +645,8 @@ class MotifTree(base.Base):
                     continue
 
             pos =  self.tree.add_data(m_added, len(m_added.ends), parent.index, p)
-            self.merger.add_motif(m_added, m_added.ends[0],
-                                  parent.data, parent.data.ends[p])
+            if pos != -1:
+                 self.update_merger = 1
             return pos
 
         return -1
@@ -750,9 +751,7 @@ class MotifTree(base.Base):
         node_j_end_name = node_j.data.ends[node_j_ei].name()
 
         self.connections.add_connection(i, j, node_i_end_name, node_j_end_name)
-        self.merger.connect_motifs(node_i.data, node_j.data,
-                                   node_i.data.ends[node_i_ei],
-                                   node_j.data.ends[node_j_ei])
+        self.update_merger = 1
 
     def replace_motif(self, pos, new_motif):
         """
@@ -774,9 +773,7 @@ class MotifTree(base.Base):
             raise exceptions.MotifTreeException(
                 "attmpted to replace a motif with a different number of ends")
 
-        new_motif = new_motif.copy()
-        self.merger.replace_motif(node.data, new_motif)
-        node.data = new_motif
+        node.data = new_motif.copy()
 
         for n in tree.transverse_tree(self.tree, pos):
             parent = n.parent
@@ -787,7 +784,8 @@ class MotifTree(base.Base):
                                               n.data.ends[0],
                                               n.data)
             n.data = m_added
-            self.merger.update_motif(n.data)
+
+        self.update_merger = 1
 
     #REMOVE FUNCTIONS   #######################################################
     def remove_node(self, i=-1):
@@ -819,7 +817,7 @@ class MotifTree(base.Base):
 
         n = self.get_node(i)
         self.tree.remove_node(index=i)
-        self.merger.remove_motif(n.data)
+        self.update_merger = 1
 
     def remove_node_level(self, level=None):
         """
@@ -911,6 +909,7 @@ class MotifTree(base.Base):
         :rtype: secondary_structure.Pose
         """
 
+        self._update_merger()
         return self.merger.secondary_structure()
 
     def designable_secondary_structure(self):
@@ -922,6 +921,7 @@ class MotifTree(base.Base):
         :rtype: secondary_structure.Pose
         """
 
+        self._update_merger()
         ss = self.merger.secondary_structure()
 
         for n in self.tree.nodes:
@@ -941,10 +941,11 @@ class MotifTree(base.Base):
 
         :return:
         """
-
+        self._update_merger()
         return self.merger.get_structure()
 
     def residues(self):
+        self._update_merger()
         return self.merger.get_structure().residues()
 
     #OUTPUTING          #######################################################
@@ -1034,5 +1035,61 @@ class MotifTree(base.Base):
 
                 leaf_nodes.append([n, i])
         return leaf_nodes
+
+    #MISC               #######################################################
+    def _update_merger(self):
+        if not self.update_merger:
+            return
+
+        self.merger = motif_merger.MotifMerger()
+        for n in self.tree:
+            if n.parent is None:
+                self.merger.add_motif(n.data)
+                continue
+            #print n.index, n.parent.index
+
+            pei = n.parent_end_index()
+            self.merger.add_motif(n.data, n.data.ends[0],
+                                  n.parent.data, n.parent.data.ends[pei])
+
+        for c in self.connections:
+            node_i = self.get_node(c.i)
+            node_j = self.get_node(c.j)
+            node_i_ei = node_i.data.get_end_index(c.name_i)
+            node_j_ei = node_j.data.get_end_index(c.name_j)
+            self.merger.connect_motifs(node_i.data, node_j.data,
+                                       node_i.data.ends[node_i_ei],
+                                       node_j.data.ends[node_j_ei])
+
+        self.update_merger = 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

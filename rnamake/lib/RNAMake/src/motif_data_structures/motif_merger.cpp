@@ -46,7 +46,7 @@ MotifMerger::add_motif(
     
     add_motif(m);
     try {
-        _link_motifs(m, m_end, parent, parent_end);
+        _link_motifs(parent, parent_end, m, m_end);
     }
     catch(GraphException const & e ){
         throw MotifMergerException(
@@ -67,15 +67,16 @@ MotifMerger::_link_motifs(
     auto m1_end_nodes = _get_end_nodes(graph_.nodes(), m1_end);
     auto m2_end_nodes = _get_end_nodes(graph_.nodes(), m2_end);
     
-    //std::cout << m2_end_nodes[0]->index() << " " << m2_end_nodes[1]->index() << std::endl;
+    auto mm_type_1 = _assign_merger_type(m1);
+    auto mm_type_2 = _assign_merger_type(m2);
     
-    if(m2->mtype() == MotifType::HELIX && m1->mtype() != MotifType::HELIX) {
-        _link_chains(m1_end_nodes, m2_end_nodes);
+    if(mm_type_2 == MotifMergerType::NON_SPECIFIC_SEQUENCE &&
+       mm_type_1 == MotifMergerType::SPECIFIC_SEQUENCE) {
+        _link_chains(m1_end_nodes, m2_end_nodes, mm_type_1, mm_type_2);
         bp_overrides_[m2_end->uuid()] = m1_end->uuid();
     }
-    
     else {
-        _link_chains(m2_end_nodes, m1_end_nodes);
+        _link_chains(m2_end_nodes, m1_end_nodes, mm_type_2, mm_type_1);
         bp_overrides_[m1_end->uuid()] = m2_end->uuid();
     }
 
@@ -136,22 +137,23 @@ MotifMerger::_get_end_nodes(
 void
 MotifMerger::_link_chains(
     ChainNodes & dominant_nodes,
-    ChainNodes & auxiliary_nodes) {
-    
+    ChainNodes & auxiliary_nodes,
+    MotifMergerType const & mm_type_1,
+    MotifMergerType const & mm_type_2) {
     
     if(dominant_nodes[0] == dominant_nodes[1]) {
-        _connect_chains(dominant_nodes[0], auxiliary_nodes[0], 1, 0);
-        _connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1);
+        _connect_chains(dominant_nodes[0], auxiliary_nodes[0], 1, 0, mm_type_1, mm_type_2);
+        _connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1, mm_type_1, mm_type_2);
     }
     
     else if(auxiliary_nodes[0] == auxiliary_nodes[1]) {
-        _connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0);
-        _connect_chains(dominant_nodes[0], auxiliary_nodes[0], 0, 1);
+        _connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0, mm_type_1, mm_type_2);
+        _connect_chains(dominant_nodes[0], auxiliary_nodes[0], 0, 1, mm_type_1, mm_type_2);
     }
     
     else {
-        _connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0);
-        _connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1);
+        _connect_chains(dominant_nodes[1], auxiliary_nodes[0], 1, 0, mm_type_1, mm_type_2);
+        _connect_chains(dominant_nodes[0], auxiliary_nodes[1], 0, 1, mm_type_1, mm_type_2);
     }
 }
 
@@ -160,27 +162,58 @@ MotifMerger::_connect_chains(
     ChainNode & d_node,
     ChainNode & a_node,
     int d_i,
-    int a_i) {
+    int a_i,
+    MotifMergerType const & mm_type_1,
+    MotifMergerType const & mm_type_2) {
     
     if(a_i == 0) {
         a_node->data().prime5_override = 1;
+        if(mm_type_1 == MotifMergerType::SPECIFIC_SEQUENCE &&
+           mm_type_2 == MotifMergerType::SPECIFIC_SEQUENCE &&
+           a_node->data().c->first()->name() != d_node->data().c->last()->name()) {
+            std::cout << "MotifMerger::_connect_chains: overriding residues of two different types, ";
+            std::cout << "this is likely to produce a merged structure that is wrong!!" << std::endl;
+        }
+        
         res_overrides_[a_node->data().c->first()->uuid()] = d_node->data().c->last()->uuid();
     }
     else {
         a_node->data().prime3_override = 1;
+        if(mm_type_1 == MotifMergerType::SPECIFIC_SEQUENCE &&
+           mm_type_2 == MotifMergerType::SPECIFIC_SEQUENCE &&
+           a_node->data().c->last()->name() != d_node->data().c->first()->name()) {
+            std::cout << "MotifMerger::_connect_chains: overriding residues of two different types, ";
+            std::cout << "this is likely to produce a merged structure that is wrong!!" << std::endl;
+        }
         res_overrides_[a_node->data().c->last()->uuid()] = d_node->data().c->first()->uuid();
-    }
-    
+    }    
     graph_.connect(d_node->index(), a_node->index(), d_i, a_i);
  
 }
 
 
+MotifMerger::MotifMergerType
+MotifMerger::_assign_merger_type(
+    MotifOP const & m) {
+    
+    if(m->mtype() != MotifType::HELIX) {
+        return MotifMergerType::SPECIFIC_SEQUENCE;
+    }
+    else {
+        if(m->name().substr(0, 5) == "HELIX") {
+            return MotifMergerType::NON_SPECIFIC_SEQUENCE;
+        }
+        else {
+            return MotifMergerType::SPECIFIC_SEQUENCE;
+        }
+    }
+    
+}
+
 void
 MotifMerger::_build_structure() {
     auto starts = ChainNodes();
     for(auto const & n : graph_.nodes()) {
-        
         if(n->available_pos(0)) { starts.push_back(n); }
     }
     
@@ -188,7 +221,6 @@ MotifMerger::_build_structure() {
         throw MotifMergerException("no place to start in chain graph to build structure");
     }
 
-    
     auto chains = ChainOPs();
     auto cur = ChainNode();
     for(auto const & n : starts) {
@@ -319,7 +351,6 @@ MotifMerger::update_motif(MotifOP const & m) {
     motifs_[m->id()] = m;
     rebuild_structure_ = 1;
 }
-
 
 sstruct::PoseOP
 MotifMerger::secondary_structure() {

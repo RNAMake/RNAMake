@@ -101,6 +101,10 @@ class MotifGraphException(Exception):
     pass
 
 
+class MotifStateGraphException(Exception):
+    pass
+
+
 class MotifStateTreeException(Exception):
     pass
 

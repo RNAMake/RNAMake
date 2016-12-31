@@ -118,6 +118,8 @@ def new_score_function(current, end, endflip):
 
     r_diff       = util.matrix_distance(current.r, end.r)
     r_diff_flip  = util.matrix_distance(current.r, endflip.r)
+    print current.r
+    print end.r
 
     if r_diff > r_diff_flip:
         r_diff = r_diff_flip
@@ -130,6 +132,7 @@ def new_score_function(current, end, endflip):
     if scale < 0:
         scale = 0
 
+    print d_diff, scale*r_diff, scale
     return d_diff + scale*r_diff
 
 def new_score_function_new(current, end, endflip):

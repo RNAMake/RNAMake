@@ -17,9 +17,7 @@
 #include "motif_data_structures/motif_state_ensemble_tree.h"
 
 String
-bp_name_from_sequence(
-    String const &);
-
+remove_Us(String const &);
 
 class SimulateTectosAppException : public std::runtime_error {
 public:

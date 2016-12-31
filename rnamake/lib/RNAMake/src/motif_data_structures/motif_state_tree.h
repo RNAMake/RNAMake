@@ -23,6 +23,7 @@
 #include "motif_data_structures/motif_tree.h"
 #include "motif_data_structures/motif_state_tree.fwd.h"
 #include "motif_data_structures/motif_connection.h"
+#include "motif_data_structures/motif_state_node.hpp"
 
 class MotifStateTreeException : public std::runtime_error {
 public:
@@ -32,68 +33,8 @@ public:
     {}
 };
 
-struct MSTNodeData {
-public:
-    inline
-    MSTNodeData(
-        MotifStateOP const & nref_state):
-    ref_state(nref_state),
-    cur_state(std::make_shared<MotifState>(*nref_state))
-    {}
-    
-    inline
-    MSTNodeData(
-        MSTNodeData const & ndata):
-    ref_state(std::make_shared<MotifState>(*ndata.ref_state)),
-    cur_state(std::make_shared<MotifState>(*ndata.cur_state))
-    {}
-    
-public: //wrappers for current state
-    
-    inline
-    BasepairStateOP
-    get_end_state(String const & name) { return cur_state->get_end_state(name); }
-    
-    inline
-    BasepairStateOP
-    get_end_state(int i) { return cur_state->end_states()[i]; }
-    
-    inline
-    int
-    get_end_index(String const & name) { return cur_state->get_end_index(name); }
-    
-    inline
-    String const &
-    name() { return cur_state->name(); }
-    
-    inline
-    int
-    block_end_add() { return cur_state->block_end_add(); }
-    
-    inline
-    String const &
-    end_name(int i) { return cur_state->end_names()[i]; }
-    
-    inline
-    Uuid const &
-    uuid() { return cur_state->uuid(); }
-    
-public: //wrappers to set some values
-    
-    inline
-    void
-    uuid(Uuid const & uuid) {
-        cur_state->uuid(uuid);
-        ref_state->uuid(uuid);
-    }
-    
-    
-public:
-    MotifStateOP ref_state, cur_state;
-    
-};
 
-typedef TreeNodeOP<MSTNodeDataOP> MotifStateTreeNodeOP;
+typedef TreeNodeOP<MSNodeDataOP> MotifStateTreeNodeOP;
 
 class MotifStateTree {
 public:
@@ -110,8 +51,8 @@ public:
     
 public: //iterators
     
-    typedef typename TreeStatic<MSTNodeDataOP>::iterator iterator;
-    typedef typename TreeStatic<MSTNodeDataOP>::const_iterator const_iterator;
+    typedef typename TreeStatic<MSNodeDataOP>::iterator iterator;
+    typedef typename TreeStatic<MSNodeDataOP>::const_iterator const_iterator;
     
     iterator begin() { return tree_.begin(); }
     iterator end()   { return tree_.end(); }
@@ -138,7 +79,7 @@ private: // add function helpers
     inline
     int
     _steric_clash(
-        MSTNodeDataOP const & new_data) {
+        MSNodeDataOP const & new_data) {
         
         float dist;
         for(auto const & n : tree_) {
@@ -336,7 +277,7 @@ private:
     
     
 private:
-    TreeStatic<MSTNodeDataOP> tree_;
+    TreeStatic<MSNodeDataOP> tree_;
     std::queue<MotifStateTreeNodeOP> queue_;
     MotifStateAligner aligner_;
     MotifConnections connections_;

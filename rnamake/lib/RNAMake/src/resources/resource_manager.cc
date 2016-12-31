@@ -18,10 +18,12 @@ RM::RM() {
     extra_me_ = std::map<String, MotifEnsembleOP>();
     
     for(auto const & kv : MotifSqliteLibrary::get_libnames()) {
+        //if(kv.first == "bp_steps") { continue; }
         mlibs_[kv.first] = std::make_shared<MotifSqliteLibrary>(kv.first);
     }
     
     for(auto const & kv : MotifStateSqliteLibrary::get_libnames()) {
+        //if(kv.first == "bp_steps") { continue; }
         ms_libs_[kv.first] = std::make_shared<MotifStateSqliteLibrary>(kv.first);
     }
     
@@ -34,6 +36,17 @@ RM::RM() {
 
 // getting functions  //////////////////////////////////////////////////////////////////////////////
 
+MotifOP
+RM::bp_step(
+    String const & end_id) {
+    return mlibs_["new_bp_steps"]->get("", end_id);
+}
+
+MotifStateOP
+RM::bp_step_state(
+    String const & end_id) {
+    return bp_step(end_id)->get_state();
+}
 
 MotifOP
 RM::motif(
@@ -281,11 +294,6 @@ RM::get_supplied_motif_ensemble(
     return extra_me_[key];
     
 }
-
-
-
-
-
 
 
 

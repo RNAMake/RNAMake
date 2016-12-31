@@ -31,6 +31,7 @@ public:
     {}
 };
 
+
 struct ChainNodeData {
     inline
     ChainNodeData() {}
@@ -106,6 +107,14 @@ public:
       }
     
     ~MotifMerger() { }
+    
+private:
+    enum MotifMergerType {
+        // sequence matters for these motifs
+        SPECIFIC_SEQUENCE = 0,
+        // sequence does not matter such as idealized helices
+        NON_SPECIFIC_SEQUENCE = 1
+    };
     
 public:
     void
@@ -188,17 +197,25 @@ private:
     void
     _link_chains(
         ChainNodes &,
-        ChainNodes &);
+        ChainNodes &,
+        MotifMergerType const &,
+        MotifMergerType const &);
     
     void
     _connect_chains(
         ChainNode &,
         ChainNode &,
-        int d_i,
-        int a_i);
+        int,
+        int,
+        MotifMergerType const &,
+        MotifMergerType const &);
     
     void
     _build_structure();
+    
+    MotifMergerType
+    _assign_merger_type(
+        MotifOP const &);
     
 private:
     std::map<Uuid, BasepairOP, UuidCompare> all_bps_;

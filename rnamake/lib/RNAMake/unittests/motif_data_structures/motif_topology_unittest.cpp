@@ -24,7 +24,7 @@ TEST_CASE( "Test Changes in Motif Topology", "[MotifTopology]" ) {
     mt = c.convert(mg, mg->get_node(0), 0);
     REQUIRE(mt->size() == 4);
 
-    SECTION("start in the middle of the motif graph") {
+    /*SECTION("start in the middle of the motif graph") {
     
         mt = c.convert(mg, mg->get_node(1), 1);
         REQUIRE(mt->size() == 2);
@@ -80,7 +80,7 @@ TEST_CASE( "Test Changes in Motif Topology", "[MotifTopology]" ) {
         
         //std::cout << mt->to_pretty_str() << std::endl;
         
-    }
+    }*/
     
 
     

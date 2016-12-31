@@ -1076,6 +1076,11 @@ class Pose(RNAStructure):
             for i, end in enumerate(m.ends):
                 m.end_ids[i] = assign_end_id_new(m, end)
 
+    def update_motif(self, m_id):
+        m = self.motif(m_id)
+        for i, end in enumerate(m.ends):
+            m.end_ids[i] = assign_end_id_new(m, end)
+
     def copy(self):
         """
         creates a deep copy of instance

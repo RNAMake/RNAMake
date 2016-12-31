@@ -166,7 +166,8 @@ class Motif(rna_structure.RNAStructure):
             ends[i] = end.state()
             end_names.append(end.name())
         return MotifState(self.name, end_names, self.end_ids, ends, centers,
-                          self.score, len(self.residues()), self.block_end_add)
+                          self.score, len(self.residues()), self.block_end_add,
+                          self.id)
 
     def end_index_with_id(self, id):
         for i, end_id in enumerate(self.end_ids):

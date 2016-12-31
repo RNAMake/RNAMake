@@ -73,6 +73,10 @@ public:
     void
     replace_sequence(
         String const &);
+    
+    void
+    update_motif(
+        Uuid const &);
 
     
 private:

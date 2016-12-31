@@ -4,7 +4,8 @@ import numpy as np
 import sqlite3
 import os
 
-from rnamake import exceptions, sqlite_library
+from rnamake import exceptions, sqlite_library, motif_graph, motif
+from rnamake import resource_manager as rm
 
 class SqliteLibraryUnittest(unittest.TestCase):
 
@@ -118,7 +119,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
                 continue
             seen.append(m.name)
 
-    def test_get_1_0(self):
+    def _test_get_1_0(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
         mlib.load_all()
 
@@ -137,6 +138,42 @@ class SqliteLibraryUnittest(unittest.TestCase):
             motifs.append(m)
             #m.to_pdb("m."+str(i)+".pdb")
         #print end_name
+
+    def _test_new_bp_steps(self):
+        mlib = sqlite_library.MotifSqliteLibrary("new_bp_steps")
+        mlib.load_all()
+
+        end_indexes = []
+        for m in mlib.all():
+            if m.end_ids[0] not in end_indexes:
+                end_indexes.append(m.end_ids[0])
+            else:
+                print m.name, m.end_ids[0]
+
+    def _test_new_bp_steps(self):
+        mlib = sqlite_library.MotifSqliteLibrary("new_bp_steps")
+        mlib.load_all()
+
+        m = rm.manager.get_motif(end_id="GC_LL_GC_RR")
+        m2 = mlib.get(end_id="GC_LL_GC_RR", end_name=m.ends[1].name())
+        mg = motif_graph.MotifGraph()
+        mg.add_motif(m)
+        h = rm.manager.get_motif(name="HELIX.IDEAL.6")
+        mg.add_motif(h)
+
+
+        #m2.ends[0].flip()
+
+        m_aligned = motif_graph.flip_alignment(m, 1)
+        #m2.ends[0].flip()
+
+        mg2 = motif_graph.MotifGraph()
+        mg2.add_motif(m_aligned)
+        mg2.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.6"))
+        #mg.write_pdbs("one")
+        #mg2.write_pdbs("two")
+
+
 
 
 def main():

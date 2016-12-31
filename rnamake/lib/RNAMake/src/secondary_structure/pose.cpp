@@ -112,6 +112,18 @@ Pose::replace_sequence(
     
 }
 
+void
+Pose::update_motif(Uuid const & uuid) {
+    auto m = motif(uuid);
+    auto end_ids = Strings(m->ends().size());
+    int i = 0;
+    for(auto const & end : m->ends()) {
+        end_ids[i] = assign_end_id(m, end);
+        i++;
+    }
+    m->end_ids(end_ids);
+}
 
+    
 }
 

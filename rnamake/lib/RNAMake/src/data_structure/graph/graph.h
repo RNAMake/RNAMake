@@ -65,7 +65,7 @@ public:
             if(n->index() == index) { return n; }
         }
         
-        throw GraphException("cannot find node with index");
+        throw GraphException("cannot find node with index: " + std::to_string(index));
     }
     
     inline
@@ -115,6 +115,10 @@ public: //getters
     inline
     int
     level() { return level_; }
+    
+    inline
+    int
+    index() { return index_; }
     
 public: //setters
     
