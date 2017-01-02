@@ -2,11 +2,6 @@ import unittest
 import os
 from rnamake import settings
 from rnamake.wrappers import simulate_tectos_wrapper
-from rnamake import motif_graph
-
-
-
-RESOURCE_PATH = settings.LIB_PATH + "/lib/RNAMake/unittests/unittest_resources/apps/design_rna/"
 
 
 class SimulateTectosUnittest(unittest.TestCase):
@@ -15,7 +10,7 @@ class SimulateTectosUnittest(unittest.TestCase):
         stw = simulate_tectos_wrapper.SimulateTectosWrapper()
         stw.run()
         hit_count = stw.get_output()
-        self.failUnless(hit_count > 970 and hit_count < 1250,
+        self.failUnless(hit_count > 1100 and hit_count < 1450,
                         "wildtype did not have expected hit_count: " + str(hit_count))
 
     def test_high(self):
@@ -29,7 +24,7 @@ class SimulateTectosUnittest(unittest.TestCase):
         stw = simulate_tectos_wrapper.SimulateTectosWrapper()
         stw.run(cseq="CTAGGATATGGAGACGCCTGGGGAACCAGGCGTCTCCTAAGTCCTAG")
         hit_count = stw.get_output()
-        self.failUnless(hit_count > 800 and hit_count < 1250,
+        self.failUnless(hit_count > 1000 and hit_count < 1450,
                         "worst seq did not have expected hit_count: " + str(hit_count))
 
 def main():

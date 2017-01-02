@@ -161,8 +161,14 @@ TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
     
     SECTION("test replacing a state in the tree") {
         auto builder = MotifTreeBuilder();
-        auto mt = builder.build(3);
-        auto mst = std::make_shared<MotifStateTree>(mt);
+        //auto mt = builder.build(3);
+        auto mst = std::make_shared<MotifStateTree>();
+        mst->add_state(RM::instance().motif_state("HELIX.IDEAL.8"));
+        mst->add_state(RM::instance().motif_state("HELIX.IDEAL.8"));
+        mst->add_state(RM::instance().motif_state("HELIX.IDEAL.8"));
+
+        auto m = RM::instance().motif("HELIX.IDEAL.7", "", "A9-A10");
+        std::cout << m->name() << " " << m->ends()[0]->name() << std::endl;
         
         auto new_state = RM::instance().motif_state("HELIX.IDEAL.2");
         mst->replace_state(2, new_state);
@@ -173,7 +179,7 @@ TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
             mt2->add_motif(m);
         }
         
-        int i = mt->size()-1;
+        int i = mst->size()-1;
         auto d1 = mst->get_node(i)->data()->get_end_state(1)->d();
         auto d2 = mt2->get_node(i)->data()->ends()[1]->d();
         

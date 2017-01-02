@@ -36,9 +36,18 @@ CommandLineOptions::_set_option(
     
     if     (cl_opt->type() == OptionType::STRING) {
         try {
-            auto f = std::stof(value);
-            throw CommandLineOptionException(
-                cl_opt->name() + " is a STRING option but it can successfully convert it float");
+            /*bool fail = 0;
+            for(auto const & e : value) {
+                if(std::isdigit(e) || e == '.') {
+                    continue;
+                }
+                else { fail = 1; break; }
+            }
+            
+            if(!fail) {
+                throw CommandLineOptionException(
+                    cl_opt->name() + " is a STRING option but it can successfully convert it float");
+            }*/
         }
         catch(std::invalid_argument) {}
         

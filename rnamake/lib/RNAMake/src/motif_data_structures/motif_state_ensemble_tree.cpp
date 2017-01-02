@@ -30,7 +30,6 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
         auto found_supplied = RM::instance().has_supplied_motif_ensemble(
                                     n->data()->name(), n->data()->end_name(0));
                 
-
         if(n->data()->mtype() == MotifType::HELIX) {
             if(n->data()->residues().size() > 4) {
                 throw MotifStateTreeEnsembleException(
@@ -70,12 +69,12 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
             parent_index = n->parent()->index();
             parent_end_index = n->parent_end_index();
             if(parent_end_index == -1) {
-                MotifStateTreeEnsembleException(
+                throw MotifStateTreeEnsembleException(
                     "cannot setup_from_mt in MotifStateEnsembleTree");
             }
             j = add_ensemble(mse, parent_index, parent_end_index);
             if(j == -1) {
-                MotifStateTreeEnsembleException("failed to add ensemble in setup_from_mt");
+                throw MotifStateTreeEnsembleException("failed to add ensemble in setup_from_mt");
             }
         }
     }
