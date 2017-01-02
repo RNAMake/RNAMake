@@ -88,6 +88,8 @@ class BuildSqliteLibraries(object):
             data.append([aligned_motif.to_str(), aligned_motif.name,
                          aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
 
+            print aligned_motif.name, aligned_motif.ends[0].name()
+
             aligned_motif = motif_factory.factory.can_align_motif_to_end(m, 0)
             aligned_motif = motif_factory.factory.align_motif_to_common_frame(aligned_motif, 0)
             motif_factory.factory._setup_secondary_structure(aligned_motif)
@@ -671,16 +673,16 @@ class BuildSqliteLibraries(object):
 #setup_start_motif()
 builder = BuildSqliteLibraries()
 
-#builder.build_ideal_helices_old()
+builder.build_ideal_helices_old()
+builder.build_trimmed_ideal_helix_library()
 #builder.build_basic_libraries()
-builder.build_helix_ensembles()
+#builder.build_helix_ensembles()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
 
-#builder.build_trimmed_ideal_helix_library()
 
 
 #mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")

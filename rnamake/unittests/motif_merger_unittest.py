@@ -56,8 +56,8 @@ class MotifMergerUnittests(unittest.TestCase):
     def test_sequence_indenity_conflict(self):
         warnings.simplefilter("default")
 
-        m1 = self.mlib_bp_steps.get(name="BP.1")
-        m2 = self.mlib_bp_steps.get(name="BP.2")
+        m1 = self.mlib_bp_steps.get(end_id="GG_LL_CC_RR")
+        m2 = self.mlib_bp_steps.get(end_id="AA_LL_UU_RR")
 
         motif.align_motif(m1.ends[1].state(), m2.ends[0], m2)
         mm = motif_merger.MotifMerger()
