@@ -179,15 +179,15 @@ class SqliteLibraryUnittest(unittest.TestCase):
         #mg.write_pdbs("one")
         #mg2.write_pdbs("two")
 
-    def test_helix(self):
-        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
-        mlib.load_all()
+    def _test_helix(self):
+        ms_lib = sqlite_library.MotifStateSqliteLibrary("ideal_helices")
+        ms_lib.load_all()
 
-        m = rm.manager.get_motif(name="HELIX.IDEAL.7", end_name="A9-A10")
-        print m
-        exit()
-        for m in mlib.all():
-            print m.name, m.ends[0].name()
+        #m = rm.manager.get_motif(name="HELIX.IDEAL.7", end_name="A9-A10")
+        #print m
+        #exit()
+        for m in ms_lib.all():
+            print m.name, m.end_names[0]
 
 
 

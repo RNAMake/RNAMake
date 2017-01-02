@@ -1,7 +1,7 @@
 import unittest
 import os
 from rnamake import settings
-from rnamake.wrappers import wrapper, build_path_wrapper, simulate_tectos_wrapper
+from rnamake.wrappers import wrapper, simulate_tectos_wrapper
 
 class WrapperUnittest(unittest.TestCase):
     def setUp(self):
