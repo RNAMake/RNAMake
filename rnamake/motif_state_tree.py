@@ -631,7 +631,6 @@ class MotifStateTree(base.Base):
         for i, n in enumerate(self.tree.nodes):
             m = rm.manager.get_motif(name=n.data.ref_state.name,
                                      end_name = n.data.ref_state.end_names[0])
-
             if i == 0:
                 motif.align_motif(n.data.cur_state.end_states[0],
                                   m.ends[0],

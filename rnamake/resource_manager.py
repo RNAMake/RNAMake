@@ -54,7 +54,7 @@ class ResourceManager(object):
         self.ms_libs,  self.extra_ms = {}, {}
         self.me_libs,  self.extra_me = {}, {}
         self.mse_libs, self.extra_mse = {}, {}
-        exclude = ['all_bp_steps', 'bp_steps']
+        exclude = ['all_bp_steps']
 
         for k in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
             if k in exclude:

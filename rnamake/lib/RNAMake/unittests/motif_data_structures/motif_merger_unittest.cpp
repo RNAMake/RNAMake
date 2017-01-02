@@ -139,8 +139,8 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
     }
     
     SECTION("test sequence indenity conflict") {
-        auto m1 = RM::instance().motif("BP.1");
-        auto m2 = RM::instance().motif("BP.2");
+        auto m1 = RM::instance().bp_step("GG_LL_CC_RR");
+        auto m2 = RM::instance().bp_step("AA_LL_UU_RR");
         align_motif(m1->ends()[1]->state(), m2->ends()[0], m2);
         auto mm = MotifMerger();
         

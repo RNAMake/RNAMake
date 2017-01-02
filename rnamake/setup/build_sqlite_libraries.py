@@ -271,8 +271,24 @@ class BuildSqliteLibraries(object):
 
         motif_data = []
         motif_keys = ['data', 'name', 'end_name', 'end_id', 'id']
-        count = 0
-        for c in clusters:
+
+        unique_data = []
+
+        unique = []
+        bp_count = 1
+
+        count = 1
+        for c_i, c in enumerate(clusters):
+            m = c.motif_and_ends[0].motif
+            if m.end_ids[0] in unique:
+                continue
+            if m.end_ids[1] in unique:
+                continue
+
+            unique.append( m.end_ids[0])
+            if not m.end_ids[1] in unique:
+                unique.append( m.end_ids[1])
+
             all_count += 1
             spl = c.end_id.split("_")
             aligned_motifs = []
@@ -299,58 +315,72 @@ class BuildSqliteLibraries(object):
 
                 aligned_motifs.append(m_a)
 
-            motifs_and_energies = []
-
-
-            f = open(c.end_id + ".scores")
-            lines = f.readlines()
-            f.close()
-
             #best 0.65
             m_clusters = cluster.cluster_motifs(aligned_motifs, 0.65)
             print "start, ", c.end_id
-            #m_clusters = cluster.cluster_motifs_3(scored_motifs, 0.65, 150)
-            #print "last", len(m_clusters)
             clustered_motifs = []
             energies = []
             dir_name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
-            #if not os.path.isdir(dir_name):
-            #    os.mkdir(dir_name)
-            #f = open(dir_name + "/prob.dat", "w")
+
             for j, c_motifs in enumerate(m_clusters):
                 m = c_motifs.motifs[0]
                 m.mtype = motif_type.HELIX
-                m.name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0] + "." + str(j)
+                m.name = "BP."+ str(c_i) + "." + str(j)
                 motif_data.append([m.to_str(), m.name, m.ends[0].name(), c.end_id, count])
                 count += 1
                 clustered_motifs.append(m)
 
                 pop = float(len(c_motifs.motifs)) / float(len(aligned_motifs))
-                #m.to_pdb(dir_name + "/" + m.name + ".pdb")
-
-                #f.write(m.name + " " + str(pop) + "\n")
 
                 energy = -kBT*math.log(pop)
                 energies.append(energy)
 
-            #f.close()
 
             me = motif_ensemble.MotifEnsemble()
             me.setup(c.end_id, clustered_motifs, energies)
-            mes_data.append([me.to_str(), me.id, count])
-
 
             motif = me.members[0].motif
-            motif.name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
+            motif.name = "BP."+str(c_i)
 
-            motif_data.append([motif.to_str(), motif.name, motif.ends[0].name(),
-                               me.id, count])
-            count += 1
+            print motif.name
+
+            mes_data.append([me.to_str(), me.id, bp_count])
+
+            unique_data.append([motif.to_str(), motif.name, motif.ends[0].name(),
+                               me.id, bp_count])
+
+            bp_count += 1
+
+
+            clustered_motifs = []
+            energies = []
+            for mem in me.members:
+                m_a = motif_factory.factory.can_align_motif_to_end(mem.motif, 1)
+                m_a = motif_factory.factory.align_motif_to_common_frame(m_a, 1)
+                clustered_motifs.append(m_a)
+                energies.append(mem.energy)
+                motif_data.append([m_a.to_str(), m_a.name, m_a.ends[0].name(),
+                                  m_a.end_ids[0], count])
+                count += 1
+
+            me = motif_ensemble.MotifEnsemble()
+            me.setup(clustered_motifs[0].end_ids[0], clustered_motifs, energies)
+            motif = me.members[0].motif
+            motif.name = "BP."+str(c_i)
+            if motif.end_ids[0] != motif.end_ids[1]:
+                mes_data.append([me.to_str(), me.id, bp_count])
+
+            unique_data.append([motif.to_str(), motif.name, motif.ends[0].name(),
+                               me.id, bp_count])
+
+            bp_count += 1
 
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
         sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps.db"
         sqlite_library.build_sqlite_library(path, motif_data, motif_keys, 'id')
+        path = settings.RESOURCES_PATH +"/motif_libraries_new/new_bp_steps.db"
+        sqlite_library.build_sqlite_library(path, unique_data, motif_keys, 'id')
 
     def build_new_bp_steps(self):
         mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
@@ -643,12 +673,12 @@ builder = BuildSqliteLibraries()
 
 #builder.build_ideal_helices_old()
 #builder.build_basic_libraries()
-#builder.build_helix_ensembles()
+builder.build_helix_ensembles()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-#builder.build_motif_ensemble_state_libraries()
+builder.build_motif_ensemble_state_libraries()
 
 #builder.build_trimmed_ideal_helix_library()
 

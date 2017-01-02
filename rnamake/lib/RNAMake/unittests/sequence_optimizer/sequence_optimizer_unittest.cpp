@@ -99,7 +99,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         so.set_option_value("return_lowest", true);
         so.set_option_value("verbose", false);
         
-        auto scorer = std::make_shared<InternalTargetScorer>(22, 1, 19, 1);
+        auto scorer = std::make_shared<InternalTargetScorer>(12, 1, 15, 1);
         auto mg_opt = so.get_optimized_mg(mg, scorer);
         
         mg->replace_helical_sequence(mg_opt->sequence());

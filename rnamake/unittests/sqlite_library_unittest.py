@@ -151,11 +151,13 @@ class SqliteLibraryUnittest(unittest.TestCase):
                 print m.name, m.end_ids[0]
 
     def _test_new_bp_steps(self):
-        mlib = sqlite_library.MotifSqliteLibrary("new_bp_steps")
-        mlib.load_all()
+        #mlib = sqlite_library.MotifSqliteLibrary("new_bp_steps")
+        #mlib.load_all()
 
-        m = rm.manager.get_motif(end_id="GC_LL_GC_RR")
-        m2 = mlib.get(end_id="GC_LL_GC_RR", end_name=m.ends[1].name())
+        m = rm.manager.get_bp_step("GC_LL_GC_RR")
+        #m2 = mlib.get(end_id="GC_LL_GC_RR", end_name=m.ends[1].name())
+
+
         mg = motif_graph.MotifGraph()
         mg.add_motif(m)
         h = rm.manager.get_motif(name="HELIX.IDEAL.6")
@@ -167,12 +169,25 @@ class SqliteLibraryUnittest(unittest.TestCase):
         m_aligned = motif_graph.flip_alignment(m, 1)
         #m2.ends[0].flip()
 
+        m.to_pdb("test.pdb")
+        m_aligned.to_pdb("test_2.pdb")
+        exit()
+
         mg2 = motif_graph.MotifGraph()
         mg2.add_motif(m_aligned)
         mg2.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.6"))
         #mg.write_pdbs("one")
         #mg2.write_pdbs("two")
 
+    def test_helix(self):
+        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+        mlib.load_all()
+
+        m = rm.manager.get_motif(name="HELIX.IDEAL.7", end_name="A9-A10")
+        print m
+        exit()
+        for m in mlib.all():
+            print m.name, m.ends[0].name()
 
 
 

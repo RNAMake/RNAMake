@@ -31,6 +31,8 @@ SimulateTectosApp::setup_options() {
     add_option("css",  "(((((((..((((((((((((....))))))))))))...)))))))",  OptionType::STRING);
     add_option("s", 1000000, OptionType::INT);
     add_option("start_pose", false, OptionType::BOOL);
+    add_option("start_pdbs", false, OptionType::BOOL);
+
     
     //extra ensembles
     add_option("extra_me", "", OptionType::STRING);
@@ -88,6 +90,13 @@ SimulateTectosApp::run() {
         std::cout << "SIMULATE_TECTOS: outputing starting pose: start_pose.pdb" << std::endl;
     }
     
+    if(get_bool_option("start_pdbs")) {
+        auto mt = mset->to_mst()->to_motif_tree();
+        mt->write_pdbs();
+        std::cout << "SIMULATE_TECTOS: outputing each motif as nodes.*.pdb" << std::endl;
+
+    }
+    
     auto steric_node_str = String("");
     auto last_node_index = mset->last_node()->index();
     steric_node_str += std::to_string(last_node_index) + "," + std::to_string(last_node_index-1);
@@ -120,7 +129,7 @@ SimulateTectosApp::get_mset_old(
     
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto m = RM::instance().motif("", "GG_LL_CC_RR");
+    auto m = RM::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
     mt->add_motif(flow_motifs[1], 1, "A7-A22");
@@ -134,6 +143,7 @@ SimulateTectosApp::get_mset_old(
         mt->add_motif(chip_motifs[i]);
     }
     
+    //mt->write_pdbs();
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
     return mset;
 }
@@ -175,7 +185,7 @@ SimulateTectosApp::get_mset_new_receptor(
     
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto m = RM::instance().motif("", "GG_LL_CC_RR");
+    auto m = RM::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
     mt->add_motif(flow_motifs[1], 1, "A7-A22");
@@ -216,7 +226,7 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
                 
         //basepair step
         if(m->mtype() == MotifType::HELIX) {
-            motif = RM::instance().motif("", m->end_ids()[0]);
+            motif = RM::instance().bp_step(m->end_ids()[0]);
             motifs.push_back(motif);
         }
         else if(m->mtype() == MotifType::TWOWAY) {

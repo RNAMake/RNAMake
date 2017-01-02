@@ -6,7 +6,7 @@ class SimulateTectos(base.Base):
     def __init__(self, **options):
         self.setup_options_and_constraints()
         self.options.dict_set(options)
-        self.mset = self._get_mset()
+        #self.mset = self._get_mset()
 
     def setup_options_and_constraints(self):
         options = { 'fseq'   : 'CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG',
@@ -42,12 +42,12 @@ class SimulateTectos(base.Base):
                 continue
 
             if n.data.mtype == motif_type.HELIX:
-                motif = rm.manager.get_motif(end_id=n.data.end_ids[0])
+                motif = rm.manager.get_bp_step(n.data.end_ids[0])
                 motifs.append(motif)
             elif n.data.mtype == motif_type.TWOWAY:
                 try:
                     motif = rm.manager.get_motif(end_id=n.data.end_ids[0])
-                    motifs.append(motifs)
+                    motifs.append(motif)
                 except exceptions.ResourceManagerException:
                     raise ValueError(
                         "cannot find a motif that corresponds to the sequence: " +
@@ -68,12 +68,11 @@ class SimulateTectos(base.Base):
         css  = self.option('css')
 
         flow_motifs = self._get_motifs_from_seq_and_ss(fseq, fss)
-
         chip_motifs = self._get_motifs_from_seq_and_ss(cseq, css)
 
         mt = motif_tree.MotifTree()
         mt.option('sterics', 0)
-        m = rm.manager.get_motif(end_id="GG_LL_CC_RR")
+        m = rm.manager.get_bp_step("GG_LL_CC_RR")
         mt.add_motif(m)
         mt.add_motif(m_name="GGAA_tetraloop", m_end_name="A14-A15")
         mt.add_motif(flow_motifs[1], parent_end_name="A7-A22")
@@ -87,12 +86,11 @@ class SimulateTectos(base.Base):
         for i in range(2, len(chip_motifs)):
             mt.add_motif(chip_motifs[i])
 
-        mt.write_pdbs("new")
         mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt=mt)
         return mset
 
     def run(self):
-        mset = self._get_mset()
+       self.mset = self._get_mset()
 
 
 
