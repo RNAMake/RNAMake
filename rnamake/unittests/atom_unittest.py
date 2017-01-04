@@ -24,6 +24,14 @@ class AtomUnittest(unittest.TestCase):
         with self.assertRaises(exceptions.AtomException):
             Atom("H1", [0, 1, 2])
 
+        a = self.a
+
+        # cannot override internal value if using the @getter
+        coords = a.coords
+        coords[0] = 10
+        self.failUnless(a.coords[0] == 0)
+
+
     def test_slots(self):
         """
         tests to make sure that no other attributes can be added to atoms

@@ -90,13 +90,11 @@ class Atom(object):
 
         return cls(a.__name, np.array(a.__coords, copy=True))
 
-
     def __repr__(self):
         """returns string representation of object"""
 
         coords = basic_io.point_to_str(self.coords)
         return "<Atom(name='%s', coords='%s')>" % (self.name, coords)
-
 
     def to_str(self):
         """returns string version of atom.
@@ -149,20 +147,8 @@ class Atom(object):
 
     @property
     def coords(self):
-        return self.__coords
+        return np.copy(self.__coords)
 
     @property
     def name(self):
         return self.__name
-
-    @coords.setter
-    def coords(self, c):
-        raise exceptions.AtomException(
-            "cannot set coords externally!, either use move or transform, "
-            "this is to keep encapsulation")
-
-    @name.setter
-    def name(self, n):
-        raise exceptions.AtomException(
-            "cannot set name externally!, this is to keep encapsulation")
-

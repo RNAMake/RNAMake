@@ -1,90 +1,9 @@
 import uuid
 import numpy as np
 
+from atom import Atom
 import residue_type, util, basic_io, exceptions
 
-# TODO work on removing this stuff, ResidueState is going into MotifState module
-# This stuff is getting removed. but need now
-###############################################################################
-
-class ResidueState(object):
-    def __init__(self, uuid):
-        self.uuid = uuid
-        self.beads = []
-
-    def copy(self):
-        return ResidueState(self.uuid)
-
-class ResidueStateType(object):
-    NORM = 0
-    END =  1
-
-class ResidueState2Bead(ResidueState):
-    def __init__(self, uuid, sugar, base, type=ResidueStateType.NORM):
-        super(self.__class__, self).__init__(uuid)
-        self.sugar = sugar
-        self.base = base
-        self.beads = [sugar, base]
-        self.type = type
-
-    def copy(self):
-        sugar = np.copy(self.sugar)
-        base  = np.copy(self.base)
-        return ResidueState2Bead(self.uuid, sugar, base, self.type)
-
-    def to_str(self):
-        return basic_io.points_to_str(self.beads) + "," + str(self.type)
-
-    def update(self, r, t):
-        self.beads = np.dot(self.beads, r) + t
-        self.sugar = self.beads[0]
-        self.base = self.beads[1]
-
-class ResidueState3Bead(ResidueState):
-    def __init__(self, uuid, sugar, base, phos,type=ResidueStateType.NORM):
-        super(self.__class__, self).__init__(uuid)
-        self.sugar = sugar
-        self.base = base
-        self.phos = phos
-        self.beads = [sugar, base, phos]
-        self.type = type
-
-    def copy(self):
-        sugar = np.copy(self.sugar)
-        base  = np.copy(self.base)
-        phos  = np.copy(self.phos)
-        return ResidueState3Bead(self.uuid, sugar, base, phos, self.type)
-
-    def to_str(self):
-        return basic_io.points_to_str(self.beads) + "," + str(self.type)
-
-    def update(self, r, t):
-        self.beads = np.dot(self.beads, r) + t
-        self.sugar = self.beads[0]
-        self.base = self.beads[1]
-        self.phos = self.beads[2]
-
-
-def get_residue_state(r, type=ResidueStateType.NORM):
-    phos_atoms, sugar_atoms, base_atoms = [], [], []
-
-    for i, a in enumerate(r.atoms):
-        if a is None:
-            continue
-        if   i < 3:
-            phos_atoms.append(a)
-        elif i < 12:
-            sugar_atoms.append(a)
-        else:
-            base_atoms.append(a)
-
-    return ResidueState3Bead(r.uuid,
-                             util.center(sugar_atoms),
-                             util.center(base_atoms),
-                             util.center(phos_atoms),
-                             type)
-
-###############################################################################
 
 class BeadType(object):
     """
@@ -99,6 +18,13 @@ class BeadType(object):
     PHOS = 0   # P, OP1, OP2
     SUGAR = 1  # O5', C5', C4', O4', C3', O3', C1', C2', O2'
     BASE = 2   # All remaining
+
+    @staticmethod
+    def valid_bead_type(btype):
+        if btype > 2 or btype < 0:
+            return 0
+        else:
+            return 1
 
 
 class Bead(object):
@@ -115,13 +41,17 @@ class Bead(object):
 
     """
 
-    __slots__ = ["center", "btype"]
+    __slots__ = ["__center", "__btype"]
 
     def __init__(self, center, btype):
-        self.center, self.btype = center, btype
+        if not BeadType.valid_bead_type(btype):
+            raise exceptions.ResidueException("not a valid BeadType value: " + str(btype))
+
+        self.__center, self.__btype = center, btype
+
 
     def __repr__(self):
-        center = basic_io.point_to_str(self.center)
+        center = basic_io.point_to_str(self.__center)
         return "<Bead(btype='%s', center='%s')>" % (self.type_name(), center)
 
     def copy(self):
@@ -131,7 +61,7 @@ class Bead(object):
         :returns: copy of bead object
         :rtype: Bead
         """
-        return Bead(np.copy(self.center), self.btype)
+        return Bead(np.copy(self.__center), self.__btype)
 
     def type_name(self):
         """
@@ -140,12 +70,25 @@ class Bead(object):
         :returns: name of btype type
         :rtype: str
         """
-        if self.btype == 0:
+        if   self.__btype == 0:
             return "PHOSPHATE"
-        if self.btype == 1:
+        elif self.__btype == 1:
             return "SUGAR"
-        if self.btype == 2:
+        elif self.__btype == 2:
             return "BASE"
+        else:
+            raise exceptions.ResidueException("invalid bead type: " + self.__btype)
+
+    def distance_to_bead(self, b):
+        return util.distance(self.__center, b.__center)
+
+    @property
+    def center(self):
+        return np.copy(self.__center)
+
+    @property
+    def btype(self):
+        return self.__btype
 
 
 class Residue(object):

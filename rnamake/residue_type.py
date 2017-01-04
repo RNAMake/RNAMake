@@ -38,25 +38,51 @@ class ResidueType(object):
         Other names the residue can go by, ex. G is also GUA
     """
 
-    __slots__ = ["name", "atom_map", "alt_names", "set_type"]
+    __slots__ = [
+        "__name",
+        "__atom_map",
+        "__alt_names",
+        "__set_type"]
 
-    def __init__(self, name, atom_map, set_type):
-        self.atom_map = atom_map
-        self.set_type = set_type
-        self.name = name
-        if self.set_type == SetType.RNA:
-            self.alt_names = [name[0], "r"+name[0], "D"+name[0]]
+    def __init__(self, name, atom_map, set_type, extra_alt_names=None):
+        self.__atom_map = atom_map
+        self.__set_type = set_type
+        self.__name = name
+        if self.__set_type == SetType.RNA:
+            self.__alt_names = [name[0], "r"+name[0], "D"+name[0]]
         else:
-            self.alt_names = []
+            self.__alt_names = []
+
+        if extra_alt_names is not None:
+            self.__alt_names.extend(extra_alt_names)
 
     def __repr__(self):
-        return "<ResidueType(name='%s')>" % (self.name)
+        return "<ResidueType(name='%s')>" % (self.__name)
 
     def get_correct_atom_name(self, a):
         if a.name in alt_names:
             return [a.name, alt_names[a.name]]
         else:
             return None
+
+    def is_alt_name(self, name):
+        if name in self.__alt_names:
+            return True
+        else:
+            return False
+
+    @property
+    def name(self):
+        return self.__name
+
+    @property
+    def short_name(self):
+        return self.__name[0]
+
+    @property
+    def set_type(self):
+        return self.__set_type
+
 
 
 class ResidueTypeSet(object):
@@ -76,10 +102,17 @@ class ResidueTypeSet(object):
         Contains all residue types that are acceptable in rnamake
     """
 
-    __slots__ = ["residue_types"]
+    __slots__ = ["__residue_types"]
 
     def __init__(self):
-        self.residue_types = []
+        extra_alt_names = {
+            'GUA' : "MIA GDP GTP M2G 1MG 7MG G7M QUO I YG".split(),
+            'ADE' : "A23 3DA 1MA 12A AET 2MA".split(),
+            'URA' : "PSU H2U 5MU 4SU 5BU 5MC U3H 2MU 70U BRU DT".split(),
+            'CYT' : "CBR CCC"
+        }
+
+        self.__residue_types = []
 
         path = settings.RESOURCES_PATH + "/residue_types"
         files =  glob.glob(path + "/*")
@@ -96,9 +129,12 @@ class ResidueTypeSet(object):
 
             for tf in rtype_files:
                 name = self._get_rtype_name(tf)
+                alt_names = None
+                if name in extra_alt_names:
+                    alt_names = extra_alt_names[name]
                 atom_map = self._get_atom_map_from_file(tf)
-                rtype = ResidueType(name, atom_map, set_type)
-                self.residue_types.append(rtype)
+                rtype = ResidueType(name, atom_map, set_type, alt_names)
+                self.__residue_types.append(rtype)
 
     def _get_set_type(self, type_dir):
         name = util.filename(type_dir)
@@ -144,39 +180,10 @@ class ResidueTypeSet(object):
             >>>rtype.get_rtype_by_resname("GUA")
             <ResidueType(name='GUA')>
         """
-        for restype in self.residue_types:
+        for restype in self.__residue_types:
             if resname == restype.name:
                 return restype
-            if resname in restype.alt_names:
+            if restype.is_alt_name(resname):
                 return restype
         return None
 
-
-def get_rtype(resname):
-    """
-    Get a reference to a ResidueType by name. This is the only way you should
-    get a ResidueType reference
-
-    :param resname: the name of the residue you want the ResidueType
-    :type resname: str
-
-    .. code-block:: python
-
-        >>>rnamake.residue_type.get_rtype("GUA")
-        <ResidueType(name='GUA')>
-
-    """
-    return rtypes.get_rtype_by_resname(resname)
-
-rtypes = ResidueTypeSet()
-
-# add alt names will at some point be phased out
-gua = get_rtype("GUA")
-ade = get_rtype("ADE")
-ura = get_rtype("URA")
-cyt = get_rtype("CYT")
-
-gua.alt_names.extend("MIA GDP GTP M2G 1MG 7MG G7M QUO I YG".split())
-ade.alt_names.extend("A23 3DA 1MA 12A AET 2MA".split())
-ura.alt_names.extend("PSU H2U 5MU 4SU 5BU 5MC U3H 2MU 70U BRU DT".split())
-cyt.alt_names.extend("CBR CCC".split())
