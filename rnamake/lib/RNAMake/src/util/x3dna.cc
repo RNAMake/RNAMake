@@ -290,8 +290,7 @@ X3dna::get_basepairs(
         auto res2 = _parse_dssr_res_str(spl[2]);
         auto bp_type = String("c...");
         //TODO look into why this is happening, sometimes will error out if I dont do this check
-        if(spl.size() > 6) {
-            
+        if(spl.size() > 7) {
             bp_type = spl[7];
         }
         found = 0;

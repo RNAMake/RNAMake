@@ -25,12 +25,11 @@ class DesignRNAWrapper(wrapper.Wrapper):
 
         # search options
         self.add_cmd_option("search.max_size", 9999, required=False)
+        self.add_cmd_option("search.accept_score", 10.0, required=False)
 
 
-    def run(self, **options):
-        try:
-            super(self.__class__, self).run(**options)
-        except:
-            self._output = ""
+    def get_output(self):
+        return self._output
+
 
 

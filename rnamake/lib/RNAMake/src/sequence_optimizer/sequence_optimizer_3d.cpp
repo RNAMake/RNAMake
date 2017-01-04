@@ -115,7 +115,7 @@ SequenceOptimizer3D::OptimizedSequenceOPs
 SequenceOptimizer3D::get_optimized_sequences(
     MotifGraphOP const & mg) {
     update_var_options();
-    
+        
     if(scorer_ == nullptr) {
         throw std::runtime_error(
             "cannot run get_optimized_sequences without scorer, either supply here "
@@ -139,7 +139,7 @@ SequenceOptimizer3D::get_optimized_sequences(
     auto last_score = scorer_->score(msg);
     auto new_score = 0.0f, eterna_score = 0.0f;
     
-    std::cout << designable_bps.size() << std::endl;
+    //std::cout << designable_bps.size() << std::endl;
     auto mc = MonteCarlo(1.0f);
     
     auto best = 1000.0f;
