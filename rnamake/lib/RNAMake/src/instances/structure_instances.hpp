@@ -12,8 +12,8 @@
 #include <stdio.h>
 
 //RNAMake Headers
-#include "util/settings.h"
-#include "util/file_io.h"
+#include "base/settings.h"
+#include "base/file_io.h"
 #include "structure/residue.h"
 
 namespace instances {

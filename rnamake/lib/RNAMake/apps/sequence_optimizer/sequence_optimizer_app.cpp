@@ -89,7 +89,7 @@ SequenceOptimizerApp::run() {
             sf_out << opt_num << "," << s->dist_score << "," << s->eterna_score << "," << s->sequence;
             sf_out << "," << mg_copy->dot_bracket() << std::endl;
             out << mg_copy->to_str() << std::endl;
-            mg_copy->write_pdbs();
+            //mg_copy->write_pdbs();
             opt_num += 1;
         
         }

@@ -27,32 +27,6 @@ class WrapperUnittest(unittest.TestCase):
         #print cmd
 
 
-class BuildPathWrapper(unittest.TestCase):
-    def setUp(self):
-        path = settings.LIB_PATH + "/rnamake/lib/RNAMake/cmake/build/path_builder"
-        if not os.path.isfile(path):
-            self.skipTest("executable not available")
-
-    def test_creation(self):
-        w = build_path_wrapper.BuildPathWrapper()
-
-    def test_get_command(self):
-        w = build_path_wrapper.BuildPathWrapper()
-
-        try:
-            w.get_command()
-            raise RuntimeError
-        except wrapper.WrapperException:
-            pass
-        except:
-            self.fail("did not get correct error")
-
-        w.set_cmd_option("mg", "~/projects/RNAMake.projects/tecto_rna_22_bp/base_mg.top")
-        cmd = w.get_command()
-        if cmd != "./Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/path_builder -mg \"~/projects/RNAMake.projects/tecto_rna_22_bp/base_mg.top\"":
-            pass
-
-
 class SimulateTectosWrapper(unittest.TestCase):
     def setUp(self):
         path = settings.LIB_PATH + "/lib/RNAMake/cmake/build/simulate_tectos_devel"
@@ -88,8 +62,6 @@ class SimulateTectosWrapper(unittest.TestCase):
         w.run(**opt_dict)
         hits = w.get_output()
         self.failUnless(hits < 5)
-
-
 
     def test_with_options_from_dict(self):
         try:

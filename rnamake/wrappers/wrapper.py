@@ -28,6 +28,24 @@ class Wrapper(object):
         self._options = Options()
         self._options.add("ignore_defaults", True)
 
+    def setup_from_file(self, fname):
+        f = open(fname)
+        lines = f.readlines()
+        f.close()
+        for l in lines:
+            spl = l.split()
+            cmd_name = spl[0][1:]
+            if len(spl) == 2:
+                val = spl[1]
+                org_val = self.get_cmd_option(cmd_name)
+                if type(org_val) == int:
+                    val = int(spl[1])
+                elif type(org_val) == float:
+                    val = float(spl[1])
+                self.set_cmd_option(cmd_name, val)
+            else:
+                self.set_cmd_option(cmd_name, True)
+
     def add_cmd_option(self, name, value, required=False):
         self._cmd_options.add(name, value)
         self._default_cmd_options[name] = value
