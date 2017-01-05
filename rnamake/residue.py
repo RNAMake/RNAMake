@@ -473,6 +473,9 @@ class Residue(primitives.Residue):
 
         return self._atoms[pos]
 
+    def get_coords(self, atom_name=None, index=None):
+        return self.get_atom(atom_name, index).coords
+
     def short_name(self):
         """gets letter of residue, i.e. A or G etc
 

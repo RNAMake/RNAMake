@@ -1,13 +1,11 @@
 import util
 import basic_io
-import settings
-import motif
 import numpy as np
 import uuid
-import exceptions
 
+import primitives
 
-class Basepair(object):
+class Basepair(primitives.Basepair):
     """
     :param res1: First residue in basepair
     :param res2: Second residue in basepair
@@ -69,251 +67,126 @@ class Basepair(object):
 
     """
 
-    __slots__ = ["res1", "res2", "r", "bp_type", "atoms", "bp_state", "uuid"]
+    __slots__ = [
+        "_res1_uuid",
+        "_res2_uuid",
+        "_r",
+        "_d",
+        "_sugars",
+        "_bp_type",
+        "_uuid"]
 
-    def __init__(self, res1, res2, r, bp_type="c..."):
-        self.res1, self.res2 = res1, res2
-        self.atoms = self._get_atoms()
-        self.bp_state = self._get_state(r)
-        self.bp_type = bp_type
-        self.uuid = uuid.uuid1()
+    def __init__(self, res1_uuid, res2_uuid, r, d, sugars, name,
+                 bp_type=None, bp_uuid=None):
+        self._res1_uuid, self._res2_uuid = res1_uuid, res2_uuid
+        self._r = r
+        self._d = d
+        self._sugars = sugars
+        self._name = name
+        self._bp_type = bp_type
+        self._uuid = bp_uuid
+
+        if self._bp_type is None:
+            self._bp_type = "c..."
+
+        if self._uuid is None:
+            self._uuid = uuid.uuid1()
+
+    @classmethod
+    def copy(cls, bp):
+        sugars = [np.copy(bp._sugars[0]), np.copy(bp._sugars[1])]
+        return cls(bp._res1_uuid, bp._res2_uuid, np.copy(bp._r), np.copy(bp._d),
+                   sugars, bp._name, bp._bp_type, bp._uuid)
 
     def __repr__(self):
           return "<Basepair("+self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
             "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code) + ")>"
 
-    def _get_atoms(self):
+    def get_transforming_r_and_t(self, r, t, sugars):
         """
-        helper function to collect all non null atoms from both resiudes in
-        basepair
+        get a rotation matrix and translation that describes the tranformation
+        between the rotation, translation to THIS BasepairState.
 
-        :return: all atoms that belong to basepair
-        :rtype: list of atom.Atoms
-        """
+        :param r: Another orientation matrix from another basepair
+        :param t: The origin of another basepair
+        :param sugars: the c1' coords of another basepair
 
-        atoms = []
-        for a in self.res1.atoms:
-            if a is not None:
-                atoms.append(a)
-        for a in self.res2.atoms:
-            if a is not None:
-                atoms.append(a)
-        return atoms
-
-    def get_base_atoms(self):
-        atoms = []
-        for a in self.res1.atoms[12:]:
-            if a is not None:
-                atoms.append(a)
-        for a in self.res2.atoms[12:]:
-            if a is not None:
-                atoms.append(a)
-        return atoms
-
-    def _get_state(self, r):
-        """
-        helper function to setup basepair state object that keeps track of the
-        rotation, center and c1' sugar atoms used to align to this basepair
-
-        :param r: orientation matrix defining principle axes of coordinate
-            system
         :type r: np.array
+        :type t: np.array
+        :type sugars: list of two np.arrays
 
-        :return: basepair state object for this basepair
-        :rtype: BasepairState
+        :return: rotation and translation that defines transformation betwen
+            both states
         """
 
-        d = util.center(self.atoms)
-        sugars = [self.res1.get_atom("C1'").coords,
-                  self.res2.get_atom("C1'").coords]
-        return BasepairState(r, d, sugars)
+        r1 = self.r
+        r2 = r
+        r_trans = util.unitarize(r1.T.dot(r2))
+        t_trans = -t
 
-    def residues(self):
-        """
-        returns both residues for easy iteration
+        new_sugars_2 = np.dot(sugars, r_trans.T) + t_trans + self.d
 
-        :returns: both residues in base
-        :rtype: list of residue.Residues
-        """
-        return [self.res1, self.res2]
-
-    def c1_prime_coords(self):
-        """
-        gets the c1' atom coordinates for both residues. These coordinates are
-        used to fine tune the alignment between basepairs
-
-        :return: list of c1' coords
-        :rtype: list of np.arrays
-        """
-
-        return [self.res1.get_atom("C1'").coords,
-                self.res2.get_atom("C1'").coords]
-
-    def partner(self, res):
-        """
-        get the other basepairing partner of a residue will throw an error
-        if the supplied residue is not contained within this basepair
-
-        :param res: the residue that you want to get the partner of
-        :type res: Residue object
-        """
-
-        if res == self.res1:
-            return self.res2
-        elif res == self.res2:
-            return self.res1
+        if sugars is not None:
+            diff = (((self.sugars[0] - new_sugars_2[0]) +
+                     (self.sugars[1] - new_sugars_2[1]))/2)
         else:
-            raise exceptions.BasepairException(
-                "called get_partner with residue not in this not in this "
-                "basepair")
+            diff = 0
+        return r_trans, t_trans+diff
 
-    def name(self):
+    def get_transforming_r_and_t_w_state(self, state):
         """
-        get name of basepair: which is the combined name of both residues
-        seperated by a "-". The residue with the lower res number should
-        come first
+        wrapper for get_transforming_r_and_t using another basepair state
+        instead of specifying each component explicitly.
 
-        :return: name of basepair
-        :rtype: str
+        :param state: the basepair state you would like to get a transformation
+            to align to the basepair state calling this function
+        :type state: BasepairState
 
-        :examples:
-
-        ..  code-block:: python
-
-            # build basepair from stratch
-            >>> from rnamake.unittests import instances
-            >>> b = instances.basepair()
-            >>> print b.res1
-            <Residue('G13 chain A')>
-
-            >>> print b.res2
-            <Residue('C12 chain A')>
-
-            >>> print b.name()
-            A12-A13
         """
 
-        res1_name = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
-        res2_name = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
+        return self.get_transforming_r_and_t(state._r, state._d, state._sugars)
 
-        if self.res1.chain_id < self.res2.chain_id:
-            return res1_name+"-"+res2_name
-        if self.res1.chain_id > self.res2.chain_id:
-            return res2_name+"-"+res1_name
-
-        if self.res1.num < self.res2.num:
-            return res1_name+"-"+res2_name
-        else:
-            return res2_name+"-"+res1_name
-
-    def flip(self):
+    def get_transformed_state(self, r, t):
         """
-        wrapper for BasepairState flip. There is probably no reasons to ever
-        call this. See the implementation in BasepairState
+        get new orientation, origin and sugar coordinates after transforming
+        with suplied rotation and translation.
 
-        :return: None
+        :param r: supplied rotation matrix
+        :param t: supplied translation
+
+        :type r: np.array
+        :type t: np.array
+
+        :return: new orientation, origin and sugar coorindates of this basepair
+            state after transformation
+
         """
 
-        self.bp_state.flip()
+        r_T = r.T
 
-    def copy(self):
-        """
-        creates a deep copy of this basepair object
-        """
-        cbp = Basepair(self.res1, self.res2, self.bp_state.r)
-        cbp.bp_state = self.bp_state.copy()
-        cbp.bp_state.sugars = [self.res1.get_atom("C1'").coords,
-                               self.res2.get_atom("C1'").coords]
-        cbp.bp_type = self.bp_type
-        cbp.uuid = self.uuid
-        return cbp
+        new_r = util.unitarize(np.dot(self._r, r_T))
+        new_sugars = np.dot(self._sugars, r_T) + t
+        new_origin = np.dot(self._d, r_T) + t
 
-    def state(self):
-        """
-        gets the state of this basepair and makes sure that the
-        center and sugar positions are updated
-        """
-        d = util.center(self.atoms)
-        self.bp_state.d = d
-        self.bp_state.sugars = self.c1_prime_coords()
-        return self.bp_state
-
-    def r(self):
-        """
-        gets the orientation matrix of this basepair which is stored in the
-        the BasepairState instance.
-
-        :return: orientation matrix of basepair
-        :rtype: np.array
-        """
-
-        return self.bp_state.r
-
-    def d(self):
-        """
-        gets the center of the atoms in this basepair.
-
-        :return: center of mass of basepair
-        :rtype: np.array
-        """
-
-        return util.center(self.atoms)
-
-    def to_str(self):
-        """
-        stringify basepair object
-        """
-        str1 = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
-        str2 = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
-
-        s = str1+"-"+str2 + "," + self.bp_state.to_str() + "," + \
-            self.bp_type
-        return s
-
-    def to_pdb_str(self, acount=1, return_acount=0):
-        """
-        creates a PDB string formatted verision of this Basepair object.
-
-        :param acount: current atom index, default: 1
-        :param return_acount: final atom index after current atoms, default: 0
-
-        :type  acount: int
-        :type  return_acount: int
-
-        :return: str
-        """
-        s = ""
-        for r in self.residues():
-            r_str, acount = r.to_pdb_str(acount, 1)
-            s += r_str
-        if return_acount:
-            return s, acount
-        else:
-            return s
-
-    def to_pdb(self, fname="basepair.pdb"):
-        """
-        write basepair object to pdb file
-
-        :param fname" the file you want to write the basepair too
-        :type fname: str
-        """
-        f = open(fname, "w")
-        f.write ( self.to_pdb_str() )
-        f.close()
+        return new_r, new_origin, new_sugars
 
     def transform(self, t):
-
         r_T = t.rotation().T
-        for a in self.atoms:
-            a.coords = np.dot(a.coords, r_T) + t.translation()
 
-        transformed = np.dot(self.state().r, r_T)
-        self.state().r = transformed
+        new_r = util.unitarize(np.dot(self._r, r_T))
+        new_sugars = []
+        for s in self._sugars:
+            new_sugars.append(np.dot(s, r_T) + t.translation())
+        new_origin = np.dot(self._d, r_T) + t.translation()
+
+        self._r = new_r
+        self._d = new_origin
+        self._sugars = new_sugars
 
     def move(self, p):
-        for a in self.atoms:
-            a.coords += p
+        self._sugars[0] += p
+        self._sugars[1] += p
+        self._d += p
 
     def diff(self, bp):
         diff = util.distance(self.d(), bp.d())
@@ -328,6 +201,34 @@ class Basepair(object):
         if r_diff > r_diff_2:
             r_diff = r_diff_2
         return r_diff
+
+    @property
+    def r(self):
+        return self._r
+
+    @property
+    def d(self):
+        return self._d
+
+    @property
+    def sugars(self):
+        return self._sugars
+
+    @property
+    def res1_sugar(self):
+        return self._sugars[0]
+
+    @property
+    def res2_sugar(self):
+        return self._sugars[1]
+
+    @property
+    def bp_type(self):
+        return self._bp_type
+
+    @property
+    def uuid(self):
+        return self._uuid
 
 class BasepairState(object):
     """
