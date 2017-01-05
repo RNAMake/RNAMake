@@ -54,11 +54,11 @@ def are_chains_equal(c1, c2, check_uuid=1):
 
 
 def are_structure_equal(s1, s2, check_uuid=1):
-    if len(s1.chains) != len(s2.chains):
+    if len(s1) != len(s2):
         return 0
 
-    for i in range(len(s1.chains)):
-        result = are_chains_equal(s1.chains[i], s2.chains[i], check_uuid)
+    for i in range(len(s1)):
+        result = are_chains_equal(s1.chain(i), s2.chain(i), check_uuid)
         if not result:
             return 0
 

@@ -208,6 +208,17 @@ class Structure(StructureObject):
         if self._chains is None:
             self._chains = []
 
+    def __len__(self):
+        return len(self._chains)
+
+    def __iter__(self):
+        return self._chains.__iter__()
+
+    def iter_res(self):
+        for c in self._chains:
+            for r in c:
+                yield r
+
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
         """
         find a residue based on residue num, chain_id, insert_code and uuid
@@ -225,9 +236,14 @@ class Structure(StructureObject):
         :type uuid: uuid
         """
 
+        if num is None and chain_id is None and i_code is None and uuid is None:
+            raise exceptions.StructureException(
+                "must specify a parameter to find a residue in get_residue")
+
+
         found = []
-        for c in self.chains:
-            for r in c.residues:
+        for c in self._chains:
+            for r in c:
                 if uuid is not None and uuid != r.uuid:
                     continue
                 if num is not None and num != r.num:
@@ -243,8 +259,14 @@ class Structure(StructureObject):
 
         return found[0]
 
+    def chain(self, i):
+        return self._chains[i]
+
     def num_residues(self):
-        pass
+        total = 0
+        for c in self._chains:
+            total += len(c)
+        return total
 
 
 

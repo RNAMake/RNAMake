@@ -1,10 +1,10 @@
 import numpy as np
 
 import pdb_parser
-import chain
 import util
 import exceptions
 import primitives
+from chain import Chain, connect_residues_into_chains
 
 class Structure(primitives.Structure):
     """Stores 3D structure information from a pdb file. Stores all chains,
@@ -71,8 +71,23 @@ class Structure(primitives.Structure):
         spl = s.split(":")
         chains = []
         for c_str in spl[:-1]:
-            c = chain.Chain.from_str(c_str, rts)
+            c = Chain.from_str(c_str, rts)
             chains.append(c)
+
+        return cls(chains)
+
+    @classmethod
+    def copy(cls, s):
+        """
+        creates a deep copy of this structure
+
+        :returns: copy of Structure object
+        :rtype: Structure
+        """
+        chains = []
+        for c in s._chains:
+            cc = Chain.copy(c)
+            chains.append(cc)
 
         return cls(chains)
 
@@ -123,72 +138,6 @@ class Structure(primitives.Structure):
             beads.extend(r.get_beads())
         return beads
 
-    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
-        """
-        find a residue based on residue num, chain_id, insert_code and uuid
-        will return an error if more then one residue matches search to avoid
-        confusion. Will return None is nothing matches search.
-
-        :param num: residue number
-        :param chain_id: what chain the residue belongs to
-        :param i_code: the insertation code of the residue
-        :param uuid: the unique indentifier that each residue is given
-
-        :type num: int
-        :type chain_id: str
-        :type i_code: str
-        :type uuid: uuid
-
-        :return: Residue object
-        :rtype: residue.Residue
-
-        :examples:
-
-        .. code-block:: python
-
-              # load structure from pdb formatted file
-              >>> import rnamake.unittests.files
-              >>> s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)
-
-              # get specific residue
-              >>> r = s.get_residue(num=106)
-              >>> print r
-              <Residue('U106 chain A')>
-
-              # get residue using its unique indentifer
-              >>>s.get_residue(uuid=r.uuid)
-              <Residue('U106 chain A')>
-        """
-
-        #nothing specified
-        if num is None and chain_id is None and i_code is None and uuid is None:
-            raise exceptions.StructureException("called get_residue wiht no "
-                                                "arguments")
-
-        found = []
-        for c in self.chains:
-            for r in c.residues:
-                if uuid is not None and uuid != r.uuid:
-                    continue
-                if num is not None and num != r.num:
-                    continue
-                if i_code is not None and i_code != r.i_code:
-                    continue
-                if chain_id is not None and chain_id != r.chain_id:
-                    continue
-                found.append(r)
-
-        if len(found) > 1:
-            raise exceptions.StructureException(
-                "found multiple residues in get_residue(), narrow " +
-                "your search")
-
-        # TODO maybe add warning here?
-        if len(found) == 0:
-            return None
-
-        return found[0]
-
     def to_str(self):
         """
         Stringifes Structure object
@@ -197,7 +146,7 @@ class Structure(primitives.Structure):
         """
 
         s = ""
-        for c in self.chains:
+        for c in self._chains:
             s += c.to_str() + ":"
         return s
 
@@ -238,32 +187,14 @@ class Structure(primitives.Structure):
             to NOT renumber, Default=-1.
 
         :type fname: str
-<<<<<<< HEAD
-9
-=======
         :type renumber: int
 
         :return: None
 
->>>>>>> devel
         """
         f = open(fname, "w")
         f.write(self.to_pdb_str(renumber))
         f.close()
-
-    def copy(self):
-        """
-        creates a deep copy of this structure
-
-        :returns: copy of Structure object
-        :rtype: Structure
-        """
-        chains = []
-        for c in self.chains:
-            cc = c.copy()
-            chains.append(cc)
-
-        return Structure(chains)
 
     def transform(self, t):
         """
@@ -305,12 +236,8 @@ class Structure(primitives.Structure):
 
 
         """
-
-
-
-        r_T = t.rotation().T
-        for a in self.atoms():
-            a.coords = np.dot(a.coords, r_T) + t.translation()
+        for c in self._chains:
+            c.transform(t)
 
     def move(self, p):
         """
@@ -342,11 +269,11 @@ class Structure(primitives.Structure):
 
         """
 
-        for a in self.atoms():
-            a.coords += p
+        for c in self._chains:
+            c.move(p)
 
 
-def structure_from_pdb(pdb_path):
+def structure_from_pdb(pdb_path, rts):
     """
     Processes a PDB formatted into Structure object. Uses pdb_parser module
     to accomplish this.
@@ -358,9 +285,8 @@ def structure_from_pdb(pdb_path):
     :rtype: Structure
     """
 
-    residues = pdb_parser.parse(pdb_path)
+    residues = pdb_parser.parse(pdb_path, rts=rts)
 
-    chains = chain.connect_residues_into_chains(residues)
+    chains = connect_residues_into_chains(residues)
     s = Structure(chains)
-    s.name = util.filename(pdb_path[:-4])
     return s

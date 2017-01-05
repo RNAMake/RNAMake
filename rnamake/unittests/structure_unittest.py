@@ -1,11 +1,11 @@
 import unittest
 import warnings
-import rnamake.structure
 import rnamake.transform
 import rnamake.motif_factory
 import rnamake.io
 
-from rnamake import exceptions, util
+from rnamake import structure, exceptions, util, residue_type
+from instances import transform_instances
 
 import is_equal, instances
 import numpy as np
@@ -16,11 +16,12 @@ class StructureUnittest(unittest.TestCase):
 
     def setUp(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        self.structure = rnamake.structure.structure_from_pdb(path)
+        self.rts = residue_type.ResidueTypeSet()
+        self.structure = structure.structure_from_pdb(path, self.rts)
 
     def test_creation(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        rnamake.structure.structure_from_pdb(path)
+        structure.structure_from_pdb(path, self.rts)
 
     # TODO move to integration
     def _test_build_chains_all(self):
@@ -68,45 +69,29 @@ class StructureUnittest(unittest.TestCase):
         if res is not None:
             self.fail("should not of gotten an error")
 
-    def test_residues(self):
-        struct = self.structure
-        residues = struct.residues()
-        if len(residues) != 157:
-            self.fail()
-
-    def test_atoms(self):
-        struct = self.structure
-        atoms = struct.atoms()
-        if len(atoms) != 3357:
-            self.fail()
+    def test_iter_residues(self):
+        s = self.structure
+        res = []
+        for r in s.iter_res():
+            res.append(r)
+        self.failUnless(len(res) == s.num_residues())
 
     def test_to_str(self):
         struct = self.structure
 
         s = struct.to_str()
-        struct_new = rnamake.io.str_to_structure(s)
-        if len(struct_new.residues()) != len(struct.residues()):
+        struct_new = structure.Structure.from_str(s, self.rts)
+        if struct_new.num_residues() != struct.num_residues():
             self.fail("did not get back all residues")
 
         if not is_equal.are_structure_equal(struct, struct_new, check_uuid=0):
             self.fail("did not produce the same structure from str")
 
-    def test_get_beads(self):
-        struct = self.structure
-        beads = struct.get_beads()
-        if len(beads) != 470:
-            self.fail("got wrong number of beads")
-
-        r = struct.get_residue(num=106)
-        beads = struct.get_beads(excluded_res=[r])
-        if len(beads) != 467:
-            self.fail("got wrong number of beads")
-
     def test_transform(self):
         r = np.random.random([3,3])
         d = np.random.random([3])
         t = rnamake.transform.Transform(r, d)
-        s = self.structure.copy()
+        s = structure.Structure.copy(self.structure)
         struct = self.structure
         s.transform(t)
         if is_equal.are_structure_equal(s, struct):
@@ -117,9 +102,9 @@ class StructureUnittest(unittest.TestCase):
         if not is_equal.are_structure_equal(s, struct):
             self.fail("structures should be the same now")
 
-        s2 = self.structure.copy()
-        s3 = self.structure.copy()
-        s2.transform(instances.transform_indentity())
+        s2 = structure.Structure.copy(self.structure)
+        s3 = structure.Structure.copy(self.structure)
+        s2.transform(transform_instances.transform_indentity())
 
         if not is_equal.are_structure_equal(s2, s3):
             self.fail("did not transform")
@@ -127,7 +112,7 @@ class StructureUnittest(unittest.TestCase):
     def test_move(self):
         path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
         d = np.random.random([3])
-        s = self.structure.copy()
+        s = structure.Structure.copy(self.structure)
         struct = self.structure
         struct.move(d)
         if is_equal.are_structure_equal(s, struct):
@@ -139,7 +124,7 @@ class StructureUnittest(unittest.TestCase):
 
     def test_copy(self):
         s = self.structure
-        s_copy = s.copy()
+        s_copy = structure.Structure.copy(s)
 
         if not is_equal.are_structure_equal(s, s_copy):
             self.fail("copying did not return an indentical structure")
