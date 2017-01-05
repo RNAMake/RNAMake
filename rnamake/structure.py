@@ -4,8 +4,9 @@ import pdb_parser
 import chain
 import util
 import exceptions
+import primitives
 
-class Structure(object):
+class Structure(primitives.Structure):
     """Stores 3D structure information from a pdb file. Stores all chains,
     residues and atoms objects. Implementation is designed to be extremely
     lightweight and capable of performing fast transformations. to load a PDB
@@ -56,11 +57,24 @@ class Structure(object):
 
     """
 
-    def __init__(self, chains=None):
-        self.chains = chains
-        if self.chains is None:
-            self.chains = []
-        self.name = "N/A"
+    @classmethod
+    def from_str(cls, s, rts):
+        """
+        creates an structure from string generated from
+        :func:`rnamake.structure.Structure.to_str`
+        :param s: string containing stringifed structure
+        :type s: str
+        :returns: unstringifed structure object
+        :rtype: structure.Structure
+        """
+
+        spl = s.split(":")
+        chains = []
+        for c_str in spl[:-1]:
+            c = chain.Chain.from_str(c_str, rts)
+            chains.append(c)
+
+        return cls(chains)
 
     def __repr__(self):
         return """<Structure(name: %s, #chains: %s, #residues: %s, #atoms: %s)>""" %\
@@ -174,34 +188,6 @@ class Structure(object):
             return None
 
         return found[0]
-
-    def residues(self):
-        """
-        Concats all residue objects from all Chain objects intos a unified
-        list to be able to easily iterate through.
-
-        :return: List of Residue objects
-        """
-        residues = []
-        for c in self.chains:
-            residues.extend(c.residues)
-        return residues
-
-    def atoms(self):
-        """
-        Concats all Atom objects from all Residue objects intos a unified
-        list to be able to easily iterate through.
-
-        :return: List of Residue objects
-        """
-
-        atoms = []
-        for r in self.residues():
-            for a in r.atoms:
-                if a is None:
-                    continue
-                atoms.append(a)
-        return atoms
 
     def to_str(self):
         """

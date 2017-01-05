@@ -69,19 +69,18 @@ class ChainUnittest(unittest.TestCase):
         chain = self.chains[0]
         sub = chain.subchain(0)
 
-        if not is_equal.are_chains_equal(chain, sub):
-            self.fail("did not shallow copy chain correctly")
+        self.failUnless(is_equal.are_chains_equal(chain, sub))
 
     def test_copy(self):
         c = self.chains[0]
-        chain_copy = c.copy()
-        if not is_equal.are_chains_equal(c, chain_copy):
+        c_copy = Chain.copy(c)
+        if not is_equal.are_chains_equal(c, c_copy):
             self.fail("did not copy chain correctly")
 
     def test_str(self):
         c = self.chains[0]
         s = c.to_str()
-        c_copy = io.str_to_chain(s)
+        c_copy = Chain.copy(c)
 
         if not is_equal.are_chains_equal(c, c_copy, check_uuid=0):
             self.fail("did not copy chain correctly")

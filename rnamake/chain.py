@@ -59,9 +59,6 @@ class Chain(primitives.Chain):
 
     """
 
-    def __init__(self, residues=None):
-        super(self.__class__, self).__init__(residues)
-
     def __repr__(self):
         if len(self._residues) == 0:
             return "<Chain( First: None\n\t  Last:  None\n\t  Size: 0)>"
@@ -106,7 +103,7 @@ class Chain(primitives.Chain):
         """
 
         s = ""
-        for r in self.residues:
+        for r in self._residues:
             s += r.to_str() + ";"
         return s
 

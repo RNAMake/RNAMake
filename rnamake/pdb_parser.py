@@ -1,3 +1,5 @@
+import numpy as np
+
 import atom
 import residue
 import residue_type
@@ -5,7 +7,8 @@ import exceptions
 import user_warnings
 
 # TODO handle no chain id!
-def parse(pdb_file, protein=0, rna=1):
+def parse(pdb_file, rts=residue_type.ResidueTypeSet(),
+          protein=0, rna=1):
     """
     very minimalistc pdb parser, currently does not support multiple MODELS
     in NMR structures but works well for what I need at the moment will be
@@ -57,9 +60,10 @@ def parse(pdb_file, protein=0, rna=1):
             chid = line[21]
             alt = line[16]
             try:
-                coords = [float(line[30:38]),
+                coords = np.array([
+                          float(line[30:38]),
                           float(line[38:46]),
-                          float(line[46:54])]
+                          float(line[46:54])])
             except:
                 raise exceptions.PDBParserError('invalid or missing coordinate(s) at '
                                                 'line {0}.'.format(line))
@@ -110,7 +114,7 @@ def parse(pdb_file, protein=0, rna=1):
         if len(res_atoms) < 6:
             continue
         spl = key.split()
-        rtype = residue_type.get_rtype(spl[0])
+        rtype = rts.get_type(spl[0])
 
         if rtype is None:
             user_warnings.warn("restype " + spl[0] + ": is unknown\n",
@@ -126,8 +130,7 @@ def parse(pdb_file, protein=0, rna=1):
         icode = ""
         if len(spl) > 3:
             icode = spl[3]
-        r = residue.Residue(rtype, spl[0], int(spl[1]), spl[2], icode)
-        r.setup_atoms(res_atoms)
+        r = residue.Residue(res_atoms, rtype, spl[0], int(spl[1]), spl[2], icode)
         residues.append(r)
 
     return residues

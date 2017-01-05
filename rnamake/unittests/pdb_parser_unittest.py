@@ -1,31 +1,31 @@
 import unittest
 import sys
 import os
-import rnamake.pdb_parser
-import rnamake.residue_type
-import rnamake.residue
 import rnamake.settings
 import rnamake.atom
 import util
 import warnings
 from rnamake.util import distance
-from rnamake import exceptions
+from rnamake import exceptions, pdb_parser, residue_type, residue, atom
+import is_equal
 
 
 class PdbParserUnittest(unittest.TestCase):
 
+    def setUp(self):
+        self.rts = residue_type.ResidueTypeSet()
+
+
     def test_parse(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        residues = rnamake.pdb_parser.parse(path)
+        self.failUnless(len(pdb_parser.parse(path)) == 157)
 
     def test_warnings(self):
         path = rnamake.settings.UNITTEST_PATH + "resources/pdbs/p4p6_error_1.pdb"
 
         #catch warning for missing atom name
-        message = "line 2: no atomname detected"
         with warnings.catch_warnings(record=True) as w:
             rnamake.pdb_parser.parse(path)
-            #self.failUnless(str(w[-1].message) == message)
 
     def _get_residues_from_prody(self, prody_structure):
         """
@@ -37,16 +37,16 @@ class PdbParserUnittest(unittest.TestCase):
         residues = []
         for pc in p_chains:
             for pr in list(pc):
-                rtype = rnamake.residue_type.get_rtype(pr.getResname())
+                rtype = self.rts.get_type(pr.getResname())
                 if rtype is None:
                     continue
-                res = rnamake.residue.Residue(rtype, pr.getResname(),
-                                              pr.getResnum(), pr.getChid(),
-                                              pr.getIcode())
+
                 atoms = []
                 for pa in list(pr):
-                    atoms.append(rnamake.atom.Atom(pa.getName(), pa.getCoords()))
-                res.setup_atoms(atoms)
+                    atoms.append(atom.Atom(pa.getName(), pa.getCoords()))
+                res = residue.Residue(atoms, rtype, pr.getResname(),
+                                      pr.getResnum(), pr.getChid(),
+                                      pr.getIcode())
                 residues.append(res)
 
         return residues
@@ -60,23 +60,8 @@ class PdbParserUnittest(unittest.TestCase):
             if res2 is None:
                 print k
                 self.fail()
-            for i in range(len(res1.atoms)):
-                if   res1.atoms[i] is None and res2.atoms[i] is None:
-                    continue
-                elif res1.atoms[i] is None and res2.atoms[i] is not None:
-                    self.fail("in res: " + res1 + "atom :" + \
-                              res1.rtype.atom_map[i] + " is None in " + \
-                              "res1 but not res2" )
-                elif res1.atoms[i] is not None and res2.atoms[i] is None:
-                     self.fail("in res: " + res1 + "atom :" + \
-                              res1.atoms[i].name + " is None in " + \
-                              "res2 but not res1" )
-                d = distance(res1.atoms[i].coords,res2.atoms[i].coords)
-                if d > 0.01:
-                    print res1.atoms[i].name, res1
-                    print res1.atoms[i].coords
-                    print res2.atoms[i].coords
-                    self.fail("distance between same atoms too great")
+
+            is_equal.are_residues_equal(res1, res2, check_uuid=0)
 
     def test_parse_compare(self):
         try:

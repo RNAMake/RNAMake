@@ -270,7 +270,7 @@ class Residue(primitives.Residue):
 
     def __repr__(self):
         return "<Residue('%s%d%s chain %s')>" % (
-            self._name, self._num, self._i_code, self.__chain_id)
+            self._name, self._num, self._i_code, self._chain_id)
 
     def iter_beads(self):
         return self._beads.__iter__()

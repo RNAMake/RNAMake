@@ -198,36 +198,15 @@ class Chain(StructureObject):
         return self._residues[index]
 
 
+class Structure(StructureObject):
+    __metaclass__ = abc.ABCMeta
 
+    __slots__ = ["_chains"]
 
-
-
-
-class Basepair(object):
-    def __init__(self, res1, res2, bp_type="c..."):
-        self.res1 = res1
-        self.res2 = res2
-        self.bp_type = bp_type
-
-    def residues(self):
-        return [self.res1, self.res2]
-
-    def name(self):
-        str1 = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
-        str2 = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
-
-        if str1 < str2:
-            return str1+"-"+str2
-        else:
-            return str2+"-"+str1
-
-
-class Structure(object):
     def __init__(self, chains=None):
-        self.chains = chains
-        if self.chains is None:
-            self.chains = []
-        self.name = "N/A"
+        self._chains = chains
+        if self._chains is None:
+            self._chains = []
 
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
         """
@@ -264,17 +243,31 @@ class Structure(object):
 
         return found[0]
 
+    def num_residues(self):
+        pass
+
+
+
+class Basepair(object):
+    def __init__(self, res1, res2, bp_type="c..."):
+        self.res1 = res1
+        self.res2 = res2
+        self.bp_type = bp_type
+
     def residues(self):
-        residues = []
-        for c in self.chains:
-            residues.extend(c.residues)
-        return residues
+        return [self.res1, self.res2]
 
-    def to_str(self):
-        pass
+    def name(self):
+        str1 = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
+        str2 = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
 
-    def copy(self):
-        pass
+        if str1 < str2:
+            return str1+"-"+str2
+        else:
+            return str2+"-"+str1
+
+
+
 
 
 class RNAStructure(object):

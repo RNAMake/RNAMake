@@ -10,7 +10,7 @@ from rnamake import exceptions, util
 import is_equal, instances
 import numpy as np
 
-warnings.simplefilter("ignore")
+#warnings.simplefilter("ignore")
 
 class StructureUnittest(unittest.TestCase):
 
