@@ -31,7 +31,6 @@ class AtomUnittest(unittest.TestCase):
         coords[0] = 10
         self.failUnless(a.coords[0] == 0)
 
-
     def test_slots(self):
         """
         tests to make sure that no other attributes can be added to atoms

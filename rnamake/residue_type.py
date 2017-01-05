@@ -59,6 +59,21 @@ class ResidueType(object):
     def __repr__(self):
         return "<ResidueType(name='%s')>" % (self.__name)
 
+    def __len__(self):
+        return len(self.__atom_map)
+
+    def is_valid_atom(self, name):
+        if name in self.__atom_map:
+            return True
+        else:
+            return False
+
+    def atom_index(self, name):
+        if name in self.__atom_map:
+            return self.__atom_map[name]
+        else:
+            return None
+
     def get_correct_atom_name(self, a):
         if a.name in alt_names:
             return [a.name, alt_names[a.name]]
@@ -120,7 +135,7 @@ class ResidueTypeSet(object):
             if os.path.isfile(f):
                 continue
             rtype_files = glob.glob(f + "/*")
-            set_type_name = self._get_set_type(f)
+            set_type_name = util.filename(f)
             set_type = None
             if set_type_name == "RNA":
                 set_type = SetType.RNA
@@ -128,19 +143,15 @@ class ResidueTypeSet(object):
                 set_type = SetType.PROTEIN
 
             for tf in rtype_files:
-                name = self._get_rtype_name(tf)
+                name = self.__get_rtype_name(tf)
                 alt_names = None
                 if name in extra_alt_names:
                     alt_names = extra_alt_names[name]
-                atom_map = self._get_atom_map_from_file(tf)
+                atom_map = self.__get_atom_map_from_file(tf)
                 rtype = ResidueType(name, atom_map, set_type, alt_names)
                 self.__residue_types.append(rtype)
 
-    def _get_set_type(self, type_dir):
-        name = util.filename(type_dir)
-        return name
-
-    def _get_rtype_name(self, type_file):
+    def __get_rtype_name(self, type_file):
         """
         extract name from file type_file name.
         :param type_file: file path of residue type file
@@ -150,7 +161,7 @@ class ResidueTypeSet(object):
         type_file_name = name_spl[-1]
         return type_file_name[:-6]
 
-    def _get_atom_map_from_file(self, type_file):
+    def __get_atom_map_from_file(self, type_file):
         """
         extracts the atom position for each atom for the Residue object atom
         array for easy indexing
@@ -166,7 +177,7 @@ class ResidueTypeSet(object):
             atom_map[name] = i
         return atom_map
 
-    def get_rtype_by_resname(self, resname):
+    def get_type(self, resname):
         """
         get the ResidueType object for a given residue by name, this method
         should not be called directly! Should call
@@ -177,7 +188,7 @@ class ResidueTypeSet(object):
         .. code-block:: python
             #get guanine residue type
             >>>rtype =  ResidueTypeSet()
-            >>>rtype.get_rtype_by_resname("GUA")
+            >>>rtype.get_type("GUA")
             <ResidueType(name='GUA')>
         """
         for restype in self.__residue_types:

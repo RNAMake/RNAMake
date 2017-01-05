@@ -2,7 +2,7 @@ import uuid
 import numpy as np
 
 from atom import Atom
-import residue_type, util, basic_io, exceptions
+import residue_type, util, basic_io, exceptions, primitives
 
 
 class BeadType(object):
@@ -49,19 +49,26 @@ class Bead(object):
 
         self.__center, self.__btype = center, btype
 
+    @classmethod
+    def from_str(cls, s):
+        spl = s.split(",")
+        center = basic_io.str_to_point(spl[1])
+        return cls(center, int(spl[1]))
 
-    def __repr__(self):
-        center = basic_io.point_to_str(self.__center)
-        return "<Bead(btype='%s', center='%s')>" % (self.type_name(), center)
-
-    def copy(self):
+    @classmethod
+    def copy(cls, b):
         """
         returns a deep copy of current bead object
 
         :returns: copy of bead object
         :rtype: Bead
         """
-        return Bead(np.copy(self.__center), self.__btype)
+
+        return cls(np.copy(b.__center), b.__btype)
+
+    def __repr__(self):
+        center = basic_io.point_to_str(self.__center)
+        return "<Bead(btype='%s', center='%s')>" % (self.type_name(), center)
 
     def type_name(self):
         """
@@ -79,8 +86,17 @@ class Bead(object):
         else:
             raise exceptions.ResidueException("invalid bead type: " + self.__btype)
 
-    def distance_to_bead(self, b):
+    def distance(self, b):
         return util.distance(self.__center, b.__center)
+
+    def move(self, p):
+        self.__center += p
+
+    def transform(self, t):
+        self.__center = np.dot(self.__center, t.rotation().T) + t.translation()
+
+    def to_str(self):
+        return basic_io.point_to_str(bead.center) + "," + str(bead.btype)
 
     @property
     def center(self):
@@ -91,7 +107,7 @@ class Bead(object):
         return self.__btype
 
 
-class Residue(object):
+class Residue(primitives.Residue):
     """
     Store residue information from pdb file, stores all Atom objects that
     belong to residue. Implementation is designed to be extremely lightweight.
@@ -171,79 +187,98 @@ class Residue(object):
     """
 
     __slots__ = [
-        "rtype",
-        "name",
-        "num",
-        "chain_id",
-        "i_code",
-        "uuid",
-        "atoms"]
+        "_atoms",
+        "_rtype",
+        "_name",
+        "_num",
+        "_chain_id",
+        "_i_code",
+        "_uuid",
+        "_beads"]
 
-    def __init__(self, rtype, name, num, chain_id, i_code=""):
-        self.rtype = rtype
-        self.name = name
-        self.num = num
-        self.chain_id = chain_id
-        self.i_code = i_code
-        self.uuid = uuid.uuid1()
-        # fix pickle bug
-        if len(self.i_code) == 0:
-            self.i_code = ""
+    def __init__(self, atoms, rtype, name, num, chain_id, i_code=None, r_uuid=None):
+        self._rtype = rtype
+        self._atoms = []
+        self.__setup_atoms(atoms)
+        self._beads = self.__get_beads()
 
-        self.atoms = []
+        super(self.__class__, self).__init__(name, num, chain_id,
+                                             i_code=i_code, r_uuid=r_uuid)
 
-    def __repr__(self):
-        return "<Residue('%s%d%s chain %s')>" % (
-            self.name, self.num, self.i_code, self.chain_id)
-
-    def short_name(self):
-        """gets letter of residue, i.e. A or G etc
-
-        :return: letter for residue
-        :rtype: str
+    @classmethod
+    def from_str(cls, s, rts):
         """
-        return self.rtype.name[0]
+        creates an residue from string generated from
+        :func:`rnamake.residue.Residue.to_str`
 
-    def setup_atoms(self, atoms):
-        """
-        put atoms in correct positon in internal atom list, also corrects some
-        named atom names to their correct name
+        :param s: string containing stringifed residue
+        :type s: str
 
-        :param atoms: list of atom objects that are to be part of this residue
-        :type atoms: list of Atom objects
+        :returns: unstringifed residue object
+        :rtype: residue.Residue
+
         """
 
-        self.atoms = [None for x in self.rtype.atom_map.keys()]
-        for a in atoms:
-            name_change = self.rtype.get_correct_atom_name(a)
-            if name_change is not None:
-                a.name = name_change[1]
-            if a.name in self.rtype.atom_map:
-                pos = self.rtype.atom_map[a.name]
-                self.atoms[pos] = a
+        spl = s.split(",")
+        atoms = []
+        for i in range(5, len(spl)-1):
+            if spl[i] == "N":
+                a = None
+            else:
+                a = Atom.from_str(spl[i])
+            atoms.append(a)
 
-    def get_atom(self, atom_name):
+        rtype = rts.get_type(spl[0])
+        r = cls(atoms, rtype, spl[1], int(spl[2]), spl[3], spl[4])
+        return r
+
+    @classmethod
+    def copy(cls, r, new_uuid=0):
         """
-        get atom object by its name
+        performs a deep copy of Residue object
 
-        :param atom_name: name of atom
-        :type atom_name: str
+        :rtype: Residue
 
-        Examples:
+        :examples:
 
         .. code-block:: python
 
+            >>> import rnamake.unittests.instances
             >>> r = rnamake.unittests.instances.residue()
-            >>> a = r.get_atom("C1'")
-            >>> print a.coords
-            [-23.806 -50.289  86.732]
+            >>> r_copy = Residue.copy(r)
+            >>> r_copy.name
+            G
+
         """
 
-        try:
-            index = self.rtype.atom_map[atom_name]
-            return self.atoms[index]
-        except KeyError:
-            raise exceptions.ResidueException("cannot find atom")
+        atoms = []
+        for a in r:
+            if a is not None:
+                atoms.append(Atom.copy(a))
+
+
+        r_uuid = r._uuid
+        if new_uuid:
+            r_uuid = uuid.uuid1()
+
+        return cls(atoms, r._rtype, r._name, r._num, r._chain_id,
+                   r._i_code, r_uuid)
+
+    def __repr__(self):
+        return "<Residue('%s%d%s chain %s')>" % (
+            self.__name, self.__num, self.__i_code, self.__chain_id)
+
+    def __eq__(self, other):
+        return self._uuid == other._uuid
+
+    def __ne__(self, other):
+        return self._uuid != self._uuid
+
+    def __iter__(self):
+        return self._atoms.__iter__()
+
+    def iter_beads(self):
+        return self._beads.__iter__()
 
     def connected_to(self, res, cutoff=3.0):
         """
@@ -261,95 +296,22 @@ class Residue(object):
 
         """
         # 5' to 3'
-        o3_atom = self.get_atom("O3'")
-        p_atom = res.get_atom("P")
-        if o3_atom and p_atom:
+        if self.has_atom("O3'") and res.has_atom("P"):
+            o3_atom = self.get_atom("O3'")
+            p_atom = res.get_atom("P")
             if util.distance(o3_atom.coords, p_atom.coords) < cutoff:
                 return 1
 
         # 3' to 5'
-        p_atom = self.get_atom("P")
-        o3_atom = res.get_atom("O3'")
-        if o3_atom and p_atom:
+        if self.has_atom("P") and res.has_atom("O3'"):
+            p_atom = self.get_atom("P")
+            o3_atom = res.get_atom("O3'")
             if util.distance(o3_atom.coords, p_atom.coords) < cutoff:
                 return -1
 
         return 0
 
-    def get_beads(self):
-        """
-        Generates steric beads required for checking for steric clashes between
-        motifs. Each residues has three beads modeled after the typical three
-        bead models used in coarse grain modeling. The three beads are:
-
-        Phosphate:  P, OP1, OP2\n
-        Sugar    :  O5',C5',C4',O4',C3',O3',C1',C2',O2'\n
-        Base     :  All remaining atoms
-
-        if there are for example no phosphate atoms only 2 beads will be returned.
-
-        .. code-block:: python
-
-            >>> import rnamake.unittests.instances
-            >>> r = rnamake.unittests.instances.residue()
-            >>> r.get_beads()
-            [<Bead(btype='SUGAR', center='-24.027 -48.5001111111 86.368')>, <Bead(btype='BASE', center='-21.2186363636 -52.048 85.1157272727')>]
-
-        """
-        phos_atoms, sugar_atoms, base_atoms = [], [], []
-
-        for i, a in enumerate(self.atoms):
-            if a is None:
-                continue
-            if i < 3:
-                phos_atoms.append(a)
-            elif i < 12:
-                sugar_atoms.append(a)
-            else:
-                base_atoms.append(a)
-
-        beads = []
-        types = [BeadType.PHOS, BeadType.SUGAR, BeadType.BASE]
-        for i, alist in enumerate([phos_atoms, sugar_atoms, base_atoms]):
-            if len(alist) > 0:
-                beads.append(Bead(util.center(alist), types[i]))
-
-        return beads
-
-    def copy(self):
-        """
-        performs a deep copy of Residue object
-
-        :rtype: Residue
-
-        :examples:
-
-        .. code-block:: python
-
-            >>> import rnamake.unittests.instances
-            >>> r = rnamake.unittests.instances.residue()
-            >>> r_copy = r.copy()
-            >>> r_copy.name
-            G
-
-        """
-        copied_r = Residue(self.rtype, self.name, self.num, self.chain_id, self.i_code)
-        copied_r.atoms = [None for x in range(len(self.atoms))]
-        for i, a in enumerate(self.atoms):
-            if a is None:
-                continue
-            copied_r.atoms[i] = a.copy()
-
-        copied_r.uuid = self.uuid
         return copied_r
-
-    def new_uuid(self):
-        """
-        give residue a new unique indentifier code.
-        There is probably no reason why you should call this unless writing a new,
-        motif structure.
-        """
-        self.uuid = uuid.uuid1()
 
     def to_str(self):
         """
@@ -364,9 +326,9 @@ class Residue(object):
             >>> r.to_str()
             "GUA,G,103,A,,N,N,N,O5' -26.469 -47.756 84.669,C5' -25.05 -47.579 84.775,C4' -24.521 -48.156 86.068,O4' -24.861 -49.568 86.118,C3' -23.009 -48.119 86.281,O3' -22.548 -46.872 86.808,C1' -23.806 -50.289 86.732,C2' -22.812 -49.259 87.269,O2' -23.167 -48.903 88.592,N1 -19.538 -52.485 85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881 -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,"
         """
-        s = self.rtype.name + "," + self.name + "," + str(self.num) + "," + \
-            self.chain_id + "," + self.i_code + ","
-        for a in self.atoms:
+        s =  self._rtype.name + "," + self._name + "," + str(self._num) + ","
+        s += self._chain_id + "," + self._i_code + ","
+        for a in self._atoms:
             if a is None:
                 s += "N,"
             else:
@@ -444,5 +406,151 @@ class Residue(object):
         f.write(s)
         f.close()
 
+    def has_atom(self, atom_name=None, index=None):
+        if atom_name is not None:
+            pos = self.__get_atom_position(atom_name)
+            if pos is None:
+                return False
+
+        if index is not None:
+            if index >= len(self._atoms):
+                return False
+            pos = index
+
+        if self._atoms[pos] is None:
+            return False
+        else:
+            return True
+
+    def center(self):
+        return util.center(self._atoms)
+
+    def transform(self, t):
+        for a in self._atoms:
+            if a is not None:
+                a.transform(t)
+        for b in self._beads:
+            b.transform(t)
+
+    def move(self, p):
+        for a in self._atoms:
+            if a is not None:
+                a.move(p)
+        for b in self._beads:
+            b.move(p)
+
+    # getters
+    def get_atom(self, atom_name=None, index=None):
+        """
+        get atom object by its name
+
+        :param atom_name: name of atom
+        :type atom_name: str
+
+        Examples:
+
+        .. code-block:: python
+
+            >>> r = rnamake.unittests.instances.residue()
+            >>> a = r.get_atom("C1'")
+            >>> print a.coords
+            [-23.806 -50.289  86.732]
+        """
+        if atom_name is not None:
+            pos = self.__get_atom_position(atom_name)
+            if pos is None:
+                raise exceptions.ResidueException(
+                    "atom: " + atom_name + " does not exist in residue")
+
+        if index is not None:
+            if index >= len(self._atoms):
+                raise exceptions.ResidueException(
+                    "atom pos: " + str(index) + " does not exist in residue")
+            pos = index
+
+        if self._atoms[pos] is None:
+            if atom_name is not None:
+                raise exceptions.ResidueException(
+                    "atom: " + atom_name + " is not initialized in residue")
+            else:
+                raise exceptions.ResidueException(
+                    "atom: " + str(pos) + " is not initialized in residue")
+
+        return self._atoms[pos]
+
+    def short_name(self):
+        """gets letter of residue, i.e. A or G etc
+
+        :return: letter for residue
+        :rtype: str
+        """
+        return self._rtype.short_name
+
+    # private
+    def __get_atom_position(self, atom_name):
+        if self._rtype.is_valid_atom(atom_name):
+            return self._rtype.atom_index(atom_name)
+        else:
+            return None
+
+    def __setup_atoms(self, atoms):
+        """
+        put atoms in correct positon in internal atom list, also corrects some
+        named atom names to their correct name
+
+        :param atoms: list of atom objects that are to be part of this residue
+        :type atoms: list of Atom objects
+        """
+
+        self._atoms = [None for x in range(0, len(self._rtype))]
+        for a in atoms:
+            if a is None:
+                continue
+            name_change = self._rtype.get_correct_atom_name(a)
+            if name_change is not None:
+                a = Atom(name_change[1], a.coords)
+            if self._rtype.is_valid_atom(a.name):
+                pos = self._rtype.atom_index(a.name)
+                self._atoms[pos] = a
+
+    def __get_beads(self):
+        """
+        Generates steric beads required for checking for steric clashes between
+        motifs. Each residues has three beads modeled after the typical three
+        bead models used in coarse grain modeling. The three beads are:
+
+        Phosphate:  P, OP1, OP2\n
+        Sugar    :  O5',C5',C4',O4',C3',O3',C1',C2',O2'\n
+        Base     :  All remaining atoms
+
+        if there are for example no phosphate atoms only 2 beads will be returned.
+
+        .. code-block:: python
+
+            >>> import rnamake.unittests.instances
+            >>> r = rnamake.unittests.instances.residue()
+            >>> r.get_beads()
+            [<Bead(btype='SUGAR', center='-24.027 -48.5001111111 86.368')>, <Bead(btype='BASE', center='-21.2186363636 -52.048 85.1157272727')>]
+
+        """
+        phos_atoms, sugar_atoms, base_atoms = [], [], []
+
+        for i, a in enumerate(self._atoms):
+            if a is None:
+                continue
+            if i < 3:
+                phos_atoms.append(a)
+            elif i < 12:
+                sugar_atoms.append(a)
+            else:
+                base_atoms.append(a)
+
+        beads = []
+        types = [BeadType.PHOS, BeadType.SUGAR, BeadType.BASE]
+        for i, alist in enumerate([phos_atoms, sugar_atoms, base_atoms]):
+            if len(alist) > 0:
+                beads.append(Bead(util.center(alist), types[i]))
+
+        return beads
 
 

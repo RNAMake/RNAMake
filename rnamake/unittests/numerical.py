@@ -1,5 +1,5 @@
 
-def are_floats_equal(f1,f2):
+def are_floats_equal(f1, f2, threshold=0.00001):
     """
     test whether two floating point values are the same, cannot use ==,
     returns true if they are the same
@@ -24,13 +24,13 @@ def are_floats_equal(f1,f2):
         0
     """
 
-    if abs(f1-f2) < 0.00001:
+    if abs(f1-f2) < threshold:
         return 1
     else:
         return 0
 
 
-def are_points_equal(p1, p2):
+def are_points_equal(p1, p2, threshold=0.00001):
     """
     test whether two points are equal, this is done by checking whether each
     element is the same between
@@ -50,16 +50,16 @@ def are_points_equal(p1, p2):
 
     """
     for i in range(3):
-        if not are_floats_equal(p1[i], p2[i]):
+        if not are_floats_equal(p1[i], p2[i], threshold):
             return 0
 
     return 1
 
 
-def are_matrices_equal(m1, m2):
+def are_matrices_equal(m1, m2, threshold=0.00001):
     for i in range(len(m1)):
         for j in range(len(m1[i])):
-            if not are_floats_equal(m1[i][j], m2[i][j]):
+            if not are_floats_equal(m1[i][j], m2[i][j], threshold):
                 return 0
     return 1
 
