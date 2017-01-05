@@ -66,6 +66,7 @@ class Bead(object):
 
         return cls(np.copy(b.__center), b.__btype)
 
+
     def __repr__(self):
         center = basic_io.point_to_str(self.__center)
         return "<Bead(btype='%s', center='%s')>" % (self.type_name(), center)
@@ -264,18 +265,12 @@ class Residue(primitives.Residue):
         return cls(atoms, r._rtype, r._name, r._num, r._chain_id,
                    r._i_code, r_uuid)
 
-    def __repr__(self):
-        return "<Residue('%s%d%s chain %s')>" % (
-            self.__name, self.__num, self.__i_code, self.__chain_id)
-
-    def __eq__(self, other):
-        return self._uuid == other._uuid
-
-    def __ne__(self, other):
-        return self._uuid != self._uuid
-
     def __iter__(self):
         return self._atoms.__iter__()
+
+    def __repr__(self):
+        return "<Residue('%s%d%s chain %s')>" % (
+            self._name, self._num, self._i_code, self.__chain_id)
 
     def iter_beads(self):
         return self._beads.__iter__()

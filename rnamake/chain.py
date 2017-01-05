@@ -1,8 +1,8 @@
 import exceptions
+import primitives
+from residue import Residue
 
-
-class Chain(object):
-
+class Chain(primitives.Chain):
     """
     Stored chain information from pdb file. Stores all residues in chain.
     Implementation is designed to be extremely lightweight. To connect residues
@@ -58,127 +58,45 @@ class Chain(object):
         .
 
     """
-    __slots__ = ["residues"]
 
     def __init__(self, residues=None):
-        self.residues = residues
-        if residues is None:
-            self.residues = []
+        super(self.__class__, self).__init__(residues)
 
     def __repr__(self):
-        if len(self.residues) == 0:
+        if len(self._residues) == 0:
             return "<Chain( First: None\n\t  Last:  None\n\t  Size: 0)>"
 
         return "<Chain( First: %s\n\t  Last:  %s\n\t  Size: %s)>" %\
-            (self.first(), self.last(), len(self.residues))
+            (self.first(), self.last(), len(self._residues))
 
-    def __len__(self):
-        return len(self.residues)
-
-    def first(self):
+    @classmethod
+    def from_str(cls, s, rts):
         """
-        returns residue at 5' end of chain
+        creates an chain from string generated from
+        :func:`rnamake.chain.Chain.to_str`
 
-        :returns: first residue in chain
-        :rtype: residue.Residue
+        :param s: string containing stringifed chain
+        :type s: str
 
-        :examples:
-
-        ..  code-block:: python
-
-            >>> import rnamake.unittests.instances
-            >>> c = rnamake.unittests.instances.chain()
-            >>> c.first()
-            <Residue('G103 chain A')>
-
+        :returns: unstringifed chain object
+        :rtype: chain.Chain
         """
-        if len(self.residues) == 0:
-            raise exceptions.ChainException("cannot call first there are no "
-                                            "residues in chain")
-        return self.residues[0]
+        spl = s.split(";")
+        residues = []
+        for r_str in spl[:-1]:
+            r = Residue.from_str(r_str, rts)
+            residues.append(r)
+        return cls(residues)
 
-    def last(self):
-        """
-        returns 3' end of chain
-        """
-        if len(self.residues) == 0:
-            raise exceptions.ChainException("cannot call first there are no "
-                                            "residues in chain")
-        return self.residues[-1]
-
-    def subchain(self, start=None, end=None, start_res=None, end_res=None):
-        """
-        Creates a new chain from a subsection of the residues in the current
-        chain.
-
-        :param start: start position in residues object list, default:None
-        :param end: end position in residues object list, default:None
-        :param start_res: The 5' residue of sub chain, default:None
-        :param end_res:  The 3' resiude of sub chain, default:None
-
-        :type start: int
-        :type end: int
-
-        :return: Chain object
-
-        :examples:
-
-        ..  code-block:: python
-
-            >>> cs = c.subchain(1, 10)
-            >>> len(cs)
-            9
-
-            >>> cs.first()
-            <Residue('A104 chain A')>
-
-            >>> cs2 = c.subchain(start_res=c.residues[10], end_res=c.residues[15])
-            >>> len(cs2)
-            6
-
-        """
-
-        if start_res is not None and end_res is not None:
-            try:
-                start = self.residues.index(start_res)
-                end = self.residues.index(end_res)
-            except:
-                raise exceptions.ChainException("supplied start_res and end_res "
-                                                "but they are not members of "
-                                                "chain")
-
-            if start > end:
-                start, end = end, start
-            end += 1
-
-        elif start_res is not None and end_res is None:
-            raise exceptions.ChainException("supplied start_res but not end_res")
-
-        elif start_res is not None and start is not None:
-            raise exceptions.ChainException("cannot supply start and start_res")
-
-        if start < 0:
-            raise exceptions.ChainException("start pos cannot be less then 0")
-
-        if end is None:
-            end = len(self.residues)
-
-        return Chain(self.residues[start:end])
-
-    def contain_res(self, r):
-        if r in self.residues:
-            return 1
-        else:
-            return 0
-
-    def copy(self):
+    @classmethod
+    def copy(cls, c):
         """
         Creates a deepcopy of the this chain object.
 
         :return: Chain object
         """
-        residues = [r.copy() for r in self.residues]
-        return Chain(residues)
+        residues = [Residue.copy(r) for r in c]
+        return cls(residues)
 
     def to_str(self):
         """
@@ -240,6 +158,13 @@ class Chain(object):
         f.write(self.to_pdb_str(rnum=rnum, chain_id=chain_id))
         f.close()
 
+    def transform(self, t):
+        for r in self._residues:
+            r.transform(t)
+
+    def move(self, p):
+        for r in self._residues:
+            r.move(p)
 
 def connect_residues_into_chains(residues):
         """

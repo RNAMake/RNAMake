@@ -1,6 +1,7 @@
 import unittest
 
-from rnamake import chain, io, exceptions, settings
+from rnamake.chain import Chain
+from rnamake import io, exceptions, settings, residue_type
 
 import util
 import is_equal
@@ -9,6 +10,8 @@ import is_equal
 class ChainUnittest(unittest.TestCase):
 
     def setUp(self):
+        self.rts = residue_type.ResidueTypeSet()
+
         path = settings.UNITTEST_PATH + "resources/chain_strs.dat"
         f = open(path)
         lines = f.readlines()
@@ -16,8 +19,8 @@ class ChainUnittest(unittest.TestCase):
 
         chains = []
         for l in lines:
-            chain = io.str_to_chain(l)
-            chains.append(chain)
+            c = Chain.from_str(l, self.rts)
+            chains.append(c)
 
         self.chains = chains
 
@@ -25,7 +28,7 @@ class ChainUnittest(unittest.TestCase):
         """creating a new object should never return an error"""
 
         try:
-            c = chain.Chain()
+            c = Chain()
         except:
             self.fail("was not expecting an error upon initation")
 
@@ -37,11 +40,11 @@ class ChainUnittest(unittest.TestCase):
            either
         """
         c = self.chains[0]
-        if c.residues[0]  != c.first() or \
-           c.residues[-1] != c.last():
+        if c.residue(0)  != c.first() or \
+           c.residue(-1) != c.last():
             self.fail()
 
-        chain_2 = chain.Chain()
+        chain_2 = Chain()
 
         with self.assertRaises(exceptions.ChainException):
             chain_2.first()
@@ -60,7 +63,7 @@ class ChainUnittest(unittest.TestCase):
             c.subchain(-1, 7)
 
         with self.assertRaises(exceptions.ChainException):
-            c.subchain(start_res=c.residues[10])
+            c.subchain(start_res=c.residue(10))
 
     def test_subchain_2(self):
         chain = self.chains[0]
