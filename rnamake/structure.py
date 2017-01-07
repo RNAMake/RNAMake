@@ -3,10 +3,10 @@ import numpy as np
 import pdb_parser
 import util
 import exceptions
-import primitives
+import primitives.structure
 from chain import Chain, connect_residues_into_chains
 
-class Structure(primitives.Structure):
+class Structure(primitives.structure.Structure):
     """Stores 3D structure information from a pdb file. Stores all chains,
     residues and atoms objects. Implementation is designed to be extremely
     lightweight and capable of performing fast transformations. to load a PDB

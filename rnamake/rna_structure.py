@@ -6,9 +6,11 @@ import util
 import chain_closure
 import exceptions
 import user_warnings
-import primitives
 import residue
 import basic_io
+
+import primitives.rna_structure
+from primitives.rna_structure import ends_from_basepairs, assign_end_id, end_id_to_seq_and_db
 
 import os
 import numpy as np
@@ -23,7 +25,7 @@ def bp_from_str(struc, s):
     return basepair.Basepair.from_str(bp_str, res1.uuid, res2.uuid)
 
 
-class RNAStructure(primitives.RNAStructure):
+class RNAStructure(primitives.rna_structure.RNAStructure):
     """
     Complete container for representing a RNA. Contains both the 3D structure
     information but also includes basepair objects to represent the pairs
@@ -322,17 +324,16 @@ class ChainEndPairMap(object):
 def rna_structure_from_pdb(pdb_path, rts):
     s = structure.structure_from_pdb(pdb_path, rts)
     bps = basepairs_from_x3dna(pdb_path, s)
-    ends = primitives.ends_from_basepairs(s, bps)
+    ends = ends_from_basepairs(s, bps)
     end_ids = []
     for end in ends:
-        end_id = primitives.assign_end_id(s, bps, end)
+        end_id = assign_end_id(s, bps, end)
         end_ids.append(end_id)
     name = util.filename(pdb_path)[:-4]
     score = 0
-    seq, dot_bracket = primitives.end_id_to_seq_and_db(end_ids[0])
+    seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
     rna_struc = RNAStructure(s, bps, ends, end_ids, name, dot_bracket=dot_bracket)
     return rna_struc
-
 
 
 

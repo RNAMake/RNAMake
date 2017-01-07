@@ -4,8 +4,9 @@ import numpy as np
 import uuid
 import exceptions
 
+import primitives.basepair
 
-class Basepair(object):
+class Basepair(primitives.basepair.Basepair):
     """
     :param res1: First residue in basepair
     :param res2: Second residue in basepair

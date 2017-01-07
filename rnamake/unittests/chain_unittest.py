@@ -1,7 +1,7 @@
 import unittest
 
 from rnamake.chain import Chain
-from rnamake import io, exceptions, settings, residue_type
+from rnamake import exceptions, settings, residue_type
 
 import util
 import is_equal

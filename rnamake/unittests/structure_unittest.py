@@ -1,7 +1,6 @@
 import unittest
 import warnings
 import rnamake.transform
-import rnamake.motif_factory
 import rnamake.io
 
 from rnamake import structure, exceptions, util, residue_type

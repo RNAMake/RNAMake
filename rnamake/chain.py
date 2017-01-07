@@ -1,8 +1,8 @@
 import exceptions
-import primitives
+import primitives.chain
 from residue import Residue
 
-class Chain(primitives.Chain):
+class Chain(primitives.chain.Chain):
     """
     Stored chain information from pdb file. Stores all residues in chain.
     Implementation is designed to be extremely lightweight. To connect residues

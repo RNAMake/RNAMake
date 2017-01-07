@@ -2,8 +2,8 @@ import uuid
 import numpy as np
 
 from atom import Atom
-import residue_type, util, basic_io, exceptions, primitives
-
+import primitives.residue
+import residue_type, util, basic_io, exceptions
 
 class BeadType(object):
     """
@@ -107,7 +107,7 @@ class Bead(object):
         return self.__btype
 
 
-class Residue(primitives.Residue):
+class Residue(primitives.residue.Residue):
     """
     Store residue information from pdb file, stores all Atom objects that
     belong to residue. Implementation is designed to be extremely lightweight.
