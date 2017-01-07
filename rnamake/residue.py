@@ -66,7 +66,6 @@ class Bead(object):
 
         return cls(np.copy(b.__center), b.__btype)
 
-
     def __repr__(self):
         center = basic_io.point_to_str(self.__center)
         return "<Bead(btype='%s', center='%s')>" % (self.type_name(), center)
@@ -201,7 +200,7 @@ class Residue(primitives.Residue):
         self._rtype = rtype
         self._atoms = []
         self.__setup_atoms(atoms)
-        self._beads = self.__get_beads()
+        self._beads = []
 
         super(self.__class__, self).__init__(name, num, chain_id,
                                              i_code=i_code, r_uuid=r_uuid)
@@ -484,6 +483,9 @@ class Residue(primitives.Residue):
         """
         return self._rtype.short_name
 
+    def num_beads(self):
+        return len(self._beads)
+
     # private
     def __get_atom_position(self, atom_name):
         if self._rtype.is_valid_atom(atom_name):
@@ -551,4 +553,5 @@ class Residue(primitives.Residue):
 
         return beads
 
-
+    def build_beads(self):
+        self._beads = self.__get_beads()

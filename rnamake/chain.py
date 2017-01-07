@@ -86,13 +86,13 @@ class Chain(primitives.Chain):
         return cls(residues)
 
     @classmethod
-    def copy(cls, c):
+    def copy(cls, c, new_uuid=0):
         """
         Creates a deepcopy of the this chain object.
 
         :return: Chain object
         """
-        residues = [Residue.copy(r) for r in c]
+        residues = [Residue.copy(r, new_uuid) for r in c]
         return cls(residues)
 
     def to_str(self):

@@ -101,6 +101,12 @@ class ResidueUnittest(unittest.TestCase):
         res1 = self.residues[0]
         res2 = self.residues[10]
 
+        res1.build_beads()
+        res2.build_beads()
+
+        self.failIf(res1.num_beads() == 0)
+        self.failIf(res2.num_beads() == 0)
+
         for b1 in res1.iter_beads():
             for b2 in res2.iter_beads():
                 self.failIf(b1.distance(b2) < settings.CLASH_RADIUS)

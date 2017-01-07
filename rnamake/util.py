@@ -128,7 +128,7 @@ def filename(path):
     return path_spl[-1]
 
 
-def wc_bp(bp):
+def wc_bp(bp, s):
     """
     checks to see if the residues in a basepair match a watson-crick basepair
 
@@ -138,8 +138,10 @@ def wc_bp(bp):
     :return: 1 if is watson-crick 0 if not
     :rtype: int
     """
+    res1 = s.get_residue(uuid=bp.res1_uuid)
+    res2 = s.get_residue(uuid=bp.res2_uuid)
 
-    bp_str = bp.res1.rtype.name[0] + bp.res2.rtype.name[0]
+    bp_str = res1.short_name() + res2.short_name()
     wc = "GC,CG,AU,UA".split(",")
     if bp_str in wc:
         return 1
@@ -147,7 +149,7 @@ def wc_bp(bp):
         return 0
 
 
-def gu_bp(bp):
+def gu_bp(bp, s):
     """
     checks to see if the residues in a basepair match a GU basepair
 
@@ -157,8 +159,10 @@ def gu_bp(bp):
     :return: 1 if is GU 0 if not
     :rtype: int
     """
+    res1 = s.get_residue(uuid=bp.res1_uuid)
+    res2 = s.get_residue(uuid=bp.res2_uuid)
 
-    bp_str = bp.res1.rtype.name[0] + bp.res2.rtype.name[0]
+    bp_str = res1.short_name() + res2.short_name()
     if bp_str == "GU" or bp_str == "UG":
         return 1
     else:

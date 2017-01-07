@@ -6,12 +6,24 @@ import util
 import chain_closure
 import exceptions
 import user_warnings
+import primitives
+import residue
+import basic_io
 
 import os
 import numpy as np
 
+def bp_from_str(struc, s):
+    bp_spl = s.split(";")
+    r2_info = bp_spl.pop().split("|")
+    r1_info = bp_spl.pop().split("|")
+    bp_str = ";".join(bp_spl)
+    res1 = struc.get_residue(int(r1_info[0]), r1_info[1], r1_info[2])
+    res2 = struc.get_residue(int(r2_info[0]), r2_info[1], r2_info[2])
+    return basepair.Basepair.from_str(bp_str, res1.uuid, res2.uuid)
 
-class RNAStructure(object):
+
+class RNAStructure(primitives.RNAStructure):
     """
     Complete container for representing a RNA. Contains both the 3D structure
     information but also includes basepair objects to represent the pairs
@@ -72,53 +84,118 @@ class RNAStructure(object):
 
     """
 
-    def __init__(self, struct=None, basepairs=None, ends=None, name="assembled",
-                 path="assembled", mtype=motif_type.UNKNOWN, score=0):
-        self.structure = struct
-        if self.structure is None:
-            self.structure = structure.Structure()
-        self.secondary_structure = None
-        self.basepairs = basepairs
-        if self.basepairs is None:
-            self.basepairs = []
-        self.mtype = mtype
-        self.name = name
-        self.path = path
-        self.score = score
-        self.ends = ends
-        self.protein_beads = []
-        if self.ends is None:
-            self.ends = []
-        self.beads = []
-        self.end_ids = []
+    __slots__ = [
+        "_structure",
+        "_basepairs",
+        "_ends",
+        "_name",
+        "_score",
+        "_protein_beads",
+        "_end_ids",
+        "_block_end_add",
+        "_dot_bracket"
+    ]
 
-    def copy(self):
-        rna_struct = RNAStructure()
-        rna_struct.name      = self.name
-        rna_struct.path      = self.path
-        rna_struct.score     = self.score
-        rna_struct.mtype     = self.mtype
-        rna_struct.structure = self.structure.copy()
-        rna_struct.beads     = [b.copy() for b in self.beads]
-        rna_struct.end_ids   = list(self.end_ids)
-        rna_struct.protein_beads = [b.copy() for b in self.protein_beads]
+    def __init__(self, structure, basepairs, ends, end_ids, name,
+                 block_end_add=-1, dot_bracket=None, protein_beads=None):
+        self._structure       = structure
+        self._basepairs       = basepairs
+        self._ends            = ends
+        self._end_ids         = end_ids
+        self._name            = name
+        self._block_end_add   = block_end_add
+        self._dot_bracket     = dot_bracket
+        self._protein_beads  = protein_beads
 
-        for bp in self.basepairs:
-            new_res1 = rna_struct.get_residue(uuid=bp.res1.uuid)
-            new_res2 = rna_struct.get_residue(uuid=bp.res2.uuid)
-            # hopefully this doesnt happen anymore
-            if new_res1 is None or new_res2 is None:
-                raise ValueError("could not find a residue during copy")
-            new_r = np.copy(bp.bp_state.r)
-            new_bp = basepair.Basepair(new_res1, new_res2, new_r, bp.bp_type)
-            new_bp.uuid = bp.uuid
-            rna_struct.basepairs.append(new_bp)
+        if self._dot_bracket is None:
+            self._dot_bracket = ""
+        if self._protein_beads is None:
+            self._protein_beads = []
 
-        for end in self.ends:
-            index = self.basepairs.index(end)
-            rna_struct.ends.append(rna_struct.basepairs[index])
+        for c in self._structure:
+            for r in c:
+                for i, end in enumerate(ends):
+                    if i == self._block_end_add:
+                        r.build_beads()
+                    elif end.res1_uuid == r.uuid or end.res2_uuid == r.uuid:
+                        continue
+                    else:
+                        r.build_beads()
 
-        return rna_struct
+    @classmethod
+    def from_str(cls, s, rts):
+        spl = s.split("&")
+        name = spl[0]
+        block_end_add = int(spl[1])
+        struc = structure.Structure.from_str(spl[2], rts)
+        bp_strs = spl[3].split("@")
+        bps = []
+        for bp_str in bp_strs[:-1]:
+            bps.append(bp_from_str(struc, bp_str))
+        ends = [ bps[int(i)] for i in spl[4].split() ]
+        end_ids = spl[5].split()
+        protein_beads = []
+        bead_strs = spl[6].split(";")
+        beads = []
+        for bead_str in bead_strs[:-1]:
+            beads.append(residue.Bead.from_str(bead_str))
+
+        return cls(struc, bps, ends, end_ids, name, block_end_add, spl[7],
+                   protein_beads)
+
+
+
+        #return cls()
+
+    @classmethod
+    def copy(cls, rs, new_uuid=0):
+        s = structure.Structure.copy(rs._structure, new_uuid)
+        basepairs = []
+        ends = []
+        protein_beads = [ residue.Bead.copy(b) for b in rs._protein_beads ]
+
+        for bp in rs._basepairs:
+            if new_uuid:
+                bp_res = rs.get_bp_res(bp)
+                res1 = s.get_residue(num=bp_res[0].num, chain_id=bp_res[0].chain_id,
+                                     i_code=bp_res[0].i_code)
+                res2 = s.get_residue(num=bp_res[1].num, chain_id=bp_res[1].chain_id,
+                                     i_code=bp_res[1].i_code)
+                bp = basepair.Basepair.copy_with_new_uuids(bp, res1.uuid, res2.uuid)
+                basepairs.append(bp)
+            else:
+                basepairs.append(basepair.Basepair.copy(bp))
+
+        for end in rs._ends:
+            i = rs._basepairs.index(end)
+            ends.append(basepairs[i])
+
+        return cls(s, basepairs, ends, rs._end_ids, rs._name, rs._block_end_add,
+                   rs._dot_bracket, protein_beads)
+
+    def to_str(self):
+        """
+        stringifies rna structure object
+        """
+        s  = self._name + "&" + str(self._block_end_add) + "&"
+        s += self._structure.to_str() + "&"
+        for bp in self._basepairs:
+            res1, res2 = self.get_bp_res(bp)
+            s += bp.to_str() + ";"
+            s += str(res1.num) + "|" + res1.chain_id + "|" + res1.i_code + ";"
+            s += str(res2.num) + "|" + res2.chain_id + "|" + res2.i_code + "@"
+        s += "&"
+        for end in self._ends:
+            index = self._basepairs.index(end)
+            s += str(index) + " "
+        s += "&"
+        for end_id in self._end_ids:
+            s += end_id + " "
+        s += "&"
+        s += basic_io.beads_to_str(self._protein_beads)
+        s += "&"
+        s += self._dot_bracket
+        return s
 
     def to_pdb_str(self, renumber=-1, close_chain=0):
         """
@@ -163,203 +240,25 @@ class RNAStructure(object):
 
         return self.structure.to_pdb(fname, renumber)
 
-    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
-        """
-        wrapper for :func:`rnamake.structure.Structure.get_residue`
-        """
-
-        return self.structure.get_residue(num=num, chain_id=chain_id,
-                                          i_code=i_code, uuid=uuid)
-
-    def residues(self):
-        """
-        wrapper for :func:`rnamake.structure.Structure.residues`
-        """
-
-        return self.structure.residues()
-
-    def chains(self):
-        """
-        wrapper for rnamake.structure.Structure.chain
-        """
-
-        return self.structure.chains
-
-    def get_basepair(self, bp_uuid=None, res1=None, res2=None, uuid1=None,
-                     uuid2=None, name=None):
-        """
-        locates a Basepair object based on residue objects or uuids if nothing
-        is supplied you will get back all the basepairs in the motif. The way
-        to make sure you will only get one basepair back is to supply BOTH
-        res1 and res2 OR uuid1 and uuid2, I have left it open like this
-        because it is sometimes useful to get all basepairs that a single
-        residue is involved
-
-        :param res1: First residue
-        :param res2: Second residue
-        :param uuid1: First residue uuid
-        :param uuid2: Second residue uuid
-
-        :type res1: Residue object
-        :type res2: Residue object
-        :type uuid1: uuid object
-        :type uuid2: uuid object
-
-        :examples:
-
-        ..  code-block:: python
-
-            # load test structure
-            >>> from rnamake.unittests import instances
-            >>> r_struct = instances.rna_structure()
-
-            # get the first basepair for testing purposes
-            >>> print r_struct.basepairs[0]
-            <Basepair(A1-A24)>
-
-            # retrieve the basepair by name
-            >>> r_struct.get_basepair(name="A1-A24")
-            [<Basepair(A1-A24)>]
-
-            # retrieve it by a residue in the basepair, either by object
-            # reference or unique indentifer.
-            >>> res1 = r_struct.basepairs[0].res1
-            >>> r_struct.get_basepair(res1=res1)
-            [<Basepair(A1-A24)>]
-
-            >>> r_struct.get_basepair(uuid1=res1.uuid)
-            [<Basepair(A1-A24)>]
-
-            # Using its indentifer is safer
-            # as copying RNA structure will yeild different references
-            >>> r_struct_copy = r_struct.copy()
-            >>> r_struct_copy.get_basepair(res1=res1)
-            []
-
-            >>> r_struct_copy.get_basepair(uuid1=res1.uuid)
-            [<Basepair(A1-A24)>]
-        """
-
-        if res1 is None and res2 is None and uuid1 is None and uuid2 is None \
-           and bp_uuid is None and name is None:
-            raise exceptions.RNAStructureException(
-                "no arguments specified for get_basepair()")
-
-        found = []
-        for bp in self.basepairs:
-            if bp_uuid is not None and bp_uuid != bp.uuid:
-                continue
-            if res1 is not None and (res1 != bp.res1 and res1 != bp.res2):
-                continue
-            if res2 is not None and (res2 != bp.res1 and res2 != bp.res2):
-                continue
-            if uuid1 is not None and \
-               (uuid1 != bp.res1.uuid and uuid1 != bp.res2.uuid):
-                continue
-            if uuid2 is not None and \
-               (uuid2 != bp.res1.uuid and uuid2 != bp.res2.uuid):
-                continue
-            if name is not None and name != bp.name():
-                continue
-            found.append(bp)
-        return found
-
-    def get_beads(self, excluded_ends=None, excluded_res=None):
-        """
-        generates 3-bead model residue beads for all residues in current
-        rna_structure.
-
-        :param excluded_res: List of residue objects whose beads are not to be
-            included. This is generally end residues that would instantly clash
-            with residues they are being overlayed onto when performing motif
-            aligning
-        :param excluded_ends: List of ends where the resiudes be added to
-            exclude list. This is just a fast way to remove residues at
-            connection sites between RNA structures.
-
-        :type excluded_res: List of residue.Residue objects
-        :type excluded_ends: List of  basepair.Basepair objects
-
-        :return: steric beads for this structure
-        :rtype:  List of residue.Bead objects
-
-        :examples:
-
-        ..  code-block:: python
-
-            # load test structure
-            >>> from rnamake.unittests import instances
-            >>> r_struct = instances.rna_structure()
-
-            # standard use of this function for building
-            # this removes sterics from the end basepairs allowing them
-            # to be overlayed on another basepair to align too
-            >>> r_struct.get_beads(r_struct.ends)
-
-        """
-
-        excluded = []
-        if excluded_ends:
-            for end in excluded_ends:
-                excluded.extend(end.residues())
-
-        if excluded_res:
-            excluded.extend(excluded_res)
-
-        self.beads = self.structure.get_beads(excluded) + self.protein_beads
-        return self.beads
-
-    def get_end_index(self, name=None, id=None):
-        """
-        gets the internal end index for an end either by its name or id, not
-        used very often.
-
-        :param name: name of end from :func:`rnamake.basepair.Basepair.name`
-        :param id: corresponding end id
-
-        :type name: str
-        :type id: str
-
-        :returns: index of the end in the internal ends list
-        :rtype: int
-
-        """
-
-        if name is None and id is None:
-            raise exceptions.RNAStructureException(
-                "must specify name or id in get_end_index")
-
-        if name is not None:
-            bps = self.get_basepair(name=name)
-            if len(bps) == 0:
-                raise exceptions.RNAStructureException(
-                    "cannot find basepair with name "+name)
-
-            end = bps[0]
-            return self.ends.index(end)
-        else:
-            matching = []
-            for i, end_id in enumerate(self.end_ids):
-                if end_id == id:
-                    matching.append(i)
-            if len(matching) > 1:
-                raise exceptions.RNAStructureException(
-                    "more then one end with id "+ id + " in get_end_index")
-            return matching[0]
-
     def sequence(self):
         """
         wrapper for :func:`rnamake.secondary_structure.Structure.sequence`
         """
 
-        return self.secondary_structure.sequence()
+        seq = ""
+        for i, c in enumerate(self._structure):
+            if i != 0:
+                seq += "&"
+            for r in c:
+                seq += r.name
+        return seq
 
     def dot_bracket(self):
         """
-        wrapper for :func:`rnamake.secondary_structure.Structure.dot_bracket`
+        secondary structure for rna_structure
         """
 
-        return self.secondary_structure.dot_bracket()
+        return self._dot_bracket
 
 
 # TODO should probably move this somewhere else?
@@ -420,20 +319,65 @@ class ChainEndPairMap(object):
         return [self.p5_chain, self.p3_chain]
 
 
+def rna_structure_from_pdb(pdb_path, rts):
+    s = structure.structure_from_pdb(pdb_path, rts)
+    bps = basepairs_from_x3dna(pdb_path, s)
+    ends = primitives.ends_from_basepairs(s, bps)
+    end_ids = []
+    for end in ends:
+        end_id = primitives.assign_end_id(s, bps, end)
+        end_ids.append(end_id)
+    name = util.filename(pdb_path)[:-4]
+    score = 0
+    seq, dot_bracket = primitives.end_id_to_seq_and_db(end_ids[0])
+    rna_struc = RNAStructure(s, bps, ends, end_ids, name, dot_bracket=dot_bracket)
+    return rna_struc
+
+
+
+
+def _calc_center(res):
+    center = np.array([0.0,0.0,0.0])
+    count = 0
+    for r in res:
+        for a in r:
+            if a is None:
+                continue
+            center += a.coords
+            count += 1
+    center /= count
+    return center
+
+
+def _calc_name(res):
+    res1, res2 = res
+
+    res1_name = res1.chain_id+str(res1.num)+str(res1.i_code)
+    res2_name = res2.chain_id+str(res2.num)+str(res2.i_code)
+
+    if res1.chain_id < res2.chain_id:
+        return res1_name+"-"+res2_name
+    if res1.chain_id > res2.chain_id:
+        return res2_name+"-"+res1_name
+
+    if res1.num < res2.num:
+        return res1_name+"-"+res2_name
+    else:
+        return res2_name+"-"+res1_name
+
+
 # TODO dont really need name, all deleting can happen in x3nda module ...
-def basepairs_from_x3dna(path, name, structure):
+def basepairs_from_x3dna(path, s):
     """
     gets x3dna data on basepairing information and then interwines it
     with the structural information stored in structure for simpler
     retreival of data
 
     :param path: path to the pdb file
-    :param name: the name of structure
     :param structure: the structure with the same residues that will appear
         in the x3dna output
 
     :type path: str
-    :type name: str
     :type structure: structure.Structure
 
     :return: gets all the basepairs that x3dna finds and returns them as
@@ -445,13 +389,13 @@ def basepairs_from_x3dna(path, name, structure):
     x_basepairs = x3dna_parser.get_basepairs(path)
     basepairs = []
     for xbp in x_basepairs:
-        res1 = structure.get_residue(num=xbp.res1.num,
-                                     chain_id=xbp.res1.chain_id,
-                                     i_code=xbp.res1.i_code)
+        res1 = s.get_residue(num=xbp.res1.num,
+                             chain_id=xbp.res1.chain_id,
+                             i_code=xbp.res1.i_code)
 
-        res2 = structure.get_residue(num=xbp.res2.num,
-                                     chain_id=xbp.res2.chain_id,
-                                     i_code=xbp.res2.i_code)
+        res2 = s.get_residue(num=xbp.res2.num,
+                             chain_id=xbp.res2.chain_id,
+                             i_code=xbp.res2.i_code)
 
         if res1 is None or res2 is None:
             not_found = 0
@@ -465,8 +409,7 @@ def basepairs_from_x3dna(path, name, structure):
             continue
 
         try:
-            if res1.get_atom("C1'") is None:
-                continue
+            res1.get_atom("C1'")
         except exceptions.ResidueException:
             user_warnings.RNAStructureWarning(
                 str(res1) + " has no C1' residue cannot have it in a basepair "
@@ -474,60 +417,27 @@ def basepairs_from_x3dna(path, name, structure):
             continue
 
         try:
-            if res2.get_atom("C1'") is None:
-                continue
+            res2.get_atom("C1'")
         except exceptions.ResidueException:
             user_warnings.RNAStructureWarning(
                 str(res2) + " has no C1' residue cannot have it in a basepair "
                 "is required for alignment\n")
             continue
 
-        bp = basepair.Basepair(res1, res2, xbp.r, xbp.bp_type)
+        center = _calc_center([res1, res2])
+        name = _calc_name([res1, res2])
+        bp = basepair.Basepair(res1.uuid, res2.uuid, xbp.r, center,
+                               [res1.get_coords("C1'"), res2.get_coords("C1'")],
+                               name, bp_type=xbp.bp_type)
         basepairs.append(bp)
 
-    if os.path.isfile("ref_frames.dat"):
+    """if os.path.isfile("ref_frames.dat"):
         os.remove("ref_frames.dat")
 
     if os.path.isfile(name + "_dssr.out"):
-        os.remove(name + "_dssr.out")
+        os.remove(name + "_dssr.out")"""
 
     return basepairs
-
-
-def ends_from_basepairs(structure, basepairs):
-    """
-    find basepairs that are composed of two residues who are at the 5' or 3'
-    end of their chains. These are elements of alignment where two basepairs
-    can be aligned together to build a larger struture.
-
-    :param structure: holds all the residues and chains for a structure
-    :param basepairs: All the basepairs extracted with residues in structure,
-        generated from :func:`basepairs_from_x3dna`
-
-    :type structure: structure.Structure
-    :type basepairs: basepair.Basepair
-
-    :return: the basepairs composed of chain end residues.
-    :rtype: list of basepair.Basepairs
-    """
-
-    chain_ends_uuids = []
-    for c in structure.chains:
-        chain_ends_uuids.append(c.first().uuid)
-        if len(c) > 1:
-            chain_ends_uuids.append(c.last().uuid)
-
-    ends = []
-    for bp in basepairs:
-        if bp.bp_type != "cW-W":
-            continue
-        if not (util.gu_bp(bp) or util.wc_bp(bp)):
-            continue
-
-        if bp.res1.uuid in chain_ends_uuids and bp.res2.uuid in chain_ends_uuids:
-            ends.append(bp)
-
-    return ends
 
 
 def get_chain_end_map(chains, end):

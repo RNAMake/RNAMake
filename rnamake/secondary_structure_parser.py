@@ -4,6 +4,67 @@ import graph
 import motif_type
 import exceptions
 
+# need to be moved to parser from secondary_structure.Structure
+"""
+    # TODO refactor __init__ must be a cleaner way
+    def __init__(self, chains=None, sequence="", dot_bracket=""):
+        self.chains = []
+        if chains is not None:
+            self.chains = chains
+
+        elif len(sequence) != 0 and len(dot_bracket) != 0:
+           self.chains = self._setup_chains(sequence, dot_bracket)
+
+        elif chains is None and len(sequence) == 0 and \
+            len(dot_bracket) == 0:
+            pass
+
+        else:
+            raise exceptions.SecondaryStructureException(
+                "invalid initiation of secondary_structure.Structure: supply "
+                " chains or sequence and dot_bracket")
+
+    def _setup_chains(self, sequence, dot_bracket):
+
+        chains = []
+        residues = []
+
+        if len(dot_bracket) != len(sequence):
+            raise exceptions.SecondaryStructureException(
+                "sequence and dot bracket are not the same length")
+
+        if dot_bracket[0] != '(' and dot_bracket[0] != '.' and dot_bracket != '&':
+            raise exceptions.SecondaryStructureException(
+                "secondary structure is not valid did you flip seq and ss?")
+
+        count = 1
+        chains_ids = "ABCDEFGHIJKLMNOPQRSTUVWXZ"
+        valid_seq = "AGUCTN&+-"
+        chain_i = 0
+        for i in range(len(sequence)):
+            if sequence[i] not in valid_seq:
+                raise exceptions.SecondaryStructureException(
+                    sequence[i] + " is not a valid secondary_structure element")
+
+            if sequence[i] != "&" and sequence[i] != "+" and sequence[i] != "-":
+                r = Factory.get_residue(sequence[i], dot_bracket[i], count,
+                                        chains_ids[chain_i], uuid.uuid1())
+                residues.append(r)
+                count += 1
+            else:
+                chain_i += 1
+                chains.append(Chain(residues))
+                # unlikely but hit max chains
+                if chain_i == len(chains_ids)-1:
+                    chain_i = 0
+                residues = []
+
+        if len(residues) > 0:
+            chains.append(Chain(residues))
+
+        return chains
+"""
+
 
 class SecondaryStructureChainGraph(object):
     """

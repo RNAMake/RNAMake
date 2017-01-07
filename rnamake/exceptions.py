@@ -37,10 +37,6 @@ class SqliteLibraryException(Exception):
     pass
 
 
-class AtomException(Exception):
-    pass
-
-
 class MotifTypeException(Exception):
     pass
 
@@ -54,6 +50,10 @@ class SecondaryStructureException(Exception):
 
 
 class SecondaryStructureParserException(Exception):
+    pass
+
+
+class AtomException(Exception):
     pass
 
 

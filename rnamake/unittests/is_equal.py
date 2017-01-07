@@ -63,4 +63,3 @@ def are_structure_equal(s1, s2, check_uuid=1):
             return 0
 
     return 1
-x

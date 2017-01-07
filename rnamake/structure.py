@@ -57,6 +57,13 @@ class Structure(primitives.Structure):
 
     """
 
+    __slots__ = [
+        "_chains",
+        "_residues"]
+
+    def __init__(self, chains):
+       super(self.__class__, self).__init__(chains)
+
     @classmethod
     def from_str(cls, s, rts):
         """
@@ -77,7 +84,7 @@ class Structure(primitives.Structure):
         return cls(chains)
 
     @classmethod
-    def copy(cls, s):
+    def copy(cls, s, new_uuid=0):
         """
         creates a deep copy of this structure
 
@@ -86,7 +93,7 @@ class Structure(primitives.Structure):
         """
         chains = []
         for c in s._chains:
-            cc = Chain.copy(c)
+            cc = Chain.copy(c, new_uuid)
             chains.append(cc)
 
         return cls(chains)

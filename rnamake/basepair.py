@@ -2,10 +2,10 @@ import util
 import basic_io
 import numpy as np
 import uuid
+import exceptions
 
-import primitives
 
-class Basepair(primitives.Basepair):
+class Basepair(object):
     """
     :param res1: First residue in basepair
     :param res2: Second residue in basepair
@@ -73,6 +73,7 @@ class Basepair(primitives.Basepair):
         "_r",
         "_d",
         "_sugars",
+        "_name",
         "_bp_type",
         "_uuid"]
 
@@ -93,14 +94,45 @@ class Basepair(primitives.Basepair):
             self._uuid = uuid.uuid1()
 
     @classmethod
+    def from_str(cls, s, res1_uuid, res2_uuid):
+        spl = s.split(";")
+        d = basic_io.str_to_point(spl[0])
+        r = basic_io.str_to_matrix(spl[1])
+        sugars = basic_io.str_to_points(spl[2])
+
+        return cls(res1_uuid, res2_uuid, r, d, sugars, spl[3], spl[4])
+
+    @classmethod
     def copy(cls, bp):
         sugars = [np.copy(bp._sugars[0]), np.copy(bp._sugars[1])]
         return cls(bp._res1_uuid, bp._res2_uuid, np.copy(bp._r), np.copy(bp._d),
                    sugars, bp._name, bp._bp_type, bp._uuid)
 
+    @classmethod
+    def copy_with_new_uuids(cls, bp, res1_uuid, res2_uuid):
+        sugars = [np.copy(bp._sugars[0]), np.copy(bp._sugars[1])]
+        return cls(res1_uuid, res2_uuid, np.copy(bp._r), np.copy(bp._d),
+                   sugars, bp._name, bp._bp_type, bp_uuid=uuid.uuid1())
+
     def __repr__(self):
-          return "<Basepair("+self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
-            "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code) + ")>"
+          return "<Basepair("+self._name + ")>"
+
+    def partner(self, r_uuid):
+        """
+        get the other basepairing partner of a residue will throw an error
+        if the supplied residue is not contained within this basepair
+
+        :param res: the residue that you want to get the partner of
+        :type res: secondary_structure.Residue object
+        """
+
+        if   r_uuid == self._res1_uuid:
+            return self.res2_uuid
+        elif r_uuid == self._res2_uuid:
+            return self.res1_uuid
+        else:
+            raise exceptions.BasepairException(
+                "call partner with a residue not in basepair")
 
     def get_transforming_r_and_t(self, r, t, sugars):
         """
@@ -202,6 +234,13 @@ class Basepair(primitives.Basepair):
             r_diff = r_diff_2
         return r_diff
 
+    def to_str(self):
+        s  = basic_io.point_to_str(self._d) + ";"
+        s += basic_io.matrix_to_str(self._r) + ";"
+        s += basic_io.points_to_str(self._sugars) + ";"
+        s += self._name + ";" + self._bp_type + ";"
+        return s
+
     @property
     def r(self):
         return self._r
@@ -229,6 +268,14 @@ class Basepair(primitives.Basepair):
     @property
     def uuid(self):
         return self._uuid
+
+    @property
+    def res1_uuid(self):
+        return self._res1_uuid
+
+    @property
+    def res2_uuid(self):
+        return self._res2_uuid
 
 class BasepairState(object):
     """
