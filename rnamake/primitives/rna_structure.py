@@ -246,13 +246,12 @@ class RNAStructure(base.BaseStructureObject):
                 "must specify name or id in get_end_index")
 
         if name is not None:
-            bps = self.get_basepair(name=name)
-            if len(bps) == 0:
+            bp = self.get_basepair(name=name)
+            if bp is None:
                 raise exceptions.RNAStructureException(
                     "cannot find basepair with name "+name)
 
-            end = bps[0]
-            return self.ends.index(end)
+            return self._ends.index(bp)
         else:
             matching = []
             for i, end_id in enumerate(self.end_ids):

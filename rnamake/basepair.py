@@ -135,6 +135,13 @@ class Basepair(primitives.basepair.Basepair):
             raise exceptions.BasepairException(
                 "call partner with a residue not in basepair")
 
+    def flip_res(self):
+        self._res1_uuid, self._res2_uuid = self._res2_uuid, self._res1_uuid
+
+    def flip(self):
+        self.r[1] = -self.r[1]
+        self.r[2] = -self.r[2]
+
     def get_transforming_r_and_t(self, r, t, sugars):
         """
         get a rotation matrix and translation that describes the tranformation

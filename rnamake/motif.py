@@ -295,17 +295,17 @@ def align_motif(ref_bp_state, motif_end, motif, sterics=1):
     :type motif: Motif object
     """
 
-    r1 , r2 = ref_bp_state.r , motif_end.state().r
+    r1 , r2 = ref_bp_state.r , motif_end.r
     r = util.unitarize(r1.T.dot(r2))
-    trans = -motif_end.state().d
+    trans = -motif_end.d
     t = transform.Transform(r, trans)
     motif.transform(t)
-    bp_pos_diff = ref_bp_state.d - motif_end.state().d
+    bp_pos_diff = ref_bp_state.d - motif_end.d
     motif.move(bp_pos_diff)
 
     #alignment is by center of basepair, it can be slightly improved by
     #aligning the c1' sugars
-    res1_coord, res2_coord = motif_end.c1_prime_coords()
+    res1_coord, res2_coord = motif_end.sugars
     ref_res1_coord, ref_res2_coord = ref_bp_state.sugars
 
     dist1 = util.distance(res1_coord, ref_res1_coord)
@@ -321,29 +321,28 @@ def align_motif(ref_bp_state, motif_end, motif, sterics=1):
     if dist1 < 5 or dist2 < 5:
         motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )
 
-    if sterics:
-        motif.get_beads([motif_end])
 
+def get_aligned_motif(ref_bp, motif_end, m, sterics=1):
 
-def get_aligned_motif(ref_bp, motif_end, motif, sterics=1):
+    motif_end_index = m.get_end_index(motif_end.name)
+    m_copy = Motif.copy(m)
+    motif_end = m_copy.get_end(motif_end_index)
 
-    motif_end_index = motif.ends.index(motif_end)
-    m_copy = motif.copy()
-    motif_end = m_copy.ends[motif_end_index]
-
-    align_motif(ref_bp.state(), motif_end, m_copy)
+    align_motif(ref_bp, motif_end, m_copy)
 
     return m_copy
 
 
 def clash_between_motifs(m1, m2, clash_radius=settings.CLASH_RADIUS):
-    for b1 in m1.beads:
-        for b2 in m2.beads:
-            if b1.btype == residue.BeadType.PHOS or \
-               b2.btype == residue.BeadType.PHOS:
-                continue
-            dist = util.distance(b1.center, b2.center)
-            if dist < clash_radius:
-                return 1
+    for r1 in m1.iter_res():
+        for b1 in r1.iter_beads():
+            for r2 in m2.iter_res():
+                for b2 in r2.iter_beads():
+                    if b1.btype == residue.BeadType.PHOS or \
+                       b2.btype == residue.BeadType.PHOS:
+                        continue
+                    dist = util.distance(b1.center, b2.center)
+                    if dist < clash_radius:
+                        return 1
     return 0
 

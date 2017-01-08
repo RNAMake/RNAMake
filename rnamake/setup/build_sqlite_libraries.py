@@ -555,7 +555,7 @@ class BuildSqliteLibraries(object):
         sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
         #path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/twoway_clusters.db"
-        #sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
+        #sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')3
 
     def build_ss_and_seq_libraries(self):
         libnames = ["twoway", "tcontact", "hairpin", "nway"]
