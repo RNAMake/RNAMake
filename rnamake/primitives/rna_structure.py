@@ -1,6 +1,6 @@
 import abc
 
-from rnamake import util
+from rnamake import util, transform, exceptions
 import base
 
 
@@ -117,17 +117,17 @@ class RNAStructure(base.BaseStructureObject):
         for bp in self._basepairs:
             if bp_uuid is not None and bp_uuid != bp.uuid:
                 continue
-            if res1 is not None and (res1 != bp.res1 and res1 != bp.res2):
+            if res1 is not None and (res1.uuid != bp.res1_uuid and res1 != bp.res2_uuid):
                 continue
-            if res2 is not None and (res2 != bp.res1 and res2 != bp.res2):
+            if res2 is not None and (res2.uuid != bp.res1_uuid and res2 != bp.res2_uuid):
                 continue
             if uuid1 is not None and \
-               (uuid1 != bp.res1.uuid and uuid1 != bp.res2.uuid):
+               (uuid1 != bp.res1_uuid and uuid1 != bp.res2_uuid):
                 continue
             if uuid2 is not None and \
-               (uuid2 != bp.res1.uuid and uuid2 != bp.res2.uuid):
+               (uuid2 != bp.res1_uuid and uuid2 != bp.res2_uuid):
                 continue
-            if name is not None and name != bp.name():
+            if name is not None and name != bp.name:
                 continue
             found.append(bp)
         return found
@@ -196,17 +196,17 @@ class RNAStructure(base.BaseStructureObject):
         for bp in self._basepairs:
             if bp_uuid is not None and bp_uuid != bp.uuid:
                 continue
-            if res1 is not None and (res1 != bp.res1 and res1 != bp.res2):
+            if res1 is not None and (res1.uuid != bp.res1_uuid and res1 != bp.res2_uuid):
                 continue
-            if res2 is not None and (res2 != bp.res1 and res2 != bp.res2):
+            if res2 is not None and (res2.uuid != bp.res1_uuid and res2 != bp.res2_uuid):
                 continue
             if uuid1 is not None and \
-               (uuid1 != bp.res1.uuid and uuid1 != bp.res2.uuid):
+               (uuid1 != bp.res1_uuid and uuid1 != bp.res2_uuid):
                 continue
             if uuid2 is not None and \
-               (uuid2 != bp.res1.uuid and uuid2 != bp.res2.uuid):
+               (uuid2 != bp.res1_uuid and uuid2 != bp.res2_uuid):
                 continue
-            if name is not None and name != bp.name():
+            if name is not None and name != bp.name:
                 continue
             if len(found) == 1:
                 raise exceptions.RNAStructureException(
@@ -272,7 +272,9 @@ class RNAStructure(base.BaseStructureObject):
     def num_ends(self):
         return len(self._ends)
 
-
+    @property
+    def name(self):
+        return self._name
 
 def ends_from_basepairs(s, bps, check_type=1):
     """
@@ -478,3 +480,44 @@ def end_id_to_seq_and_db(ss_id):
             seq += "&"
             ss += "&"
     return seq, ss
+
+
+def align_rna_structure(ref_bp, motif_end, motif):
+    """
+    This is the workhorse of the entire suite. Aligns one end of a motif to
+    the reference frame and origin of a Basepair object.
+
+    :param ref_bp: the base pair that the motif end is going to align too
+    :param motif_end: the motif end basepair to overly with the ref_bp
+    :param motif: the motif object that you want to align
+
+    :type ref_bp: Basepair object
+    :type motif_end: Basepair object
+    :type motif: Motif object
+    """
+
+    r1 , r2 = ref_bp.r , motif_end.r
+    r = util.unitarize(r1.T.dot(r2))
+    trans = -motif_end.d
+    t = transform.Transform(r, trans)
+    motif.transform(t)
+    bp_pos_diff = ref_bp.d - motif_end.d
+    motif.move(bp_pos_diff)
+
+    #alignment is by center of basepair, it can be slightly improved by
+    #aligning the c1' sugars
+    res1_coord, res2_coord = motif_end.sugars
+    ref_res1_coord, ref_res2_coord = ref_bp.sugars
+
+    dist1 = util.distance(res1_coord, ref_res1_coord)
+    dist2 = util.distance(res2_coord, ref_res1_coord)
+
+    if dist1 < dist2:
+        sugar_diff_1 = ref_res1_coord - res1_coord
+        sugar_diff_2 = ref_res2_coord - res2_coord
+    else:
+        sugar_diff_1 = ref_res1_coord - res2_coord
+        sugar_diff_2 = ref_res2_coord - res1_coord
+
+    if dist1 < 5 or dist2 < 5:
+        motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )

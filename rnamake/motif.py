@@ -16,6 +16,8 @@ import secondary_structure
 import secondary_structure_factory as ssf
 import rna_structure
 import residue
+import bead
+import motif_state
 
 class Motif(rna_structure.RNAStructure):
     """
@@ -58,208 +60,151 @@ class Motif(rna_structure.RNAStructure):
         the name of the directory without entire path
     """
 
-    def __init__(self, r_struct=None):
-        self.beads, self.score, self.mtype, self.basepairs = [], 0, motif_type.UNKNOWN, []
-        self.path, self.name, self.ends = "", "", []
-        self.end_ids = []
-        self.structure = structure.Structure()
-        self.secondary_structure = secondary_structure.Motif()
-        self.block_end_add = 0
-        self.id = uuid.uuid1()
-        self.protein_beads = []
+    __slots__ = [
+        "_structure",
+        "_basepairs",
+        "_ends",
+        "_name",
+        "_score",
+        "_protein_beads",
+        "_end_ids",
+        "_block_end_add",
+        "_dot_bracket",
+        "_uuid",
+        "_mtype",
+        "_score"
+    ]
 
-        if r_struct is not None:
-            self.__dict__.update(r_struct.__dict__)
-            self.secondary_structure = ssf.factory.secondary_structure_from_motif(self)
+    def __init__(self, structure, basepairs, ends, end_ids, name, mtype, score,
+                 block_end_add=0, dot_bracket=None, protein_beads=None, m_uuid=None):
+
+        super(self.__class__, self).__init__(structure, basepairs, ends,
+                                             end_ids, name, block_end_add,
+                                             dot_bracket, protein_beads)
+
+        self._mtype = mtype
+        self._score = score
+        self._uuid = m_uuid
+
+        if self._uuid is None:
+            self._uuid = uuid.uuid1()
+
+    @classmethod
+    def from_str(cls, s, rts):
+        spl = s.split("&")
+        name = spl[0]
+        score = float(spl[1])
+        block_end_add = int(spl[2])
+        mtype = int(spl[3])
+        struc = structure.Structure.from_str(spl[4], rts)
+        bp_strs = spl[5].split("@")
+        bps = []
+        for bp_str in bp_strs[:-1]:
+            bps.append(rna_structure.bp_from_str(struc, bp_str))
+        ends = [ bps[int(i)] for i in spl[6].split() ]
+        end_ids = spl[7].split()
+        bead_strs = spl[8].split(";")
+        protein_beads = []
+        for bead_str in bead_strs[:-1]:
+            protein_beads.append(bead.Bead.from_str(bead_str))
+        return cls(struc, bps, ends, end_ids, name, mtype, score,
+                   block_end_add, spl[7], protein_beads)
+
+    @classmethod
+    def copy(cls, m, new_uuid=0):
+        s = structure.Structure.copy(m._structure, new_uuid)
+        basepairs = []
+        ends = []
+        protein_beads = [ residue.Bead.copy(b) for b in m._protein_beads ]
+
+        for bp in m._basepairs:
+            if new_uuid:
+                bp_res = m.get_bp_res(bp)
+                res1 = s.get_residue(num=bp_res[0].num, chain_id=bp_res[0].chain_id,
+                                     i_code=bp_res[0].i_code)
+                res2 = s.get_residue(num=bp_res[1].num, chain_id=bp_res[1].chain_id,
+                                     i_code=bp_res[1].i_code)
+                bp = basepair.Basepair.copy_with_new_uuids(bp, res1.uuid, res2.uuid)
+                basepairs.append(bp)
+            else:
+                basepairs.append(basepair.Basepair.copy(bp))
+
+        for end in m._ends:
+            i = m._basepairs.index(end)
+            ends.append(basepairs[i])
+
+        return cls(s, basepairs, ends, m._end_ids, m._name, m._mtype, m._score,
+                   m._block_end_add, m._dot_bracket, protein_beads, m._uuid)
 
     def __repr__(self):
         """
         is called when motif is printed
         """
         return "<Motif(\n\tstructure='%s', \n\tends='%s')>" % (
-        self.structure,len(self.ends))
+        self._structure,len(self._ends))
 
     def to_str(self):
         """
         stringifies motif object
         """
-        s = self.path + "&" + self.name + "&" + str(self.score) + "&" +  \
-            str(self.block_end_add) + "&" + \
-            str(self.mtype) + "&" + self.structure.to_str() + "&"
-        for bp in self.basepairs:
-            s += bp.to_str() + "@"
+        s  = self._name + "&" + str(self._score) + "&"
+        s += str(self._block_end_add) + "&"
+        s += str(self._mtype) + "&" + self._structure.to_str() + "&"
+        for bp in self._basepairs:
+            res1, res2 = self.get_bp_res(bp)
+            s += bp.to_str() + ";"
+            s += str(res1.num) + "|" + res1.chain_id + "|" + res1.i_code + ";"
+            s += str(res2.num) + "|" + res2.chain_id + "|" + res2.i_code + "@"
         s += "&"
-        for end in self.ends:
-            index = self.basepairs.index(end)
+        for end in self._ends:
+            index = self._basepairs.index(end)
             s += str(index) + " "
         s += "&"
-        for end_id in self.end_ids:
+        for end_id in self._end_ids:
             s += end_id + " "
         s += "&"
-        s += self.secondary_structure.to_str()
+        s += basic_io.beads_to_str(self._protein_beads)
         s += "&"
-        s += basic_io.beads_to_str(self.protein_beads)
+        s += self._dot_bracket
         s += "&"
         return s
-
-    def transform(self, t):
-        """
-        perform an transformation of both structure and basepairs
-        """
-        r_T = t.rotation().T
-        for bp in self.basepairs:
-            transformed = np.dot(bp.state().r, r_T)
-            bp.state().r = transformed
-
-        self.structure.transform(t)
-
-    def move(self, p):
-        """
-        wrapper for self.structure.move
-        """
-        return self.structure.move(p)
-
-    def copy(self):
-        """
-        performs a deep copy of this motif
-        """
-        cmotif = Motif()
-        cmotif.name      = self.name
-        cmotif.path      = self.path
-        cmotif.score     = self.score
-        cmotif.mtype     = self.mtype
-        cmotif.id        = self.id
-        cmotif.structure = self.structure.copy()
-        cmotif.beads     = [b.copy() for b in self.beads]
-        cmotif.end_ids   = list(self.end_ids)
-        cmotif.secondary_structure = self.secondary_structure.copy()
-        cmotif.block_end_add = self.block_end_add
-        cmotif.protein_beads = [b.copy() for b in self.protein_beads]
-
-        for bp in self.basepairs:
-            new_res1 = cmotif.get_residue(uuid=bp.res1.uuid)
-            new_res2 = cmotif.get_residue(uuid=bp.res2.uuid)
-            # hopefully this doesnt happen anymore
-            if new_res1 is None or new_res2 is None:
-                raise ValueError("could not find a residue during copy")
-            new_r = np.copy(bp.bp_state.r)
-            new_bp = basepair.Basepair(new_res1, new_res2, new_r, bp.bp_type)
-            new_bp.uuid = bp.uuid
-            cmotif.basepairs.append(new_bp)
-
-        for end in self.ends:
-            index = self.basepairs.index(end)
-            cmotif.ends.append(cmotif.basepairs[index])
-
-        return cmotif
 
     def get_state(self):
-        beads = self.get_beads(excluded_ends=[self.ends[0]])
-        centers = []
-        for b in beads:
-            if b.btype != residue.BeadType.PHOS:
-                centers.append(b.center)
+        basepairs = []
+        for bp in self._basepairs:
+            sugars = [ np.copy(bp.sugars[0]), np.copy(bp.sugars[1])]
+            bp_state = motif_state.Basepair(bp.res1_uuid, bp.res2_uuid, np.copy(bp.r),
+                                            np.copy(bp.d), sugars, bp.name, bp.bp_type,
+                                            bp.uuid)
+            basepairs.append(bp_state)
 
-        ends = [None for x in self.ends]
-        end_names = []
-        for i, end in enumerate(self.ends):
-            ends[i] = end.state()
-            end_names.append(end.name())
-        return MotifState(self.name, end_names, self.end_ids, ends, centers,
-                          self.score, len(self.residues()), self.block_end_add,
-                          self.id)
+        ends = []
+        for end in self._ends:
+            i = self._basepairs.index(end)
+            ends.append(basepairs[i])
 
-    def end_index_with_id(self, id):
-        for i, end_id in enumerate(self.end_ids):
-            if i == self.block_end_add:
-                continue
-            if id == end_id:
-                return i
+        # keep only watson and crick bps
+        bps = []
+        for bp in basepairs:
+            if bp.bp_type == "cW-W":
+                bps.append(bp)
 
-        raise ValueError("no end id: " + id + " in motif: " + self.name)
+        ms = motif_state.Motif(self._structure.get_state(), bps, ends, self._end_ids,
+                               self._name, self._mtype, self._score,
+                               self._block_end_add, self._uuid)
+        return ms
 
-    # TODO rename since it updates all unique indenfiers
-    def new_res_uuids(self):
-        self.id = uuid.uuid1()
-        for i, r in enumerate(self.residues()):
-            ss_r = self.secondary_structure.get_residue(uuid=r.uuid)
-            r.new_uuid()
-            ss_r.uuid = r.uuid
-        for bp in self.basepairs:
-            bp.uuid = uuid.uuid1()
+    @property
+    def score(self):
+        return self._score
 
-    def to_secondary_structure(self):
-        ss = ssf.factory.secondary_structure_from_motif(self)
-        return ss
+    @property
+    def mtype(self):
+        return self._mtype
 
-    def copy_uuids_from_motif(self, m):
-        self.id = m.id
-
-        for r in m.residues():
-            r_self = self.get_residue(r.num, r.chain_id, r.i_code)
-            r_self.uuid = r.uuid
-
-        for bp in m.basepairs:
-            bps_self = self.get_basepair(uuid1=bp.res1.uuid, uuid2=bp.res2.uuid)
-            bps_self[0].uuid = bp.uuid
-
-
-class MotifState(object):
-    __slots__ = ['name', 'end_names', 'end_ids', 'end_states',
-                 'beads', 'score', 'size', 'block_end_add', 'uuid']
-
-    def __init__(self, name, end_names, end_ids, end_states,
-                 beads, score, size, block_end_add, m_uuid=None):
-        self.name, self.end_states, self.beads = name, end_states, beads
-        self.score, self.size = score, size
-        self.end_names, self.end_ids = end_names, end_ids
-        self.block_end_add = block_end_add
-        self.uuid = m_uuid
-        if self.uuid is None:
-            self.uuid = uuid.uuid1()
-
-    def to_str(self):
-        s = self.name + "|" + str(self.score) + "|" + str(self.size) + "|"
-        s += str(self.block_end_add) + "|"
-        s += basic_io.points_to_str(self.beads) + "|"
-        s += ",".join(self.end_names) + "|"
-        s += ",".join(self.end_ids) + "|"
-        for state in self.end_states:
-            s += state.to_str() + "|"
-        return s
-
-    def get_end_index(self, name=None, id=None):
-        if name is None and id is None:
-            raise exceptions.MotifStateException(
-                "need to supply either the end name or end id to get the index")
-
-        if name is not None and id is not None:
-            raise exceptions.MotifStateException(
-                "cannot supply both end name and end id")
-
-        for i in range(len(self.end_states)):
-            if name == self.end_names[i]:
-                return i
-            if id == self.end_ids[i]:
-                return i
-
-        raise exceptions.MotifStateException(
-            "cannot find end state with name: " + name + " or id: " + id)
-
-    def get_end_state(self, name=None, id=None):
-        index = self.get_end_index(name, id)
-        return self.end_states[index]
-
-    def copy(self):
-        end_states = [end.copy() for end in self.end_states]
-        beads = np.copy(self.beads)
-
-        return MotifState(self.name, self.end_names, self.end_ids, end_states,
-                          beads, self.score, self.size, self.block_end_add,
-                          self.uuid)
-
-    def new_uuids(self):
-        self.uuid = uuid.uuid1()
+    @property
+    def uuid(self):
+        return self._uuid
 
 
 def file_to_motif(path):
@@ -389,43 +334,6 @@ def get_aligned_motif(ref_bp, motif_end, motif, sterics=1):
     align_motif(ref_bp.state(), motif_end, m_copy)
 
     return m_copy
-
-
-def align_motif_state(ref_bp_state, org_state):
-    r, t = ref_bp_state.get_transforming_r_and_t_w_state(org_state.end_states[0])
-    t += ref_bp_state.d
-
-    for i, s in enumerate(org_state.end_states):
-        new_r, new_d, new_sug = s.get_transformed_state(r, t)
-        org_state.end_states[i].set(new_r,new_d,new_sug)
-
-
-def get_aligned_motif_state_single(ref_bp_state, ms):
-    r, t = ref_bp_state.get_transforming_r_and_t_w_state(ms.end_states[0])
-    t += ref_bp_state.d
-
-    ms_copy = ms.copy()
-
-    for i, s in enumerate(ms.end_states):
-        new_r, new_d, new_sug = s.get_transformed_state(r, t)
-        ms_copy.end_states[i].set(new_r, new_d, new_sug)
-
-    if len(ms_copy.beads) > 0:
-        ms_copy.beads = np.dot(ms.beads, r.T) + t
-
-    return ms_copy
-
-
-def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
-    r, t = ref_bp_state.get_transforming_r_and_t_w_state(org_state.end_states[0])
-    t += ref_bp_state.d
-
-    for i, s in enumerate(org_state.end_states):
-        new_r, new_d, new_sug = s.get_transformed_state(r, t)
-        cur_state.end_states[i].set(new_r, new_d, new_sug)
-
-    if len(org_state.beads) > 0:
-        cur_state.beads = np.dot(org_state.beads, r.T) + t
 
 
 def clash_between_motifs(m1, m2, clash_radius=settings.CLASH_RADIUS):

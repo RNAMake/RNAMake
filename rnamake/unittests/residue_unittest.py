@@ -1,9 +1,10 @@
 import sys
 import unittest
 import numpy as np
+import sys
 
 from rnamake.residue import Residue, Atom, Bead, BeadType
-from rnamake import residue_type, settings, util, exceptions
+from rnamake import residue_type, settings, util, exceptions, motif_state
 
 import is_equal
 
@@ -126,6 +127,24 @@ class ResidueUnittest(unittest.TestCase):
 
         self.failUnlessAlmostEqual(1.0, util.distance(c1, c2))
 
+    def test_state(self):
+        r = self.residues[1]
+        r.build_beads()
+        rs = r.get_state()
+
+        self.failUnless(rs.num_beads() == 3)
+
+        s = rs.to_str()
+        rs_copy = motif_state.Residue.from_str(s)
+
+        self.failUnless(rs_copy.num_beads() == 3)
+
+        rs_copy = motif_state.Residue.copy(rs)
+
+        self.failUnless(rs_copy.num_beads() == 3)
+        self.failUnless(rs_copy == rs)
+
+
 
 class BeadUnittest(unittest.TestCase):
 
@@ -146,6 +165,7 @@ class BeadUnittest(unittest.TestCase):
         name = self.b.type_name()
         if name != "PHOSPHATE":
             self.fail("did not get the right bead name")
+
 
 def main():
     unittest.main()

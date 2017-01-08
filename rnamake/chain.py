@@ -1,6 +1,7 @@
 import exceptions
 import primitives.chain
 from residue import Residue
+import motif_state
 
 class Chain(primitives.chain.Chain):
     """
@@ -58,6 +59,7 @@ class Chain(primitives.chain.Chain):
         .
 
     """
+    __slots__ = ["_residues"]
 
     def __repr__(self):
         if len(self._residues) == 0:
@@ -125,7 +127,7 @@ class Chain(primitives.chain.Chain):
         """
 
         s = ""
-        for r in self.residues:
+        for r in self._residues:
             r_str, acount = r.to_pdb_str(acount, 1, rnum, chain_id)
             if rnum != -1:
                 rnum += 1
@@ -162,6 +164,10 @@ class Chain(primitives.chain.Chain):
     def move(self, p):
         for r in self._residues:
             r.move(p)
+
+    def get_state(self):
+        residues = [r.get_state() for r in self._residues]
+        return motif_state.Chain(residues)
 
 def connect_residues_into_chains(residues):
         """

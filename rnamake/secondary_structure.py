@@ -1,9 +1,13 @@
 import uuid
 import motif_type
 import exceptions
-import primitives
+import primitives.residue
+import primitives.chain
+import primitives.basepair
+import primitives.structure
+import primitives.rna_structure
 
-class Residue(primitives.Residue):
+class Residue(primitives.residue.Residue):
     """
     An extremely stripped down container object for use for keeping track of
     secondary structure using dot bracket notation. Dot bracket notation is
@@ -116,7 +120,7 @@ class Residue(primitives.Residue):
         return self._name
 
 
-class Chain(primitives.Chain):
+class Chain(primitives.chain.Chain):
     """
     secondary structure chain container. Contains a chain of connected
     residues. Chain should be from 5' to 3'.
@@ -251,7 +255,7 @@ class Chain(primitives.Chain):
         return s
 
 
-class Structure(primitives.Structure):
+class Structure(primitives.structure.Structure):
     """
     lightweight container class for storing secondary structure information
     for an entire RNA.
@@ -359,7 +363,7 @@ class Structure(primitives.Structure):
         return s
 
 
-class Basepair(primitives.Basepair):
+class Basepair(primitives.basepair.Basepair):
     """
     :param res1: First residue in basepair
     :param res2: Second residue in basepair
@@ -434,7 +438,7 @@ class Basepair(primitives.Basepair):
         return self._res2_uuid
 
 
-class RNAStructure(primitives.RNAStructure):
+class RNAStructure(primitives.rna_structure.RNAStructure):
     """
     Complete secondary structure container for representing a RNA. Contains
     both the sequence indentity of each residue with its corresponding dot

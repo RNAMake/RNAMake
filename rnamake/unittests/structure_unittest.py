@@ -3,7 +3,7 @@ import warnings
 import rnamake.transform
 import rnamake.io
 
-from rnamake import structure, exceptions, util, residue_type
+from rnamake import structure, exceptions, util, residue_type, motif_state
 from instances import transform_instances
 
 import is_equal, instances
@@ -127,6 +127,20 @@ class StructureUnittest(unittest.TestCase):
 
         if not is_equal.are_structure_equal(s, s_copy):
             self.fail("copying did not return an indentical structure")
+
+    def test_get_state(self):
+        s = self.structure
+        ss = s.get_state()
+
+        self.failUnless(len(s) == len(ss))
+
+        ss_copy = motif_state.Structure.copy(ss)
+
+        s = ss.to_str()
+        ss_copy = motif_state.Structure.from_str(s)
+
+        self.failUnless(len(self.structure) == len(ss_copy))
+
 
 def main():
     unittest.main()

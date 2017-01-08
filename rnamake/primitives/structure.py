@@ -18,7 +18,6 @@ class Structure(base.BaseStructureObject):
             for r in c:
                 self._residues.append(r)
 
-
     def __len__(self):
         return len(self._chains)
 

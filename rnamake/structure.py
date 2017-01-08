@@ -3,6 +3,7 @@ import numpy as np
 import pdb_parser
 import util
 import exceptions
+import motif_state
 import primitives.structure
 from chain import Chain, connect_residues_into_chains
 
@@ -99,8 +100,8 @@ class Structure(primitives.structure.Structure):
         return cls(chains)
 
     def __repr__(self):
-        return """<Structure(name: %s, #chains: %s, #residues: %s, #atoms: %s)>""" %\
-               (self.name, len(self.chains), len(self.residues()), len(self.atoms()))
+        return """<Structure(#chains: %s, #residues: %s)>""" %\
+               (len(self._chains), len(self._residues))
 
     def get_beads(self, excluded_res=None):
         """
@@ -176,11 +177,11 @@ class Structure(primitives.structure.Structure):
             chain_id = "A"
             rnum = 1
 
-        for i, c in enumerate(self.chains):
+        for i, c in enumerate(self._chains):
             c_str, acount = c.to_pdb_str(acount, 1, rnum, chain_id)
             if renumber != -1:
             #    chain_id = c_names[i+1]
-                rnum += len(c.residues)
+                rnum += len(c)
             s += c_str
             s += "TER\n"
         return s
@@ -278,6 +279,11 @@ class Structure(primitives.structure.Structure):
 
         for c in self._chains:
             c.move(p)
+
+    def get_state(self):
+        chains = [ c.get_state() for c in self._chains]
+        return motif_state.Structure(chains)
+
 
 
 def structure_from_pdb(pdb_path, rts):

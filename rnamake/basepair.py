@@ -278,6 +278,10 @@ class Basepair(primitives.basepair.Basepair):
     def res2_uuid(self):
         return self._res2_uuid
 
+    @property
+    def name(self):
+        return self._name
+
 class BasepairState(object):
     """
     A small container class to hold the "State" of a basepair for finding
@@ -497,3 +501,15 @@ def str_to_basepairstate(s):
     sugars = basic_io.str_to_matrix(spl[2])
     return BasepairState(r, d, sugars)
 
+
+def calc_center(res):
+    center = np.array([0.0,0.0,0.0])
+    count = 0
+    for r in res:
+        for a in r:
+            if a is None:
+                continue
+            center += a.coords
+            count += 1
+    center /= count
+    return center

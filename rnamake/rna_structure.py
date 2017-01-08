@@ -116,13 +116,14 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
 
         for c in self._structure:
             for r in c:
+                found = 0
                 for i, end in enumerate(ends):
-                    if i == self._block_end_add:
-                        r.build_beads()
-                    elif end.res1_uuid == r.uuid or end.res2_uuid == r.uuid:
-                        continue
-                    else:
-                        r.build_beads()
+                    if (end.res1_uuid == r.uuid or end.res2_uuid == r.uuid) and \
+                       i != self.block_end_add:
+                        found = 1
+                        break
+                if not found:
+                    r.build_beads()
 
     @classmethod
     def from_str(cls, s, rts):
@@ -136,18 +137,13 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
             bps.append(bp_from_str(struc, bp_str))
         ends = [ bps[int(i)] for i in spl[4].split() ]
         end_ids = spl[5].split()
-        protein_beads = []
         bead_strs = spl[6].split(";")
-        beads = []
+        protein_beads = []
         for bead_str in bead_strs[:-1]:
-            beads.append(residue.Bead.from_str(bead_str))
+            protein_beads.append(residue.Bead.from_str(bead_str))
 
         return cls(struc, bps, ends, end_ids, name, block_end_add, spl[7],
                    protein_beads)
-
-
-
-        #return cls()
 
     @classmethod
     def copy(cls, rs, new_uuid=0):
@@ -197,6 +193,7 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         s += basic_io.beads_to_str(self._protein_beads)
         s += "&"
         s += self._dot_bracket
+        s += "&"
         return s
 
     def to_pdb_str(self, renumber=-1, close_chain=0):
@@ -237,10 +234,10 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
 
         """
         if close_chain:
-            for c in self.chains():
+            for c in self._chains():
                 chain_closure.close_chain(c)
 
-        return self.structure.to_pdb(fname, renumber)
+        return self._structure.to_pdb(fname, renumber)
 
     def sequence(self):
         """
@@ -261,6 +258,21 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         """
 
         return self._dot_bracket
+
+    def move(self, p):
+        self._structure.move(p)
+        for bp in self._basepairs:
+            bp.move(p)
+
+    def transform(self, t):
+        self._structure.transform(t)
+        for bp in self._basepairs:
+            bp.transform(t)
+
+    @property
+    def block_end_add(self):
+        return self._block_end_add
+
 
 
 # TODO should probably move this somewhere else?
@@ -332,7 +344,8 @@ def rna_structure_from_pdb(pdb_path, rts):
     name = util.filename(pdb_path)[:-4]
     score = 0
     seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
-    rna_struc = RNAStructure(s, bps, ends, end_ids, name, dot_bracket=dot_bracket)
+    rna_struc = RNAStructure(s, bps, ends, end_ids, name, dot_bracket=dot_bracket,
+                             block_end_add=0)
     return rna_struc
 
 

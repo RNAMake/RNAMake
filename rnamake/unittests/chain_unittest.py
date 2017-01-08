@@ -1,7 +1,7 @@
 import unittest
 
 from rnamake.chain import Chain
-from rnamake import exceptions, settings, residue_type
+from rnamake import exceptions, settings, residue_type, motif_state
 
 import util
 import is_equal
@@ -85,10 +85,26 @@ class ChainUnittest(unittest.TestCase):
         if not is_equal.are_chains_equal(c, c_copy, check_uuid=0):
             self.fail("did not copy chain correctly")
 
+    def test_get_state(self):
+        c = self.chains[0]
+        cs = c.get_state()
 
+        self.failUnless(len(c) == len(cs))
+
+        cs_copy = motif_state.Chain.copy(cs)
+
+        self.failUnless(len(cs) == len(cs_copy))
+        self.failUnless(cs.first() == cs_copy.first())
+        self.failUnless(cs.last() == cs_copy.last())
+
+        s = cs.to_str()
+        cs_copy = motif_state.Chain.from_str(s)
+
+        self.failUnless(len(cs) == len(cs_copy))
 
 def main():
     unittest.main()
 
 if __name__ == '__main__':
     main()
+2

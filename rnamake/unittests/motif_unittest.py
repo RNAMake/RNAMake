@@ -1,33 +1,76 @@
 import unittest
 import os
-import rnamake.resource_manager as rm
-import rnamake.motif as motif
-import rnamake.settings
-import rnamake.motif_type
-import rnamake.transform
-import rnamake.motif_factory
-import rnamake.util as util
-import numerical
-import numpy as np
-from rnamake import secondary_structure_factory as ssf
-from rnamake import basic_io
+from rnamake import motif, motif_type, residue_type, settings, structure, x3dna
+from rnamake import rna_structure, util, motif_state
+from rnamake.primitives.rna_structure import ends_from_basepairs, assign_end_id, end_id_to_seq_and_db
 
-import files, instances
+import numerical
+
+def motif_from_pdb(pdb_path, rts):
+    s = structure.structure_from_pdb(pdb_path, rts)
+    bps = rna_structure.basepairs_from_x3dna(pdb_path, s)
+    ends = ends_from_basepairs(s, bps)
+    end_ids = []
+    for end in ends:
+        end_id = assign_end_id(s, bps, end)
+        end_ids.append(end_id)
+    name = util.filename(pdb_path)[:-4]
+    score = 0
+    seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
+    m = motif.Motif(s, bps, ends, end_ids, name, motif_type.HELIX, 0,
+                    dot_bracket=dot_bracket)
+    return m
 
 
 class MotifUnittest(unittest.TestCase):
 
     def setUp(self):
-        self.motif = instances.motif()
+        self.rts = residue_type.ResidueTypeSet()
+        path = settings.MOTIF_DIRS + "helices/HELIX.IDEAL/HELIX.IDEAL.pdb"
+        self.m = motif_from_pdb(path, self.rts)
 
-    def test_state_1(self):
-        ms1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
-        state = ms1.get_state()
+    def test_creation(self):
+        pass
 
-        s = state.to_str()
-        state2 = motif.str_to_motif_state(s)
+    def test_to_str(self):
+        m = self.m
+        s = m.to_str()
+        m2 = motif.Motif.from_str(s, self.rts)
 
-    def test_state(self):
+        self.failUnless(m.name == m2.name)
+
+    def test_copy(self):
+        m = self.m
+        m2 = motif.Motif.copy(m)
+
+        self.failUnless(m.name == m2.name)
+
+    def test_get_state(self):
+        m = self.m
+        ms = m.get_state()
+
+        self.failUnless(ms.num_ends() == m.num_ends())
+        self.failUnless(numerical.are_points_equal(ms.get_end(0).d,
+                                                   m.get_end(0).d))
+
+        self.failUnless(ms.num_res() == m.num_res())
+
+        for r in m.iter_res():
+            self.failUnless(ms.get_residue(uuid=r.uuid) is not None)
+
+        s = ms.to_str()
+        ms_copy = motif_state.Motif.from_str(s)
+
+        self.failUnless(ms_copy.num_res() == m.num_res())
+        self.failUnless(ms_copy.mtype == m.mtype)
+
+        ms_copy = motif_state.Motif.copy(m)
+
+        self.failUnless(ms_copy.num_res() == m.num_res())
+        self.failUnless(ms_copy.mtype == m.mtype)
+
+
+    def _test_state(self):
         ms1 = rm.manager.get_state(name="HELIX.IDEAL.2")
         ms2 = rm.manager.get_state(name="HELIX.IDEAL.2")
 
@@ -48,56 +91,14 @@ class MotifUnittest(unittest.TestCase):
             print m2.ends[1].r()
             self.fail("motif state did not act like a motif for rotation")
 
-    def test_get_basepair(self):
-        m = self.motif
-        bp = m.basepairs[0]
-
-        found = m.get_basepair(res1=bp.res1, res2=bp.res2)
-        if bp != found[0]:
-            self.fail("did not retreive correct basepair")
-
-        found = m.get_basepair(uuid1=bp.res1.uuid, uuid2=bp.res2.uuid)
-        if bp != found[0]:
-            self.fail("did not retreive correct basepair")
-
-    def test_get_beads(self):
-        m = self.motif
-        beads = m.get_beads()
-        org_count = len(beads)
-
-        beads = m.get_beads(excluded_res=[m.structure.residues()[1]])
-        diff = org_count - len(beads)
-        if diff != 3:
-            self.fail("did not exclude res properly")
-
-        beads = m.get_beads([m.basepairs[0]])
-        diff = org_count - len(beads)
-        if diff != 6:
-            self.fail("did not exclude ends properly")
-
-    def test_to_str(self):
+    def _test_to_str(self):
         m = self.motif
         s = m.to_str()
         m1 = rnamake.motif.str_to_motif(s)
         if len(m1.residues()) != 10:
             self.fail("did not copy all residues correctly")
 
-    def test_copy(self):
-        m = self.motif
-        cm = m.copy()
-
-    def test_transform(self):
-        m = self.motif
-        r = np.random.random([3,3])
-        d = np.random.random([3])
-        t = rnamake.transform.Transform(r, d)
-        old_r = m.basepairs[0].state().r
-        m.transform(t)
-        new_r = m.basepairs[0].state().r
-        if numerical.are_matrices_equal(old_r, new_r):
-            self.fail("rotations should be different")
-
-    def test_get_end_id(self):
+    """def test_get_end_id(self):
         m = rm.manager.get_motif(name="HELIX.IDEAL")
         end_id = m.end_index_with_id('GG_LL_CC_RR')
 
@@ -106,7 +107,7 @@ class MotifUnittest(unittest.TestCase):
         m = rnamake.motif_factory.factory.motif_from_file(path, include_protein=1)
 
         beads = m.protein_beads
-        #basic_io.beads_to_pdb("test.pdb", beads)
+        #basic_io.beads_to_pdb("test.pdb", beads)"""
 
 
 def main():

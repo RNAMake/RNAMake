@@ -33,3 +33,5 @@ def calc_bp_name(res):
         return res1_name+"-"+res2_name
     else:
         return res2_name+"-"+res1_name
+
+
