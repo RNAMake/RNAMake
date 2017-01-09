@@ -13,6 +13,7 @@ class SimulateTectosWrapper(wrapper.Wrapper):
         self.add_cmd_option("s", 1000000, required=False)
 
         self.add_cmd_option("extra_me", "", required=False)
+        self.add_cmd_option("extra_motifs", "", required=False)
 
         self.add_cmd_option("new_ggaa_model", False, required=False)
         self.add_cmd_option("ggaa_model", "", required=False)
@@ -21,7 +22,6 @@ class SimulateTectosWrapper(wrapper.Wrapper):
         self.add_cmd_option("simulation.temperature", 298.15, required=False)
         self.add_cmd_option("simulation.steric_radius", 2.2, required=False)
         self.add_cmd_option("simulation.cutoff", 4.5, required=False)
-
 
     def run(self, **options):
         try:

@@ -45,6 +45,8 @@ SimulateTectosApp::setup_options() {
     add_option("new_ggaa_model", false, OptionType::BOOL);
     add_option("ggaa_model", "", OptionType::STRING);
     
+    add_option("extra_motifs", "", OptionType::STRING);
+    
     add_cl_options(tfs_.options(), "simulation");
     
 }
@@ -63,6 +65,17 @@ SimulateTectosApp::parse_command_line(
 
 void
 SimulateTectosApp::run() {
+    
+    // load extra motifs in resource manager
+    if(get_string_option("extra_motifs") != "") {
+        auto spl = split_str_by_delimiter(get_string_option("extra_motifs"), ",");
+        for(auto const & path : spl) {
+            std::cout << path << std::endl;
+            auto m = file_to_motif(path);
+            RM::instance().add_motif(m);
+            
+        }
+    }
     
     auto fseq = get_string_option("fseq");
     auto fss  = get_string_option("fss");
