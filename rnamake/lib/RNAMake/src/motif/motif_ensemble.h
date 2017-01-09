@@ -107,7 +107,7 @@ public:
         id_ = spl[0];
         block_end_add_ = std::stoi(spl[1]);
         members_ = MotifEnsembleMemberOPs();
-        for(int i = 2; i < spl.size(); i++) {
+        for(int i = 2; i < spl.size()-1; i++) {
             auto m_spl = split_str_by_delimiter(spl[i], "#");
             auto m = std::make_shared<Motif>(m_spl[0], rts);
             auto energy = std::stof(m_spl[1]);

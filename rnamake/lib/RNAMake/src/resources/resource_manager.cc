@@ -259,7 +259,9 @@ RM::register_extra_motif_ensembles(
             ResidueTypeSetManager::getInstance().residue_type_set());
         
         for(auto const & mem : extra_me_[spl[0]]->members()) {
-            added_motifs_.add_motif(mem->motif);
+            try{
+                added_motifs_.add_motif(mem->motif);
+            } catch(AddedMotifLibraryException) { }
         }
         
         std::cout << "RESOURCE MANAGER: motif ensemble for " <<  spl[0] << " registered" << std::endl;
