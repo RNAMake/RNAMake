@@ -206,7 +206,7 @@ MotifFactory::_setup_basepairs(
     auto x3dna_parser = X3dna();
     auto x_basepairs = x3dna_parser.get_basepairs(path, rebuild_x3dna);
     ResidueOP res1, res2;
-    BasepairOP bp;
+    //BasepairOP bp;
     for(auto const & xbp : x_basepairs) {
         res1 = structure->get_residue(xbp.res1.num, xbp.res1.chain_id, xbp.res1.i_code);
         res2 = structure->get_residue(xbp.res2.num, xbp.res2.chain_id, xbp.res2.i_code);
@@ -214,8 +214,8 @@ MotifFactory::_setup_basepairs(
             throw MotifFactoryException("cannot find residues in basepair during setup");
         }
         
-        bp = BasepairOP(new Basepair(res1, res2, xbp.r, xbp.bp_type));
-        basepairs.push_back(bp);
+        // Emplacement constructs the object in-place
+        basepairs.emplace_back(new Basepair(res1, res2, xbp.r, xbp.bp_type));
     }
     
     return basepairs;
@@ -277,12 +277,12 @@ MotifFactory::_align_chains(
     
     auto chains = m->chains();
     ChainOP closest;
-    float best = 1000, dist;
+    float best = 1000;
     auto c2 = center(ref_motif_->ends()[0]->atoms());
     Point c1;
     for(auto const & c : chains) {
         c1 = center(c->first()->atoms());
-        dist = c1.distance(c2);
+        float dist = c1.distance(c2);
         if(dist < best) {
             best = dist;
             closest = c;
@@ -302,13 +302,13 @@ MotifFactory::_align_ends(
     MotifOP & m) {
     
     BasepairOP closest;
-    float best = 1000, dist;
+    float best = 1000;
     auto c2 = center(ref_motif_->ends()[0]->atoms());
     Point c1;
     
     for(auto const & end : m->ends()) {
         c1 = center(end->atoms());
-        dist = c1.distance(c2);
+        float dist = c1.distance(c2);
         if(dist < best) {
             best = dist;
             closest = end;
@@ -320,9 +320,8 @@ MotifFactory::_align_ends(
         if(end != closest) { updated_ends.push_back(end); }
     }
     
-    int flip_res = 0;;
     for(auto & end : m->ends()) {
-        flip_res = 0;
+        int flip_res = 0;
         for (auto const & c : m->chains()) {
             if(c->first() == end->res2()) {
                 flip_res = 1;
@@ -346,11 +345,10 @@ MotifFactory::_steric_clash(
     MotifOP const & m1,
     MotifOP const & m2) {
     
-    float dist;
     for(auto const & c1 : m1->beads()) {
         for(auto const & c2 : m2->beads()) {
             if(c1.btype() == BeadType::PHOS || c2.btype() == BeadType::PHOS) {continue; }
-            dist = c1.center().distance(c2.center());
+            float dist = c1.center().distance(c2.center());
             if( dist < clash_radius_) { return 1; }
         }
     }

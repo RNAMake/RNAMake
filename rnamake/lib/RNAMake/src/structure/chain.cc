@@ -57,7 +57,6 @@ connect_residues_into_chains(
     ResidueOP current;
     ResidueOPs current_chain_res;
     int five_prime_end = 1;
-    int found = 1;
     while (true) {
         for (auto & r1 : residues) {
             five_prime_end = 1;
@@ -72,7 +71,7 @@ connect_residues_into_chains(
         if(!five_prime_end) { break; }
         residues.erase(std::remove(residues.begin(), residues.end(), current), residues.end());
         current_chain_res = ResidueOPs();
-        found = 1;
+        int found = 1;
         while ( found ) {
             current_chain_res.push_back(current);
             found = 0;

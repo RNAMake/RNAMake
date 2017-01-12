@@ -117,9 +117,8 @@ RM::get_structure(
     auto m = mf_.motif_from_file(path);
     if(name != "") { m->name(name); }
 
-    int flip_res = 0;;
     for(auto & end : m->ends()) {
-        flip_res = 0;
+        int flip_res = 0;
         for (auto const & c : m->chains()) {
             if(c->first() == end->res2()) {
                 flip_res = 1;
@@ -148,7 +147,6 @@ RM::add_motif(
     
     if(name != "") { m->name(name); }
     
-    int added = 0;
     MotifOPs motifs;
     std::map<Uuid, String, UuidCompare> end_ids;
     for( int i = 0; i < m->ends().size(); i++) {
@@ -193,7 +191,6 @@ RM::add_motif(
     
     if(name != "") { m->name(name); }
     
-    int added = 0;
     MotifOPs motifs;
     std::map<Uuid, String, UuidCompare> end_ids;
     for( int i = 0; i < m->ends().size(); i++) {

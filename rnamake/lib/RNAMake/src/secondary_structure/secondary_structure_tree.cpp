@@ -89,7 +89,6 @@ tree_from_pose(PoseOP const & p) {
     auto open_nodes = std::queue<TreePreNode>();
     auto seen = MotifOPs();
     auto current = TreePreNode();
-    int pos = 0;
     open_nodes.push(TreePreNode{ start_m, -1 , -1});
     int i = 0;
     
@@ -99,7 +98,7 @@ tree_from_pose(PoseOP const & p) {
         
         seen.push_back(current.m);
         
-        pos = sst->add_motif(current.m, current.parent_index, current.parent_end_index);
+        int pos = sst->add_motif(current.m, current.parent_index, current.parent_end_index);
         for(auto const & m : p->motifs()) {
             if(std::find(seen.begin(), seen.end(), m) != seen.end()) {
                 continue;
@@ -112,9 +111,7 @@ tree_from_pose(PoseOP const & p) {
                     open_nodes.push(TreePreNode(m, pos, i));
                 }
             }
-            
         }
-
     }
     
     return sst;

@@ -102,7 +102,7 @@ MotifTree::_get_parent(
     try {
         if(parent_index != -1) { parent = tree_.get_node(parent_index); }
     }
-    catch(TreeException e) {
+    catch(TreeException const & e) {
         throw MotifTreeException(
             "could not add motif with parent index: " + std::to_string(parent_index) +
             "there is no node with that index");

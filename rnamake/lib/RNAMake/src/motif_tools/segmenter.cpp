@@ -20,14 +20,13 @@ Segmenter::_get_pairs(
     end_pairs_ = PairOPs();
     
     ChainOP sc, sc1, sc2;
-    int i = 0, j = 0;
     float dist;
     
     for(auto const & c : m->chains()) {
-        i = -1;
+        int i = -1;
         for(auto const & res1 : res) {
             i++;
-            j = -1;
+            int j = -1;
             for(auto const & res2 : res) {
                 j++;
                 if(i >= j) { continue; }
@@ -120,9 +119,8 @@ Segmenter::_get_segments(
     remaining->name(m->name() + ".remaining");
     mf_.standardize_rna_structure_ends(remaining);
     
-    int flip_res = 0;;
     for(auto & end : remaining->ends()) {
-        flip_res = 0;
+        int flip_res = 0;
         for (auto const & c : remaining->chains()) {
             if(c->first() == end->res2()) {
                 flip_res = 1;

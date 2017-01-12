@@ -99,9 +99,8 @@ Pose::replace_sequence(
     
     RNAStructure::replace_sequence(seq);
 
-    int i = 0;
     for(auto & m : motifs_) {
-        i = 0;
+        int i = 0;
         auto end_ids = Strings(m->ends().size());
         for(auto const & end : m->ends()) {
             end_ids[i] = assign_end_id(m, end);
@@ -109,7 +108,6 @@ Pose::replace_sequence(
         }
         m->end_ids(end_ids);
     }
-    
 }
 
 void

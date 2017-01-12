@@ -130,10 +130,9 @@ MotiftoSecondaryStructure::_get_next_chain(
     
     ChainOP best_chain;
     best_score = 10000;
-    int pos = 1000, i = 0;
     for(auto const & c : best_chains) {
-        pos = 1000;
-        i = 0;
+        int pos = 1000;
+        int i = 0;
         for(auto const & r : c->residues()) {
             bps = motif->get_basepair(r->uuid());
             for(auto const & bp : bps) {
