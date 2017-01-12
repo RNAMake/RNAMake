@@ -89,14 +89,14 @@ MotifTreeStateAltPather::get_alt_paths(
     CartesianProduct<MotifTreeStateOP> product(mts_alts);
     MotifTreeStateOPs c;
     MotifTreeStateNodeOP parent, node;
-    int end_index, fail, count = 0;
+    int end_index, count = 0;
     
     
     while(!product.end()) {
         MotifTreeStateTree mtst2;
         c = product.next();
         i = 1;
-        fail = 0;
+        int fail = 0;
         for(auto const & mts : c) {
             parent = mtst2.nodes()[ mtst.nodes()[i]->parent()->index() ];
             end_index = mtst.nodes()[i]->parent_end_index();
@@ -113,9 +113,4 @@ MotifTreeStateAltPather::get_alt_paths(
     }
     
     return all_trees_;
-        
-    
-    
-    
-    
 }

@@ -23,9 +23,8 @@ SecondaryStructureParser::parse(
     
     auto res = ResidueOPs();
     pairs_ = BasepairOPs();
-    int is_start_res = 0;
     for(auto const & r : residues_) {
-        is_start_res = _start_of_chain(r);
+        int is_start_res = _start_of_chain(r);
         if(r->dot_bracket() == ".") { res.push_back(r); }
         
         else if(r->dot_bracket() == "(") {
@@ -43,7 +42,6 @@ SecondaryStructureParser::parse(
                 res = ResidueOPs();
             }
             
-            
             auto pair = _get_previous_pair(r);
             auto new_data = NodeData(ResidueOPs{r}, NodeType::PAIRED);
             int parent_index = g->get_node_by_res(_previous_res(r));
@@ -58,7 +56,6 @@ SecondaryStructureParser::parse(
     }
     
     if(res.size() > 0) { _add_unpaired_residues_to_graph(g, res, 0); }
-    
     
     return g;
 }

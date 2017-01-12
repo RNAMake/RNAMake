@@ -44,7 +44,7 @@ public: //iterator stuff
         i_(i)
         {}
         
-        iterator operator++() { i_++; return *this; }
+        iterator operator++() { ++i_; return *this; }
         MotifStateEnsembleOP const & operator*() { return i_->second; }
         bool operator== (iterator const & rhs) const { return i_ == rhs.i_; }
         bool operator!= (iterator const & rhs) const { return i_ != rhs.i_; }

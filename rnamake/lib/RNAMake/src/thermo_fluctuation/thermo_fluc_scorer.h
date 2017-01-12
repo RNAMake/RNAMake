@@ -37,7 +37,10 @@ public:
 
 class FrameScorer : public ThermoFlucScorer {
 public:
-    FrameScorer() : ThermoFlucScorer()
+    FrameScorer() : ThermoFlucScorer(),
+        frame_score_( 0 ),
+        r_diff_( 0 ),
+        r_diff_flip_( 0 )
     {}
     
     ~FrameScorer() {}
@@ -64,14 +67,19 @@ public:
     }
     
 private:
-    float frame_score_, r_diff_, r_diff_flip_;
+    float frame_score_ = 0, r_diff_ = 0, r_diff_flip_ = 0;
 };
 
 
 class FrameScorerDevel : public ThermoFlucScorer {
 public:
-    FrameScorerDevel() : ThermoFlucScorer()
-    { weight_d_ = 1; weight_r_ = 1; }
+    FrameScorerDevel() : ThermoFlucScorer(),
+        frame_score_( 0 ),
+        r_diff_( 0 ),
+        r_diff_flip_( 0 ),
+        weight_d_( 1 ),
+        weight_r_( 1 )
+    {}
     
     ~FrameScorerDevel() {}
     
@@ -119,8 +127,8 @@ public:
     weight_r() { return weight_r_; }
     
 private:
-    float frame_score_, r_diff_, r_diff_flip_;
-    float weight_d_, weight_r_;
+    float frame_score_ = 0, r_diff_ = 0, r_diff_flip_ = 0;
+    float weight_d_ = 0, weight_r_ = 0;
 };
 
 

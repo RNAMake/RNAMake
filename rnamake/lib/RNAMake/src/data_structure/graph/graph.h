@@ -168,9 +168,8 @@ private:
         queue_ = GraphNodeQueue<DataType>();
         seen_  = std::map<GraphNodeOP<DataType>, int> ();
         
-        int active_conn = 0;
         for(auto const & n : nodes) {
-            active_conn = 0;
+            int active_conn = 0;
             for (auto const & c : n->connections()) {
                 if(c != nullptr) { active_conn += 1; }
             }
@@ -193,12 +192,12 @@ private:
     
     GraphIterator(
         GraphNodeOP<DataType> const & node):
-    nodes_(GraphNodeOPs<DataType>()) {
-        
-        queue_ = GraphNodeQueue<DataType>();
-        seen_  = std::map<GraphNodeOP<DataType>, int> ();
-        leafs_ = GraphNodeOPs<DataType>();
-        current_ = node;
+    nodes_(GraphNodeOPs<DataType>()),
+    queue_(GraphNodeQueue<DataType>()),
+    seen_(std::map<GraphNodeOP<DataType>, int> ()),
+    leafs_(GraphNodeOPs<DataType>()),
+    current_(node)
+    {
         seen_[current_] = 1;
     }
 };
@@ -373,12 +372,11 @@ public:
         }
         
         i = 0;
-        int j, ei, ej;
         for(auto const & c : g.connections_) {
             i = c->node_1()->index();
-            j = c->node_2()->index();
-            ei = c->end_index(i);
-            ej = c->end_index(j);
+            int j = c->node_2()->index();
+            int ei = c->end_index(i);
+            int ej = c->end_index(j);
             connect(i, j, ei, ej);
         }
         

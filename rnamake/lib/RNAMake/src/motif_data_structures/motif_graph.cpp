@@ -45,7 +45,7 @@ MotifGraph::_setup_from_top_str(String const & s) {
     auto spl = split_str_by_delimiter(s, "&");
     auto node_spl = split_str_by_delimiter(spl[0], "|");
     auto sspl = Strings();
-    int i = 0;
+    //int i = 0;
     int max_index = 0;
     for(auto const & n_spl : node_spl) {
         sspl = split_str_by_delimiter(n_spl, ",");

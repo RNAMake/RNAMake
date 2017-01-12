@@ -59,7 +59,12 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
     
     SECTION("test adding hairpins together for one chain") {
         // catch std::cout warnings
-        auto ss = std::stringstream();
+        // We hit a most vexing parse if we use
+        //auto ss(std::stringstream());
+        // and use the deleted copy ctor if we use
+        //auto ss = std::stringstream()
+        //auto ss(std::stringstream(""));
+        std::stringstream ss;
         auto old_buf = std::cout.rdbuf(ss.rdbuf());
 
         auto mm = MotifMerger();
@@ -84,8 +89,6 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
         mm.add_motif(m1);
         mm.update_motif(m1);
         REQUIRE_THROWS_AS(mm.update_motif(m2), MotifMergerException);
-        
-        
     }
     
     SECTION("catching motif with same id twice") {
@@ -145,7 +148,8 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
         auto mm = MotifMerger();
         
         // catch std::cout warnings
-        auto ss = std::stringstream();
+        //auto ss(std::stringstream(""));
+        std::stringstream ss;
         auto old_buf = std::cout.rdbuf(ss.rdbuf());
 
         mm.add_motif(m1);
