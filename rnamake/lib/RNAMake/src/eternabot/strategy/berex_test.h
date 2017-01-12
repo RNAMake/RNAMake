@@ -18,7 +18,7 @@ namespace eternabot {
 class BerexTest: public Strategy {
 public:
     BerexTest() {
-        params_ = std::vector<float>(10);
+        params_ = std::vector<float>(12);
         params_[0] = 0.233331320365;
         params_[1] = 67.1928215814;
         params_[2] = 0.0846125555161;
