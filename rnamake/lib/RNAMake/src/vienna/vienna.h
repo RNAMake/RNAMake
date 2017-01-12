@@ -330,7 +330,7 @@ private:
     inline
     void
     get_indx(Ints & c_idx) {
-        for (int i = 1; i <= size_; i++) {
+        for (int i = 1; i < size_; i++) {
             c_idx[i] = (i*(i-1)) >> 1;
         }
     }
@@ -339,7 +339,7 @@ private:
     void
     get_iindx(Ints & c_idx, int length) {
         unsigned int i;
-        for (i = 1; i <= length; i++) {
+        for (i = 1; i < length; i++) {
             c_idx[i] = (((length + 1 - i) * (length - i))>>1) + length + 1;
         }
         
