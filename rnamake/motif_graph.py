@@ -1024,7 +1024,7 @@ class MotifGraph(base.Base):
 
     def _align_motifs_all_motifs(self):
         non_aligned_nodes = self.get_not_aligned_nodes()
-        align_list = self.align_list
+        align_list = self._get_align_list()
 
         for n in align_list:
             if n in non_aligned_nodes:

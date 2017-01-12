@@ -79,6 +79,18 @@ class ResourceManager(object):
         self.add_motif(settings.MOTIF_DIRS + "/extras/GAAA_tetraloop")
         self.add_motif(settings.MOTIF_DIRS + "/extras/GGAA_tetraloop")
 
+        #load sim list
+        self.sim_list = {}
+        f = open(settings.RESOURCES_PATH + "sim_list_new")
+        lines = f.readlines()
+        f.close()
+
+        for l in lines:
+            spl = l.split("|")
+            name = spl[0].rstrip().lstrip()
+            spl.pop(0)
+            self.sim_list[name] = [s.rstrip().lstrip() for s in spl]
+
     def get_motif(self, **options):
         for mlib in self.mlibs.itervalues():
             if mlib.contains(**options):
