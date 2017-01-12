@@ -25,9 +25,10 @@ class Scorer {
 public:
     
     Scorer() :
-    generator_( FeatureGenerator() ),
-    strategies_( StrategyOPs() ),
-    weights_ ( Floats() ) {
+        generator_( FeatureGenerator() ),
+        strategies_( StrategyOPs() ),
+        weights_ ( Floats() ) {
+        
         strategies_.push_back(std::make_shared<ABasicTest>());
         strategies_.push_back(std::make_shared<CleanPlotStackCapsandSafeGC>());
         strategies_.push_back(std::make_shared<DirectionofGCPairsinMultiLoops>());
@@ -40,9 +41,9 @@ public:
         weights_.push_back(0.3661276);
         weights_.push_back(0.2230357);
         
+        scores_ = Floats( strategies_.size() );
         mean_ = 84.8005952381;
         stdev_ = 16.4725276237;
-        scores_ = Floats( strategies_.size());
         
     }
     
@@ -66,7 +67,7 @@ private:
     FeaturesOP features_;
     StrategyOPs strategies_;
     Floats weights_, scores_;
-    float mean_, stdev_, total_score_;
+    float mean_, stdev_, total_score_ = 0.0;
 
 };
 
