@@ -17,7 +17,7 @@ TEST_CASE( "Test Motif Ensembles", "[MotifEnsemble]" ) {
     
     SECTION("test copy constructor") {
         auto me_copy = MotifEnsemble(me);
-        
+
         REQUIRE(me_copy.size() == 1);
         
     }
