@@ -1,6 +1,7 @@
 import unittest
-from rnamake import transformations
-from rnamake.unittests import util, instances
+from rnamake import transform, transformations, sqlite_library
+from rnamake.unittests import util
+from rnamake.unittests.instances.transform_instances import transform_random
 import numpy as np
 import random
 
@@ -11,73 +12,71 @@ class BasepairStateAlignmentUnittests(unittest.TestCase):
     properly for MotifStateSearch
     """
 
-    def test_align(self):
-        m = instances.motif()
-        end1 = m.ends[0].state().copy()
-        end2 = m.ends[1].state().copy()
+    def setUp(self):
+        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+        self.m = mlib.get(name="HELIX.IDEAL.1")
 
+    def test_align(self):
+        m = self.m
+        end1 = m.get_end(0).get_state()
+        end2 = m.get_end(1).get_state()
 
         for i in range(100):
             r, t = end1.get_transforming_r_and_t_w_state(end2)
             t += end1.d
 
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
+            trans = transform.Transform(r, t)
+            end2.transform(trans)
 
             diff = end1.diff(end2)
 
             if diff > 0.001:
                 self.fail("did not align properly")
 
-        end1 = m.ends[1].state().copy()
-        end2 = m.ends[0].state().copy()
+
+        end1 = m.get_end(0).get_state()
+        end2 = m.get_end(1).get_state()
 
         for i in range(100):
             r, t = end1.get_transforming_r_and_t_w_state(end2)
             t += end1.d
 
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
+            trans = transform.Transform(r, t)
+            end2.transform(trans)
 
             diff = end1.diff(end2)
             if diff > 0.01:
                 self.fail("did not align properly")
 
     def test_align_2(self):
-        m = instances.motif()
-        end1 = m.ends[0].state()
-        end2 = m.ends[1].state()
+        m = self.m
+        end1 = m.get_end(0).get_state()
+        end2 = m.get_end(1).get_state()
 
         for i in range(100):
-            trans = transformations.random_rotation_matrix()
-            rand_r = trans[:3,:3]
-            rand_t = np.array([random.randint(0, 10),
-                               random.randint(0, 10),
-                               random.randint(0, 10)])
-            new_r, new_d, new_sug = end2.get_transformed_state(rand_r, rand_t)
-            end2.set(new_r, new_d, new_sug)
+            end2.transform(transform_random())
 
             r, t = end1.get_transforming_r_and_t_w_state(end2)
             t += end1.d
 
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
+            trans = transform.Transform(r, t)
+            end2.transform(trans)
 
             diff = end1.diff(end2)
             if diff > 0.001:
                 self.fail("did not align properly")
 
     def test_align_3(self):
-        m = instances.motif()
-        end1 = m.ends[0].state()
-        end2 = m.ends[0].state()
+        m = self.m
+        end1 = m.get_end(0).get_state()
+        end2 = m.get_end(0).get_state()
 
         for i in range(100):
             r, t = end1.get_transforming_r_and_t_w_state(end2)
             t += end1.d
 
-            new_r, new_d, new_sug = end2.get_transformed_state(r, t)
-            end2.set(new_r, new_d, new_sug)
+            trans = transform.Transform(r, t)
+            end2.transform(trans)
 
             diff = end1.diff(end2)
             if diff > 0.001:

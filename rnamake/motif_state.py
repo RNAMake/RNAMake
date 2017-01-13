@@ -371,14 +371,14 @@ class Basepair(primitives.basepair.Basepair):
         self._d += p
 
     def diff(self, bp):
-        diff = util.distance(self.d(), bp.d())
+        diff = util.distance(self.d, bp.d)
         diff += self._rot_diff(bp) * 2
         return diff
 
     def _rot_diff(self, bp):
-        r_diff = util.matrix_distance(self.r(), bp.r())
+        r_diff = util.matrix_distance(self.r, bp.r)
         bp.flip()
-        r_diff_2 = util.matrix_distance(self.r(), bp.r())
+        r_diff_2 = util.matrix_distance(self.r, bp.r)
         bp.flip()
         if r_diff > r_diff_2:
             r_diff = r_diff_2
@@ -390,6 +390,10 @@ class Basepair(primitives.basepair.Basepair):
         s += basic_io.points_to_str(self._sugars) + ";"
         s += self._name + ";" + self._bp_type + ";"
         return s
+
+    def flip(self):
+        self.r[1] = -self.r[1]
+        self.r[2] = -self.r[2]
 
     @property
     def r(self):

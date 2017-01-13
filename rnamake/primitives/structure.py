@@ -28,7 +28,7 @@ class Structure(base.BaseStructureObject):
         for r in self._residues:
             yield r
 
-    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
+    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None, index=None):
         """
         find a residue based on residue num, chain_id, insert_code and uuid
         will return an error if more then one residue matches search to avoid
@@ -45,23 +45,25 @@ class Structure(base.BaseStructureObject):
         :type uuid: uuid
         """
 
-        if num is None and chain_id is None and i_code is None and uuid is None:
+        if num is None and chain_id is None and i_code is None and uuid is None \
+           and index is None:
             raise exceptions.StructureException(
                 "must specify a parameter to find a residue in get_residue")
 
 
         found = []
-        for c in self._chains:
-            for r in c:
-                if uuid is not None and uuid != r.uuid:
-                    continue
-                if num is not None and num != r.num:
-                    continue
-                if i_code is not None and i_code != r.i_code:
-                    continue
-                if chain_id is not None and chain_id != r.chain_id:
-                    continue
-                found.append(r)
+        for i, r in enumerate(self._residues):
+            if index is not None and index != i:
+                continue
+            if uuid is not None and uuid != r.uuid:
+                continue
+            if num is not None and num != r.num:
+                continue
+            if i_code is not None and i_code != r.i_code:
+                continue
+            if chain_id is not None and chain_id != r.chain_id:
+                continue
+            found.append(r)
 
         if len(found) == 0:
             return None
@@ -71,6 +73,12 @@ class Structure(base.BaseStructureObject):
                 "more than one residue was found with this query")
 
         return found[0]
+
+    def get_res_index(self, res):
+        for i, r in enumerate(self._residues):
+            if res == r:
+                return i
+        raise exceptions.StructureException("cannot find res: " + r)
 
     def chain(self, i):
         return self._chains[i]

@@ -26,7 +26,7 @@ class MotifUnittest(unittest.TestCase):
 
     def setUp(self):
         self.rts = residue_type.ResidueTypeSet()
-        path = settings.MOTIF_DIRS + "helices/HELIX.IDEAL/HELIX.IDEAL.pdb"
+        path = settings.RESOURCES_PATH + "base_helix/base_helix.pdb"
         self.m = motif_from_pdb(path, self.rts)
 
     def test_creation(self):

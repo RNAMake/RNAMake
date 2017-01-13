@@ -1,10 +1,6 @@
 import random
-import rnamake.resource_manager as rm
-import rnamake.motif_tree as motif_tree
-import rnamake.secondary_structure_factory as ssfactory
-import rnamake.secondary_structure as secondary_structure
-import rnamake.motif_tree_topology as motif_tree_topology
-from rnamake import motif_graph, motif_type
+
+from rnamake import motif_graph, motif_tree, motif_type, sqlite_library
 
 
 def fill_basepairs_in_ss(ss):
@@ -19,15 +15,17 @@ def fill_basepairs_in_ss(ss):
         for i, end in enumerate(m.ends):
             m.end_ids[i] = secondary_structure.assign_end_id_new(m, end)
 
+
 class BuildMotifTree(object):
-    def __init__(self, lib_names = ["ideal_helices", "unique_twoway"], libs = None):
+    def __init__(self, rm, lib_names = ["ideal_helices", "unique_twoway"], libs = None):
+        self.rm = rm
         if libs is None:
-            self.libs = [rm.manager.mlibs[x] for x in lib_names ]
+            self.libs = [sqlite_library.MotifSqliteLibrary(x) for x in lib_names ]
         else:
             self.libs = libs
 
     def build(self, size=2):
-        mt = motif_tree.MotifTree()
+        mt = motif_tree.MotifTree(self.rm)
         pos = 0
         count = 0
         while len(mt) < size:

@@ -1,11 +1,12 @@
 import motif_type
 import rna_structure
+import structure
 import chain
-import secondary_structure_factory as ssf
 import secondary_structure
 import util
 import graph
 import user_warnings
+from primitives.rna_structure import ends_from_basepairs, assign_end_id, end_id_to_seq_and_db
 
 
 class ChainNodeData(object):
@@ -16,7 +17,7 @@ class ChainNodeData(object):
         self.prime3_override = prime3_override
 
     def included_res(self):
-        res = self.c.residues[::]
+        res = [ r for r in  self.c]
         if self.prime5_override:
             res.pop(0)
         if self.prime3_override:
@@ -32,29 +33,40 @@ class MotifMergerType(object):
 
 
 class MotifMerger(object):
+
+    __slots__ = [
+        "_all_bps",
+        "_motifs",
+        "_res_overrides",
+        "_bp_overrides",
+        "_rebuild_structure",
+        "_chain_graph",
+        "_rna_structure"
+    ]
+
     def __init__(self):
         #super(self.__class__, self).__init__()
-        self.all_bps = {}
-        self.motifs = {}
-        self.res_overrides = {}
-        self.bp_overrides = {}
+        self._all_bps = {}
+        self._motifs = {}
+        self._res_overrides = {}
+        self._bp_overrides = {}
 
-        self.rebuild_structure = 1
-        self.chain_graph = graph.GraphStatic()
+        self._rebuild_structure = 1
+        self._chain_graph = graph.GraphStatic()
 
-        self.rna_structure = rna_structure.RNAStructure()
+        self._rna_structure = None
 
-    def get_structure(self):
-        if self.rebuild_structure == 1:
+    def get_merged_structure(self):
+        if self._rebuild_structure == 1:
             self._build_structure()
-            self.rebuild_structure = 0
+            self._rebuild_structure = 0
 
-        return self.rna_structure
+        return self._rna_structure
 
     def _build_structure(self):
         starts = []
 
-        for n in self.chain_graph.nodes:
+        for n in self._chain_graph.nodes:
             if n.available_pos(0):
                 starts.append(n)
 
@@ -73,47 +85,40 @@ class MotifMerger(object):
             c = chain.Chain(res)
             chains.append(c)
 
-        self.rna_structure.structure.chains = chains
-        res = self.rna_structure.residues()
+        s = structure.Structure(chains)
+        res = [ r for r in s.iter_res()]
         uuids = [r.uuid for r in res]
 
         current_bps = []
-        for bp in self.all_bps.values():
-            if bp.res1.uuid in uuids and bp.res2.uuid in uuids:
+        for bp in self._all_bps.values():
+            if bp.res1_uuid in uuids and bp.res2_uuid in uuids:
                 current_bps.append(bp)
 
-        self.rna_structure.basepairs = current_bps
-        self.rna_structure.ends = rna_structure.ends_from_basepairs(
-            self.rna_structure.structure, current_bps)
+        ends = ends_from_basepairs(s, current_bps)
+        end_ids = [ assign_end_id(s, current_bps, end) for end in ends]
+        seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
 
-        self.rebuild_structure = 0
+        self._rna_structure = rna_structure.RNAStructure(
+                                s, current_bps, ends, end_ids, "assembled",
+                                dot_bracket=dot_bracket)
 
-    def copy(self, new_motifs=None):
-        new_merger = MotifMerger()
-        new_merger.chain_graph = self.chain_graph.copy()
-        new_merger.res_overrides = { k : v for k,v in self.res_overrides.iteritems() }
-        new_merger.bp_overrides = {k : v for k,v in self.bp_overrides.iteritems() }
-
-        for m in new_motifs:
-            new_merger.update_motif(m)
-
-        return new_merger
+        self._rebuild_structure = 0
 
     def add_motif(self, m, m_end=None, parent=None, parent_end=None):
-        new_chains = [c.subchain(0) for c in m.chains()]
+        new_chains = [c.subchain(0) for c in m.iter_chains()]
 
         for c in new_chains:
-            data = ChainNodeData(c, m.id)
-            self.chain_graph.add_data(data, n_children=2, orphan=1)
+            data = ChainNodeData(c, m.uuid)
+            self._chain_graph.add_data(data, n_children=2, orphan=1)
 
-        for bp in m.basepairs:
-            self.all_bps[bp.uuid] = bp
+        for bp in m.iter_basepairs():
+            self._all_bps[bp.uuid] = bp
 
         if parent is not None:
             self._link_motifs(parent, m, parent_end, m_end)
 
-        self.motifs[m.id] = m
-        self.rebuild_structure = 1
+        self._motifs[m.uuid] = m
+        self._rebuild_structure = 1
 
     def remove_motif(self, m):
         for end in m.ends:
@@ -156,70 +161,84 @@ class MotifMerger(object):
     def connect_motifs(self, m1, m2, m1_end, m2_end):
         self._link_motifs(m1, m2, m1_end, m2_end)
 
-    def secondary_structure(self):
-        ss = ssf.factory.secondary_structure_from_motif(self.get_structure())
+    def __get_ss_structure(self, m, ss):
+        ss_chains = []
+        for c in m.iter_chains():
+            ss_res = []
+            for r in c:
+                r_cur = r
+                if r.uuid in self._res_overrides:
+                    r_cur = self.get_residue(self._res_overrides[r.uuid])
+                ss_r = ss.get_residue(uuid=r_cur.uuid)
+                if ss_r is None:
+                    raise ValueError("could not find residue during ss build: " +
+                                        str(r_cur) + "from " + m.name)
+                ss_res.append(ss_r)
+            ss_chains.append(secondary_structure.Chain(ss_res))
+        ss_struct = secondary_structure.Structure(ss_chains)
+        return ss_struct
+
+    def __get_ss_basepairs(self, m, ss):
+        ss_bps = []
+        for bp in m.iter_basepairs():
+            if bp.bp_type != "cW-W":
+                continue
+            if not util.wc_bp(bp, m) and not util.gu_bp(bp, m):
+                continue
+            correct_bp = bp
+            if bp.uuid in self._bp_overrides:
+                correct_bp = self.get_basepair(self._bp_overrides[bp.uuid])
+            ss_bp = ss.get_basepair(bp_uuid=correct_bp.uuid)
+            if ss_bp is None:
+                raise ValueError("could not find basepair during ss build")
+            ss_bps.append(ss_bp)
+        return ss_bps
+
+    def __get_ss_ends(self, m, ss):
+        ss_ends = []
+        for end in m.iter_ends():
+            correct_bp = end
+            if end.uuid in self._bp_overrides:
+                correct_bp = self.get_basepair(self._bp_overrides[end.uuid])
+            ss_bp = ss.get_basepair(bp_uuid=correct_bp.uuid)
+            if ss_bp is None:
+                raise ValueError("cnot not find end durign ss build")
+            ss_ends.append(ss_bp)
+        return ss_ends
+
+    def get_merged_secondary_structure(self):
+        ss = self.get_merged_structure().get_secondary_structure()
+        #ss = ssf.factory.secondary_structure_from_motif(self.get_structure())
 
         ss_motifs = []
-        for m in self.motifs.values():
-            ss_chains = []
-            for c in m.chains():
-                ss_res = []
-                for r in c.residues:
-                    r_cur = r
-                    if r.uuid in self.res_overrides:
-                        r_cur = self.get_residue(self.res_overrides[r.uuid])
-                    ss_r = ss.get_residue(uuid=r_cur.uuid)
-                    if ss_r is None:
-                        raise ValueError("could not find residue during ss build: " +
-                                         str(r_cur) + "from " + m.name)
-                    ss_res.append(ss_r)
-                ss_chains.append(secondary_structure.Chain(ss_res))
-            ss_struct = secondary_structure.Structure(ss_chains)
-            ss_bps = []
-            for bp in m.basepairs:
-                if bp.bp_type != "cW-W":
-                    continue
-                if not util.wc_bp(bp) and not util.gu_bp(bp):
-                    continue
-                correct_bp = bp
-                if bp.uuid in self.bp_overrides:
-                    correct_bp = self.get_basepair(self.bp_overrides[bp.uuid])
-                ss_bp = ss.get_basepair(uuid=correct_bp.uuid)
-                if ss_bp is None:
-                    raise ValueError("could not find basepair during ss build")
-                ss_bps.append(ss_bp)
-            ss_rna_struct = secondary_structure.RNAStructure(
-                                ss_struct, ss_bps, [], m.name, m.path,
-                                m.score, m.end_ids[:])
-            ss_ends = []
-            for end in m.ends:
-                correct_bp = end
-                if end.uuid in self.bp_overrides:
-                    correct_bp = self.get_basepair(self.bp_overrides[end.uuid])
-                ss_bp = ss.get_basepair(uuid=correct_bp.uuid)
-                if ss_bp is None:
-                    raise ValueError("cnot not find end durign ss build")
-                ss_ends.append(ss_bp)
-            ss_rna_struct.ends = ss_ends
-            ss_motifs.append(secondary_structure.Motif(r_struct=ss_rna_struct,
-                                                       id=m.id,
-                                                       mtype=m.mtype))
+        for m in self._motifs.values():
+            ss_struct = self.__get_ss_structure(m, ss)
+            ss_bps = self.__get_ss_basepairs(m, ss)
+            ss_ends = self.__get_ss_ends(m, ss)
+            end_ids = [ assign_end_id(ss_struct, ss_bps, end) for end in ss_ends]
 
-        ss_struct = secondary_structure.Structure(ss.chains())
-        ss_p = secondary_structure.Pose(ss_struct, ss.basepairs, ss.ends)
-        ss_p.motifs = ss_motifs
-        return ss_p
+            ss_motif = secondary_structure.Motif(ss_struct, ss_bps, ss_ends,
+                                                 end_ids, m.mtype)
+            ss_motifs.append(ss_motif)
+
+        ss_struct  = secondary_structure.Structure([ c for c in ss.iter_chains() ])
+        ss_bps     = [ bp for bp in ss.iter_basepairs()]
+        ss_ends    = [ end for end in ss.iter_ends()]
+        ss_end_ids = [ ss.get_end_id(i) for i in range(ss.num_ends())]
+
+        return secondary_structure.Pose(ss_struct, ss_bps, ss_ends, ss_end_ids,
+                                        ss_motifs)
 
     def get_residue(self, uuid):
-        for m in self.motifs.values():
+        for m in self._motifs.values():
             r = m.get_residue(uuid=uuid)
             if r is not None:
                 return r
         return None
 
     def get_basepair(self, uuid):
-        if uuid in self.all_bps:
-            return self.all_bps[uuid]
+        if uuid in self._all_bps:
+            return self._all_bps[uuid]
         else:
             return None
 
@@ -233,8 +252,8 @@ class MotifMerger(object):
                 return MotifMergerType.SPECIFIC_SEQUENCE
 
     def _link_motifs(self, m1, m2, m1_end, m2_end):
-        m1_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m1_end)
-        m2_end_nodes = self._get_end_nodes(self.chain_graph.nodes, m2_end)
+        m1_end_nodes = self._get_end_nodes(self._chain_graph.nodes, m1_end)
+        m2_end_nodes = self._get_end_nodes(self._chain_graph.nodes, m2_end)
 
         mm_type_1 = self._assign_merger_type(m1)
         mm_type_2 = self._assign_merger_type(m2)
@@ -242,10 +261,10 @@ class MotifMerger(object):
         if mm_type_2 == MotifMergerType.NON_SPECIFIC_SEQUENCE and \
            mm_type_1 == MotifMergerType.SPECIFIC_SEQUENCE:
             self._link_chains(m1_end_nodes, m2_end_nodes, mm_type_1, mm_type_2)
-            self.bp_overrides[m2_end.uuid] = m1_end.uuid
+            self._bp_overrides[m2_end.uuid] = m1_end.uuid
         else:
             self._link_chains(m2_end_nodes, m1_end_nodes, mm_type_2, mm_type_1)
-            self.bp_overrides[m1_end.uuid] = m2_end.uuid
+            self._bp_overrides[m1_end.uuid] = m2_end.uuid
 
     def _link_chains(self, dominant_nodes, auxiliary_nodes, mm_type_1, mm_type_2):
         if dominant_nodes[0] == dominant_nodes[1]:
@@ -278,7 +297,7 @@ class MotifMerger(object):
                         'produce a merged structure that is wrong!!',
                         user_warnings.MotifMergerWarning)
 
-            self.res_overrides[a_node.data.c.first().uuid] = \
+            self._res_overrides[a_node.data.c.first().uuid] = \
                 d_node.data.c.last().uuid
         else:
             a_node.data.prime3_override = 1
@@ -290,19 +309,19 @@ class MotifMerger(object):
                         'produce a merged structure that is wrong!!',
                         user_warnings.MotifMergerWarning)
 
-            self.res_overrides[a_node.data.c.last().uuid] = \
+            self._res_overrides[a_node.data.c.last().uuid] = \
                 d_node.data.c.first().uuid
-        self.chain_graph.connect(d_node.index, a_node.index, d_i, a_i)
+        self._chain_graph.connect(d_node.index, a_node.index, d_i, a_i)
 
     def _get_end_nodes(self, nodes, end):
         end_nodes = [None, None]
 
         for n in nodes:
-            for r in end.residues():
-                if n.data.c.first().uuid == r.uuid and end_nodes[0] is None:
+            for r_uuid in end.res_uuids():
+                if n.data.c.first().uuid == r_uuid and end_nodes[0] is None:
                     end_nodes[0] = n
                     continue
-                elif n.data.c.first().uuid == r.uuid:
+                elif n.data.c.first().uuid == r_uuid:
                     if len(end_nodes[0].data.c) == 1 and end_nodes[1] is None:
                         end_nodes[1] = end_nodes[0]
                         end_nodes[0] = n
@@ -313,9 +332,9 @@ class MotifMerger(object):
                         raise ValueError("cannot build chain map two residues are assigned"
                                          "to 5' chain")
 
-                if n.data.c.last().uuid == r.uuid and end_nodes[1] is None:
+                if n.data.c.last().uuid == r_uuid and end_nodes[1] is None:
                     end_nodes[1] = n
-                elif n.data.c.last().uuid == r.uuid:
+                elif n.data.c.last().uuid == r_uuid:
                     if len(end_nodes[1].data.c) == 1 and end_nodes[0] is None:
                         end_nodes[0] = end_nodes[1]
                         end_nodes[1] = n

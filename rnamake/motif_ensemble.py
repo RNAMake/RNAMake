@@ -4,10 +4,13 @@ import settings
 import motif
 
 class MotifEnsembleMember(object):
-    __slots__ = ['motif', 'energy']
+    __slots__ = [
+        '_motif',
+        '_energy'
+    ]
 
     def __init__(self, motif, energy):
-        self.motif, self.energy = motif, energy
+        self._motif, self._energy = motif, energy
 
     def to_str(self):
         return self.motif.to_str() + "#" + str(self.energy)
@@ -18,20 +21,27 @@ class MotifEnsembleMember(object):
 
 
 class MotifEnsemble(object):
-    def __init__(self):
-        self.id = ""
-        self.members = []
-        self.block_end_add = 0
+    __slots__ = [
+        "_end_id",
+        "_members",
+        "_block_end_add"
+    ]
 
-    def setup(self, id, motifs, energies):
-        self.id = id
-        self.members = []
+    def __init__(self, motifs, energies):
+        if len(motifs) == 0:
+            raise ValueError("must supply atleast one motif")
+
+        if len(motifs) != len(energies):
+            raise ValueError("must supply the same number of motifs and energies")
+
+        self._members = []
         for i, m in enumerate(motifs):
             ms = MotifEnsembleMember(m, energies[i])
-            self.members.append(ms)
+            self._members.append(ms)
 
-        self.members.sort(key = lambda x : x.energy, reverse=False)
-        self.block_end_add = self.members[0].motif.block_end_add
+        self._members.sort(key = lambda x : x.energy, reverse=False)
+        self._block_end_add = self._members[0].motif.block_end_add
+        self._end_id = self._members.motif.get_end_id(0)
 
     def copy(self):
         me_copy = MotifEnsemble()

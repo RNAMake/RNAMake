@@ -116,6 +116,41 @@ class Motif(rna_structure.RNAStructure):
         basepairs = []
         ends = []
         protein_beads = [ residue.Bead.copy(b) for b in m._protein_beads ]
+        m_uuid = m._uuid
+
+        for bp in m._basepairs:
+            if new_uuid:
+                bp_res = m.get_bp_res(bp)
+                r_pos_1 = m.get_res_index(bp_res[0])
+                r_pos_2 = m.get_res_index(bp_res[1])
+                res1 = s.get_residue(index=r_pos_1)
+                res2 = s.get_residue(index=r_pos_2)
+                bp = basepair.Basepair.copy_with_new_uuids(bp, res1.uuid, res2.uuid)
+                basepairs.append(bp)
+            else:
+                basepairs.append(basepair.Basepair.copy(bp))
+
+        for end in m._ends:
+            i = m._basepairs.index(end)
+            ends.append(basepairs[i])
+
+        if new_uuid:
+            m_uuid = uuid.uuid1()
+
+        return cls(s, basepairs, ends, m._end_ids, m._name, m._mtype, m._score,
+                   m._block_end_add, m._dot_bracket, protein_beads, m_uuid)
+
+    @classmethod
+    def altered_copy(cls, m, name=None, mtype=None):
+        if name is None:
+            name = m._name
+        if mtype is None:
+            mtype = m._mtype
+
+        s = structure.Structure.copy(m._structure, new_uuid)
+        basepairs = []
+        ends = []
+        protein_beads = [ residue.Bead.copy(b) for b in m._protein_beads ]
 
         for bp in m._basepairs:
             if new_uuid:
@@ -133,7 +168,7 @@ class Motif(rna_structure.RNAStructure):
             i = m._basepairs.index(end)
             ends.append(basepairs[i])
 
-        return cls(s, basepairs, ends, m._end_ids, m._name, m._mtype, m._score,
+        return cls(s, basepairs, ends, m._end_ids, name, mtype, m._score,
                    m._block_end_add, m._dot_bracket, protein_beads, m._uuid)
 
     def __repr__(self):

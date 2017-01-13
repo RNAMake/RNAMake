@@ -437,6 +437,13 @@ class Basepair(primitives.basepair.Basepair):
     def res2_uuid(self):
         return self._res2_uuid
 
+    @property
+    def uuid(self):
+        return self._uuid
+
+    @property
+    def bp_type(self):
+        return self._bp_type
 
 class RNAStructure(primitives.rna_structure.RNAStructure):
     """
@@ -504,7 +511,7 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
     ]
 
     def __init__(self, structure, basepairs, ends, end_ids):
-       super(self.__class__, self).__init__(structure, basepairs, ends, ends)
+       super(self.__class__, self).__init__(structure, basepairs, ends, end_ids)
 
     @classmethod
     def from_str(cls, s):
@@ -530,21 +537,22 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         return cls(n_ss, basepairs, ends, rs._end_ids[::])
 
     def __repr__(self):
-        return "<secondary_structure.RNAStructure( " + self.sequence() + " " + self.dot_bracket() + " )"
+        return "<secondary_structure.RNAStructure( " + self.sequence() + " " +\
+                    self.dot_bracket() + " )"
 
     def sequence(self):
         """
         wrapper for :func:`Structure.sequence`
         """
 
-        return self.structure.sequence()
+        return self._structure.sequence()
 
     def dot_bracket(self):
         """
         wrapper for :func:`Structure.dot_bracket`
         """
 
-        return self.structure.dot_bracket()
+        return self._structure.dot_bracket()
 
     def replace_sequence(self, seq):
         """
@@ -634,31 +642,18 @@ class Motif(RNAStructure):
 
     """
 
+    __slots__ = [
+        "_structure",
+        "_basepairs",
+        "_ends",
+        "_name",
+        "_end_ids",
+        "_mtype"
+    ]
 
-    def __init__(self, structure=None, basepairs=None, ends=None,
-                 name="assembled", path="assembled", mtype=motif_type.UNKNOWN,
-                 score=0, end_ids=None, id=None, r_struct=None):
-        self.structure = structure
-        if self.structure is None:
-            self.structure = Structure()
-        self.basepairs = basepairs
-        if self.basepairs is None:
-            self.basepairs = []
-        self.name = name
-        self.path = path
-        self.score = score
-        self.ends = ends
-        if self.ends is None:
-            self.ends = []
-        self.end_ids = end_ids
-        if self.end_ids is None:
-            self.end_ids = []
-        self.mtype = mtype
-        self.id = id
-        if self.id is None:
-            self.id = uuid.uuid1()
-        if r_struct is not None:
-            self.__dict__.update(r_struct.__dict__)
+    def __init__(self, structure, basepairs, ends, end_ids, mtype):
+        super(RNAStructure, self).__init__(structure, basepairs, ends, end_ids)
+        self._mtype = mtype
 
     def __repr__(self):
         return "<secondary_structure.Motif( " + self.sequence() + " " + self.dot_bracket() + " )"
@@ -823,29 +818,18 @@ class Pose(RNAStructure):
 
     """
 
-    def __init__(self, structure=None, basepairs=None, ends=None,
-                 name="assembled", path="assembled", score=0, end_ids=None,
-                 r_struct=None):
-        self.structure = structure
-        if self.structure is None:
-            self.structure = Structure()
-        self.basepairs = basepairs
-        if self.basepairs is None:
-            self.basepairs = []
-        self.name = name
-        self.path = path
-        self.score = score
-        self.ends = ends
-        if self.ends is None:
-            self.ends = []
-        self.end_ids = end_ids
-        if self.end_ids is None:
-            self.end_ids = []
-        self.motifs = []
-        self.helices = []
+    __slots__ = [
+        "_structure",
+        "_basepairs",
+        "_ends",
+        "_name",
+        "_end_ids",
+        "_motifs"
+    ]
 
-        if r_struct is not None:
-            self.__dict__.update(r_struct.__dict__)
+    def __init__(self, structure, basepairs, ends, end_ids, motifs):
+        super(RNAStructure, self).__init__(structure, basepairs, ends, end_ids)
+        self._motifs = motifs
 
     def __repr__(self):
         return "<secondary_structure.Pose( " + self.sequence() + " " + self.dot_bracket() + " )"

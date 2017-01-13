@@ -15,13 +15,13 @@ class RNAStructureUnittest(unittest.TestCase):
 
     def setUp(self):
         self.rts = residue_type.ResidueTypeSet()
-        path = settings.MOTIF_DIRS + "helices/HELIX.IDEAL/HELIX.IDEAL.pdb"
+        path = settings.RESOURCES_PATH + "base_helix/base_helix.pdb"
         self.rna_struc = rna_structure.rna_structure_from_pdb(path, self.rts)
 
     def test_creation(self):
         rs = self.rna_struc
-        self.failUnless(rs.sequence() == "GG&CC")
-        self.failUnless(rs.dot_bracket() == "((&))")
+        self.failUnless(rs.sequence() == "CCC&GGG")
+        self.failUnless(rs.dot_bracket() == "(((&)))")
 
     def test_copy(self):
         rs = self.rna_struc
@@ -103,6 +103,15 @@ class RNAStructureUnittest(unittest.TestCase):
         rs.transform(t)
         new_r = rs.get_end(0).r
         self.failUnless(numerical.are_matrices_equal(old_r, new_r) == 0)
+
+    def test_secondary_structure(self):
+        rs = self.rna_struc
+        ss = rs.get_secondary_structure()
+        for r in rs.iter_res():
+            self.failUnless(ss.get_residue(uuid=r.uuid) is not None)
+
+        for bp in rs.iter_basepairs():
+            self.failUnless(ss.get_basepair(bp_uuid=bp.uuid) is not None)
 
 def main():
     unittest.main()

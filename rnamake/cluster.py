@@ -4,26 +4,27 @@ import math
 
 
 class MotifCluster(object):
-    def __init__(self, motif, state):
-        self.state = state
+    def __init__(self, motif, bp):
+        self.bp = bp
         self.motifs = [motif]
 
 
 def cluster_motifs(motifs, max_distance=1.5):
-    clusters = [MotifCluster(motifs[0], motifs[0].ends[1].state())]
+    clusters = [MotifCluster(motifs[0], motifs[0].get_end(1))]
     for i, m in enumerate(motifs):
         if i == 0:
             continue
         found = 0
         for c in clusters:
-            dist = c.state.diff(m.ends[1].state())
+            dist = c.bp.diff(m.get_end(1))
             if dist < max_distance:
                 found = 1
                 c.motifs.append(m)
                 break
         if not found:
-            clusters.append(MotifCluster(m, m.ends[1].state()))
+            clusters.append(MotifCluster(m, m.get_end(1)))
     return clusters
+
 
 def cluster_motifs_2(motifs, max_size=100):
     i = 0
@@ -51,6 +52,7 @@ def cluster_motifs_2(motifs, max_size=100):
                 best_c = c
         best_c.motifs.append(m)
     return clusters
+
 
 def cluster_motifs_3(motifs, start_dist=0.65,ideal_size=100):
 
@@ -91,6 +93,7 @@ def cluster_motifs_3(motifs, start_dist=0.65,ideal_size=100):
 
         count += 1
     return clusters
+
 
 def clusters_to_motif_ensemble(clusters, name="motif"):
     motifs = []

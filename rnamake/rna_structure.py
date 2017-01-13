@@ -8,6 +8,7 @@ import exceptions
 import user_warnings
 import residue
 import basic_io
+import secondary_structure
 
 import primitives.rna_structure
 from primitives.rna_structure import ends_from_basepairs, assign_end_id, end_id_to_seq_and_db
@@ -268,6 +269,32 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         self._structure.transform(t)
         for bp in self._basepairs:
             bp.transform(t)
+
+    def get_secondary_structure(self):
+        db_chains = self._dot_bracket.split("&")
+        chains = []
+        for i, c in enumerate(self._structure):
+            res = []
+            for j, r in enumerate(c):
+                s_r = secondary_structure.Residue(r.name, db_chains[i][j], r.num,
+                                                  r.chain_id, r.i_code, r.uuid)
+                res.append(s_r)
+            chains.append(secondary_structure.Chain(res))
+        s = secondary_structure.Structure(chains)
+        bps = []
+        for bp in self._basepairs:
+            s_bp = secondary_structure.Basepair(bp.res1_uuid, bp.res2_uuid, bp.name, bp.uuid)
+            bps.append(s_bp)
+        ends = []
+        for end in self._ends:
+            i = self._basepairs.index(end)
+            ends.append(bps[i])
+
+        return secondary_structure.RNAStructure(s, bps, ends, self._end_ids[::])
+
+
+
+
 
     @property
     def block_end_add(self):

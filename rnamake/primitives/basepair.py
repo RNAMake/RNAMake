@@ -15,7 +15,7 @@ class Basepair(object):
         return self._uuid == other._uuid
 
     def __ne__(self, other):
-        return self._uuid != self._uuid
+        return self._uuid != other._uuid
 
 
 def calc_bp_name(res):

@@ -36,7 +36,7 @@ class RNAStructure(base.BaseStructureObject):
     def iter_res(self):
         return self._structure.iter_res()
 
-    def iter_chain(self):
+    def iter_chains(self):
         return self._structure.__iter__()
 
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
@@ -46,6 +46,9 @@ class RNAStructure(base.BaseStructureObject):
 
         return self._structure.get_residue(num=num, chain_id=chain_id,
                                          i_code=i_code, uuid=uuid)
+
+    def get_res_index(self, r):
+        return self._structure.get_res_index(r)
 
     def num_res(self):
         return self._structure.num_residues()
@@ -132,7 +135,7 @@ class RNAStructure(base.BaseStructureObject):
             found.append(bp)
         return found
 
-    def get_basepair(self, bp_uuid=None, res1=None, res2=None, uuid1=None,
+    def get_basepair(self, index=None, bp_uuid=None, res1=None, res2=None, uuid1=None,
                      uuid2=None, name=None):
         """
         locates a Basepair object based on residue objects or uuids if nothing
@@ -188,12 +191,14 @@ class RNAStructure(base.BaseStructureObject):
         """
 
         if res1 is None and res2 is None and uuid1 is None and uuid2 is None \
-           and bp_uuid is None and name is None:
+           and bp_uuid is None and name is None and index is None:
             raise exceptions.RNAStructureException(
                 "no arguments specified for get_basepair()")
 
         found = []
-        for bp in self._basepairs:
+        for i, bp in enumerate(self._basepairs):
+            if index is not None and index != i:
+                continue
             if bp_uuid is not None and bp_uuid != bp.uuid:
                 continue
             if res1 is not None and (res1.uuid != bp.res1_uuid and res1 != bp.res2_uuid):
@@ -218,9 +223,14 @@ class RNAStructure(base.BaseStructureObject):
 
         return found[0]
 
-    def get_end(self, index=None, end_name=None, end_id=None):
+    def get_end(self, index=None, name=None, end_id=None):
         if index is not None:
             return self._ends[index]
+
+        if name is not None:
+            for end in self._ends:
+                if end.name == name:
+                    return end
 
     def get_end_id(self, i):
         return self._end_ids[i]
@@ -275,7 +285,7 @@ class RNAStructure(base.BaseStructureObject):
     def name(self):
         return self._name
 
-def ends_from_basepairs(s, bps, check_type=1):
+def ends_from_basepairs(s, bps):
     """
     find basepairs that are composed of two residues who are at the 5' or 3'
     end of their chains. These are elements of alignment where two basepairs
@@ -300,8 +310,7 @@ def ends_from_basepairs(s, bps, check_type=1):
 
     ends = []
     for bp in bps:
-        if check_type:
-            if bp.bp_type != "cW-W":
+        if bp.bp_type != "cW-W":
                 continue
         if not (util.gu_bp(bp, s) or util.wc_bp(bp, s)):
             continue

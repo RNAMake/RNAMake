@@ -6,6 +6,7 @@ import motif_ensemble
 import settings
 import util
 import exceptions
+import residue_type
 
 class MotifLibrary(object):
     def __init__(self):
@@ -21,10 +22,10 @@ class MotifLibrary(object):
                 if options['name'] != m.name:
                     continue
             if 'end_name' in options:
-                if options['end_name'] != m.ends[0].name():
+                if options['end_name'] != m.get_end(0).name:
                     continue
             if 'end_id' in options:
-                if options['end_id'] != m.end_ids[0]:
+                if options['end_id'] != m.get_end_id(0):
                     continue
             if m not in motifs:
                 motifs.append(m)
@@ -39,89 +40,62 @@ class MotifLibrary(object):
 
     def get(self, **options):
         motifs = self._find_motifs(**options)
-        motifs[0].new_res_uuids()
-        return motifs[0]
+        return motif.Motif.copy(motifs[0], new_uuid=1)
 
     def get_multi(self, **options):
         motifs = self._find_motifs(**options)
-        for m in motifs:
-            m.new_res_uuids()
-        return motifs
+        return [motif.Motif.copy(m, new_uuid=1) for m in motifs]
+
 
 class ResourceManager(object):
+
+    __slots__ = [
+        "_mlibs",
+        "_added_motifs",
+        "_mf",
+        "_rts"
+    ]
+
     def __init__(self):
-        self.mlibs,    self.added_motifs = {}, MotifLibrary()
-        self.ms_libs,  self.extra_ms = {}, {}
-        self.me_libs,  self.extra_me = {}, {}
-        self.mse_libs, self.extra_mse = {}, {}
-        exclude = ['all_bp_steps']
+        self._mlibs,    = {},
+        self._added_motifs = MotifLibrary()
+        self._rts = residue_type.ResidueTypeSet()
+        self._mf = motif_factory.MotifFactory(self._rts)
 
         for k in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
-            if k in exclude:
-                continue
-            self.mlibs[k] = sqlite_library.MotifSqliteLibrary(k)
-
-        for k in sqlite_library.MotifStateSqliteLibrary.get_libnames().keys():
-            if k in exclude:
-                continue
-            self.ms_libs[k] = sqlite_library.MotifStateSqliteLibrary(k)
-
-        for k in sqlite_library.MotifEnsembleSqliteLibrary.get_libnames().keys():
-            if k in exclude:
-                continue
-            self.me_libs[k] = sqlite_library.MotifEnsembleSqliteLibrary(k)
-
-        for k in sqlite_library.MotifStateEnsembleSqliteLibrary.get_libnames().keys():
-            self.mse_libs[k] = sqlite_library.MotifStateEnsembleSqliteLibrary(k)
+            #if k in exclude:
+            #    continue
+            self._mlibs[k] = sqlite_library.MotifSqliteLibrary(k)
 
 
         #hack for now
-        self.add_motif(settings.MOTIF_DIRS + "/extras/GAAA_tetraloop")
-        self.add_motif(settings.MOTIF_DIRS + "/extras/GGAA_tetraloop")
+        self.add_motif_from_file(settings.MOTIF_DIRS + "/extras/GAAA_tetraloop")
+        self.add_motif_from_file(settings.MOTIF_DIRS + "/extras/GGAA_tetraloop")
 
     def get_motif(self, **options):
-        for mlib in self.mlibs.itervalues():
+        for mlib in self._mlibs.itervalues():
             if mlib.contains(**options):
                 return mlib.get(**options)
 
-        if self.added_motifs.contains(**options):
-            return self.added_motifs.get(**options)
-
-        #if 'name' in options:
-        #    motifs = self.get_motif_multi(name=options['name'])
-        #    s = "cannot find motif: " + self._args_to_str(options)  + "\n"
-        #    s += "here are the available options: \n"
-        #    for m in motifs:
-        #        s += "name: %s, end_id: %s, end_name: %s\n" % (m.name, m.end_ids[0],
-        #                                                       m.ends[0].name())
-        #    raise ValueError(s)
+        if self._added_motifs.contains(**options):
+            return self._added_motifs.get(**options)
 
         raise exceptions.ResourceManagerException(
             "cannot find motif: " + self._args_to_str(options))
 
-    def get_bp_step(self, end_id):
-        m = self.mlibs['new_bp_steps'].get(end_id=end_id)
-        return m
-
-    def get_bp_step_state(self, end_id):
-        m = self.get_bp_step(end_id)
-        return m.get_state()
-
     def contains_motif(self, **options):
-        for mlib in self.mlibs.itervalues():
+        for mlib in self._mlibs.itervalues():
             if mlib.contains(**options):
                 return 1
 
-        if self.added_motifs.contains(**options):
+        if self._added_motifs.contains(**options):
             return 1
 
         return 0
 
-    def _args_to_str(self, options):
-        s = ""
-        for k, v in options.iteritems():
-            s += k + " = " + v + ","
-        return s
+    def get_bp_step(self, end_id):
+        m = self._mlibs['new_bp_steps'].get(end_id=end_id)
+        return m
 
     def get_motif_multi(self, **options):
         for mlib in self.mlibs.itervalues():
@@ -159,48 +133,19 @@ class ResourceManager(object):
         raise ValueError("could not find motif state ensemble with options:"+\
                          self._args_to_str(options))
 
-    def add_motif(self, path=None, motif=None, name=None, include_protein=0,
+    def add_motif_from_file(self, path=None, name=None, include_protein=0,
                   align=1):
-        if path:
-            m = motif_factory.factory.motif_from_file(path,
-                                                      include_protein=include_protein)
-        else:
-            m = motif
 
-        if name is not None:
-            m.name = name
+        motifs = self._mf.motifs_from_file(path, include_protein=include_protein)
 
-        if len(m.ends) == 0:
-            self.added_motifs.add_motif(m)
-            return
-
-        motifs = []
-        end_ids = {}
-        for i in range(len(m.ends)):
-            m_added = motif_factory.factory.can_align_motif_to_end(m, i)
-            if m_added is None:
-                continue
-            if not align:
-                motif_factory.factory.standardize_motif(m_added)
-                motifs.append(m)
-                end_ids[m_added.ends[0].uuid] = m_added.end_ids[0]
-                break
-
-            m_added = motif_factory.factory.align_motif_to_common_frame(m_added, i)
-            if m_added is None:
-                continue
-            motifs.append(m_added)
-            end_ids[m_added.ends[0].uuid] = m_added.end_ids[0]
-
-        #fix minor changes between ids
         for m in motifs:
-            for i, end in enumerate(m.ends):
-                try :
-                    end_id = end_ids[end.uuid]
-                    m.end_ids[i] = end_id
-                except:
-                    pass
-            self.added_motifs.add_motif(m)
+            self._added_motifs.add_motif(m)
+
+    def add_motif(self, m, mtype=motif_type.UNKNOWN, mname="unknown"):
+        motifs = self._mf.motifs_from_rstruc(m, mtype, mname)
+
+        for m in motifs:
+            self._added_motifs.add_motif(m)
 
     def register_motif(self, m):
         if m.name == "":
@@ -235,6 +180,15 @@ class ResourceManager(object):
 
         return self.extra_me[key]
 
+    def _args_to_str(self, options):
+        s = ""
+        for k, v in options.iteritems():
+            s += k + " = " + v + ","
+        return s
 
-manager = ResourceManager()
+    @property
+    def residue_type_set(self):
+        return self._rts
+
+
 

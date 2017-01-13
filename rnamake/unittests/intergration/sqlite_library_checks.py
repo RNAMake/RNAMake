@@ -1,6 +1,6 @@
 import unittest
 
-from rnamake import sqlite_library, settings, motif, motif_graph, residue_type
+from rnamake import sqlite_library, settings, motif, residue_type
 
 
 class IdealHelicesUnittests(unittest.TestCase):
@@ -8,27 +8,22 @@ class IdealHelicesUnittests(unittest.TestCase):
     def setUp(self):
         self.mlib =  sqlite_library.MotifSqliteLibrary("ideal_helices")
         self.mlib.load_all()
-        self.rts = residue_type.ResidueTypeSet()
 
-        path = settings.RESOURCES_PATH + "/motifs/base.motif"
-        self.base_motif = motif.file_to_motif(path)
-        self.added_motif = motif.file_to_motif(path)
+        self.base_motif = self.mlib.get(name="HELIX.IDEAL.1")
+        self.added_motif = motif.Motif.copy(self.base_motif)
 
     def test_correct_build(self):
 
-        mg = motif_graph.MotifGraph()
-        mg.add_motif(self.base_motif)
-        mg.increase_level()
-
         for m in self.mlib.all():
 
-            mg.add_motif(m)
-            mg.add_motif(self.added_motif)
+            m1 = motif.get_aligned_motif(self.base_motif.get_end(1), m.get_end(0), m)
+            self.failIf(motif.clash_between_motifs(self.base_motif, m1))
 
-            if len(mg) != 3:
-                self.fail(m.name + " did not build correctly")
+            m2 = motif.get_aligned_motif(m1.get_end(1), self.added_motif.get_end(0),
+                                         self.added_motif)
 
-            mg.remove_node_level()
+            self.failIf(motif.clash_between_motifs(m1, m2))
+            self.failIf(motif.clash_between_motifs(self.base_motif, m2))
 
 
 class IdealReverseHelicesUnittests(unittest.TestCase):
@@ -69,27 +64,24 @@ class BasicLibrariesUnittests(unittest.TestCase):
 
     def setUp(self):
         self.rts = residue_type.ResidueTypeSet()
+        mlib =  sqlite_library.MotifSqliteLibrary("ideal_helices")
 
-        path = settings.RESOURCES_PATH + "/motifs/base.motif"
-        self.base_motif = motif.file_to_motif(path)
-        self.added_motif = motif.file_to_motif(path)
+        self.base_motif = mlib.get(name="HELIX.IDEAL.1")
+        self.added_motif = motif.Motif.copy(self.base_motif)
 
     def _test_correct_build(self, mlib):
 
         for m in mlib.all():
-            m1 = motif.get_aligned_motif(self.base_motif.ends[1], m.ends[0], m)
+            m1 = motif.get_aligned_motif(self.base_motif.get_end(1), m.get_end(0), m)
 
-            if motif.clash_between_motifs(self.base_motif, m1):
-                self.fail("clash")
+            self.failIf(motif.clash_between_motifs(self.base_motif, m1))
 
-            for i in range(1,len(m1.ends)):
-                m2 = motif.get_aligned_motif(m1.ends[i], self.added_motif.ends[0],
+            for i in range(1, m1.num_ends()):
+                m2 = motif.get_aligned_motif(m1.get_end(i), self.added_motif.get_end(0),
                                              self.added_motif)
 
-                if motif.clash_between_motifs(m1, m2):
-                    self.fail("clash")
-                if motif.clash_between_motifs(self.base_motif, m2):
-                    self.fail("clash")
+                self.failIf(motif.clash_between_motifs(m1, m2))
+                self.failIf(motif.clash_between_motifs(self.base_motif, m2))
 
     def test_correct_build_twoway(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
@@ -107,7 +99,7 @@ class BasicLibrariesUnittests(unittest.TestCase):
         self._test_correct_build(mlib)
 
     def test_correct_build_hairpin(self):
-        mlib = sqlite_library.MotifSqliteLibrary("twoway")
+        mlib = sqlite_library.MotifSqliteLibrary("hairpin")
         mlib.load_all()
         self._test_correct_build(mlib)
 

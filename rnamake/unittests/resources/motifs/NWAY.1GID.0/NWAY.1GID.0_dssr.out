@@ -1,0 +1,109 @@
+****************************************************************************
+         DSSR: a software program for Defining the Secondary
+         Structures of RNA from three-dimensional coordinates
+        v1.0.1-2014jan31, by Xiang-Jun Lu (xiangjun@x3dna.org)
+
+   This program is actively maintained and developed. As always, I
+   greatly appreciate your feedback! Please report all DSSR-related
+   issues on the 3DNA Forum (http://forum.x3dna.org/). I strive to
+   respond promptly to *any* questions posted there.
+
+****************************************************************************
+Note: Each nucleotide is identified by model:chainId.name#, where the
+      'model:' portion is omitted if no model number is available as
+      is normally the case for X-ray crystal structures in the PDB. So
+      a common example would be like A.G19, meaning G #19 on chain A.
+      One-letter base names for modified nucleotides are put in lower
+      case (e.g., 'c' for 5MC). For further information about the
+      output notation, please run DSSR with the '-note' option. More
+      details can be found in the DSSR user manual. Questions and
+      suggestions are always welcome on the 3DNA Forum.
+
+Command: x3dna-dssr -i=NWAY.1GID.0.pdb --non-pair -o=NWAY.1GID.0_dssr.out
+Date and time: Sun Jun 29 15:51:42 2014
+File name: NWAY.1GID.0.pdb
+    no. of DNA/RNA chains: 1 [A=14]
+    no. of nucleotides:    14
+    no. of atoms:          304
+    no. of waters:         0
+    no. of metals:         0
+
+****************************************************************************
+List of 5 base pairs
+      nt1              nt2             bp  name         Saenger    LW DSSR
+   1 A.C138           A.G180           C-G WC           19-XIX    cWW cW-W
+   2 A.A139           A.G164           A-G Sheared      11-XI     tHS tM-m
+   3 A.A140           A.G163           A-G Sheared      11-XI     tHS cM-m
+   4 A.G141           A.U162           G-U Wobble       28-XXVIII cWW cW-W
+   5 A.C165           A.G175           C-G WC           19-XIX    cWW cW-W
+
+****************************************************************************
+List of 1 helix
+  Note: a helix is defined by base-stacking interactions, regardless of bp
+        type and backbone connectivity, and may contain more than one stem.
+      helix#number[stems-contained] bps=number-of-base-pairs in the helix
+      bp-type: '|' for a canonical WC/wobble pair, '.' otherwise
+      helix-form: classification of a dinucleotide step comprising the bp
+        above the given designation and the bp that follows it. Types
+        include 'A', 'B' or 'Z' for the common A-, B- and Z-form helices,
+        '.' for an unclassified step, and 'x' for a step without a
+        continuous backbone.
+      --------------------------------------------------------------------
+  helix#1[0] bps=3
+      strand-1 5'-AAG-3'
+       bp-type    ..|
+      strand-2 3'-GGU-5'
+      helix-form  ..
+   1 A.A139           A.G164           A-G Sheared      11-XI     tHS tM-m
+   2 A.A140           A.G163           A-G Sheared      11-XI     tHS cM-m
+   3 A.G141           A.U162           G-U Wobble       28-XXVIII cWW cW-W
+
+****************************************************************************
+List of 3 lone WC/wobble pairs
+  Note: lone WC/wobble pairs are assigned negative indices to differentiate
+        them from the stem numbers, which are positive.
+        --------------------------------------------------------------------
+  -1 A.C138           A.G180           C-G WC           19-XIX    cWW cW-W
+  -2 A.G141           A.U162           G-U Wobble       28-XXVIII cWW cW-W
+  -3 A.C165           A.G175           C-G WC           19-XIX    cWW cW-W
+
+****************************************************************************
+List of 7 non-pairing interactions
+   1 A.C138           A.G164          base-overlap-area=0.0(0.0)   H-bonds[1]: "O3'-N2(amino)[3.29]"
+   2 A.G164           A.C165          base-overlap-area=0.0(0.0)   H-bonds[1]: "O2'(hydroxyl)-O5'[3.15]"
+   3 A.G164           A.A178          base-overlap-area=0.0(0.0)   H-bonds[1]: "O6(carbonyl)-N6(amino)[3.23]"
+   4 A.C165           A.G176          base-overlap-area=0.9(0.0)   H-bonds[0]: ""
+   5 A.G175           A.G176          base-overlap-area=4.2(1.7)   H-bonds[0]: ""
+   6 A.G176           A.U177          base-overlap-area=6.9(3.2)   H-bonds[0]: ""
+   7 A.A178           A.G180          base-overlap-area=5.2(2.7)   H-bonds[0]: ""
+
+****************************************************************************
+Note: for the various types of loops listed below, numbers within the first
+      set of brackets are the number of loop nts, and numbers in the second
+      set of brackets are the identities of the stems (positive number) or
+      lone WC/wobble pairs (negative numbers) to which they are linked.
+
+****************************************************************************
+List of 1 junction
+   1 3-way junctions: nts=14; [2,2,4]; linked by [#-1,#-2,#-3]
+     nts=14 CAAGUGGCGGUAUG A.C138,A.A139,A.A140,A.G141,A.U162,A.G163,A.G164,A.C165,A.G175,A.G176,A.U177,A.A178,A.U179,A.G180
+       nts=2 AA A.A139,A.A140
+       nts=2 GG A.G163,A.G164
+       nts=4 GUAU A.G176,A.U177,A.A178,A.U179
+
+****************************************************************************
+Secondary structures in dot-bracket notation (dbn) as a whole and per chain
+>NWAY.1GID.0 nts=14 [whole]
+CAAG&UGGC&GGUAUG
+(..(&)..(&)....)
+>NWAY.1GID.0-A #1 nts=14 [chain] RNA*
+CAAGUGGCGGUAUG
+(..()..()....)
+
+****************************************************************************
+List of 5 additional files
+   1 dssr-helices.pdb -- MODEL/ENDMDL delineated helices (pseudo/coaxial)
+   2 dssr-pairs.pdb -- MODEL/ENDMDL delineated base pairs
+   3 dssr-2ndstrs.ct -- secondary structures in the connect format
+   4 dssr-2ndstrs.dbn -- secondary structures in the dot-bracket notation
+   5 dssr-torsions.dat -- Backbone torsion angles and suite names

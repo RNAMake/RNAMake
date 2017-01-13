@@ -4,6 +4,7 @@ import numpy as np
 import uuid
 import exceptions
 
+import motif_state
 import primitives.basepair
 
 class Basepair(primitives.basepair.Basepair):
@@ -118,6 +119,9 @@ class Basepair(primitives.basepair.Basepair):
     def __repr__(self):
           return "<Basepair("+self._name + ")>"
 
+    def res_uuids(self):
+        return [self._res1_uuid, self._res2_uuid]
+
     def partner(self, r_uuid):
         """
         get the other basepairing partner of a residue will throw an error
@@ -229,14 +233,14 @@ class Basepair(primitives.basepair.Basepair):
         self._d += p
 
     def diff(self, bp):
-        diff = util.distance(self.d(), bp.d())
+        diff = util.distance(self.d, bp.d)
         diff += self._rot_diff(bp) * 2
         return diff
 
     def _rot_diff(self, bp):
-        r_diff = util.matrix_distance(self.r(), bp.r())
+        r_diff = util.matrix_distance(self.r, bp.r)
         bp.flip()
-        r_diff_2 = util.matrix_distance(self.r(), bp.r())
+        r_diff_2 = util.matrix_distance(self.r, bp.r)
         bp.flip()
         if r_diff > r_diff_2:
             r_diff = r_diff_2
@@ -248,6 +252,12 @@ class Basepair(primitives.basepair.Basepair):
         s += basic_io.points_to_str(self._sugars) + ";"
         s += self._name + ";" + self._bp_type + ";"
         return s
+
+    def get_state(self):
+        sugars = [ np.copy(self._sugars[0]), np.copy(self._sugars[1])]
+        return motif_state.Basepair(self._res1_uuid, self._res2_uuid, np.copy(self._r),
+                                    np.copy(self._d), sugars, self._name, self._bp_type,
+                                    self._uuid)
 
     @property
     def r(self):

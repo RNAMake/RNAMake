@@ -1,11 +1,9 @@
 import motif_library
-import rnamake.motif_factory as motif_factory
 import rnamake.motif_ensemble as motif_ensemble
 import rnamake.motif as motif
 import rnamake.motif_type as motif_type
 import rnamake.util as util
 import rnamake.cluster as cluster
-import rnamake.settings as settings
 import rnamake.sqlite_library as sqlite_library
 import math
 import subprocess
@@ -13,7 +11,9 @@ import os
 import numpy as np
 import shutil
 
-from rnamake import motif_tree
+import glob
+from rnamake import motif_factory, settings
+from collections import defaultdict
 
 def test_align():
     mlib = sqlite_library.MotifLibrarySqlite(libname="ideal_helices")
@@ -62,207 +62,143 @@ class SSandSeqCluster(object):
         return 0
 
 
+bad_keys = "TWOWAY.2GDI.4-X20-X45 TWOWAY.1S72.46-02097-02647 TWOWAY.2GDI.6-Y20-Y45".split()
+
+
 class BuildSqliteLibraries(object):
 
-    def build_ideal_helices_old(self):
-        mlib = motif_library.ideal_helix_lib()
-        aligned_motifs = []
-        path = settings.RESOURCES_PATH +"/motif_libraries_new/ideal_helices.db"
-        data = []
-        rdata = []
-        keys = ['data', 'name', 'end_name', 'end_id', 'id']
-        count = 0
-        for i, m in enumerate(mlib.motifs()):
-            #if m.name == "HELIX.IDEAL":
-            #    aligned_motif = motif_factory.factory.align_motif_to_common_frame(m, 0)
-            #else:
-            """name = m.name
-            spl = name.split(".")
-            if spl[-1] == "0":
-                m.name = "HELIX.IDEAL"
-            else:
-                m.name = "HELIX.IDEAL." + spl[-1]"""
-
-            aligned_motif = motif_factory.factory.align_motif_to_common_frame(m, 1)
-
-            data.append([aligned_motif.to_str(), aligned_motif.name,
-                         aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
-
-            print aligned_motif.name, aligned_motif.ends[0].name()
-
-            aligned_motif = motif_factory.factory.can_align_motif_to_end(m, 0)
-            aligned_motif = motif_factory.factory.align_motif_to_common_frame(aligned_motif, 0)
-            motif_factory.factory._setup_secondary_structure(aligned_motif)
-            rdata.append([aligned_motif.to_str(), aligned_motif.name,
-                         aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
-            count += 1
-
-        sqlite_library.build_sqlite_library(path, data, keys, 'id')
-        path = settings.RESOURCES_PATH +"/motif_libraries_new/ideal_helices_reversed.db"
-        sqlite_library.build_sqlite_library(path, rdata, keys, 'id')
-
-        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
-        m = mlib.get(name="HELIX.IDEAL.3")
-        s = m.to_str()
-        path = settings.RESOURCES_PATH + "/motifs/base.motif"
-        f = open(path, "w")
-        f.write(s)
-        f.close()
+    def __init__(self):
+        self.mf = motif_factory.MotifFactory()
 
     def build_ideal_helices(self):
-        mlib = motif_library.le_helix_lib()
-        aligned_motifs = []
-        path = settings.RESOURCES_PATH +"/motif_libraries_new/ideal_helices.db"
+        path = settings.RESOURCES_PATH +"/motif_libraries/ideal_helices.db"
         data = []
         rdata = []
         keys = ['data', 'name', 'end_name', 'end_id', 'id']
+
+        #h_dirs = settings.MOTIF_DIRS + "/helices/"
+        h_dirs = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/motifs/helices/"
+        ideal_dirs = glob.glob(h_dirs+"HELIX.IDEA*")
         count = 0
-        for i, m in enumerate(mlib.motifs()):
-            name = m.name
-            spl = name.split(".")
-            if spl[-1] == "0":
-                m.name = "HELIX.IDEAL"
-            else:
-                m.name = "HELIX.IDEAL." + spl[-1]
 
-            aligned_motif = motif_factory.factory.align_motif_to_common_frame(m, 0)
+        for i_d in ideal_dirs:
+            motifs = self.mf.motifs_from_file(i_d, mtype=motif_type.HELIX)
+            # f_m the foward ideal helix used in design
+            # r_m the reverse ideal helix only used in specific cases
+            f_m, r_m = motifs
 
-            data.append([aligned_motif.to_str(), aligned_motif.name,
-                         aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
+            data.append([f_m.to_str(), f_m.name,
+                         f_m.get_end(0).name, f_m.get_end_id(0), count])
 
-            aligned_motif = motif_factory.factory.can_align_motif_to_end(m, 1)
-            aligned_motif = motif_factory.factory.align_motif_to_common_frame(aligned_motif, 0)
-            motif_factory.factory._setup_secondary_structure(aligned_motif)
-            rdata.append([aligned_motif.to_str(), aligned_motif.name,
-                         aligned_motif.ends[0].name(), aligned_motif.end_ids[0], count])
+            rdata.append([r_m.to_str(), r_m.name,
+                         r_m.get_end(0).name, r_m.get_end_id(0), count])
+
             count += 1
 
         sqlite_library.build_sqlite_library(path, data, keys, 'id')
-        path = settings.RESOURCES_PATH +"/motif_libraries_new/ideal_helices_reversed.db"
+        path = settings.RESOURCES_PATH +"/motif_libraries/ideal_helices_reversed.db"
         sqlite_library.build_sqlite_library(path, rdata, keys, 'id')
 
-        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
-        m = mlib.get(name="HELIX.IDEAL.3")
-        s = m.to_str()
-        path = settings.RESOURCES_PATH + "/motifs/base.motif"
-        f = open(path, "w")
-        f.write(s)
-        f.close()
+    def __correct_ends_for_motif(self, m, t):
+        if t == motif_type.HAIRPIN and m.num_ends() != 1:
+            return 0
+        if t == motif_type.TWOWAY and m.num_ends() != 2:
+            return 0
+        if t == motif_type.NWAY and m.num_ends() < 3:
+            return 0
+        if t == motif_type.HELIX and m.num_ends() != 2:
+            return 0
+        if t == motif_type.TCONTACT and m.num_ends() < 2:
+            return 0
+        return 1
 
     def build_basic_libraries(self):
 
-        types = [motif_type.TWOWAY, motif_type.NWAY, motif_type.HAIRPIN,
-                 motif_type.TCONTACT]
-        #types = [motif_type.TWOWAY]
+        #types = [motif_type.TWOWAY, motif_type.NWAY, motif_type.HAIRPIN,
+        #         motif_type.TCONTACT]
 
-        #
-        bad_keys = "TWOWAY.2GDI.4-X20-X45 TWOWAY.1S72.46-02097-02647 TWOWAY.2GDI.6-Y20-Y45".split()
+        # FIX on main branch
+        base_dirs = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/motifs/"
+        types = {
+            motif_type.HAIRPIN  : base_dirs + "hairpins",
+            motif_type.HELIX    : base_dirs + "helices",
+            motif_type.TWOWAY   : base_dirs + "two_ways",
+            motif_type.NWAY     : base_dirs + "junctions",
+            motif_type.TCONTACT : base_dirs + "tertiary_contacts"
+        }
 
-        for t in types:
+        for t, p in types.iteritems():
+            print p
+            motif_dirs = glob.glob(p+"/*")
+
             count = 0
-            mlib = motif_library.MotifLibrary(t)
-            mlib.load_all()
-
-            succeses = []
-            for k, m in enumerate(mlib.motifs()):
-                if m is None:
-                    continue
-
-                if t == motif_type.HAIRPIN:
-                    m.block_end_add = -1
-
-                if t != motif_type.HAIRPIN and len(m.ends) == 1:
-                    continue
-                elif len(m.ends) == 0:
-                    continue
-
-                for ei in range(len(m.ends)):
-                    m_added = motif_factory.factory.can_align_motif_to_end(m, ei)
-
-                    if m_added is None:
-                        continue
-                    else:
-                        key = m_added.name + "-" + m_added.ends[0].name()
-                        if key in bad_keys:
-                            continue
-
-                        #print m_added.name, m_added.ends[ei].name()
-                        succeses.append([m_added, ei])
-
             data = []
             keys = ['data', 'name', 'end_name', 'end_id', 'id']
-            for i, s in enumerate(succeses):
-                m, ei = s
-                m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
-                #print m_added.name, m_added.ends[0].name(), m_added.end_ids[0]
 
-                # remove basepairs in between motifs
-                if t == motif_type.TWOWAY:
-                    """for c in m_added.secondary_structure.chains():
-                        for r in c.residues[1:-1]:
-                            r.dot_bracket = "."""
+            for m_dir in motif_dirs:
+                if not os.path.isdir(m_dir):
+                    continue
+                motifs = self.mf.motifs_from_file(m_dir, mtype=t)
+                for m in motifs:
+                    if m.name + "-" + m.get_end(0).name in bad_keys:
+                        continue
+                    if not self.__correct_ends_for_motif(m ,t):
+                        continue
 
-                    remove = []
-                    for bp in m_added.basepairs:
-                        if bp not in m_added.ends and bp.bp_type == "cW-W":
-                            remove.append(bp)
+                    data.append([m.to_str(), m.name, m.get_end(0).name,
+                                 m.get_end_id(0), count])
+                    count += 1
 
-                    for r in remove:
-                        m_added.basepairs.remove(r)
-                    motif_factory.factory._setup_secondary_structure(m_added)
-                    #print m_added.dot_bracket()
-
-                data.append([m_added.to_str(), m_added.name,
-                            m_added.ends[0].name(), m_added.end_ids[0], i])
-
-            path = settings.RESOURCES_PATH +"/motif_libraries_new/"+\
+            path = settings.RESOURCES_PATH +"/motif_libraries/"+\
                    motif_type.type_to_str(t).lower()+".db"
             sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
     def build_helix_ensembles(self):
-        helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
-        helix_mlib.load_all()
+        helix_mlib = sqlite_library.MotifSqliteLibrary("helix")
+        helix_mlib.load_all(100)
 
-        clusters = []
-        steps = []
+        all_bp_steps = defaultdict(list)
 
-        kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
-        kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
-
-        for m in helix_mlib.motifs():
+        seen_name = []
+        for m in helix_mlib.all():
+            pos = 0
             spl = m.name.split(".")
             if spl[1] == "IDEAL" or spl[1] == "LE":
                 continue
-            for i in range(len(m.basepairs)-1):
-                if m.basepairs[i].bp_type != "cW-W" or m.basepairs[i+1].bp_type != "cW-W":
+            if m.name in seen_name:
+                continue
+            seen_name.append(m.name)
+            for i in range(m.num_basepairs()-1):
+                if m.get_basepair(i).bp_type != "cW-W" or \
+                   m.get_basepair(i+1).bp_type != "cW-W":
                     continue
-                bps = [m.basepairs[i], m.basepairs[i+1]]
-
+                bps = [m.get_basepair(i), m.get_basepair(i+1)]
                 res = []
                 for bp in bps:
-                    for r in bp.residues():
-                        if r not in res:
-                            res.append(r)
+                    res.extend(m.get_bp_res(bp))
+
                 if len(res) != 4:
                     continue
 
-                m_bps = motif_factory.factory.motif_from_bps(bps)
-
-                if len(m_bps.end_ids) != 2:
+                name = m.name + ".BP." + str(pos)
+                pos += 1
+                bp_steps = self.mf.motifs_from_res(res, bps, m, name, motif_type.HELIX)
+                if len(bp_steps) != 2:
                     continue
-                if len(m_bps.end_ids[0]) != 11:
-                    continue
-                matched = 0
-                for c in clusters:
-                    if c.motif_matches(m_bps):
-                        matched = 1
+                for bp_step in bp_steps:
+                    if bp_step.num_ends() != 2:
+                        continue
+                    all_bp_steps[bp_step.get_end_id(0)].append(bp_step)
+        # TODO dont forget this
+        #for bp in m_a.basepairs:
+        #    vec1 = bp.res1.get_atom("C2'").coords - bp.res1.get_atom("O4'").coords
+        #    vec2 = bp.res2.get_atom("C2'").coords - bp.res2.get_atom("O4'").coords
+        #    if np.dot(vec1, vec2) > 2:
+        #        fail = 1
+        #             break
+        #    if fail:
+        #        continue
 
-                if not matched:
-                    clusters.append(SSandSeqCluster(m_bps.end_ids[0]))
-                    clusters[-1].motif_matches(m_bps)
-                    if m_bps.end_ids[0] != m_bps.end_ids[1]:
-                        clusters.append(SSandSeqCluster(m_bps.end_ids[1]))
-                        clusters[-1].motif_matches(m_bps)
 
         mes_keys = ['data', 'name', 'id']
         mes_data = []
@@ -279,63 +215,23 @@ class BuildSqliteLibraries(object):
         unique = []
         bp_count = 1
 
-        count = 1
-        for c_i, c in enumerate(clusters):
-            m = c.motif_and_ends[0].motif
-            if m.end_ids[0] in unique:
-                continue
-            if m.end_ids[1] in unique:
-                continue
-
-            unique.append( m.end_ids[0])
-            if not m.end_ids[1] in unique:
-                unique.append( m.end_ids[1])
-
-            all_count += 1
-            spl = c.end_id.split("_")
-            aligned_motifs = []
-            for i, m_and_e in enumerate(c.motif_and_ends):
-                m, ei = m_and_e.motif, m_and_e.end_index
-                try:
-                    m_a = motif_factory.factory.can_align_motif_to_end(m, ei)
-                except:
-                    continue
-                if m_a is None:
-                    continue
-                m_a = motif_factory.factory.align_motif_to_common_frame(m_a, ei)
-
-                #catch basepairs that have 5' - 5' interactions or 3' - 3'
-                fail = 0
-                for bp in m_a.basepairs:
-                    vec1 = bp.res1.get_atom("C2'").coords - bp.res1.get_atom("O4'").coords
-                    vec2 = bp.res2.get_atom("C2'").coords - bp.res2.get_atom("O4'").coords
-                    if np.dot(vec1, vec2) > 2:
-                        fail = 1
-                        break
-                if fail:
-                    continue
-
-                aligned_motifs.append(m_a)
+        for end_id, bp_steps in all_bp_steps.iteritems():
 
             #best 0.65
-            m_clusters = cluster.cluster_motifs(aligned_motifs, 0.65)
-            print "start, ", c.end_id
-            clustered_motifs = []
+            m_clusters = cluster.cluster_motifs(bp_steps, 0.65)
+            print len(bp_steps), len(m_clusters)
+
             energies = []
-            dir_name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
+            cluster_motifs = []
 
             for j, c_motifs in enumerate(m_clusters):
                 m = c_motifs.motifs[0]
-                m.mtype = motif_type.HELIX
-                m.name = "BP."+ str(c_i) + "." + str(j)
-                motif_data.append([m.to_str(), m.name, m.ends[0].name(), c.end_id, count])
+                motif_data.append([m.to_str(), m.name, m.get_end(0).name, end_id, count])
                 count += 1
                 clustered_motifs.append(m)
 
-                pop = float(len(c_motifs.motifs)) / float(len(aligned_motifs))
-
-                energy = -kBT*math.log(pop)
-                energies.append(energy)
+                pop = float(len(c_motifs.motifs)) / float(len(bp_steps))
+                energies.append( -kBT*math.log(pop) )
 
 
             me = motif_ensemble.MotifEnsemble()
@@ -514,48 +410,20 @@ class BuildSqliteLibraries(object):
                 continue
             count += 1
 
-            f.write(lowest.name + "," + lowest.ends[0].name() + " | ")
+            f.write(lowest.name + "," + lowest.get_end(0).name + " | ")
 
             for m in c.motifs:
-                f.write(m.name + "," + m.ends[0].name() + " | ")
+                f.write(m.name + "," + m.get_end(0).name + " | ")
             f.write("\n")
-            #print i, lowest.score, lowest.name
-            #lowest.to_pdb("m."+str(i)+".pdb")
 
-            #motif_arrays.append(motif.MotifArray(c.motifs))
-            #motif_array_names.append(lowest.name)
-            print lowest.name, lowest.dot_bracket()
             data.append([lowest.to_str(), lowest.name,
-                        lowest.ends[0].name(), lowest.end_ids[0], count])
+                        lowest.get_end(0).name, lowest.get_end_id(0), count])
 
 
-            #remove duplicate sequences
-            motifs = []
-            end_ids = {}
-            for m in c.motifs:
-                if m.end_ids[0] not in end_ids:
-                    end_ids[m.end_ids[0]] = m
-                    motifs.append(m)
-                    continue
-
-                org_m = end_ids[m.end_ids[0]]
-                if m.score < org_m.score:
-                    motifs.remove(org_m)
-                    motifs.append(m)
-                    end_ids[m.end_ids[0]] = m
-
-            scores = [1 for x in motifs]
-
-            me = motif_ensemble.MotifEnsemble()
-            me.setup(lowest.name, motifs, scores)
-            mes_data.append([me.to_str(), me.id, count])
         f.close()
 
-        path = settings.RESOURCES_PATH +"/motif_libraries_new/unique_twoway.db"
+        path = settings.RESOURCES_PATH +"/motif_libraries/unique_twoway.db"
         sqlite_library.build_sqlite_library(path, data, keys, 'id')
-
-        #path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/twoway_clusters.db"
-        #sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')3
 
     def build_ss_and_seq_libraries(self):
         libnames = ["twoway", "tcontact", "hairpin", "nway"]
@@ -673,14 +541,14 @@ class BuildSqliteLibraries(object):
 #setup_start_motif()
 builder = BuildSqliteLibraries()
 
-builder.build_ideal_helices_old()
-builder.build_trimmed_ideal_helix_library()
+#builder.build_ideal_helices()
+#builder.build_trimmed_ideal_helix_library()
 #builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
-#builder.build_unique_twoway_library()
-builder.build_motif_state_libraries()
+builder.build_unique_twoway_library()
+#builder.build_motif_state_libraries()
 #builder.build_motif_ensemble_state_libraries()
 
 
