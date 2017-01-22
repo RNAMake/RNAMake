@@ -39,6 +39,14 @@ class ResourceManagerUnittest(unittest.TestCase):
         m2 = rm.get_motif_with_new_alignment(m, 1)
         self.failUnless(numerical.are_points_equal(m.get_end(0).d, m2.get_end(1).d))
 
+    def test_get_me(self):
+        rm = self.rm
+        me = rm.get_motif_ensemble("CC_LL_GG_RR")
+        self.failUnless(len(me) > 1)
+
+        m = me.get_member(0).motif
+        self.failUnless(rm.get_motif(name=m.name) is not None)
+        self.failUnless(rm.get_motif(name=m.name, end_name=m.get_end(1).name) is not None)
 
 def main():
     unittest.main()

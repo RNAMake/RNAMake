@@ -340,6 +340,12 @@ class Residue(primitives.residue.Residue):
         for b in self._beads:
             b.move(p)
 
+    def build_beads(self):
+        self._beads = self.__get_beads()
+
+    def remove_beads(self):
+        self._beads = []
+
     # getters
     def get_atom(self, atom_name=None, index=None):
         """
@@ -464,6 +470,3 @@ class Residue(primitives.residue.Residue):
                 beads.append(Bead(util.center(alist), types[i]))
 
         return beads
-
-    def build_beads(self):
-        self._beads = self.__get_beads()

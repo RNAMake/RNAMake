@@ -348,18 +348,67 @@ class MotifEnsembleSqliteLibrary(SqliteLibrary):
     :examples:
     """
 
-    def __init__(self, libname):
+    def __init__(self, libname, rts=None):
         super(self.__class__, self).__init__(libname)
+        self.rts = rts
+        if self.rts is None:
+            self.rts = residue_type.ResidueTypeSet()
+
+    def get(self, **options):
+        """
+        Gets row for sqlite3 database with specific variables specified in
+        options. Will at most return 1 item even if multiple items meet
+        selection criteria.
+
+        :param options: sqlite3 select columns and values
+        :return: unstringified data from database
+        """
+
+        query = self._generate_query(options)
+        rows = self.connection.execute(query).fetchall()
+
+        if len(rows) == 0:
+            raise exceptions.SqliteLibraryException(
+                "query returned no rows: " + self._args_to_str(options))
+
+        id = rows[0][-1]
+        if id not in self.data:
+            self.data[id] = self._generate_data(rows[0][0])
+
+        return motif_ensemble.MotifEnsemble.copy(self.data[id])
+
+    def get_multi(self, **options):
+        """
+        Gets row for sqlite3 database with specific variables specified in
+        options. Same as get() except will return an list of all items that
+        meet the selection criteria.
+
+        :param options: sqlite3 select columns and values
+        :return: unstringified data from database
+        """
+        query = self._generate_query(options)
+        rows = self.connection.execute(query).fetchall()
+
+        if len(rows) == 0:
+            raise exceptions.SqliteLibraryException(
+                "query returned no rows: " + self._args_to_str(options))
+
+        datas = []
+        for r in rows:
+            id = r[-1]
+            if id not in self.data:
+                self.data[id] = self._generate_data(r[0])
+            datas.append(motif_ensemble.MotifEnsemble.copy(self.data[id]))
+        return datas
 
     def _generate_data(self, s):
-        return motif_ensemble.str_to_motif_ensemble(s)
+        return motif_ensemble.MotifEnsemble.from_str(s, self.rts)
 
     @staticmethod
     def get_libnames():
         libnames = {
-            "bp_steps" :  "/motif_ensemble_libraries/bp_steps.db",
-            "twoway"   :  "/motif_ensemble_libraries/twoway.db",
-            "twoway_clusters" : "motif_ensemble_libraries/twoway_clusters.db" }
+            "bp_steps" :  "/motif_ensemble_libraries/bp_steps.db"
+        }
 
         return libnames
 

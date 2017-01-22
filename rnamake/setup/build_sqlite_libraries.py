@@ -107,7 +107,7 @@ class BuildSqliteLibraries(object):
 
     def __get_bp_steps(self):
         helix_mlib = sqlite_library.MotifSqliteLibrary("helix")
-        helix_mlib.load_all()
+        helix_mlib.load_all(100)
 
         all_bp_steps = defaultdict(list)
 
@@ -142,18 +142,21 @@ class BuildSqliteLibraries(object):
                     continue
                 for bp_step in bp_steps:
                     if bp_step.num_ends() != 2 or bp_step.num_chains() != 2:
-                        continue
-                    all_bp_steps[bp_step.get_end_id(0)].append(bp_step)
+                        break
 
-        # TODO dont forget this
-        # for bp in m_a.basepairs:
-        #    vec1 = bp.res1.get_atom("C2'").coords - bp.res1.get_atom("O4'").coords
-        #    vec2 = bp.res2.get_atom("C2'").coords - bp.res2.get_atom("O4'").coords
-        #    if np.dot(vec1, vec2) > 2:
-        #        fail = 1
-        #             break
-        #    if fail:
-        #        continue
+                    fail = 0
+                    for bp in bp_step.iter_basepairs():
+                        bp_res = bp_step.get_bp_res(bp)
+                        vec1 = bp_res[0].get_coords("C2'") - bp_res[0].get_coords("O4'")
+                        vec2 = bp_res[1].get_coords("C2'") - bp_res[1].get_coords("O4'")
+                        if np.dot(vec1, vec2) > 2:
+                            fail = 1
+                            break
+                    if fail:
+                        break
+
+                    aligned_bp_step = self.mf.align_motif_to_common_frame(bp_step, 0)
+                    all_bp_steps[bp_step.get_end_id(0)].append(aligned_bp_step)
 
         return all_bp_steps
 
@@ -196,7 +199,6 @@ class BuildSqliteLibraries(object):
                 continue
             seen_end_id.append(end_id)
             bp_count += 1
-
             # best 0.65
             m_clusters = cluster.cluster_motifs(bp_steps, 0.65)
 
@@ -212,34 +214,34 @@ class BuildSqliteLibraries(object):
 
             me = motif_ensemble.MotifEnsemble(self.__get_renamed_motifs(clustered_motifs, bp_count),
                                               energies)
-            m = self.__get_renamed_motif(me.get_member(0).motif,  "BP."+str(bp_count))
+            best_m = self.__get_renamed_motif(me.get_member(0).motif,  "BP."+str(bp_count))
 
             mes_data.append([me.to_str(), me.end_id, count])
 
-            unique_data.append([m.to_str(), m.name, m.get_end(0).name,
-                                m.get_end_id(0), count])
+            unique_data.append([best_m.to_str(), best_m.name, best_m.get_end(0).name,
+                                best_m.get_end_id(0), count])
 
             count += 1
 
-            if m.get_end_id(1) in seen_end_id:
+            if best_m.get_end_id(1) in seen_end_id:
                 continue
 
             other_bp_steps = all_bp_steps[m.get_end_id(1)]
             other_motifs = []
             for m in clustered_motifs:
                 for other_bp in other_bp_steps:
-                    if m.name == other_bp.name:
+                    if m.name == other_bp.name and m.get_end(0).name == other_bp.get_end(1).name:
                         other_motifs.append(other_bp)
+                        break
 
             other_me = motif_ensemble.MotifEnsemble(self.__get_renamed_motifs(other_motifs, bp_steps),
-                                                    me.get_energies())
+                                                    energies)
             other_m = self.__get_renamed_motif(other_me.get_member(0).motif, "BP."+str(bp_count))
 
             mes_data.append([other_me.to_str(), other_me.end_id, count])
 
             unique_data.append([other_m.to_str(), other_m.name, other_m.get_end(0).name,
                                 other_m.get_end_id(0), count])
-
             count += 1
 
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"

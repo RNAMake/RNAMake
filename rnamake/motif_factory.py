@@ -417,6 +417,8 @@ class MotifFactory(object):
         bps = [ bp for bp in rna_struc.iter_basepairs() ]
         ends = [ end for end in rna_struc.iter_ends() ]
         s = structure.Structure(chains)
+        for r in s.iter_res():
+            r.remove_beads()
 
         elements = self._MotifElements(s, bps, ends)
         return self.__motifs_from_elements(elements, mtype, name)

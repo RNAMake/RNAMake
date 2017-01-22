@@ -51,24 +51,26 @@ class ResourceManager(object):
 
     __slots__ = [
         "_mlibs",
+        "_me_libs",
         "_added_motifs",
         "_mf",
         "_rts"
     ]
 
     def __init__(self):
-        self._mlibs,    = {},
+        self._mlibs = {}
+        self._me_libs = {}
         self._added_motifs = MotifLibrary()
         self._rts = residue_type.ResidueTypeSet()
         self._mf = motif_factory.MotifFactory(self._rts)
 
         for k in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
-            #if k in exclude:
-            #    continue
-            self._mlibs[k] = sqlite_library.MotifSqliteLibrary(k)
+            self._mlibs[k] = sqlite_library.MotifSqliteLibrary(k, self._rts)
 
+        for k in sqlite_library.MotifEnsembleSqliteLibrary.get_libnames().keys():
+            self._me_libs[k] = sqlite_library.MotifEnsembleSqliteLibrary(k, self._rts)
 
-        #hack for now
+        # hack for now
         self.add_motif_from_file(settings.MOTIF_DIRS + "/extras/GAAA_tetraloop")
         self.add_motif_from_file(settings.MOTIF_DIRS + "/extras/GGAA_tetraloop")
 
@@ -119,9 +121,16 @@ class ResourceManager(object):
             "cannot find motif state: "+ self._args_to_str(options))
 
     def get_motif_ensemble(self, ss_id):
-        for me_lib in self.me_libs.itervalues():
+        new_me = None
+        for me_lib in self._me_libs.itervalues():
             if me_lib.contains(name=ss_id):
-                return me_lib.get(name=ss_id)
+                new_me = me_lib.get(name=ss_id)
+                break
+
+        if new_me is not None:
+            for mem in new_me:
+                self.add_motif(mem.motif, mem.motif.mtype, mem.motif.name)
+            return new_me
 
         raise ValueError("could not find motif ensemble with id: "+ss_id)
 

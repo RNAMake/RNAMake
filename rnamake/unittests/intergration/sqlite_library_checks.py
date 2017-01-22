@@ -113,31 +113,30 @@ class BPStepsUnittests(unittest.TestCase):
 
     def setUp(self):
 
-        path = settings.RESOURCES_PATH + "/motifs/base.motif"
         self.rts = residue_type.ResidueTypeSet()
-        self.base_motif = motif.file_to_motif(path)
+        mlib = sqlite_library.MotifSqliteLibrary("ideal_helices")
+
+        self.base_motif = mlib.get(name="HELIX.IDEAL.1")
+        self.added_motif = motif.Motif.copy(self.base_motif)
 
     def _test_correct_build(self, me):
 
-        for mem in me.members:
+        for mem in me:
             m = mem.motif
-            m1 = motif.get_aligned_motif(self.base_motif.ends[1], m.ends[0], m)
+            m1 = motif.get_aligned_motif(self.base_motif.get_end(1), m.get_end(0), m)
 
-            if motif.clash_between_motifs(self.base_motif, m1):
-                self.fail("clash")
+            self.failIf(motif.clash_between_motifs(self.base_motif, m1))
 
-            for i in range(1,len(m1.ends)):
-                m2 = motif.get_aligned_motif(m1.ends[i], self.base_motif.ends[0],
-                                             self.base_motif)
+            for i in range(1, m1.num_ends()):
+                m2 = motif.get_aligned_motif(m1.get_end(i), self.added_motif.get_end(0),
+                                             self.added_motif)
 
-                if motif.clash_between_motifs(m1, m2):
-                    self.fail("clash")
-                if motif.clash_between_motifs(self.base_motif, m2):
-                    self.fail("clash")
+                self.failIf(motif.clash_between_motifs(m1, m2))
+                self.failIf(motif.clash_between_motifs(self.base_motif, m2))
 
     def test_correct_build_bps(self):
         me_lib = sqlite_library.MotifEnsembleSqliteLibrary("bp_steps")
-        me_lib.load_all()
+        me_lib.load_all(1)
 
         for me in me_lib.all():
             self._test_correct_build(me)

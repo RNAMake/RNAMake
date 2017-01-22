@@ -5,6 +5,7 @@ import primitives.residue
 import primitives.chain
 import primitives.structure
 import primitives.basepair
+from primitives.ensemble import Ensemble, EnsembleMember
 import primitives.rna_structure
 import bead
 import exceptions
@@ -551,6 +552,50 @@ class Motif(primitives.rna_structure.RNAStructure):
     def block_end_add(self):
         return self._block_end_add
 
+
+class MotifEnsemble(Ensemble):
+    __slots__ = [
+        "_end_id",
+        "_members",
+        "_block_end_add"
+    ]
+
+    def __init__(self, motifs, energies):
+        if len(motifs) != len(energies):
+            raise ValueError("must supply the same number of motifs and energies")
+
+        members = []
+        for i, m in enumerate(motifs):
+            ms = EnsembleMember(m, energies[i])
+            members.append(ms)
+
+        members.sort(key=lambda x: x.energy, reverse=False)
+        super(self.__class__, self).__init__(members)
+
+    def copy(self):
+        mes_copy = MotifStateEnsemble()
+
+        mes_copy.id =self.id
+        mes_copy.block_end_add = self.block_end_add
+        members = []
+        for mem in self.members:
+            members.append(mem.copy())
+        mes_copy.members = members
+
+        return mes_copy
+
+    def to_str(self):
+        s = self.id + "{" + str(self.block_end_add) + "{"
+        for ms in self.members:
+            s += ms.to_str() + "{"
+        return s
+
+    def get_random_member(self):
+        return random.choice(self.members)
+
+    def update_res_uuids(self, res):
+        for mem in self.members:
+            mem.motif_state.update_res_uuids(res)
 
 
 def align_motif_state(ref_bp_state, ms):
