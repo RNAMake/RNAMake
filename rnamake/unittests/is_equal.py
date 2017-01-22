@@ -63,3 +63,67 @@ def are_structure_equal(s1, s2, check_uuid=1):
             return 0
 
     return 1
+
+
+def are_basepairs_equal(bp1, bp2, check_uuid=1):
+    if not numerical.are_points_equal(bp1.d, bp2.d):
+        return 0
+    if not numerical.are_matrices_equal(bp1.r, bp2.r):
+        return 0
+    if not numerical.are_points_equal(bp1.sugars[0], bp2.sugars[0]):
+        return 0
+    if not numerical.are_points_equal(bp1.sugars[1], bp2.sugars[1]):
+        return 0
+
+    if bp1.name != bp2.name:
+        return 0
+    if bp1.bp_type != bp2.bp_type:
+        return 0
+
+    if check_uuid:
+        if bp1.uuid != bp2.uuid:
+            return 0
+        if bp1.res1_uuid != bp2.res1_uuid:
+            return 0
+        if bp1.res2_uuid != bp2.res2_uuid:
+            return 0
+
+    return 1
+
+
+def are_rna_strucs_equal(rs1, rs2, check_uuid=1):
+
+    if rs1.num_res() != rs2.num_res():
+        return 0
+
+    for i in range(rs1.num_res()):
+        result = are_residues_equal(rs1.get_residue(index=i),
+                                    rs2.get_residue(index=i),
+                                    check_uuid)
+        if not result:
+            return 0
+
+    if rs1.num_basepairs() != rs2.num_basepairs():
+        return 0
+
+    for i in range(rs1.num_basepairs()):
+        result = are_basepairs_equal(rs1.get_basepair(index=i),
+                                     rs2.get_basepair(index=i),
+                                     check_uuid)
+        if not result:
+            return 0
+
+
+    if rs1.num_ends() != rs2.num_ends():
+        return 0
+
+    for i in range(rs1.num_ends()):
+        result = are_basepairs_equal(rs1.get_end(i), rs2.get_end(i), check_uuid)
+        if not result:
+            return 0
+
+    for i in range(rs1.num_ends()):
+        if rs1.get_end_id(i) != rs2.get_end_id(i):
+            return 0
+
+    return 1

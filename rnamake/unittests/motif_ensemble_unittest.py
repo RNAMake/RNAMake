@@ -4,8 +4,16 @@ from rnamake import sqlite_library
 
 class MotifEnsembleUnittest(unittest.TestCase):
 
+    def setUp(self):
+        self.mlib = sqlite_library.MotifSqliteLibrary("twoways")
+
     def test_creation(self):
-        pass
+        motifs = []
+        energies = []
+
+        
+
+
 
 
 

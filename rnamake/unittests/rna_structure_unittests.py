@@ -8,7 +8,7 @@ import copy
 import random
 
 from instances.transform_instances import transform_random
-import numerical
+import numerical, is_equal
 
 
 class RNAStructureUnittest(unittest.TestCase):
@@ -26,28 +26,18 @@ class RNAStructureUnittest(unittest.TestCase):
     def test_copy(self):
         rs = self.rna_struc
         rs_copy = rna_structure.RNAStructure.copy(rs)
-
-        for r in rs.iter_res():
-            self.failUnless(rs_copy.get_residue(uuid=r.uuid) is not None)
-
-        for bp in rs.iter_basepairs():
-            self.failUnless(rs_copy.get_basepair(bp_uuid=bp.uuid) is not None)
-
         rs_copy_2 = rna_structure.RNAStructure.copy(rs, new_uuid=1)
-        for r in rs.iter_res():
-            self.failUnless(rs_copy_2.get_residue(uuid=r.uuid) is None)
 
-        for bp in rs.iter_basepairs():
-            self.failUnless(rs_copy_2.get_basepair(bp_uuid=bp.uuid) is None)
+        self.failUnless(is_equal.are_rna_strucs_equal(rs, rs_copy))
+        self.failIf(is_equal.are_rna_strucs_equal(rs, rs_copy_2))
+        self.failUnless(is_equal.are_rna_strucs_equal(rs, rs_copy_2, check_uuid=0))
 
     def test_to_str(self):
         rs = self.rna_struc
         s = rs.to_str()
         rs_copy = rna_structure.RNAStructure.from_str(s, self.rts)
 
-        self.failUnless(rs.num_res() == rs_copy.num_res())
-        self.failUnless(rs.num_chains() == rs_copy.num_chains())
-        self.failUnless(rs.num_basepairs() == rs_copy.num_basepairs())
+        self.failUnless(is_equal.are_rna_strucs_equal(rs, rs_copy, check_uuid=0))
 
     def test_align(self):
         rs = self.rna_struc
@@ -94,6 +84,15 @@ class RNAStructureUnittest(unittest.TestCase):
         bp_res = rs.get_bp_res(rs.get_end(1))
         self.failUnless(bp_res[0].num_beads() == 0)
         self.failUnless(bp_res[1].num_beads() == 0)
+
+        # should keep beads after copying or generating from str
+        rs_copy = rna_structure.RNAStructure.copy(rs)
+        bp_res = rs.get_bp_res(rs.get_end(0))
+        self.failUnless(bp_res[0].num_beads() != 0)
+
+        s = rs.to_str()
+        rs_copy = rna_structure.RNAStructure.from_str(s, self.rts)
+        self.failUnless(bp_res[0].num_beads() != 0)
 
     def test_transform(self):
         rs = self.rna_struc

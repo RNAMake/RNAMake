@@ -103,6 +103,11 @@ class BasicLibrariesUnittests(unittest.TestCase):
         mlib.load_all()
         self._test_correct_build(mlib)
 
+    def test_correct_build_bp_steps(self):
+        mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
+        mlib.load_all()
+        self._test_correct_build(mlib)
+
 
 class BPStepsUnittests(unittest.TestCase):
 

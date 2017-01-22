@@ -391,6 +391,8 @@ class MotifFactory(object):
                 if r not in all_res:
                     all_res.append(r)
 
+        all_res = [ residue.Residue.copy(r, build_beads=0) for r in all_res]
+
         chains = chain.connect_residues_into_chains(all_res)
         s = structure.Structure(chains)
         ends = ends_from_basepairs(s, bps)
@@ -418,12 +420,6 @@ class MotifFactory(object):
 
         elements = self._MotifElements(s, bps, ends)
         return self.__motifs_from_elements(elements, mtype, name)
-
-
-
-
-
-
 
 def ref_motif():
     path = settings.RESOURCES_PATH + "/start"

@@ -108,12 +108,12 @@ class ResourceManager(object):
         raise ValueError("cannot find motif")
 
     def get_state(self, **options):
-        for me_lib in self.ms_libs.values():
-            if me_lib.contains(**options):
-                return me_lib.get(**options)
+        for mlib in self._mlibs.itervalues():
+            if mlib.contains(**options):
+                return mlib.get(**options).get_state()
 
-        if self.added_motifs.contains(**options):
-            return self.added_motifs.get(**options).get_state()
+        if self._added_motifs.contains(**options):
+            return self._added_motifs.get(**options).get_state()
 
         raise exceptions.ResourceManagerException(
             "cannot find motif state: "+ self._args_to_str(options))
@@ -185,6 +185,18 @@ class ResourceManager(object):
         for k, v in options.iteritems():
             s += k + " = " + v + ","
         return s
+
+    def ms_to_motif(self, ms):
+        m = self.get_motif(name=ms.name, end_name=ms.get_end(0).name)
+        pass
+
+    def get_motif_with_new_alignment(self, m, ei):
+        m_copy = motif.Motif.copy(m)
+        m_copy.get_end(ei).flip()
+
+        new_m = self.get_motif(name=m_copy.name, end_name=m.get_end(ei).name)
+        m_aligned = motif.get_aligned_motif(m_copy.get_end(ei), new_m.get_end(0), new_m)
+        return m_aligned
 
     @property
     def residue_type_set(self):

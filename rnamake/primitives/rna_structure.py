@@ -39,13 +39,12 @@ class RNAStructure(base.BaseStructureObject):
     def iter_chains(self):
         return self._structure.__iter__()
 
-    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None):
+    def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None, index=None):
         """
         wrapper for :func:`rnamake.structure.Structure.get_residue`
         """
 
-        return self._structure.get_residue(num=num, chain_id=chain_id,
-                                         i_code=i_code, uuid=uuid)
+        return self._structure.get_residue(num, chain_id, i_code, uuid, index)
 
     def get_res_index(self, r):
         return self._structure.get_res_index(r)

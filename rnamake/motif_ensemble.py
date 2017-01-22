@@ -19,6 +19,14 @@ class MotifEnsembleMember(object):
         member_copy = MotifEnsembleMember(self.motif.copy(), self.energy)
         return member_copy
 
+    @property
+    def motif(self):
+        return self._motif
+
+    @property
+    def energy(self):
+        return self._energy
+
 
 class MotifEnsemble(object):
     __slots__ = [
@@ -39,9 +47,15 @@ class MotifEnsemble(object):
             ms = MotifEnsembleMember(m, energies[i])
             self._members.append(ms)
 
-        self._members.sort(key = lambda x : x.energy, reverse=False)
+        self._members.sort(key=lambda x: x.energy, reverse=False)
         self._block_end_add = self._members[0].motif.block_end_add
-        self._end_id = self._members.motif.get_end_id(0)
+        self._end_id = self._members[0].motif.get_end_id(0)
+
+    def __len__(self):
+        return len(self._members)
+
+    def __iter__(self):
+        return self._members.__iter__()
 
     def copy(self):
         me_copy = MotifEnsemble()
@@ -59,8 +73,8 @@ class MotifEnsemble(object):
         return random.choice(self.members)
 
     def to_str(self):
-        s = self.id + "{" + str(self.block_end_add) + "{"
-        for ms in self.members:
+        s = self._end_id + "{" + str(self._block_end_add) + "{"
+        for ms in self._members:
             s += ms.to_str() + "{"
         return s
 
@@ -90,6 +104,28 @@ class MotifEnsemble(object):
             f.write("ENDMDL\n")
         f.close()
 
+    def get_member(self, i):
+        return self._members[i]
+
+    def get_energies(self):
+        energies = []
+        for mem in self._members:
+            energies.append(mem.energy)
+        return energies
+
+    def get_motifs(self):
+        motifs = []
+        for mem in self._members:
+            motifs.append(mem.motifs)
+        return motifs
+
+    @property
+    def end_id(self):
+        return self._end_id
+
+    @property
+    def block_end_add(self):
+        return self._block_end_add
 
 class MotifStateEnsembleMember(object):
     __slots__ = ['motif_state', 'energy']

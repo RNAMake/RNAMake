@@ -11,6 +11,7 @@ import exceptions
 import basic_io
 import util
 import rna_structure
+import transform
 
 class Residue(primitives.residue.Residue):
     __slots__ = [
@@ -24,6 +25,9 @@ class Residue(primitives.residue.Residue):
     def __init__(self, name, num, chain_id, i_code, beads, r_uuid=None):
         super(self.__class__, self).__init__(name, num, chain_id, i_code, r_uuid)
         self._beads = beads
+
+    def iter_beads(self):
+        return self._beads.__iter__()
 
     @classmethod
     def from_str(cls, s):
@@ -431,8 +435,9 @@ class Basepair(primitives.basepair.Basepair):
     def res2_uuid(self):
         return self._res2_uuid
 
-
-    #def __init__(self,
+    @property
+    def name(self):
+        return self._name
 
 
 class Motif(primitives.rna_structure.RNAStructure):
@@ -542,46 +547,31 @@ class Motif(primitives.rna_structure.RNAStructure):
     def uuid(self):
         return self._uuid
 
+    @property
+    def block_end_add(self):
+        return self._block_end_add
 
 
 
-def align_motif_state(ref_bp_state, org_state):
-    r, t = ref_bp_state.get_transforming_r_and_t_w_state(org_state.end_states[0])
+def align_motif_state(ref_bp_state, ms):
+    r, t = ref_bp_state.get_transforming_r_and_t_w_state(ms.get_end(0))
     t += ref_bp_state.d
 
-    for i, s in enumerate(org_state.end_states):
-        new_r, new_d, new_sug = s.get_transformed_state(r, t)
-        org_state.end_states[i].set(new_r,new_d,new_sug)
+    trans  = transform.Transform(r, t)
+
+    ms.transform(trans)
 
 
-def get_aligned_motif_state_single(ref_bp_state, ms):
-    r, t = ref_bp_state.get_transforming_r_and_t_w_state(ms.end_states[0])
+def get_aligned_motif_state(ref_bp_state, ms, new_uuid=1):
+    r, t = ref_bp_state.get_transforming_r_and_t_w_state(ms.get_end(0))
     t += ref_bp_state.d
 
-    ms_copy = ms.copy()
+    ms_copy = Motif.copy(ms, new_uuid=new_uuid)
+    trans  = transform.Transform(r, t)
 
-    for i, s in enumerate(ms.end_states):
-        new_r, new_d, new_sug = s.get_transformed_state(r, t)
-        ms_copy.end_states[i].set(new_r, new_d, new_sug)
-
-    if len(ms_copy.beads) > 0:
-        ms_copy.beads = np.dot(ms.beads, r.T) + t
+    ms_copy.transform(trans)
 
     return ms_copy
-
-
-def get_aligned_motif_state(ref_bp_state, cur_state, org_state):
-    r, t = ref_bp_state.get_transforming_r_and_t_w_state(org_state.end_states[0])
-    t += ref_bp_state.d
-
-    for i, s in enumerate(org_state.end_states):
-        new_r, new_d, new_sug = s.get_transformed_state(r, t)
-        cur_state.end_states[i].set(new_r, new_d, new_sug)
-
-    if len(org_state.beads) > 0:
-        cur_state.beads = np.dot(org_state.beads, r.T) + t
-
-
 
 
 

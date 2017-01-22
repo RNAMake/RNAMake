@@ -1,52 +1,48 @@
 import unittest
 from rnamake import motif, motif_tree, motif_state_tree, settings, exceptions
-import rnamake.resource_manager as rm
+from rnamake import resource_manager
 import rnamake.util as util
 import build
 
 class MotifStateTreeUnittest(unittest.TestCase):
 
+    def setUp(self):
+        self.rm = resource_manager.ResourceManager()
 
     def test_creation_from_mt(self):
-        builder = build.BuildMotifTree()
+        builder = build.BuildMotifTree(self.rm)
         mt = builder.build(10)
-        mst = motif_state_tree.MotifStateTree(mt)
-        if len(mt) != len(mst):
-            self.fail("did not build mst properly")
+        mst = motif_state_tree.MotifStateTree(self.rm, mt)
+        self.failUnless(len(mt) == len(mst), "did not build mst properly")
 
     def test_copy(self):
         mst = self._get_sub_tree()
-        mst_copy = mst.copy()
+        mst_copy = motif_state_tree.MotifStateTree.copy(mst)
         mst.add_connection(2, 3)
 
         self.failUnless(len(mst) == len(mst_copy))
-        self.failUnless(len(mst.connections.connections) == 1)
+        self.failUnless(mst.num_connections() == 1)
+        self.failUnless(mst_copy.num_connections() == 0)
 
     def _get_sub_tree(self):
-        mt = motif_tree.MotifTree()
-        m1 = rm.manager.get_motif(name="HELIX.IDEAL.2")
-        m2 = rm.manager.get_motif(name="HELIX.IDEAL.2")
-        m3 = rm.manager.get_motif(name="HELIX.IDEAL.2")
-        nway = rm.manager.get_motif(name="NWAY.1GID.0")
-        mt.add_motif(m1)
-        mt.add_motif(nway)
-        mt.add_motif(m2)
-        mt.add_motif(m3, 1)
-        return mt
+        mst = motif_state_tree.MotifStateTree(self.rm)
+        mst.add_state(m_name="HELIX.IDEAL.2")
+        mst.add_state(m_name="NWAY.1GID.0")
+        mst.add_state(m_name="HELIX.IDEAL.2")
+        mst.add_state(m_name="HELIX.IDEAL.2", parent_index=1)
+        return mst
 
     def test_add_mst(self):
-        mt = self._get_sub_tree()
-        mt2 = self._get_sub_tree()
+        mst = self._get_sub_tree()
+        mst2 = self._get_sub_tree()
 
-        mst = motif_state_tree.MotifStateTree(mt=mt)
-        mst2 = motif_state_tree.MotifStateTree(mt=mt2)
         mst.add_mst(mst2)
         self.failUnless(len(mst) == 8)
 
     def test_add_state(self):
-        mst = motif_state_tree.MotifStateTree()
-        ms1 = rm.manager.get_state(name="HELIX.IDEAL.2")
-        ms2 = rm.manager.get_state(name="HELIX.IDEAL.2")
+        mst = motif_state_tree.MotifStateTree(self.rm)
+        ms1 = self.rm.get_state(name="HELIX.IDEAL.2")
+        ms2 = self.rm.get_state(name="HELIX.IDEAL.2")
         mst.add_state(ms1)
 
         # can only add the motif state with teh same unique indenitifer twice
@@ -60,7 +56,7 @@ class MotifStateTreeUnittest(unittest.TestCase):
 
         # supplied parent_end_index and parent_end_name
         with self.assertRaises(exceptions.MotifStateTreeException):
-            mst.add_state(ms2, parent_end_index=1, parent_end_name="A1-A8")
+            mst.add_state(ms2, parent_end_index=1, parent_end_name="A4-A5")
 
         # must supply a motif or motif name
         with self.assertRaises(exceptions.MotifStateTreeException):
@@ -80,29 +76,24 @@ class MotifStateTreeUnittest(unittest.TestCase):
 
         # invalid parent_end_name, is the name of end 0
         with self.assertRaises(exceptions.MotifStateTreeException):
-            mst.add_state(ms2, parent_end_name="A4-A5")
+            mst.add_state(ms2, parent_end_name="A1-85")
 
         # invalid parent_end_name, cannot be found as an end in motif
         with self.assertRaises(exceptions.MotifStateTreeException):
             mst.add_state(ms2, parent_end_name="FAKE")
 
-    def test_add_connection(self):
-        mst = motif_state_tree.MotifStateTree()
-        ms1 = rm.manager.get_state(name="HELIX.IDEAL.2")
-        ms2 = rm.manager.get_state(name="HELIX.IDEAL.2")
-        ms3 = rm.manager.get_state(name="HELIX.IDEAL.2")
-        nway = rm.manager.get_state(name="NWAY.1GID.0")
-        mst.add_state(ms1)
-        mst.add_state(nway)
         mst.add_state(ms2)
 
-        # try connecting through 0th end position
-        with self.assertRaises(exceptions.MotifStateTreeException):
-            mst.add_connection(1, 2, "A138-A180")
+    def test_add_connection(self):
+        mst = motif_state_tree.MotifStateTree(self.rm)
+        mst.add_state(m_name="HELIX.IDEAL.2")
+        mst.add_state(m_name="NWAY.1GID.0")
+        mst.add_state(m_name="HELIX.IDEAL.2")
+        ms3 = self.rm.get_state(name="HELIX.IDEAL.2")
 
         # try connecting thru an already used end position
         with self.assertRaises(exceptions.MotifStateTreeException):
-            mst.add_connection(1, 2, "A138-A180")
+            mst.add_connection(1, 2, "A141-A162")
 
         mst.add_connection(1, 2)
         rna_struc = mst.get_structure()
@@ -114,43 +105,33 @@ class MotifStateTreeUnittest(unittest.TestCase):
         with self.assertRaises(exceptions.MotifStateTreeException):
             mst.add_connection(1, 2)
 
-    def _test_topology_to_str(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build()
-        mst = motif_state_tree.MotifStateTree(mt)
-        s = mst.topology_to_str()
-        mst2 = motif_state_tree.str_to_motif_state_tree(s)
-        if len(mst2) != len(mt):
-            self.fail("did not reconstituate motif_state_tree from topology")
-
     def test_remove_node(self):
-        builder = build.BuildMotifTree()
+        builder = build.BuildMotifTree(self.rm)
         mt = builder.build(3)
-        mst = motif_state_tree.MotifStateTree(mt)
+        mst = motif_state_tree.MotifStateTree(self.rm, mt)
         mst.remove_node(mst.last_node().index)
-        if len(mst) != 2:
-            self.fail("did not properly remove node")
+        self.failUnless(len(mst) != 2, "did not properly remove node")
 
     def test_remove_node_level(self):
         pass
 
     def test_replace_state(self):
-        builder = build.BuildMotifTree()
+        builder = build.BuildMotifTree(self.rm)
         mt = builder.build(10)
-        mst = motif_state_tree.MotifStateTree(mt)
-        rstate = rm.manager.get_state(name="HELIX.IDEAL.2")
+        mst = motif_state_tree.MotifStateTree(self.rm, mt)
+        rstate = self.rm.get_state(name="HELIX.IDEAL.2")
         mst.replace_state(2, rstate)
 
-        mt2 = motif_tree.MotifTree()
-        mt2.option('sterics', 0)
+        mt2 = motif_tree.MotifTree(self.rm)
+        mt2.set_sterics(0)
         for n in mst:
-            m = rm.manager.get_motif(name=n.data.cur_state.name,
-                                     end_name=n.data.cur_state.end_names[0])
+            m = self.rm.get_motif(name=n.data.name,
+                                  end_name=n.data.get_end(0).name)
             mt2.add_motif(m)
 
         i = len(mst)-1
-        d1 = mst.get_node(i).data.cur_state.end_states[1].d
-        d2 = mt2.get_node(i).data.ends[1].d()
+        d1 = mst.get_node(i).data.get_end(1).d
+        d2 = mt2.get_node(i).data.get_end(1).d
         if util.distance(d1, d2) > 0.1:
             self.fail("did not properly replace state")
 

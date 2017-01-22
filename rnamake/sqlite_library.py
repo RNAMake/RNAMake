@@ -332,8 +332,7 @@ class MotifSqliteLibrary(SqliteLibrary):
             "hairpin"         : "/motif_libraries/hairpin.db",
             "nway"            : "/motif_libraries/nway.db",
             "unique_twoway"   : "/motif_libraries/unique_twoway.db",
-            #"bp_steps"        : "/motif_libraries/bp_steps.db",
-            #"new_bp_steps"    : "/motif_libraries/new_bp_steps.db",
+            "bp_steps"        : "/motif_libraries/bp_steps.db",
             "helix"           : "/motif_libraries/helix.db",
 
         }
