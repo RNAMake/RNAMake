@@ -126,16 +126,16 @@ class SqliteLibraryUnittest(unittest.TestCase):
             #m.to_pdb("m."+str(i)+".pdb")
         #print end_name
 
-    def _test_new_bp_steps(self):
-        mlib = sqlite_library.MotifSqliteLibrary("new_bp_steps")
+    def test_bp_steps(self):
+        mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
         mlib.load_all()
 
         end_indexes = []
         for m in mlib.all():
-            if m.end_ids[0] not in end_indexes:
-                end_indexes.append(m.end_ids[0])
+            if m.get_end_id(0) not in end_indexes:
+                end_indexes.append(m.get_end_id(0))
             else:
-                print m.name, m.end_ids[0]
+                self.fail("duplicate basepair steps")
 
     def _test_new_bp_steps(self):
         #mlib = sqlite_library.MotifSqliteLibrary("new_bp_steps")

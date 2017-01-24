@@ -138,7 +138,6 @@ class MotifFactory(object):
     def __get_aligned_structure(self, s):
         closest = None
         best = 1000
-        best_i = -1
         c2 = self._ref_motif.get_end(0).d
         for i, c in enumerate(s):
             c1 = c.first().center()
@@ -146,12 +145,10 @@ class MotifFactory(object):
             if dist < best:
                 best = dist
                 closest = c
-                best_i = i
-
-            updated_chains = [closest]
-            for i, c in enumerate(s):
-                if c != closest:
-                    updated_chains.append(c)
+        updated_chains = [closest]
+        for i, c in enumerate(s):
+            if c != closest:
+                updated_chains.append(c)
 
         return structure.Structure(updated_chains)
 
@@ -325,12 +322,16 @@ class MotifFactory(object):
                 end_bp.flip()
 
 
-            if mtype is not motif_type.HELIX:
+            if mtype is not motif_type.HELIX and mtype is not motif_type.UNKNOWN:
                 self.__filter_element_basepairs(final_me)
 
             end_ids      = self.__setup_end_ids(final_me.structure, final_me.basepairs,
                                                 final_me.ends)
-            seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
+
+            if len(end_ids) > 0:
+                seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
+            else:
+                dot_bracket = ""
 
             m = motif.Motif(final_me.structure, final_me.basepairs, final_me.ends, end_ids,
                             m_name, mtype, score, block_end_add=block_end_add,
@@ -371,16 +372,7 @@ class MotifFactory(object):
         return motif.get_aligned_motif(self._ref_motif.get_end(0), m.get_end(ei), m)
 
     def motifs_from_bps(self, bps, org_m, m_name):
-        m = motif.Motif()
-        res = []
-        for bp in bps:
-            res.extend(bp.residues())
-        chains = chain.connect_residues_into_chains(res)
-        m.structure.chains = chains
-        m.basepairs = bps
-        m.ends = self._setup_basepair_ends(m.structure, m.basepairs)
-        self._setup_secondary_structure(m)
-        return m
+        pass
 
     def motifs_from_res(self, res, bps, org_m, m_name, mtype):
         all_res = []
@@ -400,17 +392,71 @@ class MotifFactory(object):
 
         return self.__motifs_from_elements(elements, mtype, m_name)
 
-    def motif_from_chains(self, chains, bps, m_name, mtype):
-        m = motif.Motif()
-        m.structure.chains = chains
-        m.basepairs = bps
-        ends = self._setup_basepair_ends(m.structure, bps)
-        m.ends = ends
-        try:
-            self._setup_secondary_structure(m)
-        except:
-            pass
+    def __initial_aligned_ends(self, ends):
+        if len(ends) == 0:
+            return ends
+
+        c2 = self._ref_motif.get_end(0).d
+        closest = None
+        best = 10000
+        best_i = -1
+        for i, end in enumerate(ends):
+            c1 = end.d
+            dist = util.distance(c1, c2)
+            if dist < best:
+                best = dist
+                closest = end
+                best_i = i
+        updated_ends = [ closest ]
+        for i, end in enumerate(ends):
+            if end != closest:
+                updated_ends.append(end)
+
+        return updated_ends
+
+    def rna_structure_from_element(self, s, bps, ends, name):
+
+        elements = self._MotifElements(s, bps, ends)
+        aligned_me = self.__align_motif_elements_to_frame(self._ref_motif.get_end(0), elements, 0)
+        #aligned_me = elements
+
+        #print s.get_chain(0).get_residue(0).name
+        aligned_s = self.__get_aligned_structure(aligned_me.structure)
+        aligned_ends = self.__get_aligned_ends(aligned_s, aligned_me.ends)
+        #print aligned_s.get_chain(0).get_residue(0).name
+        end_bp = None
+        for end in elements.ends:
+            if end == aligned_ends[0]:
+                end_bp = end
+                break
+
+        new_me = self._MotifElements(aligned_s, aligned_me.basepairs, aligned_ends)
+        final_me = self.__align_motif_elements_to_frame(end_bp, new_me, 0)
+        final_me = new_me
+
+        diff = util.distance(elements.structure._residues[0].center(),
+                             final_me.structure._residues[0].center())
+
+        if diff > 1:
+            end_bp.flip()
+            final_me = self.__align_motif_elements_to_frame(end_bp, new_me, 0)
+            end_bp.flip()
+
+        end_ids = self.__setup_end_ids(final_me.structure, final_me.basepairs,
+                                       final_me.ends)
+
+        if len(end_ids) > 0:
+            seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
+        else:
+            dot_bracket = ""
+
+        m = rna_structure.RNAStructure(final_me.structure, final_me.basepairs,
+                                       final_me.ends, end_ids, name,
+                                       dot_bracket=dot_bracket)
+
         return m
+
+
 
     def motifs_from_rstruc(self, rna_struc, mtype, name):
         chains = [ c for c in rna_struc.iter_chains() ]

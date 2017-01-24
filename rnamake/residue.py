@@ -134,7 +134,7 @@ class Residue(primitives.residue.Residue):
         return r
 
     @classmethod
-    def copy(cls, r, new_uuid=0, build_beads=1):
+    def copy(cls, r, new_uuid=0, build_beads=1, given_uuid=None):
         """
         performs a deep copy of Residue object
 
@@ -157,10 +157,11 @@ class Residue(primitives.residue.Residue):
             if a is not None:
                 atoms.append(Atom.copy(a))
 
-
         r_uuid = r._uuid
         if new_uuid:
             r_uuid = uuid.uuid1()
+        if given_uuid:
+            r_uuid = given_uuid
 
         new_r = cls(atoms, r._rtype, r._name, r._num, r._chain_id,
                     r._i_code, r_uuid)

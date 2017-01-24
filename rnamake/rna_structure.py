@@ -215,7 +215,7 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
             for c in self.chains():
                 chain_closure.close_chain(c)
 
-        return self.structure.to_pdb_str(renumber)
+        return self._structure.to_pdb_str(renumber)
 
     def to_pdb(self, fname="motif.pdb", renumber=-1, close_chain=0):
         """
@@ -234,9 +234,9 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         :return: None
 
         """
-        if close_chain:
-            for c in self._chains():
-                chain_closure.close_chain(c)
+        #if close_chain:
+        #    for c in self._chains():
+        #        chain_closure.close_chain(c)
 
         return self._structure.to_pdb(fname, renumber)
 
@@ -291,10 +291,6 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
             ends.append(bps[i])
 
         return secondary_structure.RNAStructure(s, bps, ends, self._end_ids[::])
-
-
-
-
 
     @property
     def block_end_add(self):
@@ -374,7 +370,6 @@ def rna_structure_from_pdb(pdb_path, rts):
     rna_struc = RNAStructure(s, bps, ends, end_ids, name, dot_bracket=dot_bracket,
                              block_end_add=0)
     return rna_struc
-
 
 
 def _calc_center(res):

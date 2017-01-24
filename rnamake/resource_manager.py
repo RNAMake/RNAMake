@@ -7,6 +7,10 @@ import settings
 import util
 import exceptions
 import residue_type
+import residue
+import chain
+import structure
+import basepair
 
 class MotifLibrary(object):
     def __init__(self):
@@ -95,9 +99,44 @@ class ResourceManager(object):
 
         return 0
 
-    def get_bp_step(self, end_id):
-        m = self._mlibs['new_bp_steps'].get(end_id=end_id)
-        return m
+    def get_bp_step(self, end_id, org_m=None):
+        m = self._mlibs['bp_steps'].get(end_id=end_id)
+        if org_m is None:
+            return m
+
+        new_chains = []
+        for i, c1 in enumerate(m.iter_chains()):
+            c2 = org_m.get_chain(i)
+            new_res = []
+            for j, r1 in enumerate(c1):
+                new_r = residue.Residue.copy(r1, given_uuid=c2.get_residue(j).uuid)
+                new_res.append(new_r)
+            c = chain.Chain(new_res)
+            new_chains.append(c)
+        s = structure.Structure(new_chains)
+        new_bps = []
+        for i, bp in enumerate(m.iter_basepairs()):
+            bp_res = m.get_bp_res(bp)
+            r_pos_1 = m.get_res_index(bp_res[0])
+            r_pos_2 = m.get_res_index(bp_res[1])
+            other_res1 = org_m.get_residue(index=r_pos_1)
+            other_res2 = org_m.get_residue(index=r_pos_2)
+            bp2 = org_m.get_basepair(uuid1=other_res1.uuid, uuid2=other_res2.uuid)
+            new_bp = basepair.Basepair.copy_with_new_uuids(
+                            bp, bp2.res1_uuid, bp2.res2_uuid, bp2.uuid)
+            new_bps.append(new_bp)
+
+        new_ends = []
+        for end in m.iter_ends():
+            for new_bp in new_bps:
+                if end.name == new_bp.name:
+                    new_ends.append(new_bp)
+                    break
+
+        end_ids = [ m.get_end_id(i) for i in range(m.num_ends()) ]
+        new_m = motif.Motif(s, new_bps, new_ends, end_ids, m.name, m.mtype,
+                            m.score, m.block_end_add, m.dot_bracket, [], org_m.uuid)
+        return new_m
 
     def get_motif_multi(self, **options):
         for mlib in self.mlibs.itervalues():
@@ -142,8 +181,7 @@ class ResourceManager(object):
         raise ValueError("could not find motif state ensemble with options:"+\
                          self._args_to_str(options))
 
-    def add_motif_from_file(self, path=None, name=None, include_protein=0,
-                  align=1):
+    def add_motif_from_file(self, path=None, name=None, include_protein=0):
 
         motifs = self._mf.motifs_from_file(path, include_protein=include_protein)
 
@@ -162,7 +200,7 @@ class ResourceManager(object):
                 "attempted to register motif with no name this will make it "
                 "extremely unlikely you will be able to retrieve it properly!")
 
-        self.added_motifs.add_motif(m.copy())
+        self._added_motifs.add_motif(m.copy())
 
     def register_extra_motif_ensembles(self, f_name):
         f = open(f_name)
@@ -211,5 +249,8 @@ class ResourceManager(object):
     def residue_type_set(self):
         return self._rts
 
+    @property
+    def motif_factory(self):
+        return self._mf
 
 

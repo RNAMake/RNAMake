@@ -113,7 +113,6 @@ def are_rna_strucs_equal(rs1, rs2, check_uuid=1):
         if not result:
             return 0
 
-
     if rs1.num_ends() != rs2.num_ends():
         return 0
 

@@ -210,17 +210,6 @@ class SecondaryStructureParser(object):
         self.residues = []
         self.pairs = []
 
-    def reset(self):
-        """
-        resets class so it can be used again afterwards.
-
-        :return: None
-        """
-
-        self.structure = secondary_structure.Structure()
-        self.residues = []
-        self.pairs = []
-
     def _setup(self, sequence, dot_bracket, structure):
         """
         helper class for checking to make sure arguments to :func:`parse` are
@@ -267,6 +256,17 @@ class SecondaryStructureParser(object):
             self.structure = structure
 
         self.residues = self.structure.residues()
+
+    def reset(self):
+        """
+        resets class so it can be used again afterwards.
+
+        :return: None
+        """
+
+        self.structure = secondary_structure.Structure()
+        self.residues = []
+        self.pairs = []
 
     def _add_unpaired_residues_to_graph(self, g, res, is_start_res):
         """

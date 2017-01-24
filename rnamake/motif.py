@@ -243,7 +243,7 @@ class Motif(rna_structure.RNAStructure):
 
 
 
-def align_motif(ref_bp_state, motif_end, motif, sterics=1):
+def align_motif(ref_bp_state, motif_end, motif):
     """
     This is the workhorse of the entire suite. Aligns one end of a motif to
     the reference frame and origin of a Basepair object.

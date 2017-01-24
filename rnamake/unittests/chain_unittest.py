@@ -40,8 +40,8 @@ class ChainUnittest(unittest.TestCase):
            either
         """
         c = self.chains[0]
-        if c.residue(0)  != c.first() or \
-           c.residue(-1) != c.last():
+        if c.get_residue(0)  != c.get_first() or \
+           c.get_residue(-1) != c.get_last():
             self.fail()
 
         chain_2 = Chain()

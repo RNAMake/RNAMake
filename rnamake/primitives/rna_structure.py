@@ -49,6 +49,9 @@ class RNAStructure(base.BaseStructureObject):
     def get_res_index(self, r):
         return self._structure.get_res_index(r)
 
+    def get_chain(self, i):
+        return self._structure.get_chain(i)
+
     def num_res(self):
         return self._structure.num_residues()
 
@@ -188,7 +191,6 @@ class RNAStructure(base.BaseStructureObject):
             >>> r_struct_copy.get_basepair(uuid1=res1.uuid)
             [<Basepair(A1-A24)>]
         """
-
         if res1 is None and res2 is None and uuid1 is None and uuid2 is None \
            and bp_uuid is None and name is None and index is None:
             raise exceptions.RNAStructureException(
@@ -283,6 +285,7 @@ class RNAStructure(base.BaseStructureObject):
     @property
     def name(self):
         return self._name
+
 
 def ends_from_basepairs(s, bps):
     """

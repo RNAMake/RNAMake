@@ -136,6 +136,9 @@ class Chain(primitives.chain.Chain):
 
     __slots__ = ["_residues"]
 
+    def __init__(self, residues):
+        super(self.__class__, self).__init__(residues)
+
     @classmethod
     def from_str(cls, s):
         """
@@ -294,10 +297,13 @@ class Structure(primitives.structure.Structure):
         <SecondaryStructureResidue('G1 chain A')>
     """
 
-    __slots__ = ["_chains"]
+    __slots__ = [
+        "_chains",
+        "_residues"
+    ]
 
     def __init__(self, chains):
-        self._chains = chains
+        super(self.__class__, self).__init__(chains)
 
     @classmethod
     def from_str(cls, s):
@@ -445,6 +451,7 @@ class Basepair(primitives.basepair.Basepair):
     def bp_type(self):
         return self._bp_type
 
+
 class RNAStructure(primitives.rna_structure.RNAStructure):
     """
     Complete secondary structure container for representing a RNA. Contains
@@ -567,17 +574,21 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         spl = seq.split("&")
         seq2 = "".join(spl)
 
-        if len(seq2) != len(self.structure.residues()):
+        if len(seq2) != self._structure.num_residues():
             raise exceptions.SecondaryStructureException(
                 "cannot replace sequence, sequence length is different then "
                 "the number of residues")
 
-        for i, r in enumerate(self.structure.residues()):
-            r.name = seq2[i]
-
+        for i, r in enumerate(self._structure.iter_res()):
+            r.set_name(seq2[i])
 
     def to_str(self):
         pass
+
+    def update(self):
+        for i, end in enumerate(self._ends):
+            self._end_ids[i] = primitives.rna_structure.assign_end_id(
+                                    self._structure, self._basepairs, end)
 
 
 class Motif(RNAStructure):
@@ -648,12 +659,16 @@ class Motif(RNAStructure):
         "_ends",
         "_name",
         "_end_ids",
-        "_mtype"
+        "_mtype",
+        "_uuid"
     ]
 
-    def __init__(self, structure, basepairs, ends, end_ids, mtype):
+    def __init__(self, structure, basepairs, ends, end_ids, mtype, m_uuid=None):
         super(RNAStructure, self).__init__(structure, basepairs, ends, end_ids)
         self._mtype = mtype
+        self._uuid = m_uuid
+        if self._uuid is None:
+            self._uuid = uuid.uuid1()
 
     def __repr__(self):
         return "<secondary_structure.Motif( " + self.sequence() + " " + self.dot_bracket() + " )"
@@ -737,18 +752,9 @@ class Motif(RNAStructure):
             s += ei + " "
         return s
 
-    def new_res_uuids(self):
-        """
-        creates new unique indenfiers for all residues, basepairs and for the
-        motif itself
-        """
-
-        self.id = uuid.uuid1()
-        for i, r in enumerate(self.residues()):
-            r.new_uuid()
-        for bp in self.basepairs:
-            bp.uuid = uuid.uuid1()
-
+    @property
+    def uuid(self):
+        return self._uuid
 
 class Pose(RNAStructure):
     """
@@ -834,7 +840,7 @@ class Pose(RNAStructure):
     def __repr__(self):
         return "<secondary_structure.Pose( " + self.sequence() + " " + self.dot_bracket() + " )"
 
-    def motif(self, m_id):
+    def get_motif(self, m_uuid):
         """
         gets a motif by its unique indentifer
 
@@ -845,8 +851,8 @@ class Pose(RNAStructure):
         :rtype: secondary_structure.Motif
         """
 
-        for m in self.motifs:
-            if m.id == m_id:
+        for m in self._motifs:
+            if m.uuid == m_uuid:
                 return m
         return None
 
@@ -862,14 +868,18 @@ class Pose(RNAStructure):
 
         super(self.__class__, self).replace_sequence(seq)
 
-        for m in self.motifs:
-            for i, end in enumerate(m.ends):
-                m.end_ids[i] = assign_end_id_new(m, end)
+        for m in self._motifs:
+            m.update()
 
     def update_motif(self, m_id):
         m = self.motif(m_id)
         for i, end in enumerate(m.ends):
-            m.end_ids[i] = assign_end_id_new(m, end)
+            m.end_ids[i] = primitives.rna_structure.assign_end_id(m, end)
+
+    def update(self):
+        super(self.__class__, self).update()
+        for m in self._motifs:
+            m.update()
 
     def copy(self):
         """
@@ -987,111 +997,6 @@ class Pose(RNAStructure):
             self.helices.append(m)
 
 
-class Factory(object):
-    residue   = Residue
-    basepair  = Basepair
-    chain     = Chain
-    structure = Structure
-    motif     = Motif
-    pose      = Pose
-
-    @staticmethod
-    def get_residue(name, dot_bracket, num, chain_id, uuid, i_code=""):
-        return Factory.residue(name, dot_bracket, num, chain_id, uuid, i_code)
-
-    @staticmethod
-    def get_basepair(res1, res2, bp_type = None):
-        return Factory.basepair(res1, res2, bp_type)
-
-    @staticmethod
-    def get_pose(structure=None, basepairs=None, ends=None,
-                 name="assembled", path="assembled", score=0, end_ids=None,
-                 r_struct=None):
-        return Factory.pose(structure, basepairs, ends, name, path,
-                             score, end_ids, r_struct)
-
-
-def str_to_residue(s):
-    """
-    converts a residue from string generated from :func:`Residue.to_str`
-
-    :param s: string created by Residue.to_str()
-    :type s: str
-
-    :return: chain from str
-    :rtype: secondary_structure.Residue
-    """
-
-    spl = s.split(",")
-    return Residue(spl[0], spl[1], int(spl[2]), spl[3], uuid.uuid1(), spl[4])
-
-
-def str_to_chain(s):
-    """
-    converts a chain from string generated from :func:`Chain.to_str`
-
-    :param s: string created by Chain.to_str()
-    :type s: str
-
-    :return: chain from str
-    :rtype: secondary_structure.Chain
-    """
-
-    spl = s.split(";")
-    c = Chain()
-    for r_str in spl[:-1]:
-        r = str_to_residue(r_str)
-        c.residues.append(r)
-    return c
-
-
-def str_to_structure(s):
-    """
-    converts a structure from string generated from :func:`Structure.to_str`
-
-    :param s: string created by Structure.to_str()
-    :type s: str
-
-    :return: structure from str
-    :rtype: secondary_structure.Structure
-    """
-    spl = s.split("|")
-    chains = []
-    for c_str in spl[:-1]:
-        c = str_to_chain(c_str)
-        chains.append(c)
-    return Structure(chains)
-
-
-def str_to_motif(s):
-    """
-    converts a motif from string generated from :func:`Motif.to_str`
-
-    :param s: string created by Motif.to_str()
-    :type s: str
-
-    :return: motif from str
-    :rtype: secondary_structure.Motif
-    """
-
-    spl = s.split("!")
-    m = Motif()
-    m.mtype = int(spl[0])
-    m.name = spl[1]
-    m.path = spl[2]
-    m.structure = str_to_structure(spl[3])
-    res = m.residues()
-    for bp_str in spl[4].split("@")[:-1]:
-        res_is = bp_str.split()
-        r1 = res[int(res_is[0])]
-        r2 = res[int(res_is[1])]
-        m.basepairs.append(Basepair(r1, r2))
-    for end_i in spl[5].split():
-        m.ends.append(m.basepairs[int(end_i)])
-    m.end_ids = spl[6].split()
-
-    return m
-
 
 def str_to_pose(s):
     """
@@ -1149,273 +1054,3 @@ def str_to_pose(s):
         motifs.append(m)
     p.motifs = motifs
     return p
-
-
-def assign_end_id_new(ss, end):
-    """
-    generate a new end_id based on the secondary structure instance in the
-    perspective of the supplied end. An end id is a composition of both the
-    sequence and secondary structure in a single string.
-
-    Two GC pairs in a row would be: GG_LL_CC_RR. Sequence followed by secondary
-    structure with L being left bracket, R being right bracket and U being dot.
-
-    :param ss: secondary structure instance either RNAStructure,Motif or Pose
-    :param end: secondary structure basepair that you want the end id to be in
-    :return:
-    """
-
-    if end not in ss.ends:
-        raise exceptions.SecondaryStructureException(
-            "supplied an end that is not in current ss element")
-
-    all_chains = ss.structure.chains[::]
-    open_chains = []
-    for c in all_chains:
-        if c.first() == end.res1 or c.first() == end.res2:
-            open_chains.append(c)
-            break
-
-    if len(open_chains) == 0:
-        raise exceptions.SecondaryStructureException(
-            "could not find chain to start with")
-
-    all_chains.remove(open_chains[0])
-
-    seen_res = {}
-    seen_bp = {}
-    saved_bp = None
-    structure = ""
-    seq = ""
-    bounds = [0, 0]
-    ss_chains = []
-    count = 0
-    while len(open_chains) > 0:
-        c = open_chains.pop(0)
-        for r in c.residues:
-            count += 1
-            dot_bracket = "."
-            bp = ss.get_basepair(r)
-            saved_bp = None
-            if bp is not None:
-                saved_bp = bp
-                partner_res = bp.partner(r)
-                if   bp not in seen_bp and r not in seen_res and \
-                                partner_res not in seen_res:
-                    seen_res[r] = 1
-                    dot_bracket = "("
-                elif partner_res in seen_res:
-                    if seen_res[partner_res] > 1:
-                        dot_bracket = "."
-                    else:
-                        dot_bracket = ")"
-                        seen_res[r] = 1
-                        seen_res[partner_res] += 1
-
-            structure += dot_bracket
-            seq += r.name
-
-            if saved_bp is not None:
-                seen_bp[saved_bp] = 1
-
-        bounds[1] = count
-        ss_chains.append([seq, structure])
-        structure = ""
-        seq = ""
-
-
-        best_score = -1
-
-        for c in all_chains:
-            score = 0
-            for r in c.residues:
-                bp = ss.get_basepair(r)
-                if bp is not None and bp in seen_bp:
-                    score += 1
-            if score > best_score:
-                best_score = score
-
-        best_chains = []
-        for c in all_chains:
-            score = 0
-            for r in c.residues:
-                bp = ss.get_basepair(r)
-                if bp is not None and bp in seen_bp:
-                    score += 1
-            if score == best_score:
-                best_chains.append(c)
-
-        best_chain = None
-        best_score = 10000
-        for c in best_chains:
-            pos = 1000
-            for i, r in enumerate(c.residues):
-                bp = ss.get_basepair(r)
-                if bp is not None and bp in seen_bp:
-                    pos = i
-                    break
-            if pos < best_score:
-                best_score = pos
-                best_chain = c
-
-        if best_chain is None:
-            break
-        all_chains.remove(best_chain)
-        open_chains.append(best_chain)
-
-    ss_id = ""
-    for i, chain in enumerate(ss_chains):
-        ss_id += chain[0] + "_"
-        for e in chain[1]:
-            if   e == "(":
-                ss_id += "L"
-            elif e == ")":
-                ss_id += "R"
-            elif e == ".":
-                ss_id += "U"
-            else:
-                raise exceptions.SecondaryStructureException(
-                    "unexpected symbol in dot bracket notation: " + e)
-        if i != len(ss_chains)-1:
-            ss_id += "_"
-    return ss_id
-
-
-
-def get_res_basepair(basepairs, r):
-    for bp in basepairs:
-        if bp.res1_uuid == r.uuid or bp.res2_uuid == r.uuid:
-            return bp
-    return None
-
-
-def assign_end_id(s, basepairs, end):
-    """
-    generate a new end_id based on the secondary structure instance in the
-    perspective of the supplied end. An end id is a composition of both the
-    sequence and secondary structure in a single string.
-
-    Two GC pairs in a row would be: GG_LL_CC_RR. Sequence followed by secondary
-    structure with L being left bracket, R being right bracket and U being dot.
-
-    :param ss: secondary structure instance either RNAStructure,Motif or Pose
-    :param end: secondary structure basepair that you want the end id to be in
-    :return:
-    """
-
-    open_chains = []
-    for c in s:
-        if c.first().uuid == end.res1_uuid or c.first().uuid == end.res2_uuid:
-            open_chains.append(c)
-            break
-
-    if len(open_chains) == 0:
-        raise exceptions.SecondaryStructureException(
-            "could not find chain to start with")
-
-    seen_res = {}
-    seen_bp = {}
-    seen_chains = { open_chains[0] : 1 }
-    saved_bp = None
-    structure = ""
-    seq = ""
-    bounds = [0, 0]
-    ss_chains = []
-    count = 0
-    while len(open_chains) > 0:
-        c = open_chains.pop(0)
-        for r in c:
-            count += 1
-            dot_bracket = "."
-            bp = get_res_basepair(basepairs, r)
-            saved_bp = None
-            if bp is not None:
-                saved_bp = bp
-                partner_res_uuid = bp.partner(r.uuid)
-                partner_res = s.get_residue(uuid=partner_res_uuid)
-                if   bp not in seen_bp and r not in seen_res and \
-                                partner_res not in seen_res:
-                    seen_res[r] = 1
-                    dot_bracket = "("
-                elif partner_res in seen_res:
-                    if seen_res[partner_res] > 1:
-                        dot_bracket = "."
-                    else:
-                        dot_bracket = ")"
-                        seen_res[r] = 1
-                        seen_res[partner_res] += 1
-
-            structure += dot_bracket
-            seq += r.name
-
-            if saved_bp is not None:
-                seen_bp[saved_bp] = 1
-
-        bounds[1] = count
-        ss_chains.append([seq, structure])
-        structure = ""
-        seq = ""
-
-
-        best_score = -1
-
-        for c in s:
-            if c in seen_chains:
-                continue
-            score = 0
-            for r in c:
-                bp = get_res_basepair(basepairs, r)
-                if bp is not None and bp in seen_bp:
-                    score += 1
-            if score > best_score:
-                best_score = score
-
-        best_chains = []
-        for c in s:
-            if c in seen_chains:
-                continue
-            score = 0
-            for r in c:
-                bp = get_res_basepair(basepairs, r)
-                if bp is not None and bp in seen_bp:
-                    score += 1
-            if score == best_score:
-                best_chains.append(c)
-
-        best_chain = None
-        best_score = 10000
-        for c in s:
-            if c in seen_chains:
-                continue
-            pos = 1000
-            for i, r in enumerate(c):
-                bp = get_res_basepair(basepairs, r)
-                if bp is not None and bp in seen_bp:
-                    pos = i
-                    break
-            if pos < best_score:
-                best_score = pos
-                best_chain = c
-
-        if best_chain is None:
-            break
-        seen_chains[best_chain] = 1
-        open_chains.append(best_chain)
-
-    ss_id = ""
-    for i, chain in enumerate(ss_chains):
-        ss_id += chain[0] + "_"
-        for e in chain[1]:
-            if   e == "(":
-                ss_id += "L"
-            elif e == ")":
-                ss_id += "R"
-            elif e == ".":
-                ss_id += "U"
-            else:
-                raise exceptions.SecondaryStructureException(
-                    "unexpected symbol in dot bracket notation: " + e)
-        if i != len(ss_chains)-1:
-            ss_id += "_"
-    return ss_id
-

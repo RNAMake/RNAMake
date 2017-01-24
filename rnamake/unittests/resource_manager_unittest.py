@@ -1,10 +1,11 @@
 import unittest
 import numpy as np
-from rnamake import resource_manager
+from rnamake import resource_manager, motif
 import rnamake.settings as settings
 
 from rnamake import exceptions
 import numerical
+import is_equal
 
 class ResourceManagerUnittest(unittest.TestCase):
 
@@ -47,6 +48,23 @@ class ResourceManagerUnittest(unittest.TestCase):
         m = me.get_member(0).motif
         self.failUnless(rm.get_motif(name=m.name) is not None)
         self.failUnless(rm.get_motif(name=m.name, end_name=m.get_end(1).name) is not None)
+
+    def test_get_bp_step(self):
+        rm = self.rm
+        m1 = rm.get_bp_step("GG_LL_CC_RR")
+        #print m1.get_end(0), m1.get_end(1)
+        m2 = rm.get_bp_step("GG_LL_CC_RR", m1)
+
+        self.failUnless(is_equal.are_rna_strucs_equal(m1, m2))
+        #m2 = rm.get_bp_step("GU_LL_AC_RR", m1)
+
+        #m1.to_pdb("test.pdb")
+        #m2.to_pdb("test_2.pdb")
+        #m1.to_pdb("test.pdb")
+        #motif.align_motif(m1.get_end(1), m2.get_end(0), m2)
+        #m2.to_pdb("test_2.pdb")
+
+
 
 def main():
     unittest.main()

@@ -9,10 +9,8 @@ class Chain(base.BaseStructureObject):
 
     __slots__ = ["_residues"]
 
-    def __init__(self, residues=None):
-        self._residues = []
-        if residues is not None:
-            self._residues = residues
+    def __init__(self, residues):
+        self._residues = residues
 
     def __len__(self):
         return len(self._residues)
@@ -118,5 +116,5 @@ class Chain(base.BaseStructureObject):
 
         return 0
 
-    def residue(self, index):
+    def get_residue(self, index):
         return self._residues[index]

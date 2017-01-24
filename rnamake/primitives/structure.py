@@ -80,7 +80,7 @@ class Structure(base.BaseStructureObject):
                 return i
         raise exceptions.StructureException("cannot find res: " + r)
 
-    def chain(self, i):
+    def get_chain(self, i):
         return self._chains[i]
 
     def num_residues(self):

@@ -225,6 +225,7 @@ class BuildSqliteLibraries(object):
 
             if best_m.get_end_id(1) in seen_end_id:
                 continue
+            seen_end_id.append(best_m.get_end_id(1))
 
             other_bp_steps = all_bp_steps[m.get_end_id(1)]
             other_motifs = []

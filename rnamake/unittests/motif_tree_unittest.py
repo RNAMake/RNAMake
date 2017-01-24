@@ -1,11 +1,8 @@
 import unittest
 import build
-import random
 import rnamake.motif_tree as motif_tree
-import rnamake.secondary_structure_factory as ssfactory
 import rnamake.motif_type as motif_type
 from rnamake import exceptions, motif, resource_manager
-import util
 
 class MotifTreeUnittest(unittest.TestCase):
 
@@ -69,7 +66,6 @@ class MotifTreeUnittest(unittest.TestCase):
         mt.add_motif(m_name="HELIX.IDEAL.2")
         mt.add_motif(m_name="HELIX.IDEAL.2")
         mt.add_motif(m_name="HELIX.IDEAL.2")
-
         mt.remove_node(1)
         if len(mt) != 2:
             self.fail("did not remove node correctly")
@@ -111,7 +107,7 @@ class MotifTreeUnittest(unittest.TestCase):
         mt.add_motif(m_name="HELIX.IDEAL.2")
 
         ss = mt.secondary_structure()
-        if ss.sequence() != "CCCCCCC&GGGGGGG":
+        if ss.sequence() != "GGGGGGG&CCCCCCC":
             self.fail("did not get correct sequence")
 
         if ss.dot_bracket() != "(((((((&)))))))":

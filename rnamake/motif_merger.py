@@ -41,16 +41,21 @@ class MotifMerger(object):
         "_bp_overrides",
         "_rebuild_structure",
         "_chain_graph",
-        "_rna_structure"
+        "_rna_structure",
+        "_aligned",
+        "_m_pos",
+        "_mf"
     ]
 
-    def __init__(self):
-        #super(self.__class__, self).__init__()
+    def __init__(self, mf):
+        self._mf = mf
         self._all_bps = {}
         self._motifs = {}
         self._res_overrides = {}
         self._bp_overrides = {}
 
+        self._aligned = {}
+        self._m_pos = {}
         self._rebuild_structure = 1
         self._chain_graph = graph.GraphStatic()
 
@@ -62,6 +67,50 @@ class MotifMerger(object):
             self._rebuild_structure = 0
 
         return self._rna_structure
+
+    def __get_ordered_ends(self, s, ends):
+        ordered_infos = []
+        for end in ends:
+            org_m = None
+            for m in self._motifs.values():
+                if m.get_basepair(bp_uuid=end.uuid):
+                    org_m = m
+                    break
+
+            end_pos = m.get_end_index(end.name)
+
+            ordered_info = { 'end' : end, 'm' : org_m,
+                             'end_pos' : end_pos,
+                             'm_aligned' : self._aligned[org_m.uuid],
+                             'm_pos' : self._m_pos[org_m.uuid]}
+            ordered_infos.append(ordered_info)
+
+        seen = {}
+        unaligned = []
+        for ordered_info in ordered_infos:
+            if ordered_info['m_aligned'] == 0 and \
+               ordered_info['end_pos'] == ordered_info['m'].block_end_add:
+                unaligned.append(ordered_info)
+
+        unaligned.sort(key=lambda x: x['m_pos'])
+        ordered_ends = []
+        for info in unaligned:
+            seen[info['end']] = 1
+            ordered_ends.append(info['end'])
+
+        other_infos = []
+        for info in ordered_infos:
+            if info['end'] in seen:
+                continue
+            info['dist'] = ordered_ends[0].diff(info['end'])
+            other_infos.append(info)
+
+        other_infos.sort(key=lambda x: x['dist'])
+        for info in other_infos:
+            ordered_ends.append(info['end'])
+
+        return ordered_ends
+
 
     def _build_structure(self):
         starts = []
@@ -95,12 +144,10 @@ class MotifMerger(object):
                 current_bps.append(bp)
 
         ends = ends_from_basepairs(s, current_bps)
-        end_ids = [ assign_end_id(s, current_bps, end) for end in ends]
-        seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
+        ordered_ends = self.__get_ordered_ends(s, ends)
 
-        self._rna_structure = rna_structure.RNAStructure(
-                                s, current_bps, ends, end_ids, "assembled",
-                                dot_bracket=dot_bracket)
+        self._rna_structure = self._mf.rna_structure_from_element(
+                                s, current_bps, ordered_ends, "assembled")
 
         self._rebuild_structure = 0
 
@@ -115,8 +162,12 @@ class MotifMerger(object):
             self._all_bps[bp.uuid] = bp
 
         if parent is not None:
+            self._aligned[m.uuid] = 1
             self._link_motifs(parent, m, parent_end, m_end)
+        else:
+            self._aligned[m.uuid] = 0
 
+        self._m_pos[m.uuid] = len(self._motifs)
         self._motifs[m.uuid] = m
         self._rebuild_structure = 1
 
@@ -208,7 +259,6 @@ class MotifMerger(object):
 
     def get_merged_secondary_structure(self):
         ss = self.get_merged_structure().get_secondary_structure()
-        #ss = ssf.factory.secondary_structure_from_motif(self.get_structure())
 
         ss_motifs = []
         for m in self._motifs.values():
@@ -218,7 +268,7 @@ class MotifMerger(object):
             end_ids = [ assign_end_id(ss_struct, ss_bps, end) for end in ss_ends]
 
             ss_motif = secondary_structure.Motif(ss_struct, ss_bps, ss_ends,
-                                                 end_ids, m.mtype)
+                                                 end_ids, m.mtype, m.uuid)
             ss_motifs.append(ss_motif)
 
         ss_struct  = secondary_structure.Structure([ c for c in ss.iter_chains() ])
@@ -294,7 +344,7 @@ class MotifMerger(object):
                 if a_node.data.c.first().name != d_node.data.c.last().name:
                     user_warnings.warn(
                         'overriding residues of two different types, this is likely to '
-                        'produce a merged structure that is wrong!!',
+                        'produce a merged structure that is wrong!!\n',
                         user_warnings.MotifMergerWarning)
 
             self._res_overrides[a_node.data.c.first().uuid] = \
@@ -306,7 +356,7 @@ class MotifMerger(object):
                 if a_node.data.c.last().name != d_node.data.c.first().name:
                     user_warnings.warn(
                         'overriding residues of two different types, this is likely to '
-                        'produce a merged structure that is wrong!!',
+                        'produce a merged structure that is wrong!!\n',
                         user_warnings.MotifMergerWarning)
 
             self._res_overrides[a_node.data.c.last().uuid] = \

@@ -2,7 +2,8 @@ import unittest
 import uuid
 import instances
 
-from rnamake import secondary_structure, exceptions, primitives
+from rnamake import secondary_structure, exceptions
+from rnamake.primitives import rna_structure, basepair
 
 class ResidueUnittest(unittest.TestCase):
 
@@ -35,10 +36,6 @@ class ChainUnittest(unittest.TestCase):
             residues.append(r)
         self.chain = secondary_structure.Chain(residues)
 
-
-    def test_creation(self):
-        secondary_structure.Chain()
-
     def test_copy(self):
         c = self.chain
         c_copy = secondary_structure.Chain.copy(c)
@@ -60,18 +57,18 @@ class ChainUnittest(unittest.TestCase):
            c.residue(-1) != c.last():
             self.fail()
 
-        chain_2 = secondary_structure.Chain()
+        chain_2 = secondary_structure.Chain([])
 
-        with self.assertRaises(exceptions.SecondaryStructureException):
+        with self.assertRaises(exceptions.ChainException):
             chain_2.first()
 
-        with self.assertRaises(exceptions.SecondaryStructureException):
+        with self.assertRaises(exceptions.ChainException):
             chain_2.last()
 
     def test_to_str(self):
         c = self.chain
         s = c.to_str()
-        c_copy = secondary_structure.Chain.from_str(c)
+        c_copy = secondary_structure.Chain.from_str(s)
 
 
 class StructureUnittest(unittest.TestCase):
@@ -147,12 +144,12 @@ class RNAStructureUnittest(unittest.TestCase):
         for r_i1, r_i2 in bps_indexes:
             r1 = s.get_residue(r_i1)
             r2 = s.get_residue(r_i2)
-            bp = secondary_structure.Basepair(r1.uuid, r2.uuid, primitives.calc_bp_name([r1, r2]))
+            bp = secondary_structure.Basepair(r1.uuid, r2.uuid, basepair.calc_bp_name([r1, r2]))
             bps.append(bp)
 
-        ends = primitives.ends_from_basepairs(s, bps, 0)
-        end_id_1 = secondary_structure.assign_end_id(s, bps, ends[0])
-        end_id_2 = secondary_structure.assign_end_id(s, bps, ends[1])
+        ends = rna_structure.ends_from_basepairs(s, bps)
+        end_id_1 = rna_structure.assign_end_id(s, bps, ends[0])
+        end_id_2 = rna_structure.assign_end_id(s, bps, ends[1])
         end_ids = [end_id_1, end_id_2]
         self.rna_struc = secondary_structure.RNAStructure(s, bps, ends, end_ids)
 
@@ -161,7 +158,6 @@ class RNAStructureUnittest(unittest.TestCase):
 
     def test_copy(self):
         rna_struc_copy = secondary_structure.RNAStructure.copy(self.rna_struc)
-
         self.failUnless(self.rna_struc.get_end(0) == rna_struc_copy.get_end(0))
 
     def test_to_str(self):

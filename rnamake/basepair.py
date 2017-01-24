@@ -111,10 +111,12 @@ class Basepair(primitives.basepair.Basepair):
                    sugars, bp._name, bp._bp_type, bp._uuid)
 
     @classmethod
-    def copy_with_new_uuids(cls, bp, res1_uuid, res2_uuid):
+    def copy_with_new_uuids(cls, bp, res1_uuid, res2_uuid, bp_uuid=None):
+        if bp_uuid is None:
+            bp_uuid = uuid.uuid1()
         sugars = [np.copy(bp._sugars[0]), np.copy(bp._sugars[1])]
         return cls(res1_uuid, res2_uuid, np.copy(bp._r), np.copy(bp._d),
-                   sugars, bp._name, bp._bp_type, bp_uuid=uuid.uuid1())
+                   sugars, bp._name, bp._bp_type, bp_uuid=bp_uuid)
 
     def __repr__(self):
           return "<Basepair("+self._name + ")>"

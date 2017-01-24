@@ -106,7 +106,6 @@ class MotifTree(object):
         new_mt._connections = mt._connections.copy()
         return new_mt
 
-
     def __len__(self):
         return len(self._tree)
 
@@ -183,7 +182,7 @@ class MotifTree(object):
         except exceptions.ResourceManagerException as e:
             raise exceptions.MotifTreeException(
                 "cannot add motif to tree, motif cannot be found in resource "
-                "manager")
+                "manager: " + e.message)
 
         return m
 
@@ -778,7 +777,7 @@ class MotifTree(object):
         if not self._update_merger:
             return
 
-        self._merger = motif_merger.MotifMerger()
+        self._merger = motif_merger.MotifMerger(self._rm.motif_factory)
         for n in self._tree:
             if n.parent is None:
                 self._merger.add_motif(n.data)
