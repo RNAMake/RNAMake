@@ -92,29 +92,27 @@ def close_torsion(which_dir, parent_atoms, daughter_atoms, match_atoms_1,
 
     twist_torsion = math.atan2(weighted_sine, weighted_cosine)
     for daughter_atom in daughter_atoms:
-        daughter_atom.coords = np.dot(rotation_matrix( twist_torsion , x )[:3,:3],
-                                      ( daughter_atom.coords - current_atom_xyz )) + \
-                               current_atom_xyz
+        #daughter_atom.
+        new_coords = np.dot(rotation_matrix( twist_torsion , x )[:3,:3],
+                                      ( daughter_atom.coords - current_atom_xyz )) +\
+                                        current_atom_xyz
+
+        diff = new_coords - daughter_atom.coords
+        daughter_atom.move(diff)
 
 # Copied from Rhiju's Rosetta code: protocols/farna/RNA_LoopCloser.cc
 def close_chain(chain):
-    for i in range(0,len(chain.residues)-1):
-        res1 = chain.residues[i]
-        res2 = chain.residues[i+1]
+    for i in range(0,len(chain)-1):
+        res1 = chain.get_residue(i)
+        res2 = chain.get_residue(i+1)
 
-        if res1.connected_to(res2,cutoff=2.0):
-            continue
+        #if res1.connected_to(res2,cutoff=2.0):
+        #    continue
 
-        atoms = []
-        res1_atoms = [res1.get_atom(name) for name in [ "C4'", "C3'", "O3'" ]]
-        res2_atoms = [res2.get_atom(name) for name in "C5',O5',OP2,OP1".split(",")]
-        atoms.extend(res1_atoms)
-        atoms.extend(res2_atoms)
-        fail=0
-        for a in atoms:
-            if a is None:
-                fail=1
-        if fail:
+        try:
+            [res1.get_atom(name) for name in [ "C4'", "C3'", "O3'" ]]
+            [res2.get_atom(name) for name in "C5',O5',OP2,OP1".split(",")]
+        except:
             continue
 
         ovl1 = virtual_atom("OVL1", 1.606497, 60.314519, 0.0,
@@ -127,8 +125,8 @@ def close_chain(chain):
                             [res2.get_atom("P"), res2.get_atom("O5'"),
                             res2.get_atom("OP2")])
 
-        res1.atoms.extend([ovl1, ovl2])
-        res2.atoms.append(ovu1)
+        #res1.atoms.extend([ovl1, ovl2])
+        #res2.atoms.append(ovu1)
 
         match_atoms_1 = [res1.get_atom("O3'"), ovl1,               ovl2                ]
         match_atoms_2 = [ovu1,                 res2.get_atom("P"), res2.get_atom("O5'")]
@@ -153,8 +151,4 @@ def close_chain(chain):
                               [ovu1,res2.get_atom("OP1"),res2.get_atom("OP2"),
                                res2.get_atom("P"),res2.get_atom("O5'")],
                               match_atoms_1, match_atoms_2)
-
-        res1.atoms.pop()
-        res1.atoms.pop()
-        res2.atoms.pop()
 

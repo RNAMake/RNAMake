@@ -71,33 +71,29 @@ class MotifGraph(object):
         max_index = 0
         for i, n_str in enumerate(node_spl[:-1]):
             n_spl = n_str.split("^")
-            m = motif.str_to_motif(n_spl[0])
-            if len(m.ends) > 0:
-                m.get_beads([m.ends[0]])
-            else:
-                m.get_beads()
+            m = motif.Motif.from_str(n_spl[0], self._rm.residue_type_set)
 
             try:
-                rm.manager.get_motif(name=m.name,
-                                     end_name=m.ends[0].name())
+                self._rm.get_motif(name=m.name,
+                                   end_name=m.ends[0].name())
             except:
-                rm.manager.register_motif(m)
+                self._rm.add_motif(m)
 
 
-            self.graph.add_data(m, -1, -1, -1, len(m.ends),
+            self._graph.add_data(m, -1, -1, -1, m.num_ends(),
                                 orphan=1, index=int(n_spl[1]))
-            self.aligned[int(n_spl[1])] = int(n_spl[2])
+            self._aligned[int(n_spl[1])] = int(n_spl[2])
 
             if int(n_spl[1]) > max_index:
                 max_index = int(n_spl[1])
 
-        self.graph.index = max_index+1
+        self._graph.index = max_index+1
 
         con_spl = spl[1].split("|")
         for c_str in con_spl[:-1]:
             c_spl = c_str.split(",")
-            self.graph.connect(int(c_spl[0]), int(c_spl[1]),
-                               int(c_spl[2]), int(c_spl[3]))
+            self._graph.connect(int(c_spl[0]), int(c_spl[1]),
+                                int(c_spl[2]), int(c_spl[3]))
 
     def update_indexes(self, index_hash):
         # super hacky, needs to be refactored
@@ -804,6 +800,9 @@ class MotifGraph(object):
                 seen_connections[c] = 1
 
         self._update_merger = 0
+
+    def set_sterics(self, s):
+        self._sterics = s
 
 
 class MotifGraphPrinter(object):

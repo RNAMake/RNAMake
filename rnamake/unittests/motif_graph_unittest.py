@@ -205,7 +205,7 @@ class MotifGraphUnittest(unittest.TestCase):
         #mg.nodes_to_pdbs()
         self.failUnless(mg.sequence() == dss.sequence())
 
-    def test_replace_helical_sequence_spec(self):
+    def _test_replace_helical_sequence_spec(self):
         self.rm.motif_factory._ref_motif.to_pdb("ref.pdb")
         mg = motif_graph.MotifGraph(self.rm)
         mg.add_motif(m_name="HELIX.IDEAL.15")
@@ -232,13 +232,13 @@ class MotifGraphUnittest(unittest.TestCase):
         mg.to_pdb("test.pdb", renumber=1, close_chain=1)
 
     def test_replace_helical_sequence_2(self):
-        mg = motif_graph.MotifGraph()
-        m = rm.manager.get_motif(name='HELIX.IDEAL.6')
+        mg = motif_graph.MotifGraph(self.rm)
+        m = self.rm.get_motif(name='HELIX.IDEAL.6')
         m.move(np.array([40,0,0]))
         mg.add_motif(m)
         mg.replace_ideal_helices()
 
-        new_mg = mg.copy()
+        new_mg = motif_graph.MotifGraph.copy(mg)
         dss = new_mg.designable_secondary_structure()
         build.fill_basepairs_in_ss(dss)
 
@@ -247,8 +247,8 @@ class MotifGraphUnittest(unittest.TestCase):
         struc1 = mg.get_structure()
         struc2 = new_mg.get_structure()
 
-        d1 = struc1.ends[0].d()
-        ds_2 = [ struc2.ends[0].d(), struc2.ends[1].d()]
+        d1 = struc1.get_end(0).d
+        ds_2 = [ struc2.get_end(0).d, struc2.get_end(1).d]
 
         dist_1 = util.distance(d1, ds_2[0])
         dist_2 = util.distance(d1, ds_2[1])
@@ -256,40 +256,7 @@ class MotifGraphUnittest(unittest.TestCase):
         self.failIf(dist_1 > 10 and dist_2 > 10,
                     "replacing helix sequences messed up graph")
 
-    def test_secondary_structure(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build(3)
-        mg = motif_graph.MotifGraph()
-        for n in mt.tree.nodes:
-            mg.add_motif(n.data)
-        #mg.write_pdbs("org")
-        mg.replace_ideal_helices()
-
-        ss = mg.designable_secondary_structure()
-
-    def test_designable_secondary_structure(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build(3)
-        mg = motif_graph.MotifGraph()
-
-        for n in mt.tree.nodes:
-            mg.add_motif(n.data)
-
-        mg.replace_ideal_helices()
-        ss = mg.designable_secondary_structure()
-
-    def test_designable_secondary_structure_2(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build(3)
-        mg = motif_graph.MotifGraph()
-
-        for n in mt.tree.nodes:
-            mg.add_motif(n.data)
-
-        hairpin = rm.manager.mlibs['hairpin'].get_random()
-        mg.add_motif(hairpin)
-
-    def test_to_tree(self):
+    def _test_to_tree(self):
         builder = build.BuildMotifTree()
         mt = builder.build(3)
         mg = motif_graph.MotifGraph()
@@ -300,15 +267,23 @@ class MotifGraphUnittest(unittest.TestCase):
         mt2 = motif_topology.graph_to_tree(mg)
 
     def test_mg_to_str(self):
+        builder = build.BuildMotifGraph(self.rm)
+        mg = builder.build(3)
+        s = mg.to_str()
+
+        mg2 = motif_graph.MotifGraph(self.rm, s)
+        self.failUnless(len(mg) == len(mg2))
+
+    def _test_mg_to_str(self):
         #load motif graph with all atoms
         base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
         f = open(base_dir+"test.mg")
         l = f.readline()
         f.close()
 
-        mg = motif_graph.MotifGraph(mg_str=l)
+        mg = motif_graph.MotifGraph(self.rm, mg_str=l)
 
-    def test_mg_to_str_multiple_alignments(self):
+    def _test_mg_to_str_multiple_alignments(self):
         base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
         f = open(base_dir+"tecto_chip_only.mg")
         l = f.readline()
@@ -328,13 +303,13 @@ class MotifGraphUnittest(unittest.TestCase):
         org_name = mg.get_node(14).data.name
         org_end_name = mg.get_node(14).data.ends[0].name()
 
-        mg.set_options('sterics', 0)
-        mg.replace_motif(14, rm.manager.get_motif(name='HELIX.IDEAL.6'))
+        mg.set_sterics(0)
+        mg.replace_motif(14, self.rm.get_motif(name='HELIX.IDEAL.6'))
         self.failUnless(mg.get_node(14).data.name == 'HELIX.IDEAL.6')
         self.failUnless(len(mg.secondary_structure().chains()) == 1)
         self.failIf(mg.sequence() == org_sequence)
 
-        mg.replace_motif(14, rm.manager.get_motif(name=org_name, end_name=org_end_name))
+        mg.replace_motif(14, self.rm.get_motif(name=org_name, end_name=org_end_name))
         self.failUnless(mg.get_node(14).data.name == org_name)
         self.failUnless(mg.sequence() == org_sequence)
         self.failUnless(len(mg.secondary_structure().chains()) == 1)
@@ -359,7 +334,7 @@ class MotifGraphUnittest(unittest.TestCase):
             if not is_equal.are_atom_equal(atoms1[i], atoms2[i]):
                 self.fail("atoms are not equal")
 
-    def test_pretty_str(self):
+    def _test_pretty_str(self):
         builder = build.BuildMotifGraph()
         mg = builder.build(3)
         mg.to_pretty_str()
@@ -372,26 +347,6 @@ class MotifGraphUnittest(unittest.TestCase):
         mg = motif_graph.MotifGraph(mg_str=lines[0])
         #print mg.to_pretty_str()
         #mg.write_pdbs()
-
-    def _test_ss_convert(self):
-        mg = motif_graph.MotifGraph()
-        mg.add_motif(m_name="HELIX.IDEAL.6")
-        mg.add_motif(m_name="TWOWAY.1GID.12")
-        mg.add_motif(m_name="HELIX.IDEAL.6")
-        mg.replace_ideal_helices()
-
-        for n in mg:
-            m = n.data
-            name = m.ends[0].res1.name+m.ends[0].res2.name+"="
-            name += m.ends[1].res1.name+m.ends[1].res2.name
-            print name, m.sequence()
-
-        ss = mg.secondary_structure()
-        print "made it"
-        for m in ss.motifs:
-            name = m.ends[0].res1.name+m.ends[0].res2.name+"="
-            name += m.ends[1].res1.name+m.ends[1].res2.name
-            print name, m.sequence()
 
 
 def main():
