@@ -81,6 +81,8 @@ rnamake/setup/structure_motifs
 rnamake/setup/sectioned_motifs/
 rnamake/setup/score_files
 rnamake/lib/RNAMake/*.cmake
+rnamake/lib/RNAMake/cmake-build-debug
+rnamake/lib/RNAMake/CMakeFiles
 
 # Auto-generated build files
 rnamake/lib/RNAMake/cmake/

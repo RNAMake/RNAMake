@@ -1,5 +1,6 @@
 import util
 import math
+import motif_state
 
 
 class MotifTreeStateSearchScorer(object):
@@ -12,7 +13,7 @@ class MotifTreeStateSearchScorer(object):
 
     def set_target(self, target):
         self.target = target
-        self.target_flip = target.copy()
+        self.target_flip = motif_state.Basepair.copy(target)
         self.target_flip.flip()
 
     def score(self, node):
@@ -20,7 +21,7 @@ class MotifTreeStateSearchScorer(object):
 
     def accept_score(self, node):
         best_score = 10000
-        for i, bp_state in enumerate(node.cur_state.end_states):
+        for i, bp_state in enumerate(node.state.iter_ends()):
             if i == 0:
                 continue
             score = util.distance(bp_state.d, self.target.d)
@@ -63,7 +64,7 @@ class MTSS_Astar(MotifTreeStateSearchScorer):
 
     def score(self, node):
         best_score = 1000
-        for i, bp_state in enumerate(node.cur_state.end_states):
+        for i, bp_state in enumerate(node.state.iter_ends()):
             if i == 0:
                 continue
 
@@ -111,15 +112,13 @@ class MTSS_PathFollow(MotifTreeStateSearchScorer):
 
 
 def new_score_function(current, end, endflip):
-    d_diff = util.distance(current.d,end.d)
+    d_diff = util.distance(current.d, end.d)
 
     if d_diff > 25:
         return d_diff
 
     r_diff       = util.matrix_distance(current.r, end.r)
     r_diff_flip  = util.matrix_distance(current.r, endflip.r)
-    print current.r
-    print end.r
 
     if r_diff > r_diff_flip:
         r_diff = r_diff_flip

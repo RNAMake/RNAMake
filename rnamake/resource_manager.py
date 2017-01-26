@@ -56,6 +56,7 @@ class ResourceManager(object):
     __slots__ = [
         "_mlibs",
         "_me_libs",
+        "_ms_libs",
         "_added_motifs",
         "_mf",
         "_rts"
@@ -64,6 +65,7 @@ class ResourceManager(object):
     def __init__(self):
         self._mlibs = {}
         self._me_libs = {}
+        self._ms_libs = {}
         self._added_motifs = MotifLibrary()
         self._rts = residue_type.ResidueTypeSet()
         self._mf = motif_factory.MotifFactory(self._rts)
@@ -73,6 +75,9 @@ class ResourceManager(object):
 
         for k in sqlite_library.MotifEnsembleSqliteLibrary.get_libnames().keys():
             self._me_libs[k] = sqlite_library.MotifEnsembleSqliteLibrary(k, self._rts)
+
+        for k in sqlite_library.MotifStateSqliteLibrary.get_libnames().keys():
+            self._ms_libs[k] = sqlite_library.MotifStateSqliteLibrary(k)
 
         # hack for now
         self.add_motif_from_file(settings.MOTIF_DIRS + "/extras/GAAA_tetraloop")
@@ -149,6 +154,11 @@ class ResourceManager(object):
         raise ValueError("cannot find motif")
 
     def get_state(self, **options):
+
+        for ms_lib in self._ms_libs.itervalues():
+            if ms_lib.contains(**options):
+                return ms_lib.get(**options)
+
         for mlib in self._mlibs.itervalues():
             if mlib.contains(**options):
                 return mlib.get(**options).get_state()
@@ -253,4 +263,14 @@ class ResourceManager(object):
     def motif_factory(self):
         return self._mf
 
+    def get_mlib(self, name):
+        if name in self._mlibs:
+            return self._mlibs[name]
+        else:
+            raise exceptions.ResourceManagerException("cannot find motif lib: " + name)
 
+    def get_ms_lib(self, name):
+        if name in self._ms_libs:
+            return self._ms_libs[name]
+        else:
+            raise exceptions.ResourceManagerException("cannot find ms lib: " + name)

@@ -65,6 +65,10 @@ class Residue(primitives.residue.Residue):
         for b in self._beads:
             b.transform(t)
 
+    def fast_transform(self, r, t):
+        for b in self._beads:
+            b.fast_transform(r, t)
+
     def num_beads(self):
         return len(self._beads)
 
@@ -103,6 +107,10 @@ class Chain(primitives.chain.Chain):
     def transform(self, t):
         for r in self._residues:
             r.transform(t)
+
+    def fast_transform(self, r, t):
+        for res in self._residues:
+            res.fast_transform(r, t)
 
 
 class Structure(primitives.structure.Structure):
@@ -158,6 +166,10 @@ class Structure(primitives.structure.Structure):
     def transform(self, t):
         for c in self._chains:
             c.transform(t)
+
+    def fast_transform(self, r, t):
+        for c in self._chains:
+            c.fast_transform(r, t)
 
 
 class Basepair(primitives.basepair.Basepair):
@@ -370,6 +382,19 @@ class Basepair(primitives.basepair.Basepair):
         self._d = new_origin
         self._sugars = new_sugars
 
+    def fast_transform(self, r, t):
+        r_T = r
+
+        new_r = util.unitarize(np.dot(self._r, r_T))
+        new_sugars = []
+        for s in self._sugars:
+            new_sugars.append(np.dot(s, r_T) + t)
+        new_origin = np.dot(self._d, r_T) + t
+
+        self._r = new_r
+        self._d = new_origin
+        self._sugars = new_sugars
+
     def move(self, p):
         self._sugars[0] += p
         self._sugars[1] += p
@@ -480,7 +505,7 @@ class Motif(primitives.rna_structure.RNAStructure):
         bp_strs = spl[5].split("@")
         bps = []
         for bp_str in bp_strs[:-1]:
-            bps.append(rna_structure.bp_from_str(struc, bp_str))
+            bps.append(bp_from_str(struc, bp_str))
         ends = [ bps[int(i)] for i in spl[6].split() ]
         end_ids = spl[7].split()
         return cls(struc, bps, ends, end_ids, name, mtype, score,
@@ -540,6 +565,13 @@ class Motif(primitives.rna_structure.RNAStructure):
         for bp in self._basepairs:
             bp.transform(t)
 
+    def fast_transform(self, t):
+        r = t.rotation().T
+        trans = t.translation()
+        self._structure.fast_transform(r, trans)
+        for bp in self._basepairs:
+            bp.fast_transform(r, trans)
+
     @property
     def mtype(self):
         return self._mtype
@@ -552,6 +584,9 @@ class Motif(primitives.rna_structure.RNAStructure):
     def block_end_add(self):
         return self._block_end_add
 
+    @property
+    def score(self):
+        return self._score
 
 class MotifEnsemble(Ensemble):
     __slots__ = [
@@ -590,12 +625,25 @@ class MotifEnsemble(Ensemble):
             s += ms.to_str() + "{"
         return s
 
-    def get_random_member(self):
-        return random.choice(self.members)
 
-    def update_res_uuids(self, res):
-        for mem in self.members:
-            mem.motif_state.update_res_uuids(res)
+class MotifLibrary(object):
+    def __init__(self, name, motifs=None):
+        self._name = name
+        self._motifs = motifs
+        if self._motifs is None:
+            self._motifs = []
+
+    def __iter__(self):
+        return self._motifs.__iter__()
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def motifs(self):
+        return self._motifs
+
 
 
 def align_motif_state(ref_bp_state, ms):
@@ -604,8 +652,8 @@ def align_motif_state(ref_bp_state, ms):
 
     trans  = transform.Transform(r, t)
 
-    ms.transform(trans)
-
+    #ms.transform(trans)
+    ms.fast_transform(trans)
 
 def get_aligned_motif_state(ref_bp_state, ms, new_uuid=1):
     r, t = ref_bp_state.get_transforming_r_and_t_w_state(ms.get_end(0))
@@ -619,6 +667,14 @@ def get_aligned_motif_state(ref_bp_state, ms, new_uuid=1):
     return ms_copy
 
 
+def bp_from_str(struc, s):
+    bp_spl = s.split(";")
+    r2_info = bp_spl.pop().split("|")
+    r1_info = bp_spl.pop().split("|")
+    bp_str = ";".join(bp_spl)
+    res1 = struc.get_residue(int(r1_info[0]), r1_info[1], r1_info[2])
+    res2 = struc.get_residue(int(r2_info[0]), r2_info[1], r2_info[2])
+    return Basepair.from_str(bp_str, res1.uuid, res2.uuid)
 
 
 

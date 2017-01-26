@@ -6,6 +6,7 @@ import settings
 import exceptions
 import motif
 import motif_ensemble
+import motif_state
 import residue_type
 
 class SqliteLibrary(object):
@@ -331,7 +332,6 @@ class MotifSqliteLibrary(SqliteLibrary):
             "tcontact"        : "/motif_libraries/tcontact.db",
             "hairpin"         : "/motif_libraries/hairpin.db",
             "nway"            : "/motif_libraries/nway.db",
-            "unique_twoway"   : "/motif_libraries/unique_twoway.db",
             "bp_steps"        : "/motif_libraries/bp_steps.db",
             "helix"           : "/motif_libraries/helix.db",
 
@@ -424,35 +424,61 @@ class MotifStateSqliteLibrary(SqliteLibrary):
         libnames = {
             "ideal_helices" :  "/motif_state_libraries/ideal_helices.db",
             "twoway"        :  "/motif_state_libraries/twoway.db",
-            "unique_twoway" :  "/motif_state_libraries/unique_twoway.db",
-            "bp_steps"      :  "/motif_state_libraries/bp_steps.db",
-            "twoway"        :  "/motif_state_libraries/twoway.db",
             "nway"          :  "/motif_state_libraries/nway.db",
-            "hairpin"       :  "/motif_state_libraries/hairpin.db",
-            "new_bp_steps"  :  "/motif_state_libraries/new_bp_steps.db",
-
+            "hairpin"       :  "/motif_state_libraries/hairpin.db"
         }
 
         return libnames
 
     def _generate_data(self, s):
-        return motif.str_to_motif_state(s)
+        return motif_state.Motif.from_str(s)
 
     def get(self, **options):
-        m = super(self.__class__, self).get(**options)
-        m.new_uuids()
-        return m
+        """
+        Gets row for sqlite3 database with specific variables specified in
+        options. Will at most return 1 item even if multiple items meet
+        selection criteria.
 
-    def to_motif_state_ensemble(self):
-        self.load_all()
-        mes = motif_ensemble.MotifStateEnsemble()
-        motif_states = []
-        energies = []
-        for ms in self.all():
-            motif_states.append(ms)
-        mes.setup(self.name, motif_states, [1 for x in motif_states] )
-        return mes
+        :param options: sqlite3 select columns and values
+        :return: unstringified data from database
+        """
 
+        query = self._generate_query(options)
+        rows = self.connection.execute(query).fetchall()
+
+        if len(rows) == 0:
+            raise exceptions.SqliteLibraryException(
+                "query returned no rows: " + self._args_to_str(options))
+
+        id = rows[0][-1]
+        if id not in self.data:
+            self.data[id] = self._generate_data(rows[0][0])
+
+        return motif_state.Motif.copy(self.data[id], new_uuid=1)
+
+    def get_multi(self, **options):
+        """
+        Gets row for sqlite3 database with specific variables specified in
+        options. Same as get() except will return an list of all items that
+        meet the selection criteria.
+
+        :param options: sqlite3 select columns and values
+        :return: unstringified data from database
+        """
+        query = self._generate_query(options)
+        rows = self.connection.execute(query).fetchall()
+
+        if len(rows) == 0:
+            raise exceptions.SqliteLibraryException(
+                "query returned no rows: " + self._args_to_str(options))
+
+        datas = []
+        for r in rows:
+            id = r[-1]
+            if id not in self.data:
+                self.data[id] = self._generate_data(r[0])
+            datas.append(motif_state.Motif.copy(self.data[id], new_uuid=1))
+        return datas
 
 class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):

@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __REDESIGNC__xyzVector__
-#define __REDESIGNC__xyzVector__
+#ifndef __RNAMake__xyzVector__h
+#define __RNAMake__xyzVector__h
 
 #include <iostream>
 // C++ headers

@@ -201,4 +201,10 @@ def unitarize(R):
     return R
 
 
+def get_file_contents(fname):
+    f = open(fname)
+    lines = f.readlines()
+    f.close()
+
+    return lines
 

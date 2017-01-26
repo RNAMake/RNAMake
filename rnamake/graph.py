@@ -222,7 +222,7 @@ class GraphDynamic(Graph):
     def __init__(self):
         super(self.__class__, self).__init__()
 
-    def add_data(self, data, parent_index=-1):
+    def add_data(self, data, parent_index=-1, orphan=0):
         """
         add a new peice of data to the graph
 
@@ -243,7 +243,7 @@ class GraphDynamic(Graph):
 
         n = GraphNodeDynamic(data, self.index, self.level)
 
-        if parent is not None:
+        if parent is not None and not orphan:
             c = GraphConnection(parent, n, 0, 0)
             parent.add_connection(c)
             n.add_connection(c)

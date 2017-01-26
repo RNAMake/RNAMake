@@ -1,62 +1,49 @@
 import unittest
-import build
-import rnamake.motif_state_search
-import rnamake.motif_state_selector
+
+from rnamake import resource_manager, motif_state_selector, motif_state
+
 
 class MotifStateSelectorUnittest(unittest.TestCase):
 
-    def _get_dummy_node(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build()
-        start = mt.get_node(0).data.ends[0].state()
-        end   = mt.get_node(1).data.ends[1].state()
-        mss = rnamake.motif_state_search.MotifStateSearch()
-        n = mss._start_node(start)
-        return n
+    def setUp(self):
+        self.rm = resource_manager.ResourceManager()
 
-    def test_creation(self):
-        selector = rnamake.motif_state_selector.MotifStateSelector()
-        selector.add('twoway')
-        selector.connect('twoway', 'twoway')
+    def test_add(self):
+        selector = motif_state_selector.MotifStateSelector(self.rm)
+        selector.add('ideal_helices')
+        connected = selector.get_connected_libs(-1)
+        self.failUnless(len(connected) == 1)
+        self.failUnless(connected[0] == 0)
+        motif_states = selector.get_motif_states(connected[0])
+        self.failUnless(len(motif_states) > 0)
 
-    def test_get_children_ms(self):
-        n = self._get_dummy_node()
-        selector = rnamake.motif_state_selector.default_selector()
-        motif_states, types = selector.get_children_ms(n)
-        if len(motif_states) == 0:
-            self.fail("did not get any motif_states back")
+    def test_add_2(self):
+        selector = motif_state_selector.MotifStateSelector(self.rm)
+        selector.add('unique_twoway')
+        selector.add('ideal_helices_min')
 
-        n.ntype = 0
-        motif_states, types = selector.get_children_ms(n)
-        if len(motif_states) == 0:
-            self.fail("did not get any motif_states back")
+        with self.assertRaises(ValueError):
+            selector.add('FAKE')
 
-    def test_round_robin(self):
-        n = self._get_dummy_node()
-        selector = rnamake.motif_state_selector.MSS_RoundRobin()
-        selector.add("twoway")
-        selector.add("ideal_helices")
+    def test_add_3(self):
+        m1 = self.rm.get_state(name='HELIX.IDEAL')
+        m2 = self.rm.get_state(name='TWOWAY.2VQE.19', end_name='A1008-A1021')
 
-        n.ntype = 0
-        motif_states, types = selector.get_children_ms(n)
-        unique_types = []
-        for t in types:
-            if t not in unique_types:
-                unique_types.append(t)
-        if len(unique_types) != 2:
-            self.fail("did not get the correct motif_states back")
+        mlib1 = motif_state.MotifLibrary('helix', [m1])
+        mlib2 = motif_state.MotifLibrary('twoway', [m2])
 
-    def test_helix_flank(self):
-        n = self._get_dummy_node()
-        selector = rnamake.motif_state_selector.MSS_HelixFlank()
-        selector.add("twoway")
+        selector = motif_state_selector.MotifStateSelector(self.rm)
+        selector.add(mlib=mlib1)
+        selector.add(mlib=mlib2)
+        selector.connect('helix', 'twoway')
 
-        motif_states, types = selector.get_children_ms(n)
+        self.failUnless(selector.get_connected_libs(0)[0] == 1)
+        self.failUnless(selector.get_connected_libs(1)[0] == 0)
 
-        n.ntype = 0
-        motif_states, types = selector.get_children_ms(n)
-        if len(motif_states) < 100:
-            self.fail("did not get the expected number of states")
+    def test_default_selector(self):
+        selector = motif_state_selector.default_selector(self.rm)
+
+
 
 def main():
     unittest.main()

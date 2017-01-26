@@ -36,7 +36,7 @@ Residue::setup_atoms(
         if(a == nullptr) { continue; }
         String name_change = rtype_.get_correct_atom_name(*a);
         //check for misnamed atoms
-        if(name_change.length() != 0) { a->name(name_change); }
+        //if(name_change.length() != 0) { a->name(name_change); }
         int pos = rtype_.atom_pos_by_name(a->name());
         if(pos == -1) { continue; }
         atoms_[pos] = a;

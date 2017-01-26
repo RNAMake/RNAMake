@@ -124,21 +124,22 @@ public:
     inline
     void
     move(Point const & p) {
-        for(auto & a : atoms()) {
+        /*for(auto & a : atoms()) {
             a->coords(a->coords() + p);
-        }
+        }*/
     }
     
     inline
     void
     transform(Transform const & t) {
+        /*
         Matrix r = t.rotation().transpose();
         Point trans = t.translation();
         for( auto & a : atoms() ) {
             dot_vector(r, a->coords(), dummy_);
             dummy_ += trans;
             a->coords(dummy_);
-        }
+        }*/
     }
     
     String

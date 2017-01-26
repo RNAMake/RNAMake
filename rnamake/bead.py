@@ -83,7 +83,7 @@ class Bead(object):
         elif self.__btype == 2:
             return "BASE"
         else:
-            raise exceptions.ResidueException("invalid bead type: " + self.__btype)
+            raise exceptions.ResidueException("invalid bead type: " + str(self.__btype))
 
     def distance(self, b):
         return util.distance(self.__center, b.__center)
@@ -93,6 +93,9 @@ class Bead(object):
 
     def transform(self, t):
         self.__center = np.dot(self.__center, t.rotation().T) + t.translation()
+
+    def fast_transform(self, r, t):
+        self.__center = np.dot(self.__center, r) + t
 
     def to_str(self):
         return basic_io.point_to_str(self.__center) + "," + str(self.__btype)

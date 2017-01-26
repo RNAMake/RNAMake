@@ -212,7 +212,7 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         :return: str
         """
         if close_chain:
-            for c in self.chains():
+            for c in self.iter_chains():
                 chain_closure.close_chain(c)
 
         return self._structure.to_pdb_str(renumber)

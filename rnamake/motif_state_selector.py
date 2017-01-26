@@ -2,105 +2,102 @@ import motif_type
 import settings
 import resource_manager
 import graph
+import exceptions
+import motif_state
+import util
+
 
 class MotifStateSelector(object):
-    def __init__(self):
-        self.graph = graph.GraphDynamic()
+    __slots__ = [
+        '_rm',
+        '_graph'
+    ]
 
-    def add(self, lib=None, mse=None, m=None, max_uses=1000, required_uses=0):
-        if lib is not None:
-            ms_lib = resource_manager.manager.ms_libs[lib]
-            ms_lib.load_all()
-            motif_states = ms_lib.all()
-            d = MotifStateSelectorNodeData(ms_lib.name, motif_states,
-                                           max_uses, required_uses)
-            self.graph.add_data(d)
+    def __init__(self, rm):
+        self._rm = resource_manager.ResourceManager()
+        self._graph = graph.GraphDynamic()
 
-        if m is not None:
-            motif_states = [m.get_state()]
-            d = MotifStateSelectorNodeData(m.name, motif_states,
-                                           max_uses, required_uses)
-            self.graph.add_data(d)
+    def __get_motif_states_by_name(self, name):
+        try:
+            mlib = self._rm.get_ms_lib(name)
+            mlib.load_all()
+            return motif_state.MotifLibrary(name, mlib.all())
+        except exceptions.ResourceManagerException:
+            pass
+
+        if name == 'unique_twoway':
+            path = settings.RESOURCES_PATH+"/motif_lists/unique_twoways.mlist"
+            lines = util.get_file_contents(path)
+            motif_states = []
+            for l in lines:
+                spl = l.split("|")
+                m_name, end_name = spl[0].split(",")
+                try:
+                    m_state = self._rm.get_state(name=m_name, end_name=end_name)
+                except:
+                    continue
+                motif_states.append(m_state)
+            return motif_state.MotifLibrary(name, motif_states)
+
+        if name == 'ideal_helices_min':
+            mlib = self._rm.get_ms_lib("ideal_helices")
+            mlib.load_all()
+            motif_states = []
+            for m in mlib.all():
+                if m.name == "HELIX.IDEAL":
+                    continue
+                motif_states.append(m)
+            return motif_state.MotifLibrary(name, motif_states)
+
+        raise ValueError("motif library: " + name  + " is not recognized")
+
+    def add(self, name=None, mlib=None, max_uses=1000, required_uses=0):
+        if name is not None:
+            named_mlib = self.__get_motif_states_by_name(name)
+            d = MotifLibraryData(named_mlib, max_uses, required_uses)
+            self._graph.add_data(d, orphan=1)
+
+        if mlib is not None:
+            d = MotifLibraryData(mlib, max_uses, required_uses)
+            self._graph.add_data(d, orphan=1)
 
     def connect(self, name_i, name_j):
         i, j = -1, -1
-        for n in self.graph:
-            if n.data.name == name_i:
+        for n in self._graph:
+            if n.data.mlib.name == name_i:
                 i = n.index
-            if n.data.name == name_j:
+            if n.data.mlib.name == name_j:
                 j = n.index
 
         if i == -1 or j == -1:
             raise ValueError("could not find a node with that name")
 
-        self.graph.connect(i, j)
+        self._graph.connect(i, j)
 
-    def get_children_ms(self, node):
-
-        connected_nodes = []
-        if node.ntype != -1:
-            connections = self.graph.get_node(node.ntype).connections
+    def get_connected_libs(self, ntype):
+        connected_indexes = []
+        if ntype != -1:
+            connections = self._graph.get_node(ntype).connections
             for c in connections:
-                connected_nodes.append(c.partner(node.ntype))
-
+                connected_indexes.append(c.partner(ntype).index)
         else:
-            connected_nodes = [ self.graph.get_node(0) ]
-        children, types = [], []
-        for c in connected_nodes:
-            if c.data.max_uses <= node.node_type_usage(c.index):
-                continue
-            for ms in c.data.motif_states:
-                children.append(ms)
-                types.append(c.index)
+            connected_indexes = [0]
+        return connected_indexes
 
-        return children, types
-
-    def is_valid_solution(self, current):
-        for i, n in enumerate(self.graph):
-            if n.data.required_uses > current.node_type_usages[i]:
-                return 0
-        return 1
-
-    def score(self, current):
-        diff = 0
-        for i, n in enumerate(self.graph):
-            if n.data.required_uses > current.node_type_usages[i]:
-                diff += (n.data.required_uses - current.node_type_usages[i])
-        return diff
+    def get_motif_states(self, ntype):
+        return self._graph.get_node(ntype).data.mlib.motifs
 
 
-class MSS_RoundRobin(MotifStateSelector):
-    def __init__(self):
-        self.graph = graph.GraphDynamic()
-
-    def add(self, lib=None, mse=None, m=None, max_uses=1000, required_uses=0):
-        super(self.__class__, self).add(lib, mse, m, max_uses, required_uses)
-        i = len(self.graph)-1
-        for n in self.graph.nodes:
-            self.graph.connect(n.index, i)
+class MotifLibraryData(object):
+    def __init__(self, mlib, max_uses, required_uses):
+        self.mlib = mlib
 
 
-class MSS_HelixFlank(MotifStateSelector):
-    def __init__(self):
-        self.graph = graph.GraphDynamic()
-        self.add("ideal_helices")
-
-    def add(self, lib=None, mse=None, m=None, max_uses=1000, required_uses=0):
-        super(self.__class__, self).add(lib, mse, m, max_uses, required_uses)
-        i = len(self.graph)-1
-        if i != 0:
-            self.graph.connect(0, i)
-
-
-class MotifStateSelectorNodeData(object):
-    def __init__(self, name, motif_states, max_uses, required_uses):
-        self.name, self.motif_states, self.max_uses = name, motif_states, max_uses
-        self.required_uses = required_uses
-
-
-def default_selector():
-    selector = MSS_HelixFlank()
+def default_selector(rm):
+    selector = MotifStateSelector(rm)
+    selector.add('ideal_helices_min')
     selector.add('unique_twoway')
+    selector.connect('ideal_helices_min', 'unique_twoway')
     return selector
 
 

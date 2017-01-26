@@ -6,8 +6,8 @@
 //  Copyright (c) 2014 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef REDESIGNC_xyzMatrix_h
-#define REDESIGNC_xyzMatrix_h
+#ifndef __RNAMake__xyzMatrix__h
+#define __RNAMake__xyzMatrix__h
 
 #include <vector>
 #include <math.h>
@@ -63,6 +63,22 @@ private:
 		vr.y ( m.xy_ * v.x() + m.yy_ * v.y() + m.zy_ * v.z());
 		vr.z ( m.xz_ * v.x() + m.yz_ * v.y() + m.zz_ * v.z());
 		
+	}
+
+	friend
+	inline
+	void
+	dot_vector(
+			xyzMatrix< T > const & m,
+			xyzVector< T > & v) {
+
+        T val =  m.xx_ * v.x() + m.yx_ * v.y() + m.zx_ * v.z();
+		v.x (val);
+        val =  m.xy_ * v.x() + m.yy_ * v.y() + m.zy_ * v.z();
+		v.y (val);
+        val =  m.xz_ * v.x() + m.yz_ * v.y() + m.zz_ * v.z();
+        v.z (val);
+
 	}
 	
 	friend

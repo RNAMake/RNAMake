@@ -25,11 +25,12 @@ class BuildSqliteLibraries(object):
     def build_ideal_helices(self):
         path = settings.RESOURCES_PATH + "/motif_libraries/ideal_helices.db"
         data = []
+        ms_data = []
         rdata = []
         keys = ['data', 'name', 'end_name', 'end_id', 'id']
 
         # h_dirs = settings.MOTIF_DIRS + "/helices/"
-        h_dirs = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/motifs/helices/"
+        h_dirs = "/Users/jyesselm/projects/RNAMake/rnamake/resources/motifs/helices/"
         ideal_dirs = glob.glob(h_dirs+"HELIX.IDEA*")
         count = 0
 
@@ -42,12 +43,17 @@ class BuildSqliteLibraries(object):
             data.append([f_m.to_str(), f_m.name,
                          f_m.get_end(0).name, f_m.get_end_id(0), count])
 
+            ms_data.append([f_m.get_state().to_str(), f_m.name,
+                            f_m.get_end(0).name, f_m.get_end_id(0), count])
+
             rdata.append([r_m.to_str(), r_m.name,
                          r_m.get_end(0).name, r_m.get_end_id(0), count])
 
             count += 1
 
         sqlite_library.build_sqlite_library(path, data, keys, 'id')
+        path = settings.RESOURCES_PATH + "/motif_state_libraries/ideal_helices.db"
+        sqlite_library.build_sqlite_library(path, ms_data, keys, 'id')
         path = settings.RESOURCES_PATH + "/motif_libraries/ideal_helices_reversed.db"
         sqlite_library.build_sqlite_library(path, rdata, keys, 'id')
 
@@ -70,7 +76,7 @@ class BuildSqliteLibraries(object):
         #         motif_type.TCONTACT]
 
         # FIX on main branch
-        base_dirs = "/Users/josephyesselman/projects/RNAMake/rnamake/resources/motifs/"
+        base_dirs = "/Users/jyesselm/projects/RNAMake/rnamake/resources/motifs/"
         types = {
             motif_type.HAIRPIN  : base_dirs + "hairpins",
             motif_type.HELIX    : base_dirs + "helices",
@@ -85,6 +91,7 @@ class BuildSqliteLibraries(object):
 
             count = 0
             data = []
+            ms_data = []
             keys = ['data', 'name', 'end_name', 'end_id', 'id']
 
             for m_dir in motif_dirs:
@@ -99,11 +106,17 @@ class BuildSqliteLibraries(object):
 
                     data.append([m.to_str(), m.name, m.get_end(0).name,
                                  m.get_end_id(0), count])
+
+                    ms_data.append([m.get_state().to_str(), m.name, m.get_end(0).name,
+                                    m.get_end_id(0), count])
                     count += 1
 
             path = settings.RESOURCES_PATH +"/motif_libraries/"+\
                    motif_type.type_to_str(t).lower()+".db"
             sqlite_library.build_sqlite_library(path, data, keys, 'id')
+            path = settings.RESOURCES_PATH + "/motif_state_libraries/" + \
+                   motif_type.type_to_str(t).lower() + ".db"
+            sqlite_library.build_sqlite_library(path, ms_data, keys, 'id')
 
     def __get_bp_steps(self):
         helix_mlib = sqlite_library.MotifSqliteLibrary("helix")
@@ -250,122 +263,18 @@ class BuildSqliteLibraries(object):
         path = settings.RESOURCES_PATH +"/motif_libraries/bp_steps.db"
         sqlite_library.build_sqlite_library(path, unique_data, motif_keys, 'id')
 
-    def build_new_bp_steps(self):
-        mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
-        mlib.load_all()
-
-        motifs = []
-
-        motif_data = []
-        motif_keys = ['data', 'name', 'end_name', 'end_id', 'id']
-        count = 0
-
-        for m in mlib.all():
-            spl = m.name.split(".")
-            if len(spl) == 1:
-                motifs.append(m)
-
-        unique = []
-        unique_m = []
-
-        i = 0
-        for m in motifs:
-            name_spl = m.name.split("=")
-
-            if m.end_ids[0] in unique:
-                continue
-            if m.end_ids[1] in unique:
-                continue
-
-            old_name = m.name
-            unique.append( m.end_ids[0])
-            if not m.end_ids[1] in unique:
-                unique.append( m.end_ids[1])
-            #print m.end_ids
-
-            m.name = "BP."+str(i)
-
-            m_a = motif_factory.factory.can_align_motif_to_end(m, 1)
-            m_a = motif_factory.factory.align_motif_to_common_frame(m_a, 1)
-
-            motif_data.append([m.to_str(), m.name, m.ends[0].name(),
-                               m.end_ids[0], count])
-
-            count += 1
-
-            motif_data.append([m_a.to_str(), m_a.name, m_a.ends[0].name(),
-                               m_a.end_ids[0], count])
-
-            unique_m.append(m)
-            #print old_name, m.end_ids[0], m_a.end_ids[0]
-
-            count += 1
-            i += 1
-
-        print len(unique)
-        for m in unique_m:
-            print m.end_ids
-
-        path = settings.RESOURCES_PATH +"/motif_libraries_new/new_bp_steps.db"
-        sqlite_library.build_sqlite_library(path, motif_data, motif_keys, 'id')
-
-    def build_le_helix_lib(self):
-
-
-        mt = motif_tree.MotifTree()
-
-        for i in range(20):
-            if m is None:
-                continue
-
-
-
-            data = []
-            keys = ['data', 'name', 'end_name', 'end_id', 'id']
-            for i, s in enumerate(succeses):
-                m, ei = s
-                m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
-                #print m_added.name, m_added.ends[0].name(), m_added.end_ids[0]
-
-                data.append([m_added.to_str(), m_added.name,
-                            m_added.ends[0].name(), m_added.end_ids[0], i])
-
-            path = settings.RESOURCES_PATH +"/motif_libraries_new/le_helices.db"
-            sqlite_library.build_sqlite_library(path, data, keys, 'id')
-
-    def build_motif_state_libraries(self):
-        for libname in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
-            print libname
-            data = []
-            keys = ['data', 'name', 'end_name', 'end_id', 'id']
-
-            mlib = sqlite_library.MotifSqliteLibrary(libname)
-            mlib.load_all()
-            motif_states = []
-            names = []
-            for i, m in enumerate(mlib.all()):
-                ms = m.get_state()
-                data.append([ms.to_str(), ms.name,
-                             ms.end_names[0], ms.end_ids[0], i])
-
-
-
-            path = settings.RESOURCES_PATH + "/motif_state_libraries/" + libname + ".db"
-            sqlite_library.build_sqlite_library(path, data, keys, 'id')
-
     def build_unique_twoway_library(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
         mlib.load_all()
-        clusters = cluster.cluster_motifs(mlib.all(), 9.0)
-        motif_arrays = []
-        motif_array_names = []
 
+        aligned = []
+        for m in mlib.all():
+            m_aligned = self.mf.align_motif_to_common_frame(m, 0)
+            aligned.append(m_aligned)
+
+        clusters = cluster.cluster_motifs(aligned, 9.0)
         data = []
-        keys = ['data', 'name', 'end_name', 'end_id', 'id']
-
-        mes_keys = ['data', 'name', 'id']
-        mes_data = []
-        f = open("sim_list_new", "w")
+        f = open(settings.RESOURCES_PATH + "/motif_lists/unique_twoways.mlist", "w")
 
         count = 0
         for i, c in enumerate(clusters):
@@ -380,20 +289,16 @@ class BuildSqliteLibraries(object):
                 continue
             count += 1
 
-            f.write(lowest.name + "," + lowest.get_end(0).name + " | ")
+            f.write(lowest.name + "," + lowest.get_end(0).name + "|")
 
             for m in c.motifs:
-                f.write(m.name + "," + m.get_end(0).name + " | ")
+                f.write(m.name + "," + m.get_end(0).name + "|")
             f.write("\n")
-
-            data.append([lowest.to_str(), lowest.name,
-                        lowest.get_end(0).name, lowest.get_end_id(0), count])
-
 
         f.close()
 
-        path = settings.RESOURCES_PATH +"/motif_libraries/unique_twoway.db"
-        sqlite_library.build_sqlite_library(path, data, keys, 'id')
+        #path = settings.RESOURCES_PATH +"/motif_libraries/unique_twoway.db"
+        #sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
     def build_ss_and_seq_libraries(self):
         libnames = ["twoway", "tcontact", "hairpin", "nway"]
@@ -510,11 +415,9 @@ class BuildSqliteLibraries(object):
 
 #setup_start_motif()
 builder = BuildSqliteLibraries()
-
 #builder.build_ideal_helices()
-#builder.build_trimmed_ideal_helix_library()
-#builder.build_basic_libraries()
-builder.build_helix_ensembles()
+builder.build_basic_libraries()
+#builder.build_helix_ensembles()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()

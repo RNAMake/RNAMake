@@ -1,40 +1,56 @@
 import unittest
 import build
-import rnamake.motif_state_search
-import rnamake.util as util
-import rnamake.motif_state_tree as motif_state_tree
-import rnamake.settings as settings
-import rnamake.resource_manager as rm
-import rnamake.steric_lookup as steric_lookup
-import rnamake.motif_state_search_scorer as motif_state_search_scorer
-import rnamake.segmenter as segmenter
-import rnamake.pose_factory as pf
-from rnamake import motif_tree
+
+from rnamake import motif_state_search, resource_manager, motif_tree, util
 
 class MotifStateSearchUnittest(unittest.TestCase):
 
-    def test_creation(self):
-        mss = rnamake.motif_state_search.MotifStateSearch()
+    def setUp(self):
+        self.rm = resource_manager.ResourceManager()
 
-    def test_search(self):
-        builder = build.BuildMotifTree()
-        mt = builder.build(2)
-        start = mt.get_node(0).data.ends[0].state()
-        end   = mt.last_node().data.ends[1].state()
-        mss = rnamake.motif_state_search.MotifStateSearch()
+
+    def _test_creation(self):
+        self.mss = motif_state_search.MotifStateSearch(self.rm)
+
+    def _test_search(self):
+        mt = motif_tree.MotifTree(self.rm)
+        mt.add_motif(m_name='HELIX.IDEAL.10')
+        mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+
+        start = mt.get_node(0).data
+        end   = mt.last_node().data
+        mss = motif_state_search.MotifStateSearch(self.rm)
         mss.option('max_node_level', 3)
-        mss.option('accept_score', 2)
-        mss.setup(start, end)
+        mss.option('accept_score', 0.5)
+        mss.setup(start, 0,  end, 1)
         s = mss.next()
-        if s is None:
-            print mt
-            raise ValueError("could not find a suitable solution")
-        mst = s.to_mst()
-        new_end = mst.last_node().data.cur_state.end_states[1]
+        self.failUnless(s is not None)
+        mst = s.to_mst(self.rm)
+        new_end = mst.last_node().data.get_end(1)
 
-        dist = util.distance(new_end.d, end.d)
+        dist = util.distance(new_end.d, mt.last_node().data.get_end(1).d)
         if dist > mss.option('accept_score'):
             self.fail("did not find a suitable solution")
+
+    def test_search_longer(self):
+        mt = motif_tree.MotifTree(self.rm)
+        mt.add_motif(m_name='HELIX.IDEAL.10')
+        mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+        mt.add_motif(m_name='HELIX.IDEAL.10')
+        mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+        mt.add_motif(m_name='HELIX.IDEAL.10')
+        mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+        mt.add_motif(m_name='HELIX.IDEAL.10')
+        mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+
+        start = mt.get_node(0).data
+        end = mt.last_node().data
+        mss = motif_state_search.MotifStateSearch(self.rm)
+        mss.option('max_node_level', 10)
+        mss.setup(start, 0, end, 1)
+        s = mss.next()
+
+        mt = s.to_motif_tree(self.rm)
 
     #TODO fix
     def _test_search_2(self):
@@ -78,7 +94,7 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mss.option('max_node_level', 5)
         mss.option('max_solutions', 1)
         mss.option('accept_score', 5)
-        mss.scorer = motif_state_search_scorer.MTSS_Astar()
+        mss.scorer = motif_state_search_scorer.MTSS_Astar()o
 
         sl = steric_lookup.StericLookup()
         beads = pd.get_beads(pd.ends)
@@ -95,8 +111,30 @@ class MotifStateSearchUnittest(unittest.TestCase):
 
 
 
-def main():
-    unittest.main()
+#def main():
+#    unittest.main()
 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+#    main()
+
+rm = resource_manager.ResourceManager()
+mt = motif_tree.MotifTree(rm)
+m = rm.get_motif(name='HELIX.IDEAL.10')
+mt.add_motif(m)
+mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+mt.add_motif(m_name='HELIX.IDEAL.10')
+mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+mt.add_motif(m_name='HELIX.IDEAL.10')
+mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+mt.add_motif(m_name='HELIX.IDEAL.10')
+mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+mt.nodes_to_pdbs()
+
+start = mt.get_node(0).data
+end = mt.last_node().data
+mss = motif_state_search.MotifStateSearch(rm)
+mss.option('max_node_level', 10)
+mss.setup(start, 0, end, 1)
+s = mss.next()
+#print len(s.path)
+#mt = s.to_motif_tree(self.rm)

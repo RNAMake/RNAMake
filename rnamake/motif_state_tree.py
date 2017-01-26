@@ -419,7 +419,7 @@ class MotifStateTree(object):
                 "cannot find motif state with uuid")
 
     def last_node(self):
-        return self.tree.last_node
+        return self._tree.last_node
 
     def increase_level(self):
         self._tree.increase_level()
@@ -432,9 +432,9 @@ class MotifStateTree(object):
 
     #MOTIF TREE WRAPPER      ##################################################
     def to_motif_tree(self):
-        mt = motif_tree.MotifTree(self.rm)
+        mt = motif_tree.MotifTree(self._rm)
 
-        for i, n in enumerate(self.tree.nodes):
+        for i, n in enumerate(self._tree.nodes):
             m = self._rm.get_motif(name=n.data.name,
                                    end_name=n.data.get_end(0).name)
             if i == 0:
@@ -448,7 +448,7 @@ class MotifStateTree(object):
             if j == -1:
                 raise ValueError("cannot convert mst to mt in to_motif_tree")
 
-        for c in self.connections:
+        for c in self._connections:
             mt.add_connection(c.i, c.j, c.name_i, c.name_j)
 
         return mt
@@ -498,6 +498,9 @@ class MotifStateTree(object):
 
     def num_connections(self):
         return len(self._connections)
+
+    def set_sterics(self, sterics):
+        self._sterics = sterics
 
 
 def str_to_motif_state_tree(s, sterics=1):

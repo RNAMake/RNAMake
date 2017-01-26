@@ -3,10 +3,12 @@
 #define __RNAMake__atom__
 
 #include <stdio.h>
+#include <math/transform.h>
 
 //RNAMake Headers
 #include "base/types.h"
 #include "math/xyz_vector.h"
+#include "math/xyz_matrix.h"
 
 /**
  * Stores atomic information from pdb file, design is to be extremely
@@ -96,6 +98,27 @@ public:
      * @endcode
      */
     String to_pdb_str(int);
+
+    inline
+    void
+    move(Point const & p) {
+        coords_ = coords_ + p;
+
+    }
+
+    inline
+    void
+    transform(Transform const & t) {
+        dot_vector(t.rotation().transpose(), coords_);
+        coords_ = coords_ + t.translation();
+    }
+
+    inline
+    void
+    fast_transform(Matrix const & r, Vector const & t) {
+        dot_vector(r, coords_);
+        coords_ = coords_ + t;
+    }
     
 public: //accessors
     
@@ -113,29 +136,6 @@ public: //accessors
     Point const
     coords() const { return coords_; }
 
-
-public: // setters
-    
-    /**
-     * Setter for coords_
-     */
-    inline
-    void
-    coords(
-        Point const & ncoords) {
-        coords_ = ncoords;
-    }
-    
-    /**
-     * Setter for name_
-     */
-    inline
-    void
-    name(
-        String const & nname) {
-        name_ = nname;
-    }
-    
 private:
     /**
      * private variable of name of atom

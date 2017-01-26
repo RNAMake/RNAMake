@@ -25,56 +25,69 @@ public:
      * Standard constructor for ResidueException
      * @param   message   Error message for residue type
      */
-    ResidueTypeException(String const & message):
-    std::runtime_error(message)
-    {}
+    ResidueTypeException(String const & message) :
+            std::runtime_error(message) {}
 };
 
-enum SetType {  RNA, PROTEIN };
+enum SetType {
+    RNA, PROTEIN
+};
 
 class ResidueType {
 public:
     ResidueType() {}
+
     ResidueType(
-        String const &,
-        StringIntMap const &,
-        SetType const & set_type);
-    
+            String const &,
+            StringIntMap const &,
+            SetType const & set_type);
+
+    ResidueType(
+            String const &,
+            StringIntMap const &,
+            SetType const &,
+            Strings const &);
+
     ~ResidueType() {}
 
 public:
+    bool
+    is_valid_atom(String const &);
+
+    int
+    atom_index(String const &);
+
     String
     get_correct_atom_name(
-        Atom const &) const;
-    
+            Atom const &) const;
+
     int
     match_name(
-        String const &) const;
-    
+            String const &) const;
+
     inline
     String
-    short_name() const { return name_.substr(0,1); }
-    
+    short_name() const { return name_.substr(0, 1); }
+
     inline
     int
     atom_pos_by_name(
-        String const & aname) const {
-        
-        StringIntMap::const_iterator iter( atom_map_.find(aname));
-        if(iter != atom_map_.end()) {
+            String const & aname) const {
+
+        StringIntMap::const_iterator iter(atom_map_.find(aname));
+        if (iter != atom_map_.end()) {
             return iter->second;
-        }
-        else {
+        } else {
             return -1;
         }
     }
-    
+
     inline
     int
-    size() { return (int)atom_map_.size(); }
-    
+    size() { return (int) atom_map_.size(); }
+
 public: //getters
-    
+
     inline
     String
     const &
@@ -83,13 +96,13 @@ public: //getters
     inline
     SetType
     set_type() const { return set_type_; }
-    
-    
+
+
 private:
-    
+
     void
     extend_res_specific_altnames();
-    
+
 private:
     String name_;
     StringIntMap atom_map_;

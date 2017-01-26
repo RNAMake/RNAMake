@@ -40,6 +40,32 @@ TEST_CASE( "Test Atoms for Structure", "[Atom]" ) {
 
         REQUIRE(are_atoms_equal(a, a2));
     }
-    
+
+    SECTION("test moving") {
+        auto p2 = Point(0, 0, 1);
+        a->move(p2);
+
+        auto new_coords = p + p2;
+        auto dist = a->coords().distance(new_coords);
+        REQUIRE(dist < 0.01);
+    }
+
+    SECTION("test transform") {
+        auto t = Transform();
+        a->transform(t);
+        auto dist = a->coords().distance(p);
+        REQUIRE(dist < 0.01);
+    }
+
+    SECTION("test fast transform") {
+        auto t = Transform();
+        auto r = t.rotation().transpose();
+        auto trans = t.translation();
+        a->fast_transform(r, trans);
+        auto dist = a->coords().distance(p);
+        REQUIRE(dist < 0.01);
+    }
+
+
 }
 

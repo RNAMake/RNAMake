@@ -17,7 +17,7 @@ def fill_basepairs_in_ss(ss):
 
 
 class BuildMotifTree(object):
-    def __init__(self, rm, lib_names = ["ideal_helices", "unique_twoway"], libs = None):
+    def __init__(self, rm, lib_names = ["ideal_helices", "twoway"], libs = None):
         self.rm = rm
         if libs is None:
             self.libs = [sqlite_library.MotifSqliteLibrary(x) for x in lib_names ]
@@ -70,7 +70,7 @@ class BuildMotifTree(object):
 
 
 class BuildMotifGraph(object):
-    def __init__(self, rm, lib_names = ["ideal_helices", "unique_twoway"], libs = None):
+    def __init__(self, rm, lib_names = ["ideal_helices", "twoway"], libs = None):
         self.rm = rm
         if libs is None:
             self.libs = [sqlite_library.MotifSqliteLibrary(x) for x in lib_names ]

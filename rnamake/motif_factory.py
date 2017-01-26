@@ -371,8 +371,34 @@ class MotifFactory(object):
     def align_motif_to_common_frame(self, m, ei):
         return motif.get_aligned_motif(self._ref_motif.get_end(0), m.get_end(ei), m)
 
-    def motifs_from_bps(self, bps, org_m, m_name):
-        pass
+    def motifs_from_bps(self, bps, org_m, m_name, mtype):
+        all_res = []
+        for bp in bps:
+            bp_res = org_m.get_bp_res(bp)
+            for r in bp_res:
+                if r not in all_res:
+                    all_res.append(r)
+
+        all_res = [residue.Residue.copy(r, build_beads=0) for r in all_res]
+
+        chains = chain.connect_residues_into_chains(all_res)
+        s = structure.Structure(chains)
+        ends = ends_from_basepairs(s, bps)
+
+        if len(bps) == 1:
+            end_ids = self.__setup_end_ids(s, bps, ends)
+
+            if len(end_ids) > 0:
+                seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
+            else:
+                dot_bracket = ""
+
+            m = motif.Motif(s, bps, ends, end_ids, m_name, mtype, 0,
+                            block_end_add=-1, dot_bracket=dot_bracket)
+            return m
+        else:
+            raise ValueError("not supported")
+
 
     def motifs_from_res(self, res, bps, org_m, m_name, mtype):
         all_res = []

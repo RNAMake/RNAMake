@@ -1054,3 +1054,4 @@ def str_to_pose(s):
         motifs.append(m)
     p.motifs = motifs
     return p
+
