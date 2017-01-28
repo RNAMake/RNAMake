@@ -43,7 +43,7 @@ ResidueTypeSet::_read_rtypes_from_dir(
     delete entry;
 }
 
-String
+String const &
 ResidueTypeSet::_get_rtype_name(
         String const & fname) {
     Strings name_spl = split_str_by_delimiter(fname, "/");
@@ -74,7 +74,7 @@ ResidueTypeSet::_get_atom_map_from_file(
 
 ResidueType
 const &
-ResidueTypeSet::get_rtype_by_resname(
+ResidueTypeSet::get_type(
         String const & resname) const {
 
     for (auto const & restype : residue_types_) {

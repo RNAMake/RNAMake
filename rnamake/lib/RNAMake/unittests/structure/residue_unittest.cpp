@@ -7,8 +7,8 @@
 //RNAMake Headers
 #include "base/file_io.h"
 #include "base/settings.h"
+#include "math/numerical.h"
 #include "structure/residue.h"
-#include "structure/residue_type_set.h"
 #include "structure/is_equal.hpp"
 
 
@@ -22,18 +22,41 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         auto r = std::make_shared<Residue>(l, rts);
         residues.push_back(r);
     }
-    
-    SECTION("test getting atoms by name") {
-        auto r = residues[0];
-        auto name = String("C1'");
-        auto a = r->get_atom(name);
 
-        REQUIRE(a != nullptr);
-        REQUIRE(a->name() == "C1'");
-        
-        REQUIRE_THROWS_AS(r->get_atom("fake"), ResidueException);
+    SECTION("test getting atoms by name") {
+        auto gtype = rts.get_type("GUA");
+        auto atoms = AtomOPs();
+        atoms.push_back(std::make_shared<Atom>("P", Point(0, 1, 2)));
+        auto res = std::make_shared<Residue>(atoms, gtype, "GUA", 1, "A", "");
+
+        // can find a real atom
+        auto p_atom = res->get_atom("P");
+        REQUIRE(p_atom->name() == "P");
+        REQUIRE(p_atom == res->get_atom(0));
+
+        REQUIRE_THROWS_AS(res->get_atom(999), ResidueException);
+        REQUIRE_THROWS_AS(res->get_atom("OP1"), ResidueException);
+        REQUIRE_THROWS_AS(res->get_atom("fake"), ResidueException);
     }
-    
+
+    SECTION("test has atoms") {
+        auto gtype = rts.get_type("GUA");
+        auto atoms = AtomOPs();
+        atoms.push_back(std::make_shared<Atom>("P", Point(0, 1, 2)));
+        auto res = std::make_shared<Residue>(atoms, gtype, "GUA", 1, "A", "");
+
+        REQUIRE(res->has_atom("P") == true);
+        REQUIRE(res->has_atom("P1") == false);
+        REQUIRE(res->has_atom("OP1") == false);
+        REQUIRE(res->has_atom(0) == true);
+        REQUIRE(res->has_atom(999) == false);
+
+        res = residues[0];
+        // first residue does not have a P atom
+        REQUIRE(res->has_atom("P") == false);
+        REQUIRE(res->has_atom("C1'") == true);
+    }
+
     SECTION("are residues detecting connections properly") {
         auto r1 = residues[0];
         auto r2 = residues[1];
@@ -44,12 +67,50 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         SECTION("connecting from 3' to 5'") { REQUIRE(r3->connected_to(*r2) == -1); }
         
     }
-    
+
+    SECTION("are residues stringifing correctly") {
+        auto r = residues[0];
+        auto s = r->to_str();
+        auto r2 = std::make_shared<Residue>(s, rts);
+
+        SECTION("residues should be the same but not have the same id") {
+            REQUIRE(are_residues_equal(r, r2, 0));
+        }
+    }
+
+    SECTION("are residues copying correctly") {
+
+        auto r = residues[0];
+        auto r2 = std::make_shared<Residue>(*r);
+
+        REQUIRE(are_residues_equal(r, r2));
+
+        r2 = std::make_shared<Residue>(*r, 1);
+
+        REQUIRE(are_residues_equal(r, r2) == 0);
+        REQUIRE(are_residues_equal(r, r2, 0) == 1);
+
+    }
+
+    SECTION("can move residues properly") {
+        auto r = residues[0];
+        auto c1 = r->center();
+        auto p = Point(1, 0, 0);
+
+        r->move(p);
+        auto c2 = r->center();
+        auto dist = c1.distance(c2);
+        REQUIRE(are_floats_equal(dist, 1.0));
+    }
+
     SECTION("are residues generating steric beads properly") {
 
         auto r = residues[1];
-        auto beads = r->get_beads();
-        
+
+        REQUIRE(r->num_beads() == 0);
+        r->build_beads();
+        auto beads = r->beads();
+
         SECTION("produced the right number of beads") { REQUIRE(beads.size() == 3); }
         
         REQUIRE(beads[0].btype() == BeadType::PHOS);
@@ -57,26 +118,59 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         REQUIRE(beads[2].btype() == BeadType::BASE);
 
     }
-    
-    SECTION("are residues copying correctly") {
 
-        auto r = residues[0];
-        auto r2 = std::make_shared<Residue>(*r);
-        
-        REQUIRE(are_residues_equal(r, r2));
-    
-    }
-    
-    SECTION("are residues stringifing correctly") {
-        auto r = residues[0];
-        auto s = r->to_str();
-        auto r2 = std::make_shared<Residue>(s, rts);
-        
-        SECTION("residues should be the same but not have the same id") {
-            REQUIRE(are_residues_equal(r, r2, 0));
+    SECTION("get residue state") {
+        auto r = residues[1];
+        r->build_beads();
+        auto rs = r->get_state();
+
+        // got all the beads
+        REQUIRE(rs->num_beads() == r->num_beads());
+
+        SECTION("are beads properly copied over and not linked") {
+            auto p = Point(1, 0, 0);
+            rs->move(p);
+
+            auto beads1 = rs->beads();
+            auto beads2 = r->beads();
+
+            auto dist = beads1[0].distance(beads2[0]);
+            REQUIRE(are_floats_equal(dist, 1.0));
         }
+
+        auto s = rs->to_str();
+        auto rs_copy = std::make_shared<state::Residue>(s);
+
+        REQUIRE(rs->num_beads() == rs_copy->num_beads());
+
+        rs_copy = std::make_shared<state::Residue>(*rs);
+        REQUIRE(rs->num_beads() == rs_copy->num_beads());
+        REQUIRE(*rs == *rs_copy);
+
     }
-    
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

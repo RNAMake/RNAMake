@@ -103,7 +103,7 @@ if not os.path.isdir(c_dir + "bin/integration"):
     os.mkdir(c_dir + "bin/integration")
 
 #libs = "base math data_structure util vienna secondary_structure eternabot structure motif resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer instances"
-libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
+libs = "base math data_structure util vienna primitives secondary_structure motif_state eternabot structure motif motif_tools resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
 lib_paths = libs.split()
 
 depends = {
@@ -112,9 +112,11 @@ depends = {
     'data_structure' : 'base',
     'util' : 'math ${SQLITE3_LIBRARY}',
     'vienna' : 'base',
-    'secondary_structure' : 'util',
+    'primitives' : 'util',
+    'secondary_structure' : 'util primitives',
+    'motif_state' : 'util primitives',
     'eternabot' : 'vienna secondary_structure',
-    'structure' : 'util',
+    'structure' : 'util primitives motif_state',
     'motif' : 'structure secondary_structure',
     'motif_tools' : 'motif',
     'resources' : 'motif',

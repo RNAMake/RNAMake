@@ -20,7 +20,7 @@ public:
     ~ResidueTypeSet() {}
 
     ResidueType const &
-    get_rtype_by_resname(
+    get_type(
             String const &) const;
 
     bool
@@ -28,7 +28,7 @@ public:
             String const &) const;
 
 private:
-    String
+    String const &
     _get_rtype_name(
             String const &);
 

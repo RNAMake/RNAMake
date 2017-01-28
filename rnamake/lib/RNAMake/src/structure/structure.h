@@ -65,9 +65,6 @@ public:
     
 public:
     
-    void
-    renumber();
-    
     inline
     Beads
     get_beads(
@@ -80,9 +77,9 @@ public:
                 if( r->uuid() == er->uuid()) {found = 1; break;}
             }
             if (found) { continue; }
-            for (auto const & b : r->get_beads()) {
+            /*for (auto const & b : r->get_beads()) {
                 beads.push_back(b);
-            }
+            }*/
         }
         return beads;
     }
@@ -106,20 +103,6 @@ public:
 
     ResidueOPs const
     residues() const;
-    
-    inline
-    AtomOPs const
-    atoms() {
-        AtomOPs atoms;
-        for (auto const & r : residues()) {
-            for (auto const & a : r->atoms()) {
-                if(a.get() != NULL) {
-                    atoms.push_back(a);
-                }
-            }
-        }
-        return atoms;
-    }
 
     inline
     void

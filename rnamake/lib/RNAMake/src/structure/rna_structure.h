@@ -108,11 +108,7 @@ public: //output functions
         int renumber = -1);
     
 public: //wrappers from structure
-    
-    inline
-    AtomOPs const
-    atoms() const { return structure_->atoms(); }
-    
+
     inline
     ResidueOPs const
     residues() const { return structure_->residues(); }

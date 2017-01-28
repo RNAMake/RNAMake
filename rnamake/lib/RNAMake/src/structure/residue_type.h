@@ -42,45 +42,24 @@ public:
             StringIntMap const &,
             SetType const & set_type);
 
-    ResidueType(
-            String const &,
-            StringIntMap const &,
-            SetType const &,
-            Strings const &);
-
     ~ResidueType() {}
 
 public:
     bool
-    is_valid_atom(String const &);
+    is_valid_atom(String const &) const;
 
     int
-    atom_index(String const &);
+    atom_index(String const &) const;
 
     String
-    get_correct_atom_name(
-            Atom const &) const;
+    get_correct_atom_name(Atom const &) const;
 
     int
-    match_name(
-            String const &) const;
+    match_name(String const &) const;
 
     inline
     String
     short_name() const { return name_.substr(0, 1); }
-
-    inline
-    int
-    atom_pos_by_name(
-            String const & aname) const {
-
-        StringIntMap::const_iterator iter(atom_map_.find(aname));
-        if (iter != atom_map_.end()) {
-            return iter->second;
-        } else {
-            return -1;
-        }
-    }
 
     inline
     int

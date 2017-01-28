@@ -37,14 +37,14 @@ public:
     {
     
         atoms_ = AtomOPs();
-        for( auto const & a : res1->atoms() ) {
+        /*for( auto const & a : res1->atoms() ) {
             if(a != nullptr) { atoms_.push_back(a); }
         }
         for( auto const & a : res2->atoms() ) {
             if(a != nullptr) { atoms_.push_back(a); }
-        }
+        }*/
         
-        Point d = center(atoms_);
+        Point d = calc_center(atoms_);
         Points sugars(2);
         sugars[0] = res1_->get_atom("C1'")->coords();
         sugars[1] = res2_->get_atom("C1'")->coords();
@@ -69,7 +69,7 @@ public: // getters
     inline
     BasepairStateOP const &
     state() {
-        bp_state_->d(center(atoms_));
+        bp_state_->d(calc_center(atoms_));
         bp_state_->sugars(Points{ res1_->get_atom("C1'")->coords(), res2_->get_atom("C1'")->coords() });
         return bp_state_;
     }
@@ -125,7 +125,7 @@ public: // getters
     
     inline
     Point const
-    d()  const { return center(atoms_); }
+    d()  const { return calc_center(atoms_); }
     
     inline
     Uuid const &

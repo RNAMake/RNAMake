@@ -16,7 +16,7 @@ TEST_CASE("Test ResidueType for Structure", "[ResidueType]" ) {
         auto rt = ResidueType(name, atom_map, SetType::RNA);
         
         REQUIRE(rt.short_name() == "G");
-        REQUIRE(rt.atom_pos_by_name("P") == 0);
+        REQUIRE(rt.atom_index("P") == 0);
         
     }
     
@@ -55,15 +55,15 @@ TEST_CASE("Test ResidueType for Structure", "[ResidueType]" ) {
     }
     
     SECTION("Getting correct residue type by name from set") {
-        auto rt = rts.get_rtype_by_resname("GUA");
+        auto rt = rts.get_type("GUA");
         
         REQUIRE(rt.short_name() == "G");
-        REQUIRE_THROWS_AS(rts.get_rtype_by_resname("FAKE"), ResidueTypeException);
+        REQUIRE_THROWS_AS(rts.get_type("FAKE"), ResidueTypeException);
         
     }
     
     SECTION("can load amino acid residue types") {
-        auto rt = rts.get_rtype_by_resname("ARG");
+        auto rt = rts.get_type("ARG");
         REQUIRE(rt.short_name() == "A");
         REQUIRE(rt.atom_pos_by_name("N") == 0);
     }

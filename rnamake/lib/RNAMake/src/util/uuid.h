@@ -30,26 +30,26 @@ public:
     inline
     bool 
     operator ==(Uuid const & uuid) const {
-        return s_uuid_.compare(uuid.s_uuid_) == 0;
+        return s_uuid_ == uuid.s_uuid_;
     }
  
     inline
     bool
-    operator ==(Uuid & uuid)  {
-        return s_uuid_.compare(uuid.s_uuid_) == 0;
+    operator ==(Uuid const & uuid)  {
+        return s_uuid_ == uuid.s_uuid_;
     }
     
     inline
     bool
     operator != (Uuid const & uuid) const {
-        return s_uuid_.compare(uuid.s_uuid_) != 0;
+        return s_uuid_ != uuid.s_uuid_;
     }
 
     
     inline
     bool
     operator != (Uuid & uuid)  {
-        return s_uuid_.compare(uuid.s_uuid_) != 0;
+        return s_uuid_ != uuid.s_uuid_;
     }
 
     inline
@@ -73,5 +73,7 @@ struct UuidCompare {
         return u1.s_uuid() < u2.s_uuid();
     }
 };
+
+//std::shared_ptr<Uuid> UuidOP;
 
 #endif

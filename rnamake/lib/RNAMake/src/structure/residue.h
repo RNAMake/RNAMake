@@ -14,126 +14,15 @@
 //RNAMake Headers
 #include "base/types.h"
 #include "util/uuid.h"
+#include "util/bead.h"
+#include "primitives/residue.h"
+#include "motif_state/residue.h"
 #include "structure/atom.h"
 #include "structure/residue_type.h"
 #include "structure/residue_type_set.h"
 
 Point
-center(AtomOPs const &);
-
-/**
- * BeadType is an ENUM type. This is to specify which center of atoms each bead
- * represents.
- *
- * Phosphate (0):  P, OP1, OP2\n
- * Sugar (1):  O5',C5',C4',O4',C3',O3',C1',C2',O2'\n
- * Base  (2):  All remaining atoms
- */
-enum BeadType { PHOS = 0, SUGAR = 1, BASE = 2 };
-
-
-/*
- * Exception for residues
- */
-class ResidueException : public std::runtime_error {
-public:
-    /**
-     * Standard constructor for ResidueException
-     * @param   message   Error message for residue
-     */
-    ResidueException(String const & message):
-    std::runtime_error(message)
-    {}
-};
-
-
-/**
- * Bead class stores information related to keeping track of steric clashes
- * between residues during building. They are never used outside the Residue class
- *
- */
-class Bead {
-public:
-    /**
-     * Empty constructor for Bead object.
-     */
-    Bead():
-    center_(Point(0,0,0)),
-    btype_(BeadType(0))
-    {}
-    
-    /**
-     * Standard constructor for Bead object.
-     * @param   btype   type of bead (PHOS, SUGAR or BASE)
-     * @param   center  the average 3D position of all atoms represented by bead
-     */
-    inline
-    Bead(
-        Point const & center,
-        BeadType const btype):
-        center_ ( center ),
-        btype_ ( btype )
-    {}
-    
-    
-    inline
-    Bead(
-        String const & s) {
-        auto spl = split_str_by_delimiter(s, ",");
-        center_ = vector_from_str(spl[0]);
-        btype_ = BeadType(std::stoi(spl[1]));
-    }
-    
-    /**
-     * Copy constructor
-     * @param   b   Bead object copying from
-     */
-    inline
-    Bead(
-        Bead const & b):
-    center_(b.center_),
-    btype_(b.btype_)
-    {}
-    
-public:
-    
-    inline
-    double
-    distance(
-        Bead const & b) const {
-        return b.center_.distance(center_);
-    }
-    
-public: //accessors
-    
-    /**
-     * Accessor for center_
-     */
-    inline
-    Point
-    center() const { return center_; }
-    
-    /**
-     * Accessor for btype_
-     */
-    inline
-    BeadType
-    btype() const { return btype_; }
-
-private:
-    /**
-     * private variable for the 3D coordinates of the center of atoms the bead represents
-     */
-    Point center_;
-    
-    /**
-     * private variable of the type of the bead PHOS, SUGAR or BASE)
-     */
-    BeadType btype_;
-    
-};
-
-typedef std::vector<Bead> Beads;
+calc_center(AtomOPs const &);
 
 /**
  * Store residue information from pdb file, stores all Atom objects that
@@ -173,9 +62,9 @@ typedef std::vector<Bead> Beads;
  * @endcode
  */
 
-class Residue {
+class Residue : public primitives::Residue {
 public:
-    
+
     /**
      * Standard constructor for Residue object.
      * @param   rtype   residue type, dictates residue topology and information
@@ -185,76 +74,50 @@ public:
      * @param   i_code  residue insertion code, usually nothing ("")
      */
     Residue(
-        ResidueType const & rtype,
-        String const & name,
-        int const & num,
-        String const & chain_id,
-        String const & i_code):
-    rtype_ ( rtype ),
-    name_ ( name ),
-    num_ ( num ),
-    chain_id_ ( chain_id ),
-    i_code_ ( i_code ),
-    atoms_ ( AtomOPs() ),
-    uuid_ ( Uuid() )
-    {}
-    
+            AtomOPs const &,
+            ResidueType const &,
+            String const &,
+            int const &,
+            String const &,
+            String const &);
+
     /**
      * Copy constructor
      * @param   r   Residue object copying from
      */
     Residue(
-        Residue const & r):
-    rtype_(r.rtype_),
-    name_(r.name_),
-    num_(r.num_),
-    chain_id_(r.chain_id_),
-    i_code_(r.i_code_),
-    atoms_ ( AtomOPs(r.atoms().size()) ),
-    uuid_(r.uuid_) {
-        int i = -1;
-        for(auto const & a : r.atoms_) {
-            i++;
-            if(a  == nullptr) { continue; }
-            atoms_[i] = std::make_shared<Atom>(*a);
-        }
-    }
-    
+            Residue const & r,
+            int new_uuid = 0,
+            int build_beads = 1);
+
+    Residue(
+            Residue const & r,
+            Uuid const & given_uuid,
+            int build_beads = 1);
+
     /**
      * Construction from String, used in reading data from files
      * @param   s   string generated from to_str()
      * @see to_str()
      */
     Residue(
-        String const & s,
-        ResidueTypeSet const & rts) {
-        
-        Strings spl = split_str_by_delimiter(s, ",");
-        rtype_      = rts.get_rtype_by_resname(spl[0]);
-        name_       = spl[1];
-        num_        = std::stoi(spl[2]);
-        chain_id_   = spl[3];
-        i_code_     = spl[4];
-        atoms_      = AtomOPs();
-        auto atoms  = AtomOPs();
-        int i = 5;
-        while ( i < spl.size() ) {
-            if( spl[i].length() == 1) {
-                atoms.push_back( nullptr );
-            }
-            else {
-                atoms.push_back(std::make_shared<Atom>(spl[i]));
-            }
-            i++;
-        }        
-        setup_atoms(atoms);
-    }
+            String const &,
+            ResidueTypeSet const &);
 
-    
     /**
      * Empty deconstructor
      */
     ~Residue() {}
+
+public: //iterator
+    typedef typename AtomOPs::iterator iterator;
+    typedef typename AtomOPs::const_iterator const_iterator;
+
+    iterator begin() { return atoms_.begin(); }
+    iterator end()   { return atoms_.end(); }
+
+    const_iterator begin() const { return atoms_.begin(); }
+    const_iterator end()   const { return atoms_.end(); }
 
 public:
     /**
@@ -264,10 +127,10 @@ public:
      */
     void
     setup_atoms(
-        AtomOPs &);
-    
+            AtomOPs const &);
+
 public:
-    
+
     /**
      * get atom object by its name
      * @param   name   name of atom
@@ -280,17 +143,49 @@ public:
      * @endcode
      */
     inline
-    AtomOP
-    const &
-    get_atom (
-        String const & name) const {
-        int index = rtype_.atom_pos_by_name(name);
-        if( index == -1) {
+    AtomOP const &
+    get_atom(String const & name) const {
+        auto result = rtype_.is_valid_atom(name);
+        if(!result) {
             throw ResidueException("cannot find atom name " + name);
         }
+        auto index = rtype_.atom_index(name);
+        return get_atom(index);
+    }
+
+    inline
+    AtomOP const &
+    get_atom(int index) const{
+        if(index >= atoms_.size()) {
+            throw ResidueException("cannot get atom with index: " + std::to_string(index));
+        }
+        if(atoms_[index] == nullptr) {
+            throw ResidueException("cannot get atom wiht index: " + std::to_string(index) +
+                                   " it is not initialized");
+        }
+
         return atoms_[index];
     }
-    
+
+    inline
+    bool
+    has_atom(String const & name) const {
+        auto result = rtype_.is_valid_atom(name);
+        if(!result) { return false; }
+
+        auto index = rtype_.atom_index(name);
+        return has_atom(index);
+    }
+
+    inline
+    bool
+    has_atom(int index) const {
+        if(index >= atoms_.size()) { return false; }
+        if(atoms_[index] == nullptr) { return false; }
+
+        return true;
+    }
+
     /**
      * Determine if another residue is connected to this residue, returns 0
      * if res is not connected to self, returns 1 if connection is going
@@ -298,216 +193,183 @@ public:
      * @param   res another residue
      * @param   cutoff  distance to be considered connected, default: 3 Angstroms
      */
-    
     inline
     int
     connected_to(
-        Residue const & res,
-        float cutoff = 3.0) const {
-        String o3 = "O3'", p = "P";
-        
+            Residue const & res,
+            float cutoff = 3.0) const {
+
         // 5' to 3'
-        AtomOP o3_atom = get_atom(o3), p_atom = res.get_atom(p);
-        if(o3_atom != nullptr && p_atom != nullptr) {
-            if( o3_atom->coords().distance(p_atom->coords()) < cutoff) {
-                return 1;
+        if(has_atom("O3'") && res.has_atom("P")) {
+            auto o3_atom = get_atom("O3'");
+            auto p_atom  = res.get_atom("P");
+            if (o3_atom != nullptr && p_atom != nullptr) {
+                if (o3_atom->coords().distance(p_atom->coords()) < cutoff) {
+                    return 1;
+                }
             }
         }
-        
+
         // 3' to 5'
-        o3_atom = res.get_atom(o3); p_atom = get_atom(p);
-        if(o3_atom != nullptr && p_atom != nullptr) {
-            if( o3_atom->coords().distance(p_atom->coords()) < cutoff) {
-                return -1;
+        if(has_atom("P") && res.has_atom("O3'")) {
+            auto o3_atom = res.get_atom("O3'");
+            auto p_atom = get_atom("P");
+            if (o3_atom != nullptr && p_atom != nullptr) {
+                if (o3_atom->coords().distance(p_atom->coords()) < cutoff) {
+                    return -1;
+                }
             }
         }
-        
+
         return 0;
     }
-    
-    /**
-     * give residue a new unique indentifier code.
-     * There is probably no reason why you should call this unless writing a new,
-     * motif structure.
-     */
-    
-    void
-    new_uuid() {
-        uuid_ = Uuid();
-    }
-    
-    
-    /**
-     * Generates steric beads required for checking for steric clashes between
-     * motifs. Each residues has three beads modeled after the typical three
-     * bead models used in coarse grain modeling. The three beads are:
-     *
-     * @code 
-     *  #include "instances/structure_instances.hpp"
-     *  auto r = instances::residue();
-     *  auto beads = r->get_beads();
-     *  //Test instance is the first residue in a chain with no phosphate so it has 
-     *  //only two beads
-     *  std::cout << beads.size() << std::endl;
-     *  //OUTPUT 2
-     *  std::cout << beads[0].btype() == BeadType::SUGAR << std::endl;
-     *  //OUTPUT 1
-     * @endcode
-     */
-    Beads
-    get_beads() const;
 
-    /**
-     * stringifes residue object
-     * @code 
-     *  #include "instances/structure_instances.hpp"
-     *  auto r = instances::residue();
-     *  std::cout << r->to_str() << std::endl;
-     *  //OUTPUT 
-     *  GUA,G,103,A,,N,N,N,O5' -26.469 -47.756 84.669,C5' -25.05 -47.579 84.775,C4' -24.521 -48.156 
-     *  86.068,O4' -24.861 -49.568 86.118,C3' -23.009 -48.119 86.281,O3' -22.548 -46.872 86.808,C1'
-     *  -23.806 -50.289 86.732,C2' -22.812 -49.259 87.269,O2' -23.167 -48.903 88.592,N1 -19.538 -52.485 
-     *  85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881
-     *  -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7 
-     *  -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,
-     * @endcode
-     */
-    String
-    to_str() const;
-    
     /**
      * wrapper for to_pdb_str(int &, int, String const &) when one does not care about
      * renumbering atoms and residue
      */
-    
     inline
     String
     to_pdb_str(int & acount) {
         return to_pdb_str(acount, -1, "");
     }
-    
+
+    inline
+    void
+    build_beads() { beads_ = _get_beads(); }
+
+    inline
+    void
+    remove_beads() { beads_ = Beads(); }
+
+    inline
+    void
+    move(Point const & p) {
+        for(auto & a : atoms_) {
+            if(a != nullptr) { a->move(p); }
+        }
+        for(auto & b : beads_) { b.move(p); }
+    }
+
+    inline
+    void
+    transform(Transform const & t) {
+        for(auto & a : atoms_) {
+            if(a != nullptr) { a->transform(t); }
+        }
+        for(auto & b : beads_) { b.transform(t); }
+    }
+
+    inline
+    void
+    fast_transform(
+            Matrix const & r,
+            Vector const & t) {
+        for(auto & a : atoms_) {
+            if(a != nullptr) { a->fast_transform(r, t); }
+        }
+        for(auto & b : beads_) { b.fast_transform(r, t); }
+    }
+
+public:
+
     /**
-     * returns pdb formatted string of residue's coordinate information
-     * @param   acount  current atom index, default: 1
-     * @param   rnum    starting residue number
-     * @param   chain_id    the chain id of the chain, i.e. "A", "B" etc
-     * @code 
+     * stringifes residue object
+     * @code
      *  #include "instances/structure_instances.hpp"
      *  auto r = instances::residue();
-     *  //get PDB formatted String (can also write to file with r->to_pdb("test.pdb") )
-     *  std::cout << r->to_pdb_str() << std::endl; //OUTPUT -->
-     *  ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
-     *  ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
-     *  ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
-     *  ATOM      4 O4'  G   A 103     -24.861 -49.568  86.118  1.00  0.00
-     *  ATOM      5 C3'  G   A 103     -23.009 -48.119  86.281  1.00  0.00
-     *  ATOM      6 O3'  G   A 103     -22.548 -46.872  86.808  1.00  0.00
-     *  .
-     *  .
-     *  .
+     *  std::cout << r->to_str() << std::endl;
+     *  //OUTPUT
+     *  GUA,G,103,A,,N,N,N,O5' -26.469 -47.756 84.669,C5' -25.05 -47.579 84.775,C4' -24.521 -48.156
+     *  86.068,O4' -24.861 -49.568 86.118,C3' -23.009 -48.119 86.281,O3' -22.548 -46.872 86.808,C1'
+     *  -23.806 -50.289 86.732,C2' -22.812 -49.259 87.269,O2' -23.167 -48.903 88.592,N1 -19.538 -52.485
+     *  85.025,C2 -19.717 -51.643 86.097,N2 -18.624 -51.354 86.809,N3 -20.884 -51.124 86.445,C4 -21.881
+     *  -51.521 85.623,C5 -21.811 -52.356 84.527,C6 -20.546 -52.91 84.164,O6 -20.273 -53.677 83.228,N7
+     *  -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,
      * @endcode
      */
     String
-    to_pdb_str(
-        int &,
-        int,
-        String const &) const;
-    
+    to_str() const;
+
     /**
-     * writes a PDB string formmated verision of this Residue object to file
-     * @param  filename of output PDB file
-     */
+   * writes a PDB string formmated verision of this Residue object to file
+   * @param  filename of output PDB file
+   */
     void
     to_pdb(String const);
- 
-    /**
-     * equal operator checks whether the unique indentifier is the same 
-     * @param   r   another residue to check if its the same
-     */
-    bool
-    operator ==(Residue const & r) const {
-        return uuid_ == r.uuid_;
-    }
 
-    
-public: // setters
     /**
-     * setter for residue num
-     * @param   nnum new residue num
-     */
-    inline
-    void
-    num(int nnum) { num_ = nnum; }
-    
-    /**
-     * setter for nchain id
-     * @param   chain_id    new chain id
-     */
-    inline
-    void
-    chain_id(String const & nchain_id) { chain_id_ = nchain_id; }
-    
-    /**
-     * setter for the residue unique indentifier, do not do this without really knowing what you 
-     * are doing
-     * @param   uuid new residue unique indentifier
-     */
-    inline
-    void
-    uuid(Uuid const & uuid) { uuid_ = uuid; }
-    
-    
+ * returns pdb formatted string of residue's coordinate information
+ * @param   acount  current atom index, default: 1
+ * @param   rnum    starting residue number
+ * @param   chain_id    the chain id of the chain, i.e. "A", "B" etc
+ * @code
+ *  #include "instances/structure_instances.hpp"
+ *  auto r = instances::residue();
+ *  //get PDB formatted String (can also write to file with r->to_pdb("test.pdb") )
+ *  std::cout << r->to_pdb_str() << std::endl; //OUTPUT -->
+ *  ATOM      1 O5'  G   A 103     -26.469 -47.756  84.669  1.00  0.00
+ *  ATOM      2 C5'  G   A 103     -25.050 -47.579  84.775  1.00  0.00
+ *  ATOM      3 C4'  G   A 103     -24.521 -48.156  86.068  1.00  0.00
+ *  ATOM      4 O4'  G   A 103     -24.861 -49.568  86.118  1.00  0.00
+ *  ATOM      5 C3'  G   A 103     -23.009 -48.119  86.281  1.00  0.00
+ *  ATOM      6 O3'  G   A 103     -22.548 -46.872  86.808  1.00  0.00
+ *  .
+ *  .
+ *  .
+ * @endcode
+ */
+    String
+    to_pdb_str(
+            int &,
+            int,
+            String const &) const;
+
+    state::ResidueOP
+    get_state();
+
 public: // getters
-    
-    /**
-     * getter for the name of the residue, i.e. "A", "G" etc
-     */
-    inline
-    String const &
-    name() const { return name_; }
-    
-    /**
-     * getter the chain_id
-     */
-    inline
-    String const &
-    chain_id() const { return chain_id_; }
-    
-    /**
-     * getter for the residue insertion code
-     */
-    inline
-    String const &
-    i_code() const { return i_code_; }
-    
-    /**
-     * getter for the residue num
-     */
-    inline
-    int const &
-    num() const { return num_; }
-    
+
     /**
      * getter for the one letter residue type
      */
     inline
     String
     short_name() const { return rtype_.short_name(); }
-    
-    /**
-     * getter for the internal atom vector
-     */
+
     inline
-    AtomOPs const &
-    atoms() const { return atoms_; }
-    
-    /**
-     * getter for residue unique indentifier
-     */
+    Beads const &
+    beads() { return beads_; }
+
     inline
-    Uuid const &
-    uuid() const { return uuid_; }
-    
+    size_t
+    num_beads() { return beads_.size(); }
+
+    inline
+    Point
+    center() { return calc_center(atoms_); }
+
+private:
+    /**
+ * Generates steric beads required for checking for steric clashes between
+ * motifs. Each residues has three beads modeled after the typical three
+ * bead models used in coarse grain modeling. The three beads are:
+ *
+ * @code
+ *  #include "instances/structure_instances.hpp"
+ *  auto r = instances::residue();
+ *  auto beads = r->get_beads();
+ *  //Test instance is the first residue in a chain with no phosphate so it has
+ *  //only two beads
+ *  std::cout << beads.size() << std::endl;
+ *  //OUTPUT 2
+ *  std::cout << beads[0].btype() == BeadType::SUGAR << std::endl;
+ *  //OUTPUT 1
+ * @endcode
+ */
+    Beads
+    _get_beads() const;
+
 private:
     /**
      * residue type object which explains what atoms in belong in this residue.
@@ -515,35 +377,15 @@ private:
     ResidueType rtype_;
 
     /**
-     * the name of the residue, only one letter.
-     */
-    String name_;
-    
-    /**
-     * the chain_id of the residue, only one letter
-     */
-    String chain_id_;
-    
-    /**
-     * the residue insertion code, only one letter
-     */
-    String i_code_;
-
-    /**
-     * the residue number
-     */
-    int num_;
-    
-    /**
      * vector of the atom objects that belong to this residue
      */
     AtomOPs atoms_;
-    
+
     /**
-     * unique residue indentifier so each residue can be be found in larger structures
-     */
-    Uuid uuid_;
-    
+    * vector of the beads represents sterics for Phosphate, Sugars and Base
+    */
+    Beads beads_;
+
 };
 
 /**
@@ -554,9 +396,7 @@ typedef std::shared_ptr<Residue> ResidueOP;
 /**
  * Typedef of a vector of shared pointer vectors, only used this.
  */
-typedef std::vector<ResidueOP>   ResidueOPs;
-
-
+typedef std::vector<ResidueOP> ResidueOPs;
 
 
 #endif /* defined(__RNAMake__residue__) */

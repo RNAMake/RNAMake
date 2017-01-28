@@ -104,16 +104,16 @@ PDBParser::parse(
         if(kv.second.size() < 6) { continue; }
         spl = split_str_by_delimiter(kv.first, " ");
         if(!rts_.contains_rtype(spl[0])) { continue; }
-        rtype = rts_.get_rtype_by_resname(spl[0]);
+        rtype = rts_.get_type(spl[0]);
         
         if(!protein && rtype.set_type() == SetType::PROTEIN) { continue; }
         if(!rna && rtype.set_type() == SetType::RNA) { continue; }
  
         icode = "";
         if(spl.size() > 3) { icode = spl[3]; }
-        r = ResidueOP(new Residue(rtype, spl[0], std::stoi(spl[1]), spl[2], icode));
-        r->setup_atoms(kv.second);
-        residues_.push_back(r);
+        //r = ResidueOP(new Residue(rtype, spl[0], std::stoi(spl[1]), spl[2], icode));
+        //r->setup_atoms(kv.second);
+        //residues_.push_back(r);
         
     }
     
