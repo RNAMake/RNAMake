@@ -63,7 +63,6 @@ are_residues_equal(
     
 }
 
-
 bool
 are_chains_equal(
     ChainOP const & c1,
@@ -71,17 +70,16 @@ are_chains_equal(
     int check_uuids) {
     
     if(c1->length() != c2->length()) { return false; }
-    
-    auto c1_res = c1->residues();
-    auto c2_res = c2->residues();
+
     auto result = 0;
     for(int i = 0; i < c1->length(); i++) {
-        result = are_residues_equal(c1_res[i], c2_res[i], check_uuids);
+        result = are_residues_equal(c1->get_residue(i), c2->get_residue(i), check_uuids);
         if(!result) { return false; }
     }
     return true;
 }
 
+/*
 bool
 are_structures_equal(
     StructureOP const & s1,
@@ -90,4 +88,4 @@ are_structures_equal(
     
     return true;
     
-}
+}*/

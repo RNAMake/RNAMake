@@ -55,13 +55,13 @@ public:
     */
     inline
     bool
-    operator ==(Residue & other)  {
+    operator==(Residue & other) {
         return uuid_ == other.uuid_;
     }
 
     inline
     bool
-    operator != (Residue & other) const {
+    operator!=(Residue & other) const {
         return uuid_ != other.uuid_;
     }
 
@@ -115,7 +115,6 @@ protected:
     Uuid uuid_;
 
 };
-
 
 }
 #endif //PRIMITIVES_RESIDUE_H

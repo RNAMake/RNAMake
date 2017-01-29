@@ -47,7 +47,7 @@ def are_chains_equal(c1, c2, check_uuid=1):
         return 0
 
     for i in range(len(c1)):
-        result = are_residues_equal(c1.residue(i), c2.residue(i), check_uuid)
+        result = are_residues_equal(c1.get_residue(i), c2.get_residue(i), check_uuid)
         if not result:
             return 0
     return 1

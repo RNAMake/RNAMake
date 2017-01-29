@@ -14,23 +14,11 @@
 
 //RNAMake Headers
 #include "base/types.h"
+#include "primitives/chain.h"
+#include "motif_state/chain.h"
 #include "structure/chain.fwd.h"
 #include "structure/residue.h"
 #include "structure/residue_type_set.h"
-
-/*
- * Exception for chain
- */
-class ChainException : public std::runtime_error {
-public:
-    /**
-     * Standard constructor for ChainException
-     * @param   message   Error message for chain
-     */
-    ChainException(String const & message):
-    std::runtime_error(message)
-    {}
-};
 
 /**
  * Stored chain information from pdb file. Stores all residues in chain.
@@ -77,152 +65,116 @@ public:
  *  .
  */
 
-class Chain {
+class Chain : public primitives::Chain<Residue> {
 public:
-    Chain() {}
     Chain(
-        ResidueOPs const & residues):
-        residues_ ( residues )
-    {}
-    
+            ResidueOPs const & residues) :
+            primitives::Chain<Residue>(residues) {}
+
     Chain(
-        Chain const & c) {
-        
+            Chain const & c,
+            int new_uuid = 0) :
+            primitives::Chain<Residue>() {
+
         residues_ = ResidueOPs(c.residues_.size());
         int i = 0;
         for (auto const & r : c.residues_) {
-            residues_[i] = std::make_shared<Residue>(*r);
+            residues_[i] = std::make_shared<Residue>(*r, new_uuid);
             i++;
         }
     }
-    
+
     Chain(
-        String const & s,
-        ResidueTypeSet const & rts) {
-        
+            String const & s,
+            ResidueTypeSet const & rts) :
+            primitives::Chain<Residue>() {
+
         residues_ = ResidueOPs();
         Strings spl = split_str_by_delimiter(s, ";");
-        for(auto const & r_str : spl) {
+        for (auto const & r_str : spl) {
             auto r = std::make_shared<Residue>(r_str, rts);
             residues_.push_back(r);
         }
     }
-    
-    
+
     ~Chain() {}
 
 public:
-    
-    inline
-    int
-    length() const {
-        return (int)residues_.size();
-    }
-    
-    inline
-    ResidueOP const &
-    first() {
-        
-        if(residues_.size() == 0) {
-            throw ChainException("cannot call first there are no "
-                                 "residues in chain");
-        }
-        
-        return residues_[0];
-    }
-    
-    inline
-    ResidueOP const &
-    last() {
-        
-        if(residues_.size() == 0) {
-            throw ChainException("cannot call last there are no "
-                                 "residues in chain");
-        }
-        
-        return residues_.back();
-    }
-    
-    inline
+
     ChainOP
-    subchain(int start, int end) {
-        if(start < 0) { throw ChainException("start cannot be less then 0"); }
-        if(start == end) { throw ChainException("start and end cannot be the same value"); }
-        if(end > residues().size()) { throw ChainException("end is greater then chain length"); }
-        if(start > end) { throw ChainException("start is greater then end"); }
-        
-        return ChainOP(new Chain(ResidueOPs(residues_.begin() + start, residues_.begin() + end)));
-    }
-    
-    inline
+    subchain(int, int);
+
     ChainOP
     subchain(
-        ResidueOP const & r1,
-        ResidueOP const & r2) {
-        
-        if(std::find(residues_.begin(), residues_.end(), r1) == residues_.end()) {
-            throw ChainException("starting residue is not part of chain, cannot"
-                                 "create subchain");
-        
-        }
-        if(std::find(residues_.begin(), residues_.end(), r2) == residues_.end()) {
-            throw ChainException("end residue is not part of chain, cannot"
-                                 "create subchain");
-        }
+            ResidueOP const &,
+            ResidueOP const &);
 
-        int start = (int)(std::find(residues_.begin(), residues_.end(), r1) - residues_.begin());
-        int end   = (int)(std::find(residues_.begin(), residues_.end(), r2) - residues_.begin());
-        
-        if( start > end) {
-            int temp = start;
-            start = end;
-            end = temp;
-        }
-        return subchain(start, end);
-    }
-    
     String
     to_str() const;
-    
-    
+
+
     String
     to_pdb_str(
-        int &,
-        int,
-        String const &) const;
-    
+            int &,
+            int,
+            String const &) const;
+
     inline
     String
     to_pdb_str(int & acount) const {
         return to_pdb_str(acount, -1, "");
     }
-    
+
     void
     to_pdb(
-        String const,
-        int,
-        String const &) const;
-    
+            String const,
+            int,
+            String const &) const;
+
     inline
     void
     to_pdb(String const & fname) {
         return to_pdb(fname, -1, "");
     }
-    
-public: //getters
-    
+
+    state::ChainOP
+    get_state() {
+        auto residues = state::ResidueOPs();
+        for(auto const & r : residues_) {
+            residues.push_back(r->get_state());
+        }
+        return std::make_shared<state::Chain>(residues);
+    }
+
+public:
+
     inline
-    ResidueOPs &
-    residues() { return residues_; }
-    
-private:
-    ResidueOPs residues_;
+    void
+    move(Point const & p) {
+        for(auto & r : residues_) { r->move(p); }
+    }
+
+    inline
+    void
+    transform(Transform const & t) {
+        for(auto & r : residues_) { r->transform(t); }
+    }
+
+    inline
+    void
+    fast_transform(
+            Matrix const & r,
+            Vector const & t) {
+        for(auto & res : residues_) { res->fast_transform(r, t); }
+    }
+
+
 };
 
 void
 connect_residues_into_chains(
-    ResidueOPs & residues,
-    ChainOPs & chains);
+        ResidueOPs & residues,
+        ChainOPs & chains);
 
 
 #endif /* defined(__RNAMake__chain__) */
