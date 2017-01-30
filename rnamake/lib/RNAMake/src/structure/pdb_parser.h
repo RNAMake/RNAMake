@@ -18,10 +18,15 @@
 class PDBParser {
 public:
     PDBParser():
-    residues_(ResidueOPs()),
-    rts_(ResidueTypeSet())
+            residues_(ResidueOPs()),
+            rts_(ResidueTypeSet())
     {}
-    
+
+    PDBParser(ResidueTypeSet const & rts):
+            residues_(ResidueOPs()),
+            rts_(rts)
+    {}
+
     ~PDBParser() {}
     
 public:

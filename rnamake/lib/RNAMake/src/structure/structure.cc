@@ -15,44 +15,6 @@
 #include "structure/chain.fwd.h"
 
 
-ResidueOPs const
-Structure::residues() const {
-    ResidueOPs residues;
-    for (auto & c : chains_) {
-        for (auto r : c->residues()) {
-            residues.push_back(r);
-        }
-    }
-    return residues;
-}
-
-ResidueOP const
-Structure::get_residue(
-    int const & num,
-    String const & chain_id,
-    String const & i_code) {
-    for( auto & c : chains_) {
-        for (auto & r : c->residues() ){
-            if (num == r->num() && chain_id.compare(r->chain_id()) == 0 && i_code.compare(r->i_code()) == 0) {
-                return r;
-            }
-        }
-    }
-    return ResidueOP(NULL);
-}
-
-ResidueOP const
-Structure::get_residue(
-    Uuid const & uuid) {
-    for( auto & c : chains_) {
-        for (auto & r : c->residues() ){
-            if ( r->uuid() == uuid) { return r; }
-        }
-    }
-    
-    return ResidueOP(NULL);
-}
-
 String
 Structure::to_pdb_str(
     int renumber) {
@@ -70,7 +32,7 @@ Structure::to_pdb_str(
     for (auto const & c : chains_) {
         s += c->to_pdb_str(acount, rnum, chain_id);
         if(renumber != -1) {
-            rnum += (int)c->residues().size();
+            rnum += c->length();
         }
         s += "TER\n";
     }
@@ -95,6 +57,20 @@ Structure::to_pdb(
     String s = to_pdb_str(renumber);
     out << s << std::endl;
     out.close();
+}
+
+
+
+StructureOP
+structure_from_pdb(
+        String const & path,
+        ResidueTypeSet const & rts) {
+
+    auto pdb_parser = PDBParser(rts);
+    auto residues = pdb_parser.parse(path);
+    auto chains = ChainOPs();
+    connect_residues_into_chains(residues, chains);
+    return std::make_shared<Structure>(chains);
 }
 
 

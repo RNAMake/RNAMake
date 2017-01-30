@@ -11,7 +11,6 @@ import bead
 import exceptions
 import basic_io
 import util
-import rna_structure
 import transform
 
 class Residue(primitives.residue.Residue):

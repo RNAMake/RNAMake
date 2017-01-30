@@ -29,7 +29,7 @@ calc_center(AtomOPs const & atoms) {
 
 Residue::Residue(
         AtomOPs const & atoms,
-        ResidueType const & rtype,
+        ResidueTypeOP const & rtype,
         String const & name,
         int const & num,
         String const & chain_id,
@@ -113,23 +113,23 @@ Residue::Residue(
 void
 Residue::setup_atoms(
         AtomOPs const & atoms) {
-    atoms_ = AtomOPs(rtype_.size());
+    atoms_ = AtomOPs(rtype_->size());
     int count = 0;
     for (auto const & a : atoms) {
         if (a == nullptr) { continue; }
         // does this atom belong in this residue
-        if(!rtype_.is_valid_atom(a->name())) { continue; }
+        if(!rtype_->is_valid_atom(a->name())) { continue; }
 
-        auto name_change = rtype_.get_correct_atom_name(*a);
+        auto name_change = rtype_->get_correct_atom_name(*a);
         //check for misnamed atoms
         if(name_change.length() != 0) {
             auto new_a = std::make_shared<Atom>(name_change, a->coords());
-            int pos = rtype_.atom_index(new_a->name());
+            int pos = rtype_->atom_index(new_a->name());
             if (pos == -1) { continue; }
             atoms_[pos] = new_a;
         }
         else {
-            int pos = rtype_.atom_index(a->name());
+            int pos = rtype_->atom_index(a->name());
             if (pos == -1) { continue; }
             atoms_[pos] = a;
         }
@@ -162,7 +162,7 @@ Residue::_get_beads() const {
 String
 Residue::to_str() const {
     std::stringstream ss;
-    ss << rtype_.name() << "," << name_ << "," << num_ << "," << chain_id_ << "," << i_code_ << ",";
+    ss << rtype_->name() << "," << name_ << "," << num_ << "," << chain_id_ << "," << i_code_ << ",";
     for (auto const & a : atoms_) {
         if (a == nullptr) { ss << "N,"; }
         else { ss << a->to_str() + ","; }

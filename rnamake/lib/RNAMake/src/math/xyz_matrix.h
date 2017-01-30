@@ -67,20 +67,18 @@ private:
 
 	friend
 	inline
-	void
+	xyzVector< T >
 	dot_vector(
 			xyzMatrix< T > const & m,
 			xyzVector< T > & v) {
 
-        T val =  m.xx_ * v.x() + m.yx_ * v.y() + m.zx_ * v.z();
-		v.x (val);
-        val =  m.xy_ * v.x() + m.yy_ * v.y() + m.zy_ * v.z();
-		v.y (val);
-        val =  m.xz_ * v.x() + m.yz_ * v.y() + m.zz_ * v.z();
-        v.z (val);
-
+		auto new_v = xyzVector< T >();
+		new_v.x(m.xx_ * v.x() + m.yx_ * v.y() + m.zx_ * v.z());
+		new_v.y(m.xy_ * v.x() + m.yy_ * v.y() + m.zy_ * v.z());
+		new_v.z(m.xz_ * v.x() + m.yz_ * v.y() + m.zz_ * v.z());
+		return new_v;
 	}
-	
+
 	friend
 	inline
 	void

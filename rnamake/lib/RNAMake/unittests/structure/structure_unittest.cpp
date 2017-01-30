@@ -3,6 +3,7 @@
 
 #include "base/file_io.h"
 #include "base/settings.h"
+#include "math/numerical.h"
 #include "structure/structure.h"
 #include "structure/is_equal.hpp"
 
@@ -12,6 +13,21 @@ TEST_CASE( "Test Structure", "[Structure]" ) {
     auto lines = get_lines_from_file(path);
     auto rts = ResidueTypeSet();
     auto s = std::make_shared<Structure>(lines[0], rts);
+
+    SECTION("test chain iter") {
+        int size = 0;
+        for(auto c = s->chain_begin(); c != s->chain_end(); ++c) {
+            size = (*c)->length();
+        }
+        // correct number of residues in only chain
+        REQUIRE(size == 157);
+    }
+
+    SECTION("test load from pdb") {
+        auto path = py_unittest_path() + "/resources/p4p6.pdb";
+        auto new_s = structure_from_pdb(path, rts);
+        REQUIRE(are_structures_equal(s, new_s, 0));
+    }
     
     SECTION("Test ability to get specific residues from structure") {
         auto r = s->get_residue(107, "A", "");
@@ -28,90 +44,67 @@ TEST_CASE( "Test Structure", "[Structure]" ) {
             REQUIRE(s->get_residue(106, "B", "") == nullptr);
             
             auto r3 = s->get_residue(107, "A", "");
-            auto r3_copy = std::make_shared<Residue>(*r3);
-            r3_copy->new_uuid();
-            
+            auto r3_copy = std::make_shared<Residue>(*r3, 1);
             REQUIRE(s->get_residue(r3_copy->uuid()) == nullptr);
             
         }
     }
-    
-    SECTION("Should contain the correct number of residues") {
-        REQUIRE(s->residues().size() == 157);
-    }
-    
-    SECTION("Should contain the correct number of atoms") {
-        REQUIRE(s->atoms().size() == 3357);
-    }
-    
+
     SECTION("Test ability to stringify structure") {
         auto str = s->to_str();
         auto s2 = std::make_shared<Structure>(str, rts);
-        
-        REQUIRE(s->residues().size() == s2->residues().size());
         REQUIRE(are_structures_equal(s, s2, 0));
     }
-    
+
     SECTION("Test ability to copy structure") {
         auto s2 = std::make_shared<Structure>(*s);
-        
         REQUIRE(are_structures_equal(s, s2));
+
+        s2 = std::make_shared<Structure>(*s, 1);
+        REQUIRE(are_structures_equal(s, s2) == 0);
+        REQUIRE(are_structures_equal(s, s2, 0) == 1);
+
     }
-    
-    SECTION("Collecting beads for all residues") {
-        REQUIRE(s->get_beads().size() == 470);
-        
-        SECTION("excluding a residue should remove 3 beads") {
-            auto r = s->get_residue(106, "A", "");
-            REQUIRE(s->get_beads(ResidueOPs{r}).size() == 467);
-        }
-            
-    }
-    
+
     SECTION("Test moving structure") {
         auto p = Point(10, 0, 0);
         auto s2 = std::make_shared<Structure>(*s);
         s2->move(p);
         
-        auto new_atoms = s2->atoms();
-        auto org_atoms = s->atoms();
-        
-        float dist;
-        int flag = 0;
-        for(int i = 0; i < org_atoms.size(); i++) {
-            if(org_atoms[i].get() == NULL) { continue; }
-            dist = 10 - org_atoms[i]->coords().distance(new_atoms[i]->coords());
-            if(dist > 0.001) { flag = 1; }
-        }
-        
-        REQUIRE(flag == 0);
-        
-        
+        auto r1 = s->get_residue(0);
+        auto r2 = s2->get_residue(0);
+
+        auto dist = r1->center().distance(r2->center());
+        REQUIRE(are_floats_equal(dist, 10.0f));
     }
-    
+
     SECTION("Test applying a tranform to coordinates") {
-        auto path = unittest_resource_dir() + "/structure/test_transform.dat";
+        auto path = unittest_resource_dir() + "/structure/structure_transformations.dat";
         auto lines = get_lines_from_file(path);
-        
-        auto r = matrix_from_str(lines[0]);
-        auto trans = vector_from_str(lines[1]);
-        auto t = Transform(r, trans);
-        auto s2 = std::make_shared<Structure>(*s);
-        
-        s2->transform(t);
-        
-        auto new_atoms = s2->atoms();
-        auto org_atoms = s->atoms();
-        
-        float dist;
-        int flag = 0;
-        for(int i = 0; i < org_atoms.size(); i++) {
-            if(org_atoms[i].get() == NULL) { continue; }
-            dist = 10 - org_atoms[i]->coords().distance(new_atoms[i]->coords());
-            if(dist > 0.001) { flag = 1; }
+
+        for(auto i = 0; i < lines.size()-2; i+=3) {
+
+            auto s = structure_from_pdb(resources_path()+"/start/start.pdb", rts);
+            auto r = matrix_from_str(lines[i]);
+            auto trans = vector_from_str(lines[i+1]);
+            auto t = Transform(r, trans);
+            auto s2 = std::make_shared<Structure>(lines[i+2], rts);
+
+            s->transform(t);
+
+            auto r1 = s->get_chain(0)->get_residue(0);
+            auto r2 = s2->get_chain(1)->get_residue(0);
+
+            std::cout << r1->num() << " " << r2->num() << std::endl;
+
+            auto dist = r1->center().distance(r2->center());
+            std::cout << dist << std::endl;
+
+            exit(0);
+            //REQUIRE(are_structures_equal(s2, s_trans, 0));
         }
-        
-        REQUIRE(flag == 0);
+
+
         
     }
     

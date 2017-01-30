@@ -32,4 +32,7 @@ x3dna_path();
 String
 unittest_resource_dir();
 
+String
+py_unittest_path();
+
 #endif /* defined(__RNAMake__settings__) */

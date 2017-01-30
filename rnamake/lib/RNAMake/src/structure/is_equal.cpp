@@ -79,13 +79,19 @@ are_chains_equal(
     return true;
 }
 
-/*
+
 bool
 are_structures_equal(
     StructureOP const & s1,
     StructureOP const & s2,
     int check_uuids) {
-    
+
+    if(s1->num_chains() != s2->num_chains()) { return false; }
+    for(int i = 0; i < s1->num_chains(); i++) {
+        auto result = are_chains_equal(s1->get_chain(i), s2->get_chain(i), check_uuids);
+        if(!result) { return false; }
+    }
+
     return true;
     
-}*/
+}

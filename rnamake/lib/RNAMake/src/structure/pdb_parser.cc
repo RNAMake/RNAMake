@@ -92,11 +92,11 @@ PDBParser::parse(
             }
         }
         if(already_has) { continue;}
-        residue_atoms[key].push_back(AtomOP(new Atom(atomnames[i], coordinates[i])));
+        residue_atoms[key].push_back(std::make_shared<Atom>(atomnames[i], coordinates[i]));
     }
     
     
-    ResidueType rtype;
+    ResidueTypeOP rtype;
     Strings spl;
     String icode = "";
     ResidueOP r;
@@ -106,14 +106,13 @@ PDBParser::parse(
         if(!rts_.contains_rtype(spl[0])) { continue; }
         rtype = rts_.get_type(spl[0]);
         
-        if(!protein && rtype.set_type() == SetType::PROTEIN) { continue; }
-        if(!rna && rtype.set_type() == SetType::RNA) { continue; }
+        if(!protein && rtype->set_type() == SetType::PROTEIN) { continue; }
+        if(!rna && rtype->set_type() == SetType::RNA) { continue; }
  
         icode = "";
         if(spl.size() > 3) { icode = spl[3]; }
-        //r = ResidueOP(new Residue(rtype, spl[0], std::stoi(spl[1]), spl[2], icode));
-        //r->setup_atoms(kv.second);
-        //residues_.push_back(r);
+        r = std::make_shared<Residue>(kv.second, rtype, spl[0], std::stoi(spl[1]), spl[2], icode);
+        residues_.push_back(r);
         
     }
     

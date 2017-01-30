@@ -76,6 +76,10 @@ public: //getters
     SetType
     set_type() const { return set_type_; }
 
+    inline
+    Point &
+    dummy_coords() { return dummy_coords_; }
+
 
 private:
 
@@ -88,10 +92,13 @@ private:
     Strings alt_names_;
     StringStringMap atom_alt_names_;
     SetType set_type_;
+    // not sure well else to put this, speeds up transformations
+    Point dummy_coords_;
 
 };
 
-typedef std::vector<ResidueType> ResidueTypes;
+typedef std::shared_ptr<ResidueType> ResidueTypeOP;
+typedef std::vector<ResidueTypeOP>   ResidueTypeOPs;
 
 
 #endif /* defined(__RNAMake__residue_type__) */

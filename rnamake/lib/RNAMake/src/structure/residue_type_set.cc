@@ -15,7 +15,7 @@
 #include "base/types.h"
 
 ResidueTypeSet::ResidueTypeSet() :
-        residue_types_(ResidueTypes()) {
+        residue_types_(ResidueTypeOPs()) {
     String base_path = resources_path() + "/residue_types/";
 
     _read_rtypes_from_dir(base_path + "RNA/", SetType::RNA);
@@ -36,7 +36,7 @@ ResidueTypeSet::_read_rtypes_from_dir(
 
         auto name = _get_rtype_name(path + fname);
         auto atom_map = _get_atom_map_from_file(path + fname);
-        auto rtype = ResidueType(name, atom_map, set_type);
+        auto rtype = std::make_shared<ResidueType>(name, atom_map, set_type);
         residue_types_.push_back(rtype);
     }
     closedir(pDIR);
@@ -72,13 +72,12 @@ ResidueTypeSet::_get_atom_map_from_file(
     return atom_map;
 }
 
-ResidueType
-const &
+ResidueTypeOP const &
 ResidueTypeSet::get_type(
         String const & resname) const {
 
     for (auto const & restype : residue_types_) {
-        if (restype.match_name(resname)) { return restype; }
+        if (restype->match_name(resname)) { return restype; }
     }
 
     throw ResidueTypeException("cannot find residue with name :" + resname);
@@ -90,7 +89,7 @@ ResidueTypeSet::contains_rtype(
         String const & resname) const {
 
     for (auto const & restype : residue_types_) {
-        if (restype.match_name(resname)) { return true; }
+        if (restype->match_name(resname)) { return true; }
     }
 
     return false;

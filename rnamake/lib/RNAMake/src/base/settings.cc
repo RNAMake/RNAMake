@@ -55,4 +55,9 @@ unittest_resource_dir() {
     return base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/";
 }
 
+String
+py_unittest_path() {
+    return base_dir() + "/rnamake/unittests/";
+}
+
 

@@ -22,10 +22,10 @@ public:
 
 namespace primitives {
 
-template <typename ResType>
+template <typename Restype>
 class Chain {
 public:
-    typedef std::shared_ptr<ResType> ResidueOP;
+    typedef std::shared_ptr<Restype> ResidueOP;
     typedef std::vector<ResidueOP>   ResidueOPs;
 
 public:

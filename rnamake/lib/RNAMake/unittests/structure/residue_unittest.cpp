@@ -119,6 +119,38 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
 
     }
 
+    SECTION("test rotations to be consistent with python") {
+        auto path = unittest_resource_dir()+"/residue/residue_transformations.dat";
+        auto lines = get_lines_from_file(path);
+        for(int i  = 0; i < lines.size()-2; i+=3) {
+            auto r = std::make_shared<Residue>(*residues[0]);
+            auto rot = matrix_from_str(lines[i]);
+            auto trans = vector_from_str(lines[i+1]);
+            auto t = Transform(rot, trans);
+            auto r_rot = std::make_shared<Residue>(lines[i+2], rts);
+
+            r->transform(t);
+            auto dist = r->center().distance(r_rot->center());
+            REQUIRE(dist < 0.001);
+        }
+    }
+
+    SECTION("test fast rotations to be consistent with python") {
+        auto path = unittest_resource_dir()+"/residue/residue_transformations.dat";
+        auto lines = get_lines_from_file(path);
+        for(int i  = 0; i < lines.size()-2; i+=3) {
+            auto r = std::make_shared<Residue>(*residues[0]);
+            auto rot = matrix_from_str(lines[i]);
+            auto trans = vector_from_str(lines[i+1]);
+            auto t = Transform(rot, trans);
+            auto r_rot = std::make_shared<Residue>(lines[i+2], rts);
+
+            r->fast_transform(rot.transpose(), trans);
+            auto dist = r->center().distance(r_rot->center());
+            REQUIRE(dist < 0.001);
+        }
+    }
+
     SECTION("get residue state") {
         auto r = residues[1];
         r->build_beads();

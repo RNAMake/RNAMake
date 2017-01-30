@@ -75,7 +75,7 @@ public:
      */
     Residue(
             AtomOPs const &,
-            ResidueType const &,
+            ResidueTypeOP const &,
             String const &,
             int const &,
             String const &,
@@ -145,11 +145,11 @@ public:
     inline
     AtomOP const &
     get_atom(String const & name) const {
-        auto result = rtype_.is_valid_atom(name);
+        auto result = rtype_->is_valid_atom(name);
         if(!result) {
             throw ResidueException("cannot find atom name " + name);
         }
-        auto index = rtype_.atom_index(name);
+        auto index = rtype_->atom_index(name);
         return get_atom(index);
     }
 
@@ -170,10 +170,10 @@ public:
     inline
     bool
     has_atom(String const & name) const {
-        auto result = rtype_.is_valid_atom(name);
+        auto result = rtype_->is_valid_atom(name);
         if(!result) { return false; }
 
-        auto index = rtype_.atom_index(name);
+        auto index = rtype_->atom_index(name);
         return has_atom(index);
     }
 
@@ -266,9 +266,10 @@ public:
             Matrix const & r,
             Vector const & t) {
         for(auto & a : atoms_) {
-            if(a != nullptr) { a->fast_transform(r, t); }
+            if(a != nullptr) { a->fast_transform(r, t, rtype_->dummy_coords()); }
         }
-        for(auto & b : beads_) { b.fast_transform(r, t); }
+
+        //for(auto & b : beads_) { b.fast_transform(r, t); }
     }
 
 public:
@@ -335,7 +336,7 @@ public: // getters
      */
     inline
     String
-    short_name() const { return rtype_.short_name(); }
+    short_name() const { return rtype_->short_name(); }
 
     inline
     Beads const &
@@ -374,7 +375,7 @@ private:
     /**
      * residue type object which explains what atoms in belong in this residue.
      */
-    ResidueType rtype_;
+    ResidueTypeOP rtype_;
 
     /**
      * vector of the atom objects that belong to this residue

@@ -24,14 +24,14 @@ TEST_CASE("Test ResidueType for Structure", "[ResidueType]" ) {
         auto name = String("GUA");
         auto atom_map = StringIntMap();
         atom_map["P"] = 0;
-        auto rt = ResidueType(name, atom_map, SetType::RNA);
+        auto rt = std::make_shared<ResidueType>(name, atom_map, SetType::RNA);
         auto names = Strings{"GUA", "G", "rG"};
         
         for(auto const & n : names) {
-            REQUIRE(rt.match_name(n));
+            REQUIRE(rt->match_name(n));
         }
         
-        REQUIRE(rt.match_name("rC") == 0);
+        REQUIRE(rt->match_name("rC") == 0);
 
     }
     
@@ -57,15 +57,15 @@ TEST_CASE("Test ResidueType for Structure", "[ResidueType]" ) {
     SECTION("Getting correct residue type by name from set") {
         auto rt = rts.get_type("GUA");
         
-        REQUIRE(rt.short_name() == "G");
+        REQUIRE(rt->short_name() == "G");
         REQUIRE_THROWS_AS(rts.get_type("FAKE"), ResidueTypeException);
         
     }
     
     SECTION("can load amino acid residue types") {
         auto rt = rts.get_type("ARG");
-        REQUIRE(rt.short_name() == "A");
-        REQUIRE(rt.atom_pos_by_name("N") == 0);
+        REQUIRE(rt->short_name() == "A");
+        REQUIRE(rt->atom_index("N") == 0);
     }
     
 }

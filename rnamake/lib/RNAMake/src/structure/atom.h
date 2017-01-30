@@ -109,15 +109,18 @@ public:
     inline
     void
     transform(Transform const & t) {
-        dot_vector(t.rotation().transpose(), coords_);
+        coords_ = dot_vector(t.rotation().transpose(), coords_);
         coords_ = coords_ + t.translation();
     }
 
     inline
     void
-    fast_transform(Matrix const & r, Vector const & t) {
-        dot_vector(r, coords_);
-        coords_ = coords_ + t;
+    fast_transform(
+            Matrix const & r,
+            Vector const & t,
+            Point & dummy) {
+        dot_vector(r, coords_, dummy);
+        coords_ = dummy + t;
     }
     
 public: //accessors

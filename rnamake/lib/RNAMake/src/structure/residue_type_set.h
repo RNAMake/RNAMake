@@ -19,7 +19,7 @@ public:
 
     ~ResidueTypeSet() {}
 
-    ResidueType const &
+    ResidueTypeOP const &
     get_type(
             String const &) const;
 
@@ -42,7 +42,7 @@ private:
             SetType const &);
 
 private:
-    ResidueTypes residue_types_;
+    ResidueTypeOPs residue_types_;
 
 };
 
