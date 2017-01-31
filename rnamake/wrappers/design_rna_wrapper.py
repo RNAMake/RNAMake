@@ -26,6 +26,7 @@ class DesignRNAWrapper(wrapper.Wrapper):
         # search options
         self.add_cmd_option("search.max_size", 9999, required=False)
         self.add_cmd_option("search.accept_score", 10.0, required=False)
+        self.add_cmd_option("search.helix_end", False, required=False)
 
 
     def get_output(self):

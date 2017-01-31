@@ -64,6 +64,7 @@ private:
     MotifGraphOP mg_;
     EndStateInfo start_, end_;
     StericLookup lookup_;
+    SequenceOptimizer3D optimizer_;
     
     
 };

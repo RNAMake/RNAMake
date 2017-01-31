@@ -24,6 +24,7 @@ MotifStateSearch::setup_options() {
     options_.add_option("max_steps", 1000000000, OptionType::FLOAT);
     options_.add_option("verbose", true, OptionType::BOOL);
     options_.add_option("return_best", false, OptionType::BOOL);
+    options_.add_option("helix_end", false, OptionType::BOOL);
     
     //for making a movie
     options_.add_option("save_midpoints", false, OptionType::BOOL);
@@ -47,6 +48,7 @@ MotifStateSearch::update_var_options() {
     min_ss_score_   = options_.get_float("min_ss_score");
     max_steps_      = options_.get_float("max_steps");
     verbose_        = options_.get_bool("verbose");
+    helix_end_      = options_.get_bool("helix_end");
     
 }
 
@@ -142,6 +144,12 @@ MotifStateSearch::_search() {
         score = scorer_->accept_score(current);
         
         if(score < best) {
+            if(helix_end_) {
+                if(current->ref_state()->name()[0] == 'T') {
+                    continue;
+                }
+            }
+            
             best = score;
             best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
             

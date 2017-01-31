@@ -514,10 +514,13 @@ class BuildSqliteLibraries(object):
                 continue
             count += 1
 
-            f.write(lowest.name + "," + lowest.ends[0].name() + " | ")
+            if lowest.name == "TWOWAY.2VQE.18":
+                continue
+
+            f.write(lowest.name + "," + lowest.ends[0].name() + "|")
 
             for m in c.motifs:
-                f.write(m.name + "," + m.ends[0].name() + " | ")
+                f.write(m.name + "," + m.ends[0].name() + "|")
             f.write("\n")
             #print i, lowest.score, lowest.name
             #lowest.to_pdb("m."+str(i)+".pdb")
@@ -673,8 +676,8 @@ class BuildSqliteLibraries(object):
 #setup_start_motif()
 builder = BuildSqliteLibraries()
 
-builder.build_ideal_helices_old()
-builder.build_trimmed_ideal_helix_library()
+#builder.build_ideal_helices_old()
+#builder.build_trimmed_ideal_helix_library()
 #builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_new_bp_steps()

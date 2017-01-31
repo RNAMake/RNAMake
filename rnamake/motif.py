@@ -411,6 +411,7 @@ def get_aligned_motif_state_single(ref_bp_state, ms):
         ms_copy.end_states[i].set(new_r, new_d, new_sug)
 
     if len(ms_copy.beads) > 0:
+
         ms_copy.beads = np.dot(ms.beads, r.T) + t
 
     return ms_copy

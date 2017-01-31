@@ -143,7 +143,7 @@ RM::add_motif(
     String const & path,
     String name) {
     
-    auto m = mf_.motif_from_file(path);
+    auto m = mf_.motif_from_file(path, 0, 1);
     
     if(name != "") { m->name(name); }
     

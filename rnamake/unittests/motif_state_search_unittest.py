@@ -36,6 +36,27 @@ class MotifStateSearchUnittest(unittest.TestCase):
         if dist > mss.option('accept_score'):
             self.fail("did not find a suitable solution")
 
+    def test_search_longer(self):
+        mt = motif_tree.MotifTree()
+        mt.add_motif(m_name='HELIX.IDEAL.10')
+        mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+        mt.add_motif(m_name='HELIX.IDEAL.10')
+        mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+        mt.add_motif(m_name='HELIX.IDEAL.10')
+        mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+        mt.add_motif(m_name='HELIX.IDEAL.10')
+        mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+
+        start = mt.get_node(0).data.ends[0].state()
+        end   = mt.last_node().data.ends[1].state()
+        mss = rnamake.motif_state_search.MotifStateSearch()
+        mss.option('max_node_level', 10)
+        mss.setup(start, end)
+        s = mss.next()
+        print len(s.path)
+
+        #mt = s.to_motif_tree(self.rm)
+
     #TODO fix
     def _test_search_2(self):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
@@ -98,5 +119,24 @@ class MotifStateSearchUnittest(unittest.TestCase):
 def main():
     unittest.main()
 
-if __name__ == '__main__':
-    main()
+#if __name__ == '__main__':
+#    main()
+
+mt = motif_tree.MotifTree()
+mt.add_motif(m_name='HELIX.IDEAL.10')
+mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+mt.add_motif(m_name='HELIX.IDEAL.10')
+mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+mt.add_motif(m_name='HELIX.IDEAL.10')
+mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+mt.add_motif(m_name='HELIX.IDEAL.10')
+mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+mt.write_pdbs("org")
+
+start = mt.get_node(0).data.ends[0].state()
+end   = mt.last_node().data.ends[1].state()
+mss = rnamake.motif_state_search.MotifStateSearch()
+mss.option('max_node_level', 10)
+mss.setup(start, end)
+s = mss.next()
+#print len(s.path)
