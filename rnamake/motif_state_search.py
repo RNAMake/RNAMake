@@ -7,6 +7,7 @@ import motif_state_selector
 import motif_state_search_scorer
 import copy
 import numpy as np
+import resource_manager as rm
 
 class MotifStateSearch(base.Base):
     def __init__(self):
@@ -75,24 +76,29 @@ class MotifStateSearch(base.Base):
         return self.solutions
 
     def _search(self):
+        count = 0
         accept_score, max_node_level, sterics, max_size, min_size = self._get_local_variables()
         best = 1000000000
         while not self.queue.empty():
             current = self.queue.get()
             score = self.scorer.accept_score(current)
-
+            count += 1
             #print current.score
-            if current.score < best:
-                best = current.score
+            if score < best:
+                best = score
+                print score
                 #print current.score, current.level
 
+            if count > 1000:
+                break
 
             if score < accept_score:
                 if not self.selector.is_valid_solution(current):
                     continue
                 if current.size < min_size:
                     continue
-                return MotifStateSearchSolution(current, score)
+                #print count
+                #return MotifStateSearchSolution(current, score)
 
             if current.level+1 > max_node_level:
                 continue
@@ -116,6 +122,7 @@ class MotifStateSearch(base.Base):
                                                   self.test_node.ref_state)
 
                     score = self.scorer.score(self.test_node)
+
                     #score += self.selector.score(self.test_node)*self.test_node.level*10
                     #print score, current.score, len(current.cur_state.beads)
                     if score > current.score:
@@ -132,7 +139,6 @@ class MotifStateSearch(base.Base):
                         continue
                     child.ntype = types[i]
                     self.queue.put(child, score)
-
 
         return None
 

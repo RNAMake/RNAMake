@@ -69,7 +69,7 @@ public:
          Atom const & a):
     name_(a.name_),
     coords_(a.coords_)
-    {}
+    { }
     
 public:
     

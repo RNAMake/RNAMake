@@ -48,6 +48,14 @@ public:
     
     
     Motif(Motif const & m);
+
+    Motif(RNAStructure const & rs):
+        RNAStructure(rs) {
+        id_ = Uuid();
+        block_end_add_ = -1;
+        secondary_structure_ = std::make_shared<sstruct::Motif>();
+        mtype_ = MotifType::UNKNOWN;
+    }
     
     ~Motif() {}
 

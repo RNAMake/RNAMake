@@ -142,7 +142,7 @@ private:
     int no_more_solutions_;
     Options options_;
     //options
-    bool sterics_, verbose_;
+    bool sterics_, verbose_, helix_end_;
     int max_node_level_, min_size_, max_size_, max_solutions_;
     int sol_count_, min_node_level_;
     float accept_score_, min_ss_score_, max_steps_;

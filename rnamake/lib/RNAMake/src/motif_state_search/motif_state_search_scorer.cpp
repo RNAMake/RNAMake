@@ -36,7 +36,8 @@ MotifStateSearchScorer::accept_score(
         r_diff_       = state->r().difference(target_->r());
         r_diff_flip_  = state->r().difference(target_flip_->r());
     
-        if( r_diff_ > r_diff_flip_) { score_ += 2*r_diff_flip_; }
+        if( r_diff_ > r_diff_flip_) { score_ += 2*r_diff_; }
+        //if( r_diff_ > r_diff_flip_) { score_ += 2*r_diff_flip_; }
         else                        { score_ += 2*r_diff_;      }
         
         if(score_ < best_score_) {

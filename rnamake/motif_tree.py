@@ -950,6 +950,7 @@ class MotifTree(base.Base):
 
     #OUTPUTING          #######################################################
     def to_pdb(self, fname="mt.pdb", renumber=-1, close_chain=0):
+        self._update_merger()
         self.merger.get_structure().to_pdb(fname, renumber=renumber,
                                            close_chain=close_chain)
 

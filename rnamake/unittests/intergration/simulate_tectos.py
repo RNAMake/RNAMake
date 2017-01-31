@@ -2,6 +2,18 @@ from rnamake import base, option, motif_state_ensemble_tree
 from rnamake import secondary_structure_parser, motif_type, motif_tree, exceptions
 from rnamake import resource_manager as rm
 
+import argparse
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-fseq')
+    parser.add_argument('-fss')
+    parser.add_argument('-cseq')
+    parser.add_argument('-css')
+
+    args = parser.parse_args()
+    return args
+
 class SimulateTectos(base.Base):
     def __init__(self, **options):
         self.setup_options_and_constraints()
@@ -87,11 +99,18 @@ class SimulateTectos(base.Base):
             mt.add_motif(chip_motifs[i])
 
         mset = motif_state_ensemble_tree.MotifStateEnsembleTree(mt=mt)
+        self.mt = mt
         return mset
 
     def run(self):
        self.mset = self._get_mset()
 
 
-
+if __name__ == "__main__":
+    args = parse_args()
+    opts = vars(args)
+    st = SimulateTectos(**opts)
+    st._get_mset()
+    mt = st.mt
+    mt.to_pdb("test.pdb", renumber=1, close_chain=1)
 

@@ -9,8 +9,6 @@
 #include "p5abc.hpp"
 
 #include "base/cl_option.h"
-#include "secondary_structure/ss_tree.h"
-#include "motif/motif_tree.h"
 #include "resources/resource_manager.h"
 #include "motif/motif_factory.h"
 #include "thermo_fluctuation/thermo_fluc_sampler.h"

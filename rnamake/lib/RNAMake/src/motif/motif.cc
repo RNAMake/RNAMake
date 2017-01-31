@@ -91,10 +91,16 @@ Motif::Motif(
     id_         = m.id_;
     block_end_add_ = m.block_end_add_;
     secondary_structure_ = std::make_shared<sstruct::Motif>(*m.secondary_structure_);
-  
+    protein_beads_ = Beads(m.protein_beads_.size());
+
     int i = 0;
     for (auto const & b : m.beads_) {
         beads_[i] = Bead(b);
+        i++;
+    }
+    i = 0;
+    for (auto const & b : m.protein_beads_) {
+        protein_beads_[i] = Bead(b);
         i++;
     }
     i = 0;
