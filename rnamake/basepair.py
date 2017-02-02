@@ -77,10 +77,11 @@ class Basepair(primitives.basepair.Basepair):
         "_sugars",
         "_name",
         "_bp_type",
+        "_x3dna_bp_type",
         "_uuid"]
 
     def __init__(self, res1_uuid, res2_uuid, r, d, sugars, name,
-                 bp_type=None, bp_uuid=None):
+                 x3dna_bp_type=None, bp_type=None, bp_uuid=None):
         self._res1_uuid, self._res2_uuid = res1_uuid, res2_uuid
         self._r = r
         self._d = d
@@ -88,9 +89,13 @@ class Basepair(primitives.basepair.Basepair):
         self._name = name
         self._bp_type = bp_type
         self._uuid = bp_uuid
+        self._x3dna_bp_type = x3dna_bp_type
 
         if self._bp_type is None:
-            self._bp_type = "c..."
+            self._bp_type = primitives.basepair.BasepairType.NC
+
+        if self._x3dna_bp_type is None:
+            self._x3dna_bp_type = "c..."
 
         if self._uuid is None:
             self._uuid = uuid.uuid1()
@@ -102,13 +107,13 @@ class Basepair(primitives.basepair.Basepair):
         r = basic_io.str_to_matrix(spl[1])
         sugars = basic_io.str_to_points(spl[2])
 
-        return cls(res1_uuid, res2_uuid, r, d, sugars, spl[3], spl[4])
+        return cls(res1_uuid, res2_uuid, r, d, sugars, spl[3], spl[4], int(spl[5]))
 
     @classmethod
     def copy(cls, bp):
         sugars = [np.copy(bp._sugars[0]), np.copy(bp._sugars[1])]
         return cls(bp._res1_uuid, bp._res2_uuid, np.copy(bp._r), np.copy(bp._d),
-                   sugars, bp._name, bp._bp_type, bp._uuid)
+                   sugars, bp._name, bp._x3dna_bp_type, bp._bp_type, bp._uuid)
 
     @classmethod
     def copy_with_new_uuids(cls, bp, res1_uuid, res2_uuid, bp_uuid=None):
@@ -116,7 +121,7 @@ class Basepair(primitives.basepair.Basepair):
             bp_uuid = uuid.uuid1()
         sugars = [np.copy(bp._sugars[0]), np.copy(bp._sugars[1])]
         return cls(res1_uuid, res2_uuid, np.copy(bp._r), np.copy(bp._d),
-                   sugars, bp._name, bp._bp_type, bp_uuid=bp_uuid)
+                   sugars, bp._name, bp._x3dna_bp_type, bp._bp_type, bp_uuid=bp_uuid)
 
     def __repr__(self):
           return "<Basepair("+self._name + ")>"
@@ -252,7 +257,7 @@ class Basepair(primitives.basepair.Basepair):
         s  = basic_io.point_to_str(self._d) + ";"
         s += basic_io.matrix_to_str(self._r) + ";"
         s += basic_io.points_to_str(self._sugars) + ";"
-        s += self._name + ";" + self._bp_type + ";"
+        s += self._name + ";" + self._x3dna_bp_type + ";" + str(self._bp_type) + ";"
         return s
 
     def get_state(self):
@@ -282,6 +287,10 @@ class Basepair(primitives.basepair.Basepair):
         return self._sugars[1]
 
     @property
+    def x3dna_bp_type(self):
+        return self._x3dna_bp_type
+
+    @property
     def bp_type(self):
         return self._bp_type
 
@@ -300,6 +309,7 @@ class Basepair(primitives.basepair.Basepair):
     @property
     def name(self):
         return self._name
+
 
 class BasepairState(object):
     """

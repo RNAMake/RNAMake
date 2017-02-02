@@ -27,7 +27,10 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         auto gtype = rts.get_type("GUA");
         auto atoms = AtomOPs();
         atoms.push_back(std::make_shared<Atom>("P", Point(0, 1, 2)));
-        auto res = std::make_shared<Residue>(atoms, gtype, "GUA", 1, "A", "");
+        auto res = std::make_shared<Residue>(atoms, gtype,
+                                             std::make_shared<String>("GUA"), 1,
+                                             std::make_shared<String>("A"),
+                                             std::make_shared<String>(""));
 
         // can find a real atom
         auto p_atom = res->get_atom("P");
@@ -43,8 +46,10 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         auto gtype = rts.get_type("GUA");
         auto atoms = AtomOPs();
         atoms.push_back(std::make_shared<Atom>("P", Point(0, 1, 2)));
-        auto res = std::make_shared<Residue>(atoms, gtype, "GUA", 1, "A", "");
-
+        auto res = std::make_shared<Residue>(atoms, gtype,
+                                             std::make_shared<String>("GUA"), 1,
+                                             std::make_shared<String>("A"),
+                                             std::make_shared<String>(""));
         REQUIRE(res->has_atom("P") == true);
         REQUIRE(res->has_atom("P1") == false);
         REQUIRE(res->has_atom("OP1") == false);

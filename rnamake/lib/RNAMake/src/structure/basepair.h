@@ -12,61 +12,149 @@
 #include <stdio.h>
 
 //RNAMake Headers
+
 #include "base/types.h"
 #include "util/uuid.h"
+#include "primitives/basepair.h"
 #include "math/xyz_matrix.h"
-#include "structure/atom.h"
+#include "motif_state/basepair.h"
 #include "structure/residue.h"
-#include "structure/basepair_state.h"
 
-class Basepair {
+
+class Basepair : public primitives::Basepair {
 public:
-    Basepair()
-    {}
-    
     Basepair(
-        ResidueOP & res1,
-        ResidueOP & res2,
-        Matrix const & r,
-        String const & bp_type):
-        bp_type_(bp_type),
-        uuid_( Uuid() ),
-        res1_( res1 ),
-        res2_( res2 ),
-        flipped_ ( 0 )
-    {
-    
-        atoms_ = AtomOPs();
-        /*for( auto const & a : res1->atoms() ) {
-            if(a != nullptr) { atoms_.push_back(a); }
-        }
-        for( auto const & a : res2->atoms() ) {
-            if(a != nullptr) { atoms_.push_back(a); }
-        }*/
-        
-        Point d = calc_center(atoms_);
-        Points sugars(2);
-        sugars[0] = res1_->get_atom("C1'")->coords();
-        sugars[1] = res2_->get_atom("C1'")->coords();
-        bp_state_ = std::make_shared<BasepairState>(d, r, sugars);
-        
-    }
-    
+            UuidOP const &,
+            UuidOP const &,
+            Matrix const &,
+            Point const &,
+            Points const &,
+            StringOP const &,
+            StringOP const &,
+            primitives::Basepair::BasepairType const &,
+            UuidOP const &);
+
+    Basepair(
+            String const &,
+            UuidOP const &,
+            UuidOP const &);
+
+    Basepair(Basepair const &);
+
+    Basepair(
+            Basepair const & bp,
+            UuidOP const & res1_uuid,
+            UuidOP const & res2_uuid,
+            UuidOP const & bp_uuid = nullptr);
+
+
     ~Basepair() {
-        res1_.reset();
-        res2_.reset();
+        res1_uuid_.reset();
+        res2_uuid_.reset();
     }
-    
-    Basepair
-    copy();
-    
+
+public:
+
+    void
+    move(Point const & p) {
+        sugars_[0] += p;
+        sugars_[1] += p;
+        d_ += p;
+    }
+
     inline
-    bool
-    operator == (Basepair const & bp ) const { return uuid_ == bp.uuid_; }
+    void
+    transform(Transform const & t) {
+        auto r_T = t.rotation().transpose();
+        auto new_r = Matrix();
+        dot(r_, r_T, new_r);
+        r_ = new_r;
+        sugars_[0] = dot_vector(r_T, sugars_[0]) + t.translation();
+        sugars_[1] = dot_vector(r_T, sugars_[1]) + t.translation();
+        d_ = dot_vector(r_T, d_) + t.translation();
+    }
+
+    inline
+    void
+    fast_transform(
+            Matrix const & r,
+            Vector const & t) {
+
+    }
+
+    inline
+    float
+    diff(Basepair const & bp) {
+        return 0.0f;
+    }
+
+private:
+
+    inline
+    float
+    _rot_diff(Basepair const & bp) {
+        return 0.0f;
+    }
+
+public:
+
+    void
+    flip_res();
+
+    String
+    to_str() const;
+
+    state::BasepairOP
+    get_state();
+
 
 public: // getters
-    
+
     inline
+    Matrix const &
+    r() const { return r_; }
+
+    inline
+    Point const &
+    d() const { return d_; }
+
+    inline
+    Points const &
+    sugars() const { return sugars_; }
+
+    inline
+    Point const &
+    res1_sugar() const { return sugars_[0]; }
+
+    inline
+    Point const &
+    res2_sugar() const { return sugars_[1]; }
+
+    inline
+    StringOP const &
+    x3dna_bp_type() const { return x3dna_bp_type_; }
+
+    inline
+    UuidOP const &
+    uuid() const { return uuid_; }
+
+    inline
+    UuidOP const &
+    res1_uuid() const { return res1_uuid_; }
+
+    inline
+    UuidOP const &
+    res2_uuid() const { return res2_uuid_; }
+
+    inline
+    StringOP const &
+    name() const { return name_; }
+
+    inline
+    primitives::Basepair::BasepairType
+    bp_type() const { return bp_type_; }
+
+    /*inline
     BasepairStateOP const &
     state() {
         bp_state_->d(calc_center(atoms_));
@@ -204,25 +292,23 @@ private:
         return r_diff;
     }
     
-    
+    */
 private:
-    ResidueOP res1_, res2_;
-    AtomOPs atoms_;
-    BasepairStateOP bp_state_;
-    String bp_type_;
-    int flipped_;
-    Uuid uuid_;
-    
+    Matrix r_;
+    Point d_;
+    Points sugars_;
+    UuidOP res1_uuid_, res2_uuid_;
+    StringOP name_, x3dna_bp_type_;
+    primitives::Basepair::BasepairType bp_type_;
+
 };
 
 typedef std::shared_ptr<Basepair> BasepairOP;
 typedef std::vector<BasepairOP> BasepairOPs;
 
-bool
-wc_bp(BasepairOP const &);
+Point
+_calc_center(ResidueOPs const &);
 
-bool
-gu_bp(BasepairOP const &);
 
 
 #endif /* defined(__RNAMake__basepair__) */

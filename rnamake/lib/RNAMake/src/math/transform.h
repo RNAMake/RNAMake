@@ -155,6 +155,4 @@ private:
 };
 
 
-
-
 #endif /* defined(__REDESIGNC__Transform__) */

@@ -400,6 +400,13 @@ class Residue(primitives.residue.Residue):
     def num_beads(self):
         return len(self._beads)
 
+    def num_atoms(self):
+        count = 0
+        for a in self._atoms:
+            if a is not None:
+                count += 1
+        return count
+
     def get_state(self):
         beads = [Bead.copy(b) for b in self._beads]
         return motif_state.Residue(self._name, self._num, self._chain_id,

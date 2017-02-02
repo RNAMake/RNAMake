@@ -111,7 +111,11 @@ PDBParser::parse(
  
         icode = "";
         if(spl.size() > 3) { icode = spl[3]; }
-        r = std::make_shared<Residue>(kv.second, rtype, spl[0], std::stoi(spl[1]), spl[2], icode);
+        r = std::make_shared<Residue>(kv.second, rtype,
+                                      std::make_shared<String>(spl[0]),
+                                      std::stoi(spl[1]),
+                                      std::make_shared<String>(spl[2]),
+                                      std::make_shared<String>(icode));
         residues_.push_back(r);
         
     }

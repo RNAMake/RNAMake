@@ -25,23 +25,40 @@ namespace primitives {
 
 class Residue {
 public:
+    inline
     Residue(
-            String const &,
-            int,
-            String const &);
+            char name,
+            int num,
+            char chain_id):
+            name_(name),
+            num_(num),
+            chain_id_(chain_id),
+            i_code_(' '),
+            uuid_(Uuid()) {}
 
+    inline
     Residue(
-            String const &,
-            int,
-            String const &,
-            String const &);
-
+            char name,
+            int num,
+            char chain_id,
+            char i_code):
+            name_(name),
+            num_(num),
+            chain_id_(chain_id),
+            i_code_(i_code),
+            uuid_(Uuid()) {}
+    inline
     Residue(
-            String const &,
-            int,
-            String const &,
-            String const &,
-            Uuid const &);
+            char name,
+            int num,
+            char chain_id,
+            char i_code,
+            Uuid const & uuid):
+            name_(name),
+            num_(num),
+            chain_id_(chain_id),
+            i_code_(i_code),
+            uuid_(uuid) {}
 
 protected:
     // let derived class setup members
@@ -71,7 +88,7 @@ public: //getters
     * getter for the name of the residue, i.e. "A", "G" etc
     */
     inline
-    String const &
+    char
     name() { return name_; }
 
     /**
@@ -85,14 +102,14 @@ public: //getters
      * getter the chain_id, i.e. "A", "B", the id of the chain this residue belongs to
      */
     inline
-    String const &
+    char
     chain_id() { return chain_id_; }
 
     /**
     * getter for the residue insertion code
     */
     inline
-    String const &
+    char
     i_code() { return i_code_; }
 
     /**
@@ -100,18 +117,14 @@ public: //getters
     */
     inline
     Uuid const &
-    uuid() { return uuid_; }
-
-    inline
-    Uuid const &
     uuid() const { return uuid_; }
 
 protected:
 
-    String name_;
+    char name_;
     int num_;
-    String chain_id_;
-    String i_code_;
+    char chain_id_;
+    char i_code_;
     Uuid uuid_;
 
 };

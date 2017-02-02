@@ -23,47 +23,40 @@ public:
     ~Uuid() {}
     
 public:
-    inline
-    String const &
-    s_uuid() const { return s_uuid_; }
+
     
     inline
     bool 
     operator ==(Uuid const & uuid) const {
-        return s_uuid_ == uuid.s_uuid_;
+        return id_ == uuid.id_;
     }
  
     inline
     bool
     operator ==(Uuid const & uuid)  {
-        return s_uuid_ == uuid.s_uuid_;
+        return id_ == uuid.id_;
     }
     
     inline
     bool
     operator != (Uuid const & uuid) const {
-        return s_uuid_ != uuid.s_uuid_;
+        return id_ != uuid.id_;
     }
 
     
     inline
     bool
     operator != (Uuid & uuid)  {
-        return s_uuid_ != uuid.s_uuid_;
+        return id_ != uuid.id_;
     }
 
-    inline
-    bool
-    operator < (Uuid const & uuid) const {
-        return s_uuid_.compare(uuid.s_uuid());
-    }
     
 private:
-    String s_uuid_;
+    uint64_t id_;
     
 };
 
-std::ostream &
+/*std::ostream &
 operator <<( std::ostream &, Uuid const &);
 
 struct UuidCompare {
@@ -72,8 +65,8 @@ struct UuidCompare {
         Uuid const & u2) const {
         return u1.s_uuid() < u2.s_uuid();
     }
-};
+};*/
 
-//std::shared_ptr<Uuid> UuidOP;
+typedef std::shared_ptr<Uuid> UuidOP;
 
 #endif

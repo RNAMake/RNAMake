@@ -5,6 +5,8 @@
 #ifndef RNAMAKE_MOTIF_STATE_RESIDUE_H
 #define RNAMAKE_MOTIF_STATE_RESIDUE_H
 
+#include <sstream>
+
 #include "primitives/residue.h"
 #include "util/bead.h"
 
@@ -14,20 +16,20 @@ class Residue : public primitives::Residue {
 public:
     inline
     Residue(
-            String const & name,
+            char name,
             int num,
-            String const & chain_id,
-            String const & i_code,
+            char chain_id,
+            char i_code,
             Beads const & beads):
             primitives::Residue(name, num, chain_id, i_code),
             beads_(beads) {}
 
     inline
     Residue(
-            String const & name,
+            char name,
             int num,
-            String const & chain_id,
-            String const & i_code,
+            char chain_id,
+            char i_code,
             Beads const & beads,
             Uuid const & uuid):
             primitives::Residue(name, num, chain_id, i_code, uuid),
@@ -49,10 +51,10 @@ public:
             primitives::Residue() {
 
         auto spl = split_str_by_delimiter(s, ",");
-        name_     = spl[0];
+        name_     = spl[0][0];
         num_      = std::stoi(spl[1]);
-        chain_id_ = spl[2];
-        i_code_   = spl[3];
+        chain_id_ = spl[2][0];
+        i_code_   = spl[3][0];
         uuid_     = Uuid();
         beads_    = Beads();
         for(int i = 4; i < spl.size()-1; i+=2) {
@@ -65,13 +67,13 @@ public:
 public:
     String
     to_str() {
-        auto s = String("");
-        s = name_ + "," + std::to_string(num_) + "," + chain_id_ + "," + i_code_ + ",";
+        auto ss = std::stringstream();
+        ss << name_ << "," << std::to_string(num_) << "," << chain_id_ << "," << i_code_ << ",";
         for(auto const & b : beads_) {
-            s += b.to_str() + ",";
+            ss << b.to_str() << ",";
         }
 
-        return s;
+        return ss.str();
     }
 
 public:
@@ -91,8 +93,9 @@ public:
     void
     fast_transform(
             Matrix const & r,
-            Vector const & t) {
-        for(auto & b : beads_) { b.fast_transform(r, t); }
+            Vector const & t,
+            Point & dummy) {
+        for(auto & b : beads_) { b.fast_transform(r, t, dummy); }
     }
 
 public: //getters

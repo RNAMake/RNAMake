@@ -16,10 +16,8 @@ for i in range(10):
     t = transform_instances.transform_random()
 
     r.transform(t)
-    print t.rotation()
     f.write(basic_io.matrix_to_str(t.rotation()) + "\n")
     f.write(basic_io.point_to_str(t.translation()) + "\n")
     f.write(r.to_str() + "\n")
-    break
 f.close()
 

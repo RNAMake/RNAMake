@@ -30,6 +30,7 @@ public:
     typedef std::vector<ChainOP>       ChainOPs;
 
 public:
+    inline
     Structure(ChainOPs const & chains):
             chains_(chains),
             residues_(ResidueOPs()) {
@@ -69,7 +70,7 @@ public:
             String const & i_code) {
 
         for (auto const & r : residues_) {
-            if (num == r->num() && chain_id == r->chain_id() && i_code == r->i_code()) {
+            if (num == r->num() && chain_id == *(r->chain_id()) && i_code == *(r->i_code())) {
                 return r;
             }
         }

@@ -79,6 +79,8 @@ def are_basepairs_equal(bp1, bp2, check_uuid=1):
         return 0
     if bp1.bp_type != bp2.bp_type:
         return 0
+    if bp1.x3dna_bp_type != bp2.x3dna_bp_type:
+        return 0
 
     if check_uuid:
         if bp1.uuid != bp2.uuid:

@@ -92,20 +92,47 @@ TEST_CASE( "Test Structure", "[Structure]" ) {
 
             s->transform(t);
 
-            auto r1 = s->get_chain(0)->get_residue(0);
-            auto r2 = s2->get_chain(1)->get_residue(0);
-
-            std::cout << r1->num() << " " << r2->num() << std::endl;
-
-            auto dist = r1->center().distance(r2->center());
-            std::cout << dist << std::endl;
-
-            exit(0);
-            //REQUIRE(are_structures_equal(s2, s_trans, 0));
+            for(auto const & r : *s) {
+                auto r2 = s2->get_residue(r->num(), r->chain_id(), r->i_code());
+                auto dist = r->center().distance(r2->center());
+                REQUIRE(dist < 0.001);
+            }
         }
+    }
 
+    SECTION("Test applying a tranform to coordinates using fast transforms") {
+        auto path = unittest_resource_dir() + "/structure/structure_transformations.dat";
+        auto lines = get_lines_from_file(path);
 
-        
+        for(auto i = 0; i < lines.size()-2; i+=3) {
+
+            auto s = structure_from_pdb(resources_path()+"/start/start.pdb", rts);
+            auto r = matrix_from_str(lines[i]);
+            auto trans = vector_from_str(lines[i+1]);
+            auto t = Transform(r, trans);
+            auto s2 = std::make_shared<Structure>(lines[i+2], rts);
+
+            s->fast_transform(r.transpose(), trans);
+
+            for(auto const & r : *s) {
+                auto r2 = s2->get_residue(r->num(), r->chain_id(), r->i_code());
+                auto dist = r->center().distance(r2->center());
+                REQUIRE(dist < 0.001);
+            }
+        }
+    }
+
+    SECTION("Test getting motif state of structure") {
+        auto ss = s->get_state();
+        REQUIRE(s->num_residues() == ss->num_residues());
+
+        auto ss_copy = std::make_shared<state::Structure>(*ss);
+        REQUIRE(ss_copy->num_residues() == ss->num_residues());
+
+        auto str = ss->to_str();
+        ss_copy = std::make_shared<state::Structure>(str);
+        REQUIRE(ss_copy->num_residues() == ss->num_residues());
+
     }
     
 }

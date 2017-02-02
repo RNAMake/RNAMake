@@ -16,6 +16,7 @@
 #include "math/transform.h"
 #include "math/xyz_matrix.h"
 #include "primitives/structure.h"
+#include "motif_state/structure.h"
 #include "structure/chain.fwd.h"
 #include "structure/chain.h"
 #include "structure/residue.h"
@@ -96,8 +97,17 @@ public:
             String const,
             int renumber = -1);
 
+
 public: // getters
 
+    state::StructureOP
+    get_state() {
+        auto chains = state::ChainOPs();
+        for(auto const & c : chains_) {
+            chains.push_back(c->get_state());
+        }
+        return std::make_shared<state::Structure>(chains);
+    }
 
 
 };

@@ -12,18 +12,22 @@ namespace state {
 
 class Chain : public primitives::Chain<Residue>{
 public:
+
+    inline
     Chain(
             ResidueOPs const & residues):
             primitives::Chain<Residue>(residues) {}
 
+    inline
     Chain(
-            Chain const & c):
+            Chain const & c,
+            int new_uuid = 0):
             primitives::Chain<Residue>() {
 
         residues_ = ResidueOPs(c.residues_.size());
         int i = 0;
         for (auto const & r : c.residues_) {
-            residues_[i] = std::make_shared<Residue>(*r);
+            residues_[i] = std::make_shared<Residue>(*r, new_uuid);
             i++;
         }
     }
@@ -64,8 +68,9 @@ public:
     void
     fast_transform(
             Matrix const & r,
-            Vector const & t) {
-        for(auto & res : residues_) { res->fast_transform(r, t); }
+            Vector const & t,
+            Point & dummy) {
+        for(auto & res : residues_) { res->fast_transform(r, t, dummy); }
     }
 
 };

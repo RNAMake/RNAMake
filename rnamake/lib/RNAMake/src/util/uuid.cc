@@ -11,26 +11,21 @@
 
 //RNAMake Headers
 #include "util/uuid.h"
-#include "util/random_number_generator.h"
 
-const char alphanum[] =
-"0123456789"
-"ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-int stringLength = sizeof(alphanum) - 1;
+int length = 10;
 
 Uuid::Uuid() {
-    s_uuid_ = String();
-    RandomNumberGenerator rng;
-    for ( int i = 0; i < 25; i++) {
-        //int pos = rand() % stringLength;
-        int pos = rng.randrange(stringLength);
-        s_uuid_ += alphanum[pos];
+    id_ = rand() % length;
+    uint64_t digit = 10;
+    for ( int i = 1; i < 15; i++) {
+        int pos = rand() % length;
+        id_ += (digit*i)*pos;
+        digit *= 10;
     }
-    
 }
 
-std::ostream &
+/*std::ostream &
 operator <<( std::ostream & stream, Uuid const & uuid) {
     stream << uuid.s_uuid();
     return stream;
-}
+}*/

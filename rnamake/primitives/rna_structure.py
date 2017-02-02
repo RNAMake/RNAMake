@@ -2,6 +2,7 @@ import abc
 
 from rnamake import util, transform, exceptions
 import base
+import basepair
 
 
 
@@ -312,9 +313,7 @@ def ends_from_basepairs(s, bps):
 
     ends = []
     for bp in bps:
-        if bp.bp_type != "cW-W":
-                continue
-        if not (util.gu_bp(bp, s) or util.wc_bp(bp, s)):
+        if bp.bp_type == basepair.BasepairType.NC:
             continue
 
         if bp.res1_uuid in chain_ends_uuids and bp.res2_uuid in chain_ends_uuids:
@@ -371,9 +370,7 @@ def assign_end_id(s, basepairs, end):
             bp = get_res_basepair(basepairs, r)
             if bp is not None:
                 flag =0
-                if bp.bp_type != "cW-W":
-                    flag = 1
-                if not (util.gu_bp(bp, s) or util.wc_bp(bp, s)):
+                if bp.bp_type == basepair.BasepairType.NC:
                     flag = 1
                 if flag:
                     bp = None

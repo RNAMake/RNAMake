@@ -11,20 +11,11 @@ import basic_io
 import secondary_structure
 
 import primitives.rna_structure
+import primitives.basepair
 from primitives.rna_structure import ends_from_basepairs, assign_end_id, end_id_to_seq_and_db
 
 import os
 import numpy as np
-
-def bp_from_str(struc, s):
-    bp_spl = s.split(";")
-    r2_info = bp_spl.pop().split("|")
-    r1_info = bp_spl.pop().split("|")
-    bp_str = ";".join(bp_spl)
-    res1 = struc.get_residue(int(r1_info[0]), r1_info[1], r1_info[2])
-    res2 = struc.get_residue(int(r2_info[0]), r2_info[1], r2_info[2])
-    return basepair.Basepair.from_str(bp_str, res1.uuid, res2.uuid)
-
 
 class RNAStructure(primitives.rna_structure.RNAStructure):
     """
@@ -402,7 +393,16 @@ def _calc_name(res):
         return res2_name+"-"+res1_name
 
 
-# TODO dont really need name, all deleting can happen in x3nda module ...
+def bp_from_str(struc, s):
+        bp_spl = s.split(";")
+        r2_info = bp_spl.pop().split("|")
+        r1_info = bp_spl.pop().split("|")
+        bp_str = ";".join(bp_spl)
+        res1 = struc.get_residue(int(r1_info[0]), r1_info[1], r1_info[2])
+        res2 = struc.get_residue(int(r2_info[0]), r2_info[1], r2_info[2])
+        return basepair.Basepair.from_str(bp_str, res1.uuid, res2.uuid)
+
+
 def basepairs_from_x3dna(path, s):
     """
     gets x3dna data on basepairing information and then interwines it
@@ -462,9 +462,18 @@ def basepairs_from_x3dna(path, s):
 
         center = _calc_center([res1, res2])
         name = _calc_name([res1, res2])
+        bp_type = primitives.basepair.BasepairType.NC
+
+        bp_str = res1.name+res2.name
+        wc = "GC,CG,AU,UA".split(",")
+        if bp_str in wc and xbp.bp_type == "cW-W":
+            bp_type = primitives.basepair.BasepairType.WC
+        elif bp_str == "GU" or bp_str == "UG" and xbp.bp_type == "cW-W":
+            bp_type = primitives.basepair.BasepairType.GU
+
         bp = basepair.Basepair(res1.uuid, res2.uuid, xbp.r, center,
                                [res1.get_coords("C1'"), res2.get_coords("C1'")],
-                               name, bp_type=xbp.bp_type)
+                               name, bp_type=bp_type, x3dna_bp_type=xbp.bp_type)
         basepairs.append(bp)
 
     """if os.path.isfile("ref_frames.dat"):

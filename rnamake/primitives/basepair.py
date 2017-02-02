@@ -1,6 +1,11 @@
 import uuid
 
 
+class BasepairType(object):
+    WC = 0
+    GU = 1
+    NC = 2
+
 class Basepair(object):
     __slots__= [
         "_uuid"

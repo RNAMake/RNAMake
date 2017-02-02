@@ -103,49 +103,6 @@ class Structure(primitives.structure.Structure):
         return """<Structure(#chains: %s, #residues: %s)>""" %\
                (len(self._chains), len(self._residues))
 
-    def get_beads(self, excluded_res=None):
-        """
-        generates 3-bead model residue beads for all residues in current
-        structure.
-
-        :param excluded_res: List of residue objects whose beads are not to be
-            included. This is generally end residues that would instantly clash
-            with residues they are being overlayed onto when performing motif
-            aligning
-        :type excluded_res: List of Residue objects
-
-        :return: List of Bead objects
-
-        :examples:
-
-        .. code-block:: python
-
-            # load structure from pdb formatted file
-            >>> import rnamake.unittests.files
-            >>> s = structure_from_pdb(rnamake.unittests.files.P4P6_PDB_PATH)
-
-            >>> len(s.get_beads())
-            470
-
-            >>> s.get_beads()[0]
-            <Bead(btype='SUGAR', center='-24.027 -48.5001111111 86.368')>
-
-            # exclude beads from first residue. This can be useful if you only
-            # need sterics from a part of the structure
-            >>> len(s.get_beads(excluded_res=[s.residues()[0]]))
-            468
-        """
-
-        if excluded_res is None:
-            excluded_res = []
-
-        beads = []
-        for r in self.residues():
-            if r in excluded_res:
-                continue
-            beads.extend(r.get_beads())
-        return beads
-
     def to_str(self):
         """
         Stringifes Structure object

@@ -15,6 +15,5 @@ for i in range(10):
     f.write(basic_io.matrix_to_str(t.rotation()) + "\n")
     f.write(basic_io.point_to_str(t.translation()) + "\n")
     f.write(s.to_str() + "\n")
-
 f.close()
 

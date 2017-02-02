@@ -83,7 +83,7 @@ public:
     inline
     void
     transform(Transform const & t) {
-        dot_vector(t.rotation().transpose(), center_);
+        center_ = dot_vector(t.rotation().transpose(), center_);
         center_ = center_ + t.translation();
     }
 
@@ -91,9 +91,10 @@ public:
     void
     fast_transform(
             Matrix const & r,
-            Vector const & t) {
-        dot_vector(r, center_);
-        center_ = center_ + t;
+            Vector const & t,
+            Point const & dummy) {
+        dot_vector(r, dummy, center_);
+        center_ = dummy + t;
     }
 
     String

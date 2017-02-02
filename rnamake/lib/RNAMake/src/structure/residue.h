@@ -76,10 +76,10 @@ public:
     Residue(
             AtomOPs const &,
             ResidueTypeOP const &,
-            String const &,
-            int const &,
-            String const &,
-            String const &);
+            char,
+            int,
+            char,
+            char);
 
     /**
      * Copy constructor
@@ -269,7 +269,7 @@ public:
             if(a != nullptr) { a->fast_transform(r, t, rtype_->dummy_coords()); }
         }
 
-        //for(auto & b : beads_) { b.fast_transform(r, t); }
+        for(auto & b : beads_) { b.fast_transform(r, t, rtype_->dummy_coords()); }
     }
 
 public:
@@ -345,6 +345,16 @@ public: // getters
     inline
     size_t
     num_beads() { return beads_.size(); }
+
+    inline
+    int
+    num_atoms() {
+        int count = 0;
+        for(auto const & a : atoms_) {
+            if(a != nullptr) { count++; }
+        }
+        return count;
+    }
 
     inline
     Point

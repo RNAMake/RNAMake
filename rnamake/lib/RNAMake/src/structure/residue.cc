@@ -30,10 +30,10 @@ calc_center(AtomOPs const & atoms) {
 Residue::Residue(
         AtomOPs const & atoms,
         ResidueTypeOP const & rtype,
-        String const & name,
-        int const & num,
-        String const & chain_id,
-        String const & i_code) :
+        char name,
+        int  num,
+        char chain_id,
+        char i_code):
         primitives::Residue(name, num, chain_id, i_code),
         rtype_(rtype),
         beads_(Beads()) {
@@ -56,7 +56,7 @@ Residue::Residue(
         atoms_[i] = std::make_shared<Atom>(*a);
     }
 
-    if(new_uuid) { uuid_ = Uuid(); }
+    if(new_uuid) { uuid_= Uuid(); }
     if(build_beads && r.beads_.size() > 0) {
         beads_ = _get_beads();
     }
@@ -89,10 +89,11 @@ Residue::Residue(
 
     Strings spl = split_str_by_delimiter(s, ",");
     rtype_    = rts.get_type(spl[0]);
-    name_     = spl[1];
+    name_     = spl[1][0];
     num_      = std::stoi(spl[2]);
-    chain_id_ = spl[3];
-    i_code_   = spl[4];
+    chain_id_ = spl[3][0];
+    i_code_   = spl[4][0];
+    uuid_     = Uuid();
     atoms_    = AtomOPs();
     auto atoms = AtomOPs();
     int i = 5;
@@ -113,13 +114,10 @@ Residue::Residue(
 void
 Residue::setup_atoms(
         AtomOPs const & atoms) {
-    atoms_ = AtomOPs(rtype_->size());
+    atoms_ = AtomOPs((int)rtype_->size());
     int count = 0;
     for (auto const & a : atoms) {
         if (a == nullptr) { continue; }
-        // does this atom belong in this residue
-        if(!rtype_->is_valid_atom(a->name())) { continue; }
-
         auto name_change = rtype_->get_correct_atom_name(*a);
         //check for misnamed atoms
         if(name_change.length() != 0) {
@@ -129,6 +127,8 @@ Residue::setup_atoms(
             atoms_[pos] = new_a;
         }
         else {
+            // does this atom belong in this residue
+            if(!rtype_->is_valid_atom(a->name())) { continue; }
             int pos = rtype_->atom_index(a->name());
             if (pos == -1) { continue; }
             atoms_[pos] = a;
@@ -180,7 +180,8 @@ Residue::to_pdb_str(
     if (rnum != -1) {
         num = rnum;
     }
-    String cid = chain_id_;
+    auto cid = String();
+    cid += chain_id_;
     if (chain_id != "") {
         cid = chain_id;
     }

@@ -1,5 +1,6 @@
 import unittest
 from rnamake import structure, transformations, x3dna, residue_type, basepair, settings
+import rnamake.primitives.basepair
 
 import util, instances
 import numpy as np
@@ -8,6 +9,7 @@ import random
 
 from instances.transform_instances import transform_random
 import numerical
+import is_equal
 
 def _calc_center(res):
     center = np.array([0.0,0.0,0.0])
@@ -54,7 +56,8 @@ class BasepairUnittest(unittest.TestCase):
         center = _calc_center(res)
         bp = basepair.Basepair(res1.uuid, res2.uuid, x_bp.r, center,
                                [res1.get_coords("C1'"), res2.get_coords("C1'")],
-                               _calc_name(res), bp_type=x_bp.bp_type)
+                               _calc_name(res), x_bp.bp_type,
+                               rnamake.primitives.basepair.BasepairType.WC)
 
         self.basepair = bp
 
@@ -90,6 +93,16 @@ class BasepairUnittest(unittest.TestCase):
     def test_copy(self):
         bp = self.basepair
         bp_copy = basepair.Basepair.copy(bp)
+
+        self.failUnless(is_equal.are_basepairs_equal(bp, bp_copy))
+
+    def test_to_str(self):
+        bp = self.basepair
+        s = bp.to_str()
+
+        bp_copy = basepair.Basepair.from_str(s, bp.res1_uuid, bp.res2_uuid)
+        self.failUnless(is_equal.are_basepairs_equal(bp, bp_copy, 0))
+
 
 
 """class BasepairStateUnittest(unittest.TestCase):
