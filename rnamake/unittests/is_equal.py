@@ -35,7 +35,6 @@ def are_residues_equal(r1, r2, check_uuid=1, threshold=0.00001):
             continue
 
         result = are_atom_equal(a, r2.get_atom(name), threshold)
-        print a.coords, r2.get_atom(name).coords
         if not result:
             return 0
 

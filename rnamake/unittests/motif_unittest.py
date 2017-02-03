@@ -76,19 +76,8 @@ class MotifUnittest(unittest.TestCase):
         ms1 = m1.get_state()
         ms2 = m2.get_state()
 
-        print ms1.get_end(0).d
-        print m1.get_end(0).d
-
         motif.align_motif(m1.get_end(1), m2.get_end(0), m2)
         motif_state.align_motif_state(ms1.get_end(1), ms2)
-
-        print m1.get_end(0).d
-        m1.to_pdb("test.pdb")
-        m2.to_pdb("test_2.pdb")
-
-        print m2.get_residue(index=0)._beads[0].center
-        print ms2.get_residue(index=0)._beads[0].center
-        exit()
 
         self.failUnless(numerical.are_points_equal(m2.get_end(1).d, ms2.get_end(1).d))
         self.failUnless(numerical.are_matrices_equal(m2.get_end(1).r, ms2.get_end(1).r))

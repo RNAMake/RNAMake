@@ -267,11 +267,15 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         self._structure.move(p)
         for bp in self._basepairs:
             bp.move(p)
+        for end in self._ends:
+            end.move(p)
 
     def transform(self, t):
         self._structure.transform(t)
         for bp in self._basepairs:
             bp.transform(t)
+        for end in self._ends:
+            end.transform(t)
 
     def get_secondary_structure(self):
         db_chains = self._dot_bracket.split("&")

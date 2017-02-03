@@ -578,11 +578,15 @@ class Motif(primitives.rna_structure.RNAStructure):
         self._structure.move(p)
         for bp in self._basepairs:
             bp.move(p)
+        for end in self._ends:
+            end.move(p)
 
     def transform(self, t):
         self._structure.transform(t)
         for bp in self._basepairs:
             bp.transform(t)
+        for end in self._ends:
+            end.transform(t)
 
     def fast_transform(self, t):
         r = t.rotation().T
@@ -590,7 +594,8 @@ class Motif(primitives.rna_structure.RNAStructure):
         self._structure.fast_transform(r, trans)
         for bp in self._basepairs:
             bp.fast_transform(r, trans)
-
+        for end in self._ends:
+            end.fast_transform(r, trans)
     @property
     def mtype(self):
         return self._mtype
