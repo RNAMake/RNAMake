@@ -35,6 +35,7 @@ def are_residues_equal(r1, r2, check_uuid=1, threshold=0.00001):
             continue
 
         result = are_atom_equal(a, r2.get_atom(name), threshold)
+        print a.coords, r2.get_atom(name).coords
         if not result:
             return 0
 
@@ -58,7 +59,7 @@ def are_structure_equal(s1, s2, check_uuid=1):
         return 0
 
     for i in range(len(s1)):
-        result = are_chains_equal(s1.chain(i), s2.chain(i), check_uuid)
+        result = are_chains_equal(s1.get_chain(i), s2.get_chain(i), check_uuid)
         if not result:
             return 0
 

@@ -8,23 +8,21 @@ class Structure(base.BaseStructureObject):
     __metaclass__ = abc.ABCMeta
 
     __slots__ = [
-        "_chains",
-        "_residues"]
+        "_residues",
+        "_chain_cuts"]
 
-    def __init__(self, chains):
-        self._chains = chains
-        self._residues = []
-        for c in chains:
-            for r in c:
-                self._residues.append(r)
+    def __init__(self, residues, chain_cuts):
+        self._residues = residues
+        self._chain_cuts = chain_cuts
+
 
     def __len__(self):
-        return len(self._chains)
+        return len(self._chain_cuts)
 
     def __iter__(self):
-        return self._chains.__iter__()
+        return self._residues.__iter__()
 
-    def iter_res(self):
+    def iter_chains(self):
         for r in self._residues:
             yield r
 
@@ -80,11 +78,11 @@ class Structure(base.BaseStructureObject):
                 return i
         raise exceptions.StructureException("cannot find res: " + r)
 
+    def get_chains(self):
+        pass
+
     def get_chain(self, i):
-        return self._chains[i]
+        return self.get_chains()[i]
 
     def num_residues(self):
-        total = 0
-        for c in self._chains:
-            total += len(c)
-        return total
+        return len(self._residues)

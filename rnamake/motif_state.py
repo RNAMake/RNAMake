@@ -114,22 +114,22 @@ class Chain(primitives.chain.Chain):
 
 class Structure(primitives.structure.Structure):
     __slots__ = [
-        "_chains",
-        "_residues"
+        "_residues",
+        "_chain_cuts"
     ]
 
-    def __init__(self, chains):
-        super(self.__class__, self).__init__(chains)
+    def __init__(self, residues, chain_cuts):
+        super(self.__class__, self).__init__(residues, chain_cuts)
 
     @classmethod
     def from_str(cls, s):
-        spl = s.split(":")
-        chains = []
-        for c_str in spl[:-1]:
-            c = Chain.from_str(c_str)
-            chains.append(c)
-
-        return cls(chains)
+        spl = s.split(";")
+        residues = []
+        for r_str in spl[:-2]:
+            r = Residue.from_str(r_str)
+            residues.append(r)
+        chain_cuts = [int(x) for x in spl[-2].split()]
+        return cls(residues, chain_cuts)
 
     @classmethod
     def copy(cls, s, new_uuid=0):
@@ -139,12 +139,12 @@ class Structure(primitives.structure.Structure):
         :returns: copy of Structure object
         :rtype: Structure
         """
-        chains = []
-        for c in s._chains:
-            cc = Chain.copy(c, new_uuid)
-            chains.append(cc)
+        residues = []
+        for r in s._residues:
+            cr = Residue.copy(r, new_uuid)
+            residues.append(cr)
 
-        return cls(chains)
+        return cls(residues, s._chain_cuts)
 
     def to_str(self):
         """
@@ -154,21 +154,22 @@ class Structure(primitives.structure.Structure):
         """
 
         s = ""
-        for c in self._chains:
-            s += c.to_str() + ":"
+        for r in self._residues:
+            s += r.to_str() + ";"
+        s += " ".join([str(x) for x in self._chain_cuts]) + ";"
         return s
 
     def move(self, p):
-        for c in self._chains:
-            c.move(p)
+        for r in self._residues:
+            r.move(p)
 
     def transform(self, t):
-        for c in self._chains:
-            c.transform(t)
+        for r in self._residues:
+            r.transform(t)
 
     def fast_transform(self, r, t):
-        for c in self._chains:
-            c.fast_transform(r, t)
+        for res in self._residues:
+            res.fast_transform(r, t)
 
 
 class Basepair(primitives.basepair.Basepair):
@@ -240,21 +241,26 @@ class Basepair(primitives.basepair.Basepair):
         "_d",
         "_sugars",
         "_name",
+        "_x3dna_bp_type",
         "_bp_type",
         "_uuid"]
 
     def __init__(self, res1_uuid, res2_uuid, r, d, sugars, name,
-                 bp_type=None, bp_uuid=None):
+                 x3dna_bp_type=None, bp_type=None, bp_uuid=None):
         self._res1_uuid, self._res2_uuid = res1_uuid, res2_uuid
         self._r = r
         self._d = d
         self._sugars = sugars
         self._name = name
+        self._x3dna_bp_type = x3dna_bp_type
         self._bp_type = bp_type
         self._uuid = bp_uuid
 
+        if self._x3dna_bp_type is None:
+            self._x3dna_bp_type = "c..."
+
         if self._bp_type is None:
-            self._bp_type = "c..."
+            self._bp_type = primitives.basepair.BasepairType.NC
 
         if self._uuid is None:
             self._uuid = uuid.uuid1()
@@ -266,19 +272,20 @@ class Basepair(primitives.basepair.Basepair):
         r = basic_io.str_to_matrix(spl[1])
         sugars = basic_io.str_to_points(spl[2])
 
-        return cls(res1_uuid, res2_uuid, r, d, sugars, spl[3], spl[4])
+        return cls(res1_uuid, res2_uuid, r, d, sugars, spl[3], spl[4], int(spl[5]))
 
     @classmethod
     def copy(cls, bp):
         sugars = [np.copy(bp._sugars[0]), np.copy(bp._sugars[1])]
         return cls(bp._res1_uuid, bp._res2_uuid, np.copy(bp._r), np.copy(bp._d),
-                   sugars, bp._name, bp._bp_type, bp._uuid)
+                   sugars, bp._name, bp._x3dna_bp_type, bp._bp_type, bp._uuid)
 
     @classmethod
     def copy_with_new_uuids(cls, bp, res1_uuid, res2_uuid):
         sugars = [np.copy(bp._sugars[0]), np.copy(bp._sugars[1])]
         return cls(res1_uuid, res2_uuid, np.copy(bp._r), np.copy(bp._d),
-                   sugars, bp._name, bp._bp_type, bp_uuid=uuid.uuid1())
+                   sugars, bp._name, bp._x3dna_bp_type, bp._bp_type,
+                   bp_uuid=uuid.uuid1())
 
     def __repr__(self):
           return "<Basepair("+self._name + ")>"
@@ -417,7 +424,7 @@ class Basepair(primitives.basepair.Basepair):
         s  = basic_io.point_to_str(self._d) + ";"
         s += basic_io.matrix_to_str(self._r) + ";"
         s += basic_io.points_to_str(self._sugars) + ";"
-        s += self._name + ";" + self._bp_type + ";"
+        s += self._name + ";" + self._x3dna_bp_type + ";"+ str(self._bp_type) + ";"
         return s
 
     def flip(self):
@@ -505,7 +512,10 @@ class Motif(primitives.rna_structure.RNAStructure):
         bps = []
         for bp_str in bp_strs[:-1]:
             bps.append(bp_from_str(struc, bp_str))
-        ends = [ bps[int(i)] for i in spl[6].split() ]
+        ends = []
+        end_strs = spl[6].split("@")
+        for end_str in end_strs[:-1]:
+            bps.append(bp_from_str(struc, end_str))
         end_ids = spl[7].split()
         return cls(struc, bps, ends, end_ids, name, mtype, score,
                    block_end_add)
@@ -523,14 +533,22 @@ class Motif(primitives.rna_structure.RNAStructure):
                                      i_code=bp_res[0].i_code)
                 res2 = s.get_residue(num=bp_res[1].num, chain_id=bp_res[1].chain_id,
                                      i_code=bp_res[1].i_code)
-                bp = Basepair.copy_with_new_uuids(bp, res1.uuid, res2.uuid)
-                basepairs.append(bp)
+                new_bp = Basepair.copy_with_new_uuids(bp, res1.uuid, res2.uuid)
+                basepairs.append(new_bp)
             else:
                 basepairs.append(Basepair.copy(bp))
 
         for end in m._ends:
-            i = m._basepairs.index(end)
-            ends.append(basepairs[i])
+            if new_uuid:
+                bp_res = m.get_bp_res(end)
+                res1 = s.get_residue(num=bp_res[0].num, chain_id=bp_res[0].chain_id,
+                                     i_code=bp_res[0].i_code)
+                res2 = s.get_residue(num=bp_res[1].num, chain_id=bp_res[1].chain_id,
+                                     i_code=bp_res[1].i_code)
+                bp = Basepair.copy_with_new_uuids(end, res1.uuid, res2.uuid)
+                basepairs.append(bp)
+            else:
+                basepairs.append(Basepair.copy(bp))
 
         return cls(s, basepairs, ends, m._end_ids, m._name, m._mtype, m._score,
                    m._block_end_add, m._uuid)
@@ -546,8 +564,10 @@ class Motif(primitives.rna_structure.RNAStructure):
             s += str(res2.num) + "|" + res2.chain_id + "|" + res2.i_code + "@"
         s += "&"
         for end in self._ends:
-            index = self._basepairs.index(end)
-            s += str(index) + " "
+            res1, res2 = self.get_bp_res(end)
+            s += end.to_str() + ";"
+            s += str(res1.num) + "|" + res1.chain_id + "|" + res1.i_code + ";"
+            s += str(res2.num) + "|" + res2.chain_id + "|" + res2.i_code + "@"
         s += "&"
         for end_id in self._end_ids:
             s += end_id + " "
@@ -586,6 +606,7 @@ class Motif(primitives.rna_structure.RNAStructure):
     @property
     def score(self):
         return self._score
+
 
 class MotifEnsemble(Ensemble):
     __slots__ = [
@@ -651,8 +672,9 @@ def align_motif_state(ref_bp_state, ms):
 
     trans  = transform.Transform(r, t)
 
-    #ms.transform(trans)
-    ms.fast_transform(trans)
+    ms.transform(trans)
+    #ms.fast_transform(trans)
+
 
 def get_aligned_motif_state(ref_bp_state, ms, new_uuid=1):
     r, t = ref_bp_state.get_transforming_r_and_t_w_state(ms.get_end(0))

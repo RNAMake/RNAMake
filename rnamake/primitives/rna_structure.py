@@ -35,10 +35,10 @@ class RNAStructure(base.BaseStructureObject):
 
     # wrappers from structure
     def iter_res(self):
-        return self._structure.iter_res()
+        return self._structure.__iter__();
 
     def iter_chains(self):
-        return self._structure.__iter__()
+        return self._structure.iter_chains();
 
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None, index=None):
         """
@@ -306,7 +306,7 @@ def ends_from_basepairs(s, bps):
     """
 
     chain_ends_uuids = []
-    for c in s:
+    for c in s.get_chains():
         chain_ends_uuids.append(c.first().uuid)
         if len(c) > 1:
             chain_ends_uuids.append(c.last().uuid)
@@ -344,7 +344,8 @@ def assign_end_id(s, basepairs, end):
     """
 
     open_chains = []
-    for c in s:
+    chains = s.get_chains()
+    for c in chains:
         if c.first().uuid == end.res1_uuid or c.first().uuid == end.res2_uuid:
             open_chains.append(c)
             break
@@ -404,8 +405,7 @@ def assign_end_id(s, basepairs, end):
 
 
         best_score = -1
-
-        for c in s:
+        for c in chains:
             if c in seen_chains:
                 continue
             score = 0
@@ -417,7 +417,7 @@ def assign_end_id(s, basepairs, end):
                 best_score = score
 
         best_chains = []
-        for c in s:
+        for c in chains:
             if c in seen_chains:
                 continue
             score = 0
@@ -430,7 +430,7 @@ def assign_end_id(s, basepairs, end):
 
         best_chain = None
         best_score = 10000
-        for c in s:
+        for c in chains:
             if c in seen_chains:
                 continue
             pos = 1000

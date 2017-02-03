@@ -11,6 +11,9 @@ import motif_type, exceptions
 X3DNA_BIN_PATH = settings.X3DNA_PATH + "bin/"
 os.environ['X3DNA'] =  settings.X3DNA_PATH
 
+class X3dnaBPType(object):
+    pass
+
 # TODO figure out what operating system is being used
 # TODO create at enum type for basepair types instead of strings
 # TODO check to see what happens with RNA without chain ids

@@ -6,6 +6,7 @@ import exceptions
 import motif_state
 import primitives.structure
 from chain import Chain, connect_residues_into_chains
+from residue import Residue
 
 class Structure(primitives.structure.Structure):
     """Stores 3D structure information from a pdb file. Stores all chains,
@@ -14,13 +15,10 @@ class Structure(primitives.structure.Structure):
     formated file into a Structure object use
     :func:`structure_from_pdb`
 
-    :param chains: chains that belong to this structure, optional
-    :type chains: list of chain.Chain objects
-
     :attributes:
 
-    `chains` : list of chain.Chain
-        These chain belong to the current structure
+    `residues_` : list of residue.Residues
+        These residues belong to the current structure
 
     :examples:
 
@@ -59,11 +57,11 @@ class Structure(primitives.structure.Structure):
     """
 
     __slots__ = [
-        "_chains",
-        "_residues"]
+        "_residues",
+        "_chain_cuts"]
 
-    def __init__(self, chains):
-       super(self.__class__, self).__init__(chains)
+    def __init__(self, residues, chain_cuts):
+       super(self.__class__, self).__init__(residues, chain_cuts)
 
     @classmethod
     def from_str(cls, s, rts):
@@ -76,13 +74,13 @@ class Structure(primitives.structure.Structure):
         :rtype: structure.Structure
         """
 
-        spl = s.split(":")
-        chains = []
-        for c_str in spl[:-1]:
-            c = Chain.from_str(c_str, rts)
-            chains.append(c)
-
-        return cls(chains)
+        spl = s.split(";")
+        residues = []
+        for r_str in spl[:-2]:
+            r = Residue.from_str(r_str, rts)
+            residues.append(r)
+        chain_cuts = [int(x) for x in spl[-2].split()]
+        return cls(residues, chain_cuts)
 
     @classmethod
     def copy(cls, s, new_uuid=0):
@@ -92,12 +90,12 @@ class Structure(primitives.structure.Structure):
         :returns: copy of Structure object
         :rtype: Structure
         """
-        chains = []
-        for c in s._chains:
-            cc = Chain.copy(c, new_uuid)
-            chains.append(cc)
+        residues = []
+        for r in s._residues:
+            cr = Residue.copy(r, new_uuid)
+            residues.append(cr)
 
-        return cls(chains)
+        return cls(residues, s._chain_cuts)
 
     def __repr__(self):
         return """<Structure(#chains: %s, #residues: %s)>""" %\
@@ -111,8 +109,9 @@ class Structure(primitives.structure.Structure):
         """
 
         s = ""
-        for c in self._chains:
-            s += c.to_str() + ":"
+        for r in self._residues:
+            s += r.to_str() + ";"
+        s += " ".join([str(x) for x in self._chain_cuts]) + ";"
         return s
 
     def to_pdb_str(self, renumber=-1):
@@ -134,7 +133,7 @@ class Structure(primitives.structure.Structure):
             chain_id = "A"
             rnum = 1
 
-        for i, c in enumerate(self._chains):
+        for i, c in enumerate(self.get_chains()):
             c_str, acount = c.to_pdb_str(acount, 1, rnum, chain_id)
             if renumber != -1:
             #    chain_id = c_names[i+1]
@@ -201,8 +200,8 @@ class Structure(primitives.structure.Structure):
 
 
         """
-        for c in self._chains:
-            c.transform(t)
+        for r in self._residues:
+            r.transform(t)
 
     def move(self, p):
         """
@@ -234,14 +233,29 @@ class Structure(primitives.structure.Structure):
 
         """
 
-        for c in self._chains:
-            c.move(p)
+        for r in self._residues:
+            r.move(p)
 
     def get_state(self):
-        chains = [ c.get_state() for c in self._chains]
-        return motif_state.Structure(chains)
+        residues = [ r.get_state() for r in self._residues ]
+        return motif_state.Structure(residues, self._chain_cuts)
 
+    def get_chains(self):
+        pos = 0
+        res = []
+        chains = []
+        for i, r in enumerate(self._residues):
+            if self._chain_cuts[pos] == i:
+                c = Chain(res)
+                chains.append(c)
+                res = [r]
+                pos += 1
+            else:
+                res.append(r)
 
+        if len(res) > 0:
+            chains.append(Chain(res))
+        return chains
 
 def structure_from_pdb(pdb_path, rts):
     """
@@ -258,5 +272,16 @@ def structure_from_pdb(pdb_path, rts):
     residues = pdb_parser.parse(pdb_path, rts=rts)
 
     chains = connect_residues_into_chains(residues)
-    s = Structure(chains)
+
+    # TODO should probably clean this up at some point
+    chain_cuts = []
+    residues = []
+    for i, c in enumerate(chains):
+        for r in c:
+            residues.append(r)
+        if i < len(chains) - 1:
+            chain_cuts.append(len(residues))
+    chain_cuts.append(len(residues))
+
+    s = Structure(residues, chain_cuts)
     return s

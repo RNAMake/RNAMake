@@ -3,7 +3,8 @@ import warnings
 import rnamake.transform
 import rnamake.io
 
-from rnamake import structure, exceptions, util, residue_type, motif_state
+from rnamake import structure, exceptions, util, residue_type, motif_state, chain
+from rnamake import settings
 from instances import transform_instances
 
 import is_equal, instances
@@ -14,13 +15,40 @@ import numpy as np
 class StructureUnittest(unittest.TestCase):
 
     def setUp(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
+        path = settings.UNITTEST_PATH + "resources/p4p6.pdb"
         self.rts = residue_type.ResidueTypeSet()
         self.structure = structure.structure_from_pdb(path, self.rts)
 
     def test_creation(self):
-        path = rnamake.settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        structure.structure_from_pdb(path, self.rts)
+        path = settings.UNITTEST_PATH + "resources/p4p6.pdb"
+        s = structure.structure_from_pdb(path, self.rts)
+
+    def test_new_chains(self):
+        s = self.structure
+        chains = s.get_chains()
+        new_chains = []
+        new_res = []
+        all_res = []
+        chain_cuts = []
+        i = 0
+        for r in chains[0]:
+            new_res.append(r)
+            all_res.append(r)
+            if i > 10:
+                new_chain = chain.Chain(new_res)
+                new_chains.append(new_chain)
+                new_res = []
+                chain_cuts.append(len(all_res))
+                i = 0
+            i += 1
+
+        new_chains.append(chain.Chain(new_res))
+        chain_cuts.append(len(all_res))
+        new_s = structure.Structure(all_res, chain_cuts)
+        new_s_chains = new_s.get_chains()
+
+        for i in range(len(new_chains)):
+            self.failUnless(is_equal.are_chains_equal(new_chains[i], new_s_chains[i]))
 
     # TODO move to integration
     def _test_build_chains_all(self):
@@ -71,7 +99,7 @@ class StructureUnittest(unittest.TestCase):
     def test_iter_residues(self):
         s = self.structure
         res = []
-        for r in s.iter_res():
+        for r in s:
             res.append(r)
         self.failUnless(len(res) == s.num_residues())
 

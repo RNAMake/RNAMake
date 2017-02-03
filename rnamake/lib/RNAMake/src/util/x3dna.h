@@ -22,6 +22,12 @@
 #include "math/xyz_vector.h"
 #include "math/xyz_matrix.h"
 
+enum X3dnaBPType {
+    cm_  = 0,
+    cM_M = 1,
+    tWpW = 2,
+};
+
 class X3dnaException : public std::runtime_error {
 public:
     X3dnaException(

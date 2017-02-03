@@ -302,8 +302,8 @@ class Structure(primitives.structure.Structure):
         "_residues"
     ]
 
-    def __init__(self, chains):
-        super(self.__class__, self).__init__(chains)
+    def __init__(self, residues, chain_cuts):
+        super(self.__class__, self).__init__(residues, chain_cuts)
 
     @classmethod
     def from_str(cls, s):

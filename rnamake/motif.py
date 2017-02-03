@@ -101,7 +101,10 @@ class Motif(rna_structure.RNAStructure):
         bps = []
         for bp_str in bp_strs[:-1]:
             bps.append(rna_structure.bp_from_str(struc, bp_str))
-        ends = [ bps[int(i)] for i in spl[6].split() ]
+        ends = []
+        end_strs = spl[6].split("@")
+        for end_str in end_strs[:-1]:
+            bps.append(rna_structure.bp_from_str(struc, end_str))
         end_ids = spl[7].split()
         bead_strs = spl[8].split(";")
         protein_beads = []
@@ -125,14 +128,22 @@ class Motif(rna_structure.RNAStructure):
                 r_pos_2 = m.get_res_index(bp_res[1])
                 res1 = s.get_residue(index=r_pos_1)
                 res2 = s.get_residue(index=r_pos_2)
-                bp = basepair.Basepair.copy_with_new_uuids(bp, res1.uuid, res2.uuid)
-                basepairs.append(bp)
+                new_bp = basepair.Basepair.copy_with_new_uuids(bp, res1.uuid, res2.uuid)
+                basepairs.append(new_bp)
             else:
                 basepairs.append(basepair.Basepair.copy(bp))
 
         for end in m._ends:
-            i = m._basepairs.index(end)
-            ends.append(basepairs[i])
+            if new_uuid:
+                bp_res = m.get_bp_res(end)
+                r_pos_1 = m.get_res_index(bp_res[0])
+                r_pos_2 = m.get_res_index(bp_res[1])
+                res1 = s.get_residue(index=r_pos_1)
+                res2 = s.get_residue(index=r_pos_2)
+                new_end = basepair.Basepair.copy_with_new_uuids(end, res1.uuid, res2.uuid)
+                ends.append(new_end)
+            else:
+                ends.append(basepair.Basepair.copy(end))
 
         if new_uuid:
             m_uuid = uuid.uuid1()
@@ -192,8 +203,10 @@ class Motif(rna_structure.RNAStructure):
             s += str(res2.num) + "|" + res2.chain_id + "|" + res2.i_code + "@"
         s += "&"
         for end in self._ends:
-            index = self._basepairs.index(end)
-            s += str(index) + " "
+            res1, res2 = self.get_bp_res(end)
+            s += end.to_str() + ";"
+            s += str(res1.num) + "|" + res1.chain_id + "|" + res1.i_code + ";"
+            s += str(res2.num) + "|" + res2.chain_id + "|" + res2.i_code + "@"
         s += "&"
         for end_id in self._end_ids:
             s += end_id + " "
@@ -209,22 +222,24 @@ class Motif(rna_structure.RNAStructure):
         for bp in self._basepairs:
             sugars = [ np.copy(bp.sugars[0]), np.copy(bp.sugars[1])]
             bp_state = motif_state.Basepair(bp.res1_uuid, bp.res2_uuid, np.copy(bp.r),
-                                            np.copy(bp.d), sugars, bp.name, bp.bp_type,
-                                            bp.uuid)
+                                            np.copy(bp.d), sugars, bp.name, bp.x3dna_bp_type,
+                                            bp.bp_type, bp.uuid)
             basepairs.append(bp_state)
 
         ends = []
         for end in self._ends:
-            i = self._basepairs.index(end)
-            ends.append(basepairs[i])
+            sugars = [np.copy(end.sugars[0]), np.copy(end.sugars[1])]
+            bp_state = motif_state.Basepair(end.res1_uuid, end.res2_uuid, np.copy(end.r),
+                                            np.copy(end.d), sugars, end.name, end.x3dna_bp_type,
+                                            end.bp_type, end.uuid)
+            ends.append(bp_state)
 
         # keep only watson and crick bps
-        bps = []
-        for bp in basepairs:
-            if bp.bp_type == "cW-W":
-                bps.append(bp)
-
-        ms = motif_state.Motif(self._structure.get_state(), bps, ends, self._end_ids,
+        #bps = []
+        #for bp in basepairs:
+        #    if bp.bp_type == "cW-W":
+        #        bps.append(bp)
+        ms = motif_state.Motif(self._structure.get_state(), basepairs, ends, self._end_ids,
                                self._name, self._mtype, self._score,
                                self._block_end_add, self._uuid)
         return ms

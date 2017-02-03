@@ -106,7 +106,7 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         if self._protein_beads is None:
             self._protein_beads = []
 
-        for c in self._structure:
+        for c in self._structure.get_chains():
             for r in c:
                 found = 0
                 for i, end in enumerate(ends):
@@ -127,7 +127,10 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         bps = []
         for bp_str in bp_strs[:-1]:
             bps.append(bp_from_str(struc, bp_str))
-        ends = [ bps[int(i)] for i in spl[4].split() ]
+        end_strs = spl[4].split("@")
+        ends = []
+        for end_str in end_strs[:-1]:
+            ends.append(bp_from_str(struc, end_str))
         end_ids = spl[5].split()
         bead_strs = spl[6].split(";")
         protein_beads = []
@@ -151,15 +154,22 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
                                      i_code=bp_res[0].i_code)
                 res2 = s.get_residue(num=bp_res[1].num, chain_id=bp_res[1].chain_id,
                                      i_code=bp_res[1].i_code)
-                bp = basepair.Basepair.copy_with_new_uuids(bp, res1.uuid, res2.uuid)
-                basepairs.append(bp)
+                bp_new = basepair.Basepair.copy_with_new_uuids(bp, res1.uuid, res2.uuid)
+                basepairs.append(bp_new)
             else:
                 basepairs.append(basepair.Basepair.copy(bp))
 
         for end in rs._ends:
-            i = rs._basepairs.index(end)
-            ends.append(basepairs[i])
-
+            if new_uuid:
+                bp_res = rs.get_bp_res(end)
+                res1 = s.get_residue(num=bp_res[0].num, chain_id=bp_res[0].chain_id,
+                                     i_code=bp_res[0].i_code)
+                res2 = s.get_residue(num=bp_res[1].num, chain_id=bp_res[1].chain_id,
+                                     i_code=bp_res[1].i_code)
+                bp = basepair.Basepair.copy_with_new_uuids(end, res1.uuid, res2.uuid)
+                ends.append(bp)
+            else:
+                ends.append(basepair.Basepair.copy(end))
         return cls(s, basepairs, ends, rs._end_ids, rs._name, rs._block_end_add,
                    rs._dot_bracket, protein_beads)
 
@@ -176,8 +186,10 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
             s += str(res2.num) + "|" + res2.chain_id + "|" + res2.i_code + "@"
         s += "&"
         for end in self._ends:
-            index = self._basepairs.index(end)
-            s += str(index) + " "
+            res1, res2 = self.get_bp_res(end)
+            s += end.to_str() + ";"
+            s += str(res1.num) + "|" + res1.chain_id + "|" + res1.i_code + ";"
+            s += str(res2.num) + "|" + res2.chain_id + "|" + res2.i_code + "@"
         s += "&"
         for end_id in self._end_ids:
             s += end_id + " "
@@ -237,7 +249,7 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         """
 
         seq = ""
-        for i, c in enumerate(self._structure):
+        for i, c in enumerate(self._structure.get_chains()):
             if i != 0:
                 seq += "&"
             for r in c:
@@ -263,15 +275,13 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
 
     def get_secondary_structure(self):
         db_chains = self._dot_bracket.split("&")
-        chains = []
-        for i, c in enumerate(self._structure):
-            res = []
+        res = []
+        for i, c in enumerate(self._structure.get_chains()):
             for j, r in enumerate(c):
                 s_r = secondary_structure.Residue(r.name, db_chains[i][j], r.num,
                                                   r.chain_id, r.i_code, r.uuid)
                 res.append(s_r)
-            chains.append(secondary_structure.Chain(res))
-        s = secondary_structure.Structure(chains)
+        s = secondary_structure.Structure(res, self._structure._chain_cuts)
         bps = []
         for bp in self._basepairs:
             s_bp = secondary_structure.Basepair(bp.res1_uuid, bp.res2_uuid, bp.name, bp.uuid)
@@ -355,6 +365,7 @@ def rna_structure_from_pdb(pdb_path, rts):
     for end in ends:
         end_id = assign_end_id(s, bps, end)
         end_ids.append(end_id)
+        bps.remove(end)
     name = util.filename(pdb_path)[:-4]
     score = 0
     seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])

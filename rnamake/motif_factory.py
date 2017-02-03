@@ -139,7 +139,7 @@ class MotifFactory(object):
         closest = None
         best = 1000
         c2 = self._ref_motif.get_end(0).d
-        for i, c in enumerate(s):
+        for i, c in enumerate(s.get_chains()):
             c1 = c.first().center()
             dist = util.distance(c1, c2)
             if dist < best:
@@ -223,7 +223,7 @@ class MotifFactory(object):
             for bp in me_copy.basepairs:
                 bp.move(diff)
 
-        for c in me_copy.structure:
+        for c in me_copy.structure.get_chains():
             for r in c:
                 found = 0
                 for i, end in enumerate(me_copy.ends):
