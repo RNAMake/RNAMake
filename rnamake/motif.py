@@ -104,7 +104,7 @@ class Motif(rna_structure.RNAStructure):
         ends = []
         end_strs = spl[6].split("@")
         for end_str in end_strs[:-1]:
-            bps.append(rna_structure.bp_from_str(struc, end_str))
+            ends.append(rna_structure.bp_from_str(struc, end_str))
         end_ids = spl[7].split()
         bead_strs = spl[8].split(";")
         protein_beads = []
@@ -311,9 +311,9 @@ def get_aligned_motif(ref_bp, motif_end, m, sterics=1):
 
 
 def clash_between_motifs(m1, m2, clash_radius=settings.CLASH_RADIUS):
-    for r1 in m1.iter_res():
+    for r1 in m1:
         for b1 in r1.iter_beads():
-            for r2 in m2.iter_res():
+            for r2 in m2:
                 for b2 in r2.iter_beads():
                     if b1.btype == residue.BeadType.PHOS or \
                        b2.btype == residue.BeadType.PHOS:

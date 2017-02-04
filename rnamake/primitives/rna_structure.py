@@ -34,9 +34,6 @@ class RNAStructure(base.BaseStructureObject):
         return self._ends.__iter__()
 
     # wrappers from structure
-    def iter_res(self):
-        return self._structure.__iter__();
-
     def iter_chains(self):
         return self._structure.iter_chains();
 
@@ -50,6 +47,9 @@ class RNAStructure(base.BaseStructureObject):
     def get_res_index(self, r):
         return self._structure.get_res_index(r)
 
+    def get_chains(self):
+        return self._structure.get_chains()
+
     def get_chain(self, i):
         return self._structure.get_chain(i)
 
@@ -59,8 +59,7 @@ class RNAStructure(base.BaseStructureObject):
     def num_chains(self):
         return len(self._structure)
 
-    def get_basepairs(self, bp_uuid=None, res1=None, res2=None, uuid1=None,
-                      uuid2=None, name=None):
+    def get_basepairs(self, bp_uuid=None, uuid1=None, uuid2=None, name=None):
         """
         locates a Basepair object based on residue objects or uuids if nothing
         is supplied you will get back all the basepairs in the motif. The way
@@ -114,18 +113,13 @@ class RNAStructure(base.BaseStructureObject):
             [<Basepair(A1-A24)>]
         """
 
-        if res1 is None and res2 is None and uuid1 is None and uuid2 is None \
-           and bp_uuid is None and name is None:
+        if  uuid1 is None and uuid2 is None and bp_uuid is None and name is None:
             raise exceptions.RNAStructureException(
                 "no arguments specified for get_basepair()")
 
         found = []
         for bp in self._basepairs:
             if bp_uuid is not None and bp_uuid != bp.uuid:
-                continue
-            if res1 is not None and (res1.uuid != bp.res1_uuid and res1 != bp.res2_uuid):
-                continue
-            if res2 is not None and (res2.uuid != bp.res1_uuid and res2 != bp.res2_uuid):
                 continue
             if uuid1 is not None and \
                (uuid1 != bp.res1_uuid and uuid1 != bp.res2_uuid):
@@ -138,8 +132,7 @@ class RNAStructure(base.BaseStructureObject):
             found.append(bp)
         return found
 
-    def get_basepair(self, index=None, bp_uuid=None, res1=None, res2=None, uuid1=None,
-                     uuid2=None, name=None):
+    def get_basepair(self, index=None, bp_uuid=None, uuid1=None, uuid2=None, name=None):
         """
         locates a Basepair object based on residue objects or uuids if nothing
         is supplied you will get back all the basepairs in the motif. The way
@@ -192,8 +185,8 @@ class RNAStructure(base.BaseStructureObject):
             >>> r_struct_copy.get_basepair(uuid1=res1.uuid)
             [<Basepair(A1-A24)>]
         """
-        if res1 is None and res2 is None and uuid1 is None and uuid2 is None \
-           and bp_uuid is None and name is None and index is None:
+        if  uuid1 is None and uuid2 is None and bp_uuid is None \
+                and name is None and index is None:
             raise exceptions.RNAStructureException(
                 "no arguments specified for get_basepair()")
 
@@ -202,10 +195,6 @@ class RNAStructure(base.BaseStructureObject):
             if index is not None and index != i:
                 continue
             if bp_uuid is not None and bp_uuid != bp.uuid:
-                continue
-            if res1 is not None and (res1.uuid != bp.res1_uuid and res1 != bp.res2_uuid):
-                continue
-            if res2 is not None and (res2.uuid != bp.res1_uuid and res2 != bp.res2_uuid):
                 continue
             if uuid1 is not None and \
                (uuid1 != bp.res1_uuid and uuid1 != bp.res2_uuid):
@@ -225,14 +214,39 @@ class RNAStructure(base.BaseStructureObject):
 
         return found[0]
 
-    def get_end(self, index=None, name=None, end_id=None):
-        if index is not None:
-            return self._ends[index]
+    def get_end(self, index=None, bp_uuid=None, uuid1=None, uuid2=None,
+                      name=None, end_id=None):
 
-        if name is not None:
-            for end in self._ends:
-                if end.name == name:
-                    return end
+        if  uuid1 is None and uuid2 is None and bp_uuid is None \
+                and name is None and index is None and end_id is None:
+            raise exceptions.RNAStructureException(
+                "no arguments specified for get_basepair()")
+
+        found = []
+        for i, bp in enumerate(self._ends):
+            if index is not None and index != i:
+                continue
+            if end_id is not None and self._end_ids[i] != end_id:
+                continue
+            if bp_uuid is not None and bp_uuid != bp.uuid:
+                continue
+            if uuid1 is not None and \
+               (uuid1 != bp.res1_uuid and uuid1 != bp.res2_uuid):
+                continue
+            if uuid2 is not None and \
+               (uuid2 != bp.res1_uuid and uuid2 != bp.res2_uuid):
+                continue
+            if name is not None and name != bp.name:
+                continue
+            if len(found) == 1:
+                raise exceptions.RNAStructureException(
+                    "more than one basepair has been found with these search criteria")
+            found.append(bp)
+
+        if len(found) == 0:
+            return None
+
+        return found[0]
 
     def get_end_id(self, i):
         return self._end_ids[i]
@@ -258,7 +272,7 @@ class RNAStructure(base.BaseStructureObject):
                 "must specify name or id in get_end_index")
 
         if name is not None:
-            bp = self.get_basepair(name=name)
+            bp = self.get_end(name=name)
             if bp is None:
                 raise exceptions.RNAStructureException(
                     "cannot find basepair with name "+name)
@@ -266,7 +280,7 @@ class RNAStructure(base.BaseStructureObject):
             return self._ends.index(bp)
         else:
             matching = []
-            for i, end_id in enumerate(self.end_ids):
+            for i, end_id in enumerate(self._end_ids):
                 if end_id == id:
                     matching.append(i)
             if len(matching) > 1:
@@ -329,7 +343,7 @@ def get_res_basepair(basepairs, r):
     return None
 
 
-def assign_end_id(s, basepairs, end):
+def assign_end_id(s, basepairs, ends, end):
     """
     generate a new end_id based on the secondary structure instance in the
     perspective of the supplied end. An end id is a composition of both the
@@ -369,6 +383,9 @@ def assign_end_id(s, basepairs, end):
             count += 1
             dot_bracket = "."
             bp = get_res_basepair(basepairs, r)
+            if bp is None:
+                bp = get_res_basepair(ends, r)
+
             if bp is not None:
                 flag =0
                 if bp.bp_type == basepair.BasepairType.NC:
@@ -411,6 +428,8 @@ def assign_end_id(s, basepairs, end):
             score = 0
             for r in c:
                 bp = get_res_basepair(basepairs, r)
+                if bp is None:
+                    bp = get_res_basepair(ends, r)
                 if bp is not None and bp in seen_bp:
                     score += 1
             if score > best_score:
@@ -423,6 +442,8 @@ def assign_end_id(s, basepairs, end):
             score = 0
             for r in c:
                 bp = get_res_basepair(basepairs, r)
+                if bp is None:
+                    bp = get_res_basepair(ends, r)
                 if bp is not None and bp in seen_bp:
                     score += 1
             if score == best_score:
@@ -436,6 +457,8 @@ def assign_end_id(s, basepairs, end):
             pos = 1000
             for i, r in enumerate(c):
                 bp = get_res_basepair(basepairs, r)
+                if bp is None:
+                    bp = get_res_basepair(ends, r)
                 if bp is not None and bp in seen_bp:
                     pos = i
                     break

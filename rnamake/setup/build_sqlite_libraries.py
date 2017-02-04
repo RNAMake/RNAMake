@@ -134,8 +134,8 @@ class BuildSqliteLibraries(object):
                 continue
             seen_name.append(m.name)
             for i in range(m.num_basepairs() - 1):
-                if m.get_basepair(i).bp_type != "cW-W" or \
-                                m.get_basepair(i + 1).bp_type != "cW-W":
+                if m.get_basepair(i).x3dna_bp_type != "cW-W" or \
+                                m.get_basepair(i + 1).x3dna_bp_type != "cW-W":
                     continue
                 bps = [m.get_basepair(i), m.get_basepair(i + 1)]
                 res = []
@@ -151,6 +151,7 @@ class BuildSqliteLibraries(object):
                 name = m.name + ".BP." + str(pos)
                 pos += 1
                 bp_steps = self.mf.motifs_from_res(res, bps, m, name, motif_type.HELIX)
+
                 if len(bp_steps) != 2:
                     continue
                 for bp_step in bp_steps:
@@ -415,9 +416,9 @@ class BuildSqliteLibraries(object):
 
 #setup_start_motif()
 builder = BuildSqliteLibraries()
-#builder.build_ideal_helices()
+builder.build_ideal_helices()
 builder.build_basic_libraries()
-#builder.build_helix_ensembles()
+builder.build_helix_ensembles()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()

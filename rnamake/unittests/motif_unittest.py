@@ -10,11 +10,14 @@ def motif_from_pdb(pdb_path, rts):
     s = structure.structure_from_pdb(pdb_path, rts)
     bps = rna_structure.basepairs_from_x3dna(pdb_path, s)
     ends = ends_from_basepairs(s, bps)
+    for end in ends:
+        bps.remove(end)
+
     end_ids = []
     for end in ends:
-        end_id = assign_end_id(s, bps, end)
+        end_id = assign_end_id(s, bps, ends, end)
         end_ids.append(end_id)
-        bps.remove(end)
+
     name = util.filename(pdb_path)[:-4]
     score = 0
     seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
@@ -56,7 +59,7 @@ class MotifUnittest(unittest.TestCase):
 
         self.failUnless(ms.num_res() == m.num_res())
 
-        for r in m.iter_res():
+        for r in m:
             self.failUnless(ms.get_residue(uuid=r.uuid) is not None)
 
         s = ms.to_str()

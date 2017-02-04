@@ -35,8 +35,7 @@ class MotifFactory(object):
                 bps_new.append(basepair.Basepair.copy(bp))
             ends_new = []
             for end in me.ends:
-                i = me.basepairs.index(end)
-                ends_new.append(bps_new[i])
+                ends_new.append(basepair.Basepair.copy(end))
 
             return cls(s_new, bps_new, ends_new)
 
@@ -89,6 +88,9 @@ class MotifFactory(object):
         name = "Base"
         score = 0
 
+        for end in ends:
+            basepairs.remove(end)
+
         seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
         m = motif.Motif(s, basepairs, ends, end_ids, name, motif_type.HELIX, 0,
                         dot_bracket=dot_bracket)
@@ -98,14 +100,14 @@ class MotifFactory(object):
     def __setup_end_ids(self, s, basepairs, ends):
         end_ids = []
         for end in ends:
-            end_id = assign_end_id(s, basepairs, end)
+            end_id = assign_end_id(s, basepairs, ends, end)
             end_ids.append(end_id)
         return end_ids
 
     def __steric_clash(self, m, me):
-        for r1 in m.iter_res():
+        for r1 in m:
             for b1 in r1.iter_beads():
-                for r2 in me.structure.iter_res():
+                for r2 in me.structure:
                     for b2 in r2.iter_beads():
                         if b1.btype == bead.BeadType.PHOS or \
                            b2.btype == bead.BeadType.PHOS:
@@ -123,10 +125,10 @@ class MotifFactory(object):
             me.structure.get_residue(uuid=me.ends[ei2].res2_uuid)
         ]
 
-        for r1 in m.iter_res():
+        for r1 in m:
             if r1 in end_res_1:
                 continue
-            for r2 in me.structure.iter_res():
+            for r2 in me.structure:
                 if r2 in end_res_2:
                     continue
                 dist = util.distance(r1.center(), r2.center())
@@ -139,18 +141,28 @@ class MotifFactory(object):
         closest = None
         best = 1000
         c2 = self._ref_motif.get_end(0).d
-        for i, c in enumerate(s.get_chains()):
+        chains = s.get_chains()
+        for i, c in enumerate(chains):
             c1 = c.first().center()
             dist = util.distance(c1, c2)
             if dist < best:
                 best = dist
                 closest = c
         updated_chains = [closest]
-        for i, c in enumerate(s):
+        for i, c in enumerate(chains):
             if c != closest:
                 updated_chains.append(c)
 
-        return structure.Structure(updated_chains)
+        res = []
+        chain_cuts = []
+        for i, c in enumerate(updated_chains):
+            for r in c:
+                res.append(r)
+            if i < len(updated_chains) - 1:
+                chain_cuts.append(len(res))
+        chain_cuts.append(len(res))
+
+        return structure.Structure(res, chain_cuts)
 
     def __get_aligned_ends(self, s, ends):
         if len(ends) == 0:
@@ -174,7 +186,7 @@ class MotifFactory(object):
 
         for i, end in enumerate(updated_ends):
             flip_res = 0
-            for c in s:
+            for c in s.get_chains():
                 if c.first().uuid == end.res2_uuid:
                     flip_res = 1
                     break
@@ -195,12 +207,16 @@ class MotifFactory(object):
         me_copy.structure.transform(t)
         for bp in me_copy.basepairs:
             bp.transform(t)
+        for end in me_copy.ends:
+            end.transform(t)
 
         bp_pos_diff = ref_bp.d - me_copy.ends[pos].d
 
         me_copy.structure.move(bp_pos_diff)
         for bp in me_copy.basepairs:
             bp.move(bp_pos_diff)
+        for end in me_copy.ends:
+            end.move(bp_pos_diff)
 
         # alignment is by center of basepair, it can be slightly improved by
         # aligning the c1' sugars
@@ -222,6 +238,8 @@ class MotifFactory(object):
             me_copy.structure.move(diff)
             for bp in me_copy.basepairs:
                 bp.move(diff)
+            for end in me_copy.ends:
+                end.move(diff)
 
         for c in me_copy.structure.get_chains():
             for r in c:
@@ -260,6 +278,7 @@ class MotifFactory(object):
             if not self.__steric_clash(m2_added, aligned_me) and \
                not motif.clash_between_motifs(self._base_helix, m2_added):
                 continue
+
 
             aligned_me.ends[i].flip()
 
@@ -347,6 +366,8 @@ class MotifFactory(object):
 
         basepairs = rna_structure.basepairs_from_x3dna(pdb_path, s)
         ends      = ends_from_basepairs(s, basepairs)
+        for end in ends:
+            basepairs.remove(end)
 
         elements = self._MotifElements(s, basepairs, ends)
         name = util.filename(pdb_path)[:-4]
@@ -399,7 +420,6 @@ class MotifFactory(object):
         else:
             raise ValueError("not supported")
 
-
     def motifs_from_res(self, res, bps, org_m, m_name, mtype):
         all_res = []
         all_res.extend(res)
@@ -412,9 +432,23 @@ class MotifFactory(object):
         all_res = [ residue.Residue.copy(r, build_beads=0) for r in all_res]
 
         chains = chain.connect_residues_into_chains(all_res)
-        s = structure.Structure(chains)
+
+        new_res = []
+        chain_cuts = []
+        for i, c in enumerate(chains):
+            for r in c:
+                new_res.append(r)
+            if i < len(chains) - 1:
+                chain_cuts.append(len(new_res))
+        chain_cuts.append(len(new_res))
+
+        s = structure.Structure(new_res, chain_cuts)
         ends = ends_from_basepairs(s, bps)
-        elements = self._MotifElements(s, bps, ends)
+        new_bps = bps[:]
+        for end in ends:
+            new_bps.remove(end)
+
+        elements = self._MotifElements(s, new_bps, ends)
 
         return self.__motifs_from_elements(elements, mtype, m_name)
 
@@ -482,14 +516,22 @@ class MotifFactory(object):
 
         return m
 
-
-
     def motifs_from_rstruc(self, rna_struc, mtype, name):
-        chains = [ c for c in rna_struc.iter_chains() ]
+        chains = [ c for c in rna_struc.get_chains() ]
         bps = [ bp for bp in rna_struc.iter_basepairs() ]
         ends = [ end for end in rna_struc.iter_ends() ]
-        s = structure.Structure(chains)
-        for r in s.iter_res():
+
+        res = []
+        chain_cuts = []
+        for i, c in enumerate(chains):
+            for r in c:
+                res.append(r)
+            if i < len(chains) - 1:
+                chain_cuts.append(len(res))
+        chain_cuts.append(len(res))
+
+        s = structure.Structure(res, chain_cuts)
+        for r in s:
             r.remove_beads()
 
         elements = self._MotifElements(s, bps, ends)

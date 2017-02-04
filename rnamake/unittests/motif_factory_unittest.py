@@ -19,11 +19,11 @@ class MotifFactoryUnittest(unittest.TestCase):
         #    m.to_pdb("test."+str(i)+".pdb")
 
     def test_motifs_from_res(self):
-        path = settings.UNITTEST_PATH + "resources/motifs/HELIX.IDEAL.6"
+        path = settings.RESOURCES_PATH + "base_helix"
         motifs = self.mf.motifs_from_file(path)
         m = motifs[0]
 
-        bps = [ m.get_basepair(0), m.get_basepair(1)]
+        bps = [ m.get_end(0), m.get_basepair(0)]
         res = []
 
         for bp in bps:

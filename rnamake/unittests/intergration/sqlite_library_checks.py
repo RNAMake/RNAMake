@@ -26,7 +26,7 @@ class IdealHelicesUnittests(unittest.TestCase):
             self.failIf(motif.clash_between_motifs(self.base_motif, m2))
 
 
-class IdealReverseHelicesUnittests(unittest.TestCase):
+"""class IdealReverseHelicesUnittests(unittest.TestCase):
 
     def setUp(self):
         self.mlib =  sqlite_library.MotifSqliteLibrary("ideal_helices_reversed")
@@ -57,7 +57,7 @@ class IdealReverseHelicesUnittests(unittest.TestCase):
         m = self.mlib.get(name="HELIX.IDEAL.3")
 
         if m.sequence() == self.base_motif.sequence():
-            self.fail("sequence should be flipped but now")
+            self.fail("sequence should be flipped but now")"""
 
 
 class BasicLibrariesUnittests(unittest.TestCase):

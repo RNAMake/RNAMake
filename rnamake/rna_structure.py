@@ -117,6 +117,9 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
                 if not found:
                     r.build_beads()
 
+    def __iter__(self):
+        return self._structure.__iter__()
+
     @classmethod
     def from_str(cls, s, rts):
         spl = s.split("&")
@@ -170,6 +173,7 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
                 ends.append(bp)
             else:
                 ends.append(basepair.Basepair.copy(end))
+
         return cls(s, basepairs, ends, rs._end_ids, rs._name, rs._block_end_add,
                    rs._dot_bracket, protein_beads)
 
@@ -292,8 +296,8 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
             bps.append(s_bp)
         ends = []
         for end in self._ends:
-            i = self._basepairs.index(end)
-            ends.append(bps[i])
+            s_end = secondary_structure.Basepair(end.res1_uuid, end.res2_uuid, end.name, end.uuid)
+            ends.append(s_end)
 
         return secondary_structure.RNAStructure(s, bps, ends, self._end_ids[::])
 
@@ -366,10 +370,14 @@ def rna_structure_from_pdb(pdb_path, rts):
     bps = basepairs_from_x3dna(pdb_path, s)
     ends = ends_from_basepairs(s, bps)
     end_ids = []
+
     for end in ends:
-        end_id = assign_end_id(s, bps, end)
-        end_ids.append(end_id)
         bps.remove(end)
+
+    for end in ends:
+        end_id = assign_end_id(s, bps, ends, end)
+        end_ids.append(end_id)
+
     name = util.filename(pdb_path)[:-4]
     score = 0
     seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])

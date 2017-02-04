@@ -99,7 +99,7 @@ class Structure(primitives.structure.Structure):
 
     def __repr__(self):
         return """<Structure(#chains: %s, #residues: %s)>""" %\
-               (len(self._chains), len(self._residues))
+               (len(self.get_chains()), len(self._residues))
 
     def to_str(self):
         """
@@ -256,6 +256,7 @@ class Structure(primitives.structure.Structure):
         if len(res) > 0:
             chains.append(Chain(res))
         return chains
+
 
 def structure_from_pdb(pdb_path, rts):
     """

@@ -69,7 +69,7 @@ class RNAStructureUnittest(unittest.TestCase):
         rs = self.rna_struc
         bp = rs.get_end(0)
 
-        found = rs.get_basepair(uuid1=bp.res1_uuid, uuid2=bp.res2_uuid)
+        found = rs.get_end(uuid1=bp.res1_uuid, uuid2=bp.res2_uuid)
         if bp != found:
             self.fail("did not retreive correct basepair")
 
@@ -106,7 +106,7 @@ class RNAStructureUnittest(unittest.TestCase):
     def test_secondary_structure(self):
         rs = self.rna_struc
         ss = rs.get_secondary_structure()
-        for r in rs.iter_res():
+        for r in rs:
             self.failUnless(ss.get_residue(uuid=r.uuid) is not None)
 
         for bp in rs.iter_basepairs():

@@ -58,7 +58,7 @@ class MotifScorer(object):
             else:
                 score += 6.1122
 
-        for r in s.iter_res():
+        for r in s:
             found = 0
             for bp in basepairs:
                 if r.uuid == bp.res1_uuid or r.uuid == bp.res2_uuid:
