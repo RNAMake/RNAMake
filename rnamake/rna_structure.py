@@ -371,6 +371,7 @@ def rna_structure_from_pdb(pdb_path, rts):
     ends = ends_from_basepairs(s, bps)
     end_ids = []
 
+
     for end in ends:
         bps.remove(end)
 

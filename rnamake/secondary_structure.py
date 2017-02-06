@@ -298,7 +298,7 @@ class Structure(primitives.structure.Structure):
     """
 
     __slots__ = [
-        "_chains",
+        "_chain_cuts",
         "_residues"
     ]
 
@@ -342,7 +342,7 @@ class Structure(primitives.structure.Structure):
         :return: sequence of structure
         :rtype: seq
         """
-        sequences = [x.sequence() for x in self._chains]
+        sequences = [x.sequence() for x in self.get_chains()]
         return "&".join(sequences)
 
     def dot_bracket(self):
@@ -353,7 +353,7 @@ class Structure(primitives.structure.Structure):
         :return: sequence of structure
         :rtype: seq
         """
-        dot_brackets = [x.dot_bracket() for x in self._chains]
+        dot_brackets = [x.dot_bracket() for x in self.get_chains()]
         return "&".join(dot_brackets)
 
     def to_str(self):
@@ -367,6 +367,23 @@ class Structure(primitives.structure.Structure):
         for c in self._chains:
             s += c.to_str() + "|"
         return s
+
+    def get_chains(self):
+        pos = 0
+        res = []
+        chains = []
+        for i, r in enumerate(self._residues):
+            if self._chain_cuts[pos] == i:
+                c = Chain(res)
+                chains.append(c)
+                res = [r]
+                pos += 1
+            else:
+                res.append(r)
+
+        if len(res) > 0:
+            chains.append(Chain(res))
+        return chains
 
 
 class Basepair(primitives.basepair.Basepair):
@@ -588,7 +605,7 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
     def update(self):
         for i, end in enumerate(self._ends):
             self._end_ids[i] = primitives.rna_structure.assign_end_id(
-                                    self._structure, self._basepairs, end)
+                                    self._structure, self._basepairs, self._ends, end)
 
 
 class Motif(RNAStructure):
@@ -756,6 +773,7 @@ class Motif(RNAStructure):
     def uuid(self):
         return self._uuid
 
+
 class Pose(RNAStructure):
     """
     Complete secondary structure container for representing an RNA Pose.
@@ -839,6 +857,9 @@ class Pose(RNAStructure):
 
     def __repr__(self):
         return "<secondary_structure.Pose( " + self.sequence() + " " + self.dot_bracket() + " )"
+
+    def iter_motifs(self):
+        return self._motifs.__iter__()
 
     def get_motif(self, m_uuid):
         """

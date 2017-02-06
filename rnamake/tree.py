@@ -131,7 +131,7 @@ class Tree(object):
         self.current_node = self.get_node(0)
         return self
 
-    # TODO this is really bad need to just call connections.__iter__()
+    # TODO this is really bad need to just call nodes.__iter__()
     def next(self):
         if self.current_node is None:
             raise StopIteration

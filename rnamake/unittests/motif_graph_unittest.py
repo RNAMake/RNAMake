@@ -192,16 +192,16 @@ class MotifGraphUnittest(unittest.TestCase):
     def test_replace_helical_sequence(self):
         builder = build.BuildMotifGraph(self.rm)
         mg = builder.build(3)
-        for n in mg:
-            print n.data.name, n.data.get_end(0).name
+        #for n in mg:
+        #    print n.data.name, n.data.get_end(0).name
         mg.replace_ideal_helices()
         dss = mg.designable_secondary_structure()
         build.fill_basepairs_in_ss(dss)
         mg.replace_helix_sequence(dss)
 
-        print mg.sequence()
-        print dss.sequence()
-        mg.to_pdb("test.pdb", renumber=1, close_chain=1)
+        #print mg.sequence()
+        #print dss.sequence()
+        #mg.to_pdb("test.pdb", renumber=1, close_chain=1)
         #mg.nodes_to_pdbs()
         self.failUnless(mg.sequence() == dss.sequence())
 
@@ -292,13 +292,13 @@ class MotifGraphUnittest(unittest.TestCase):
         mg = motif_graph.MotifGraph(mg_str=l)
         self.failIf(len(mg.secondary_structure().chains()) != 1)
 
-    def test_replace_motif(self):
+    def _test_replace_motif(self):
         base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
         f = open(base_dir+"tecto_chip_only.mg")
         l = f.readline()
         f.close()
 
-        mg = motif_graph.MotifGraph(mg_str=l)
+        mg = motif_graph.MotifGraph(self.rm, mg_str=l)
         org_sequence = mg.sequence()
         org_name = mg.get_node(14).data.name
         org_end_name = mg.get_node(14).data.ends[0].name()

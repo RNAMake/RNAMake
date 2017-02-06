@@ -23,7 +23,7 @@ class Structure(base.BaseStructureObject):
         return self._residues.__iter__()
 
     def iter_chains(self):
-        for r in self._residues:
+        for r in self.get_chains():
             yield r
 
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None, index=None):
@@ -79,7 +79,7 @@ class Structure(base.BaseStructureObject):
         raise exceptions.StructureException("cannot find res: " + r)
 
     def get_chains(self):
-        pass
+        raise ValueError("not implmemented")
 
     def get_chain(self, i):
         return self.get_chains()[i]

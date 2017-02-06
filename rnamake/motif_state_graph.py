@@ -418,8 +418,8 @@ class MotifStateGraph(base.Base):
         mg.option('sterics', self.option('sterics'))
         return mg
 
-    def write_pdbs(self):
-        self.to_motif_graph().write_pdbs()
+    def nodes_to_pdbs(self):
+        self.to_motif_graph().nodes_to_pdbs()
 
     #MISC               #######################################################
     def _steric_clash(self, new_data):

@@ -241,17 +241,12 @@ class MotifTree(object):
                 "cannot supply parent_end_index and parent_end_name together")
 
         elif parent_end_name is not None:
-            parent_ends = parent.data.get_basepairs(name=parent_end_name)
-            if len(parent_ends) == 0:
+            parent_end = parent.data.get_end(name=parent_end_name)
+            if parent_end is None:
                 raise exceptions.MotifTreeException(
                     "cannot find parent_end_name: " + parent_end_name + " in "
                     "parent motif: " + parent.data.name)
-            if len(parent_ends) > 1:
-                raise exceptions.MotifTreeException(
-                    "more then one end was found with parent_end_name: " +
-                    parent_end_name + " in parent motif: " + parent.data.name)
 
-            parent_end = parent_ends[0]
             parent_end_index = parent.data.get_end_index(name=parent_end.name)
 
             if parent_end_index == parent.data.block_end_add:
@@ -701,8 +696,8 @@ class MotifTree(object):
     #OUTPUTING          #######################################################
     def to_pdb(self, fname="mt.pdb", renumber=-1, close_chain=0):
         self.__update_merger()
-        self._merger.get_structure().to_pdb(fname, renumber=renumber,
-                                            close_chain=close_chain)
+        self._merger.get_merged_structure().to_pdb(fname, renumber=renumber,
+                                                   close_chain=close_chain)
 
     def to_pdb_str(self, renumber=-1, close_chain=0):
         self.__update_merger()

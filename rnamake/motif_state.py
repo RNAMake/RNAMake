@@ -515,7 +515,7 @@ class Motif(primitives.rna_structure.RNAStructure):
         ends = []
         end_strs = spl[6].split("@")
         for end_str in end_strs[:-1]:
-            bps.append(bp_from_str(struc, end_str))
+            ends.append(bp_from_str(struc, end_str))
         end_ids = spl[7].split()
         return cls(struc, bps, ends, end_ids, name, mtype, score,
                    block_end_add)
@@ -525,6 +525,11 @@ class Motif(primitives.rna_structure.RNAStructure):
         s = Structure.copy(m._structure, new_uuid)
         basepairs = []
         ends = []
+
+        m_uuid = m._uuid
+        if new_uuid:
+            m_uuid = uuid.uuid1()
+
 
         for bp in m._basepairs:
             if new_uuid:
@@ -546,12 +551,12 @@ class Motif(primitives.rna_structure.RNAStructure):
                 res2 = s.get_residue(num=bp_res[1].num, chain_id=bp_res[1].chain_id,
                                      i_code=bp_res[1].i_code)
                 bp = Basepair.copy_with_new_uuids(end, res1.uuid, res2.uuid)
-                basepairs.append(bp)
+                ends.append(bp)
             else:
-                basepairs.append(Basepair.copy(bp))
+                ends.append(Basepair.copy(end))
 
         return cls(s, basepairs, ends, m._end_ids, m._name, m._mtype, m._score,
-                   m._block_end_add, m._uuid)
+                   m._block_end_add, m_uuid)
 
     def to_str(self):
         s  = self._name + "&" + str(self._score) + "&"

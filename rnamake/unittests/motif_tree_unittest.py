@@ -107,7 +107,7 @@ class MotifTreeUnittest(unittest.TestCase):
         mt.add_motif(m_name="HELIX.IDEAL.2")
 
         ss = mt.secondary_structure()
-        if ss.sequence() != "GGGGGGG&CCCCCCC":
+        if ss.sequence() != "CCCCCCC&GGGGGGG":
             self.fail("did not get correct sequence")
 
         if ss.dot_bracket() != "(((((((&)))))))":

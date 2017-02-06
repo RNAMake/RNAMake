@@ -480,6 +480,7 @@ class MotifStateSqliteLibrary(SqliteLibrary):
             datas.append(motif_state.Motif.copy(self.data[id], new_uuid=1))
         return datas
 
+
 class MotifStateEnsembleSqliteLibrary(SqliteLibrary):
     def __init__(self, libname):
         super(self.__class__, self).__init__(libname)

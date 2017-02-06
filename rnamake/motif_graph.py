@@ -234,7 +234,7 @@ class MotifGraph(object):
                 "cannot supply parent_end_index and parent_end_name together")
 
         elif parent_end_name is not None:
-            parent_end = parent.data.get_basepair(name=parent_end_name)
+            parent_end = parent.data.get_end(name=parent_end_name)
             if parent_end is None:
                 raise exceptions.MotifGraphException(
                     "cannot find parent_end_name: " + parent_end_name + " in "
@@ -335,7 +335,7 @@ class MotifGraph(object):
 
         if parent_index != -1:
             parent = self.get_node(parent_index)
-            bps = parent.data.get_basepair(name=parent_end_name)
+            bps = parent.data.get_end(name=parent_end_name)
             if len(bps) == 0:
                 raise ValueError("cannot find parent end in add_motif_tree")
             pei = parent.data.ends.index(bps[0])
@@ -423,7 +423,7 @@ class MotifGraph(object):
         for n in self._graph.nodes:
             if n.data.name != "HELIX.IDEAL":
                 continue
-            for r in n.data.iter_res():
+            for r in n.data:
                 r_ss = ss.get_residue(uuid=r.uuid)
                 if r_ss is not None:
                     r_ss.set_name("N")
@@ -661,7 +661,7 @@ class MotifGraph(object):
             n = nodes[0]
 
         if m_end_name != "":
-            bp = n.data.get_basepair(name=m_end_name)
+            bp = n.data.get_end(name=m_end_name)
             if bp is None:
                 raise ValueError("found motif but " + m_end_name + "is not is a "
                                                                    "basepair in it")

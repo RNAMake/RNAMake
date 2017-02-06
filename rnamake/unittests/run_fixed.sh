@@ -1,5 +1,14 @@
 python atom_unittest.py
 python residue_type_unittest.py
 python residue_unittest.py
+python x3dna_unittest.py
 python structure_unittest.py
 python rna_structure_unittests.py
+python motif_unittest.py
+python motif_factory_unittest.py
+python motif_merger_unittest.py 
+python sqlite_library_unittest.py 
+python resource_manager_unittest.py
+python motif_tree_unittest.py
+python motif_graph_unittest.py
+python motif_state_tree_unittest.py

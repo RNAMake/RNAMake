@@ -27,6 +27,9 @@ class RNAStructure(base.BaseStructureObject):
         if self._name is None:
             self._name = ""
 
+    def __iter__(self):
+        return self._structure.__iter__()
+
     def iter_basepairs(self):
         return self._basepairs.__iter__()
 

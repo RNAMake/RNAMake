@@ -118,7 +118,17 @@ class ResourceManager(object):
                 new_res.append(new_r)
             c = chain.Chain(new_res)
             new_chains.append(c)
-        s = structure.Structure(new_chains)
+
+        res = []
+        chain_cuts = []
+        for i, c in enumerate(new_chains):
+            for r in c:
+                res.append(r)
+            if i < len(new_chains) - 1:
+                chain_cuts.append(len(res))
+        chain_cuts.append(len(res))
+
+        s = structure.Structure(res, chain_cuts)
         new_bps = []
         for i, bp in enumerate(m.iter_basepairs()):
             bp_res = m.get_bp_res(bp)
@@ -132,11 +142,16 @@ class ResourceManager(object):
             new_bps.append(new_bp)
 
         new_ends = []
-        for end in m.iter_ends():
-            for new_bp in new_bps:
-                if end.name == new_bp.name:
-                    new_ends.append(new_bp)
-                    break
+        for i, bp in enumerate(m.iter_ends()):
+            bp_res = m.get_bp_res(bp)
+            r_pos_1 = m.get_res_index(bp_res[0])
+            r_pos_2 = m.get_res_index(bp_res[1])
+            other_res1 = org_m.get_residue(index=r_pos_1)
+            other_res2 = org_m.get_residue(index=r_pos_2)
+            bp2 = org_m.get_end(uuid1=other_res1.uuid, uuid2=other_res2.uuid)
+            new_bp = basepair.Basepair.copy_with_new_uuids(
+                bp, bp2.res1_uuid, bp2.res2_uuid, bp2.uuid)
+            new_ends.append(new_bp)
 
         end_ids = [ m.get_end_id(i) for i in range(m.num_ends()) ]
         new_m = motif.Motif(s, new_bps, new_ends, end_ids, m.name, m.mtype,

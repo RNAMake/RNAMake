@@ -34,7 +34,7 @@ class ResourceManagerUnittest(unittest.TestCase):
 
     def test_get_motif_with_new_alignment(self):
         rm = self.rm
-        m = rm.get_motif(name="BP.1")
+        m = rm.get_motif(name="BP.2")
         m.move(np.array([10, 10, 10]))
 
         m2 = rm.get_motif_with_new_alignment(m, 1)

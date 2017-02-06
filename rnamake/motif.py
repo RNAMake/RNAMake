@@ -304,7 +304,6 @@ def get_aligned_motif(ref_bp, motif_end, m, sterics=1):
     motif_end_index = m.get_end_index(motif_end.name)
     m_copy = Motif.copy(m)
     motif_end = m_copy.get_end(motif_end_index)
-
     align_motif(ref_bp, motif_end, m_copy)
 
     return m_copy

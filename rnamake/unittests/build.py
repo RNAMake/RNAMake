@@ -13,6 +13,14 @@ def fill_basepairs_in_ss(ss):
             bp_res[0].set_name(p[0])
             bp_res[1].set_name(p[1])
 
+    for bp in ss.iter_ends():
+        bp_res = ss.get_bp_res(bp)
+        bp_name = bp_res[0].name+bp_res[1].name
+        if bp_name == "NN":
+            p = random.choice(pairs)
+            bp_res[0].set_name(p[0])
+            bp_res[1].set_name(p[1])
+
     ss.update()
 
 

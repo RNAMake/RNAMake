@@ -69,14 +69,16 @@ class MotifMerger(object):
         return self._rna_structure
 
     def __get_ordered_ends(self, s, ends):
+        if len(ends) == 0:
+            return []
+
         ordered_infos = []
         for end in ends:
             org_m = None
             for m in self._motifs.values():
-                if m.get_basepair(bp_uuid=end.uuid):
+                if m.get_end(bp_uuid=end.uuid):
                     org_m = m
                     break
-
             end_pos = m.get_end_index(end.name)
 
             ordered_info = { 'end' : end, 'm' : org_m,
@@ -102,15 +104,18 @@ class MotifMerger(object):
         for info in ordered_infos:
             if info['end'] in seen:
                 continue
-            info['dist'] = ordered_ends[0].diff(info['end'])
+            if len(ordered_ends) > 0:
+                info['dist'] = ordered_ends[0].diff(info['end'])
+            else:
+                info['dist'] = 0
             other_infos.append(info)
+
 
         other_infos.sort(key=lambda x: x['dist'])
         for info in other_infos:
             ordered_ends.append(info['end'])
 
         return ordered_ends
-
 
     def _build_structure(self):
         starts = []
@@ -134,8 +139,16 @@ class MotifMerger(object):
             c = chain.Chain(res)
             chains.append(c)
 
-        s = structure.Structure(chains)
-        res = [ r for r in s.iter_res()]
+        res = []
+        chain_cuts = []
+        for i, c in enumerate(chains):
+            for r in c:
+                res.append(r)
+            if i < len(chains) - 1:
+                chain_cuts.append(len(res))
+        chain_cuts.append(len(res))
+
+        s = structure.Structure(res, chain_cuts)
         uuids = [r.uuid for r in res]
 
         current_bps = []
@@ -144,6 +157,9 @@ class MotifMerger(object):
                 current_bps.append(bp)
 
         ends = ends_from_basepairs(s, current_bps)
+        for end in ends:
+            current_bps.remove(end)
+
         ordered_ends = self.__get_ordered_ends(s, ends)
 
         self._rna_structure = self._mf.rna_structure_from_element(
@@ -152,7 +168,7 @@ class MotifMerger(object):
         self._rebuild_structure = 0
 
     def add_motif(self, m, m_end=None, parent=None, parent_end=None):
-        new_chains = [c.subchain(0) for c in m.iter_chains()]
+        new_chains = [c for c in m.get_chains()]
 
         for c in new_chains:
             data = ChainNodeData(c, m.uuid)
@@ -160,6 +176,8 @@ class MotifMerger(object):
 
         for bp in m.iter_basepairs():
             self._all_bps[bp.uuid] = bp
+        for end in m.iter_ends():
+            self._all_bps[end.uuid] = end
 
         if parent is not None:
             self._aligned[m.uuid] = 1
@@ -214,7 +232,7 @@ class MotifMerger(object):
 
     def __get_ss_structure(self, m, ss):
         ss_chains = []
-        for c in m.iter_chains():
+        for c in m.get_chains():
             ss_res = []
             for r in c:
                 r_cur = r
@@ -226,7 +244,17 @@ class MotifMerger(object):
                                         str(r_cur) + "from " + m.name)
                 ss_res.append(ss_r)
             ss_chains.append(secondary_structure.Chain(ss_res))
-        ss_struct = secondary_structure.Structure(ss_chains)
+
+        res = []
+        chain_cuts = []
+        for i, c in enumerate(ss_chains):
+            for r in c:
+                res.append(r)
+            if i < len(ss_chains) - 1:
+                chain_cuts.append(len(res))
+        chain_cuts.append(len(res))
+
+        ss_struct = secondary_structure.Structure(res, chain_cuts)
         return ss_struct
 
     def __get_ss_basepairs(self, m, ss):
@@ -251,9 +279,11 @@ class MotifMerger(object):
             correct_bp = end
             if end.uuid in self._bp_overrides:
                 correct_bp = self.get_basepair(self._bp_overrides[end.uuid])
-            ss_bp = ss.get_basepair(bp_uuid=correct_bp.uuid)
+            ss_bp = ss.get_end(bp_uuid=correct_bp.uuid)
             if ss_bp is None:
-                raise ValueError("cnot not find end durign ss build")
+                ss_bp = ss.get_basepair(bp_uuid=correct_bp.uuid)
+            if ss_bp is None:
+                raise ValueError("cannot not find end durign ss build")
             ss_ends.append(ss_bp)
         return ss_ends
 
@@ -265,13 +295,24 @@ class MotifMerger(object):
             ss_struct = self.__get_ss_structure(m, ss)
             ss_bps = self.__get_ss_basepairs(m, ss)
             ss_ends = self.__get_ss_ends(m, ss)
-            end_ids = [ assign_end_id(ss_struct, ss_bps, end) for end in ss_ends]
+            end_ids = [ assign_end_id(ss_struct, ss_bps, ss_ends, end) for end in ss_ends]
 
             ss_motif = secondary_structure.Motif(ss_struct, ss_bps, ss_ends,
                                                  end_ids, m.mtype, m.uuid)
             ss_motifs.append(ss_motif)
 
-        ss_struct  = secondary_structure.Structure([ c for c in ss.iter_chains() ])
+        ss_chains = ss.get_chains()
+
+        res = []
+        chain_cuts = []
+        for i, c in enumerate(ss_chains):
+            for r in c:
+                res.append(r)
+            if i < len(ss_chains) - 1:
+                chain_cuts.append(len(res))
+        chain_cuts.append(len(res))
+
+        ss_struct  = secondary_structure.Structure(res, chain_cuts)
         ss_bps     = [ bp for bp in ss.iter_basepairs()]
         ss_ends    = [ end for end in ss.iter_ends()]
         ss_end_ids = [ ss.get_end_id(i) for i in range(ss.num_ends())]
