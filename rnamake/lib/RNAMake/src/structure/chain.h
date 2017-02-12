@@ -171,10 +171,23 @@ public:
 
 };
 
+struct ResiduesandChainCuts {
+    ResidueOPs residues;
+    Ints chain_cuts;
+};
+
 void
 connect_residues_into_chains(
-        ResidueOPs & residues,
-        ChainOPs & chains);
+        ResidueOPs &,
+        ChainOPs &);
 
+ResiduesandChainCuts
+get_chain_cuts(ResidueOPs const &);
+
+bool
+are_chains_equal(
+        ChainOP const & c1,
+        ChainOP const & c2,
+        int check_uuids = 1);
 
 #endif /* defined(__RNAMake__chain__) */

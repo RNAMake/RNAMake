@@ -215,6 +215,32 @@ Residue::get_state() {
     return std::make_shared<state::Residue>(name_, num_, chain_id_, i_code_, beads_, uuid_);
 }
 
+//non class functions //////////////////////////////////////////////////////////////////////////////
+
+bool
+are_residues_equal(
+        ResidueOP const & r1,
+        ResidueOP const & r2,
+        int check_uuids) {
+
+    if (r1->name() != r2->name()) { return false; }
+    if (check_uuids && r1->uuid() !=  r2->uuid()) { return false; }
+
+    int i = -1;
+    bool result;
+    for (auto const & a : *r1) {
+        i++;
+        if (a == nullptr && r2->has_atom(i)) { return 0; }
+        if (!r2->has_atom(i) && a != nullptr) { return 0; }
+        if (a == nullptr and !r2->has_atom(i)) { continue; }
+
+        result = are_atoms_equal(a, r2->get_atom(i));
+        if (!result) { return false; }
+    }
+
+    return true;
+
+}
 
 
 

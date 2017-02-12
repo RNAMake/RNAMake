@@ -9,7 +9,6 @@
 #include "base/settings.h"
 #include "math/numerical.h"
 #include "structure/residue.h"
-#include "structure/is_equal.hpp"
 
 
 TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
@@ -27,10 +26,7 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         auto gtype = rts.get_type("GUA");
         auto atoms = AtomOPs();
         atoms.push_back(std::make_shared<Atom>("P", Point(0, 1, 2)));
-        auto res = std::make_shared<Residue>(atoms, gtype,
-                                             std::make_shared<String>("GUA"), 1,
-                                             std::make_shared<String>("A"),
-                                             std::make_shared<String>(""));
+        auto res = std::make_shared<Residue>(atoms, gtype, 'G', 1, 'A', ' ');
 
         // can find a real atom
         auto p_atom = res->get_atom("P");
@@ -46,10 +42,8 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         auto gtype = rts.get_type("GUA");
         auto atoms = AtomOPs();
         atoms.push_back(std::make_shared<Atom>("P", Point(0, 1, 2)));
-        auto res = std::make_shared<Residue>(atoms, gtype,
-                                             std::make_shared<String>("GUA"), 1,
-                                             std::make_shared<String>("A"),
-                                             std::make_shared<String>(""));
+        auto res = std::make_shared<Residue>(atoms, gtype, 'G', 1, 'A', ' ');
+
         REQUIRE(res->has_atom("P") == true);
         REQUIRE(res->has_atom("P1") == false);
         REQUIRE(res->has_atom("OP1") == false);

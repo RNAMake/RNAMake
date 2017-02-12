@@ -14,8 +14,10 @@ namespace state {
 class Structure : public primitives::Structure<Chain, Residue> {
 public:
     inline
-    Structure(ChainOPs const & chains):
-            primitives::Structure<Chain, Residue>(chains) {}
+    Structure(
+            ResidueOPs const & res,
+            Ints const & chain_cuts):
+            primitives::Structure<Chain, Residue>(res, chain_cuts) {}
 
     inline
     Structure(
@@ -23,31 +25,25 @@ public:
             int new_uuid = 0):
             primitives::Structure<Chain, Residue>() {
 
-        chains_ = ChainOPs(s.chains_.size());
-        int i = 0;
-        for (auto const & c : s.chains_) {
-            chains_[i] = std::make_shared<Chain>(*c, new_uuid);
-            i++;
+        residues_ = ResidueOPs();
+        for(auto const & r : s.residues_) {
+            residues_.push_back(std::make_shared<Residue>(*r, new_uuid));
         }
+        chain_cuts_ = s.chain_cuts_;
 
-        for(auto const & c : chains_) {
-            for(auto const & r : *c) { residues_.push_back(r); }
-        }
     }
 
-    inline
     Structure(
             String const & s):
             primitives::Structure<Chain, Residue>() {
-        chains_ = ChainOPs();
-        Strings spl = split_str_by_delimiter(s, ":");
-        for (auto const & c_str : spl) {
-            chains_.push_back(std::make_shared<Chain>(c_str));
+        residues_ = ResidueOPs();
+        Strings spl = split_str_by_delimiter(s, ";");
+        for(int i = 0; i < spl.size()-1; i++) {
+            residues_.push_back(std::make_shared<Residue>(spl[i]));
         }
 
-        for(auto const & c : chains_) {
-            for(auto const & r : *c) { residues_.push_back(r); }
-        }
+        auto chain_cuts_spl = split_str_by_delimiter(spl.back(), " ");
+        for(auto const & i : chain_cuts_spl) { chain_cuts_.push_back(std::stoi(i)); }
     }
 
     ~Structure() {}
@@ -57,9 +53,13 @@ public:
     String
     to_str() {
         String s;
-        for (auto const & c : chains_) {
-            s += c->to_str() + ":";
+        for (auto const & r : residues_) {
+            s += r->to_str() + ";";
         }
+        for (auto const & i : chain_cuts_) {
+            s += std::to_string(i) + " ";
+        }
+        s += ";";
         return s;
     }
 
@@ -83,10 +83,37 @@ public:
             Point & dummy) {
         for(auto const & res : residues_) { res->fast_transform(r, t, dummy); }
     }
+
+    ChainOPs
+    get_chains() {
+        auto pos = 0;
+        auto res = ResidueOPs();
+        auto chains = ChainOPs();
+        auto i = -1;
+        for(auto const & r : residues_) {
+            i++;
+            if(chain_cuts_[pos] == i) {
+                auto c = std::make_shared<Chain>(res);
+                chains.push_back(c);
+                res = ResidueOPs();
+                res.push_back(r);
+                pos++;
+            }
+            else {
+                res.push_back(r);
+            }
+        }
+
+        if(res.size() > 0) {
+            chains.push_back(std::make_shared<Chain>(res));
+        }
+
+        return chains;
+    }
+
 };
 
 typedef std::shared_ptr<Structure> StructureOP;
-typedef std::vector<StructureOP>   StructureOPs;
 
 }
 

@@ -26,13 +26,13 @@ TEST_CASE( "Test Basepairs for Structure", "[Basepair]" ) {
     sugars.push_back(res1->get_atom("C1'")->coords());
     sugars.push_back(res2->get_atom("C1'")->coords());
 
-    auto bp = std::make_shared<Basepair>(res1->uuid(), res2->uuid(), x_bp.r, center, sugars,
-                                         std::make_shared<String>(bp_name),
-                                         std::make_shared<String>(x_bp.bp_type),
-                                         primitives::Basepair::BasepairType::WC,
-                                         std::make_shared<Uuid>());
+    //auto bp = std::make_shared<Basepair>(res1->uuid(), res2->uuid(), x_bp.r, center, sugars,
+    //                                     std::make_shared<String>(bp_name),
+    //                                     std::make_shared<String>(x_bp.bp_type),
+    //                                     primitives::Basepair::BasepairType::WC,
+    //                                     std::make_shared<Uuid>());
 
-    SECTION("test whether basepair transformations reflect residue transformations") {
+    /*SECTION("test whether basepair transformations reflect residue transformations") {
         auto path = unittest_resource_dir() + "/math/random_transformations.dat";
         auto lines = get_lines_from_file(path);
         for(auto const & l : lines) {
@@ -73,7 +73,7 @@ TEST_CASE( "Test Basepairs for Structure", "[Basepair]" ) {
         bp->move(Point(10, 10, 01));
         REQUIRE(are_xyzVector_equal(bp->d(), bp_state->d()) == 0);
 
-    }
+    }*/
 
 }
 

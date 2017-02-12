@@ -5,32 +5,19 @@
 #include "base/settings.h"
 #include "math/numerical.h"
 #include "structure/structure.h"
-#include "structure/is_equal.hpp"
-
 
 TEST_CASE( "Test Structure", "[Structure]" ) {
-    auto path = unittest_resource_dir() + "/structure/test_str_to_structure.dat";
-    auto lines = get_lines_from_file(path);
     auto rts = ResidueTypeSet();
-    auto s = std::make_shared<Structure>(lines[0], rts);
+    auto path = py_unittest_path() + "/resources/p4p6.pdb";
+    auto s = structure_from_pdb(path, rts);
 
-    SECTION("test chain iter") {
-        int size = 0;
-        for(auto c = s->chain_begin(); c != s->chain_end(); ++c) {
-            size = (*c)->length();
-        }
-        // correct number of residues in only chain
-        REQUIRE(size == 157);
-    }
 
-    SECTION("test load from pdb") {
-        auto path = py_unittest_path() + "/resources/p4p6.pdb";
-        auto new_s = structure_from_pdb(path, rts);
-        REQUIRE(are_structures_equal(s, new_s, 0));
-    }
-    
     SECTION("Test ability to get specific residues from structure") {
-        auto r = s->get_residue(107, "A", "");
+        for(auto const & r : *s) {
+        //    std::cout << r->num() << "|" << r->chain_id() << "|" << r->i_code() << "|" << std::endl;
+        }
+
+        auto r = s->get_residue(107, 'A', ' ');
         
         REQUIRE(r != nullptr);
         
@@ -40,10 +27,10 @@ TEST_CASE( "Test Structure", "[Structure]" ) {
         
         SECTION("should get nullptr for residues that dont exist") {
             
-            REQUIRE(s->get_residue(1000, "A", "") == nullptr);
-            REQUIRE(s->get_residue(106, "B", "") == nullptr);
+            REQUIRE(s->get_residue(1000, 'A', ' ') == nullptr);
+            REQUIRE(s->get_residue(106, 'B', ' ') == nullptr);
             
-            auto r3 = s->get_residue(107, "A", "");
+            auto r3 = s->get_residue(107, 'A', ' ');
             auto r3_copy = std::make_shared<Residue>(*r3, 1);
             REQUIRE(s->get_residue(r3_copy->uuid()) == nullptr);
             

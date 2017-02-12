@@ -21,7 +21,7 @@ class Residue(base.BaseStructureObject):
         self._uuid = r_uuid
 
         if self._i_code is None:
-            self._i_code = ""
+            self._i_code = " "
 
         if self._uuid is None:
             self._uuid = uuid.uuid1()

@@ -98,7 +98,7 @@ PDBParser::parse(
     
     ResidueTypeOP rtype;
     Strings spl;
-    String icode = "";
+    String icode = " ";
     ResidueOP r;
     for(auto & kv : residue_atoms) {
         if(kv.second.size() < 6) { continue; }
@@ -109,13 +109,11 @@ PDBParser::parse(
         if(!protein && rtype->set_type() == SetType::PROTEIN) { continue; }
         if(!rna && rtype->set_type() == SetType::RNA) { continue; }
  
-        icode = "";
+        icode = " ";
         if(spl.size() > 3) { icode = spl[3]; }
-        r = std::make_shared<Residue>(kv.second, rtype,
-                                      std::make_shared<String>(spl[0]),
-                                      std::stoi(spl[1]),
-                                      std::make_shared<String>(spl[2]),
-                                      std::make_shared<String>(icode));
+        if(icode.size() == 0) { icode = " "; }
+        r = std::make_shared<Residue>(kv.second, rtype, spl[0][0], std::stoi(spl[1]),
+                                      spl[2][0], icode[0]);
         residues_.push_back(r);
         
     }

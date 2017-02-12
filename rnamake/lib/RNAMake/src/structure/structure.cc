@@ -29,7 +29,7 @@ Structure::to_pdb_str(
     
     int acount = 1;
     String s;
-    for (auto const & c : chains_) {
+    for (auto const & c : get_chains()) {
         s += c->to_pdb_str(acount, rnum, chain_id);
         if(renumber != -1) {
             rnum += c->length();
@@ -42,9 +42,13 @@ Structure::to_pdb_str(
 String
 Structure::to_str() {
     String s;
-    for (auto const & c : chains_) {
-        s += c->to_str() + ":";
+    for (auto const & r : residues_) {
+        s += r->to_str() + ";";
     }
+    for (auto const & i : chain_cuts_) {
+        s += std::to_string(i) + " ";
+    }
+    s += ";";
     return s;
 }
 
@@ -59,7 +63,22 @@ Structure::to_pdb(
     out.close();
 }
 
+bool
+are_structures_equal(
+        StructureOP const & s1,
+        StructureOP const & s2,
+        int check_uuids) {
 
+    if (s1->num_chains() != s2->num_chains()) { return false; }
+
+    for (int i = 0; i < s1->num_residues(); i++) {
+        auto result = are_residues_equal(s1->get_residue(i), s2->get_residue(i), check_uuids);
+        if (!result) { return false; }
+    }
+
+    return true;
+
+}
 
 StructureOP
 structure_from_pdb(
@@ -68,9 +87,9 @@ structure_from_pdb(
 
     auto pdb_parser = PDBParser(rts);
     auto residues = pdb_parser.parse(path);
-    auto chains = ChainOPs();
-    connect_residues_into_chains(residues, chains);
-    return std::make_shared<Structure>(chains);
+    auto residues_and_chain_cuts = get_chain_cuts(residues);
+    return std::make_shared<Structure>(residues_and_chain_cuts.residues,
+                                       residues_and_chain_cuts.chain_cuts);
 }
 
 

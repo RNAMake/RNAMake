@@ -127,9 +127,11 @@ def parse(pdb_file, rts=residue_type.ResidueTypeSet(),
         if rna == 0 and rtype.set_type == residue_type.SetType.RNA:
             continue
 
-        icode = ""
+        icode = " "
         if len(spl) > 3:
             icode = spl[3]
+        if len(icode) == 0:
+            icdoe = " "
         r = residue.Residue(res_atoms, rtype, spl[0], int(spl[1]), spl[2], icode)
         residues.append(r)
 

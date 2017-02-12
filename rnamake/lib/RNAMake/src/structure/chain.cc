@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
+#include <map>
 #include "chain.h"
 
 ChainOP
@@ -132,4 +133,81 @@ connect_residues_into_chains(
         }
     }
 
+}
+
+ResiduesandChainCuts
+get_chain_cuts(ResidueOPs const & residues) {
+
+    ResidueOP current;
+    ResidueOPs current_chain_res;
+    ResidueOPs all_res;
+    Ints chain_cuts;
+    auto seen = std::map<ResidueOP, int>();
+    int five_prime_end = 1;
+    int found = 1;
+    while (true) {
+        for (auto & r1 : residues) {
+            if (seen.find(r1) != seen.end()) { continue; }
+            five_prime_end = 1;
+            for (auto & r2 : residues) {
+                if (seen.find(r2) != seen.end()) { continue; }
+                if (r1->connected_to(*r2) == -1) {
+                    five_prime_end = 0;
+                    break;
+                }
+            }
+            if (five_prime_end) {
+                current = r1;
+                break;
+            }
+        }
+        if (!five_prime_end) { break; }
+        seen[current] = 1;
+        current_chain_res = ResidueOPs();
+        found = 1;
+        while (found) {
+            current_chain_res.push_back(current);
+            found = 0;
+            for (auto & r : residues) {
+                if (seen.find(r) != seen.end()) { continue; }
+                if (current->connected_to(*r) == 1) {
+                    current = r;
+                    found = 1;
+                    break;
+                }
+            }
+            if (found) {
+                seen[current] = 1;
+            } else {
+                for(auto const & r : current_chain_res) {
+                    all_res.push_back(r);
+                }
+                chain_cuts.push_back((int)all_res.size());
+
+                break;
+            }
+        }
+        if(seen.size() == residues.size()) { break; }
+    }
+
+    chain_cuts.push_back((int)all_res.size());
+
+    return ResiduesandChainCuts { all_res, chain_cuts};
+
+}
+
+bool
+are_chains_equal(
+        ChainOP const & c1,
+        ChainOP const & c2,
+        int check_uuids) {
+
+    if (c1->length() != c2->length()) { return false; }
+
+    auto result = 0;
+    for (int i = 0; i < c1->length(); i++) {
+        result = are_residues_equal(c1->get_residue(i), c2->get_residue(i), check_uuids);
+        if (!result) { return false; }
+    }
+    return true;
 }

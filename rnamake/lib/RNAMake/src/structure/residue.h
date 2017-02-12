@@ -409,5 +409,11 @@ typedef std::shared_ptr<Residue> ResidueOP;
  */
 typedef std::vector<ResidueOP> ResidueOPs;
 
+bool
+are_residues_equal(
+        ResidueOP const & r1,
+        ResidueOP const & r2,
+        int check_uuids = 1);
+
 
 #endif /* defined(__RNAMake__residue__) */
