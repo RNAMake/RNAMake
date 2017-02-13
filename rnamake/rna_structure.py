@@ -9,10 +9,12 @@ import user_warnings
 import residue
 import basic_io
 import secondary_structure
+import basepair
 
 import primitives.rna_structure
 import primitives.basepair
-from primitives.rna_structure import ends_from_basepairs, assign_end_id, end_id_to_seq_and_db
+from primitives.rna_structure import ends_from_basepairs, assign_end_id
+from primitives.rna_structure import end_id_to_seq_and_db
 
 import os
 import numpy as np
@@ -371,7 +373,6 @@ def rna_structure_from_pdb(pdb_path, rts):
     ends = ends_from_basepairs(s, bps)
     end_ids = []
 
-
     for end in ends:
         bps.remove(end)
 
@@ -398,23 +399,6 @@ def _calc_center(res):
             count += 1
     center /= count
     return center
-
-
-def _calc_name(res):
-    res1, res2 = res
-
-    res1_name = res1.chain_id+str(res1.num)+str(res1.i_code)
-    res2_name = res2.chain_id+str(res2.num)+str(res2.i_code)
-
-    if res1.chain_id < res2.chain_id:
-        return res1_name+"-"+res2_name
-    if res1.chain_id > res2.chain_id:
-        return res2_name+"-"+res1_name
-
-    if res1.num < res2.num:
-        return res1_name+"-"+res2_name
-    else:
-        return res2_name+"-"+res1_name
 
 
 def bp_from_str(struc, s):
@@ -484,15 +468,17 @@ def basepairs_from_x3dna(path, s):
                 "is required for alignment\n")
             continue
 
+
         center = _calc_center([res1, res2])
-        name = _calc_name([res1, res2])
+        name = primitives.basepair.calc_bp_name([res1, res2])
         bp_type = primitives.basepair.BasepairType.NC
 
         bp_str = res1.name+res2.name
         wc = "GC,CG,AU,UA".split(",")
-        if bp_str in wc and xbp.bp_type == "cW-W":
+
+        if bp_str in wc and xbp.bp_type == x3dna.X3dnaBPType.cWUW:
             bp_type = primitives.basepair.BasepairType.WC
-        elif bp_str == "GU" or bp_str == "UG" and xbp.bp_type == "cW-W":
+        elif bp_str == "GU" or bp_str == "UG" and xbp.bp_type == x3dna.X3dnaBPType.cWUW:
             bp_type = primitives.basepair.BasepairType.GU
 
         bp = basepair.Basepair(res1.uuid, res2.uuid, xbp.r, center,

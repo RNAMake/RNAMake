@@ -27,7 +27,7 @@ class ResourceManagerUnittest(unittest.TestCase):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
         self.rm.add_motif_from_file(path)
         m = self.rm.get_motif(name="tetraloop_receptor_min",
-                                 end_name="A228-A246")
+                              end_name="A228-A246")
 
         if m.name != 'tetraloop_receptor_min':
             self.fail('did not get correct motif back')

@@ -1,6 +1,7 @@
 import secondary_structure
 import secondary_structure_parser
 import util
+import x3dna
 
 
 class MotiftoSecondaryStructure(object):
@@ -96,9 +97,9 @@ class MotiftoSecondaryStructure(object):
                     partner_res = bp.partner(r)
                     passes = 0
                     saved_bp = None
-                    if util.wc_bp(bp) and bp.bp_type == "cW-W":
+                    if util.wc_bp(bp) and bp.bp_type == x3dna.X3dnaBPType.cWUW:
                         passes = 1
-                    if util.gu_bp(bp) and bp.bp_type == "cW-W":
+                    if util.gu_bp(bp) and bp.bp_type == x3dna.X3dnaBPType.cWUW:
                         passes = 1
 
                     if passes:

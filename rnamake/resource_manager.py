@@ -209,7 +209,6 @@ class ResourceManager(object):
     def add_motif_from_file(self, path=None, name=None, include_protein=0):
 
         motifs = self._mf.motifs_from_file(path, include_protein=include_protein)
-
         for m in motifs:
             self._added_motifs.add_motif(m)
 

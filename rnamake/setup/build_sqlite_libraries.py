@@ -11,7 +11,7 @@ import numpy as np
 import shutil
 
 import glob
-from rnamake import motif_factory, settings
+from rnamake import motif_factory, settings, x3dna
 from collections import defaultdict
 
 bad_keys = "TWOWAY.2GDI.4-X20-X45 TWOWAY.1S72.46-02097-02647 TWOWAY.2GDI.6-Y20-Y45".split()
@@ -103,7 +103,6 @@ class BuildSqliteLibraries(object):
                         continue
                     if not self.__correct_ends_for_motif(m ,t):
                         continue
-
                     data.append([m.to_str(), m.name, m.get_end(0).name,
                                  m.get_end_id(0), count])
 
@@ -134,8 +133,8 @@ class BuildSqliteLibraries(object):
                 continue
             seen_name.append(m.name)
             for i in range(m.num_basepairs() - 1):
-                if m.get_basepair(i).x3dna_bp_type != "cW-W" or \
-                                m.get_basepair(i + 1).x3dna_bp_type != "cW-W":
+                if m.get_basepair(i).x3dna_bp_type != x3dna.X3dnaBPType.cWUW or \
+                                m.get_basepair(i + 1).x3dna_bp_type != x3dna.X3dnaBPType.cWUW:
                     continue
                 bps = [m.get_basepair(i), m.get_basepair(i + 1)]
                 res = []
@@ -416,9 +415,9 @@ class BuildSqliteLibraries(object):
 
 #setup_start_motif()
 builder = BuildSqliteLibraries()
-builder.build_ideal_helices()
+#builder.build_ideal_helices()
 builder.build_basic_libraries()
-builder.build_helix_ensembles()
+#builder.build_helix_ensembles()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()

@@ -11,11 +11,188 @@ import motif_type, exceptions
 X3DNA_BIN_PATH = settings.X3DNA_PATH + "bin/"
 os.environ['X3DNA'] =  settings.X3DNA_PATH
 
+#- = U
+#+ = P
+#. = D
 class X3dnaBPType(object):
-    pass
+    cmU  = 0  #cm-
+    cMUM = 1  #cM-M
+    tWPW = 2  #tW+W
+    cDPM = 3  #c.+M
+    DWPW = 4  #.W+W
+    tWUM = 5  #tW-M
+    tmUM = 6  #tm-M
+    cWPM = 7  #cW+M
+    DWUW = 8  #.W-W
+    cMPD = 9  #cM+.
+    cDUm = 10 #c.-m
+    cMPW = 11 #cM+W
+    tMPm = 12 #tM+m
+    tMUW = 13 #tM-W
+    cmUm = 14 #cm-m
+    cMUW = 15 #cM-W
+    cWUW = 16 #cW-W
+    cDUM = 17 #c.-M
+    cmPM = 18 #cm+M
+    cmUM = 19 #cm-M
+    DDDD = 20 #....
+    cmUW = 21 #cm-W
+    tMUm = 22 #tM-m
+    cDUW = 23 #c.-W
+    cMPm = 24 #cM+m
+    cMUm = 25 #cM-m
+    cDDD = 26 #c...
+    tWPm = 27 #tW+m
+    cDPm = 28 #c.+m
+    tmPm = 29 #tm+m
+    tWPD = 30 #tW+.
+    tmPW = 31 #tm+W
+    tDDD = 32 #t...
+    cWUD = 33 #cW-.
+    cWUM = 34 #cW-M
+    tDUW = 35 #t.-W
+    tMPM = 36 #tM+M
+    tDUM = 37 #t.-M
+    cMUD = 38 #cM-.
+    cWUm = 39 #cW-m
+    tDPm = 40 #t.+m
+    tMUD = 41 #tM-.
+    cmPW = 42 #cm+W
+    cMPM = 43 #cM+M
+    cmPD = 44 #cm+.
+    cmUD = 45 #cm-.
+    cDUD = 46 #c.-.
+    cWPW = 47 #cW+W
+    tDUD = 48 #t.-.
+    tDPW = 49 #t.+W
+    tmUm = 50 #tm-m
+    cWPD = 51 #cW+.
+    tmPD = 52 #tm+.
+    tDPD = 53 #t.+.
+    cDPD = 54 #c.+.
+    tDUm = 55 #t.-m
+    tDPM = 56 #t.+M
 
-# TODO figure out what operating system is being used
-# TODO create at enum type for basepair types instead of strings
+
+def get_x3dna_bp_type(name):
+    if   name == "cm-":
+        return X3dnaBPType.cmU
+    elif name == "cM-M":
+        return X3dnaBPType.cMUM
+    elif name == "tW+W":
+        return X3dnaBPType.tWPW
+    elif name == "c.+M":
+        return X3dnaBPType.cDPM
+    elif name == ".W+W":
+        return X3dnaBPType.DWPW
+    elif name == "tW-M":
+        return X3dnaBPType.tWUM
+    elif name == "tm-M":
+        return X3dnaBPType.tmUM
+    elif name == "cW+M":
+        return X3dnaBPType.cWPM
+    elif name == ".W-W":
+        return X3dnaBPType.DWUW
+    elif name == "cM+.":
+        return X3dnaBPType.cMPD
+    elif name == "c.-m":
+        return X3dnaBPType.cDUm
+    elif name == "cM+W":
+        return X3dnaBPType.cMPW
+    elif name == "tM+m":
+        return X3dnaBPType.tMPm
+    elif name == "tM-W":
+        return X3dnaBPType.tMUW
+    elif name == "cm-m":
+        return X3dnaBPType.cmUm
+    elif name == "cM-W":
+        return X3dnaBPType.cMUW
+    elif name == "cW-W":
+        return X3dnaBPType.cWUW
+    elif name == "c.-M":
+        return X3dnaBPType.cDUM
+    elif name == "cm+M":
+        return X3dnaBPType.cmPM
+    elif name == "cm-M":
+        return X3dnaBPType.cmUM
+    elif name == "....":
+        return X3dnaBPType.DDDD
+    elif name == "cm-W":
+        return X3dnaBPType.cmUW
+    elif name == "tM-m":
+        return X3dnaBPType.tMUm
+    elif name == "c.-W":
+        return X3dnaBPType.cDUW
+    elif name == "cM+m":
+        return X3dnaBPType.cMPm
+    elif name == "cM-m":
+        return X3dnaBPType.cMUm
+    elif name == "c...":
+        return X3dnaBPType.cDDD
+    elif name == "tW+m":
+        return X3dnaBPType.tWPm
+    elif name == "c.+m":
+        return X3dnaBPType.cDPm
+    elif name == "tm+m":
+        return X3dnaBPType.tmPm
+    elif name == "tW+.":
+        return X3dnaBPType.tWPD
+    elif name == "tm+W":
+        return X3dnaBPType.tmPW
+    elif name == "t...":
+        return X3dnaBPType.tDDD
+    elif name == "cW-.":
+        return X3dnaBPType.cWUD
+    elif name == "cW-M":
+        return X3dnaBPType.cWUM
+    elif name == "t.-W":
+        return X3dnaBPType.tDUW
+    elif name == "tM+M":
+        return X3dnaBPType.tMPM
+    elif name == "t.-M":
+        return X3dnaBPType.tDUM
+    elif name == "cM-.":
+        return X3dnaBPType.cMUD
+    elif name == "cW-m":
+        return X3dnaBPType.cWUm
+    elif name == "t.+m":
+        return X3dnaBPType.tDPm
+    elif name == "tM-.":
+        return X3dnaBPType.tMUD
+    elif name == "cm+W":
+        return X3dnaBPType.cmPW
+    elif name == "cM+M":
+        return X3dnaBPType.cMPM
+    elif name == "cm+.":
+        return X3dnaBPType.cmPD
+    elif name == "cm-.":
+        return X3dnaBPType.cmUD
+    elif name == "c.-.":
+        return X3dnaBPType.cDUD
+    elif name == "cW+W":
+        return X3dnaBPType.cWPW
+    elif name == "t.-.":
+        return X3dnaBPType.tDUD
+    elif name == "t.+W":
+        return X3dnaBPType.tDPW
+    elif name == "tm-m":
+        return X3dnaBPType.tmUm
+    elif name == "cW+.":
+        return X3dnaBPType.cWPD
+    elif name == "tm+.":
+        return X3dnaBPType.tmPD
+    elif name == "t.+.":
+        return X3dnaBPType.tDPD
+    elif name == "c.+.":
+        return X3dnaBPType.cDPD
+    elif name == "t.-m":
+        return X3dnaBPType.tDUm
+    elif name == "t.+M":
+        return X3dnaBPType.tDPM
+    else:
+        raise ValueError("cannot get x3dna type with: " + name)
+
+
 # TODO check to see what happens with RNA without chain ids
 class X3dna(object):
     """
@@ -265,7 +442,7 @@ class X3dna(object):
 
         chain = spl[0]
         rnum = spl[1][1:]
-        i_code = ""
+        i_code = " "
 
         if not p.match(rnum):
             r_spl = spl[1]
@@ -351,11 +528,13 @@ class X3dna(object):
                 continue
             res1 = self._parse_dssr_res_str(spl[2])
             res2 = self._parse_dssr_res_str(spl[3])
-            if res1 == None or res2 == None:
+            if res1 is None or res2 is None:
                 continue
-            bp_type = spl[8]
-            if len(bp_type) < 1:
-                bp_type = spl[7]
+            bp_type_str = spl[8]
+            if len(bp_type_str) < 1:
+                bp_type_str = spl[7]
+
+            bp_type = get_x3dna_bp_type(bp_type_str)
 
             found = 0
             for bp in basepairs:
@@ -500,7 +679,7 @@ class Basepair(object):
 
     def __init__(self, res1, res2, r, d):
         self.res1, self.res2, self.r, self.d = res1, res2, r, d
-        self.bp_type = "c..."
+        self.bp_type = X3dnaBPType.cDDD
 
     def __repr__(self):
         res1 = self.res1.chain_id + str(self.res1.num) + self.res1.i_code
@@ -528,7 +707,7 @@ class Residue(object):
 
     __slots__ = ["num", "chain_id", "i_code"]
 
-    def __init__(self, num, chain_id, i_code=""):
+    def __init__(self, num, chain_id, i_code=" "):
         self.num, self.chain_id, self.i_code = num, chain_id, i_code
 
     def __repr__(self):

@@ -1,4 +1,5 @@
 import util
+import x3dna
 
 class MotifScorer(object):
 
@@ -20,7 +21,7 @@ class MotifScorer(object):
     def score(self, m):
         score = 0
         for bp in m.basepairs:
-            if   bp.bp_type == "cW-W":
+            if   bp.bp_type == x3dna.X3dnaBPType.cWUW:
                 score += self._score_cWW_bp(bp)
             elif bp.bp_type in self.bp_ref_energy:
                 score += self.bp_ref_energy[bp.bp_type]
@@ -51,7 +52,7 @@ class MotifScorer(object):
     def score_elements(self, s, basepairs):
         score = 0
         for bp in basepairs:
-            if   bp.bp_type == "cW-W":
+            if   bp.bp_type == x3dna.X3dnaBPType.cWUW:
                 score += self._score_cWW_bp_new(bp, s)
             elif bp.bp_type in self.bp_ref_energy:
                 score += self.bp_ref_energy[bp.bp_type]
@@ -71,7 +72,7 @@ class MotifScorer(object):
         return score
 
     def _bp_reference_energy_table(self):
-        bp_ref_energy = {
+        """bp_ref_energy = {
             'cm-':6.1122307919,
             'cM-M':6.1122307919,
             'tW+W':3.11366762268,
@@ -98,6 +99,35 @@ class MotifScorer(object):
             'c.-W':6.1122307919,
             'cM+m':5.68522906698,
             'cM-m':3.12321871743
+        }"""
+
+        bp_ref_energy = {
+            x3dna.X3dnaBPType.cmU : 6.1122307919,
+            x3dna.X3dnaBPType.cMUM: 6.1122307919,
+            x3dna.X3dnaBPType.tWPW: 3.11366762268,
+            x3dna.X3dnaBPType.cDPM: 5.68522906698,
+            x3dna.X3dnaBPType.DWPW: 6.1122307919,
+            x3dna.X3dnaBPType.tWUM: 2.42283130036,
+            x3dna.X3dnaBPType.tmUM: 2.71577524698,
+            x3dna.X3dnaBPType.cWPM: 3.33339125508,
+            x3dna.X3dnaBPType.DWUW: 4.33166562348,
+            x3dna.X3dnaBPType.cMPD: 6.1122307919,
+            x3dna.X3dnaBPType.cDUm: 6.1122307919,
+            x3dna.X3dnaBPType.cMPW: 4.4042238922,
+            x3dna.X3dnaBPType.tMPm: 6.1122307919,
+            x3dna.X3dnaBPType.tMUW: 3.02141948251,
+            x3dna.X3dnaBPType.cmUm: 5.12076349023,
+            x3dna.X3dnaBPType.cMUW: 6.1122307919,
+            x3dna.X3dnaBPType.cWUW: 0.056986982519,
+            x3dna.X3dnaBPType.cDUM: 5.43544907015,
+            x3dna.X3dnaBPType.cmPM: 2.7132962365,
+            x3dna.X3dnaBPType.cmUM: 3.23361276018,
+            x3dna.X3dnaBPType.DDDD: 4.18066203386,
+            x3dna.X3dnaBPType.cmUW: 4.36687710812,
+            x3dna.X3dnaBPType.tMUm: 2.83911913314,
+            x3dna.X3dnaBPType.cDUW: 6.1122307919,
+            x3dna.X3dnaBPType.cMPm: 5.68522906698,
+            x3dna.X3dnaBPType.cMUm: 3.12321871743
         }
 
         return bp_ref_energy

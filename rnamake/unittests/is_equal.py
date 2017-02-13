@@ -75,6 +75,7 @@ def are_basepairs_equal(bp1, bp2, check_uuid=1):
     if not numerical.are_points_equal(bp1.sugars[1], bp2.sugars[1]):
         return 0
 
+
     if bp1.name != bp2.name:
         return 0
     if bp1.bp_type != bp2.bp_type:

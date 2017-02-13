@@ -107,7 +107,7 @@ class Basepair(primitives.basepair.Basepair):
         r = basic_io.str_to_matrix(spl[1])
         sugars = basic_io.str_to_points(spl[2])
 
-        return cls(res1_uuid, res2_uuid, r, d, sugars, spl[3], spl[4], int(spl[5]))
+        return cls(res1_uuid, res2_uuid, r, d, sugars, spl[3], int(spl[4]), int(spl[5]))
 
     @classmethod
     def copy(cls, bp):
@@ -257,7 +257,7 @@ class Basepair(primitives.basepair.Basepair):
         s  = basic_io.point_to_str(self._d) + ";"
         s += basic_io.matrix_to_str(self._r) + ";"
         s += basic_io.points_to_str(self._sugars) + ";"
-        s += self._name + ";" + self._x3dna_bp_type + ";" + str(self._bp_type) + ";"
+        s += self._name + ";" + str(self._x3dna_bp_type) + ";" + str(self._bp_type) + ";"
         return s
 
     def get_state(self):

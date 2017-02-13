@@ -300,7 +300,7 @@ class MotifFactory(object):
         basepairs = []
 
         for bp in element.basepairs:
-            if bp.bp_type != "cW-W":
+            if bp.bp_type != x3dna.X3dnaBPType.cWUW:
                 basepairs.append(bp)
             if bp in element.ends:
                 basepairs.append(bp)
@@ -536,11 +536,6 @@ class MotifFactory(object):
 
         elements = self._MotifElements(s, bps, ends)
         return self.__motifs_from_elements(elements, mtype, name)
-
-def ref_motif():
-    path = settings.RESOURCES_PATH + "/start"
-    m = factory.motif_from_file(path)
-    return m
 
 
 

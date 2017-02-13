@@ -306,6 +306,12 @@ private:
 typedef std::shared_ptr<Basepair> BasepairOP;
 typedef std::vector<BasepairOP> BasepairOPs;
 
+bool
+are_basepairs_equal(
+        BasepairOP const & bp1,
+        BasepairOP const & bp2,
+        int check_uuids = 1);
+
 Point
 _calc_center(ResidueOPs const &);
 

@@ -38,7 +38,7 @@ class RNAStructure(base.BaseStructureObject):
 
     # wrappers from structure
     def iter_chains(self):
-        return self._structure.iter_chains();
+        return self._structure.iter_chains()
 
     def get_residue(self, num=None, chain_id=None, i_code=None, uuid=None, index=None):
         """

@@ -1,3 +1,4 @@
+import x3dna
 import motif_type
 import rna_structure
 import structure
@@ -260,7 +261,7 @@ class MotifMerger(object):
     def __get_ss_basepairs(self, m, ss):
         ss_bps = []
         for bp in m.iter_basepairs():
-            if bp.bp_type != "cW-W":
+            if bp.bp_type != x3dna.X3dnaBPType.cWUW:
                 continue
             if not util.wc_bp(bp, m) and not util.gu_bp(bp, m):
                 continue

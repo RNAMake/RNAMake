@@ -26,8 +26,16 @@ class Basepair(object):
 def calc_bp_name(res):
     res1, res2 = res
 
-    res1_name = res1.chain_id+str(res1.num)+str(res1.i_code)
-    res2_name = res2.chain_id+str(res2.num)+str(res2.i_code)
+    if res1.i_code == " ":
+        res1_name = res1.chain_id + str(res1.num)
+    else:
+        res1_name = res1.chain_id + str(res1.num) + str(res1.i_code)
+
+    if res2.i_code == " ":
+        res2_name = res2.chain_id + str(res2.num)
+    else:
+        res2_name = res2.chain_id + str(res2.num) + str(res2.i_code)
+
 
     if res1.chain_id < res2.chain_id:
         return res1_name+"-"+res2_name

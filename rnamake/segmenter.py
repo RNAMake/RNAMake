@@ -6,6 +6,7 @@ import pose_factory
 import motif_type
 import structure
 import motif
+import x3dna
 import motif_factory
 import exceptions
 
@@ -193,7 +194,7 @@ class Segmenter(object):
             basepairs = []
             missed_bps = 0
             for bp in m.basepairs:
-                if bp.bp_type != "cW-W":
+                if bp.bp_type != x3dna.X3dnaBPType.cWUW:
                     continue
                 if   bp.res1 in sub_res and bp.res2 in sub_res:
                     basepairs.append(bp)
