@@ -22,8 +22,6 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
             REQUIRE_THROWS_AS(x.generate_ref_frame("fake.pdb"), X3dnaException);
             
         }
-        
-        
     }
     
     SECTION("test generating dssr file from pdb") {
@@ -38,10 +36,10 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
     }
     
     SECTION("test x3dna residue equality") {
-        auto res1 = X3Residue(1, "A", "");
-        auto res2 = X3Residue(1, "A", "");
-        auto res3 = X3Residue(2, "A", "");
-        auto res4 = X3Residue(1, "B", "");
+        auto res1 = X3dna::X3Residue{1, 'A', ' '};
+        auto res2 = X3dna::X3Residue{1, 'A', ' '};
+        auto res3 = X3dna::X3Residue{2, 'A', ' '};
+        auto res4 = X3dna::X3Residue{1, 'B', ' '};
         
         REQUIRE(res1 == res2);
         REQUIRE(!(res1 == res3));

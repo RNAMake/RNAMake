@@ -682,8 +682,8 @@ def align_motif_state(ref_bp_state, ms):
 
     trans  = transform.Transform(r, t)
 
-    ms.transform(trans)
-    #ms.fast_transform(trans)
+    #ms.transform(trans)
+    ms.fast_transform(trans)
 
 
 def get_aligned_motif_state(ref_bp_state, ms, new_uuid=1):

@@ -3,6 +3,7 @@ import basic_io
 import numpy as np
 import uuid
 import exceptions
+import x3dna
 
 import motif_state
 import primitives.basepair
@@ -95,7 +96,7 @@ class Basepair(primitives.basepair.Basepair):
             self._bp_type = primitives.basepair.BasepairType.NC
 
         if self._x3dna_bp_type is None:
-            self._x3dna_bp_type = "c..."
+            self._x3dna_bp_type = x3dna.X3dnaBPType.cDDD
 
         if self._uuid is None:
             self._uuid = uuid.uuid1()

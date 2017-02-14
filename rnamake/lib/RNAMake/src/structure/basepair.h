@@ -10,6 +10,7 @@
 #define __RNAMake__basepair__
 
 #include <stdio.h>
+#include <util/x3dna.h>
 
 //RNAMake Headers
 
@@ -24,34 +25,30 @@
 class Basepair : public primitives::Basepair {
 public:
     Basepair(
-            UuidOP const &,
-            UuidOP const &,
+            Uuid const &,
+            Uuid const &,
             Matrix const &,
             Point const &,
             Points const &,
-            StringOP const &,
-            StringOP const &,
-            primitives::Basepair::BasepairType const &,
-            UuidOP const &);
+            Chars const &,
+            X3dna::X3dnaBPType const,
+            primitives::Basepair::BasepairType const,
+            Uuid const &);
 
     Basepair(
             String const &,
-            UuidOP const &,
-            UuidOP const &);
+            Uuid const &,
+            Uuid const &);
 
     Basepair(Basepair const &);
 
     Basepair(
             Basepair const & bp,
-            UuidOP const & res1_uuid,
-            UuidOP const & res2_uuid,
-            UuidOP const & bp_uuid = nullptr);
+            Uuid const & res1_uuid,
+            Uuid const & res2_uuid,
+            Uuid const & bp_uuid);
 
-
-    ~Basepair() {
-        res1_uuid_.reset();
-        res2_uuid_.reset();
-    }
+    ~Basepair() {}
 
 public:
 
@@ -131,23 +128,23 @@ public: // getters
     res2_sugar() const { return sugars_[1]; }
 
     inline
-    StringOP const &
+    X3dna::X3dnaBPType
     x3dna_bp_type() const { return x3dna_bp_type_; }
 
     inline
-    UuidOP const &
+    Uuid const &
     uuid() const { return uuid_; }
 
     inline
-    UuidOP const &
+    Uuid const &
     res1_uuid() const { return res1_uuid_; }
 
     inline
-    UuidOP const &
+    Uuid const &
     res2_uuid() const { return res2_uuid_; }
 
     inline
-    StringOP const &
+    Chars const &
     name() const { return name_; }
 
     inline
@@ -172,100 +169,15 @@ public: // getters
     }
     
     inline
-    ResidueOPs const
-    residues() const {
-        ResidueOPs res(2);
-        res[0] = res1_;
-        res[1] = res2_;
-        return res;
-    }
-    
-    inline
     ResidueOP const &
     partner(ResidueOP const & res) {
         if     ( res->uuid() == res1_->uuid()) {  return res2_;  }
         else if( res->uuid() == res2_->uuid()) {  return res1_;  }
         else { throw "called partner with resiude not in this basepair"; }
     }
-    
-    inline
-    String const
-    name() const {
-        auto res1_name = res1_->chain_id()+std::to_string(res1_->num())+res1_->i_code();
-        auto res2_name = res2_->chain_id()+std::to_string(res2_->num())+res2_->i_code();
-        
-        if(res1_->chain_id() < res2_->chain_id()) { return res1_name+"-"+res2_name; }
-        if(res1_->chain_id() > res2_->chain_id()) { return res2_name+"-"+res1_name; }
-        
-        if(res1_->num() < res2_->num()) { return res1_name+"-"+res2_name; }
-        else                            { return res2_name+"-"+res1_name; }
-        
-        return res1_name+"-"+res2_name;
-    }
-    
-    inline
-    void
-    flip() { bp_state_->flip(); }
-    
-    inline
-    Matrix const &
-    r() const { return bp_state_->r(); }
-    
-    inline
-    Point const
-    d()  const { return calc_center(atoms_); }
-    
-    inline
-    Uuid const &
-    uuid() const { return uuid_; }
-    
-    inline
-    ResidueOP
-    res1() const { return res1_; }
-    
-    inline
-    ResidueOP 
-    res2() const { return res2_; }
-    
-    inline
-    String const &
-    bp_type() const { return bp_type_; }
-    
-    inline
-    int const
-    flipped() const { return flipped_; }
-    
-    inline
-    AtomOPs const &
-    atoms() const { return atoms_; }
 
-public: // setters
-    
-    inline
-    void
-    r(Matrix const & nr) { bp_state_->r(nr); }
-    
-    inline
-    void
-    uuid(Uuid const & nuuid) { uuid_ = nuuid; }
-    
-    inline
-    void
-    flipped(int const & nflipped) { flipped_ = nflipped; }
-    
-    inline
-    void
-    res1(ResidueOP const & nres1) { res1_ = nres1;}
-    
-    inline
-    void
-    res2(ResidueOP const & nres2) { res2_ = nres2;}
-    
-    
-    inline
-    void
-    bp_type(String const & nbp_type) { bp_type_ = nbp_type; }
-    
+
+
 public:
     
     String const
@@ -297,20 +209,22 @@ private:
     Matrix r_;
     Point d_;
     Points sugars_;
-    UuidOP res1_uuid_, res2_uuid_;
-    StringOP name_, x3dna_bp_type_;
+    Uuid res1_uuid_, res2_uuid_;
+    Chars name_;
+    X3dna::X3dnaBPType x3dna_bp_type_;
     primitives::Basepair::BasepairType bp_type_;
 
 };
 
 typedef std::shared_ptr<Basepair> BasepairOP;
-typedef std::vector<BasepairOP> BasepairOPs;
 
 bool
 are_basepairs_equal(
         BasepairOP const & bp1,
         BasepairOP const & bp2,
         int check_uuids = 1);
+
+typedef std::vector<BasepairOP> BasepairOPs;
 
 Point
 _calc_center(ResidueOPs const &);

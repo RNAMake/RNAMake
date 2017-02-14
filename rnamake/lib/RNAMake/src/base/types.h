@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <array>
 
 using Ints = std::vector<int>;
 using Chars = std::vector<char>;

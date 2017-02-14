@@ -199,9 +199,9 @@ X3dna::_parse_ref_frame_file(String const & ref_frames_path) {
             r.xx(rs[0][0]); r.xy(rs[0][1]); r.xz(rs[0][2]);
             r.yx(rs[1][0]); r.yy(rs[1][1]); r.yz(rs[1][2]);
             r.zx(rs[2][0]); r.zy(rs[2][1]); r.zz(rs[2][2]);
-            X3Residue res1(res_num_1, res_id_1, "");
-            X3Residue res2(res_num_2, res_id_2, "");
-            X3Basepair bp(res1, res2, r, d);
+            auto res1 = X3Residue{res_num_1, res_id_1[0], ' '};
+            auto res2 = X3Residue{res_num_2, res_id_2[0], ' '};
+            auto bp   = X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
             basepairs_.push_back(bp);
             rs.resize(0);
         }
@@ -250,11 +250,11 @@ X3dna::_split_over_white_space(String const & str) {
     return non_white_space;
 }
 
-X3Residue
+X3dna::X3Residue
 X3dna::_parse_dssr_res_str(String const & res_str) {
-    Strings spl = split_str_by_delimiter(res_str, ".");
-    String chain = spl[0];
-    String rnum = spl[1].substr(1);
+    auto spl = split_str_by_delimiter(res_str, ".");
+    auto chain = spl[0][0];
+    auto rnum = spl[1].substr(1);
     int num;
     try{
         num = std::stoi(rnum);
@@ -263,11 +263,11 @@ X3dna::_parse_dssr_res_str(String const & res_str) {
         throw "could not parse " + res_str + " into a residue\n";
     }
 
-    return X3Residue(num, chain, "");
+    return X3Residue{num, chain, ' '};
     
 }
 
-X3Basepairs const &
+X3dna::X3Basepairs const &
 X3dna::get_basepairs(
     String const & pdb_path,
     bool force_build_files) {
@@ -288,10 +288,10 @@ X3dna::get_basepairs(
         if(spl.size() < 6) { continue; }
         auto res1 = _parse_dssr_res_str(spl[1]);
         auto res2 = _parse_dssr_res_str(spl[2]);
-        auto bp_type = String("c...");
+        auto bp_type = X3dnaBPType::cDDD;
         //TODO look into why this is happening, sometimes will error out if I dont do this check
         if(spl.size() > 7) {
-            bp_type = spl[7];
+            bp_type = get_x3dna_by_type(spl[7]);
         }
         found = 0;
         for(auto & bp : basepairs_) {
@@ -308,7 +308,8 @@ X3dna::get_basepairs(
         }
         
         if(!found) {
-            basepairs_.push_back(X3Basepair(res1, res2, Matrix(), Point(-1,-1,-1)));
+            basepairs_.push_back(X3Basepair{res1, res2, Point(-1,-1,-1), Matrix(),
+                                            X3dnaBPType::cDDD});
         }
         
     }    
@@ -318,7 +319,7 @@ X3dna::get_basepairs(
 
 }
 
-X3Motifs
+X3dna::X3Motifs
 X3dna::get_motifs(
     String const & pdb_path) {
     
@@ -349,7 +350,7 @@ X3dna::get_motifs(
     
 }
 
-X3Motifs
+X3dna::X3Motifs
 X3dna::_parse_dssr_section(
     Strings const & section,
     String const & mtype) {
@@ -382,7 +383,7 @@ X3dna::_parse_dssr_section(
             continue;
         }
         for(auto const & r : res) { seen_res.push_back(r); }
-        motifs.push_back(X3Motif(res, mtype));
+        motifs.push_back(X3Motif{res, mtype});
         
     }
     
@@ -390,7 +391,7 @@ X3dna::_parse_dssr_section(
     
 }
 
-X3Motifs
+X3dna::X3Motifs
 X3dna::_parse_dssr_helix_section(
     Strings const & section) {
     
@@ -405,7 +406,7 @@ X3dna::_parse_dssr_helix_section(
         } catch(...) { continue; }
 
         if(i == 1 && res.size() > 0) {
-            motifs.push_back(X3Motif(res, "HELIX"));
+            motifs.push_back(X3Motif{res, "HELIX"});
             res = X3Residues();
         }
         res.push_back(_parse_dssr_res_str(spl[1]));
@@ -413,11 +414,75 @@ X3dna::_parse_dssr_helix_section(
     }
     
     if(res.size() > 0) {
-        motifs.push_back(X3Motif(res, "HELIX"));
+        motifs.push_back(X3Motif{res, "HELIX"});
     }
     
     return motifs;
 }
+
+
+X3dna::X3dnaBPType
+get_x3dna_by_type(String const & name) {
+    if     (name == "cm-")  { return X3dna::X3dnaBPType::cmU; }
+    else if(name == "cM-M") { return X3dna::X3dnaBPType::cMUM; }
+    else if(name == "tW+W") { return X3dna::X3dnaBPType::tWPW; }
+    else if(name == "c.+M") { return X3dna::X3dnaBPType::cDPM; }
+    else if(name == ".W+W") { return X3dna::X3dnaBPType::DWPW; }
+    else if(name == "tW-M") { return X3dna::X3dnaBPType::tWUM; }
+    else if(name == "tm-M") { return X3dna::X3dnaBPType::tmUM; }
+    else if(name == "cW+M") { return X3dna::X3dnaBPType::cWPM; }
+    else if(name == ".W-W") { return X3dna::X3dnaBPType::DWUW; }
+    else if(name == "cM+.") { return X3dna::X3dnaBPType::cMPD; }
+    else if(name == "c.-m") { return X3dna::X3dnaBPType::cDUm; }
+    else if(name == "cM+W") { return X3dna::X3dnaBPType::cMPW; }
+    else if(name == "tM+m") { return X3dna::X3dnaBPType::tMPm; }
+    else if(name == "tM-W") { return X3dna::X3dnaBPType::tMUW; }
+    else if(name == "cm-m") { return X3dna::X3dnaBPType::cmUm; }
+    else if(name == "cM-W") { return X3dna::X3dnaBPType::cMUW; }
+    else if(name == "cW-W") { return X3dna::X3dnaBPType::cWUW; }
+    else if(name == "c.-M") { return X3dna::X3dnaBPType::cDUM; }
+    else if(name == "cm+M") { return X3dna::X3dnaBPType::cmPM; }
+    else if(name == "cm-M") { return X3dna::X3dnaBPType::cmUM; }
+    else if(name == "....") { return X3dna::X3dnaBPType::DDDD; }
+    else if(name == "cm-W") { return X3dna::X3dnaBPType::cmUW; }
+    else if(name == "tM-m") { return X3dna::X3dnaBPType::tMUm; }
+    else if(name == "c.-W") { return X3dna::X3dnaBPType::cDUW; }
+    else if(name == "cM+m") { return X3dna::X3dnaBPType::cMPm; }
+    else if(name == "cM-m") { return X3dna::X3dnaBPType::cMUm; }
+    else if(name == "c...") { return X3dna::X3dnaBPType::cDDD; }
+    else if(name == "tW+m") { return X3dna::X3dnaBPType::tWPm; }
+    else if(name == "c.+m") { return X3dna::X3dnaBPType::cDPm; }
+    else if(name == "tm+m") { return X3dna::X3dnaBPType::tmPm; }
+    else if(name == "tW+.") { return X3dna::X3dnaBPType::tWPD; }
+    else if(name == "tm+W") { return X3dna::X3dnaBPType::tmPW; }
+    else if(name == "t...") { return X3dna::X3dnaBPType::tDDD; }
+    else if(name == "cW-.") { return X3dna::X3dnaBPType::cWUD; }
+    else if(name == "cW-M") { return X3dna::X3dnaBPType::cWUM; }
+    else if(name == "t.-W") { return X3dna::X3dnaBPType::tDUW; }
+    else if(name == "tM+M") { return X3dna::X3dnaBPType::tMPM; }
+    else if(name == "t.-M") { return X3dna::X3dnaBPType::tDUM; }
+    else if(name == "cM-.") { return X3dna::X3dnaBPType::cMUD; }
+    else if(name == "cW-m") { return X3dna::X3dnaBPType::cWUm; }
+    else if(name == "t.+m") { return X3dna::X3dnaBPType::tDPm; }
+    else if(name == "tM-.") { return X3dna::X3dnaBPType::tMUD; }
+    else if(name == "cm+W") { return X3dna::X3dnaBPType::cmPW; }
+    else if(name == "cM+M") { return X3dna::X3dnaBPType::cMPM; }
+    else if(name == "cm+.") { return X3dna::X3dnaBPType::cmPD; }
+    else if(name == "cm-.") { return X3dna::X3dnaBPType::cmUD; }
+    else if(name == "c.-.") { return X3dna::X3dnaBPType::cDUD; }
+    else if(name == "cW+W") { return X3dna::X3dnaBPType::cWPW; }
+    else if(name == "t.-.") { return X3dna::X3dnaBPType::tDUD; }
+    else if(name == "t.+W") { return X3dna::X3dnaBPType::tDPW; }
+    else if(name == "tm-m") { return X3dna::X3dnaBPType::tmUm; }
+    else if(name == "cW+.") { return X3dna::X3dnaBPType::cWPD; }
+    else if(name == "tm+.") { return X3dna::X3dnaBPType::tmPD; }
+    else if(name == "t.+.") { return X3dna::X3dnaBPType::tDPD; }
+    else if(name == "c.+.") { return X3dna::X3dnaBPType::cDPD; }
+    else if(name == "t.-m") { return X3dna::X3dnaBPType::tDUm; }
+    else if(name == "t.+M") { return X3dna::X3dnaBPType::tDPM; }
+    else                    {throw X3dnaException("cannot get x3dna type with: " + name); }
+}
+
 
 
 

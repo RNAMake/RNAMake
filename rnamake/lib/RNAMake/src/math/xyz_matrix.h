@@ -113,6 +113,26 @@ private:
 		c.zy_ = a.zx_*b.xy_ + a.zy_*b.yy_ + a.zz_*b.zy_;
 		c.zz_ = a.zx_*b.xz_ + a.zy_*b.yz_ + a.zz_*b.zz_;
 	}
+
+	friend
+	inline
+	xyzMatrix< T >
+	dot(
+			xyzMatrix< T > const & a,
+			xyzMatrix< T > const & b)
+	{
+		auto c = xyzMatrix< T >();
+		c.xx_ = a.xx_*b.xx_ + a.xy_*b.yx_ + a.xz_*b.zx_;
+		c.xy_ = a.xx_*b.xy_ + a.xy_*b.yy_ + a.xz_*b.zy_;
+		c.xz_ = a.xx_*b.xz_ + a.xy_*b.yz_ + a.xz_*b.zz_;
+		c.yx_ = a.yx_*b.xx_ + a.yy_*b.yx_ + a.yz_*b.zx_;
+		c.yy_ = a.yx_*b.xy_ + a.yy_*b.yy_ + a.yz_*b.zy_;
+		c.yz_ = a.yx_*b.xz_ + a.yy_*b.yz_ + a.yz_*b.zz_;
+		c.zx_ = a.zx_*b.xx_ + a.zy_*b.yx_ + a.zz_*b.zx_;
+		c.zy_ = a.zx_*b.xy_ + a.zy_*b.yy_ + a.zz_*b.zy_;
+		c.zz_ = a.zx_*b.xz_ + a.zy_*b.yz_ + a.zz_*b.zz_;
+		return c;
+	}
 	
 
 public: //creation

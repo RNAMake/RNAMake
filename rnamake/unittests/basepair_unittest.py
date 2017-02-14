@@ -1,9 +1,11 @@
 import unittest
 from rnamake import structure, transformations, x3dna, residue_type, basepair, settings
+from rnamake import basic_io, motif_state
 import rnamake.primitives.basepair
 
 import util, instances
 import numpy as np
+import uuid
 import copy
 import random
 
@@ -103,6 +105,30 @@ class BasepairUnittest(unittest.TestCase):
         bp_copy = basepair.Basepair.from_str(s, bp.res1_uuid, bp.res2_uuid)
         self.failUnless(is_equal.are_basepairs_equal(bp, bp_copy, 0))
 
+    def _get_bp_from_str(self, s):
+        spl = s.split(";")
+        d = basic_io.str_to_point(spl[0])
+        r = basic_io.str_to_matrix(spl[1])
+        sugars = basic_io.str_to_points(spl[2])
+        return motif_state.Basepair(uuid.uuid1(), uuid.uuid1(), r, d, sugars, "test")
+
+    def test_state_get_transforming_r_and_t(self):
+        path = settings.UNITTEST_PATH+"resources/motif_state/get_transforming_r_and_t_test.dat"
+        f = open(path)
+        lines = f.readlines()
+        f.close()
+
+        for l in lines:
+            spl = l.split("|")
+            bp1 = self._get_bp_from_str(spl[0])
+            bp2 = self._get_bp_from_str(spl[1])
+            t = basic_io.str_to_point(spl[2])
+            r = basic_io.str_to_matrix(spl[3])
+
+            new_r, new_t = bp1.get_transforming_r_and_t_w_state(bp2)
+
+            self.failUnless(numerical.are_points_equal(new_t, t))
+            self.failUnless(numerical.are_matrices_equal(new_r, r))
 
 
 """class BasepairStateUnittest(unittest.TestCase):
