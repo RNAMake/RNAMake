@@ -15,9 +15,7 @@ _get_bp_from_str(String const & s) {
     auto r = matrix_from_str(spl[1]);
     auto sugars = vectors_from_str(spl[2]);
     auto bp_name_str = String("test");
-    auto bp_name = Chars(4);
-    int i = 0;
-    for(auto const & e : bp_name_str) { bp_name[i] = e; i++; }
+    auto bp_name = std::make_shared<SimpleString>(bp_name_str);
     return std::make_shared<state::Basepair>(Uuid(), Uuid(), r, d, sugars[0], sugars[1], bp_name,
                                              X3dna::X3dnaBPType::cDDD,
                                              primitives::Basepair::BasepairType::WC, Uuid());
@@ -39,12 +37,9 @@ TEST_CASE( "Test Basepairs for Structure", "[Basepair]" ) {
     auto sugars = Points();
     sugars.push_back(res1->get_atom("C1'")->coords());
     sugars.push_back(res2->get_atom("C1'")->coords());
-    auto bp_name = Chars(bp_name_str.length());
-    int i = 0;
-    for(auto const & e : bp_name_str) { bp_name[i] = e; i++; }
-
-    auto bp = std::make_shared<Basepair>(res1->uuid(), res2->uuid(), x_bp.r, center, sugars,
-                                         bp_name, x_bp.bp_type,
+    auto bp_name = std::make_shared<SimpleString>(bp_name_str);
+    auto bp = std::make_shared<Basepair>(res1->uuid(), res2->uuid(), x_bp.r, center,
+                                         sugars[0], sugars[1], bp_name, x_bp.bp_type,
                                          primitives::Basepair::BasepairType::WC, Uuid());
 
     SECTION("test whether basepair transformations reflect residue transformations") {
@@ -76,8 +71,8 @@ TEST_CASE( "Test Basepairs for Structure", "[Basepair]" ) {
     }
 
     SECTION("test to str") {
-        auto s = bp->to_str();
-        auto bp_copy = std::make_shared<Basepair>(s, bp->res1_uuid(), bp->res2_uuid());
+        auto bp_str = bp->to_str();
+        auto bp_copy = std::make_shared<Basepair>(bp_str, bp->res1_uuid(), bp->res2_uuid());
 
         REQUIRE(are_basepairs_equal(bp, bp_copy, 0));
     }
@@ -134,12 +129,10 @@ TEST_CASE( "Test Basepairs for Structure", "[Basepair]" ) {
 
             REQUIRE(are_xyzMatrix_equal(bp1->r(), bp2->r()));
             REQUIRE(are_xyzVector_equal(bp1->d(), bp2->d()));
-            //REQUIRE(are_xyzVector_equal(bp1->sugars()[0], bp2->sugars()[0]));
-            //REQUIRE(are_xyzVector_equal(bp1->sugars()[1], bp2->sugars()[1]));
+            REQUIRE(are_xyzVector_equal(bp1->res1_sugar(), bp2->res1_sugar()));
+            REQUIRE(are_xyzVector_equal(bp1->res2_sugar(), bp2->res2_sugar()));
 
         }
-
-
     }
 
 }

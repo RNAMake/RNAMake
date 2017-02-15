@@ -16,9 +16,7 @@ _get_bp_from_str(String const & s) {
     auto r = matrix_from_str(spl[1]);
     auto sugars = vectors_from_str(spl[2]);
     auto bp_name_str = String("test");
-    auto bp_name = Chars(4);
-    int i = 0;
-    for(auto const & e : bp_name_str) { bp_name[i] = e; i++; }
+    auto bp_name = std::make_shared<SimpleString>(bp_name_str);
     return std::make_shared<state::Basepair>(Uuid(), Uuid(), r, d, sugars[0], sugars[1], bp_name,
                                              X3dna::X3dnaBPType::cDDD,
                                              primitives::Basepair::BasepairType::WC, Uuid());

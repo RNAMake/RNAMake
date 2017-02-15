@@ -1,6 +1,6 @@
 import unittest
 from rnamake import structure, transformations, x3dna, residue_type, basepair, settings
-from rnamake import basic_io, motif_state
+from rnamake import basic_io, motif_statea
 import rnamake.primitives.basepair
 
 import util, instances

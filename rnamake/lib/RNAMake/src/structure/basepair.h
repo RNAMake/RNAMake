@@ -29,8 +29,9 @@ public:
             Uuid const &,
             Matrix const &,
             Point const &,
-            Points const &,
-            Chars const &,
+            Point const &,
+            Point const &,
+            SimpleStringOP const &,
             X3dna::X3dnaBPType const,
             primitives::Basepair::BasepairType const,
             Uuid const &);
@@ -44,9 +45,9 @@ public:
 
     Basepair(
             Basepair const & bp,
-            Uuid const & res1_uuid,
-            Uuid const & res2_uuid,
-            Uuid const & bp_uuid);
+            Uuid const &,
+            Uuid const &,
+            Uuid const & );
 
     ~Basepair() {}
 
@@ -54,8 +55,8 @@ public:
 
     void
     move(Point const & p) {
-        sugars_[0] += p;
-        sugars_[1] += p;
+        res1_sugar_ += p;
+        res2_sugar_ += p;
         d_ += p;
     }
 
@@ -66,8 +67,8 @@ public:
         auto new_r = Matrix();
         dot(r_, r_T, new_r);
         r_ = new_r;
-        sugars_[0] = dot_vector(r_T, sugars_[0]) + t.translation();
-        sugars_[1] = dot_vector(r_T, sugars_[1]) + t.translation();
+        res1_sugar_ = dot_vector(r_T, res1_sugar_) + t.translation();
+        res2_sugar_ = dot_vector(r_T, res2_sugar_) + t.translation();
         d_ = dot_vector(r_T, d_) + t.translation();
     }
 
@@ -116,16 +117,16 @@ public: // getters
     d() const { return d_; }
 
     inline
-    Points const &
-    sugars() const { return sugars_; }
+    Points
+    sugars() const { return Points{res1_sugar_, res2_sugar_}; }
 
     inline
     Point const &
-    res1_sugar() const { return sugars_[0]; }
+    res1_sugar() const { return res1_sugar_; }
 
     inline
     Point const &
-    res2_sugar() const { return sugars_[1]; }
+    res2_sugar() const { return res2_sugar_; }
 
     inline
     X3dna::X3dnaBPType
@@ -144,8 +145,8 @@ public: // getters
     res2_uuid() const { return res2_uuid_; }
 
     inline
-    Chars const &
-    name() const { return name_; }
+    SimpleString const &
+    name() const { return *name_; }
 
     inline
     primitives::Basepair::BasepairType
@@ -208,9 +209,9 @@ private:
 private:
     Matrix r_;
     Point d_;
-    Points sugars_;
+    Point res1_sugar_, res2_sugar_;
     Uuid res1_uuid_, res2_uuid_;
-    Chars name_;
+    SimpleStringOP name_;
     X3dna::X3dnaBPType x3dna_bp_type_;
     primitives::Basepair::BasepairType bp_type_;
 

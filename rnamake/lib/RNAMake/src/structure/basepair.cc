@@ -14,8 +14,9 @@ Basepair::Basepair(
         Uuid const & res2_uuid,
         Matrix const & r,
         Point const & d,
-        Points const & sugars,
-        Chars const & name,
+        Point const & res1_sugar,
+        Point const & res2_sugar,
+        SimpleStringOP const & name,
         X3dna::X3dnaBPType const x3dna_bp_type,
         primitives::Basepair::BasepairType const bp_type,
         Uuid const & uuid) :
@@ -24,7 +25,8 @@ Basepair::Basepair(
         res2_uuid_(res2_uuid),
         r_(r),
         d_(d),
-        sugars_(sugars),
+        res1_sugar_(res1_sugar),
+        res2_sugar_(res2_sugar),
         name_(name),
         x3dna_bp_type_(x3dna_bp_type),
         bp_type_(bp_type) {}
@@ -38,14 +40,13 @@ Basepair::Basepair(
         res2_uuid_(res2_uuid) {
 
     auto spl = split_str_by_delimiter(s, ";");
-    d_       = vector_from_str(spl[0]);
-    r_       = matrix_from_str(spl[1]);
-    sugars_  = vectors_from_str(spl[2]);
-    x3dna_bp_type_ = static_cast<X3dna::X3dnaBPType>(std::stoi(spl[4]));
-    bp_type_ = static_cast<primitives::Basepair::BasepairType>(std::stoi(spl[5]));
-    name_ = Chars(spl[3].length());
-    int i = 0;
-    for(auto const & e : spl[3]) { name_[i] = e; i++; }
+    d_             = vector_from_str(spl[0]);
+    r_             = matrix_from_str(spl[1]);
+    res1_sugar_    = vector_from_str(spl[2]);
+    res2_sugar_    = vector_from_str(spl[3]);
+    name_          = std::make_shared<SimpleString>(spl[4]);
+    x3dna_bp_type_ = static_cast<X3dna::X3dnaBPType>(std::stoi(spl[5]));
+    bp_type_       = static_cast<primitives::Basepair::BasepairType>(std::stoi(spl[6]));
 
 }
 
@@ -55,7 +56,8 @@ Basepair::Basepair(Basepair const & bp):
         res2_uuid_(bp.res2_uuid_),
         r_(bp.r_),
         d_(bp.d_),
-        sugars_(bp.sugars_),
+        res1_sugar_(bp.res1_sugar_),
+        res2_sugar_(bp.res2_sugar_),
         name_(bp.name_),
         x3dna_bp_type_(bp.x3dna_bp_type_),
         bp_type_(bp.bp_type_) {}
@@ -70,15 +72,16 @@ Basepair::Basepair(
         res2_uuid_(res2_uuid),
         r_(bp.r_),
         d_(bp.d_),
-        sugars_(bp.sugars_),
+        res1_sugar_(bp.res1_sugar_),
+        res2_sugar_(bp.res2_sugar_),
         name_(bp.name_),
         x3dna_bp_type_(bp.x3dna_bp_type_),
         bp_type_(bp.bp_type_)  {}
 
 String
 Basepair::to_str() const {
-    auto s = vector_to_str(d_) + ";" + matrix_to_str(r_) + ";" + vectors_to_str(sugars_) + ";";
-    s     += char_vector_to_str(name_) + ";" + std::to_string(x3dna_bp_type_) + ";";
+    auto s = vector_to_str(d_) + ";" + matrix_to_str(r_) + ";" + vector_to_str(res1_sugar_) + ";";
+    s     += vector_to_str(res2_sugar_) + ";" + name_->to_str() + ";" + std::to_string(x3dna_bp_type_) + ";";
     s     += std::to_string(bp_type_) + ";";
     return s;
 }
@@ -86,7 +89,7 @@ Basepair::to_str() const {
 state::BasepairOP
 Basepair::get_state() {
     auto bp_state = std::make_shared<state::Basepair>(res1_uuid_, res2_uuid_, r_, d_,
-                                                      sugars_[0], sugars_[1], name_, x3dna_bp_type_,
+                                                      res1_sugar_, res2_sugar_, name_, x3dna_bp_type_,
                                                       bp_type_, uuid_);
     return bp_state;
 }
@@ -102,7 +105,7 @@ are_basepairs_equal(
     if(!are_xyzMatrix_equal(bp1->r(), bp2->r())) { return false; }
     if(!are_xyzVector_equal(bp1->res1_sugar(), bp2->res1_sugar())) { return false; }
     if(!are_xyzVector_equal(bp1->res2_sugar(), bp2->res2_sugar())) { return false; }
-    if(!are_char_vectors_equal(bp1->name(), bp2->name())) { return false; }
+    if(bp1->name() != bp2->name()) { return false; }
     if(bp1->x3dna_bp_type() != bp2->x3dna_bp_type()) { return false; }
 
     if(check_uuids) {

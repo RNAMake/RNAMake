@@ -5,6 +5,7 @@
 #ifndef RNAMAKE_MOTIF_STATE_BASEPAIR_H
 #define RNAMAKE_MOTIF_STATE_BASEPAIR_H
 
+#include "base/simple_string.h"
 #include "util/uuid.h"
 #include "primitives/basepair.h"
 #include "math/xyz_matrix.h"
@@ -34,7 +35,7 @@ public:
             Point const & d,
             Point const & res1_sugar,
             Point const & res2_sugar,
-            Chars const & name,
+            SimpleStringOP const & name,
             X3dna::X3dnaBPType const x3dna_bp_type,
             primitives::Basepair::BasepairType const bp_type,
             Uuid const & uuid) :
@@ -179,8 +180,8 @@ public: // getters
     res2_uuid() const { return res2_uuid_; }
 
     inline
-    Chars const &
-    name() const { return name_; }
+    SimpleString const &
+    name() const { return *name_; }
 
     inline
     primitives::Basepair::BasepairType const
@@ -191,7 +192,7 @@ private:
     Matrix r_;
     Point d_, res1_sugar_, res2_sugar_;
     Uuid res1_uuid_, res2_uuid_;
-    Chars name_;
+    SimpleStringOP name_;
     X3dna::X3dnaBPType x3dna_bp_type_;
     primitives::Basepair::BasepairType bp_type_;
 };
