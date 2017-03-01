@@ -15,6 +15,9 @@
 #include "base/types.h"
 
 String
+get_os_name();
+
+String
 base_dir();
 
 String

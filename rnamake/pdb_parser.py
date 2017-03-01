@@ -3,6 +3,7 @@ import residue
 import residue_type
 import exceptions
 import user_warnings
+import numpy as np
 
 # TODO handle no chain id!
 def parse(pdb_file, protein=0, rna=1):
@@ -57,9 +58,10 @@ def parse(pdb_file, protein=0, rna=1):
             chid = line[21]
             alt = line[16]
             try:
-                coords = [float(line[30:38]),
+                coords = np.array(
+                          [float(line[30:38]),
                           float(line[38:46]),
-                          float(line[46:54])]
+                          float(line[46:54])])
             except:
                 raise exceptions.PDBParserError('invalid or missing coordinate(s) at '
                                                 'line {0}.'.format(line))
@@ -126,6 +128,8 @@ def parse(pdb_file, protein=0, rna=1):
         icode = ""
         if len(spl) > 3:
             icode = spl[3]
+        if len(spl) == 2:
+            spl.append('A')
         r = residue.Residue(rtype, spl[0], int(spl[1]), spl[2], icode)
         r.setup_atoms(res_atoms)
         residues.append(r)
