@@ -89,6 +89,33 @@ def analyze_motifs():
     df.to_csv("motifs_extra_bps.csv", index=False)
 
 
+def analyze_motifs_nway():
+    twoway_files = glob.glob("sectioned_motifs/NWAY/*")
+
+    df = pd.DataFrame(columns = "m_name m_size extra_bps bps_names".split())
+    pos = 0
+    for m_file in twoway_files:
+        f = open(m_file)
+        lines = f.readlines()
+        f.close()
+        name = util.filename(m_file)[:-6]
+
+        #ull_m = motif.file_to_motif("structure_motifs/"+name+".motif")
+
+        for l in lines:
+            m = motif.str_to_motif(l)
+
+            if len(m.ends) != 3:
+                continue
+            print "nways/"+m.name+".pdb", len(m.residues()), len(m.chains()), len(m.ends)
+            m.to_pdb("nways/"+m.name+".pdb")
+            #df.loc[pos] = [m.name, len(m.residues()), found, bps_names]
+            pos += 1
+
+    #df.to_csv("motifs_extra_bps.csv", index=False)
+
+
+
 def compile_summary():
     df = pd.read_csv("motifs_extra_bps.csv")
 
@@ -104,7 +131,8 @@ def compile_summary():
 
 #build_structure_motifs()
 #build_all_motifs()
-analyze_motifs()
+#analyze_motifs()
+analyze_motifs_nway()
 #compile_summary()
 
 

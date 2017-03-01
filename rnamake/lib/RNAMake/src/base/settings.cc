@@ -13,6 +13,21 @@
 #include "base/settings.h"
 
 String
+get_os_name() {
+    #ifdef _WIN32 || _WIN64
+    return  String("Windows");
+    #elif __unix || __unix__
+    return  String("unix");
+    #elif __APPLE__ || __MACH__
+    return String("OSX");
+    #elif __linux__
+    return String("Linux");
+    #endif
+
+    throw std::runtime_error("cannot determine operating system");
+}
+
+String
 base_dir() {
 
     char* base_path;
@@ -42,12 +57,13 @@ motif_dirs() {
     return base_path + "/rnamake/resources/motifs/";
 }
 
-
 String
 x3dna_path() {
-    String path = resources_path() + "x3dna/osx/";
-    return path;
-    
+    auto os_name = get_os_name();
+    if(os_name == "OSX") { return resources_path() + "x3dna/osx/"; }
+    if(os_name == "Linux" || os_name == "unix") { return resources_path() + "x3dna/linux/"; }
+    throw std::runtime_error("unsupported operating system!");
+
 }
 
 String

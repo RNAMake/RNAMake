@@ -85,3 +85,4 @@ rnamake/lib/RNAMake/*.cmake
 # Auto-generated build files
 rnamake/lib/RNAMake/cmake/
 rnamake/lib/RNAMake/bin/
+rnamake/lib/RNAMake/CMakeFiles
