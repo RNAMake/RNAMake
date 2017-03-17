@@ -512,11 +512,11 @@ class BuildSqliteLibraries(object):
                lowest.name == "TWOWAY.1GID.2" or \
                lowest.name == "TWOWAY.2GDI.4":
                 continue
-            count += 1
 
             if lowest.name == "TWOWAY.2VQE.18":
                 continue
 
+            count += 1
             f.write(lowest.name + "," + lowest.ends[0].name() + "|")
 
             for m in c.motifs:
@@ -682,8 +682,8 @@ builder = BuildSqliteLibraries()
 #builder.build_helix_ensembles()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
-#builder.build_unique_twoway_library()
-builder.build_motif_state_libraries()
+builder.build_unique_twoway_library()
+#builder.build_motif_state_libraries()
 #builder.build_motif_ensemble_state_libraries()
 
 

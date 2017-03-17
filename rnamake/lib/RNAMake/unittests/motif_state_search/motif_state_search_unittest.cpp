@@ -30,9 +30,10 @@ TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
         
         search.setup(start, end);
         auto sol = search.next();
-        
+
         REQUIRE(sol != nullptr);
         REQUIRE(sol->score() < 0.1);
+
     }
     
     SECTION("test miniTTR") {
@@ -60,6 +61,7 @@ TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
         auto search = MotifStateSearch();
         search.set_option_value("verbose", false);
         search.beads(centers);
+        //search.set_option_value("max_node_level", 6);
         search.setup(start, end);
         auto sol = search.next();
         REQUIRE(sol->score() < 10);

@@ -50,10 +50,12 @@ class MotifStateSearchUnittest(unittest.TestCase):
         start = mt.get_node(0).data.ends[0].state()
         end   = mt.last_node().data.ends[1].state()
         mss = rnamake.motif_state_search.MotifStateSearch()
+        mss.option('accept_score', 20)
         mss.option('max_node_level', 10)
         mss.setup(start, end)
         s = mss.next()
-        print len(s.path)
+        if s is None:
+            self.fail("could not find solution")
 
         #mt = s.to_motif_tree(self.rm)
 
@@ -119,10 +121,10 @@ class MotifStateSearchUnittest(unittest.TestCase):
 def main():
     unittest.main()
 
-#if __name__ == '__main__':
-#    main()
+if __name__ == '__main__':
+    main()
 
-mt = motif_tree.MotifTree()
+""""mt = motif_tree.MotifTree()
 mt.add_motif(m_name='HELIX.IDEAL.10')
 mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
 mt.add_motif(m_name='HELIX.IDEAL.10')
@@ -139,4 +141,4 @@ mss = rnamake.motif_state_search.MotifStateSearch()
 mss.option('max_node_level', 10)
 mss.setup(start, end)
 s = mss.next()
-#print len(s.path)
+#print len(s.path)"""
