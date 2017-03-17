@@ -232,7 +232,7 @@ class Structure(object):
         chain_id = ""
         if renumber != -1:
             chain_id = "A"
-            rnum = 1
+            rnum = renumber
 
         for i, c in enumerate(self.chains):
             c_str, acount = c.to_pdb_str(acount, 1, rnum, chain_id)

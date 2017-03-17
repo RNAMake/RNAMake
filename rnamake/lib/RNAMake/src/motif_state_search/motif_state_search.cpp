@@ -110,7 +110,6 @@ MotifStateSearch::_search() {
     int pos;
     MotifStateSearchNodeOP current, child, current_2;
     int clash;
-    Points centers(100);
     float dist = 1000;
     float best = 1000000000;
     MotifStateSearchSolutionOP best_sol;
@@ -142,14 +141,15 @@ MotifStateSearch::_search() {
         }
         
         score = scorer_->accept_score(current);
-        
+
         if(score < best) {
-            if(helix_end_) {
+            /*if(helix_end_) {
                 if(current->ref_state()->name()[0] == 'T') {
                     continue;
                 }
-            }
-            
+            }*/
+
+
             best = score;
             best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
             
@@ -157,12 +157,13 @@ MotifStateSearch::_search() {
                 std::cout << "MOTIF STATE SEARCH: best_score=" << best << " motifs_in_solution=";
                 std::cout << current->level()-1 << " steps=" << steps << std::endl;
                 
-                //::cout << best << " " << accept_score_ << " " << current->level() << " " << steps << " " << max_steps_ << std::endl;
+                //std::cout << best << " " << accept_score_ << " " << current->level() << " " << steps << " " << max_steps_ << std::endl;
             }
         }
         
         if(score < accept_score_ && current->ss_score() < min_ss_score_ &&
            current->level() > min_node_level_) {
+
             if(verbose_) {
                 std::cout << "MOTIF STATE SEARCH: found a solution!" << std::endl;
             }

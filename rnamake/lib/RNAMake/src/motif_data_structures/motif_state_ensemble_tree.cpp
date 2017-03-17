@@ -55,6 +55,7 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
             std::cout << n->data()->name() << " endname=" << n->data()->end_name(0) << std::endl;
             mse = RM::instance().get_supplied_motif_ensemble(
                                     n->data()->name(), n->data()->end_name(0))->get_state();
+            //std::cout << mse->size() <<std::endl;
         }
         
         else {

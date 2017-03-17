@@ -154,7 +154,7 @@ class SqliteLibrary(object):
 
         query = self._generate_query(options)
         rows = self.connection.execute(query).fetchall()
-
+        #print query
         if len(rows) == 0:
             raise exceptions.SqliteLibraryException(
                 "query returned no rows: " + self._args_to_str(options) )
@@ -198,6 +198,7 @@ class SqliteLibrary(object):
         """
 
         id = str(random.randint(1, self.max_size-1))
+        #print id, self.max_size-1
         return self.get(id=id)
 
     def load_all(self, limit=99999):

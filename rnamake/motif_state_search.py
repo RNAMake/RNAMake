@@ -86,11 +86,8 @@ class MotifStateSearch(base.Base):
             #print current.score
             if score < best:
                 best = score
-                print score
+                #print score
                 #print current.score, current.level
-
-            if count > 1000:
-                break
 
             if score < accept_score:
                 if not self.selector.is_valid_solution(current):
@@ -98,7 +95,7 @@ class MotifStateSearch(base.Base):
                 if current.size < min_size:
                     continue
                 #print count
-                #return MotifStateSearchSolution(current, score)
+                return MotifStateSearchSolution(current, score)
 
             if current.level+1 > max_node_level:
                 continue

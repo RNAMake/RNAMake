@@ -27,6 +27,7 @@ class Wrapper(object):
 
         self._options = Options()
         self._options.add("ignore_defaults", True)
+        self._options.add("print_command", False)
 
     def setup_from_file(self, fname):
         f = open(fname)
@@ -79,6 +80,8 @@ class Wrapper(object):
 
     def run(self, **options):
         cmd = self.get_command(**options)
+        if self._options['print_command']:
+            print cmd
         self._output = subprocess.check_output(cmd, shell=True)
         return self._output
 

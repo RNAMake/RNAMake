@@ -86,14 +86,14 @@ MotifStateSelector::score(
 MotifStateSelectorOP
 default_selector() {
     auto selector = std::make_shared<MotifStateSelector>(MSS_HelixFlank());
-    //selector->add("unique_twoway");
-    selector->add("twoway");
-    
-    
-    selector = std::make_shared<MotifStateSelector>(MotifStateSelector());
-    selector->add("twoway");
-    selector->add("ideal_helices_min");
-    selector->connect("twoway", "ideal_helices_min");
-    
+    selector->add("unique_twoway");
+    //selector->add("twoway");
+
+
+    //selector = std::make_shared<MotifStateSelector>(MotifStateSelector());
+    //selector->add("twoway");
+    //selector->add("ideal_helices_min");selector->add("nway");
+    //selector->connect("twoway", "ideal_helices_min");
+
     return selector;
 }

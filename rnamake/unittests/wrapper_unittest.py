@@ -10,18 +10,18 @@ class WrapperUnittest(unittest.TestCase):
             self.skipTest("executable not available")
 
     def test_creation(self):
-        path = "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/design_rna"
+        path = settings.LIB_PATH + "/lib/RNAMake/cmake/build/design_rna"
         w = wrapper.Wrapper(path)
 
     def test_add_cmd_option(self):
-        path = "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/design_rna"
+        path = settings.LIB_PATH + "/lib/RNAMake/cmake/build/design_rna"
         mg_path = "~/projects/RNAMake.projects/tecto_rna_22_bp/base_mg.top"
         w = wrapper.Wrapper(path)
         w.add_cmd_option("mg", mg_path)
         #print w.get_command()
 
     def test_command(self):
-        path = "/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/design_rna"
+        path = settings.LIB_PATH + "/lib/RNAMake/cmake/build/design_rna"
         w = wrapper.Wrapper(path)
         #cmd = w.get_command(fake_arg=2)
         #print cmd

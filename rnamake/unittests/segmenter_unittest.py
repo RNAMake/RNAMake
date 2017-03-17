@@ -30,7 +30,7 @@ class SegmenterUnittest(unittest.TestCase):
         p = pf.factory.pose_from_file(path)
         ends = [p.get_basepair(name="A112-A208")[0],
                 p.get_basepair(name="A128-A194")[0]]
-        print ends
+        #print ends
         s = rnamake.segmenter.Segmenter()
         segments = s.apply(p, ends)
         m = segments.remaining
