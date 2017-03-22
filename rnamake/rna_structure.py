@@ -306,7 +306,7 @@ class RNAStructure(object):
         if excluded_res:
             excluded.extend(excluded_res)
 
-        self.beads = self.structure.get_beads(excluded) + self.protein_beads
+        self.beads = self.structure.get_beads(excluded)
         return self.beads
 
     def get_end_index(self, name=None, id=None):
