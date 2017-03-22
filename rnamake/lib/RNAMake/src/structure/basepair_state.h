@@ -375,8 +375,8 @@ new_score_function_new(
     
     float scale = (log(150/d_diff) - 1);
     if (scale > 2) { scale = 2; }
-    if (scale < 0) { scale = 0; }
-    
+
+
     return d_diff + scale*r_diff;
 }
 
