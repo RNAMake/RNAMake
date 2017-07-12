@@ -4,8 +4,7 @@
 #include "base/file_io.h"
 #include "base/settings.h"
 #include "structure/pdb_parser.h"
-#include "structure/residue_type_set.h"
-#include "structure/is_equal.hpp"
+#include "structure/structure.h"
 
 
 TEST_CASE( "Test PDB Parser", "[PDBParser]" ) {

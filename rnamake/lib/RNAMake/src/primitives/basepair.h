@@ -6,7 +6,21 @@
 #define RNAMAKE_PRIMITIVES_BASEPAIR_H
 
 #include "util/uuid.h"
+#include "util/x3dna.h"
 #include "primitives/residue.h"
+
+/*
+ * Exception for basepair
+ */
+class BasepairException : public std::runtime_error {
+public:
+    /**
+     * Standard constructor for BasepairException
+     * @param   message   Error message for basepair
+     */
+    BasepairException(String const & message) :
+            std::runtime_error(message) {}
+};
 
 namespace primitives {
 
@@ -19,11 +33,20 @@ public:
 
 public:
     inline
-    Basepair(Uuid const & uuid):
+    Basepair(
+            Uuid const & res1_uuid,
+            Uuid const & res2_uuid,
+            Uuid const & uuid):
+            res1_uuid_(res1_uuid),
+            res2_uuid_(res2_uuid),
             uuid_(uuid) {}
 
     virtual
     ~Basepair() {}
+
+public:
+    Uuid const &
+    partner(Uuid const &);
 
 public:
     /**
@@ -47,6 +70,8 @@ public:
 protected:
     inline
     Basepair():
+            res1_uuid_(Uuid()),
+            res2_uuid_(Uuid()),
             uuid_(Uuid()) {}
 
 public:
@@ -54,8 +79,18 @@ public:
     Uuid const &
     uuid() { return uuid_; }
 
+    inline
+    Uuid const &
+    res1_uuid() const { return res1_uuid_; }
+
+    inline
+    Uuid const &
+    res2_uuid() const { return res2_uuid_; }
+
+
 protected:
     Uuid uuid_;
+    Uuid res1_uuid_, res2_uuid_;
 };
 
 template <typename Restype>
@@ -90,6 +125,22 @@ calc_bp_name(std::vector<std::shared_ptr<Restype>> const & res) {
 
 }
 
+template <typename Restype>
+Basepair::BasepairType
+get_bp_type(std::vector<std::shared_ptr<Restype>> const & res,
+            X3dna::X3dnaBPType const & x3dna_bp_type) {
+    auto bp_str = String();
+    bp_str += res[0]->name(); bp_str += res[1]->name();
+    auto wc_names = Strings{"GC", "CG", "AU", "UA"};
+    // not in WC orientation, is non-cononical
+    if(x3dna_bp_type != X3dna::X3dnaBPType::cWUW) { return Basepair::BasepairType::NC; }
+    // has correct residues to be a WC basepair
+    if (std::find(wc_names.begin(), wc_names.end(), bp_str) != wc_names.end()) { return Basepair::BasepairType::WC; }
+    if (bp_str == "GU" || bp_str == "UG" ) { return Basepair::BasepairType::GU; }
+    return Basepair::BasepairType::NC;
 }
+
+}
+
 
 #endif //TEST_BASEPAIR_H

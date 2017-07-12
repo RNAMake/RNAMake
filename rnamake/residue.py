@@ -386,6 +386,18 @@ class Residue(primitives.residue.Residue):
 
         return self._atoms[pos]
 
+    def get_bead(self, btype):
+        for b in self._beads:
+            if b.btype == btype:
+                return b
+        return None
+
+    def get_sugar_bead(self):
+        for b in self._beads:
+            if b.btype == BeadType.SUGAR:
+                return b
+        return None
+
     def get_coords(self, atom_name=None, index=None):
         return self.get_atom(atom_name, index).coords
 

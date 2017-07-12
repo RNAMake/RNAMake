@@ -12,9 +12,7 @@ Basepair::Basepair(
         Uuid const & res1_uuid,
         Uuid const & res2_uuid,
         Uuid const & uuid):
-        primitives::Basepair(uuid),
-        res1_uuid_(res1_uuid),
-        res2_uuid_(res2_uuid) {
+        primitives::Basepair(res1_uuid, res2_uuid, uuid) {
 
     auto spl = split_str_by_delimiter(s, ";");
     d_ = vector_from_str(spl[0]);

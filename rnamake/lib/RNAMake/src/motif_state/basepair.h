@@ -39,9 +39,7 @@ public:
             X3dna::X3dnaBPType const x3dna_bp_type,
             primitives::Basepair::BasepairType const bp_type,
             Uuid const & uuid) :
-            primitives::Basepair(uuid),
-            res1_uuid_(res1_uuid),
-            res2_uuid_(res2_uuid),
+            primitives::Basepair(res1_uuid, res2_uuid, uuid),
             r_(r),
             d_(d),
             res1_sugar_(res1_sugar),
@@ -52,9 +50,7 @@ public:
 
     inline
     Basepair(Basepair const & bp):
-            primitives::Basepair(bp.uuid_),
-            res1_uuid_(bp.res1_uuid_),
-            res2_uuid_(bp.res2_uuid_),
+            primitives::Basepair(bp.res1_uuid_, bp.res2_uuid_, bp.uuid_),
             r_(bp.r_),
             d_(bp.d_),
             res1_sugar_(bp.res1_sugar_),
@@ -191,7 +187,6 @@ public: // getters
 private:
     Matrix r_;
     Point d_, res1_sugar_, res2_sugar_;
-    Uuid res1_uuid_, res2_uuid_;
     SimpleStringOP name_;
     X3dna::X3dnaBPType x3dna_bp_type_;
     primitives::Basepair::BasepairType bp_type_;

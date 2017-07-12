@@ -98,7 +98,7 @@ public:
 public: // getters
 
     ChainOPs
-    get_chains() {
+    get_chains() const {
         auto pos = 0;
         auto res = ResidueOPs();
         auto chains = ChainOPs();

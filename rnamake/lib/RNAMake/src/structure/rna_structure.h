@@ -6,50 +6,56 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef RNAMAKE_LIB_RNAMAKE_SRC_STRUCTURE_RNA_STRUCTURE_H_
-#define RNAMAKE_LIB_RNAMAKE_SRC_STRUCTURE_RNA_STRUCTURE_H_
+#ifndef RNAMAKE_STRUCTURE_RNA_STRUCTURE_H_
+#define RNAMAKE_STRUCTURE_RNA_STRUCTURE_H_
 
 #include <stdio.h>
 #include <memory>
 #include <algorithm>
 
 //RNAMake
+#include "primitives/rna_structure.h"
 #include "structure/structure.h"
 #include "structure/basepair.h"
 #include "structure/residue.h"
 
-
-/*
- * Exception for RNA Structure
- */
-class RNAStructureException : public std::runtime_error {
+class RNAStructure : public primitives::RNAStructure<Basepair, Structure, Chain, Residue> {
 public:
-    /**
-     * Standard constructor for RNAStructureException
-     * @param   message   Error message for rna structure
-     */
-    RNAStructureException(String const & message):
-    std::runtime_error(message)
-    {}
-};
-
-class RNAStructure {
-public:
-    RNAStructure()
-    {}
-    
     RNAStructure(
-        StructureOP const & structure,
-        BasepairOPs const & basepairs,
-        BasepairOPs const & ends):
-    structure_(structure),
-    basepairs_(basepairs),
-    ends_(ends)
-    {}
-    
+            StructureOP const &,
+            BasepairOPs const &,
+            BasepairOPs const &,
+            SimpleStringOPs const &,
+            SimpleStringOP const &,
+            int,
+            SimpleStringOP const &);
+
+    RNAStructure(
+            StructureOP const &,
+            BasepairOPs const &,
+            BasepairOPs const &,
+            SimpleStringOPs const &,
+            SimpleStringOP const &,
+            int,
+            SimpleStringOP const &,
+            Beads const &);
+
+    RNAStructure(
+            RNAStructure const & rs,
+            int new_uuid=0);
+
+    RNAStructure(
+            String const &,
+            ResidueTypeSet const &);
+
     virtual
     ~RNAStructure() {}
-    
+
+public:
+    String
+    to_str();
+
+    /*
 public: // get specific basepairs
     BasepairOPs
     get_basepair(
@@ -166,49 +172,25 @@ public: //getters
     Beads const &
     protein_beads() { return protein_beads_; }
 
-    
-public: //setters
-    
+*/
+
+public: //getters
     inline
-    void
-    name(String const & nname) { name_ = nname; }
-    
-    inline
-    void
-    path(String const & npath) { path_ = npath; }
-    
-    inline
-    void
-    score(float const & nscore) { score_ = nscore; }
-    
-    inline
-    void
-    end_ids(Strings const & end_ids) {
-        end_ids_ = end_ids;
-    }
-    
-    inline
-    void
-    ends(BasepairOPs const & ends) { ends_ = ends; }
-    
-    inline
-    void
-    protein_beads(Beads const & beads) { protein_beads_ = beads; }
-    
-    
+    String
+    dot_bracket() { return dot_bracket_->to_str(); }
+
 protected:
-    StructureOP structure_;
-    BasepairOPs basepairs_, ends_;
-    String name_, path_;
-    Strings end_ids_;
-    Beads beads_, protein_beads_;
-    float score_;
-    
+    SimpleStringOP dot_bracket_;
+    Beads protein_beads_;
+    int block_end_add_;
+
 };
 
 
 typedef std::shared_ptr<RNAStructure> RNAStructureOP;
 
+
+/*
 std::shared_ptr<BasepairOPs>
 end_from_basepairs(
     StructureOP const &,
@@ -218,10 +200,44 @@ std::shared_ptr<BasepairOPs>
 subselect_basepairs_with_res(
     ResidueOPs const &,
     BasepairOPs const &);
+ */
 
 
+//wrappers from primitive functions
+inline
+BasepairOPs
+ends_from_basepairs(
+        Structure const & s,
+        BasepairOPs const & bps) {
+    return primitives::ends_from_basepairs<Basepair, Structure>(s, bps);
+}
 
-#endif /* defined(RNAMAKE_LIB_RNAMAKE_SRC_STRUCTURE_RNA_STRUCTURE_H_) */
+inline
+String
+assign_end_id(
+        Structure const & s,
+        BasepairOPs const & bps,
+        BasepairOPs const & ends,
+        BasepairOP const & end) {
+    return primitives::assign_end_id<Basepair, Structure, Chain, Residue>(s, bps, ends, end); }
+
+RNAStructureOP
+rna_structure_from_pdb(
+        String const &,
+        ResidueTypeSet const &);
+
+BasepairOPs
+basepairs_from_x3dna(
+        String const &,
+        Structure const &);
+
+bool
+are_rna_strucs_equal(
+        RNAStructure const & rs1,
+        RNAStructure const & rs2,
+        bool check_uuid = 1);
+
+#endif /* defined(RNAMAKE_STRUCTURE_RNA_STRUCTURE_H_) */
 
 
 

@@ -6,8 +6,8 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#ifndef __RNAMake__basepair__
-#define __RNAMake__basepair__
+#ifndef __RNAMake__STRUCTURE_basepair__
+#define __RNAMake__STRUCTURE_basepair__
 
 #include <stdio.h>
 #include <util/x3dna.h>
@@ -137,14 +137,6 @@ public: // getters
     uuid() const { return uuid_; }
 
     inline
-    Uuid const &
-    res1_uuid() const { return res1_uuid_; }
-
-    inline
-    Uuid const &
-    res2_uuid() const { return res2_uuid_; }
-
-    inline
     SimpleString const &
     name() const { return *name_; }
 
@@ -210,7 +202,6 @@ private:
     Matrix r_;
     Point d_;
     Point res1_sugar_, res2_sugar_;
-    Uuid res1_uuid_, res2_uuid_;
     SimpleStringOP name_;
     X3dna::X3dnaBPType x3dna_bp_type_;
     primitives::Basepair::BasepairType bp_type_;
@@ -232,4 +223,4 @@ _calc_center(ResidueOPs const &);
 
 
 
-#endif /* defined(__RNAMake__basepair__) */
+#endif /* defined(__RNAMake__STRUCTURE_basepair__) */

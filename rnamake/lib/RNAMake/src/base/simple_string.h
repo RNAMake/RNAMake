@@ -2,10 +2,10 @@
 // Created by Joseph Yesselman on 2/14/17.
 //
 
-#ifndef TEST_SIMPLE_STRING_H
-#define TEST_SIMPLE_STRING_H
+#ifndef RNAMAKE_SIMPLE_STRING_H
+#define RNAMAKE_SIMPLE_STRING_H
 
-#include "types.h"
+#include "base/types.h"
 #include "memory"
 #include "sstream"
 #include "iostream"
@@ -72,13 +72,9 @@ private:
 };
 
 std::ostream &
-operator <<( std::ostream & stream, SimpleString const & ss) {
-    auto string_stream = std::stringstream();
-    string_stream << ss.chars_;
-    stream << string_stream.str();
-    return stream;
-}
+operator <<( std::ostream &, SimpleString const &);
 
 typedef std::shared_ptr<SimpleString> SimpleStringOP;
+typedef std::vector<SimpleStringOP>   SimpleStringOPs;
 
 #endif //TEST_SIMPLE_STRING_H

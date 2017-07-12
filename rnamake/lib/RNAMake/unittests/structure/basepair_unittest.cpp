@@ -33,7 +33,7 @@ TEST_CASE( "Test Basepairs for Structure", "[Basepair]" ) {
     auto res2 = s->get_residue(x_bp.res2.num, x_bp.res2.chain_id, x_bp.res2.i_code);
     auto res = ResidueOPs { res1, res2};
     auto center = _calc_center(res);
-    auto bp_name_str = primitives::calc_bp_name<Residue>(res);
+    auto bp_name_str = primitives::calc_bp_name(res);
     auto sugars = Points();
     sugars.push_back(res1->get_atom("C1'")->coords());
     sugars.push_back(res2->get_atom("C1'")->coords());

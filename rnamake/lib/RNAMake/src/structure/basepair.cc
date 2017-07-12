@@ -20,9 +20,7 @@ Basepair::Basepair(
         X3dna::X3dnaBPType const x3dna_bp_type,
         primitives::Basepair::BasepairType const bp_type,
         Uuid const & uuid) :
-        primitives::Basepair(uuid),
-        res1_uuid_(res1_uuid),
-        res2_uuid_(res2_uuid),
+        primitives::Basepair(res1_uuid, res2_uuid, uuid),
         r_(r),
         d_(d),
         res1_sugar_(res1_sugar),
@@ -35,9 +33,7 @@ Basepair::Basepair(
         String const & s,
         Uuid const & res1_uuid,
         Uuid const & res2_uuid):
-        primitives::Basepair(),
-        res1_uuid_(res1_uuid),
-        res2_uuid_(res2_uuid) {
+        primitives::Basepair(res1_uuid, res2_uuid, Uuid()) {
 
     auto spl = split_str_by_delimiter(s, ";");
     d_             = vector_from_str(spl[0]);
@@ -51,9 +47,7 @@ Basepair::Basepair(
 }
 
 Basepair::Basepair(Basepair const & bp):
-        primitives::Basepair(bp.uuid_),
-        res1_uuid_(bp.res1_uuid_),
-        res2_uuid_(bp.res2_uuid_),
+        primitives::Basepair(bp.res1_uuid_, bp.res2_uuid_, bp.uuid_),
         r_(bp.r_),
         d_(bp.d_),
         res1_sugar_(bp.res1_sugar_),
@@ -67,9 +61,7 @@ Basepair::Basepair(
         Uuid const & res1_uuid,
         Uuid const & res2_uuid,
         Uuid const & bp_uuid):
-        primitives::Basepair(bp_uuid),
-        res1_uuid_(res1_uuid),
-        res2_uuid_(res2_uuid),
+        primitives::Basepair(res1_uuid, res2_uuid, bp_uuid),
         r_(bp.r_),
         d_(bp.d_),
         res1_sugar_(bp.res1_sugar_),

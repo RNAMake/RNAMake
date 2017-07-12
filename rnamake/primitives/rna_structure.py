@@ -454,9 +454,7 @@ def assign_end_id(s, basepairs, ends, end):
 
         best_chain = None
         best_score = 10000
-        for c in chains:
-            if c in seen_chains:
-                continue
+        for c in best_chains:
             pos = 1000
             for i, r in enumerate(c):
                 bp = get_res_basepair(basepairs, r)

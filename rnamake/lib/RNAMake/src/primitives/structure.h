@@ -50,12 +50,12 @@ public: //res iterator
     const_iterator begin() const { return residues_.begin(); }
     const_iterator end() const { return residues_.end(); }
 
-public:
+public: //get_residue interface
     ResidueOP const
     get_residue(
             int num,
             char chain_id,
-            char i_code) {
+            char i_code) const{
 
         for (auto const & r : residues_) {
             if (num == r->num() && chain_id == r->chain_id() && i_code == r->i_code()) {
@@ -67,7 +67,7 @@ public:
 
     ResidueOP const
     get_residue(
-            Uuid const & uuid) {
+            Uuid const & uuid) const {
 
         for (auto const & r : residues_) {
             if (r->uuid() == uuid) { return r; }
@@ -78,7 +78,7 @@ public:
 
     ResidueOP const &
     get_residue(
-            int index) {
+            int index) const {
         return residues_[index];
     }
 
@@ -98,6 +98,22 @@ public:
 
     size_t
     num_chains() { return chain_cuts_.size(); }
+
+    String
+    sequence() {
+        auto i = -1;
+        auto seq = String("");
+        auto pos = 0;
+        for(auto const & r : residues_) {
+            i++;
+            if(chain_cuts_[pos] == i) {
+                seq += "&";
+                pos++;
+            }
+            seq += r->name();
+        }
+        return seq;
+    }
 
 
 protected:

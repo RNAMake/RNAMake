@@ -129,5 +129,8 @@ protected:
 
 };
 
+typedef std::shared_ptr<Residue> ResidueOP;
+typedef std::vector<ResidueOP>   ResidueOPs;
+
 }
 #endif //PRIMITIVES_RESIDUE_H
