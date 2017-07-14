@@ -119,25 +119,17 @@ class SqliteLibraryUnittest(unittest.TestCase):
                 continue
             seen.append(m.name)
 
-    def _test_get_1_0(self):
-        mlib = sqlite_library.MotifSqliteLibrary("twoway")
+    def test_get_1_0(self):
+        mlib = sqlite_library.MotifSqliteLibrary("tcontact")
         mlib.load_all()
 
         motifs = []
         end_name = ""
+        f = open("motifs/tcontacts.csv", "w")
         for i,m in enumerate(mlib.all()):
-            if len(m.residues()) != 5:
-                continue
-            if len(m.chains()[0].residues) != 3:
-                continue
-            if m.chains()[0].residues[1].name != 'A':
-                continue
+            f.write(m.name + "," + m.sequence() + "," + m.dot_bracket() + "\n")
+            m.to_pdb("motifs/tcontacts/"+m.name + ".pdb")
 
-            if m.name == "TWOWAY.1DUQ.7":
-                end_name = m.ends[0].name()
-            motifs.append(m)
-            #m.to_pdb("m."+str(i)+".pdb")
-        #print end_name
 
     def _test_new_bp_steps(self):
         mlib = sqlite_library.MotifSqliteLibrary("new_bp_steps")

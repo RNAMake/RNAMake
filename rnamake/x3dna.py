@@ -280,6 +280,7 @@ class X3dna(object):
                     num = e + num
                 except:
                     break
+            rnum = num
         try:
             int(rnum)
         except:

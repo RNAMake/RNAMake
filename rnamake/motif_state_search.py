@@ -101,6 +101,7 @@ class MotifStateSearch(base.Base):
                 continue
 
             motif_states, types = self.selector.get_children_ms(current)
+
             avail_ends = []
             for i, end in enumerate(current.cur_state.end_states):
                 if i == 0:
@@ -120,6 +121,8 @@ class MotifStateSearch(base.Base):
 
                     score = self.scorer.score(self.test_node)
 
+                    print score, ms.name
+
                     #score += self.selector.score(self.test_node)*self.test_node.level*10
                     #print score, current.score, len(current.cur_state.beads)
                     if score > current.score:
@@ -136,6 +139,8 @@ class MotifStateSearch(base.Base):
                         continue
                     child.ntype = types[i]
                     self.queue.put(child, score)
+
+            exit()
 
         return None
 

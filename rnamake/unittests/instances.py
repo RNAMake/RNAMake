@@ -41,7 +41,7 @@ def transform_indentity():
 
 def transform_random():
     r = transformations.random_rotation_matrix()[:3, :3]
-    d = np.random.random([3])*50
+    d = np.random.random([3])*5
     return transform.Transform(r, d)
 
 

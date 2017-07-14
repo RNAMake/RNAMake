@@ -231,11 +231,11 @@ void
 RM::register_motif(
     MotifOP const & m) {
     
-    if(m->name() == "") {
+    /*if(m->name() == "") {
         throw ResourceManagerException(
             "attempted to register motif with no name this will make it "
             "extremely unlikely you will be able to retrieve it properly!");
-    }
+    }*/
     
     added_motifs_.add_motif(m);
     

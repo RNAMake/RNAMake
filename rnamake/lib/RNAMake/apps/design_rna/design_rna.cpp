@@ -30,8 +30,9 @@ DesignRNAApp::setup_options() {
     add_option("score_file", "default.scores", OptionType::STRING, false);
     add_option("verbose", false, OptionType::BOOL, false);
     add_option("pdbs", false, OptionType::BOOL, false);
+    add_option("design_pdbs", false, OptionType::BOOL, false);
     add_option("show_sections", false, OptionType::BOOL, false);
-
+    add_option("defined_motif_path", "", OptionType::STRING, false);
 
     //no sequence opt
     add_option("only_ideal", false, OptionType::BOOL, false);
@@ -68,10 +69,11 @@ void
 DesignRNAApp::_setup_sterics() {
     auto beads = Points();
     for (auto & n : *mg_) {
+        n->data()->get_beads(n->data()->ends());
+        std::cout << n->data()->beads().size() << std::endl;
         for (auto const & b : n->data()->beads()) {
             if (b.btype() == BeadType::PHOS) { continue; }
             beads.push_back(b.center());
-
         }
 
         for (auto const & b : n->data()->protein_beads()) { beads.push_back(b.center()); }
@@ -167,13 +169,56 @@ void
 DesignRNAApp::_setup_from_mg() {
 
     auto lines = get_lines_from_file(get_string_option("mg"));
-    //std::cout << "made it" << std::endl;
     mg_ = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
     mg_->set_option_value("sterics", false);
     auto spl = split_str_by_delimiter(lines[1], " ");
     start_ = EndStateInfo{spl[1], std::stoi(spl[0])};
     spl = split_str_by_delimiter(lines[2], " ");
     end_ = EndStateInfo{spl[1], std::stoi(spl[0])};
+
+    try {mg_->get_node(start_.n_pos); }
+    catch(...) {
+        throw DesignRNAAppException("node: " + std::to_string(start_.n_pos) + " does not exist!");
+    }
+
+    try {mg_->get_node(end_.n_pos); }
+    catch(...) {
+        throw DesignRNAAppException("node: " + std::to_string(end_.n_pos) + " does not exist!");
+    }
+
+
+}
+
+std::shared_ptr<MSS_Path>
+DesignRNAApp::_setup_path() {
+    auto spl = split_str_by_delimiter(get_string_option("defined_motif_path"), ",");
+    auto selector = std::make_shared<MSS_Path>();
+    auto i = 0;
+    for(auto const & name : spl) {
+        if(name.length() < 2) { continue; }
+        if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact") {
+            selector->add(name);
+        }
+        else {
+            auto m = RM::instance().motif(name);
+            auto motif_states = MotifStateOPs();
+            auto scores = Floats();
+
+            for(auto const & end : m->ends()) {
+                auto m_new = RM::instance().motif(name, "", end->name());
+                std::cout << m_new->name() << std::endl;
+                motif_states.push_back(m_new->get_state());
+                scores.push_back(1);
+            }
+            auto mse = std::make_shared<MotifStateEnsemble>(motif_states, scores);
+            selector->add("", mse);
+        }
+        if(i > 0) {
+            selector->connect(i-1, i);
+        }
+        i++;
+    }
+    return selector;
 }
 
 void
@@ -181,12 +226,32 @@ DesignRNAApp::run() {
     if (get_string_option("pdb") != "") { _setup_from_pdb(); }
     if (get_string_option("mg") != "") { _setup_from_mg(); }
 
+    //mg_->write_pdbs();
     auto start = mg_->get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
     auto end_bp = mg_->get_node(end_.n_pos)->data()->get_basepair(end_.name)[0];
     auto end = end_bp->state();
 
     _setup_sterics();
 
+    if(get_string_option("defined_motif_path") != "") {
+        std::shared_ptr<MSS_Path> custom_selector = _setup_path();
+        search_.selector(custom_selector);
+    }
+    /*auto selector = std::make_shared<MSS_Path>();
+    //selector->add("ideal_helices_min");
+    selector->add("unique_twoway");
+    selector->add("ideal_helices_min");
+    selector->add("tcontact");
+    selector->add("ideal_helices_min");
+    //selector->add("unique_twoway");
+    //selector->add("ideal_helices_min");
+    selector->connect(0, 1);
+    selector->connect(1, 2);
+    selector->connect(2, 3);
+    //selector->connect(3, 4);
+    //selector->connect(4, 5);
+    //selector->connect(5, 6);
+    */
     search_.setup(start, end);
     search_.lookup(lookup_);
     search_.set_option_value("max_solutions", 10000000);
@@ -219,8 +284,12 @@ DesignRNAApp::run() {
 
 
         auto mt = sol->to_motif_tree();
-
         mg_->add_motif_tree(mt, start_.n_pos, start_.name);
+        for(auto const & n : *mt) {
+            std::cout << n->data()->name() << std::endl;
+        }
+        //mg_->write_pdbs();
+
         mg_->add_connection(end_.n_pos, mg_->last_node()->index(), end_.name, "");
         mg_->replace_ideal_helices();
 
@@ -234,9 +303,8 @@ DesignRNAApp::run() {
                 motif_names += n->data()->name() + ";";
             }
 
-
-            sf_out << design_num << "," << sol->score() << "," << mg_->designable_sequence();
-            sf_out << "," << mg_->secondary_structure()->dot_bracket() << ",";
+            sf_out << design_num << "," << sol->score() << ","; //<< mg_->designable_sequence();
+            //sf_out << "," << mg_->secondary_structure()->dot_bracket() << ",";
             sf_out << motif_names << std::endl;
 
             out << mg_->to_str() << std::endl;
@@ -246,6 +314,23 @@ DesignRNAApp::run() {
             if (get_bool_option("pdbs")) {
                 mg_->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
                 solution_count++;
+                //mg_->write_pdbs();
+                //exit(0);
+            }
+
+            if(get_bool_option("design_pdbs")) {
+                mt->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
+                solution_count++;
+            }
+
+            if (design_num >= get_int_option("designs")) {
+                std::cout << "DESIGN RNA: generated " << get_int_option("designs") << " ";
+                std::cout << "design(s)! if you would like more please specify how many you ";
+                std::cout << "would like with -designs #Num" << std::endl;
+                sf_out.close();
+                out.close();
+
+                exit(0);
             }
 
             mg_->remove_level(1);

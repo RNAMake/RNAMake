@@ -19,6 +19,7 @@ class MotifStateSearchUnittest(unittest.TestCase):
     def test_search(self):
         builder = build.BuildMotifTree()
         mt = builder.build(2)
+        mt.write_pdbs()
         start = mt.get_node(0).data.ends[0].state()
         end   = mt.last_node().data.ends[1].state()
         mss = rnamake.motif_state_search.MotifStateSearch()
@@ -30,6 +31,7 @@ class MotifStateSearchUnittest(unittest.TestCase):
             print mt
             raise ValueError("could not find a suitable solution")
         mst = s.to_mst()
+        mst.write_pdbs("out")
         new_end = mst.last_node().data.cur_state.end_states[1]
 
         dist = util.distance(new_end.d, end.d)

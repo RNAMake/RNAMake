@@ -39,15 +39,16 @@ MotifStateSearchSolution::to_mst() {
                                                       n->ref_state()->block_end_add());
         
         // Nothing ever changes i...        
-        //if(i == 0) {
-        mst->add_state(cur_state);
-        //}
-        //else {
-        //    j = mst->add_state(cur_state, -1, n->parent_end_index());
-        //    if(j == -1) {
-        //        throw std::runtime_error("something went horribly wrong, cannot build solution");
-        //    }
-        //}
+        if(i == 0) {
+            mst->add_state(cur_state);
+        }
+        else {
+            j = mst->add_state(cur_state, -1, n->parent_end_index());
+            if(j == -1) {
+                throw std::runtime_error("something went horribly wrong, cannot build solution");
+            }
+        }
+        i++;
     }
     
     return mst;

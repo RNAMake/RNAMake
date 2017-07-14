@@ -139,7 +139,7 @@ MotifStateSearch::_search() {
             midpoint_file << sol.to_motif_tree()->topology_to_str() << std::endl;
             
         }
-        
+
         score = scorer_->accept_score(current);
 
         if(score < best) {
@@ -152,7 +152,7 @@ MotifStateSearch::_search() {
 
             best = score;
             best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
-            
+
             if(verbose_) {
                 std::cout << "MOTIF STATE SEARCH: best_score=" << best << " motifs_in_solution=";
                 std::cout << current->level()-1 << " steps=" << steps << std::endl;
@@ -172,7 +172,7 @@ MotifStateSearch::_search() {
         }
         
         if(current->level()+1 > max_node_level_) { continue; }
-        
+
         possible_children_ = selector_->get_children_ms(current);
         pos = possible_children_.pos();
         test_node_->parent(current);
@@ -187,6 +187,7 @@ MotifStateSearch::_search() {
                 j++;
                 
                 if(j >= pos) { break; }
+                //std::cout << current->level() << " " << current->ntype() << " " << ms_and_type.type << std::endl;
                 test_node_->replace_ms(ms_and_type.motif_state,
                                        ms_and_type.type);
                 
@@ -198,7 +199,7 @@ MotifStateSearch::_search() {
                 aligner_.get_aligned_motif_state(end,
                                                  test_node_->cur_state(),
                                                  test_node_->ref_state());
-                test_node_->update();
+                test_node_->update(i);
                 
                 score = scorer_->score(test_node_);
                 if(score > current->score()) { continue; }
@@ -240,7 +241,7 @@ MotifStateSearch::_search() {
              
                 
                 child = std::make_shared<MotifStateSearchNode>(*test_node_);
-                child->update();
+                child->update(i);
                 child->score(score);
                 queue_.push(child);
             }

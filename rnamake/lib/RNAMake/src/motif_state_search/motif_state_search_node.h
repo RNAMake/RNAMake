@@ -89,9 +89,10 @@ public:
     
     inline
     void
-    update() {
+    update(int parent_end_index) {
         if(parent_ == nullptr) { return; }
         level_ = parent_->level_ + 1;
+        parent_end_index_ = parent_end_index;
         ss_score_ = ref_state_->score() + parent_->ss_score_;
         size_ = ref_state_->size() + parent_->size_;
         if(ntype_ == -1) { return; }
@@ -107,6 +108,7 @@ public:
         MotifStateOP const & ms,
         int ntype) {
         ref_state_ = ms;
+        cur_state_ = ms;
         ntype_ = ntype;
         
     }
