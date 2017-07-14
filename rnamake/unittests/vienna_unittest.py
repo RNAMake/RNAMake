@@ -20,6 +20,13 @@ class ViennaUnittest(unittest.TestCase):
         v = vienna.Vienna()
         results = v.fold(random_sequence())
 
+    def test_cofold(self):
+        seq1 = random_sequence()
+        seq2 = random_sequence()
+        v = vienna.Vienna()
+        results = v.cofold(seq1+"&"+seq2)
+
+
     # TODO move to intergration
     def _test_fold_exhustive(self):
         v = vienna.Vienna()

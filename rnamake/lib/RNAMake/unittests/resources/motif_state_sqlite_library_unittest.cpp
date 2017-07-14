@@ -51,5 +51,13 @@ TEST_CASE( "Test Motif State Sqlite3 Library", "[MotifStateSqliteLibrary]" ) {
         
     }
 
+    SECTION("test other libraries") {
+        auto mlib = MotifStateSqliteLibrary("nway");
+        mlib.load_all(10);
+        for(auto const & m : mlib) {
+            std::cout << m->name() << std::endl;
+        }
+    }
+
 
 }

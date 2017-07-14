@@ -81,7 +81,7 @@ class SecondaryStructureChainGraph(object):
                                    n_children=3, orphan=orphan)
 
     def get_node_by_res(self, res):
-        for i, n in enumerate(self.graph):
+        for i, n in enumerate(self.graph.nodes):
             for r in n.data.residues:
                 if r == res:
                     return i
@@ -303,7 +303,8 @@ class SecondaryStructureParser(object):
         self.pairs = []
         for i, r in enumerate(self.residues):
             is_start_res = self._start_of_chain(r)
-            if r.dot_bracket == ".":
+            # TODO properly parse [ and ]
+            if r.dot_bracket == "." or r.dot_bracket == '[' or r.dot_bracket == ']':
                 res.append(r)
 
             elif r.dot_bracket == "(":

@@ -215,10 +215,10 @@ class ResourceManager(object):
             self.added_motifs.add_motif(m)
 
     def register_motif(self, m):
-        if m.name == "":
-            raise exceptions.ResourceManagerException(
-                "attempted to register motif with no name this will make it "
-                "extremely unlikely you will be able to retrieve it properly!")
+        #if m.name == "":
+        #    raise exceptions.ResourceManagerException(
+        #        "attempted to register motif with no name this will make it "
+        #        "extremely unlikely you will be able to retrieve it properly!")
 
         self.added_motifs.add_motif(m.copy())
 

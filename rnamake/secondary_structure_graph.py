@@ -87,6 +87,9 @@ class SecondaryStructureGraph(object):
     def __len__(self):
         return len(self.graph)
 
+    def get_node(self, i):
+        return self.graph.get_node(i)
+
     def add_motif(self, m, parent_index=-1, parent_end_index=-1, m_end_index=0,
                   parent_end_name=None, new_uuids=1):
 

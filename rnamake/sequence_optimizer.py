@@ -1,6 +1,6 @@
 from rnamake.eternabot import sequence_designer
 import resource_manager as rm
-import motif_state_tree, monte_carlo, motif_state_graph, motif_state_search_scorer
+import motif_state_tree, monte_carlo, motif_state_graph, motif_state_search_scorer, vienna
 import basepair, util
 from eternabot import sequence_designer
 import base
@@ -21,7 +21,7 @@ class SequenceOptimizerScorer(object):
     def __init__(self):
         pass
 
-    def score(self, msg):
+    def score(self, msg, ss):
         pass
 
 
@@ -31,7 +31,7 @@ class ExternalTargetScorer(SequenceOptimizerScorer):
         self.ni = ni
         self.ei = ei
 
-    def score(self, msg):
+    def score(self, msg, ss):
         state = msg.get_node(self.ni).data.cur_state.end_states[self.ei]
         return self.target.diff(state)
 
@@ -43,11 +43,80 @@ class InternalTargetScorer(SequenceOptimizerScorer):
         self.ei1 = ei1
         self.ei2 = ei2
 
-    def score(self, msg):
+    def score(self, msg, ss):
         state1 = msg.get_node(self.ni1).data.cur_state.end_states[self.ei1]
         state2 = msg.get_node(self.ni2).data.cur_state.end_states[self.ei2]
 
         return state1.diff(state2)
+
+
+class ViennaFoldScorer(SequenceOptimizerScorer):
+    def __init__(self, target_ss, start=None, end=None):
+        self.v = vienna.Vienna()
+        self.target_ss = target_ss
+        self.start = start
+        self.end = end
+
+    def score(self, msg, ss):
+        if self.start is None:
+            r = self.v.fold(ss.sequence())
+        else:
+            r = self.v.fold(ss.sequence()[self.start:self.end])
+        diff = 0
+        for i in range(len(self.target_ss)):
+            if self.target_ss[i] != r.structure[i]:
+                diff += 1
+        return diff
+
+class ViennaCoFoldScorer(SequenceOptimizerScorer):
+    def __init__(self, target_ss, start_1=None, end_1=None, start_2=None, end_2=None):
+        self.v = vienna.Vienna()
+        self.target_ss = target_ss
+        self.start_1 = start_1
+        self.end_1 = end_1
+        self.start_2 = start_2
+        self.end_2 = end_2
+
+    def score(self, msg, ss):
+        if self.start_1 is None:
+            seq1 = ss.sequence()
+            seq2 = seq1
+        else:
+            seq1 = ss.sequence()[self.start_1:self.end_1]
+            seq2 = ss.sequence()[self.start_2:self.end_2]
+
+        r = self.v.cofold(seq1+"&"+seq2)
+        diff = 0
+        for i in range(len(self.target_ss)):
+            if self.target_ss[i] != r.structure[i]:
+                diff += 1
+
+        # check homodimers
+        r1 = self.v.cofold(seq1+"&"+seq1)
+        r2 = self.v.cofold(seq2+"&"+seq2)
+
+        if r1.energy < r.energy:
+            diff += abs(r1.energy - r.energy)*5
+        if r2.energy < r.energy:
+            diff += abs(r2.energy - r.energy)*5
+
+        return diff
+
+
+class MultiScorer(SequenceOptimizerScorer):
+    def __init__(self):
+        self.scorers = []
+        self.weights = []
+
+    def add_scorer(self, scorer, weight):
+        self.scorers.append(scorer)
+        self.weights.append(weight)
+
+    def score(self, msg, ss):
+        total = 0
+        for i, s in enumerate(self.scorers):
+            total += s.score(msg, ss)*self.weights[i]
+        return total
 
 
 class SequenceOptimizer3D(base.Base):
@@ -176,7 +245,7 @@ class SequenceOptimizer3D(base.Base):
 
         msg = motif_state_graph.MotifStateGraph(mg)
         self._initiate_sequence_in_msg(msg, ss)
-        last_score = self.scorer.score(msg)
+        last_score = self.scorer.score(msg, ss)
 
         mc = monte_carlo.MonteCarlo()
         mc.temperature = 1
@@ -194,7 +263,7 @@ class SequenceOptimizer3D(base.Base):
 
             self._update_designable_bp(d_bp, msg, ss)
 
-            new_score = self.scorer.score(msg)
+            new_score = self.scorer.score(msg, ss)
 
             if mc.accept(last_score, new_score):
                 last_score = new_score

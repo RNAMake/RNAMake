@@ -1018,6 +1018,30 @@ class MotifGraph(base.Base):
                     elif len(partner_n.data.ends) == 1:
                         open.append(partner_n)
 
+        # make sure we got all the nodes
+        not_aligned_list = []
+        for n in self:
+            if n not in used_nodes:
+                not_aligned_list.append(n)
+
+        i = 0
+        while len(not_aligned_list) > 0:
+            removed_nodes = []
+            for n in not_aligned_list:
+                for c in n.connections:
+                    if c is None:
+                        continue
+                    partner = c.partner(n.index)
+                    if partner in self.align_list:
+                        self.align_list.append(n)
+                        removed_nodes.append(n)
+                        break
+            for n in removed_nodes:
+                not_aligned_list.remove(n)
+                i = 0
+            i += 1
+            if i > 100:
+                raise ValueError("cannot add all nodes to align list")
 
         self.update_align_list = 0
         return self.align_list
@@ -1072,7 +1096,6 @@ class MotifGraph(base.Base):
             if n in non_aligned_nodes:
                 self.merger.add_motif(n.data)
                 continue
-
             c = n.connections[0]
             parent = c.partner(n.index)
             parent_end_index = c.end_index(parent.index)
@@ -1090,6 +1113,7 @@ class MotifGraph(base.Base):
                 partner = c.partner(n.index)
                 end1 = n.data.ends[c.end_index(n.index)]
                 end2 = partner.data.ends[c.end_index(partner.index)]
+                print n.index, partner.index, end1.name(), end2.name()
                 self.merger.connect_motifs(n.data, partner.data, end1, end2)
                 seen_connections[c] = 1
 

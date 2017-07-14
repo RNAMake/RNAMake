@@ -40,6 +40,7 @@ class Vienna(object):
         f = open("rnafold_dump")
         lines = f.readlines()
         f.close()
+        #print lines
         try:
             last_line = lines.pop()
         except:

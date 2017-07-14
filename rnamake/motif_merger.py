@@ -198,7 +198,8 @@ class MotifMerger(object):
                     correct_bp = self.get_basepair(self.bp_overrides[end.uuid])
                 ss_bp = ss.get_basepair(uuid=correct_bp.uuid)
                 if ss_bp is None:
-                    raise ValueError("cnot not find end durign ss build")
+                    print m, end
+                    raise ValueError("coult not find end during ss build")
                 ss_ends.append(ss_bp)
             ss_rna_struct.ends = ss_ends
             ss_motifs.append(secondary_structure.Motif(r_struct=ss_rna_struct,

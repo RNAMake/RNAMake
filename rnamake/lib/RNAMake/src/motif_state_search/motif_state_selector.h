@@ -147,7 +147,7 @@ typedef std::shared_ptr<MotifStateSelectorNodeData> MotifStateSelectorNodeDataOP
 class MotifStateSelector {
 public:
     MotifStateSelector():
-    motif_states_and_types_(MotifStateandTypes())
+        motif_states_and_types_(MotifStateandTypes()), name_("MotifStateSelector")
     {}
     
     virtual
@@ -178,13 +178,29 @@ public:
 
             auto d = std::make_shared<MotifStateSelectorNodeData>(m->name(),
                                                                   MotifStateOPs { m->get_state() },
-                                                                  required_uses);
+                                                                  max_uses,  required_uses);
+            graph_.add_data(d);
+        }
+
+        else if(mse != nullptr) {
+            auto motif_states = MotifStateOPs();
+            for(auto const & mem : mse->members()) {
+                motif_states.push_back(mem->motif_state);
+            }
+
+            auto d = std::make_shared<MotifStateSelectorNodeData>("mse",
+                                                                  motif_states,
+                                                                  max_uses, required_uses);
             graph_.add_data(d);
         }
     }
     
     int
     size() { return (int)graph_.size(); }
+
+    inline
+    String const &
+    name() { return name_; }
     
 public:
     
@@ -192,10 +208,42 @@ public:
     connect(
         String const &,
         String const &);
-    
+
+    void
+    connect(
+            int,
+            int);
+
+    virtual
     MotifStateandTypes const &
     get_children_ms(
-        MotifStateSearchNodeOP const &);
+            MotifStateSearchNodeOP const & node) {
+
+        motif_states_and_types_.reset();
+        //beginning of search start on first node
+        if(node->ntype() == -1) {
+            motif_states_and_types_.need_resize((int)graph_.get_node(0)->data()->motif_states.size());
+            for(auto const & ms : graph_.get_node(0)->data()->motif_states) {
+                motif_states_and_types_.add(ms, 0);
+            }
+        }
+
+        else {
+            for(auto const & c : graph_.get_node(node->ntype())->connections()) {
+                auto partner =  c->partner(graph_.get_node(node->ntype())->index());
+                //did use all that we needed of this type
+                if(partner->data()->max_uses <= node->node_type_usage(partner->index())) {
+                    continue;
+                }
+                motif_states_and_types_.need_resize((int)partner->data()->motif_states.size());
+                for(auto const & ms : partner->data()->motif_states) {
+                    motif_states_and_types_.add(ms, partner->index());
+                }
+            }
+        }
+
+        return motif_states_and_types_;
+    }
     
     int
     is_valid_solution(
@@ -209,6 +257,7 @@ public:
 protected:
     GraphDynamic<MotifStateSelectorNodeDataOP> graph_;
     MotifStateandTypes motif_states_and_types_;
+    String name_;
 };
 
 class MSS_RoundRobin : public MotifStateSelector {
@@ -262,6 +311,52 @@ public:
         }
     }
     
+};
+
+class MSS_Path : public MotifStateSelector {
+public:
+    MSS_Path() : MotifStateSelector()
+    { name_ = "MSS_Path"; }
+
+    ~MSS_Path() {}
+public:
+
+    virtual
+    MotifStateandTypes const &
+    get_children_ms(
+            MotifStateSearchNodeOP const & node) {
+
+        motif_states_and_types_.reset();
+        //beginning of search start on first node
+        if(node->ntype() == -1) {
+            motif_states_and_types_.need_resize((int)graph_.get_node(0)->data()->motif_states.size());
+            for(auto const & ms : graph_.get_node(0)->data()->motif_states) {
+                motif_states_and_types_.add(ms, 0);
+            }
+        }
+        else {
+            auto connections =  graph_.get_node(node->ntype())->connections();
+            if(connections.size() < 2) { return motif_states_and_types_; }
+
+            if(graph_.size() == node->ntype()+1) {
+                return motif_states_and_types_;
+            }
+
+            auto partner =  graph_.get_node(node->ntype()+1);
+            //std::cout << node->ntype() << " " << partner->index() << std::endl;
+            //did use all that we needed of this type
+            if(partner->data()->max_uses <= node->node_type_usage(partner->index())) {
+                return motif_states_and_types_;
+            }
+            motif_states_and_types_.need_resize((int)partner->data()->motif_states.size());
+            for(auto const & ms : partner->data()->motif_states) {
+                motif_states_and_types_.add(ms, partner->index());
+            }
+        }
+
+        return motif_states_and_types_;
+    }
+
 };
 
 typedef std::shared_ptr<MotifStateSelector> MotifStateSelectorOP;

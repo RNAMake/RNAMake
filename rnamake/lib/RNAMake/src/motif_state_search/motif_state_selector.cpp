@@ -26,34 +26,11 @@ MotifStateSelector::connect(
     graph_.connect(i, j);
 }
 
-MotifStateandTypes const &
-MotifStateSelector::get_children_ms(
-    MotifStateSearchNodeOP const & node) {
-
-    motif_states_and_types_.reset();
-    //beginning of search start on first node
-    if(node->ntype() == -1) {
-        motif_states_and_types_.need_resize((int)graph_.get_node(0)->data()->motif_states.size());
-        for(auto const & ms : graph_.get_node(0)->data()->motif_states) {
-            motif_states_and_types_.add(ms, 0);
-        }
-    }
-    
-    else {
-        for(auto const & c : graph_.get_node(node->ntype())->connections()) {
-            auto partner =  c->partner(graph_.get_node(node->ntype())->index());
-            //did use all that we needed of this type
-            if(partner->data()->max_uses <= node->node_type_usage(partner->index())) {
-                continue;
-            }
-            motif_states_and_types_.need_resize((int)partner->data()->motif_states.size());
-            for(auto const & ms : partner->data()->motif_states) {
-                motif_states_and_types_.add(ms, partner->index());
-            }
-        }
-    }
-    
-    return motif_states_and_types_;
+void
+MotifStateSelector::connect(
+        int i,
+        int j) {
+    graph_.connect(i, j);
 }
 
 int
@@ -97,3 +74,5 @@ default_selector() {
 
     return selector;
 }
+
+

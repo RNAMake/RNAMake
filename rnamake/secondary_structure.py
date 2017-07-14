@@ -326,13 +326,18 @@ class Basepair(object):
             A10-A15
         """
 
-        str1 = self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code)
-        str2 = self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code)
+        res1_name = self.res1.chain_id + str(self.res1.num) + str(self.res1.i_code)
+        res2_name = self.res2.chain_id + str(self.res2.num) + str(self.res2.i_code)
 
-        if str1 < str2:
-            return str1+"-"+str2
+        if self.res1.chain_id < self.res2.chain_id:
+            return res1_name + "-" + res2_name
+        if self.res1.chain_id > self.res2.chain_id:
+            return res2_name + "-" + res1_name
+
+        if self.res1.num < self.res2.num:
+            return res1_name + "-" + res2_name
         else:
-            return str2+"-"+str1
+            return res2_name + "-" + res1_name
 
     def partner(self, r):
         """
@@ -436,7 +441,7 @@ class Structure(object):
 
         count = 1
         chains_ids = "ABCDEFGHIJKLMNOPQRSTUVWXZ"
-        valid_seq = "AGUCTN&+-"
+        valid_seq = "AGUCTNK&+-"
         chain_i = 0
         for i in range(len(sequence)):
             if sequence[i] not in valid_seq:
@@ -764,6 +769,45 @@ class RNAStructure(object):
 
         return RNAStructure(n_ss, basepairs, ends, self.name, self.path,
                             self.score, self.end_ids[::])
+
+    def get_end_index(self, name=None, id=None):
+        """
+        gets the internal end index for an end either by its name or id, not
+        used very often.
+
+        :param name: name of end from :func:`rnamake.basepair.Basepair.name`
+        :param id: corresponding end id
+
+        :type name: str
+        :type id: str
+
+        :returns: index of the end in the internal ends list
+        :rtype: int
+
+        """
+
+        if name is None and id is None:
+            raise exceptions.RNAStructureException(
+                "must specify name or id in get_end_index")
+
+        if name is not None:
+            bp = self.get_basepair(name=name)
+            if bp is None == 0:
+                raise exceptions.RNAStructureException(
+                    "cannot find basepair with name "+name)
+
+            end = bp
+            return self.ends.index(end)
+        else:
+            matching = []
+            for i, end_id in enumerate(self.end_ids):
+                if end_id == id:
+                    matching.append(i)
+            if len(matching) > 1:
+                raise exceptions.RNAStructureException(
+                    "more then one end with id "+ id + " in get_end_index")
+            return matching[0]
+
 
 
 class Motif(RNAStructure):

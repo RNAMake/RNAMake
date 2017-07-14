@@ -79,8 +79,7 @@ class Basepair(object):
         self.uuid = uuid.uuid1()
 
     def __repr__(self):
-          return "<Basepair("+self.res1.chain_id+str(self.res1.num)+str(self.res1.i_code) +\
-            "-" + self.res2.chain_id+str(self.res2.num)+str(self.res2.i_code) + ")>"
+          return "<Basepair("+self.name()+ ")>"
 
     def _get_atoms(self):
         """
@@ -328,6 +327,7 @@ class Basepair(object):
         if r_diff > r_diff_2:
             r_diff = r_diff_2
         return r_diff
+
 
 class BasepairState(object):
     """

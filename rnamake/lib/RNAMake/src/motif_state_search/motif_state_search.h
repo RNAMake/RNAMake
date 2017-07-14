@@ -133,8 +133,8 @@ private:
     MotifStateSearchNodeQueue queue_;
     MotifStateSelectorOP selector_;
     MotifStateSearchScorerOP scorer_;
-    MotifStateSearchSolutionOPs solutions_;
     MotifStateSearchNodeOP test_node_;
+    MotifStateSearchSolutionOPs solutions_;
     MotifStateAligner aligner_;
     MotifStateandTypes possible_children_;
     StericLookup lookup_;
