@@ -92,8 +92,8 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         "_dot_bracket"
     ]
 
-    def __init__(self, structure, basepairs, ends, end_ids, name,
-                 block_end_add=-1, dot_bracket=None, protein_beads=None):
+    def __init__(self, structure, basepairs, ends, end_ids, name, dot_bracket,
+                 block_end_add=-1, protein_beads=None):
         self._structure       = structure
         self._basepairs       = basepairs
         self._ends            = ends
@@ -101,10 +101,8 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         self._name            = name
         self._block_end_add   = block_end_add
         self._dot_bracket     = dot_bracket
-        self._protein_beads  = protein_beads
+        self._protein_beads   = protein_beads
 
-        if self._dot_bracket is None:
-            self._dot_bracket = ""
         if self._protein_beads is None:
             self._protein_beads = []
 
@@ -262,13 +260,6 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
                 seq += r.name
         return seq
 
-    def dot_bracket(self):
-        """
-        secondary structure for rna_structure
-        """
-
-        return self._dot_bracket
-
     def move(self, p):
         self._structure.move(p)
         for bp in self._basepairs:
@@ -306,6 +297,14 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
     @property
     def block_end_add(self):
         return self._block_end_add
+
+    @property
+    def dot_bracket(self):
+        """
+        secondary structure for rna_structure
+         """
+
+        return self._dot_bracket
 
 
 

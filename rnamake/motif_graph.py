@@ -7,7 +7,7 @@ import motif_type
 import graph
 import motif_merger
 import copy
-import exceptions
+from . import exceptions
 
 from collections import defaultdict
 

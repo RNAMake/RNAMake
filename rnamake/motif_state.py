@@ -12,6 +12,7 @@ import exceptions
 import basic_io
 import util
 import transform
+import secondary_structure
 
 class Residue(primitives.residue.Residue):
     __slots__ = [
@@ -170,6 +171,23 @@ class Structure(primitives.structure.Structure):
     def fast_transform(self, r, t):
         for res in self._residues:
             res.fast_transform(r, t)
+
+    def get_chains(self):
+        pos = 0
+        res = []
+        chains = []
+        for i, r in enumerate(self._residues):
+            if self._chain_cuts[pos] == i:
+                c = Chain(res)
+                chains.append(c)
+                res = [r]
+                pos += 1
+            else:
+                res.append(r)
+
+        if len(res) > 0:
+            chains.append(Chain(res))
+        return chains
 
 
 class Basepair(primitives.basepair.Basepair):
@@ -431,6 +449,9 @@ class Basepair(primitives.basepair.Basepair):
         self.r[1] = -self.r[1]
         self.r[2] = -self.r[2]
 
+    def res_uuids(self):
+        return [self._res1_uuid, self._res2_uuid]
+
     @property
     def r(self):
         return self._r
@@ -476,6 +497,7 @@ class Motif(primitives.rna_structure.RNAStructure):
     __slots__ = [
         "_structure",
         "_basepairs",
+        "_dot_"
         "_ends",
         "_name",
         "_score",
@@ -487,7 +509,7 @@ class Motif(primitives.rna_structure.RNAStructure):
     ]
 
     def __init__(self, structure, basepairs, ends, end_ids, name, mtype, score,
-                 block_end_add=0, m_uuid=None):
+                 dot_bracket, block_end_add=0, m_uuid=None):
 
         super(self.__class__, self).__init__(structure, basepairs, ends,
                                              end_ids, name)
@@ -496,6 +518,7 @@ class Motif(primitives.rna_structure.RNAStructure):
         self._mtype = mtype
         self._score = score
         self._uuid = m_uuid
+        self._dot_bracket = dot_bracket
 
         if self._uuid is None:
             self._uuid = uuid.uuid1()
@@ -601,6 +624,28 @@ class Motif(primitives.rna_structure.RNAStructure):
             bp.fast_transform(r, trans)
         for end in self._ends:
             end.fast_transform(r, trans)
+
+    def get_secondary_structure(self):
+        db_chains = self._dot_bracket.split("&")
+        res = []
+        for i, c in enumerate(self._structure.get_chains()):
+            for j, r in enumerate(c):
+                s_r = secondary_structure.Residue(r.name, db_chains[i][j], r.num,
+                                                  r.chain_id, r.i_code, r.uuid)
+                res.append(s_r)
+        s = secondary_structure.Structure(res, self._structure._chain_cuts)
+        bps = []
+        for bp in self._basepairs:
+            s_bp = secondary_structure.Basepair(bp.res1_uuid, bp.res2_uuid, bp.name, bp.uuid)
+            bps.append(s_bp)
+        ends = []
+        for end in self._ends:
+            s_end = secondary_structure.Basepair(end.res1_uuid, end.res2_uuid, end.name, end.uuid)
+            ends.append(s_end)
+
+        return secondary_structure.RNAStructure(s, bps, ends, self._end_ids[::])
+
+
     @property
     def mtype(self):
         return self._mtype
@@ -617,6 +662,9 @@ class Motif(primitives.rna_structure.RNAStructure):
     def score(self):
         return self._score
 
+    @property
+    def dot_bracket(self):
+        return self._dot_bracket
 
 class MotifEnsemble(Ensemble):
     __slots__ = [
@@ -673,7 +721,6 @@ class MotifLibrary(object):
     @property
     def motifs(self):
         return self._motifs
-
 
 
 def align_motif_state(ref_bp_state, ms):

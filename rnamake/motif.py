@@ -76,11 +76,11 @@ class Motif(rna_structure.RNAStructure):
     ]
 
     def __init__(self, structure, basepairs, ends, end_ids, name, mtype, score,
-                 block_end_add=0, dot_bracket=None, protein_beads=None, m_uuid=None):
+                 dot_bracket, block_end_add=0, protein_beads=None, m_uuid=None):
 
         super(self.__class__, self).__init__(structure, basepairs, ends,
-                                             end_ids, name, block_end_add,
-                                             dot_bracket, protein_beads)
+                                             end_ids, name, dot_bracket,
+                                             block_end_add, protein_beads)
 
         self._mtype = mtype
         self._score = score
@@ -240,7 +240,7 @@ class Motif(rna_structure.RNAStructure):
         #    if bp.bp_type == "cW-W":
         #        bps.append(bp)
         ms = motif_state.Motif(self._structure.get_state(), basepairs, ends, self._end_ids,
-                               self._name, self._mtype, self._score,
+                               self._name, self._mtype, self._score, self._dot_bracket,
                                self._block_end_add, self._uuid)
         return ms
 

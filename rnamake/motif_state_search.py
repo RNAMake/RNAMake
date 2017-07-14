@@ -72,12 +72,12 @@ class MotifStateSearch(base.Base):
         return sol
 
     def all(self):
-        while not self.queue.empty():
+        while not self._queue.empty():
             sol = self._search()
-            self.solutions.append(sol)
-            if len(self.solutions) >= self.option('max_solutions'):
+            self._solutions.append(sol)
+            if len(self._solutions) >= self.option('max_solutions'):
                 break
-        return self.solutions
+        return self._solutions
 
     def _first_round(self, start_n, start_ei):
         mlib_indexes = self._selector.get_connected_libs(-1)
@@ -109,7 +109,7 @@ class MotifStateSearch(base.Base):
             if score < accept_score:
                 if current.size < min_size:
                     continue
-                #return MotifStateSearchSolution(current, score)
+                return MotifStateSearchSolution(current, score)
 
             if current.level+1 > max_node_level:
                 continue

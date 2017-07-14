@@ -42,6 +42,7 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
         mt.add_motif(m_name='HELIX.IDEAL.10')
         mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
+        mt.to_pdb("test.pdb", renumber=1)
 
         start = mt.get_node(0).data
         end = mt.last_node().data
@@ -50,10 +51,11 @@ class MotifStateSearchUnittest(unittest.TestCase):
         mss.setup(start, 0, end, 1)
         s = mss.next()
 
-        mt = s.to_motif_tree(self.rm)
+        mt2 = s.to_motif_tree(self.rm)
+        mt2.to_pdb("search.pdb", renumber=1)
 
     #TODO fix
-    def _test_search_2(self):
+    """def _test_search_2(self):
         path = settings.UNITTEST_PATH + "/resources/motifs/tetraloop_receptor_min"
         rm.manager.add_motif(path)
         mst = motif_state_tree.MotifStateTree(sterics=0)
@@ -105,36 +107,14 @@ class MotifStateSearchUnittest(unittest.TestCase):
         s = mss.next()
         mst_sol = s.to_mst()
 
+        """
 
 
 
 
 
+def main():
+    unittest.main()
 
-#def main():
-#    unittest.main()
-
-#if __name__ == '__main__':
-#    main()
-
-rm = resource_manager.ResourceManager()
-mt = motif_tree.MotifTree(rm)
-m = rm.get_motif(name='HELIX.IDEAL.10')
-mt.add_motif(m)
-mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
-mt.add_motif(m_name='HELIX.IDEAL.10')
-mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
-mt.add_motif(m_name='HELIX.IDEAL.10')
-mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
-mt.add_motif(m_name='HELIX.IDEAL.10')
-mt.add_motif(m_name='TWOWAY.2VQE.19', m_end_name='A1008-A1021')
-mt.nodes_to_pdbs()
-
-start = mt.get_node(0).data
-end = mt.last_node().data
-mss = motif_state_search.MotifStateSearch(rm)
-mss.option('max_node_level', 10)
-mss.setup(start, 0, end, 1)
-s = mss.next()
-#print len(s.path)
-#mt = s.to_motif_tree(self.rm)
+if __name__ == '__main__':
+    main()

@@ -353,9 +353,9 @@ class MotifFactory(object):
                 dot_bracket = ""
 
             m = motif.Motif(final_me.structure, final_me.basepairs, final_me.ends, end_ids,
-                            m_name, mtype, score, block_end_add=block_end_add,
-                            dot_bracket=dot_bracket)
-
+                            m_name, mtype, score, dot_bracket,
+                            block_end_add=block_end_add)
+            
             motifs.append(m)
 
         return motifs

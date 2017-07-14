@@ -1,9 +1,9 @@
 import x3dna
 import motif_type
-import rna_structure
 import structure
 import chain
 import secondary_structure
+import motif_state
 import util
 import graph
 import user_warnings
@@ -33,23 +33,20 @@ class MotifMergerType(object):
     NON_SPECIFIC_SEQUENCE = 1
 
 
-class MotifMerger(object):
-
+class Merger(object):
     __slots__ = [
         "_all_bps",
         "_motifs",
         "_res_overrides",
         "_bp_overrides",
         "_rebuild_structure",
-        "_chain_graph",
         "_rna_structure",
+        "_chain_graph",
         "_aligned",
         "_m_pos",
-        "_mf"
     ]
 
-    def __init__(self, mf):
-        self._mf = mf
+    def __init__(self):
         self._all_bps = {}
         self._motifs = {}
         self._res_overrides = {}
@@ -59,114 +56,7 @@ class MotifMerger(object):
         self._m_pos = {}
         self._rebuild_structure = 1
         self._chain_graph = graph.GraphStatic()
-
         self._rna_structure = None
-
-    def get_merged_structure(self):
-        if self._rebuild_structure == 1:
-            self._build_structure()
-            self._rebuild_structure = 0
-
-        return self._rna_structure
-
-    def __get_ordered_ends(self, s, ends):
-        if len(ends) == 0:
-            return []
-
-        ordered_infos = []
-        for end in ends:
-            org_m = None
-            for m in self._motifs.values():
-                if m.get_end(bp_uuid=end.uuid):
-                    org_m = m
-                    break
-            end_pos = m.get_end_index(end.name)
-
-            ordered_info = { 'end' : end, 'm' : org_m,
-                             'end_pos' : end_pos,
-                             'm_aligned' : self._aligned[org_m.uuid],
-                             'm_pos' : self._m_pos[org_m.uuid]}
-            ordered_infos.append(ordered_info)
-
-        seen = {}
-        unaligned = []
-        for ordered_info in ordered_infos:
-            if ordered_info['m_aligned'] == 0 and \
-               ordered_info['end_pos'] == ordered_info['m'].block_end_add:
-                unaligned.append(ordered_info)
-
-        unaligned.sort(key=lambda x: x['m_pos'])
-        ordered_ends = []
-        for info in unaligned:
-            seen[info['end']] = 1
-            ordered_ends.append(info['end'])
-
-        other_infos = []
-        for info in ordered_infos:
-            if info['end'] in seen:
-                continue
-            if len(ordered_ends) > 0:
-                info['dist'] = ordered_ends[0].diff(info['end'])
-            else:
-                info['dist'] = 0
-            other_infos.append(info)
-
-
-        other_infos.sort(key=lambda x: x['dist'])
-        for info in other_infos:
-            ordered_ends.append(info['end'])
-
-        return ordered_ends
-
-    def _build_structure(self):
-        starts = []
-
-        for n in self._chain_graph.nodes:
-            if n.available_pos(0):
-                starts.append(n)
-
-        chains = []
-        for n in starts:
-            res = []
-            cur = n
-            while cur is not None:
-                res.extend(cur.data.included_res())
-                if cur.available_pos(1):
-                    cur = None
-                else:
-                    con = cur.connections[1]
-                    cur = con.partner(cur.index)
-
-            c = chain.Chain(res)
-            chains.append(c)
-
-        res = []
-        chain_cuts = []
-        for i, c in enumerate(chains):
-            for r in c:
-                res.append(r)
-            if i < len(chains) - 1:
-                chain_cuts.append(len(res))
-        chain_cuts.append(len(res))
-
-        s = structure.Structure(res, chain_cuts)
-        uuids = [r.uuid for r in res]
-
-        current_bps = []
-        for bp in self._all_bps.values():
-            if bp.res1_uuid in uuids and bp.res2_uuid in uuids:
-                current_bps.append(bp)
-
-        ends = ends_from_basepairs(s, current_bps)
-        for end in ends:
-            current_bps.remove(end)
-
-        ordered_ends = self.__get_ordered_ends(s, ends)
-
-        self._rna_structure = self._mf.rna_structure_from_element(
-                                s, current_bps, ordered_ends, "assembled")
-
-        self._rebuild_structure = 0
 
     def add_motif(self, m, m_end=None, parent=None, parent_end=None):
         new_chains = [c for c in m.get_chains()]
@@ -321,6 +211,13 @@ class MotifMerger(object):
         return secondary_structure.Pose(ss_struct, ss_bps, ss_ends, ss_end_ids,
                                         ss_motifs)
 
+    def get_merged_structure(self):
+        if self._rebuild_structure == 1:
+            self._build_structure()
+            self._rebuild_structure = 0
+
+        return self._rna_structure
+
     def get_residue(self, uuid):
         for m in self._motifs.values():
             r = m.get_residue(uuid=uuid)
@@ -438,3 +335,253 @@ class MotifMerger(object):
             raise ValueError("did not build map properly, both chains are not found")
 
         return end_nodes
+
+    def _build_structure(self):
+        raise ValueError("not implemented")
+
+class MotifMerger(Merger):
+
+    __slots__ = [
+        "_all_bps",
+        "_motifs",
+        "_res_overrides",
+        "_bp_overrides",
+        "_rebuild_structure",
+        "_chain_graph",
+        "_rna_structure",
+        "_aligned",
+        "_m_pos",
+        "_mf"
+    ]
+
+    def __init__(self, mf):
+        super(self.__class__, self).__init__()
+        self._mf = mf
+
+    def __get_ordered_ends(self, s, ends):
+        if len(ends) == 0:
+            return []
+
+        ordered_infos = []
+        for end in ends:
+            org_m = None
+            for m in self._motifs.values():
+                if m.get_end(bp_uuid=end.uuid):
+                    org_m = m
+                    break
+            end_pos = m.get_end_index(end.name)
+
+            ordered_info = { 'end' : end, 'm' : org_m,
+                             'end_pos' : end_pos,
+                             'm_aligned' : self._aligned[org_m.uuid],
+                             'm_pos' : self._m_pos[org_m.uuid]}
+            ordered_infos.append(ordered_info)
+
+        seen = {}
+        unaligned = []
+        for ordered_info in ordered_infos:
+            if ordered_info['m_aligned'] == 0 and \
+               ordered_info['end_pos'] == ordered_info['m'].block_end_add:
+                unaligned.append(ordered_info)
+
+        unaligned.sort(key=lambda x: x['m_pos'])
+        ordered_ends = []
+        for info in unaligned:
+            seen[info['end']] = 1
+            ordered_ends.append(info['end'])
+
+        other_infos = []
+        for info in ordered_infos:
+            if info['end'] in seen:
+                continue
+            if len(ordered_ends) > 0:
+                info['dist'] = ordered_ends[0].diff(info['end'])
+            else:
+                info['dist'] = 0
+            other_infos.append(info)
+
+
+        other_infos.sort(key=lambda x: x['dist'])
+        for info in other_infos:
+            ordered_ends.append(info['end'])
+
+        return ordered_ends
+
+    def _build_structure(self):
+        starts = []
+
+        for n in self._chain_graph.nodes:
+            if n.available_pos(0):
+                starts.append(n)
+
+        chains = []
+        for n in starts:
+            res = []
+            cur = n
+            while cur is not None:
+                res.extend(cur.data.included_res())
+                if cur.available_pos(1):
+                    cur = None
+                else:
+                    con = cur.connections[1]
+                    cur = con.partner(cur.index)
+
+            c = chain.Chain(res)
+            chains.append(c)
+
+        res = []
+        chain_cuts = []
+        for i, c in enumerate(chains):
+            for r in c:
+                res.append(r)
+            if i < len(chains) - 1:
+                chain_cuts.append(len(res))
+        chain_cuts.append(len(res))
+
+        s = structure.Structure(res, chain_cuts)
+        uuids = [r.uuid for r in res]
+
+        current_bps = []
+        for bp in self._all_bps.values():
+            if bp.res1_uuid in uuids and bp.res2_uuid in uuids:
+                current_bps.append(bp)
+
+        ends = ends_from_basepairs(s, current_bps)
+        for end in ends:
+            current_bps.remove(end)
+
+        ordered_ends = self.__get_ordered_ends(s, ends)
+
+        self._rna_structure = self._mf.rna_structure_from_element(
+                                s, current_bps, ordered_ends, "assembled")
+
+        self._rebuild_structure = 0
+
+
+class MotifStateMerger(Merger):
+    def __init__(self):
+        super(self.__class__, self).__init__()
+
+    def __get_ordered_ends(self, s, ends):
+        if len(ends) == 0:
+            return []
+
+        ordered_infos = []
+        for end in ends:
+            org_m = None
+            for m in self._motifs.values():
+                if m.get_end(bp_uuid=end.uuid):
+                    org_m = m
+                    break
+            end_pos = m.get_end_index(end.name)
+
+            ordered_info = {'end': end, 'm': org_m,
+                            'end_pos': end_pos,
+                            'm_aligned': self._aligned[org_m.uuid],
+                            'm_pos': self._m_pos[org_m.uuid]}
+            ordered_infos.append(ordered_info)
+
+        seen = {}
+        unaligned = []
+        for ordered_info in ordered_infos:
+            if ordered_info['m_aligned'] == 0 and \
+                            ordered_info['end_pos'] == ordered_info['m'].block_end_add:
+                unaligned.append(ordered_info)
+
+        unaligned.sort(key=lambda x: x['m_pos'])
+        ordered_ends = []
+        for info in unaligned:
+            seen[info['end']] = 1
+            ordered_ends.append(info['end'])
+
+        other_infos = []
+        for info in ordered_infos:
+            if info['end'] in seen:
+                continue
+            if len(ordered_ends) > 0:
+                info['dist'] = ordered_ends[0].diff(info['end'])
+            else:
+                info['dist'] = 0
+            other_infos.append(info)
+
+        other_infos.sort(key=lambda x: x['dist'])
+        for info in other_infos:
+            ordered_ends.append(info['end'])
+
+        return ordered_ends
+
+    def _build_structure(self):
+        starts = []
+
+        for n in self._chain_graph.nodes:
+            if n.available_pos(0):
+                starts.append(n)
+
+        chains = []
+        for n in starts:
+            res = []
+            cur = n
+            while cur is not None:
+                res.extend(cur.data.included_res())
+                if cur.available_pos(1):
+                    cur = None
+                else:
+                    con = cur.connections[1]
+                    cur = con.partner(cur.index)
+
+            c = chain.Chain(res)
+            chains.append(c)
+
+        res = []
+        chain_cuts = []
+        for i, c in enumerate(chains):
+            for r in c:
+                res.append(r)
+            if i < len(chains) - 1:
+                chain_cuts.append(len(res))
+        chain_cuts.append(len(res))
+
+        s = motif_state.Structure(res, chain_cuts)
+        uuids = [r.uuid for r in res]
+
+        current_bps = []
+        for bp in self._all_bps.values():
+            if bp.res1_uuid in uuids and bp.res2_uuid in uuids:
+                current_bps.append(bp)
+
+        ends = ends_from_basepairs(s, current_bps)
+        for end in ends:
+            current_bps.remove(end)
+
+        ordered_ends = self.__get_ordered_ends(s, ends)
+
+        end_ids = []
+        for end in ordered_ends:
+            end_ids.append(assign_end_id(s, current_bps, ordered_ends, end,))
+
+        seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
+
+        self._rna_structure = motif_state.Motif(s, current_bps, ordered_ends,
+                                                end_ids, "assembled", motif_type.UNKNOWN,
+                                                0, dot_bracket)
+        self._rebuild_structure = 0
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

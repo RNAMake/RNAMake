@@ -513,6 +513,9 @@ def end_id_to_seq_and_db(ss_id):
     return seq, ss
 
 
+
+
+
 def align_rna_structure(ref_bp, motif_end, motif):
     """
     This is the workhorse of the entire suite. Aligns one end of a motif to

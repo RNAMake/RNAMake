@@ -21,8 +21,7 @@ def motif_from_pdb(pdb_path, rts):
     name = util.filename(pdb_path)[:-4]
     score = 0
     seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
-    m = motif.Motif(s, bps, ends, end_ids, name, motif_type.HELIX, 0,
-                    dot_bracket=dot_bracket)
+    m = motif.Motif(s, bps, ends, end_ids, name, motif_type.HELIX, 0, dot_bracket)
     return m
 
 
@@ -34,7 +33,7 @@ class MotifUnittest(unittest.TestCase):
         self.m = motif_from_pdb(path, self.rts)
 
     def test_creation(self):
-        pass
+        self.failUnless(self.m.dot_bracket == "(((&)))")
 
     def test_to_str(self):
         m = self.m
@@ -58,6 +57,7 @@ class MotifUnittest(unittest.TestCase):
                                                    m.get_end(0).d))
 
         self.failUnless(ms.num_res() == m.num_res())
+        self.failUnless(ms.dot_bracket == m.dot_bracket)
 
         for r in m:
             self.failUnless(ms.get_residue(uuid=r.uuid) is not None)
