@@ -18,6 +18,7 @@ import rna_structure
 import residue
 import bead
 import motif_state
+from primitives import aligner
 
 class Motif(rna_structure.RNAStructure):
     """
@@ -256,6 +257,60 @@ class Motif(rna_structure.RNAStructure):
     def uuid(self):
         return self._uuid
 
+
+class MotifAligner(aligner.Aligner):
+    __slots__ = [
+        '_r',
+        '_d',
+        '_t',
+        '_m_end',
+        '_bp_pos_diff',
+        '_dist_1',
+        '_dist_2',
+        '_sugar_diff_1',
+        '_sugar_diff_2'
+    ]
+
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self._bp_pos_diff = 0
+        self._m_end = None
+        self._dist_1 = 0
+        self._dist_2 = 0
+        self._sugar_diff_1 = 0
+        self._sugar_diff_2 = 0
+
+    def get_aligned_motif(self, ref_bp, m):
+        m_copy = Motif.copy(m)
+        self.align(ref_bp, m_copy)
+        return m_copy
+
+    def align(self, ref_bp, m):
+        self._m_end = m.get_end(0)
+
+        # calculate rotation before ref_bp (where we are going) and current
+        # base pair (where we are)
+        self._r = util.unitarize(ref_bp.r.T.dot(self._m_end.r))
+        self._d = -self._m_end.d
+        self._t = transform.Transform(self._r, self._d)
+        m.transform(self._t)
+        self._bp_pos_diff = ref_bp.d - self._m_end.d
+        m.move(self._bp_pos_diff)
+
+        # alignment is by center of basepair, it can be slightly improved by
+        # aligning the c1' sugars
+        self._dist_1 = util.distance(self._m_end.res1_sugar, ref_bp.res1_sugar)
+        self._dist_2 = util.distance(self._m_end.res2_sugar, ref_bp.res1_sugar)
+
+        if self._dist_1 < self._dist_2:
+            self._sugar_diff_1 = ref_bp.res1_sugar - self._m_end.res1_sugar
+            self._sugar_diff_2 = ref_bp.res2_sugar - self._m_end.res2_sugar
+        else:
+            self._sugar_diff_1 = ref_bp.res1_sugar - self._m_end.res2_sugar
+            self._sugar_diff_2 = ref_bp.res2_sugar - self._m_end.res1_sugar
+
+        if self._dist_1 < 5 or self._dist_2 < 5:
+            m.move((self._sugar_diff_1 + self._sugar_diff_2) / 2)
 
 
 def align_motif(ref_bp_state, motif_end, motif):
