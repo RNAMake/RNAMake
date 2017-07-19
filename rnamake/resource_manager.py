@@ -254,7 +254,7 @@ class ResourceManager(object):
     def _args_to_str(self, options):
         s = ""
         for k, v in options.iteritems():
-            s += k + " = " + v + ","
+            s += k + " = " + str(v) + ","
         return s
 
     def ms_to_motif(self, ms):

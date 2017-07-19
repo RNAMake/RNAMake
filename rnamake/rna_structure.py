@@ -1,5 +1,4 @@
 import motif_type
-import basepair
 import x3dna
 import structure
 import util
@@ -10,6 +9,7 @@ import residue
 import basic_io
 import secondary_structure
 import basepair
+import settings
 
 import primitives.rna_structure
 import primitives.basepair
@@ -293,6 +293,19 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
             ends.append(s_end)
 
         return secondary_structure.RNAStructure(s, bps, ends, self._end_ids[::])
+
+    def steric_clash(self, rs, clash_radius=settings.CLASH_RADIUS):
+        for r1 in self:
+            for b1 in r1.iter_beads():
+                for r2 in rs:
+                    for b2 in r2.iter_beads():
+                        if b1.btype == residue.BeadType.PHOS or \
+                                        b2.btype == residue.BeadType.PHOS:
+                            continue
+                        dist = util.distance(b1.center, b2.center)
+                        if dist < clash_radius:
+                            return 1
+        return 0
 
     @property
     def block_end_add(self):

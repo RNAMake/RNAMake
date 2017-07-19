@@ -300,6 +300,9 @@ class RNAStructure(base.BaseStructureObject):
     def num_ends(self):
         return len(self._ends)
 
+    def steric_clash(self, rs):
+        raise NotImplementedError
+
     @property
     def name(self):
         return self._name

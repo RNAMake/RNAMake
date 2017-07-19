@@ -5,10 +5,12 @@ class DirectedGraph(object):
         "_nodes",
         "_edges",
         "_level",
+        "_levels",
         "_index",
         "_iter_list",
         "_parent",
-        "_rebuild_list"]
+        "_rebuild_list",
+        "_last"]
 
     def __init__(self):
         self._nodes = {}
@@ -18,6 +20,7 @@ class DirectedGraph(object):
         self._index = 0
         self._rebuild_list = 0
         self._iter_list = []
+        self._last = -1
 
     def __len__(self):
         return len(self._nodes)
@@ -76,12 +79,13 @@ class DirectedGraph(object):
     def get_all_edges(self):
         all_edges = []
         for ni, edges in self._edges.iteritems():
-            for e in edges:
-                if e is None:
+            for ei, e in enumerate(edges):
+                nj, ej = e
+                if nj is None:
                     continue
-                full_edge = [ni, e]
+                full_edge = [ni, nj, ei, ej]
                 if ni > e:
-                    full_edge = [e, ni]
+                    full_edge = [nj, ni, ej, ei]
                 if full_edge not in all_edges:
                     all_edges.append(full_edge)
         return all_edges
@@ -111,8 +115,8 @@ class DirectedGraph(object):
             raise ValueError("cannot get parent edge index, node: " +
                              str(index) + " does not have a parent" )
         edges = self.get_edges(pi)
-        for i, ni in enumerate(edges):
-            if ni == index:
+        for i, n in enumerate(edges):
+            if n[0] == index:
                 return i
 
     def edge_index_empty(self, ni, ei):
@@ -121,7 +125,13 @@ class DirectedGraph(object):
             raise ValueError(
                 "node: " + str(ni) + " has only " + str(len(edges)) + " but requested " + str(ei))
 
-        if edges[ei] is None:
+        if edges[ei][0] is None:
+            return True
+        else:
+            return False
+
+    def edge_exists(self, ni, nj, ei, ej):
+        if self._edges[ni][ei] == [nj, ej]:
             return True
         else:
             return False
@@ -132,35 +142,18 @@ class DirectedGraph(object):
             raise ValueError("cannot get edge to parent, node: " +
                              str(index) + " does not have a parent")
         edges = self.get_edges(index)
-        for i, ni in enumerate(edges):
-            if pi == ni:
+        for i, n in enumerate(edges):
+            if pi == n[0]:
                 return i
 
     def are_nodes_connected(self, ni, nj):
         edges = self.get_edges(ni)
 
-        for i in edges:
-            if i == nj:
+        for connected_n, connected_end in edges:
+            if connected_n == nj:
                 return True
 
         return False
-
-    def get_edge_indexes(self, ni, nj):
-        if not self.are_nodes_connected(ni, nj):
-            raise ValueError(
-                "cannot get end indexes as nodes are not connected: " +
-                str(ni) + ", " + str(nj))
-        edge_indexes = []
-
-        for i, e in enumerate(self.get_edges(ni)):
-            if e == nj:
-                edge_indexes.append(i)
-
-        for i, e in enumerate(self.get_edges(nj)):
-            if e == ni:
-                edge_indexes.append(i)
-
-        return edge_indexes
 
     def get_connected_node(self, ni, ei):
         return self._edges[ni][ei]
@@ -178,8 +171,8 @@ class DirectedGraph(object):
                 " and edge_index: " + str(ej) + " is already filled by node " +
                 str(self.get_connected_node(nj, ej)))
 
-        self._edges[ni][ei] = nj
-        self._edges[nj][ej] = ni
+        self._edges[ni][ei] = [nj, ej]
+        self._edges[nj][ej] = [ni, ei]
         self._rebuild_list = 1
 
     def add_node(self, n, allowed_edges, parent_index=-1, parent_edge_index=1,
@@ -194,7 +187,7 @@ class DirectedGraph(object):
             i = self._index
 
         self._nodes[i] = n
-        self._edges[i] = [None for j in range(allowed_edges)]
+        self._edges[i] = [[None, None] for j in range(allowed_edges)]
 
         self._index = self._get_next_available_index()
 
@@ -203,6 +196,7 @@ class DirectedGraph(object):
             self._parent[i] = parent_index
 
         self._rebuild_list = 1
+        self._last = i
 
         return i
 
@@ -233,34 +227,36 @@ class DirectedGraph(object):
             ni = updated_indexes [ full_edge[0] ]
             nj = updated_indexes [ full_edge[1] ]
             if not self.are_nodes_connected(ni, nj):
-                ei, ej = dg.get_edge_indexes(full_edge[0], full_edge[1])
-                self.add_edge(ni, nj, ei, ej)
+                self.add_edge(ni, nj, full_edge[2], full_edge[3])
 
     def remove_node(self, ni):
         if ni not in self._nodes:
             raise ValueError("cannot remove node: " + str(ni) + " it does not exist")
 
         edges = self.get_edges(ni)
-        for i, nj in enumerate(edges):
+        for i, n in enumerate(edges):
+            nj, ej = n
             if nj is None:
                 continue
-            ei, ej = self.get_edge_indexes(ni, nj)
             # no longer has a parent
             if nj in self._parent:
                 if self._parent[nj] == ni:
                     del self._parent[nj]
 
-            self._edges[nj][ej] = None
+            self._edges[nj][ej] = [None, None]
 
 
         del self._edges[ni]
         if ni in self._parent:
             del self._parent[ni]
+        del self._nodes[ni]
 
         self._rebuild_list = 1
 
-    def remove_edge(self, ni, nj):
-        ei, ej = self.get_edge_indexes(ni, nj)
+    def remove_edge(self, ni, nj, ei, ej):
+        if self._edges[ni][ei] != [nj, ej]:
+            raise ValueError(
+                "edge: %d %d %d %d" % (ni, nj, ei, ej) + "does not exist" )
 
         if ni == self.get_parent_index(nj):
             del self._parent[nj]
@@ -268,8 +264,8 @@ class DirectedGraph(object):
         if nj == self.get_parent_index(ni):
             del self._parent[ni]
 
-        self._edges[nj][ej] = None
-        self._edges[ni][ei] = None
+        self._edges[nj][ej] = [None, None]
+        self._edges[ni][ei] = [None, None]
         self._rebuild_list = 1
 
     def _rebuild_iter_list(self, ni=None):
@@ -315,6 +311,10 @@ class DirectedGraph(object):
     @property
     def index(self):
         return self._index
+
+    @property
+    def last(self):
+        return self._last
 
 
 

@@ -112,7 +112,7 @@ class Motif(rna_structure.RNAStructure):
         for bead_str in bead_strs[:-1]:
             protein_beads.append(bead.Bead.from_str(bead_str))
         return cls(struc, bps, ends, end_ids, name, mtype, score,
-                   block_end_add, spl[7], protein_beads)
+                   spl[9], block_end_add, protein_beads)
 
     @classmethod
     def copy(cls, m, new_uuid=0):
@@ -150,7 +150,7 @@ class Motif(rna_structure.RNAStructure):
             m_uuid = uuid.uuid1()
 
         return cls(s, basepairs, ends, m._end_ids, m._name, m._mtype, m._score,
-                   m._block_end_add, m._dot_bracket, protein_beads, m_uuid)
+                   m._dot_bracket, m._block_end_add, protein_beads, m_uuid)
 
     @classmethod
     def altered_copy(cls, m, name=None, mtype=None):
@@ -268,8 +268,7 @@ class MotifAligner(aligner.Aligner):
         '_dist_1',
         '_dist_2',
         '_sugar_diff_1',
-        '_sugar_diff_2'
-    ]
+        '_sugar_diff_2']
 
     def __init__(self):
         super(self.__class__, self).__init__()
@@ -280,7 +279,7 @@ class MotifAligner(aligner.Aligner):
         self._sugar_diff_1 = 0
         self._sugar_diff_2 = 0
 
-    def get_aligned_motif(self, ref_bp, m):
+    def get_aligned(self, ref_bp, m):
         m_copy = Motif.copy(m)
         self.align(ref_bp, m_copy)
         return m_copy
@@ -312,7 +311,7 @@ class MotifAligner(aligner.Aligner):
         if self._dist_1 < 5 or self._dist_2 < 5:
             m.move((self._sugar_diff_1 + self._sugar_diff_2) / 2)
 
-
+# DEPRECATED
 def align_motif(ref_bp_state, motif_end, motif):
     """
     This is the workhorse of the entire suite. Aligns one end of a motif to
@@ -353,7 +352,7 @@ def align_motif(ref_bp_state, motif_end, motif):
     if dist1 < 5 or dist2 < 5:
         motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )
 
-
+# DEPRECATED
 def get_aligned_motif(ref_bp, motif_end, m, sterics=1):
 
     motif_end_index = m.get_end_index(motif_end.name)
@@ -363,7 +362,7 @@ def get_aligned_motif(ref_bp, motif_end, m, sterics=1):
 
     return m_copy
 
-
+# DEPRECATED
 def clash_between_motifs(m1, m2, clash_radius=settings.CLASH_RADIUS):
     for r1 in m1:
         for b1 in r1.iter_beads():

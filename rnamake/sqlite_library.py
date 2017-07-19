@@ -3,11 +3,11 @@ import random
 import os
 
 import settings
-import exceptions
 import motif
 import motif_ensemble
 import motif_state
 import residue_type
+from . import exceptions
 
 class SqliteLibrary(object):
     """
@@ -112,7 +112,7 @@ class SqliteLibrary(object):
         """
         s = ""
         for k, v in options.iteritems():
-            s += k + " = " + v + ","
+            s += str(k) + " = " + str(v) + ","
         return s
 
     def _generate_query(self, options):
@@ -135,7 +135,7 @@ class SqliteLibrary(object):
                     "attempted to use " + k + "=" + v + " in getting data from"
                     " SqliteLibrary, this column does not exist in database")
 
-            cmd += k + "='" + v + "' "
+            cmd += str(k) + "='" + str(v) + "' "
             if len(options) != count+1:
                 cmd += " AND "
             count += 1

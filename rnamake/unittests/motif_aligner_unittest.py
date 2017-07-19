@@ -29,7 +29,7 @@ class MotifAlignerUnittest(unittest.TestCase):
         m2 = mlib.get(name='HELIX.IDEAL.2')
 
         m_aligner = motif.MotifAligner()
-        m_aligned = m_aligner.get_aligned_motif(m1.get_end(1), m2)
+        m_aligned = m_aligner.get_aligned(m1.get_end(1), m2)
 
         diff = m1.get_end(1).diff(m_aligned.get_end(0))
         self.failUnless(diff < 0.001)

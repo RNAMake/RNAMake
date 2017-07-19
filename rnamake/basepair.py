@@ -2,11 +2,12 @@ import util
 import basic_io
 import numpy as np
 import uuid
-import exceptions
 import x3dna
 
 import motif_state
 import primitives.basepair
+
+from . import exceptions
 
 class Basepair(primitives.basepair.Basepair):
     """
