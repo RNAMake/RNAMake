@@ -557,7 +557,7 @@ class MotifStateMerger(Merger):
 
         end_ids = []
         for end in ordered_ends:
-            end_ids.append(assign_end_id(s, current_bps, ordered_ends, end,))
+            end_ids.append(assign_end_id(s, current_bps, ordered_ends, end))
 
         seq, dot_bracket = end_id_to_seq_and_db(end_ids[0])
 

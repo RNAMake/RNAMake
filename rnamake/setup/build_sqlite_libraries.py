@@ -415,8 +415,8 @@ class BuildSqliteLibraries(object):
 
 #setup_start_motif()
 builder = BuildSqliteLibraries()
-#builder.build_ideal_helices()
-builder.build_basic_libraries()
+builder.build_ideal_helices()
+#builder.build_basic_libraries()
 #builder.build_helix_ensembles()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()

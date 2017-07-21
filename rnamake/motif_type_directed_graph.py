@@ -14,7 +14,6 @@ class MotifTypeDirectedGraph(object):
         "_motif_class_type",
         "_motif_aligner",
         "_motif_type",
-        "_motif_merger",
     ]
 
     def __init__(self):
@@ -115,6 +114,14 @@ class MotifTypeDirectedGraph(object):
         self._dg.remove_node(i)
         self._update_motif_alignments()
 
+    def get_end(self, ni, ei):
+        end = self.get_motif(ni).get_end(ei)
+        if end is None:
+            raise ValueError(
+                "cannot get end %d from node %d does not exist" % (ei, ni))
+        return end
+
+    # helper functions
     def _align(self, parent_index, parent_end_index, m):
         m_copy = self._motif_class_type.copy(m)
         if parent_index == -1:
@@ -160,6 +167,9 @@ class MotifTypeDirectedGraph(object):
         raise NotImplementedError
 
     # wrappers from directed graph
+    def get_parent(self, i):
+        return self._dg.get_parent(i)
+
     def get_parent_index(self, i):
         return self._dg.get_parent_index(i)
 
@@ -186,6 +196,10 @@ class MotifTypeDirectedGraph(object):
 
     def is_end_filled(self, ni, ei):
         return self._dg.edge_index_empty(ni, ei)
+
+    def remove_connection(self, ni, nj, ei, ej):
+        return self._dg.remove_edge(ni, nj, ei, ej)
+
 
     @property
     def sterics(self):

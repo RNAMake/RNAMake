@@ -111,8 +111,15 @@ class Motif(rna_structure.RNAStructure):
         protein_beads = []
         for bead_str in bead_strs[:-1]:
             protein_beads.append(bead.Bead.from_str(bead_str))
+
+        dot_bracket = ""
+        for i in range(9, len(spl)-1):
+            dot_bracket += spl[i]
+            if i != len(spl)-2:
+                dot_bracket += "&"
+
         return cls(struc, bps, ends, end_ids, name, mtype, score,
-                   spl[9], block_end_add, protein_beads)
+                   dot_bracket, block_end_add, protein_beads)
 
     @classmethod
     def copy(cls, m, new_uuid=0):
@@ -217,6 +224,29 @@ class Motif(rna_structure.RNAStructure):
         s += self._dot_bracket
         s += "&"
         return s
+
+    def get_secondary_structure(self):
+        db_chains = self._dot_bracket.split("&")
+        res = []
+        for i, c in enumerate(self._structure.get_chains()):
+            for j, r in enumerate(c):
+                s_r = secondary_structure.Residue(r.name, db_chains[i][j], r.num,
+                                                  r.chain_id, r.i_code, r.uuid)
+                res.append(s_r)
+        s = secondary_structure.Structure(res, self._structure._chain_cuts)
+        bps = []
+        for bp in self._basepairs:
+            s_bp = secondary_structure.Basepair(bp.res1_uuid, bp.res2_uuid,
+                                                bp.name, bp.uuid)
+            bps.append(s_bp)
+        ends = []
+        for end in self._ends:
+            s_end = secondary_structure.Basepair(end.res1_uuid, end.res2_uuid,
+                                                 end.name, end.uuid)
+            ends.append(s_end)
+
+        return secondary_structure.Motif(s, bps, ends, self._end_ids[::],
+                                         self._mtype, self._name, self._uuid)
 
     def get_state(self):
         basepairs = []

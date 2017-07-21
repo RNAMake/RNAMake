@@ -492,7 +492,8 @@ class MotifFactory(object):
 
         new_me = self._MotifElements(aligned_s, aligned_me.basepairs, aligned_ends)
         final_me = self.__align_motif_elements_to_frame(end_bp, new_me, 0)
-        final_me = new_me
+        # why is this here?
+        #final_me = new_me
 
         diff = util.distance(elements.structure._residues[0].center(),
                              final_me.structure._residues[0].center())

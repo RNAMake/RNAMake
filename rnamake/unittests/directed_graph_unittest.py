@@ -153,15 +153,51 @@ class MotifDirectedGraphUnittest(unittest.TestCase):
         mdg.add_motif(self._rm.get_motif(name="HELIX.IDEAL.2"), 0, 1)
         self.failUnless(len(mdg) == 3)
 
+    def test_merge(self):
+        mdg = motif_directed_graph.MotifDirectedGraph(self._rm)
+        mdg.add_motif_by_name("HELIX.IDEAL")
+        mdg.add_motif_by_name("HELIX.IDEAL", None, 0, 1)
+        rs = mdg.get_merged_rna_structure()
+
+        self.failUnless(rs.num_chains() == 2)
+        self.failUnless(rs.num_res() == 6)
+
     def test_add_connection(self):
         mdg = motif_directed_graph.MotifDirectedGraph(self._rm)
         nway = self._rm.get_motif(name="NWAY.1GID.0")
         mdg.add_motif(self._m1)
         mdg.add_motif(nway, 0, 1)
         mdg.add_motif(self._m2, 1, 1)
-        mdg.add_connection(1, 2, 2, 1)
 
+        ei1 = mdg.get_motif(1).get_end_index("A138-A180")
+        ei2 = mdg.get_motif(1).get_end_index("A141-A162")
 
+        # try connecting through 0th end position
+        with self.assertRaises(ValueError):
+            mdg.add_connection(1, 2, ei1, 1)
+
+        # try connecting thru an already used end position
+        with self.assertRaises(ValueError):
+            mdg.add_connection(1, 2, ei2, 1)
+
+        self.failUnless(mdg.is_valid_connection(1, 2, 2, 1) == 0)
+
+    def test_replace_sequence(self):
+        mdg = motif_directed_graph.MotifDirectedGraph(self._rm)
+        mdg.add_motif_by_name("HELIX.IDEAL.15")
+        mdg.add_motif_by_name("TWOWAY.3R1C.32", "g4-h5", 0, 1)
+        mdg.add_motif_by_name("HELIX.IDEAL.14", None, 1, 1)
+        mdg2 = mdg.get_graph_wo_ideal_helices()
+
+        seq = "ACUGAGGAACGUACGACGGCUUACCGUUUAACUA&UAGUUAAACGGUAAGCGGUCGUACGUUCCUCAGU"
+        mdg2.update_sequence(seq)
+
+        #dss = mg.secondary_structure()
+        #rna_struc = mg.get_structure()
+        #mg.to_pdb("org.pdb", renumber=1, close_chain=1)
+
+        # print rna_struc.get_chain(0).get_residue(0).name
+        # print dss.get_chain(0).get_residue(0).name
 
     def test_replace_ideal_helices(self):
         mdg = motif_directed_graph.MotifDirectedGraph(self._rm)

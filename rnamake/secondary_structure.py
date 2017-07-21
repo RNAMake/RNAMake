@@ -6,6 +6,8 @@ import primitives.chain
 import primitives.basepair
 import primitives.structure
 import primitives.rna_structure
+import primitives.aligner
+import motif_type_directed_graph
 
 class Residue(primitives.residue.Residue):
     """
@@ -534,8 +536,9 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         "_end_ids"
     ]
 
-    def __init__(self, structure, basepairs, ends, end_ids):
-       super(self.__class__, self).__init__(structure, basepairs, ends, end_ids)
+    def __init__(self, structure, basepairs, ends, end_ids, name):
+       super(self.__class__, self).__init__(structure, basepairs, ends,
+                                            end_ids, name)
 
     @classmethod
     def from_str(cls, s):
@@ -677,11 +680,15 @@ class Motif(RNAStructure):
         "_name",
         "_end_ids",
         "_mtype",
-        "_uuid"
+        "_uuid",
+        "_name",
+        "_block_end_add"
     ]
 
-    def __init__(self, structure, basepairs, ends, end_ids, mtype, m_uuid=None):
-        super(RNAStructure, self).__init__(structure, basepairs, ends, end_ids)
+    def __init__(self, structure, basepairs, ends, end_ids, mtype, name,
+                 m_uuid=None):
+        super(RNAStructure, self).__init__(structure, basepairs,
+                                           ends, end_ids, name)
         self._mtype = mtype
         self._uuid = m_uuid
         if self._uuid is None:
@@ -772,6 +779,17 @@ class Motif(RNAStructure):
     @property
     def uuid(self):
         return self._uuid
+
+
+class Aligner(primitives.aligner.Aligner):
+    def __init__(self):
+        super(self.__class__, self).__init__()
+
+    def get_aligned_motif(self, ref_bp, m):
+        return m
+
+    def align(self, ref_bp, m):
+        return m
 
 
 class Pose(RNAStructure):
@@ -1017,6 +1035,13 @@ class Pose(RNAStructure):
             m = Motif(struc, bps, ends)
             self.helices.append(m)
 
+
+class MotifDirectedGraph(motif_type_directed_graph.MotifTypeDirectedGraph):
+    def __init__(self):
+        super(self.__class__, self).__init__()
+        self._sterics = 0
+        self._motif_class_type = Motif
+        self._motif_aligner = Aligner
 
 
 def str_to_pose(s):

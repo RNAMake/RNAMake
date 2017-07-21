@@ -84,7 +84,7 @@ class DirectedGraph(object):
                 if nj is None:
                     continue
                 full_edge = [ni, nj, ei, ej]
-                if ni > e:
+                if ni > nj:
                     full_edge = [nj, ni, ej, ei]
                 if full_edge not in all_edges:
                     all_edges.append(full_edge)

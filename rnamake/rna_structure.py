@@ -3,7 +3,6 @@ import x3dna
 import structure
 import util
 import chain_closure
-import exceptions
 import user_warnings
 import residue
 import basic_io
@@ -11,6 +10,7 @@ import secondary_structure
 import basepair
 import settings
 
+from . import exceptions
 import primitives.rna_structure
 import primitives.basepair
 from primitives.rna_structure import ends_from_basepairs, assign_end_id
@@ -105,6 +105,22 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
 
         if self._protein_beads is None:
             self._protein_beads = []
+
+        if len(self._end_ids) != len(self._ends):
+            raise exceptions.RNAStructureException(
+                "RNAStructures must have the same number of ends as end_ids "
+                "has %d ends and % end_ids" % (len(self._ends), len(self._end_ids)))
+
+        db_length = 0
+        for e in self._dot_bracket:
+            if e != "&":
+                db_length += 1
+
+        if db_length != self.num_res():
+            raise exceptions.RNAStructureException(
+                "RNAStructures must have dot_bracket symbol for each residue "
+                "has %d residues and %d db symbols" % (self.num_res(), db_length))
+
 
         for c in self._structure.get_chains():
             for r in c:
@@ -285,14 +301,17 @@ class RNAStructure(primitives.rna_structure.RNAStructure):
         s = secondary_structure.Structure(res, self._structure._chain_cuts)
         bps = []
         for bp in self._basepairs:
-            s_bp = secondary_structure.Basepair(bp.res1_uuid, bp.res2_uuid, bp.name, bp.uuid)
+            s_bp = secondary_structure.Basepair(bp.res1_uuid, bp.res2_uuid,
+                                                bp.name, bp.uuid)
             bps.append(s_bp)
         ends = []
         for end in self._ends:
-            s_end = secondary_structure.Basepair(end.res1_uuid, end.res2_uuid, end.name, end.uuid)
+            s_end = secondary_structure.Basepair(end.res1_uuid, end.res2_uuid,
+                                                 end.name, end.uuid)
             ends.append(s_end)
 
-        return secondary_structure.RNAStructure(s, bps, ends, self._end_ids[::])
+        return secondary_structure.RNAStructure(s, bps, ends, self._end_ids[::],
+                                                self._name)
 
     def steric_clash(self, rs, clash_radius=settings.CLASH_RADIUS):
         for r1 in self:

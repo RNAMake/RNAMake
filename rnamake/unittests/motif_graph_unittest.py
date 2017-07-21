@@ -274,7 +274,7 @@ class MotifGraphUnittest(unittest.TestCase):
         mg2 = motif_graph.MotifGraph(self.rm, s)
         self.failUnless(len(mg) == len(mg2))
 
-    def test_mg_to_str(self):
+    def test_mg_to_str_2(self):
         #load motif graph with all atoms
         base_dir = settings.UNITTEST_PATH + "resources/motif_graph/"
         f = open(base_dir+"test.mg")
