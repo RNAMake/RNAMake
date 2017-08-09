@@ -6,7 +6,6 @@ from rnamake import exceptions, settings, residue_type, motif_state
 import util
 import is_equal
 
-
 class ChainUnittest(unittest.TestCase):
 
     def setUp(self):
@@ -28,7 +27,7 @@ class ChainUnittest(unittest.TestCase):
         """creating a new object should never return an error"""
 
         try:
-            c = Chain()
+            c = Chain([])
         except:
             self.fail("was not expecting an error upon initation")
 
@@ -44,30 +43,29 @@ class ChainUnittest(unittest.TestCase):
            c.get_residue(-1) != c.get_last():
             self.fail()
 
-        chain_2 = Chain()
+        chain_2 = Chain([])
 
         with self.assertRaises(exceptions.ChainException):
-            chain_2.first()
+            chain_2.get_first()
 
         with self.assertRaises(exceptions.ChainException):
-            chain_2.last()
+            chain_2.get_last()
 
     def test_subchain(self):
         c = self.chains[0]
-
-        sub1 = c.subchain(0, 7)
+        sub1 = c.get_subchain(0, 7)
         if len(sub1) != 7:
             self.fail()
 
         with self.assertRaises(exceptions.ChainException):
-            c.subchain(-1, 7)
+            c.get_subchain(-1, 7)
 
         with self.assertRaises(exceptions.ChainException):
-            c.subchain(start_res=c.residue(10))
+            c.get_subchain(start_res=c.get_residue(10))
 
     def test_subchain_2(self):
         chain = self.chains[0]
-        sub = chain.subchain(0)
+        sub = chain.get_subchain(0)
 
         self.failUnless(is_equal.are_chains_equal(chain, sub))
 
@@ -94,17 +92,17 @@ class ChainUnittest(unittest.TestCase):
         cs_copy = motif_state.Chain.copy(cs)
 
         self.failUnless(len(cs) == len(cs_copy))
-        self.failUnless(cs.first() == cs_copy.first())
-        self.failUnless(cs.last() == cs_copy.last())
+        self.failUnless(cs.get_first() == cs_copy.get_first())
+        self.failUnless(cs.get_last() == cs_copy.get_last())
 
         s = cs.to_str()
         cs_copy = motif_state.Chain.from_str(s)
 
         self.failUnless(len(cs) == len(cs_copy))
 
+
 def main():
     unittest.main()
 
 if __name__ == '__main__':
     main()
-2

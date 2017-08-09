@@ -1,20 +1,16 @@
 import uuid
 import numpy as np
 
-import primitives.residue
-import primitives.chain
-import primitives.structure
-import primitives.basepair
-from primitives.ensemble import Ensemble, EnsembleMember
-import primitives.rna_structure
-import bead
+from . import bead
+from . import primitives
+from . import exceptions
 import exceptions
 import basic_io
 import util
 import transform
 import secondary_structure
 
-class Residue(primitives.residue.Residue):
+class Residue(primitives.Residue):
     __slots__ = [
         "_name",
         "_num",
@@ -73,7 +69,7 @@ class Residue(primitives.residue.Residue):
         return len(self._beads)
 
 
-class Chain(primitives.chain.Chain):
+class Chain(primitives.Chain):
     __slots__ = ["_residues"]
 
     def __init__(self, residues):
@@ -113,7 +109,7 @@ class Chain(primitives.chain.Chain):
             res.fast_transform(r, t)
 
 
-class Structure(primitives.structure.Structure):
+class Structure(primitives.Structure):
     __slots__ = [
         "_residues",
         "_chain_cuts"
@@ -190,7 +186,7 @@ class Structure(primitives.structure.Structure):
         return chains
 
 
-class Basepair(primitives.basepair.Basepair):
+class Basepair(primitives.Basepair):
     """
     :param res1: First residue in basepair
     :param res2: Second residue in basepair
@@ -493,7 +489,7 @@ class Basepair(primitives.basepair.Basepair):
         return self._name
 
 
-class Motif(primitives.rna_structure.RNAStructure):
+class Motif(primitives.RNAStructure):
     __slots__ = [
         "_structure",
         "_basepairs",
@@ -666,7 +662,7 @@ class Motif(primitives.rna_structure.RNAStructure):
     def dot_bracket(self):
         return self._dot_bracket
 
-class MotifEnsemble(Ensemble):
+class MotifEnsemble(primitives.Ensemble):
     __slots__ = [
         "_end_id",
         "_members",

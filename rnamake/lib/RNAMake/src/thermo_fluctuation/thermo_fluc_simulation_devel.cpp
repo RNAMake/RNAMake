@@ -211,7 +211,7 @@ ThermoFlucSimulationDevel::run() {
         if(score_ < cutoff_) {
             
             count += 1;
-            
+
             /*if(bound_pdb_ > bound_pdb_count) {
                 try {
                     const int dir_err = mkdir(String("nodes_" + std::to_string(bound_pdb_count)).c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);

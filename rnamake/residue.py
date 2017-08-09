@@ -4,11 +4,11 @@ import numpy as np
 from atom import Atom
 from bead import BeadType, Bead
 import motif_state
-import primitives.residue
+import primitives
 import residue_type, util, basic_io, exceptions
 
 
-class Residue(primitives.residue.Residue):
+class Residue(primitives.Residue):
     """
     Store residue information from pdb file, stores all Atom objects that
     belong to residue. Implementation is designed to be extremely lightweight.

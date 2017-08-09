@@ -3,7 +3,8 @@ import unittest
 import numpy as np
 import sys
 
-from rnamake.residue import Residue, Atom, Bead, BeadType
+from rnamake.residue import Residue, Bead, BeadType
+from rnamake.atom import Atom
 from rnamake import residue_type, settings, util, exceptions, motif_state
 
 import is_equal

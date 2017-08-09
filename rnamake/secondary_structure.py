@@ -1,15 +1,10 @@
 import uuid
 import motif_type
 import exceptions
-import primitives.residue
-import primitives.chain
-import primitives.basepair
-import primitives.structure
-import primitives.rna_structure
-import primitives.aligner
+import primitives
 import motif_type_directed_graph
 
-class Residue(primitives.residue.Residue):
+class Residue(primitives.Residue):
     """
     An extremely stripped down container object for use for keeping track of
     secondary structure using dot bracket notation. Dot bracket notation is
@@ -122,7 +117,7 @@ class Residue(primitives.residue.Residue):
         return self._name
 
 
-class Chain(primitives.chain.Chain):
+class Chain(primitives.Chain):
     """
     secondary structure chain container. Contains a chain of connected
     residues. Chain should be from 5' to 3'.
@@ -260,7 +255,7 @@ class Chain(primitives.chain.Chain):
         return s
 
 
-class Structure(primitives.structure.Structure):
+class Structure(primitives.Structure):
     """
     lightweight container class for storing secondary structure information
     for an entire RNA.
@@ -388,7 +383,7 @@ class Structure(primitives.structure.Structure):
         return chains
 
 
-class Basepair(primitives.basepair.Basepair):
+class Basepair(primitives.Basepair):
     """
     :param res1: First residue in basepair
     :param res2: Second residue in basepair
@@ -471,7 +466,7 @@ class Basepair(primitives.basepair.Basepair):
         return self._bp_type
 
 
-class RNAStructure(primitives.rna_structure.RNAStructure):
+class RNAStructure(primitives.RNAStructure):
     """
     Complete secondary structure container for representing a RNA. Contains
     both the sequence indentity of each residue with its corresponding dot
@@ -781,7 +776,7 @@ class Motif(RNAStructure):
         return self._uuid
 
 
-class Aligner(primitives.aligner.Aligner):
+class Aligner(primitives.Aligner):
     def __init__(self):
         super(self.__class__, self).__init__()
 

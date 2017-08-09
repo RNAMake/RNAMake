@@ -1,9 +1,9 @@
-import exceptions
-import primitives.chain
+from . import exceptions
+import primitives
 from residue import Residue
 import motif_state
 
-class Chain(primitives.chain.Chain):
+class Chain(primitives.Chain):
     """
     Stored chain information from pdb file. Stores all residues in chain.
     Implementation is designed to be extremely lightweight. To connect residues
@@ -168,6 +168,7 @@ class Chain(primitives.chain.Chain):
     def get_state(self):
         residues = [r.get_state() for r in self._residues]
         return motif_state.Chain(residues)
+
 
 def connect_residues_into_chains(residues):
         """
