@@ -1,9 +1,8 @@
 import unittest
 import warnings
 import rnamake.transform
-import rnamake.io
 
-from rnamake import structure, exceptions, util, residue_type, motif_state, chain
+from rnamake import all_atom, exceptions, residue_type, motif_state
 from rnamake import settings
 from instances import transform_instances
 
@@ -17,11 +16,11 @@ class StructureUnittest(unittest.TestCase):
     def setUp(self):
         path = settings.UNITTEST_PATH + "resources/p4p6.pdb"
         self.rts = residue_type.ResidueTypeSet()
-        self.structure = structure.structure_from_pdb(path, self.rts)
+        self.structure = all_atom.structure_from_pdb(path, self.rts)
 
     def test_creation(self):
         path = settings.UNITTEST_PATH + "resources/p4p6.pdb"
-        s = structure.structure_from_pdb(path, self.rts)
+        all_atom.structure_from_pdb(path, self.rts)
 
     def test_new_chains(self):
         s = self.structure
@@ -35,16 +34,16 @@ class StructureUnittest(unittest.TestCase):
             new_res.append(r)
             all_res.append(r)
             if i > 10:
-                new_chain = chain.Chain(new_res)
+                new_chain = all_atom.Chain(new_res)
                 new_chains.append(new_chain)
                 new_res = []
                 chain_cuts.append(len(all_res))
                 i = 0
             i += 1
 
-        new_chains.append(chain.Chain(new_res))
+        new_chains.append(all_atom.Chain(new_res))
         chain_cuts.append(len(all_res))
-        new_s = structure.Structure(all_res, chain_cuts)
+        new_s = all_atom.Structure(all_res, chain_cuts)
         new_s_chains = new_s.get_chains()
 
         for i in range(len(new_chains)):
@@ -101,14 +100,14 @@ class StructureUnittest(unittest.TestCase):
         res = []
         for r in s:
             res.append(r)
-        self.failUnless(len(res) == s.num_residues())
+        self.failUnless(len(res) == s.get_num_residues())
 
-    def test_to_str(self):
+    def test_get_str(self):
         struct = self.structure
 
-        s = struct.to_str()
-        struct_new = structure.Structure.from_str(s, self.rts)
-        if struct_new.num_residues() != struct.num_residues():
+        s = struct.get_str()
+        struct_new = all_atom.Structure.from_str(s, self.rts)
+        if struct_new.get_num_residues() != struct.get_num_residues():
             self.fail("did not get back all residues")
 
         if not is_equal.are_structure_equal(struct, struct_new, check_uuid=0):
@@ -118,7 +117,7 @@ class StructureUnittest(unittest.TestCase):
         r = np.random.random([3,3])
         d = np.random.random([3])
         t = rnamake.transform.Transform(r, d)
-        s = structure.Structure.copy(self.structure)
+        s = all_atom.Structure.copy(self.structure)
         struct = self.structure
         s.transform(t)
         if is_equal.are_structure_equal(s, struct):
@@ -129,8 +128,8 @@ class StructureUnittest(unittest.TestCase):
         if not is_equal.are_structure_equal(s, struct):
             self.fail("structures should be the same now")
 
-        s2 = structure.Structure.copy(self.structure)
-        s3 = structure.Structure.copy(self.structure)
+        s2 = all_atom.Structure.copy(self.structure)
+        s3 = all_atom.Structure.copy(self.structure)
         s2.transform(transform_instances.transform_indentity())
 
         if not is_equal.are_structure_equal(s2, s3):
@@ -139,7 +138,7 @@ class StructureUnittest(unittest.TestCase):
     def test_move(self):
         path = "/Users/josephyesselman/projects/REDESIGN/redesign/tests/p4p6"
         d = np.random.random([3])
-        s = structure.Structure.copy(self.structure)
+        s = all_atom.Structure.copy(self.structure)
         struct = self.structure
         struct.move(d)
         if is_equal.are_structure_equal(s, struct):
@@ -151,7 +150,7 @@ class StructureUnittest(unittest.TestCase):
 
     def test_copy(self):
         s = self.structure
-        s_copy = structure.Structure.copy(s)
+        s_copy = all_atom.Structure.copy(s)
 
         if not is_equal.are_structure_equal(s, s_copy):
             self.fail("copying did not return an indentical structure")
@@ -164,7 +163,7 @@ class StructureUnittest(unittest.TestCase):
 
         ss_copy = motif_state.Structure.copy(ss)
 
-        s = ss.to_str()
+        s = ss.get_str()
         ss_copy = motif_state.Structure.from_str(s)
 
         self.failUnless(len(self.structure) == len(ss_copy))

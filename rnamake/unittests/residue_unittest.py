@@ -3,8 +3,7 @@ import unittest
 import numpy as np
 import sys
 
-from rnamake.residue import Residue, Bead, BeadType
-from rnamake.atom import Atom
+from rnamake import all_atom, bead
 from rnamake import residue_type, settings, util, exceptions, motif_state
 
 import is_equal
@@ -22,7 +21,7 @@ class ResidueUnittest(unittest.TestCase):
 
         residues = []
         for l in lines:
-            res = Residue.from_str(l, self.rts)
+            res = all_atom.Residue.from_str(l, self.rts)
             residues.append(res)
         self.residues = residues
 
@@ -30,21 +29,20 @@ class ResidueUnittest(unittest.TestCase):
         """
         make sure creating a Residue object does not throw any exceptions
         """
-
         try:
             #also check name changing works
             rtype = self.rts.get_type("GUA")
-            atoms = [Atom("O1P", np.array([1, 2, 3]))]
-            res = Residue(atoms, rtype, "GUA", 1, "A")
+            atoms = [all_atom.Atom("O1P", np.array([1, 2, 3]))]
+            res = all_atom.Residue(atoms, rtype, "GUA", 1, "A")
         except:
             self.fail("cannot creat Residue object sucessfully")
 
     def test_get_atom(self):
         gtype = self.rts.get_type("GUA")
         atoms = [
-            Atom("P", np.array([0, 1, 2]))
+            all_atom.Atom("P", np.array([0, 1, 2]))
         ]
-        res = Residue(atoms, gtype, "GUA", 1, "A")
+        res = all_atom.Residue(atoms, gtype, "GUA", 1, "A")
 
         # can find a real atom
         p_atom = res.get_atom("P")
@@ -65,12 +63,38 @@ class ResidueUnittest(unittest.TestCase):
         with self.assertRaises(exceptions.ResidueException):
             res.get_atom(index=1)
 
+    def test_get_coords(self):
+        gtype = self.rts.get_type("GUA")
+        atoms = [
+            all_atom.Atom("P", np.array([0, 1, 2]))
+        ]
+        res = all_atom.Residue(atoms, gtype, "GUA", 1, "A")
+
+        # can find a real atom
+        p_atom = res.get_atom("P")
+        self.assertIs(p_atom, res.get_atom(index=0))
+
+        # should throw and error if no error exist
+        with self.assertRaises(exceptions.ResidueException):
+            res.get_coords("P1")
+
+        # invalid num
+        with self.assertRaises(exceptions.ResidueException):
+            res.get_coords(index=999)
+
+        # valid name but not initialized
+        with self.assertRaises(exceptions.ResidueException):
+            res.get_coords("OP1")
+
+        with self.assertRaises(exceptions.ResidueException):
+            res.get_coords(index=1)
+
     def test_has_atom(self):
         gtype = self.rts.get_type("GUA")
         atoms = [
-            Atom("P", np.array([0, 1, 2]))
+            all_atom.Atom("P", np.array([0, 1, 2]))
         ]
-        res = Residue(atoms, gtype, "GUA", 1, "A")
+        res = all_atom.Residue(atoms, gtype, "GUA", 1, "A")
 
         self.failUnless(res.has_atom("P") == True)
         self.failUnless(res.has_atom("P1") == False)
@@ -83,10 +107,10 @@ class ResidueUnittest(unittest.TestCase):
         self.failUnless(res.has_atom("P") == False)
         self.failUnless(res.has_atom("C1'") == True)
 
-    def test_to_str(self):
+    def test_get_str(self):
         res = self.residues[0]
-        s = res.to_str()
-        res2 = Residue.from_str(s, self.rts)
+        s = res.get_str()
+        res2 = all_atom.Residue.from_str(s, self.rts)
 
         self.failUnless(is_equal.are_residues_equal(res, res2, check_uuid=0))
 
@@ -95,9 +119,9 @@ class ResidueUnittest(unittest.TestCase):
         res2 = self.residues[1]
         res3 = self.residues[2]
 
-        self.failUnless(res1.connected_to(res2) == 1)
-        self.failUnless(res2.connected_to(res1) == -1)
-        self.failUnless(res1.connected_to(res3) == 0)
+        self.failUnless(all_atom.are_residues_connected(res1, res2) == 1)
+        self.failUnless(all_atom.are_residues_connected(res2, res1) == -1)
+        self.failUnless(all_atom.are_residues_connected(res1, res3) == 0)
 
     def test_beads(self):
         res1 = self.residues[0]
@@ -106,8 +130,8 @@ class ResidueUnittest(unittest.TestCase):
         res1.build_beads()
         res2.build_beads()
 
-        self.failIf(res1.num_beads() == 0)
-        self.failIf(res2.num_beads() == 0)
+        self.failIf(res1.get_num_beads() == 0)
+        self.failIf(res2.get_num_beads() == 0)
 
         for b1 in res1.iter_beads():
             for b2 in res2.iter_beads():
@@ -115,16 +139,19 @@ class ResidueUnittest(unittest.TestCase):
 
     def test_copy(self):
         res = self.residues[0]
-        copy_res = Residue.copy(res)
+        copy_res = all_atom.Residue.copy(res)
 
-        self.failUnless(is_equal.are_residues_equal(res, copy_res, check_uuid=0))
+        self.failUnless(is_equal.are_residues_equal(res, copy_res))
+
+        copy_res = res.get_copy()
+        self.failUnless(is_equal.are_residues_equal(res, copy_res))
 
     def test_move(self):
         r = self.residues[0]
-        c1 = r.center()
+        c1 = r.get_center()
 
         r.move(np.array([1, 0, 0]))
-        c2 = r.center()
+        c2 = r.get_center()
 
         self.failUnlessAlmostEqual(1.0, util.distance(c1, c2))
 
@@ -146,24 +173,23 @@ class ResidueUnittest(unittest.TestCase):
         self.failUnless(rs_copy == rs)
 
 
-
 class BeadUnittest(unittest.TestCase):
 
     def setUp(self):
-        self.b = Bead(np.array([1,1,1]), BeadType.PHOS)
+        self.b = bead.Bead(np.array([1,1,1]), bead.BeadType.PHOS)
 
     def test_creation(self):
 
         with self.assertRaises(exceptions.ResidueException):
-            Bead(np.array([1,1,1]), 4)
+            bead.Bead(np.array([1,1,1]), 4)
 
     def test_copy(self):
-        b_copy = Bead.copy(self.b)
+        b_copy = bead.Bead.copy(self.b)
         d = b_copy.distance(self.b)
         self.failUnless(d < 0.0001)
 
     def test_type_name(self):
-        name = self.b.type_name()
+        name = self.b.get_type_name()
         if name != "PHOSPHATE":
             self.fail("did not get the right bead name")
 

@@ -1,9 +1,8 @@
 import unittest
 
-from rnamake.chain import Chain
+from rnamake import all_atom
 from rnamake import exceptions, settings, residue_type, motif_state
 
-import util
 import is_equal
 
 class ChainUnittest(unittest.TestCase):
@@ -18,7 +17,7 @@ class ChainUnittest(unittest.TestCase):
 
         chains = []
         for l in lines:
-            c = Chain.from_str(l, self.rts)
+            c = all_atom.Chain.from_str(l, self.rts)
             chains.append(c)
 
         self.chains = chains
@@ -27,7 +26,7 @@ class ChainUnittest(unittest.TestCase):
         """creating a new object should never return an error"""
 
         try:
-            c = Chain([])
+            all_atom.Chain([])
         except:
             self.fail("was not expecting an error upon initation")
 
@@ -43,7 +42,7 @@ class ChainUnittest(unittest.TestCase):
            c.get_residue(-1) != c.get_last():
             self.fail()
 
-        chain_2 = Chain([])
+        chain_2 = all_atom.Chain([])
 
         with self.assertRaises(exceptions.ChainException):
             chain_2.get_first()
@@ -71,14 +70,19 @@ class ChainUnittest(unittest.TestCase):
 
     def test_copy(self):
         c = self.chains[0]
-        c_copy = Chain.copy(c)
+        c_copy = all_atom.Chain.copy(c)
         if not is_equal.are_chains_equal(c, c_copy):
             self.fail("did not copy chain correctly")
 
-    def test_str(self):
+        c_copy = c.get_copy()
+        if not is_equal.are_chains_equal(c, c_copy):
+            self.fail("did not copy chain correctly")
+
+
+    def test_get_str(self):
         c = self.chains[0]
-        s = c.to_str()
-        c_copy = Chain.copy(c)
+        s = c.get_str()
+        c_copy = all_atom.Chain.from_str(s, self.rts)
 
         if not is_equal.are_chains_equal(c, c_copy, check_uuid=0):
             self.fail("did not copy chain correctly")

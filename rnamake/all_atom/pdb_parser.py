@@ -1,10 +1,12 @@
 import numpy as np
 
-import atom
-import residue
-import residue_type
-import exceptions
-import user_warnings
+from rnamake import residue_type
+from rnamake import exceptions
+from rnamake import user_warnings
+from rnamake import primitives
+from rnamake import util
+
+from rnamake.all_atom import structure
 
 # TODO handle no chain id!
 def parse(pdb_file, rts=residue_type.ResidueTypeSet(),
@@ -101,13 +103,13 @@ def parse(pdb_file, rts=residue_type.ResidueTypeSet(),
             residue_atoms[key] = []
         already_has = 0
         for a in residue_atoms[key]:
-            if a.name == atomnames[i]:
+            if a.get_name() == atomnames[i]:
                 already_has = 1
                 break
         if already_has:
             continue
 
-        residue_atoms[key].append(atom.Atom(atomnames[i],coordinates[i]))
+        residue_atoms[key].append(structure.Atom(atomnames[i],coordinates[i]))
 
     residues = []
     for key,res_atoms in residue_atoms.iteritems():
@@ -132,8 +134,65 @@ def parse(pdb_file, rts=residue_type.ResidueTypeSet(),
             icode = spl[3]
         if len(icode) == 0:
             icdoe = " "
-        r = residue.Residue(res_atoms, rtype, spl[0], int(spl[1]), spl[2], icode)
+        r = structure.Residue(res_atoms, rtype, spl[0], int(spl[1]), spl[2], icode)
         residues.append(r)
 
     return residues
 
+
+def structure_from_pdb(pdb_path, rts):
+    """
+    Processes a PDB formatted into Structure object. Uses pdb_parser module
+    to accomplish this.
+
+    :param pdb_path: path to PDB formatted file
+    :type pdb_path: str
+
+    :return: Structure object
+    :rtype: Structure
+    """
+
+    residues = parse(pdb_path, rts=rts)
+
+    chains = structure.connect_residues_into_chains(residues)
+
+    # TODO should probably clean this up at some point
+    chain_cuts = []
+    residues = []
+    for i, c in enumerate(chains):
+        for r in c:
+            residues.append(r)
+        if i < len(chains) - 1:
+            chain_cuts.append(len(residues))
+    chain_cuts.append(len(residues))
+
+    s = structure.Structure(residues, chain_cuts)
+    return s
+
+
+def rna_structure_from_pdb(pdb_path, rts):
+    s = structure_from_pdb(pdb_path, rts)
+    bps = structure.basepairs_from_x3dna(pdb_path, s)
+    ends = primitives.ends_from_basepairs(s, bps)
+    end_ids = []
+
+    for end in ends:
+        bps.remove(end)
+
+    for end in ends:
+        end_id = primitives.assign_end_id(s, bps, ends, end)
+        end_ids.append(end_id)
+
+    name = util.filename(pdb_path)[:-4]
+
+    dot_bracket = ""
+    if len(ends) > 0:
+        seq, dot_bracket = primitives.end_id_to_seq_and_db(end_ids[0])
+    elif len(bps) > 0:
+        end_id = primitives.assign_end_id(s, bps, [bps[0]], bps[0])
+        seq, dot_bracket = primitives.end_id_to_seq_and_db(end_id)
+
+    rna_struc = structure.RNAStructure(s, bps, ends, end_ids,
+                                       name, dot_bracket=dot_bracket,
+                                       block_end_add=0)
+    return rna_struc

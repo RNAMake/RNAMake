@@ -1,8 +1,10 @@
 import uuid
-import motif_type
-import exceptions
-import primitives
-import motif_type_directed_graph
+
+# rnamake imports
+from rnamake import motif_type
+from rnamake import exceptions
+from rnamake import primitives
+from rnamake import motif_type_directed_graph
 
 class Residue(primitives.Residue):
     """
@@ -94,7 +96,7 @@ class Residue(primitives.Residue):
         return "<SecondaryStructureResidue('%s%d%s chain %s')>" % (
             self._name, self._num, self._i_code, self._chain_id)
 
-    def to_str(self):
+    def get_str(self):
         """
         stringify residue object. can be converted back with
         :func:`str_to_residue`
@@ -240,7 +242,7 @@ class Chain(primitives.Chain):
             db += r.dot_bracket
         return db
 
-    def to_str(self):
+    def get_str(self):
         """
         stringify chain object. can be converted back with
         :func:`str_to_chain`
@@ -353,7 +355,7 @@ class Structure(primitives.Structure):
         dot_brackets = [x.dot_bracket() for x in self.get_chains()]
         return "&".join(dot_brackets)
 
-    def to_str(self):
+    def get_str(self):
         """
         generates a stringified verision of this instance.
 
@@ -597,7 +599,7 @@ class RNAStructure(primitives.RNAStructure):
         for i, r in enumerate(self._structure.iter_res()):
             r.set_name(seq2[i])
 
-    def to_str(self):
+    def get_str(self):
         pass
 
     def update(self):

@@ -9,6 +9,7 @@ alt_names = {
     "O2P": "OP2"
 }
 
+
 class SetType(object):
     RNA = 0,
     PROTEIN = 1
@@ -75,8 +76,8 @@ class ResidueType(object):
             return None
 
     def get_correct_atom_name(self, a):
-        if a.name in alt_names:
-            return [a.name, alt_names[a.name]]
+        if a.get_name() in alt_names:
+            return [a.get_name(), alt_names[a.get_name()]]
         else:
             return None
 

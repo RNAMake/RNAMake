@@ -69,7 +69,32 @@ class Bead(object):
         center = basic_io.point_to_str(self.__center)
         return "<Bead(btype='%s', center='%s')>" % (self.type_name(), center)
 
-    def type_name(self):
+    def distance(self, b):
+        return util.distance(self.__center, b.__center)
+
+    def move(self, p):
+        self.__center += p
+
+    def transform(self, t):
+        self.__center = np.dot(self.__center, t.rotation().T) + t.translation()
+
+    def fast_transform(self, r, t):
+        self.__center = np.dot(self.__center, r) + t
+
+    # getters
+    def get_copy(self):
+        return Bead.copy(self)
+
+    def get_str(self):
+        return basic_io.point_to_str(self.__center) + "," + str(self.__btype)
+
+    def get_center(self):
+        return np.copy(self.__center)
+
+    def get_btype(self):
+        return self.__btype
+
+    def get_type_name(self):
         """
         returns name of btype in string form
 
@@ -84,26 +109,3 @@ class Bead(object):
             return "BASE"
         else:
             raise exceptions.ResidueException("invalid bead type: " + str(self.__btype))
-
-    def distance(self, b):
-        return util.distance(self.__center, b.__center)
-
-    def move(self, p):
-        self.__center += p
-
-    def transform(self, t):
-        self.__center = np.dot(self.__center, t.rotation().T) + t.translation()
-
-    def fast_transform(self, r, t):
-        self.__center = np.dot(self.__center, r) + t
-
-    def to_str(self):
-        return basic_io.point_to_str(self.__center) + "," + str(self.__btype)
-
-    @property
-    def center(self):
-        return np.copy(self.__center)
-
-    @property
-    def btype(self):
-        return self.__btype

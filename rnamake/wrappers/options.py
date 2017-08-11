@@ -68,7 +68,6 @@ class Option(object):
         self.__value = new_value
 
 
-
 class Options(object):
     """
     holds the options for a class derived from Base. Checks for correct type

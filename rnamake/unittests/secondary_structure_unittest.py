@@ -1,9 +1,7 @@
 import unittest
 import uuid
-import instances
 
 from rnamake import secondary_structure, exceptions
-from rnamake.primitives import rna_structure, basepair
 
 class ResidueUnittest(unittest.TestCase):
 
@@ -227,7 +225,6 @@ class PoseUnittest(unittest.TestCase):
                              "((((.((+))))))")
         p.build_helices()
         self.failIf(len(p.helices) != 2, "did not build the right number of helices")
-
 
 def main():
     unittest.main()

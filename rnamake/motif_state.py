@@ -48,7 +48,7 @@ class Residue(primitives.Residue):
     def to_str(self):
         bead_str = ""
         for b in self._beads:
-            bead_str += b.to_str() + ","
+            bead_str += b.get_str() + ","
 
         return self._name + "," + str(self._num) + "," + \
                str(self._chain_id) + "," + str(self._i_code) + "," + bead_str
@@ -143,7 +143,7 @@ class Structure(primitives.Structure):
 
         return cls(residues, s._chain_cuts)
 
-    def to_str(self):
+    def get_str(self):
         """
         Stringifes Structure object
 
@@ -274,7 +274,7 @@ class Basepair(primitives.Basepair):
             self._x3dna_bp_type = "c..."
 
         if self._bp_type is None:
-            self._bp_type = primitives.basepair.BasepairType.NC
+            self._bp_type = primitives.BasepairType.NC
 
         if self._uuid is None:
             self._uuid = uuid.uuid1()
@@ -661,6 +661,7 @@ class Motif(primitives.RNAStructure):
     @property
     def dot_bracket(self):
         return self._dot_bracket
+
 
 class MotifEnsemble(primitives.Ensemble):
     __slots__ = [

@@ -1,7 +1,7 @@
 import unittest
-from rnamake import structure, transformations, x3dna, residue_type, basepair, settings
-from rnamake import basic_io, motif_statea
-import rnamake.primitives.basepair
+from rnamake import x3dna, residue_type, settings
+from rnamake import basic_io, motif_state, all_atom
+from rnamake import primitives
 
 import util, instances
 import numpy as np
@@ -20,7 +20,7 @@ def _calc_center(res):
         for a in r:
             if a is None:
                 continue
-            center += a.coords
+            center += a.get_coords()
             count += 1
     center /= count
     return center
@@ -28,15 +28,15 @@ def _calc_center(res):
 def _calc_name(res):
         res1, res2 = res
 
-        res1_name = res1.chain_id+str(res1.num)+str(res1.i_code)
-        res2_name = res2.chain_id+str(res2.num)+str(res2.i_code)
+        res1_name = res1.get_chain_id()+str(res1.get_num())+str(res1.get_i_code())
+        res2_name = res2.get_chain_id()+str(res2.get_num())+str(res2.get_i_code())
 
-        if res1.chain_id < res2.chain_id:
+        if res1.get_chain_id() < res2.get_chain_id():
             return res1_name+"-"+res2_name
-        if res1.chain_id > res2.chain_id:
+        if res1.get_chain_id() > res2.get_chain_id():
             return res2_name+"-"+res1_name
 
-        if res1.num < res2.num:
+        if res1.get_num() < res2.get_num():
             return res1_name+"-"+res2_name
         else:
             return res2_name+"-"+res1_name
@@ -47,7 +47,7 @@ class BasepairUnittest(unittest.TestCase):
     def setUp(self):
         self.rts = residue_type.ResidueTypeSet()
         path = settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        s = structure.structure_from_pdb(path, self.rts)
+        s = all_atom.structure_from_pdb(path, self.rts)
 
         x = x3dna.X3dna()
         x_bps = x.get_basepairs(settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb")
@@ -56,17 +56,17 @@ class BasepairUnittest(unittest.TestCase):
         res2 = s.get_residue(num=x_bp.res2.num)
         res = [res1, res2]
         center = _calc_center(res)
-        bp = basepair.Basepair(res1.uuid, res2.uuid, x_bp.r, center,
+        bp = all_atom.Basepair(res1.get_uuid(), res2.get_uuid(), x_bp.r, center,
                                [res1.get_coords("C1'"), res2.get_coords("C1'")],
                                _calc_name(res), x_bp.bp_type,
-                               rnamake.primitives.basepair.BasepairType.WC)
+                               primitives.BasepairType.WC)
 
         self.basepair = bp
 
     def test_synced(self):
         rts = residue_type.ResidueTypeSet()
         path = settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb"
-        s = structure.structure_from_pdb(path, rts)
+        s = all_atom.structure_from_pdb(path, rts)
 
         x = x3dna.X3dna()
         x_bps = x.get_basepairs(settings.UNITTEST_PATH + "resources/motifs/p4p6/p4p6.pdb")
@@ -75,10 +75,10 @@ class BasepairUnittest(unittest.TestCase):
         res2 = s.get_residue(num=x_bp.res2.num)
         res = [res1, res2]
         center = _calc_center(res)
-        bp = basepair.Basepair(res1.uuid, res2.uuid, x_bp.r, center,
+        bp = all_atom.Basepair(res1.get_uuid(), res2.get_uuid(), x_bp.r, center,
                                [res1.get_coords("C1'"), res2.get_coords("C1'")],
-                               _calc_name(res), bp_type=x_bp.bp_type)
-
+                               _calc_name(res), x_bp.bp_type,
+                               primitives.BasepairType.WC)
 
         for i in range(100):
             t = transform_random()
@@ -88,21 +88,26 @@ class BasepairUnittest(unittest.TestCase):
             for r in [res1, res2]:
                 r.transform(t)
 
-        self.failUnless(numerical.are_points_equal(bp.d, _calc_center(res)))
-        self.failUnless(numerical.are_points_equal(bp.res1_sugar, res1.get_coords("C1'")))
-        self.failUnless(numerical.are_points_equal(bp.res2_sugar, res2.get_coords("C1'")))
+        self.failUnless(numerical.are_points_equal(bp.get_d(), _calc_center(res)))
+        self.failUnless(numerical.are_points_equal(bp.get_res1_sugar(),
+                                                   res1.get_coords("C1'")))
+        self.failUnless(numerical.are_points_equal(bp.get_res2_sugar(),
+                                                   res2.get_coords("C1'")))
 
     def test_copy(self):
         bp = self.basepair
-        bp_copy = basepair.Basepair.copy(bp)
+        bp_copy = all_atom.Basepair.copy(bp)
 
+        self.failUnless(is_equal.are_basepairs_equal(bp, bp_copy))
+
+        bp_copy = bp.get_copy()
         self.failUnless(is_equal.are_basepairs_equal(bp, bp_copy))
 
     def test_to_str(self):
         bp = self.basepair
-        s = bp.to_str()
+        s = bp.get_str()
 
-        bp_copy = basepair.Basepair.from_str(s, bp.res1_uuid, bp.res2_uuid)
+        bp_copy = all_atom.Basepair.from_str(s, bp.get_res1_uuid(), bp.get_res2_uuid())
         self.failUnless(is_equal.are_basepairs_equal(bp, bp_copy, 0))
 
     def _get_bp_from_str(self, s):
@@ -131,23 +136,6 @@ class BasepairUnittest(unittest.TestCase):
             self.failUnless(numerical.are_matrices_equal(new_r, r))
 
 
-"""class BasepairStateUnittest(unittest.TestCase):
-
-    def test_copy(self):
-        bpstate = rnamake.basepair.BasepairState(np.eye(3),
-                                                 np.array([1, 0, 0]),
-                                                 [[1, 0, 0], [0, 1, 0]])
-
-        cbpstate = bpstate.copy()
-        cbpstate.r[0][0] += 1
-        if bpstate.r[0][0] == cbpstate.r[0][0]:
-            self.fail()
-
-        cbpstate.sugars[0][0] += 1
-        if bpstate.sugars[0][0] == cbpstate.sugars[0][0]:
-            self.fail("sugars did not deep copy")
-
-"""
 
 def main():
     unittest.main()

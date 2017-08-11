@@ -73,7 +73,7 @@ def center(atoms):
     for a in atoms:
         if a is None:
             continue
-        center += a.coords
+        center += a.get_coords()
         count += 1
 
     return center / float(count)

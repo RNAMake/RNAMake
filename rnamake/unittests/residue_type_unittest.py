@@ -2,7 +2,7 @@ import unittest
 import logging
 import numpy as np
 
-from rnamake import atom, residue_type
+from rnamake import all_atom, residue_type
 
 class ResidueTypeUnittest(unittest.TestCase):
 
@@ -26,7 +26,7 @@ class ResidueTypeUnittest(unittest.TestCase):
             self.fail("cannot get altname restype in test_get_rtype")
 
     def test_get_correct_atom_name(self):
-        a1 = atom.Atom("O1P", np.array([0, 1, 2]))
+        a1 = all_atom.Atom("O1P", np.array([0, 1, 2]))
         gua = self.rts.get_type("GUA")
         self.failIf(gua.get_correct_atom_name(a1) is None)
 
