@@ -71,13 +71,13 @@ class SE3Map(module):
         :return: None
         """
         # TODO align_to_org(ms)
-        e_r, e_d = ms.endstates[1].r, ms.endstates[1].d
-        s_r, s_d = ms.endstates[0].r, ms.endstates[0].d
+        e_r, e_d = ms.end_states[1].r, ms.end_states[1].d
+        s_r, s_d = ms.end_states[0].r, ms.end_states[0].d
         t = transform.Transform(s_r.T, )
         s = ms.end_states[0]
         grid_ndx = self.state_to_grid_ndx(s)
 
-        probability = self.nrg_to_probability(nrg)
+        probability = nrg_to_probability(nrg)
 
         self.data[grid_ndx] = probability
 
@@ -121,21 +121,34 @@ class MotifGaussianList(module):
         self.gl=[]
         for en in mset:
             chis = np.zeros([6,len(en.data.members)])
-            for i,ms in enumerate(en.data.members):
-                chis[:,i] = self.state_to_chi(ms)
-            self.gl.append(self.mg_from_cl(chis))
+            counts = np.zeros([6,len(en.data.members)])
+            for i,msm in enumerate(en.data.members):
+                chis[:,i] = self.state_to_chi(msm.motif_state)
+                counts[:,i] = nrg_to_probability(msm.count)
+            self.gl.append(self.mg_from_cp(chis,counts))
 
 
-    def mg_from_cl(self,cl):
+    def mg_from_cp(self, cl, ct):
         assert type(cl) == np.ndarray\
-           and cl.shape[0] == (6)
+           and cl.shape[0] == 6 \
+           and ct.ndim == 1
         mean = np.mean(cl,1)
+        covar = np.cov(cl,fweights=ct)
+        return MotifGaussian(covar,mean)
+
+
+    def state_to_chi(self,ms):
+        """
+        :type ms motif.MotifState
+        :param ms:
+        :return:
+        """
+
 
 
 
 class MotifGaussian(module):
     __slots__ = ['SIGMA','mean']
-
 
     def __init__(self,SIGMA,mean):
         assert (type(SIGMA), type(mean) == np.ndarray, np.ndarray)\

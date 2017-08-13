@@ -12,30 +12,35 @@ from rnamake import se3util as se3
 
 class MotifStateEnsembleConvolution:
     """
-    :param mst: MotifStateTree to calculate
+    :param mset: MotifStateEnsembleTree to calculate
     :param grid_size: how many samples to sample along each axis
     :param grid_unit: what is the length between two grid points
-    :type mst: motif_state_tree.MotifStateTree
+    :type mset: motif_state_ensemble_tree.MotifStateEnsembleTree
     :type grid_size: iterable of int
     :type grid_unit: float
     :return: result distribution in ndarray
     :rtype: se3.SE3Map
     """
-    def __init__(self, mst, grid_size=(1,1,1,1,1,1),grid_unit=1):
-        self.mst = mst
-        self.mset =motif_state_ensemble_tree.MotifStateEnsembleTree(mt=self.mst)
+    def __init__(self, mset, grid_size=(1,1,1,1,1,1),grid_unit=1):
+        self.mset = mset
+        self.mst_ = mset.to_mst()
         self.grid_size = grid_size
         self.grid_unit = grid_unit
         self.map = se3.SE3Map(self.grid_size, self.grid_unit)
-        self.done = False
+        self.done_ = False
+        self.ni_f_ = 1
+        self.ni_l_ = mset.tree.last_node.index
+        self.ei_f_ = 1
+        self.ei_l_ = 1
 
     def run(self):
 
         # init
-        self.map.place_ensemble(self.mset.get_node(0).data)
+        self.map.place_ensemble(self.mset.get_node(self.ni_f_).data)
 
         #iter
-        for en in self.mset.tree.nodes[2:]:
+        for en in self.mset.tree.nodes[2:]:#use iterator, start from one
+            #if statement
             temp_map = se3.SE3Map(self.grid_size, self.grid_unit)
             temp_map.place_ensemble(en.data)
             # TODO order?

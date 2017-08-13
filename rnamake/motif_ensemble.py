@@ -4,10 +4,11 @@ import settings
 import motif
 
 class MotifEnsembleMember(object):
-    __slots__ = ['motif', 'energy']
+    __slots__ = ['motif', 'energy','count']
 
-    def __init__(self, motif, energy):
+    def __init__(self, motif, energy,count):
         self.motif, self.energy = motif, energy
+        self.count = count
 
     def to_str(self):
         return self.motif.to_str() + "#" + str(self.energy)
@@ -23,11 +24,11 @@ class MotifEnsemble(object):
         self.members = []
         self.block_end_add = 0
 
-    def setup(self, id, motifs, energies):
+    def setup(self, id, motifs, energies,counts=None):
         self.id = id
         self.members = []
         for i, m in enumerate(motifs):
-            ms = MotifEnsembleMember(m, energies[i])
+            ms = MotifEnsembleMember(m, energies[i],counts[i])
             self.members.append(ms)
 
         self.members.sort(key = lambda x : x.energy, reverse=False)

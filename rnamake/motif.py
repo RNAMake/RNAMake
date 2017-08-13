@@ -352,7 +352,7 @@ def align_motif(ref_bp_state, motif_end, motif, sterics=1):
 
     r1 , r2 = ref_bp_state.r , motif_end.state().r
     r = util.unitarize(r1.T.dot(r2))
-    trans = -motif_end.state().d
+    trans = -motif_end.state().d # zyz: this step seems redundant.
     t = transform.Transform(r, trans)
     motif.transform(t)
     bp_pos_diff = ref_bp_state.d - motif_end.state().d

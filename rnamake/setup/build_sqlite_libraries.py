@@ -219,6 +219,8 @@ class BuildSqliteLibraries(object):
                    motif_type.type_to_str(t).lower()+".db"
             sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
+
+
     def build_helix_ensembles(self):
         helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
         helix_mlib.load_all()
@@ -322,6 +324,7 @@ class BuildSqliteLibraries(object):
             print "start, ", c.end_id
             clustered_motifs = []
             energies = []
+            counts = []
             dir_name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
 
             for j, c_motifs in enumerate(m_clusters):
@@ -336,10 +339,17 @@ class BuildSqliteLibraries(object):
 
                 energy = -kBT*math.log(pop)
                 energies.append(energy)
+                counts.append(len(c_motifs.motifs))
+            """
+            Sorry I have to do this to pass the original
+            statistics besides the population since 
+            covariance per se depends
+            on the count, not just ratio.
+            """
 
 
             me = motif_ensemble.MotifEnsemble()
-            me.setup(c.end_id, clustered_motifs, energies)
+            me.setup(c.end_id, clustered_motifs, energies, counts)
 
             motif = me.members[0].motif
             motif.name = "BP."+str(c_i)
