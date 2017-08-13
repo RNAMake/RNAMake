@@ -2,11 +2,12 @@ import numpy as np
 
 from rnamake import base, option, motif_state_ensemble_tree
 from rnamake import motif_ensemble
-from rnamake import motif,basepair
+from rnamake import motif,basepair,transform
 from rnamake import transformations
 from rnamake import fconv3d
+from numpy import linalg as la
 
-class SE3Map:
+class SE3Map(module):
     """
     A map in SE(3) with all the information specified
     :param grid_size: How many grid along each axis
@@ -70,6 +71,9 @@ class SE3Map:
         :return: None
         """
         # TODO align_to_org(ms)
+        e_r, e_d = ms.endstates[1].r, ms.endstates[1].d
+        s_r, s_d = ms.endstates[0].r, ms.endstates[0].d
+        t = transform.Transform(s_r.T, )
         s = ms.end_states[0]
         grid_ndx = self.state_to_grid_ndx(s)
 
@@ -97,13 +101,72 @@ class SE3Map:
         return ndx
 
 
-    #TODO
-    def nrg_to_probability(self, energy):
+
+
+class MotifGaussianList(module):
+    __slots__ = ['mset', 'mgl']
+
+
+    def __init__(self,mset):
+        self.set_from_mset(mset)
+
+
+    def set_from_mset(self,mset):
         """
-        conversion from energy to  probability density
-        :param energy:
-        :type energy: float
-        :return: PD
-        :rtype: float
+
+        :param mset:
+        :type mset: motif_state_ensemble_tree.MotifStateEnsembleTree
+        :return:
         """
-        pass
+        self.gl=[]
+        for en in mset:
+            chis = np.zeros([6,len(en.data.members)])
+            for i,ms in enumerate(en.data.members):
+                chis[:,i] = self.state_to_chi(ms)
+            self.gl.append(self.mg_from_cl(chis))
+
+
+    def mg_from_cl(self,cl):
+        assert type(cl) == np.ndarray\
+           and cl.shape[0] == (6)
+        mean = np.mean(cl,1)
+
+
+
+class MotifGaussian(module):
+    __slots__ = ['SIGMA','mean']
+
+
+    def __init__(self,SIGMA,mean):
+        assert (type(SIGMA), type(mean) == np.ndarray, np.ndarray)\
+            and (SIGMA.shape, mean.shape == (6,6),6)
+        self.SIGMA=SIGMA
+        self.mean = mean
+
+
+    def eval(self,chi):
+        assert type(chi) == np.ndarray\
+            and chi.shape == (6,)
+
+        return 1/((2*np.pi)**3*np.sqrt(la.det(self.SIGMA)))*\
+               np.exp(-1/2*np.dot(np.dot(chi.T,la.inv(self.SIGMA)),chi))[0,0]
+
+
+
+def nrg_to_probability(self, energy):
+    """
+    conversion from energy to  probability density
+    :param energy:
+    :type energy: float
+    :return: PD
+    :rtype: float
+    """
+
+    '''
+    The following constant is copied from rnamake/setup/build_sqlite_libraries:337.
+    Please check consistency if necessary.
+    '''
+    kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+    kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
+
+    return np.exp(energy/(-kBT))
