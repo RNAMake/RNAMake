@@ -111,35 +111,60 @@ class SimulateTectos(base.Base):
         self.mset = self._get_mset()
         self.mst = self.mset.to_mst()
 
-        ni1 = 1
-        ni2 = 2
+        ni1 = 2
+        ni2 = self.mst.last_node().index
+        # ni2 = 3
         # default ei = 1
         mgl = se3.MotifGaussianList(self.mset)
-        print 'ni2 ref state\n',self.mst.get_node(ni2).data.ref_state.end_states[1]
-        print 'ni2 mean ref state\n',mgl.mgl[ni2].mean,'\n'
         mg = mgl.get_mg(ni1,ni2)
-        # for i in range(ni1-1,-1,-1):
-        #     state_node = self.mst.get_node(i).data
-        #     mg.mean = np.dot(se3.state_to_matrix(
-        #         state_node.get_end_state(state_node.end_name(1))
-        #     ),mg.mean)
+        state_node = self.mst.get_node(ni1).data
+        mg.mean = np.dot(se3.state_to_matrix(
+            state_node.get_end_state(state_node.end_name(0))
+        ),mg.mean)
+        test_chi = np.array([0,0,0,0,0,0])
+        print 'PDF at destination: ', mg.eval(test_chi),'\n'
+        test_chi[3] = 1
+        print 'PDF deviated x=1 A: ', mg.eval(test_chi)
+        test_chi[3] = 2
+        print 'PDF deviated x=2 A: ', mg.eval(test_chi)
+        test_chi[3] = 0
+        test_chi[4] = 2
+        print 'PDF deviated y=2: ', mg.eval(test_chi)
+        test_chi[4] = 0
+        test_chi[5] = 2
+        print 'PDF deviated z=2: ', mg.eval(test_chi)
+        test_n = 100
+        test_grid = np.mgrid[0:10:test_n*1j]
+        from matplotlib import pylab as plt
+        plt.figure('PDF over v_x')
+        vx = np.zeros([test_n])
+        for x in range(test_n):
+            vx[x]=mg.eval(np.array([0,0,0,test_grid[x],0,0]))
+        plt.plot(vx)
+        plt.figure('PDF over v_y')
+        vy = np.zeros([test_n])
+        for x in range(test_n):
+            vy[x]=mg.eval(np.array([0,0,0,0,test_grid[x],0]))
+        plt.plot(vy)
+        plt.figure('PDF over v_z')
+        vz = np.zeros([test_n])
+        for x in range(test_n):
+            vz[x]=mg.eval(np.array([0,0,0,0,0,test_grid[x]]))
+        plt.plot(vz)
+        plt.show()
+
+
+
         print 'ni2 resultant mean\n',mg.mean,'\n'
         state_node = self.mst.get_node(ni2).data
         print 'ni2 resultant state',state_node.get_end_state(state_node.end_name(1))
-        state_node = self.mst.last_node().data
-        print 'last node state',state_node.get_end_state(state_node.end_name(1))
-        for x in self.mst:
-            if x.parent is not None:
-                prnt = x.parent.data.name()
-            else:
-                prnt = 'None'
-            curt = x.data.name()
-            chld = []
-            if x.children is not None:
-                for y in x.children:
-                    if y is not None:
-                        chld.append((y.data.name(),y.data.uuid()))
-            print prnt,'\t>\t',curt,'\t>\t',chld
+        # for x in range(0,ni2+1):
+        #     state_node = self.mst.get_node(x).data
+        #     print 'node %d end 0 current\n'%x, state_node.get_end_state(state_node.end_name(1))
+        # for x in range(0,ni2+1):
+        #     state_node = self.mst.get_node(x).data
+        #     print 'node %d end 0 ref\n'%x,state_node.ref_state.end_states[1]
+
 
 
 

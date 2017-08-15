@@ -125,7 +125,9 @@ class MotifGaussianList(object):
             states = np.zeros([4,4,len(en.data.members)])
             counts = np.zeros(len(en.data.members))
             for i,msm in enumerate(en.data.members):
-                states[:,:,i] = state_to_matrix(msm.motif_state.end_states[1])
+                final_state= state_to_matrix(msm.motif_state.end_states[1])
+                start_state= state_to_matrix(msm.motif_state.end_states[0])
+                states[:,:,i] = np.dot(la.inv(start_state),final_state)
                 counts[i] = msm.count
             print en.index,'\t',np.sum(counts)
             self.mgl.append(self.mg_from_sc(states,counts))
@@ -137,6 +139,8 @@ class MotifGaussianList(object):
                and st.shape[:2] ==(4,4)  \
                and ct.ndim == 1
         mean = np.mean(st, 2)
+        # mean = st[:,:,0]
+        mean[:3,:3] /= (la.det(mean[:3,:3])**(1.0/3))
         covar = np.cov(matrix_to_chi(st-mean[:,:,np.newaxis]), fweights=ct)
         if not np.all(np.isfinite(covar)):
             assert np.all(np.isnan(covar))
@@ -147,6 +151,7 @@ class MotifGaussianList(object):
         res_mg = copy.copy(self.mgl[ni1])
         for i in range(ni1+1,ni2+1):
             res_mg = res_mg*self.mgl[i]
+            print '|SIGMA| at the end of step %d = '%i,la.det(res_mg.SIGMA)
         return res_mg
 
 
@@ -161,6 +166,7 @@ class MotifGaussian(object):
         self.mean = mean.copy()
 
     def __copy__(self):
+        print 'MotifGaussian copied'
         return MotifGaussian(self.SIGMA,self.mean)
 
     def __mul__(self,other):
@@ -170,7 +176,7 @@ class MotifGaussian(object):
         :return:
         """
         assert self.mean.shape ==(4,4)
-        res_mean = np.dot(self.mean, other.mean)
+        res_mean = np.dot(self.mean,other.mean)
         g2_inv = la.inv(other.mean)
         r = g2_inv[:3,:3]
         d = g2_inv[:3, 3]
@@ -189,7 +195,7 @@ class MotifGaussian(object):
             and chi.shape == (6,)
 
         return 1/((2*np.pi)**3*np.sqrt(la.det(self.SIGMA)))*\
-               np.exp(-1/2*np.dot(np.dot(chi.T,la.inv(self.SIGMA)),chi))[0,0]
+               np.exp(-1/2*np.dot(np.dot(chi.T,la.inv(self.SIGMA)),chi))#[0,0]
 
 
 
@@ -226,9 +232,10 @@ def state_to_matrix(bs):
     :param bs:
     :return:
     """
-    res = np.zeros([4,4])
-    res[:3,:3] = bs.r.copy()
-    res[3,:3] = bs.d.copy()
+    res = np.zeros([4,4]).astype('float')
+    res[:3,:3] = bs.r.copy().T
+    res[:3,3] = bs.d.copy()
+    res[:3, :3] /= (la.det(res[:3, :3]) ** (1.0 / 3))
     res[3,3] = 1
     return res
 
