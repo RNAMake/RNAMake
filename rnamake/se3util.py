@@ -6,8 +6,9 @@ from rnamake import motif,basepair,transform
 from rnamake import transformations
 from rnamake import fconv3d
 from numpy import linalg as la
+import copy
 
-class SE3Map(module):
+class SE3Map(object):
     """
     A map in SE(3) with all the information specified
     :param grid_size: How many grid along each axis
@@ -103,8 +104,9 @@ class SE3Map(module):
 
 
 
-class MotifGaussianList(module):
+class MotifGaussianList(object):
     __slots__ = ['mset', 'mgl']
+
 
 
     def __init__(self,mset):
@@ -118,43 +120,68 @@ class MotifGaussianList(module):
         :type mset: motif_state_ensemble_tree.MotifStateEnsembleTree
         :return:
         """
-        self.gl=[]
+        self.mgl=[]
         for en in mset:
-            chis = np.zeros([6,len(en.data.members)])
-            counts = np.zeros([6,len(en.data.members)])
+            states = np.zeros([4,4,len(en.data.members)])
+            counts = np.zeros(len(en.data.members))
             for i,msm in enumerate(en.data.members):
-                chis[:,i] = self.state_to_chi(msm.motif_state)
-                counts[:,i] = nrg_to_probability(msm.count)
-            self.gl.append(self.mg_from_cp(chis,counts))
+                states[:,:,i] = state_to_matrix(msm.motif_state.end_states[1])
+                counts[i] = msm.count
+            print en.index,'\t',np.sum(counts)
+            self.mgl.append(self.mg_from_sc(states,counts))
 
 
-    def mg_from_cp(self, cl, ct):
-        assert type(cl) == np.ndarray\
-           and cl.shape[0] == 6 \
-           and ct.ndim == 1
-        mean = np.mean(cl,1)
-        covar = np.cov(cl,fweights=ct)
+    def mg_from_sc(self, st, ct):
+        # print ct
+        assert type(st) == np.ndarray \
+               and st.shape[:2] ==(4,4)  \
+               and ct.ndim == 1
+        mean = np.mean(st, 2)
+        covar = np.cov(matrix_to_chi(st-mean[:,:,np.newaxis]), fweights=ct)
+        if not np.all(np.isfinite(covar)):
+            assert np.all(np.isnan(covar))
         return MotifGaussian(covar,mean)
 
 
-    def state_to_chi(self,ms):
-        """
-        :type ms motif.MotifState
-        :param ms:
-        :return:
-        """
+    def get_mg(self,ni1, ni2):
+        res_mg = copy.copy(self.mgl[ni1])
+        for i in range(ni1+1,ni2+1):
+            res_mg = res_mg*self.mgl[i]
+        return res_mg
 
 
 
-
-class MotifGaussian(module):
+class MotifGaussian(object):
     __slots__ = ['SIGMA','mean']
 
     def __init__(self,SIGMA,mean):
         assert (type(SIGMA), type(mean) == np.ndarray, np.ndarray)\
-            and (SIGMA.shape, mean.shape == (6,6),6)
-        self.SIGMA=SIGMA
-        self.mean = mean
+            and (SIGMA.shape, mean.shape == (6,6),(4,4))
+        self.SIGMA=np.nan_to_num(SIGMA).copy()
+        self.mean = mean.copy()
+
+    def __copy__(self):
+        return MotifGaussian(self.SIGMA,self.mean)
+
+    def __mul__(self,other):
+        """
+        :type other: MotifGaussian
+        :param other:
+        :return:
+        """
+        assert self.mean.shape ==(4,4)
+        res_mean = np.dot(self.mean, other.mean)
+        g2_inv = la.inv(other.mean)
+        r = g2_inv[:3,:3]
+        d = g2_inv[:3, 3]
+        ad = np.zeros([6,6])
+        ad[:3,:3] = r
+        ad[3:,3:] = r
+        ad[3:,:3] = np.cross(d,r,axisb=0)
+        res_cov = np.dot(np.dot(ad,self.SIGMA),ad.T)+other.SIGMA
+        return MotifGaussian(res_cov,res_mean)
+
+
 
 
     def eval(self,chi):
@@ -166,7 +193,7 @@ class MotifGaussian(module):
 
 
 
-def nrg_to_probability(self, energy):
+def nrg_to_probability(energy):
     """
     conversion from energy to  probability density
     :param energy:
@@ -183,3 +210,49 @@ def nrg_to_probability(self, energy):
     kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
 
     return np.exp(energy/(-kBT))
+
+
+def matrix_to_chi(t):
+    chi1 = (t[2, 1] - t[1, 2]) / 2
+    chi2 = (t[0, 2] - t[2, 0]) / 2
+    chi3 = (t[1, 0] - t[0, 1]) / 2
+    chi4, chi5, chi6 = t[0,3], t[1,3], t[2,3]
+    chi =np.array([chi1,chi2,chi3,chi4,chi5,chi6])
+    return chi
+
+def state_to_matrix(bs):
+    """
+    :type bs: basepair.BasepairState
+    :param bs:
+    :return:
+    """
+    res = np.zeros([4,4])
+    res[:3,:3] = bs.r.copy()
+    res[:3,3] = bs.d.copy()
+    res[3,3] = 1
+    return res
+
+def test_mul():
+    from rnamake import unittests
+    from rnamake.unittests import instances as inst
+    motif1 = inst.motif()
+    motif2 = inst.motif()
+    st1 = motif1.ends[1].state()
+    st2 = motif2.ends[1].state()
+    st1m = state_to_matrix(st1)
+    st2m = state_to_matrix(st2)
+    stm = np.dot(st1m,st2m)
+    stminv = np.dot(st2m,st1m)
+    motif.align_motif(motif1.ends[1].state(),motif2.ends[0],motif2)
+    st3 = motif2.ends[0].state()
+    st4 = motif1.ends[1].state()
+    st = motif2.ends[1].state()
+    print 'st4',st4
+    print 'st3',st3
+    print 'st1m\n',st1m,'\n'
+    print 'stm \n',stm, '\n'
+    print 'stminv\n',stminv,'\n'
+    print 'st',st
+
+if __name__ == "__main__":
+    test_mul()

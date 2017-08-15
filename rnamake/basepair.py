@@ -392,7 +392,7 @@ class BasepairState(object):
 
 
     def __repr__(self):
-        return """\
+        return """\n\
         <BasepairState>\n\
         ...Frame...\n\
         ||\t%f\t%f\t%f\t%f\t||\n\
