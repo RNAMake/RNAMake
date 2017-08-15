@@ -374,10 +374,10 @@ def align_motif(ref_bp_state, motif_end, motif, sterics=1):
     #     sugar_diff_2 = ref_res2_coord - res1_coord
     #
     # if dist1 < 5 or dist2 < 5:
-    #     motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )
+    #     motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )b1 = --526
 
-    if sterics:
-        motif.get_beads([motif_end])
+    # if sterics:
+    #     motif.get_beads([motif_end])
 
 
 def get_aligned_motif(ref_bp, motif_end, motif, sterics=1):

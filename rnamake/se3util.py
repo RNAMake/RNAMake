@@ -228,7 +228,7 @@ def state_to_matrix(bs):
     """
     res = np.zeros([4,4])
     res[:3,:3] = bs.r.copy()
-    res[:3,3] = bs.d.copy()
+    res[3,:3] = bs.d.copy()
     res[3,3] = 1
     return res
 
@@ -239,20 +239,28 @@ def test_mul():
     motif2 = inst.motif()
     st1 = motif1.ends[1].state()
     st2 = motif2.ends[1].state()
+    ost2 = copy.copy(motif2.ends[0].state())
+    st2c = copy.copy(st2)
     st1m = state_to_matrix(st1)
     st2m = state_to_matrix(st2)
     stm = np.dot(st1m,st2m)
     stminv = np.dot(st2m,st1m)
     motif.align_motif(motif1.ends[1].state(),motif2.ends[0],motif2)
-    st3 = motif2.ends[0].state()
+    st5 = motif1.ends[0].state()
     st4 = motif1.ends[1].state()
-    st = motif2.ends[1].state()
+    st3 = motif2.ends[0].state()
+    st6 = motif2.ends[1].state()
+    print 'st5',st5
     print 'st4',st4
     print 'st3',st3
+    print 'st6',st6
+    print 'st2c',st2c
+    print 'ost2',ost2
     print 'st1m\n',st1m,'\n'
     print 'stm \n',stm, '\n'
     print 'stminv\n',stminv,'\n'
-    print 'st',st
+    motif1.to_pdb('test_motif1.pdb')
+    motif2.to_pdb('test_motif2.pdb')
 
 if __name__ == "__main__":
     test_mul()
