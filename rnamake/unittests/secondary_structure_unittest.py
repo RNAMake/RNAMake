@@ -12,10 +12,10 @@ class ResidueUnittest(unittest.TestCase):
         r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
         r_copy = secondary_structure.Residue.copy(r)
 
-        self.failUnless(r.dot_bracket == r_copy.dot_bracket)
+        self.failUnless(r.get_dot_bracket() == r_copy.get_dot_bracket())
         r_copy.set_name("A")
 
-        self.failUnless(r.name != r_copy.name)
+        self.failUnless(r.get_name() != r_copy.get_name())
 
     def test_to_str(self):
         r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())

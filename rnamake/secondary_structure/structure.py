@@ -96,6 +96,16 @@ class Residue(primitives.Residue):
         return "<SecondaryStructureResidue('%s%d%s chain %s')>" % (
             self._name, self._num, self._i_code, self._chain_id)
 
+    # getters
+    def get_copy(self, new_uuid=0):
+        return Residue.copy(self, new_uuid)
+
+    def get_dot_bracket(self):
+        return self._dot_bracket
+
+    def get_short_name(self):
+        return self._name
+
     def get_str(self):
         """
         stringify residue object. can be converted back with
@@ -108,15 +118,10 @@ class Residue(primitives.Residue):
         return self._name + "," + self._dot_bracket + "," + str(self._num) + "," + \
                str(self._chain_id) + "," + str(self._i_code)
 
-    @property
-    def dot_bracket(self):
-        return self._dot_bracket
-
+    # setters
     def set_name(self, n):
         self._name = n
 
-    def short_name(self):
-        return self._name
 
 
 class Chain(primitives.Chain):

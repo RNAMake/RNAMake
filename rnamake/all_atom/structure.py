@@ -1332,9 +1332,6 @@ class Basepair(primitives.Basepair):
 
         return new_r, new_origin, new_sugars
 
-    def get_uuid(self):
-        return self._uuid
-
     def get_x3dna_bp_type(self):
         return self._x3dna_bp_type
 
