@@ -131,7 +131,7 @@ class SE3Map(object):
         elif grid_ndx[4] == beta_grid_size-1:
             beta_w = np.cos(np.pi*(beta_grid_size-3.0/2)/beta_grid_size)+1
         else:
-            beta_w = np.cos(np.pi/beta_grid_size*(grid_ndx-0.5))-np.cos(np.pi/beta_grid_size*(grid_ndx+0.5))
+            beta_w = np.cos(np.pi/beta_grid_size*(grid_ndx[4]-0.5))-np.cos(np.pi/beta_grid_size*(grid_ndx[4]+0.5))
         res = beta_w * self.grid_unit**3
         return res
 
