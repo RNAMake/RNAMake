@@ -15,7 +15,7 @@ class SE3Map(object):
     :param grid_size: How many grid along each axis
     :param grid_unit: How long is one grid
     :param data: numpy array actually storing the data
-    :type grid_size: iterable of int
+    :type grid_size: iterable of int,length 4
     :type grid_unit: float
     :type data: numpy.ndarray
     """
@@ -72,40 +72,52 @@ class SE3Map(object):
         :type nrg: float
         :return: None
         """
-        # TODO align_to_org(ms)
-        e_r, e_d = ms.end_states[1].r, ms.end_states[1].d
-        s_r, s_d = ms.end_states[0].r, ms.end_states[0].d
-        t = transform.Transform(s_r.T, )
-        s = ms.end_states[0]
-        grid_ndx = self.state_to_grid_ndx(s)
-
+        start_matrix = state_to_matrix(ms.end_states[0])
+        final_matrix  = state_to_matrix( ms.end_states[1])
+        step_matrix = start_matrix.T.dot(final_matrix)
         probability = nrg_to_probability(nrg)
+        # e_r, e_d = ms.end_states[1].r, ms.end_states[1].d
+        # s_r, s_d = ms.end_states[0].r, ms.end_states[0].d
+        # t = transform.Transform(s_r.T, )
+        # s = ms.end_states[0]
+        grid_ndx = self.matrix_to_grid_ndx(step_matrix)
+        probability = nrg_to_probability(nrg)
+        self.data[grid_ndx] = probability/voxel
 
-        self.data[grid_ndx] = probability
 
-
-    #TODO
-    def state_to_grid_ndx(self,basepair_state):
+    #finished
+    def matrix_to_grid_ndx(self, state_matrix):
         """
         converting state to index on the grid
-        :param basepair_state:
-        :type basepair_state: basepair.BasepairState
+        :param state_matrix:
+        :type state_matrix: numpy.ndarray
         :return:
-        :rtype: list of ints, shape(6,)
+        :rtype: tuple of ints, shape(6,)
         """
-        eu = transformations.euler_from_matrix(
-            basepair_state.r,axes='szxz'
-        )
-        d = basepair_state.d
         a = self.grid_unit
-        n = self.grid_size
-        ndx = []
-        return ndx
+        n = np.asarray(self.grid_size).astype('float')
+        eu = transformations.euler_from_matrix(
+            state_matrix[:3,:3],axes='szxz'
+        )
+        d = state_matrix[:3,3].astype('float')
+        nd = np.around(d/a)
+        assert np.any(abs(nd)<=(n[0]-1)/2) # keep index in range
+        neu = np.zeros(3)
+        neu[0]=np.around(eu[0]*n[1]/2/np.pi)
+        if neu[0]==n[1]:
+            neu[0] = 0
+        neu[1]=np.around(eu[1]*n[2]/np.pi)
+        if neu[1]==n[2]:
+            print 'beta out of index!'
+            neu[1] = n[2] -1
+        neu[2] = np.around(eu[2]*n[3]/2/np.pi)
+        if neu[2] == n[3]:
+            neu[2] = 0
+
+        return (nd[0],nd[1],nd[2],neu[0],neu[1],neu[2])
 
 
-
-
-class MotifGaussianList(object):
+class MotifGaussianList(object): # finished
     __slots__ = ['mset', 'mgl']
 
 
@@ -157,7 +169,7 @@ class MotifGaussianList(object):
 
 
 
-class MotifGaussian(object):
+class MotifGaussian(object): # finished
     __slots__ = ['SIGMA','mean']
 
     def __init__(self,SIGMA,mean):
