@@ -28,7 +28,8 @@ class SimulateTectos(base.Base):
     def setup_options_and_constraints(self):
         options = { 'fseq'   : 'CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG',
                     'fss'    : '((((((....((((((((((((....))))))))))))....))))))',
-                    'cseq'   : 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG',
+                    # 'cseq'   : 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG',
+                    'cseq'   : 'CTAGGATATGGGGGGUUUUUGGGAACAAAAACCCCCCTAAGTCCTAG',
                     'css'    : '(((((((..((((((((((((....))))))))))))...)))))))'}
         self.options = option.Options(options)
 
@@ -121,43 +122,83 @@ class SimulateTectos(base.Base):
         mg.mean = np.dot(se3.state_to_matrix(
             state_node.get_end_state(state_node.end_name(0))
         ),mg.mean)
-        test_chi = np.array([0,0,0,0,0,0])
-        print 'PDF at destination: ', mg.eval(test_chi),'\n'
-        test_chi[3] = 1
-        print 'PDF deviated x=1 A: ', mg.eval(test_chi)
-        test_chi[3] = 2
+        state_node =self.mst.get_node(1).data
+        target_matrix = se3.state_to_matrix(state_node.get_end_state(state_node.end_name(1)))
+
+        # '''printing out the topology'''
+        # print self.mst.to_pretty_str()
+
+        '''testing chi'''
+        from scipy import linalg as la
+        target_chi = se3.matrix_to_chi(np.dot(la.inv(mg.mean),target_matrix))
+        print target_chi
+        test_chi = target_chi
+        # test_chi = np.array([0,0,0,0,0,0])
+        print 'PDF at destination: ', mg.eval(test_chi)
+        test_chi[3] += 2
         print 'PDF deviated x=2 A: ', mg.eval(test_chi)
-        test_chi[3] = 0
-        test_chi[4] = 2
+        test_chi[3] -=2
+        test_chi[4] += 2
         print 'PDF deviated y=2: ', mg.eval(test_chi)
-        test_chi[4] = 0
-        test_chi[5] = 2
+        test_chi[4] -= 2
+        test_chi[5] += 2
         print 'PDF deviated z=2: ', mg.eval(test_chi)
+        test_chi[5] -= 4
+        # test_chi[4] +=2
         test_n = 100
-        test_grid = np.mgrid[0:10:test_n*1j]
+        test_grid = np.mgrid[-0.2:0.2:test_n*1j]
         from matplotlib import pylab as plt
         plt.figure('PDF over v_x')
-        vx = np.zeros([test_n])
+        v = np.zeros([test_n])
         for x in range(test_n):
-            vx[x]=mg.eval(np.array([0,0,0,test_grid[x],0,0]))
-        plt.plot(vx)
+            temp_chi = test_chi.copy()
+            temp_chi[0]+=test_grid[x]
+            v[x]=mg.eval(temp_chi)
+        plt.plot(v)
+
         plt.figure('PDF over v_y')
-        vy = np.zeros([test_n])
+        v = np.zeros([test_n])
         for x in range(test_n):
-            vy[x]=mg.eval(np.array([0,0,0,0,test_grid[x],0]))
-        plt.plot(vy)
+            temp_chi = test_chi.copy()
+            temp_chi[1] += test_grid[x]
+            v[x] = mg.eval(temp_chi)
+        plt.plot(v)
+
         plt.figure('PDF over v_z')
-        vz = np.zeros([test_n])
+        v = np.zeros([test_n])
         for x in range(test_n):
-            vz[x]=mg.eval(np.array([0,0,0,0,0,test_grid[x]]))
-        plt.plot(vz)
+            temp_chi = test_chi.copy()
+            temp_chi[2] += test_grid[x]
+            v[x] = mg.eval(temp_chi)
+        plt.plot(v)
+
         plt.show()
 
+        '''integrated probability'''
+        vx,vy,vz,x,y,z = target_chi[0],target_chi[1],target_chi[2],\
+        target_chi[3],target_chi[4],target_chi[5]
+        from scipy import integrate as jf
+        def wrapper(x0, x1, x2):
+            return mg.eval(np.array([x0, x1, x2, x,y,z]))
+        prob = jf.nquad(wrapper,
+                 [[vx-1,vx+1],[vy-1,vy+1],[vz-1,vz+1]],opts={'epsrel':0.2})
+        print 'result',prob
+        factor = prob[0]/8/mg.eval(target_chi)
+        def wrapper(x0,x1,x2):
+            return mg.eval(np.array([vx,vy,vz,x0,x1,x2]))
+        prob = jf.nquad(wrapper,
+                 [[x - 2, x + 2], [y - 2, y + 2], [z - 2, z + 2]], opts={'epsabs': 0.1, 'epsrel': 0.2})
+        print prob
+        print 'further result',prob[0]*factor
+        # print mg.eval(target_chi)*32.*8*np.pi**2
 
 
-        print 'ni2 resultant mean\n',mg.mean,'\n'
-        state_node = self.mst.get_node(ni2).data
-        print 'ni2 resultant state',state_node.get_end_state(state_node.end_name(1))
+        # '''comparison of mean'''
+        # print 'ni2 resultant mean\n',mg.mean,'\n'
+        # state_node = self.mst.get_node(ni2).data
+        # print 'ni2 resultant state',state_node.get_end_state(state_node.end_name(1))
+        # # for x in range(0,ni2+1):
+        # print 'the state to align to ', state_node.get_end_state(state_node.end_name(1))
         # for x in range(0,ni2+1):
         #     state_node = self.mst.get_node(x).data
         #     print 'node %d end 0 current\n'%x, state_node.get_end_state(state_node.end_name(1))

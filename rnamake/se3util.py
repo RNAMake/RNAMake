@@ -7,6 +7,7 @@ from rnamake import transformations
 from rnamake import fconv3d
 from numpy import linalg as la
 import copy
+from numba import jit
 
 class SE3Map(object):
     """
@@ -186,8 +187,6 @@ class MotifGaussian(object):
         ad[3:,:3] = np.cross(d,r,axisb=0)
         res_cov = np.dot(np.dot(ad,self.SIGMA),ad.T)+other.SIGMA
         return MotifGaussian(res_cov,res_mean)
-
-
 
 
     def eval(self,chi):
