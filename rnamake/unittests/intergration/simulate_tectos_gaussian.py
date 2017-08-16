@@ -29,7 +29,7 @@ class SimulateTectos(base.Base):
         options = { 'fseq'   : 'CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG',
                     'fss'    : '((((((....((((((((((((....))))))))))))....))))))',
                     # 'cseq'   : 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG',
-                    'cseq'   : 'CTAGGATATGGGGGGUUUUUGGGAACAAAAACCCCCCTAAGTCCTAG',
+                    'cseq'   : 'CTAGGATATGGUUUAUAGGCGGGAACGCCUAUAAACCTAAGTCCTAG',
                     'css'    : '(((((((..((((((((((((....))))))))))))...)))))))'}
         self.options = option.Options(options)
 
@@ -146,7 +146,7 @@ class SimulateTectos(base.Base):
         print 'PDF deviated z=2: ', mg.eval(test_chi)
         test_chi[5] -= 2
         # test_chi[4] +=2
-        test_chi = np.array([0,0,0,0,0,0]).astype('float')
+        # test_chi = np.array([0,0,0,0,0,0]).astype('float')
         test_n = 100
         test_grid = np.mgrid[-0.2:0.2:test_n*1j]
         from matplotlib import pylab as plt

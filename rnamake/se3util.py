@@ -102,7 +102,9 @@ class SE3Map(object):
         )
         d = state_matrix[:3,3].astype('float')
         nd = np.around(d/a)
-        assert np.any(abs(nd)<=(n[0]-1)/2) # keep index in range
+        assert np.all(abs(nd)<=(n[0]-1)/2) # keep index in range
+        nd += (n[0]-1)/2
+
         neu = np.zeros(3)
         neu[0]=np.around(eu[0]*n[1]/2/np.pi)
         if neu[0]==n[1]:
@@ -168,7 +170,7 @@ class MotifGaussianList(object): # finished
         assert type(st) == np.ndarray \
                and st.shape[:2] ==(4,4)  \
                and ct.ndim == 1
-        mean = np.mean(st, 2)
+        mean = np.average(st, axis=2,weights=ct)
         # mean = st[:,:,0]
         mean[:3,:3] /= (la.det(mean[:3,:3])**(1.0/3))
         covar = np.cov(matrix_to_chi(st-mean[:,:,np.newaxis]), fweights=ct)
