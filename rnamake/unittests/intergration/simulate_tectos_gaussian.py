@@ -132,6 +132,7 @@ class SimulateTectos(base.Base):
         from scipy import linalg as la
         target_chi = se3.matrix_to_chi(np.dot(la.inv(mg.mean),target_matrix))
         print target_chi
+        print mg.eval(target_chi)
         test_chi = target_chi
         # test_chi = np.array([0,0,0,0,0,0])
         print 'PDF at destination: ', mg.eval(test_chi)
@@ -143,8 +144,9 @@ class SimulateTectos(base.Base):
         test_chi[4] -= 2
         test_chi[5] += 2
         print 'PDF deviated z=2: ', mg.eval(test_chi)
-        test_chi[5] -= 4
+        test_chi[5] -= 2
         # test_chi[4] +=2
+        test_chi = np.array([0,0,0,0,0,0]).astype('float')
         test_n = 100
         test_grid = np.mgrid[-0.2:0.2:test_n*1j]
         from matplotlib import pylab as plt
@@ -154,7 +156,7 @@ class SimulateTectos(base.Base):
             temp_chi = test_chi.copy()
             temp_chi[0]+=test_grid[x]
             v[x]=mg.eval(temp_chi)
-        plt.plot(v)
+        plt.plot(test_grid,v)
 
         plt.figure('PDF over v_y')
         v = np.zeros([test_n])
@@ -162,7 +164,7 @@ class SimulateTectos(base.Base):
             temp_chi = test_chi.copy()
             temp_chi[1] += test_grid[x]
             v[x] = mg.eval(temp_chi)
-        plt.plot(v)
+        plt.plot(test_grid,v)
 
         plt.figure('PDF over v_z')
         v = np.zeros([test_n])
@@ -170,7 +172,32 @@ class SimulateTectos(base.Base):
             temp_chi = test_chi.copy()
             temp_chi[2] += test_grid[x]
             v[x] = mg.eval(temp_chi)
-        plt.plot(v)
+        plt.plot(test_grid,v)
+
+        test_grid = np.mgrid[-2:2:test_n * 1j]
+        plt.figure('PDF over x')
+        v = np.zeros([test_n])
+        for x in range(test_n):
+            temp_chi = test_chi.copy()
+            temp_chi[3] += test_grid[x]
+            v[x] = mg.eval(temp_chi)
+        plt.plot(test_grid, v)
+
+        plt.figure('PDF over y')
+        v = np.zeros([test_n])
+        for x in range(test_n):
+            temp_chi = test_chi.copy()
+            temp_chi[4] += test_grid[x]
+            v[x] = mg.eval(temp_chi)
+        plt.plot(test_grid, v)
+
+        plt.figure('PDF over z')
+        v = np.zeros([test_n])
+        for x in range(test_n):
+            temp_chi = test_chi.copy()
+            temp_chi[5] += test_grid[x]
+            v[x] = mg.eval(temp_chi)
+        plt.plot(test_grid, v)
 
         plt.show()
 
@@ -181,9 +208,9 @@ class SimulateTectos(base.Base):
         def wrapper(x0, x1, x2):
             return mg.eval(np.array([x0, x1, x2, x,y,z]))
         prob = jf.nquad(wrapper,
-                 [[vx-1,vx+1],[vy-1,vy+1],[vz-1,vz+1]],opts={'epsrel':0.2})
+                 [[vx-0.2,vx+0.2],[vy-0.2,vy+0.2],[vz-0.2,vz+0.2]],opts={'epsrel':0.2})
         print 'result',prob
-        factor = prob[0]/8/mg.eval(target_chi)
+        factor = prob[0]/mg.eval(target_chi)
         def wrapper(x0,x1,x2):
             return mg.eval(np.array([vx,vy,vz,x0,x1,x2]))
         prob = jf.nquad(wrapper,

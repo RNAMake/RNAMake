@@ -63,7 +63,7 @@ class SE3Map(object):
             self.place_motif_state(mem.motif_state,mem.energy)
         return self
 
-
+    #finished
     def place_motif_state(self, ms,nrg):
         """
         :param ms: motif state to place
@@ -82,7 +82,8 @@ class SE3Map(object):
         # s = ms.end_states[0]
         grid_ndx = self.matrix_to_grid_ndx(step_matrix)
         probability = nrg_to_probability(nrg)
-        self.data[grid_ndx] = probability/voxel
+        self.data[grid_ndx] = probability/self.voxel(grid_ndx)
+
 
 
     #finished
@@ -115,6 +116,22 @@ class SE3Map(object):
             neu[2] = 0
 
         return (nd[0],nd[1],nd[2],neu[0],neu[1],neu[2])
+    #finished
+    def voxel(self,grid_ndx):
+        """
+        :type grid_ndx: tuple of ints, shape(6,)
+        :param grid_ndx:
+        :return:
+        """
+        beta_grid_size = self.grid_size[2]
+        if grid_ndx[4] == 0:
+            beta_w = 1-np.cos(np.pi/2/beta_grid_size)
+        elif grid_ndx[4] == beta_grid_size-1:
+            beta_w = np.cos(np.pi*(beta_grid_size-3.0/2)/beta_grid_size)+1
+        else:
+            beta_w = np.cos(np.pi/beta_grid_size*(grid_ndx-0.5))-np.cos(np.pi/beta_grid_size*(grid_ndx+0.5))
+        res = beta_w * self.grid_unit**3
+        return res
 
 
 class MotifGaussianList(object): # finished
@@ -204,9 +221,10 @@ class MotifGaussian(object): # finished
     def eval(self,chi):
         assert type(chi) == np.ndarray\
             and chi.shape == (6,)
+        chi = chi.astype('float')
 
-        return 1/((2*np.pi)**3*np.sqrt(la.det(self.SIGMA)))*\
-               np.exp(-1/2*np.dot(np.dot(chi.T,la.inv(self.SIGMA)),chi))#[0,0]
+        return 1.0/((2*np.pi)**3*np.sqrt(la.det(self.SIGMA)))*\
+               np.exp(-1.0/2*np.dot(np.dot(chi.T,la.inv(self.SIGMA)),chi))#[0,0]
 
 
 
