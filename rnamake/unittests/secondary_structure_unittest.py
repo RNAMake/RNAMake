@@ -2,27 +2,28 @@ import unittest
 import uuid
 
 from rnamake import secondary_structure, exceptions
+import is_equal_ss
 
 class ResidueUnittest(unittest.TestCase):
 
     def test_creation(self):
-        secondary_structure.Residue("G", "(", 10, "A")
+        secondary_structure.Residue("G", "(", 10, "A", " ", uuid.uuid1())
 
     def test_copy(self):
-        r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
+        r =  secondary_structure.Residue("G", "(", 10, "A", " ", uuid.uuid1())
         r_copy = secondary_structure.Residue.copy(r)
 
-        self.failUnless(r.get_dot_bracket() == r_copy.get_dot_bracket())
-        r_copy.set_name("A")
+        self.failUnless(is_equal_ss.are_residues_equal(r, r_copy))
 
+        r_copy.set_name("A")
         self.failUnless(r.get_name() != r_copy.get_name())
 
-    def test_to_str(self):
-        r =  secondary_structure.Residue("G", "(", 10, "A", uuid.uuid1())
-        s = r.to_str()
+    def test_get_str(self):
+        r =  secondary_structure.Residue("G", "(", 10, "A", " ", uuid.uuid1())
+        s = r.get_str()
         r_copy = secondary_structure.Residue.from_str(s)
-        self.failIf(r.name != r_copy.name)
-        self.failIf(r.dot_bracket != r_copy.dot_bracket)
+
+        self.failUnless(is_equal_ss.are_residues_equal(r, r_copy, check_uuid=0))
 
 
 class ChainUnittest(unittest.TestCase):
@@ -30,7 +31,7 @@ class ChainUnittest(unittest.TestCase):
     def setUp(self):
         residues = []
         for i in range(1, 10):
-            r =  secondary_structure.Residue("G", "(", i, "A")
+            r =  secondary_structure.Residue("G", "(", i, "A", " ", uuid.uuid1())
             residues.append(r)
         self.chain = secondary_structure.Chain(residues)
 
@@ -40,7 +41,7 @@ class ChainUnittest(unittest.TestCase):
 
         self.failIf(len(c) != len(c_copy), "copied chain is not the right size")
         for i, r in enumerate(c):
-            self.failIf(r != c_copy.residue(i),
+            self.failIf(r != c_copy.get_residue(i),
                         "did not get correct uuid")
 
     def test_first_and_last(self):
@@ -51,21 +52,21 @@ class ChainUnittest(unittest.TestCase):
            either
         """
         c = self.chain
-        if c.residue(0)  != c.first() or \
-           c.residue(-1) != c.last():
+        if c.get_residue(0)  != c.get_first() or \
+           c.get_residue(-1) != c.get_last():
             self.fail()
 
         chain_2 = secondary_structure.Chain([])
 
         with self.assertRaises(exceptions.ChainException):
-            chain_2.first()
+            chain_2.get_first()
 
         with self.assertRaises(exceptions.ChainException):
-            chain_2.last()
+            chain_2.get_last()
 
     def test_to_str(self):
         c = self.chain
-        s = c.to_str()
+        s = c.get_str()
         c_copy = secondary_structure.Chain.from_str(s)
 
 
@@ -76,7 +77,8 @@ class StructureUnittest(unittest.TestCase):
         chain_1_residues = []
         chain_2_residues = []
         for i, e in enumerate(seq):
-            chain_1_residues.append(secondary_structure.Residue(e, "(", i+1, "A"))
+            chain_1_residues.append(
+                secondary_structure.Residue(e, "(", i+1, "A", " ", uuid.uuid1()))
         for i, e in enumerate(seq):
             chain_2_residues.append(secondary_structure.Residue(e, ")", i+len(seq)+1, "B"))
 

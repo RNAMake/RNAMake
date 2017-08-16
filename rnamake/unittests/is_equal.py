@@ -20,6 +20,12 @@ def are_atoms_equal(atoms1, atoms2):
 def are_residues_equal(r1, r2, check_uuid=1, threshold=0.00001):
     if r1.get_name() != r2.get_name():
         return 0
+    if r1.get_chain_id() != r2.get_chain_id():
+        return 0
+    if r1.get_i_code() != r2.get_i_code():
+        return 0
+    if r1.get_num() != r2.get_num():
+        return 0
 
     if r1.get_uuid() != r2.get_uuid() and check_uuid:
         return 0

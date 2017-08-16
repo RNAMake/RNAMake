@@ -68,14 +68,14 @@ class Residue(primitives.Residue):
         "_uuid",
         "_i_code"]
 
-    def __init__(self, name, dot_bracket, num, chain_id, i_code=None, r_uuid=None):
+    def __init__(self, name, dot_bracket, num, chain_id, i_code, r_uuid):
         self._dot_bracket = dot_bracket
         super(self.__class__, self).__init__(name, num, chain_id, i_code, r_uuid)
 
     @classmethod
     def from_str(cls, s):
         spl = s.split(",")
-        return cls(spl[0], spl[1], int(spl[2]), spl[3], spl[4])
+        return cls(spl[0], spl[1], int(spl[2]), spl[3], spl[4], uuid.uuid1())
 
     @classmethod
     def copy(cls, r, new_uuid=0):
@@ -121,7 +121,6 @@ class Residue(primitives.Residue):
     # setters
     def set_name(self, n):
         self._name = n
-
 
 
 class Chain(primitives.Chain):
@@ -184,7 +183,34 @@ class Chain(primitives.Chain):
 
         return "<SecondaryStructureChain( " + seq + ")"
 
-    def sequence(self):
+    def get_copy(self):
+        return Chain.copy(self)
+
+    def get_dot_bracket(self):
+        """
+        gets the string verision of the secondary structure in
+        dot_bracket notation of this chain
+
+        :returns: string of secondary structure in dot bracket notation of
+            chain
+        :rtype: str
+
+        :examples:
+
+        ..  code-block:: python
+
+            >>> from rnamake.unittests import instances
+            >>> c = instances.secondary_structure_chain()
+            >>> c.dot_bracket()
+            u'(((((((((((('
+        """
+
+        db = ""
+        for r in self._residues:
+            db += r.get_dot_bracket()
+        return db
+
+    def get_sequence(self):
         """
         gets the string verision of the sequence in this chain
 
@@ -220,32 +246,8 @@ class Chain(primitives.Chain):
 
         seq = ""
         for r in self._residues:
-            seq += r.name
+            seq += r.get_name()
         return seq
-
-    def dot_bracket(self):
-        """
-        gets the string verision of the secondary structure in
-        dot_bracket notation of this chain
-
-        :returns: string of secondary structure in dot bracket notation of
-            chain
-        :rtype: str
-
-        :examples:
-
-        ..  code-block:: python
-
-            >>> from rnamake.unittests import instances
-            >>> c = instances.secondary_structure_chain()
-            >>> c.dot_bracket()
-            u'(((((((((((('
-        """
-
-        db = ""
-        for r in self._residues:
-            db += r.dot_bracket
-        return db
 
     def get_str(self):
         """
@@ -258,7 +260,7 @@ class Chain(primitives.Chain):
 
         s = ""
         for r in self._residues:
-            s += r.to_str() + ";"
+            s += r.get_str() + ";"
         return s
 
 
@@ -338,40 +340,6 @@ class Structure(primitives.Structure):
         new_chains = [ Chain.copy(c) for c in s]
         return cls(new_chains)
 
-    def sequence(self):
-        """
-        Concats the sequence of each Chain into one sequence for the entire
-        RNA
-
-        :return: sequence of structure
-        :rtype: seq
-        """
-        sequences = [x.sequence() for x in self.get_chains()]
-        return "&".join(sequences)
-
-    def dot_bracket(self):
-        """
-        Concats the secondary structure in the form of dot bracket notation
-        of each Chain into one sequence for the entire RNA
-
-        :return: sequence of structure
-        :rtype: seq
-        """
-        dot_brackets = [x.dot_bracket() for x in self.get_chains()]
-        return "&".join(dot_brackets)
-
-    def get_str(self):
-        """
-        generates a stringified verision of this instance.
-
-        :returns: stringified verision of structure
-        :rtype: str
-        """
-        s = ""
-        for c in self._chains:
-            s += c.to_str() + "|"
-        return s
-
     def get_chains(self):
         pos = 0
         res = []
@@ -388,6 +356,45 @@ class Structure(primitives.Structure):
         if len(res) > 0:
             chains.append(Chain(res))
         return chains
+
+    def get_copy(self):
+        return Structure.copy(self)
+
+    def get_sequence(self):
+        """
+        Concats the sequence of each Chain into one sequence for the entire
+        RNA
+
+        :return: sequence of structure
+        :rtype: seq
+        """
+        sequences = [c.get_sequence() for c in self.get_chains()]
+        return "&".join(sequences)
+
+    def get_dot_bracket(self):
+        """
+        Concats the secondary structure in the form of dot bracket notation
+        of each Chain into one sequence for the entire RNA
+
+        :return: sequence of structure
+        :rtype: seq
+        """
+        dot_brackets = [c.get_dot_bracket() for c in self.get_chains()]
+        return "&".join(dot_brackets)
+
+    def get_str(self):
+        """
+        generates a stringified verision of this instance.
+
+        :returns: stringified verision of structure
+        :rtype: str
+        """
+        s = ""
+        for r in self._residues:
+            s += r.get_str() + ";"
+        s += " ".join([str(x) for x in self._chain_cuts]) + ";"
+        return s
+
 
 
 class Basepair(primitives.Basepair):
@@ -1102,4 +1109,3 @@ def str_to_pose(s):
         motifs.append(m)
     p.motifs = motifs
     return p
-
