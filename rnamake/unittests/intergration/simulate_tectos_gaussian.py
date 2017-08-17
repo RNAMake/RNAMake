@@ -113,8 +113,8 @@ class SimulateTectos(base.Base):
         self.mst = self.mset.to_mst()
 
         ni1 = 2
-        ni2 = self.mst.last_node().index
-        # ni2 = 3
+        # ni2 = self.mst.last_node().index
+        ni2 = 3
         # default ei = 1
         mgl = se3.MotifGaussianList(self.mset)
         mg = mgl.get_mg(ni1,ni2)
@@ -220,18 +220,18 @@ class SimulateTectos(base.Base):
         # print mg.eval(target_chi)*32.*8*np.pi**2
 
 
-        # '''comparison of mean'''
-        # print 'ni2 resultant mean\n',mg.mean,'\n'
-        # state_node = self.mst.get_node(ni2).data
-        # print 'ni2 resultant state',state_node.get_end_state(state_node.end_name(1))
-        # # for x in range(0,ni2+1):
-        # print 'the state to align to ', state_node.get_end_state(state_node.end_name(1))
+        '''comparison of mean'''
+        print 'ni2 resultant mean\n',mg.mean,'\n'
+        state_node = self.mst.get_node(ni2).data
+        print 'ni2 resultant state',state_node.get_end_state(state_node.end_name(1))
         # for x in range(0,ni2+1):
-        #     state_node = self.mst.get_node(x).data
-        #     print 'node %d end 0 current\n'%x, state_node.get_end_state(state_node.end_name(1))
-        # for x in range(0,ni2+1):
-        #     state_node = self.mst.get_node(x).data
-        #     print 'node %d end 0 ref\n'%x,state_node.ref_state.end_states[1]
+        print 'the state to align to ', state_node.get_end_state(state_node.end_name(1))
+        for x in range(0,ni2+1):
+            state_node = self.mst.get_node(x).data
+            print 'node %d end 0 current\n'%x, state_node.get_end_state(state_node.end_name(1))
+        for x in range(0,ni2+1):
+            state_node = self.mst.get_node(x).data
+            print 'node %d end 0 ref\n'%x,state_node.ref_state.end_states[1]
 
 
 

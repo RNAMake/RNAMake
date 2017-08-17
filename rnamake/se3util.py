@@ -5,6 +5,7 @@ from rnamake import motif_ensemble
 from rnamake import motif,basepair,transform
 from rnamake import transformations
 from rnamake import fconv3d
+from rnamake.fconv3d import auxi
 from numpy import linalg as la
 import copy
 from numba import jit
@@ -15,14 +16,17 @@ class SE3Map(object):
     :param grid_size: How many grid along each axis
     :param grid_unit: How long is one grid
     :param data: numpy array actually storing the data
-    :type grid_size: iterable of int,length 4
+    :type grid_sizes: iterable of int,length 4
     :type grid_unit: float
     :type data: numpy.ndarray
     """
-    def __init__(self, grid_size, grid_unit):
-        self.grid_size = grid_size
+    def __init__(self, grid_sizes, grid_unit):
+        self.grid_sizes = grid_sizes
         self.grid_unit = grid_unit
-        self.data = np.zeros(grid_size)
+        self.data = np.zeros([grid_sizes[0], grid_sizes[0], grid_sizes[0],
+                              grid_sizes[1], grid_sizes[2], grid_sizes[3]])
+        org = (self.grid_sizes[0] - 1) / 2
+        auxi.org = [org,org,org]
 
     def __mul__(self, other):
         """
@@ -32,9 +36,9 @@ class SE3Map(object):
         :return:
         :rtype: SE3Map
         """
-        assert self.grid_size == other.grid_size\
+        assert self.grid_sizes == other.grid_sizes\
             and self.grid_unit == other.grid_unit
-        res = SE3Map(self.grid_size, self.grid_unit)
+        res = SE3Map(self.grid_sizes, self.grid_unit)
         res.data = fconv3d.fconv3d_broadcast.c3d(self.data, other.data)
         return res
 
@@ -74,7 +78,7 @@ class SE3Map(object):
         """
         start_matrix = state_to_matrix(ms.end_states[0])
         final_matrix  = state_to_matrix( ms.end_states[1])
-        step_matrix = start_matrix.T.dot(final_matrix)
+        step_matrix = la.inv(start_matrix).dot(final_matrix)
         probability = nrg_to_probability(nrg)
         # e_r, e_d = ms.end_states[1].r, ms.end_states[1].d
         # s_r, s_d = ms.end_states[0].r, ms.end_states[0].d
@@ -96,7 +100,7 @@ class SE3Map(object):
         :rtype: tuple of ints, shape(6,)
         """
         a = self.grid_unit
-        n = np.asarray(self.grid_size).astype('float')
+        n = np.asarray(self.grid_sizes).astype('float')
         eu = transformations.euler_from_matrix(
             state_matrix[:3,:3],axes='szxz'
         )
@@ -125,7 +129,7 @@ class SE3Map(object):
         :param grid_ndx:
         :return:
         """
-        beta_grid_size = self.grid_size[2]
+        beta_grid_size = self.grid_sizes[2]
         if grid_ndx[4] == 0:
             beta_w = 1-np.cos(np.pi/2/beta_grid_size)
         elif grid_ndx[4] == beta_grid_size-1:
