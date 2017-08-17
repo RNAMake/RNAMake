@@ -203,11 +203,11 @@ class SimulateTectos(base.Base):
         return mset
 
     def run(self):
-        ni1 = 2
-        ni2 = 3
+        ni1 = 11
+        ni2 = 13
         self.mset = self._get_mset()
         self.mst = self.mset.to_mst()
-        msec = MotifStateEnsembleConvolution(self.mset,ni1,ni2,grid_size=[11,11,11,11],grid_unit=1.0)
+        msec = MotifStateEnsembleConvolution(self.mset,ni1,ni2,grid_size=[11,11,11,11],grid_unit=3.0)
         msec.run()
         start_state = self.mst.get_node(ni1).data.cur_state.end_states[0]
         start_matrix = se3.state_to_matrix(start_state)
