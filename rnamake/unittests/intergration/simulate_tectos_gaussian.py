@@ -3,6 +3,8 @@ from rnamake import secondary_structure_parser, motif_type, motif_tree, exceptio
 from rnamake import resource_manager as rm
 from rnamake import se3util as se3
 import numpy as np
+from matplotlib import pylab as plt
+from matplotlib.animation import FuncAnimation
 # import warnings
 # warnings.filterwarnings('error')
 
@@ -20,16 +22,16 @@ def parse_args():
     return args
 
 class SimulateTectos(base.Base):
-    def __init__(self, **options):
-        self.setup_options_and_constraints()
-        self.options.dict_set(options)
-        #self.mset = self._get_mset()
+    def __init__(self, cseq,**options):
+        self.setup_options_and_constraints(cseq)
+        # self.options.dict_set(options)
+        self.mset = self._get_mset()
 
-    def setup_options_and_constraints(self):
+    def setup_options_and_constraints(self,cseq):
         options = { 'fseq'   : 'CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG',
                     'fss'    : '((((((....((((((((((((....))))))))))))....))))))',
                     # 'cseq'   : 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG',
-                    'cseq'   : 'CTAGGATATGGUUUAUAGGCGGGAACGCCUAUAAACCTAAGTCCTAG',
+                    'cseq'   : cseq,
                     'css'    : '(((((((..((((((((((((....))))))))))))...)))))))'}
         self.options = option.Options(options)
 
@@ -109,12 +111,12 @@ class SimulateTectos(base.Base):
         return mset
 
     def run(self):
-        self.mset = self._get_mset()
+        # self.mset = self._get_mset()
         self.mst = self.mset.to_mst()
 
         ni1 = 2
-        # ni2 = self.mst.last_node().index
-        ni2 = 3
+        ni2 = self.mst.last_node().index
+        # ni2 = 3
         # default ei = 1
         mgl = se3.MotifGaussianList(self.mset)
         mg = mgl.get_mg(ni1,ni2)
@@ -127,123 +129,159 @@ class SimulateTectos(base.Base):
 
         # '''printing out the topology'''
         # print self.mst.to_pretty_str()
-
+        '''matrix for double gaussian'''
+        cutoff = 2.25
+        radius = 10.0
+        radian = cutoff/radius
+        ele_v = 2.0/radian**2
+        ele_x = 2.0/cutoff**2
+        TAU = np.diag([ele_v,ele_v,ele_v,ele_x,ele_x,ele_x])
         '''testing chi'''
         from scipy import linalg as la
         target_chi = se3.matrix_to_chi(np.dot(la.inv(mg.mean),target_matrix))
         print target_chi
-        print mg.eval(target_chi)
-        test_chi = target_chi
-        # test_chi = np.array([0,0,0,0,0,0])
-        print 'PDF at destination: ', mg.eval(test_chi)
-        test_chi[3] += 2
-        print 'PDF deviated x=2 A: ', mg.eval(test_chi)
-        test_chi[3] -=2
-        test_chi[4] += 2
-        print 'PDF deviated y=2: ', mg.eval(test_chi)
-        test_chi[4] -= 2
-        test_chi[5] += 2
-        print 'PDF deviated z=2: ', mg.eval(test_chi)
-        test_chi[5] -= 2
-        # test_chi[4] +=2
-        # test_chi = np.array([0,0,0,0,0,0]).astype('float')
-        test_n = 100
-        test_grid = np.mgrid[-0.2:0.2:test_n*1j]
-        from matplotlib import pylab as plt
-        plt.figure('PDF over v_x')
-        v = np.zeros([test_n])
-        for x in range(test_n):
-            temp_chi = test_chi.copy()
-            temp_chi[0]+=test_grid[x]
-            v[x]=mg.eval(temp_chi)
-        plt.plot(test_grid,v)
-
-        plt.figure('PDF over v_y')
-        v = np.zeros([test_n])
-        for x in range(test_n):
-            temp_chi = test_chi.copy()
-            temp_chi[1] += test_grid[x]
-            v[x] = mg.eval(temp_chi)
-        plt.plot(test_grid,v)
-
-        plt.figure('PDF over v_z')
-        v = np.zeros([test_n])
-        for x in range(test_n):
-            temp_chi = test_chi.copy()
-            temp_chi[2] += test_grid[x]
-            v[x] = mg.eval(temp_chi)
-        plt.plot(test_grid,v)
-
-        test_grid = np.mgrid[-2:2:test_n * 1j]
-        plt.figure('PDF over x')
-        v = np.zeros([test_n])
-        for x in range(test_n):
-            temp_chi = test_chi.copy()
-            temp_chi[3] += test_grid[x]
-            v[x] = mg.eval(temp_chi)
-        plt.plot(test_grid, v)
-
-        plt.figure('PDF over y')
-        v = np.zeros([test_n])
-        for x in range(test_n):
-            temp_chi = test_chi.copy()
-            temp_chi[4] += test_grid[x]
-            v[x] = mg.eval(temp_chi)
-        plt.plot(test_grid, v)
-
-        plt.figure('PDF over z')
-        v = np.zeros([test_n])
-        for x in range(test_n):
-            temp_chi = test_chi.copy()
-            temp_chi[5] += test_grid[x]
-            v[x] = mg.eval(temp_chi)
-        plt.plot(test_grid, v)
-
-        plt.show()
-
-        '''integrated probability'''
-        vx,vy,vz,x,y,z = target_chi[0],target_chi[1],target_chi[2],\
-        target_chi[3],target_chi[4],target_chi[5]
-        from scipy import integrate as jf
-        def wrapper(x0, x1, x2):
-            return mg.eval(np.array([x0, x1, x2, x,y,z]))
-        prob = jf.nquad(wrapper,
-                 [[vx-0.2,vx+0.2],[vy-0.2,vy+0.2],[vz-0.2,vz+0.2]],opts={'epsrel':0.2})
-        print 'result',prob
-        factor = prob[0]/mg.eval(target_chi)
-        def wrapper(x0,x1,x2):
-            return mg.eval(np.array([vx,vy,vz,x0,x1,x2]))
-        prob = jf.nquad(wrapper,
-                 [[x - 2, x + 2], [y - 2, y + 2], [z - 2, z + 2]], opts={'epsabs': 0.1, 'epsrel': 0.2})
-        print prob
-        print 'further result',prob[0]*factor
-        # print mg.eval(target_chi)*32.*8*np.pi**2
-
-
-        '''comparison of mean'''
-        print 'ni2 resultant mean\n',mg.mean,'\n'
-        state_node = self.mst.get_node(ni2).data
-        print 'ni2 resultant state',state_node.get_end_state(state_node.end_name(1))
+        print 'PDF at target: ',mg.eval(target_chi)
+        res = mg.eval_double(target_chi,TAU)
+        print 'P by double Gaussian: ',res
+        return res
+        # test_chi = target_chi
+        # # test_chi = np.array([0,0,0,0,0,0])
+        # print 'PDF at destination: ', mg.eval(test_chi)
+        # test_chi[3] += 2
+        # print 'PDF deviated x=2 A: ', mg.eval(test_chi)
+        # test_chi[3] -=2
+        # test_chi[4] += 2
+        # print 'PDF deviated y=2: ', mg.eval(test_chi)
+        # test_chi[4] -= 2
+        # test_chi[5] += 2
+        # print 'PDF deviated z=2: ', mg.eval(test_chi)
+        # test_chi[5] -= 2
+        # # test_chi[4] +=2
+        # # test_chi = np.array([0,0,0,0,0,0]).astype('float')
+        # test_n = 100
+        # test_grid = np.mgrid[-0.2:0.2:test_n*1j]
+        #
+        # plt.figure('PDF over v_x')
+        # v = np.zeros([test_n])
+        # for x in range(test_n):
+        #     temp_chi = test_chi.copy()
+        #     temp_chi[0]+=test_grid[x]
+        #     v[x]=mg.eval(temp_chi)
+        # plt.plot(test_grid,v)
+        #
+        # plt.figure('PDF over v_y')
+        # v = np.zeros([test_n])
+        # for x in range(test_n):
+        #     temp_chi = test_chi.copy()
+        #     temp_chi[1] += test_grid[x]
+        #     v[x] = mg.eval(temp_chi)
+        # plt.plot(test_grid,v)
+        #
+        # plt.figure('PDF over v_z')
+        # v = np.zeros([test_n])
+        # for x in range(test_n):
+        #     temp_chi = test_chi.copy()
+        #     temp_chi[2] += test_grid[x]
+        #     v[x] = mg.eval(temp_chi)
+        # plt.plot(test_grid,v)
+        #
+        # test_grid = np.mgrid[-2:2:test_n * 1j]
+        # plt.figure('PDF over x')
+        # v = np.zeros([test_n])
+        # for x in range(test_n):
+        #     temp_chi = test_chi.copy()
+        #     temp_chi[3] += test_grid[x]
+        #     v[x] = mg.eval(temp_chi)
+        # plt.plot(test_grid, v)
+        #
+        # plt.figure('PDF over y')
+        # v = np.zeros([test_n])
+        # for x in range(test_n):
+        #     temp_chi = test_chi.copy()
+        #     temp_chi[4] += test_grid[x]
+        #     v[x] = mg.eval(temp_chi)
+        # plt.plot(test_grid, v)
+        #
+        # plt.figure('PDF over z')
+        # v = np.zeros([test_n])
+        # for x in range(test_n):
+        #     temp_chi = test_chi.copy()
+        #     temp_chi[5] += test_grid[x]
+        #     v[x] = mg.eval(temp_chi)
+        # plt.plot(test_grid, v)
+        #
+        # plt.show()
+        #
+        # '''integrated probability'''
+        # vx,vy,vz,x,y,z = target_chi[0],target_chi[1],target_chi[2],\
+        # target_chi[3],target_chi[4],target_chi[5]
+        # from scipy import integrate as jf
+        # def wrapper(x0, x1, x2):
+        #     return mg.eval(np.array([x0, x1, x2, x,y,z]))
+        # prob = jf.nquad(wrapper,
+        #          [[vx-0.2,vx+0.2],[vy-0.2,vy+0.2],[vz-0.2,vz+0.2]],opts={'epsrel':0.2})
+        # print 'result',prob
+        # factor = prob[0]/mg.eval(target_chi)
+        # def wrapper(x0,x1,x2):
+        #     return mg.eval(np.array([vx,vy,vz,x0,x1,x2]))
+        # prob = jf.nquad(wrapper,
+        #          [[x - 2, x + 2], [y - 2, y + 2], [z - 2, z + 2]], opts={'epsabs': 0.1, 'epsrel': 0.2})
+        # print prob
+        # print 'further result',prob[0]*factor
+        # # print mg.eval(target_chi)*32.*8*np.pi**2
+        #
+        #
+        # '''comparison of mean'''
+        # print 'ni2 resultant mean\n',mg.mean,'\n'
+        # state_node = self.mst.get_node(ni2).data
+        # print 'ni2 resultant state',state_node.get_end_state(state_node.end_name(1))
+        # # for x in range(0,ni2+1):
+        # print 'the state to align to ', state_node.get_end_state(state_node.end_name(1))
         # for x in range(0,ni2+1):
-        print 'the state to align to ', state_node.get_end_state(state_node.end_name(1))
-        for x in range(0,ni2+1):
-            state_node = self.mst.get_node(x).data
-            print 'node %d end 0 current\n'%x, state_node.get_end_state(state_node.end_name(1))
-        for x in range(0,ni2+1):
-            state_node = self.mst.get_node(x).data
-            print 'node %d end 0 ref\n'%x,state_node.ref_state.end_states[1]
+        #     state_node = self.mst.get_node(x).data
+        #     print 'node %d end 0 current\n'%x, state_node.get_end_state(state_node.end_name(1))
+        # for x in range(0,ni2+1):
+        #     state_node = self.mst.get_node(x).data
+        #     print 'node %d end 0 ref\n'%x,state_node.ref_state.end_states[1]
 
 
 
 
+class RunMe():
+    def __init__(self):
+
+        self.datajoe = np.genfromtxt('/home/zhuoyu/Downloads/exhustive_helices.results',
+                                skip_header=1,usecols=(0,1),dtype=['S128','float'])
+        self.data_count = self.datajoe.shape[0]
+
+        self.n=100
+        self.cmpdata = np.zeros([2,self.n])
+        self.cmpdata[:] = np.nan
+        self.k1 =0
+    def ud(self,ha):
+        i = np.random.randint(self.data_count)
+        cseq,counts = self.datajoe[i]
+        st = SimulateTectos(cseq)
+
+        # st._get_mset()
+        # mt = st.mt
+        # mt.to_pdb("test.pdb", renumber=1, close_chain=1)
+        self.cmpdata[0,self.k1],self.cmpdata[1,self.k1] = st.run() * 10**6,counts
+        theplot = plt.scatter(self.cmpdata[1,:],self.cmpdata[0,:])
+        self.k1 +=1
+        return theplot
 
 
 
 if __name__ == "__main__":
-    args = parse_args()
-    opts = vars(args)
-    st = SimulateTectos()
-    st._get_mset()
-    mt = st.mt
-    mt.to_pdb("test.pdb", renumber=1, close_chain=1)
-    st.run()
+    # args = parse_args()
+    # opts = vars(args)
+    runme =  RunMe()
+    fig = plt.figure('compare')
+    ani = FuncAnimation(fig,runme.ud,interval=0,frames=range(100))
+    plt.show()
+
+
+
+
+
