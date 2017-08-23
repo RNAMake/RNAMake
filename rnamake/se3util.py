@@ -39,7 +39,11 @@ class SE3Map(object):
         assert self.grid_sizes == other.grid_sizes\
             and self.grid_unit == other.grid_unit
         res = SE3Map(self.grid_sizes, self.grid_unit)
-        res.data = fconv3d.fconv3d_broadcast.c3d(self.data, other.data)
+        res.data = fconv3d.fconv3d.c3d(self.data, other.data)
+        res.data /= res.data.max()
+        res.data[res.data<0]=0
+        res.data[np.isclose(res.data,0)] = 0
+        assert not np.all(res.data == 0) # There should still be some data
         return res
 
 
@@ -63,30 +67,36 @@ class SE3Map(object):
         :type mse: motif_ensemble.MotifStateEnsemble
         :return: self
         """
+        netc=0
         for mem in mse.members:
-            self.place_motif_state(mem.motif_state,mem.energy)
+            netc += mem.count
+        for mem in mse.members:
+            probability = float(mem.count)/netc
+            self.place_motif_state(mem.motif_state,probability)
         return self
 
     #finished
-    def place_motif_state(self, ms,nrg):
+    def place_motif_state(self, ms, prob):
         """
         :param ms: motif state to place
-        :param nrg: energy related to that MS
+        :param prob: probability related to that MS
         :type ms: motif.MotifState
-        :type nrg: float
+        :type prob: float
         :return: None
         """
         start_matrix = state_to_matrix(ms.end_states[0])
         final_matrix  = state_to_matrix( ms.end_states[1])
         step_matrix = la.inv(start_matrix).dot(final_matrix)
-        probability = nrg_to_probability(nrg)
+        # probability = nrg_to_probability(prob)
         # e_r, e_d = ms.end_states[1].r, ms.end_states[1].d
         # s_r, s_d = ms.end_states[0].r, ms.end_states[0].d
         # t = transform.Transform(s_r.T, )
         # s = ms.end_states[0]
         grid_ndx = self.matrix_to_grid_ndx(step_matrix)
-        probability = nrg_to_probability(nrg)
-        self.data[grid_ndx] = probability/self.voxel(grid_ndx)
+        # probability = nrg_to_probability(prob)
+        self.data[grid_ndx] += prob/self.voxel(grid_ndx)
+        # print 'motif state to place\n',step_matrix,'\n'
+        # print 'it is placed at', grid_ndx
 
 
 
@@ -103,17 +113,19 @@ class SE3Map(object):
         n = np.asarray(self.grid_sizes).astype('float')
         eu = transformations.euler_from_matrix(
             state_matrix[:3,:3],axes='szxz'
-        )
+        )[::-1]
         d = state_matrix[:3,3].astype('float')
         nd = np.around(d/a)
-        assert np.all(abs(nd)<=(n[0]-1)/2) # keep index in range
+        if not np.all(abs(nd)<=(n[0]-1)/2):
+            print 'shift index required',nd
+            assert 0 # keep index in range
         nd += (n[0]-1)/2
 
         neu = np.zeros(3)
         neu[0]=np.around(eu[0]*n[1]/2/np.pi)
         if neu[0]==n[1]:
             neu[0] = 0
-        neu[1]=np.around(eu[1]*n[2]/np.pi)
+        neu[1]=int(eu[1]*n[2]/np.pi)
         if neu[1]==n[2]:
             print 'beta out of index!'
             neu[1] = n[2] -1
@@ -138,6 +150,34 @@ class SE3Map(object):
             beta_w = np.cos(np.pi/beta_grid_size*(grid_ndx[4]-0.5))-np.cos(np.pi/beta_grid_size*(grid_ndx[4]+0.5))
         res = beta_w * self.grid_unit**3
         return res
+
+    def gen_be_weight(self):
+        beta_grid_size = self.grid_sizes[2]
+        self.bwt = np.zeros(beta_grid_size,dtype='float32')
+        for be in range(beta_grid_size):
+            if be == 0:
+                self.bwt[be] = 1 - np.cos(np.pi / 2 / beta_grid_size)
+            elif be == beta_grid_size - 1:
+                self.bwt[be] = np.cos(np.pi * (beta_grid_size - 3.0 / 2) / beta_grid_size) + 1
+            else:
+                self.bwt[be] = np.cos(np.pi / beta_grid_size * (be - 0.5)) - np.cos(
+                    np.pi / beta_grid_size * (be + 0.5))
+
+
+
+    def trans_reg(self):
+        pass
+    def nmlz(self):
+        res = 0
+        # for x1 in range(self.grid_sizes[0]):
+        #     for x2 in range(self.grid_sizes[0]):
+        #         for x3 in range(self.grid_sizes[0]):
+        for al in range(self.grid_sizes[1]):
+            for be in range(self.grid_sizes[2]):
+                for ga in range(self.grid_sizes[3]):
+                    res += np.sum(self.data[:,:,:,al,be,ga]*self.voxel([0,0,0,al,be,ga]))
+        return res
+        pass
 
 
 class MotifGaussianList(object): # finished
@@ -165,7 +205,7 @@ class MotifGaussianList(object): # finished
                 start_state= state_to_matrix(msm.motif_state.end_states[0])
                 states[:,:,i] = np.dot(la.inv(start_state),final_state)
                 counts[i] = msm.count
-            print en.index,'\t',np.sum(counts)
+            # print en.index,'\t',np.sum(counts)
             self.mgl.append(self.mg_from_sc(states,counts))
 
 
@@ -187,7 +227,7 @@ class MotifGaussianList(object): # finished
         res_mg = copy.copy(self.mgl[ni1])
         for i in range(ni1+1,ni2+1):
             res_mg = res_mg*self.mgl[i]
-            print '|SIGMA| at the end of step %d = '%i,la.det(res_mg.SIGMA)
+            # print '|SIGMA| at the end of step %d = '%i,la.det(res_mg.SIGMA)
         return res_mg
 
 
@@ -232,6 +272,18 @@ class MotifGaussian(object): # finished
         return 1.0/((2*np.pi)**3*np.sqrt(la.det(self.SIGMA)))*\
                np.exp(-1.0/2*np.dot(np.dot(chi.T,la.inv(self.SIGMA)),chi))#[0,0]
 
+    def eval_double(self,chi,TAU):
+        assert type(chi) == np.ndarray\
+        and chi.shape == (6,)\
+        and type(TAU) == np.ndarray\
+        and TAU.shape == (6,6)
+        TAU = TAU.astype('float')
+        A = la.inv(self.SIGMA)
+        return 1.0/np.sqrt(la.det(TAU+A)*la.det(self.SIGMA))*\
+                np.exp(-1.0/2*np.dot(np.dot(chi,TAU),chi))*np.exp(1.0/2*(np.dot(np.dot(np.dot(TAU,chi),
+                                                                                       la.inv(A+TAU)),np.dot(TAU,chi))))
+
+
 
 
 def nrg_to_probability(energy):
@@ -251,6 +303,12 @@ def nrg_to_probability(energy):
     kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
 
     return np.exp(energy/(-kBT))
+
+def prob_to_nrg(prob):
+    kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+    kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
+    return kBT*np.log(prob)*6.02/100
+
 
 
 def matrix_to_chi(t):

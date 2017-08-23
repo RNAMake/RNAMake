@@ -9,30 +9,43 @@ import pdb
 #import auxi as a
 
 def envis6d(phi, hold_on=False):  # phi(x1,x2,x3,alpha,beta,gamma)
-    """this will hopefully envisage the configuration of the SE(3) group"""
+    """
+    this will envisage the configuration of the SE(3) group
+    """
     phi = np.abs(phi)
-    threshold = (phi.max() - phi.min()) * 0.5 + phi.min()
-    grid_phi = np.mgrid[0:phi.shape[0],0:phi.shape[1],0:phi.shape[2],0:phi.shape[3],0:phi.shape[4],0:phi.shape[5]]
+    threshold = (phi.max() - phi.min()) * 0.1 + phi.min()
+    grid_phi = np.mgrid[0:phi.shape[0], 0:phi.shape[1], 0:phi.shape[2], 0:phi.shape[3], 0:np.pi:phi.shape[4] * 1j,
+               0:phi.shape[5]]
     grid_phi = grid_phi.astype('float')
     grid_phi[3,:] *= 2*np.pi/phi.shape[3]
-    # FIXME
-    grid_phi[4,:] *= np.pi/phi.shape[4]
     grid_phi[5,:] *= 2*np.pi/phi.shape[5]
     grid_phi_list = grid_phi.reshape([6,-1])
     phi_list = phi.reshape([-1])
     effect_points = np.logical_and(phi_list >= threshold,phi_list > 0)
 
-    effect_phi_list = phi_list[effect_points] #Ah just leave it here until I feel like proposing a scheme to envisage the relative intensity.
+    effect_phi_list = phi_list[effect_points]
     effect_grid = grid_phi_list[:,effect_points]
 
     effect_grid_translation = effect_grid[:3,:]
     effect_grid_rotation = effect_grid[3:,:]
-    effect_grid_rotation_representation = lambda r: effect_grid_translation+r*np.array([np.sin(effect_grid_rotation[1,:])*np.sin(effect_grid_rotation[2,:]),-np.sin(effect_grid_rotation[1,:])*np.cos(effect_grid_rotation[2,:]),np.cos(effect_grid_rotation[1,:])])
-    effect_grid_spin_representation = effect_grid_rotation_representation(0.5) + 0.05 * np.array([np.cos(
-        effect_grid_rotation[0, :]) * np.cos(effect_grid_rotation[2, :]) - np.sin(effect_grid_rotation[0, :]) * np.cos(
-        effect_grid_rotation[1, :]) * np.sin(effect_grid_rotation[2, :]), \
-                                                                                                  np.cos(effect_grid_rotation[0,:]) * np.sin(effect_grid_rotation[2,:]) + np.sin(effect_grid_rotation[0,:]) * np.cos(effect_grid_rotation[1,:]) * np.cos(effect_grid_rotation[2,:]), \
-                                                                                                  np.sin(effect_grid_rotation[0,:]) * np.sin(effect_grid_rotation[1,:])])
+    effect_grid_rotation_representation = \
+        lambda r: effect_grid_translation + \
+                  r * np.array([
+                      np.sin(effect_grid_rotation[1, :]) * np.sin(effect_grid_rotation[0, :]),
+                      -np.sin(effect_grid_rotation[1, :]) * np.cos(effect_grid_rotation[0, :]),
+                      np.cos(effect_grid_rotation[1, :])
+                  ])
+    effect_grid_spin_representation = \
+        effect_grid_rotation_representation(0.5) + \
+        0.05 * np.array([
+            np.cos(effect_grid_rotation[2, :]) * np.cos(effect_grid_rotation[0, :]) -
+            np.sin(effect_grid_rotation[2, :]) * np.cos(effect_grid_rotation[1, :]) * np.sin(
+                effect_grid_rotation[0, :]),
+            np.cos(effect_grid_rotation[2, :]) * np.sin(effect_grid_rotation[0, :]) +
+            np.sin(effect_grid_rotation[2, :]) * np.cos(effect_grid_rotation[1, :]) * np.cos(
+                effect_grid_rotation[0, :]),
+            np.sin(effect_grid_rotation[2, :]) * np.sin(effect_grid_rotation[1, :])
+        ])
     fig1 = plt.figure()
     fig1.canvas.set_window_title('SE(3) Illustration')
     ax = fig1.add_subplot(111,projection='3d')
@@ -51,7 +64,9 @@ def envis6d(phi, hold_on=False):  # phi(x1,x2,x3,alpha,beta,gamma)
     # ax.scatter(effect_grid_translation[0]+0.15, effect_grid_translation[1], effect_grid_translation[2]+0.5, c='r',marker='s')
     # for r in np.mgrid[0:0.4:5j]:
     #     ax.scatter(effect_grid_rotation_representation(r)[0],effect_grid_rotation_representation(r)[1],effect_grid_rotation_representation(r)[2],marker='.',c='r')
-    ax.scatter(effect_grid_rotation_representation(0.5)[0], effect_grid_rotation_representation(0.5)[1],effect_grid_rotation_representation(0.5)[2], marker='*', c='r',depthshade=False)
+    ax.scatter(effect_grid_rotation_representation(0.5)[0],
+               effect_grid_rotation_representation(0.5)[1],
+               effect_grid_rotation_representation(0.5)[2], marker='*', c='r', depthshade=False)
     ax.scatter(effect_grid_spin_representation[0], effect_grid_spin_representation[1],
                effect_grid_spin_representation[2], marker='s', c=effect_phi_list, depthshade=False)
     if not hold_on:
