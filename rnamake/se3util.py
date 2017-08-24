@@ -27,6 +27,7 @@ class SE3Map(object):
                               grid_sizes[1], grid_sizes[2], grid_sizes[3]])
         org = (self.grid_sizes[0] - 1) / 2
         auxi.org = [org,org,org]
+        self.gen_be_weight()
 
     def __mul__(self, other):
         """
@@ -166,7 +167,12 @@ class SE3Map(object):
 
 
     def trans_reg(self):
-        pass
+        # regression to translational distributions
+        return np.sum(self.data*self.bwt[np.newaxis,np.newaxis,np.newaxis,np.newaxis,:,np.newaxis],
+                      axis=(3,4,5))
+
+
+
     def nmlz(self):
         res = 0
         # for x1 in range(self.grid_sizes[0]):

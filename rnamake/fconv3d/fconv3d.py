@@ -66,6 +66,7 @@ def e_fft3(phi):
     f = np.concatenate([f[:, :, a.org[2]:, :, :, :], f[:, :, :a.org[2], :, :, :]], axis=2)
     res = ft.ifftn(f, axes=(0, 1, 2))
     '''normalization'''
+    res *= (f.shape[0])**3
     # res *= phi.shape[0] * phi.shape[1] * phi.shape[2]
     # res /= (2 * np.pi) ** 3
     res_shifted = ft.fftshift(res, axes=(0, 1, 2))
@@ -667,6 +668,7 @@ def so3inti(phi):  # phi(x1,x2,x3,lp,mp,s,n)
     f6 = res.transpose([0, 1, 2, 4, 5, 3])
     '''Real* Normalization'''
     f6 *= (2 * np.pi) ** 2
+    f6 /= (rang_1)**3
     print 'Goodbye so3inti. \n'
     return f6
 
