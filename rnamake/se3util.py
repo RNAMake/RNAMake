@@ -6,6 +6,7 @@ from rnamake import motif,basepair,transform
 from rnamake import transformations
 from rnamake import fconv3d
 from rnamake.fconv3d import auxi
+from rnamake.fconv3d import envis as ev
 from numpy import linalg as la
 import copy
 from numba import jit
@@ -41,7 +42,7 @@ class SE3Map(object):
             and self.grid_unit == other.grid_unit
         res = SE3Map(self.grid_sizes, self.grid_unit)
         res.data = fconv3d.fconv3d.c3d(self.data, other.data)
-        res.data /= res.data.max()
+        res.data /= self.nmlz()
         res.data[res.data<0]=0
         res.data[np.isclose(res.data,0)] = 0
         assert not np.all(res.data == 0) # There should still be some data
@@ -74,6 +75,7 @@ class SE3Map(object):
         for mem in mse.members:
             probability = float(mem.count)/netc
             self.place_motif_state(mem.motif_state,probability)
+        ev.envis6d(self.data)
         return self
 
     #finished

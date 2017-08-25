@@ -4,6 +4,7 @@ from rnamake import resource_manager as rm
 from rnamake import se3util as se3
 import numpy as np
 from matplotlib import pylab as plt
+import matplotlib.cm as cm
 from matplotlib.animation import FuncAnimation
 # import warnings
 # warnings.filterwarnings('error')
@@ -130,18 +131,20 @@ class SimulateTectos(base.Base):
         # '''printing out the topology'''
         # print self.mst.to_pretty_str()
         '''matrix for double gaussian'''
-        cutoff = 4.7
-        radius = 10.0
-        radian = cutoff/radius
-        ele_v = 2.0/radian**2
-        ele_x = 2.0/cutoff**2
-        TAU = np.diag([ele_v*2,ele_v,ele_v/5,ele_x,ele_x,ele_x])
-        # cutoff = 10.0
+        # cutoff = 4.7
         # radius = 10.0
         # radian = cutoff/radius
         # ele_v = 2.0/radian**2
         # ele_x = 2.0/cutoff**2
         # TAU = np.diag([ele_v*2,ele_v,ele_v/5,ele_x,ele_x,ele_x])
+        cutoff = 5
+        radius = 10.0
+        radian = cutoff/radius
+        ele_v = 2.0/radian**2
+        ele_x = 2.0/cutoff**2
+        TAU = np.diag([ele_v*2,ele_v,ele_v,ele_x,ele_x,ele_x])
+        print 'TAU diag'
+        print [ele_v*2,ele_v,ele_v,ele_x,ele_x,ele_x]
         '''testing chi'''
         from scipy import linalg as la
         target_chi = se3.matrix_to_chi(np.dot(la.inv(mg.mean),target_matrix))
@@ -149,7 +152,7 @@ class SimulateTectos(base.Base):
         print 'PDF at target: ',mg.eval(target_chi)
         res = mg.eval_double(target_chi,TAU)
         print 'P by double Gaussian: ',res
-
+        #
         # test_chi = target_chi
         # # test_chi = np.array([0,0,0,0,0,0])
         # print 'PDF at destination: ', mg.eval(test_chi)
@@ -319,6 +322,10 @@ class RunMeVarLen():
                                      delimiter=',')
         self.data_count = self.dataexp.shape[0]
 
+        self.datajoe = np.genfromtxt('/home/zhuoyu/Downloads/org_wcall_results.csv', skip_header=1,
+                                     usecols=(1,3,8), dtype=['S128', 'S128','float'],delimiter=',')
+        self.wtctjoe = 13060.0
+
 
         self.n = self.data_count
         self.cmpdata=np.zeros([3,self.n])
@@ -336,28 +343,33 @@ class RunMeVarLen():
         clen = 10+(len(str(css))-len("CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG"))/2
         if flen != query_flen or clen != query_clen:
             return
+        # else:
+        #     self.cmpdata[0, self.k1], self.cmpdata[1, self.k1], self.cmpdata[2, self.k1] = i-1,i,i+1
+        #     self.k1 += 1
+        #     return
         st = SimulateTectos(fseq=str(fseq),fss=str(fss),cseq=str(cseq),css=str(css))
         kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
         kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
         # st._get_mset()
         # mt = st.mt
         # mt.to_pdb("test.pdb", renumber=1, close_chain=1)
-        # ndxjoe = np.where(self.datajoe['f0'] == cseq)[0]
-        # if len(ndxjoe) == 1:
-        #     probjoe = self.datajoe[ndxjoe]['f1'][0]
+        ndxjoe = np.where(np.logical_and(self.datajoe['f0'] == fseq,self.datajoe['f1']==cseq))[0]
+        if len(ndxjoe) == 1:
+            ddgjoe = self.datajoe[ndxjoe]['f2'][0]
             # print self.datajoe[np.where(self.datajoe['f0'] == cseq)]['f0'][0]
             # print cseq
             # print probjoe
             # ddgjoe = -kBT * 6.02 / 4.1868 / 100 * np.log(probjoe / self.wtctjoe)
-            # dgjoe = ddgjoe + self.wtdg
-        # else:
-        #     dgjoe = np.nan
-        #     print 'data unmatched in Joe\'s and exp'
+            dgjoe = ddgjoe + self.wtdg
+        else:
+            dgjoe = np.nan
+            print 'data unmatched in Joe\'s and exp'
         simulprob = st.run()
         simulddg = -kBT * 6.02 / 4.1868 / 100 * np.log(simulprob / self.wtprob)
         simuldg = simulddg + self.wtdg
-        self.cmpdata[0, self.k1], self.cmpdata[1, self.k1], self.cmpdata[2, self.k1] = simuldg, dg,np.nan# dgjoe
+        self.cmpdata[0, self.k1], self.cmpdata[1, self.k1], self.cmpdata[2, self.k1] = simuldg, dg, dgjoe
         self.k1 += 1
+
 
 
 
@@ -365,16 +377,46 @@ class RunMeVarLen():
 if __name__ == "__main__":
     # args = parse_args()
     # opts = vars(args)
-    runme =  RunMeVarLen()
+    runme =  RunMe()
     fig = plt.figure()
     ax = fig.add_subplot(111)
-    for x in range(runme.n):
-        runme.ud(x,10,11)
-    plt.scatter(runme.cmpdata[1,:],runme.cmpdata[0,:])
-    plt.scatter(runme.cmpdata[1,:],runme.cmpdata[2,:],c='r')
-    plt.plot(np.mgrid[-12:-10:100j],np.mgrid[-12:-10:100j])
-    ax.set_xlabel('Exp $\Delta$G(kcal/mol)')
-    ax.set_ylabel('Mine & Joe\'s (kcal/mol)')
+    # lenlist = [(10,11)]
+    lenlist = [(10,9),(10,10),(10,11),(11,9),(11,10),(9,9),(9,10)]
+    # colorlist = cm.rainbow(np.mgrid[0:1:2*len(lenlist)*1j])
+    sctlist_mine = []
+    sctlist_joe =[]
+    len_split = []
+    # for ndx_len in enumerate(lenlist):
+
+    # for i,ndx_len in enumerate(lenlist):
+    #     len_split.append(runme.k1)
+    #     k2 = runme.k1
+        # runme.cmpdata[:]=np.nan
+        # for x in range(runme.n):
+        #     runme.ud(x,*ndx_len)
+        # sct_mine= plt.scatter(runme.cmpdata[1, k2:], runme.cmpdata[0, k2:],color=colorlist[i])
+        # sct_joe=plt.scatter(runme.cmpdata[1, k2:], runme.cmpdata[2, k2:], marker='^',color=colorlist[i+len(lenlist)])
+        # sctlist_mine.append(sct_mine)
+        # sctlist_joe.append(sct_joe)
+    # for x in range(runme.n):
+    #     runme.ud(x)
+    npzf = np.load('gaussian_1010.npz')
+    runme.cmpdata = npzf['data']
+    sct_mine= plt.scatter(runme.cmpdata[1, :], runme.cmpdata[0, :])
+    plt.plot(np.mgrid[-11:-10:100j], np.mgrid[-11:-10:100j], 'k')
+    plt.figure()
+    sct_joe=plt.scatter(runme.cmpdata[1, :], runme.cmpdata[2, :], marker='^')
+    # np.savez('gaussian_1010',data=runme.cmpdata)
+    # legend1 =plt.legend(tuple(sctlist_joe),('flow %d chip %d' % x for x in lenlist),loc='lower right',
+    #                     scatterpoints=1,title='MC')
+    # legend2=plt.legend(tuple(sctlist_mine), ('flow %d chip %d' % x for x in lenlist), scatterpoints=1,
+    #            loc='upper left',title='Gaussian')
+    # legend1.draggable()
+    # legend2.draggable()
+    # plt.gca().add_artist(legend1)
+    plt.plot(np.mgrid[-11:-10:100j],np.mgrid[-11:-10:100j],'k')
+    ax.set_xlabel('Exp $\Delta G$(kcal/mol)')
+    ax.set_ylabel('Predicted $\Delta G$(kcal/mol)')
     plt.show()
 
 
