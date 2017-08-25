@@ -345,21 +345,21 @@ def align_motif(ref_bp_state, motif_end, motif, sterics=1):
     :param motif_end: the motif end basepair to overly with the ref_bp
     :param motif: the motif object that you want to align
 
-    :type ref_bp: basepair.BasepairState
+    :type ref_bp: Basepair object
     :type motif_end: Basepair object
     :type motif: Motif object
     """
 
     r1 , r2 = ref_bp_state.r , motif_end.state().r
     r = util.unitarize(r1.T.dot(r2))
-    trans = -motif_end.state().d # zyz: this step seems redundant.
+    trans = -motif_end.state().d
     t = transform.Transform(r, trans)
     motif.transform(t)
     bp_pos_diff = ref_bp_state.d - motif_end.state().d
     motif.move(bp_pos_diff)
 
-    # alignment is by center of basepair, it can be slightly improved by
-    # aligning the c1' sugars
+    #alignment is by center of basepair, it can be slightly improved by
+    #aligning the c1' sugars
     res1_coord, res2_coord = motif_end.c1_prime_coords()
     ref_res1_coord, ref_res2_coord = ref_bp_state.sugars
 
@@ -373,8 +373,8 @@ def align_motif(ref_bp_state, motif_end, motif, sterics=1):
         sugar_diff_1 = ref_res1_coord - res2_coord
         sugar_diff_2 = ref_res2_coord - res1_coord
 
-    # if dist1 < 5 or dist2 < 5:
-    #     motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )b1 = --526
+    if dist1 < 5 or dist2 < 5:
+        motif.move( (sugar_diff_1 + sugar_diff_2) / 2 )
 
     if sterics:
         motif.get_beads([motif_end])

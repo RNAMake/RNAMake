@@ -219,8 +219,6 @@ class BuildSqliteLibraries(object):
                    motif_type.type_to_str(t).lower()+".db"
             sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
-
-
     def build_helix_ensembles(self):
         helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
         helix_mlib.load_all()
@@ -324,7 +322,6 @@ class BuildSqliteLibraries(object):
             print "start, ", c.end_id
             clustered_motifs = []
             energies = []
-            counts = []
             dir_name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
 
             for j, c_motifs in enumerate(m_clusters):
@@ -339,17 +336,10 @@ class BuildSqliteLibraries(object):
 
                 energy = -kBT*math.log(pop)
                 energies.append(energy)
-                counts.append(len(c_motifs.motifs))
-            """
-            Sorry I have to do this to pass the original
-            statistics besides the population since 
-            covariance per se depends
-            on the count, not just ratio.
-            """
 
 
             me = motif_ensemble.MotifEnsemble()
-            me.setup(c.end_id, clustered_motifs, energies, counts)
+            me.setup(c.end_id, clustered_motifs, energies)
 
             motif = me.members[0].motif
             motif.name = "BP."+str(c_i)
@@ -376,7 +366,7 @@ class BuildSqliteLibraries(object):
                 count += 1
 
             me = motif_ensemble.MotifEnsemble()
-            me.setup(clustered_motifs[0].end_ids[0], clustered_motifs, energies,counts)
+            me.setup(clustered_motifs[0].end_ids[0], clustered_motifs, energies)
             motif = me.members[0].motif
             motif.name = "BP."+str(c_i)
             if motif.end_ids[0] != motif.end_ids[1]:
@@ -558,18 +548,17 @@ class BuildSqliteLibraries(object):
                     end_ids[m.end_ids[0]] = m
 
             scores = [1 for x in motifs]
-            counts = [1 for x in motifs]
 
             me = motif_ensemble.MotifEnsemble()
-            me.setup(lowest.name, motifs, scores,counts)
+            me.setup(lowest.name, motifs, scores)
             mes_data.append([me.to_str(), me.id, count])
         f.close()
 
         path = settings.RESOURCES_PATH +"/motif_libraries_new/unique_twoway.db"
         sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
-        # path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/twoway_clusters.db"
-        # sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
+        #path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/twoway_clusters.db"
+        #sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
 
     def build_ss_and_seq_libraries(self):
         libnames = ["twoway", "tcontact", "hairpin", "nway"]
@@ -609,9 +598,8 @@ class BuildSqliteLibraries(object):
                     all_motifs.append(m_e.motif)
                 if libname != "twoway":
                     energies = [1 for x in all_motifs]
-                    counts = [1 for x in all_motifs]
                     me = motif_ensemble.MotifEnsemble()
-                    me.setup(c.end_id, all_motifs, energies,counts)
+                    me.setup(c.end_id, all_motifs, energies)
                     mes.append(me)
                     motifs.append(me.members[0].motif)
                     motifs[-1].name = me.id
@@ -621,16 +609,14 @@ class BuildSqliteLibraries(object):
                 m_clusters = cluster.cluster_motifs(all_motifs)
                 clustered_motifs = []
                 energies = []
-                counts = []
                 for j, c_motifs in enumerate(m_clusters):
                     clustered_motifs.append(c_motifs.motifs[0])
                     pop = float(len(c_motifs.motifs)) / float(len(all_motifs))
                     energy = -kBT*math.log(pop)
                     energies.append(energy)
-                    counts.append(len(c_motifs.motifs))
 
                 me = motif_ensemble.MotifEnsemble()
-                me.setup(c.end_id, clustered_motifs, energies,counts)
+                me.setup(c.end_id, clustered_motifs, energies)
                 data.append([me.to_str(), me.id, i])
 
             print libname, len(mlib.all()), len(clusters), len(data), len(keys)
@@ -687,18 +673,18 @@ class BuildSqliteLibraries(object):
             path = settings.RESOURCES_PATH + "/motif_state_libraries/" + libname + "_min.db"
             sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
-# setup_start_motif()
+#setup_start_motif()
 builder = BuildSqliteLibraries()
 
-builder.build_ideal_helices_old()
-# builder.build_trimmed_ideal_helix_library()
-# builder.build_basic_libraries()
-# builder.build_helix_ensembles()
+#builder.build_ideal_helices_old()
+#builder.build_trimmed_ideal_helix_library()
+#builder.build_basic_libraries()
+#builder.build_helix_ensembles()
 #builder.build_new_bp_steps()
-# builder.build_ss_and_seq_libraries()
-# builder.build_unique_twoway_library()
-# builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_ss_and_seq_libraries()
+builder.build_unique_twoway_library()
+#builder.build_motif_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
 
 
 
