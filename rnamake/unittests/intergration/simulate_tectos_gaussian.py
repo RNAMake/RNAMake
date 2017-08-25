@@ -22,16 +22,16 @@ def parse_args():
     return args
 
 class SimulateTectos(base.Base):
-    def __init__(self, cseq,**options):
-        self.setup_options_and_constraints(cseq)
-        # self.options.dict_set(options)
+    def __init__(self,**options):
+        self.setup_options_and_constraints()
+        self.options.dict_set(options)
         self.mset = self._get_mset()
 
-    def setup_options_and_constraints(self,cseq):
+    def setup_options_and_constraints(self):
         options = { 'fseq'   : 'CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG',
                     'fss'    : '((((((....((((((((((((....))))))))))))....))))))',
-                    # 'cseq'   : 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG',
-                    'cseq'   : cseq,
+                    'cseq'   : 'CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG',
+                    # 'cseq'   : cseq,
                     'css'    : '(((((((..((((((((((((....))))))))))))...)))))))'}
         self.options = option.Options(options)
 
@@ -116,7 +116,7 @@ class SimulateTectos(base.Base):
 
         ni1 = 2
         ni2 = self.mst.last_node().index
-        # ni2 = 3
+        # ni2 = 10
         # default ei = 1
         mgl = se3.MotifGaussianList(self.mset)
         mg = mgl.get_mg(ni1,ni2)
@@ -130,12 +130,18 @@ class SimulateTectos(base.Base):
         # '''printing out the topology'''
         # print self.mst.to_pretty_str()
         '''matrix for double gaussian'''
-        cutoff = 2.25
+        cutoff = 4.7
         radius = 10.0
         radian = cutoff/radius
         ele_v = 2.0/radian**2
         ele_x = 2.0/cutoff**2
-        TAU = np.diag([ele_v,ele_v,ele_v,ele_x,ele_x,ele_x])
+        TAU = np.diag([ele_v*2,ele_v,ele_v/5,ele_x,ele_x,ele_x])
+        # cutoff = 10.0
+        # radius = 10.0
+        # radian = cutoff/radius
+        # ele_v = 2.0/radian**2
+        # ele_x = 2.0/cutoff**2
+        # TAU = np.diag([ele_v*2,ele_v,ele_v/5,ele_x,ele_x,ele_x])
         '''testing chi'''
         from scipy import linalg as la
         target_chi = se3.matrix_to_chi(np.dot(la.inv(mg.mean),target_matrix))
@@ -143,7 +149,7 @@ class SimulateTectos(base.Base):
         print 'PDF at target: ',mg.eval(target_chi)
         res = mg.eval_double(target_chi,TAU)
         print 'P by double Gaussian: ',res
-        return res
+
         # test_chi = target_chi
         # # test_chi = np.array([0,0,0,0,0,0])
         # print 'PDF at destination: ', mg.eval(test_chi)
@@ -185,7 +191,7 @@ class SimulateTectos(base.Base):
         #     v[x] = mg.eval(temp_chi)
         # plt.plot(test_grid,v)
         #
-        # test_grid = np.mgrid[-2:2:test_n * 1j]
+        # test_grid = np.mgrid[-5:5:test_n * 1j]
         # plt.figure('PDF over x')
         # v = np.zeros([test_n])
         # for x in range(test_n):
@@ -236,49 +242,139 @@ class SimulateTectos(base.Base):
         # state_node = self.mst.get_node(ni2).data
         # print 'ni2 resultant state',state_node.get_end_state(state_node.end_name(1))
         # # for x in range(0,ni2+1):
-        # print 'the state to align to ', state_node.get_end_state(state_node.end_name(1))
+        # # print 'the state to align to ', state_node.get_end_state(state_node.end_name(1))
+        # for x in range(0,ni2):
+        #     state_node = self.mst.get_node(x).data
+        #     print 'node %d name'%x,state_node.name()
+        #     print 'node %d end 0 current\n'%x, state_node.get_end_state(state_node.end_name(0))
+        # state_node = self.mst.get_node(2).data
+        # node2state = state_node.get_end_state(state_node.end_name(0))
+        # print 'target node w.r.t node 2'
+        # for x in range(2,ni2+1):
+        #     print 'node %d mean w.r.t node2 \n'%x,mgl.get_mg(2,x).mean
+
         # for x in range(0,ni2+1):
         #     state_node = self.mst.get_node(x).data
-        #     print 'node %d end 0 current\n'%x, state_node.get_end_state(state_node.end_name(1))
-        # for x in range(0,ni2+1):
-        #     state_node = self.mst.get_node(x).data
-        #     print 'node %d end 0 ref\n'%x,state_node.ref_state.end_states[1]
+        #     print 'node %d end 0 ref\n'%x,state_node.ref_state.end_states[0]
+        return res
 
 
 
 
 class RunMe():
     def __init__(self):
+        #
+        # self.datajoe = np.genfromtxt('/home/zhuoyu/Downloads/exhustive_helices.results',
+        #                         skip_header=1,usecols=(0,1),dtype=['S128','float'])
+        # self.data_count = self.datajoe.shape[0]
 
-        self.datajoe = np.genfromtxt('/home/zhuoyu/Downloads/exhustive_helices.results',
-                                skip_header=1,usecols=(0,1),dtype=['S128','float'])
-        self.data_count = self.datajoe.shape[0]
+        self.dataexp = np.genfromtxt('/home/zhuoyu/Downloads/helical_variation.csv',skip_header=1,
+                                     usecols=(0,1),dtype=['S128','float'],delimiter=',')
+        self.data_count = self.dataexp.shape[0]
 
-        self.n=100
-        self.cmpdata = np.zeros([2,self.n])
+        self.datajoe = np.genfromtxt('/home/zhuoyu/Downloads/exhustive_helices_TU.results',skip_header=1,
+                                     usecols=(0,1),dtype=['S128','float'])
+        self.wtctjoe = 13060.0
+
+        self.n=self.data_count
+        self.cmpdata = np.zeros([3,self.n])
         self.cmpdata[:] = np.nan
         self.k1 =0
-    def ud(self,ha):
-        i = np.random.randint(self.data_count)
-        cseq,counts = self.datajoe[i]
-        st = SimulateTectos(cseq)
+        wtst = SimulateTectos(cseq='CTAGGATATGGGGUAGGUGCGGGAACGCACCUACCCCTAAGTCCTAG')
+        self.wtprob = wtst.run()
+        self.wtdg = -10.583
+    def ud(self,x):
+        # i = np.random.randint(self.data_count)
+        i = x
+        cseq,dg = self.dataexp[i]
+        st = SimulateTectos(cseq=str(cseq))
 
+        kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+        kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
         # st._get_mset()
         # mt = st.mt
         # mt.to_pdb("test.pdb", renumber=1, close_chain=1)
-        self.cmpdata[0,self.k1],self.cmpdata[1,self.k1] = st.run() * 10**6,counts
-        theplot = plt.scatter(self.cmpdata[1,:],self.cmpdata[0,:])
+        ndxjoe = np.where(self.datajoe['f0'] == cseq)[0]
+        if len(ndxjoe) == 1:
+            probjoe = self.datajoe[ndxjoe]['f1'][0]
+        # print self.datajoe[np.where(self.datajoe['f0'] == cseq)]['f0'][0]
+        # print cseq
+        # print probjoe
+            ddgjoe  = -kBT*6.02/4.1868/100*np.log(probjoe/self.wtctjoe)
+            dgjoe = ddgjoe + self.wtdg
+        else:
+            dgjoe = np.nan
+            print 'data unmatched in Joe\'s and exp'
+        simulprob = st.run()
+        simulddg = -kBT*6.02/4.1868/100*np.log(simulprob/self.wtprob)
+        simuldg = simulddg+self.wtdg
+        self.cmpdata[0,self.k1],self.cmpdata[1,self.k1],self.cmpdata[2,self.k1] =simuldg,dg,dgjoe
         self.k1 +=1
-        return theplot
+
+
+class RunMeVarLen():
+    def __init__(self):
+        self.dataexp = np.genfromtxt('/home/zhuoyu/Downloads/all_lengths.csv', skip_header=1,
+                                usecols=(0, 1,2,3,4), dtype=['S128','S128','S128','S128','float'],
+                                     delimiter=',')
+        self.data_count = self.dataexp.shape[0]
+
+
+        self.n = self.data_count
+        self.cmpdata=np.zeros([3,self.n])
+        self.cmpdata[:]=np.nan
+        self.k1 = 0
+
+        wtst = SimulateTectos(cseq='CTAGGATATGGGGUAGGUGCGGGAACGCACCUACCCCTAAGTCCTAG')
+        self.wtprob = wtst.run()
+        self.wtdg = -10.583
+
+    def ud(self,x,query_flen,query_clen):
+        i = x
+        fseq,fss,cseq,css,dg = self.dataexp[i]
+        flen = 10+(len(str(fss))-len("CUAGGAAUCUGGAAGUACCGAGGAAACUCGGUACUUCCUGUGUCCUAG"))/2
+        clen = 10+(len(str(css))-len("CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG"))/2
+        if flen != query_flen or clen != query_clen:
+            return
+        st = SimulateTectos(fseq=str(fseq),fss=str(fss),cseq=str(cseq),css=str(css))
+        kB = 1.3806488e-1  # Boltzmann constant in pN.A/K
+        kBT = kB * 298.15  # kB.T at room temperature (25 degree Celsius)
+        # st._get_mset()
+        # mt = st.mt
+        # mt.to_pdb("test.pdb", renumber=1, close_chain=1)
+        # ndxjoe = np.where(self.datajoe['f0'] == cseq)[0]
+        # if len(ndxjoe) == 1:
+        #     probjoe = self.datajoe[ndxjoe]['f1'][0]
+            # print self.datajoe[np.where(self.datajoe['f0'] == cseq)]['f0'][0]
+            # print cseq
+            # print probjoe
+            # ddgjoe = -kBT * 6.02 / 4.1868 / 100 * np.log(probjoe / self.wtctjoe)
+            # dgjoe = ddgjoe + self.wtdg
+        # else:
+        #     dgjoe = np.nan
+        #     print 'data unmatched in Joe\'s and exp'
+        simulprob = st.run()
+        simulddg = -kBT * 6.02 / 4.1868 / 100 * np.log(simulprob / self.wtprob)
+        simuldg = simulddg + self.wtdg
+        self.cmpdata[0, self.k1], self.cmpdata[1, self.k1], self.cmpdata[2, self.k1] = simuldg, dg,np.nan# dgjoe
+        self.k1 += 1
+
 
 
 
 if __name__ == "__main__":
     # args = parse_args()
     # opts = vars(args)
-    runme =  RunMe()
-    fig = plt.figure('compare')
-    ani = FuncAnimation(fig,runme.ud,interval=0,frames=range(100))
+    runme =  RunMeVarLen()
+    fig = plt.figure()
+    ax = fig.add_subplot(111)
+    for x in range(runme.n):
+        runme.ud(x,10,11)
+    plt.scatter(runme.cmpdata[1,:],runme.cmpdata[0,:])
+    plt.scatter(runme.cmpdata[1,:],runme.cmpdata[2,:],c='r')
+    plt.plot(np.mgrid[-12:-10:100j],np.mgrid[-12:-10:100j])
+    ax.set_xlabel('Exp $\Delta$G(kcal/mol)')
+    ax.set_ylabel('Mine & Joe\'s (kcal/mol)')
     plt.show()
 
 

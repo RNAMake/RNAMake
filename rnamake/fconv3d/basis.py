@@ -12,6 +12,8 @@ warnings.filterwarnings("error", module='basis')
 def p_lmn(l,mm,nn,z):
     m=np.copy(mm).astype('float32')
     n=np.copy(nn).astype('float32')
+    l = np.copy(l).astype('float32')
+    z = np.copy(z).astype('float32')
     pm = m+n < 0
     m[pm], n[pm] = -m[pm], -n[pm]
     cmp_m = m < n
@@ -19,7 +21,8 @@ def p_lmn(l,mm,nn,z):
     if not (np.all(np.isfinite(m)) and np.all(np.isfinite(n)))\
             and np.all(np.isfinite(l))  and np.all(np.isfinite(z)):
         print 'NaN before basis function is calculated!'
-    tmp = np.zeros(l.shape,dtype='float64')
+        raw_input('waiting...')
+    tmp = np.zeros(l.shape,dtype='float32')
     cmp_l = np.logical_and(l >= abs(m), l >= abs(n))
     tmp[cmp_l] = 2 ** (-m[cmp_l])* (1 + z[cmp_l]) ** ((m[cmp_l] + n[cmp_l]) / 2) * np.sqrt(ss.factorial(l[cmp_l] - m[cmp_l])/ss.factorial(l[cmp_l] - n[cmp_l]) *
                                             ss.factorial(l[cmp_l] + m[cmp_l]) / ss.factorial(l[cmp_l] + n[cmp_l])) * \
@@ -31,6 +34,8 @@ def p_lmn(l,mm,nn,z):
             print 'early tmp not finite! @ ', it.multi_index
             print 'value:', it[0]
         it.iternext()
+    if not np.all(np.isfinite(tmp)):
+        raw_input('waiting...')
 
     if np.all(np.isfinite(ss.eval_jacobi(l[cmp_l] - m[cmp_l], m[cmp_l] - n[cmp_l], m[cmp_l] + n[cmp_l], z[cmp_l]))):
         tmp[cmp_l]*=ss.eval_jacobi(l[cmp_l] - m[cmp_l], m[cmp_l] - n[cmp_l], m[cmp_l] + n[cmp_l], z[cmp_l])

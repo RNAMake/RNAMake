@@ -378,7 +378,7 @@ class SimulateTectos(base.Base):
 
     def run(self):
 
-        analyse = 1
+        analyse = 0
 
         ni1 = 2
 
@@ -387,7 +387,7 @@ class SimulateTectos(base.Base):
         ni2 = self.mst.last_node().index
         # ni2 = 3
         if analyse == 0:
-            msec = MotifStateEnsembleConvolution(self.mset,ni1,ni2,grid_size=[13,9,10,9],grid_unit=1.5)
+            msec = MotifStateEnsembleConvolution(self.mset,ni1,ni2,grid_size=[21,21,20,21],grid_unit=1.5)
             msec.run()
         else:
             npzf = np.load('run2.npz')
