@@ -414,7 +414,8 @@ if __name__ == "__main__":
     # legend1.draggable()
     # legend2.draggable()
     # plt.gca().add_artist(legend1)
-    plt.plot(np.mgrid[-11:-10:100j],np.mgrid[-11:-10:100j],'k')
+    plt.plot(np.mgrid[-11:-10:100j],np.mgrid[-11:-10ls
+    len_split:100j],'k')
     ax.set_xlabel('Exp $\Delta G$(kcal/mol)')
     ax.set_ylabel('Predicted $\Delta G$(kcal/mol)')
     plt.show()
