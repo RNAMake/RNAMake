@@ -109,8 +109,12 @@ class SimulateTectos(base.Base):
 if __name__ == "__main__":
     args = parse_args()
     opts = vars(args)
-    st = SimulateTectos(**opts)
+    st = SimulateTectos()
     st._get_mset()
+    mset = st._get_mset()
+    mst = mset.to_mst()
+    print mst.get_node(1).data.ref_state.end_states[0]
+    print mst.get_node(1).data.cur_state.end_states[0]
     mt = st.mt
     mt.to_pdb("test.pdb", renumber=1, close_chain=1)
 

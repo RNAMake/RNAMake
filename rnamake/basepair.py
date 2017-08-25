@@ -390,6 +390,27 @@ class BasepairState(object):
     def __init__(self, r, d, sugars):
         self.r, self.d, self.sugars = r, d, sugars
 
+
+    def __repr__(self):
+        return """\n\
+        <BasepairState>\n\
+        ...Frame...\n\
+        ||\t%f\t%f\t%f\t%f\t||\n\
+        ||\t%f\t%f\t%f\t%f\t||\n\
+        ||\t%f\t%f\t%f\t%f\t||\n\
+        ||\t%f\t%f\t%f\t%f\t||\n\
+        ...Sugars...\n\
+        [%f\t%f\t%f\t]\n\
+        [%f\t%f\t%f\t]\n\
+        """%\
+       (self.r[0][0],self.r[1][0],self.r[2][0],self.d[0],
+        self.r[0][1], self.r[1][1], self.r[2][1], self.d[1],
+        self.r[0][2], self.r[1][2], self.r[2][2], self.d[2],
+        0,0,0,1,
+        self.sugars[0][0],self.sugars[0][1],self.sugars[0][2],
+        self.sugars[1][0], self.sugars[1][1], self.sugars[1][2]
+        )
+
     def flip(self):
         self.r[1] = -self.r[1]
         self.r[2] = -self.r[2]
