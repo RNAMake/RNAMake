@@ -80,11 +80,13 @@ class StructureUnittest(unittest.TestCase):
             chain_1_residues.append(
                 secondary_structure.Residue(e, "(", i+1, "A", " ", uuid.uuid1()))
         for i, e in enumerate(seq):
-            chain_2_residues.append(secondary_structure.Residue(e, ")", i+len(seq)+1, "B"))
+            chain_2_residues.append(
+                secondary_structure.Residue(e, ")", i+len(seq)+1, "B", " ", uuid.uuid1()))
 
         c1 = secondary_structure.Chain(chain_1_residues)
         c2 = secondary_structure.Chain(chain_2_residues)
-        self.s = secondary_structure.Structure([c1, c2])
+        all_res, chain_cuts = secondary_structure.chains_to_res_and_cuts([c1, c2])
+        self.s = secondary_structure.Structure(all_res, chain_cuts)
 
     def test_creation(self):
         pass
@@ -95,7 +97,7 @@ class StructureUnittest(unittest.TestCase):
         if r is None:
             self.fail("did not find a known residue, find_residue not working")
 
-        r2 = ss.get_residue(uuid=r.uuid)
+        r2 = ss.get_residue(uuid=r.get_uuid())
         if r2 is None:
             self.fail("did not find a known residue, find_residue not working")
 
@@ -105,19 +107,25 @@ class StructureUnittest(unittest.TestCase):
     def test_copy(self):
         ss = self.s
         c_ss = secondary_structure.Structure.copy(ss)
-        for r in ss.iter_res():
-            if c_ss.get_residue(uuid=r.uuid) is None:
+        for r in ss:
+            if c_ss.get_residue(uuid=r.get_uuid()) is None:
                 self.fail("cannot find residue in copy")
 
-    def test_to_str(self):
+    def test_get_str(self):
         ss = self.s
-        s = ss.to_str()
+        s = ss.get_str()
         c_ss = secondary_structure.Structure.from_str(s)
-        for r in ss.iter_res():
-            if c_ss.get_residue(r.num, r.chain_id) is None:
+        for r in ss:
+            if c_ss.get_residue(r.get_num(), r.get_chain_id()) is None:
                 self.fail("cannot find residue in to_str")
 
     def test_seq_and_ss(self):
+        self.failUnless(self.s.get_sequence() == "AGCU&AGCU")
+
+
+class BasepairUnittest(unittest.TestCase):
+
+    def setUp(self):
         pass
 
 

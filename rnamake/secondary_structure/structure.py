@@ -322,12 +322,13 @@ class Structure(primitives.Structure):
         :return: structure from str
         :rtype: secondary_structure.Structure
         """
-        spl = s.split("|")
-        chains = []
-        for c_str in spl[:-1]:
-            c = Chain.from_str(c_str)
-            chains.append(c)
-        return cls(chains)
+        spl = s.split(";")
+        residues = []
+        for r_str in spl[:-2]:
+            r = Residue.from_str(r_str)
+            residues.append(r)
+        chain_cuts = [int(x) for x in spl[-2].split()]
+        return cls(residues, chain_cuts)
 
     @classmethod
     def copy(cls, s):
@@ -337,8 +338,13 @@ class Structure(primitives.Structure):
         :return: copy of structure
         :rtype: secondary_structure.Structure
         """
-        new_chains = [ Chain.copy(c) for c in s]
-        return cls(new_chains)
+
+        residues = []
+        for r in s._residues:
+            cr = Residue.copy(r)
+            residues.append(cr)
+
+        return cls(residues, s._chain_cuts)
 
     def get_chains(self):
         pos = 0
@@ -394,7 +400,6 @@ class Structure(primitives.Structure):
             s += r.get_str() + ";"
         s += " ".join([str(x) for x in self._chain_cuts]) + ";"
         return s
-
 
 
 class Basepair(primitives.Basepair):
@@ -1053,59 +1058,13 @@ class MotifDirectedGraph(motif_type_directed_graph.MotifTypeDirectedGraph):
         self._motif_aligner = Aligner
 
 
-def str_to_pose(s):
-    """
-    converts a pose from string generated from :func:`Pose.to_str`
+def chains_to_res_and_cuts(chains):
+    all_res = []
+    chain_cuts = []
+    for c in chains:
+        for r in c:
+            all_res.append(r)
+        chain_cuts.append(len(all_res))
 
-    :param s: string created by Pose.to_str()
-    :type s: str
-
-    :return: pose from str
-    :rtype: secondary_structure.Pose
-    """
-
-    spl = s.split("#")
-    p = Pose()
-    p.name = spl[0]
-    p.path = spl[1]
-    p.structure = str_to_structure(spl[2])
-    res = p.residues()
-    for bp_str in spl[3].split("@")[:-1]:
-        res_is = bp_str.split()
-        r1 = res[int(res_is[0])]
-        r2 = res[int(res_is[1])]
-        p.basepairs.append(Basepair(r1, r2))
-    for end_i in spl[4].split():
-        p.ends.append(p.basepairs[int(end_i)])
-    p.end_ids = spl[5].split()
-
-    motifs = []
-    for str in spl[6:-1]:
-        spl2 = str.split("!")
-        m = Motif()
-        m.mtype = int(spl2[0])
-        m.name = spl2[1]
-        m.path = spl2[2]
-        m.structure = str_to_structure(spl2[3])
-        chains = []
-        for c in m.chains():
-            res = []
-            for r in c.residues:
-                r_new = p.get_residue(r.num, r.chain_id)
-                res.append(r_new)
-            chains.append(Chain(res))
-        m.structure.chains = chains
-        res = m.residues()
-        for bp_str in spl2[4].split("@")[:-1]:
-            res_is = bp_str.split()
-            r1 = res[int(res_is[0])]
-            r2 = res[int(res_is[1])]
-            for bp in p.basepairs:
-                if bp.res1 == r1 and bp.res2 == r2:
-                    m.basepairs.append(bp)
-        for end_i in spl2[5].split():
-            m.ends.append(m.basepairs[int(end_i)])
-        m.end_ids = spl2[6].split()
-        motifs.append(m)
-    p.motifs = motifs
-    return p
+    chain_cuts.append(len(all_res))
+    return all_res, chain_cuts

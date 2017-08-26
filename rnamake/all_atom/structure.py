@@ -1124,14 +1124,13 @@ class Basepair(primitives.Basepair):
         "_uuid"]
 
     def __init__(self, res1_uuid, res2_uuid, r, d, sugars, name,
-                 x3dna_bp_type=None, bp_type=None, bp_uuid=None):
-        self._res1_uuid, self._res2_uuid = res1_uuid, res2_uuid
+                 x3dna_bp_type, bp_type, bp_uuid):
+
+        super(self.__class__, self).__init__(res1_uuid, res2_uuid, bp_uuid, bp_type)
         self._r = r
         self._d = d
         self._sugars = sugars
         self._name = name
-        self._bp_type = bp_type
-        self._uuid = bp_uuid
         self._x3dna_bp_type = x3dna_bp_type
 
         if self._bp_type is None:
@@ -1150,7 +1149,8 @@ class Basepair(primitives.Basepair):
         r = basic_io.str_to_matrix(spl[1])
         sugars = basic_io.str_to_points(spl[2])
 
-        return cls(res1_uuid, res2_uuid, r, d, sugars, spl[3], int(spl[4]), int(spl[5]))
+        return cls(res1_uuid, res2_uuid, r, d, sugars, spl[3], int(spl[4]),
+                   int(spl[5]), uuid.uuid1())
 
     @classmethod
     def copy(cls, bp):

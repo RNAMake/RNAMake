@@ -25,6 +25,7 @@ def _calc_center(res):
     center /= count
     return center
 
+
 def _calc_name(res):
         res1, res2 = res
 
@@ -59,7 +60,7 @@ class BasepairUnittest(unittest.TestCase):
         bp = all_atom.Basepair(res1.get_uuid(), res2.get_uuid(), x_bp.r, center,
                                [res1.get_coords("C1'"), res2.get_coords("C1'")],
                                _calc_name(res), x_bp.bp_type,
-                               primitives.BasepairType.WC)
+                               primitives.BasepairType.WC, uuid.uuid1())
 
         self.basepair = bp
 
@@ -78,7 +79,7 @@ class BasepairUnittest(unittest.TestCase):
         bp = all_atom.Basepair(res1.get_uuid(), res2.get_uuid(), x_bp.r, center,
                                [res1.get_coords("C1'"), res2.get_coords("C1'")],
                                _calc_name(res), x_bp.bp_type,
-                               primitives.BasepairType.WC)
+                               primitives.BasepairType.WC, uuid.uuid1())
 
         for i in range(100):
             t = transform_random()
