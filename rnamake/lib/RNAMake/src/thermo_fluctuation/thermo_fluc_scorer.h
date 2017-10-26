@@ -58,7 +58,7 @@ public:
         state_2->flip();
         r_diff_flip_ = state_1->r().difference(state_2->r());;
         state_2->flip();
-        
+
         if(r_diff_ > r_diff_flip_) { frame_score_ += r_diff_flip_; }
         else                       { frame_score_ += r_diff_;      }
         
@@ -94,7 +94,7 @@ public:
         frame_score_ = state_1->d().distance(state_2->d())*weight_d_;
         r_diff_ = state_1->r().difference(state_2->r());
         state_2->flip();
-        r_diff_flip_ = state_1->r().difference(state_2->r());;
+        r_diff_flip_ = state_1->r().difference(state_2->r());
         state_2->flip();
         if(r_diff_ > r_diff_flip_) { frame_score_ += r_diff_flip_*weight_r_; }
         else                       { frame_score_ += r_diff_*weight_r_;      }

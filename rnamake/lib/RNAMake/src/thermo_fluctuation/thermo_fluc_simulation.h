@@ -17,32 +17,24 @@
 #include "thermo_fluctuation/thermo_fluc_scorer.h"
 
 
-class ThermoFlucSimulationException : public std::runtime_error {
-public:
-    ThermoFlucSimulationException(
-        String const & message) :
-    std::runtime_error(message)
-    {}
-};
-
 class ThermoFlucSimulation : public OptionClass {
 public: // constructors
     ThermoFlucSimulation();
 
     ~ThermoFlucSimulation() {}
-    
+
 public:
-    
+
     void
     setup(
-        MotifStateEnsembleTreeOP const &,
-        int,
-        int,
-        int,
-        int);
-    
+            MotifStateEnsembleTreeOP const &,
+            int,
+            int,
+            int,
+            int);
+
 public: //run
-    
+
     inline
     int
     _check_sterics() {
@@ -53,7 +45,7 @@ public: //run
                     for(auto const & b1 : sampler_.mst()->get_node(j)->data()->cur_state->beads()) {
                         if(b1.distance(b2) < 2.2) { clash_ = 1; }
                     }
-                    
+
                     if(clash_) { break; }
                 }
                 if(clash_) { break; }
@@ -62,49 +54,49 @@ public: //run
         }
         return clash_;
     }
-    
+
     int
     run();
-    
+
 public: //option wrappers
-    
+
     inline
     Options &
     options() { return options_; }
-    
+
     inline
     float
     get_int_option(String const & name) { return options_.get_int(name); }
-    
+
     inline
     float
     get_float_option(String const & name) { return options_.get_float(name); }
-    
+
     inline
     String
     get_string_option(String const & name) { return options_.get_string(name); }
-    
+
     inline
     bool
     get_bool_option(String const & name) { return options_.get_bool(name); }
-    
-    
+
+
     template<typename T>
     void
     set_option_value(
-        String const & name,
-        T const & val) {
+            String const & name,
+            T const & val) {
         options_.set_value(name, val);
         update_var_options();
     }
-    
+
     void
     update_var_options();
-    
+
 protected:
     void
     setup_options();
-    
+
 private:
     ThermoFlucScorerOP scorer_;
     ThermoFlucSampler sampler_;
@@ -119,6 +111,14 @@ private:
     bool record_;
     float temperature_, cutoff_;
     int steps_;
+};
+
+class ThermoFlucSimulationException : public std::runtime_error {
+public:
+    ThermoFlucSimulationException(
+        String const & message) :
+    std::runtime_error(message)
+    {}
 };
 
 

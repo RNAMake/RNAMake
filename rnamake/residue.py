@@ -302,6 +302,9 @@ class Residue(object):
         except KeyError:
             raise exceptions.ResidueException("cannot find atom")
 
+    def center(self):
+        return util.center(self.atoms)
+
     def connected_to(self, res, cutoff=3.0):
         """
         Determine if another residue is connected to this residue, returns 0
@@ -501,5 +504,15 @@ class Residue(object):
         f.write(s)
         f.close()
 
+    def transform(self, t):
+        for a in self.atoms:
+            if a is not None:
+                a.transform(t)
+
+
+    def move(self, p):
+        for a in self.atoms:
+            if a is not None:
+                a.move(p)
 
 

@@ -32,8 +32,6 @@ SimulateTectosApp::setup_options() {
     add_option("s", 1000000, OptionType::INT);
     add_option("start_pose", false, OptionType::BOOL);
     add_option("start_pdbs", false, OptionType::BOOL);
-
-    
     //extra ensembles
     add_option("extra_me", "", OptionType::STRING);
     

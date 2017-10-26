@@ -64,7 +64,7 @@ class Atom(object):
 
         """
 
-        coords = np.array(self.coords)
+        coords = np.copy(self.coords)
         return Atom(self.name, coords)
 
     def to_str(self):
@@ -109,3 +109,10 @@ class Atom(object):
                 self.coords[1],
                 self.coords[2])
         return s
+
+    def transform(self, t):
+        self.coords = np.dot(self.coords, t.rotation().T) + t.translation()
+
+    def move(self, p):
+        self.coords += p
+
