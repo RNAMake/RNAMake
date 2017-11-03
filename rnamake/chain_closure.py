@@ -2,7 +2,6 @@ import math
 import numpy as np
 import atom
 import util
-import transform
 
 
 def create_coord_system(atoms):
@@ -99,29 +98,9 @@ def close_torsion(which_dir, parent_atoms, daughter_atoms, match_atoms_1,
 
 # Copied from Rhiju's Rosetta code: protocols/farna/RNA_LoopCloser.cc
 def close_chain(chain):
-    r_template = None
-    for r in chain.residues:
-        if r.get_atom("P") is not None:
-            r_template = r
-            break
-
-    if r_template is None:
-        raise ValueError(
-            "cannot close chain no residue has a phostphate")
-
-    r_template = r_template.copy()
-
-
     for i in range(0,len(chain.residues)-1):
-
         res1 = chain.residues[i]
         res2 = chain.residues[i+1]
-
-        if res1.get_atom("P") is None:
-            replace_missing_phosphate_backbone(res1, r_template)
-        if res2.get_atom("P") is None:
-            replace_missing_phosphate_backbone(res2, r_template)
-
 
         if res1.connected_to(res2,cutoff=2.0):
             continue
@@ -179,40 +158,3 @@ def close_chain(chain):
         res1.atoms.pop()
         res2.atoms.pop()
 
-
-def replace_missing_phosphate_backbone(r, r_template):
-    ref_frame_1 = get_res_ref_frame(r)
-    ref_frame_2 = get_res_ref_frame(r_template)
-
-    rot = util.unitarize(ref_frame_1.T.dot(ref_frame_2))
-    t = transform.Transform(rot, -r_template.center())
-    r_template.transform(t)
-    r_template.move(r.get_atom("C4'").coords - r_template.get_atom("C4'").coords)
-
-    atom_names = ["C5'", "O5'", "P", "OP1", "OP2"]
-    new_atoms = []
-    for name in atom_names:
-        a = r_template.get_atom(name)
-        new_atoms.append(atom.Atom(a.name, np.copy(a.coords)))
-
-    for na in new_atoms:
-        pos = r.rtype.atom_map[na.name]
-        r.atoms[pos] = na
-
-
-def get_res_ref_frame(r):
-    beads =  r.get_beads()
-    c = r.center()
-    if r.name == "A" or r.name == "G":
-        vec1 = util.normalize(np.array(r.get_atom("N9").coords - r.get_atom("C1'").coords))
-        vec2 = util.normalize(np.array(r.get_atom("N9").coords - beads[-1].center))
-        cross = np.cross(vec1, vec2)
-        rot = [vec1, vec2, cross]
-    else:
-        vec1 = util.normalize(np.array(r.get_atom("N1").coords - r.get_atom("C1'").coords))
-        vec2 = util.normalize(np.array(r.get_atom("N1").coords - beads[-1].center))
-        cross = np.cross(vec1, vec2)
-        rot = [vec1, vec2, cross]
-
-    rot = np.array(rot)
-    return util.unitarize(rot)

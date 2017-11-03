@@ -5,6 +5,13 @@ class Transform(object):
     Basic transform object, stores a 4x4 homogenous transform that contains
     both the rotation and translation of a transform
 
+    zyz:the transformation matrix
+        looks like:
+        [[... ... ... x]
+         [...  R  ... y]
+         [... ... ... z]
+         [ 0   0   0  1]]
+
     .. code-block:: python
 
         #with full matrix

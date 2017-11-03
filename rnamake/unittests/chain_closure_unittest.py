@@ -2,7 +2,7 @@ import unittest
 import numpy as np
 
 from rnamake import resource_manager as rm
-from rnamake import motif_factory, util, transform, motif_graph, atom
+from rnamake import motif_factory, util, transform, motif_graph, atom, motif_tree
 import is_equal
 
 
@@ -94,11 +94,17 @@ class ChainClosureUnittest(unittest.TestCase):
 
 
     def test_tecto_fix(self):
-        m = rm.manager.get_structure("/Users/jyesselm/Documents/tecto_for_nmr/tightest.0.pdb",
-                                     "tightest")
+        #m = rm.manager.get_structure("/Users/jyesselm/Documents/tecto_for_nmr/tightest.0.pdb",
+        #                             "tightest")
 
-        #m.to_pdb("test.pdb", renumber=1)
-        #m.to_pdb("fix.pdb", renumber=1, close_chain=1)
+        f = open("/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/bound.0.mt")
+        lines = f.readlines()
+        f.close()
+
+        mt = motif_tree.motif_tree_from_topology_str(lines[0])
+        mt.add_connection(1, mt.last_node().index)
+        mt.to_pdb("test.pdb", renumber=1)
+        mt.to_pdb("fix.pdb", renumber=1, close_chain=1)
 
 
 def main():

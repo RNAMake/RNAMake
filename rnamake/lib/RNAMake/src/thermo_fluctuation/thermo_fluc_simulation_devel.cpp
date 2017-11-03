@@ -136,7 +136,7 @@ ThermoFlucSimulationDevel::run() {
     int r = 0;
     int count = 0;
     int clash = 0;
-    int pdb_count = 0;
+    int bound_pdb_count = 0;
         
     std::ofstream out, out_state, out_all;
     if(record_) {
@@ -211,15 +211,7 @@ ThermoFlucSimulationDevel::run() {
         if(score_ < cutoff_) {
             
             count += 1;
-
-            if(bound_pdbs_ && !all_pdbs_) {
-                try {
-                    sampler_.mst()->to_motif_tree()->to_pdb("bound." + std::to_string(pdb_count) + ".pdb", 1);
-                    pdb_count += 1;
-                }
-                catch(...) {}
-            }
-
+            
             /*if(bound_pdb_ > bound_pdb_count) {
                 try {
                     const int dir_err = mkdir(String("nodes_" + std::to_string(bound_pdb_count)).c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
@@ -231,21 +223,6 @@ ThermoFlucSimulationDevel::run() {
                 }
                 catch(...) {}
             }*/
-        }
-
-        else {
-            if(unbound_pdbs_ && !all_pdbs_) {
-                try {
-                    sampler_.mst()->to_motif_tree()->to_pdb("unbound." + std::to_string(pdb_count) + ".pdb", 1);
-                    pdb_count += 1;
-                }
-                catch(...) {}
-            }
-        }
-
-        if(all_pdbs_) {
-            sampler_.mst()->to_motif_tree()->to_pdb("all." + std::to_string(pdb_count) + ".pdb", 1);
-            pdb_count += 1;
         }
         
         if(record_) {
@@ -343,9 +320,6 @@ ThermoFlucSimulationDevel::setup_options() {
     options_.add_option("record", false, OptionType::BOOL);
     options_.add_option("record_file", "test.out", OptionType::STRING);
     options_.add_option("steric_radius", 2.2f, OptionType::FLOAT);
-    options_.add_option("all_pdbs", false, OptionType::BOOL);
-    options_.add_option("bound_pdbs", false, OptionType::BOOL);
-    options_.add_option("unbound_pdbs", false, OptionType::BOOL);
     options_.lock_option_adding();
     
     /*
@@ -367,8 +341,15 @@ ThermoFlucSimulationDevel::update_var_options() {
     record_        = options_.get_bool("record");
     record_file_   = options_.get_string("record_file");
     steric_radius_ = options_.get_float("steric_radius");
-    all_pdbs_      = options_.get_bool("all_pdbs");
-    bound_pdbs_    = options_.get_bool("bound_pdbs");
-    unbound_pdbs_  = options_.get_bool("unbound_pdbs");
-
+    
+    /*temperature_    = options_.option<float>("temperature");
+    steps_          = options_.option<int>("steps");
+    record_state_   = options_.option<int>("record_state");
+    record_all_     = options_.option<int>("record_all");
+    record_all_file_= options_.option<String>("record_all_file");
+    bound_pdb_      = options_.option<int>("bound_pdb");
+    
+    std::dynamic_pointer_cast<FrameScorerDevel>(scorer_)->weight_d(options_.option<float>("d_weight"));
+    std::dynamic_pointer_cast<FrameScorerDevel>(scorer_)->weight_r(options_.option<float>("r_weight"));
+    */
 }

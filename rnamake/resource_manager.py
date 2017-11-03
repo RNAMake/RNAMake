@@ -247,27 +247,6 @@ class ResourceManager(object):
 
         return self.extra_me[key]
 
-    def get_structure(self, path, name):
-        m  = motif_factory.factory.motif_from_file(path)
-        if name is not None:
-            m.name = name
-        for end in m.ends:
-            flip_res = 0
-            for c in m.chains():
-                if c.first == end.res2:
-                    flip_res = 1
-                    break
-
-            if not flip_res:
-                continue
-
-            temp = end.res1
-            end.res1 = end.res2
-            end.res2 = temp
-
-        return m
-
-
 
 manager = ResourceManager()
 

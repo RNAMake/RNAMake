@@ -4,16 +4,17 @@ import settings
 import motif
 
 class MotifEnsembleMember(object):
-    __slots__ = ['motif', 'energy']
+    __slots__ = ['motif', 'energy','count']
 
-    def __init__(self, motif, energy):
+    def __init__(self, motif, energy,count):
         self.motif, self.energy = motif, energy
+        self.count = count
 
     def to_str(self):
-        return self.motif.to_str() + "#" + str(self.energy)
+        return self.motif.to_str() + "#" + str(self.energy) + "#" + str(self.count)
 
     def copy(self):
-        member_copy = MotifEnsembleMember(self.motif.copy(), self.energy)
+        member_copy = MotifEnsembleMember(self.motif.copy(), self.energy,self.count)
         return member_copy
 
 
@@ -23,11 +24,11 @@ class MotifEnsemble(object):
         self.members = []
         self.block_end_add = 0
 
-    def setup(self, id, motifs, energies):
+    def setup(self, id, motifs, energies,counts):
         self.id = id
         self.members = []
         for i, m in enumerate(motifs):
-            ms = MotifEnsembleMember(m, energies[i])
+            ms = MotifEnsembleMember(m, energies[i],counts[i])
             self.members.append(ms)
 
         self.members.sort(key = lambda x : x.energy, reverse=False)
@@ -64,12 +65,14 @@ class MotifEnsemble(object):
         mse = MotifStateEnsemble()
         motif_states = []
         energies = []
+        counts = []
 
         for mem in self.members:
             motif_states.append(mem.motif.get_state())
             energies.append(mem.energy)
+            counts.append(mem.count)
 
-        mse.setup(self.id, motif_states, energies)
+        mse.setup(self.id, motif_states, energies,counts)
         return mse
 
     def to_pdb(self, name="test.pdb"):
@@ -82,16 +85,17 @@ class MotifEnsemble(object):
 
 
 class MotifStateEnsembleMember(object):
-    __slots__ = ['motif_state', 'energy']
+    __slots__ = ['motif_state', 'energy','count']
 
-    def __init__(self, motif_state, energy):
+    def __init__(self, motif_state, energy,count):
         self.motif_state, self.energy = motif_state, energy
+        self.count = count
 
     def to_str(self):
-        return self.motif_state.to_str() + "#" + str(self.energy)
+        return self.motif_state.to_str() + "#" + str(self.energy)+ "#" +str(self.count)
 
     def copy(self):
-        member_copy = MotifStateEnsembleMember(self.motif_state.copy(), self.energy)
+        member_copy = MotifStateEnsembleMember(self.motif_state.copy(), self.energy,self.count)
         return member_copy
 
 
@@ -101,10 +105,10 @@ class MotifStateEnsemble(object):
         self.members = []
         self.block_end_add = 0
 
-    def setup(self, id, motif_states, energies):
+    def setup(self, id, motif_states, energies,counts):
         self.id = id
         for i in range(len(motif_states)):
-            self.members.append((MotifStateEnsembleMember(motif_states[i], energies[i])))
+            self.members.append((MotifStateEnsembleMember(motif_states[i], energies[i],counts[i])))
         self.members.sort(key = lambda x : x.energy, reverse=False)
         self.block_end_add = self.members[0].motif_state.block_end_add
 
@@ -152,7 +156,8 @@ def str_to_motif_ensemble(s):
         spl2 = s.split("#")
         m = motif.str_to_motif(spl2[0])
         energy = float(spl2[1])
-        ms = MotifEnsembleMember(m, energy)
+        count = int(spl2[2])
+        ms = MotifEnsembleMember(m, energy,count)
         members.append(ms)
     me.members = members
     return me
@@ -168,7 +173,8 @@ def str_to_motif_state_ensemble(s):
         spl2 = s.split("#")
         m = motif.str_to_motif_state(spl2[0])
         energy = float(spl2[1])
-        ms = MotifStateEnsembleMember(m, energy)
+        count = int(spl2[2])
+        ms = MotifStateEnsembleMember(m, energy,count)
         members.append(ms)
     mes.members = members
     return mes
@@ -176,6 +182,6 @@ def str_to_motif_state_ensemble(s):
 
 def motif_state_to_motif_state_ensemble(ms):
     mse = MotifStateEnsemble()
-    mse.setup(ms.end_ids[0], [ms], [1])
+    mse.setup(ms.end_ids[0], [ms], [1],[1])
     return mse
 

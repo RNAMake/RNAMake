@@ -2,7 +2,6 @@ design_rna ../../apps/design_rna/design_rna.cpp
 simulate_tectos ../../apps/simulate_tectos/simulate_tectos.cc 
 simulate_tectos_devel ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc
 sequence_optimizer_app ../../apps/sequence_optimizer/sequence_optimizer_app.cpp
-general_helix_sampler ../../apps/general_helix_sampler/general_helix_sampler.cc
 #mini_ttr ../../apps/mini_ttr/mini_ttr.cpp 
 #exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp
 #eternabot_app ../../apps/eternabot/eternabot.cpp
