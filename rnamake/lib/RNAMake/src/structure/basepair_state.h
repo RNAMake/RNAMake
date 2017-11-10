@@ -361,10 +361,11 @@ new_score_function_new(
     BasepairStateOP const & end,
     BasepairStateOP const & endflip) {
     
-    float d_diff = (current->sugars()[0].distance(end->sugars()[1]) +
-                    current->sugars()[1].distance(end->sugars()[0]))*0.50;
-    
-    if(d_diff > 25) { return d_diff; }
+    //float d_diff = (current->sugars()[0].distance(end->sugars()[1]) +
+    //                current->sugars()[1].distance(end->sugars()[0]))*0.50;
+	float d_diff = current->d().distance(end->d());
+
+	if(d_diff > 25) { return d_diff; }
     
     float r_diff      = current->r().difference(end->r());
     float r_diff_flip = current->r().difference(endflip->r());

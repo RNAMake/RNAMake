@@ -2,6 +2,7 @@ import os
 import glob
 import pandas as pd
 from rnamake import pose_factory, motif_type, motif_factory, util, motif
+import motif_library
 
 def build_structure_motifs():
 
@@ -39,6 +40,7 @@ def build_all_motifs():
                 m.name = t_name + "." + name + "." + str(i)
                 f.write(m.to_str()+"\n")
             f.close()
+
 
 def analyze_motifs():
     twoway_files = glob.glob("sectioned_motifs/TWOWAY/*")
@@ -82,11 +84,68 @@ def analyze_motifs():
             if p_clashes > 1:
                 print m.name
 
-            m.to_pdb("twoways/"+m.name+".pdb")
+            #m.to_pdb("twoways/"+m.name+".pdb")
             df.loc[pos] = [m.name, len(m.residues()), found, bps_names]
             pos += 1
 
     df.to_csv("motifs_extra_bps.csv", index=False)
+
+
+def analyze_motifs_2():
+    mlib = motif_library.MotifLibrary(motif_type.TWOWAY)
+    mlib.load_all()
+
+    seen = {}
+
+    df = pd.DataFrame(columns = "m_name m_size extra_bps bps_names".split())
+    pos = 0
+    for k, m in enumerate(mlib.motifs()):
+        name_spl = m.name.split(".")
+        name = name_spl[1]
+
+        if name not in seen:
+            try:
+                full_m = motif.file_to_motif("structure_motifs/"+name+".motif")
+                seen[name] = full_m
+            except:
+                print name
+                continue
+        else:
+            full_m = seen[name]
+
+        res = m.residues()
+        centers = [ util.center(r.atoms) for r in res]
+        keys = { r.chain_id + " " + r.name + " " + str(r.num) : r for r in res }
+
+        bps_names = ""
+        found = 0
+        p_clashes = 0
+        for bp in full_m.basepairs:
+            r1_key = bp.res1.chain_id + " " + bp.res1.name + " " + str(bp.res1.num)
+            r2_key = bp.res2.chain_id + " " + bp.res2.name + " " + str(bp.res2.num)
+            if r1_key in keys and r2_key not in keys:
+                bps_names += bp.name() + "|"
+                found += 1
+
+            if r2_key in keys and r1_key not in keys:
+                bps_names += bp.name() + "|"
+                found += 1
+
+        for b in full_m.protein_beads:
+            for c in centers:
+                dist = util.distance(b.center, c)
+                if dist < 6:
+                    p_clashes += 1
+
+        if p_clashes > 1:
+            print m.name
+
+        #m.to_pdb("twoways/"+m.name+".pdb")
+        df.loc[pos] = [m.name, len(m.residues()), found, bps_names]
+        pos += 1
+
+    df.to_csv("motifs_extra_bps.csv", index=False)
+
 
 
 def analyze_motifs_nway():
@@ -117,22 +176,24 @@ def analyze_motifs_nway():
 
 
 def compile_summary():
-    df = pd.read_csv("motifs_extra_bps.csv")
+    pass
+    #df = pd.read_csv("motifs_extra_bps.csv")
+
 
     #print len(df[df.apply(lambda x: x['extra_bps'] == 0, axis=1)])
     #print len(df[df.apply(lambda x: x['extra_bps'] == 1, axis=1)])
     #print len(df[df.apply(lambda x: x['extra_bps'] == 2, axis=1)])
     #print len(df[df.apply(lambda x: x['extra_bps'] > 2, axis=1)])
 
-    print df[df.apply(lambda x: x['extra_bps'] == 0 and x['m_size'] > 15, axis=1)]
+    #print df[df.apply(lambda x: x['extra_bps'] == 0 and x['m_size'] > 15, axis=1)]
 
 #need to check for more than 2 chains
 
 
 #build_structure_motifs()
 #build_all_motifs()
-#analyze_motifs()
-analyze_motifs_nway()
+analyze_motifs_2()
+#analyze_motifs_nway()
 #compile_summary()
 
 

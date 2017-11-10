@@ -12,8 +12,24 @@ import subprocess
 import os
 import numpy as np
 import shutil
+import argparse 
+import glob
 
 from rnamake import motif_tree
+from rnamake.unittests import build
+
+avail_functions =[
+
+]
+
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-', action="store_true")
+    parser.add_argument('-last_ta', action="store_true")
+
+    args = parser.parse_args()
+
+    return args
 
 def test_align():
     mlib = sqlite_library.MotifLibrarySqlite(libname="ideal_helices")
@@ -61,7 +77,7 @@ class SSandSeqCluster(object):
                 return 1
         return 0
 
-
+#TODO add command like options for rebuild
 class BuildSqliteLibraries(object):
 
     def build_ideal_helices_old(self):
@@ -158,6 +174,17 @@ class BuildSqliteLibraries(object):
         #
         bad_keys = "TWOWAY.2GDI.4-X20-X45 TWOWAY.1S72.46-02097-02647 TWOWAY.2GDI.6-Y20-Y45".split()
 
+        f = open("motifs_extra_bps.csv")
+        lines = f.readlines()
+        f.close()
+        lines.pop(0)
+
+        has_extra_bps = {}
+        for l in lines:
+            spl = l.split(",")
+            if float(spl[2]) > 0:
+                has_extra_bps[spl[0]] = 1
+
         for t in types:
             count = 0
             mlib = motif_library.MotifLibrary(t)
@@ -167,6 +194,11 @@ class BuildSqliteLibraries(object):
             for k, m in enumerate(mlib.motifs()):
                 if m is None:
                     continue
+
+                # probably does not fold context independently
+                if t == motif_type.TWOWAY:
+                    if m.name in has_extra_bps:
+                        continue
 
                 if t == motif_type.HAIRPIN:
                     m.block_end_add = -1
@@ -218,6 +250,20 @@ class BuildSqliteLibraries(object):
             path = settings.RESOURCES_PATH +"/motif_libraries_new/"+\
                    motif_type.type_to_str(t).lower()+".db"
             sqlite_library.build_sqlite_library(path, data, keys, 'id')
+
+    def build_flex_helix_library(self):
+        flex_helices = []
+        helix_files = glob.glob("flex_helices/*.dat")
+        for fname in helix_files:
+            print fname
+            f = open(fname)
+            lines = f.readlines()
+            f.close()
+
+            for l in lines:
+                m = motif.str_to_motif(l)
+                flex_helices.append(m)
+
 
     def build_helix_ensembles(self):
         helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
@@ -679,12 +725,14 @@ builder = BuildSqliteLibraries()
 #builder.build_ideal_helices_old()
 #builder.build_trimmed_ideal_helix_library()
 #builder.build_basic_libraries()
-builder.build_helix_ensembles()
+#builder.build_helix_ensembles()
+builder.build_flex_helix_library()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()
 #builder.build_motif_ensemble_state_libraries()
+#builder.build_flex_helices()
 
 
 

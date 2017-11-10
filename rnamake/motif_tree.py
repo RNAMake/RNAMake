@@ -934,7 +934,7 @@ class MotifTree(base.Base):
 
         return ss
 
-    def get_structure(self):
+    def get_structure(self, renumber=False):
         """
         wrapper for merger object ot get rna_structure.RNAStructure object
         for entire tree.
@@ -942,7 +942,19 @@ class MotifTree(base.Base):
         :return:
         """
         self._update_merger()
-        return self.merger.get_structure()
+        struc = self.merger.get_structure()
+        if not renumber:
+            return struc
+        chains_ids = "ABCDEFGHIJKLMNOPQRSTUVWXZ"
+        for i, c in enumerate(struc.chains()):
+            for j, r in enumerate(c.residues):
+                r.num = j+1
+                r.chain_id = chains_ids[i]
+                r.i_code = " "
+        return struc
+
+
+
 
     def residues(self):
         self._update_merger()

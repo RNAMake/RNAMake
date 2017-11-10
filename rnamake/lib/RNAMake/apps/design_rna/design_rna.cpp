@@ -70,7 +70,7 @@ DesignRNAApp::_setup_sterics() {
     auto beads = Points();
     for (auto & n : *mg_) {
         n->data()->get_beads(n->data()->ends());
-        std::cout << n->data()->beads().size() << std::endl;
+        //std::cout << n->data()->beads().size() << std::endl;
         for (auto const & b : n->data()->beads()) {
             if (b.btype() == BeadType::PHOS) { continue; }
             beads.push_back(b.center());
@@ -196,7 +196,8 @@ DesignRNAApp::_setup_path() {
     auto i = 0;
     for(auto const & name : spl) {
         if(name.length() < 2) { continue; }
-        if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact") {
+        if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact" ||
+                name == "twoway") {
             selector->add(name);
         }
         else {
@@ -206,7 +207,9 @@ DesignRNAApp::_setup_path() {
 
             for(auto const & end : m->ends()) {
                 auto m_new = RM::instance().motif(name, "", end->name());
-                std::cout << m_new->name() << std::endl;
+                m_new->new_res_uuids();
+                //m_new->ends()[1]->flip();
+                //std::cout << m_new->name() << std::endl;
                 motif_states.push_back(m_new->get_state());
                 scores.push_back(1);
             }
@@ -256,6 +259,7 @@ DesignRNAApp::run() {
     search_.lookup(lookup_);
     search_.set_option_value("max_solutions", 10000000);
     search_.set_option_value("verbose", get_bool_option("verbose"));
+    search_.set_option_value("accept_score", 10);
 
     auto end_n_uuid = mg_->get_node(end_.n_pos)->data()->id();
     mg_->increase_level();
@@ -400,6 +404,7 @@ int main(int argc, const char *argv[]) {
     String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
     //RM::instance().add_motif(base_path+"GAAA_tetraloop");
     //RM::instance().add_motif(base_path+"GGAA_tetraloop");
+    RM::instance().add_motif(base_path+"ATP_apt.pdb");
 
     auto app = DesignRNAApp();
     app.setup_options();

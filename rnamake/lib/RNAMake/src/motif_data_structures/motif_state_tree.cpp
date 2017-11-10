@@ -576,7 +576,8 @@ MotifStateTree::to_motif_tree() {
         }*/
         m = RM::instance().motif(n->data()->name(), "",
                                  n->data()->end_name(0));
-        
+        m->new_res_uuids();
+
         if(i == 0) {
             align_motif(n->data()->cur_state->end_states()[0],
                         m->ends()[0], m);

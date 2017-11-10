@@ -22,6 +22,7 @@ class SimulateTectosWrapper(wrapper.Wrapper):
         self.add_cmd_option("simulation.temperature", 298.15, required=False)
         self.add_cmd_option("simulation.steric_radius", 2.2, required=False)
         self.add_cmd_option("simulation.cutoff", 4.5, required=False)
+        self.add_cmd_option("simulation.bound_pdbs", False, required=False)
 
     def run(self, **options):
         try:

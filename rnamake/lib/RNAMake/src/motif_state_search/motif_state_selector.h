@@ -187,7 +187,6 @@ public:
             for(auto const & mem : mse->members()) {
                 motif_states.push_back(mem->motif_state);
             }
-
             auto d = std::make_shared<MotifStateSelectorNodeData>("mse",
                                                                   motif_states,
                                                                   max_uses, required_uses);
@@ -232,9 +231,9 @@ public:
             for(auto const & c : graph_.get_node(node->ntype())->connections()) {
                 auto partner =  c->partner(graph_.get_node(node->ntype())->index());
                 //did use all that we needed of this type
-                if(partner->data()->max_uses <= node->node_type_usage(partner->index())) {
-                    continue;
-                }
+                //if(partner->data()->max_uses <= node->node_type_usage(partner->index())) {
+                //    continue;
+                //}
                 motif_states_and_types_.need_resize((int)partner->data()->motif_states.size());
                 for(auto const & ms : partner->data()->motif_states) {
                     motif_states_and_types_.add(ms, partner->index());

@@ -143,13 +143,6 @@ MotifStateSearch::_search() {
         score = scorer_->accept_score(current);
 
         if(score < best) {
-            /*if(helix_end_) {
-                if(current->ref_state()->name()[0] == 'T') {
-                    continue;
-                }
-            }*/
-
-
             best = score;
             best_sol = std::make_shared<MotifStateSearchSolution>(current, score);
 
@@ -163,6 +156,10 @@ MotifStateSearch::_search() {
         
         if(score < accept_score_ && current->ss_score() < min_ss_score_ &&
            current->level() > min_node_level_) {
+            if(helix_end_ && current->ref_state()->name()[0] != 'H') {
+                continue;
+            }
+
 
             if(verbose_) {
                 std::cout << "MOTIF STATE SEARCH: found a solution!" << std::endl;
