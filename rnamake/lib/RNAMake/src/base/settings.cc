@@ -14,13 +14,13 @@
 
 String
 get_os_name() {
-    #ifdef _WIN32 || _WIN64
+    #if defined(_WIN32) || defined(_WIN64)
     return  String("Windows");
-    #elif __unix || __unix__
+    #elif defined(__unix) || defined(__unix__)
     return  String("unix");
-    #elif __APPLE__ || __MACH__
+    #elif defined(__APPLE__) || defined(__MACH__)
     return String("OSX");
-    #elif __linux__
+    #elif defined(__linux__)
     return String("Linux");
     #endif
 
