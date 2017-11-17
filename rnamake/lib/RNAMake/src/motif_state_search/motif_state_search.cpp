@@ -153,19 +153,16 @@ MotifStateSearch::_search() {
                 //std::cout << best << " " << accept_score_ << " " << current->level() << " " << steps << " " << max_steps_ << std::endl;
             }
         }
-        
-        if(score < accept_score_ && current->ss_score() < min_ss_score_ &&
-           current->level() > min_node_level_) {
-            if(helix_end_ && current->ref_state()->name()[0] != 'H') {
-                continue;
-            }
 
+        if(score < accept_score_ && current->ss_score() < min_ss_score_ && current->level() > min_node_level_) {
 
             if(verbose_) {
                 std::cout << "MOTIF STATE SEARCH: found a solution!" << std::endl;
             }
-            auto s = std::make_shared<MotifStateSearchSolution>(current, score);
-            return s;
+            //if(helix_end_ && current->ref_state()->name()[0] != 'H') {
+                auto s = std::make_shared<MotifStateSearchSolution>(current, score);
+                return s;
+            //}
         }
         
         if(current->level()+1 > max_node_level_) { continue; }

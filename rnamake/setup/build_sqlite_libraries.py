@@ -255,15 +255,39 @@ class BuildSqliteLibraries(object):
         flex_helices = []
         helix_files = glob.glob("flex_helices/*.dat")
         for fname in helix_files:
-            print fname
+            name = util.filename(fname)
+            length = name.split("_")[1]
             f = open(fname)
             lines = f.readlines()
             f.close()
 
-            for l in lines:
+            for i, l in enumerate(lines):
                 m = motif.str_to_motif(l)
+                for r in m.residues():
+                    r.i_code = ""
+                m.name = "HELIX.FLEX." + length + "." + str(i)
                 flex_helices.append(m)
 
+        succeses = []
+        for m in flex_helices:
+            m_added = motif_factory.factory.can_align_motif_to_end(m, 0)
+
+            if m_added is None:
+                 continue
+            else:
+                succeses.append([m_added, 0])
+
+        data = []
+        keys = ['data', 'name', 'end_name', 'end_id', 'id']
+        for i, s in enumerate(succeses):
+            m, ei = s
+            m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
+
+            data.append([m_added.to_str(), m_added.name,
+                         m_added.ends[0].name(), m_added.end_ids[0], i])
+
+        path = settings.RESOURCES_PATH + "/motif_libraries_new/flex_helices.db"
+        sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
     def build_helix_ensembles(self):
         helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
@@ -730,7 +754,7 @@ builder.build_flex_helix_library()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
-#builder.build_motif_state_libraries()
+builder.build_motif_state_libraries()
 #builder.build_motif_ensemble_state_libraries()
 #builder.build_flex_helices()
 

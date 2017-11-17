@@ -297,6 +297,7 @@ class MotifSqliteLibrary(SqliteLibrary):
             "unique_twoway"   : "/motif_libraries_new/unique_twoway.db",
             "bp_steps"        : "/motif_libraries_new/bp_steps.db",
             "new_bp_steps"    : "/motif_libraries_new/new_bp_steps.db",
+            "flex_helices"    : "/motif_libraries_new/flex_helices.db"
 
         }
 
@@ -344,7 +345,7 @@ class MotifStateSqliteLibrary(SqliteLibrary):
             "nway"          :  "/motif_state_libraries/nway.db",
             "hairpin"       :  "/motif_state_libraries/hairpin.db",
             "new_bp_steps"  :  "/motif_state_libraries/new_bp_steps.db",
-
+            "flex_helices"  :  "/motif_state_libraries/flex_helices.db"
         }
 
         return libnames

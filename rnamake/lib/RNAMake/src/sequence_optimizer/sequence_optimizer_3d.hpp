@@ -189,7 +189,34 @@ private:
     _initiate_sequence_in_msg(
         MotifStateGraphOP &,
         sstruct::PoseOP const &);
-    
+
+    int
+    convert_char_to_res_code(
+            char c) {
+        if     (c == 'A') { return 0; }
+        else if(c == 'C') { return 1; }
+        else if(c == 'G') { return 2; }
+        else if(c == 'U') { return 3; }
+        else if(c == 'T') { return 3; }
+        else if(c == 'N') { return -1; }
+        else {
+            throw sstruct::SecondaryStructureException("incorrect character for secondary string");
+        }
+    }
+
+    void
+    find_seq_violations(
+            sstruct::PoseOP,
+            Ints &);
+
+    bool
+    new_seq_violations() {
+        for(int i = 0; i < current_violations_.size(); i++) {
+            if(current_violations_[i] != next_violations_[i]) { return true; }
+        }
+        return false;
+    }
+
 public: //option wrappers
     
     inline
@@ -211,8 +238,7 @@ public: //option wrappers
     inline
     bool
     get_bool_option(String const & name) { return options_.get_bool(name); }
-    
-    
+
     template<typename T>
     void
     set_option_value(
@@ -240,6 +266,10 @@ private:
     int steps_;
     float cutoff_, eterna_cutoff_;
     bool verbose_, return_lowest_;
+    Strings disallowed_sequences_;
+    std::vector<Ints> disallowed_res_types_sequences_;
+    Ints current_violations_;
+    Ints next_violations_;
     
     
 };

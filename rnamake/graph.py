@@ -708,11 +708,7 @@ class GraphNode(object):
         parent = self.parent()
         if parent is None:
             return -1
-        for c in self.connections:
-            if c.partner(self.index) == parent.index:
-                return c.end_index(parent.index)
-
-        return -1
+        return parent.index
 
     def parent_end_index(self):
         """
@@ -730,6 +726,18 @@ class GraphNode(object):
                 continue
             if c.partner(self.index) == parent.index:
                 return c.end_index(parent.index)
+
+        return -1
+
+    def end_index_to_parent(self):
+        parent = self.parent()
+        if parent is None:
+            return -1
+        for c in self.connections:
+            if c is None:
+                continue
+            if c.partner(self.index) == parent.index:
+                return c.end_index(self.index)
 
         return -1
 

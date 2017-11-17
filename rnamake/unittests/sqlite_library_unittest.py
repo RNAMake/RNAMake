@@ -130,7 +130,6 @@ class SqliteLibraryUnittest(unittest.TestCase):
             f.write(m.name + "," + m.sequence() + "," + m.dot_bracket() + "\n")
             m.to_pdb("motifs/tcontacts/"+m.name + ".pdb")
 
-
     def _test_new_bp_steps(self):
         mlib = sqlite_library.MotifSqliteLibrary("new_bp_steps")
         mlib.load_all()
@@ -170,6 +169,14 @@ class SqliteLibraryUnittest(unittest.TestCase):
         mg2.add_motif(rm.manager.get_motif(name="HELIX.IDEAL.6"))
         #mg.write_pdbs("one")
         #mg2.write_pdbs("two")
+
+    def test_flex_helices(self):
+        mlib = sqlite_library.MotifSqliteLibrary("flex_helices")
+        mlib.load_all()
+        for m in mlib.all():
+            for bp in m.basepairs:
+                print bp.res1, bp.res2
+            exit()
 
     def _test_helix(self):
         ms_lib = sqlite_library.MotifStateSqliteLibrary("ideal_helices")

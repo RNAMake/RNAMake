@@ -197,7 +197,7 @@ DesignRNAApp::_setup_path() {
     for(auto const & name : spl) {
         if(name.length() < 2) { continue; }
         if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact" ||
-                name == "twoway") {
+                name == "twoway" || name == "flex_helices") {
             selector->add(name);
         }
         else {
@@ -230,6 +230,7 @@ DesignRNAApp::run() {
     if (get_string_option("mg") != "") { _setup_from_mg(); }
 
     //mg_->write_pdbs();
+    std::cout << start_.n_pos << " " << end_.n_pos << std::endl;
     auto start = mg_->get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
     auto end_bp = mg_->get_node(end_.n_pos)->data()->get_basepair(end_.name)[0];
     auto end = end_bp->state();
@@ -259,8 +260,9 @@ DesignRNAApp::run() {
     search_.lookup(lookup_);
     search_.set_option_value("max_solutions", 10000000);
     search_.set_option_value("verbose", get_bool_option("verbose"));
-    search_.set_option_value("accept_score", 10);
+    //search_.set_option_value("accept_score", 5);
 
+    std::cout << search_.get_float_option("accept_score") << std::endl;
     auto end_n_uuid = mg_->get_node(end_.n_pos)->data()->id();
     mg_->increase_level();
 

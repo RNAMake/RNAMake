@@ -453,7 +453,7 @@ class MotifGraph(base.Base):
             except exceptions.GraphIndexException:
                 raise exceptions.MotifGraphException(
                     "parent_index supplied: " + str(parent_index) + " does not " +
-                    "exist in current motif graph")
+                    "xist in current motif graph")
 
         return parent
 
@@ -696,6 +696,7 @@ class MotifGraph(base.Base):
 
     def replace_ideal_helices(self):
         found = 1
+        tot_count = 0
         while found:
             found = 0
             for n in self.graph.nodes:
@@ -720,6 +721,8 @@ class MotifGraph(base.Base):
                 name_spl = n.data.name.split(".")
                 if len(name_spl) == 3:
                     count = int(name_spl[2])
+                elif len(name_spl) == 4:
+                    count = int(name_spl[2])-2
                 else:
                     count = 1
                 i = n.index
@@ -756,7 +759,8 @@ class MotifGraph(base.Base):
                 if other:
                     self.graph.connect(pos, other.index, 1, other_end_index)
                     node = self.graph.get_node(pos)
-                    self.aligned[other.index] = 1
+                    if other_end_index == 0:
+                        self.aligned[other.index] = 1
 
                 break
 
@@ -805,7 +809,6 @@ class MotifGraph(base.Base):
                 "attempted to replace a motif with a different number of ends")
 
         node.data = new_motif.copy()
-
         self.update_merger = 1
         self._align_motifs_all_motifs()
 

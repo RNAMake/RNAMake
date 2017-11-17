@@ -10,6 +10,7 @@ import rnamake.util as util
 import numerical
 import numpy as np
 from rnamake import secondary_structure_factory as ssf
+from rnamake import transformations
 from rnamake import basic_io
 
 import files, instances
@@ -88,11 +89,9 @@ class MotifUnittest(unittest.TestCase):
 
     def test_transform(self):
         m = self.motif
-        r = np.random.random([3,3])
+        r = transformations.random_rotation_matrix()[:3,:3]
         d = np.random.random([3])
         t = rnamake.transform.Transform(r, d)
-        old_r = m.basepairs[0].state().r
-        m.transform(t)
         new_r = m.basepairs[0].state().r
         if numerical.are_matrices_equal(old_r, new_r):
             self.fail("rotations should be different")

@@ -321,7 +321,7 @@ class MotifTree(base.Base):
 
 
     #SETUP FUNCTIONS ##########################################################
-    def __init__(self, **options):
+    def __init__(self, mt_str=None, **options):
         self.setup_options_and_constraints()
         self.options.dict_set(options)
         self.clash_radius = settings.CLASH_RADIUS
@@ -331,6 +331,8 @@ class MotifTree(base.Base):
         self.update_merger = 1
 
         self.connections = motif_connection.MotifConnections()
+        if mt_str is not None:
+            self._setup_from_str(mt_str)
 
     def __len__(self):
         return len(self.tree)
@@ -375,6 +377,38 @@ class MotifTree(base.Base):
 
         self.options = option.Options(options)
         self.constraints = {}
+
+    def _setup_from_str(self, mt_str):
+        self.option('sterics', 0)
+        spl = mt_str.split("FAF")
+        node_spl = spl[0].split("KAK")
+        max_index = -10
+        for i, n_str in enumerate(node_spl[:-1]):
+            n_spl = n_str.split("^")
+            m = motif.str_to_motif(n_spl[0])
+            if len(m.ends) > 0:
+                m.get_beads([m.ends[0]])
+            else:
+                m.get_beads()
+
+            try:
+                rm.manager.get_motif(name=m.name,
+                                     end_name=m.ends[0].name())
+            except:
+                rm.manager.register_motif(m)
+
+            self.tree.add_data(m, len(m.ends), int(n_spl[2]), int(n_spl[3]))
+            self.tree.last_node.index = int(n_spl[1])
+
+            if max_index < int(n_spl[1]):
+                max_index = int(n_spl[1])
+        self.tree.index = max_index + 1
+
+        con_spl = spl[1].split("|")
+        for c_str in con_spl[:-1]:
+            c = motif_connection.str_to_motif_connection(c_str)
+            self.connections.add_connection(c.i, c.j, c.name_i, c.name_j)
+
 
     #ADD FUNCTIONS      #######################################################
     def _validate_arguments_to_add_motif(self, m, m_name):
@@ -953,9 +987,6 @@ class MotifTree(base.Base):
                 r.i_code = " "
         return struc
 
-
-
-
     def residues(self):
         self._update_merger()
         return self.merger.get_structure().residues()
@@ -982,6 +1013,16 @@ class MotifTree(base.Base):
         s += "|"
         for c in self.connections:
             s += c.to_str() + " "
+        return s
+
+    def to_str(self):
+        s = ""
+        for n in self.tree.nodes:
+            s += n.data.to_str() + "^" + str(n.index) + "^"
+            s += str(n.parent_index()) + "^" + str(n.parent_end_index()) + " KAK "
+        s += " FAF "
+        for c in self.connections:
+            s += c.to_str() + "|"
         return s
 
     def write_pdbs(self,name="node"):

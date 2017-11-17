@@ -150,6 +150,13 @@ public: //setters
         TreeNodeOP<DataType> const & p) {
         parent_ = p;
     }
+
+    inline
+    void
+    index(
+            int index) {
+        index_ = index;
+    }
     
 protected:
     DataType data_;

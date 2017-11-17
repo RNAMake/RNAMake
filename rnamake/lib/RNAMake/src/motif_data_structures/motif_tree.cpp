@@ -10,6 +10,8 @@
 
 #include "motif_data_structures/motif_tree.h"
 #include "resources/resource_manager.h"
+#include "structure/residue_type_set_manager.h"
+
 
 MotifTree::MotifTree():
     tree_(TreeStatic<MotifOP>()),
@@ -76,6 +78,22 @@ MotifTree::MotifTree(
 }
 
 MotifTree::MotifTree(
+        String const & s,
+        MotifTreeStringType type):
+        tree_(TreeStatic<MotifOP>()),
+        merger_(nullptr),
+        update_merger_(1),
+        connections_(MotifConnections()),
+        options_(Options()) {
+
+    setup_options();
+    if(type == MotifTreeStringType::MT_STR) {
+        _setup_from_str(s);
+    }
+
+}
+
+MotifTree::MotifTree(
     MotifTree const & mt):
     tree_(TreeStatic<MotifOP>(mt.tree_)) {
     auto motifs = MotifOPs();
@@ -87,6 +105,40 @@ MotifTree::MotifTree(
     options_ = Options(mt.options_);
     connections_ = MotifConnections(mt.connections_);
     update_merger_ = 1;
+}
+
+void
+MotifTree::_setup_from_str(
+        String const & mt_str) {
+    set_option_value("sterics", false);
+    auto spl = split_str_by_delimiter(mt_str, "FAF");
+    auto node_spl = split_str_by_delimiter(spl[0], "KAK");
+    auto max_index = -100;
+    for(auto const & n_str : node_spl) {
+        if(n_str.length() < 10) { break; }
+        auto n_spl = split_str_by_delimiter(n_str, "^");
+        auto m = std::make_shared<Motif>(n_spl[0],
+                                         ResidueTypeSetManager::getInstance().residue_type_set());
+        try {
+            auto m2 = RM::instance().motif(m->name());
+        } catch(ResourceManagerException const & e) {
+            RM::instance().register_motif(m);
+        }
+
+        if(m->ends().size() > 1) {
+            m->get_beads(m->ends()[0]);
+        }
+        auto n_index = std::stoi(n_spl[1]);
+        tree_.add_data(m, (int)m->ends().size(), std::stoi(n_spl[2]), std::stoi(n_spl[3]));
+        tree_.last_node()->index(n_index);
+
+        if(n_index > max_index) {
+            max_index = n_index;
+        }
+    }
+    tree_.index(max_index+1);
+
+
 }
 
 
@@ -394,6 +446,20 @@ MotifTree::topology_to_str() {
         s += c->to_str() + " ";
     }
     
+    return s;
+}
+
+String
+MotifTree::to_str() {
+    auto s = String();
+    for(auto const & n : tree_) {
+        s += n->data()->to_str() + "^" + std::to_string(n->index()) + "^";
+        s += std::to_string(n->parent_index()) + "^" + std::to_string(n->parent_end_index()) + " KAK ";
+    }
+    s += " FAF ";
+    for(auto const & c : connections_) {
+        s += c->to_str() + "|";
+    }
     return s;
 }
 

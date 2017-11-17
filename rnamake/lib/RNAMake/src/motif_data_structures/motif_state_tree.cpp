@@ -562,7 +562,8 @@ MotifTreeOP
 MotifStateTree::to_motif_tree() {
     
     auto mt = std::make_shared<MotifTree>();
-    mt->set_option_value("sterics", options_.get_bool("sterics"));
+    //mt->set_option_value("sterics", options_.get_bool("sterics"));
+    mt->set_option_value("sterics", false);
     int i = -1, j = -1;
     int parent_index = -1, parent_end_index = -1;
     for(auto const & n : tree_) {
@@ -602,7 +603,8 @@ MotifStateTree::to_motif_tree() {
     for(auto const & c : connections_) {
         mt->add_connection(c->i(), c->j(), c->name_i(), c->name_j());
     }
-    
+    mt->set_option_value("sterics", options_.get_bool("sterics"));
+
     return mt;
 }
 

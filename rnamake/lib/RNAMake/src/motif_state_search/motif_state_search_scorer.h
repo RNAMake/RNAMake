@@ -91,7 +91,7 @@ public:
     MSS_Astar() {
         g_ = 0; h_ = 0;
         ss_score_weight_ = 0.25;
-        level_weight_ = 2.0;
+        level_weight_ = 2; //used to be 2
     }
     
     inline

@@ -259,7 +259,13 @@ public:
         
     }
     
-    
+public:
+    inline
+    void
+    index(
+            int n_index) {
+        this->index_ = n_index;
+    }
 };
 
 

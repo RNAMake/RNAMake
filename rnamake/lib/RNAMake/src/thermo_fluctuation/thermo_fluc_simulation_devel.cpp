@@ -138,6 +138,11 @@ ThermoFlucSimulationDevel::run() {
     int clash = 0;
     int pdb_count = 0;
 
+    auto r1_trans = Matrix();
+    auto r2_trans = Matrix();
+    auto r_result = Matrix();
+    auto rot      = Matrix();
+
     auto mf = MotifFactory();
 
     std::ofstream out, out_state, out_all, out_motifs;
@@ -265,6 +270,9 @@ ThermoFlucSimulationDevel::run() {
         }
         
         if(record_) {
+
+
+
             out << vector_to_str(end_state_1_->d()) << "," << matrix_to_str(end_state_1_->r()) << "," <<vector_to_str(end_state_2_->d()) << "," << matrix_to_str(end_state_2_->r()) << "," << cutoff_ << "," << score_;
             out << std::endl;
         }

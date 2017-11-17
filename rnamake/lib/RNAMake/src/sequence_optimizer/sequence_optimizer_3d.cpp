@@ -16,6 +16,24 @@ eterna_scorer_(eternabot::Scorer()),
 scorer_(nullptr),
 rng_(RandomNumberGenerator()) {
     possible_bps_ = std::vector<Strings>({{"A", "U"}, {"U", "A"}, {"G", "C"}, {"C", "G"}});
+
+    disallowed_sequences_ = Strings();
+    disallowed_sequences_.push_back(String("AAAA"));
+    disallowed_sequences_.push_back(String("CCCC"));
+    disallowed_sequences_.push_back(String("GGGG"));
+    disallowed_sequences_.push_back(String("UUUU"));
+
+    disallowed_res_types_sequences_ = std::vector<Ints>();
+    for(auto const & seq : disallowed_sequences_) {
+        auto disallowed_types = Ints();
+        for(auto const & c : seq) {
+            disallowed_types.push_back(convert_char_to_res_code(c));
+        }
+        disallowed_res_types_sequences_.push_back(disallowed_types);
+    }
+    current_violations_ = Ints(disallowed_res_types_sequences_.size());
+    next_violations_ = Ints(disallowed_res_types_sequences_.size());
+
     setup_options();
 }
 
@@ -64,6 +82,37 @@ SequenceOptimizer3D::_validate_sequence(
 
 }
 
+void
+SequenceOptimizer3D::find_seq_violations(
+        sstruct::PoseOP ss,
+        Ints & violations) {
+    auto pos = 0;
+    for(int i = 0; i < violations.size(); i++) {
+        violations[i] = 0;
+    }
+
+    for(auto const & c : ss->chains()) {
+        auto & res = c->residues();
+        for(int i = 0; i < res.size(); i++) {
+            for(int j = 0; j < disallowed_res_types_sequences_.size(); j++) {
+                if(i < disallowed_res_types_sequences_[j].size()) { continue; }
+                auto match = true;
+                pos = i - disallowed_res_types_sequences_[j].size();
+                for(auto const & e : disallowed_res_types_sequences_[j]) {
+                    if(res[pos]->res_type() != e) {
+                        match = false;
+                        break;
+                    }
+                    pos += 1;
+                }
+                if(match) {
+                    violations[j] += 1;
+                }
+            }
+        }
+    }
+}
+
 SequenceOptimizer3D::DesignableBPOPs
 SequenceOptimizer3D::_get_designable_bps(
     sstruct::PoseOP & ss) {
@@ -75,7 +124,10 @@ SequenceOptimizer3D::_get_designable_bps(
             designable_bps.push_back(std::make_shared<DesignableBP>(bp));
         }
     }
-    
+
+    find_seq_violations(ss, current_violations_);
+    int count = 0;
+
     for(auto const & d_bp : designable_bps) {
         for(auto const & m : ss->motifs()) {
             if(m->name() != "HELIX.IDEAL") { continue; }
@@ -86,8 +138,19 @@ SequenceOptimizer3D::_get_designable_bps(
         auto state = possible_bps_[rng_.randrange(possible_bps_.size())];
         d_bp->bp->res1()->name(state[0]);
         d_bp->bp->res2()->name(state[1]);
+        find_seq_violations(ss, next_violations_);
+        while(new_seq_violations()) {
+            auto state = possible_bps_[rng_.randrange(possible_bps_.size())];
+            d_bp->bp->res1()->name(state[0]);
+            d_bp->bp->res2()->name(state[1]);
+            find_seq_violations(ss, next_violations_);
+            count ++;
+            if(count > 100) {
+                current_violations_ = next_violations_;
+            }
+        }
+
     }
-        
     for(auto & m : ss->motifs()) { ss->update_motif(m->id()); }
         
     return designable_bps;
@@ -154,6 +217,12 @@ SequenceOptimizer3D::get_optimized_sequences(
         d_bp = designable_bps[rng_.randrange(designable_bps.size())];
         new_bp_state = possible_bps_[rng_.randrange(possible_bps_.size())];
         d_bp->update_state(new_bp_state);
+
+        find_seq_violations(ss, next_violations_);
+        if(new_seq_violations()) {
+            d_bp->revert_state();
+            continue;
+        }
 
         _update_designable_bp(d_bp, msg, ss);
         

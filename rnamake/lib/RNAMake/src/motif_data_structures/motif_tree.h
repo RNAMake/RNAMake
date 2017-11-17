@@ -17,6 +17,12 @@
 #include "motif_data_structures/motif_merger.h"
 #include "motif_data_structures/motif_connection.h"
 
+enum MotifTreeStringType {
+    MT_STR,
+    TOP_STR
+};
+
+
 class MotifTreeException : public std::runtime_error {
 public:
     MotifTreeException(
@@ -24,7 +30,6 @@ public:
     std::runtime_error(message)
     {}
 };
-
 
 class MotifTree  {
 private:
@@ -235,12 +240,22 @@ public: // constructors
     MotifTree();
     
     MotifTree(
-        String const &);
+            String const &);
+
+    MotifTree(
+            String const &,
+            MotifTreeStringType);
     
     MotifTree(
         MotifTree const &);
     
     ~MotifTree() {}
+
+private: // setup functions
+
+    void
+    _setup_from_str(
+            String const &);
     
 public: //iterators
     
@@ -333,6 +348,9 @@ public: //outputing functions
         auto printer = MotifTreePrinter(*this);
         return printer.print_tree(*this);
     }
+
+    String
+    to_str();
     
 public: // misc
     

@@ -81,6 +81,7 @@ SequenceOptimizerApp::run() {
     }
     
     auto mg_copy = std::make_shared<MotifGraph>(*mg);
+    auto write_pdbs = get_bool_option("pdbs");
     
     for(int i = 0; i < get_int_option("n"); i++) {
         auto sols = optimizer_.get_optimized_sequences(mg, scorer);
@@ -89,6 +90,12 @@ SequenceOptimizerApp::run() {
             sf_out << opt_num << "," << s->dist_score << "," << s->eterna_score << "," << s->sequence;
             sf_out << "," << mg_copy->dot_bracket() << std::endl;
             out << mg_copy->to_str() << std::endl;
+            if(write_pdbs) {
+                try {
+                    mg_copy->to_pdb("design."+std::to_string(i)+".pdb", 1);
+                }
+                catch(...) { continue; }
+            }
             //mg_copy->write_pdbs();
             opt_num += 1;
         
