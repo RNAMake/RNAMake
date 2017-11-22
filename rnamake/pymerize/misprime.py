@@ -86,11 +86,11 @@ def check_misprime(sequence):
         if (sort_idx[i] <= N - 1):
             num_match_foward[0, sort_idx[i]] = match_max[0, i]
             misprime_score_forward[0, sort_idx[i]] = misprime_score_max[0, i]
-            best_match_forward[0, sort_idx[i]] = (sort_idx[best_match[0, i]] - 1) % N + 1
+            best_match_forward[0, sort_idx[i]] = (sort_idx[int(best_match[0, i])] - 1) % N + 1
         else:
             num_match_reverse[0, sort_idx[i] - N] = match_max[0, i]
             misprime_score_reverse[0, sort_idx[i] - N] = misprime_score_max[0, i]
-            best_match_reverse[0, sort_idx[i] - N] = (sort_idx[best_match[0, i]] - 1) % N + 1
+            best_match_reverse[0, sort_idx[i] - N] = (sort_idx[int(best_match[0, i])] - 1) % N + 1
 
     return (num_match_foward, num_match_reverse, best_match_forward, best_match_reverse, misprime_score_forward, misprime_score_reverse)
 

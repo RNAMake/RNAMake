@@ -77,7 +77,7 @@ SequenceOptimizerApp::run() {
     auto scorer = SequenceOptimizerScorerOP(nullptr);
     
     if(get_string_option("opt") == "Internal") {
-        scorer = std::make_shared<InternalTargetScorer>(ni1, ei2, ni2, ei2);
+        scorer = std::make_shared<InternalTargetScorer>(ni1, ei1, ni2, ei2);
     }
     
     auto mg_copy = std::make_shared<MotifGraph>(*mg);

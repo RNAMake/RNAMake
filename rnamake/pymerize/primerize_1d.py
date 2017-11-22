@@ -276,11 +276,11 @@ def back_tracking(N_BP, sequence, scores_final, choice_start_p, choice_start_q, 
     else:
         primers[:, 2 * N_primers - 1] = [q, N_BP - 1, -1]
         for m in xrange(N_primers - 1, 0, -1):
-            i = choice_stop_i[p, q, m]
-            j = choice_stop_j[p, q, m]
+            i = int(choice_stop_i[p, q, m])
+            j = int(choice_stop_j[p, q, m])
             primers[:, 2 * m] = [i, p, 1]
-            p = choice_start_p[i, j, m - 1]
-            q = choice_start_q[i, j, m - 1]
+            p = int(choice_start_p[i, j, m - 1])
+            q = int(choice_start_q[i, j, m - 1])
             primers[:, 2 * m - 1] = [q, j, -1]
         primers[:, 0] = [0, p, 1]
         primers = primers.astype(int)
