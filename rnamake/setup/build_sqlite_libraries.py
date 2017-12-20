@@ -15,7 +15,7 @@ import shutil
 import argparse 
 import glob
 
-from rnamake import motif_tree
+from rnamake import motif_tree, basic_io
 from rnamake.unittests import build
 
 avail_functions =[
@@ -349,6 +349,9 @@ class BuildSqliteLibraries(object):
         unique = []
         bp_count = 1
 
+        f = open("bp_step_info.csv", "w")
+        f.write("name,pop,d,r\n")
+
         count = 1
         for c_i, c in enumerate(clusters):
             m = c.motif_and_ends[0].motif
@@ -403,17 +406,21 @@ class BuildSqliteLibraries(object):
                 clustered_motifs.append(m)
 
                 pop = float(len(c_motifs.motifs)) / float(len(aligned_motifs))
-
+                f.write(m.name + "," + str(pop) + "," + basic_io.point_to_str(m.ends[1].d()))
+                f.write("," + basic_io.matrix_to_str(m.ends[1].r()) + "\n")
                 energy = -kBT*math.log(pop)
                 energies.append(energy)
-
 
             me = motif_ensemble.MotifEnsemble()
             me.setup(c.end_id, clustered_motifs, energies)
 
             motif = me.members[0].motif
-            motif.name = "BP."+str(c_i)
+            pop = math.exp(me.members[0].energy/-kBT)
 
+            motif.name = "BP."+str(c_i)
+            f.write(motif.name + "," + str(pop) + "," + basic_io.point_to_str(
+                motif.ends[1].d()))
+            f.write("," + basic_io.matrix_to_str(motif.ends[1].r()) + "\n")
             print motif.name
 
             mes_data.append([me.to_str(), me.id, bp_count])
@@ -447,6 +454,7 @@ class BuildSqliteLibraries(object):
 
             bp_count += 1
 
+        exit()
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
         sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps.db"
@@ -749,12 +757,12 @@ builder = BuildSqliteLibraries()
 #builder.build_ideal_helices_old()
 #builder.build_trimmed_ideal_helix_library()
 #builder.build_basic_libraries()
-#builder.build_helix_ensembles()
-builder.build_flex_helix_library()
+builder.build_helix_ensembles()
+#builder.build_flex_helix_library()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
-builder.build_motif_state_libraries()
+#builder.build_motif_state_libraries()
 #builder.build_motif_ensemble_state_libraries()
 #builder.build_flex_helices()
 

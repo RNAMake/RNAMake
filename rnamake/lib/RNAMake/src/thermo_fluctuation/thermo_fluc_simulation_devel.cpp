@@ -147,13 +147,9 @@ ThermoFlucSimulationDevel::run() {
 
     std::ofstream out, out_state, out_all, out_motifs;
 
-    //if(bound_pdbs_) {
+    if(bound_pdbs_) {
         out_motifs.open("motifs.out");
-    //}
-    record_ = 1;
-    record_file_ = "test.out";
-    //record_all_ = 1;
-    //record_all_file_ = "test_all.out";
+    }
     if(record_) {
         out.open(record_file_);
         out << "d1,r1,d2,r2,cutoff,score";

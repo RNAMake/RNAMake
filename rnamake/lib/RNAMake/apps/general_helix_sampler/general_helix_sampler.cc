@@ -1,12 +1,8 @@
 //
-//  sample_helix.cpp
-//  RNAMake
-//
-//  Created by Joseph Yesselman on 6/7/16.
-//  Copyright © 2016 Joseph Yesselman. All rights reserved.
+// Created by Joseph Yesselman on 12/18/17.
 //
 
-#include "sample_helix/sample_helix.hpp"
+#include "general_helix_sampler/general_helix_sampler.h"
 #include "base/backtrace.hpp"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "motif_data_structures/motif_tree.h"
@@ -14,64 +10,30 @@
 #include "resources/resource_manager.h"
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
-SampleHelixApp::SampleHelixApp() : Application(),
-        sampler_(ThermoFlucSampler())
+GeneralHelixSampler::GeneralHelixSampler() : Application(),
+        tfs_(ThermoFlucSimulation())
 {}
-
 
 // application setups functions ////////////////////////////////////////////////////////////////////
 
 void
-SampleHelixApp::setup_options() {
+GeneralHelixSampler::setup_options() {
+    add_option("pdb", "", OptionType::STRING, true);
+    add_option("start_bp", "", OptionType::STRING, true);
+    add_option("end_bp", "", OptionType::STRING, true);
     add_option("seq", "", OptionType::STRING, true);
-    add_option("s", 1000000, OptionType::INT);
-    add_option("output_freq", 100, OptionType::INT);
-    add_option("output_filename", "test.out", OptionType::STRING);
-
 
 }
 
 void
-SampleHelixApp::parse_command_line(
+GeneralHelixSampler::parse_command_line(
         int argc,
         const char ** argv) {
     Application::parse_command_line(argc, argv);
 }
 
-void
-SampleHelixApp::run() {
-    auto sequence = get_string_option("seq");
-    auto structure = _generate_structure(sequence);
-
-    auto motifs = get_motifs_from_seq_and_ss(sequence, structure);
-    auto mt = std::make_shared<MotifTree>();
-    for(auto const & m : motifs) {
-        mt->add_motif(m);
-    }
-
-    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
-
-    sampler_.setup(mset);
-
-    std::ofstream out;
-    out.open(get_string_option("output_filename"));
-
-    int output_freq = get_int_option("output_freq");
-    for(int i = 0; i < get_int_option("s"); i++) {
-        sampler_.next();
-        if(i % output_freq == 0) {
-            out << sampler_.mst()->last_node()->data()->get_end_state(1)->d().to_str() << "&";
-            out << sampler_.mst()->last_node()->data()->get_end_state(1)->r().to_str() << "&";
-            out << sampler_.mst()->topology_to_str() << std::endl;
-        }
-    }
-    out.close();
-
-
-}
-
 String
-SampleHelixApp::_generate_structure(
+GeneralHelixSampler::_generate_structure(
         String const & seq) {
     auto structure = String("");
     auto spl = split_str_by_delimiter(seq, "&");
@@ -88,7 +50,7 @@ SampleHelixApp::_generate_structure(
 }
 
 MotifOPs
-SampleHelixApp::get_motifs_from_seq_and_ss(
+GeneralHelixSampler::get_motifs_from_seq_and_ss(
         String const & seq,
         String const & ss) {
 
@@ -113,14 +75,59 @@ SampleHelixApp::get_motifs_from_seq_and_ss(
 }
 
 
+
+void
+GeneralHelixSampler::run() {
+    auto pdb = get_string_option("pdb");
+    //auto structure = _generate_structure(sequence);
+    auto rs =  RM::instance().get_structure(pdb, "pdb");
+    auto start_bp_str = get_string_option("start_bp");
+    auto end_bp_str = get_string_option("end_bp");
+
+    auto start_bp = rs->get_basepair(start_bp_str)[0];
+    auto end_bp = rs->get_basepair(end_bp_str)[0];
+
+    start_bp->bp_type("cW-W");
+    end_bp->bp_type("cW-W");
+
+    auto mf = MotifFactory();
+    auto start = mf.motif_from_bps(BasepairOPs{start_bp, end_bp});
+    start->name("start");
+    start->block_end_add(-1);
+
+    RM::instance().register_motif(start);
+
+    auto seq = get_string_option("seq");
+    auto struc = _generate_structure(seq);
+
+    auto bp_steps = get_motifs_from_seq_and_ss(seq, struc);
+
+    auto mt = std::make_shared<MotifTree>();
+    mt->set_option_value("sterics", false);
+
+    mt->add_motif(start);
+    for(auto const & m : bp_steps) {
+        mt->add_motif(m);
+    }
+    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    tfs_.setup(mset, 0, mt->last_node()->index(), 1, 1);
+    std::cout << tfs_.run() << std::endl;
+
+}
+
+
+
+
 int main(int argc, const char * argv[]) {
     //must add this for all apps!
     std::set_terminate(print_backtrace);
 
-    auto app = SampleHelixApp();
+    auto app = GeneralHelixSampler();
     app.setup_options();
     app.parse_command_line(argc, argv);
     app.run();
-    
+
     return 0;
+
+
 }

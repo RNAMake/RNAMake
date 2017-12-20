@@ -170,7 +170,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
         #mg.write_pdbs("one")
         #mg2.write_pdbs("two")
 
-    def test_flex_helices(self):
+    def _test_flex_helices(self):
         mlib = sqlite_library.MotifSqliteLibrary("flex_helices")
         mlib.load_all()
         for m in mlib.all():

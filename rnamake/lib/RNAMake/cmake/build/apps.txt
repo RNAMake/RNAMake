@@ -4,6 +4,7 @@ simulate_tectos_devel ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc
 sequence_optimizer_app ../../apps/sequence_optimizer/sequence_optimizer_app.cpp
 sample_helix ../../apps/sample_helix/sample_helix.cpp
 thermo_simulation ../../apps/thermo_simulation/thermo_simulation.cpp
+general_helix_sampler ../../apps/general_helix_sampler/general_helix_sampler.cpp
 #mini_ttr ../../apps/mini_ttr/mini_ttr.cpp 
 #exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp
 #eternabot_app ../../apps/eternabot/eternabot.cpp
