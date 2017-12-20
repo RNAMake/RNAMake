@@ -392,7 +392,7 @@ class BuildSqliteLibraries(object):
 
             #best 0.65
             m_clusters = cluster.cluster_motifs(aligned_motifs, 0.65)
-            print "start, ", c.end_id
+            #print "start, ", c.end_id
             clustered_motifs = []
             energies = []
             dir_name = spl[0][0]+spl[2][1]+"="+spl[0][1]+spl[2][0]
@@ -421,7 +421,7 @@ class BuildSqliteLibraries(object):
             f.write(motif.name + "," + str(pop) + "," + basic_io.point_to_str(
                 motif.ends[1].d()))
             f.write("," + basic_io.matrix_to_str(motif.ends[1].r()) + "\n")
-            print motif.name
+            print motif.name, c.end_id
 
             mes_data.append([me.to_str(), me.id, bp_count])
 
