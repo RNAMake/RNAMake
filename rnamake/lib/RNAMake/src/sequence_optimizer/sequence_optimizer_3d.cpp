@@ -127,7 +127,7 @@ SequenceOptimizer3D::find_gc_helix_stretches(
             else {
                 count = 0;
             }
-            if(count > 2) {
+            if(count > 3) {
                 violations += 1;
                 break;
             }
