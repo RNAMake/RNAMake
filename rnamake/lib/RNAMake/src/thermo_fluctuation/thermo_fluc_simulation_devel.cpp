@@ -281,7 +281,8 @@ ThermoFlucSimulationDevel::run() {
                     last = a;
                     break;
                 }
-                out_state << sampler_.mst()->get_node(a)->data()->cur_state->name() <<  ",";
+                out_state << sampler_.mst()->get_node(a)->data()->cur_state->name() << "|";
+                out_state << sampler_.mst()->get_node(a)->data()->cur_state->end_ids()[0] << ",";
             }
             
             for(int a = last+1; a < sampler_.mst()->size(); a++) {
@@ -289,7 +290,8 @@ ThermoFlucSimulationDevel::run() {
                     last = a;
                     break;
                 }
-                out_state << sampler_.mst()->get_node(a)->data()->cur_state->name() <<  ",";
+                out_state << sampler_.mst()->get_node(a)->data()->cur_state->name() <<  "|";
+                out_state << sampler_.mst()->get_node(a)->data()->cur_state->end_ids()[0] << ",";
             }
 
             out_state << score_ << std::endl;

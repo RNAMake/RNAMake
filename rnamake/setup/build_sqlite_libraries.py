@@ -406,7 +406,7 @@ class BuildSqliteLibraries(object):
                 clustered_motifs.append(m)
 
                 pop = float(len(c_motifs.motifs)) / float(len(aligned_motifs))
-                f.write(m.name + "," + str(pop) + "," + basic_io.point_to_str(m.ends[1].d()))
+                f.write(m.name + "," + m.end_ids[0] + "," + str(pop) + "," + basic_io.point_to_str(m.ends[1].d()))
                 f.write("," + basic_io.matrix_to_str(m.ends[1].r()) + "\n")
                 energy = -kBT*math.log(pop)
                 energies.append(energy)
@@ -418,7 +418,7 @@ class BuildSqliteLibraries(object):
             pop = math.exp(me.members[0].energy/-kBT)
 
             motif.name = "BP."+str(c_i)
-            f.write(motif.name + "," + str(pop) + "," + basic_io.point_to_str(
+            f.write(motif.name + "," + motif.end_ids[0] + "," + str(pop) + "," + basic_io.point_to_str(
                 motif.ends[1].d()))
             f.write("," + basic_io.matrix_to_str(motif.ends[1].r()) + "\n")
             print motif.name, c.end_id
@@ -438,6 +438,9 @@ class BuildSqliteLibraries(object):
                 m_a = motif_factory.factory.align_motif_to_common_frame(m_a, 1)
                 clustered_motifs.append(m_a)
                 energies.append(mem.energy)
+                f.write(m_a.name + "," + m_a.end_ids[0] + "," + str(
+                    pop) + "," + basic_io.point_to_str(m_a.ends[1].d()))
+                f.write("," + basic_io.matrix_to_str(m_a.ends[1].r()) + "\n")
                 motif_data.append([m_a.to_str(), m_a.name, m_a.ends[0].name(),
                                   m_a.end_ids[0], count])
                 count += 1
@@ -446,6 +449,9 @@ class BuildSqliteLibraries(object):
             me.setup(clustered_motifs[0].end_ids[0], clustered_motifs, energies)
             motif = me.members[0].motif
             motif.name = "BP."+str(c_i)
+            f.write(motif.name + "," + motif.end_ids[0] + "," + str(pop) + "," + basic_io.point_to_str(
+                motif.ends[1].d()))
+            f.write("," + basic_io.matrix_to_str(motif.ends[1].r()) + "\n")
             if motif.end_ids[0] != motif.end_ids[1]:
                 mes_data.append([me.to_str(), me.id, bp_count])
 
