@@ -267,8 +267,6 @@ ThermoFlucSimulationDevel::run() {
         
         if(record_) {
 
-
-
             out << vector_to_str(end_state_1_->d()) << "," << matrix_to_str(end_state_1_->r()) << "," <<vector_to_str(end_state_2_->d()) << "," << matrix_to_str(end_state_2_->r()) << "," << cutoff_ << "," << score_;
             out << std::endl;
         }
