@@ -350,7 +350,7 @@ class BuildSqliteLibraries(object):
         bp_count = 1
 
         f = open("bp_step_info.csv", "w")
-        f.write("name,pop,d,r\n")
+        f.write("name,bp_type,pop,d,r\n")
 
         count = 1
         for c_i, c in enumerate(clusters):
@@ -414,7 +414,7 @@ class BuildSqliteLibraries(object):
             me = motif_ensemble.MotifEnsemble()
             me.setup(c.end_id, clustered_motifs, energies)
 
-            motif = me.members[0].motif
+            motif = me.members[0].motif.copy()
             pop = math.exp(me.members[0].energy/-kBT)
 
             motif.name = "BP."+str(c_i)
@@ -438,9 +438,10 @@ class BuildSqliteLibraries(object):
                 m_a = motif_factory.factory.align_motif_to_common_frame(m_a, 1)
                 clustered_motifs.append(m_a)
                 energies.append(mem.energy)
-                f.write(m_a.name + "," + m_a.end_ids[0] + "," + str(
-                    pop) + "," + basic_io.point_to_str(m_a.ends[1].d()))
-                f.write("," + basic_io.matrix_to_str(m_a.ends[1].r()) + "\n")
+                if motif.end_ids[0] != motif.end_ids[1]:
+                    f.write(m_a.name + "," + m_a.end_ids[0] + "," + str(
+                        pop) + "," + basic_io.point_to_str(m_a.ends[1].d()))
+                    f.write("," + basic_io.matrix_to_str(m_a.ends[1].r()) + "\n")
                 motif_data.append([m_a.to_str(), m_a.name, m_a.ends[0].name(),
                                   m_a.end_ids[0], count])
                 count += 1
@@ -449,17 +450,17 @@ class BuildSqliteLibraries(object):
             me.setup(clustered_motifs[0].end_ids[0], clustered_motifs, energies)
             motif = me.members[0].motif
             motif.name = "BP."+str(c_i)
-            f.write(motif.name + "," + motif.end_ids[0] + "," + str(pop) + "," + basic_io.point_to_str(
-                motif.ends[1].d()))
-            f.write("," + basic_io.matrix_to_str(motif.ends[1].r()) + "\n")
             if motif.end_ids[0] != motif.end_ids[1]:
                 mes_data.append([me.to_str(), me.id, bp_count])
+                f.write(motif.name + "," + motif.end_ids[0] + "," + str(
+                    pop) + "," + basic_io.point_to_str(
+                    motif.ends[1].d()))
+                f.write("," + basic_io.matrix_to_str(motif.ends[1].r()) + "\n")
 
             unique_data.append([motif.to_str(), motif.name, motif.ends[0].name(),
                                me.id, bp_count])
 
             bp_count += 1
-
         exit()
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
         sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
@@ -528,7 +529,6 @@ class BuildSqliteLibraries(object):
         sqlite_library.build_sqlite_library(path, motif_data, motif_keys, 'id')
 
     def build_le_helix_lib(self):
-
 
         mt = motif_tree.MotifTree()
 
