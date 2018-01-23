@@ -422,6 +422,9 @@ class BuildSqliteLibraries(object):
                 motif.ends[1].d()))
             f.write("," + basic_io.matrix_to_str(motif.ends[1].r()) + "\n")
             print motif.name, c.end_id
+            if c_i == 13:
+                for mem in me.members:
+                    print mem.motif.name
 
             mes_data.append([me.to_str(), me.id, bp_count])
 
@@ -438,6 +441,8 @@ class BuildSqliteLibraries(object):
                 m_a = motif_factory.factory.align_motif_to_common_frame(m_a, 1)
                 clustered_motifs.append(m_a)
                 energies.append(mem.energy)
+                pop = math.exp(mem.energy / -kBT)
+
                 if motif.end_ids[0] != motif.end_ids[1]:
                     f.write(m_a.name + "," + m_a.end_ids[0] + "," + str(
                         pop) + "," + basic_io.point_to_str(m_a.ends[1].d()))
@@ -448,10 +453,11 @@ class BuildSqliteLibraries(object):
 
             me = motif_ensemble.MotifEnsemble()
             me.setup(clustered_motifs[0].end_ids[0], clustered_motifs, energies)
-            motif = me.members[0].motif
-            motif.name = "BP."+str(c_i)
             if motif.end_ids[0] != motif.end_ids[1]:
+                pop = math.exp(mem.energy / -kBT)
                 mes_data.append([me.to_str(), me.id, bp_count])
+                motif = me.members[0].motif.copy()
+                motif.name = "BP." + str(c_i)
                 f.write(motif.name + "," + motif.end_ids[0] + "," + str(
                     pop) + "," + basic_io.point_to_str(
                     motif.ends[1].d()))
@@ -461,7 +467,6 @@ class BuildSqliteLibraries(object):
                                me.id, bp_count])
 
             bp_count += 1
-        exit()
         path = settings.RESOURCES_PATH +"/motif_ensemble_libraries/bp_steps.db"
         sqlite_library.build_sqlite_library(path, mes_data, mes_keys, 'id')
         path = settings.RESOURCES_PATH +"/motif_libraries_new/bp_steps.db"
@@ -763,13 +768,13 @@ builder = BuildSqliteLibraries()
 #builder.build_ideal_helices_old()
 #builder.build_trimmed_ideal_helix_library()
 #builder.build_basic_libraries()
-builder.build_helix_ensembles()
+#builder.build_helix_ensembles()
 #builder.build_flex_helix_library()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()
-#builder.build_motif_ensemble_state_libraries()
+builder.build_motif_ensemble_state_libraries()
 #builder.build_flex_helices()
 
 
