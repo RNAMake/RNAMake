@@ -129,6 +129,7 @@ ThermoFlucSimulationDevel::static_run() {
     return String("");
 }
 
+
 int
 ThermoFlucSimulationDevel::run() {
     
@@ -145,17 +146,23 @@ ThermoFlucSimulationDevel::run() {
 
     auto mf = MotifFactory();
 
-    std::ofstream out, out_state, out_all, out_motifs;
+    std::ofstream out, out_state, out_all, out_motifs, out_dump_state;
 
     if(bound_pdbs_) {
         out_motifs.open("motifs.out");
     }
-    if(record_) {
-        out.open(record_file_);
-        out << "d1,r1,d2,r2,cutoff,score";
-        out << std::endl;
+
+    if(dump_state_) {
+        out_dump_state.open("state.out");
     }
-    
+
+    if(record_) {
+        // default setup
+        if(logger_ == nullptr) { logger_ = std::make_shared<ThermoFlucSimulationLogger>(); }
+
+        logger_->setup(sampler_.mst(), ni1_, ni2_, ei1_, ei2_);
+    }
+
     if(record_state_) {
         out_state.open("test_state.out");
         int last = 0;
@@ -202,9 +209,9 @@ ThermoFlucSimulationDevel::run() {
         out_all << "cutoff" << std::endl;
     }
 
-    int ncount = 0;
     while (steps < steps_) {
         r = sampler_.next();
+        //TODO revisit if moving to the next state gives better results
         //if(r == 0) { continue; }
 
         clash = _check_sterics();
@@ -214,16 +221,15 @@ ThermoFlucSimulationDevel::run() {
             steps++;
             continue;
         }
-        
+
         end_state_1_ = sampler_.mst()->get_node(ni1_)->data()->get_end_state(ei1_);
         end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->get_end_state(ei2_);
         
         score_ = scorer_->score(end_state_1_, end_state_2_);
         if(score_ < cutoff_) {
-            
             count += 1;
 
-            if(bound_pdbs_ && !all_pdbs_) {
+           /*if(bound_pdbs_ && !all_pdbs_) {
                 try {
                     //sampler_.mst()->to_motif_tree()->to_pdb("bound." + std::to_string(pdb_count) + ".pdb", 1);
                     auto mt = sampler_.mst()->to_motif_tree();
@@ -235,22 +241,28 @@ ThermoFlucSimulationDevel::run() {
                     pdb_count += 1;
                 }
                 catch(...) {}
-            }
-
-            /*if(bound_pdb_ > bound_pdb_count) {
-                try {
-                    const int dir_err = mkdir(String("nodes_" + std::to_string(bound_pdb_count)).c_str(), S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
-                    sampler_.mst()->write_pdbs("nodes_" + std::to_string(bound_pdb_count) + "/nodes");
-                 
-                    //sampler_.mst()->to_motif_tree()->to_pdb("bound."+std::to_string(bound_pdb_count)+
-                     //                                       ".pdb");
-                    bound_pdb_count++;
-                }
-                catch(...) {}
             }*/
+
         }
 
-        else {
+        if(record_) {
+            if     (record_only_bound_ && score_ <= cutoff_)      { logger_->log(sampler_.mst(), score_); }
+            else if(record_only_unbound_ && score_ > cutoff_)     { logger_->log(sampler_.mst(), score_); }
+            else if(!record_only_bound_ && !record_only_unbound_) { logger_->log(sampler_.mst(), score_); }
+        }
+        if(dump_state_) {
+            if     (record_only_bound_ && score_ <= cutoff_)      {
+                out_dump_state << sampler_.mst()->to_motif_tree()->to_str() << std::endl;
+            }
+            else if(record_only_unbound_ && score_ > cutoff_)     {
+                out_dump_state << sampler_.mst()->to_motif_tree()->to_str() << std::endl;
+            }
+            else if(!record_only_bound_ && !record_only_unbound_) {
+                out_dump_state << sampler_.mst()->to_motif_tree()->to_str() << std::endl;
+            }
+        }
+
+        /*else {
             if(unbound_pdbs_ && !all_pdbs_) {
                 try {
                     sampler_.mst()->to_motif_tree()->to_pdb("unbound." + std::to_string(pdb_count) + ".pdb", 1);
@@ -263,13 +275,13 @@ ThermoFlucSimulationDevel::run() {
         if(all_pdbs_) {
             sampler_.mst()->to_motif_tree()->to_pdb("all." + std::to_string(pdb_count) + ".pdb", 1);
             pdb_count += 1;
-        }
+        }*/
         
-        if(record_) {
+        /*if(record_) {
 
             out << vector_to_str(end_state_1_->d()) << "," << matrix_to_str(end_state_1_->r()) << "," <<vector_to_str(end_state_2_->d()) << "," << matrix_to_str(end_state_2_->r()) << "," << cutoff_ << "," << score_;
             out << std::endl;
-        }
+        }*/
         
         if(record_state_) {
             int last = 0;
@@ -333,13 +345,12 @@ ThermoFlucSimulationDevel::run() {
             }
             
             out_all << score_ << std::endl;
+
         }
+
+
         
         steps++;
-    }
-    
-    if(record_) {
-        out.close();
     }
     
     if(record_state_) {
@@ -373,6 +384,9 @@ ThermoFlucSimulationDevel::setup_options() {
     options_.add_option("all_pdbs", false, OptionType::BOOL);
     options_.add_option("bound_pdbs", false, OptionType::BOOL);
     options_.add_option("unbound_pdbs", false, OptionType::BOOL);
+    options_.add_option("dump_state", false, OptionType::BOOL);
+    options_.add_option("record_only_bound", false, OptionType::BOOL);
+    options_.add_option("record_only_unbound", false, OptionType::BOOL);
     options_.lock_option_adding();
     
     /*
@@ -388,17 +402,20 @@ ThermoFlucSimulationDevel::setup_options() {
 
 void
 ThermoFlucSimulationDevel::update_var_options() {
-    temperature_    = options_.get_float("temperature");
-    steps_          = options_.get_int("steps");
-    cutoff_         = options_.get_float("cutoff");
-    record_         = options_.get_bool("record");
-    record_all_     = options_.get_bool("record_all");
-    record_all_file_= options_.get_string("record_all_file");
-    record_file_    = options_.get_string("record_file");
-    record_state_   = options_.get_bool("record_state");
-    steric_radius_  = options_.get_float("steric_radius");
-    all_pdbs_       = options_.get_bool("all_pdbs");
-    bound_pdbs_     = options_.get_bool("bound_pdbs");
-    unbound_pdbs_   = options_.get_bool("unbound_pdbs");
+    temperature_          = options_.get_float("temperature");
+    steps_                = options_.get_int("steps");
+    cutoff_               = options_.get_float("cutoff");
+    record_               = options_.get_bool("record");
+    record_all_           = options_.get_bool("record_all");
+    record_all_file_      = options_.get_string("record_all_file");
+    record_file_          = options_.get_string("record_file");
+    record_state_         = options_.get_bool("record_state");
+    steric_radius_        = options_.get_float("steric_radius");
+    all_pdbs_             = options_.get_bool("all_pdbs");
+    bound_pdbs_           = options_.get_bool("bound_pdbs");
+    unbound_pdbs_         = options_.get_bool("unbound_pdbs");
+    dump_state_           = options_.get_bool("dump_state");
+    record_only_bound_    = options_.get_bool("record_only_bound");
+    record_only_unbound_  = options_.get_bool("record_only_unbound");
 
 }

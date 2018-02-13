@@ -85,7 +85,18 @@ private:
         String const &,
         String const &,
         String const &);
-    
+
+    MotifStateEnsembleTreeOP
+    get_mset_old_gaaa_coorigin(
+            String const &,
+            String const &,
+            String const &,
+            String const &);
+
+    ThermoFlucSimulationLoggerOP
+    _get_logger(
+            String const &);
+
     MotifOPs
     get_motifs_from_seq_and_ss(
         String const &,
@@ -94,6 +105,9 @@ private:
     
 private:
     ThermoFlucSimulationDevel tfs_;
+    Strings motif_names_;
+    Strings ggaa_ttr_end_names_;
+    Strings gaaa_ttr_end_names_;
     
     
     

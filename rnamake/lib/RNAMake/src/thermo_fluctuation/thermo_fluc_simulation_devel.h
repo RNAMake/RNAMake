@@ -25,6 +25,68 @@ public:
     {}
 };
 
+class ThermoFlucSimulationLogger {
+public:
+    ThermoFlucSimulationLogger(
+            String const & fname = "test.out"):
+            outputed_header_(false){
+        out_.open(fname);
+    }
+
+    ~ThermoFlucSimulationLogger() {
+        out_.close();
+    }
+
+public:
+    virtual
+    void
+    log(
+            MotifStateTreeOP const & mst,
+            float score) {
+
+        auto end_state_1 = mst->get_node(ni1_)->data()->get_end_state(ei1_);
+        auto end_state_2 = mst->get_node(ni2_)->data()->get_end_state(ei2_);
+
+        out_ << vector_to_str(end_state_1->d()) << "," << matrix_to_str(end_state_1->r()) << ",";
+        out_ << vector_to_str(end_state_2->d()) << "," << matrix_to_str(end_state_2->r()) << ","  << score;
+        out_ << std::endl;
+    }
+
+    virtual
+    void
+    setup(
+            MotifStateTreeOP const & mst,
+            int ni1,
+            int ni2,
+            int ei1,
+            int ei2) {
+        ni1_ = ni1;
+        ni2_ = ni2;
+        ei1_ = ei1;
+        ei2_ = ei2;
+        if(! outputed_header_) {
+            _output_header(mst);
+        }
+    }
+
+protected:
+    virtual
+    void
+    _output_header(
+            MotifStateTreeOP const & mst) {
+        out_ << "d_target,r_target,d_variable,r_variable,score" << std::endl;
+        outputed_header_ = true;
+    }
+
+protected:
+    std::ofstream out_;
+    int ni1_, ni2_, ei1_, ei2_;
+    bool outputed_header_;
+
+
+};
+
+typedef std::shared_ptr<ThermoFlucSimulationLogger> ThermoFlucSimulationLoggerOP;
 
 class ThermoFlucSimulationDevel : public OptionClass {
 public:
@@ -75,13 +137,21 @@ public:
         int,
         int,
         int);
-    
+
     int
     run();
     
     String
     static_run();
-    
+
+public:
+    inline
+    void
+    set_logger(
+            ThermoFlucSimulationLoggerOP logger) {
+        logger_ = logger;
+    }
+
    
 public: //option wrappers
     
@@ -127,6 +197,7 @@ protected:
     
 private:
     ThermoFlucScorerOP scorer_;
+    ThermoFlucSimulationLoggerOP logger_;
     ThermoFlucSampler sampler_;
     BasepairStateOP end_state_1_, end_state_2_;
     Options options_;
@@ -139,6 +210,8 @@ private:
     float temperature_, cutoff_, steric_radius_;
     int steps_, record_state_, record_all_;
     bool record_, bound_pdbs_, all_pdbs_, unbound_pdbs_;
+    bool record_only_bound_, record_only_unbound_;
+    bool dump_state_;
 };
 
 #endif /* defined(__RNAMake__thermo_fluc_simulation_devel__) */

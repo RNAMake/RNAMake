@@ -109,6 +109,7 @@ GeneralHelixSampler::run() {
     for(auto const & m : bp_steps) {
         mt->add_motif(m);
     }
+    mt->write_pdbs();
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
     tfs_.setup(mset, 0, mt->last_node()->index(), 1, 1);
     std::cout << tfs_.run() << std::endl;

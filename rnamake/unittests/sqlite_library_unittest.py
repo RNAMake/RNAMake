@@ -188,6 +188,11 @@ class SqliteLibraryUnittest(unittest.TestCase):
         for m in ms_lib.all():
             print m.name, m.end_names[0]
 
+    def test_get_bp_steps(self):
+        mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
+        mlib.load_all()
+        for m in mlib.all():
+            m.to_pdb("bp_steps/"+m.name+"."+m.end_ids[0]+".pdb")
 
 
 def main():

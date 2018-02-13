@@ -15,10 +15,102 @@
 #include "motif_data_structures/motif_tree.h"
 #include "simulate_tectos_devel.h"
 
+// loggers               ////////////////////////////////////////////////////////////////////////////
+
+class SimulateTectosRecordAllLogger : public ThermoFlucSimulationLogger {
+public:
+    SimulateTectosRecordAllLogger(
+            String const & fname,
+            Strings const & motif_names,
+            Strings const & ggaa_ttr_end_names,
+            Strings const & gaaa_ttr_end_names):
+            ThermoFlucSimulationLogger(fname),
+            motif_names_(motif_names),
+            ggaa_ttr_end_names_(ggaa_ttr_end_names),
+            gaaa_ttr_end_names_(gaaa_ttr_end_names) {
+    }
+
+public:
+
+    void
+    log(
+            MotifStateTreeOP const & mst,
+            float score) {
+        int i = 0;
+        for(auto const & n : *mst) {
+            i++;
+            if(i == 1) { continue; } // ignore first state
+            if(n->data()->cur_state->end_states().size() == 2) {
+                out_ << vector_to_str(n->data()->get_end_state(0)->d()) << ",";
+                out_ << matrix_to_str(n->data()->get_end_state(0)->r()) << ",";
+                out_ << n->data()->cur_state->name() << ",";
+                out_ << n->data()->cur_state->end_ids()[0];
+            }
+            else {
+                int i = 0;
+                int size = n->data()->cur_state->end_states().size();
+                for(auto const & end_state : n->data()->cur_state->end_states()) {
+                    i++;
+                    out_ << vector_to_str(end_state->d()) << ",";
+                    out_ << matrix_to_str(end_state->r());
+                    if(i != size) { out_ << ","; }
+                }
+
+            }
+            out_ << ",";
+        }
+        out_ << score << std::endl;
+
+    }
+
+protected:
+    void
+    _output_header(
+            MotifStateTreeOP const & mst) {
+        for(auto const & name : motif_names_) {
+            if(name.length() < 4) {
+                this->out_ << name + "_d," <<  name + "_r," << name + "_bp," << name << "_ei";
+                this->out_ << ",";
+            }
+            else {
+                if(name == "gaaa_ttr") { _output_ttr_header_section(name, gaaa_ttr_end_names_); }
+                if(name == "ggaa_ttr") { _output_ttr_header_section(name, ggaa_ttr_end_names_); }
+                this->out_ << ",";
+
+            }
+
+        }
+        this->out_ << "score\n";
+
+        outputed_header_ = true;
+    }
+
+    void
+    _output_ttr_header_section(
+            String const & name,
+            Strings const & end_names) {
+        int i = 0;
+        for(auto const & end_name : end_names) {
+            this->out_ << name + "_" + end_name + "_r," <<  name + "_" + end_name + "_d";
+            i++;
+            if(i != end_names.size()) { this->out_ << ","; }
+        }
+
+    }
+
+private:
+    Strings motif_names_;
+    Strings ggaa_ttr_end_names_;
+    Strings gaaa_ttr_end_names_;
+
+};
+
 
 SimulateTectosApp::SimulateTectosApp() : Application(),
-tfs_(ThermoFlucSimulationDevel())
-{}
+        tfs_(ThermoFlucSimulationDevel()),
+        motif_names_(Strings()),
+        ggaa_ttr_end_names_(Strings()),
+        gaaa_ttr_end_names_(Strings()) {}
 
 
 // application setups functions ////////////////////////////////////////////////////////////////////
@@ -32,20 +124,28 @@ SimulateTectosApp::setup_options() {
     add_option("s", 1000000, OptionType::INT);
     add_option("start_pose", false, OptionType::BOOL);
     add_option("start_pdbs", false, OptionType::BOOL);
+    add_option("coorigin", false, OptionType::BOOL);
+    add_option("gaaa_coorigin", false, OptionType::BOOL);
+
     //extra ensembles
     add_option("extra_me", "", OptionType::STRING);
-    
-    //record options
-    add_option("r", false, OptionType::BOOL);
-    add_option("record_file", "test.out", OptionType::STRING);
 
     //new ggaa loop
     add_option("new_ggaa_model", false, OptionType::BOOL);
     add_option("ggaa_model", "", OptionType::STRING);
     
     add_option("extra_motifs", "", OptionType::STRING);
-    
-    add_cl_options(tfs_.options(), "simulation");
+
+    // recording info from simulation
+    add_option("record", false, OptionType::BOOL);
+    add_option("record_file", "test.out", OptionType::STRING);
+    add_option("record_only_bound", false, OptionType::BOOL);
+    add_option("record_only_unbound", false, OptionType::BOOL);
+    add_option("record_file_type", "", OptionType::STRING);
+    add_option("dump_state", false, OptionType::BOOL);
+
+
+    //add_cl_options(tfs_.options(), "simulation");
     
 }
 
@@ -57,7 +157,7 @@ SimulateTectosApp::parse_command_line(
     
     Application::parse_command_line(argc, argv);
     
-    cl_parser_.assign_options(cl_options_, tfs_.options(), "simulation");
+    //cl_parser_.assign_options(cl_options_, tfs_.options(), "simulation");
     tfs_.update_var_options();
 }
 
@@ -86,15 +186,21 @@ SimulateTectosApp::run() {
         std::cout << get_string_option("extra_me") << std::endl;
         RM::instance().register_extra_motif_ensembles(get_string_option("extra_me"));
     }
-    
-    if(get_bool_option("new_ggaa_model")) {
+
+    if     (get_bool_option("new_ggaa_model")) {
         mset = get_mset_new_receptor(remove_Us(fseq), fss, remove_Us(cseq), css);
     }
+    else if(get_bool_option("coorigin")) {
+        mset = get_mset_old_coorigin(remove_Us(fseq), fss, remove_Us(cseq), css);
+    }
+    else if(get_bool_option("gaaa_coorigin")) {
+        mset = get_mset_old_gaaa_coorigin(remove_Us(fseq), fss, remove_Us(cseq), css);
+    }
+
     else {
         mset = get_mset_old(remove_Us(fseq), fss, remove_Us(cseq), css);
     }
-    
-    
+
     if(get_bool_option("start_pose")) {
         auto mt = mset->to_mst()->to_motif_tree();
         mt->to_pdb("start_pose.pdb");
@@ -107,18 +213,67 @@ SimulateTectosApp::run() {
         std::cout << "SIMULATE_TECTOS: outputing each motif as nodes.*.pdb" << std::endl;
 
     }
-    
+
+    auto target_node_index = 1;
+    auto target_node_end_index = -1;
+
+    auto final_node_index = mset->last_node()->index();
+    auto final_node_end_index = 1;
+
     auto steric_node_str = String("");
-    auto last_node_index = mset->last_node()->index();
-    steric_node_str += std::to_string(last_node_index) + "," + std::to_string(last_node_index-1);
-    steric_node_str += ":1";
-    
-    auto end_index = mset->to_mst()->get_node(1)->data()->get_end_index("A1-A6");
-    
+    steric_node_str  = std::to_string(final_node_index) + "," + std::to_string(final_node_index-1);
+
+    if(get_bool_option("coorigin")) {
+        for(auto const & n : *mset) {
+            if(n->data()->get_member(0)->motif_state->name() == "GAAA_tetraloop") {
+                target_node_index = n->index();
+                break;
+            }
+        }
+        if(target_node_index == -1) {
+            throw SimulateTectosAppException("cannot find GAAA_tetraloop");
+        }
+
+        target_node_end_index = mset->get_node(target_node_index)->data()->get_member(0)->motif_state->get_end_index("A222-A251");
+
+        steric_node_str += ":" + std::to_string(target_node_index);
+    }
+    else if(get_bool_option("gaaa_coorigin")) {
+        for(auto const & n : *mset) {
+            if(n->data()->get_member(0)->motif_state->name() == "GGAA_tetraloop") {
+                target_node_index = n->index();
+                break;
+            }
+        }
+        if(target_node_index == -1) {
+            throw SimulateTectosAppException("cannot find GGAA_tetraloop");
+        }
+        target_node_end_index = mset->get_node(target_node_index)->data()->get_member(0)->motif_state->get_end_index("A1-A6");
+
+        steric_node_str += ":" + std::to_string(target_node_index);
+
+    }
+
+    else {
+        steric_node_str += ":1";
+
+        target_node_end_index = mset->get_node(1)->data()->get_member(0)->motif_state->get_end_index("A1-A6");
+    }
+
     tfs_.set_option_value("steps", get_int_option("s"));
     tfs_.set_option_value("steric_nodes", steric_node_str);
-    tfs_.set_option_value("record", get_bool_option("r"));
-    tfs_.setup(mset, 1, mset->last_node()->index(), end_index, 1);
+    tfs_.setup(mset, target_node_index, final_node_index, target_node_end_index, final_node_end_index);
+
+    tfs_.set_option_value("record_only_bound", get_bool_option("record_only_bound"));
+    tfs_.set_option_value("record_only_unbound", get_bool_option("record_only_unbound"));
+    tfs_.set_option_value("dump_state", get_bool_option("dump_state"));
+
+    if(get_bool_option("record")) {
+        tfs_.set_option_value("record", true);
+        auto logger = _get_logger(get_string_option("record_file_type"));
+        tfs_.set_logger(logger);
+    }
+
     auto count = tfs_.run();
     std::cout << count << std::endl;
     
@@ -134,6 +289,9 @@ SimulateTectosApp::get_mset_old(
     
     auto ggaa_ttr = RM::instance().motif("GGAA_tetraloop", "", "A14-A15");
     auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
+
+    for(auto const & end : gaaa_ttr->ends()) { gaaa_ttr_end_names_.push_back(end->name()); }
+    for(auto const & end : ggaa_ttr->ends()) { ggaa_ttr_end_names_.push_back(end->name()); }
     
     auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
     auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
@@ -143,16 +301,23 @@ SimulateTectosApp::get_mset_old(
     auto m = RM::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
+    motif_names_.push_back("ggaa_ttr");
+    motif_names_.push_back("f1");
     mt->add_motif(flow_motifs[1], 1, "A7-A22");
     for(int i = 2; i < flow_motifs.size(); i++) {
+        motif_names_.push_back("f"+std::to_string(i));
         mt->add_motif(flow_motifs[i]);
     }
-    
+
     mt->add_motif(gaaa_ttr);
     mt->add_motif(chip_motifs[1], -1, "A222-A251");
+    motif_names_.push_back("gaaa_ttr");
+    motif_names_.push_back("c1");
     for(int i = 2; i < chip_motifs.size(); i++) {
+        motif_names_.push_back("c"+std::to_string(i));
         mt->add_motif(chip_motifs[i]);
     }
+
     
     //mt->write_pdbs();
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
@@ -190,7 +355,10 @@ SimulateTectosApp::get_mset_new_receptor(
     
     auto ggaa_ttr = RM::instance().motif("new_ggaa_tetraloop", "", "A13-A16");
     auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
-    
+
+    for(auto const & end : gaaa_ttr->ends()) { gaaa_ttr_end_names_.push_back(end->name()); }
+    for(auto const & end : ggaa_ttr->ends()) { ggaa_ttr_end_names_.push_back(end->name()); }
+
     auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
     auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
     
@@ -200,13 +368,19 @@ SimulateTectosApp::get_mset_new_receptor(
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
     mt->add_motif(flow_motifs[1], 1, "A7-A22");
+    motif_names_.push_back("ggaa_ttr");
+    motif_names_.push_back("f1");
     for(int i = 2; i < flow_motifs.size(); i++) {
+        motif_names_.push_back("f"+std::to_string(i));
         mt->add_motif(flow_motifs[i]);
     }
     
     mt->add_motif(gaaa_ttr);
     mt->add_motif(chip_motifs[1], -1, "A222-A251");
+    motif_names_.push_back("gaaa_ttr");
+    motif_names_.push_back("c1");
     for(int i = 2; i < chip_motifs.size(); i++) {
+        motif_names_.push_back("c"+std::to_string(i));
         mt->add_motif(chip_motifs[i]);
     }
     
@@ -215,10 +389,110 @@ SimulateTectosApp::get_mset_new_receptor(
     
 }
 
+MotifStateEnsembleTreeOP
+SimulateTectosApp::get_mset_old_coorigin(
+        String const & fseq,
+        String const & fss,
+        String const & cseq,
+        String const & css) {
+
+    auto ggaa_ttr = RM::instance().motif("GGAA_tetraloop", "", "A14-A15");
+    auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
+
+    for(auto const & end : gaaa_ttr->ends()) { gaaa_ttr_end_names_.push_back(end->name()); }
+    for(auto const & end : ggaa_ttr->ends()) { ggaa_ttr_end_names_.push_back(end->name()); }
+
+    auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
+    auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
+
+    auto mt = std::make_shared<MotifTree>();
+    mt->set_option_value("sterics", false);
+    auto m = RM::instance().bp_step("GG_LL_CC_RR");
+    mt->add_motif(m);
+    auto pos = mt->add_motif(ggaa_ttr);
+    motif_names_.push_back("ggaa_ttr");
+    motif_names_.push_back("f1");
+    mt->add_motif(flow_motifs[1], 1, "A7-A22");
+    for(int i = 2; i < flow_motifs.size(); i++) {
+        motif_names_.push_back("f"+std::to_string(i));
+        mt->add_motif(flow_motifs[i]);
+    }
+
+    mt->add_motif(gaaa_ttr);
+    auto new_chip_motifs = MotifOPs();
+    for(int i = chip_motifs.size()-1; i > -1; i--) {
+        auto m = RM::instance().motif(chip_motifs[i]->name(), chip_motifs[i]->end_ids()[1], "");
+        new_chip_motifs.push_back(m);
+    }
+
+    mt->add_motif(new_chip_motifs[0], pos, "A1-A6");
+    int j = new_chip_motifs.size()-1;
+    motif_names_.push_back("c"+std::to_string(j));
+    j--;
+    for(int i = 1; i < new_chip_motifs.size()-1; i++) {
+        motif_names_.push_back("c"+std::to_string(j));
+        mt->add_motif(new_chip_motifs[i]);
+        j--;
+    }
+
+    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    return mset;
+
+}
+
+MotifStateEnsembleTreeOP
+SimulateTectosApp::get_mset_old_gaaa_coorigin(
+        String const & fseq,
+        String const & fss,
+        String const & cseq,
+        String const & css) {
+
+    auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A229-A245");
+    auto ggaa_ttr = RM::instance().motif("GGAA_tetraloop", "", "A7-A22");
+
+    for(auto const & end : gaaa_ttr->ends()) { gaaa_ttr_end_names_.push_back(end->name()); }
+    for(auto const & end : ggaa_ttr->ends()) { ggaa_ttr_end_names_.push_back(end->name()); }
+
+    auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
+    auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
+
+    auto mt = std::make_shared<MotifTree>();
+    mt->set_option_value("sterics", false);
+    auto m = RM::instance().bp_step("GG_LL_CC_RR");
+    mt->add_motif(m);
+    auto pos = mt->add_motif(gaaa_ttr);
+    motif_names_.push_back("gaaa_ttr");
+    auto new_flow_motifs = MotifOPs();
+    for(int i = flow_motifs.size()-1; i > -1; i--) {
+        auto m = RM::instance().motif(flow_motifs[i]->name(), flow_motifs[i]->end_ids()[1], "");
+        new_flow_motifs.push_back(m);
+    }
+    mt->add_motif(new_flow_motifs[0], pos, "A149-A154");
+    int j = new_flow_motifs.size()-1;
+    motif_names_.push_back("f"+std::to_string(j));
+    j--;
+    for(int i = 1; i < new_flow_motifs.size()-1; i++) {
+        motif_names_.push_back("f"+std::to_string(j));
+        mt->add_motif(new_flow_motifs[i]);
+        j--;
+    }
+    mt->add_motif(ggaa_ttr);
+    mt->add_motif(chip_motifs[1], pos, "A222-A251");
+    motif_names_.push_back("ggaa_ttr");
+    motif_names_.push_back("c1");
+    for(int i = 2; i < chip_motifs.size(); i++) {
+        motif_names_.push_back("c"+std::to_string(i));
+        mt->add_motif(chip_motifs[i]);
+    }
+
+    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    return mset;
+}
+
 MotifOPs
 SimulateTectosApp::get_motifs_from_seq_and_ss(
-    String const & seq,
-    String const & ss) {
+        String const & seq,
+        String const & ss) {
     
     auto parser = sstruct::SecondaryStructureParser();
     auto ss_motifs = parser.parse_to_motifs(seq, ss);
@@ -261,6 +535,29 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
     }
     
     return motifs;
+}
+
+ThermoFlucSimulationLoggerOP
+SimulateTectosApp::_get_logger(
+        String const & name) {
+    if(name.length() == 0) {
+        return std::make_shared<SimulateTectosRecordAllLogger>(
+                get_string_option("record_file"),
+                motif_names_,
+                ggaa_ttr_end_names_,
+                gaaa_ttr_end_names_);
+    }
+    else if (name == "AllLoger") {
+        return std::make_shared<SimulateTectosRecordAllLogger>(
+                get_string_option("record_file"),
+                motif_names_,
+                ggaa_ttr_end_names_,
+                gaaa_ttr_end_names_);
+    }
+
+    else {
+        throw SimulateTectosAppException("unknown logger type: " + name);
+    }
 }
 
 
