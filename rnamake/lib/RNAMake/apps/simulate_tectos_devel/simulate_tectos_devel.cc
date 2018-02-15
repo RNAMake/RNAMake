@@ -14,6 +14,7 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_tree.h"
 #include "simulate_tectos_devel.h"
+#include "math/euler.h"
 
 // loggers               ////////////////////////////////////////////////////////////////////////////
 
@@ -51,8 +52,8 @@ public:
                 int size = n->data()->cur_state->end_states().size();
                 for(auto const & end_state : n->data()->cur_state->end_states()) {
                     i++;
-                    out_ << vector_to_str(end_state->d()) << ",";
-                    out_ << matrix_to_str(end_state->r());
+                    out_ << matrix_to_str(end_state->r()) << ",";
+                    out_ << vector_to_str(end_state->d());
                     if(i != size) { out_ << ","; }
                 }
 
@@ -104,6 +105,75 @@ private:
     Strings gaaa_ttr_end_names_;
 
 };
+
+class SimulateTectosRecord6D : public ThermoFlucSimulationLogger {
+public:
+    SimulateTectosRecord6D(
+            String const & fname,
+            BasepairOP ref_bp ):
+            ThermoFlucSimulationLogger(fname),
+            ref_bp_(ref_bp) {
+        ref_r_t_ = ref_bp_->r().transposed();
+    }
+
+public:
+    void
+    log(
+            MotifStateTreeOP const & mst,
+            float score) {
+
+        auto end_state_1 = mst->get_node(ni1_)->data()->get_end_state(ei1_);
+        auto end_state_2 = mst->get_node(ni2_)->data()->get_end_state(ei2_);
+
+        r1_ = end_state_1->r();
+        d1_ = end_state_1->d();
+
+        r2_ = end_state_2->r();
+        d2_ = end_state_2->d();
+
+        dot(ref_r_t_, r1_, rot_);
+        rot_t_.unitarize();
+        rot_t_ = rot_.transposed();
+
+
+        dot(r1_, rot_t_, r1_trans_);
+        dot(r2_, rot_t_, r2_trans_);
+
+        dot(r1_trans_.transposed(), r2_trans_, r_);
+        r_.unitarize();
+
+        auto euler = Vector();
+        calc_euler(r_, euler);
+
+        d_ = d2_ - d1_;
+        for(int i = 0; i < 3; i++) {
+            euler[i] = euler[i]*180/M_PI;
+            if(euler[i] > 180) {
+                euler[i] -= 360;
+            }
+        }
+        out_ << d_[0] << "," << d_[1] << "," << d_[2] << "," << euler[0] << "," << euler[1] << "," << euler[2] << ",";
+        out_ << score << std::endl;
+
+
+    }
+
+protected:
+    void
+    _output_header(
+            MotifStateTreeOP const & mst) {
+        this->out_ << "x,y,z,a,b,g,score" << std::endl;
+        outputed_header_ = true;
+
+    }
+
+private:
+    BasepairOP ref_bp_;
+    Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
+    Point d1_, d2_, d_;
+
+};
+
 
 
 SimulateTectosApp::SimulateTectosApp() : Application(),
@@ -163,7 +233,21 @@ SimulateTectosApp::parse_command_line(
 
 void
 SimulateTectosApp::run() {
-    
+
+    /*auto lines = get_lines_from_file("state.out");
+    auto mt = std::make_shared<MotifTree>(lines[0], MotifTreeStringType::MT_STR);
+
+    auto path = motif_dirs() + "ref.motif";
+    auto ref_motif = file_to_motif(path);
+    auto logger = std::make_shared<SimulateTectosRecord6D>(
+            "new.out",
+            ref_motif->basepairs()[0]);
+    auto mst = std::make_shared<MotifStateTree>(mt);
+    logger->setup(mst, 1, 23, 1, 1);
+    logger->log(mst, 0);
+
+    exit(0);*/
+
     // load extra motifs in resource manager
     if(get_string_option("extra_motifs") != "") {
         auto spl = split_str_by_delimiter(get_string_option("extra_motifs"), ",");
@@ -553,6 +637,15 @@ SimulateTectosApp::_get_logger(
                 motif_names_,
                 ggaa_ttr_end_names_,
                 gaaa_ttr_end_names_);
+    }
+
+    else if(name == "Record6D") {
+        auto path = motif_dirs() + "ref.motif";
+        auto ref_motif = file_to_motif(path);
+        return std::make_shared<SimulateTectosRecord6D>(
+                get_string_option("record_file"),
+                ref_motif->basepairs()[0]);
+
     }
 
     else {

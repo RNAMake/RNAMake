@@ -1127,9 +1127,12 @@ def euler_from_matrix(matrix, axes='sxyz'):
         _TUPLE2AXES[axes]  # validation
         firstaxis, parity, repetition, frame = axes
 
+    print firstaxis, parity, repetition, frame
+
     i = firstaxis
     j = _NEXT_AXIS[i+parity]
     k = _NEXT_AXIS[i-parity+1]
+    print i, j, k
 
     M = numpy.array(matrix, dtype=numpy.float64, copy=False)[:3, :3]
     if repetition:

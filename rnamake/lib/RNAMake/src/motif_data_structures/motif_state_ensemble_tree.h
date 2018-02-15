@@ -19,6 +19,7 @@
 #include "motif_data_structures/motif_tree.h"
 #include "motif_data_structures/motif_state_tree.h"
 #include "motif_data_structures/motif_connection.h"
+#include "math/euler.h"
 
 class MotifStateTreeEnsembleException : public std::runtime_error {
 public:
@@ -30,12 +31,12 @@ public:
 
 typedef TreeNodeOP<MotifStateEnsembleOP> MotifStateEnsembleTreeNodeOP;
 
-const double _EPS = 2.22044604925e-16 * 4.0;
+/*const double _EPS = 2.22044604925e-16 * 4.0;
 
 //assumes 3x3 matrices
 inline
 void
-calc_euler(
+calc_euler2(
     Matrix & M,
     Vector & euler) {
     
@@ -62,7 +63,7 @@ calc_euler(
     //'sxyz': (0, 0, 0, 0)
     //_NEXT_AXIS = [1, 2, 0, 1]
     
-}
+}*/
 
 
 class MotifStateEnsembleTree {

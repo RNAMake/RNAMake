@@ -682,8 +682,7 @@ public: // Properties: value assignment
 	
 	inline
 	xyzMatrix<T>
-	transposed()
-	{
+	transposed() const {
 		return xyzMatrix(
 						 xx_, yx_, zx_,
 						 xy_, yy_, zy_,

@@ -148,10 +148,6 @@ ThermoFlucSimulationDevel::run() {
 
     std::ofstream out, out_state, out_all, out_motifs, out_dump_state;
 
-    if(bound_pdbs_) {
-        out_motifs.open("motifs.out");
-    }
-
     if(dump_state_) {
         out_dump_state.open("state.out");
     }
@@ -161,52 +157,6 @@ ThermoFlucSimulationDevel::run() {
         if(logger_ == nullptr) { logger_ = std::make_shared<ThermoFlucSimulationLogger>(); }
 
         logger_->setup(sampler_.mst(), ni1_, ni2_, ei1_, ei2_);
-    }
-
-    if(record_state_) {
-        out_state.open("test_state.out");
-        int last = 0;
-        int c = 1;
-        for(int a = 2; a < sampler_.mst()->size(); a++) {
-            if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
-                last = a;
-                break;
-            }
-            out_state << "f" << c << ",";
-            c += 1;
-        }
-        
-        c = 1;
-        for(int a = last+1; a < sampler_.mst()->size(); a++) {
-            out_state << "c" << c << ",";
-            c += 1;
-        }
-        
-        out_state << "cutoff" << std::endl;
-    }
-    
-    if(record_all_) {
-        out_all.open(record_all_file_);
-        int last = 0;
-        int c = 1;
-        out_all << "fstart_d,fstart_r,";
-        for(int a = 2; a < sampler_.mst()->size(); a++) {
-            if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
-                last = a;
-                break;
-            }
-            out_all << "f" << c << "_d," << "f" << c << "_r,";
-            c += 1;
-        }
-        
-        c = 1;
-        out_all << "cstart_d,cstart_r,";
-        for(int a = last+1; a < sampler_.mst()->size(); a++) {
-            out_all << "c" << c << "_d," << "c" << c << "_r,";
-            c += 1;
-        }
-        
-        out_all << "cutoff" << std::endl;
     }
 
     while (steps < steps_) {
@@ -262,107 +212,9 @@ ThermoFlucSimulationDevel::run() {
             }
         }
 
-        /*else {
-            if(unbound_pdbs_ && !all_pdbs_) {
-                try {
-                    sampler_.mst()->to_motif_tree()->to_pdb("unbound." + std::to_string(pdb_count) + ".pdb", 1);
-                    pdb_count += 1;
-                }
-                catch(...) {}
-            }
-        }
-
-        if(all_pdbs_) {
-            sampler_.mst()->to_motif_tree()->to_pdb("all." + std::to_string(pdb_count) + ".pdb", 1);
-            pdb_count += 1;
-        }*/
-        
-        /*if(record_) {
-
-            out << vector_to_str(end_state_1_->d()) << "," << matrix_to_str(end_state_1_->r()) << "," <<vector_to_str(end_state_2_->d()) << "," << matrix_to_str(end_state_2_->r()) << "," << cutoff_ << "," << score_;
-            out << std::endl;
-        }*/
-        
-        if(record_state_) {
-            int last = 0;
-            for(int a = 2; a < sampler_.mst()->size(); a++) {
-                
-                if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
-                    last = a;
-                    break;
-                }
-                out_state << sampler_.mst()->get_node(a)->data()->cur_state->name() << "|";
-                out_state << sampler_.mst()->get_node(a)->data()->cur_state->end_ids()[0] << ",";
-            }
-            
-            for(int a = last+1; a < sampler_.mst()->size(); a++) {
-                if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
-                    last = a;
-                    break;
-                }
-                out_state << sampler_.mst()->get_node(a)->data()->cur_state->name() <<  "|";
-                out_state << sampler_.mst()->get_node(a)->data()->cur_state->end_ids()[0] << ",";
-            }
-
-            out_state << score_ << std::endl;
-        }
-        
-        if(record_all_) {
-            int last = 0;
-            int first = 1;
-
-            for(int a = 2; a < sampler_.mst()->size(); a++) {
-                if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
-                    last = a;
-                    break;
-                }
-                
-                if(first) {
-                    out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[0]->d()) <<  ",";
-                    out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[0]->r()) <<  ",";
-                }
-                
-                out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->d()) <<  ",";
-                out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->r()) <<  ",";
-                first = 0;
-            }
-            first = 1;
-            
-            for(int a = last+1; a < sampler_.mst()->size(); a++) {
-                if(sampler_.mst()->get_node(a)->data()->cur_state->size() > 4) {
-                    last = a;
-                    break;
-                }
-                
-                if(first) {
-                    out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[0]->d()) <<  ",";
-                    out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[0]->r()) <<  ",";
-                }
-                
-                out_all << vector_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->d()) <<  ",";
-                out_all << matrix_to_str(sampler_.mst()->get_node(a)->data()->cur_state->end_states()[1]->r()) <<  ",";
-                first = 0;
-            }
-            
-            out_all << score_ << std::endl;
-
-        }
-
 
         
         steps++;
-    }
-    
-    if(record_state_) {
-        out_state.close();
-    }
-    
-    if(record_all_) {
-        out_all.close();
-    }
-
-    if(bound_pdbs_) {
-        out_motifs.close();
     }
     
     return count;
