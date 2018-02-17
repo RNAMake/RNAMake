@@ -293,6 +293,21 @@ class BuildSqliteLibraries(object):
         helix_mlib = motif_library.MotifLibrary(motif_type.HELIX)
         helix_mlib.load_all()
 
+        """f = open("helix_vectors.csv", "w")
+        f.write("pdb,res,vector,start_pos\n")
+        for h in helix_mlib.motifs():
+            spl = h.name.split(".")
+            if spl[1] == "IDEAL" or spl[1] == "LE":
+                continue
+            f.write(spl[1] + ",")
+            for r in h.residues():
+                f.write(str(r.num) + r.chain_id + " ")
+            f.write(",")
+            v = h.ends[0].d() - h.ends[1].d()
+            f.write(basic_io.point_to_str(v) + "," + basic_io.point_to_str(h.ends[0].d()) +"\n")
+
+        exit()"""
+
         clusters = []
         steps = []
 
@@ -768,13 +783,13 @@ builder = BuildSqliteLibraries()
 #builder.build_ideal_helices_old()
 #builder.build_trimmed_ideal_helix_library()
 #builder.build_basic_libraries()
-#builder.build_helix_ensembles()
+builder.build_helix_ensembles()
 #builder.build_flex_helix_library()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
 #builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
 #builder.build_flex_helices()
 
 
