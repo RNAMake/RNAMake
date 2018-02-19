@@ -188,6 +188,7 @@ private: // data
 typedef _BoundingBox<Point> BoundingBox;
 typedef std::array<size_t, 3> Size3;
 typedef std::array<size_t, 6> Size6;
+typedef std::array<double, 2> Real2;
 typedef std::array<double, 3> Real3;
 typedef std::array<double, 6> Real6;
 typedef std::array<double, 6> Bin6D;
@@ -371,7 +372,37 @@ public:
             Strings const & s,
             SixDHistogramStrType const & type):
             binner_(BoundingBox(), Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1}) {
-        if(type == SixDHistogramStrType::TEXT) { _setup_from_text(s); }
+        if(type == SixDHistogramStrType::TEXT)   { _setup_from_text(s); }
+    }
+
+    SixDHistogram(
+            std::ifstream & in):
+            binner_(BoundingBox(), Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1}) {
+
+        auto datas = Real3();
+        for(int i = 0; i < 3; i++) {
+            in.read(reinterpret_cast<char *>(&datas[i]), sizeof(datas[i]));
+        }
+        auto lower = Point(datas[0], datas[1], datas[2]);
+        for(int i = 0; i < 3; i++) {
+            in.read(reinterpret_cast<char *>(&datas[i]), sizeof(datas[i]));
+        }
+        auto upper = Point(datas[0], datas[1], datas[2]);
+        auto bin_widths = Real6();
+        for(int i = 0; i < 6; i++) {
+            in.read(reinterpret_cast<char *>(&bin_widths[i]), sizeof(bin_widths[i]));
+        }
+        binner_ = SixDCoordinateBinner(BoundingBox(lower, upper), bin_widths);
+        u_int64_t num;
+        u_int64_t key, count;
+        in.read(reinterpret_cast<char *>(&num), sizeof(num));
+        for(int i = 0; i < num; i++) {
+            in.read(reinterpret_cast<char *>(&key), sizeof(key));
+            in.read(reinterpret_cast<char *>(&count), sizeof(count));
+            stored_values_[key] = count;
+
+        }
+
     }
 
 private:
@@ -452,10 +483,30 @@ public:
     }
 
     void
-    to_str() {
-        auto s = Strings();
-        s.push_back("");
+    to_binary_file(
+            String const & fname) {
+
+        std::ofstream out;
+        out.open(fname, std::ios::binary);
         auto lower = binner_.get_bounding_box().lower();
+        auto upper = binner_.get_bounding_box().upper();
+        out.write((const char *)&lower.x(), sizeof(lower.x()));
+        out.write((const char *)&lower.y(), sizeof(lower.y()));
+        out.write((const char *)&lower.z(), sizeof(lower.z()));
+        out.write((const char *)&upper.x(), sizeof(upper.x()));
+        out.write((const char *)&upper.y(), sizeof(upper.y()));
+        out.write((const char *)&upper.z(), sizeof(upper.z()));
+        for(int i = 0; i < 6; i++) {
+            out.write((const char *)&binner_.get_bin_widths()[i], sizeof(binner_.get_bin_widths()[i]));
+        }
+        u_int64_t num = stored_values_.size();
+        out.write((const char *)&num, sizeof(num));
+        for(auto const & kv : stored_values_) {
+            out.write((const char *)&kv.first, sizeof(kv.first));
+            out.write((const char *)&kv.second, sizeof(kv.second));
+        }
+        out.close();
+
 
     }
 

@@ -87,17 +87,48 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         auto histo_2 = SixDHistogram(lines, SixDHistogramStrType::TEXT);
         REQUIRE(histo_2.contains(pA));
 
-        //histo.to_str();
+        histo.to_binary_file("test.bin");
+
+        std::ifstream in;
+        in.open("test.bin", std::ios::binary);
+        auto histo_3 = SixDHistogram(in);
+
+        REQUIRE(histo_3.contains(pA));
+
+        //double test;
+        //in.read(reinterpret_cast<char *>(&test), sizeof(test));
+        //std::cout << test << std::endl;
+
+        //auto lines2 = get_lines_from_file("test.bin");
+        //auto histo_3 = SixDHistogram(lines2, SixDHistogramStrType::BINARY);
 
     }
 
-    SECTION("test histo on tecto data") {
+    SECTION("test two histograms in one file") {
+        Real6 pA;
+        pA[0] = -4.25;  pA[1] = 3.42;  pA[2] = -1.3;
+        pA[3] = 360;    pA[4] = 12.2;  pA[5] = 2;
+
+        std::ifstream in;
+        in.open("test_2.bin", std::ios::binary);
+
+        auto histo = SixDHistogram(in);
+        auto histo_2 = SixDHistogram(in);
+
+        REQUIRE(histo.contains(pA));
+        REQUIRE(histo_2.contains(pA));
+
+
+
+
+    }
+    /*SECTION("test histo on tecto data") {
         auto in = std::ifstream();
         in.open("test.out");
         auto line = String();
         int i = -1;
 
-        auto bb = BoundingBox(Point(-100, -100, -100), Point(100, 100, 100));
+        auto bb = BoundingBox(Point(-10, -10, -10), Point(10, 10, 10));
         auto bin_widths = Real6{0.25, 0.25, 0.25, 5, 5, 5};
         auto histo = SixDHistogram(bb, bin_widths);
         auto values = Real6();
@@ -116,10 +147,7 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         }
 
         histo.to_text_file("test_histo.csv");
-
-
-
-    }
+    }*/
 
 
 

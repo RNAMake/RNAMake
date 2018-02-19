@@ -111,9 +111,12 @@ class SimulateTectosRecord6D : public ThermoFlucSimulationLogger {
 public:
     SimulateTectosRecord6D(
             String const & fname,
+            String const & record_constraints,
             BasepairOP ref_bp ):
             ThermoFlucSimulationLogger(fname),
             ref_bp_(ref_bp) {
+        _setup_constraints();
+        _parse_constraints(record_constraints);
         ref_r_t_ = ref_bp_->r().transposed();
     }
 
@@ -147,12 +150,25 @@ public:
         calc_euler(r_, euler);
 
         d_ = d2_ - d1_;
+
         for(int i = 0; i < 3; i++) {
             euler[i] = euler[i]*180/M_PI;
             if(euler[i] > 180) {
                 euler[i] -= 360;
             }
         }
+
+        value_[0] = d_[0];
+        value_[1] = d_[1];
+        value_[2] = d_[2];
+        value_[3] = euler[0];
+        value_[4] = euler[1];
+        value_[5] = euler[2];
+
+        for(int i = 0; i < 6; i++) {
+            if(constraints_[i][0] > value_[i] || value_[i] > constraints_[i][1]) { return; }
+        }
+
         out_ << d_[0] << "," << d_[1] << "," << d_[2] << "," << euler[0] << "," << euler[1] << "," << euler[2] << ",";
         out_ << score << std::endl;
 
@@ -169,9 +185,49 @@ protected:
     }
 
 private:
+    void
+    _parse_constraints(
+            String const & constraints) {
+
+        auto spl =  split_str_by_delimiter(constraints, ";");
+        for(auto const & s : spl) {
+            auto spl2 = split_str_by_delimiter(s, ",");
+            if(spl2.size() != 3) { throw SimulateTectosAppException("invalid record constraint: " + s); }
+            auto pos = _parse_constraint_position(spl2[0]);
+            auto lower = std::stod(spl2[1]);
+            auto upper = std::stod(spl2[2]);
+            constraints_[pos] = Real2{lower, upper};
+        }
+    }
+
+    int
+    _parse_constraint_position(
+            String const & constraint_name) {
+        if     (constraint_name == "x") { return 0; }
+        else if(constraint_name == "y") { return 1; }
+        else if(constraint_name == "z") { return 2; }
+        else if(constraint_name == "a") { return 3; }
+        else if(constraint_name == "b") { return 4; }
+        else if(constraint_name == "g") { return 5; }
+        else {
+            throw SimulateTectosAppException("unknown constraint name: " + constraint_name);
+        }
+
+    }
+
+    void
+    _setup_constraints() {
+        for(int i = 0; i < 3; i++) { constraints_[i] = Real2{ -100, 100}; }
+        for(int i = 3; i < 6; i++) { constraints_[i] = Real2{ -180, 180}; }
+    }
+
+private:
     BasepairOP ref_bp_;
     Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
     Point d1_, d2_, d_;
+    Real6 value_;
+    std::array<Real2, 6> constraints_;
+
 
 };
 
@@ -179,12 +235,15 @@ class SimulateTectosRecord6DHistogram : public ThermoFlucSimulationLogger {
 public:
     SimulateTectosRecord6DHistogram(
             String const & fname,
+            String const & constraints,
             BasepairOP ref_bp ):
             ThermoFlucSimulationLogger("out.out"),
             ref_bp_(ref_bp),
             histo_(SixDHistogram(BoundingBox(), Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1})),
             file_name_(fname) {
         ref_r_t_ = ref_bp_->r().transposed();
+        _setup_constraints();
+        _parse_constraints(constraints);
         auto bb = BoundingBox(Point(-100, -100, -100), Point(100, 100, 100));
         auto bin_widths = Real6{0.25, 0.25, 0.25, 5, 5, 5};
         histo_ = SixDHistogram(bb, bin_widths);
@@ -230,6 +289,11 @@ public:
         values_[3] = euler[0];
         values_[4] = euler[1];
         values_[5] = euler[2];
+
+        for(int i = 0; i < 6; i++) {
+            if(constraints_[i][0] > values_[i] || values_[i] > constraints_[i][1]) { return; }
+        }
+
         histo_.add(values_);
     }
 
@@ -246,6 +310,44 @@ protected:
 
     }
 
+
+private:
+    void
+    _parse_constraints(
+            String const & constraints) {
+
+        auto spl =  split_str_by_delimiter(constraints, ";");
+        for(auto const & s : spl) {
+            auto spl2 = split_str_by_delimiter(s, ",");
+            if(spl2.size() != 3) { throw SimulateTectosAppException("invalid record constraint: " + s); }
+            auto pos = _parse_constraint_position(spl2[0]);
+            auto lower = std::stod(spl2[1]);
+            auto upper = std::stod(spl2[2]);
+            constraints_[pos] = Real2{lower, upper};
+        }
+    }
+
+    int
+    _parse_constraint_position(
+            String const & constraint_name) {
+        if     (constraint_name == "x") { return 0; }
+        else if(constraint_name == "y") { return 1; }
+        else if(constraint_name == "z") { return 2; }
+        else if(constraint_name == "a") { return 3; }
+        else if(constraint_name == "b") { return 4; }
+        else if(constraint_name == "g") { return 5; }
+        else {
+            throw SimulateTectosAppException("unknown constraint name: " + constraint_name);
+        }
+
+    }
+
+    void
+    _setup_constraints() {
+        for(int i = 0; i < 3; i++) { constraints_[i] = Real2{ -100, 100}; }
+        for(int i = 3; i < 6; i++) { constraints_[i] = Real2{ -180, 180}; }
+    }
+
 private:
     BasepairOP ref_bp_;
     Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
@@ -253,13 +355,11 @@ private:
     String file_name_;
     SixDHistogram histo_;
     Real6 values_;
+    std::array<Real2, 6> constraints_;
 
 
 
 };
-
-
-
 
 SimulateTectosApp::SimulateTectosApp() : Application(),
         tfs_(ThermoFlucSimulationDevel()),
@@ -293,6 +393,7 @@ SimulateTectosApp::setup_options() {
 
     // recording info from simulation
     add_option("record", false, OptionType::BOOL);
+    add_option("record_constraints", "", OptionType::STRING);
     add_option("record_file", "test.out", OptionType::STRING);
     add_option("record_only_bound", false, OptionType::BOOL);
     add_option("record_only_unbound", false, OptionType::BOOL);
@@ -729,6 +830,7 @@ SimulateTectosApp::_get_logger(
         auto ref_motif = file_to_motif(path);
         return std::make_shared<SimulateTectosRecord6D>(
                 get_string_option("record_file"),
+                get_string_option("record_constraints"),
                 ref_motif->basepairs()[0]);
     }
     else if(name == "Record6DHisto" || name == "Record6DHistogram") {
@@ -736,6 +838,7 @@ SimulateTectosApp::_get_logger(
         auto ref_motif = file_to_motif(path);
         return std::make_shared<SimulateTectosRecord6DHistogram>(
                 get_string_option("record_file"),
+                get_string_option("record_constraints"),
                 ref_motif->basepairs()[0]);
     }
 
