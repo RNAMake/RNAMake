@@ -69,6 +69,12 @@ public:
         }
     }
 
+    virtual
+    void
+    finalize() {
+
+    }
+
 protected:
     virtual
     void

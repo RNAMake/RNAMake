@@ -9,6 +9,7 @@
 
 #include "base/cl_option.h"
 #include "base/settings.h"
+#include "math/hashing.h"
 #include "structure/residue_type_set_manager.h"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "resources/resource_manager.h"
@@ -173,6 +174,90 @@ private:
     Point d1_, d2_, d_;
 
 };
+
+class SimulateTectosRecord6DHistogram : public ThermoFlucSimulationLogger {
+public:
+    SimulateTectosRecord6DHistogram(
+            String const & fname,
+            BasepairOP ref_bp ):
+            ThermoFlucSimulationLogger("out.out"),
+            ref_bp_(ref_bp),
+            histo_(SixDHistogram(BoundingBox(), Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1})),
+            file_name_(fname) {
+        ref_r_t_ = ref_bp_->r().transposed();
+        auto bb = BoundingBox(Point(-100, -100, -100), Point(100, 100, 100));
+        auto bin_widths = Real6{0.25, 0.25, 0.25, 5, 5, 5};
+        histo_ = SixDHistogram(bb, bin_widths);
+    }
+
+public:
+    void
+    log(
+            MotifStateTreeOP const & mst,
+            float score) {
+
+        auto end_state_1 = mst->get_node(ni1_)->data()->get_end_state(ei1_);
+        auto end_state_2 = mst->get_node(ni2_)->data()->get_end_state(ei2_);
+
+        r1_ = end_state_1->r();
+        d1_ = end_state_1->d();
+
+        r2_ = end_state_2->r();
+        d2_ = end_state_2->d();
+
+        dot(ref_r_t_, r1_, rot_);
+        rot_t_.unitarize();
+        rot_t_ = rot_.transposed();
+
+
+        dot(r1_, rot_t_, r1_trans_);
+        dot(r2_, rot_t_, r2_trans_);
+
+        dot(r1_trans_.transposed(), r2_trans_, r_);
+        r_.unitarize();
+
+        auto euler = Vector();
+        calc_euler(r_, euler);
+
+        d_ = d2_ - d1_;
+        for(int i = 0; i < 3; i++) {
+            euler[i] = euler[i]*180/M_PI;
+            euler[i] += 180;
+        }
+        values_[0] = d_[0];
+        values_[1] = d_[1];
+        values_[2] = d_[2];
+        values_[3] = euler[0];
+        values_[4] = euler[1];
+        values_[5] = euler[2];
+        histo_.add(values_);
+    }
+
+    void
+    finalize() {
+        histo_.to_text_file(file_name_);
+    }
+
+protected:
+    void
+    _output_header(
+            MotifStateTreeOP const & mst) {
+        outputed_header_ = true;
+
+    }
+
+private:
+    BasepairOP ref_bp_;
+    Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
+    Point d1_, d2_, d_;
+    String file_name_;
+    SixDHistogram histo_;
+    Real6 values_;
+
+
+
+};
+
 
 
 
@@ -645,7 +730,13 @@ SimulateTectosApp::_get_logger(
         return std::make_shared<SimulateTectosRecord6D>(
                 get_string_option("record_file"),
                 ref_motif->basepairs()[0]);
-
+    }
+    else if(name == "Record6DHisto" || name == "Record6DHistogram") {
+        auto path = motif_dirs() + "ref.motif";
+        auto ref_motif = file_to_motif(path);
+        return std::make_shared<SimulateTectosRecord6DHistogram>(
+                get_string_option("record_file"),
+                ref_motif->basepairs()[0]);
     }
 
     else {

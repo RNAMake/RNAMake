@@ -176,24 +176,7 @@ ThermoFlucSimulationDevel::run() {
         end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->get_end_state(ei2_);
         
         score_ = scorer_->score(end_state_1_, end_state_2_);
-        if(score_ < cutoff_) {
-            count += 1;
-
-           /*if(bound_pdbs_ && !all_pdbs_) {
-                try {
-                    //sampler_.mst()->to_motif_tree()->to_pdb("bound." + std::to_string(pdb_count) + ".pdb", 1);
-                    auto mt = sampler_.mst()->to_motif_tree();
-                    auto bp1 = mt->get_node(ni1_)->data()->ends()[ei1_];
-                    auto bp2 = mt->get_node(ni2_)->data()->ends()[ei2_];
-                    auto m = mf.motif_from_bps(BasepairOPs{bp1, bp2});
-                    //m->to_pdb("bound." + std::to_string(pdb_count) + ".pdb", 1);
-                    out_motifs << m->to_str() << std::endl;
-                    pdb_count += 1;
-                }
-                catch(...) {}
-            }*/
-
-        }
+        if(score_ < cutoff_) { count += 1; }
 
         if(record_) {
             if     (record_only_bound_ && score_ <= cutoff_)      { logger_->log(sampler_.mst(), score_); }
@@ -212,11 +195,10 @@ ThermoFlucSimulationDevel::run() {
             }
         }
 
-
-        
         steps++;
     }
-    
+    logger_->finalize();
+
     return count;
 }
 
