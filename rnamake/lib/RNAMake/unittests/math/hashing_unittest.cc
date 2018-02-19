@@ -118,10 +118,15 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         REQUIRE(histo.contains(pA));
         REQUIRE(histo_2.contains(pA));
 
-
-
-
     }
+
+    SECTION("test read tecto bin file") {
+        std::ifstream in;
+        in.open("test_tecto.bin", std::ios::binary);
+
+        auto histo = SixDHistogram(in);
+    }
+
     /*SECTION("test histo on tecto data") {
         auto in = std::ifstream();
         in.open("test.out");

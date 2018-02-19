@@ -244,8 +244,10 @@ public:
         ref_r_t_ = ref_bp_->r().transposed();
         _setup_constraints();
         _parse_constraints(constraints);
-        auto bb = BoundingBox(Point(-100, -100, -100), Point(100, 100, 100));
-        auto bin_widths = Real6{0.25, 0.25, 0.25, 5, 5, 5};
+        auto lower = Point(constraints_[0][0], constraints_[1][0], constraints_[2][0]);
+        auto upper = Point(constraints_[0][1], constraints_[1][1], constraints_[2][1]);
+        auto bb = BoundingBox(lower, upper);
+        auto bin_widths = Real6{0.25, 0.25, 0.25, 2.5, 2.5, 2.5};
         histo_ = SixDHistogram(bb, bin_widths);
     }
 
@@ -299,7 +301,8 @@ public:
 
     void
     finalize() {
-        histo_.to_text_file(file_name_);
+        //histo_.to_text_file(file_name_);
+        histo_.to_binary_file(file_name_);
     }
 
 protected:
@@ -325,6 +328,7 @@ private:
             auto upper = std::stod(spl2[2]);
             constraints_[pos] = Real2{lower, upper};
         }
+
     }
 
     int

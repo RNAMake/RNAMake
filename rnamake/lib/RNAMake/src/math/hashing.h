@@ -484,7 +484,8 @@ public:
 
     void
     to_binary_file(
-            String const & fname) {
+            String const & fname,
+            u_int64_t cuttoff=0) {
 
         std::ofstream out;
         out.open(fname, std::ios::binary);
@@ -499,9 +500,14 @@ public:
         for(int i = 0; i < 6; i++) {
             out.write((const char *)&binner_.get_bin_widths()[i], sizeof(binner_.get_bin_widths()[i]));
         }
-        u_int64_t num = stored_values_.size();
+        u_int64_t num = 0;
+        for(auto const & kv : stored_values_) {
+            if(kv.second <= cuttoff) { continue; }
+            num += 1;
+        }
         out.write((const char *)&num, sizeof(num));
         for(auto const & kv : stored_values_) {
+            if(kv.second <= cuttoff) { continue; }
             out.write((const char *)&kv.first, sizeof(kv.first));
             out.write((const char *)&kv.second, sizeof(kv.second));
         }

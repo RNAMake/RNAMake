@@ -18,6 +18,10 @@ class SimulateTectosWrapper(wrapper.Wrapper):
         self.add_cmd_option("new_ggaa_model", False, required=False)
         self.add_cmd_option("ggaa_model", "", required=False)
 
+        self.add_cmd_option("record", False, required=False)
+        self.add_cmd_option("record_file_type", "", required=False)
+        self.add_cmd_option("record_constraints", "", required=False)
+
         # simulation options using for testing
         self.add_cmd_option("simulation.temperature", 298.15, required=False)
         self.add_cmd_option("simulation.steric_radius", 2.2, required=False)
