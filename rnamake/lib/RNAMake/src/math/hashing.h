@@ -455,6 +455,41 @@ public:
 
     }
 
+    u_int64_t
+    get(
+            Real6 const & values) {
+        auto bin_index = binner_.bin_index(values);
+        return stored_values_[bin_index];
+    }
+
+
+    u_int64_t
+    within_constraints(
+            std::array<Real2, 6> const & constraints) {
+        auto values = Real6();
+        auto bins = Real6();
+        auto total = 0;
+        auto fail = 0;
+        for(auto const & kv : stored_values_) {
+            bins = binner_.bin_from_index(kv.first);
+            values = binner_.bin_to_values(bins);
+            fail = 0;
+            for(int i = 0; i < 6; i++) {
+                if(i != 3 && (constraints[i][0] > values[i] || values[i] > constraints[i][1])) { fail = 1; break; }
+                if(i == 3 && (constraints[i][0] < values[i] && values[i] < constraints[i][1])) { fail = 1; break; }
+            }
+
+            if(! fail) {
+                total += kv.second;
+            }
+
+        }
+        return total;
+
+
+    }
+
+
 public:
     void
     to_text_file(
@@ -489,6 +524,15 @@ public:
 
         std::ofstream out;
         out.open(fname, std::ios::binary);
+        output_binary(out, cuttoff);
+        out.close();
+
+    }
+
+    void
+    output_binary(
+            std::ofstream & out,
+            u_int64_t cuttoff) {
         auto lower = binner_.get_bounding_box().lower();
         auto upper = binner_.get_bounding_box().upper();
         out.write((const char *)&lower.x(), sizeof(lower.x()));
@@ -502,17 +546,15 @@ public:
         }
         u_int64_t num = 0;
         for(auto const & kv : stored_values_) {
-            if(kv.second <= cuttoff) { continue; }
+            //if(kv.second <= cuttoff) { continue; }
             num += 1;
         }
         out.write((const char *)&num, sizeof(num));
         for(auto const & kv : stored_values_) {
-            if(kv.second <= cuttoff) { continue; }
+            //if(kv.second <= cuttoff) { continue; }
             out.write((const char *)&kv.first, sizeof(kv.first));
             out.write((const char *)&kv.second, sizeof(kv.second));
         }
-        out.close();
-
 
     }
 

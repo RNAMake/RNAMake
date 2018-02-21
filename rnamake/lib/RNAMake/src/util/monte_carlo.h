@@ -38,6 +38,12 @@ public:
         
         return 0;
     }
+
+public:
+    inline
+    void
+    set_temperature(
+            float new_temp) { temperature_ = new_temp; }
     
     
 private:
