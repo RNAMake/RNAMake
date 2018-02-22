@@ -197,8 +197,9 @@ ThermoFlucSimulationDevel::run() {
 
         steps++;
     }
-    logger_->finalize();
-
+    if(record_) {
+        logger_->finalize();
+    }
     return count;
 }
 
