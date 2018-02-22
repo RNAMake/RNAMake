@@ -71,6 +71,9 @@ private:
     void
     _get_scored_dataset();
 
+    void
+    _score_constraint_file();
+
     int
     _parse_constraint_position(
             String const &);

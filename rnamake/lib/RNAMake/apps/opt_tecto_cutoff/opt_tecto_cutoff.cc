@@ -23,6 +23,7 @@ OptTectoCutoff::setup_options() {
     add_option("divide_set", false, OptionType::BOOL, false);
     add_option("divide_set_num", 10, OptionType::INT, false);
     add_option("constraints", "", OptionType::STRING, false);
+    add_option("constraint_file", "", OptionType::STRING, false);
 
 
 }
@@ -49,7 +50,7 @@ OptTectoCutoff::_setup() {
         //if(exp_dgs_.size() > 100) { break; }
     }
 
-    auto in = std::ifstream();
+    std::ifstream in;
     in.open(get_string_option("histos"), std::ios::binary);
     histos_ =  std::vector<SixDHistogram>();
     while (in.good()) {
@@ -78,8 +79,8 @@ OptTectoCutoff::_divide_dataset() {
     int step = get_int_option("divide_set_num");
 
     for(int j = 0; j < step; j++) {
-        auto c_out = std::ofstream("constructs_"+std::to_string(j) + ".csv");
-        auto h_out = std::ofstream("histos_"+std::to_string(j) + ".out", std::ios::binary);
+        std::ofstream c_out ("constructs_"+std::to_string(j) + ".csv");
+        std::ofstream h_out ("histos_"+std::to_string(j) + ".out", std::ios::binary);
         c_out << "fseq,fss,cseq,css,dG\n";
         int i = 0;
         for(i = 0; i < constructs_.size(); i+=step) {
@@ -105,8 +106,8 @@ void
 OptTectoCutoff::_get_scored_dataset() {
     auto constraints_str = get_string_option("constraints");
 
-    auto spl =  split_str_by_delimiter(constraints_str, ";");
-    for(auto const & s : spl) {
+    auto spl = split_str_by_delimiter(constraints_str, ";");
+    for (auto const & s : spl) {
         auto spl2 = split_str_by_delimiter(s, ",");
         auto pos = _parse_constraint_position(spl2[0]);
         auto lower = std::stod(spl2[1]);
@@ -118,13 +119,13 @@ OptTectoCutoff::_get_scored_dataset() {
 
     std::cout << score << " " << r_ << " " << avg_diff_ << std::endl;
 
-    auto out = std::ofstream();
+    std::ofstream out;
     out.open("scored.csv");
-    out << "fseq,fss,cseq,css,dG,norm_dG,predicted_dG\n";
+    out << "fseq,fss,cseq,css,dG,norm_dG,predicted_dG,avg_hit_count\n";
     int i = 0;
-    for(auto const & c : constructs_) {
+    for (auto const & c : constructs_) {
         out << c.fseq << "," << c.fss << "," << c.cseq << "," << c.css << ",";
-        out << c.dg << "," << norm_exp_dgs_[i] << "," << pred_dgs_[i] << std::endl;
+        out << c.dg << "," << norm_exp_dgs_[i] << "," << pred_dgs_[i] << "," << avg_hit_counts_[i] << std::endl;
         i++;
     }
     out.close();
@@ -146,6 +147,52 @@ OptTectoCutoff::_parse_constraint_position(
     }
 
 }
+
+
+
+void
+OptTectoCutoff::_score_constraint_file() {
+    auto constraint_file = get_string_option("constraint_file");
+    std::ifstream in (constraint_file);
+    auto line = String();
+    int i = 0;
+
+    std::ofstream out_sum ("constraint_scores.csv");
+    out_sum << "x_min,x_max,y_min,y_max,z_min,z_max,a_min,a_max,b_min,b_max,g_min,g_max,r,avg_diff,lowest\n";
+
+    while (in.good()) {
+        getline(in, line);
+        if(line[0] == 'x') {continue; }
+        auto spl = split_str_by_delimiter(line, ",");
+        int j = 0;
+        for(int k = 0; k < 12; k += 2) {
+            constraints_[j] = Real2{std::stod(spl[k]), std::stod(spl[k+1])};
+            j += 1;
+        }
+
+        auto score = _score(constraints_);
+        if(score > 100) { continue; }
+        std::cout << i << " " << score << " " << r_ << " " << avg_diff_ << std::endl;
+
+        auto lowest = 100000;
+        for(auto const & hits : avg_hit_counts_) {
+            if(hits < lowest) { lowest = hits; }
+        }
+
+        for(int k = 0; k < spl.size(); k++) {
+            out_sum << spl[k] << ",";
+        }
+
+        out_sum <<  r_ << "," << avg_diff_ << "," << lowest << std::endl;
+        //if(i > 100) { break; }
+        i++;
+
+    }
+    out_sum.close();
+
+
+}
+
 
 
 
@@ -256,6 +303,10 @@ OptTectoCutoff::run() {
     }
     if(get_string_option("constraints") != "") {
         _get_scored_dataset();
+        return;
+    }
+    if(get_string_option("constraint_file") != "") {
+        _score_constraint_file();
         return;
     }
 
