@@ -131,8 +131,20 @@ private:
     float weight_d_ = 0, weight_r_ = 0;
 };
 
+class SixDScorer : public ThermoFlucScorer {
+public:
+    SixDScorer(): ThermoFlucScorer() {
+
+    }
+
+private:
+    Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
+    Point d1_, d2_, d_;
+
+};
 
 
 typedef std::shared_ptr<ThermoFlucScorer> ThermoFlucScorerOP;
+
 
 #endif /* defined(__RNAMake__thermo_fluc_scorer__) */

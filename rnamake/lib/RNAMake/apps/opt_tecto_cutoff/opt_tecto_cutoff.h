@@ -89,6 +89,7 @@ private:
     std::vector<double> exp_dgs_, norm_exp_dgs_, pred_dgs_;
     std::vector<double> avg_hit_counts_;
     double r_, avg_diff_;
+    double lowest_;
 
 
 

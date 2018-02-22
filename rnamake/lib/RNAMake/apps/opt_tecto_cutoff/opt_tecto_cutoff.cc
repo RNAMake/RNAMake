@@ -22,7 +22,7 @@ OptTectoCutoff::setup_options() {
     add_option("histos", "", OptionType::STRING, true);
     add_option("data", "", OptionType::STRING, true);
     add_option("divide_set", false, OptionType::BOOL, false);
-    add_option("divide_set_num", 10, OptionType::INT, false);
+    add_option("divide_set_num", 6, OptionType::INT, false);
     add_option("constraints", "", OptionType::STRING, false);
     add_option("constraint_file", "", OptionType::STRING, false);
 
@@ -122,7 +122,7 @@ OptTectoCutoff::_get_scored_dataset() {
 
     std::ofstream out;
     out.open("scored.csv");
-    out << "fseq,fss,cseq,css,dG,norm_dG,predicted_dG,avg_hit_count\n";
+    out << "fseq,fss,cseq,css,dG,dG_normalized,dG_predicted,avg_hit_count\n";
     int i = 0;
     for (auto const & c : constructs_) {
         out << c.fseq << "," << c.fss << "," << c.cseq << "," << c.css << ",";
@@ -201,14 +201,18 @@ double
 OptTectoCutoff::_score(
         std::array<Real2, 6> const & constraints) {
 
+    lowest_ = 1000000;
     for(int i = 0; i < histos_.size(); i++) {
         avg_hit_counts_[i] = histos_[i].within_constraints(constraints);
         if(avg_hit_counts_[i] < 1) { return 10000; }
+        if(avg_hit_counts_[i] < lowest_) {
+            lowest_ = avg_hit_counts_[i];
+        }
     }
     auto avg_hit_count_mean = mean(avg_hit_counts_);
 
 
-    double closest = 1000;
+    double closest = 100000;
     int closest_i = 0;
     double diff = 0;
     for(int i = 0; i < histos_.size(); i++) {
@@ -226,7 +230,7 @@ OptTectoCutoff::_score(
 
     r_ = pearson_coeff(pred_dgs_, norm_exp_dgs_);
     avg_diff_ =  avg_unsigned_diff(pred_dgs_, norm_exp_dgs_);
-    return  1.0/r_ + avg_diff_*2;
+    return  avg_diff_*4 + 10 / lowest_;
 
 }
 
@@ -325,7 +329,7 @@ OptTectoCutoff::run() {
     auto current_score = _score(constraints_);
     auto new_score = current_score;
 
-    std::cout << current_score << " " << r_ << " " << avg_diff_ << std::endl;
+    std::cout << current_score << " " << r_ << " " << avg_diff_ << " " << lowest_ << std::endl;
 
     double best_score = 10000;
     auto best_constraints = constraints_;
@@ -357,7 +361,7 @@ OptTectoCutoff::run() {
                 best_constraints = constraints_;
                 best_r = r_;
                 best_avg_diff = avg_diff_;
-                std::cout << "best: " << best_score << " " << best_r << " " << best_avg_diff << std::endl;
+                std::cout << "best: " << best_score << " " << best_r << " " << best_avg_diff << " " << lowest_ << std::endl;
                 for(auto const & c : best_constraints) {
                     std::cout << c[0] << " " << c[1] << " ";
                 }
