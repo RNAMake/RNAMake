@@ -1,6 +1,7 @@
 //
 // Created by Joseph Yesselman on 2/19/18.
 //
+#include <algorithm>
 
 #include "base/backtrace.hpp"
 #include "math/hashing.h"
