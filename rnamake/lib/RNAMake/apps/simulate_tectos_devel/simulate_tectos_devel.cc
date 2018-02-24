@@ -247,7 +247,7 @@ public:
         auto lower = Point(constraints_[0][0], constraints_[1][0], constraints_[2][0]);
         auto upper = Point(constraints_[0][1], constraints_[1][1], constraints_[2][1]);
         auto bb = BoundingBox(lower, upper);
-        auto bin_widths = Real6{0.25, 0.25, 0.25, 2.5, 2.5, 2.5};
+        auto bin_widths = Real6{0.25, 0.25, 0.25, 5.0, 5.0, 5.0};
         histo_ = SixDHistogram(bb, bin_widths);
     }
 
@@ -295,6 +295,10 @@ public:
         for(int i = 0; i < 6; i++) {
             if(constraints_[i][0] > values_[i] || values_[i] > constraints_[i][1]) { return; }
         }
+
+        dist_ = sqrt(values_[0]*values_[0] + values_[1]*values_[1] + values_[2]*values_[2]);
+        if(dist_ > 7) { return; }
+
 
         histo_.add(values_);
     }
@@ -360,6 +364,7 @@ private:
     SixDHistogram histo_;
     Real6 values_;
     std::array<Real2, 6> constraints_;
+    double dist_;
 
 
 

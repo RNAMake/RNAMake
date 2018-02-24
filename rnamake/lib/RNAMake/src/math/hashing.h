@@ -470,16 +470,22 @@ public:
         auto bins = Real6();
         auto total = 0;
         auto fail = 0;
+        double max_distance = 6;
+        double dist = 0;
         for(auto const & kv : stored_values_) {
             bins = binner_.bin_from_index(kv.first);
             values = binner_.bin_to_values(bins);
+
             fail = 0;
             for(int i = 0; i < 6; i++) {
                 if(i != 3 && (constraints[i][0] > values[i] || values[i] > constraints[i][1])) { fail = 1; break; }
                 if(i == 3 && (constraints[i][0] < values[i] && values[i] < constraints[i][1])) { fail = 1; break; }
+
             }
 
             if(! fail) {
+                dist = sqrt(values[0]*values[0] + values[1]*values[1] + values[2]*values[2]);
+                if(dist > max_distance) { continue;}
                 total += kv.second;
             }
 

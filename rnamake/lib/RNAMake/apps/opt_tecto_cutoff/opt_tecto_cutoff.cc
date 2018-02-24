@@ -279,8 +279,8 @@ OptTectoCutoff::_get_initial_constraints(
     while(!done) {
         for (int i = 0; i < 6; i++) {
             if (i < 3) {
-                auto min = -rng.randrange(70) * .10;
-                auto max = rng.randrange(70) * .10;
+                auto min = -rng.randrange(25) * .25;
+                auto max = rng.randrange(25) * .25;
                 constraints_[i][0] = min;
                 constraints_[i][1] = max;
             }
