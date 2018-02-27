@@ -21,12 +21,14 @@ class SimulateTectosWrapper(wrapper.Wrapper):
         self.add_cmd_option("record", False, required=False)
         self.add_cmd_option("record_file_type", "", required=False)
         self.add_cmd_option("record_constraints", "", required=False)
+        self.add_cmd_option("record_only_bound", False, required=False)
+        self.add_cmd_option("record_only_unbound", False, required=False)
+        self.add_cmd_option("dump_state", False, required=False)
 
-        # simulation options using for testing
-        self.add_cmd_option("simulation.temperature", 298.15, required=False)
-        self.add_cmd_option("simulation.steric_radius", 2.2, required=False)
-        self.add_cmd_option("simulation.cutoff", 4.5, required=False)
-        self.add_cmd_option("simulation.bound_pdbs", False, required=False)
+        self.add_cmd_option("scorer", "", required=False)
+        self.add_cmd_option("constraints", "", required=False)
+
+
 
     def run(self, **options):
         try:

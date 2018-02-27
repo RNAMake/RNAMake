@@ -484,8 +484,8 @@ public:
             }
 
             if(! fail) {
-                dist = sqrt(values[0]*values[0] + values[1]*values[1] + values[2]*values[2]);
-                if(dist > max_distance) { continue;}
+            //    dist = sqrt(values[0]*values[0] + values[1]*values[1] + values[2]*values[2]);
+            //    if(dist > max_distance) { continue;}
                 total += kv.second;
             }
 
@@ -493,6 +493,15 @@ public:
         return total;
 
 
+    }
+
+    u_int64_t
+    total_count() {
+        u_int64_t count = 0;
+        for (auto const & kv : stored_values_) {
+            count += kv.second;
+        }
+        return count;
     }
 
 

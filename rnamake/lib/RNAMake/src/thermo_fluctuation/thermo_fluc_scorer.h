@@ -12,6 +12,9 @@
 #include <stdio.h>
 
 //RNAMake Headers
+#include "math/euler.h"
+#include "math/hashing.h"
+#include "structure/basepair.h"
 #include "structure/basepair_state.fwd.h"
 #include "structure/basepair_state.h"
 
@@ -133,13 +136,120 @@ private:
 
 class SixDScorer : public ThermoFlucScorer {
 public:
-    SixDScorer(): ThermoFlucScorer() {
+    SixDScorer(
+            String const & constraints,
+            BasepairOP ref_bp):
+            ThermoFlucScorer(),
+            ref_bp_(ref_bp) {
+        ref_r_t_ = ref_bp_->r().transposed();
+        _setup_constraints();
+        _parse_constraints(constraints);
+    }
+
+public:
+
+    inline
+    float
+    score(
+            BasepairStateOP & state_1,
+            BasepairStateOP & state_2) {
+
+        r1_ = state_1->r();
+        d1_ = state_1->d();
+
+        r2_ = state_2->r();
+        d2_ = state_2->d();
+
+        dot(ref_r_t_, r1_, rot_);
+        rot_t_.unitarize();
+        rot_t_ = rot_.transposed();
+
+
+        dot(r1_, rot_t_, r1_trans_);
+        dot(r2_, rot_t_, r2_trans_);
+
+        dot(r1_trans_.transposed(), r2_trans_, r_);
+        r_.unitarize();
+
+        auto euler = Vector();
+        calc_euler(r_, euler);
+
+        d_ = d2_ - d1_;
+        for(int i = 0; i < 3; i++) {
+            euler[i] = euler[i]*180/M_PI;
+            euler[i] += 180;
+        }
+
+        values_[0] = d_[0];
+        values_[1] = d_[1];
+        values_[2] = d_[2];
+        values_[3] = euler[0];
+        values_[4] = euler[1];
+        values_[5] = euler[2];
+
+        dist_ = sqrt(values_[0]*values_[0] + values_[1]*values_[1] + values_[2]*values_[2]);
+        if(dist_ > 7) { return 99; }
+
+        fail_ = 0;
+        for(int i = 0; i < 6; i++) {
+            if(i != 3 &&
+               (constraints_[i][0] > values_[i] || values_[i] > constraints_[i][1])) { fail_ = 1; break; }
+            if(i == 3 &&
+               (constraints_[i][0] < values_[i] && values_[i] < constraints_[i][1])) { fail_ = 1; break; }
+        }
+
+        if(fail_) { return 99; }
+        else      { return 0; }
 
     }
 
 private:
+
+    void
+    _parse_constraints(
+            String const & constraints) {
+
+        auto spl =  split_str_by_delimiter(constraints, ";");
+        for(auto const & s : spl) {
+            auto spl2 = split_str_by_delimiter(s, ",");
+            if(spl2.size() != 3) { throw std::runtime_error("invalid record constraint: " + s); }
+            auto pos = _parse_constraint_position(spl2[0]);
+            auto lower = std::stod(spl2[1]);
+            auto upper = std::stod(spl2[2]);
+            constraints_[pos] = Real2{lower, upper};
+        }
+
+    }
+
+    int
+    _parse_constraint_position(
+            String const & constraint_name) {
+        if     (constraint_name == "x") { return 0; }
+        else if(constraint_name == "y") { return 1; }
+        else if(constraint_name == "z") { return 2; }
+        else if(constraint_name == "a") { return 3; }
+        else if(constraint_name == "b") { return 4; }
+        else if(constraint_name == "g") { return 5; }
+        else {
+            throw std::runtime_error("unknown constraint name: " + constraint_name);
+        }
+
+    }
+
+    void
+    _setup_constraints() {
+        for(int i = 0; i < 3; i++) { constraints_[i] = Real2{ -10, 10}; }
+        for(int i = 3; i < 6; i++) { constraints_[i] = Real2{ 0, 360}; }
+    }
+
+private:
+    BasepairOP ref_bp_;
     Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
     Point d1_, d2_, d_;
+    std::array<Real2, 6> constraints_;
+    Real6 values_;
+    float dist_;
+    bool fail_;
 
 };
 

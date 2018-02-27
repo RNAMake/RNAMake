@@ -158,6 +158,12 @@ public:
         logger_ = logger;
     }
 
+    inline
+    void
+    set_scorer(
+            ThermoFlucScorerOP scorer) {
+        scorer_ = scorer;
+    }
    
 public: //option wrappers
     

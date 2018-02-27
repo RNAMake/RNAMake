@@ -97,6 +97,10 @@ private:
     _get_logger(
             String const &);
 
+    ThermoFlucScorerOP
+    _get_scorer(
+            String const &);
+
     MotifOPs
     get_motifs_from_seq_and_ss(
         String const &,

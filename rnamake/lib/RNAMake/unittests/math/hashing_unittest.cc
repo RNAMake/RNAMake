@@ -154,6 +154,104 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         histo.to_text_file("test_histo.csv");
     }*/
 
+    SECTION("test on tecto data") {
+        auto in = std::ifstream();
+        in.open("test.out");
+        auto line = String();
+        int i = -1;
+
+        auto constraints = std::array<Real2, 6>{
+                Real2{-3.5,5.25},
+                Real2{-3.5,4.75},
+                Real2{-4.00,4.75},
+                Real2{9.99999,300},
+                Real2{45,335},
+                Real2{170,200}};
+
+        auto constraints_2 = std::array<Real2, 6>{
+                Real2{-3.5,5.0},
+                Real2{-3.5,4.5},
+                Real2{-4.0,4.5},
+                Real2{5,300},
+                Real2{45,330},
+                Real2{170,195}};
+
+        auto values = Real6();
+        auto bb = BoundingBox(Point(-10, -10, -10), Point(10, 10, 10));
+        auto bin_widths = Real6{0.25, 0.25, 0.25, 5, 5, 5};
+        auto binner = SixDCoordinateBinner(bb, bin_widths);
+
+        auto count = 0;
+        auto count_2 = 0;
+        auto fail = 0;
+        auto fail_2 = 0;
+        while ( in.good() ) {
+            i++;
+            getline(in, line);
+            if (i < 3) { continue; }
+            if(line.length() < 5) { break; }
+            auto spl = split_str_by_delimiter(line, ",");
+
+            for(int j = 0; j < 6; j++) {
+                values[j] = std::stod(spl[j]);
+                if(j > 2) { values[j] += 180; }
+            }
+
+            auto bin_index = binner.bin_index(values);
+            auto bin = binner.bin_from_index(bin_index);
+            auto values_2 = binner.bin_to_values(bin);
+
+            fail = 0;
+            for(int i = 0; i < 6; i++) {
+                if(i != 3 && (constraints[i][0] > values[i] || values[i] > constraints[i][1])) { fail = 1; break; }
+                if(i == 3 && (constraints[i][0] < values[i] && values[i] < constraints[i][1])) { fail = 1; break; }
+            }
+
+            fail_2 = 0;
+            for(int i = 0; i < 6; i++) {
+                if(i != 3 && (constraints_2[i][0] > values_2[i] || values_2[i] > constraints_2[i][1])) {
+                    fail_2 = 1; break;
+                }
+                if(i == 3 && (constraints_2[i][0] < values_2[i] && values_2[i] < constraints_2[i][1])) {
+                    fail_2 = 1; break;
+                }
+            }
+
+            if(!fail) { count += 1; }
+            if(!fail_2) { count_2 += 1;}
+
+            if(fail != fail_2) {
+                std::cout << fail << " " << fail_2 << std::endl;
+                for(int i = 0; i < 6; i++) {
+                    if (i != 3 && (constraints[i][0] > values[i] || values[i] > constraints[i][1])) {
+                        std::cout << i << " " << (constraints[i][0] > values[i]) << " " << (values[i] > constraints[i][1]) << std::endl;
+                    }
+                    if (i == 3 && (constraints[i][0] < values[i] && values[i] < constraints[i][1])) {
+                        std::cout << i << std::endl;
+                    }
+                }
+                std::cout << "bined" << std::endl;
+
+                for(int i = 0; i < 6; i++) {
+                    if(i != 3 && (constraints_2[i][0] > values_2[i] || values_2[i] > constraints_2[i][1])) {
+                        std::cout << i << " " << (constraints_2[i][0] > values_2[i]) << " " << (values_2[i] > constraints_2[i][1]) << std::endl;                    }
+                    if(i == 3 && (constraints_2[i][0] < values_2[i] && values_2[i] < constraints_2[i][1])) {
+                        std::cout << i << std::endl;
+                    }
+                }
+                for(auto const & v : values) { std::cout << v << " ";}
+                std::cout << std::endl;
+                for(auto const & v : values_2) { std::cout << v << " ";}
+                std::cout << std::endl;
+                exit(0);
+            }
+
+
+        }
+        std::cout << count << " " << count_2 << std::endl;
+
+    }
+
 
 
 }

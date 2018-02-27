@@ -22,7 +22,7 @@ OptTectoCutoff::setup_options() {
     add_option("histos", "", OptionType::STRING, true);
     add_option("data", "", OptionType::STRING, true);
     add_option("divide_set", false, OptionType::BOOL, false);
-    add_option("divide_set_num", 6, OptionType::INT, false);
+    add_option("divide_set_num", 2, OptionType::INT, false);
     add_option("constraints", "", OptionType::STRING, false);
     add_option("constraint_file", "", OptionType::STRING, false);
 
@@ -64,8 +64,12 @@ OptTectoCutoff::_setup() {
         if(histos_.size() == constructs_.size()) { break; }
     }
     in.close();
+    /*for(int i = 0; i < histos_.size(); i++) {
+        std::cout << i << " " << histos_[i].total_count() << " " << exp_dgs_[i] << std::endl;
+    }
 
     std::cout << histos_.size() << " " << exp_dgs_.size() << std::endl;
+    exit(0);*/
 
     avg_hit_counts_ = std::vector<double>(histos_.size());
     pred_dgs_ = std::vector<double>(histos_.size());
@@ -250,13 +254,13 @@ OptTectoCutoff::_vary_constraints(
         auto diff = 1 + rng.randrange(3);
         auto dir = rng.randrange(2);
 
-        if (pos < 3) { val = 0.1 * diff; }
-        else { val = 2.5 * diff; }
+        if (pos < 3) { val = 0.25 * diff; }
+        else { val = 5.0 * diff; }
 
         if (dir == 1) { val = -val; }
 
         if (pos < 3) {
-            if(new_constraints[pos][i] + val > 10 || new_constraints[pos][i] + val < -10) { continue; }
+            if(new_constraints[pos][i] + val > 6 || new_constraints[pos][i] + val < -6) { continue; }
         }
         else {
             if(new_constraints[pos][i] + val > 360 || new_constraints[pos][i] + val < 0) { continue; }
@@ -285,8 +289,8 @@ OptTectoCutoff::_get_initial_constraints(
                 constraints_[i][1] = max;
             }
             else {
-                auto min = -rng.randrange(72) * 2.5 + 180;
-                auto max = rng.randrange(72) * 2.5 + 180;
+                auto min = -rng.randrange(36) * 5.0 + 180;
+                auto max = rng.randrange(36) * 5.0 + 180;
                 constraints_[i][0] = min;
                 constraints_[i][1] = max;
             }

@@ -169,6 +169,10 @@ public:
             if(constraints_[i][0] > value_[i] || value_[i] > constraints_[i][1]) { return; }
         }
 
+        dist_ = sqrt(value_[0]*value_[0] + value_[1]*value_[1] + value_[2]*value_[2]);
+        if(dist_ > 7) { return; }
+
+
         out_ << d_[0] << "," << d_[1] << "," << d_[2] << "," << euler[0] << "," << euler[1] << "," << euler[2] << ",";
         out_ << score << std::endl;
 
@@ -227,6 +231,7 @@ private:
     Point d1_, d2_, d_;
     Real6 value_;
     std::array<Real2, 6> constraints_;
+    double dist_;
 
 
 };
@@ -299,13 +304,12 @@ public:
         dist_ = sqrt(values_[0]*values_[0] + values_[1]*values_[1] + values_[2]*values_[2]);
         if(dist_ > 7) { return; }
 
-
         histo_.add(values_);
     }
 
     void
     finalize() {
-        //histo_.to_text_file(file_name_);
+        histo_.to_text_file("test.txt");
         histo_.to_binary_file(file_name_);
     }
 
@@ -353,7 +357,7 @@ private:
     void
     _setup_constraints() {
         for(int i = 0; i < 3; i++) { constraints_[i] = Real2{ -100, 100}; }
-        for(int i = 3; i < 6; i++) { constraints_[i] = Real2{ -180, 180}; }
+        for(int i = 3; i < 6; i++) { constraints_[i] = Real2{ 0, 360}; }
     }
 
 private:
@@ -408,6 +412,9 @@ SimulateTectosApp::setup_options() {
     add_option("record_only_unbound", false, OptionType::BOOL);
     add_option("record_file_type", "", OptionType::STRING);
     add_option("dump_state", false, OptionType::BOOL);
+
+    add_option("scorer", "", OptionType::STRING);
+    add_option("constraints", "", OptionType::STRING);
 
 
     //add_cl_options(tfs_.options(), "simulation");
@@ -552,6 +559,9 @@ SimulateTectosApp::run() {
         auto logger = _get_logger(get_string_option("record_file_type"));
         tfs_.set_logger(logger);
     }
+
+    auto scorer = _get_scorer(get_string_option("scorer"));
+    tfs_.set_scorer(scorer);
 
     auto count = tfs_.run();
     std::cout << count << std::endl;
@@ -853,6 +863,31 @@ SimulateTectosApp::_get_logger(
 
     else {
         throw SimulateTectosAppException("unknown logger type: " + name);
+    }
+}
+
+ThermoFlucScorerOP
+SimulateTectosApp::_get_scorer(
+        String const & name) {
+
+    if(name.length() == 0) {
+        return std::make_shared<FrameScorerDevel>();
+    }
+
+    else if(name == "FrameScorer") {
+        return std::make_shared<FrameScorerDevel>();
+    }
+
+    else if(name == "SixDScorer") {
+        auto path = motif_dirs() + "ref.motif";
+        auto ref_motif = file_to_motif(path);
+        return std::make_shared<SixDScorer>(
+                get_string_option("constraints"),
+                ref_motif->basepairs()[0]);
+    }
+
+    else {
+        throw SimulateTectosAppException("unknown scorer: " + name);
     }
 }
 
