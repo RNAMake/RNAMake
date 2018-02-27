@@ -10,7 +10,7 @@ class SimulateTectosUnittest(unittest.TestCase):
         stw = simulate_tectos_wrapper.SimulateTectosWrapper()
         stw.run()
         hit_count = stw.get_output()
-        self.failUnless(hit_count > 1100 and hit_count < 1450,
+        self.failUnless(hit_count > 1000 and hit_count < 1450,
                         "wildtype did not have expected hit_count: " + str(hit_count))
 
     def test_high(self):

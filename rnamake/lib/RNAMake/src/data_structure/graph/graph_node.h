@@ -120,6 +120,16 @@ public:
         return nullptr;
         
     }
+
+    inline
+    int
+    parent_index() {
+        for(auto const & c : connections_) {
+            if(c == nullptr) { continue; }
+            if(c->partner(index_)->index_ < index_) { return c->partner(index_)->index_; }
+        }
+        return -1;
+    }
     
     inline
     int

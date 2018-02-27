@@ -303,7 +303,7 @@ MotifStateGraph::replace_state(
         throw MotifStateGraphException(
             "attempted to replace a state with a different number of ends");
     }
-    
+
     auto old_state = n->data()->ref_state;
     n->data()->ref_state = new_state;
     n->data()->cur_state = std::make_shared<MotifState>(*new_state);
@@ -387,13 +387,13 @@ MotifStateGraph::to_motif_graph() {
 void
 MotifStateGraph::_update_align_list() {
     if(!update_align_list_) { return; }
-    
+
     auto non_aligned_nodes = unaligned_nodes();
     auto open = std::queue<GraphNodeOP<MSNodeDataOP>>();
     auto used_nodes = std::map<GraphNodeOP<MSNodeDataOP>, int>();
     
     align_list_ = GraphNodeOPs<MSNodeDataOP>();
-    
+
     for(auto const & start : non_aligned_nodes) {
         open.push(start);
         auto seen_nodes = std::map<GraphNodeOP<MSNodeDataOP>, int>();
@@ -432,7 +432,7 @@ MotifStateGraph::_update_align_list() {
             }
         }
     }
-    
+
     update_align_list_ = 0;
 }
 
@@ -442,7 +442,7 @@ MotifStateGraph::_align_states(int pos) {
     
     int start = 1;
     if(pos != -1) { start = 0; }
-    
+
     _update_align_list();
     for(auto const & n : align_list_) {
         if(start == 0) {
@@ -451,7 +451,7 @@ MotifStateGraph::_align_states(int pos) {
         }
         
         if(element_in_vector(n, non_aligned_nodes)) { continue; }
-        
+
         auto parent = n->connections()[0]->partner(n->index());
         auto pei = n->connections()[0]->end_index(parent->index());
         get_aligned_motif_state(parent->data()->get_end_state(pei),
@@ -471,6 +471,7 @@ MotifStateGraph::unaligned_nodes() const {
     for(auto const & kv : aligned_) {
         if(kv.second == 0) { nodes.push_back(get_node(kv.first)); }
     }
+
     return nodes;
 }
 

@@ -62,6 +62,9 @@ private:
     std::shared_ptr<MSS_Path>
     _setup_path();
 
+    std::vector<MotifStateOPs>
+    _get_libraries();
+
 private:
     MotifStateSearch search_;
     MotifGraphOP mg_;

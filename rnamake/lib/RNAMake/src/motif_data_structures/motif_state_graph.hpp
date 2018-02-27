@@ -117,18 +117,22 @@ public: // add functions
     replace_state(
         int i,
         MotifStateOP const &);
-    
-public: //remove functions
-    
+
     void
     remove_state(int);
-    
+
+public: //remove functions
+
     void
     remove_level(int level);
     
     
 public: // graph wrappers
-    
+
+    inline
+    GraphNodeOP<MSNodeDataOP>
+    last_node() { return graph_.last_node(); }
+
     inline
     GraphNodeOP<MSNodeDataOP> const &
     get_node(int i) const { return graph_.get_node(i); }

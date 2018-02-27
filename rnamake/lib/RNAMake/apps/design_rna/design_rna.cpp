@@ -11,6 +11,8 @@
 #include "resources/resource_manager.h"
 #include "motif_tools/segmenter.h"
 #include "motif_data_structures/motif_topology.h"
+#include <motif_state_search/motif_state_monte_carlo.h>
+#include <motif_data_structures/motif_state_graph.hpp>
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 #include "design_rna.hpp"
 
@@ -33,6 +35,7 @@ DesignRNAApp::setup_options() {
     add_option("design_pdbs", false, OptionType::BOOL, false);
     add_option("show_sections", false, OptionType::BOOL, false);
     add_option("defined_motif_path", "", OptionType::STRING, false);
+    add_option("mc", false, OptionType::BOOL, false);
 
     //no sequence opt
     add_option("only_ideal", false, OptionType::BOOL, false);
@@ -224,6 +227,40 @@ DesignRNAApp::_setup_path() {
     return selector;
 }
 
+std::vector<MotifStateOPs>
+DesignRNAApp::_get_libraries() {
+    auto spl = split_str_by_delimiter(get_string_option("defined_motif_path"), ",");
+    auto i = 0;
+    auto libraries = std::vector<MotifStateOPs>();
+    auto motif_states = MotifStateOPs();
+    for(auto const & name : spl) {
+        if(name.length() < 2) { continue; }
+        if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact" ||
+           name == "twoway" || name == "flex_helices") {
+            auto ms_lib =  MotifStateSqliteLibrary(name);
+            ms_lib.load_all();
+            motif_states = MotifStateOPs();
+            for(auto const & ms : ms_lib) { motif_states.push_back(ms); }
+            libraries.push_back(motif_states);
+        }
+        else {
+            auto m = RM::instance().motif(name);
+            motif_states = MotifStateOPs();
+
+            for(auto const & end : m->ends()) {
+                auto m_new = RM::instance().motif(name, "", end->name());
+                m_new->new_res_uuids();
+                //m_new->ends()[1]->flip();
+                //std::cout << m_new->name() << std::endl;
+                motif_states.push_back(m_new->get_state());
+            }
+            libraries.push_back(motif_states);
+        }
+    }
+    return libraries;
+}
+
+
 void
 DesignRNAApp::run() {
     if (get_string_option("pdb") != "") { _setup_from_pdb(); }
@@ -237,25 +274,38 @@ DesignRNAApp::run() {
 
     _setup_sterics();
 
+    // doing a monte carlo search instead
+    if(get_bool_option("mc")) {
+        if(get_string_option("defined_motif_path") == "") {
+            throw DesignRNAAppException("if using monte carlo must also supply definted_motif_path");
+        }
+        auto msg = std::make_shared<MotifStateGraph>();
+        for(auto const & n : *mg_) {
+            auto ms = n->data()->get_state();
+            if(n->parent() == nullptr) {
+                msg->add_state(ms);
+            }
+            else {
+                auto parent_index = n->parent_index();
+                auto parent_end_index = n->parent_end_index();
+                msg->add_state(ms, parent_index, parent_end_index);
+            }
+
+        }
+        auto ms_libraries = _get_libraries();
+        auto mc = MotifStateMonteCarlo(ms_libraries);
+        auto start_end_pos = mg_->get_node(start_.n_pos)->data()->get_end_index(start_.name);
+        auto end_end_pos = mg_->get_node(end_.n_pos)->data()->get_end_index(end_.name);
+        mc.setup(msg, start_.n_pos, end_.n_pos, start_end_pos, end_end_pos);
+        mc.run();
+        exit(0);
+    }
+
     if(get_string_option("defined_motif_path") != "") {
         std::shared_ptr<MSS_Path> custom_selector = _setup_path();
         search_.selector(custom_selector);
     }
-    /*auto selector = std::make_shared<MSS_Path>();
-    //selector->add("ideal_helices_min");
-    selector->add("unique_twoway");
-    selector->add("ideal_helices_min");
-    selector->add("tcontact");
-    selector->add("ideal_helices_min");
-    //selector->add("unique_twoway");
-    //selector->add("ideal_helices_min");
-    selector->connect(0, 1);
-    selector->connect(1, 2);
-    selector->connect(2, 3);
-    //selector->connect(3, 4);
-    //selector->connect(4, 5);
-    //selector->connect(5, 6);
-    */
+
     search_.setup(start, end);
     search_.lookup(lookup_);
     search_.set_option_value("max_solutions", 10000000);

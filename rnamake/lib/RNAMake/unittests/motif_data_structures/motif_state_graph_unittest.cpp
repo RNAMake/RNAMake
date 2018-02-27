@@ -198,7 +198,7 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
         
     }
     
-    SECTION("test multiple alignments") {
+    /*SECTION("test multiple alignments") {
         auto path = base_dir() + "/rnamake/unittests/resources/motif_graph/";
         auto lines = get_lines_from_file(path+"tecto_chip_only.mg");
         auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
@@ -208,6 +208,6 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
         //REQUIRE(mg->sequence() == mg2->sequence());
         //std::cout << mg2->sequence() << std::endl;
 
-    }
+    }*/
     
 }
