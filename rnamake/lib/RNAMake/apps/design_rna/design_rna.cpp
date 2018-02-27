@@ -240,7 +240,17 @@ DesignRNAApp::_get_libraries() {
             auto ms_lib =  MotifStateSqliteLibrary(name);
             ms_lib.load_all();
             motif_states = MotifStateOPs();
-            for(auto const & ms : ms_lib) { motif_states.push_back(ms); }
+            if(name == "flex_helices") {
+                for (auto const & ms : ms_lib) {
+                    if(ms->size() < 20) {
+                        motif_states.push_back(ms);
+                    }
+                }
+
+            }
+            else {
+                for (auto const & ms : ms_lib) { motif_states.push_back(ms); }
+            }
             libraries.push_back(motif_states);
         }
         else {
@@ -457,6 +467,7 @@ int main(int argc, const char *argv[]) {
     //RM::instance().add_motif(base_path+"GAAA_tetraloop");
     //RM::instance().add_motif(base_path+"GGAA_tetraloop");
     RM::instance().add_motif(base_path+"ATP_apt.pdb");
+    RM::instance().add_motif(base_path+"spinach_apt.pdb");
 
     auto app = DesignRNAApp();
     app.setup_options();

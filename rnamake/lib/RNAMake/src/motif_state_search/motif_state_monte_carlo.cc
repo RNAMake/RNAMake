@@ -86,10 +86,12 @@ MotifStateMonteCarlo::run() {
                 }
                 if(seen.find(motif_used_string) != seen.end()) { continue; }
                 seen[motif_used_string] = 1;
-                msg_->to_motif_graph()->to_pdb("design."+std::to_string(seen.size()-1)+".pdb", 1);
+                if(seen.size() % 10 == 0) {
+                    msg_->to_motif_graph()->to_pdb("design."+std::to_string(seen.size()-1)+".pdb", 1);
+                    std::cout << "solutions: " << seen.size() << std::endl;
+                }
                 out << score_num << "," << cur_score << "," << motif_used_string << "," << std::endl;
                 out_str << msg_->to_motif_graph()->to_str() << std::endl;
-                std::cout << "solutions: " << seen.size() << std::endl;
             }
         }
         // heat back up

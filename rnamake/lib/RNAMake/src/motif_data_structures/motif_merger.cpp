@@ -171,8 +171,8 @@ MotifMerger::_connect_chains(
         if(mm_type_1 == MotifMergerType::SPECIFIC_SEQUENCE &&
            mm_type_2 == MotifMergerType::SPECIFIC_SEQUENCE &&
            a_node->data().c->first()->name() != d_node->data().c->last()->name()) {
-            std::cout << "MotifMerger::_connect_chains: overriding residues of two different types, ";
-            std::cout << "this is likely to produce a merged structure that is wrong!!" << std::endl;
+            //std::cout << "MotifMerger::_connect_chains: overriding residues of two different types, ";
+            //std::cout << "this is likely to produce a merged structure that is wrong!!" << std::endl;
         }
         
         res_overrides_[a_node->data().c->first()->uuid()] = d_node->data().c->last()->uuid();
@@ -182,8 +182,8 @@ MotifMerger::_connect_chains(
         if(mm_type_1 == MotifMergerType::SPECIFIC_SEQUENCE &&
            mm_type_2 == MotifMergerType::SPECIFIC_SEQUENCE &&
            a_node->data().c->last()->name() != d_node->data().c->first()->name()) {
-            std::cout << "MotifMerger::_connect_chains: overriding residues of two different types, ";
-            std::cout << "this is likely to produce a merged structure that is wrong!!" << std::endl;
+            //std::cout << "MotifMerger::_connect_chains: overriding residues of two different types, ";
+            //std::cout << "this is likely to produce a merged structure that is wrong!!" << std::endl;
         }
         res_overrides_[a_node->data().c->last()->uuid()] = d_node->data().c->first()->uuid();
     }    

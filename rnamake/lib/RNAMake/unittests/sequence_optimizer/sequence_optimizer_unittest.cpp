@@ -90,7 +90,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         
     }
 
-    // messed up backward compadility 
+    // messed up backward compadility
     /*SECTION("test optimizing chip sequence") {
         auto base_path = base_dir() + "/rnamake/unittests/resources/motif_graph";
         auto lines = get_lines_from_file(base_path+"/tecto_chip_only.mg");
