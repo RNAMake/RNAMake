@@ -113,6 +113,30 @@ SequenceOptimizer3D::find_seq_violations(
     }
 }
 
+int
+SequenceOptimizer3D::find_gc_helix_stretches(
+        sstruct::PoseOP ss) {
+    int count = 0;
+    int violations = 0;
+    for(auto const & h : ss->helices()) {
+        count = 0;
+        for(auto const & r : h->chains()[0]->residues()) {
+            if(r->res_type() == 1 || r->res_type() == 2) {
+                count += 1;
+            }
+            else {
+                count = 0;
+            }
+            if(count > 2) {
+                violations += 1;
+                break;
+            }
+        }
+    }
+    return violations;
+
+}
+
 SequenceOptimizer3D::DesignableBPOPs
 SequenceOptimizer3D::_get_designable_bps(
     sstruct::PoseOP & ss) {
@@ -126,6 +150,7 @@ SequenceOptimizer3D::_get_designable_bps(
     }
 
     find_seq_violations(ss, current_violations_);
+    current_gc_stretches_ = find_gc_helix_stretches(ss);
     int count = 0;
 
     for(auto const & d_bp : designable_bps) {
@@ -139,14 +164,17 @@ SequenceOptimizer3D::_get_designable_bps(
         d_bp->bp->res1()->name(state[0]);
         d_bp->bp->res2()->name(state[1]);
         find_seq_violations(ss, next_violations_);
+        next_gc_stretches_ = find_gc_helix_stretches(ss);
         while(new_seq_violations()) {
             auto state = possible_bps_[rng_.randrange(possible_bps_.size())];
             d_bp->bp->res1()->name(state[0]);
             d_bp->bp->res2()->name(state[1]);
             find_seq_violations(ss, next_violations_);
+            next_gc_stretches_ = find_gc_helix_stretches(ss);
             count ++;
             if(count > 100) {
                 current_violations_ = next_violations_;
+                current_gc_stretches_ = next_gc_stretches_;
             }
         }
 
@@ -219,6 +247,8 @@ SequenceOptimizer3D::get_optimized_sequences(
         d_bp->update_state(new_bp_state);
 
         find_seq_violations(ss, next_violations_);
+        next_gc_stretches_ = find_gc_helix_stretches(ss);
+
         if(new_seq_violations()) {
             d_bp->revert_state();
             continue;
@@ -359,7 +389,7 @@ SequenceOptimizer3D::get_optimized_mg(
 
 void
 SequenceOptimizer3D::setup_options() {
-    options_.add_option("cutoff", 10.0f, OptionType::FLOAT);
+    options_.add_option("cutoff", 5.0f, OptionType::FLOAT);
     options_.add_option("solutions", 1, OptionType::INT);
     options_.add_option("eterna_cutoff", -1.0f, OptionType::FLOAT);
     options_.add_option("verbose", false, OptionType::BOOL);

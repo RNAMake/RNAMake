@@ -209,11 +209,18 @@ private:
             sstruct::PoseOP,
             Ints &);
 
+    int
+    find_gc_helix_stretches(
+            sstruct::PoseOP);
+
     bool
     new_seq_violations() {
         for(int i = 0; i < current_violations_.size(); i++) {
             if(current_violations_[i] != next_violations_[i]) { return true; }
         }
+
+        if(current_gc_stretches_ < next_gc_stretches_) { return true; }
+
         return false;
     }
 
@@ -270,8 +277,10 @@ private:
     std::vector<Ints> disallowed_res_types_sequences_;
     Ints current_violations_;
     Ints next_violations_;
-    
-    
+    int current_gc_stretches_, next_gc_stretches_;
+
+
+
 };
 
 #endif /* sequence_optimizer_3d_hpp */

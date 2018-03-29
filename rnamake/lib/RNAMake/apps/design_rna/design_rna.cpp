@@ -25,30 +25,29 @@ DesignRNAApp::DesignRNAApp() : Application(),
 void
 DesignRNAApp::setup_options() {
 
-    //general options
-    add_option("designs", 1, OptionType::INT, false);
-    add_option("seqs_per_design", 1, OptionType::INT, false);
+    // start from pdb
+    add_option("pdb", String(""), OptionType::STRING, false);
+    add_option("start_bp", String(""), OptionType::STRING, false);
+    add_option("end_bp", String(""), OptionType::STRING, false);
+    //add_option("no_segment", false, OptionType::BOOL, false);
+
+    // start from motif graph
+    add_option("mg", String(""), OptionType::STRING, false);
+
+    // general options
     add_option("out_file", "default.out", OptionType::STRING, false);
     add_option("score_file", "default.scores", OptionType::STRING, false);
-    add_option("verbose", false, OptionType::BOOL, false);
+    add_option("designs", 1, OptionType::INT, false);
+    add_option("seqs_per_design", 1, OptionType::INT, false);
     add_option("pdbs", false, OptionType::BOOL, false);
     add_option("design_pdbs", false, OptionType::BOOL, false);
     add_option("show_sections", false, OptionType::BOOL, false);
     add_option("defined_motif_path", "", OptionType::STRING, false);
     add_option("mc", false, OptionType::BOOL, false);
+    add_option("verbose", false, OptionType::BOOL, false);
 
     //no sequence opt
     add_option("only_ideal", false, OptionType::BOOL, false);
-
-
-    // start from pdb
-    add_option("pdb", String(""), OptionType::STRING, false);
-    add_option("start_bp", String(""), OptionType::STRING, false);
-    add_option("end_bp", String(""), OptionType::STRING, false);
-    add_option("no_segment", false, OptionType::BOOL, false);
-
-    // start from motif graph
-    add_option("mg", String(""), OptionType::STRING, false);
 
     add_cl_options(search_.options(), "search");
     add_cl_options(optimizer_.options(), "optimizer");
@@ -136,17 +135,19 @@ DesignRNAApp::_setup_from_pdb() {
 
     auto bps = BasepairOPs{start_bps[0], end_bps[0]};
 
-    if (get_bool_option("no_segment")) {
-        RM::instance().add_motif(get_string_option("pdb"), "scaffold");
-        auto m = RM::instance().motif("scaffold", "", end_bp_name);
+    //if (get_bool_option("no_segment")) {
+    RM::instance().add_motif(get_string_option("pdb"), "scaffold");
+    auto m = RM::instance().motif("scaffold", "", end_bp_name);
+    m->mtype(MotifType::TWOWAY);
         //RM::instance().register_motif(m);
-        mg_->add_motif(m);
-        mg_->write_pdbs();
-        start_ = EndStateInfo{start_bp_name, 0};
-        end_ = EndStateInfo{end_bp_name, 0};
-        return;
-    }
-    auto segmenter = Segmenter();
+    mg_->add_motif(m);
+    //mg_->write_pdbs();
+    start_ = EndStateInfo{start_bp_name, 0};
+    end_ = EndStateInfo{end_bp_name, 0};
+    return;
+    //}
+    // TODO not using this anymore make an option for segmentation
+    /*auto segmenter = Segmenter();
     auto segments = segmenter.apply(struc, bps);
 
     std::cout << "DESIGN RNA: segmentation success" << std::endl;
@@ -165,7 +166,7 @@ DesignRNAApp::_setup_from_pdb() {
     segments->remaining->block_end_add(-1);
     mg_->add_motif(segments->remaining);
     start_ = EndStateInfo{start_bp_name, 0};
-    end_ = EndStateInfo{end_bp_name, 0};
+    end_ = EndStateInfo{end_bp_name, 0};*/
 }
 
 void
@@ -277,7 +278,7 @@ DesignRNAApp::run() {
     if (get_string_option("mg") != "") { _setup_from_mg(); }
 
     //mg_->write_pdbs();
-    std::cout << start_.n_pos << " " << end_.n_pos << std::endl;
+    //std::cout << start_.n_pos << " " << end_.n_pos << std::endl;
     auto start = mg_->get_node(start_.n_pos)->data()->get_basepair(start_.name)[0]->state();
     auto end_bp = mg_->get_node(end_.n_pos)->data()->get_basepair(end_.name)[0];
     auto end = end_bp->state();
@@ -322,7 +323,7 @@ DesignRNAApp::run() {
     search_.set_option_value("verbose", get_bool_option("verbose"));
     //search_.set_option_value("accept_score", 5);
 
-    std::cout << search_.get_float_option("accept_score") << std::endl;
+    //std::cout << search_.get_float_option("accept_score") << std::endl;
     auto end_n_uuid = mg_->get_node(end_.n_pos)->data()->id();
     mg_->increase_level();
 
@@ -351,9 +352,9 @@ DesignRNAApp::run() {
 
         auto mt = sol->to_motif_tree();
         mg_->add_motif_tree(mt, start_.n_pos, start_.name);
-        for(auto const & n : *mt) {
-            std::cout << n->data()->name() << std::endl;
-        }
+        //for(auto const & n : *mt) {
+        //    std::cout << n->data()->name() << std::endl;
+        //}
         //mg_->write_pdbs();
 
         mg_->add_connection(end_.n_pos, mg_->last_node()->index(), end_.name, "");
