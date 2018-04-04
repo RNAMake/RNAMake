@@ -54,23 +54,27 @@ MotifStateSearch::update_var_options() {
 
 void
 MotifStateSearch::setup(
-    BasepairStateOP const & start,
-    BasepairStateOP const & end) {
-    
+        BasepairStateOP const & start,
+        BasepairStateOP const & end,
+        bool target_an_aligned_end) {
+
+    target_an_aligned_end_ = target_an_aligned_end;
     auto start_n = _start_node(start);
     start_n->score(1000000000);
     queue_ =  MotifStateSearchNodeQueue();
     test_node_ = std::make_shared<MotifStateSearchNode>(*start_n);
     queue_.push(start_n);
-    scorer_->set_target(end);
+    scorer_->set_target(end, target_an_aligned_end);
     no_more_solutions_ = 0;
     sol_count_ = 0;
+    enumerating_ = true;
 }
 
 void
 MotifStateSearch::reset() {
     no_more_solutions_ = 0;
     sol_count_ = 0;
+    enumerating_ = false;
     
 }
 
@@ -93,6 +97,7 @@ MotifStateSearch::finished() {
         if(verbose_) {
             std::cout << "maxed out solutions " << sol_count_ << " " << max_solutions_ <<  std::endl;
         }
+        enumerating_ = false;
         return 1;
     }
     else{
@@ -159,10 +164,16 @@ MotifStateSearch::_search() {
             if(verbose_) {
                 std::cout << "MOTIF STATE SEARCH: found a solution!" << std::endl;
             }
-            //if(helix_end_ && current->ref_state()->name()[0] != 'H') {
+            if(helix_end_) {
+                if(current->ref_state()->name()[0] == 'H') {
+                    auto s = std::make_shared<MotifStateSearchSolution>(current, score);
+                    return s;
+                }
+            }
+            else {
                 auto s = std::make_shared<MotifStateSearchSolution>(current, score);
                 return s;
-            //}
+            }
         }
         
         if(current->level()+1 > max_node_level_) { continue; }

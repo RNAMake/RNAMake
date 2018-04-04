@@ -25,20 +25,48 @@ public:
 public:
     
     void
-    set_target(BasepairStateOP const &);
-    
+    set_target(
+            BasepairStateOP const & target,
+            bool target_an_aligned_end = false);
+
+
+    inline
+    float
+    weighted_score(
+            BasepairStateOP const & current,
+            BasepairStateOP const & end,
+            BasepairStateOP const & endflip) {
+
+        float d_diff = current->d().distance(end->d());
+
+        if(d_diff > 25) { return d_diff; }
+
+        if(target_an_aligned_end_) {
+            r_diff_ = current->r().difference(target_->r());
+        }
+        else {
+            r_diff_  = current->r().difference(target_flip_->r());
+        }
+
+        float scale = (log(150/d_diff) - 1);
+        if (scale > 2) { scale = 2; }
+
+
+        return d_diff + scale*r_diff_;
+    }
+
     virtual
     inline
     float
     score(
-        MotifStateSearchNodeOP const & node ) {
+            MotifStateSearchNodeOP const & node ) {
         best_score_ = 1000;
         int i = -1;
         for(auto const & state : node->cur_state()->end_states() ) {
             i++;
             if(i == 0) { continue; }
             
-            score_ = new_score_function_new(state, target_, target_flip_);
+            score_ = weighted_score(state, target_, target_flip_);
             
             if(score_ < best_score_) {
                 best_score_ = score_;
@@ -63,10 +91,18 @@ public:
     inline
     void
     ss_score_weight(float const & nss_score_weight) {}
+
+public:
+    inline
+    bool
+    target_an_aligned_end() {
+        return target_an_aligned_end_;
+    }
     
 protected:
     BasepairStateOP target_, target_flip_;
     float best_score_, score_, r_diff_, r_diff_flip_;
+    bool target_an_aligned_end_;
     
 };
 

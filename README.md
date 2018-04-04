@@ -99,5 +99,5 @@ Getting more designs:
 
 ```
 design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -designs 100
-> DESIGN RNA: generated 1 design(s)! if you would like more please specify how many you would like with -designs #Num
+> DESIGN RNA: generated 100 design(s)! if you would like more please specify how many you would like with -designs #Num
 ```

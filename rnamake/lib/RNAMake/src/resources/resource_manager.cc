@@ -140,10 +140,12 @@ RM::get_structure(
 
 void
 RM::add_motif(
-    String const & path,
-    String name) {
+        String const & path,
+        String name,
+        MotifType mtype) {
     
     auto m = mf_.motif_from_file(path, 0, 1);
+    m->mtype(mtype);
     
     if(name != "") { m->name(name); }
     

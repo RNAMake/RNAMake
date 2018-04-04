@@ -10,9 +10,10 @@
 
 void
 MotifStateSearchScorer::set_target(
-    BasepairStateOP const & target)
-{
+        BasepairStateOP const & target,
+        bool target_an_aligned_end) {
     target_ = target;
+    target_an_aligned_end_ = target_an_aligned_end;
     target_flip_ = BasepairStateOP ( new BasepairState ( target_->copy() ));
     target_flip_->flip();
     
@@ -30,16 +31,14 @@ MotifStateSearchScorer::accept_score(
         
         score_ = state->d().distance(target_->d());
 
-        //score_ = (state->sugars()[0].distance(target_->sugars()[1]) +
-        //          state->sugars()[1].distance(target_->sugars()[0]))*0.50;
-        
-        r_diff_       = state->r().difference(target_->r());
-        r_diff_flip_  = state->r().difference(target_flip_->r());
-    
-        //if( r_diff_ > r_diff_flip_) { score_ += 2*r_diff_; }
-        if( r_diff_ > r_diff_flip_) { score_ += 2*r_diff_flip_; }
-        else                        { score_ += 2*r_diff_;      }
-        
+        if(target_an_aligned_end_) {
+            r_diff_ = state->r().difference(target_->r());
+        }
+        else {
+            r_diff_  = state->r().difference(target_flip_->r());
+        }
+        score_ += 2*r_diff_;
+
         if(score_ < best_score_) {
             best_score_ = score_;
         }

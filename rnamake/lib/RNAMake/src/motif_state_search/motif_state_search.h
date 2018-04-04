@@ -43,8 +43,9 @@ public:
     
     void
     setup(
-        BasepairStateOP const &,
-        BasepairStateOP const &);
+        BasepairStateOP const & start,
+        BasepairStateOP const & end,
+        bool target_an_aligned_end = false);
     
     MotifStateSearchSolutionOP
     next();
@@ -105,11 +106,21 @@ public:
     
     inline
     void
-    scorer(MotifStateSearchScorerOP const & scorer) { scorer_ = scorer; }
+    scorer(MotifStateSearchScorerOP const & scorer) {
+        if(enumerating_) {
+            throw std::runtime_error("cannot set a new scorer in the middle of a run");
+        }
+        scorer_ = scorer;
+    }
     
     inline
     void
-    selector(MotifStateSelectorOP const & selector) { selector_ = selector; }
+    selector(MotifStateSelectorOP const & selector) {
+        if(enumerating_) {
+            throw std::runtime_error("cannot set a new selector in the middle of a run");
+        }
+        selector_ = selector;
+    }
     
     void
     update_var_options();
@@ -147,7 +158,9 @@ private:
     int sol_count_, min_node_level_;
     float accept_score_, min_ss_score_, max_steps_;
     int using_lookup_;
-    
+    bool target_an_aligned_end_;
+    bool enumerating_;
+
 };
 
 #endif /* defined(__RNAMake__motif_state_search__) */

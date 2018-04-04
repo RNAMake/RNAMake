@@ -23,9 +23,35 @@
 
 class SequenceOptimizerScorer {
 public:
+    SequenceOptimizerScorer(
+            bool target_an_aligned_end):
+            target_an_aligned_end_(target_an_aligned_end) {}
+
+public:
     virtual
     float
     score(MotifStateGraphOP const &) = 0;
+
+public:
+    float
+    motif_state_diff(
+            BasepairStateOP const & end1,
+            BasepairStateOP const & end2) {
+        auto diff = end1->d().distance(end2->d());
+        if(target_an_aligned_end_) {
+            diff += end1->r().difference(end2->r())*2;
+        }
+        else {
+            end2->flip();
+            diff += end1->r().difference(end2->r())*2;
+            end2->flip();
+        }
+        return diff;
+    }
+
+protected:
+    bool target_an_aligned_end_;
+
 };
 
 typedef std::shared_ptr<SequenceOptimizerScorer> SequenceOptimizerScorerOP;
@@ -36,7 +62,8 @@ public:
     ExternalTargetScorer(
         BasepairStateOP const & target,
         int ni,
-        int ei):
+        int ei,
+        bool target_an_aligned_end): SequenceOptimizerScorer(target_an_aligned_end),
         target_(target),
         ni_(ni),
         ei_(ei) {}
@@ -45,7 +72,7 @@ public:
     float
     score(MotifStateGraphOP const & msg) {
         state_ = msg->get_node(ni_)->data()->get_end_state(ei_);
-        return target_->diff(state_);
+        return motif_state_diff(state_, target_);
     }
     
 private:
@@ -61,7 +88,8 @@ public:
         int ni1,
         int ei1,
         int ni2,
-        int ei2):
+        int ei2,
+        bool target_an_aligned_end): SequenceOptimizerScorer(target_an_aligned_end),
     ni1_(ni1),
     ei1_(ei1),
     ni2_(ni2),
@@ -72,7 +100,9 @@ public:
     score(MotifStateGraphOP const & msg) {
         state1_ = msg->get_node(ni1_)->data()->get_end_state(ei1_);
         state2_ = msg->get_node(ni2_)->data()->get_end_state(ei2_);
-        return state1_->diff(state2_);
+        //return state1_->diff(state2_);
+        return motif_state_diff(state1_, state2_);
+
     }
     
 private:

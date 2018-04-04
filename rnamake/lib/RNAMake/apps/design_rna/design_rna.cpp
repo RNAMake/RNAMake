@@ -136,10 +136,8 @@ DesignRNAApp::_setup_from_pdb() {
     auto bps = BasepairOPs{start_bps[0], end_bps[0]};
 
     //if (get_bool_option("no_segment")) {
-    RM::instance().add_motif(get_string_option("pdb"), "scaffold");
+    RM::instance().add_motif(get_string_option("pdb"), "scaffold", MotifType::TWOWAY);
     auto m = RM::instance().motif("scaffold", "", end_bp_name);
-    m->mtype(MotifType::TWOWAY);
-        //RM::instance().register_motif(m);
     mg_->add_motif(m);
     //mg_->write_pdbs();
     start_ = EndStateInfo{start_bp_name, 0};
@@ -317,7 +315,13 @@ DesignRNAApp::run() {
         search_.selector(custom_selector);
     }
 
-    search_.setup(start, end);
+    bool target_an_aligned_end = false;
+    auto end_end_pos = mg_->get_node(end_.n_pos)->data()->get_end_index(end_.name);
+    if(end_end_pos == mg_->get_node(end_.n_pos)->data()->block_end_add()) {
+        target_an_aligned_end = true;
+    }
+
+    search_.setup(start, end, target_an_aligned_end);
     search_.lookup(lookup_);
     search_.set_option_value("max_solutions", 10000000);
     search_.set_option_value("verbose", get_bool_option("verbose"));
@@ -364,11 +368,12 @@ DesignRNAApp::run() {
         auto end_i = end_node->data()->get_end_index(end_.name);
         auto partner = end_node->connections()[end_i]->partner(end_node->index());
 
+        auto motif_names = String("");
+        for (auto const & n : *mt) {
+            motif_names += n->data()->name() + ";";
+        }
+
         if (get_bool_option("only_ideal")) {
-            auto motif_names = String("");
-            for (auto const & n : *mt) {
-                motif_names += n->data()->name() + ";";
-            }
 
             sf_out << design_num << "," << sol->score() << ","; //<< mg_->designable_sequence();
             //sf_out << "," << mg_->secondary_structure()->dot_bracket() << ",";
@@ -404,13 +409,14 @@ DesignRNAApp::run() {
             continue;
         }
 
-        auto scorer = std::make_shared<ExternalTargetScorer>(end_bp->state(), partner->index(), 1);
+        auto scorer = std::make_shared<ExternalTargetScorer>(end_bp->state(), partner->index(), 1, target_an_aligned_end);
         auto sols = optimizer_.get_optimized_sequences(mg_, scorer);
 
         if (sols.size() > 0) {
             int opt_num = 0;
             for (auto const & s : sols) {
                 sf_out << design_num << "," << sol->score() << "," << mg_->designable_sequence() << ",";
+                sf_out << motif_names << ",";
                 sf_out << opt_num << "," << s->sequence << "," << s->dist_score << "," << s->eterna_score;
                 sf_out << std::endl;
 
