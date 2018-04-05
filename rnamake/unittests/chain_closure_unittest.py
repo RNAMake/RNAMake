@@ -2,7 +2,8 @@ import unittest
 import numpy as np
 
 from rnamake import resource_manager as rm
-from rnamake import motif_factory, util, transform, motif_graph, atom
+from rnamake import motif_factory, util, transform, motif_graph, atom, chain_closure, pdb_parser
+from rnamake import settings, chain
 import is_equal
 
 
@@ -48,6 +49,17 @@ class ChainClosureUnittest(unittest.TestCase):
 
     def setUp(self):
         pass
+
+
+    def test_helix_ideal(self):
+        m_path = settings.base_dir + "/unittests/resources/motifs/HELIX.IDEAL/HELIX.IDEAL.pdb"
+        residues = pdb_parser.parse(m_path)
+        chains = chain.connect_residues_into_chains(residues)
+        chain_closure.close_chain(chains[1])
+        chains[1].to_pdb("c.pdb")
+
+
+
 
     def _test_find_missing_atoms(self):
         bp_lib = rm.manager.mlibs["bp_steps"]

@@ -123,8 +123,8 @@ def close_chain(chain):
             replace_missing_phosphate_backbone(res2, r_template)
 
 
-        if res1.connected_to(res2,cutoff=2.0):
-            continue
+        #if res1.connected_to(res2,cutoff=2.0):
+        #    continue
 
         atoms = []
         res1_atoms = [res1.get_atom(name) for name in [ "C4'", "C3'", "O3'" ]]
@@ -141,6 +141,7 @@ def close_chain(chain):
         ovl1 = virtual_atom("OVL1", 1.606497, 60.314519, 0.0,
                             [res1.get_atom("O3'"), res1.get_atom("C3'"),
                              res1.get_atom("C4'")])
+
         ovl2 = virtual_atom("OVL2", 1.593180, 71.059360, 0.0,
                             [ovl1, res1.get_atom("O3'"),
                              res1.get_atom("C3'")])
@@ -154,10 +155,11 @@ def close_chain(chain):
         match_atoms_1 = [res1.get_atom("O3'"), ovl1,               ovl2                ]
         match_atoms_2 = [ovu1,                 res2.get_atom("P"), res2.get_atom("O5'")]
 
-        for i in range(100):
+        for j in range(100):
             close_torsion(+1,
                               [res1.get_atom("O3'"), res1.get_atom("C3'"),res1.get_atom("C4'")],
                               [ovl1,ovl2], match_atoms_1, match_atoms_2)
+
             close_torsion(+1,
                               [ovl1,res1.get_atom("O3'"),res1.get_atom("C3'")],
                               [ovl2], match_atoms_1, match_atoms_2)
