@@ -61,15 +61,14 @@ class ChainClosureUnittest(unittest.TestCase):
 
 
 
-    def _test_find_missing_atoms(self):
+    def test_find_missing_atoms(self):
         bp_lib = rm.manager.mlibs["bp_steps"]
         bp_lib.load_all(100)
         for m in bp_lib.all():
             r = m.residues()[0]
             if r.get_atom("P") is not None:
                 continue
-            print m.name
-            print r.name
+            m.to_pdb(m.name+".pdb")
 
     def _test_fix_missing_atoms(self):
         start_m = motif_factory.factory.base_motif
@@ -94,6 +93,8 @@ class ChainClosureUnittest(unittest.TestCase):
         r_template = start_m.residues()[0]
 
         m = rm.manager.get_motif(name="BP.0.27")
+        m.to_pdb("phos_missing.pdb")
+        exit()
         mg = motif_graph.MotifGraph()
         """for r in m.residues():
             if r.get_atom("P") is None:

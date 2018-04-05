@@ -58,9 +58,9 @@ Residue::get_beads() const {
         else             { base_atoms.push_back(a);  }
     }
     Beads beads;
-    if(phos_atoms.size() > 0)  { beads.push_back(Bead(center(phos_atoms),  BeadType::PHOS)); }
-    if(sugar_atoms.size() > 0) { beads.push_back(Bead(center(sugar_atoms), BeadType::SUGAR)); }
-    if(base_atoms.size() > 0)  { beads.push_back(Bead(center(base_atoms),  BeadType::BASE)); }
+    if(phos_atoms.size() > 0)  { beads.push_back(Bead(::center(phos_atoms),  BeadType::PHOS)); }
+    if(sugar_atoms.size() > 0) { beads.push_back(Bead(::center(sugar_atoms), BeadType::SUGAR)); }
+    if(base_atoms.size() > 0)  { beads.push_back(Bead(::center(base_atoms),  BeadType::BASE)); }
     return beads;
 }
 

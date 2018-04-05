@@ -43,9 +43,21 @@ close_torsion(
         AtomOPs const &,
         AtomOPs const &);
 
+Matrix
+get_res_ref_frame(
+        ResidueOP);
+
+void
+replace_missing_phosphate_backbone(
+        ResidueOP,
+        ResidueOP);
+
+
 void
 close_chain(
         ChainOP);
+
+
 
 
 #endif //TEST_CLOSE_CHAIN_H

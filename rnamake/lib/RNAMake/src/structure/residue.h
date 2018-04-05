@@ -372,6 +372,7 @@ public:
      *  -23.063 -52.513 83.947,C8 -23.858 -51.786 84.686,N9 -23.21 -51.159 85.722,
      * @endcode
      */
+
     String
     to_str() const;
     
@@ -429,6 +430,29 @@ public:
         return uuid_ == r.uuid_;
     }
 
+public: // non const methods
+
+    inline
+    void
+    move(Point const & p) {
+        for(auto & a : atoms_) {
+            a->coords(a->coords() + p);
+        }
+    }
+
+    inline
+    void
+    transform(Transform const & t) {
+        Matrix r = t.rotation().transpose();
+        Point trans = t.translation();
+        auto dummy = Point();
+        for( auto & a : atoms() ) {
+            dot_vector(r, a->coords(), dummy);
+            dummy += trans;
+            a->coords(dummy);
+        }
+    }
+
     
 public: // setters
     /**
@@ -458,6 +482,12 @@ public: // setters
     
     
 public: // getters
+
+    inline
+    Point
+    center() const {
+        return ::center(atoms_);
+    }
     
     /**
      * getter for the name of the residue, i.e. "A", "G" etc

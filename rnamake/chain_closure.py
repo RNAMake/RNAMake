@@ -123,8 +123,8 @@ def close_chain(chain):
             replace_missing_phosphate_backbone(res2, r_template)
 
 
-        #if res1.connected_to(res2,cutoff=2.0):
-        #    continue
+        if res1.connected_to(res2,cutoff=2.0):
+            continue
 
         atoms = []
         res1_atoms = [res1.get_atom(name) for name in [ "C4'", "C3'", "O3'" ]]

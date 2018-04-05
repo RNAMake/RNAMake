@@ -127,18 +127,102 @@ close_torsion(
 
 }
 
+Matrix
+get_res_ref_frame(
+        ResidueOP r) {
+    auto vec1 = Point();
+    auto vec2 = Point();
+    auto beads = r->get_beads();
+    auto b = beads[0];
+    for(auto const & bead : beads) {
+        if(bead.btype() == BeadType::BASE) { b = bead; break; }
+    }
+
+    if(r->name() == "A" || r->name() == "G") {
+        vec1 = (r->get_atom("N9")->coords() - r->get_atom("C1'")->coords()).normalize();
+        vec2 = (r->get_atom("N9")->coords() - b.center()).normalize();
+    }
+    else {
+        vec1 = (r->get_atom("N1")->coords() - r->get_atom("C1'")->coords()).normalize();
+        vec2 = (r->get_atom("N1")->coords() - b.center()).normalize();
+    }
+    auto cross = vec1.cross(vec2);
+    auto m = Matrix(
+            vec1.x(), vec1.y(), vec1.z(),
+            vec2.x(), vec2.y(), vec2.z(),
+            cross.x(), cross.y(), cross.z());
+    m.unitarize();
+    return m;
+
+}
+
+
+void
+replace_missing_phosphate_backbone(
+        ResidueOP r ,
+        ResidueOP r_template) {
+
+    auto ref_frame_1 = get_res_ref_frame(r);
+    auto ref_frame_2 = get_res_ref_frame(r_template);
+
+    auto rot = Matrix();
+    dot(ref_frame_1.transpose(), ref_frame_2, rot);
+    auto trans = -r_template->center();
+    auto c4p_atom =  r->get_atom("C4'");
+
+    auto t = Transform(rot, trans);
+
+    r_template->transform(t);
+    r_template->move(c4p_atom->coords() - r_template->get_atom("C4'")->coords());
+
+    auto atom_names = Strings{"C5'", "O5'", "P", "OP1", "OP2"};
+    auto atoms = AtomOPs();
+    for(auto const & name : atom_names) {
+        auto a = r_template->get_atom(name);
+        atoms.push_back(std::make_shared<Atom>(a->name(), a->coords()));
+    }
+
+    for(auto const & a : r->atoms()) {
+        if(a == nullptr) { continue; }
+        if(std::find(atom_names.begin(), atom_names.end(), a->name()) != atom_names.end()) { continue; }
+        atoms.push_back(a);
+    }
+
+    r->setup_atoms(atoms);
+
+}
+
 void
 close_chain(
         ChainOP chain) {
+    auto r_template = ResidueOP(nullptr);
+    for(auto const & r : chain->residues()) {
+        if(r->get_atom("P") != nullptr && r->get_atom("OP1") != nullptr && r->get_atom("OP2") != nullptr) {
+            r_template = std::make_shared<Residue>(*r);
+            break;
+        }
+    }
+
+    if(r_template == nullptr) {
+        std::cout << " cannot rebuild phosphates, there is no residue with all phosphate atoms" << std::endl;
+        return;
+    }
 
     for(int i = 0; i < chain->length()-1; i++) {
 
         auto res1 = chain->residues()[i];
         auto res2 = chain->residues()[i+1];
 
-        //if(res1->connected_to(*res2, 2.0)) {
-        //    continue;
-        //}
+        if(res1->get_atom("P") == nullptr) {
+            replace_missing_phosphate_backbone(res1, r_template);
+        }
+        if(res2->get_atom("P") == nullptr) {
+            replace_missing_phosphate_backbone(res2, r_template);
+        }
+
+        if(res1->connected_to(*res2, 2.0)) {
+            continue;
+        }
 
         auto res1_atoms = AtomOPs();
         auto res2_atoms = AtomOPs();

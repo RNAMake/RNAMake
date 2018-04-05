@@ -7,6 +7,7 @@
 //RNAMake Headers
 #include "base/types.h"
 #include "math/xyz_vector.h"
+#include "math/transform.h"
 
 /**
  * Stores atomic information from pdb file, design is to be extremely
@@ -96,7 +97,26 @@ public:
      * @endcode
      */
     String to_pdb_str(int);
-    
+
+public: // non const methods
+
+    inline
+    void
+    move(Point const & p) {
+        coords_ = coords_ + p;
+    }
+
+    inline
+    void
+    transform(Transform const & t) {
+        Matrix r = t.rotation().transpose();
+        Point trans = t.translation();
+        auto new_coords = Point();
+        dot_vector(r, coords_, new_coords);
+        new_coords += trans;
+        coords_ = new_coords;
+    }
+
 public: //accessors
     
     /**
