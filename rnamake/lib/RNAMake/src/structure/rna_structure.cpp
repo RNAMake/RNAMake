@@ -9,6 +9,7 @@
 #include <memory>
 
 //RNAMake Headers
+#include "structure/close_chain.h"
 #include "structure/rna_structure.h"
 
 // get basepair functions //////////////////////////////////////////////////////////////////////////
@@ -124,15 +125,25 @@ RNAStructure::get_end_index(String const & end_name) {
 
 String const
 RNAStructure::to_pdb_str(
-    int renumber) {
+    int renumber,
+    int close_chains) {
     return structure_->to_pdb_str(renumber);
 }
 
 void
 RNAStructure::to_pdb(
     String const fname,
-    int renumber) {
-    return structure_->to_pdb(fname, renumber);
+    int renumber,
+    int close_chains,
+    int conect_statements) {
+
+    if(close_chains) {
+        for(auto & c : structure_->chains()) {
+            close_chain(c);
+        }
+    }
+
+    return structure_->to_pdb(fname, renumber, conect_statements);
 }
 
 

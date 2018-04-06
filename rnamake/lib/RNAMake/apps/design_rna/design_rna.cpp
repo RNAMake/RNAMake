@@ -384,14 +384,14 @@ DesignRNAApp::run() {
             design_num++;
 
             if (get_bool_option("pdbs")) {
-                mg_->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
+                mg_->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1, 1, 1);
                 solution_count++;
                 //mg_->write_pdbs();
                 //exit(0);
             }
 
             if(get_bool_option("design_pdbs")) {
-                mt->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
+                mt->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1, 1, 1);
                 solution_count++;
             }
 
@@ -430,7 +430,7 @@ DesignRNAApp::run() {
                     out << copy_mg->to_str() << std::endl;
 
                     if (get_bool_option("pdbs")) {
-                        copy_mg->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1);
+                        copy_mg->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1, 1, 1);
                         solution_count++;
                     }
                 } catch (std::runtime_error const & e) {

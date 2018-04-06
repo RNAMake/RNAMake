@@ -177,8 +177,10 @@ public:
     void
     to_pdb(
         String const & fname,
-        int renumber = -1) {
-        return get_structure()->to_pdb(fname, renumber);
+        int renumber = -1,
+        int close_chains = 0,
+        int conect_statements = 0) {
+        return get_structure()->to_pdb(fname, renumber, close_chains, conect_statements);
     }
     
 private:

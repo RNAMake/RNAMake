@@ -107,12 +107,15 @@ public: //output functions
 
     String const
     to_pdb_str(
-            int rnumber = -1);
+            int rnumber = -1,
+            int close_chains = 0);
 
     void
     to_pdb(
             String const,
-            int renumber = -1);
+            int renumber = -1,
+            int close_chains = 0,
+            int conect_statements = 0);
 
 public: //wrappers from structure
 

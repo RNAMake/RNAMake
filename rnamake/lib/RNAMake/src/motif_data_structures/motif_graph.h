@@ -608,11 +608,13 @@ public: //Motif Merger Wrappers
     void
     to_pdb(
         String const fname = "test.pdb",
-        int renumber = -1) {
+        int renumber = -1,
+        int close_chains = 0,
+        int conect_statement = 0) {
         
         try {
             _update_merger();
-            return merger_->to_pdb(fname, renumber);
+            return merger_->to_pdb(fname, renumber, close_chains, conect_statement);
         }
         catch(MotifMergerException) {
             throw MotifGraphException(

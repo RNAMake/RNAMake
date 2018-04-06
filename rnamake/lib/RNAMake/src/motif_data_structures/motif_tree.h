@@ -326,11 +326,13 @@ public: //outputing functions
     void
     to_pdb(
         String const fname = "test.pdb",
-        int renumber = -1) {
+        int renumber = -1,
+        int close_chains = 0,
+        int conect_statements = 0) {
         
         try {
             _update_merger();
-            return merger_->to_pdb(fname, renumber);
+            return merger_->to_pdb(fname, renumber, close_chains, conect_statements);
         }
         catch(MotifMergerException) {
             throw MotifTreeException(

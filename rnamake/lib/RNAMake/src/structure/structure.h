@@ -128,7 +128,7 @@ public:
             a->coords(a->coords() + p);
         }
     }
-    
+
     inline
     void
     transform(Transform const & t) {
@@ -143,7 +143,8 @@ public:
     
     String
     to_pdb_str(
-        int renumber = -1);
+        int renumber = -1,
+        int conect_statements = 0);
     
     String
     to_str();
@@ -151,7 +152,8 @@ public:
     void
     to_pdb(
         String const,
-        int renumber = -1);
+        int renumber = -1,
+        int conect_statements = 0);
     
 public: // getters
     

@@ -70,7 +70,8 @@ Structure::get_residue(
 
 String
 Structure::to_pdb_str(
-    int renumber) {
+    int renumber,
+    int conect_statements) {
     
     int rnum = -1;
     String chain_id = "";
@@ -89,6 +90,21 @@ Structure::to_pdb_str(
         }
         s += "TER\n";
     }
+
+    if(conect_statements) {
+        int a_count = 0;
+        int o3_pos = 9;
+        int p_pos = 1;
+        for(auto const & c : chains_) {
+            for(int i = 0; i < c->residues().size()-1; i++) {
+                int r_size = c->residues()[i]->atoms().size();
+                s += "CONECT " + std::to_string(a_count+o3_pos) + " " + std::to_string(a_count+r_size+p_pos) + "\n";
+                a_count += r_size;
+            }
+        }
+
+    }
+
     return s;
 }
 
@@ -103,11 +119,12 @@ Structure::to_str() {
 
 void
 Structure::to_pdb(
-    String const fname,
-    int renumber) {
+        String const fname,
+        int renumber,
+        int conect_statements) {
     std::ofstream out;
     out.open(fname.c_str());
-    String s = to_pdb_str(renumber);
+    String s = to_pdb_str(renumber, conect_statements);
     out << s << std::endl;
     out.close();
 }
