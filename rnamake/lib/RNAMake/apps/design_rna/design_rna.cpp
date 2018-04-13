@@ -14,7 +14,7 @@
 #include <motif_state_search/motif_state_monte_carlo.h>
 #include <motif_data_structures/motif_state_graph.hpp>
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
-#include "design_rna.hpp"
+#include "design_rna/design_rna.hpp"
 
 DesignRNAApp::DesignRNAApp() : Application(),
         search_(MotifStateSearch()),
@@ -415,8 +415,8 @@ DesignRNAApp::run() {
         if (sols.size() > 0) {
             int opt_num = 0;
             for (auto const & s : sols) {
-                sf_out << design_num << "," << sol->score() << "," << mg_->designable_sequence() << ",";
-                sf_out << motif_names << ",";
+                sf_out << design_num << "," << sol->score() << "," << mg_->designable_sequence() << "," ;
+                sf_out << mg_->dot_bracket() << "," << motif_names << ",";
                 sf_out << opt_num << "," << s->sequence << "," << s->dist_score << "," << s->eterna_score;
                 sf_out << std::endl;
 
