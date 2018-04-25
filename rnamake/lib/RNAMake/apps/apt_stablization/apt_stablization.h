@@ -9,6 +9,15 @@
 #include "base/application.hpp"
 #include "util/steric_lookup.hpp"
 
+class APTStablizationException : public std::runtime_error {
+public:
+    APTStablizationException(
+            String const & message):
+            std::runtime_error(message)
+    {}
+};
+
+
 class APTStablization : public Application {
 public:
     APTStablization();
@@ -28,7 +37,19 @@ public:
     void
     run();
 
-public:
+private:
+    void
+    _setup_sterics(
+            MotifStateGraphOP);
+
+private:
+
+    std::vector<MotifStateOPs>
+    _get_libraries(
+            String const &);
+
+private:
+    StericLookup lookup_;
 
 };
 

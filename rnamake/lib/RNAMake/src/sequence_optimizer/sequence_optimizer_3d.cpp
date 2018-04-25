@@ -127,7 +127,7 @@ SequenceOptimizer3D::find_gc_helix_stretches(
             else {
                 count = 0;
             }
-            if(count > 2) {
+            if(count > 3) {
                 violations += 1;
                 break;
             }
@@ -381,7 +381,7 @@ SequenceOptimizer3D::get_optimized_mg(
         }
         
     }
-    
+
     return best_msg->to_motif_graph();
 }
 
@@ -393,8 +393,8 @@ SequenceOptimizer3D::setup_options() {
     options_.add_option("solutions", 1, OptionType::INT);
     options_.add_option("eterna_cutoff", -1.0f, OptionType::FLOAT);
     options_.add_option("verbose", false, OptionType::BOOL);
-    options_.add_option("return_lowest", false, OptionType::BOOL);
-    options_.add_option("steps", 1000, OptionType::INT);
+    options_.add_option("return_lowest", true, OptionType::BOOL);
+    options_.add_option("steps", 10000, OptionType::INT);
     options_.lock_option_adding();
     update_var_options();
 }

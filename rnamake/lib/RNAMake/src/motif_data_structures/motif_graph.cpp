@@ -562,6 +562,9 @@ MotifGraph::replace_ideal_helices() {
             if(name_spl.size() == 3) {
                 count = std::stoi(name_spl[2]);
             }
+            else if(name_spl.size() == 4) {
+                count = std::stoi(name_spl[2])-2;
+            }
             
             auto old_n_aligned = aligned_[n->index()];
             auto old_n = n;

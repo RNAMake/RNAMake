@@ -283,6 +283,13 @@ DesignRNAApp::run() {
 
     _setup_sterics();
 
+
+    bool target_an_aligned_end = false;
+    auto end_end_pos = mg_->get_node(end_.n_pos)->data()->get_end_index(end_.name);
+    if(end_end_pos == mg_->get_node(end_.n_pos)->data()->block_end_add()) {
+        target_an_aligned_end = true;
+    }
+
     // doing a monte carlo search instead
     if(get_bool_option("mc")) {
         if(get_string_option("defined_motif_path") == "") {
@@ -305,7 +312,7 @@ DesignRNAApp::run() {
         auto mc = MotifStateMonteCarlo(ms_libraries);
         auto start_end_pos = mg_->get_node(start_.n_pos)->data()->get_end_index(start_.name);
         auto end_end_pos = mg_->get_node(end_.n_pos)->data()->get_end_index(end_.name);
-        mc.setup(msg, start_.n_pos, end_.n_pos, start_end_pos, end_end_pos);
+        mc.setup(msg, start_.n_pos, end_.n_pos, start_end_pos, end_end_pos, target_an_aligned_end);
         mc.run();
         exit(0);
     }
@@ -315,11 +322,6 @@ DesignRNAApp::run() {
         search_.selector(custom_selector);
     }
 
-    bool target_an_aligned_end = false;
-    auto end_end_pos = mg_->get_node(end_.n_pos)->data()->get_end_index(end_.name);
-    if(end_end_pos == mg_->get_node(end_.n_pos)->data()->block_end_add()) {
-        target_an_aligned_end = true;
-    }
 
     search_.setup(start, end, target_an_aligned_end);
     search_.lookup(lookup_);

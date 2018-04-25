@@ -6,6 +6,7 @@
 //RNAMake Headers
 #include "resources/resource_manager.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
+#include "motif_data_structures/motif_state_ensemble_graph.h"
 
 
 
@@ -63,7 +64,27 @@ TEST_CASE( "Test Assembling MotifEnsembleStates together", "[MotifStateEnsembleT
         auto mset2 = MotifStateEnsembleTree(mt2);
         
         REQUIRE(mset2.size() == 4);
-        
-        
+    }
+
+    // graph tests!
+    SECTION("test adding ensembles to graph") {
+
+        auto mseg = MotifStateEnsembleGraph();
+        auto mse = RM::instance().motif_state_ensemble("GG_LL_CC_RR");
+        mseg.add_ensemble(mse);
+        mseg.add_ensemble(mse);
+
+        REQUIRE(mseg.size() == 2);
+    }
+
+    SECTION("setup from motif tree with graph") {
+        auto mg = std::make_shared<MotifGraph>();
+        auto m1 = RM::instance().motif("HELIX.IDEAL");
+        auto m2 = RM::instance().motif("HELIX.IDEAL");
+        mg->add_motif(m1);
+        mg->add_motif(m2);
+
+
+
     }
 }
