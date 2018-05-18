@@ -412,6 +412,7 @@ SimulateTectosApp::setup_options() {
     add_option("record_only_unbound", false, OptionType::BOOL);
     add_option("record_file_type", "", OptionType::STRING);
     add_option("dump_state", false, OptionType::BOOL);
+    add_option("dump_pdbs", false, OptionType::BOOL);
 
     add_option("scorer", "", OptionType::STRING);
     add_option("constraints", "", OptionType::STRING);
@@ -489,7 +490,7 @@ SimulateTectosApp::run() {
 
     if(get_bool_option("start_pose")) {
         auto mt = mset->to_mst()->to_motif_tree();
-        mt->to_pdb("start_pose.pdb");
+        mt->to_pdb("start_pose.pdb", 1, 1, 1);
         std::cout << "SIMULATE_TECTOS: outputing starting pose: start_pose.pdb" << std::endl;
     }
     
@@ -553,6 +554,7 @@ SimulateTectosApp::run() {
     tfs_.set_option_value("record_only_bound", get_bool_option("record_only_bound"));
     tfs_.set_option_value("record_only_unbound", get_bool_option("record_only_unbound"));
     tfs_.set_option_value("dump_state", get_bool_option("dump_state"));
+    tfs_.set_option_value("dump_pdbs", get_bool_option("dump_pdbs"));
 
     if(get_bool_option("record")) {
         tfs_.set_option_value("record", true);
@@ -606,8 +608,8 @@ SimulateTectosApp::get_mset_old(
         motif_names_.push_back("c"+std::to_string(i));
         mt->add_motif(chip_motifs[i]);
     }
+    mt->add_connection(1, mt->last_node()->index(), "A1-A6", mt->last_node()->data()->end_name(1));
 
-    
     //mt->write_pdbs();
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
     return mset;

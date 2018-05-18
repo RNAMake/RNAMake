@@ -68,44 +68,53 @@ APTStablization::run() {
         target_an_aligned_end = true;
     }
 
+    std::ofstream out, sf_out;
+    sf_out.open(get_string_option("score_file"));
+    sf_out << "design_num,design_score,design_sequence,design_structure,motifs_uses,opt_num,";
+    sf_out << "opt_sequence,opt_score,eterna_score" << std::endl;
+
     auto mc = MotifStateMonteCarlo(ms_libraries);
     mc.setup(msg, 2, 2, start_end_pos, end_end_pos, target_an_aligned_end);
     mc.lookup(lookup_);
     mc.start();
     mc.set_option_value("max_solutions", 10000);
 
-    auto solutions = 0;
+
+    auto designs = 0;
 
     while(! mc.finished()) {
-        auto mg = mc.next();
-        if(mg == nullptr) {
+        auto sol = mc.next();
+        if(sol == nullptr) {
             std::cout << "no solutions" << std::endl;
             exit(0);
         }
-        //mg->to_pdb("design." + std::to_string(0) + ".pdb", 1, 1, 1);
+
+        auto mg = sol->mg;
+        auto motif_names = String("");
         for(auto & n : *mg) {
             if(n->data()->name().substr(0,5) == "HELIX") {
                 n->data()->mtype(MotifType::HELIX);
             }
-            std::cout << n->data()->name() << " " << n->data()->mtype() << std::endl;
+            if(n->data()->name().substr(0,4) == "GAAA") {
+                n->data()->mtype(MotifType::NWAY);
+            }
+
+            motif_names += n->data()->name() + ";";
         }
-        mg->to_pdb("test.pdb", 1);
         mg->replace_ideal_helices();
 
         auto end_node = mg->get_node(2);
         auto target_state = end_node->data()->ends()[end_end_pos]->state();
         auto end_i = end_end_pos;
         auto partner = end_node->connections()[end_i]->partner(end_node->index());
-        std::cout << partner->index() << std::endl;
-        //auto scorer = std::make_shared<ExternalTargetScorer>(target_state, partner->index(), 1, target_an_aligned_end);
         auto scorer = std::make_shared<InternalTargetScorer>(2, end_end_pos, partner->index(), 1, target_an_aligned_end);
 
         auto optimizer = SequenceOptimizer3D();
         optimizer.set_option_value("verbose", true);
-        optimizer.set_option_value("cutoff", 5.0f);
+        optimizer.set_option_value("cutoff", 7.0f);
 
         auto sols = optimizer.get_optimized_sequences(mg, scorer);
-        if(sols[0]->dist_score > 5) {
+        if(sols[0]->dist_score > 7) {
             continue;
         }
 
@@ -113,16 +122,25 @@ APTStablization::run() {
         auto dss = copy_mg->designable_secondary_structure();
         dss->replace_sequence(sols[0]->sequence);
         copy_mg->replace_helical_sequence(dss);
-        copy_mg->to_pdb("design." + std::to_string(solutions) + ".pdb", 1, 1, 1);
-        exit(0);
+        copy_mg->to_pdb("design." + std::to_string(designs) + ".pdb", 1, 1, 1);
+        designs += 1;
 
+        sf_out << designs << "," << sol->score << "," << copy_mg->designable_sequence() << "," ;
+        sf_out << copy_mg->dot_bracket() << "," << motif_names << ",";
+        sf_out << 1 << "," << sols[0]->sequence << "," << sols[0]->dist_score << "," << sols[0]->eterna_score;
+        sf_out << std::endl;
+        out << copy_mg->to_str() << std::endl;
+
+        if(designs >= get_int_option("designs")) {
+            std::cout << "Found " << designs << " designs, Finished!" << std::endl;
+            break;
+        }
 
 
     }
 
-    //mc.run();
-
-
+    sf_out.close();
+    out.close();
 
 }
 
@@ -159,12 +177,17 @@ APTStablization::_get_libraries(
             motif_states = MotifStateOPs();
 
             for(auto const & end : m->ends()) {
-                auto m_new = RM::instance().motif(name, "", end->name());
-                m_new->new_res_uuids();
-                //m_new->ends()[1]->flip();
-                //std::cout << m_new->name() << std::endl;
-                motif_states.push_back(m_new->get_state());
+                try {
+                    auto m_new = RM::instance().motif(name, "", end->name());
+                    m_new->new_res_uuids();
+                    motif_states.push_back(m_new->get_state());
+                }
+                catch (...) {}
             }
+            if(motif_states.size() == 0) {
+                throw APTStablizationException("no viable aptamer conformations");
+            }
+
             libraries.push_back(motif_states);
         }
     }

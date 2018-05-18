@@ -49,6 +49,7 @@ MotifStateSearch::update_var_options() {
     max_steps_      = options_.get_float("max_steps");
     verbose_        = options_.get_bool("verbose");
     helix_end_      = options_.get_bool("helix_end");
+    return_best_    = options_.get_bool("return_best");
     
 }
 

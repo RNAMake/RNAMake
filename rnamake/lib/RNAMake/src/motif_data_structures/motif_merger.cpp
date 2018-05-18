@@ -200,7 +200,7 @@ MotifMerger::_assign_merger_type(
         return MotifMergerType::SPECIFIC_SEQUENCE;
     }
     else {
-        if(m->name().substr(0, 5) == "HELIX") {
+        if(m->name().substr(0, 5) == "HELIX" || m->name().substr(0,2) == "BP") {
             return MotifMergerType::NON_SPECIFIC_SEQUENCE;
         }
         else {

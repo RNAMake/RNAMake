@@ -8,6 +8,7 @@
 
 
 #include "base/backtrace.hpp"
+#include "math/euler.h"
 #include "resources/resource_manager.h"
 #include "motif_tools/segmenter.h"
 #include "motif_data_structures/motif_topology.h"
@@ -45,6 +46,9 @@ DesignRNAApp::setup_options() {
     add_option("defined_motif_path", "", OptionType::STRING, false);
     add_option("mc", false, OptionType::BOOL, false);
     add_option("verbose", false, OptionType::BOOL, false);
+    add_option("no_sterics", false, OptionType::BOOL, false);
+    add_option("info", false, OptionType::BOOL, false);
+    add_option("return_best", false, OptionType::BOOL, false);
 
     //no sequence opt
     add_option("only_ideal", false, OptionType::BOOL, false);
@@ -281,7 +285,25 @@ DesignRNAApp::run() {
     auto end_bp = mg_->get_node(end_.n_pos)->data()->get_basepair(end_.name)[0];
     auto end = end_bp->state();
 
-    _setup_sterics();
+    if(! get_bool_option("no_sterics")) {
+        _setup_sterics();
+    }
+
+    if(get_bool_option("info")) {
+        std::cout << "DESIGN RNA: translation= " << (start->d() - end->d()) << std::endl;
+
+        // calc rotation between ref frames
+        auto r_T = start->r();
+        Matrix transformed;
+        r_T.transpose();
+        dot(end->r(), r_T, transformed);
+
+        auto euler_v = Vector();
+        calc_euler(transformed, euler_v);
+
+        std::cout << "DESIGN RNA: rotation= " << euler_v.to_str() << std::endl;
+
+    }
 
 
     bool target_an_aligned_end = false;

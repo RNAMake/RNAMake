@@ -68,7 +68,7 @@ MotifStateMonteCarlo::setup(
     seen_ = StringIntMap();
 }
 
-MotifGraphOP
+MotifStateMonteCarloSolutionOP
 MotifStateMonteCarlo::next() {
     // do not call run() now, getting one solution at a time
     enumerating_ = true;
@@ -97,7 +97,7 @@ MotifStateMonteCarlo::next() {
                 auto nj_name = msg_->get_node(nj_)->data()->end_name(ej_);
                 auto last_name = msg_->get_node(last_n)->data()->end_name(1);
                 mg->add_connection(nj_, last_n, nj_name, last_name);
-                return mg;
+                return std::make_shared<MotifStateMonteCarloSolution>(mg, new_score);
             }
 
         }
@@ -117,7 +117,7 @@ MotifStateMonteCarlo::next() {
         stage_ += 1;
     }
 
-    return MotifGraphOP(nullptr);
+    return MotifStateMonteCarloSolutionOP(nullptr);
 }
 
 void
@@ -304,7 +304,13 @@ MotifStateMonteCarlo::_seen_solution(
     for (auto const & n : *msg_) {
         j++;
         if (j == 0) { continue; }
-        motif_used_string += n->data()->name() + ";";
+        if(n->data()->name().substr(0, 10) == "HELIX.FLEX") {
+            auto spl = split_str_by_delimiter(n->data()->name(), ".");
+            motif_used_string += spl[0] + "." + spl[1] + "." + spl[2] + ";";
+        }
+        else {
+            motif_used_string += n->data()->name() + ";";
+        }
     }
     if(seen_.find(motif_used_string) != seen_.end()) { return true; }
     else                                             {

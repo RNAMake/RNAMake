@@ -160,6 +160,7 @@ private:
     int using_lookup_;
     bool target_an_aligned_end_;
     bool enumerating_;
+    bool return_best_;
 
 };
 

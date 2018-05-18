@@ -436,6 +436,7 @@ public: // non const methods
     void
     move(Point const & p) {
         for(auto & a : atoms_) {
+            if(a == nullptr) { continue; }
             a->coords(a->coords() + p);
         }
     }
@@ -446,7 +447,8 @@ public: // non const methods
         Matrix r = t.rotation().transpose();
         Point trans = t.translation();
         auto dummy = Point();
-        for( auto & a : atoms() ) {
+        for( auto & a : atoms_ ) {
+            if(a == nullptr) { continue; }
             dot_vector(r, a->coords(), dummy);
             dummy += trans;
             a->coords(dummy);

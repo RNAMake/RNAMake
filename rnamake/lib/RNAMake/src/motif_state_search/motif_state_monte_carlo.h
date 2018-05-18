@@ -11,6 +11,20 @@
 #include <motif_data_structures/motif_state_tree.h>
 #include <motif_data_structures/motif_state_graph.hpp>
 
+struct MotifStateMonteCarloSolution {
+    inline
+    MotifStateMonteCarloSolution(
+            MotifGraphOP n_mg,
+            float n_score):
+            mg(n_mg),
+            score(n_score) {}
+
+    MotifGraphOP mg;
+    float score;
+};
+
+typedef std::shared_ptr<MotifStateMonteCarloSolution> MotifStateMonteCarloSolutionOP;
+
 class MotifStateMonteCarlo {
 public:
     MotifStateMonteCarlo(
@@ -39,7 +53,7 @@ public:
     void
     start();
 
-    MotifGraphOP
+    MotifStateMonteCarloSolutionOP
     next();
 
     bool
