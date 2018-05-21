@@ -122,8 +122,13 @@ private:
     _steric_clash(
         MotifOP const &,
         MotifOP const &);
-    
-    
+
+    int
+    _steric_clash_count(
+            MotifOP const &,
+            MotifOP const &);
+
+
 private:
     MotiftoSecondaryStructure parser_;
     PDBParser pdb_parser_;

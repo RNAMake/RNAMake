@@ -79,7 +79,6 @@ GeneralHelixSampler::get_motifs_from_seq_and_ss(
 void
 GeneralHelixSampler::run() {
     auto pdb = get_string_option("pdb");
-    //auto structure = _generate_structure(sequence);
     auto rs =  RM::instance().get_structure(pdb, "pdb");
     auto start_bp_str = get_string_option("start_bp");
     auto end_bp_str = get_string_option("end_bp");
@@ -110,6 +109,7 @@ GeneralHelixSampler::run() {
     for(auto const & m : bp_steps) {
         mt->add_motif(m);
     }
+    mt->write_pdbs();
 
     /*for(int i = 0; i < bp_steps.size(); i++) {
         mt2->add_motif(mt->get_node(i+1)->data());

@@ -142,8 +142,14 @@ MotifFactory::can_align_motif_to_end(
     int ei) {
     
     auto m_end = m->ends()[ei];
-    auto m_added = get_aligned_motif(base_motif_->ends()[1], m_end, m);
-    if(_steric_clash(base_motif_, m_added)) {
+    auto m_added_1 = get_aligned_motif(base_motif_->ends()[1], m_end, m);
+    m_end->flip();
+    auto m_added_2 = get_aligned_motif(base_motif_->ends()[1], m_end, m);
+    m_end->flip();
+
+    auto clash_count_1 = _steric_clash_count(base_motif_, m_added_1);
+    auto clash_count_2 = _steric_clash_count(base_motif_, m_added);
+    /*if(_steric_clash(base_motif_, m_added)) {
         m_end->flip();
         m_added = get_aligned_motif(base_motif_->ends()[1], m_end, m);
         if(_steric_clash(base_motif_, m_added)) { return nullptr; }
@@ -168,7 +174,7 @@ MotifFactory::can_align_motif_to_end(
     }
     
     if (fail) { return nullptr; }
-    else      { return m_added; }
+    else      { return m_added; }*/
     
 }
 
@@ -356,6 +362,24 @@ MotifFactory::_steric_clash(
     
     return 0;
     
+}
+
+int
+MotifFactory::_steric_clash_count(
+        MotifOP const & m1,
+        MotifOP const & m2) {
+
+    auto count = 0;
+    for(auto const & c1 : m1->beads()) {
+        for(auto const & c2 : m2->beads()) {
+            if(c1.btype() == BeadType::PHOS || c2.btype() == BeadType::PHOS) {continue; }
+            float dist = c1.center().distance(c2.center());
+            if( dist < clash_radius_) { count += 1;}
+        }
+    }
+
+    return count;
+
 }
 
 
