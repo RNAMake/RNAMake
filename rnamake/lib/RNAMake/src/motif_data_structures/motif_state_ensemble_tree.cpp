@@ -148,6 +148,12 @@ MotifStateEnsembleTree::to_mst() {
             std::runtime_error("can not build motif state tree from mset");
         }
     }
+
+    for(auto const & c : connections_) {
+        mst->add_connection(c->i(), c->j(), c->name_i(), c->name_j());
+    }
+
+
     mst->set_option_value("sterics", true);
     
     return mst;
