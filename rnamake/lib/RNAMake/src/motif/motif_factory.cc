@@ -142,40 +142,48 @@ MotifFactory::can_align_motif_to_end(
     int ei) {
     
     auto m_end = m->ends()[ei];
+    auto m_updated = std::make_shared<Motif>(*m);
+    auto m_added = MotifOP(nullptr);
     auto m_added_1 = get_aligned_motif(base_motif_->ends()[1], m_end, m);
     m_end->flip();
     auto m_added_2 = get_aligned_motif(base_motif_->ends()[1], m_end, m);
-    m_end->flip();
 
     auto clash_count_1 = _steric_clash_count(base_motif_, m_added_1);
-    auto clash_count_2 = _steric_clash_count(base_motif_, m_added);
-    /*if(_steric_clash(base_motif_, m_added)) {
-        m_end->flip();
-        m_added = get_aligned_motif(base_motif_->ends()[1], m_end, m);
-        if(_steric_clash(base_motif_, m_added)) { return nullptr; }
-    }
-    
-    int fail = 0;
-    MotifOP m2_added;
-    for(auto & end : m_added->ends()) {
-        if(end->name() == m_end->name()) { continue; }
-        m2_added = get_aligned_motif(end, added_helix_->ends()[0], added_helix_);
-        if(_steric_clash(m_added, m2_added) == 0 &&
-           _steric_clash(base_motif_, m2_added) == 0) {
-            continue;
-        }
-        
-        end->flip();
-        m2_added = get_aligned_motif(end, added_helix_->ends()[0], added_helix_);
-        if(_steric_clash(m_added, m2_added) || _steric_clash(base_motif_, m2_added)) {
-            fail = 1; break;
-        }
+    auto clash_count_2 = _steric_clash_count(base_motif_, m_added_2);
 
+    std::cout << clash_count_1 << " " << clash_count_2 << std::endl;
+
+    base_motif_->to_pdb("base.pdb", 1, 1);
+    m_added_1->to_pdb("aligned_1.pdb", 1, 1);
+    m_added_2->to_pdb("aligned_2.pdb", 1, 1);
+
+    if(clash_count_1 < clash_count_2) {
+        m_updated->ends()[ei]->flip();
+        m_added = m_added_2;
     }
-    
-    if (fail) { return nullptr; }
-    else      { return m_added; }*/
-    
+    else {
+        m_added = m_added_1;
+    }
+
+    auto i = -1;
+    for(auto & end : m_added->ends()) {
+        i++;
+        if (end->name() == m_end->name()) { continue; }
+        auto added_helix_1 = get_aligned_motif(end, added_helix_->ends()[0], added_helix_);
+        end->flip();
+        auto added_helix_2 = get_aligned_motif(end, added_helix_->ends()[0], added_helix_);
+        end->flip();
+
+        clash_count_1 = _steric_clash_count(m_added, added_helix_1) + _steric_clash_count(base_motif_, added_helix_1);
+        clash_count_2 = _steric_clash_count(m_added, added_helix_2) + _steric_clash_count(base_motif_, added_helix_2);
+
+        if(clash_count_1 < clash_count_2) {
+            m_updated->ends()[i]->flip();
+
+        }
+    }
+
+    return m_updated;
 }
 
 

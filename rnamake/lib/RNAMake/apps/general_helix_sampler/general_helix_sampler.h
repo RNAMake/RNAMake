@@ -53,6 +53,12 @@ private:
             String const &,
             String const &);
 
+    int
+    _get_hit_count(
+            MotifOP const &,
+            String const &,
+            String const &);
+
 private:
     ThermoFlucSimulation tfs_;
 

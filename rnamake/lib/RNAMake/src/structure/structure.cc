@@ -98,9 +98,13 @@ Structure::to_pdb_str(
         for(auto const & c : chains_) {
             for(int i = 0; i < c->residues().size()-1; i++) {
                 int r_size = c->residues()[i]->atoms().size();
-                s += "CONECT " + std::to_string(a_count+o3_pos) + " " + std::to_string(a_count+r_size+p_pos) + "\n";
+                if(!c->residues()[i]->connected_to(*c->residues()[i+1], 1.8)) {
+                    s += "CONECT " + std::to_string(a_count + o3_pos) + " " + std::to_string(a_count + r_size + p_pos) +
+                         "\n";
+                }
                 a_count += r_size;
             }
+            a_count += c->last()->atoms().size();
         }
 
     }

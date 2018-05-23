@@ -23,7 +23,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         mg->add_motif(RM::instance().motif("HAIRPIN.1GID.0"));
         auto end1 = std::make_shared<Basepair>(*mg->get_node(9)->data()->ends()[1]);
         auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(),
-                                                             8, 1);
+                                                             8, 1, false);
         auto so = SequenceOptimizer3D();
         auto sols = so.get_optimized_sequences(mg, scorer);
         mg->replace_helical_sequence(sols[0]->sequence);
@@ -43,7 +43,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         mg->add_motif(RM::instance().motif("HAIRPIN.1GID.0"));
         auto end1 = std::make_shared<Basepair>(*mg->get_node(9)->data()->ends()[1]);
         auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(),
-                                                             8, 1);
+                                                             8, 1, false);
         auto so = SequenceOptimizer3D();
         auto mg_opt = so.get_optimized_mg(mg, scorer);
         
@@ -70,7 +70,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
         
         mg->replace_ideal_helices();
-        auto scorer = std::make_shared<InternalTargetScorer>(11, 1, 19, 1);
+        auto scorer = std::make_shared<InternalTargetScorer>(11, 1, 19, 1, false);
         auto so = SequenceOptimizer3D();
         auto mg_opt = so.get_optimized_mg(mg, scorer);
         

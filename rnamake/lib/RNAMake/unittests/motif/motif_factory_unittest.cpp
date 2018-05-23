@@ -85,8 +85,23 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         auto path = base_dir() + "/rnamake/unittests/resources/pdbs/5g2x.pdb";
         auto m = mf.motif_from_file(path, false, true);
         REQUIRE(m->protein_beads().size() != 0);
-        
-        
+    }
+
+    SECTION("test alignment setup") {
+        auto path = motif_dirs() + "helices/HELIX.IDEAL.2";
+        auto m = mf.motif_from_file(path);
+
+        auto m_added = mf.can_align_motif_to_end(m, 0);
+        mf.standardize_motif(m_added);
+
+        path = motif_dirs() + "base.motif";
+        auto base_motif_1 = file_to_motif(path);
+        auto base_motif_2 = file_to_motif(path);
+
+        auto aligned_motif_1 = get_aligned_motif(base_motif_1->ends()[1], m_added->ends()[0], m_added);
+        auto aligned_motif_2 = get_aligned_motif(aligned_motif_1->ends()[1], base_motif_2->ends()[0], base_motif_2);
+
+
     }
     
 }

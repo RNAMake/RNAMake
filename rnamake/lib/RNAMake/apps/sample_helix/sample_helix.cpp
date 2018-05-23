@@ -27,6 +27,8 @@ SampleHelixApp::setup_options() {
     add_option("s", 1000000, OptionType::INT);
     add_option("output_freq", 100, OptionType::INT);
     add_option("output_filename", "test.out", OptionType::STRING);
+    add_option("pdbs", false, OptionType::BOOL);
+
 
 
 }
@@ -40,6 +42,8 @@ SampleHelixApp::parse_command_line(
 
 void
 SampleHelixApp::run() {
+    auto output_pdbs = get_bool_option("pdbs");
+    auto pdb_count = 0;
     auto sequence = get_string_option("seq");
     auto structure = _generate_structure(sequence);
 
@@ -54,15 +58,26 @@ SampleHelixApp::run() {
     sampler_.setup(mset);
 
     std::ofstream out;
-    out.open(get_string_option("output_filename"));
+    if(! output_pdbs) {
+        out.open(get_string_option("output_filename"));
+    }
 
     int output_freq = get_int_option("output_freq");
     for(int i = 0; i < get_int_option("s"); i++) {
         sampler_.next();
         if(i % output_freq == 0) {
-            out << sampler_.mst()->last_node()->data()->get_end_state(1)->d().to_str() << "&";
-            out << sampler_.mst()->last_node()->data()->get_end_state(1)->r().to_str() << "&";
-            out << sampler_.mst()->topology_to_str() << std::endl;
+            if(! output_pdbs) {
+                out << sampler_.mst()->last_node()->data()->get_end_state(1)->d().to_str() << "&";
+                out << sampler_.mst()->last_node()->data()->get_end_state(1)->r().to_str() << "&";
+                out << sampler_.mst()->topology_to_str() << std::endl;
+            }
+            else {
+                try {
+                    sampler_.mst()->to_motif_tree()->to_pdb("test."+std::to_string(pdb_count)+".pdb", 1, 1);
+                    pdb_count += 1;
+                }
+                catch(...) { }
+            }
         }
     }
     out.close();
