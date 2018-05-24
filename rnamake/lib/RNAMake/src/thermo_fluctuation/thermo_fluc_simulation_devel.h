@@ -104,9 +104,6 @@ public:
         record_state_ = 0;
         record_all_ = 0;
         steric_radius_ = 2.2;
-        all_pdbs_ = false;
-        bound_pdbs_ = false;
-        unbound_pdbs_ = false;
         setup_options();
         
     }
@@ -221,9 +218,10 @@ private:
     String record_file_, record_all_file_;
     float temperature_, cutoff_, steric_radius_;
     int steps_, record_state_, record_all_;
-    bool record_, bound_pdbs_, all_pdbs_, unbound_pdbs_;
+    bool record_;
     bool record_only_bound_, record_only_unbound_;
     bool dump_state_;
+    bool dump_pdbs_;
 };
 
 #endif /* defined(__RNAMake__thermo_fluc_simulation_devel__) */

@@ -162,7 +162,7 @@ ThermoFlucSimulationDevel::run() {
     while (steps < steps_) {
         r = sampler_.next();
         //TODO revisit if moving to the next state gives better results
-        //if(r == 0) { continue; }
+        if(r == 0) { continue; }
 
         clash = _check_sterics();
         //clash = 0;
@@ -194,6 +194,21 @@ ThermoFlucSimulationDevel::run() {
                 out_dump_state << sampler_.mst()->to_motif_tree()->to_str() << std::endl;
             }
         }
+        if(dump_pdbs_) {
+            if     (record_only_bound_ && score_ <= cutoff_)      {
+                sampler_.mst()->to_motif_tree()->to_pdb("test."+std::to_string(pdb_count)+".pdb", 1, 1);
+                pdb_count += 1;
+            }
+            else if(record_only_unbound_ && score_ > cutoff_)     {
+                sampler_.mst()->to_motif_tree()->to_pdb("test."+std::to_string(pdb_count)+".pdb", 1, 1);
+                pdb_count += 1;
+            }
+            else if(!record_only_bound_ && !record_only_unbound_) {
+                sampler_.mst()->to_motif_tree()->to_pdb("test."+std::to_string(pdb_count)+".pdb", 1, 1);
+                pdb_count += 1;
+            }
+
+        }
 
         steps++;
     }
@@ -215,13 +230,12 @@ ThermoFlucSimulationDevel::setup_options() {
     options_.add_option("record_state", false, OptionType::BOOL);
     options_.add_option("record_all", false, OptionType::BOOL);
     options_.add_option("record_all_file", "test_all.out", OptionType::STRING);
-    options_.add_option("steric_radius", 2.2f, OptionType::FLOAT);
-    options_.add_option("all_pdbs", false, OptionType::BOOL);
-    options_.add_option("bound_pdbs", false, OptionType::BOOL);
     options_.add_option("unbound_pdbs", false, OptionType::BOOL);
     options_.add_option("dump_state", false, OptionType::BOOL);
+    options_.add_option("dump_pdbs", false, OptionType::BOOL);
     options_.add_option("record_only_bound", false, OptionType::BOOL);
     options_.add_option("record_only_unbound", false, OptionType::BOOL);
+    options_.add_option("steric_radius", 2.2f, OptionType::FLOAT);
     options_.lock_option_adding();
     
     /*
@@ -246,10 +260,8 @@ ThermoFlucSimulationDevel::update_var_options() {
     record_file_          = options_.get_string("record_file");
     record_state_         = options_.get_bool("record_state");
     steric_radius_        = options_.get_float("steric_radius");
-    all_pdbs_             = options_.get_bool("all_pdbs");
-    bound_pdbs_           = options_.get_bool("bound_pdbs");
-    unbound_pdbs_         = options_.get_bool("unbound_pdbs");
     dump_state_           = options_.get_bool("dump_state");
+    dump_pdbs_            = options_.get_bool("dump_pdbs");
     record_only_bound_    = options_.get_bool("record_only_bound");
     record_only_unbound_  = options_.get_bool("record_only_unbound");
 
