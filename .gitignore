@@ -70,6 +70,7 @@ rnamake/lib/RNAMake/html/
 _sources/auto/
 
 #Project specific
+rnamake/fconv3d/
 rnamake/resources/motifs
 rnamake/unittests/*.pdb
 rnamake/unittests/dot.ps
@@ -78,6 +79,7 @@ rnamake/unittests/rnafold_dump
 rnamake/unittests/intergration/*.pdb
 rnamake/setup/twoways
 rnamake/setup/structure_motifs
+rnamake/setup/helices
 rnamake/setup/sectioned_motifs/
 rnamake/setup/score_files
 rnamake/lib/RNAMake/*.cmake

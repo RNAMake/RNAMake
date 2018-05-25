@@ -24,6 +24,7 @@ GeneralHelixSampler::setup_options() {
     add_option("end_bp", "", OptionType::STRING, true);
     add_option("seq", "", OptionType::STRING, true);
     add_option("all", false, OptionType::BOOL, false);
+    add_option("get_ideal", false, OptionType::BOOL, false);
 
 }
 
@@ -166,6 +167,16 @@ GeneralHelixSampler::_get_hit_count(
     for(auto const & m : bp_steps) {
         mt->add_motif(m);
     }
+
+    if(get_bool_option("get_ideal")) {
+        auto mt2 = std::make_shared<MotifTree>();
+        for(auto const & n : *mt) {
+            if(n->data()->name() == "start") { continue; }
+            mt2->add_motif(n->data());
+        }
+        mt2->to_pdb("ideal.pdb", 1, 1);
+    }
+
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
     tfs_.setup(mset, 0, mt->last_node()->index(), 1, 1);
     return tfs_.run();
