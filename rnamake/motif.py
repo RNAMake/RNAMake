@@ -157,8 +157,8 @@ class Motif(rna_structure.RNAStructure):
         beads = self.get_beads(excluded_ends=[self.ends[0]])
         centers = []
         for b in beads:
-            if b.btype != residue.BeadType.PHOS:
-                centers.append(b.center)
+            #if b.btype != residue.BeadType.PHOS:
+            centers.append(b.center)
 
         ends = [None for x in self.ends]
         end_names = []
