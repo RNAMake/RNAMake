@@ -36,7 +36,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
  
     SECTION("test standardizing motifs, i.e. making sure they all behave the same") {
-        auto path = motif_dirs() + "helices/HELIX.IDEAL";
+        /*auto path = motif_dirs() + "helices/HELIX.IDEAL";
         auto m = mf.motif_from_file(path);
         
         auto aligned_m = mf.align_motif_to_common_frame(m, 1);
@@ -53,7 +53,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         aligned_m = mf.align_motif_to_common_frame(m, 0);
         mf.standardize_motif(aligned_m);
         
-        REQUIRE(m->sequence() != aligned_m->sequence());
+        REQUIRE(m->sequence() != aligned_m->sequence());*/
     }
     
     SECTION("test generating motifs from basepairs") {
@@ -91,16 +91,16 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         auto path = motif_dirs() + "helices/HELIX.IDEAL.2";
         auto m = mf.motif_from_file(path);
 
-        auto m_added = mf.can_align_motif_to_end(m, 0);
-        mf.standardize_motif(m_added);
-
         path = motif_dirs() + "base.motif";
         auto base_motif_1 = file_to_motif(path);
         auto base_motif_2 = file_to_motif(path);
 
-        auto aligned_motif_1 = get_aligned_motif(base_motif_1->ends()[1], m_added->ends()[0], m_added);
+        auto aligned_motif_1 = get_aligned_motif(base_motif_1->ends()[1], m->ends()[0], m);
         auto aligned_motif_2 = get_aligned_motif(aligned_motif_1->ends()[1], base_motif_2->ends()[0], base_motif_2);
 
+        base_motif_1->to_pdb("base.pdb", 1, 1);
+        aligned_motif_1->to_pdb("aligned_1.pdb", 1, 1);
+        aligned_motif_2->to_pdb("aligned_2.pdb", 1, 1);
 
     }
     

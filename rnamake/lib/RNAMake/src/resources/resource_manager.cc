@@ -143,28 +143,17 @@ RM::add_motif(
         String const & path,
         String name,
         MotifType mtype) {
-    
+
     auto m = mf_.motif_from_file(path, 0, 1);
     m->mtype(mtype);
-    
+
     if(name != "") { m->name(name); }
     
     MotifOPs motifs;
     std::map<Uuid, String, UuidCompare> end_ids;
     for( int i = 0; i < m->ends().size(); i++) {
-        auto m_added = mf_.can_align_motif_to_end(m, i);
-        if(m_added == nullptr) {
-            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
-            std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
-            continue;
-        }
-        m_added = mf_.align_motif_to_common_frame(m_added, i);
-        if(m_added == nullptr) {
-            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
-            std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
-            continue;
-        }
-        
+        auto m_added = mf_.get_oriented_motif(m, i);
+
         motifs.push_back(m_added);
         end_ids[m_added->ends()[0]->uuid()] = m_added->end_ids()[0];
     }
@@ -229,48 +218,6 @@ RM::add_motif(
     }
 }
 
-void
-RM::force_add_motif(
-        MotifOP const & m,
-        String name) {
-
-    if(name != "") { m->name(name); }
-
-    MotifOPs motifs;
-    std::map<Uuid, String, UuidCompare> end_ids;
-    for( int i = 0; i < m->ends().size(); i++) {
-        auto m_added = mf_.can_align_motif_to_end(m, i);
-        if(m_added == nullptr) {
-            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
-            std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
-            continue;
-        }
-        m_added = mf_.align_motif_to_common_frame(m_added, i);
-        if(m_added == nullptr) {
-            std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
-            std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
-            continue;
-        }
-
-        motifs.push_back(m_added);
-        end_ids[m_added->ends()[0]->uuid()] = m_added->end_ids()[0];
-    }
-
-    if(motifs.size() == 0) {
-        throw ResourceManagerException(
-                "attempted to add motif " + m->name() + " unforunately it has no viable "
-                        "basepair ends to be build from ");
-    }
-
-    for(auto & m : motifs) {
-        Strings final_end_ids;
-        for(auto const & end : m->ends()) {
-            final_end_ids.push_back(end_ids[end->uuid()]);
-        }
-        m->end_ids(final_end_ids);
-        added_motifs_.add_motif(m);
-    }
-}
 
 
 void
