@@ -95,6 +95,9 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
 
         REQUIRE(histo_3.contains(pA));
 
+        system("rm test.csv");
+        system("rm test.bin");
+
         //double test;
         //in.read(reinterpret_cast<char *>(&test), sizeof(test));
         //std::cout << test << std::endl;
@@ -109,8 +112,9 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         pA[0] = -4.25;  pA[1] = 3.42;  pA[2] = -1.3;
         pA[3] = 360;    pA[4] = 12.2;  pA[5] = 2;
 
+        auto path = base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/math/test_2.bin";
         std::ifstream in;
-        in.open("test_2.bin", std::ios::binary);
+        in.open(path, std::ios::binary);
 
         auto histo = SixDHistogram(in);
         auto histo_2 = SixDHistogram(in);
@@ -121,8 +125,10 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
     }
 
     SECTION("test read tecto bin file") {
+        auto path = base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/math/test_tecto.bin";
+
         std::ifstream in;
-        in.open("test_tecto.bin", std::ios::binary);
+        in.open(path, std::ios::binary);
 
         auto histo = SixDHistogram(in);
     }
@@ -155,8 +161,10 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
     }*/
 
     SECTION("test on tecto data") {
+        auto path = base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/math/test.out";
+
         auto in = std::ifstream();
-        in.open("test.out");
+        in.open(path);
         auto line = String();
         int i = -1;
 
@@ -248,8 +256,7 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
 
 
         }
-        std::cout << count << " " << count_2 << std::endl;
-
+        REQUIRE(count == count_2);
     }
 
 

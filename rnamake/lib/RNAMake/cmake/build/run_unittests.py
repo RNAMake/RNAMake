@@ -24,8 +24,3 @@ for test in unittests:
         print test, ": FAIL"
         subprocess.call(test, shell=True)
 
-py_unittests = glob.glob("../../unittests/apps/*.py")
-print "Application Unittests"
-for test in py_unittests:
-    print test
-    subprocess.call("python " + test, shell=True)

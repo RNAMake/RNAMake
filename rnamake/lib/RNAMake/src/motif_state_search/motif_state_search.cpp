@@ -259,8 +259,13 @@ MotifStateSearch::_search() {
     
     if(midpoints) { midpoint_file.close(); }
 
-    
-    return best_sol;
+
+    if(get_bool_option("return_best")) {
+        return best_sol;
+    }
+    else {
+        return nullptr;
+    }
 
 }
 

@@ -11,7 +11,7 @@
 
 TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
     
-    
+
     SECTION("test simple search") {
         auto mt = MotifTree();
         auto m1 = RM::instance().motif("HELIX.IDEAL.3");
@@ -20,15 +20,15 @@ TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
         mt.add_motif(m1);
         mt.add_motif(m2);
         mt.add_motif(m3);
-        
+
         auto start = mt.get_node(0)->data()->ends()[0]->state();
         auto end = mt.get_node(2)->data()->ends()[1]->state();
         auto search = MotifStateSearch();
         search.set_option_value("accept_score", 0.5f);
         search.set_option_value("max_node_level", 4);
         search.set_option_value("verbose", false);
-        
-        search.setup(start, end);
+
+        search.setup(start, end, true);
         auto sol = search.next();
 
         REQUIRE(sol != nullptr);
@@ -52,6 +52,7 @@ TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
         auto end = mt.get_node(2)->data()->ends()[1]->state();
         auto beads = mt.beads();
         auto centers = Points();
+
         for(auto const & b : beads) {
             if(b.btype() != BeadType::PHOS) {
                 centers.push_back(b.center());

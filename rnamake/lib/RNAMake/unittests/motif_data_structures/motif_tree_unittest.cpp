@@ -253,8 +253,6 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         mt2.add_motif(m2);
         mt2.add_motif(m3, 1);
 
-        mt2.write_pdbs();
-        
         mt2.add_connection(2, 3, "", "");
         
         auto mt_copy = MotifTree(mt2);
