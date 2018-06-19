@@ -297,8 +297,8 @@ class MotifSqliteLibrary(SqliteLibrary):
             "unique_twoway"   : "/motif_libraries_new/unique_twoway.db",
             "bp_steps"        : "/motif_libraries_new/bp_steps.db",
             "new_bp_steps"    : "/motif_libraries_new/new_bp_steps.db",
-            "flex_helices"    : "/motif_libraries_new/flex_helices.db"
-
+            "flex_helices"    : "/motif_libraries_new/flex_helices.db",
+            "existing"        : "/motif_libraries_new/existing.db"
         }
 
         return libnames

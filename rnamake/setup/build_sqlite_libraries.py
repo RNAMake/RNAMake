@@ -251,6 +251,51 @@ class BuildSqliteLibraries(object):
                    motif_type.type_to_str(t).lower()+".db"
             sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
+    def build_existing_motif_library(self):
+        f = open("existing.motifs")
+        lines = f.readlines()
+        f.close()
+        motifs = []
+        for l in lines:
+            motifs.append(motif.str_to_motif(l))
+
+        succeses = []
+        for k, m in enumerate(motifs):
+
+            if len(m.ends) == 2:
+                m.mtype = motif_type.TWOWAY
+            else:
+                m.mtype = motif_type.NWAY
+
+            for ei in range(len(m.ends)):
+                m_added = motif_factory.factory.can_align_motif_to_end(m, ei)
+
+                if m_added is None:
+                    continue
+
+                succeses.append([m_added, ei])
+
+        data = []
+        keys = ['data', 'name', 'end_name', 'end_id', 'id']
+        for i, s in enumerate(succeses):
+            m, ei = s
+            m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
+            # remove basepairs in between motifs
+            remove = []
+            for bp in m_added.basepairs:
+                if bp not in m_added.ends and bp.bp_type == "cW-W":
+                    remove.append(bp)
+
+            for r in remove:
+                m_added.basepairs.remove(r)
+            motif_factory.factory._setup_secondary_structure(m_added)
+
+            data.append([m_added.to_str(), m_added.name,
+                         m_added.ends[0].name(), m_added.end_ids[0], i])
+
+        path = settings.RESOURCES_PATH + "/motif_libraries_new/existing.db"
+        sqlite_library.build_sqlite_library(path, data, keys, 'id')
+
     def build_flex_helix_library(self):
         flex_helices = []
         helix_files = glob.glob("flex_helices/*.dat")
@@ -433,13 +478,14 @@ class BuildSqliteLibraries(object):
             pop = math.exp(me.members[0].energy/-kBT)
 
             motif.name = "BP."+str(c_i)
+            motif.to_pdb("BP."+str(c_i)+".pdb")
             f.write(motif.name + "," + motif.end_ids[0] + "," + str(pop) + "," + basic_io.point_to_str(
                 motif.ends[1].d()))
             f.write("," + basic_io.matrix_to_str(motif.ends[1].r()) + "\n")
             print motif.name, c.end_id
-            if c_i == 13:
-                for mem in me.members:
-                    print mem.motif.name
+            #if c_i == 13:
+            #    for mem in me.members:
+            #        print mem.motif.name
 
             mes_data.append([me.to_str(), me.id, bp_count])
 
@@ -473,6 +519,9 @@ class BuildSqliteLibraries(object):
                 mes_data.append([me.to_str(), me.id, bp_count])
                 motif = me.members[0].motif.copy()
                 motif.name = "BP." + str(c_i)
+                #print motif.name, motif.end_ids[0]
+                #motif.to_pdb("ideal." + motif.end_ids[0] + ".pdb")
+
                 f.write(motif.name + "," + motif.end_ids[0] + "," + str(
                     pop) + "," + basic_io.point_to_str(
                     motif.ends[1].d()))
@@ -783,12 +832,13 @@ builder = BuildSqliteLibraries()
 #builder.build_ideal_helices_old()
 #builder.build_trimmed_ideal_helix_library()
 #builder.build_basic_libraries()
-builder.build_helix_ensembles()
+#builder.build_existing_motif_library()
+#builder.build_helix_ensembles()
 #builder.build_flex_helix_library()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_unique_twoway_library()
-#builder.build_motif_state_libraries()
+builder.build_motif_state_libraries()
 #builder.build_motif_ensemble_state_libraries()
 #builder.build_flex_helices()
 
