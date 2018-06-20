@@ -21,6 +21,9 @@ APTStablization::setup_options() {
     add_option("out_file", "default.out", OptionType::STRING, false);
     add_option("score_file", "default.scores", OptionType::STRING, false);
     add_option("designs", 1, OptionType::INT, false);
+    add_option("only_existing_motifs", false, OptionType::BOOL, false);
+    add_option("only_ideal", false, OptionType::BOOL, false);
+
 
 }
 
@@ -45,8 +48,11 @@ APTStablization::run() {
         throw APTStablizationException("aptamer does not have not have two basepair ends");
     }
 
-    //auto start_path = "flex_helices,twoway,flex_helices,twoway,flex_helices,aptamer,flex_helices";
-    auto start_path = "flex_helices,aptamer,flex_helices,twoway,flex_helices,twoway,flex_helices";
+    auto start_path = String("flex_helices,aptamer,flex_helices,twoway,flex_helices,twoway,flex_helices");
+    if(get_bool_option("only_existing_motifs")) {
+        start_path = "flex_helices,aptamer,flex_helices,existing,flex_helices,existing,flex_helices";
+    }
+
     auto ms_libraries = _get_libraries(start_path);
 
     // setup initial graph
@@ -109,6 +115,22 @@ APTStablization::run() {
         auto partner = end_node->connections()[end_i]->partner(end_node->index());
         auto scorer = std::make_shared<InternalTargetScorer>(2, end_end_pos, partner->index(), 1, target_an_aligned_end);
 
+        if(get_bool_option("only_ideal")) {
+            sf_out << designs << "," << sol->score << "," << mg->designable_sequence() << "," ;
+            sf_out << mg->dot_bracket() << "," << motif_names << ",";
+            sf_out << std::endl;
+            designs += 1;
+            out << mg->to_str() << std::endl;
+            mg->to_pdb("design." + std::to_string(designs) + ".pdb", 1, 1, 1);
+
+            if(designs >= get_int_option("designs")) {
+                std::cout << "Found " << designs << " designs, Finished!" << std::endl;
+                break;
+            }
+
+            continue;
+        }
+
         auto optimizer = SequenceOptimizer3D();
         optimizer.set_option_value("verbose", true);
         optimizer.set_option_value("cutoff", 7.0f);
@@ -155,7 +177,7 @@ APTStablization::_get_libraries(
     for(auto const & name : spl) {
         if(name.length() < 2) { continue; }
         if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact" ||
-           name == "twoway" || name == "flex_helices") {
+           name == "twoway" || name == "flex_helices" || name == "existing") {
             auto ms_lib =  MotifStateSqliteLibrary(name);
             ms_lib.load_all();
             motif_states = MotifStateOPs();

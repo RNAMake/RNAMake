@@ -4,6 +4,7 @@
 
 #include "general_helix_sampler/general_helix_sampler.h"
 #include "base/backtrace.hpp"
+#include "util/cartesian_product.h"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "motif_data_structures/motif_tree.h"
 #include "motif_data_structures/motif_state_ensemble_tree.h"
@@ -22,6 +23,8 @@ GeneralHelixSampler::setup_options() {
     add_option("start_bp", "", OptionType::STRING, true);
     add_option("end_bp", "", OptionType::STRING, true);
     add_option("seq", "", OptionType::STRING, true);
+    add_option("all", false, OptionType::BOOL, false);
+    add_option("get_ideal", false, OptionType::BOOL, false);
 
 }
 
@@ -103,27 +106,82 @@ GeneralHelixSampler::run() {
     auto bp_steps = get_motifs_from_seq_and_ss(seq, struc);
 
     auto mt = std::make_shared<MotifTree>();
-    auto mt2 = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
 
+    mt->add_motif(start);
+    mt->add_motif(bp_steps[0]);
+    auto dist1 = start->ends()[0]->d().distance(start->ends()[1]->d());
+    auto dist2 = mt->get_node(1)->data()->ends()[1]->d().distance(start->ends()[1]->d());
+
+    if(dist1 < dist2) {
+        mt->get_node(0)->data()->ends()[0]->flip();
+    }
+    auto new_start = mt->get_node(0)->data();
+
+    if(! get_bool_option("all")) {
+        std::cout << _get_hit_count(new_start, seq, struc) << std::endl;
+        return;
+    }
+
+    auto pairs = std::vector<Strings>();
+    pairs.push_back(Strings{"A", "U"});
+    pairs.push_back(Strings{"U", "A"});
+    pairs.push_back(Strings{"C", "G"});
+    pairs.push_back(Strings{"G", "C"});
+
+    auto all_pairs = std::vector<std::vector<Strings>>(rs->basepairs().size());
+    for(int i = 0; i < all_pairs.size(); i++) {
+        all_pairs[i] = pairs;
+    }
+
+    auto pair_iterator = CartesianProduct<Strings>(all_pairs);
+    auto current = std::vector<Strings>();
+    auto new_seq = String();
+    auto seq1 = String();
+    auto seq2 = String();
+
+    while (!pair_iterator.end()) {
+        current = pair_iterator.next();
+        seq1 = "";
+        seq2 = "";
+        for (auto const & p : current) {
+            seq1 += p[0];
+            seq2 = p[1] + seq2;
+        }
+        new_seq = seq1 + "&" + seq2;
+        std::cout << new_seq << " " <<  _get_hit_count(new_start, new_seq, struc) << std::endl;
+    }
+
+}
+
+int
+GeneralHelixSampler::_get_hit_count(
+        MotifOP const & start,
+        String const & seq,
+        String const & ss) {
+
+    auto bp_steps = get_motifs_from_seq_and_ss(seq, ss);
+    auto mt = std::make_shared<MotifTree>();
+    mt->set_option_value("sterics", false);
     mt->add_motif(start);
     for(auto const & m : bp_steps) {
         mt->add_motif(m);
     }
 
-    /*for(int i = 0; i < bp_steps.size(); i++) {
-        mt2->add_motif(mt->get_node(i+1)->data());
+    if(get_bool_option("get_ideal")) {
+        auto mt2 = std::make_shared<MotifTree>();
+        for(auto const & n : *mt) {
+            if(n->data()->name() == "start") { continue; }
+            mt2->add_motif(n->data());
+        }
+        mt2->to_pdb("ideal.pdb", 1, 1);
     }
 
-    mt2->to_pdb("merged.pdb", 1);
-    exit(0);
-    */
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
     tfs_.setup(mset, 0, mt->last_node()->index(), 1, 1);
-    std::cout << tfs_.run() << std::endl;
+    return tfs_.run();
 
 }
-
 
 
 

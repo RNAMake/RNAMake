@@ -299,10 +299,10 @@ MotifStateGraph::replace_state(
     MotifStateOP const & new_state) {
     
     auto n = graph_.get_node(i);
-    if(new_state->end_states().size() != n->data()->ref_state->end_states().size()) {
+    /*if(new_state->end_states().size() != n->data()->ref_state->end_states().size()) {
         throw MotifStateGraphException(
             "attempted to replace a state with a different number of ends");
-    }
+    }*/
 
     auto old_state = n->data()->ref_state;
     n->data()->ref_state = new_state;

@@ -95,7 +95,7 @@ Residue::to_pdb_str(
     for(auto const & a : atoms_) {
         if( a == nullptr) { continue; }
         char buffer [200];
-        std::sprintf(buffer, "%-6s%5d %-4s%1s%-4s%1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s\n", "ATOM", acount, a->name().c_str(), "", short_name().c_str(), cid.c_str(), num, "",  a->coords()[0], a->coords()[1], a->coords()[2], 1.00, 0.00, "", "");
+        std::sprintf(buffer, "%-6s%5d %4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s\n", "ATOM", acount, a->name().c_str(), "", short_name().c_str(), cid.c_str(), num, "",  a->coords()[0], a->coords()[1], a->coords()[2], 1.00, 0.00, "", "");
         s += String(buffer);
         acount++;
     }

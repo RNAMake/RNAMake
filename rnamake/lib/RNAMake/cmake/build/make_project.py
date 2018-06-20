@@ -37,8 +37,8 @@ def write_application_cmake_file():
             fsum.write(app_dir + "/" + f + " ")
         fsum.write(")\n")
         fsum.write("target_link_libraries("+spl[0]+" all_libs)\n")
-        fsum.write("add_custom_target("+symlink+" ALL)\n")
-        fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink "+BIN_PATH+spl[0]+" "+ spl[0]+")\n")
+       # fsum.write("add_custom_target("+symlink+" ALL)\n")
+       # fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink "+BIN_PATH+spl[0]+" "+ spl[0]+")\n")
         fsum.write("\n\n")
 
     fsum.close()
@@ -148,8 +148,8 @@ for p in lib_paths:
         symlink = prog_name+"_symlink"
         f.write("add_executable("+ prog_name + " " + unit_app +")\n")
         f.write("target_link_libraries("+prog_name+" %s)\n" % p)
-        f.write("add_custom_target("+symlink+" ALL)\n")
-        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " " + BIN_PATH + "unittests/"+prog_name+")\n")
+        #f.write("add_custom_target("+symlink+" ALL)\n")
+        #f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " " + BIN_PATH + "unittests/"+prog_name+")\n")
         f.write("\n\n")
 
     integration_apps = get_integration_tests_for_dir(p)
@@ -161,8 +161,8 @@ for p in lib_paths:
         symlink = prog_name+"_symlink"
         f.write("add_executable("+ prog_name + " " + inte_app +")\n")
         f.write("target_link_libraries("+prog_name+" %s)\n" % p)
-        f.write("add_custom_target("+symlink+" ALL)\n")
-        f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " " + BIN_PATH +  "integration/"+prog_name+")\n")
+        #f.write("add_custom_target("+symlink+" ALL)\n")
+        #f.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND ./symlink.py "+prog_name + " " + BIN_PATH +  "integration/"+prog_name+")\n")
         f.write("\n\n")
 
     #compile unittests for this lib

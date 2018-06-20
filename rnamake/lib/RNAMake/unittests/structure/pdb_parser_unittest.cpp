@@ -24,6 +24,5 @@ TEST_CASE( "Test PDB Parser", "[PDBParser]" ) {
         auto s_org = std::make_shared<Structure>(lines[0], rts);
         
         REQUIRE(are_structures_equal(s, s_org, 0));
-        
     }
 }

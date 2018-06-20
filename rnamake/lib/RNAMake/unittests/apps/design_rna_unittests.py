@@ -1,11 +1,10 @@
 import unittest
 import os
+import pandas as pd
 from rnamake import settings
 from rnamake.wrappers import design_rna_wrapper
 from rnamake import motif_graph
 
-
-#./design_rna -pdb ~/Downloads/3suy.pdb -end_bp "X30-X56" -start_bp "X20-X78" -pdbs -verbose -search.max_size 90
 
 RESOURCE_PATH = settings.LIB_PATH + "/lib/RNAMake/unittests/unittest_resources/apps/design_rna/"
 
@@ -26,40 +25,27 @@ def _get_motif_graph():
 
 class DesignRNAUnittest(unittest.TestCase):
 
-    def test_1(self):
+    def tests(self):
+        path = RESOURCE_PATH + "design_rna_tests.txt"
+        df = pd.read_csv(path)
 
-        cmd_opts = {
-            'pdb'      : RESOURCE_PATH + '3suy.pdb',
-            'start_bp' : 'X20-X78',
-            'end_bp'   : 'X30-X56',
-            'search.max_size' : 90}
+        for i, r in df.iterrows():
 
-        drw = design_rna_wrapper.DesignRNAWrapper()
-        drw.run(**cmd_opts)
+            cmd_opts = {
+                'pdb'      : RESOURCE_PATH + r.pdb,
+                'start_bp' : r.start_bp,
+                'end_bp'   : r.end_bp
+            }
 
-        self.failUnless(_out_files_exist(), "out files were not produced")
-        mg = _get_motif_graph()
+            drw = design_rna_wrapper.DesignRNAWrapper()
+            drw.run(**cmd_opts)
 
-        self.failUnless(len(mg) > 1)
+            self.failUnless(_out_files_exist(), "out files were not produced")
+            mg = _get_motif_graph()
 
-        _remove_out_files()
+            self.failUnless(len(mg) > 1)
+            _remove_out_files()
 
-    def test_2(self):
-        cmd_opts = {
-            'pdb'      : RESOURCE_PATH + '1xpe.pdb',
-            'start_bp' : 'B5-B19',
-            'end_bp'   : 'A5-A19',
-            'search.max_size' : 50}
-
-        drw = design_rna_wrapper.DesignRNAWrapper()
-        drw.run(**cmd_opts)
-
-        self.failUnless(_out_files_exist(), "out files were not produced")
-        mg = _get_motif_graph()
-
-        self.failUnless(len(mg) > 1)
-
-        _remove_out_files()
 
 
 def main():

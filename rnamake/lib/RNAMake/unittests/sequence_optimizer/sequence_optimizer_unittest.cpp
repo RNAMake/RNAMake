@@ -22,8 +22,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         }
         mg->add_motif(RM::instance().motif("HAIRPIN.1GID.0"));
         auto end1 = std::make_shared<Basepair>(*mg->get_node(9)->data()->ends()[1]);
-        auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(),
-                                                             8, 1, false);
+        auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(), 8, 1, true);
         auto so = SequenceOptimizer3D();
         auto sols = so.get_optimized_sequences(mg, scorer);
         mg->replace_helical_sequence(sols[0]->sequence);
@@ -42,8 +41,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         }
         mg->add_motif(RM::instance().motif("HAIRPIN.1GID.0"));
         auto end1 = std::make_shared<Basepair>(*mg->get_node(9)->data()->ends()[1]);
-        auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(),
-                                                             8, 1, false);
+        auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(), 8, 1, true);
         auto so = SequenceOptimizer3D();
         auto mg_opt = so.get_optimized_mg(mg, scorer);
         
@@ -90,12 +88,12 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         
     }
 
+
     // messed up backward compadility
     /*SECTION("test optimizing chip sequence") {
         auto base_path = base_dir() + "/rnamake/unittests/resources/motif_graph";
         auto lines = get_lines_from_file(base_path+"/tecto_chip_only.mg");
         auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
-        mg->write_pdbs();
         auto so = SequenceOptimizer3D();
         so.set_option_value("return_lowest", true);
         so.set_option_value("verbose", false);

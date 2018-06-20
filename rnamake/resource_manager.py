@@ -21,9 +21,13 @@ class MotifLibrary(object):
                 if options['name'] != m.name:
                     continue
             if 'end_name' in options:
+                if len(m.ends) == 0:
+                    continue
                 if options['end_name'] != m.ends[0].name():
                     continue
             if 'end_id' in options:
+                if len(m.end_ids) == 0:
+                    continue
                 if options['end_id'] != m.end_ids[0]:
                     continue
             if m not in motifs:

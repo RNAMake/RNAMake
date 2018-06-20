@@ -44,6 +44,7 @@ DesignRNAApp::setup_options() {
     add_option("design_pdbs", false, OptionType::BOOL, false);
     add_option("show_sections", false, OptionType::BOOL, false);
     add_option("defined_motif_path", "", OptionType::STRING, false);
+    add_option("only_existing_motifs", false, OptionType::BOOL, false);
     add_option("mc", false, OptionType::BOOL, false);
     add_option("verbose", false, OptionType::BOOL, false);
     add_option("no_sterics", false, OptionType::BOOL, false);
@@ -340,10 +341,16 @@ DesignRNAApp::run() {
     }
 
     if(get_string_option("defined_motif_path") != "") {
-        std::shared_ptr<MSS_Path> custom_selector = _setup_path();
+        auto custom_selector = _setup_path();
         search_.selector(custom_selector);
     }
 
+
+    if(get_bool_option("only_existing_motifs")) {
+        auto selector = std::make_shared<MotifStateSelector>(MSS_HelixFlank());
+        selector->add("existing");
+        search_.selector(selector);
+    }
 
     search_.setup(start, end, target_an_aligned_end);
     search_.lookup(lookup_);

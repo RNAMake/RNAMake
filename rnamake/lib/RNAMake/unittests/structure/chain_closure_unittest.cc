@@ -24,14 +24,14 @@ TEST_CASE( "Test chain closure", "[ChainClosure]" ) {
     }
 
     SECTION("test fixing missing phosphates") {
-        auto m_path = "BP.0.22.pdb";
+        auto m_path = base_dir() + "/rnamake/unittests/resources/motifs/BP.0.22.pdb";
         auto parser = PDBParser();
         auto residues = parser.parse(m_path);
         auto chains = ChainOPs();
         connect_residues_into_chains(residues, chains);
-        chains[1]->to_pdb("org_test.pdb");
+        //chains[1]->to_pdb("org_test.pdb");
         close_chain(chains[1]);
-        chains[1]->to_pdb("test.pdb");
+        //chains[1]->to_pdb("test.pdb");
 
     }
 

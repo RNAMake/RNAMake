@@ -1,0 +1,2 @@
+pdb,start_bp,end_bp
+min_tetraloop_receptor.pdb,A221-A252,A145-A158
