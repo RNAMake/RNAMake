@@ -1116,7 +1116,7 @@ class MotifGraph(base.Base):
                 partner = c.partner(n.index)
                 end1 = n.data.ends[c.end_index(n.index)]
                 end2 = partner.data.ends[c.end_index(partner.index)]
-                print n.index, partner.index, end1.name(), end2.name()
+                #print n.index, partner.index, end1.name(), end2.name()
                 self.merger.connect_motifs(n.data, partner.data, end1, end2)
                 seen_connections[c] = 1
 

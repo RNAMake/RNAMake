@@ -7,7 +7,8 @@ from rnamake import resource_manager as rm
 
 class MotifTopologyUnittest(unittest.TestCase):
 
-    def test_graph_to_tree(self):
+    # DEPRECATED
+    def _test_graph_to_tree(self):
         builder = build.BuildMotifGraph()
         mg = builder.build(3)
 
@@ -35,7 +36,8 @@ class MotifTopologyUnittest(unittest.TestCase):
 
         self.failIf(len(mt) != len(mg))
 
-    def test_last_end(self):
+    # DEPRECATED
+    def _test_last_end(self):
         path = settings.UNITTEST_PATH + "/resources/motif_graph/mini_ttr.mg"
         f = open(path)
         lines = f.readlines()

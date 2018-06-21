@@ -89,9 +89,11 @@ class MotifUnittest(unittest.TestCase):
 
     def test_transform(self):
         m = self.motif
+        old_r = m.basepairs[0].state().r
         r = transformations.random_rotation_matrix()[:3,:3]
         d = np.random.random([3])
         t = rnamake.transform.Transform(r, d)
+        m.transform(t)
         new_r = m.basepairs[0].state().r
         if numerical.are_matrices_equal(old_r, new_r):
             self.fail("rotations should be different")

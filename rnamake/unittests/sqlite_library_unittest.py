@@ -119,7 +119,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
                 continue
             seen.append(m.name)
 
-    def test_get_1_0(self):
+    def _test_get_1_0(self):
         mlib = sqlite_library.MotifSqliteLibrary("tcontact")
         mlib.load_all()
 
@@ -188,7 +188,7 @@ class SqliteLibraryUnittest(unittest.TestCase):
         for m in ms_lib.all():
             print m.name, m.end_names[0]
 
-    def test_get_bp_steps(self):
+    def _test_get_bp_steps(self):
         mlib = sqlite_library.MotifSqliteLibrary("bp_steps")
         mlib.load_all()
         for m in mlib.all():

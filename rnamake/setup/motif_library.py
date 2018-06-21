@@ -79,6 +79,7 @@ class MotifLibrary(object):
         return mname in self.motif_paths
 
 
+# DEPRECTED?
 def unique_twoway_lib():
     path = settings.MOTIF_DIRS + "two_ways/unique_7.dat"
     mlib = MotifLibrary(libfile=path)

@@ -21,7 +21,7 @@ To install call
 python setup.py 
 ```
 
-Compile [optional]
+Compile
 ------- 
 
 to compile, make sure you have `cmake` and `ninja` installed with their binaries set up in your `$PATH`. Then run:

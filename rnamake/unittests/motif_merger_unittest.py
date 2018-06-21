@@ -28,7 +28,7 @@ class MotifMergerUnittests(unittest.TestCase):
 
     def test_conserve_sequence_indentity_with_twoway(self):
         m1 = self.mlib_helix.get(name="HELIX.IDEAL")
-        m2 = self.mlib_twoway.get(name="TWOWAY.1GID.12")
+        m2 = self.mlib_twoway.get(name='TWOWAY.2VQE.19')
 
         motif.align_motif(m1.ends[1].state(), m2.ends[0], m2)
         mm = motif_merger.MotifMerger()
@@ -40,7 +40,7 @@ class MotifMergerUnittests(unittest.TestCase):
         self.failUnless(rna_struc.get_residue(uuid=m1.ends[1].res1.uuid) is None)
 
         m1 = self.mlib_helix.get(name="HELIX.IDEAL")
-        m2 = self.mlib_twoway.get(name="TWOWAY.1GID.12")
+        m2 = self.mlib_twoway.get(name='TWOWAY.2VQE.19')
 
         motif.align_motif(m2.ends[1].state(), m1.ends[0], m1)
         mm = motif_merger.MotifMerger()

@@ -24,10 +24,10 @@ class MotifLibraryUnittest(unittest.TestCase):
         except:
             self.fail("did not get the error I expected")
 
-        path = rnamake.settings.MOTIF_DIRS + "two_ways/unique_7.dat"
+        """path = rnamake.settings.MOTIF_DIRS + "two_ways/unique_7.dat"
         mlib = motif_library.MotifLibrary(libfile=path)
         if (mlib.motif_paths) == 0:
-            self.fail("did not load motifs paths properly")
+            self.fail("did not load motifs paths properly")"""
 
     def test_get_motif(self):
         mtype = rnamake.motif_type.HELIX

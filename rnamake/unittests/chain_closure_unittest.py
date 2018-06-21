@@ -94,7 +94,6 @@ class ChainClosureUnittest(unittest.TestCase):
 
         m = rm.manager.get_motif(name="BP.0.27")
         m.to_pdb("phos_missing.pdb")
-        exit()
         mg = motif_graph.MotifGraph()
         """for r in m.residues():
             if r.get_atom("P") is None:
