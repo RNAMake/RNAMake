@@ -37,6 +37,8 @@ class DesignRNAUnittest(unittest.TestCase):
                 'end_bp'   : r.end_bp
             }
 
+            print r.pdb
+
             drw = design_rna_wrapper.DesignRNAWrapper()
             drw.run(**cmd_opts)
 

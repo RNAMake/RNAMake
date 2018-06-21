@@ -92,7 +92,7 @@ public: // adding functions
     add_motif(
         MotifOP const & m,
         String name = "");
-    
+
     void
     register_motif(
         MotifOP const &);

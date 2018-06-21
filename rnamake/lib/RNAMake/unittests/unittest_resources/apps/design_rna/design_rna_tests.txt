@@ -1,2 +1,8 @@
 pdb,start_bp,end_bp
 min_tetraloop_receptor.pdb,A221-A252,A145-A158
+trna.pdb,A28-A42,A7-A66
+1a4d_section.pdb,A70-B106,A85-B91
+6bg9_section.pdb,A39-B58,A10-B87
+5y7m_section.pdb,D17-D33,D6-D46
+vs_ribozyme.pdb,A625-A635,A727-A748
+

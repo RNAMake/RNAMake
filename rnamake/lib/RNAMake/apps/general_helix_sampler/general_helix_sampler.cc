@@ -82,7 +82,6 @@ GeneralHelixSampler::get_motifs_from_seq_and_ss(
 void
 GeneralHelixSampler::run() {
     auto pdb = get_string_option("pdb");
-    //auto structure = _generate_structure(sequence);
     auto rs =  RM::instance().get_structure(pdb, "pdb");
     auto start_bp_str = get_string_option("start_bp");
     auto end_bp_str = get_string_option("end_bp");
@@ -116,6 +115,7 @@ GeneralHelixSampler::run() {
     if(dist1 < dist2) {
         mt->get_node(0)->data()->ends()[0]->flip();
     }
+
     auto new_start = mt->get_node(0)->data();
 
     if(! get_bool_option("all")) {

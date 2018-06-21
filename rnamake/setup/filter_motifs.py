@@ -92,7 +92,7 @@ def analyze_motifs():
 
 
 def analyze_motifs_2():
-    mlib = motif_library.MotifLibrary(motif_type.TWOWAY)
+    mlib = motif_library.MotifLibrary(motif_type.HELIX)
     mlib.load_all()
 
     seen = {}
@@ -140,11 +140,11 @@ def analyze_motifs_2():
         if p_clashes > 1:
             print m.name
 
-        #m.to_pdb("twoways/"+m.name+".pdb")
+        m.to_pdb("helices/"+m.name+".pdb")
         df.loc[pos] = [m.name, len(m.residues()), found, bps_names]
         pos += 1
 
-    df.to_csv("motifs_extra_bps.csv", index=False)
+    df.to_csv("motifs_extra_bps_helix.csv", index=False)
 
 
 
