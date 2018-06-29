@@ -41,7 +41,8 @@ RNAMake/rnamake/unittests/run_unittests.sh
 ```
 
 To run unit tests for C++ code:
-```
+
+```bash
 cd RNAMAke/rnamake/lib/RNAMake/cmake/build/
 python run_unittests.py
 ```
@@ -78,7 +79,7 @@ Argument  | Description
 -end_bp			 |	The Watson-Crick basepair to end the RNA segment. Same naming convention as `start_bp`. See examples below.
 -mg			    | Supplies a motif graph file instead of a pdb, `start_bp` and `end_bp`; see documention for more info. 
 
-#### Example of Basepair Ends that can be built from or too with design_rna
+#### Example of Basepair Ends that can be connected with `design_rna`
 
 ![basepair_end_examples](readme_resources/ggaa_tetraloop.png "Basepair End Example")
 
@@ -93,6 +94,7 @@ Simplest use, generating one design
 ```
 
 design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs
+
 > DESIGN RNA: generated 1 design(s)! if you would like more please specify how many you would like with -designs #Num
 ```
 saved solution in: design.0.pdb
@@ -102,5 +104,6 @@ Getting more designs:
 
 ```
 design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -designs 100
+
 > DESIGN RNA: generated 100 design(s)! if you would like more please specify how many you would like with -designs #Num
 ```
