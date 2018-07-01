@@ -56,7 +56,7 @@ class ChainClosureUnittest(unittest.TestCase):
         residues = pdb_parser.parse(m_path)
         chains = chain.connect_residues_into_chains(residues)
         chain_closure.close_chain(chains[1])
-        chains[1].to_pdb("c.pdb")
+        #chains[1].to_pdb("c.pdb")
 
 
 
@@ -68,7 +68,7 @@ class ChainClosureUnittest(unittest.TestCase):
             r = m.residues()[0]
             if r.get_atom("P") is not None:
                 continue
-            m.to_pdb(m.name+".pdb")
+            #m.to_pdb(m.name+".pdb")
 
     def _test_fix_missing_atoms(self):
         start_m = motif_factory.factory.base_motif
@@ -85,8 +85,8 @@ class ChainClosureUnittest(unittest.TestCase):
         r1_cor.transform(t)
         r1_cor.move(r1_mis.get_atom("C4'").coords - r1_cor.get_atom("C4'").coords)
 
-        r1_mis.to_pdb("r1.pdb")
-        r1_cor.to_pdb("r2.pdb")
+        #r1_mis.to_pdb("r1.pdb")
+        #r1_cor.to_pdb("r2.pdb")
 
     def test_full_fix(self):
         start_m = motif_factory.factory.base_motif

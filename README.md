@@ -9,37 +9,60 @@ rate of forming the predicted structure in vitro.
 
 Install
 -------
-
 ```bash
 git clone https://github.com/jyesselm/RNAMake.git
 cd RNAMake
 sudo pip install -r requirements.txt
 ```
 
-To install call
+Make sure to have a valid c++ compiler either g++ (> 4.6) or clang as well as python 2.7. In your .bashrc (.bash_profile if mac OSX) add:
+
+```bash
+# location to RNAMake directory used by RNAMake
+export RNAMAKE=<RNAMake Path> 
+# adding point python to RNAMake python code 
+export PYTHONPATH=$PYTHONPATH:$RNAMAKE
 ```
-python setup.py 
+[OPTIONAL] but useful
+
+```bash
+# location of RNAMake c++ executables 
+export PATH=$PATH:$RNAMAKE/rnamake/lib/RNAMake/cmake/build/ 
+# location of python executable scripts                         
 ```
+
+note if you are using c shell or another non bash shell you will need to use the equivalent commands
+
 
 Compile
 ------- 
+requires `cmake` and `ninja`
 
-to compile, make sure you have `cmake` and `ninja` installed with their binaries set up in your `$PATH`. Then run:
-```
+cmake: https://github.com/Kitware/CMake <br>
+ninja: https://github.com/ninja-build/ninja
+
+make sure they are in your `$PATH`. Then run:
+
+```bash
 python compile.py 
 ```
+executables are located in
 
+```bash
+$RNAMAKE/rnamake/lib/RNAMake/cmake/build/
+```
 
-Tests
+Tests [OPTIONAL]
 -----
 To run unit tests for python:
 ```
-RNAMake/rnamake/unittests/run_unittests.sh
+$RNAMAKE/rnamake/unittests/run_unittests.sh
 ```
 
 To run unit tests for C++ code:
-```
-cd RNAMAke/rnamake/lib/RNAMake/cmake/build/
+
+```bash
+cd $RNAMAKE/rnamake/lib/RNAMake/cmake/build/
 python run_unittests.py
 ```
 
@@ -80,16 +103,22 @@ Argument  | Description
 ![basepair_end_examples](readme_resources/ggaa_tetraloop.png "Basepair End Example")
 
 #Examples
+<a href="#-">link</a> - (click to go to first anchor of this comment)
+
 examples are located: /RNAMake/examples/cpp/design_rna
 
 start.pdb:
 ![basepair_end_examples](readme_resources/ggaa_tetraloop.png "Basepair End Example")
+
+<a id="-"></a>
+
 
 Simplest use, generating one design
 
 ```
 
 design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs
+> DESIGN RNA: loaded pdb from file: start.pdb
 > DESIGN RNA: generated 1 design(s)! if you would like more please specify how many you would like with -designs #Num
 ```
 saved solution in: design.0.pdb
@@ -99,5 +128,20 @@ Getting more designs:
 
 ```
 design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -designs 100
+> DESIGN RNA: loaded pdb from file: start.pdb
 > DESIGN RNA: generated 100 design(s)! if you would like more please specify how many you would like with -designs #Num
+```
+
+Controlling size of the solution:
+
+```
+design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -search.max_size 100
+```
+
+![basepair_end_examples](readme_resources/controlling_size.png "Controlling the size of solutions")
+
+Ensuring solutions end with a helix: 
+
+```
+design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -search.helix_end
 ```

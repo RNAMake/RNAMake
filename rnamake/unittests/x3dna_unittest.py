@@ -103,8 +103,10 @@ class X3dnaUnittest(unittest.TestCase):
         basepairs = x.get_basepairs(path)
         os.remove("ref_frames.dat")
         os.remove('p4p6_dssr.out')
-        os.remove("p4p6.pdb")
-
+        try:
+            os.remove("p4p6.pdb")
+        except:
+            pass
 
 def main():
     unittest.main()

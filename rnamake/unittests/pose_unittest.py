@@ -20,7 +20,7 @@ from rnamake.rosetta import rna_denovo
 class PoseUnittest(unittest.TestCase):
 
     def test_creation(self):
-        p = pf.factory.pose_from_file("resources/motifs/p4p6")
+        p = pf.factory.pose_from_file(settings.UNITTEST_PATH+"/resources/motifs/p4p6")
 
     def _test_designable_secondary_structure(self):
         builder = build.BuildMotifTree()
@@ -32,7 +32,7 @@ class PoseUnittest(unittest.TestCase):
         #print results[0]['end'][0]
 
     def test_motifs(self):
-        p = pf.factory.pose_from_file("resources/motifs/p4p6")
+        p = pf.factory.pose_from_file((settings.UNITTEST_PATH+"/resources/motifs/p4p6")
         twoways = p.motifs(motif_type.TWOWAY)
         if len(twoways) != 6:
             self.fail("did not properly get all two way junctions")
