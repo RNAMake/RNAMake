@@ -88,6 +88,14 @@ rnamake/setup/score_files
 rnamake/setup/*.csv
 rnamake/lib/RNAMake/*.cmake
 rnamake/lib/RNAMake/CMake*
+# old scripts
+rnamake/bin/DEPRECATED/*
+
+# Examples
+/examples/cpp/design_rna/*
+/examples/cpp/ribosome_tether/*
+/examples/cpp/apt_stablization/*
+
 
 # Auto-generated build files
 rnamake/lib/RNAMake/cmake/

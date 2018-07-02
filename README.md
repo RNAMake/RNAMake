@@ -11,7 +11,7 @@ rate of forming the predicted structure _in vitro_.
 
 Install
 -------
-```bash
+```
 git clone https://github.com/jyesselm/RNAMake.git
 cd RNAMake
 sudo pip install -r requirements.txt
@@ -19,7 +19,7 @@ sudo pip install -r requirements.txt
 
 Make sure to have a valid c++ compiler either g++ (> 4.6) or clang as well as python 2.7. In your .bashrc (.bash_profile if mac OSX) add:
 
-```bash
+```
 # location to RNAMake directory used by RNAMake
 export RNAMAKE=<RNAMake Path> 
 # adding point python to RNAMake python code 
@@ -27,10 +27,12 @@ export PYTHONPATH=$PYTHONPATH:$RNAMAKE
 ```
 [OPTIONAL] but useful
 
-```bash
+```
 # location of RNAMake c++ executables 
 export PATH=$PATH:$RNAMAKE/rnamake/lib/RNAMake/cmake/build/ 
-# location of python executable scripts                         
+# location of python executable scripts  
+export PATH=$PATH:$RNAMAKE/rnamake/bin/                                                                     
+```
 
 note if you are using c shell or another non bash shell you will need to use the equivalent commands
 
@@ -44,12 +46,12 @@ ninja: https://github.com/ninja-build/ninja
 
 make sure they are in your `$PATH`. Then run:
 
-```bash
+```
 python compile.py 
 ```
 executables are located in
 
-```bash
+```
 $RNAMAKE/rnamake/lib/RNAMake/cmake/build/
 ```
 
@@ -62,7 +64,7 @@ $RNAMAKE/rnamake/unittests/run_unittests.sh
 
 To run unit tests for C++ code:
 
-```bash
+```
 cd $RNAMAKE/rnamake/lib/RNAMake/cmake/build/
 python run_unittests.py
 ```
@@ -70,7 +72,11 @@ python run_unittests.py
 
 Applications
 ============
+1. <a href="#design_rna">design_rna</a> 
+2. <a href="#ribosome_tethering">ribosome_tethering</a> 
+3. <a href="#apt_stablization">apt_stablization</a> 
 
+<a id="design_rna"></a>
 design_rna
 -----------
 Generates segments are RNA between two Watson-Crick basepairs can also perform sequence optimization for helical sequences. 
@@ -103,16 +109,13 @@ Argument  | Description
 
 ![basepair_end_examples](readme_resources/ggaa_tetraloop.png "Basepair End Example")
 
-#Examples
-<a href="#-">link</a> - (click to go to first anchor of this comment)
+##Examples
 
-examples are located: /RNAMake/examples/cpp/design_rna
+examples are located: $RNAMAKE/examples/cpp/design_rna
 
 
 start.pdb:
 ![basepair_end_examples](readme_resources/ggaa_tetraloop.png "Basepair End Example")
-
-<a id="-"></a>
 
 
 Simplest use, generating one design
@@ -141,8 +144,66 @@ design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -search.ma
 
 ![basepair_end_examples](readme_resources/controlling_size.png "Controlling the size of solutions")
 
-Ensuring solutions end with a helix: 
+####Many more examples in $RNAMAKE/examples/cpp/design_rna/COMMANDS
+
+<a id="ribosome_tethering"></a>
+ribosome_tethering
+-----------
+A python script that setups up a <a href="#design_rna">design_rna</a> run to tether the two subunits of the E. coli. ribosome.
 
 ```
-design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -search.helix_end
+ribosome_tethering.py 
+		   -pdb_50s "pdb path to 50s subunit"
+		   -pdb_30s "pdb path to 30s subunit"
+			[-cutpoint_50s "50s basepair name" ]
+			[-cutpoint_30s "30s basepair name" ]
 ```
+-cutpoint\_50s and -cutpoint\_30s work as -start\_bp and -end\_bp from design_rna: a Watson-Crick basepair, Example "A194-A252" the base pair between residues 192 and 252 both on chain A.  		
+##Examples
+examples are located: $RNAMAKE/examples/cpp/ribosome_tether
+
+```
+ribosome_tethering.py -pdb_50s pdbs/3R8T.pdb -pdb_30s pdbs/4GD2.pdb
+>[2018-07-01 13:12:07,258] building new motif file for: pdbs/3R8T.pdb will save to reduce run time for repeat runs. Can be overrided with -rebuild
+>[2018-07-01 13:13:45,325] building new motif file for: pdbs/4GD2.pdb will save to reduce run time for repeat runs. Can be overrided with -rebuild
+>[2018-07-01 13:14:20,378] loading saved motif file: motifs/3R8T.motif
+>[2018-07-01 13:14:21,592] loading saved motif file: motifs/4GD2.motif
+>[2018-07-01 13:15:13,950] outputing start pdbs 30S.pdb and 50S.pdb
+>[2018-07-01 13:15:13,950] success! COMMAND file generated. run "source COMMAND" to build tether
+```
+
+![basepair_end_examples](readme_resources/ribosome_start.png "")
+
+```
+source COMMAND
+>DESIGN RNA: generated 1 design(s)! if you would like more please specify how many you would like with -designs #Num
+```
+![basepair_end_examples](readme_resources/ribosome_solution.png "")
+
+<a id="apt_stablization"></a>
+apt_stablization
+-----------
+Generates a 3D scaffold around a given coordinates of a small-molecule binding aptamer. 
+
+```
+apt_stablization [-pdb pdb_file.pdb ]
+				 [-out_file name_of_outfile.out ]
+				 [-score_file name_of_scorefile.scores ]
+				 [-designs num_of_designs ]
+				 [-only_ideal]
+```
+
+##Examples
+examples are located: /Users/jyesselm/projects/RNAMake/examples/cpp/apt_stablization
+
+![basepair_end_examples](readme_resources/atp_apt.png "ATP aptamer")
+
+NOTE: please remove the coordinate of the ligand before running. It cause errors.
+
+```
+ apt_stablization -pdb atp_apt.pdb
+```
+![basepair_end_examples](readme_resources/finished_apt_stablization.png "ATP aptamer")
+
+
+

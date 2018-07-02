@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import argparse
 import os
 import logging
@@ -18,8 +20,9 @@ def parse_args():
     parser.add_argument('-cutpoint_50s',
                         help='which basepair to cut off a hairpin to build from',
                         default="A2854-A2863")
-    parser.add_argument('-cutpoint_30s'
-                        help=)
+    parser.add_argument('-cutpoint_30s',
+                        help= "which basepair to cut off a hairpin to build from",
+                        default="A1445-A1457")
     args = parser.parse_args()
     return args
 
@@ -106,6 +109,10 @@ def standardize_basepair_at_cutpoint(m):
 if __name__ == "__main__":
     args = parse_args()
 
+    if not os.path.isdir("motifs"):
+        logger.info("creating motifs/ directory to store motifs files")
+        os.mkdir("motifs")
+
     name_50s = util.filename(args.pdb_50s)[:-4]
     name_30s = util.filename(args.pdb_30s)[:-4]
     if not os.path.isfile("motifs/"+name_50s+".motif"):
@@ -121,9 +128,10 @@ if __name__ == "__main__":
 
     mg = motif_graph.MotifGraph()
     mg.set_options('sterics', 0)
-    print mg.add_motif(m_30s_cut)
-    print mg.add_motif(m_50s_cut, orphan=1)
-    mg.write_pdbs()
+    mg.add_motif(m_30s_cut)
+    mg.add_motif(m_50s_cut, orphan=1)
+    mg.get_node(0).data.to_pdb("30S.pdb")
+    mg.get_node(1).data.to_pdb("50S.pdb")
 
     f = open("test.mg", "w")
     f.write(mg.to_str() + "\n")
@@ -131,6 +139,12 @@ if __name__ == "__main__":
     f.write("0 " + "A1445-A1457" + "\n")
     f.close()
 
+    logger.info("outputing start pdbs 30S.pdb and 50S.pdb")
+    logger.info("success! COMMAND file generated. run \"source COMMAND\" to build tether")
+
+    f = open("COMMAND", "w")
+    f.write("design_rna -mg test.mg -only_ideal -design_pdbs -designs 1\n")
+    f.close()
 
 
 

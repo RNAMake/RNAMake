@@ -23,8 +23,6 @@ APTStablization::setup_options() {
     add_option("designs", 1, OptionType::INT, false);
     add_option("only_existing_motifs", false, OptionType::BOOL, false);
     add_option("only_ideal", false, OptionType::BOOL, false);
-
-
 }
 
 void
