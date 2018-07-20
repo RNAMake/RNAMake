@@ -143,13 +143,13 @@ APTStablization::run() {
         dss->replace_sequence(sols[0]->sequence);
         copy_mg->replace_helical_sequence(dss);
         copy_mg->to_pdb("design." + std::to_string(designs) + ".pdb", 1, 1, 1);
-        designs += 1;
 
         sf_out << designs << "," << sol->score << "," << copy_mg->designable_sequence() << "," ;
         sf_out << copy_mg->dot_bracket() << "," << motif_names << ",";
         sf_out << 1 << "," << sols[0]->sequence << "," << sols[0]->dist_score << "," << sols[0]->eterna_score;
         sf_out << std::endl;
         out << copy_mg->to_str() << std::endl;
+        designs += 1;
 
         if(designs >= get_int_option("designs")) {
             std::cout << "Found " << designs << " designs, Finished!" << std::endl;
