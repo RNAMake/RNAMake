@@ -295,7 +295,9 @@ SequenceOptimizer3D::get_optimized_sequences(
     }
     
     if(sols.size() == 0 && return_lowest_) {
-        sols.push_back(std::make_shared<OptimizedSequence>(OptimizedSequence{best_seq, best, -1}));
+        ss->replace_sequence(best_seq);
+        eterna_score = eterna_scorer_.score_secondary_structure(ss);
+        sols.push_back(std::make_shared<OptimizedSequence>(OptimizedSequence{best_seq, best, eterna_score}));
     }
     
     return sols;
