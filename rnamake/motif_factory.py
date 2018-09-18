@@ -247,7 +247,7 @@ class MotifFactory(object):
         m.basepairs = bps
         ends = self._setup_basepair_ends(m.structure, bps)
         m.ends = ends
-        self._setup_secondary_structure(m)
+        #self._setup_secondary_structure(m)
         return m
 
     def motif_from_chains(self, chains, bps):

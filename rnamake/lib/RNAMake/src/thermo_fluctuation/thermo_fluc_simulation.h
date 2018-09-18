@@ -17,6 +17,41 @@
 #include "thermo_fluctuation/thermo_fluc_scorer.h"
 
 
+class RunningAverage {
+private:
+    double val;
+    size_t count;
+
+public:
+    RunningAverage() {
+        this->Reset();
+    }
+
+    double Update(double valIn) {
+        double scaling = 1. / (double)(count + 1);
+        val = valIn * scaling + val * (1. - scaling);
+        count++;
+        return val;
+    }
+
+    double Get() {
+        return val;
+    }
+
+    size_t Count()
+    {
+        return count;
+    }
+
+    void Reset()
+    {
+        val = 0.;
+        count = 0;
+    }
+};
+
+
+
 class ThermoFlucSimulation : public OptionClass {
 public: // constructors
     ThermoFlucSimulation();
@@ -57,6 +92,10 @@ public: //run
 
     int
     run();
+
+    double
+    get_avg() {
+        return avg_.Get(); }
 
 public: //option wrappers
 
@@ -111,6 +150,7 @@ private:
     bool record_;
     float temperature_, cutoff_;
     int steps_;
+    RunningAverage avg_;
 };
 
 class ThermoFlucSimulationException : public std::runtime_error {

@@ -130,7 +130,9 @@ ThermoFlucSimulation::run() {
     int clash = 0;
     //Ints check_nodes = { 22, 21 };
     //Ints check_nodes_2 = { 1 };
-    
+
+    avg_ = RunningAverage();
+
     while (steps < steps_) {
         //if(r == 0) { continue; }
         
@@ -143,7 +145,7 @@ ThermoFlucSimulation::run() {
         end_state_2_ = sampler_.mst()->get_node(ni2_)->data()->get_end_state(ei2_);
 
         score_ = scorer_->score(end_state_1_, end_state_2_);
-
+        avg_.Update(score_);
         
         if(score_ < cutoff_) { count += 1; }
         

@@ -100,6 +100,10 @@ public:
     MotifOP const &
     added_helix() { return added_helix_; }
 
+    inline
+    MotifOP const &
+    ref_motif() { return ref_motif_; }
+
 
 private:
 

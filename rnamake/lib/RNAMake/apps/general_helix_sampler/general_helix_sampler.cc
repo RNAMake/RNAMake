@@ -94,6 +94,20 @@ GeneralHelixSampler::run() {
 
     auto mf = MotifFactory();
     auto start = mf.motif_from_bps(BasepairOPs{start_bp, end_bp});
+    auto ref_m = mf.ref_motif();
+
+    //auto aligned = get_aligned_motif(ref_m->ends()[0], start->ends()[1], start);
+    /*align_motif(ref_m->ends()[0]->state(), start->ends()[1], start);
+    auto diff = ref_m->ends()[0]->d() - start->ends()[0]->d();
+    if(diff[2] < 0 ) {
+        start = mf.motif_from_bps(BasepairOPs{start_bp, end_bp});
+        start->ends()[1]->flip();
+        align_motif(ref_m->ends()[0]->state(), start->ends()[1], start);
+    }*/
+
+    //start->to_pdb("test.pdb");
+    //ref_m->to_pdb("ref.pdb");
+
     start->name("start");
     start->block_end_add(-1);
 
@@ -175,6 +189,7 @@ GeneralHelixSampler::_get_hit_count(
             mt2->add_motif(n->data());
         }
         mt2->to_pdb("ideal.pdb", 1, 1);
+        exit(0);
     }
 
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
