@@ -142,8 +142,9 @@ MotifStateSearch::_search() {
         
         if(midpoints && steps % midpoint_freq == 0) {
             auto sol = MotifStateSearchSolution(current, score);
-            midpoint_file << sol.to_motif_tree()->topology_to_str() << std::endl;
-            
+            //midpoint_file << sol.to_motif_tree()->topology_to_str() << std::endl;
+            sol.to_motif_tree()->to_pdb("test."+std::to_string(steps)+".pdb", 1, 1, 1);
+
         }
 
         score = scorer_->accept_score(current);
@@ -171,6 +172,8 @@ MotifStateSearch::_search() {
                     return s;
                 }
             }
+            else if(current->ref_state()->name()[0] == 'N') { continue; }
+
             else {
                 auto s = std::make_shared<MotifStateSearchSolution>(current, score);
                 return s;

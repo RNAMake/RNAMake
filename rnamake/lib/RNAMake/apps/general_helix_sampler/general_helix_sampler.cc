@@ -19,13 +19,14 @@ GeneralHelixSampler::GeneralHelixSampler() : Application(),
 
 void
 GeneralHelixSampler::setup_options() {
-    add_option("pdb", "", OptionType::STRING, true);
+    add_option("pdb", "", OptionType::STRING, false);
+    add_option("motif", "", OptionType::STRING, false);
     add_option("start_bp", "", OptionType::STRING, true);
     add_option("end_bp", "", OptionType::STRING, true);
     add_option("seq", "", OptionType::STRING, true);
     add_option("all", false, OptionType::BOOL, false);
     add_option("get_ideal", false, OptionType::BOOL, false);
-
+    add_option("get_dist_from_ideal", false, OptionType::BOOL, false);
 }
 
 void
@@ -77,36 +78,39 @@ GeneralHelixSampler::get_motifs_from_seq_and_ss(
     return motifs;
 }
 
-
-
 void
 GeneralHelixSampler::run() {
-    auto pdb = get_string_option("pdb");
-    auto rs =  RM::instance().get_structure(pdb, "pdb");
+
+    if(get_string_option("pdb") == "" && get_string_option("motif") == "") {
+        throw GeneralHelixSamplerException("must supply pdb or motif");
+    }
+
+    auto start_bp = BasepairOP(nullptr);
+    auto end_bp = BasepairOP(nullptr);
     auto start_bp_str = get_string_option("start_bp");
     auto end_bp_str = get_string_option("end_bp");
 
-    auto start_bp = rs->get_basepair(start_bp_str)[0];
-    auto end_bp = rs->get_basepair(end_bp_str)[0];
+    if(get_string_option("pdb") != "") {
+        auto pdb = get_string_option("pdb");
+        auto rs = RM::instance().get_structure(pdb, "pdb");
+        start_bp = rs->get_basepair(start_bp_str)[0];
+        end_bp = rs->get_basepair(end_bp_str)[0];
+    }
+    else {
+        auto motif_file = get_string_option("motif");
+        auto m = file_to_motif(motif_file);
+        start_bp = m->get_basepair(start_bp_str)[0];
+        end_bp = m->get_basepair(end_bp_str)[0];
+    }
+
 
     start_bp->bp_type("cW-W");
     end_bp->bp_type("cW-W");
 
     auto mf = MotifFactory();
     auto start = mf.motif_from_bps(BasepairOPs{start_bp, end_bp});
+    start->ends(BasepairOPs{start_bp, end_bp});
     auto ref_m = mf.ref_motif();
-
-    //auto aligned = get_aligned_motif(ref_m->ends()[0], start->ends()[1], start);
-    /*align_motif(ref_m->ends()[0]->state(), start->ends()[1], start);
-    auto diff = ref_m->ends()[0]->d() - start->ends()[0]->d();
-    if(diff[2] < 0 ) {
-        start = mf.motif_from_bps(BasepairOPs{start_bp, end_bp});
-        start->ends()[1]->flip();
-        align_motif(ref_m->ends()[0]->state(), start->ends()[1], start);
-    }*/
-
-    //start->to_pdb("test.pdb");
-    //ref_m->to_pdb("ref.pdb");
 
     start->name("start");
     start->block_end_add(-1);
@@ -143,7 +147,7 @@ GeneralHelixSampler::run() {
     pairs.push_back(Strings{"C", "G"});
     pairs.push_back(Strings{"G", "C"});
 
-    auto all_pairs = std::vector<std::vector<Strings>>(rs->basepairs().size());
+    auto all_pairs = std::vector<std::vector<Strings>>((int)(seq.size() / 2));
     for(int i = 0; i < all_pairs.size(); i++) {
         all_pairs[i] = pairs;
     }
@@ -178,6 +182,10 @@ GeneralHelixSampler::_get_hit_count(
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
     mt->add_motif(start);
+    int i = 0;
+    for(auto const & e : start->ends()) {
+        std::cout << e->name() << std::endl;
+    }
     for(auto const & m : bp_steps) {
         mt->add_motif(m);
     }
@@ -190,6 +198,19 @@ GeneralHelixSampler::_get_hit_count(
         }
         mt2->to_pdb("ideal.pdb", 1, 1);
         exit(0);
+    }
+
+    if(get_bool_option("get_dist_from_ideal")) {
+        auto target = mt->get_node(0)->data()->ends()[1];
+        auto current = mt->last_node()->data()->ends()[1];
+
+        std::cout << target->d().to_str() << "," << current->d().to_str() << ",";
+        std::cout << target->d().distance(current->d()) << ",";
+        std::cout << target->r().to_str() << "," << current->r().to_str() << ",";
+        std::cout << target->r().difference(current->r()) << ",";
+        std::cout << target->d().distance(current->d()) + 2*target->r().difference(current->r()) << std::endl;
+        exit(0);
+
     }
 
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);

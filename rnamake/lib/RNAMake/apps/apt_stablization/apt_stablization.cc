@@ -42,11 +42,12 @@ APTStablization::run() {
     std::cout << "APT STABLIZATION: loaded pdb from file: " << get_string_option("pdb") << std::endl;
 
     auto m = RM::instance().motif("aptamer");
-    if(m->ends().size() != 2) {
+    if(m->ends().size() < 2) {
         throw APTStablizationException("aptamer does not have not have two basepair ends");
     }
 
-    auto start_path = String("flex_helices,aptamer,flex_helices,twoway,flex_helices,twoway,flex_helices");
+    //auto start_path = String("flex_helices,aptamer,flex_helices,twoway,flex_helices,twoway,flex_helices");
+    auto start_path = String("flex_helices,twoway,flex_helices,aptamer,flex_helices,twoway,flex_helices");
     if(get_bool_option("only_existing_motifs")) {
         start_path = "flex_helices,aptamer,flex_helices,existing,flex_helices,existing,flex_helices";
     }
@@ -76,6 +77,8 @@ APTStablization::run() {
     sf_out.open(get_string_option("score_file"));
     sf_out << "design_num,design_score,design_sequence,design_structure,motifs_uses,opt_num,";
     sf_out << "opt_sequence,opt_score,eterna_score" << std::endl;
+
+    out.open(get_string_option("out_file"));
 
     auto mc = MotifStateMonteCarlo(ms_libraries);
     mc.setup(msg, 2, 2, start_end_pos, end_end_pos, target_an_aligned_end);

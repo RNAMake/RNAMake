@@ -45,6 +45,7 @@ DesignRNAApp::setup_options() {
     add_option("show_sections", false, OptionType::BOOL, false);
     add_option("defined_motif_path", "", OptionType::STRING, false);
     add_option("only_existing_motifs", false, OptionType::BOOL, false);
+    add_option("include_nways", false, OptionType::BOOL, false);
     add_option("mc", false, OptionType::BOOL, false);
     add_option("verbose", false, OptionType::BOOL, false);
     add_option("no_sterics", false, OptionType::BOOL, false);
@@ -144,7 +145,6 @@ DesignRNAApp::_setup_from_pdb() {
     RM::instance().add_motif(get_string_option("pdb"), "scaffold", MotifType::TWOWAY);
     auto m = RM::instance().motif("scaffold", "", end_bp_name);
     mg_->add_motif(m);
-    //mg_->write_pdbs();
     start_ = EndStateInfo{start_bp_name, 0};
     end_ = EndStateInfo{end_bp_name, 0};
     return;
@@ -192,7 +192,6 @@ DesignRNAApp::_setup_from_mg() {
     catch(...) {
         throw DesignRNAAppException("node: " + std::to_string(end_.n_pos) + " does not exist!");
     }
-
 
 }
 
@@ -349,6 +348,16 @@ DesignRNAApp::run() {
     if(get_bool_option("only_existing_motifs")) {
         auto selector = std::make_shared<MotifStateSelector>(MSS_HelixFlank());
         selector->add("existing");
+        search_.selector(selector);
+    }
+
+    if(get_bool_option("include_nways")) {
+        auto selector = std::make_shared<MotifStateSelector>(MotifStateSelector());
+        selector->add("twoway");
+        selector->add("ideal_helices");
+        selector->add("nway");
+        selector->connect("twoway", "ideal_helices");
+        selector->connect("nway", "ideal_helices");
         search_.selector(selector);
     }
 
