@@ -30,7 +30,7 @@ public:
     {}
 };
 
-enum SetType {  RNA, PROTEIN };
+enum class SetType {  RNA, PROTEIN, UNKNOWN };
 
 class ResidueType {
 public:

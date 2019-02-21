@@ -147,5 +147,78 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
         
     }
     
-    
+    SECTION("test transform() instead of get_transformed_state()") {
+        auto path = unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
+        auto lines = get_lines_from_file(path);
+
+        auto dist = 0.0;
+        auto rdist = 0.0;
+        int fail = 0;
+
+        for(int i = 0; i < 100; i++) {
+            auto spl = split_str_by_delimiter(lines[0], "|");
+            auto bp_state_1 = BasepairState(spl[0]);
+            auto bp_state_2 = BasepairState(spl[1]);
+
+            auto dummy = BasepairState();
+            auto dummy_2 = BasepairState();
+
+            bp_state_1.get_transforming_r_and_t(bp_state_2, dummy);
+            bp_state_2.get_transformed_state(dummy, dummy_2);
+
+            auto bp_state_copy = bp_state_2.copy();
+            bp_state_2.set(dummy_2);
+
+            bp_state_copy.transform(dummy.r().transposed(), dummy.d());
+
+
+            dist = bp_state_copy.d().distance(bp_state_2.d());
+            rdist = bp_state_copy.r().difference(bp_state_2.r());
+
+            if(dist > 0.001) { fail =1; }
+            if(rdist > 0.001) { fail = 1; }
+
+            REQUIRE(!fail);
+
+            //std::cout << dist << " " << rdist << std::endl;
+
+        }
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

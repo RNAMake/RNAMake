@@ -76,9 +76,11 @@ DesignRNAApp::parse_command_line(
 void
 DesignRNAApp::_setup_sterics() {
     auto beads = Points();
+    //std::cout << mg_->size() << std::endl;
+    //for(int i = 0; i < 8; i++) {
+    //    auto n = mg_->get_node(i);
     for (auto & n : *mg_) {
         n->data()->get_beads(n->data()->ends());
-        //std::cout << n->data()->beads().size() << std::endl;
         for (auto const & b : n->data()->beads()) {
             if (b.btype() == BeadType::PHOS) { continue; }
             beads.push_back(b.center());

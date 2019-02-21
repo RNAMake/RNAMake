@@ -176,12 +176,22 @@ class ResourceManager(object):
                          self._args_to_str(options))
 
     def add_motif(self, path=None, motif=None, name=None, include_protein=0,
-                  align=1):
+                  align=1, remove_extra_bps=0):
         if path:
             m = motif_factory.factory.motif_from_file(path,
                                                       include_protein=include_protein)
         else:
             m = motif
+
+        if remove_extra_bps:
+            remove = []
+            for bp in m.basepairs:
+                if bp not in m.ends:
+                    remove.append(bp)
+
+            for r in remove:
+                m.basepairs.remove(r)
+            motif_factory.factory._setup_secondary_structure(m)
 
         if name is not None:
             m.name = name

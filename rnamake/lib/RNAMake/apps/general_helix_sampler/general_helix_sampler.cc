@@ -183,9 +183,6 @@ GeneralHelixSampler::_get_hit_count(
     mt->set_option_value("sterics", false);
     mt->add_motif(start);
     int i = 0;
-    for(auto const & e : start->ends()) {
-        std::cout << e->name() << std::endl;
-    }
     for(auto const & m : bp_steps) {
         mt->add_motif(m);
     }

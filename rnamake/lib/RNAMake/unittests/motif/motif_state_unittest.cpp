@@ -92,6 +92,28 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         REQUIRE(ms->get_end_index(end) == 0 );  
         
     }
+
+    SECTION("Test behavior between basepair and basepair state") {
+        auto m_copy = std::make_shared<Motif>(*m);
+
+        auto bp = m_copy->ends()[0];
+        auto bp_target = m_copy->ends()[1];
+
+        // make sure its a deep copy
+        auto bp_state = bp->state();
+        auto bp_state_target = bp_target->state();
+        auto s = bp_state->to_str();
+        auto dummy = BasepairState();
+        bp_state = std::make_shared<BasepairState>(s);
+
+        bp_state_target->get_transforming_r_and_t(*bp_state, dummy);
+
+        bp_state->transform(dummy.r().transposed(), dummy.d());
+        bp->transform(dummy.r().transposed(), dummy.d());
+
+        REQUIRE(are_xyzVector_equal(bp_state->d(), bp->d()));
+
+    }
     
     
 }

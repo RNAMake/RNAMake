@@ -12,24 +12,36 @@
 
 
 StericLookup::StericLookup():
-bhash_(std::map<double, int>()),
-grid_size_(0.5),
-additions_(Points()){
+        bhash_(std::map<double, int>()),
+        grid_size_(0.5),
+        cutoff_(2.65),
+        radius_(6),
+        additions_(Points()){
     check_additions_ = Points();
     _setup_additions();
-    
-    
-    
+}
+
+StericLookup::StericLookup(
+        float grid_size,
+        float cutoff,
+        int radius):
+        bhash_(std::map<double, int>()),
+        grid_size_(grid_size),
+        cutoff_(cutoff),
+        radius_(6),
+        additions_(Points()){
+    check_additions_ = Points();
+    _setup_additions();
 }
 
 void
 StericLookup::_setup_additions() {
     auto add = Floats();
-    for(int i = 1; i < 6; i++) {
+    for(int i = 1; i < radius_; i++) {
         add.push_back(float(-i*grid_size_));
     }
     add.push_back(0);
-    for(int i = 1; i < 6; i++) {
+    for(int i = 1; i < radius_; i++) {
         add.push_back(float(i*grid_size_));
     }
     
@@ -41,7 +53,7 @@ StericLookup::_setup_additions() {
             for(auto const & z : add) {
                 p = Point(x,y,z);
                 dist = p.distance(origin);
-                if (dist < 2.65 ) {
+                if (dist < cutoff_ ) {
                     additions_.push_back(p);
                 }
             }

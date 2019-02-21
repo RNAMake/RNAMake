@@ -136,9 +136,9 @@ MotifFactory::motif_from_bps(
     auto res = ResidueOPs();
     for (auto const & bp : bps) {
         res.push_back(bp->res1());
+
         res.push_back(bp->res2());
     }
-
     auto chains = ChainOPs();
     connect_residues_into_chains(res, chains);
     auto structure = std::make_shared<Structure>(chains);

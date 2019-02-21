@@ -84,8 +84,49 @@ public:
     copy() const {
         return BasepairState(d_, r_, sugars_);
     }
-    
-	
+
+
+public: // non const methods
+	inline
+	void
+	move(
+			Point const & p) {
+		d_ = d_ + p;
+		sugars_[0] = sugars_[0] + p;
+		sugars_[1] = sugars_[1] + p;
+	}
+
+	inline
+	void
+	transform(
+			Matrix const & r,
+			Vector const & t,
+			Point & dummy) {
+		dot_vector(r, d_, dummy);
+		d_ = dummy + t;
+
+		dot_vector(r, sugars_[0], dummy);
+		sugars_[0] = dummy + t;
+
+		dot_vector(r, sugars_[1], dummy);
+		sugars_[1] = dummy + t;
+
+		auto r_new = Matrix();
+		dot(r_, r, r_new);
+		r_ = r_new;
+		r_.unitarize();
+	}
+
+	inline
+	void
+	transform(
+			Matrix const & r,
+			Vector const & t) {
+		auto dummy = Point();
+		transform(r, t, dummy);
+	}
+
+
 public:
 	inline
 	void
@@ -129,7 +170,7 @@ public:
 	get_transformed_state(
 		BasepairState const & o_state,
 		BasepairState & r_state) {
-		
+
 		dot        (r_, o_state.r_T_, r_state.r_);
         r_state.r_.unitarize();
 		dot_vector (o_state.r_T_, d_, r_state.d_);

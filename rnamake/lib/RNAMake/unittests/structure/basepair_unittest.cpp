@@ -24,6 +24,5 @@ TEST_CASE( "Test Basepairs for Structure", "[Basepair]" ) {
         REQUIRE(bp->res1() == res1);
         REQUIRE(bp->res2() == res2);
     }
-    
-    
+
 }

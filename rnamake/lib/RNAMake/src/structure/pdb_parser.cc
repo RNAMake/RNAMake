@@ -18,7 +18,8 @@ ResidueOPs const &
 PDBParser::parse(
     String const & pdb_file,
     int protein,
-    int rna) {
+    int rna,
+    int others) {
     
     residues_ = ResidueOPs();
     
@@ -103,12 +104,20 @@ PDBParser::parse(
     for(auto & kv : residue_atoms) {
         if(kv.second.size() < 6) { continue; }
         spl = split_str_by_delimiter(kv.first, " ");
-        if(!rts_.contains_rtype(spl[0])) { continue; }
-        rtype = rts_.get_rtype_by_resname(spl[0]);
-        
+        if(!rts_.contains_rtype(spl[0]) && !others) { continue; }
+        if(!others) {
+            rtype = rts_.get_rtype_by_resname(spl[0]);
+        }
+        else {
+            auto atom_names = Strings();
+            for(auto const & a : kv.second) { atom_names.push_back(a->name()); }
+            rtype = _get_new_residue_type(spl[0], atom_names);
+        }
+
         if(!protein && rtype.set_type() == SetType::PROTEIN) { continue; }
         if(!rna && rtype.set_type() == SetType::RNA) { continue; }
- 
+
+
         icode = "";
         if(spl.size() > 3) { icode = spl[3]; }
         r = ResidueOP(new Residue(rtype, spl[0], std::stoi(spl[1]), spl[2], icode));
@@ -120,6 +129,22 @@ PDBParser::parse(
     return residues_;
 }
 
+//adapted from new code to allow for small molecule residue types
+ResidueType
+PDBParser::_get_new_residue_type(
+        String const & res_name,
+        Strings const & atom_names) {
+
+    auto atom_name_map = StringIntMap();
+    int i = 0;
+    for(auto const & name : atom_names) {
+        atom_name_map[name] = i;
+        i++;
+    }
+    auto extra_alt_names = Strings();
+
+    return ResidueType(res_name, atom_name_map, SetType::UNKNOWN);
+}
 
 
 

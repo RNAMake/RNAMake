@@ -17,29 +17,34 @@
 class StericLookup {
 public:
     StericLookup();
+
+    StericLookup(
+            float,
+            float,
+            int);
     
     ~StericLookup() {}
     
 public:
     void
     add_point(
-        Point const &);
+            Point const &);
     
     void
     add_points(
-        Points const &);
+            Points const &);
     
     int
     clash(
-        Point const &);
+            Point const &);
     
     int
     clash(
-        Points const &);
+            Points const &);
     
     int
     better_clash(
-          Point const &);
+            Point const &);
     
 private:
     void
@@ -51,6 +56,8 @@ private:
     Point rounded_;
     Point p_;
     float grid_size_;
+    float cutoff_;
+    int radius_;
     double k_;
     
     

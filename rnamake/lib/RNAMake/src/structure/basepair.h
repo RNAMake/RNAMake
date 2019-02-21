@@ -64,6 +64,41 @@ public:
     bool
     operator == (Basepair const & bp ) const { return uuid_ == bp.uuid_; }
 
+public: // non const methods
+    inline
+    void
+    move(
+            Point const & p) {
+        bp_state_->move(p);
+        for(auto & a : atoms_) {
+            a->coords(a->coords() + p);
+        }
+    }
+
+    inline
+    void
+    transform(
+            Matrix const & r,
+            Vector const & t,
+            Point & dummy) {
+        bp_state_->transform(r, t, dummy);
+        for( auto & a : atoms() ) {
+            dot_vector(r, a->coords(), dummy);
+            dummy += t;
+            a->coords(dummy);
+        }
+    }
+
+    inline
+    void
+    transform(
+            Matrix const & r,
+            Vector const & t) {
+        auto dummy = Point();
+        transform(r, t, dummy);
+    }
+
+
 public: // getters
     
     inline

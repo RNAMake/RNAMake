@@ -27,10 +27,17 @@ public:
 public:
     
     ResidueOPs const &
-    parse(String const & pdb_file,
-          int protein=0,
-          int rna=1);
-    
+    parse(
+            String const & pdb_file,
+            int protein=0,
+            int rna=1,
+            int others=0);
+private:
+
+    ResidueType
+    _get_new_residue_type(
+            String const &,
+            Strings const &);
 
 private:
     ResidueOPs residues_;
