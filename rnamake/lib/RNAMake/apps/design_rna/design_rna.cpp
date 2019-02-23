@@ -45,6 +45,7 @@ DesignRNAApp::setup_options() {
     add_option("show_sections", false, OptionType::BOOL, false);
     add_option("defined_motif_path", "", OptionType::STRING, false);
     add_option("only_existing_motifs", false, OptionType::BOOL, false);
+    add_option("flex_helices", false, OptionType::BOOL, false);
     add_option("include_nways", false, OptionType::BOOL, false);
     add_option("mc", false, OptionType::BOOL, false);
     add_option("verbose", false, OptionType::BOOL, false);
@@ -323,7 +324,7 @@ DesignRNAApp::run() {
         for(auto const & n : *mg_) {
             auto ms = n->data()->get_state();
             if(n->parent() == nullptr) {
-                msg->add_state(ms);
+                msg->add_state(ms, -1, -1, 1);
             }
             else {
                 auto parent_index = n->parent_index();
@@ -360,6 +361,13 @@ DesignRNAApp::run() {
         selector->add("nway");
         selector->connect("twoway", "ideal_helices");
         selector->connect("nway", "ideal_helices");
+        search_.selector(selector);
+    }
+
+    if(get_bool_option("flex_helices")) {
+        auto selector = std::make_shared<MotifStateSelector>(MotifStateSelector());
+        selector->add("twoway");
+        selector->add("flex_helices");
         search_.selector(selector);
     }
 

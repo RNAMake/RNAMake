@@ -204,7 +204,8 @@ int
 MotifStateGraph::add_state(
     MotifStateOP const & state,
     int parent_index,
-    int parent_end_index) {
+    int parent_end_index,
+    int orphan) {
     
     for(auto const & n : graph_.nodes()) {
         if(n->data()->uuid() == state->uuid()) {
@@ -216,7 +217,7 @@ MotifStateGraph::add_state(
     
     auto parent = _get_parent(state->name(), parent_index);
     
-    if(parent == nullptr) {
+    if(parent == nullptr || orphan) {
         auto n_data = std::make_shared<MSNodeData>(state);
         auto pos =  graph_.add_data(n_data, -1, -1, -1, (int)state->end_states().size(), 1);
         if(pos != -1) {

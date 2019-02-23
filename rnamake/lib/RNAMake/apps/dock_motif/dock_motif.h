@@ -8,6 +8,20 @@
 #include <stdio.h>
 #include "base/application.hpp"
 
+struct MotifStateandScore {
+    MotifStateOP ms;
+    float score;
+};
+
+bool sort_by_score(
+        MotifStateandScore const & a,
+        MotifStateandScore const & b) {
+    return a.score < b.score;
+}
+
+typedef std::vector<MotifStateandScore> MotifStateandScores;
+
+
 class DockMotifAppException : public std::runtime_error {
 public:
     DockMotifAppException(
@@ -37,7 +51,7 @@ public: // application interface functions
     run();
 
 private: // search functions
-    void
+    float
     _score(
             MotifStateOP);
 
@@ -77,6 +91,8 @@ private:
     MotifStateOPs rotations_;
     StericLookup lookup_;
     Point center_;
+    MotifStateandScores results_;
+    MotifStateOP helix_;
 
 };
 

@@ -203,9 +203,6 @@ MotifStateMonteCarlo::run() {
                 }
                 out << score_num << "," << cur_score << "," << motif_used_string << "," << std::endl;
                 out_str << msg_->to_motif_graph()->to_str() << std::endl;
-                msg_->to_motif_graph()->to_pdb("design."+std::to_string(seen.size()-1)+".pdb", 1);
-                exit(0);
-
             }
         }
 
@@ -220,12 +217,17 @@ MotifStateMonteCarlo::run() {
             new_score = get_score(msg_->last_node()->data()->cur_state->end_states()[1]);
             accept = mc_.accept(cur_score, new_score);
             if (accept) {
+                if(_steric_clash(msg_)) {
+                    msg_->replace_state(pos+org_num_, last_ms);
+                    continue;
+                }
                 cur_score = new_score;
             } else {
                 msg_->replace_state(pos+org_num_, last_ms);
             }
         }
         mc_.set_temperature(1.0);
+
         stage_ += 1;
     }
 }

@@ -43,6 +43,8 @@ DockMotifApp::run() {
     auto motif = RM::instance().motif("motif");
     motif->ends()[0]->flip();
 
+    helix_ = RM::instance().motif_state("HELIX.IDEAL.2");
+
     auto start_ms = motif->get_state();
     _precompute_rotations(start_ms);
 
@@ -61,26 +63,27 @@ DockMotifApp::run() {
         center_ = ligand->center();
     }
 
-    auto ms = _get_starting_state(screening_lookup, center_);
-    _search(center_);
-    //RM::instance().add_motif()
+    results_ = MotifStateandScores();
 
-    auto box_size = 15.0;
-    auto grid_size = 1.0;
-    auto valid_start_points = Points();
-    auto current = Point();
-    auto clash = 0;
-    for(auto i = -box_size; i < box_size; i += grid_size) {
-        for(auto j = -box_size; j < box_size; j += grid_size) {
-            for(auto k = -box_size; k < box_size; k += grid_size) {
-                current = center + Point(i, j, k);
-                clash = screening_lookup.clash(current);
-                if(clash) { continue; }
-                valid_start_points.push_back(current);
-            }
-        }
+    for (int i = 0; i < 1000; i++) {
+        std::cout << i << std::endl;
+        _get_starting_state(screening_lookup, center_);
+        _search();
+
     }
 
+    std::sort(results_.begin(), results_.end(), sort_by_score);
+
+    int i = 0;
+    for(auto const & result : results_) {
+        std::cout << i << " : " << result.score << std::endl;
+        auto m = RM::instance().get_motif_from_state(result.ms);
+        m->to_pdb("docked." + std::to_string(i) + ".pdb");
+        i++;
+        if(i > 9) { break; }
+    }
+
+    //RM::instance().add_motif()
 
 
     //points_to_pdb("grid.pdb", valid_start_points);
@@ -115,56 +118,77 @@ DockMotifApp::_get_starting_state(
 
 void
 DockMotifApp::_search() {
-    auto ms = rotations_[0];
+    auto pos = 0;
+    auto next_pos = 0;
+    auto ms = rotations_[pos];
+    auto last_ms = ms;
     auto rng = RandomNumberGenerator();
     int bound = 2;
     auto p = Point();
 
-    float closest = 1000;
-    float dist = 1000;
-    for(auto const & b : ms->beads()) {
-        dist = b.distance(center);
-        if (dist < closest)  { closest = dist; }
-    }
-
-    auto current = closest;
-    auto best = closest;
-    auto next = closest;
+    auto current = _score(ms);
+    auto best = current;
+    auto next = current;
     auto mc = MonteCarlo();
     auto best_ms = std::make_shared<MotifState>(*ms);
-    auto current_pos = 0;
 
-    for (int i = 0; i < 10000; i++) {
+    for (int i = 0; i < 100000; i++) {
+        last_ms = ms;
+        ms = rotations_[rng.randrange(rotations_.size()-1)];
         p = get_random_point(rng, bound);
         ms->move(p);
 
         if(lookup_.clash(ms->beads())) {
-            ms->move(-p);
+            ms = last_ms;
+            continue;
         }
 
-        closest = 1000;
-        for(auto const & b : ms->beads()) {
-            dist = b.distance(center);
-            if (dist < closest)  { closest = dist; }
+        next = _score(ms);
+        if(! mc.accept(current, next)) {
+            ms = last_ms;
+            continue;
         }
 
-        if(! mc.accept(current, dist)) {
-            ms->move(-p);
+        align_motif_state(ms->end_states()[0], helix_);
+        if(lookup_.clash(helix_->beads())) {
+            ms = last_ms;
+            continue;
         }
 
-        current = dist;
+
+        current = next;
         if(current < best) {
             best = current;
             best_ms = std::make_shared<MotifState>(*ms);
         }
     }
 
-    auto m = RM::instance().get_motif_from_state(best_ms);
-    std::cout << best << std::endl;
-    m->to_pdb("docked.pdb");
+    results_.push_back(MotifStateandScore{best_ms, best});
 
+    //auto m = RM::instance().get_motif_from_state(best_ms);
+    //std::cout << best << std::endl;
+    //m->to_pdb("docked.pdb");
+}
+
+float
+DockMotifApp::_score(
+        MotifStateOP ms) {
+    /*float avg = 0;
+    for(auto const & b : ms->beads()) {
+        avg += b.distance(center_);
+    }
+    return avg /= (float)ms->beads().size();*/
+
+    float best = 1000;
+    float dist = 0;
+    for(auto const & b : ms->beads()) {
+        dist = b.distance(center_);
+        if(dist < best) { best = dist; }
+    }
+    return best;
 
 }
+
 
 Point
 get_random_point(

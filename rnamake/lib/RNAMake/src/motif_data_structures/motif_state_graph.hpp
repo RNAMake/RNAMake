@@ -96,9 +96,10 @@ public: // add functions
     
     int
     add_state(
-        MotifStateOP const & state,
-        int parent_index=-1,
-        int parent_end_index=-1);
+            MotifStateOP const & state,
+            int parent_index=-1,
+            int parent_end_index=-1,
+            int orphan = 0);
     
     int
     add_state(
