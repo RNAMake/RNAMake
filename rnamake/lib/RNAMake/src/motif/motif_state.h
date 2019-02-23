@@ -122,6 +122,47 @@ public:
     
     ~MotifState() {}
 
+public: // non const methods
+    inline
+    void
+    move(
+            Point const & p) {
+        for(auto & end_state : end_states_) {
+            end_state->move(p);
+        }
+
+        for( auto & b : beads_) {
+            b += p;
+        }
+    }
+
+    inline
+    void
+    transform(
+            Matrix const & r,
+            Vector const & t,
+            Point & dummy) {
+
+        for(auto & end_state : end_states_) {
+            end_state->transform(r, t, dummy);
+        }
+
+        for( auto & b : beads_) {
+            dot_vector(r, b, dummy);
+            dummy += t;
+            b = dummy;
+        }
+    }
+
+    inline
+    void
+    transform(
+            Matrix const & r,
+            Vector const & t) {
+        auto dummy = Point();
+        transform(r, t, dummy);
+    }
+
 public:
     
     

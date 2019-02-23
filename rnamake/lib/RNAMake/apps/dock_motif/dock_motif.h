@@ -36,6 +36,19 @@ public: // application interface functions
     void
     run();
 
+private: // search functions
+    void
+    _score(
+            MotifStateOP);
+
+    void
+    _search();
+
+    MotifStateOP
+    _get_starting_state(
+            StericLookup &,
+            Point const &);
+
 private:
     ResidueOP
     _parse_ligand_for_center_coords();
@@ -44,7 +57,32 @@ private:
     _calc_motif_center(
             MotifOP);
 
+    Matrix
+    _rotation_about_x_axis(
+            float);
+
+    Matrix
+    _rotation_about_y_axis(
+            float);
+
+    Matrix
+    _rotation_about_z_axis(
+            float);
+
+    void
+    _precompute_rotations(
+            MotifStateOP);
+
+private:
+    MotifStateOPs rotations_;
+    StericLookup lookup_;
+    Point center_;
+
 };
 
+Point
+get_random_point(
+        RandomNumberGenerator &,
+        int);
 
 #endif //TEST_DOCK_MOTIF_H

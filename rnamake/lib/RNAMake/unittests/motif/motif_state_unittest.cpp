@@ -8,11 +8,20 @@
 #include "motif/motif_state.h"
 #include "motif/motif.h"
 
+Matrix
+rotation_about_x_axis(
+        float degrees) {
+    float a = 3.14/180*degrees;
+    return Matrix(1.0, 0.0, 0.0,
+                  0.0, cos(a), sin(a),
+                  0.0, -sin(a), cos(a));
+}
+
 TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]" ) {
     auto path = motif_dirs() + "base.motif";
     auto m = file_to_motif(path);
     path = motif_dirs() + "ref.motif";
-    auto ref_m = file_to_motif(path);;
+    auto ref_m = file_to_motif(path);
 
     auto ms = m->get_state();
     
@@ -114,6 +123,29 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         REQUIRE(are_xyzVector_equal(bp_state->d(), bp->d()));
 
     }
-    
+
+    SECTION("test transformation of motif states") {
+        auto ms = m->get_state();
+        auto ms_copy = std::make_shared<MotifState>(*ms);
+        auto m_copy = std::make_shared<Motif>(*m);
+
+        auto t = Point(0, 0, 0);
+        auto r = rotation_about_x_axis(60);
+
+        for(int i = 0; i < 5; i++) {
+            //align_motif(ms->end_states()[0], m_copy->ends()[0], m_copy);
+            //m_copy->to_pdb("frame."+std::to_string(i)+".pdb");
+            ms->transform(r, t);
+        }
+
+        // should be at a 300 degree rotation thus not in the same place
+        REQUIRE(!are_xyzVector_equal(ms->end_states()[1]->d(), ms_copy->end_states()[1]->d()));
+
+        ms->transform(r, t);
+        auto dist = ms->end_states()[1]->d().distance(ms_copy->end_states()[1]->d());
+        REQUIRE(dist < 0.1);
+
+
+    }
     
 }

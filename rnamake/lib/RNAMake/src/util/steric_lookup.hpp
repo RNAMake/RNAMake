@@ -33,7 +33,7 @@ public:
     void
     add_points(
             Points const &);
-    
+
     int
     clash(
             Point const &);
@@ -45,6 +45,14 @@ public:
     int
     better_clash(
             Point const &);
+
+    int
+    total_clash(
+            Point const &);
+
+    int
+    total_clash(
+            Points const &);
     
 private:
     void

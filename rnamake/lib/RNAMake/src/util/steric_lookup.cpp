@@ -76,7 +76,8 @@ StericLookup::add_point(
         gp = rounded_ + add;
         k = double(gp.x()*0.001)+ (double)(gp.y())*0.000000001+ double(gp.z()*100000);
 
-        bhash_[k] = 1;
+        if(bhash_.find(k) != bhash_.end()) { bhash_[k] += 1; }
+        else                               { bhash_[k] = 1; }
     }
 
     
@@ -147,8 +148,33 @@ StericLookup::better_clash(
 
     if(i > 6) { return 1;}
     return 0;
-    
-    
-    
-    
+
+}
+
+
+int
+StericLookup::total_clash(
+        Point const & p) {
+    rounded_.x (round(p.x() / grid_size_)*grid_size_);
+    rounded_.y (round(p.y() / grid_size_)*grid_size_);
+    rounded_.z (round(p.z() / grid_size_)*grid_size_);
+
+    double k = double(rounded_.x()*0.001)+ (double)(rounded_.y())*0.000000001+ double(rounded_.z()*100000);
+
+
+    if(bhash_.find(k) != bhash_.end()) { return bhash_[k]; }
+    else                               { return 0; }
+
+
+}
+
+int
+StericLookup::total_clash(
+        Points const & points) {
+    int clash_count = 0;
+    for(auto const & p : points) {
+        clash_count += clash(p);
+    }
+
+    return clash_count;
 }

@@ -114,6 +114,17 @@ public: // adding functions
     String
     get_helix_name(
         String const &);
+
+public: // new functions that I would like in new code
+
+    MotifOP
+    get_motif_from_state(
+            MotifStateOP ms) {
+        auto m = motif(ms->name(), "", ms->end_names()[0]);
+        align_motif(ms->end_states()[0], m->ends()[0], m);
+        return m;
+    }
+
     
     
 private:
