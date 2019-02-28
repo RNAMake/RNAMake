@@ -483,6 +483,8 @@ DesignRNAApp::run() {
                         copy_mg->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1, 1, 1);
                         solution_count++;
                     }
+
+
                 } catch (std::runtime_error const & e) {
                     std::cout << e.what() << std::endl;
                 }

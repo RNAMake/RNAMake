@@ -104,7 +104,7 @@ MotifStateMonteCarlo::next() {
         std::cout << "stage: " << stage_ << " best_score: " << best_score << " cur_score: " << cur_score << std::endl;
 
         // heat back up
-        mc_.set_temperature(5.0);
+        /*mc_.set_temperature(1000.0);
         for(int i = 0; i < 100; i++) {
             new_score = perform_motif_swap(cur_score);
             // monte carlo move accepted
@@ -112,6 +112,16 @@ MotifStateMonteCarlo::next() {
             else              { continue; }
         }
         mc_.set_temperature(1.0);
+        */
+
+        int j = 0;
+        for(int i = org_num_; i < org_num_+mses_.size(); i++) {
+            auto new_ms = mses_[j][rng_.randrange((int) mses_[pos].size() - 1)];
+            msg_->replace_state(i, new_ms);
+            j++;
+        }
+
+        cur_score = get_score(msg_->last_node()->data()->cur_state->end_states()[1]);
 
         step_ = 0;
         stage_ += 1;
