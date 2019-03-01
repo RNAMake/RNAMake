@@ -19,8 +19,10 @@
 void
 SequenceOptimizerApp::setup_options() {
     add_option("mg", String(""), OptionType::STRING, true);
-    add_option("end_1", String(""), OptionType::STRING, true);
-    add_option("end_2", String(""), OptionType::STRING, true);
+    add_option("end_1", String(""), OptionType::STRING, false);
+    add_option("end_2", String(""), OptionType::STRING, false);
+
+    add_option("connections", String(""), OptionType::STRING, false);
     
     
     add_option("v", false, OptionType::BOOL);
@@ -45,7 +47,26 @@ SequenceOptimizerApp::parse_command_line(
 
 void
 SequenceOptimizerApp::run() {
-    
+
+    // load motif graph from file
+    auto lines = get_lines_from_file(get_string_option("mg"));
+    auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
+
+    // parse connection info
+    _get_end_connections(mg);
+
+    // get sequence optimizer scorer
+    auto scorer = _setup_optimizer_scorer();
+
+    mg->write_pdbs();
+    auto p = mg->secondary_structure();
+    std::cout << p->sequence() << std::endl;
+
+    //auto test_sols = optimizer_.get_optimized_sequences(mg, scorer);
+
+
+    exit(0);
+
     std::ofstream out, sf_out;
     sf_out.open(get_string_option("score_file"));
     sf_out << "opt_num,opt_score,eterna_score,opt_sequence,opt_structure" << std::endl;
@@ -53,8 +74,6 @@ SequenceOptimizerApp::run() {
     out.open(get_string_option("out_file"));
 
     auto opt_num = 1;
-    auto lines = get_lines_from_file(get_string_option("mg"));
-    auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
     auto spl = split_str_by_delimiter(get_string_option("end_1"), ",");
     
     if(spl.size() != 2) {
@@ -74,8 +93,7 @@ SequenceOptimizerApp::run() {
     
     auto ni2 = std::stoi(spl[0]);
     auto ei2 = std::stoi(spl[1]);
-    auto scorer = SequenceOptimizerScorerOP(nullptr);
-    
+
     if(get_string_option("opt") == "Internal") {
         scorer = std::make_shared<InternalTargetScorer>(ni1, ei1, ni2, ei2, false);
     }
@@ -107,6 +125,85 @@ SequenceOptimizerApp::run() {
     
     
 }
+
+void
+SequenceOptimizerApp::_get_end_connections(
+        MotifGraphOP mg) {
+    connections_ = std::vector<ConnectionTemplate>();
+    if(get_string_option("end_1") == "" && get_string_option("end_2") == "" && get_string_option("connections") == "") {
+        throw SequenceOptimizerAppException("please supply either end_1 / end_2 or connections");
+    }
+    else if(get_string_option("end_1") != "" && get_string_option("end_2") != "") {
+        connections_.push_back(_parse_end_commandline_args());
+    }
+    else if(get_string_option("connections") != "") {
+        auto connection_strs = split_str_by_delimiter(get_string_option("connections"), ";");
+        for(auto const & connection_str : connection_strs) {
+            auto spl = split_str_by_delimiter(connection_str, " ");
+            auto ni1 = std::stoi(spl[0]);
+            auto ei1 = mg->get_node(ni1)->data()->get_end_index(spl[1]);
+
+            auto ni2 = std::stoi(spl[2]);
+            auto ei2 = mg->get_node(ni2)->data()->get_end_index(spl[3]);
+
+            auto start = NodeIndexandEdge{ni1, ei1};
+            auto end   = NodeIndexandEdge{ni2, ei2};
+            connections_.push_back(ConnectionTemplate{start, end, "Internal"});
+        }
+
+        if(connections_.size() == 0) {
+            throw SequenceOptimizerAppException("connections were supplied but were not processed correctly");
+        }
+
+    }
+    else {
+        throw SequenceOptimizerAppException("please supply either end_1 / end_2 or connections");
+    }
+}
+
+ConnectionTemplate
+SequenceOptimizerApp::_parse_end_commandline_args() {
+    auto spl = split_str_by_delimiter(get_string_option("end_1"), ",");
+
+    if(spl.size() != 2) {
+        throw std::runtime_error(
+                "incorrect format for end_1 must be graph_pos,end_pos, example 20,1 for the 20th node "
+                        "and end 1");
+    }
+    auto ni1 = std::stoi(spl[0]);
+    auto ei1 = std::stoi(spl[1]);
+
+    spl = split_str_by_delimiter(get_string_option("end_2"), ",");
+    if(spl.size() != 2) {
+        throw std::runtime_error(
+                "incorrect format for end_2 must be graph_pos,end_pos, example 20,1 for the 20th node "
+                        "and end 1");
+    }
+
+    auto ni2 = std::stoi(spl[0]);
+    auto ei2 = std::stoi(spl[1]);
+
+    auto start = NodeIndexandEdge{ni1, ei1};
+    auto end   = NodeIndexandEdge{ni2, ei2};
+    return ConnectionTemplate{start, end, "Internal"};
+}
+
+SequenceOptimizerScorerOP
+SequenceOptimizerApp::_setup_optimizer_scorer() {
+    if(connections_.size() == 1) {
+        auto c = connections_[0];
+        return std::make_shared<InternalTargetScorer>(c.start.ni, c.start.ei, c.end.ni, c.end.ei, false);
+    }
+    else {
+        auto sub_scorers = std::vector<SequenceOptimizerScorerOP>();
+        for(auto const & c : connections_) {
+            auto scorer = std::make_shared<InternalTargetScorer>(c.start.ni, c.start.ei, c.end.ni, c.end.ei, false);
+            sub_scorers.push_back(scorer);
+        }
+        return std::make_shared<MultiTargetScorer>(sub_scorers);
+    }
+}
+
 
 
 int main(int argc, const char * argv[]) {

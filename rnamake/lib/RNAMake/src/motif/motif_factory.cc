@@ -19,7 +19,8 @@ MotifOP
 MotifFactory::motif_from_file(
         String const & path,
         bool rebuild_x3dna,
-        bool include_protein) {
+        bool include_protein,
+        int force_num_chains) {
 
 
     if (!file_exists(path)) {

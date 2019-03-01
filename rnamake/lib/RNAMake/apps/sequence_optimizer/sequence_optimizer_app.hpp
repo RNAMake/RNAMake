@@ -14,6 +14,26 @@
 #include "base/application.hpp"
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 
+class SequenceOptimizerAppException : public std::runtime_error {
+public:
+    SequenceOptimizerAppException(
+            String const & message):
+            std::runtime_error(message)
+    {}
+};
+
+
+struct NodeIndexandEdge {
+    int ni; //node index
+    int ei; //end index
+};
+
+struct ConnectionTemplate {
+    NodeIndexandEdge start;
+    NodeIndexandEdge end;
+    String type;
+};
+
 class SequenceOptimizerApp : public Application {
 public:
     SequenceOptimizerApp() : Application(),
@@ -33,14 +53,23 @@ public:
     
     void
     run();
-    
+
 private:
     void
-    run_from_mg();
+    _get_end_connections(
+            MotifGraphOP);
+
+    ConnectionTemplate
+    _parse_end_commandline_args();
+
+    SequenceOptimizerScorerOP
+    _setup_optimizer_scorer();
+
+
     
     
 private:
-    
+    std::vector<ConnectionTemplate> connections_;
     SequenceOptimizer3D optimizer_;
     
     

@@ -90,10 +90,10 @@ public:
         int ni2,
         int ei2,
         bool target_an_aligned_end): SequenceOptimizerScorer(target_an_aligned_end),
-    ni1_(ni1),
-    ei1_(ei1),
-    ni2_(ni2),
-    ei2_(ei2) {}
+        ni1_(ni1),
+        ei1_(ei1),
+        ni2_(ni2),
+        ei2_(ei2) {}
     
 public:
     float
@@ -109,6 +109,27 @@ private:
     int ni1_, ni2_;
     int ei1_, ei2_;
     BasepairStateOP state1_, state2_;
+};
+
+class MultiTargetScorer : public SequenceOptimizerScorer {
+public:
+    MultiTargetScorer(
+            std::vector<SequenceOptimizerScorerOP> sub_scorers):
+            sub_scorers_(sub_scorers),
+            SequenceOptimizerScorer(false) {}
+public:
+    float
+    score(MotifStateGraphOP const & msg) {
+        score_ = 0;
+        for(auto const & sub_scorer : sub_scorers_) {
+            score_ += sub_scorer->score(msg);
+        }
+        return score_;
+    }
+
+private:
+    std::vector<SequenceOptimizerScorerOP> sub_scorers_;
+    float score_;
 };
 
 

@@ -15,8 +15,11 @@
 X3dna::X3dna() {
     String env = "X3DNA="+x3dna_path();
     s_ = strdup(env.c_str());
-    putenv(s_);
-    
+
+    if(getenv("X3DNA") == NULL) {
+        putenv(s_);
+    }
+
     bin_path_ = x3dna_path()+"/bin/";
 }
 

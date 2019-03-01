@@ -80,7 +80,8 @@ public: // adding functions
     RNAStructureOP
     get_structure(
         String const & path,
-        String name = "");
+        String name = "",
+        int force_num_chains = -1);
     
     void
     add_motif(

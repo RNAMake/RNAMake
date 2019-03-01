@@ -111,8 +111,9 @@ RM::motif_state_ensemble(
 
 RNAStructureOP
 RM::get_structure(
-    String const & path,
-    String name) {
+        String const & path,
+        String name,
+        int force_num_chains = -1) {
     
     auto m = mf_.motif_from_file(path);
     if(name != "") { m->name(name); }

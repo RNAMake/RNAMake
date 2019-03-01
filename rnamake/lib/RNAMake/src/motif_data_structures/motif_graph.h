@@ -592,6 +592,10 @@ public: //Motif Merger Wrappers
     
     sstruct::PoseOP
     secondary_structure() {
+
+        _update_merger();
+        return merger_->secondary_structure();
+
         try {
             _update_merger();
             return merger_->secondary_structure();

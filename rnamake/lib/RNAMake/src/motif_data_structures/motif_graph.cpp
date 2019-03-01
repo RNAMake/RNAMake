@@ -760,6 +760,13 @@ MotifGraph::_update_align_list() {
                 auto c = n->connections()[0];
                 auto parent = c->partner(n->index());
                 if(used_nodes.find(parent) == used_nodes.end()) { continue; }
+
+                // don't add unaligned nodes twice
+                auto found = 0;
+                for(auto const & na_node : non_aligned_nodes) {
+                    if(na_node == n) { found = 1; break; }
+                }
+                if(found) { continue; }
                 align_list_.push_back(n);
             }
             

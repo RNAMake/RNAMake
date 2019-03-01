@@ -42,7 +42,7 @@ struct X3Residue {
     i_code(ni_code)
     {}
     
-    ~X3Residue() {}
+    ~X3Residue() { }
     
     bool
     operator == (X3Residue const & r) const {

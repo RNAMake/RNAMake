@@ -56,7 +56,8 @@ public:
     motif_from_file(
             String const & path,
             bool rebuild_x3dna = true,
-            bool include_protein = false);
+            bool include_protein = false,
+            int force_num_chains = -1);
 
     MotifOP
     get_oriented_motif(
