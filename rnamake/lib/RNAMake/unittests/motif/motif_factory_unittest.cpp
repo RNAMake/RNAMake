@@ -103,6 +103,11 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         aligned_motif_2->to_pdb("aligned_2.pdb", 1, 1);
 
     }
+
+    SECTION("test forcing set number of chains") {
+
+
+    }
     
 }
 

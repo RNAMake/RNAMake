@@ -47,6 +47,11 @@ MotifFactory::motif_from_file(
         fname = fname.substr(0, fname.length() - 4);
     }
 
+    if(force_num_chains != -1) {
+
+        exit(0);
+    }
+
     auto basepairs = _setup_basepairs(pdb_path, structure, rebuild_x3dna);
     auto ends = _setup_basepair_ends(structure, basepairs);
     auto m = std::make_shared<Motif>(structure, basepairs, ends);
