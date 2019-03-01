@@ -51,6 +51,7 @@ DesignRNAApp::setup_options() {
     add_option("no_sterics", false, OptionType::BOOL, false);
     add_option("info", false, OptionType::BOOL, false);
     add_option("return_best", false, OptionType::BOOL, false);
+    add_option("dump_aligned_scaffold", false, OptionType::BOOL, false);
 
     //no sequence opt
     add_option("only_ideal", false, OptionType::BOOL, false);
@@ -144,6 +145,11 @@ DesignRNAApp::_setup_from_pdb() {
     //if (get_bool_option("no_segment")) {
     RM::instance().add_motif(get_string_option("pdb"), "scaffold", MotifType::TWOWAY);
     auto m = RM::instance().motif("scaffold", "", end_bp_name);
+
+    if(get_bool_option("dump_aligned_scaffold")) {
+        m->to_pdb("aligned_scaffold.pdb", 1, 1);
+    }
+
     mg_->add_motif(m);
     start_ = EndStateInfo{start_bp_name, 0};
     end_ = EndStateInfo{end_bp_name, 0};
