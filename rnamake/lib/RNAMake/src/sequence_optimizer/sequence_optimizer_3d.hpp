@@ -125,16 +125,18 @@ public: //setup
     set_scorer(SequenceOptimizerScorerOP const & scorer) {
         scorer_ = scorer;
     }
-    
-private:
-    
+
     struct OptimizedSequence {
         String sequence;
         float dist_score, eterna_score;
     };
-    
+
+
     typedef std::shared_ptr<OptimizedSequence> OptimizedSequenceOP;
     typedef std::vector<OptimizedSequenceOP> OptimizedSequenceOPs;
+
+private:
+
     
     struct DesignableBP {
         inline

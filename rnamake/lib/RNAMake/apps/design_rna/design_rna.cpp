@@ -55,6 +55,7 @@ DesignRNAApp::setup_options() {
 
     //no sequence opt
     add_option("only_ideal", false, OptionType::BOOL, false);
+    add_option("only_tether_opt", false, OptionType::BOOL, false);
 
     add_cl_options(search_.options(), "search");
     add_cl_options(optimizer_.options(), "optimizer");
@@ -387,6 +388,8 @@ DesignRNAApp::run() {
 
     out.open(get_string_option("out_file"));
 
+    optimizer_.set_option_value("verbose", true);
+
     int design_num = 0;
     int solution_count = 0;
     while (!search_.finished()) {
@@ -399,8 +402,122 @@ DesignRNAApp::run() {
             exit(0);
         }
 
-
         auto mt = sol->to_motif_tree();
+
+        auto motif_names = String("");
+        for (auto const & n : *mt) {
+            motif_names += n->data()->name() + ";";
+        }
+
+        if(get_bool_option("only_tether_opt")) {
+            auto new_mg = std::make_shared<MotifGraph>();
+            new_mg->set_option_value("sterics", false);
+            for(auto const & n : *mt) {
+                if(new_mg->size() == 0) {
+                    auto start_bp = mg_->get_node(start_.n_pos)->data()->get_basepair(start_.name)[0];
+                    auto m = std::make_shared<Motif>(*n->data());
+                    auto aligned = get_aligned_motif(start_bp, m->ends()[0], m);
+                    new_mg->add_motif(aligned);
+                }
+                else {
+                    new_mg->add_motif(n->data(), n->parent_index(), n->parent_end_index());
+                }
+            }
+
+            auto last_node = new_mg->last_node();
+            new_mg->replace_ideal_helices();
+
+            if (get_bool_option("only_ideal")) {
+                sf_out << design_num << "," << sol->score() << "," << new_mg->designable_sequence();
+                sf_out << "," << new_mg->secondary_structure()->dot_bracket() << ",";
+                sf_out << motif_names << std::endl;
+
+                out << new_mg->to_str() << std::endl;
+
+                design_num++;
+
+                if (get_bool_option("pdbs")) {
+                    new_mg->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1, 1, 1);
+                    solution_count++;
+                    //mg_->write_pdbs();
+                    //exit(0);
+                }
+
+                if(get_bool_option("design_pdbs")) {
+                    mt->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1, 1, 1);
+                    solution_count++;
+                }
+
+                if (design_num >= get_int_option("designs")) {
+                    std::cout << "DESIGN RNA: generated " << get_int_option("designs") << " ";
+                    std::cout << "design(s)! if you would like more please specify how many you ";
+                    std::cout << "would like with -designs #Num" << std::endl;
+                    sf_out.close();
+                    out.close();
+
+                    exit(0);
+                }
+                continue;
+
+            }
+            auto scorer = std::make_shared<ExternalTargetScorer>(end_bp->state(), last_node->index(), 1, target_an_aligned_end);
+
+            auto sols = SequenceOptimizer3D::OptimizedSequenceOPs();
+            try {
+                sols = optimizer_.get_optimized_sequences(new_mg, scorer);
+            }
+            catch(...) { continue; }
+            auto dist_cutoff = optimizer_.get_float_option("cutoff");
+
+            if (sols.size() > 0) {
+
+                int opt_num = 0;
+                for (auto const & s : sols) {
+                    std::cout << s->dist_score << " " << dist_cutoff << std::endl;
+                    if(s->dist_score > dist_cutoff) { continue; }
+                    sf_out << design_num << "," << sol->score() << "," << new_mg->designable_sequence() << "," ;
+                    sf_out << new_mg->dot_bracket() << "," << motif_names << ",";
+                    sf_out << opt_num << "," << s->sequence << "," << s->dist_score << "," << s->eterna_score;
+                    sf_out << std::endl;
+
+                    opt_num++;
+
+                    try {
+                        auto copy_mg = std::make_shared<MotifGraph>(*new_mg);
+                        std::cout << new_mg->size() << std::endl;
+                        std::cout << copy_mg->size() << std::endl;
+                        auto dss = copy_mg->designable_secondary_structure();
+                        std::cout << dss->sequence() << std::endl;
+                        dss->replace_sequence(s->sequence);
+                        copy_mg->replace_helical_sequence(dss);
+                        out << copy_mg->to_str() << std::endl;
+
+                        if (get_bool_option("design_pdbs")) {
+                            copy_mg->to_pdb("design." + std::to_string(solution_count) + ".pdb", 1, 1, 1);
+                            solution_count++;
+                        }
+                    } catch (std::runtime_error const & e) {
+                        std::cout << e.what() << std::endl;
+                    }
+                    design_num++;
+                    break;
+                }
+
+
+                if (design_num >= get_int_option("designs")) {
+                    std::cout << "DESIGN RNA: generated " << get_int_option("designs") << " ";
+                    std::cout << "design(s)! if you would like more please specify how many you ";
+                    std::cout << "would like with -designs #Num" << std::endl;
+                    sf_out.close();
+                    out.close();
+
+                    exit(0);
+                }
+            }
+            continue;
+
+        }
+
         mg_->add_motif_tree(mt, start_.n_pos, start_.name);
         //for(auto const & n : *mt) {
         //    std::cout << n->data()->name() << std::endl;
@@ -413,11 +530,6 @@ DesignRNAApp::run() {
         auto end_node = mg_->get_node(end_.n_pos);
         auto end_i = end_node->data()->get_end_index(end_.name);
         auto partner = end_node->connections()[end_i]->partner(end_node->index());
-
-        auto motif_names = String("");
-        for (auto const & n : *mt) {
-            motif_names += n->data()->name() + ";";
-        }
 
         if (get_bool_option("only_ideal")) {
 

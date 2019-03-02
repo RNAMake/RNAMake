@@ -246,13 +246,13 @@ SequenceOptimizer3D::get_optimized_sequences(
         new_bp_state = possible_bps_[rng_.randrange(possible_bps_.size())];
         d_bp->update_state(new_bp_state);
 
-        find_seq_violations(ss, next_violations_);
+        /*find_seq_violations(ss, next_violations_);
         next_gc_stretches_ = find_gc_helix_stretches(ss);
 
         if(new_seq_violations()) {
             d_bp->revert_state();
             continue;
-        }
+        }*/
 
         _update_designable_bp(d_bp, msg, ss);
         

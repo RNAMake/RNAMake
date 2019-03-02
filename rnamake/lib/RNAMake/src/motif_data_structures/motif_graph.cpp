@@ -581,7 +581,7 @@ MotifGraph::replace_ideal_helices() {
                     auto m_added = get_aligned_motif(old_n->data()->ends()[0],
                                                      new_n->data()->ends()[0],
                                                      new_n->data());
-                    n->data() = m_added;
+                    new_n->data() = m_added;
                 }
 
             }
