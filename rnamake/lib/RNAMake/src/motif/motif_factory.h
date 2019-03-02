@@ -142,6 +142,11 @@ private:
             MotifOP const &,
             MotifOP const &);
 
+private: // new functions to add to new code
+    StructureOP
+    _get_reduced_chain_num_structure(
+            Structure const &);
+
 
 private:
     MotiftoSecondaryStructure parser_;

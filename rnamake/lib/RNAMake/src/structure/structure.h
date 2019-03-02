@@ -159,7 +159,7 @@ public: // getters
     
     inline
     ChainOPs const &
-    chains() { return chains_; }
+    chains() const { return chains_; }
 
     
 private:

@@ -48,7 +48,7 @@ MotifFactory::motif_from_file(
     }
 
     if(force_num_chains != -1) {
-
+        auto new_structure = _get_reduced_chain_num_structure(*structure);
         exit(0);
     }
 
@@ -432,6 +432,31 @@ MotifFactory::_bead_overlap(
 
     return count;
 
+}
+
+StructureOP
+MotifFactory::_get_reduced_chain_num_structure(
+        Structure const & start) {
+
+    auto chains = start.chains();
+    auto best_i = -1;
+    auto best_j = -1;
+    auto best_score = 1000;
+
+    for(int i = 0; i < chains.size(); i++) {
+        for(int j = 0; j < chains.size(); j++) {
+            if(i == j) { continue; }
+            auto o3_atom = chains[i]->last()->get_atom("O3'");
+            auto p_atom  = chains[j]->first()->get_atom("P");
+            std::cout << i << " " << j << " " << o3_atom->coords().distance(p_atom->coords()) << std::endl;
+
+        }
+    }
+
+
+
+
+    return StructureOP(nullptr);
 }
 
 
