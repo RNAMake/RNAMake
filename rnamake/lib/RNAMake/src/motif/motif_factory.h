@@ -145,7 +145,8 @@ private:
 private: // new functions to add to new code
     StructureOP
     _get_reduced_chain_num_structure(
-            Structure const &);
+            Structure const &,
+            int);
 
 
 private:

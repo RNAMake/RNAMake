@@ -47,9 +47,12 @@ MotifFactory::motif_from_file(
         fname = fname.substr(0, fname.length() - 4);
     }
 
-    if(force_num_chains != -1) {
-        auto new_structure = _get_reduced_chain_num_structure(*structure);
-        exit(0);
+    if(force_num_chains != -1 && structure->chains().size() != force_num_chains) {
+        if(force_num_chains > structure->chains().size()) {
+            throw MotifFactoryException(
+                    "force_num_chains must be smaller than current number in motif");
+        }
+        structure = _get_reduced_chain_num_structure(*structure, force_num_chains);
     }
 
     auto basepairs = _setup_basepairs(pdb_path, structure, rebuild_x3dna);
@@ -436,27 +439,50 @@ MotifFactory::_bead_overlap(
 
 StructureOP
 MotifFactory::_get_reduced_chain_num_structure(
-        Structure const & start) {
+        Structure const & start,
+        int chain_num) {
 
     auto chains = start.chains();
-    auto best_i = -1;
-    auto best_j = -1;
-    auto best_score = 1000;
 
-    for(int i = 0; i < chains.size(); i++) {
-        for(int j = 0; j < chains.size(); j++) {
-            if(i == j) { continue; }
-            auto o3_atom = chains[i]->last()->get_atom("O3'");
-            auto p_atom  = chains[j]->first()->get_atom("P");
-            std::cout << i << " " << j << " " << o3_atom->coords().distance(p_atom->coords()) << std::endl;
+    for(int round = 0; round < (chains.size() - chain_num); round++) {
+        auto best_i = -1;
+        auto best_j = -1;
+        auto best_score = 1000;
+        auto dist = 100;
 
+        for (int i = 0; i < chains.size(); i++) {
+            for (int j = 0; j < chains.size(); j++) {
+                if (i == j) { continue; }
+                auto o3_atom = chains[i]->last()->get_atom("O3'");
+                auto p_atom = chains[j]->first()->get_atom("P");
+                dist = o3_atom->coords().distance(p_atom->coords());
+                if(dist < best_score) {
+                    best_i = i;
+                    best_j = j;
+                    best_score = dist;
+                }
+
+            }
         }
+
+        auto new_chains = ChainOPs();
+        auto residues = ResidueOPs();
+        for(auto const & r : chains[best_i]->residues()) {
+            residues.push_back(r);
+        }
+        for(auto const & r : chains[best_j]->residues()) {
+            residues.push_back(r);
+        }
+        auto new_chain = std::make_shared<Chain>(residues);
+        new_chains.push_back(new_chain);
+        for(int i = 0; i < chains.size(); i++) {
+            if(i == best_i || i == best_j) { continue; }
+            new_chains.push_back(chains[i]);
+        }
+        chains = new_chains;
     }
 
-
-
-
-    return StructureOP(nullptr);
+    return std::make_shared<Structure>(chains);
 }
 
 

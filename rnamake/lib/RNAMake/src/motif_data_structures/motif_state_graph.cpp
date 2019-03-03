@@ -25,14 +25,32 @@ MotifStateGraph::MotifStateGraph(MotifGraphOP const & mg) : MotifStateGraph() {
 }
 
 MotifStateGraph::MotifStateGraph(MotifStateGraph const & msg) : MotifStateGraph() {
-        
-    graph_ = GraphStatic<MSNodeDataOP>(msg.graph_);
+
+    auto max_index = 0;
+    for(auto const & n : msg.graph_.nodes()) {
+        auto n_data = std::make_shared<MSNodeData>(*n->data());
+        graph_.add_data(n_data, -1, -1, -1, n->data()->cur_state->end_states().size(), 1, n->index());
+        if(n->index() > max_index) {
+            max_index = n->index();
+        }
+    }
+    graph_.index(max_index+1);
+    for(auto const & c : msg.graph_.connections()) {
+        graph_.connect(c->node_1()->index(), c->node_2()->index(),
+                       c->end_index_1(), c->end_index_2());
+    }
+
+    aligned_ = msg.aligned_;
+    update_align_list_ = 1;
+
+    /*graph_ = GraphStatic<MSNodeDataOP>(msg.graph_);
     // dear god this is horrible but cant figure out a better way to do a copy
     for(auto const & n : msg.graph_.nodes()) {
         graph_.get_node(n->index())->data() = std::make_shared<MSNodeData>(*n->data());
     }
+    update_align_list_ = 1;
+    _update_align_list();*/
 }
-
 
 void
 MotifStateGraph::_setup_from_mg(MotifGraphOP const & mg) {
@@ -351,6 +369,7 @@ MotifStateGraph::to_motif_graph() {
     auto j = 0;
     
     _update_align_list();
+
     for(auto const & n : align_list_) {
         auto m = RM::instance().motif(n->data()->name(), "", n->data()->end_name(0));
         
@@ -365,7 +384,7 @@ MotifStateGraph::to_motif_graph() {
             auto pei = c->end_index(parent->index());
             j = mg->add_motif(m, index_hash[parent->index()], pei);
         }
-        
+
         index_hash[n->index()] = j;
         
     }

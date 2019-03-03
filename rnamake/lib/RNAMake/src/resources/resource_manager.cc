@@ -113,9 +113,9 @@ RNAStructureOP
 RM::get_structure(
         String const & path,
         String name,
-        int force_num_chains = -1) {
+        int force_num_chains) {
     
-    auto m = mf_.motif_from_file(path);
+    auto m = mf_.motif_from_file(path, false, false, force_num_chains);
     if(name != "") { m->name(name); }
 
     for(auto & end : m->ends()) {

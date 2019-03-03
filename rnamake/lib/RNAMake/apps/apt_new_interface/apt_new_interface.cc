@@ -38,7 +38,7 @@ AptNewInterface::run() {
     auto mf = MotifFactory();
 
     // add new motifs to resource manager
-    auto scaffold_rm = RM::instance().get_structure(get_string_option("scaffold"), "scaffold");
+    auto scaffold_rm = RM::instance().get_structure(get_string_option("scaffold"), "scaffold", 3);
     auto scaffold_m = std::make_shared<Motif>(*scaffold_rm);
     scaffold_m->name("scaffold");
     scaffold_m->mtype(MotifType::TCONTACT);
@@ -64,8 +64,10 @@ AptNewInterface::run() {
     msg->add_state(docked_motif->get_state(), -1, -1, 1);
     msg->increase_level();
 
+    auto msg_copy = std::make_shared<MotifStateGraph>(*msg);
+
     lookup_ = StericLookup(1.0, 5.0, 7);
-    _setup_sterics(msg);
+    _setup_sterics(msg_copy);
 
     auto start_path_1 = String("flex_helices,twoway,flex_helices");
     auto start_path_2 = String("flex_helices,twoway,flex_helices,twoway,flex_helices");
@@ -77,7 +79,7 @@ AptNewInterface::run() {
     auto end_end_pos = msg->get_node(0)->data()->get_end_index("A41-A87");
 
     auto mc_1 = MotifStateMonteCarlo(ms_libraries_1);
-    mc_1.setup(msg, 2, 0, start_end_pos, end_end_pos, false);
+    mc_1.setup(msg_copy, 2, 0, start_end_pos, end_end_pos, false);
     mc_1.set_option_value("accept_score", 7);
     mc_1.set_option_value("max_solutions", 1);
     mc_1.lookup(lookup_);
@@ -93,11 +95,36 @@ AptNewInterface::run() {
         std::cout << " first solution found! " << std::endl;
     }
 
+    exit(0);
+
+    /*sol_1->mg->write_pdbs();
+    sol_1->mg->to_pdb("test.pdb", 1, 1);
+    auto p = sol_1->mg->secondary_structure();
+    std::cout << p->sequence() << std::endl;
+    std::cout << p->dot_bracket() << std::endl;
+    exit(0);*/
+
+    for(auto it = sol_1->mg->node_begin();
+             it != sol_1->mg->node_end();
+             it++){
+
+        auto n = *(it);
+        std::cout << n->index() << " : ";
+        for(auto const & c : n->connections()) {
+            if(c == nullptr) { continue; }
+            std::cout << c->partner(n->index())->index() << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    std::cout << "\n" << std::endl;
+    exit(0);
+
+
     auto next_msg = 0;
 
     auto beads = Points();
     for (auto & n : *msg) {
-        std::cout << n->data()->cur_state->beads().size() << std::endl;
         for(auto const & b : n->data()->cur_state->beads()) {
             beads.push_back(b);
         }
@@ -126,7 +153,20 @@ AptNewInterface::run() {
     }
 
 
-    sol_2->mg->write_pdbs();
+    /*sol_2->mg->write_pdbs();
+    sol_2->mg->to_pdb("test.pdb", 1, 1);
+    auto p = sol_2->mg->secondary_structure();
+    std::cout << p->sequence() << std::endl;
+    std::cout << p->dot_bracket() << std::endl;
+    */
+    for(auto const & n : *sol_2->mg) {
+        std::cout << n->index() << " : ";
+        for(auto const & c : n->connections()) {
+            if(c == nullptr) { continue; }
+            std::cout << c->partner(n->index())->index() << " ";
+        }
+        std::cout << std::endl;
+    }
 
     std::ofstream out;
     out.open("multi_path_solution.out");

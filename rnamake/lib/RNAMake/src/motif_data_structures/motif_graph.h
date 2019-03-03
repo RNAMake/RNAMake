@@ -322,7 +322,16 @@ public: //iterators
     
     const_iterator begin() const { return graph_.begin(); }
     const_iterator end()   const { return graph_.end(); }
-    
+
+public:
+
+    typedef typename GraphNodeOPs<MotifOP>::iterator node_iterator;
+    typedef typename GraphNodeOPs<MotifOP>::const_iterator node_const_iterator;
+
+    node_iterator node_begin() { _update_align_list(); return align_list_.begin(); }
+    node_iterator node_end()   { return align_list_.end(); }
+
+
 private://add function helpers
     
     GraphNodeOP<MotifOP>

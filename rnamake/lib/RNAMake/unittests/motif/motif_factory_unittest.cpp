@@ -108,6 +108,8 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         auto path = base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/motif/construct_3.pdb";
         auto m = mf.motif_from_file(path, false, true, 1);
 
+        REQUIRE(m->chains().size() == 1);
+
     }
 
 }
