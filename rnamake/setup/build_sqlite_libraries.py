@@ -556,24 +556,38 @@ class BuildSqliteLibraries(object):
 
         mt = motif_tree.MotifTree()
 
-        for i in range(20):
+        mlib = motif_library.MotifLibrary(motif_type.HELIX)
+
+        data = []
+        keys = ['data', 'name', 'end_name', 'end_id', 'id']
+        count = 1
+        for i in range(2, 12):
+            m = mlib.get_motif("HELIX.LE."+str(i))
             if m is None:
                 continue
 
+            succeses = []
+
+            for ei in range(len(m.ends)):
+                m_added = motif_factory.factory.can_align_motif_to_end(m, ei)
+
+                if m_added is None:
+                    continue
+
+                succeses.append([m_added, ei])
 
 
-            data = []
-            keys = ['data', 'name', 'end_name', 'end_id', 'id']
             for i, s in enumerate(succeses):
                 m, ei = s
                 m_added = motif_factory.factory.align_motif_to_common_frame(m, ei)
                 #print m_added.name, m_added.ends[0].name(), m_added.end_ids[0]
 
                 data.append([m_added.to_str(), m_added.name,
-                            m_added.ends[0].name(), m_added.end_ids[0], i])
+                            m_added.ends[0].name(), m_added.end_ids[0], count])
+                count += 1
 
-            path = settings.RESOURCES_PATH +"/motif_libraries_new/le_helices.db"
-            sqlite_library.build_sqlite_library(path, data, keys, 'id')
+        path = settings.RESOURCES_PATH +"/motif_libraries_new/le_helices.db"
+        sqlite_library.build_sqlite_library(path, data, keys, 'id')
 
     def build_motif_state_libraries(self):
         for libname in sqlite_library.MotifSqliteLibrary.get_libnames().keys():
@@ -788,13 +802,14 @@ builder = BuildSqliteLibraries()
 #builder.build_ideal_helices()
 #builder.build_basic_libraries()
 #builder.build_existing_motif_library()
-builder.build_helix_ensembles()
+#builder.build_helix_ensembles()
 #builder.build_flex_helix_library()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
+builder.build_le_helix_lib()
 #builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-builder.build_motif_ensemble_state_libraries()
+#builder.build_motif_ensemble_state_libraries()
 #builder.build_flex_helices()
 
 

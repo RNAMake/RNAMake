@@ -23,7 +23,21 @@ struct MotifStateMonteCarloSolution {
     float score;
 };
 
+struct MotifStateMonteCarloSolutionNew {
+    inline
+    MotifStateMonteCarloSolutionNew(
+            MotifStateGraphOP n_msg,
+            float n_score):
+            msg(n_msg),
+            score(n_score) {}
+
+    MotifStateGraphOP msg;
+    float score;
+};
+
+
 typedef std::shared_ptr<MotifStateMonteCarloSolution> MotifStateMonteCarloSolutionOP;
+typedef std::shared_ptr<MotifStateMonteCarloSolutionNew> MotifStateMonteCarloSolutionNewOP;
 
 class MotifStateMonteCarlo {
 public:
@@ -55,6 +69,9 @@ public:
 
     MotifStateMonteCarloSolutionOP
     next();
+
+    MotifStateMonteCarloSolutionNewOP
+    next_state();
 
     bool
     finished();

@@ -58,12 +58,20 @@ SequenceOptimizerApp::run() {
     // get sequence optimizer scorer
     auto scorer = _setup_optimizer_scorer();
 
-    mg->write_pdbs();
-    auto p = mg->secondary_structure();
-    std::cout << p->sequence() << std::endl;
+    for(auto & n : *mg) {
+        if(n->data()->name().substr(0, 5) == "HELIX") {
+            n->data()->mtype(MotifType::HELIX);
+        }
+    }
 
-    //auto test_sols = optimizer_.get_optimized_sequences(mg, scorer);
+    mg->replace_ideal_helices();
+    mg->write_pdbs("org");
+    auto test_sols = optimizer_.get_optimized_sequences(mg, scorer);
+    std::cout << test_sols[0]->dist_score << std::endl;
 
+    auto dss = mg->designable_secondary_structure();
+    mg->replace_helical_sequence(test_sols[0]->sequence);
+    mg->write_pdbs("new");
 
     exit(0);
 

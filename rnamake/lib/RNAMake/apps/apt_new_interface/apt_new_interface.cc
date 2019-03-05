@@ -72,6 +72,9 @@ AptNewInterface::run() {
     auto start_path_1 = String("flex_helices,twoway,flex_helices");
     auto start_path_2 = String("flex_helices,twoway,flex_helices,twoway,flex_helices");
 
+    //auto start_path_1 = String("ideal_helices_min,twoway,ideal_helices_min");
+    //auto start_path_2 = String("ideal_helices_min,twoway,ideal_helices_min,twoway,ideal_helices_min");
+
     auto ms_libraries_1 = _get_libraries(start_path_1);
     auto ms_libraries_2 = _get_libraries(start_path_2);
 
@@ -80,12 +83,12 @@ AptNewInterface::run() {
 
     auto mc_1 = MotifStateMonteCarlo(ms_libraries_1);
     mc_1.setup(msg_copy, 2, 0, start_end_pos, end_end_pos, false);
-    mc_1.set_option_value("accept_score", 7);
+    mc_1.set_option_value("accept_score", 10);
     mc_1.set_option_value("max_solutions", 1);
     mc_1.lookup(lookup_);
     mc_1.start();
 
-    auto sol_1 = mc_1.next();
+    auto sol_1 = mc_1.next_state();
     if(sol_1 == nullptr) {
         std::cout << " no solution 1" << std::endl;
         exit(0);
@@ -95,17 +98,9 @@ AptNewInterface::run() {
         std::cout << " first solution found! " << std::endl;
     }
 
-    exit(0);
-
-    /*sol_1->mg->write_pdbs();
-    sol_1->mg->to_pdb("test.pdb", 1, 1);
-    auto p = sol_1->mg->secondary_structure();
-    std::cout << p->sequence() << std::endl;
-    std::cout << p->dot_bracket() << std::endl;
-    exit(0);*/
-
-    for(auto it = sol_1->mg->node_begin();
-             it != sol_1->mg->node_end();
+    auto sol_1_msg = sol_1->msg;
+    /*for(auto it = sol_1_msg->node_begin();
+             it != sol_1_msg->node_end();
              it++){
 
         auto n = *(it);
@@ -115,11 +110,7 @@ AptNewInterface::run() {
             std::cout << c->partner(n->index())->index() << " ";
         }
         std::cout << std::endl;
-    }
-
-    std::cout << "\n" << std::endl;
-    exit(0);
-
+    }*/
 
     auto next_msg = 0;
 
@@ -134,9 +125,8 @@ AptNewInterface::run() {
     start_end_pos = msg->get_node(2)->data()->get_end_index("A10-B9");
     end_end_pos = msg->get_node(3)->data()->get_end_index("A60-A65");
 
-
     auto mc_2 = MotifStateMonteCarlo(ms_libraries_2);
-    mc_2.setup(msg, 2, 3, start_end_pos, end_end_pos, true);
+    mc_2.setup(sol_1_msg, 2, 3, start_end_pos, end_end_pos, true);
     mc_2.set_option_value("accept_score", 15);
     mc_2.set_option_value("max_solutions", 1);
     mc_2.lookup(lookup_);
@@ -153,12 +143,13 @@ AptNewInterface::run() {
     }
 
 
-    /*sol_2->mg->write_pdbs();
+    sol_2->mg->replace_ideal_helices();
+    sol_2->mg->write_pdbs();
     sol_2->mg->to_pdb("test.pdb", 1, 1);
     auto p = sol_2->mg->secondary_structure();
     std::cout << p->sequence() << std::endl;
     std::cout << p->dot_bracket() << std::endl;
-    */
+
     for(auto const & n : *sol_2->mg) {
         std::cout << n->index() << " : ";
         for(auto const & c : n->connections()) {

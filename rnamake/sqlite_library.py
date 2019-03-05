@@ -298,7 +298,8 @@ class MotifSqliteLibrary(SqliteLibrary):
             "bp_steps"        : "/motif_libraries_new/bp_steps.db",
             "new_bp_steps"    : "/motif_libraries_new/new_bp_steps.db",
             "flex_helices"    : "/motif_libraries_new/flex_helices.db",
-            "existing"        : "/motif_libraries_new/existing.db"
+            "existing"        : "/motif_libraries_new/existing.db",
+            "le_helices"      : "/motif_libraries_new/le_helices.db"
         }
 
         return libnames

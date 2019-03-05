@@ -130,6 +130,59 @@ MotifStateMonteCarlo::next() {
     return MotifStateMonteCarloSolutionOP(nullptr);
 }
 
+
+MotifStateMonteCarloSolutionNewOP
+MotifStateMonteCarlo::next_state() {
+    // do not call run() now, getting one solution at a time
+    enumerating_ = true;
+
+    auto score_num = 0;
+    auto pos = 0;
+    auto cur_score = get_score(msg_->last_node()->data()->cur_state->end_states()[1]);
+    auto new_score = 0.0;
+    auto best_score = cur_score;
+    mc_.set_temperature(1.0);
+    while (stage_ < stages_) {
+        while (step_ < steps_) {
+            step_ += 1;
+            new_score = perform_motif_swap(cur_score);
+            // monte carlo move accepted
+            if(new_score > 0) { cur_score = new_score; }
+            else              { continue; }
+
+            if(new_score < best_score) { best_score = new_score; }
+
+            // accept solution?
+            if(new_score < accept_score_) {
+                auto msg_copy = std::make_shared<MotifStateGraph>(*msg_);
+                if(_seen_solution(msg_)) { continue; }
+                auto last_n = msg_->last_node()->index();
+                auto nj_name = msg_->get_node(nj_)->data()->end_name(ej_);
+                auto last_name = msg_->get_node(last_n)->data()->end_name(1);
+                msg_copy->add_connection(nj_, last_n, nj_name, last_name);
+                return std::make_shared<MotifStateMonteCarloSolutionNew>(msg_copy, new_score);
+            }
+
+        }
+        std::cout << "stage: " << stage_ << " best_score: " << best_score << " cur_score: " << cur_score << std::endl;
+
+        int j = 0;
+        for(int i = org_num_; i < org_num_+mses_.size(); i++) {
+            auto new_ms = mses_[j][rng_.randrange((int) mses_[pos].size() - 1)];
+            msg_->replace_state(i, new_ms);
+            j++;
+        }
+
+        cur_score = get_score(msg_->last_node()->data()->cur_state->end_states()[1]);
+
+        step_ = 0;
+        stage_ += 1;
+    }
+
+
+    return MotifStateMonteCarloSolutionNewOP(nullptr);
+}
+
 void
 MotifStateMonteCarlo::start() {
     enumerating_ = true;
