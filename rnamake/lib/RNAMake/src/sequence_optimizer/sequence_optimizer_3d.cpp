@@ -91,6 +91,7 @@ SequenceOptimizer3D::find_seq_violations(
         violations[i] = 0;
     }
 
+    //TODO go back and see if this works!!, maybe right a sub class to test seperately
     for(auto const & c : ss->chains()) {
         auto & res = c->residues();
         for(int i = 0; i < res.size(); i++) {

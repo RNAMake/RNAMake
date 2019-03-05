@@ -59,6 +59,10 @@ private:
     find_seq_violations(
             Ints const &);
 
+    bool
+    find_gc_strech(
+            Ints const &);
+
 private:
     std::vector<Ints> disallowed_num_sequences_;
 };

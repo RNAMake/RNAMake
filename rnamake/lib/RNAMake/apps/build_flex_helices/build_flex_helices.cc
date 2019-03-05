@@ -203,6 +203,8 @@ BuildFlexHelicesApp::get_avg_helix(
             num_seq[j] = convert_char_to_res_code(seq1[j]);
         }
 
+        if(find_seq_violations(num_seq) || find_gc_strech(num_seq)) { continue; }
+
         new_seq = seq1 + "&" + seq2;
         /*motifs = get_motifs_from_seq_and_ss(new_seq, structure);
 
@@ -222,6 +224,7 @@ BuildFlexHelicesApp::get_avg_helix(
         //std::cout << new_seq << " " <<  _get_hit_count(new_start, new_seq, struc) << std::endl;
     }
     std::cout << i << std::endl;
+    return MotifOP(nullptr);
 }
 
 bool
@@ -229,26 +232,40 @@ BuildFlexHelicesApp::find_seq_violations(
         Ints const & num_seq) {
     auto pos = 0;
 
-    for (auto const & r : num_seq) {
-        for (int j = 0; j < disallowed_res_types_sequences_.size(); j++) {
-            if (i < disallowed_res_types_sequences_[j].size()) { continue; }
+    //std::cout << num_seq.size() << " " << disallowed_num_sequences_[0].size() << std::endl;
+
+    for (int i = 0; i < num_seq.size(); i++) {
+        for (int j = 0; j < disallowed_num_sequences_.size(); j++) {
+            if (i < disallowed_num_sequences_[j].size()-1) { continue; }
             auto match = true;
-            pos = i - disallowed_res_types_sequences_[j].size();
-            for (auto const & e : disallowed_res_types_sequences_[j]) {
-                if (res[pos]->res_type() != e) {
+            pos = i - (disallowed_num_sequences_[j].size()-1);
+            if(pos < 0) { continue; }
+            for (auto const & e : disallowed_num_sequences_[j]) {
+                if (num_seq[pos] != e) {
                     match = false;
                     break;
                 }
                 pos += 1;
             }
             if (match) {
-                violations[j] += 1;
+                return true;
             }
         }
     }
     return false;
 }
 
+bool
+BuildFlexHelicesApp::find_gc_strech(
+        Ints const & num_seq) {
+    int count = 0;
+    for(auto const & r : num_seq) {
+        if(r == 1 || r == 2)  { count += 1; }
+        else                  { count = 0;  }
+        if(count > 2) { return true; }
+    }
+    return false;
+}
 
 
 int
