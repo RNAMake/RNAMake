@@ -37,6 +37,13 @@ public:
             c_(c),
             d_(d) {}
 
+    Quaternion(
+            Quaternion const & q):
+            a_(q.a_),
+            b_(q.b_),
+            c_(q.c_),
+            d_(q.d_){}
+
 public:
     friend
     std::ostream &
@@ -47,7 +54,7 @@ public:
     inline
     double
     operator[] (
-            int i) {
+            int i) const {
         if     (i == 0) { return a_; }
         else if(i == 1) { return b_; }
         else if(i == 2) { return c_; }
@@ -76,6 +83,16 @@ public:
         c_ *= v;
         d_ *= v;
     }
+
+    inline
+    Quaternion
+    operator -() const
+    {
+        return Quaternion( -a_, -b_, -c_, -d_ );
+    }
+
+
+
 public:
 
 public:
@@ -148,6 +165,67 @@ power_iteration(
         std::vector<double> &,
         int);
 
+
+class AverageQuaternionCalculator {
+public:
+    AverageQuaternionCalculator() {
+        A_ = std::vector<std::vector<double>>{
+                std::vector<double>{0, 0, 0, 0},
+                std::vector<double>{0, 0, 0, 0},
+                std::vector<double>{0, 0, 0, 0},
+                std::vector<double>{0, 0, 0, 0}};
+        qq_ = A_;
+        A_scaled_ = A_;
+
+        eigen_values_ = std::vector<double>{0, 0, 0, 0};
+        count_ = 0;
+    }
+
+    ~AverageQuaternionCalculator() {}
+
+public:
+    void
+    add_quaternion(
+            Quaternion const & q) {
+
+        auto q1 = Quaternion(q);
+        if(q1[0] < 0) { q1 = -q1;}
+
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                qq_[i][j] = q1[i]*q1[j];
+            }
+        }
+
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                A_[i][j] = A_[i][j] + qq_[i][j];
+            }
+        }
+        count_ += 1;
+
+    }
+
+    Quaternion
+    get_average() {
+        if(count_ < 1) { return Quaternion(); }
+
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                A_scaled_[i][j] = (1 / count_)*A_[i][j];
+            }
+        }
+
+        power_iteration(A_scaled_, eigen_values_, 100);
+        return Quaternion(eigen_values_[0], eigen_values_[1], eigen_values_[2], eigen_values_[3]);
+    }
+
+private:
+    double count_;
+    std::vector<std::vector<double>> A_scaled_, A_, qq_;
+    std::vector<double> eigen_values_;
+
+};
 
 #endif //RNAMAKE_NEW_QUATERNION_H
 
