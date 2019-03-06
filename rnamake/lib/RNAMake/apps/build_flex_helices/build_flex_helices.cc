@@ -6,6 +6,7 @@
 
 
 #include "base/backtrace.hpp"
+#include "math/quaternion.h"
 #include "util/cartesian_product.h"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "motif_data_structures/motif_tree.h"
@@ -50,7 +51,7 @@ BuildFlexHelicesApp::run() {
     RM::instance().motif("HELIX.IDEAL.2");
     ideal->to_pdb("ideal.pdb", 1, 1);
 
-    get_avg_helix(4);
+    get_avg_helix_new(3);
 
     /*auto seq = String("CCCCC&GGGGG");
     auto ss  = String("(((((&)))))");
@@ -157,6 +158,21 @@ BuildFlexHelicesApp::generate_helices(
 }
 
 MotifOP
+BuildFlexHelicesApp::get_avg_helix_new(
+        int length) {
+
+    auto iterator = HelixStructureIterator();
+    iterator.setup(3);
+    auto mst1 = iterator.next();
+    auto mst2 = iterator.next();
+
+    mst1->to_motif_tree()->to_pdb("test_1.pdb", 1, 1);
+    mst2->to_motif_tree()->to_pdb("test_2.pdb", 1, 1);
+
+    return MotifOP(nullptr);
+}
+
+MotifOP
 BuildFlexHelicesApp::get_avg_helix(
         int length) {
 
@@ -190,7 +206,11 @@ BuildFlexHelicesApp::get_avg_helix(
 
     auto num_seq = Ints(length);
 
-    int i = 0;
+    auto q = Quaternion();
+    auto q_averager = AverageQuaternionCalculator();
+    auto t_average = Point(0, 0, 0);
+
+    double i = 0;
     while (!pair_iterator.end()) {
         current = pair_iterator.next();
         seq1 = "";
@@ -206,12 +226,19 @@ BuildFlexHelicesApp::get_avg_helix(
         if(find_seq_violations(num_seq) || find_gc_strech(num_seq)) { continue; }
 
         new_seq = seq1 + "&" + seq2;
-        /*motifs = get_motifs_from_seq_and_ss(new_seq, structure);
+        motifs = get_motifs_from_seq_and_ss(new_seq, structure);
 
         auto mst = std::make_shared<MotifStateTree>();
         for(auto const & m : motifs) {
             mst->add_state(m);
-        }*/
+        }
+
+
+        t_average += mst->last_node()->data()->get_end_state(1)->d();
+
+        q = get_quaternion_from_matrix(mst->last_node()->data()->get_end_state(1)->r());
+        q_averager.add_quaternion(q);
+
 
 
         /*mst->to_motif_tree()->to_pdb("helix."+std::to_string(i)+".pdb");
@@ -224,6 +251,71 @@ BuildFlexHelicesApp::get_avg_helix(
         //std::cout << new_seq << " " <<  _get_hit_count(new_start, new_seq, struc) << std::endl;
     }
     std::cout << i << std::endl;
+
+    t_average = t_average / i;
+    auto q_avg = q_averager.get_average();
+
+    i = 0;
+    pair_iterator = CartesianProduct<Strings>(all_pairs);
+
+    auto best_seq = String("");
+    auto best_score = 10000.0;
+
+    auto dist = 100.0;
+    auto q_dist = 1000.0;
+    auto dot = 1000.0;
+
+    while (!pair_iterator.end()) {
+        current = pair_iterator.next();
+        seq1 = "";
+        seq2 = "";
+        for (auto const & p : current) {
+            seq1 += p[0];
+            seq2 = p[1] + seq2;
+        }
+        for(int j = 0; j < length; j++) {
+            num_seq[j] = convert_char_to_res_code(seq1[j]);
+        }
+
+        if(find_seq_violations(num_seq) || find_gc_strech(num_seq)) { continue; }
+
+        new_seq = seq1 + "&" + seq2;
+        motifs = get_motifs_from_seq_and_ss(new_seq, structure);
+
+        auto mst = std::make_shared<MotifStateTree>();
+        for(auto const & m : motifs) {
+            mst->add_state(m);
+        }
+
+
+        dist = t_average.distance( mst->last_node()->data()->get_end_state(1)->d());
+
+        q = get_quaternion_from_matrix(mst->last_node()->data()->get_end_state(1)->r());
+        q_dist = 2*acos(q.dot(q_avg));
+
+        dist += q_dist*10;
+
+        if(dist < best_score) {
+            best_score = dist;
+            best_seq = new_seq;
+        }
+
+        mst->to_motif_tree()->to_pdb("helix."+std::to_string((int)i)+".pdb");
+
+        i++;
+        //std::cout << new_seq << " " <<  _get_hit_count(new_start, new_seq, struc) << std::endl;
+    }
+    std::cout << best_score << " " << best_seq << std::endl;
+
+    motifs = get_motifs_from_seq_and_ss(best_seq, structure);
+    auto mst = std::make_shared<MotifStateTree>();
+    for(auto const & m : motifs) {
+        mst->add_state(m);
+    }
+
+    mst->to_motif_tree()->to_pdb("average.pdb");
+
+
     return MotifOP(nullptr);
 }
 

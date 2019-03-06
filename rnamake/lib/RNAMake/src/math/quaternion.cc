@@ -53,6 +53,44 @@ Quaternion::get_rotation_matrix() {
 }
 
 
+Quaternion
+get_quaternion_from_matrix(
+        Matrix const & m) {
+
+    double qx, qy, qz, qw;
+    double tr = m.xx() + m.yy() + m.zz();
+    if(tr > 0) {
+        double s = sqrt(tr+1.0) * 2;
+        qw = 0.25 * s;
+        qx = (m.zy() - m.yz()) / s;
+        qy = (m.xz() - m.zx()) / s;
+        qz = (m.yx() - m.xy()) / s;
+    }
+    else if((m.xx() > m.yy()) && (m.xx() > m.zz())) {
+        double s = sqrt(1.0 + m.xx() - m.yy() - m.zz()) * 2;
+        qw = (m.zy() - m.yz()) / s;
+        qx = 0.25*s;
+        qy = (m.xy() + m.yx()) / s;
+        qz = (m.xz() + m.zx()) / s;
+    }
+    else if(m.yy() > m.zz()) {
+        double s = sqrt(1.0 + m.yy() - m.xx() - m.zz()) * 2;
+        qw = (m.xz() - m.zx()) / s;
+        qx = (m.xy() + m.yx()) / s;
+        qy = 0.25*s;
+        qz = (m.zy() + m.yz()) / s;
+    }
+    else {
+        double s = sqrt(1.0 + m.zz() - m.xx() - m.yy()) * 2;
+        qw = (m.xy() - m.yx()) / s;
+        qx = (m.xz() + m.zx()) / s;
+        qy = (m.yz() + m.zy()) / s;
+        qz = 0.25*s;
+    }
+
+    return Quaternion(qw, qx, qy, qz);
+}
+
 
 void
 power_iteration(

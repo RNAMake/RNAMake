@@ -93,13 +93,26 @@ TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
                 averager.add_quaternion(q);
             }
 
-            auto matlab_result_q = Quaternion(0.4199, 0.6709, 0.4577, 0.4050);
+            auto matlab_result_q = Quaternion(0.4199, 0.6709, -0.4577, -0.4050);
             auto q_avg = averager.get_average();
 
             for (int i = 0; i < 4; i++) {
                 REQUIRE(are_floats_equal(abs(matlab_result_q[i]), abs(q_avg[i])));
             }
 
+        }
+
+        SECTION("covert to a rotation matrix and back") {
+            //auto q = get_random_quaternion();
+            //std::cout << q << std::endl;
+            auto q = Quaternion(0.656091, 0.545157, 0.0359373, 0.520632);
+            auto r = q.get_rotation_matrix();
+
+            auto q1 = get_quaternion_from_matrix(r);
+
+            for (int i = 0; i < 4; i++) {
+                REQUIRE(are_floats_equal(abs(q[i]), abs(q1[i])));
+            }
         }
     }
 

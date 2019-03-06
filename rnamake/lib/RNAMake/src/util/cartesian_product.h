@@ -22,19 +22,33 @@ public:
     typedef std::vector<Value> Values;
     
 public:
-    CartesianProduct(std::vector<Values> const & values) {
+    CartesianProduct():
+            setup_(false) {
+
+    }
+
+    CartesianProduct(
+            std::vector<Values> const & values):
+            setup_(false) {
+        setup(values);
+    }
+
+    void
+    setup(
+            std::vector<Values> const & values) {
         values_ = values;
         indices_ = Ints(values_.size());
         maxes_ = Ints(values_.size());
         current_ = Values(values_.size());
         end_ = 0;
-        
+
         int i = 0;
         for (auto const & v : values_) {
             maxes_[i] = (int)v.size();
             i++;
         }
-        
+        setup_ = true;
+
     }
     
     inline
@@ -44,6 +58,10 @@ public:
     Values
     const &
     next() {
+        if(!setup_) {
+            throw std::runtime_error("CartesianProduct is not setup! must call setup() first");
+        }
+
         int j = 0;
         for(auto const & v : values_) {
             current_ [j] = v [ indices_ [j] ];
@@ -73,6 +91,7 @@ private:
     std::vector<Values> values_;
     Values current_;
     int end_;
+    bool setup_;
     
 };
 

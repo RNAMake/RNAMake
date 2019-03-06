@@ -533,6 +533,13 @@ MotifStateTree::remove_node_level(
     for(auto const & n : remove) {
         remove_node(n->index());
     }
+
+    // find new highest node index
+    int max_index = 0;
+    for(auto const & n : tree_) {
+        if(n->index() > max_index) { max_index = n->index();}
+    }
+    tree_.index(max_index);
     
 }
 

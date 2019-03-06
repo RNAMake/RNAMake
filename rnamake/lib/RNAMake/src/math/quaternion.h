@@ -131,6 +131,10 @@ private:
 Quaternion
 get_random_quaternion();
 
+Quaternion
+get_quaternion_from_matrix(
+        Matrix const &);
+
 
 inline
 void
