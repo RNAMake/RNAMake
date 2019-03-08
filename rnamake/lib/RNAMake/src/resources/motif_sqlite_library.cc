@@ -26,6 +26,7 @@ MotifSqliteLibrary::get_libnames() {
     libnames["flex_helices"]   = "/motif_libraries_new/flex_helices.db";
     libnames["existing"]       = "/motif_libraries_new/existing.db";
     libnames["le_helices"]     = "/motif_libraries_new/le_helices.db";
+    libnames["avg_helices"]    = "/motif_libraries_new/avg_helices.db";
 
     return libnames;
 }

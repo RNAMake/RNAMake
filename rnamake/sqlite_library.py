@@ -299,7 +299,8 @@ class MotifSqliteLibrary(SqliteLibrary):
             "new_bp_steps"    : "/motif_libraries_new/new_bp_steps.db",
             "flex_helices"    : "/motif_libraries_new/flex_helices.db",
             "existing"        : "/motif_libraries_new/existing.db",
-            "le_helices"      : "/motif_libraries_new/le_helices.db"
+            "le_helices"      : "/motif_libraries_new/le_helices.db",
+            "avg_helices"     : "/motif_libraries_new/avg_helices.db"
         }
 
         return libnames
@@ -346,7 +347,9 @@ class MotifStateSqliteLibrary(SqliteLibrary):
             "nway"          :  "/motif_state_libraries/nway.db",
             "hairpin"       :  "/motif_state_libraries/hairpin.db",
             "new_bp_steps"  :  "/motif_state_libraries/new_bp_steps.db",
-            "flex_helices"  :  "/motif_state_libraries/flex_helices.db"
+            "flex_helices"  :  "/motif_state_libraries/flex_helices.db",
+            "avg_helices"   :  "/motif_state_libraries/avg_helices.db"
+
         }
 
         return libnames

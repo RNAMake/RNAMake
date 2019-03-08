@@ -14,16 +14,8 @@
 #include "resources/resource_manager.h"
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
-BuildFlexHelicesApp::BuildFlexHelicesApp() {
-    disallowed_num_sequences_ = std::vector<Ints>();
-    for(int i = 0; i < 4; i++) {
-        auto disallowed_sequence = Ints(4);
-        for(int j = 0; j < 4; j++) { disallowed_sequence[j] = i; }
-        disallowed_num_sequences_.push_back(disallowed_sequence);
-    }
-
-}
-
+BuildFlexHelicesApp::BuildFlexHelicesApp():
+        mf_(MotifFactory()){}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // app functions
@@ -45,13 +37,18 @@ BuildFlexHelicesApp::parse_command_line(
 void
 BuildFlexHelicesApp::run() {
 
-    auto ideal = RM::instance().motif("HELIX.LE.2");
-    ideal->to_pdb("ideal_le.pdb", 1, 1);
-
-    RM::instance().motif("HELIX.IDEAL.2");
+    auto ideal = RM::instance().motif("HELIX.IDEAL.1");
     ideal->to_pdb("ideal.pdb", 1, 1);
 
-    get_avg_helix_new(3);
+    std::ofstream out;
+    out.open("average_helices.dat");
+
+    for(int i = 3; i < 9; i++) {
+        std::cout << "GENERATING avg helix with length " << i << std::endl;
+        auto m = get_avg_helix_new(i);
+        out << m->to_str() << std::endl;
+    }
+    out.close();
 
     /*auto seq = String("CCCCC&GGGGG");
     auto ss  = String("(((((&)))))");
@@ -71,36 +68,11 @@ BuildFlexHelicesApp::run() {
 // private functions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-MotifStateOPs
-BuildFlexHelicesApp::get_motifs_from_seq_and_ss(
-        String const & seq,
-        String const & ss) {
-
-    auto parser = sstruct::SecondaryStructureParser();
-    auto ss_motifs = parser.parse_to_motifs(seq, ss);
-    auto motifs = MotifStateOPs();
-
-    auto start = 0;
-    auto motif = MotifStateOP(nullptr);
-    for(auto const & m : ss_motifs) {
-        //basepair step
-        if(m->mtype() == MotifType::HELIX) {
-            motif = RM::instance().bp_step(m->end_ids()[0])->get_state();
-            motifs.push_back(motif);
-        }
-        else {
-            throw std::runtime_error("only helices are allowed");
-        }
-    }
-
-    return motifs;
-}
-
 void
 BuildFlexHelicesApp::generate_helices(
         int length) {
 
-    auto pairs = std::vector<Strings>();
+    /*auto pairs = std::vector<Strings>();
     pairs.push_back(Strings{"A", "U"});
     pairs.push_back(Strings{"U", "A"});
     pairs.push_back(Strings{"C", "G"});
@@ -143,17 +115,13 @@ BuildFlexHelicesApp::generate_helices(
         for(auto const & m : motifs) {
             mst->add_state(m);
         }
-        /*mst->to_motif_tree()->to_pdb("helix."+std::to_string(i)+".pdb");
-        i++;
-        if(i > 100) {
-            break;
-        }*/
+
         mst->remove_node_level();
 
         i++;
         //std::cout << new_seq << " " <<  _get_hit_count(new_start, new_seq, struc) << std::endl;
     }
-    std::cout << i << std::endl;
+    std::cout << i << std::endl;*/
 
 }
 
@@ -161,22 +129,106 @@ MotifOP
 BuildFlexHelicesApp::get_avg_helix_new(
         int length) {
 
+    auto mst = MotifStateTreeOP(nullptr);
     auto iterator = HelixStructureIterator();
-    iterator.setup(3);
-    auto mst1 = iterator.next();
-    auto mst2 = iterator.next();
+    iterator.setup(length);
 
-    mst1->to_motif_tree()->to_pdb("test_1.pdb", 1, 1);
-    mst2->to_motif_tree()->to_pdb("test_2.pdb", 1, 1);
+    auto q = Quaternion();
+    auto q_averager = AverageQuaternionCalculator();
+    auto t_average = Point(0, 0, 0);
 
-    return MotifOP(nullptr);
+    int i = 0;
+    while(!iterator.end()) {
+        mst = iterator.next();
+
+        t_average += mst->last_node()->data()->get_end_state(1)->d();
+
+        q = get_quaternion_from_matrix(mst->last_node()->data()->get_end_state(1)->r());
+        q_averager.add_quaternion(q);
+
+        i++;
+    }
+
+    t_average = t_average / i;
+    auto q_avg = q_averager.get_average();
+
+    auto best_seq = String("");
+    auto best_score = 10000.0;
+
+    auto dist = 100.0;
+    auto q_dist = 1000.0;
+    auto dot = 1000.0;
+
+    iterator = HelixStructureIterator();
+    iterator.setup(length);
+
+    while(!iterator.end()) {
+        mst = iterator.next();
+
+        dist = t_average.distance(mst->last_node()->data()->get_end_state(1)->d());
+
+        q = get_quaternion_from_matrix(mst->last_node()->data()->get_end_state(1)->r());
+        q_dist = 2 * acos(q.dot(q_avg));
+
+        dist += q_dist * 10;
+
+        if (dist < best_score) {
+            best_score = dist;
+            best_seq = iterator.get_current_sequence();
+        }
+    }
+
+    auto best_mst = iterator.get_tree_with_sequence(best_seq);
+    auto rs = best_mst->to_motif_tree()->get_structure();
+    auto m = std::make_shared<Motif>(*rs);
+    auto num = 1;
+    for(auto & c : m->chains()) {
+       for(auto & r : c->residues()) {
+           r->num(num);
+           r->chain_id("A");
+           num++;
+       }
+    }
+    for(auto & bp : m->basepairs()) {
+        auto r1 = m->get_residue(bp->res1()->uuid());
+        auto r2 = m->get_residue(bp->res2()->uuid());
+        bp->res1()->num(r1->num());
+        bp->res1()->chain_id("A");
+        bp->res2()->num(r2->num());
+        bp->res2()->chain_id("A");
+    }
+
+    for(auto & bp : m->ends()) {
+        auto r1 = m->get_residue(bp->res1()->uuid());
+        auto r2 = m->get_residue(bp->res2()->uuid());
+        bp->res1()->num(r1->num());
+        bp->res1()->chain_id("A");
+        bp->res2()->num(r2->num());
+        bp->res2()->chain_id("A");
+    }
+
+    auto scorer = MotifScorer();
+
+    m->mtype(MotifType::HELIX);
+    m->name("HELIX.AVG."+std::to_string(length));
+    mf_._setup_secondary_structure(m);
+    m->block_end_add(0);
+    auto score = scorer.score(m);
+    m->score(score);
+
+    //auto s = m->to_str();
+    //auto m2 = std::make_shared<Motif>(s, ResidueTypeSetManager::getInstance().residue_type_set());
+
+    //std::cout << i << std::endl;
+
+    return m;
 }
 
 MotifOP
 BuildFlexHelicesApp::get_avg_helix(
         int length) {
 
-    auto pairs = std::vector<Strings>();
+    /*auto pairs = std::vector<Strings>();
     pairs.push_back(Strings{"A", "U"});
     pairs.push_back(Strings{"U", "A"});
     pairs.push_back(Strings{"C", "G"});
@@ -239,17 +291,8 @@ BuildFlexHelicesApp::get_avg_helix(
         q = get_quaternion_from_matrix(mst->last_node()->data()->get_end_state(1)->r());
         q_averager.add_quaternion(q);
 
-
-
-        /*mst->to_motif_tree()->to_pdb("helix."+std::to_string(i)+".pdb");
         i++;
-        if(i > 100) {
-            break;
-        }*/
-
-        i++;
-        //std::cout << new_seq << " " <<  _get_hit_count(new_start, new_seq, struc) << std::endl;
-    }
+     }
     std::cout << i << std::endl;
 
     t_average = t_average / i;
@@ -303,7 +346,6 @@ BuildFlexHelicesApp::get_avg_helix(
         mst->to_motif_tree()->to_pdb("helix."+std::to_string((int)i)+".pdb");
 
         i++;
-        //std::cout << new_seq << " " <<  _get_hit_count(new_start, new_seq, struc) << std::endl;
     }
     std::cout << best_score << " " << best_seq << std::endl;
 
@@ -315,64 +357,8 @@ BuildFlexHelicesApp::get_avg_helix(
 
     mst->to_motif_tree()->to_pdb("average.pdb");
 
-
+       */
     return MotifOP(nullptr);
-}
-
-bool
-BuildFlexHelicesApp::find_seq_violations(
-        Ints const & num_seq) {
-    auto pos = 0;
-
-    //std::cout << num_seq.size() << " " << disallowed_num_sequences_[0].size() << std::endl;
-
-    for (int i = 0; i < num_seq.size(); i++) {
-        for (int j = 0; j < disallowed_num_sequences_.size(); j++) {
-            if (i < disallowed_num_sequences_[j].size()-1) { continue; }
-            auto match = true;
-            pos = i - (disallowed_num_sequences_[j].size()-1);
-            if(pos < 0) { continue; }
-            for (auto const & e : disallowed_num_sequences_[j]) {
-                if (num_seq[pos] != e) {
-                    match = false;
-                    break;
-                }
-                pos += 1;
-            }
-            if (match) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
-bool
-BuildFlexHelicesApp::find_gc_strech(
-        Ints const & num_seq) {
-    int count = 0;
-    for(auto const & r : num_seq) {
-        if(r == 1 || r == 2)  { count += 1; }
-        else                  { count = 0;  }
-        if(count > 2) { return true; }
-    }
-    return false;
-}
-
-
-int
-BuildFlexHelicesApp::convert_char_to_res_code(
-        char c) {
-    if     (c == 'A') { return 0; }
-    else if(c == 'C') { return 1; }
-    else if(c == 'G') { return 2; }
-    else if(c == 'U') { return 3; }
-    else if(c == 'T') { return 3; }
-    else if(c == 'N') { return -1; }
-    else {
-        throw BuildFlexHelicesAppException("incorrect character for secondary string");
-    }
-    return -1;
 }
 
 

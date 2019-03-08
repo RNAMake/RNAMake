@@ -11,6 +11,7 @@ apt_stablization ../../apps/apt_stablization/apt_stablization.cc
 dock_motif ../../apps/dock_motif/dock_motif.cc
 apt_new_interface ../../apps/apt_new_interface/apt_new_interface.cc
 build_flex_helices ../../apps/build_flex_helices/build_flex_helices.cc
+sequence_optimization_benchmarks ../../apps/sequence_optimization_benchmarks/sequence_optimization_benchmarks.cc
 #mini_ttr ../../apps/mini_ttr/mini_ttr.cpp 
 #exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp
 #eternabot_app ../../apps/eternabot/eternabot.cpp

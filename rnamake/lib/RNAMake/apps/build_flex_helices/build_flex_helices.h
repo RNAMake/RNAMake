@@ -47,6 +47,7 @@ public:
         }
         pair_iterator_ = CartesianProduct<Strings>(all_pairs);
         motifs_ = MotifStateOPs(length-1);
+        num_seq_ = Ints(length);
 
         for(int i = 0; i < length; i++) { structure_ += "("; }
         structure_ += "&";
@@ -64,6 +65,12 @@ public:
                 seq1_ += p[0];
                 seq2_ = p[1] + seq2_;
             }
+
+            for(int i = 0 ; i < num_seq_.size(); i++) {
+                num_seq_[i] = convert_char_to_res_code(seq1_[i]);
+            }
+            if(find_seq_violations(num_seq_) || find_gc_strech(num_seq_)) { continue; }
+
             seq_full_ = seq1_ + "&" + seq2_;
             get_motifs_from_seq_and_ss(seq_full_, structure_, motifs_);
 
@@ -81,6 +88,27 @@ public:
     bool
     end() {
         return pair_iterator_.end();
+    }
+
+public:
+    String const &
+    get_current_sequence() {
+        return seq_full_;
+    }
+
+    MotifStateTreeOP
+    get_tree_with_sequence(
+            String const & seq) {
+        if(seq.size() != structure_.size()) {
+            throw std::runtime_error("cannot build new tree seq and structure not the same size");
+        }
+        get_motifs_from_seq_and_ss(seq, structure_, motifs_);
+
+        auto new_mst = std::make_shared<MotifStateTree>();
+        for(auto const & m : motifs_) {
+            new_mst->add_state(m);
+        }
+        return new_mst;
     }
 
 private:
@@ -109,12 +137,65 @@ private:
         }
     }
 
+    int
+    convert_char_to_res_code(
+            char c) {
+        if     (c == 'A') { return 0; }
+        else if(c == 'C') { return 1; }
+        else if(c == 'G') { return 2; }
+        else if(c == 'U') { return 3; }
+        else if(c == 'T') { return 3; }
+        else if(c == 'N') { return -1; }
+        else {
+            throw std::runtime_error("incorrect character for secondary string");
+        }
+        return -1;
+    }
+
+    bool
+    find_seq_violations(
+            Ints const & num_seq) {
+        auto pos = 0;
+        for (int i = 0; i < num_seq.size(); i++) {
+            for (int j = 0; j < disallowed_num_sequences_.size(); j++) {
+                if (i < disallowed_num_sequences_[j].size()-1) { continue; }
+                auto match = true;
+                pos = i - (disallowed_num_sequences_[j].size()-1);
+                if(pos < 0) { continue; }
+                for (auto const & e : disallowed_num_sequences_[j]) {
+                    if (num_seq[pos] != e) {
+                        match = false;
+                        break;
+                    }
+                    pos += 1;
+                }
+                if (match) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    bool
+    find_gc_strech(
+            Ints const & num_seq) {
+        int count = 0;
+        for(auto const & r : num_seq) {
+            if(r == 1 || r == 2)  { count += 1; }
+            else                  { count = 0;  }
+            if(count > 2) { return true; }
+        }
+        return false;
+    }
+
 
 private:
     MotifStateTreeOP mst_;
     CartesianProduct<Strings> pair_iterator_;
     std::vector<Ints> disallowed_num_sequences_;
     String seq1_, seq2_, seq_full_, structure_;
+    Ints num_seq_;
     MotifStateOPs motifs_;
 };
 
@@ -145,13 +226,7 @@ public:
     void
     run();
 
-
 private:
-    MotifStateOPs
-    get_motifs_from_seq_and_ss(
-            String const &,
-            String const &);
-
     void
     generate_helices(
             int);
@@ -164,20 +239,8 @@ private:
     get_avg_helix(
             int);
 
-    int
-    convert_char_to_res_code(
-            char);
-
-    bool
-    find_seq_violations(
-            Ints const &);
-
-    bool
-    find_gc_strech(
-            Ints const &);
-
 private:
-    std::vector<Ints> disallowed_num_sequences_;
+    MotifFactory mf_;
 };
 
 

@@ -113,7 +113,6 @@ MotifStateMonteCarlo::next() {
         }
         mc_.set_temperature(1.0);
         */
-
         int j = 0;
         for(int i = org_num_; i < org_num_+mses_.size(); i++) {
             auto new_ms = mses_[j][rng_.randrange((int) mses_[pos].size() - 1)];

@@ -367,7 +367,7 @@ MotifStateGraph::to_motif_graph() {
     auto seen_connections = std::map<GraphConnectionOP<MSNodeDataOP>, int>();
     auto index_hash = std::map<int, int>();
     auto j = 0;
-    
+
     _update_align_list();
 
     for(auto const & n : align_list_) {
@@ -388,7 +388,7 @@ MotifStateGraph::to_motif_graph() {
         index_hash[n->index()] = j;
         
     }
-    
+
     for(auto const c : graph_.connections()) {
         if(seen_connections.find(c) != seen_connections.end()) { continue; }
         mg->add_connection(index_hash[c->node_1()->index()],

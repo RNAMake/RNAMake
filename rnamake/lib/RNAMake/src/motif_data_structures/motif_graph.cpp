@@ -557,10 +557,14 @@ MotifGraph::replace_ideal_helices() {
                 other_end_index = n->connections()[1]->end_index(other->index());
             }
 
+            //TODO look at resiude size instead of this mess!!
             auto name_spl = split_str_by_delimiter(n->data()->name(), ".");
             int count = 1;
-            if(name_spl.size() == 3) {
+            if(name_spl.size() == 3 && name_spl[1] != "AVG") {
                 count = std::stoi(name_spl[2]);
+            }
+            else if(name_spl.size() == 3) {
+                count = std::stoi(name_spl[2])-2;
             }
             else if(name_spl.size() == 4) {
                 count = std::stoi(name_spl[2])-2;
