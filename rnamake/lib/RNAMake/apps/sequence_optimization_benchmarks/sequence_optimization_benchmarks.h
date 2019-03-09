@@ -147,6 +147,79 @@ private:
     bool target_an_aligned_end_;
 };
 
+class Add3WAYProblemFactory : public SequenceOptProblemFactory {
+public:
+    Add3WAYProblemFactory():
+            SequenceOptProblemFactory(),
+            has_setup_(false),
+            mf_(MotifFactory()) {}
+
+    ~Add3WAYProblemFactory() {}
+
+public:
+    SequenceOptProblemOP
+    get_problem() {
+        if (!has_setup_) {
+            String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";
+            RM::instance().add_motif(base_path+"pRNA_3WJ.pdb", "prna");
+
+            auto path = base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/start.pdb";
+            auto scaffold_rm = RM::instance().get_structure(path, "scaffold", 3);
+            auto scaffold_m = std::make_shared<Motif>(*scaffold_rm);
+            mf_._setup_secondary_structure(scaffold_m);
+            RM::instance().register_motif(scaffold_m);
+
+            prna_ = RM::instance().motif("prna", "", "A7-C10");
+            scaffold_ = RM::instance().motif("scaffold");
+        }
+
+        auto msg = std::make_shared<MotifStateGraph>();
+        msg->set_option_value("sterics", false);
+        msg->add_state(scaffold_->get_state());
+        msg->add_state(RM::instance().motif_state("HELIX.IDEAL.1"), 0, 2);
+        msg->add_state(prna_->get_state());
+
+        if (!has_setup_) {
+            lookup_ = std::make_shared<StericLookup>();
+            this->_setup_sterics(msg, lookup_);
+
+            start_name_ = "B14-C7";
+            end_name_ = "A41-A87";
+
+            auto start_end_pos = msg->get_node(2)->data()->get_end_index(start_name_);
+            auto end_end_pos = msg->get_node(0)->data()->get_end_index(end_name_);
+
+            start_ = NodeIndexandEdge{2, start_end_pos};
+            end_ = NodeIndexandEdge{0, end_end_pos};
+
+            target_an_aligned_end_ = false;
+            if(end_end_pos == msg->get_node(0)->data()->block_end_add()) {
+                target_an_aligned_end_ = true;
+            }
+        }
+
+        has_setup_ = true;
+
+        auto p = std::make_shared<SequenceOptProblem>(msg, start_, end_, start_name_, end_name_,
+                                                      lookup_, target_an_aligned_end_);
+        return p;
+
+    }
+
+private:
+    bool has_setup_;
+    StericLookupOP lookup_;
+    NodeIndexandEdge start_, end_;
+    String start_name_, end_name_;
+    bool target_an_aligned_end_;
+    MotifFactory mf_;
+    MotifOP scaffold_, prna_;
+
+};
+
+
+
+
 struct SequenceOptimizationParameters {
 public:
     inline
@@ -164,7 +237,6 @@ public:
     int rounds, motifs;
     int min_helix_size, max_helix_size;
 };
-
 
 class SequenceOptimizationBenchmarks : public Application {
 public:

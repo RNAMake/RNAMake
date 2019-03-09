@@ -49,7 +49,8 @@ SequenceOptimizationBenchmarks::parse_command_line(
 
 void
 SequenceOptimizationBenchmarks::run() {
-    auto problem_factory = std::make_shared<TTRProblemFactory>();
+    //auto problem_factory = std::make_shared<TTRProblemFactory>();
+    auto problem_factory = std::make_shared<Add3WAYProblemFactory>();
     auto ms_libraries = _get_libraries();
     auto timer = Timer();
 
@@ -65,7 +66,6 @@ SequenceOptimizationBenchmarks::run() {
         auto time_1 = timer.end();
 
         if (sol == nullptr) { continue; }
-
         auto & motif_names = _get_motif_names(sol->mg);
 
         // fix flex helices
