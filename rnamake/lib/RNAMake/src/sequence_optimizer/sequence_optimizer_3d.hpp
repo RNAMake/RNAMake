@@ -331,7 +331,8 @@ private:
     int current_gc_stretches_, next_gc_stretches_;
 
 
-
 };
+
+typedef std::shared_ptr<SequenceOptimizer3D> SequenceOptimizer3DOP;
 
 #endif /* sequence_optimizer_3d_hpp */

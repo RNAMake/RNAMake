@@ -174,7 +174,7 @@ private:
     float accept_score_;
 };
 
-typedef std::shared<MotifStateMonteCarlo> MotifStateMonteCarloOP;
+typedef std::shared_ptr<MotifStateMonteCarlo> MotifStateMonteCarloOP;
 
 
 #endif //TEST_MOTIF_STATE_MONTE_CARLO_H

@@ -11,7 +11,8 @@
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 #include "sequence_optimization_benchmarks/sequence_optimization_benchmarks.h"
 
-SequenceOptimizationBenchmarks::SequenceOptimizationBenchmarks() {}
+SequenceOptimizationBenchmarks::SequenceOptimizationBenchmarks():
+        parameters_(SequenceOptimizationParameters()){}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // app functions
@@ -20,8 +21,11 @@ SequenceOptimizationBenchmarks::SequenceOptimizationBenchmarks() {}
 void
 SequenceOptimizationBenchmarks::setup_options() {
     add_option("problem", String("TTR"), OptionType::STRING, false);
-    add_option("helices", String("ideal"), OptionType::STRING, false);
+    add_option("helices", String("ideal_helices"), OptionType::STRING, false);
     add_option("rounds", 1, OptionType::INT, false);
+    add_option("motifs", 3, OptionType::INT, false);
+    add_option("min_helix_size", 6, OptionType::INT, false);
+    add_option("max_helix_size", 18, OptionType::INT, false);
 
     add_option("out_file", "results.csv", OptionType::STRING, false);
 
@@ -33,164 +37,154 @@ SequenceOptimizationBenchmarks::parse_command_line(
         const char **argv) {
 
     Application::parse_command_line(argc, argv);
+
+    parameters_.problem        = get_string_option("problem");
+    parameters_.helices        = get_string_option("helices");
+    parameters_.rounds         = get_int_option("rounds");
+    parameters_.motifs         = get_int_option("motifs");
+    parameters_.min_helix_size = get_int_option("min_helix_size");
+    parameters_.max_helix_size = get_int_option("max_helix_size");
+
 }
 
 void
 SequenceOptimizationBenchmarks::run() {
-    auto msg = _get_starting_graph();
-    auto lookup = StericLookup();
-    _setup_sterics(msg, lookup);
+    auto problem_factory = std::make_shared<TTRProblemFactory>();
+    auto ms_libraries = _get_libraries();
+    auto timer = Timer();
 
-    auto start_end_pos = msg->get_node(2)->data()->get_end_index("A222-A251");
-    auto end_end_pos = msg->get_node(2)->data()->get_end_index("A149-A154");
+    std::ofstream f_out;
+    f_out.open(get_string_option("out_file"));
 
-    bool target_an_aligned_end = false;
-    if(end_end_pos == msg->get_node(2)->data()->block_end_add()) {
-        target_an_aligned_end = true;
-    }
+    for(int i = 0; i < parameters_.rounds; i++) {
+        auto problem = problem_factory->get_problem();
+        auto search  = _get_search(problem, ms_libraries);
 
-    for(int mode = 0; mode < 2; mode++) {
+        timer.start();
+        auto sol = search->next();
+        auto time_1 = timer.end();
 
-        auto motif_path = String();
+        if (sol == nullptr) { continue; }
 
-        std::ofstream f_out;
+        auto & motif_names = _get_motif_names(sol->mg);
 
-        if(mode == 0) {
-            f_out.open("results_ideal.dat");
-            motif_path = "ideal_helices,twoway,ideal_helices,twoway,ideal_helices,twoway,ideal_helices";
-        }
-        else {
-            f_out.open("results_avg.dat");
-            motif_path = "avg_helices,twoway,avg_helices,twoway,avg_helices,twoway,avg_helices";
-        }
-        f_out << "design_score,design_time,opt_score,opt_time,motifs" << std::endl;
-        auto ms_libraries = _get_libraries(motif_path);
-
-        for (int i = 0; i < 100; i++) {
-            msg = _get_starting_graph();
-            auto mc = MotifStateMonteCarlo(ms_libraries);
-            mc.setup(msg, 2, 2, start_end_pos, end_end_pos, target_an_aligned_end);
-            mc.set_option_value("accept_score", 5.0f);
-            mc.lookup(lookup);
-            mc.start();
-
-            auto start_1 = std::chrono::steady_clock::now();
-            auto sol = mc.next();
-            auto end_1 = std::chrono::steady_clock::now();
-            auto time_1 = std::chrono::duration<double, std::milli> (end_1 - start_1).count();
-
-            if(sol == nullptr) { continue; }
-
-            auto mg = sol->mg;
-            auto motif_names = String("");
-
-            for(auto const & n : *mg) {
-                motif_names += n->data()->name() + ";";
+        // fix flex helices
+        for(auto & n : *sol->mg) {
+            if(n->data()->name().substr(0,1) == "H") {
+                n->data()->mtype(MotifType::HELIX);
             }
-
-            mg->replace_ideal_helices();
-
-            auto end_node = mg->get_node(2);
-            auto target_state = end_node->data()->ends()[end_end_pos]->state();
-            auto end_i = end_end_pos;
-            auto partner = end_node->connections()[end_i]->partner(end_node->index());
-            auto scorer = std::make_shared<InternalTargetScorer>(2, end_end_pos, partner->index(), 1,
-                                                                 target_an_aligned_end);
-
-            auto optimizer = SequenceOptimizer3D();
-            //optimizer.set_option_value("verbose", true);
-            optimizer.set_option_value("cutoff", 0.01f);
-            optimizer.set_option_value("return_lowest", true);
-
-            auto start_2 = std::chrono::steady_clock::now();
-            auto sols = optimizer.get_optimized_sequences(mg, scorer);
-            auto end_2 = std::chrono::steady_clock::now();
-            auto time_2 = std::chrono::duration<double, std::milli> (end_2 - start_2).count();
-            f_out << sol->score << "," << time_1 << "," << sols[0]->dist_score << "," << time_2 << ",";
-            f_out << motif_names << std::endl;
-            f_out.flush();
-
         }
-        f_out.close();
+
+        sol->mg->replace_ideal_helices();
+        auto optimizer = _get_optimizer(problem, sol->mg);
+
+        timer.start();
+        auto sols = optimizer->get_optimized_sequences(sol->mg);
+        auto time_2 = timer.end();
+
+        f_out << sol->score << "," << time_1 << "," << sols[0]->dist_score << "," << time_2 << "," << motif_names << std::endl;
+        f_out.flush();
     }
+
+    f_out.close();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // private functions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-MotifStateGraphOP
-SequenceOptimizationBenchmarks::_get_starting_graph() {
-    auto ttr = RM::instance().motif("GAAA_tetraloop", "", "A229-A245");
-    auto bp_step_1 = RM::instance().bp_step("GC_LL_GC_RR");
-    auto bp_step_2 = RM::instance().bp_step("CG_LL_CG_RR");
-    auto msg = std::make_shared<MotifStateGraph>();
-    msg->add_state(bp_step_1->get_state());
-    msg->add_state(bp_step_2->get_state());
-    msg->add_state(ttr->get_state());
-    return msg;
-}
-
-void
-SequenceOptimizationBenchmarks::_setup_sterics(
-        MotifStateGraphOP msg,
-        StericLookup & lookup) {
-    auto beads = Points();
-    for (auto & n : *msg) {
-        for(auto const & b : n->data()->cur_state->beads()) {
-            beads.push_back(b);
-        }
-    }
-    lookup.add_points(beads);
-}
 
 std::vector<MotifStateOPs>
-SequenceOptimizationBenchmarks::_get_libraries(
-        String const & motif_path) {
-    auto spl = split_str_by_delimiter(motif_path, ",");
-    auto i = 0;
-    auto libraries = std::vector<MotifStateOPs>();
-    auto motif_states = MotifStateOPs();
-    for(auto const & name : spl) {
-        if(name.length() < 2) { continue; }
-        if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact" || name == "ideal_helices" ||
-           name == "twoway" || name == "flex_helices" || name == "existing" || name == "avg_helices") {
-            auto ms_lib =  MotifStateSqliteLibrary(name);
-            ms_lib.load_all();
-            motif_states = MotifStateOPs();
-            if(name == "ideal_helices") {
-                for (auto const & ms : ms_lib) {
-                    if(ms->size() > 4 && ms->size() < 18) {
-                        motif_states.push_back(ms);
-                    }
-                }
-            }
-            else {
-                for (auto const & ms : ms_lib) { motif_states.push_back(ms); }
-            }
-            libraries.push_back(motif_states);
+SequenceOptimizationBenchmarks::_get_libraries() {
+
+    auto num = parameters_.motifs*2 + 1;
+    auto motif_lib_names = Strings(num);
+    auto motif_types = std::vector<MotifType>(num);
+    for(int i = 0; i < num; i++) {
+        if (i % 2 == 0) {
+            motif_lib_names[i] = parameters_.helices;
+            motif_types[i]     = MotifType::HELIX;
         }
-        else {
-            auto m = RM::instance().motif(name);
-            motif_states = MotifStateOPs();
-
-            for(auto const & end : m->ends()) {
-                try {
-                    auto m_new = RM::instance().motif(name, "", end->name());
-                    m_new->new_res_uuids();
-                    motif_states.push_back(m_new->get_state());
-                }
-                catch (...) {}
-            }
-            if(motif_states.size() == 0) {
-                throw std::runtime_error("no viable aptamer conformations");
-            }
-
-            libraries.push_back(motif_states);
+        else            {
+            motif_lib_names[i] = "twoway";
+            motif_types[i]     = MotifType::TWOWAY;
         }
     }
+
+    auto libraries = std::vector<MotifStateOPs>();
+    auto motif_states = MotifStateOPs();
+    int i = 0;
+    for(auto const & name : motif_lib_names) {
+        auto ms_lib =  MotifStateSqliteLibrary(name);
+        ms_lib.load_all();
+        motif_states = MotifStateOPs();
+
+        if(motif_types[i] == MotifType::HELIX) {
+            for (auto const & ms : ms_lib) {
+                if(ms->size() >= parameters_.min_helix_size && ms->size() <= parameters_.max_helix_size) {
+
+                    motif_states.push_back(ms);
+                }
+            }
+        }
+        else {
+            for (auto const & ms : ms_lib) { motif_states.push_back(ms); }
+        }
+        libraries.push_back(motif_states);
+        i++;
+    }
+
     return libraries;
 }
+
+
+MotifStateMonteCarloOP
+SequenceOptimizationBenchmarks::_get_search(
+        SequenceOptProblemOP problem,
+        std::vector<MotifStateOPs> const & ms_libraries) {
+
+    auto mc = std::make_shared<MotifStateMonteCarlo>(ms_libraries);
+    mc->setup(problem->msg, problem->start.ni, problem->end.ni,
+              problem->start.ei, problem->end.ei, problem->target_an_aligned_end);
+    mc->set_option_value("accept_score", 5.0f);
+    mc->lookup(*problem->lookup);
+    mc->start();
+
+    return mc;
+}
+
+SequenceOptimizer3DOP
+SequenceOptimizationBenchmarks::_get_optimizer(
+        SequenceOptProblemOP problem,
+        MotifGraphOP mg) {
+
+    auto end_node = mg->get_node(problem->end.ni);
+    auto target_state = end_node->data()->ends()[problem->end.ei]->state();
+    auto partner = end_node->connections()[problem->end.ei]->partner(end_node->index());
+    auto scorer = std::make_shared<InternalTargetScorer>(problem->end.ni, problem->end.ei, partner->index(), 1,
+                                                         problem->target_an_aligned_end);
+
+    auto optimizer = std::make_shared<SequenceOptimizer3D>();
+    //optimizer.set_option_value("verbose", true);
+    optimizer->set_option_value("cutoff", 0.01f);
+    optimizer->set_option_value("return_lowest", true);
+    optimizer->set_scorer(scorer);
+
+    return optimizer;
+
+}
+
+String const &
+SequenceOptimizationBenchmarks::_get_motif_names(
+        MotifGraphOP mg) {
+    motif_names_ = "";
+    for (auto const & n : *mg) {
+        motif_names_ += n->data()->name() + ";";
+    }
+    return motif_names_;
+}
+
+
 
 
 

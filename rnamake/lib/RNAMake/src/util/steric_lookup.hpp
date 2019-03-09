@@ -24,7 +24,7 @@ public:
             int);
     
     ~StericLookup() {}
-    
+
 public:
     void
     add_point(
@@ -70,5 +70,7 @@ private:
     
     
 };
+
+typedef std::shared_ptr<StericLookup> StericLookupOP;
 
 #endif /* steric_lookup_hpp */

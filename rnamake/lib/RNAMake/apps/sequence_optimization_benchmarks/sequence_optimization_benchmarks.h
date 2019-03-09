@@ -5,23 +5,165 @@
 #ifndef TEST_SEQUENCE_OPTIMIZATION_BENCHMARKS_H
 #define TEST_SEQUENCE_OPTIMIZATION_BENCHMARKS_H
 
+#include <sequence_optimizer/sequence_optimizer_app.hpp>
 #include "base/application.hpp"
 #include "util/steric_lookup.hpp"
 #include "motif_data_structures/motif_state_graph.hpp"
 #include "motif_state_search/motif_state_monte_carlo.h"
+#include "sequence_optimizer/sequence_optimizer_3d.hpp"
 
-class SequenceOptProblem {
+class Timer {
 public:
-    virtual
-    MotifStateGraphOP
-    get_motif_state_graph();
+    Timer() {}
 
+    ~Timer() {}
 
+public:
+    void
+    start() {
+        start_ =  std::chrono::steady_clock::now();
+    }
 
+    double
+    end() {
+        auto end = std::chrono::steady_clock::now();
+        auto time = std::chrono::duration<double, std::milli>(end - start_).count();
+        return time;
+    }
+
+private:
+    std::chrono::steady_clock::time_point start_;
 };
 
+struct SequenceOptProblem {
+public:
+    inline
+    SequenceOptProblem(
+            MotifStateGraphOP n_msg,
+            NodeIndexandEdge const & n_start,
+            NodeIndexandEdge const & n_end,
+            String const & n_start_name,
+            String const & n_end_name,
+            StericLookupOP n_lookup,
+            bool n_target_an_aligned_end):
+            msg(n_msg),
+            start(n_start),
+            end(n_end),
+            start_name(n_start_name),
+            end_name(n_end_name),
+            lookup(n_lookup),
+            target_an_aligned_end(n_target_an_aligned_end) {}
 
+public:
+    MotifStateGraphOP msg;
+    NodeIndexandEdge start, end;
+    String start_name, end_name;
+    StericLookupOP lookup;
+    bool target_an_aligned_end;
+};
 
+typedef std::shared_ptr<SequenceOptProblem> SequenceOptProblemOP;
+
+class SequenceOptProblemFactory {
+public:
+    SequenceOptProblemFactory() {}
+
+    virtual
+    ~SequenceOptProblemFactory() {}
+
+public:
+    virtual
+    SequenceOptProblemOP
+    get_problem() = 0;
+
+protected:
+    void
+    _setup_sterics(
+            MotifStateGraphOP msg,
+            StericLookupOP lookup) {
+
+        auto beads = Points();
+        for (auto & n : *msg) {
+            for(auto const & b : n->data()->cur_state->beads()) {
+                beads.push_back(b);
+            }
+        }
+        lookup->add_points(beads);
+    }
+};
+
+typedef std::shared_ptr<SequenceOptProblemFactory> SequenceOptProblemFactoryOP;
+
+class TTRProblemFactory : public SequenceOptProblemFactory {
+public:
+    TTRProblemFactory():
+            SequenceOptProblemFactory(),
+            has_setup_(false) {}
+
+    ~TTRProblemFactory() {}
+
+public:
+    SequenceOptProblemOP
+    get_problem() {
+        auto ttr = RM::instance().motif("GAAA_tetraloop", "", "A229-A245");
+        auto bp_step_1 = RM::instance().bp_step("GC_LL_GC_RR");
+        auto bp_step_2 = RM::instance().bp_step("CG_LL_CG_RR");
+        auto msg = std::make_shared<MotifStateGraph>();
+        msg->add_state(bp_step_1->get_state());
+        msg->add_state(bp_step_2->get_state());
+        msg->add_state(ttr->get_state());
+
+        if (!has_setup_) {
+            lookup_ = std::make_shared<StericLookup>();
+            this->_setup_sterics(msg, lookup_);
+
+            start_name_ = "A222-A251";
+            end_name_ = "A149-A154";
+
+            auto start_end_pos = msg->get_node(2)->data()->get_end_index(start_name_);
+            auto end_end_pos = msg->get_node(2)->data()->get_end_index(end_name_);
+
+            start_ = NodeIndexandEdge{2, start_end_pos};
+            end_ = NodeIndexandEdge{2, end_end_pos};
+
+            target_an_aligned_end_ = false;
+            if(end_end_pos == msg->get_node(2)->data()->block_end_add()) {
+                target_an_aligned_end_ = true;
+            }
+        }
+
+        has_setup_ = true;
+
+        auto p = std::make_shared<SequenceOptProblem>(msg, start_, end_, start_name_, end_name_,
+                                                      lookup_, target_an_aligned_end_);
+        return p;
+    }
+
+private:
+    bool has_setup_;
+    StericLookupOP lookup_;
+    NodeIndexandEdge start_, end_;
+    String start_name_, end_name_;
+    bool target_an_aligned_end_;
+};
+
+struct SequenceOptimizationParameters {
+public:
+    inline
+    SequenceOptimizationParameters() {
+        problem = "TTR";
+        helices = "ideal_helices";
+        rounds = 1;
+        motifs = 3;
+        min_helix_size = 6;
+        max_helix_size = 18;
+    }
+
+public:
+    String problem, helices;
+    int rounds, motifs;
+    int min_helix_size, max_helix_size;
+};
 
 
 class SequenceOptimizationBenchmarks : public Application {
@@ -43,18 +185,27 @@ public:
     run();
 
 private:
-    MotifStateGraphOP
-    _get_starting_graph();
-
-    void
-    _setup_sterics(
-            MotifStateGraphOP,
-            StericLookup &);
 
     std::vector<MotifStateOPs>
-    _get_libraries(
-            String const &);
+    _get_libraries();
 
+    MotifStateMonteCarloOP
+    _get_search(
+            SequenceOptProblemOP,
+            std::vector<MotifStateOPs> const &);
+
+    SequenceOptimizer3DOP
+    _get_optimizer(
+            SequenceOptProblemOP,
+            MotifGraphOP);
+
+    String const &
+    _get_motif_names(
+            MotifGraphOP);
+
+private:
+    SequenceOptimizationParameters parameters_;
+    String motif_names_;
 
 };
 
