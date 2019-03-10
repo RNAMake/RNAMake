@@ -245,8 +245,8 @@ public:
             //this->_setup_sterics(msg, lookup_);
 
             auto points = Points();
-            for(auto const & b : scaffold_->atoms()) {
-                points.push_back(b->coords());
+            for(auto const & b : scaffold_->beads()) {
+                points.push_back(b.center());
             }
             lookup_->add_points(points);
 
