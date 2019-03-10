@@ -232,10 +232,6 @@ private:
             int);
 
     MotifOP
-    get_avg_helix_new(
-            int);
-
-    MotifOP
     get_avg_helix(
             int);
 

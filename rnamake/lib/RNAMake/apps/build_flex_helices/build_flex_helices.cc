@@ -45,7 +45,7 @@ BuildFlexHelicesApp::run() {
 
     for(int i = 3; i < 9; i++) {
         std::cout << "GENERATING avg helix with length " << i << std::endl;
-        auto m = get_avg_helix_new(i);
+        auto m = get_avg_helix(i);
         out << m->to_str() << std::endl;
     }
     out.close();
@@ -126,7 +126,7 @@ BuildFlexHelicesApp::generate_helices(
 }
 
 MotifOP
-BuildFlexHelicesApp::get_avg_helix_new(
+BuildFlexHelicesApp::get_avg_helix(
         int length) {
 
     auto mst = MotifStateTreeOP(nullptr);
@@ -223,144 +223,6 @@ BuildFlexHelicesApp::get_avg_helix_new(
 
     return m;
 }
-
-MotifOP
-BuildFlexHelicesApp::get_avg_helix(
-        int length) {
-
-    /*auto pairs = std::vector<Strings>();
-    pairs.push_back(Strings{"A", "U"});
-    pairs.push_back(Strings{"U", "A"});
-    pairs.push_back(Strings{"C", "G"});
-    pairs.push_back(Strings{"G", "C"});
-
-    auto all_pairs = std::vector<std::vector<Strings>>((int)(length));
-    for(int i = 0; i < all_pairs.size(); i++) {
-        all_pairs[i] = pairs;
-    }
-
-    auto pair_iterator = CartesianProduct<Strings>(all_pairs);
-    auto current = std::vector<Strings>();
-    auto new_seq = String();
-    auto seq1 = String();
-    auto seq2 = String();
-    auto structure = String();
-
-    for(int i = 0; i < length; i++) { structure += "("; }
-    structure += "&";
-    for(int i = 0; i < length; i++) { structure += ")"; }
-
-    auto motifs = MotifStateOPs();
-
-    std::ofstream out;
-    out.open("length_"+std::to_string(length)+"_helices.dat");
-
-
-    auto num_seq = Ints(length);
-
-    auto q = Quaternion();
-    auto q_averager = AverageQuaternionCalculator();
-    auto t_average = Point(0, 0, 0);
-
-    double i = 0;
-    while (!pair_iterator.end()) {
-        current = pair_iterator.next();
-        seq1 = "";
-        seq2 = "";
-        for (auto const & p : current) {
-            seq1 += p[0];
-            seq2 = p[1] + seq2;
-        }
-        for(int j = 0; j < length; j++) {
-            num_seq[j] = convert_char_to_res_code(seq1[j]);
-        }
-
-        if(find_seq_violations(num_seq) || find_gc_strech(num_seq)) { continue; }
-
-        new_seq = seq1 + "&" + seq2;
-        motifs = get_motifs_from_seq_and_ss(new_seq, structure);
-
-        auto mst = std::make_shared<MotifStateTree>();
-        for(auto const & m : motifs) {
-            mst->add_state(m);
-        }
-
-
-        t_average += mst->last_node()->data()->get_end_state(1)->d();
-
-        q = get_quaternion_from_matrix(mst->last_node()->data()->get_end_state(1)->r());
-        q_averager.add_quaternion(q);
-
-        i++;
-     }
-    std::cout << i << std::endl;
-
-    t_average = t_average / i;
-    auto q_avg = q_averager.get_average();
-
-    i = 0;
-    pair_iterator = CartesianProduct<Strings>(all_pairs);
-
-    auto best_seq = String("");
-    auto best_score = 10000.0;
-
-    auto dist = 100.0;
-    auto q_dist = 1000.0;
-    auto dot = 1000.0;
-
-    while (!pair_iterator.end()) {
-        current = pair_iterator.next();
-        seq1 = "";
-        seq2 = "";
-        for (auto const & p : current) {
-            seq1 += p[0];
-            seq2 = p[1] + seq2;
-        }
-        for(int j = 0; j < length; j++) {
-            num_seq[j] = convert_char_to_res_code(seq1[j]);
-        }
-
-        if(find_seq_violations(num_seq) || find_gc_strech(num_seq)) { continue; }
-
-        new_seq = seq1 + "&" + seq2;
-        motifs = get_motifs_from_seq_and_ss(new_seq, structure);
-
-        auto mst = std::make_shared<MotifStateTree>();
-        for(auto const & m : motifs) {
-            mst->add_state(m);
-        }
-
-
-        dist = t_average.distance( mst->last_node()->data()->get_end_state(1)->d());
-
-        q = get_quaternion_from_matrix(mst->last_node()->data()->get_end_state(1)->r());
-        q_dist = 2*acos(q.dot(q_avg));
-
-        dist += q_dist*10;
-
-        if(dist < best_score) {
-            best_score = dist;
-            best_seq = new_seq;
-        }
-
-        mst->to_motif_tree()->to_pdb("helix."+std::to_string((int)i)+".pdb");
-
-        i++;
-    }
-    std::cout << best_score << " " << best_seq << std::endl;
-
-    motifs = get_motifs_from_seq_and_ss(best_seq, structure);
-    auto mst = std::make_shared<MotifStateTree>();
-    for(auto const & m : motifs) {
-        mst->add_state(m);
-    }
-
-    mst->to_motif_tree()->to_pdb("average.pdb");
-
-       */
-    return MotifOP(nullptr);
-}
-
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
