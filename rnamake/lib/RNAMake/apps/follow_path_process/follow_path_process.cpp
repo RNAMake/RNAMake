@@ -41,7 +41,7 @@ int main(int argc, const char * argv[]) {
     out.open("finished.out");
     
     int i = 0;
-    auto lines = get_lines_from_file("solutions.top");
+    auto lines =base::get_lines_from_file("solutions.top");
     for(auto const & l : lines) {
         
         std::cout << i << std::endl;

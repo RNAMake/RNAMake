@@ -123,7 +123,7 @@ PathBuilderNewApp::run() {
 void
 PathBuilderNewApp::_setup_from_mg() {
     
-    auto lines = get_lines_from_file(get_string_option("mg"));
+    auto lines =base::get_lines_from_file(get_string_option("mg"));
     //std::cout << "made it" << std::endl;
     mg_ =  MotifGraph(lines[0], MotifGraphStringType::MG);
     auto spl = split_str_by_delimiter(lines[1], " ");

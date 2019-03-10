@@ -63,8 +63,8 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     }
     
     SECTION("test optimizing miniTTR sequence") {
-        auto path = base_dir() + "/rnamake/unittests/test_problems/mini_ttr/sol.mg";
-        auto lines = get_lines_from_file(path);
+        auto path = base::base_dir() + "/rnamake/unittests/test_problems/mini_ttr/sol.mg";
+        auto lines =base::get_lines_from_file(path);
         auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
         
         mg->replace_ideal_helices();
@@ -91,8 +91,8 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
 
     // messed up backward compadility
     /*SECTION("test optimizing chip sequence") {
-        auto base_path = base_dir() + "/rnamake/unittests/resources/motif_graph";
-        auto lines = get_lines_from_file(base_path+"/tecto_chip_only.mg");
+        auto base_path = base::base_dir() + "/rnamake/unittests/resources/motif_graph";
+        auto lines =base::get_lines_from_file(base_path+"/tecto_chip_only.mg");
         auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
         auto so = SequenceOptimizer3D();
         so.set_option_value("return_lowest", true);

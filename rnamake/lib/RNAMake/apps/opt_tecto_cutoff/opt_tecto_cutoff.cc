@@ -40,7 +40,7 @@ OptTectoCutoff::parse_command_line(
 void
 OptTectoCutoff::_setup() {
 
-    auto lines = get_lines_from_file(get_string_option("data"));
+    auto lines =base::get_lines_from_file(get_string_option("data"));
     exp_dgs_ = std::vector<double>();
     constructs_ = Constructs();
     for(int i = 1; i < lines.size(); i++) {

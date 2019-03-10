@@ -17,7 +17,7 @@ Sqlite3Connection::Sqlite3Connection(
     
     zErrMsg_ = 0;
     ic_ = 0;
-    if(! file_exists(path)) {
+    if(!base::file_exists(path)) {
         throw Sqlite3ConnectionException(
             "Can't open sqlite3 database " + path + " it does not exist");
     }

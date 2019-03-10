@@ -55,11 +55,11 @@ TEST_CASE( "Test Changes in Motif Topology", "[MotifTopology]" ) {
     REQUIRE(mt->size() == mg->size());
     
     SECTION("test with minittr construct") {
-        auto base_path = base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
+        auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
         RM::instance().add_motif(base_path+"GAAA_tetraloop");
         
-        auto path = base_dir() + "/rnamake/unittests/resources/motif_graph/mini_ttr.mg";
-        auto lines = get_lines_from_file(path);
+        auto path = base::base_dir() + "/rnamake/unittests/resources/motif_graph/mini_ttr.mg";
+        auto lines =base::get_lines_from_file(path);
         auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
 
         auto c = GraphtoTree();

@@ -49,7 +49,7 @@ void
 SequenceOptimizerApp::run() {
 
     // load motif graph from file
-    auto lines = get_lines_from_file(get_string_option("mg"));
+    auto lines =base::get_lines_from_file(get_string_option("mg"));
     auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
 
     // parse connection info

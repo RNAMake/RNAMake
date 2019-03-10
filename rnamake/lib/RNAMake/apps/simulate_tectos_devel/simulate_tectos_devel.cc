@@ -437,10 +437,10 @@ SimulateTectosApp::parse_command_line(
 void
 SimulateTectosApp::run() {
 
-    /*auto lines = get_lines_from_file("state.out");
+    /*auto lines =base::get_lines_from_file("state.out");
     auto mt = std::make_shared<MotifTree>(lines[0], MotifTreeStringType::MT_STR);
 
-    auto path = motif_dirs() + "ref.motif";
+    auto path = base::motif_dirs() + "ref.motif";
     auto ref_motif = file_to_motif(path);
     auto logger = std::make_shared<SimulateTectosRecord6D>(
             "new.out",
@@ -623,8 +623,8 @@ SimulateTectosApp::get_mset_new_receptor(
     String const & css) {
     
     if(get_string_option("ggaa_model") == "") {
-        String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
-        auto lines = get_lines_from_file(base_path+"new_ggaa_tetraloop.motif");
+        String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
+        auto lines =base::get_lines_from_file(base_path+"new_ggaa_tetraloop.motif");
         std::cout << "SIMULATE_TECTOS: using custom ggaa_model: ";
         std::cout << base_path+"new_ggaa_tetraloop.motif" << std::endl;
 
@@ -634,7 +634,7 @@ SimulateTectosApp::get_mset_new_receptor(
         RM::instance().add_motif(new_ggaa_tetraloop);
     }
     else {
-        auto lines = get_lines_from_file(get_string_option("ggaa_model"));
+        auto lines =base::get_lines_from_file(get_string_option("ggaa_model"));
         std::cout << "SIMULATE_TECTOS: using custom ggaa_model: ";
         std::cout << get_string_option("ggaa_model") << std::endl;
         auto new_ggaa_tetraloop = std::make_shared<Motif>(
@@ -847,7 +847,7 @@ SimulateTectosApp::_get_logger(
     }
 
     else if(name == "Record6D") {
-        auto path = motif_dirs() + "ref.motif";
+        auto path = base::motif_dirs() + "ref.motif";
         auto ref_motif = file_to_motif(path);
         return std::make_shared<SimulateTectosRecord6D>(
                 get_string_option("record_file"),
@@ -855,7 +855,7 @@ SimulateTectosApp::_get_logger(
                 ref_motif->basepairs()[0]);
     }
     else if(name == "Record6DHisto" || name == "Record6DHistogram") {
-        auto path = motif_dirs() + "ref.motif";
+        auto path = base::motif_dirs() + "ref.motif";
         auto ref_motif = file_to_motif(path);
         return std::make_shared<SimulateTectosRecord6DHistogram>(
                 get_string_option("record_file"),
@@ -881,7 +881,7 @@ SimulateTectosApp::_get_scorer(
     }
 
     else if(name == "SixDScorer") {
-        auto path = motif_dirs() + "ref.motif";
+        auto path = base::motif_dirs() + "ref.motif";
         auto ref_motif = file_to_motif(path);
         return std::make_shared<SixDScorer>(
                 get_string_option("constraints"),

@@ -15,7 +15,7 @@
 TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
     auto rts = ResidueTypeSet();
     auto path = unittest_resource_dir() + "residue/test_str_to_residue.dat";
-    auto lines = get_lines_from_file(path);
+    auto lines =base::get_lines_from_file(path);
     auto residues  = ResidueOPs();
     for(auto const & l : lines) {
         if(l.size() < 10) { break; } // end of file

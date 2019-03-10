@@ -16,7 +16,7 @@
 
 ResidueTypeSet::ResidueTypeSet():
 residue_types_(ResidueTypes()) {
-    String base_path = resources_path() + "/residue_types/";
+    String base_path = base::resources_path() + "/residue_types/";
     
     _read_rtypes_from_dir(base_path+"RNA/", SetType::RNA);
     _read_rtypes_from_dir(base_path+"PROTEIN/", SetType::PROTEIN);

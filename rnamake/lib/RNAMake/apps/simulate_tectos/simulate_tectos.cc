@@ -190,7 +190,7 @@ int main(int argc, const char * argv[]) {
     std::set_terminate(print_backtrace);
     
     //load extra motifs being used
-    String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
+    String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
     RM::instance().add_motif(base_path+"GAAA_tetraloop");
     RM::instance().add_motif(base_path+"GGAA_tetraloop");
     

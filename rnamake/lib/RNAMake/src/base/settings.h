@@ -14,6 +14,8 @@
 //RNAMake Headers
 #include "base/types.h"
 
+namespace base {
+
 String
 get_os_name();
 
@@ -34,5 +36,7 @@ x3dna_path();
 
 String
 unittest_resource_dir();
+
+}
 
 #endif /* defined(__RNAMake__settings__) */

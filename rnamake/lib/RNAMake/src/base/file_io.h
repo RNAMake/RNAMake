@@ -20,24 +20,24 @@
 //RNAMake Headers
 #include "base/types.h"
 
+namespace base {
 
 inline
 bool
-file_exists (String const & name) {
+file_exists(String const & name) {
     struct stat buffer;
-    return (stat (name.c_str(), &buffer) == 0);
+    return (stat(name.c_str(), &buffer) == 0);
 }
 
 inline
 int
 is_dir(String const & path) {
-    if(!file_exists(path)) { return 0; }
+    if (!file_exists(path)) { return 0; }
     struct stat st;
     lstat(path.c_str(), &st);
-    if(S_ISDIR(st.st_mode)) {
+    if (S_ISDIR(st.st_mode)) {
         return 1;
-    }
-    else {
+    } else {
         return 0;
     }
 }
@@ -46,6 +46,7 @@ is_dir(String const & path) {
 Strings
 get_lines_from_file(String);
 
+}
 
 
 

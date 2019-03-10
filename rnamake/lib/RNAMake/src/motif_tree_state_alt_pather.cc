@@ -13,11 +13,11 @@
 
 MotifTreeStateAltPather::MotifTreeStateAltPather() {
     
-    String lib_path = resources_path() + "/precomputed/motif_tree_states/TWOWAY_all.new.me";
+    String lib_path = base::resources_path() + "/precomputed/motif_tree_states/TWOWAY_all.new.me";
     mts_lib_ = MotifTreeStateLibrary(lib_path);
     all_trees_ = std::vector<MotifTreeStateTree>();
     sim_dict_ = std::map<String, Strings>();
-    String path = resources_path() + "sim_list";
+    String path = base::resources_path() + "sim_list";
     String line;
     std::ifstream in;
     in.open(path);

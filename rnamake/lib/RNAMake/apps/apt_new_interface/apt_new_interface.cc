@@ -247,7 +247,7 @@ main(
     std::set_terminate(print_backtrace);
 
     //load extra motifs being used
-    String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";
+    String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";
     RM::instance().add_motif(base_path+"pRNA_3WJ.pdb", "prna");
 
     auto app = AptNewInterface();

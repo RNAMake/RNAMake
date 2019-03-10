@@ -8,6 +8,8 @@
 
 #include "base/file_io.h"
 
+namespace base {
+
 Strings
 get_lines_from_file(String const fname) {
     if(!file_exists(fname)) {
@@ -27,4 +29,6 @@ get_lines_from_file(String const fname) {
     input.close();
     
     return lines;
+}
+
 }

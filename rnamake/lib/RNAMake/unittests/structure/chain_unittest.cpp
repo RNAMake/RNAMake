@@ -10,7 +10,7 @@ TEST_CASE( "Test Chain for Structure", "[Chain]" ) {
     
     auto rts = ResidueTypeSet();
     auto path = unittest_resource_dir() + "structure/test_str_to_chain.dat";
-    auto lines = get_lines_from_file(path);
+    auto lines =base::get_lines_from_file(path);
     auto c = std::make_shared<Chain>(lines[0], rts);
     
     SECTION("can stringify chain") {

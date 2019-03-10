@@ -23,7 +23,7 @@ MotifFactory::motif_from_file(
         int force_num_chains) {
 
 
-    if (!file_exists(path)) {
+    if (!base::file_exists(path)) {
         throw MotifFactoryException("cannot generate motif from file " + path + " does not exist");
     }
 
@@ -31,11 +31,11 @@ MotifFactory::motif_from_file(
     auto fname = filename(path);
     auto pdb_path = path;
     StructureOP structure;
-    if (is_dir(path)) {
+    if (base::is_dir(path)) {
         rebuild_x3dna = false;
 
         pdb_path = path + "/" + fname + ".pdb";
-        if (!file_exists(pdb_path)) {
+        if (!base::file_exists(pdb_path)) {
             throw MotifFactoryException(
                     "cannot generate motif from directory " + path + " it exists but there is no pdb "
                             " in it expected: dir_name/dir_name.pdb");

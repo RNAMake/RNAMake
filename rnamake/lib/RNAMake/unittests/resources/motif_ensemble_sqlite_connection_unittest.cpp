@@ -7,7 +7,7 @@
 #include "resources/motif_ensemble_sqlite_connection.h"
 
 TEST_CASE( "Test Motif Ensemble Sqlite Connection", "[MotifEnsembleSqliteConnection]" ) {
-    auto path = resources_path() + "motif_ensemble_libraries/bp_steps.db";
+    auto path = base::resources_path() + "motif_ensemble_libraries/bp_steps.db";
     auto conn = MotifEnsembleSqliteConnection(path);
     
     

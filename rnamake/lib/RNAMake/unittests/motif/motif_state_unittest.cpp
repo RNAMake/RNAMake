@@ -18,9 +18,9 @@ rotation_about_x_axis(
 }
 
 TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]" ) {
-    auto path = motif_dirs() + "base.motif";
+    auto path = base::motif_dirs() + "base.motif";
     auto m = file_to_motif(path);
-    path = motif_dirs() + "ref.motif";
+    path = base::motif_dirs() + "ref.motif";
     auto ref_m = file_to_motif(path);
 
     auto ms = m->get_state();

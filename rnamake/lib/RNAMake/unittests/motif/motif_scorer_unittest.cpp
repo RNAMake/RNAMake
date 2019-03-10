@@ -8,9 +8,9 @@
 
 TEST_CASE( "Test Secondary Structure scoring of motifs", "[MotifScorer]" ) {
     
-    auto path = motif_dirs() + "base.motif";
+    auto path = base::motif_dirs() + "base.motif";
     auto m = file_to_motif(path);
-    path = motif_dirs() + "ref.motif";
+    path = base::motif_dirs() + "ref.motif";
     auto ref_m = file_to_motif(path);;
 
     auto scorer = MotifScorer();

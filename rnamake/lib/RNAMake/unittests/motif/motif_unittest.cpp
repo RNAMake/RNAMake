@@ -11,9 +11,9 @@
 
 TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     
-    auto path = motif_dirs() + "base.motif";
+    auto path = base::motif_dirs() + "base.motif";
     auto m = file_to_motif(path);
-    path = motif_dirs() + "ref.motif";
+    path = base::motif_dirs() + "ref.motif";
     auto ref_m = file_to_motif(path);
     auto rts = ResidueTypeSet();
     
@@ -117,7 +117,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     }
     
     SECTION("test copying uuids from one motif to another") {
-        auto path = motif_dirs() + "base.motif";
+        auto path = base::motif_dirs() + "base.motif";
         auto m1 = file_to_motif(path);
         auto m2 = file_to_motif(path);
 
@@ -141,7 +141,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     }
 
     SECTION("test steric look based on beads and atoms") {
-        auto path = motif_dirs() + "ref.motif";
+        auto path = base::motif_dirs() + "ref.motif";
         auto m1 = file_to_motif(path);
         auto lookup = StericLookupNew();
         auto points = Points();

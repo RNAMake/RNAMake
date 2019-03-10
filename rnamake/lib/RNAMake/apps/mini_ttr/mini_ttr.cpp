@@ -133,7 +133,7 @@ MiniTTR::optimize_sequence(MotifGraph & org_mg) {
 void
 MiniTTRPathFollow::run() {
     
-    auto lines = get_lines_from_file(options_.get_string("path"));
+    auto lines =base::get_lines_from_file(options_.get_string("path"));
     auto path_points = vectors_from_str(lines[0]);
     auto scorer = std::make_shared<MSS_PathFollow>(path_points);
     
@@ -200,7 +200,7 @@ MiniTTRPathFollow::run() {
 
 
 int main(int argc, const char * argv[]) {
-    auto base_path = base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
+    auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
     RM::instance().add_motif(base_path+"GAAA_tetraloop");
 
     auto options = parse_command_line(argc, argv);

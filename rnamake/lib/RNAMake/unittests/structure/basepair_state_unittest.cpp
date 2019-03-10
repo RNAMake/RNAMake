@@ -12,7 +12,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
 
     SECTION("test loading basepair from string") {
         auto path = unittest_resource_dir() + "/structure/test_str_to_basepairstate.dat";
-        auto lines = get_lines_from_file(path);
+        auto lines =base::get_lines_from_file(path);
         auto bp_state = BasepairStateOP(nullptr);
         
         for(auto const & l : lines) {
@@ -29,7 +29,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
     
     SECTION("test generating rotation and translation between basepairs") {
         auto path = unittest_resource_dir() + "/structure/get_transforming_r_and_t_test.dat";
-        auto lines = get_lines_from_file(path);
+        auto lines =base::get_lines_from_file(path);
 
         auto dummy = BasepairState();
         int fail = 0;
@@ -62,7 +62,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
     
     SECTION("test random tranformation between basepairs") {
         auto path = unittest_resource_dir() + "/structure/test_get_transformed_state.dat";
-        auto lines = get_lines_from_file(path);
+        auto lines =base::get_lines_from_file(path);
         auto dummy = BasepairState();
         auto dummy_2 = BasepairState();
         
@@ -92,7 +92,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
     
     SECTION("test repeated alignment") {
         auto path = unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
-        auto lines = get_lines_from_file(path);
+        auto lines =base::get_lines_from_file(path);
         
         auto spl = split_str_by_delimiter(lines[0], "|");
         auto bp_state_1 = BasepairState(spl[0]);
@@ -149,7 +149,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
     
     SECTION("test transform() instead of get_transformed_state()") {
         auto path = unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
-        auto lines = get_lines_from_file(path);
+        auto lines =base::get_lines_from_file(path);
 
         auto dist = 0.0;
         auto rdist = 0.0;

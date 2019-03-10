@@ -39,9 +39,9 @@ public:
     MotifFactory() :
             parser_(MotiftoSecondaryStructure()),
             pdb_parser_(PDBParser()) {
-        auto path = motif_dirs() + "ref.motif";
+        auto path = base::motif_dirs() + "ref.motif";
         ref_motif_ = file_to_motif(path);
-        path = motif_dirs() + "base.motif";
+        path = base::motif_dirs() + "base.motif";
         base_motif_ = file_to_motif(path);
         base_motif_->get_beads(base_motif_->ends()[0]);
         added_helix_ = std::make_shared<Motif>(*base_motif_);

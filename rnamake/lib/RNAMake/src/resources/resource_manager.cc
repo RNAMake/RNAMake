@@ -241,7 +241,7 @@ void
 RM::register_extra_motif_ensembles(
     String const & f_name) {
     
-    auto lines = get_lines_from_file(f_name);
+    auto lines = base::get_lines_from_file(f_name);
     
     for(auto const & l : lines) {
         if(l.length() < 10) { continue; }

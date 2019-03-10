@@ -9,7 +9,7 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
    
     SECTION("test generating ref_frame file from pdb") {
     
-        auto m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
+        auto m_path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
         auto x = X3dna();
         x.generate_ref_frame(m_path);
     
@@ -27,7 +27,7 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
     }
     
     SECTION("test generating dssr file from pdb") {
-        auto m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
+        auto m_path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
         auto x = X3dna();
         x.generate_dssr_file(m_path);
         
@@ -53,7 +53,7 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
         auto x = X3dna();
         SECTION("should not build new ref frame and dssr files since they already exist") {
         
-            auto m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+            auto m_path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
             auto basepairs = x.get_basepairs(m_path);
         
             REQUIRE(!file_exists("ref_frames.dat"));
@@ -62,7 +62,7 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
         
         SECTION("needs to build new ref frame and dssr files") {
             
-            auto m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
+            auto m_path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
             auto basepairs = x.get_basepairs(m_path);
             
             REQUIRE(file_exists("ref_frames.dat"));
@@ -74,7 +74,7 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
         }
         
         SECTION("force creation fo ref_frames file") {
-            auto m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+            auto m_path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
             auto basepairs = x.get_basepairs(m_path, true);
             
             REQUIRE(file_exists("ref_frames.dat"));
@@ -87,7 +87,7 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
     }
     
     SECTION("test getting motifs from large rna structure") {
-        auto m_path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+        auto m_path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
         auto x = X3dna();
         auto motifs = x.get_motifs(m_path);
         REQUIRE(motifs.size() == 22);

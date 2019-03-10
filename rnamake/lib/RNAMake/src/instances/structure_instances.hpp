@@ -23,9 +23,9 @@ namespace instances {
 inline
 ResidueOP
 residue() {
-    auto unittest_path = base_dir() + "/rnamake/lib/RNAMake/unittests/resources/";
+    auto unittest_path = base::base_dir() + "/rnamake/lib/RNAMake/unittests/resources/";
     auto path = unittest_path + "residue/test_str_to_residue.dat";
-    Strings lines = get_lines_from_file(path);
+    Strings lines =base::get_lines_from_file(path);
     ResidueTypeSet rts;
     auto r = std::make_shared<Residue>(lines[0], rts);
     return r;

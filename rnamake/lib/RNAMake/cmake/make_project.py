@@ -28,6 +28,7 @@ all_lib_paths = libs.split()
 
 
 file_path = os.path.realpath(__file__)
+file_path = os.path.realpath(__file__)
 spl = file_path.split("/")
 base_dir = "/".join(spl[:-2])
 

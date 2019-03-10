@@ -13,14 +13,14 @@
 #include "util/x3dna.h"
 
 X3dna::X3dna() {
-    String env = "X3DNA="+x3dna_path();
+    String env = "X3DNA=" + base::x3dna_path();
     s_ = strdup(env.c_str());
 
     if(getenv("X3DNA") == NULL) {
         putenv(s_);
     }
 
-    bin_path_ = x3dna_path()+"/bin/";
+    bin_path_ = base::x3dna_path() + "/bin/";
 }
 
 void
@@ -28,7 +28,7 @@ X3dna::generate_ref_frame(String const & path) {
     
     String fname = filename(path).substr(0,-4);
     fname = fname.substr(0, fname.length()-4);
-    if(!file_exists(path)) {
+    if(!base::file_exists(path)) {
         throw X3dnaException("cannot find pdb for ref_frames.dat\n");
     }
     
@@ -57,7 +57,7 @@ X3dna::generate_dssr_file(String const & path) {
     
     String fname = filename(path);
     fname = fname.substr(0, fname.length()-4);
-    if(!file_exists(path)) {
+    if(!base::file_exists(path)) {
         throw X3dnaException("cannot find pdb for generate_dssr_file\n");
     }
     
@@ -93,15 +93,15 @@ X3dna::_get_ref_frame_path(
     }
     
     // is pdb
-    else if(file_exists(basedir + "/ref_frames.dat")) {
+    else if(base::file_exists(basedir + "/ref_frames.dat")) {
         ref_frames_path = basedir + "/ref_frames.dat";
     }
     // is directory
-    else if(file_exists(pdb_name + "/ref_frames.dat")) {
+    else if(base::file_exists(pdb_name + "/ref_frames.dat")) {
         ref_frames_path = pdb_name + "/ref_frames.dat";
     }
     
-    else if(file_exists("ref_frames.dat")) {
+    else if(base::file_exists("ref_frames.dat")) {
         ref_frames_path = "ref_frames.dat";
     }
     else {
@@ -128,11 +128,11 @@ X3dna::_get_dssr_file_path(
         dssr_file_path = dssr_name;
     }
     
-    else if(file_exists(basedir + "/" + dssr_name)) {
+    else if(base::file_exists(basedir + "/" + dssr_name)) {
         dssr_file_path = basedir + "/" + dssr_name;
     }
     
-    else if(file_exists(pdb_path + "/" + dssr_name )) {
+    else if(base::file_exists(pdb_path + "/" + dssr_name )) {
         dssr_file_path = pdb_path + "/" + dssr_name;
     }
     else {
@@ -157,7 +157,7 @@ X3dna::_convert_strings_to_point(Strings const & spl) {
 
 void
 X3dna::_parse_ref_frame_file(String const & ref_frames_path) {
-    Strings lines = get_lines_from_file(ref_frames_path);
+    Strings lines = base::get_lines_from_file(ref_frames_path);
     basepairs_ = X3Basepairs();
 
     Point d;
@@ -213,7 +213,7 @@ X3dna::_parse_ref_frame_file(String const & ref_frames_path) {
 
 std::map<String, Strings>
 X3dna::_divide_dssr_file_into_sections(String const & dssr_file_path) {
-    Strings lines = get_lines_from_file(dssr_file_path);
+    Strings lines = base::get_lines_from_file(dssr_file_path);
     
     std::map<String, Strings> sections;
     Strings section;

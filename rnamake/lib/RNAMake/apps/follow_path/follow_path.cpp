@@ -49,7 +49,7 @@ PathBuilder::setup(
 
 void
 PathBuilder::build() {
-    auto lines = get_lines_from_file(get_string_option("path"));
+    auto lines = base::get_lines_from_file(get_string_option("path"));
     auto path_points = vectors_from_str(lines[0]);
     
     auto mg = MotifGraphOP(nullptr);
@@ -57,7 +57,7 @@ PathBuilder::build() {
     String end_name = "";
     auto end_bp = BasepairStateOP(nullptr);
     if(get_string_option("mg").size() > 0) {
-        auto lines2 = get_lines_from_file(get_string_option("mg"));
+        auto lines2 =base::get_lines_from_file(get_string_option("mg"));
         mg = std::make_shared<MotifGraph>(lines2[0],  MotifGraphStringType::OLD);
         
         auto spl = split_str_by_delimiter(lines2[1], " ");
@@ -299,12 +299,12 @@ int main(int argc, const char * argv[]) {
         return 0;
     }
     
-    auto lines = get_lines_from_file(cmd_opts.get_string("path"));
+    auto lines =base::get_lines_from_file(cmd_opts.get_string("path"));
     auto path_points = vectors_from_str(lines[0]);
 
     auto pf = PathFollower();
     if(cmd_opts.is_filled("mg")) {
-        auto lines2 = get_lines_from_file(cmd_opts.get_string("mg"));
+        auto lines2 =base::get_lines_from_file(cmd_opts.get_string("mg"));
         auto mg = std::make_shared<MotifGraph>(lines2[0], MotifGraphStringType::OLD);
         
         auto spl = split_str_by_delimiter(lines2[1], " ");

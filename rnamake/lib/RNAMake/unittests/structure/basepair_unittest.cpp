@@ -10,7 +10,7 @@
 
 TEST_CASE( "Test Basepairs for Structure", "[Basepair]" ) {
     auto path = unittest_resource_dir() + "/structure/test_str_to_structure.dat";
-    auto lines = get_lines_from_file(path);
+    auto lines =base::get_lines_from_file(path);
     auto rts = ResidueTypeSet();
     auto s = std::make_shared<Structure>(lines[0], rts);
     

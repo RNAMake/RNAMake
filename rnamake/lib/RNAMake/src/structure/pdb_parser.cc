@@ -23,7 +23,7 @@ PDBParser::parse(
     
     residues_ = ResidueOPs();
     
-    Strings lines = get_lines_from_file(pdb_file);
+    Strings lines = base::get_lines_from_file(pdb_file);
     String startswith;
     String atomname, resname, resnum, chid, alt;
     Point coords;

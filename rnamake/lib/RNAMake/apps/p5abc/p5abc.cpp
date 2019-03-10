@@ -32,7 +32,7 @@ parse_command_line(
 
 void
 setup_motif() {
-    auto base_path = base_dir() + "/rnamake/lib/RNAMake/apps/p5abc/";
+    auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/p5abc/";
     
     auto mf = MotifFactory();
     auto m = mf.motif_from_file(base_path+"p4p6_start.pdb");
@@ -60,7 +60,7 @@ int main(int argc, const char * argv[]) {
     auto flip_sequence = spl[1] + "&" + spl[0];
     
 
-    auto base_path = base_dir() + "/rnamake/lib/RNAMake/apps/p5abc/";
+    auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/p5abc/";
     auto m = file_to_motif(base_path+"start.motif");
     auto m_clash_section = file_to_motif(base_path+"clash_section.motif");
     

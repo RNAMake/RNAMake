@@ -8,7 +8,7 @@
 #include "resources/motif_sqlite_connection.h"
 
 TEST_CASE( "Test Motif Sqlite3 Connection", "[MotifSqliteConnection]" ) {
-    auto path = resources_path() + "motif_libraries_new/ideal_helices.db";
+    auto path = base::resources_path() + "motif_libraries_new/ideal_helices.db";
     auto conn = MotifSqliteConnection(path);
     
     SECTION("try querying for a motif") {

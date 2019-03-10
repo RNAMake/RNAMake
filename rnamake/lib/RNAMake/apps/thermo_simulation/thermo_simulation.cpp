@@ -43,7 +43,7 @@ ThermoSimulationApp::run() {
         RM::instance().register_extra_motif_ensembles(get_string_option("extra_me"));
     }
 
-    auto lines = get_lines_from_file(get_string_option("mt"));
+    auto lines =base::get_lines_from_file(get_string_option("mt"));
     auto mt = std::make_shared<MotifTree>(lines[0], MotifTreeStringType::MT_STR);
     auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
 

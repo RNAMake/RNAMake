@@ -233,7 +233,7 @@ int main(int argc, const char *argv[]) {
     //must add this for all apps!
     std::set_terminate(print_backtrace);
 
-    String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
+    String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
     RM::instance().add_motif(base_path+"GAAA_tetraloop");
 
     auto app = APTStablization();

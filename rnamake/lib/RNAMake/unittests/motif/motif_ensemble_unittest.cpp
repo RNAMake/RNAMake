@@ -9,7 +9,7 @@
 #include "motif/motif_ensemble.h"
 
 TEST_CASE( "Test Motif Ensembles", "[MotifEnsemble]" ) {
-    auto path = motif_dirs() + "base.motif";
+    auto path = base::motif_dirs() + "base.motif";
     auto m = file_to_motif(path);
 
     auto me = MotifEnsemble(MotifOPs{m}, Floats{1});

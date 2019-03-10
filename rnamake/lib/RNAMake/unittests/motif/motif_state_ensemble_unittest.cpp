@@ -9,7 +9,7 @@
 #include "motif/motif_state_ensemble.h"
 
 TEST_CASE( "Test Motif State Ensembles", "[MotifStateEnsemble]" ) {
-    auto path = motif_dirs() + "base.motif";
+    auto path = base::motif_dirs() + "base.motif";
     auto m = file_to_motif(path);
     
     auto mse = MotifStateEnsemble(m->get_state());

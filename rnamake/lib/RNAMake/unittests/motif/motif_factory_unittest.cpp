@@ -9,18 +9,18 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     
     auto mf = MotifFactory();
     
-    auto path = motif_dirs() + "ref.motif";
+    auto path = base::motif_dirs() + "ref.motif";
     auto ref_m = file_to_motif(path);;
     
     SECTION("test loading motif from pdb file") {
-        auto path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
+        auto path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
         auto m = mf.motif_from_file(path);
         
         REQUIRE(m->residues().size() == 157);
     }
     
     SECTION("load motif from directory") {
-        auto path = base_dir() + "/rnamake/unittests/resources/motifs/p4p6";
+        auto path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6";
         auto m = mf.motif_from_file(path);
         
         REQUIRE(m->residues().size() == 157);
@@ -36,7 +36,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
  
     SECTION("test standardizing motifs, i.e. making sure they all behave the same") {
-        /*auto path = motif_dirs() + "helices/HELIX.IDEAL";
+        /*auto path = base::motif_dirs() + "helices/HELIX.IDEAL";
         auto m = mf.motif_from_file(path);
         
         auto aligned_m = mf.align_motif_to_common_frame(m, 1);
@@ -57,7 +57,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
     
     SECTION("test generating motifs from basepairs") {
-        auto path = base_dir() + "/rnamake/unittests/resources/motifs/HELIX.IDEAL";
+        auto path = base::base_dir() + "/rnamake/unittests/resources/motifs/HELIX.IDEAL";
         auto m = mf.motif_from_file(path);
         auto bps = m->basepairs();
         
@@ -82,16 +82,16 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
     
     SECTION("Loading in proteins with RNA") {
-        auto path = base_dir() + "/rnamake/unittests/resources/pdbs/5g2x.pdb";
+        auto path = base::base_dir() + "/rnamake/unittests/resources/pdbs/5g2x.pdb";
         auto m = mf.motif_from_file(path, false, true);
         REQUIRE(m->protein_beads().size() != 0);
     }
 
     SECTION("test alignment setup") {
-        auto path = motif_dirs() + "helices/HELIX.IDEAL.2";
+        auto path = base::motif_dirs() + "helices/HELIX.IDEAL.2";
         auto m = mf.motif_from_file(path);
 
-        path = motif_dirs() + "base.motif";
+        path = base::motif_dirs() + "base.motif";
         auto base_motif_1 = file_to_motif(path);
         auto base_motif_2 = file_to_motif(path);
 
@@ -105,7 +105,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
 
     SECTION("test forcing set number of chains") {
-        auto path = base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/motif/construct_3.pdb";
+        auto path = base::base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/motif/construct_3.pdb";
         auto m = mf.motif_from_file(path, false, true, 1);
 
         REQUIRE(m->chains().size() == 1);

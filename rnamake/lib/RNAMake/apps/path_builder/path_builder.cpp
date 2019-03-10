@@ -36,7 +36,7 @@ int main(int argc, const char * argv[]) {
     RM::instance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
     RM::instance().add_motif(ttr_dir+"/resources/GGAA_tetraloop");
     
-    auto lines = get_lines_from_file(cmd_opts.get_string("mg"));
+    auto lines =base::get_lines_from_file(cmd_opts.get_string("mg"));
     if(lines.size() < 3) {
         throw std::runtime_error("motif graph file did not contain three lines, first line is" \
                                  "topology followed by starting basepair and end basepair");

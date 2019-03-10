@@ -48,7 +48,7 @@ operator <<(
 
 BasepairState
 get_ref_bp_state() {
-	String path = resources_path() + "/ref_bp_state.dat";
+	String path = base::resources_path() + "/ref_bp_state.dat";
 	std::ifstream input;
 	String line;
 	

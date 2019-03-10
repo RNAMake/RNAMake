@@ -21,7 +21,7 @@ TEST_CASE( "Test Matrix math ", "[XYZMatrix]" ) {
     SECTION("Single known test of unitarize compared to python") {
     
         auto path = unittest_resource_dir() + "/math/test_unitarize.dat";
-        auto lines = get_lines_from_file(path);
+        auto lines =base::get_lines_from_file(path);
         auto org_m = Matrix(lines[0]);
         
         auto m = Matrix(1.0, 2.0, 3.0,
@@ -36,7 +36,7 @@ TEST_CASE( "Test Matrix math ", "[XYZMatrix]" ) {
     
     SECTION("Test unitarize in batch with 1000 matrices") {
         auto path = unittest_resource_dir() + "/math/test_unitarize_multi.dat";
-        auto lines = get_lines_from_file(path);
+        auto lines =base::get_lines_from_file(path);
         
         int fail = 0;
         for(auto const & l : lines) {

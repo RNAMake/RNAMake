@@ -251,14 +251,14 @@ get_aligned_motif(
 MotifOP
 file_to_motif(
     String const & path ) {
-    Strings lines = get_lines_from_file(path);
+    Strings lines = base::get_lines_from_file(path);
     return std::make_shared<Motif>(lines[0],
                                    ResidueTypeSetManager::getInstance().residue_type_set());
 }
 
 Motif
 ref_motif() {
-    String path = resources_path() + "start.motif";
+    String path = base::resources_path() + "start.motif";
     String line;
     std::ifstream in;
     in.open(path);

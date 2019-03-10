@@ -98,12 +98,12 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     }
     
     SECTION("test compatibility with python stringification and topology serialization") {
-        auto path = base_dir() + "/rnamake/unittests/resources/motif_graph/";
-        auto lines = get_lines_from_file(path + "test.mg");
+        auto path = base::base_dir() + "/rnamake/unittests/resources/motif_graph/";
+        auto lines =base::get_lines_from_file(path + "test.mg");
         auto mg = MotifGraph(lines[0], MotifGraphStringType::MG);
         auto s = mg.get_structure();
         
-        lines = get_lines_from_file(path + "base_mg.mg");
+        lines =base::get_lines_from_file(path + "base_mg.mg");
         mg = MotifGraph(lines[0], MotifGraphStringType::MG);
         s = mg.get_structure();
         
@@ -247,7 +247,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     }
     
     SECTION("test get end for easy building ") {
-        auto base_path = base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
+        auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
         auto m1 = RM::instance().motif("HELIX.IDEAL.2");
         auto m2 = RM::instance().motif("HELIX.IDEAL.2");
 
@@ -346,7 +346,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto s = mg2.to_pretty_str();
         
         auto path = unittest_resource_dir() + "motif_tree/pretty_str_1.dat";
-        auto lines = get_lines_from_file(path);
+        auto lines =base::get_lines_from_file(path);
         
         auto spl = split_str_by_delimiter(s, "\n");
         for(int i = 1; i < spl.size(); i++) {
@@ -371,7 +371,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         //std::cout << s << std::endl;
         
         auto path = unittest_resource_dir() + "motif_tree/pretty_str_2.dat";
-        auto lines = get_lines_from_file(path);
+        auto lines =base::get_lines_from_file(path);
         
         auto spl = split_str_by_delimiter(s, "\n");
         for(int i = 1; i < spl.size(); i++) {

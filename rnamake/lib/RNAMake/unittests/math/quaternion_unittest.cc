@@ -57,7 +57,7 @@ TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
     SECTION("test quaternion averaging") {
         SECTION("test reproducing same quaternion") {
             auto path = unittest_resource_dir() + "/math/test_quaternions.dat";
-            auto lines = get_lines_from_file(path);
+            auto lines =base::get_lines_from_file(path);
 
             auto averager = AverageQuaternionCalculator();
             auto q_init = quaternion_from_str(lines[0]);
@@ -82,7 +82,7 @@ TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
 
         SECTION("reproduce matlab values") {
             auto path = unittest_resource_dir() + "/math/test_quaternions.dat";
-            auto lines = get_lines_from_file(path);
+            auto lines =base::get_lines_from_file(path);
 
             auto averager = AverageQuaternionCalculator();
             auto q_init = quaternion_from_str(lines[0]);

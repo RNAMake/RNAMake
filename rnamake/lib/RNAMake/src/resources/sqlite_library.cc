@@ -28,6 +28,6 @@ SqliteLibrary::_get_path(
             "cannot find library type in sqlite_library: " + libname + 
             " valid options are: " + options );
     }
-    return resources_path()+libnames_[libname];
+    return base::resources_path()+libnames_[libname];
     
 }

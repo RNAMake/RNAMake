@@ -165,10 +165,10 @@ public:
     SequenceOptProblemOP
     get_problem() {
         if (!has_setup_) {
-            String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";
+            String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";
             RM::instance().add_motif(base_path+"pRNA_3WJ.pdb", "prna");
 
-            auto path = base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/start.pdb";
+            auto path = base::base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/start.pdb";
             auto scaffold_rm = RM::instance().get_structure(path, "scaffold", 3);
             auto scaffold_m = std::make_shared<Motif>(*scaffold_rm);
             mf_._setup_secondary_structure(scaffold_m);
@@ -235,7 +235,7 @@ public:
     SequenceOptProblemOP
     get_problem() {
         if(! has_setup_) {
-            auto path = base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/";
+            auto path = base::base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/";
             RM::instance().add_motif(path + "short.out.1.pdb", "scaffold", MotifType::TWOWAY);
             scaffold_ = RM::instance().motif("scaffold", "", "A1019-A3915");
         }
