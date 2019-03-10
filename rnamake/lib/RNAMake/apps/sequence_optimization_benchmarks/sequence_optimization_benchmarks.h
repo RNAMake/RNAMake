@@ -304,7 +304,7 @@ public:
     int min_helix_size, max_helix_size;
 };
 
-class SequenceOptimizationBenchmarks : public Application {
+class SequenceOptimizationBenchmarks : public base::Application {
 public:
     SequenceOptimizationBenchmarks();
 

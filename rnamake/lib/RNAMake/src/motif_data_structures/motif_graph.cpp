@@ -21,7 +21,7 @@ MotifGraph::MotifGraph():
     merger_(nullptr),
     clash_radius_(2.5),
     sterics_(1),
-    options_(Options()),
+    options_(base::Options()),
     update_merger_(1),
     update_align_list_(1),
     align_list_(GraphNodeOPs<MotifOP>()),
@@ -121,7 +121,7 @@ MotifGraph::_setup_from_str(String const & s) {
 
 MotifGraph::MotifGraph(
     MotifGraph const & mg):
-    options_(Options()),
+    options_(base::Options()),
     graph_(GraphStatic<MotifOP>(mg.graph_)) {
         
     // dear god this is horrible but cant figure out a better way to do a copy
@@ -129,7 +129,7 @@ MotifGraph::MotifGraph(
         graph_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
     }
         
-    options_ = Options(mg.options_);
+    options_ = base::Options(mg.options_);
     aligned_ = mg.aligned_;
     update_merger_ = 1;
     update_align_list_ = 1;
@@ -954,8 +954,8 @@ MotifGraph::get_build_points() {
 
 void
 MotifGraph::setup_options() {
-    options_.add_option("sterics", true, OptionType::BOOL);
-    options_.add_option("clash_radius", 2.9f, OptionType::FLOAT);
+    options_.add_option("sterics", true, base::OptionType::BOOL);
+    options_.add_option("clash_radius", 2.9f, base::OptionType::FLOAT);
     options_.lock_option_adding();
     update_var_options();
 }

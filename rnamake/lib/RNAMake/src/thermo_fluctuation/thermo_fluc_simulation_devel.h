@@ -94,7 +94,7 @@ protected:
 
 typedef std::shared_ptr<ThermoFlucSimulationLogger> ThermoFlucSimulationLoggerOP;
 
-class ThermoFlucSimulationDevel : public OptionClass {
+class ThermoFlucSimulationDevel : public base::OptionClass {
 public:
     ThermoFlucSimulationDevel() {
         scorer_ = std::make_shared<FrameScorerDevel>(FrameScorerDevel());
@@ -165,7 +165,7 @@ public:
 public: //option wrappers
     
     inline
-    Options &
+    base::Options &
     options() { return options_; }
     
     inline
@@ -209,7 +209,7 @@ private:
     ThermoFlucSimulationLoggerOP logger_;
     ThermoFlucSampler sampler_;
     BasepairStateOP end_state_1_, end_state_2_;
-    Options options_;
+    base::Options options_;
     int ni1_, ni2_, ei1_, ei2_;
     int clash_;
     float score_;

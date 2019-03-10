@@ -22,7 +22,7 @@
 #include "motif_state_search/motif_state_search_solution.h"
 
 
-class MotifStateSearch : public OptionClass {
+class MotifStateSearch : public base::OptionClass {
 public:
     MotifStateSearch():
     queue_(MotifStateSearchNodeQueue()),
@@ -33,7 +33,7 @@ public:
     aligner_(MotifStateAligner()),
     lookup_(StericLookup()),
     using_lookup_(0),
-    options_(Options()) {
+    options_(base::Options()) {
         setup_options();
     }
     
@@ -59,7 +59,7 @@ public:
 public: //option wrappers
     
     inline
-    Options &
+    base::Options &
     options() { return options_; }
     
     inline
@@ -151,7 +151,7 @@ private:
     StericLookup lookup_;
     Points beads_;
     int no_more_solutions_;
-    Options options_;
+    base::Options options_;
     //options
     bool sterics_, verbose_, helix_end_;
     int max_node_level_, min_size_, max_size_, max_solutions_;

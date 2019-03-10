@@ -10,21 +10,21 @@
 
 void
 PathFollower::set_cmd_options(
-    CommandLineOptions const & opts) {
+    base::CommandLineOptions const & opts) {
     
     for(auto const & opt : opts) {
         if(! search_.has_option(opt->name())) { continue; }
         if(! opts.is_filled(opt->name())) { continue; }
-        if     (opt->type() == OptionType::INT) {
+        if     (opt->type() == base::OptionType::INT) {
             search_.set_option_value(opt->name(), opt->get_int());
         }
-        else if(opt->type() == OptionType::FLOAT) {
+        else if(opt->type() == base::OptionType::FLOAT) {
             search_.set_option_value(opt->name(), opt->get_float());
         }
-        else if(opt->type() == OptionType::BOOL) {
+        else if(opt->type() == base::OptionType::BOOL) {
             search_.set_option_value(opt->name(), opt->get_bool());
         }
-        else if(opt->type() == OptionType::STRING) {
+        else if(opt->type() == base::OptionType::STRING) {
             search_.set_option_value(opt->name(), opt->get_string());
         }
     }
@@ -32,16 +32,16 @@ PathFollower::set_cmd_options(
     for(auto const & opt: opts) {
         if(! has_option(opt->name())) { continue; }
         
-        if     (opt->type() == OptionType::INT) {
+        if     (opt->type() == base::OptionType::INT) {
             set_option_value(opt->name(), opt->get_int());
         }
-        else if(opt->type() == OptionType::FLOAT) {
+        else if(opt->type() == base::OptionType::FLOAT) {
             set_option_value(opt->name(), opt->get_float());
         }
-        else if(opt->type() == OptionType::BOOL) {
+        else if(opt->type() == base::OptionType::BOOL) {
             set_option_value(opt->name(), opt->get_bool());
         }
-        else if(opt->type() == OptionType::STRING) {
+        else if(opt->type() == base::OptionType::STRING) {
             set_option_value(opt->name(), opt->get_string());
         }
     }
@@ -51,10 +51,10 @@ PathFollower::set_cmd_options(
 
 void
 PathFollower::setup_options() {
-    options_.add_option("only_one", 0, OptionType::INT);
-    options_.add_option("max_pathes", 10, OptionType::INT);
-    options_.add_option("score_diff", .90f, OptionType::FLOAT);
-    options_.add_option("final_path", false, OptionType::BOOL);
+    options_.add_option("only_one", 0, base::OptionType::INT);
+    options_.add_option("max_pathes", 10, base::OptionType::INT);
+    options_.add_option("score_diff", .90f, base::OptionType::FLOAT);
+    options_.add_option("final_path", false, base::OptionType::BOOL);
     options_.lock_option_adding();
     update_var_options();
 }

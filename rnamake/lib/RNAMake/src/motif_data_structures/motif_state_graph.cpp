@@ -15,7 +15,7 @@ MotifStateGraph::MotifStateGraph():
     graph_(GraphStatic<MSNodeDataOP>()),
     clash_radius_(2.5),
     sterics_(1),
-    options_(Options()),
+    options_(base::Options()),
     update_align_list_(1),
     align_list_(GraphNodeOPs<MSNodeDataOP>()),
     aligned_(std::map<int, int>()) { setup_options(); }
@@ -502,8 +502,8 @@ MotifStateGraph::unaligned_nodes() const {
 
 void
 MotifStateGraph::setup_options() {
-    options_.add_option("sterics", true, OptionType::BOOL);
-    options_.add_option("clash_radius", 2.9f, OptionType::FLOAT);
+    options_.add_option("sterics", true, base::OptionType::BOOL);
+    options_.add_option("clash_radius", 2.9f, base::OptionType::FLOAT);
     options_.lock_option_adding();
     update_var_options();
 }

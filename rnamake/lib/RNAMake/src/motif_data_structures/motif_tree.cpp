@@ -18,7 +18,7 @@ MotifTree::MotifTree():
     merger_(nullptr),
     update_merger_(1),
     connections_(MotifConnections()),
-    options_(Options()) { setup_options(); }
+    options_(base::Options()) { setup_options(); }
 
 MotifTree::MotifTree(
     String const & s):
@@ -26,7 +26,7 @@ MotifTree::MotifTree(
     merger_(nullptr),
     update_merger_(1),
     connections_(MotifConnections()),
-    options_(Options())  {
+    options_(base::Options())  {
     setup_options();
     
     set_option_value("sterics", false);
@@ -84,7 +84,7 @@ MotifTree::MotifTree(
         merger_(nullptr),
         update_merger_(1),
         connections_(MotifConnections()),
-        options_(Options()) {
+        options_(base::Options()) {
 
     setup_options();
     if(type == MotifTreeStringType::MT_STR) {
@@ -102,7 +102,7 @@ MotifTree::MotifTree(
         tree_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
         motifs.push_back(tree_.get_node(n->index())->data());
     }
-    options_ = Options(mt.options_);
+    options_ = base::Options(mt.options_);
     connections_ = MotifConnections(mt.connections_);
     update_merger_ = 1;
 }
@@ -518,8 +518,8 @@ MotifTree::beads() {
 
 void
 MotifTree::setup_options() {
-    options_.add_option("sterics", true, OptionType::BOOL);
-    options_.add_option("clash_radius", 2.9f, OptionType::FLOAT);
+    options_.add_option("sterics", true, base::OptionType::BOOL);
+    options_.add_option("clash_radius", 2.9f, base::OptionType::FLOAT);
     options_.lock_option_adding();
     update_var_options();
 }

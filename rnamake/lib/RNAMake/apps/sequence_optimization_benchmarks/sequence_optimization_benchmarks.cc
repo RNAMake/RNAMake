@@ -20,14 +20,14 @@ SequenceOptimizationBenchmarks::SequenceOptimizationBenchmarks():
 
 void
 SequenceOptimizationBenchmarks::setup_options() {
-    add_option("problem", String("TTR"), OptionType::STRING, false);
-    add_option("helices", String("ideal_helices"), OptionType::STRING, false);
-    add_option("rounds", 1, OptionType::INT, false);
-    add_option("motifs", 3, OptionType::INT, false);
-    add_option("min_helix_size", 6, OptionType::INT, false);
-    add_option("max_helix_size", 18, OptionType::INT, false);
+    add_option("problem", String("TTR"), base::OptionType::STRING, false);
+    add_option("helices", String("ideal_helices"), base::OptionType::STRING, false);
+    add_option("rounds", 1, base::OptionType::INT, false);
+    add_option("motifs", 3, base::OptionType::INT, false);
+    add_option("min_helix_size", 6, base::OptionType::INT, false);
+    add_option("max_helix_size", 18, base::OptionType::INT, false);
 
-    add_option("out_file", "results.csv", OptionType::STRING, false);
+    add_option("out_file", "results.csv", base::OptionType::STRING, false);
 
 }
 
@@ -36,7 +36,7 @@ SequenceOptimizationBenchmarks::parse_command_line(
         int argc,
         const char **argv) {
 
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
 
     parameters_.problem        = get_string_option("problem");
     parameters_.helices        = get_string_option("helices");
@@ -201,7 +201,7 @@ main(
         const char ** argv) {
 
     //must add this for all apps!
-    std::set_terminate(print_backtrace);
+    std::set_terminate(base::print_backtrace);
 
     //load extra motifs being used
     String base_path = base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";

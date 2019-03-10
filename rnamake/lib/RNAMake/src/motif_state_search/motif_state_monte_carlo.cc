@@ -7,11 +7,11 @@
 
 void
 MotifStateMonteCarlo::setup_options() {
-    options_.add_option("sterics", false, OptionType::BOOL);
-    options_.add_option("max_solutions", 1, OptionType::INT);
-    options_.add_option("accept_score", 5, OptionType::FLOAT);
-    options_.add_option("stages", 100, OptionType::INT);
-    options_.add_option("steps", 500000, OptionType::INT);
+    options_.add_option("sterics", false, base::OptionType::BOOL);
+    options_.add_option("max_solutions", 1, base::OptionType::INT);
+    options_.add_option("accept_score", 5, base::OptionType::FLOAT);
+    options_.add_option("stages", 100, base::OptionType::INT);
+    options_.add_option("steps", 500000, base::OptionType::INT);
     options_.lock_option_adding();
 
     update_var_options();

@@ -14,21 +14,25 @@
 #include "base/option.h"
 #include "base/cl_option.h"
 
+namespace base {
+
 class CommandLineParser {
 public:
     CommandLineParser() {}
-    
+
     ~CommandLineParser() {}
-    
+
 public:
-    
+
     void
     assign_options(
-        CommandLineOptions const & cl_options,
-        Options & options,
-        String prefix = "");
-    
-    
+            CommandLineOptions const & cl_options,
+            Options & options,
+            String prefix = "");
+
+
 };
+
+}
 
 #endif /* command_line_parser_hpp */

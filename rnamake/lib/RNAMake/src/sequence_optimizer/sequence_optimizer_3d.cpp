@@ -392,12 +392,12 @@ SequenceOptimizer3D::get_optimized_mg(
 
 void
 SequenceOptimizer3D::setup_options() {
-    options_.add_option("cutoff", 5.0f, OptionType::FLOAT);
-    options_.add_option("solutions", 1, OptionType::INT);
-    options_.add_option("eterna_cutoff", -1.0f, OptionType::FLOAT);
-    options_.add_option("verbose", false, OptionType::BOOL);
-    options_.add_option("return_lowest", true, OptionType::BOOL);
-    options_.add_option("steps", 10000, OptionType::INT);
+    options_.add_option("cutoff", 5.0f, base::OptionType::FLOAT);
+    options_.add_option("solutions", 1, base::OptionType::INT);
+    options_.add_option("eterna_cutoff", -1.0f, base::OptionType::FLOAT);
+    options_.add_option("verbose", false, base::OptionType::BOOL);
+    options_.add_option("return_lowest", true, base::OptionType::BOOL);
+    options_.add_option("steps", 10000, base::OptionType::INT);
     options_.lock_option_adding();
     update_var_options();
 }

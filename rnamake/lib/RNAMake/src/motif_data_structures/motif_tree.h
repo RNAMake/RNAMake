@@ -528,7 +528,7 @@ private:
     bool sterics_;
     float clash_radius_;
     int update_merger_;
-    Options options_;
+    base::Options options_;
 };
 
 typedef std::shared_ptr<MotifTree> MotifTreeOP;

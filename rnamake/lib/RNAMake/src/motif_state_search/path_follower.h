@@ -135,7 +135,7 @@ public:
     
     void
     set_cmd_options(
-        CommandLineOptions const &);
+        base::CommandLineOptions const &);
     
     MotifTreeOP 
     next();
@@ -190,7 +190,7 @@ private:
     BasepairOP start_;
     BasepairStateOP start_state_;
     MotifStateSearch search_;
-    Options options_;
+    base::Options options_;
 
     
 };

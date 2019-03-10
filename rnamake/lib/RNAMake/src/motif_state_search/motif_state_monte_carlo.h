@@ -46,7 +46,7 @@ public:
             mses_(mses),
             mc_(MonteCarlo(0.5f)),
             rng_(RandomNumberGenerator()),
-            options_(Options()){
+            options_(base::Options()){
         using_lookup_ = 0;
         setup_options();
     }
@@ -115,7 +115,7 @@ protected:
 public: //option wrappers
 
     inline
-    Options &
+    base::Options &
     options() { return options_; }
 
     inline
@@ -152,7 +152,7 @@ private:
     RandomNumberGenerator rng_;
     StericLookupNew lookup_;
     Points beads_;
-    Options options_;
+    base::Options options_;
     std::vector<MotifStateOPs> mses_;
     BasepairStateOP end_, end_flip_;
     MotifStateOP start_m_;

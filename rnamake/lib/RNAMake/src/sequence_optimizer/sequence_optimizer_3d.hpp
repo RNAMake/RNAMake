@@ -278,7 +278,7 @@ private:
 public: //option wrappers
     
     inline
-    Options &
+    base::Options &
     options() { return options_; }
     
     inline
@@ -314,7 +314,7 @@ protected:
     setup_options();
 
 private:
-    Options options_;
+    base::Options options_;
     eternabot::Scorer eterna_scorer_;
     RandomNumberGenerator rng_;
     SequenceOptimizerScorerOP scorer_;

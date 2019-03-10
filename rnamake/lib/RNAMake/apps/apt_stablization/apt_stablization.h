@@ -18,7 +18,7 @@ public:
 };
 
 
-class APTStablization : public Application {
+class APTStablization : public base::Application {
 public:
     APTStablization();
 

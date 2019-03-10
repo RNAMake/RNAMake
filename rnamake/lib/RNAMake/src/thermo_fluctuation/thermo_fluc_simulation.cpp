@@ -11,7 +11,7 @@
 ThermoFlucSimulation::ThermoFlucSimulation() {
     scorer_ = std::make_shared<FrameScorer>(FrameScorer());
     sampler_ = ThermoFlucSampler();
-    options_ = Options();
+    options_ = base::Options();
     check_nodes_1_ = Ints{};
     check_nodes_2_ = Ints{};
     setup_ = 0;
@@ -161,11 +161,11 @@ ThermoFlucSimulation::run() {
 
 void
 ThermoFlucSimulation::setup_options() {
-    options_.add_option("temperature", 298.15f, OptionType::FLOAT);
-    options_.add_option("steps", 100000, OptionType::INT);
-    options_.add_option("record", false, OptionType::BOOL);
-    options_.add_option("cutoff", 4.5f, OptionType::FLOAT);
-    options_.add_option("steric_nodes", "", OptionType::STRING);
+    options_.add_option("temperature", 298.15f, base::OptionType::FLOAT);
+    options_.add_option("steps", 100000, base::OptionType::INT);
+    options_.add_option("record", false, base::OptionType::BOOL);
+    options_.add_option("cutoff", 4.5f, base::OptionType::FLOAT);
+    options_.add_option("steric_nodes", "", base::OptionType::STRING);
     options_.lock_option_adding();
     update_var_options();
 }

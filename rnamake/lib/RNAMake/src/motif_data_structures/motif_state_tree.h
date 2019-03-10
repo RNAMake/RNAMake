@@ -281,7 +281,7 @@ private:
     std::queue<MotifStateTreeNodeOP> queue_;
     MotifStateAligner aligner_;
     MotifConnections connections_;
-    Options options_;
+    base::Options options_;
     int sterics_;
     float clash_radius_;
     

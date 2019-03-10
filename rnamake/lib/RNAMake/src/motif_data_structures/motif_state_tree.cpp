@@ -15,7 +15,7 @@ MotifStateTree::MotifStateTree():
     aligner_(MotifStateAligner()),
     queue_(std::queue<MotifStateTreeNodeOP>()),
     connections_(MotifConnections()),
-    options_(Options()) {
+    options_(base::Options()) {
     setup_options();
 }
 
@@ -58,7 +58,7 @@ MotifStateTree::MotifStateTree(
     MotifStateTree const & mst):
     aligner_(MotifStateAligner()),
     queue_(std::queue<MotifStateTreeNodeOP>()),
-    options_(Options(mst.options_)),
+    options_(base::Options(mst.options_)),
     connections_(MotifConnections(mst.connections_)),
     tree_(TreeStatic<MSNodeDataOP>(mst.tree_)) {
     
@@ -621,8 +621,8 @@ MotifStateTree::to_motif_tree() {
 
 void
 MotifStateTree::setup_options() {
-    options_.add_option("sterics", true, OptionType::BOOL);
-    options_.add_option("clash_radius", 2.9f, OptionType::FLOAT);
+    options_.add_option("sterics", true, base::OptionType::BOOL);
+    options_.add_option("clash_radius", 2.9f, base::OptionType::FLOAT);
     options_.lock_option_adding();
     update_var_options();
 }

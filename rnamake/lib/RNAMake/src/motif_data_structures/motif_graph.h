@@ -696,7 +696,7 @@ private:
 private:
     GraphStatic<MotifOP> graph_;
     MotifMergerOP merger_;
-    Options options_;
+    base::Options options_;
     std::map<int, int> aligned_;
     GraphNodeOPs<MotifOP> align_list_;
     int update_merger_;

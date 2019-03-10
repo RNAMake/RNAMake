@@ -221,21 +221,21 @@ ThermoFlucSimulationDevel::run() {
 
 void
 ThermoFlucSimulationDevel::setup_options() {
-    options_.add_option("temperature", 298.15f, OptionType::FLOAT);
-    options_.add_option("steps", 100000, OptionType::INT);
-    options_.add_option("cutoff", 4.5f, OptionType::FLOAT);
-    options_.add_option("steric_nodes", "", OptionType::STRING);
-    options_.add_option("record", false, OptionType::BOOL);
-    options_.add_option("record_file", "test.out", OptionType::STRING);
-    options_.add_option("record_state", false, OptionType::BOOL);
-    options_.add_option("record_all", false, OptionType::BOOL);
-    options_.add_option("record_all_file", "test_all.out", OptionType::STRING);
-    options_.add_option("unbound_pdbs", false, OptionType::BOOL);
-    options_.add_option("dump_state", false, OptionType::BOOL);
-    options_.add_option("dump_pdbs", false, OptionType::BOOL);
-    options_.add_option("record_only_bound", false, OptionType::BOOL);
-    options_.add_option("record_only_unbound", false, OptionType::BOOL);
-    options_.add_option("steric_radius", 2.2f, OptionType::FLOAT);
+    options_.add_option("temperature", 298.15f, base::OptionType::FLOAT);
+    options_.add_option("steps", 100000, base::OptionType::INT);
+    options_.add_option("cutoff", 4.5f, base::OptionType::FLOAT);
+    options_.add_option("steric_nodes", "", base::OptionType::STRING);
+    options_.add_option("record", false, base::OptionType::BOOL);
+    options_.add_option("record_file", "test.out", base::OptionType::STRING);
+    options_.add_option("record_state", false, base::OptionType::BOOL);
+    options_.add_option("record_all", false, base::OptionType::BOOL);
+    options_.add_option("record_all_file", "test_all.out", base::OptionType::STRING);
+    options_.add_option("unbound_pdbs", false, base::OptionType::BOOL);
+    options_.add_option("dump_state", false, base::OptionType::BOOL);
+    options_.add_option("dump_pdbs", false, base::OptionType::BOOL);
+    options_.add_option("record_only_bound", false, base::OptionType::BOOL);
+    options_.add_option("record_only_unbound", false, base::OptionType::BOOL);
+    options_.add_option("steric_radius", 2.2f, base::OptionType::FLOAT);
     options_.lock_option_adding();
     
     /*

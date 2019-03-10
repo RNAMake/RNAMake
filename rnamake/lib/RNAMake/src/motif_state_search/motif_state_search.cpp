@@ -13,23 +13,23 @@
 
 void
 MotifStateSearch::setup_options() {
-    options_.add_option("sterics", true, OptionType::BOOL);
-    options_.add_option("max_node_level", 100, OptionType::INT);
-    options_.add_option("min_node_level", 0, OptionType::INT);
-    options_.add_option("min_size", 0, OptionType::INT);
-    options_.add_option("max_size", 1000000, OptionType::INT);
-    options_.add_option("max_solutions", 1, OptionType::INT);
-    options_.add_option("accept_score", 10, OptionType::FLOAT);
-    options_.add_option("min_ss_score", 10000, OptionType::FLOAT);
-    options_.add_option("max_steps", 1000000000, OptionType::FLOAT);
-    options_.add_option("verbose", true, OptionType::BOOL);
-    options_.add_option("return_best", false, OptionType::BOOL);
-    options_.add_option("helix_end", false, OptionType::BOOL);
+    options_.add_option("sterics", true, base::OptionType::BOOL);
+    options_.add_option("max_node_level", 100, base::OptionType::INT);
+    options_.add_option("min_node_level", 0, base::OptionType::INT);
+    options_.add_option("min_size", 0, base::OptionType::INT);
+    options_.add_option("max_size", 1000000, base::OptionType::INT);
+    options_.add_option("max_solutions", 1, base::OptionType::INT);
+    options_.add_option("accept_score", 10, base::OptionType::FLOAT);
+    options_.add_option("min_ss_score", 10000, base::OptionType::FLOAT);
+    options_.add_option("max_steps", 1000000000, base::OptionType::FLOAT);
+    options_.add_option("verbose", true, base::OptionType::BOOL);
+    options_.add_option("return_best", false, base::OptionType::BOOL);
+    options_.add_option("helix_end", false, base::OptionType::BOOL);
     
     //for making a movie
-    options_.add_option("save_midpoints", false, OptionType::BOOL);
-    options_.add_option("save_midpoints_file", "midpoints.dat", OptionType::STRING);
-    options_.add_option("save_midpoints_freq", 100, OptionType::INT);
+    options_.add_option("save_midpoints", false, base::OptionType::BOOL);
+    options_.add_option("save_midpoints_file", "midpoints.dat", base::OptionType::STRING);
+    options_.add_option("save_midpoints_freq", 100, base::OptionType::INT);
     
     options_.lock_option_adding();
     
