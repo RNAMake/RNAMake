@@ -5,13 +5,17 @@
 #ifndef TEST_SEQUENCE_OPTIMIZATION_BENCHMARKS_H
 #define TEST_SEQUENCE_OPTIMIZATION_BENCHMARKS_H
 
-#include <sequence_optimizer/sequence_optimizer_app.hpp>
 #include "base/application.hpp"
 #include "util/basic_io.hpp"
 #include "util/steric_lookup.hpp"
 #include "motif_data_structures/motif_state_graph.hpp"
 #include "motif_state_search/motif_state_monte_carlo.h"
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
+
+struct NodeIndexandEdge {
+    int ni; //node index
+    int ei; //end index
+};
 
 class Timer {
 public:

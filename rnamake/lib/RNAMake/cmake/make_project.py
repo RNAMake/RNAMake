@@ -18,7 +18,7 @@ depends = {
     'thermo_fluctuation' : ['motif_data_structures'],
     'motif_state_search' : ['motif_data_structures'],
     'sequence_optimizer' : ['motif_data_structures', 'eternabot'],
-    'all_libs' : ['motif_tools', 'thermo_fluctuation', 'motif_state_search',
+    'all' : ['motif_tools', 'thermo_fluctuation', 'motif_state_search',
                   'sequence_optimizer']
 }
 
@@ -52,6 +52,7 @@ def get_cmake_lists_header():
     s += "# Include paths for RNAMake src\n"
     s += "include_directories(%s)\n" % (base_dir + "/src/")
     s += "include_directories(%s)\n\n" % (base_dir + "/unittests/")
+    s += "include_directories(%s)\n\n" % (base_dir + "/apps/")
     s += "# sqlite libraries\n"
     s += "find_library(SQLITE3_LIBRARY sqlite3)\n\n"
     return s
@@ -97,7 +98,11 @@ def get_unittests_apps_for_library(lib):
 
 def get_build_library_declaration(lib):
     s  = "add_library(%s ${%s})\n" % (lib + "_lib", lib + "_files")
-    s += "target_link_libraries(%s" % (lib + "_lib")
+    s += get_linking_declaration(lib)
+    return s
+
+def get_linking_declaration(lib):
+    s = "target_link_libraries(%s" % (lib + "_lib")
     for depend in depends[lib]:
         s += " " + depend + "_lib "
     if lib == "util":
@@ -117,33 +122,29 @@ def get_cc_files_in_dir(path):
                     cpp_files.append(final_root + filename)
     return cpp_files
 
-def write_application_cmake_file():
-
-    fsum = open(CMAKE_PATH+"apps.cmake", "w")
-
-    f = open(CMAKE_PATH+"apps.txt")
+def get_applications():
+    path = base_dir + "/cmake/build/apps.txt"
+    f = open(path)
     lines = f.readlines()
     f.close()
+
+    s = ""
     for l in lines:
         if l[0] == "#":
          continue
 
         spl = l.split()
-        cc_path = util.base_dir(spl[1])
-        app_dir = cc_path
+        app_dir = base_dir + "/apps/" + spl[0]
         cpp_files = get_cc_files_in_dir(app_dir)
 
         symlink = spl[0]+"_symlink"
-        fsum.write("add_executable("+spl[0] + " ")
+        s += "add_executable("+spl[0] + " "
         for f in cpp_files:
-            fsum.write(f + " ")
-        fsum.write(")\n")
-        fsum.write("target_link_libraries("+spl[0]+" all_libs)\n")
-        fsum.write("add_custom_target("+symlink+" ALL)\n")
-        fsum.write("add_custom_command(TARGET "+symlink+" POST_BUILD COMMAND cmake -E create_symlink "+BIN_PATH+spl[0]+" "+ spl[0]+")\n")
-        fsum.write("\n\n")
-
-    fsum.close()
+            s += f + " "
+        s += ")\n"
+        s += "target_link_libraries("+spl[0]+" all_lib)\n"
+        s += "\n\n"
+    return s
 
 def get_unittests_for_dir(d_name):
     unittest_apps = []
@@ -178,6 +179,12 @@ def write_cmake_lists(path, args):
         f.write(get_build_library_declaration(lib))
         if not args.no_unittests:
             f.write(get_unittests_apps_for_library(lib))
+
+    f.write(get_pretty_lib_name("all"))
+    f.write("add_library(all_lib " + base_dir + "/src/main.cpp)\n")
+    f.write(get_linking_declaration("all"))
+
+    f.write(get_applications())
     f.close()
 
 if __name__ == '__main__':
