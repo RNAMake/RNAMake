@@ -3,6 +3,8 @@
 //
 
 
+#include <random>
+
 #include "../common.hpp"
 
 #include "base/settings.h"
@@ -278,17 +280,30 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
 
         for (int i = 0; i < bin.size(); i++) {
             REQUIRE(bin[i] == bin_2[i]);
-            std::cout << bin_center[i] << std::endl;
         }
     }
 
-    /*SECTION("test 3d hasher") {
+    SECTION("test 3d histogram") {
         auto bb = BoundingBox(Point(-100, -100, -100), Point(100, 100, 100));
         auto bin_widths = Real3{0.5, 0.5, 0.5};
-        auto binner = ThreeDCoordinateBinner(bb, bin_widths);
+        auto histo = ThreeDHistogram(bb, bin_widths);
 
+        std::random_device rd;
+        std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
+        std::uniform_real_distribution<> dis(-100.0, 100.0);
 
-    }*/
+        auto points = Points();
+        for(int i = 0; i < 100; i++) {
+            auto p = Point(dis(gen), dis(gen), dis(gen));
+            histo.add(p);
+            points.push_back(p);
+        }
+
+        for(auto const & p : points) {
+            REQUIRE(histo.contains(p));
+        }
+
+    }
 
 }
 

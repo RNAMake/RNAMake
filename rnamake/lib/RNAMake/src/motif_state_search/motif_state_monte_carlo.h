@@ -81,7 +81,7 @@ public:
     inline
     void
     lookup(
-            StericLookup const & sl) {
+            StericLookupNew const & sl) {
         using_lookup_ = 1;
         lookup_ = sl;
     }
@@ -150,7 +150,7 @@ public: //option wrappers
 private:
     MonteCarlo mc_;
     RandomNumberGenerator rng_;
-    StericLookup lookup_;
+    StericLookupNew lookup_;
     Points beads_;
     Options options_;
     std::vector<MotifStateOPs> mses_;

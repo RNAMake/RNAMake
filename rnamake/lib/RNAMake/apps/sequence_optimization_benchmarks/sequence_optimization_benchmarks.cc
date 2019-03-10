@@ -149,7 +149,7 @@ SequenceOptimizationBenchmarks::_get_search(
     auto mc = std::make_shared<MotifStateMonteCarlo>(ms_libraries);
     mc->setup(problem->msg, problem->start.ni, problem->end.ni,
               problem->start.ei, problem->end.ei, problem->target_an_aligned_end);
-    mc->set_option_value("accept_score", 5.0f);
+    mc->set_option_value("accept_score", 7.0f);
     mc->lookup(*problem->lookup);
     mc->start();
 

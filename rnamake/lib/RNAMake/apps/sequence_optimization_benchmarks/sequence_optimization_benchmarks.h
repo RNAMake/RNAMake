@@ -45,7 +45,7 @@ public:
             NodeIndexandEdge const & n_end,
             String const & n_start_name,
             String const & n_end_name,
-            StericLookupOP n_lookup,
+            StericLookupNewOP n_lookup,
             bool n_target_an_aligned_end):
             msg(n_msg),
             start(n_start),
@@ -59,7 +59,7 @@ public:
     MotifStateGraphOP msg;
     NodeIndexandEdge start, end;
     String start_name, end_name;
-    StericLookupOP lookup;
+    StericLookupNewOP lookup;
     bool target_an_aligned_end;
 };
 
@@ -81,7 +81,7 @@ protected:
     void
     _setup_sterics(
             MotifStateGraphOP msg,
-            StericLookupOP lookup) {
+            StericLookupNewOP lookup) {
 
         auto beads = Points();
         for (auto & n : *msg) {
@@ -95,7 +95,7 @@ protected:
 
 typedef std::shared_ptr<SequenceOptProblemFactory> SequenceOptProblemFactoryOP;
 
-class TTRProblemFactory : public SequenceOptProblemFactory {
+/*class TTRProblemFactory : public SequenceOptProblemFactory {
 public:
     TTRProblemFactory():
             SequenceOptProblemFactory(),
@@ -217,6 +217,7 @@ private:
     MotifOP scaffold_, prna_;
 
 };
+*/
 
 class RibosomeTetherProblemFactory : public SequenceOptProblemFactory {
 public:
@@ -240,7 +241,7 @@ public:
         msg->add_state(scaffold_->get_state());
 
         if(! has_setup_) {
-            lookup_ = std::make_shared<StericLookup>(2.0, 7.0, 9);
+            lookup_ = std::make_shared<StericLookupNew>();
             //this->_setup_sterics(msg, lookup_);
 
             auto points = Points();
@@ -248,7 +249,6 @@ public:
                 points.push_back(b->coords());
             }
             lookup_->add_points(points);
-            lookup_->print_hash_to_pdb("lookup.pdb");
 
             start_name_ = "A1003-A3926";
             end_name_ = "A1019-A3915";
@@ -274,7 +274,7 @@ public:
 
 private:
     bool has_setup_;
-    StericLookupOP lookup_;
+    StericLookupNewOP lookup_;
     NodeIndexandEdge start_, end_;
     String start_name_, end_name_;
     bool target_an_aligned_end_;

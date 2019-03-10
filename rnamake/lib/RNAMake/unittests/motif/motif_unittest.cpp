@@ -4,6 +4,8 @@
 
 //RNAMake Headers
 #include "base/settings.h"
+#include "util/basic_io.hpp"
+#include "util/steric_lookup.hpp"
 #include "structure/is_equal.hpp"
 #include "motif/motif.h"
 
@@ -136,6 +138,18 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
             i++;
         }
         
+    }
+
+    SECTION("test steric look based on beads and atoms") {
+        auto path = motif_dirs() + "ref.motif";
+        auto m1 = file_to_motif(path);
+        auto lookup = StericLookupNew();
+        auto points = Points();
+        for(auto const & b : m1->get_beads()) {
+            points.push_back(b.center());
+        }
+        lookup.add_points(points);
+
     }
     
 }

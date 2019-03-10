@@ -5,6 +5,7 @@
 #ifndef TEST_HASHING_H
 #define TEST_HASHING_H
 
+#include <stdio.h>
 #include <map>
 #include <array>
 #include "math/xyz_vector.h"
@@ -326,24 +327,7 @@ private:
             if(euler[i] < 0)   { euler[i] += 360; }
         }
 
-
-        /*if ( ( values[ 5 ] < euler_offsets_[ 2 ] || values[ 5 ] >= 180.0 - euler_offsets_[ 2 ] )) {
-            /// The idea is that, when we're wrapping theta, half of the points have to stay fixed so they end up in the same
-            /// bin: if all points wrapped, then none would land in the same bin.
-            euler[ 0 ] = values[ 3 ] - euler_offsets_[ 0 ] - 180.0;
-            euler[ 1 ] = values[ 4 ] - euler_offsets_[ 1 ] - 180.0;
-            if ( euler[ 1 ] < 0 ) { euler[ 1 ] += 360; }
-        } else {
-            /// Leave phi/psi in their usual positions
-            euler[ 0 ] = values[ 3 ] - euler_offsets_[ 0 ];
-            if ( euler[ 0 ] < 0 ) { euler[ 0 ] += 360; }
-
-            euler[ 1 ] = values[ 4 ] - euler_offsets_[ 1 ];
-            if ( euler[ 1 ] < 0 ) { euler[ 1 ] += 360; }
-        }*/
         return euler;
-
-
     }
 
 private:
@@ -438,11 +422,11 @@ public:
         return A;
     }
 
-    Bin6D
+    Real3
     bin_from_index(
-            uint64_t bin_index) {
-        Bin6D bin;
-        for (int ii = 0; ii < 6; ++ii ) {
+            uint32_t bin_index) {
+        Real3 bin;
+        for (int ii = 0; ii < 3; ++ii ) {
             bin[ii] = bin_index / dimprods_[ii];
             bin_index = bin_index % dimprods_[ii];
         }
@@ -689,6 +673,91 @@ private:
     std::map<u_int64_t, u_int64_t> stored_values_;
 
 };
+
+class ThreeDHistogram {
+public:
+    ThreeDHistogram() {
+
+    }
+
+    ThreeDHistogram(
+            BoundingBox const & bounding_box,
+            Real3 const & bin_widths):
+            binner_ (std::make_shared<ThreeDCoordinateBinner>(bounding_box, bin_widths)) {}
+
+
+public:
+    void
+    setup(
+            BoundingBox const & bounding_box,
+            Real3 const & bin_widths) {
+        binner_ = std::make_shared<ThreeDCoordinateBinner>(bounding_box, bin_widths);
+    }
+
+    inline
+    size_t
+    size() {
+        return stored_values_.size();
+    }
+
+public:
+    void
+    add(
+            Point const & values) {
+        auto bin_index = binner_->bin_index(values);
+        if(stored_values_.find(bin_index) == stored_values_.end()) {
+            stored_values_[bin_index] = 0;
+        }
+        stored_values_[bin_index] += 1;
+    }
+
+public:
+
+    bool
+    contains(
+            Point const & values) {
+        auto bin_index = binner_->bin_index(values);
+        if(stored_values_.find(bin_index) == stored_values_.end()) { return false; }
+        else                                                       { return true; }
+
+    }
+
+    u_int32_t
+    get(
+            Point const & values) {
+        auto bin_index = binner_->bin_index(values);
+        return stored_values_[bin_index];
+    }
+
+
+public:
+    void
+    write_histo_to_pdb(
+            String const & pdb_name) {
+        int i = 1;
+        std::ofstream out;
+        out.open(pdb_name);
+        auto bins = Real3();
+        auto p = Real3();
+        for(auto const & kv : stored_values_) {
+            bins = binner_->bin_from_index(kv.first);
+            p = binner_->bin_center_point(bins);
+            char buffer [200];
+            std::sprintf(buffer, "ATOM %6d  P   C   A   1 %11.3f%8.3f%8.3f  1.00 62.18           P\n", i, p[0], p[1], p[2]);
+            out << String(buffer);
+            i++;
+        }
+        out.close();
+    }
+
+
+
+private:
+    std::shared_ptr<ThreeDCoordinateBinner> binner_;
+    std::map<u_int32_t, int> stored_values_;
+
+};
+
 
 
 #endif //TEST_HASHING_H

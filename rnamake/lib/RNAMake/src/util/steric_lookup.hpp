@@ -13,6 +13,7 @@
 #include <stdio.h>
 
 #include "math/xyz_vector.h"
+#include "math/hashing.h"
 
 class StericLookup {
 public:
@@ -53,10 +54,6 @@ public:
     int
     total_clash(
             Points const &);
-
-    void
-    print_hash_to_pdb(
-            String const &);
     
 private:
     void
@@ -75,6 +72,71 @@ private:
     
 };
 
+class StericLookupNew {
+public:
+    StericLookupNew();
+
+public:
+    void
+    add_point(
+            Point const &);
+
+    void
+    add_points(
+            Points const &);
+
+    bool
+    clash(
+            Point const &);
+
+    bool
+    clash(
+            Points const &);
+
+public:
+    void
+    to_pdb(
+            String const &);
+
+private:
+    void
+    _setup_additions();
+
+private:
+    float grid_size_;
+    float cutoff_;
+    int radius_;
+    Points additions_;
+    ThreeDHistogram histo_;
+    Point dummy_;
+};
+
 typedef std::shared_ptr<StericLookup> StericLookupOP;
+typedef std::shared_ptr<StericLookupNew> StericLookupNewOP;
 
 #endif /* steric_lookup_hpp */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -180,27 +180,88 @@ StericLookup::total_clash(
     return clash_count;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// StericLookupNew
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void
-StericLookup::print_hash_to_pdb(
-        String const & pdb_name) {
-
-    std::ofstream out;
-    out.open(pdb_name);
-    for(auto const & kv : bhash_) {
-        std::cout << std::setprecision(10) << kv.first << std::endl;
-        auto z = round(kv.first / 100000.0);
-        std::cout << z << std::endl;
-        auto new_val = kv.first - z*100000;
-        std::cout << std::setprecision(10) << new_val << std::endl;
-        exit(0);
-
-    }
-    out.close();
-
+StericLookupNew::StericLookupNew() {
+    auto bb = BoundingBox(Point(-200, -200, -200), Point(100, 100, 100));
+    //auto bb = BoundingBox(Point(-10, -10, -10), Point(10, 10, 10));
+    auto bin_widths = Real3{0.25, 0.25, 0.25};
+    histo_ = ThreeDHistogram(bb, bin_widths);
+    grid_size_ = 0.25;
+    cutoff_ = 2.65;
+    radius_ = 10;
+    additions_ = Points();
+    _setup_additions();
 }
 
+void
+StericLookupNew::_setup_additions() {
+    auto add = Floats();
+    for(int i = 1; i < radius_; i++) {
+        add.push_back(float(-i*grid_size_));
+    }
+    add.push_back(0);
+    for(int i = 1; i < radius_; i++) {
+        add.push_back(float(i*grid_size_));
+    }
 
+    float dist = 0;
+    Point p;
+    Point origin(0,0,0);
+    for(auto const & x : add) {
+        for(auto const & y : add) {
+            for(auto const & z : add) {
+                p = Point(x,y,z);
+                dist = p.distance(origin);
+                if (dist < cutoff_ ) {
+                    additions_.push_back(p);
+                }
+            }
+        }
+    }
+}
+
+void
+StericLookupNew::add_point(
+        Point const & p) {
+    for(auto const & add : additions_) {
+        dummy_ = p + add;
+        histo_.add(dummy_);
+    }
+}
+
+void
+StericLookupNew::add_points(
+        Points const & points) {
+    for(auto const & p : points) { add_point(p); }
+}
+
+bool
+StericLookupNew::clash(
+        Point const & p) {
+    return histo_.contains(p);
+}
+
+bool
+StericLookupNew::clash(
+        Points const & points) {
+
+    bool is_clash = 0;
+    for(auto const & p : points) {
+        is_clash = clash(p);
+        if(is_clash) { return is_clash; }
+    }
+
+    return false;
+}
+
+void
+StericLookupNew::to_pdb(
+        String const & pdb_name) {
+    histo_.write_histo_to_pdb(pdb_name);
+}
 
 
 
