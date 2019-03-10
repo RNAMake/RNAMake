@@ -7,6 +7,7 @@
 
 #include <sequence_optimizer/sequence_optimizer_app.hpp>
 #include "base/application.hpp"
+#include "util/basic_io.hpp"
 #include "util/steric_lookup.hpp"
 #include "motif_data_structures/motif_state_graph.hpp"
 #include "motif_state_search/motif_state_monte_carlo.h"
@@ -217,7 +218,68 @@ private:
 
 };
 
+class RibosomeTetherProblemFactory : public SequenceOptProblemFactory {
+public:
+    RibosomeTetherProblemFactory():
+            SequenceOptProblemFactory(),
+            has_setup_(false) {}
 
+    ~RibosomeTetherProblemFactory() {}
+
+public:
+    SequenceOptProblemOP
+    get_problem() {
+        if(! has_setup_) {
+            auto path = base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/";
+            RM::instance().add_motif(path + "short.out.1.pdb", "scaffold", MotifType::TWOWAY);
+            scaffold_ = RM::instance().motif("scaffold", "", "A1019-A3915");
+        }
+
+        auto msg = std::make_shared<MotifStateGraph>();
+        msg->set_option_value("sterics", false);
+        msg->add_state(scaffold_->get_state());
+
+        if(! has_setup_) {
+            lookup_ = std::make_shared<StericLookup>(2.0, 7.0, 9);
+            //this->_setup_sterics(msg, lookup_);
+
+            auto points = Points();
+            for(auto const & b : scaffold_->atoms()) {
+                points.push_back(b->coords());
+            }
+            lookup_->add_points(points);
+            lookup_->print_hash_to_pdb("lookup.pdb");
+
+            start_name_ = "A1003-A3926";
+            end_name_ = "A1019-A3915";
+
+            auto start_end_pos = msg->get_node(0)->data()->get_end_index(start_name_);
+            auto end_end_pos = msg->get_node(0)->data()->get_end_index(end_name_);
+
+            start_ = NodeIndexandEdge{0, start_end_pos};
+            end_ = NodeIndexandEdge{0, end_end_pos};
+
+            target_an_aligned_end_ = false;
+            if(end_end_pos == msg->get_node(0)->data()->block_end_add()) {
+                target_an_aligned_end_ = true;
+            }
+        }
+
+        has_setup_ = true;
+
+        auto p = std::make_shared<SequenceOptProblem>(msg, start_, end_, start_name_, end_name_,
+                                                      lookup_, target_an_aligned_end_);
+        return p;
+    }
+
+private:
+    bool has_setup_;
+    StericLookupOP lookup_;
+    NodeIndexandEdge start_, end_;
+    String start_name_, end_name_;
+    bool target_an_aligned_end_;
+    MotifOP scaffold_;
+};
 
 
 struct SequenceOptimizationParameters {

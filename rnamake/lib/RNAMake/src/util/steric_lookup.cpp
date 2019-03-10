@@ -9,6 +9,7 @@
 #include <math.h>
 
 #include "util/steric_lookup.hpp"
+#include <iomanip>      // std::setprecision
 
 
 StericLookup::StericLookup():
@@ -178,3 +179,50 @@ StericLookup::total_clash(
 
     return clash_count;
 }
+
+
+void
+StericLookup::print_hash_to_pdb(
+        String const & pdb_name) {
+
+    std::ofstream out;
+    out.open(pdb_name);
+    for(auto const & kv : bhash_) {
+        std::cout << std::setprecision(10) << kv.first << std::endl;
+        auto z = round(kv.first / 100000.0);
+        std::cout << z << std::endl;
+        auto new_val = kv.first - z*100000;
+        std::cout << std::setprecision(10) << new_val << std::endl;
+        exit(0);
+
+    }
+    out.close();
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -50,7 +50,7 @@ SequenceOptimizationBenchmarks::parse_command_line(
 void
 SequenceOptimizationBenchmarks::run() {
     //auto problem_factory = std::make_shared<TTRProblemFactory>();
-    auto problem_factory = std::make_shared<Add3WAYProblemFactory>();
+    auto problem_factory = std::make_shared<RibosomeTetherProblemFactory>();
     auto ms_libraries = _get_libraries();
     auto timer = Timer();
 
@@ -74,6 +74,9 @@ SequenceOptimizationBenchmarks::run() {
                 n->data()->mtype(MotifType::HELIX);
             }
         }
+
+        sol->mg->write_pdbs();
+        exit(0);
 
         sol->mg->replace_ideal_helices();
         auto optimizer = _get_optimizer(problem, sol->mg);

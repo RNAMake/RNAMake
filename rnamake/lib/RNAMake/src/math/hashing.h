@@ -356,6 +356,117 @@ private:
 
 };
 
+class ThreeDCoordinateBinner {
+public:
+    ThreeDCoordinateBinner(
+            BoundingBox const & bounding_box,
+            Real3 const & bin_widths):
+            bounding_box_(bounding_box),
+            bin_widths_(bin_widths) {
+
+        auto span = bounding_box_.upper() - bounding_box_.lower();
+        auto new_upper = bounding_box_.upper();
+
+        for (int ii = 0; ii < 3; ++ii) {
+            dimsizes_[ii] = static_cast<size_t>( span[ii] / bin_widths_[ii] );
+            if (dimsizes_[ii] * bin_widths_[ii] < span[ii]) {
+                dimsizes_[ii] += 1;
+                new_upper[ii] = bounding_box_.lower()[ii] + dimsizes_[ii] * bin_widths_[ii];
+            }
+        }
+        bounding_box_.set_upper(new_upper);
+
+        if (dimsizes_[2] == 0) { dimsizes_[2] = 1; }
+        dimprods_[2] = 1;
+        for (int ii = 1; ii >= 0; --ii) {
+            dimprods_[ii] = dimprods_[ii + 1] * dimsizes_[ii + 1];
+        }
+
+        for (int ii = 0; ii < 3; ++ii) { halfbin_widths_[ii] = bin_widths_[ii] / 2; }
+
+    }
+
+    Real3
+    bin3(
+            Point const & values) const  {
+        assert(bounding_box_.contains(values));
+
+        auto from_corner = values - bounding_box_.lower();
+        Real3 bins;
+
+        bins[0] = static_cast< size_t > ( from_corner.x() / bin_widths_[0] );
+        if ( bins[0] == dimsizes_[0] ) { bins[0] -= 1; }
+
+        bins[1] = static_cast< size_t > ( from_corner.y() / bin_widths_[1] );
+        if ( bins[1] == dimsizes_[1] ) { bins[1] -= 1; }
+
+        bins[2] = static_cast< size_t > ( from_corner.z() / bin_widths_[2] );
+        if ( bins[2] == dimsizes_[2] ) { bins[2] -= 1; }
+
+        return bins;
+    }
+
+    Real3
+    bin_center_point(
+            Real3 const & bin) const {
+        Real3 center;
+        for ( int ii = 0; ii < 3; ++ii ) {
+            center[ii] = bounding_box_.lower()[ii] + bin[ii] * bin_widths_[ii] + halfbin_widths_[ii];
+        }
+        return center;
+    }
+
+    Real3
+    bin_to_values(
+            Bin6D const & bin) const {
+        Real3 values;
+        for ( int ii = 0; ii < 3; ++ii ) {
+            values[ii] = bounding_box_.lower()[ii] + bin[ii] * bin_widths_[ii];
+        }
+        return values;
+    }
+
+    uint32_t
+    bin_index(
+            Point const & values) const {
+        auto bin = bin3(values);
+
+        uint32_t const A =
+                bin[ 0 ] * dimprods_[ 0 ] +
+                bin[ 1 ] * dimprods_[ 1 ] +
+                bin[ 2 ] * dimprods_[ 2 ];
+        return A;
+    }
+
+    Bin6D
+    bin_from_index(
+            uint64_t bin_index) {
+        Bin6D bin;
+        for (int ii = 0; ii < 6; ++ii ) {
+            bin[ii] = bin_index / dimprods_[ii];
+            bin_index = bin_index % dimprods_[ii];
+        }
+
+        return bin;
+    }
+
+public: // getters
+
+    BoundingBox const &
+    get_bounding_box() { return bounding_box_; }
+
+    Real3 const &
+    get_bin_widths() { return bin_widths_; }
+
+private:
+    BoundingBox bounding_box_;
+    Size3 dimsizes_;
+    Size3 dimprods_;
+    Real3 bin_widths_;
+    Real3 halfbin_widths_;
+
+};
+
 enum class SixDHistogramStrType {
     TEXT,
     BINARY

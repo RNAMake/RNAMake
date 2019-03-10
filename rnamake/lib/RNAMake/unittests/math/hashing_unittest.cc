@@ -251,7 +251,6 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
                 std::cout << std::endl;
                 for(auto const & v : values_2) { std::cout << v << " ";}
                 std::cout << std::endl;
-                exit(0);
             }
 
 
@@ -259,7 +258,37 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         REQUIRE(count == count_2);
     }
 
+    SECTION("test 3d binner from rosetta example") {
+        auto lower = Point(12.5, 16.25, 4.25);
+        auto upper = Point(15.5, 20, 8.5);
+        auto bb = BoundingBox(lower, upper);
 
+        Real3 binwidths;
+        binwidths[0] = binwidths[1] = binwidths[2] = 0.25;
+
+        auto binner = ThreeDCoordinateBinner(bb, binwidths);
+
+        auto pA = Point(13.6, 19.4, 5.3);
+
+        auto bin = binner.bin3(pA);
+        auto bin_center = binner.bin_center_point(bin);
+        auto bin_index = binner.bin_index(pA);
+
+        auto bin_2 = binner.bin_from_index(bin_index);
+
+        for (int i = 0; i < bin.size(); i++) {
+            REQUIRE(bin[i] == bin_2[i]);
+            std::cout << bin_center[i] << std::endl;
+        }
+    }
+
+    /*SECTION("test 3d hasher") {
+        auto bb = BoundingBox(Point(-100, -100, -100), Point(100, 100, 100));
+        auto bin_widths = Real3{0.5, 0.5, 0.5};
+        auto binner = ThreeDCoordinateBinner(bb, bin_widths);
+
+
+    }*/
 
 }
 

@@ -53,6 +53,10 @@ public:
     int
     total_clash(
             Points const &);
+
+    void
+    print_hash_to_pdb(
+            String const &);
     
 private:
     void
