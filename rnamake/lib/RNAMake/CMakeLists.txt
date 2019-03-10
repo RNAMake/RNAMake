@@ -7,6 +7,7 @@ include(/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/compile
 # Include path for Python header files
 # Include paths for RNAMake src
 include_directories(/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/)
+include_directories(/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/plog/)
 include_directories(/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/)
 
 include_directories(/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/)
@@ -26,6 +27,7 @@ set(base_files
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/cl_option.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/command_line_parser.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/backtrace.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/log.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/option.cc
 )
 
@@ -40,6 +42,9 @@ target_link_libraries(option_unittest base_lib)
 
 add_executable(cl_option_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/base/cl_option_unittest.cpp)
 target_link_libraries(cl_option_unittest base_lib)
+
+add_executable(log_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/base/log_unittest.cc)
+target_link_libraries(log_unittest base_lib)
 
 ###########################################################################
 # math

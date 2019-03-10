@@ -51,6 +51,7 @@ def get_cmake_lists_header():
     s += "# Include path for Python header files\n"
     s += "# Include paths for RNAMake src\n"
     s += "include_directories(%s)\n" % (base_dir + "/src/")
+    s += "include_directories(%s)\n" % (base_dir + "/src/plog/")
     s += "include_directories(%s)\n\n" % (base_dir + "/unittests/")
     s += "include_directories(%s)\n\n" % (base_dir + "/apps/")
     s += "# sqlite libraries\n"
