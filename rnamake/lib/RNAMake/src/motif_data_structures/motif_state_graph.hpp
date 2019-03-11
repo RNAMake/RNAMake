@@ -35,8 +35,8 @@ public:
 
 public: //iterators
     
-    typedef typename GraphStatic<MSNodeDataOP>::iterator iterator;
-    typedef typename GraphStatic<MSNodeDataOP>::const_iterator const_iterator;
+    typedef typename data_structure::graph::GraphStatic<MSNodeDataOP>::iterator iterator;
+    typedef typename data_structure::graph::GraphStatic<MSNodeDataOP>::const_iterator const_iterator;
     
     iterator begin() { return graph_.begin(); }
     iterator end()   { return graph_.end(); }
@@ -46,8 +46,8 @@ public: //iterators
 
 public:
 
-    typedef typename GraphNodeOPs<MSNodeDataOP>::iterator node_iterator;
-    typedef typename GraphNodeOPs<MSNodeDataOP>::const_iterator node_const_iterator;
+    typedef typename data_structure::graph::GraphNodeOPs<MSNodeDataOP>::iterator node_iterator;
+    typedef typename data_structure::graph::GraphNodeOPs<MSNodeDataOP>::const_iterator node_const_iterator;
 
     node_iterator node_begin() { _update_align_list(); return align_list_.begin(); }
     node_iterator node_end()   { return align_list_.end(); }
@@ -64,27 +64,26 @@ public:
     
     
 private://add function helpers
-    
-    GraphNodeOP<MSNodeDataOP>
+
+    data_structure::graph::GraphNodeOP<MSNodeDataOP>
     _get_parent(
         String const &,
         int);
 
     Ints
     _get_available_parent_end_pos(
-        GraphNodeOP<MSNodeDataOP> const &,
-        int);
+            data_structure::graph::GraphNodeOP<MSNodeDataOP> const &,
+            int);
     
     int
     _get_parent_index_from_name(
-        GraphNodeOP<MSNodeDataOP> const &,
-        String const &);
-
+            data_structure::graph::GraphNodeOP<MSNodeDataOP> const &,
+            String const &);
     
     int
     _get_connection_end(
-        GraphNodeOP<MSNodeDataOP> const &,
-        String const &);
+            data_structure::graph::GraphNodeOP<MSNodeDataOP> const &,
+            String const &);
     
     inline
     int
@@ -141,15 +140,15 @@ public: //remove functions
 public: // graph wrappers
 
     inline
-    GraphNodeOP<MSNodeDataOP>
+    data_structure::graph::GraphNodeOP<MSNodeDataOP>
     last_node() { return graph_.last_node(); }
 
     inline
-    GraphNodeOP<MSNodeDataOP> const &
+    data_structure::graph::GraphNodeOP<MSNodeDataOP> const &
     get_node(int i) const { return graph_.get_node(i); }
     
     inline
-    GraphNodeOP<MSNodeDataOP> const
+    data_structure::graph::GraphNodeOP<MSNodeDataOP> const
     get_node(Uuid const & uuid) const {
         for(auto const & n : graph_) {
             if(n->data()->uuid() == uuid) {
@@ -160,9 +159,9 @@ public: // graph wrappers
     }
     
     inline
-    GraphNodeOP<MSNodeDataOP> const
+    data_structure::graph::GraphNodeOP<MSNodeDataOP> const
     get_node(String const & m_name) const {
-        auto node = GraphNodeOP<MSNodeDataOP>(nullptr);
+        auto node = data_structure::graph::GraphNodeOP<MSNodeDataOP>(nullptr);
         for(auto const & n : graph_) {
             if(n->data()->name() == m_name) {
                 if(node != nullptr) {
@@ -204,8 +203,8 @@ private: // misc functions
 
     
 public: // getters
-    
-    GraphNodeOPs<MSNodeDataOP> const
+
+    data_structure::graph::GraphNodeOPs<MSNodeDataOP> const
     unaligned_nodes() const;
 
     
@@ -247,10 +246,10 @@ private:
 
   
 private:
-    GraphStatic<MSNodeDataOP> graph_;
+    data_structure::graph::GraphStatic<MSNodeDataOP> graph_;
+    data_structure::graph::GraphNodeOPs<MSNodeDataOP> align_list_;
     base::Options options_;
     std::map<int, int> aligned_;
-    GraphNodeOPs<MSNodeDataOP> align_list_;
     int update_align_list_;
     //options
     float clash_radius_;

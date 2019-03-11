@@ -16,7 +16,7 @@ str_to_basepairstate(
 	
 	//always d,r,sugars order most be kept!!
 	
-	Strings strs = split_str_by_delimiter(s, ";");
+	Strings strs = base::split_str_by_delimiter(s, ";");
 	if(strs.size() < 3) {
 		throw "cannot load BasepairState from String, not the right number of elements\n";
 	}

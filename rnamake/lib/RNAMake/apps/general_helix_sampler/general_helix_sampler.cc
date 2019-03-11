@@ -40,7 +40,7 @@ String
 GeneralHelixSampler::_generate_structure(
         String const & seq) {
     auto structure = String("");
-    auto spl = split_str_by_delimiter(seq, "&");
+    auto spl = base::split_str_by_delimiter(seq, "&");
 
     if(spl.size() != 2) {
         throw std::runtime_error(

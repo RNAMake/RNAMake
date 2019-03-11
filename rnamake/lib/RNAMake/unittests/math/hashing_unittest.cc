@@ -151,7 +151,7 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
             getline(in, line);
             if(i == 0) { continue; }
             if(line.length() < 5) { break; }
-            auto spl = split_str_by_delimiter(line, ",");
+            auto spl = base::split_str_by_delimiter(line, ",");
             for(int j = 0; j < 6; j++) {
                 values[j] = std::stod(spl[j]);
                 if(j > 2) { values[j] += 180; }
@@ -200,7 +200,7 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
             getline(in, line);
             if (i < 3) { continue; }
             if(line.length() < 5) { break; }
-            auto spl = split_str_by_delimiter(line, ",");
+            auto spl = base::split_str_by_delimiter(line, ",");
 
             for(int j = 0; j < 6; j++) {
                 values[j] = std::stod(spl[j]);

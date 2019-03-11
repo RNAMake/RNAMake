@@ -245,7 +245,7 @@ RM::register_extra_motif_ensembles(
     
     for(auto const & l : lines) {
         if(l.length() < 10) { continue; }
-        auto spl = split_str_by_delimiter(l, "!!");
+        auto spl = base::split_str_by_delimiter(l, "!!");
         extra_me_[spl[0]] = std::make_shared<MotifEnsemble>(spl[1],
             ResidueTypeSetManager::getInstance().residue_type_set());
         

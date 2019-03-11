@@ -16,7 +16,7 @@ Quaternion
 quaternion_from_str(
         String s) {
 
-    auto spl = split_str_by_delimiter(s, " ");
+    auto spl = base::split_str_by_delimiter(s, " ");
     auto values = std::vector<double>();
     for(auto const & e : spl) {
         if(e.size() < 3) { continue; }

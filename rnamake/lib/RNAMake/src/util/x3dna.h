@@ -102,9 +102,9 @@ typedef std::vector<X3Motif>    X3Motifs;
 
 class X3dna {
 public:
-    
+
     X3dna();
-    
+
     ~X3dna() { delete s_; }
 
 public:

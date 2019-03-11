@@ -235,7 +235,7 @@ main(
         const char ** argv) {
 
     //must add this for all apps!
-    std::set_terminate(print_backtrace);
+    std::set_terminate(base::print_backtrace);
 
     //load extra motifs being used
     //String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";

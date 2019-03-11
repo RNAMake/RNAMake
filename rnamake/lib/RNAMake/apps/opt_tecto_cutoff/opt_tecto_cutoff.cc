@@ -44,7 +44,7 @@ OptTectoCutoff::_setup() {
     exp_dgs_ = std::vector<double>();
     constructs_ = Constructs();
     for(int i = 1; i < lines.size(); i++) {
-        auto spl = split_str_by_delimiter(lines[i], ",");
+        auto spl = base::split_str_by_delimiter(lines[i], ",");
         if(spl.size() < 3) { break; }
         constructs_.push_back(Construct{spl[0], spl[1], spl[2], spl[3], std::stod(spl[4]), i-1});
         exp_dgs_.push_back(std::stod(spl[4]));
@@ -111,9 +111,9 @@ void
 OptTectoCutoff::_get_scored_dataset() {
     auto constraints_str = get_string_option("constraints");
 
-    auto spl = split_str_by_delimiter(constraints_str, ";");
+    auto spl = base::split_str_by_delimiter(constraints_str, ";");
     for (auto const & s : spl) {
-        auto spl2 = split_str_by_delimiter(s, ",");
+        auto spl2 = base::split_str_by_delimiter(s, ",");
         auto pos = _parse_constraint_position(spl2[0]);
         auto lower = std::stod(spl2[1]);
         auto upper = std::stod(spl2[2]);
@@ -168,7 +168,7 @@ OptTectoCutoff::_score_constraint_file() {
     while (in.good()) {
         getline(in, line);
         if(line[0] == 'x') {continue; }
-        auto spl = split_str_by_delimiter(line, ",");
+        auto spl = base::split_str_by_delimiter(line, ",");
         int j = 0;
         for(int k = 0; k < 12; k += 2) {
             constraints_[j] = Real2{std::stod(spl[k]), std::stod(spl[k+1])};

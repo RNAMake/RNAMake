@@ -65,7 +65,7 @@ RNAStructure::get_basepair(
 void
 RNAStructure::replace_sequence(
     String const & seq) {
-    auto spl = split_str_by_delimiter(seq, "&");
+    auto spl = base::split_str_by_delimiter(seq, "&");
     auto seq2 = String();
     for(auto const & s : spl) {
         seq2 += s;

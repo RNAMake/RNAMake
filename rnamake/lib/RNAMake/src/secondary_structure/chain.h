@@ -39,7 +39,7 @@ public:
     Chain(
         String const & s) {
         residues_ = ResidueOPs();
-        Strings spl = split_str_by_delimiter(s, ";");
+        Strings spl = base::split_str_by_delimiter(s, ";");
         for(auto const & r_str : spl) {
             if(r_str.length() < 3) { continue; }
             auto r = std::make_shared<Residue>(r_str);

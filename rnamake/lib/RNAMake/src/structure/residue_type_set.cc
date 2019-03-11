@@ -48,7 +48,7 @@ ResidueTypeSet::_read_rtypes_from_dir(
 String
 ResidueTypeSet::_get_rtype_name(
     String const & fname) {
-    Strings name_spl = split_str_by_delimiter(fname, "/");
+    Strings name_spl = base::split_str_by_delimiter(fname, "/");
     String type_file_name = name_spl.back();
     std::size_t pos = type_file_name.find(".");
     return type_file_name.substr(0,pos);
@@ -64,7 +64,7 @@ ResidueTypeSet::_get_atom_map_from_file(
     input.open(fname);
     getline(input, line);
     input.close();
-    Strings atom_names = split_str_by_delimiter(line, " ");
+    Strings atom_names = base::split_str_by_delimiter(line, " ");
     int i = 0;
     StringIntMap atom_map;
     for(auto const & name : atom_names) {

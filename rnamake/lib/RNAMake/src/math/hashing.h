@@ -506,7 +506,7 @@ private:
             Strings const & s) {
         auto lower = vector_from_str(s[0]);
         auto upper = vector_from_str(s[1]);
-        auto spl = split_str_by_delimiter(s[2], " ");
+        auto spl = base::split_str_by_delimiter(s[2], " ");
         auto bin_widths = Real6();
         auto bb = BoundingBox(lower, upper);
         for(int i = 0; i < 6; i++) { bin_widths[i] = std::stod(spl[i]); }
@@ -514,7 +514,7 @@ private:
         auto values = Real6();
         for(int i = 4; i < s.size(); i++) {
             if(s[i].length() < 5) { break; }
-            spl = split_str_by_delimiter(s[i], ",");
+            spl = base::split_str_by_delimiter(s[i], ",");
             for(int i = 0; i < 6; i++) { values[i] = std::stod(spl[i]); }
             auto bin_index = binner_.bin_index(values);
             stored_values_[bin_index] = std::stoull(spl[6]);

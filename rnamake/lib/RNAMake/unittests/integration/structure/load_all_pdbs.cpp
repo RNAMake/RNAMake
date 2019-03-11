@@ -20,7 +20,7 @@ TEST_CASE( "Load all PDBs", "[PDBParser]" ) {
         
         auto fail = 0;
         for(auto const & l : lines) {
-            auto spl = split_str_by_delimiter(l, " ");
+            auto spl = base::split_str_by_delimiter(l, " ");
             if(spl.size() < 2) { continue; }
             auto s_path = base + "/" + spl[0] + "/" + spl[0] + ".pdb";
             auto res = parser.parse(s_path);

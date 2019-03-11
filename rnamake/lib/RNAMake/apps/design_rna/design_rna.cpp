@@ -181,9 +181,9 @@ DesignRNAApp::_setup_from_mg() {
     auto lines =base::get_lines_from_file(get_string_option("mg"));
     mg_ = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
     mg_->set_option_value("sterics", false);
-    auto spl = split_str_by_delimiter(lines[1], " ");
+    auto spl = base::split_str_by_delimiter(lines[1], " ");
     start_ = EndStateInfo{spl[1], std::stoi(spl[0])};
-    spl = split_str_by_delimiter(lines[2], " ");
+    spl = base::split_str_by_delimiter(lines[2], " ");
     end_ = EndStateInfo{spl[1], std::stoi(spl[0])};
 
     try {mg_->get_node(start_.n_pos); }
@@ -200,7 +200,7 @@ DesignRNAApp::_setup_from_mg() {
 
 std::shared_ptr<MSS_Path>
 DesignRNAApp::_setup_path() {
-    auto spl = split_str_by_delimiter(get_string_option("defined_motif_path"), ",");
+    auto spl = base::split_str_by_delimiter(get_string_option("defined_motif_path"), ",");
     auto selector = std::make_shared<MSS_Path>();
     auto i = 0;
     for(auto const & name : spl) {
@@ -235,7 +235,7 @@ DesignRNAApp::_setup_path() {
 
 std::vector<MotifStateOPs>
 DesignRNAApp::_get_libraries() {
-    auto spl = split_str_by_delimiter(get_string_option("defined_motif_path"), ",");
+    auto spl = base::split_str_by_delimiter(get_string_option("defined_motif_path"), ",");
     auto i = 0;
     auto libraries = std::vector<MotifStateOPs>();
     auto motif_states = MotifStateOPs();

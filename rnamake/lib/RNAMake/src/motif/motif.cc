@@ -27,17 +27,17 @@ id_(Uuid()) {
         throw "tried to construct Motif object from string, with a string too short";
     }
     
-    auto spl       = split_str_by_delimiter(s, "&");
+    auto spl       = base::split_str_by_delimiter(s, "&");
     path_          = spl[0];
     name_          = spl[1];
     score_         = std::stof(spl[2]);
     block_end_add_ = std::stoi(spl[3]);
     mtype_         = static_cast<MotifType>(std::stoi(spl[4]));
     structure_     = std::make_shared<Structure>(spl[5], rts);
-    auto basepair_str = split_str_by_delimiter(spl[6], "@");
+    auto basepair_str = base::split_str_by_delimiter(spl[6], "@");
     for (auto const & bp_str : basepair_str) {
-        auto bp_spl = split_str_by_delimiter(bp_str, ",");
-        auto res_spl = split_str_by_delimiter(bp_spl[0], "-");
+        auto bp_spl = base::split_str_by_delimiter(bp_str, ",");
+        auto res_spl = base::split_str_by_delimiter(bp_spl[0], "-");
         auto res1_id = res_spl[0].substr(0,1);
         auto res2_id = res_spl[1].substr(0,1);
         auto res1_num = std::stoi(res_spl[0].substr(1));
@@ -53,11 +53,11 @@ id_(Uuid()) {
         basepairs_.push_back(bp);
     }
     
-    Strings end_indexes = split_str_by_delimiter(spl[7], " ");
+    Strings end_indexes = base::split_str_by_delimiter(spl[7], " ");
     for (auto const & index : end_indexes) {
         ends_.push_back( basepairs_ [ std::stoi(index) ]);
     }
-    end_ids_ = split_str_by_delimiter(spl[8], " ");
+    end_ids_ = base::split_str_by_delimiter(spl[8], " ");
     secondary_structure_ = std::make_shared<sstruct::Motif>(spl[9]);
     
     auto ss_res = secondary_structure_->residues();
@@ -68,7 +68,7 @@ id_(Uuid()) {
     }
     
     if(spl.size() > 10) {
-        auto bead_spl = split_str_by_delimiter(spl[10], ";");
+        auto bead_spl = base::split_str_by_delimiter(spl[10], ";");
         for(auto const & b_spl : bead_spl) {
             if(b_spl.length() < 5) { continue; }
             protein_beads_.push_back(Bead(b_spl));

@@ -41,7 +41,7 @@ ThermoFlucSimulation::setup(
     try {
         sampler_.mst()->get_node(ni1_);
     }
-    catch(TreeException const & e) {
+    catch(data_structure::tree::TreeException const & e) {
         throw ThermoFlucSimulationException(
             "cannot setup thermo fluc simulation as there is no node with index: " +
             std::to_string(ni1_) + " in given tree");
@@ -50,7 +50,7 @@ ThermoFlucSimulation::setup(
     try {
         sampler_.mst()->get_node(ni2_);
     }
-    catch(TreeException const & e) {
+    catch(data_structure::tree::TreeException const & e) {
         throw ThermoFlucSimulationException(
             "cannot setup thermo fluc simulation as there is no node with index: " +
             std::to_string(ni2_) + " in given tree");
@@ -71,21 +71,21 @@ ThermoFlucSimulation::setup(
     //parse sterics information
     if(get_string_option("steric_nodes") == "") { return; }
     auto steric_node_str = get_string_option("steric_nodes");
-    auto spl = split_str_by_delimiter(steric_node_str, ":");
+    auto spl = base::split_str_by_delimiter(steric_node_str, ":");
     if(spl.size() != 2) {
         throw ThermoFlucSimulationException(
             "incorrect format for steric_nodes option, must be in the form NodeSet1:NodeSet2,"
             " example: '22,21:1' which check sterics of nodes 22 and 21 against node 1");
     }
     
-    auto node_set_1 = split_str_by_delimiter(spl[0], ",");
+    auto node_set_1 = base::split_str_by_delimiter(spl[0], ",");
     for(auto const & n_num : node_set_1) {
         auto n_index = std::stoi(n_num);
         
         try {
             sampler_.mst()->get_node(n_index);
         }
-        catch(TreeException const & e) {
+        catch(data_structure::tree::TreeException const & e) {
             throw ThermoFlucSimulationException(
                 "cannot setup sterics for simulation, specified node: " + std::to_string(n_index) +
                 " does not exist");
@@ -94,14 +94,14 @@ ThermoFlucSimulation::setup(
         check_nodes_1_.push_back(n_index);
     }
     
-    auto node_set_2 = split_str_by_delimiter(spl[1], ",");
+    auto node_set_2 = base::split_str_by_delimiter(spl[1], ",");
     for(auto const & n_num : node_set_2) {
         auto n_index = std::stoi(n_num);
         
         try {
             sampler_.mst()->get_node(n_index);
         }
-        catch(TreeException const & e) {
+        catch(data_structure::tree::TreeException const & e) {
             throw ThermoFlucSimulationException(
                 "cannot setup sterics for simulation, specified node: " + std::to_string(n_index) +
                 " does not exist");

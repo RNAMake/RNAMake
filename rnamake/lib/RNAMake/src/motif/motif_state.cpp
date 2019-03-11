@@ -17,7 +17,7 @@ String
 MotifState::to_str() {
     String s = name_ + "|" + std::to_string(score_) + "|" + std::to_string(size_) + "|";
     s += std::to_string(block_end_add_) + "|" + vectors_to_str(beads_) + "|";
-    s += join_by_delimiter(end_names_, ",") + "|" + join_by_delimiter(end_ids_, ",") + "|";
+    s += base::join_by_delimiter(end_names_, ",") + "|" + base::join_by_delimiter(end_ids_, ",") + "|";
     for(auto const & state : end_states_) {
         s += state->to_str() + "|";
     }

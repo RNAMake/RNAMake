@@ -79,7 +79,7 @@ public:
     inline
     Bead(
         String const & s) {
-        auto spl = split_str_by_delimiter(s, ",");
+        auto spl = base::split_str_by_delimiter(s, ",");
         center_ = vector_from_str(spl[0]);
         btype_ = BeadType(std::stoi(spl[1]));
     }
@@ -229,7 +229,7 @@ public:
         String const & s,
         ResidueTypeSet const & rts) {
         
-        Strings spl = split_str_by_delimiter(s, ",");
+        Strings spl = base::split_str_by_delimiter(s, ",");
         rtype_      = rts.get_rtype_by_resname(spl[0]);
         name_       = spl[1];
         num_        = std::stoi(spl[2]);

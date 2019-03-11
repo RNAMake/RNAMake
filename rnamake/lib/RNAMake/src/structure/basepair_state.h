@@ -62,7 +62,7 @@ public:
     diff_ ( Vector(0.0) ),
     diff_sugars_( Vectors(2) )
     {
-        auto spl = split_str_by_delimiter(s, ";");
+        auto spl = base::split_str_by_delimiter(s, ";");
         if(spl.size() < 3) {
             throw "cannot load BasepairState from String, not the right number of elements\n";
         }

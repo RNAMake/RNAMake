@@ -26,7 +26,7 @@ X3dna::X3dna() {
 void
 X3dna::generate_ref_frame(String const & path) {
     
-    String fname = filename(path).substr(0,-4);
+    String fname = base::filename(path).substr(0,-4);
     fname = fname.substr(0, fname.length()-4);
     if(!base::file_exists(path)) {
         throw X3dnaException("cannot find pdb for ref_frames.dat\n");
@@ -42,7 +42,7 @@ X3dna::generate_ref_frame(String const & path) {
         throw X3dnaException("could not call find_pair properly, please make sure you have it set up properly\n");
     }
     String files_str = "auxiliary.par,bestpairs.pdb,bp_helical.par,bp_order.dat,bp_step.par,cf_7methods.par,col_chains.scr,col_helices.scr,hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb";
-    Strings files = split_str_by_delimiter(files_str, ",");
+    Strings files = base::split_str_by_delimiter(files_str, ",");
     files.push_back(fname+".out");
     for(auto const & f : files) {
         try { std::remove(f.c_str()); }
@@ -55,7 +55,7 @@ X3dna::generate_ref_frame(String const & path) {
 void
 X3dna::generate_dssr_file(String const & path) {
     
-    String fname = filename(path);
+    String fname = base::filename(path);
     fname = fname.substr(0, fname.length()-4);
     if(!base::file_exists(path)) {
         throw X3dnaException("cannot find pdb for generate_dssr_file\n");
@@ -71,7 +71,7 @@ X3dna::generate_dssr_file(String const & path) {
     }
     
     String filename_str = "dssr-2ndstrs.ct,dssr-2ndstrs.dbn,dssr-helices.pdb,dssr-pairs.pdb,dssr-stems.pdb,hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb,dssr-torsions.dat,dssr-Kturns.pdb,dssr-multiplets.pdb,dssr-hairpins.pdb,dssr-Aminors.pdb";
-    Strings files = split_str_by_delimiter(filename_str, ",");
+    Strings files = base::split_str_by_delimiter(filename_str, ",");
     for(auto const & f : files) {
         try { std::remove(f.c_str()); }
         catch(String const & e) {}
@@ -85,7 +85,7 @@ X3dna::_get_ref_frame_path(
     String const & pdb_name,
     bool force_build_files) {
     
-    String basedir = base_dir(pdb_name);
+    String basedir = base::base_dir(pdb_name);
     String ref_frames_path = "";
     if(force_build_files) {
         generate_ref_frame(pdb_name);
@@ -117,8 +117,8 @@ String
 X3dna::_get_dssr_file_path(
     String const & pdb_path,
     bool force_build_files) {
-    String basedir = base_dir(pdb_path);
-    String fname = filename(pdb_path);
+    String basedir = base::base_dir(pdb_path);
+    String fname = base::filename(pdb_path);
     fname = fname.substr(0, fname.length()-4);
     String dssr_name = fname + "_dssr.out";
     String dssr_file_path = "";
@@ -186,12 +186,12 @@ X3dna::_parse_ref_frame_file(String const & ref_frames_path) {
         }
         if     (start_bp == 0) { continue; }
         if     (start_bp == 1) {
-            Strings spl = split_str_by_delimiter(l, " ");
+            Strings spl = base::split_str_by_delimiter(l, " ");
             d = _convert_strings_to_point(spl);
             start_bp++;
         }
         else if(start_bp > 1)  {
-            Strings spl = split_str_by_delimiter(l, " ");
+            Strings spl = base::split_str_by_delimiter(l, " ");
             rs.push_back(_convert_strings_to_point(spl));
             start_bp++;
         }
@@ -221,7 +221,7 @@ X3dna::_divide_dssr_file_into_sections(String const & dssr_file_path) {
     
     for(auto const & l : lines) {
         if(l.substr(0,4).compare("List") == 0 && section.size() == 0) {
-            Strings spl = split_str_by_delimiter(l, " ");
+            Strings spl = base::split_str_by_delimiter(l, " ");
             section_name = spl[3];
         }
         if(l[0] == '*') {
@@ -240,12 +240,12 @@ X3dna::_divide_dssr_file_into_sections(String const & dssr_file_path) {
 
 Strings
 X3dna::_split_over_white_space(String const & str) {
-    Strings spl = split_str_by_delimiter(str, " ");
+    Strings spl = base::split_str_by_delimiter(str, " ");
     Strings non_white_space;
     String temp;
     for(auto & s : spl) {
         //if(!(s.len) {
-        temp = trim(s);
+        temp = base::trim(s);
         if(temp.size() == 0) { continue; }
         non_white_space.push_back(temp);
         //}
@@ -255,7 +255,7 @@ X3dna::_split_over_white_space(String const & str) {
 
 X3Residue
 X3dna::_parse_dssr_res_str(String const & res_str) {
-    Strings spl = split_str_by_delimiter(res_str, ".");
+    Strings spl = base::split_str_by_delimiter(res_str, ".");
     String chain = spl[0];
     String rnum = spl[1].substr(1);
     int num;
@@ -286,7 +286,7 @@ X3dna::get_basepairs(
     for(auto const & l : section) {
         if(l.length() < 3) { continue; }
         auto spl = _split_over_white_space(l);
-        auto spl2 = split_str_by_delimiter(spl[1], ".");
+        auto spl2 = base::split_str_by_delimiter(spl[1], ".");
         if(spl2.size() == 1) {continue; }
         if(spl.size() < 6) { continue; }
         auto res1 = _parse_dssr_res_str(spl[1]);
@@ -368,7 +368,7 @@ X3dna::_parse_dssr_section(
         } catch(...) { continue; }
         if(spl.size() < 3) { continue; }
         
-        auto res_strs = split_str_by_delimiter(spl[2], ",");
+        auto res_strs = base::split_str_by_delimiter(spl[2], ",");
         X3Residues res;
         for(auto const & res_str : res_strs) {
             auto res_obj = _parse_dssr_res_str(res_str);

@@ -78,23 +78,23 @@ public: // Motif specific constructors
     
     Motif(
         String const & s) {
-        auto spl = split_str_by_delimiter(s, "!");
+        auto spl = base::split_str_by_delimiter(s, "!");
         mtype_      = static_cast<MotifType>(std::stoi(spl[0]));
         name_       = spl[1];
         path_       = spl[2];
         structure_  = std::make_shared<Structure>(spl[3]);
         basepairs_  = BasepairOPs();
         ends_       = BasepairOPs();
-        end_ids_    = split_str_by_delimiter(spl[6], " ");
+        end_ids_    = base::split_str_by_delimiter(spl[6], " ");
         auto res = structure_->residues();
-        for(auto const & bp_str : split_str_by_delimiter(spl[4], "@")) {
-            auto res_is = split_str_by_delimiter(bp_str, " ");
+        for(auto const & bp_str : base::split_str_by_delimiter(spl[4], "@")) {
+            auto res_is = base::split_str_by_delimiter(bp_str, " ");
             auto res1   = res[std::stoi(res_is[0])];
             auto res2   = res[std::stoi(res_is[1])];
             auto bp     = std::make_shared<Basepair>(res1, res2, Uuid());
             basepairs_.push_back(bp);
         }
-        for(auto const & end_i : split_str_by_delimiter(spl[5], " ") ) {
+        for(auto const & end_i : base::split_str_by_delimiter(spl[5], " ") ) {
             ends_.push_back(basepairs_[std::stoi(end_i)]);
         }
     }

@@ -56,7 +56,7 @@ public:
     Atom(
         String const & s) {
         
-        auto spl = split_str_by_delimiter(s, " ");
+        auto spl = base::split_str_by_delimiter(s, " ");
         name_   = spl[0];
         coords_ = Point(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
     }

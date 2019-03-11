@@ -55,7 +55,7 @@ PoseFactory::_setup_motifs_from_x3dna(
     int singlet_bp_seperation) {
 
     auto pdb_path = p->path();
-    auto fname = filename(pdb_path);
+    auto fname = base::filename(pdb_path);
     if(base::is_dir(p->path())) {
         pdb_path = pdb_path + "/" + fname + ".pdb";
     }

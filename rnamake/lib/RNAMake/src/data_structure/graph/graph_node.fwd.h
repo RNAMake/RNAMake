@@ -12,21 +12,29 @@
 #include <vector>
 #include <memory>
 
-enum class GraphNodeType { GraphNodeTypeStatic, GraphNodeTypeDynamic };
+namespace data_structure {
+namespace graph {
 
-template <typename DataType>
+enum class GraphNodeType {
+    GraphNodeTypeStatic, GraphNodeTypeDynamic
+};
+
+template<typename DataType>
 class GraphNode;
 
-template <typename DataType>
+template<typename DataType>
 class GraphConnection;
 
-template <typename DataType>
+template<typename DataType>
 using GraphNodeOP = std::shared_ptr<GraphNode<DataType>>;
-template <typename DataType>
+template<typename DataType>
 using GraphConnectionOP = std::shared_ptr<GraphConnection<DataType>>;
-template <typename DataType>
+template<typename DataType>
 using GraphNodeOPs = std::vector<GraphNodeOP<DataType>>;
-template <typename DataType>
+template<typename DataType>
 using GraphConnectionOPs = std::vector<GraphConnectionOP<DataType>>;
+
+}
+}
 
 #endif

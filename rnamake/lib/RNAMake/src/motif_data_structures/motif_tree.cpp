@@ -14,7 +14,7 @@
 
 
 MotifTree::MotifTree():
-    tree_(TreeStatic<MotifOP>()),
+    tree_(data_structure::tree::TreeStatic<MotifOP>()),
     merger_(nullptr),
     update_merger_(1),
     connections_(MotifConnections()),
@@ -22,7 +22,7 @@ MotifTree::MotifTree():
 
 MotifTree::MotifTree(
     String const & s):
-    tree_(TreeStatic<MotifOP>()),
+    tree_(data_structure::tree::TreeStatic<MotifOP>()),
     merger_(nullptr),
     update_merger_(1),
     connections_(MotifConnections()),
@@ -31,13 +31,13 @@ MotifTree::MotifTree(
     
     set_option_value("sterics", false);
     
-    auto spl = split_str_by_delimiter(s, "|");
-    auto node_spl = split_str_by_delimiter(spl[0], " ");
+    auto spl = base::split_str_by_delimiter(s, "|");
+    auto node_spl = base::split_str_by_delimiter(spl[0], " ");
     int i = -1;
     int pos = 0;
     for(auto const & e : node_spl) {
         i++;
-        auto n_spl = split_str_by_delimiter(e, ",");
+        auto n_spl = base::split_str_by_delimiter(e, ",");
         auto m = MotifOP(nullptr);
         
         try {
@@ -66,9 +66,9 @@ MotifTree::MotifTree(
     
     if(spl.size() == 1) { return; }
     
-    auto connection_spl = split_str_by_delimiter(spl[1], " ");
+    auto connection_spl = base::split_str_by_delimiter(spl[1], " ");
     for(auto const & c_str : connection_spl) {
-        auto c_spl = split_str_by_delimiter(c_str, ",");
+        auto c_spl = base::split_str_by_delimiter(c_str, ",");
         connections_.add_connection(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
                                     c_spl[2], c_spl[3]);
     }
@@ -80,7 +80,7 @@ MotifTree::MotifTree(
 MotifTree::MotifTree(
         String const & s,
         MotifTreeStringType type):
-        tree_(TreeStatic<MotifOP>()),
+        tree_(data_structure::tree::TreeStatic<MotifOP>()),
         merger_(nullptr),
         update_merger_(1),
         connections_(MotifConnections()),
@@ -95,7 +95,7 @@ MotifTree::MotifTree(
 
 MotifTree::MotifTree(
     MotifTree const & mt):
-    tree_(TreeStatic<MotifOP>(mt.tree_)) {
+    tree_(data_structure::tree::TreeStatic<MotifOP>(mt.tree_)) {
     auto motifs = MotifOPs();
     // dear god this is horrible but cant figure out a better way to do a copy
     for(auto const & n : mt) {
@@ -111,12 +111,12 @@ void
 MotifTree::_setup_from_str(
         String const & mt_str) {
     set_option_value("sterics", false);
-    auto spl = split_str_by_delimiter(mt_str, "FAF");
-    auto node_spl = split_str_by_delimiter(spl[0], "KAK");
+    auto spl = base::split_str_by_delimiter(mt_str, "FAF");
+    auto node_spl = base::split_str_by_delimiter(spl[0], "KAK");
     auto max_index = -100;
     for(auto const & n_str : node_spl) {
         if(n_str.length() < 10) { break; }
-        auto n_spl = split_str_by_delimiter(n_str, "^");
+        auto n_spl = base::split_str_by_delimiter(n_str, "^");
         auto m = std::make_shared<Motif>(n_spl[0],
                                          ResidueTypeSetManager::getInstance().residue_type_set());
         try {
@@ -144,7 +144,7 @@ MotifTree::_setup_from_str(
 
 //add functions ////////////////////////////////////////////////////////////////////////////////////
 
-TreeNodeOP<MotifOP>
+data_structure::tree::TreeNodeOP<MotifOP>
 MotifTree::_get_parent(
     int parent_index) {
     
@@ -154,7 +154,7 @@ MotifTree::_get_parent(
     try {
         if(parent_index != -1) { parent = tree_.get_node(parent_index); }
     }
-    catch(TreeException const & e) {
+    catch(data_structure::tree::TreeException const & e) {
         throw MotifTreeException(
             "could not add motif with parent index: " + std::to_string(parent_index) +
             "there is no node with that index");
@@ -165,7 +165,7 @@ MotifTree::_get_parent(
 
 Ints
 MotifTree::_get_available_parent_end_pos(
-    TreeNodeOP<MotifOP> const & parent,
+    data_structure::tree::TreeNodeOP<MotifOP> const & parent,
     int parent_end_index) {
     
     auto avail_pos = Ints();
@@ -232,7 +232,7 @@ MotifTree::_steric_clash(MotifOP const & m) {
 
 int
 MotifTree::_get_connection_end(
-    TreeNodeOP<MotifOP> const & node,
+    data_structure::tree::TreeNodeOP<MotifOP> const & node,
     String const & bp_name) {
     
     int node_end_index = -1;
@@ -347,18 +347,18 @@ MotifTree::add_connection(
     String const & i_bp_name,
     String const & j_bp_name) {
     
-    auto node_i = TreeNodeOP<MotifOP>(nullptr);
-    auto node_j = TreeNodeOP<MotifOP>(nullptr);
+    auto node_i = data_structure::tree::TreeNodeOP<MotifOP>(nullptr);
+    auto node_j = data_structure::tree::TreeNodeOP<MotifOP>(nullptr);
 
     try {  node_i = tree_.get_node(i); }
-    catch(TreeException) {
+    catch(data_structure::tree::TreeException) {
         throw MotifTreeException(
             "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
             std::to_string(i) +" does not exist");
     }
     
     try {  node_j = tree_.get_node(j); }
-    catch(TreeException) {
+    catch(data_structure::tree::TreeException) {
         throw MotifTreeException(
             "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
             std::to_string(j) +" does not exist");
@@ -405,7 +405,7 @@ MotifTree::remove_node_level(
     
     if(level == -1) { level = tree_.level(); }
     
-    auto remove = TreeNodeOPs<MotifOP>();
+    auto remove = data_structure::tree::TreeNodeOPs<MotifOP>();
     for(auto const & n : tree_) {
         if(n->level() >= level) {
             remove.push_back(n);

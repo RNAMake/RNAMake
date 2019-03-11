@@ -10,7 +10,7 @@ struct CommandLineArgs {
     CommandLineArgs(
         String const & s) {
         
-        Strings spl = split_str_by_delimiter(s, " ");
+        Strings spl = base::split_str_by_delimiter(s, " ");
         argv_ = new char*[spl.size()+1];
         argv_[0] = new char[20];
         strcpy(argv_[0], "program_name");

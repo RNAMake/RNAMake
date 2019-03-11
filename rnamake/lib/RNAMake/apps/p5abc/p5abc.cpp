@@ -54,7 +54,7 @@ int main(int argc, const char * argv[]) {
     
     
     //need to build from 3' to 5' based on where I am building from so much reverse teh sequence
-    auto spl = split_str_by_delimiter(seq, "&");
+    auto spl = base::split_str_by_delimiter(seq, "&");
     std::reverse(spl[0].begin(), spl[0].end());
     std::reverse(spl[1].begin(), spl[1].end());
     auto flip_sequence = spl[1] + "&" + spl[0];

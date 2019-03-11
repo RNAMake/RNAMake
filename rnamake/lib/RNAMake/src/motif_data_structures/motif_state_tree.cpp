@@ -11,7 +11,7 @@
 
 
 MotifStateTree::MotifStateTree():
-    tree_(TreeStatic<MSNodeDataOP>()),
+    tree_(data_structure::tree::TreeStatic<MSNodeDataOP>()),
     aligner_(MotifStateAligner()),
     queue_(std::queue<MotifStateTreeNodeOP>()),
     connections_(MotifConnections()),
@@ -60,7 +60,7 @@ MotifStateTree::MotifStateTree(
     queue_(std::queue<MotifStateTreeNodeOP>()),
     options_(base::Options(mst.options_)),
     connections_(MotifConnections(mst.connections_)),
-    tree_(TreeStatic<MSNodeDataOP>(mst.tree_)) {
+    tree_(data_structure::tree::TreeStatic<MSNodeDataOP>(mst.tree_)) {
     
     for(auto const & n : mst) {
         tree_.get_node(n->index())->data() = std::make_shared<MSNodeData>(*n->data());
@@ -75,13 +75,13 @@ MotifStateTree::MotifStateTree(
      
     set_option_value("sterics", false);
     
-    auto spl = split_str_by_delimiter(s, "|");
-    auto node_spl = split_str_by_delimiter(spl[0], " ");
+    auto spl = base::split_str_by_delimiter(s, "|");
+    auto node_spl = base::split_str_by_delimiter(spl[0], " ");
     int i = -1;
     int pos = 0;
     for(auto const & e : node_spl) {
         i++;
-        auto n_spl = split_str_by_delimiter(e, ",");
+        auto n_spl = base::split_str_by_delimiter(e, ",");
         auto ms = MotifStateOP(nullptr);
         
         try {
@@ -110,9 +110,9 @@ MotifStateTree::MotifStateTree(
     
     if(spl.size() == 1) { return; }
     
-    auto connection_spl = split_str_by_delimiter(spl[1], " ");
+    auto connection_spl = base::split_str_by_delimiter(spl[1], " ");
     for(auto const & c_str : connection_spl) {
-        auto c_spl = split_str_by_delimiter(c_str, ",");
+        auto c_spl = base::split_str_by_delimiter(c_str, ",");
         connections_.add_connection(std::stoi(c_spl[0]), std::stoi(c_spl[1]),
                                     c_spl[2], c_spl[3]);
     }
@@ -135,7 +135,7 @@ MotifStateTree::_get_parent(
     try {
         if(parent_index != -1) { parent = tree_.get_node(parent_index); }
     }
-    catch(TreeException const & e) {
+    catch(data_structure::tree::TreeException const & e) {
         throw MotifStateTreeException(
             "could not add motif state with parent index: " + std::to_string(parent_index) +
             "there is no node with that index");
@@ -420,14 +420,14 @@ MotifStateTree::add_connection(
     auto node_j = MotifStateTreeNodeOP(nullptr);
     
     try {  node_i = tree_.get_node(i); }
-    catch(TreeException) {
+    catch(data_structure::tree::TreeException) {
         throw MotifTreeException(
             "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
             std::to_string(i) +" does not exist");
     }
     
     try {  node_j = tree_.get_node(j); }
-    catch(TreeException) {
+    catch(data_structure::tree::TreeException) {
         throw MotifTreeException(
             "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
             std::to_string(j) +" does not exist");

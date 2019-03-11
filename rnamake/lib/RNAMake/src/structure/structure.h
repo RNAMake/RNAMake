@@ -55,7 +55,7 @@ public:
         String const & s,
         ResidueTypeSet const & rts) {
         chains_ = ChainOPs();
-        Strings spl = split_str_by_delimiter(s, ":");
+        Strings spl = base::split_str_by_delimiter(s, ":");
         for( auto const & c_str : spl) {
             chains_.push_back(std::make_shared<Chain>(c_str, rts));
         }

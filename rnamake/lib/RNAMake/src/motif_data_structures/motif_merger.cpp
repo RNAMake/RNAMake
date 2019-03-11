@@ -48,7 +48,7 @@ MotifMerger::add_motif(
     try {
         _link_motifs(parent, parent_end, m, m_end);
     }
-    catch(GraphException const & e ){
+    catch(data_structure::graph::GraphException const & e ){
         throw MotifMergerException(
             "cannot add motif: " + m->name() + " with basepair " + m_end->name() + " with parent: " +
              parent->name() + " and parent basepair " + parent_end->name());

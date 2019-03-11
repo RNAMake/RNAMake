@@ -209,9 +209,9 @@ private:
     _parse_constraints(
             String const & constraints) {
 
-        auto spl =  split_str_by_delimiter(constraints, ";");
+        auto spl = base::split_str_by_delimiter(constraints, ";");
         for(auto const & s : spl) {
-            auto spl2 = split_str_by_delimiter(s, ",");
+            auto spl2 = base::split_str_by_delimiter(s, ",");
             if(spl2.size() != 3) { throw std::runtime_error("invalid record constraint: " + s); }
             auto pos = _parse_constraint_position(spl2[0]);
             auto lower = std::stod(spl2[1]);

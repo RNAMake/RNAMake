@@ -101,7 +101,7 @@ public:
         ResidueTypeSet const & rts) {
         
         residues_ = ResidueOPs();
-        Strings spl = split_str_by_delimiter(s, ";");
+        Strings spl = base::split_str_by_delimiter(s, ";");
         for(auto const & r_str : spl) {
             auto r = std::make_shared<Residue>(r_str, rts);
             residues_.push_back(r);

@@ -348,7 +348,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto path = unittest_resource_dir() + "motif_tree/pretty_str_1.dat";
         auto lines =base::get_lines_from_file(path);
         
-        auto spl = split_str_by_delimiter(s, "\n");
+        auto spl = base::split_str_by_delimiter(s, "\n");
         for(int i = 1; i < spl.size(); i++) {
             REQUIRE(spl[i] == lines[i-1]);
         }
@@ -373,7 +373,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto path = unittest_resource_dir() + "motif_tree/pretty_str_2.dat";
         auto lines =base::get_lines_from_file(path);
         
-        auto spl = split_str_by_delimiter(s, "\n");
+        auto spl = base::split_str_by_delimiter(s, "\n");
         for(int i = 1; i < spl.size(); i++) {
             REQUIRE(spl[i] == lines[i-1]);
         }

@@ -176,7 +176,7 @@ AptNewInterface::run() {
 std::vector<MotifStateOPs>
 AptNewInterface::_get_libraries(
         String const & motif_path) {
-    auto spl = split_str_by_delimiter(motif_path, ",");
+    auto spl = base::split_str_by_delimiter(motif_path, ",");
     auto i = 0;
     auto libraries = std::vector<MotifStateOPs>();
     auto motif_states = MotifStateOPs();

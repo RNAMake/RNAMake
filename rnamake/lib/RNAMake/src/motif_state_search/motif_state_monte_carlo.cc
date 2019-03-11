@@ -369,7 +369,7 @@ MotifStateMonteCarlo::_seen_solution(
         j++;
         if (j == 0) { continue; }
         if(n->data()->name().substr(0, 10) == "HELIX.FLEX") {
-            auto spl = split_str_by_delimiter(n->data()->name(), ".");
+            auto spl = base::split_str_by_delimiter(n->data()->name(), ".");
             motif_used_string += spl[0] + "." + spl[1] + "." + spl[2] + ";";
         }
         else {

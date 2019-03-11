@@ -54,7 +54,7 @@ private:
         String
         print_tree(
             MotifTree const & mt) {
-            auto nodes_per_level = std::map<int, TreeNodeOPs<MotifOP>>();
+            auto nodes_per_level = std::map<int, data_structure::tree::TreeNodeOPs<MotifOP>>();
             for(auto const & n : mt) {
                 nodes_per_level[levels_[n->index()]].push_back(n);
             }
@@ -75,25 +75,25 @@ private:
         
     private:
         String
-        _print_level(TreeNodeOPs<MotifOP> const & nodes) {
+        _print_level(data_structure::tree::TreeNodeOPs<MotifOP> const & nodes) {
             auto s = String("");
             auto strings = std::vector<Strings>();
 
             //sort nodes by pos, using a lambda statement and std::pair
             //probably can be cleaned up
-            auto pairs = std::vector<std::pair<TreeNodeOP<MotifOP>, int>>();
+            auto pairs = std::vector<std::pair<data_structure::tree::TreeNodeOP<MotifOP>, int>>();
             for(auto const & n : nodes) {
-                auto p = std::pair<TreeNodeOP<MotifOP>, int>(n, node_pos_[n->index()]);
+                auto p = std::pair<data_structure::tree::TreeNodeOP<MotifOP>, int>(n, node_pos_[n->index()]);
                 pairs.push_back(p);
             }
             
             std::sort(pairs.begin(), pairs.end(),
-                      [](std::pair<TreeNodeOP<MotifOP>, int> const & p1,
-                         std::pair<TreeNodeOP<MotifOP>, int> const & p2) {
+                      [](std::pair<data_structure::tree::TreeNodeOP<MotifOP>, int> const & p1,
+                         std::pair<data_structure::tree::TreeNodeOP<MotifOP>, int> const & p2) {
                           return p1.second < p2.second; });
             
             
-            auto sorted_nodes = TreeNodeOPs<MotifOP>();
+            auto sorted_nodes = data_structure::tree::TreeNodeOPs<MotifOP>();
             for(auto const & p : pairs) { sorted_nodes.push_back(p.first); }
             
             for(auto const & n : sorted_nodes) {
@@ -137,7 +137,7 @@ private:
             int current_pos = 0;
             int hit = 0;
             for(auto const & n : sorted_nodes) {
-                auto children = TreeNodeOPs<MotifOP>();
+                auto children = data_structure::tree::TreeNodeOPs<MotifOP>();
                 for(auto const & c : n->children()) {
                     if(c != nullptr) { children.push_back(c); }
                 }
@@ -179,7 +179,7 @@ private:
                     node_pos_[n->index()] = start_pos_;
                 }
                 
-                auto children = TreeNodeOPs<MotifOP>();
+                auto children = data_structure::tree::TreeNodeOPs<MotifOP>();
                 for(auto const & c : n->children()) {
                     if(c != nullptr) { children.push_back(c); }
                 }
@@ -259,8 +259,8 @@ private: // setup functions
     
 public: //iterators
     
-    typedef typename TreeStatic<MotifOP>::iterator iterator;
-    typedef typename TreeStatic<MotifOP>::const_iterator const_iterator;
+    typedef typename data_structure::tree::TreeStatic<MotifOP>::iterator iterator;
+    typedef typename data_structure::tree::TreeStatic<MotifOP>::const_iterator const_iterator;
     
     iterator begin() { return tree_.begin(); }
     iterator end()   { return tree_.end(); }
@@ -270,12 +270,12 @@ public: //iterators
     
 private: //adding functions helpers
     
-    TreeNodeOP<MotifOP>
+    data_structure::tree::TreeNodeOP<MotifOP>
     _get_parent(int);
     
     Ints
     _get_available_parent_end_pos(
-        TreeNodeOP<MotifOP> const &,
+        data_structure::tree::TreeNodeOP<MotifOP> const &,
         int);
     
     int
@@ -284,7 +284,7 @@ private: //adding functions helpers
     
     int
     _get_connection_end(
-        TreeNodeOP<MotifOP> const &,
+        data_structure::tree::TreeNodeOP<MotifOP> const &,
         String const &);
 
 
@@ -374,19 +374,19 @@ public: //tree wrappers
     size() { return tree_.size(); }
     
     inline
-    TreeNodeOP<MotifOP> const &
+    data_structure::tree::TreeNodeOP<MotifOP> const &
     get_node(int i) {
         try {
             return tree_.get_node(i);
         }
-        catch(TreeException) {
+        catch(data_structure::tree::TreeException) {
             throw MotifTreeException(
                 "cannot get node: " + std::to_string(i) + " in MotifTree it does not exist");
         }
     }
     
     inline
-    TreeNodeOP<MotifOP> const &
+    data_structure::tree::TreeNodeOP<MotifOP> const &
     get_node(Uuid const & uuid) {
         for(auto const & n : tree_) {
             if(n->data()->id() == uuid) {
@@ -398,9 +398,9 @@ public: //tree wrappers
     }
     
     inline
-    TreeNodeOP<MotifOP>
+    data_structure::tree::TreeNodeOP<MotifOP>
     get_node(String const & m_name) {
-        auto node = TreeNodeOP<MotifOP>(nullptr);
+        auto node = data_structure::tree::TreeNodeOP<MotifOP>(nullptr);
         for(auto const & n : tree_) {
             if(n->data()->name() == m_name) {
                 if(node != nullptr) {
@@ -423,7 +423,7 @@ public: //tree wrappers
     }
     
     inline
-    TreeNodeOP<MotifOP> const &
+    data_structure::tree::TreeNodeOP<MotifOP> const &
     last_node() { return tree_.last_node(); }
     
     void
@@ -522,7 +522,7 @@ private: //private option functions
     update_var_options();
     
 private:
-    TreeStatic<MotifOP> tree_;
+    data_structure::tree::TreeStatic<MotifOP> tree_;
     MotifMergerOP merger_;
     MotifConnections connections_;
     bool sterics_;

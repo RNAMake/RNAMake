@@ -41,7 +41,7 @@ TEST_CASE( "Test Matrix math ", "[XYZMatrix]" ) {
         int fail = 0;
         for(auto const & l : lines) {
             if(l.length() < 10) { break; }
-            auto spl = split_str_by_delimiter(l, "|");
+            auto spl = base::split_str_by_delimiter(l, "|");
             auto org_m = Matrix(spl[0]);
             auto final_m = Matrix(spl[1]);
             

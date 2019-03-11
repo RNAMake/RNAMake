@@ -12,20 +12,21 @@
 
 
 MotifStateGraph::MotifStateGraph():
-    graph_(GraphStatic<MSNodeDataOP>()),
-    clash_radius_(2.5),
-    sterics_(1),
-    options_(base::Options()),
-    update_align_list_(1),
-    align_list_(GraphNodeOPs<MSNodeDataOP>()),
-    aligned_(std::map<int, int>()) { setup_options(); }
+        graph_(data_structure::graph::GraphStatic<MSNodeDataOP>()),
+        align_list_(data_structure::graph::GraphNodeOPs<MSNodeDataOP>()),
+        clash_radius_(2.5),
+        sterics_(1),
+        options_(base::Options()),
+        update_align_list_(1),
+        aligned_(std::map<int, int>()) { setup_options(); }
 
-MotifStateGraph::MotifStateGraph(MotifGraphOP const & mg) : MotifStateGraph() {
+MotifStateGraph::MotifStateGraph(
+        MotifGraphOP const & mg) : MotifStateGraph() {
     _setup_from_mg(mg);
 }
 
-MotifStateGraph::MotifStateGraph(MotifStateGraph const & msg) : MotifStateGraph() {
-
+MotifStateGraph::MotifStateGraph(
+        MotifStateGraph const & msg) : MotifStateGraph() {
     auto max_index = 0;
     for(auto const & n : msg.graph_.nodes()) {
         auto n_data = std::make_shared<MSNodeData>(*n->data());
@@ -53,7 +54,8 @@ MotifStateGraph::MotifStateGraph(MotifStateGraph const & msg) : MotifStateGraph(
 }
 
 void
-MotifStateGraph::_setup_from_mg(MotifGraphOP const & mg) {
+MotifStateGraph::_setup_from_mg(
+        MotifGraphOP const & mg) {
     aligned_ = mg->aligned();
     auto max_index = 0;
     for(auto const & n : *mg) {
@@ -74,7 +76,7 @@ MotifStateGraph::_setup_from_mg(MotifGraphOP const & mg) {
 //add function helpers /////////////////////////////////////////////////////////////////////////////
 
 
-GraphNodeOP<MSNodeDataOP>
+data_structure::graph::GraphNodeOP<MSNodeDataOP>
 MotifStateGraph::_get_parent(
     String const & m_name,
     int parent_index) {
@@ -85,7 +87,7 @@ MotifStateGraph::_get_parent(
     try {
         if(parent_index != -1) { parent = graph_.get_node(parent_index); }
     }
-    catch(GraphException const & e) {
+    catch(data_structure::graph::GraphException const & e) {
         throw MotifStateGraphException(
             "could not add state: " + m_name + " with parent index: " +
             std::to_string(parent_index) + "there is no node with that index");
@@ -96,9 +98,8 @@ MotifStateGraph::_get_parent(
 
 Ints
 MotifStateGraph::_get_available_parent_end_pos(
-    GraphNodeOP<MSNodeDataOP> const & parent,
-    int parent_end_index) {
-    
+        data_structure::graph::GraphNodeOP<MSNodeDataOP> const & parent,
+        int parent_end_index) {
     auto avail_pos = Ints();
     
     if(parent_end_index != -1) {
@@ -133,8 +134,8 @@ MotifStateGraph::_get_available_parent_end_pos(
 
 int
 MotifStateGraph::_get_parent_index_from_name(
-    GraphNodeOP<MSNodeDataOP> const & parent,
-    String const & parent_end_name) {
+        data_structure::graph::GraphNodeOP<MSNodeDataOP> const & parent,
+        String const & parent_end_name) {
     
     auto parent_end_index = -1;
     
@@ -173,8 +174,8 @@ MotifStateGraph::_get_parent_index_from_name(
 
 int
 MotifStateGraph::_get_connection_end(
-    GraphNodeOP<MSNodeDataOP> const & node,
-    String const & bp_name) {
+        data_structure::graph::GraphNodeOP<MSNodeDataOP> const & node,
+        String const & bp_name) {
     
     int node_end_index = -1;
     
@@ -285,18 +286,18 @@ MotifStateGraph::add_connection(
     String const & i_bp_name,
     String const & j_bp_name) {
     
-    auto node_i = GraphNodeOP<MSNodeDataOP>(nullptr);
-    auto node_j = GraphNodeOP<MSNodeDataOP>(nullptr);
+    auto node_i = data_structure::graph::GraphNodeOP<MSNodeDataOP>(nullptr);
+    auto node_j = data_structure::graph::GraphNodeOP<MSNodeDataOP>(nullptr);
     
     try {  node_i = graph_.get_node(i); }
-    catch(GraphException) {
+    catch(data_structure::graph::GraphException) {
         throw MotifTreeException(
             "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
             std::to_string(i) +" does not exist");
     }
     
     try {  node_j = graph_.get_node(j); }
-    catch(GraphException) {
+    catch(data_structure::graph::GraphException) {
         throw MotifTreeException(
             "cannot connect: " + std::to_string(i) + " " + std::to_string(j) + " as node " +
             std::to_string(j) +" does not exist");
@@ -364,7 +365,7 @@ MotifStateGraph::to_motif_graph() {
     auto mg = std::make_shared<MotifGraph>();
     mg->set_option_value("sterics", false);
     auto non_aligned_nodes = unaligned_nodes();
-    auto seen_connections = std::map<GraphConnectionOP<MSNodeDataOP>, int>();
+    auto seen_connections = std::map<data_structure::graph::GraphConnectionOP<MSNodeDataOP>, int>();
     auto index_hash = std::map<int, int>();
     auto j = 0;
 
@@ -409,14 +410,14 @@ MotifStateGraph::_update_align_list() {
     if(!update_align_list_) { return; }
 
     auto non_aligned_nodes = unaligned_nodes();
-    auto open = std::queue<GraphNodeOP<MSNodeDataOP>>();
-    auto used_nodes = std::map<GraphNodeOP<MSNodeDataOP>, int>();
+    auto open = std::queue<data_structure::graph::GraphNodeOP<MSNodeDataOP>>();
+    auto used_nodes = std::map<data_structure::graph::GraphNodeOP<MSNodeDataOP>, int>();
     
-    align_list_ = GraphNodeOPs<MSNodeDataOP>();
+    align_list_ = data_structure::graph::GraphNodeOPs<MSNodeDataOP>();
 
     for(auto const & start : non_aligned_nodes) {
         open.push(start);
-        auto seen_nodes = std::map<GraphNodeOP<MSNodeDataOP>, int>();
+        auto seen_nodes = std::map<data_structure::graph::GraphNodeOP<MSNodeDataOP>, int>();
         
         while (!open.empty()) {
             auto n = open.front();
@@ -485,9 +486,9 @@ MotifStateGraph::_align_states(int pos) {
 // getters /////////////////////////////////////////////////////////////////////////////////////////
 
 
-GraphNodeOPs<MSNodeDataOP> const
+data_structure::graph::GraphNodeOPs<MSNodeDataOP> const
 MotifStateGraph::unaligned_nodes() const {
-    auto nodes = GraphNodeOPs<MSNodeDataOP>();
+    auto nodes = data_structure::graph::GraphNodeOPs<MSNodeDataOP>();
     for(auto const & kv : aligned_) {
         if(kv.second == 0) { nodes.push_back(get_node(kv.first)); }
     }

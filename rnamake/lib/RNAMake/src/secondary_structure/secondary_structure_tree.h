@@ -20,7 +20,7 @@ namespace sstruct {
 class SecondaryStructureTree {
 public:
     SecondaryStructureTree():
-    tree_(TreeStatic<MotifOP>())
+    tree_(data_structure::tree::TreeStatic<MotifOP>())
     {}
     
     
@@ -28,8 +28,8 @@ public:
     
 public: //iterators
     
-    typedef typename TreeStatic<MotifOP>::iterator iterator;
-    typedef typename TreeStatic<MotifOP>::const_iterator const_iterator;
+    typedef typename data_structure::tree::TreeStatic<MotifOP>::iterator iterator;
+    typedef typename data_structure::tree::TreeStatic<MotifOP>::const_iterator const_iterator;
     
     iterator begin() { return tree_.begin(); }
     iterator end()   { return tree_.end(); }
@@ -48,7 +48,7 @@ public:
         int parent_end_index = -1);
     
 private:
-    TreeStatic<MotifOP> tree_;
+    data_structure::tree::TreeStatic<MotifOP> tree_;
 };
 
 typedef std::shared_ptr<SecondaryStructureTree> SecondaryStructureTreeOP;

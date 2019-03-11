@@ -38,18 +38,18 @@ PDBParser::parse(
         if(startswith.compare("ATOM  ") == 0 ||
            startswith.compare("HETATM") == 0) {
             atomname = line.substr(12, 4);
-            atomname = trim(atomname);
+            atomname = base::trim(atomname);
             resname  = line.substr(17, 4);
-            resname  = trim(resname);
+            resname  = base::trim(resname);
             chid     = line.substr(21, 1);
             alt      = line.substr(16, 1);
             
             sx       = line.substr(30, 8);
-            sx       = trim(sx);
+            sx       = base::trim(sx);
             sy       = line.substr(38, 8);
-            sy       = trim(sy);
+            sy       = base::trim(sy);
             sz       = line.substr(46, 8);
-            sz       = trim(sz);
+            sz       = base::trim(sz);
             
             
             x        = std::stod(sx);
@@ -58,7 +58,7 @@ PDBParser::parse(
             coords   = Point(x, y, z);
             
             resnum  = line.substr(22, 4);
-            resnum  = trim(resnum);
+            resnum  = base::trim(resnum);
             
             atomnames.push_back(atomname);
             resnames.push_back(resname);
@@ -103,7 +103,7 @@ PDBParser::parse(
     ResidueOP r;
     for(auto & kv : residue_atoms) {
         if(kv.second.size() < 6) { continue; }
-        spl = split_str_by_delimiter(kv.first, " ");
+        spl = base::split_str_by_delimiter(kv.first, " ");
         if(!rts_.contains_rtype(spl[0]) && !others) { continue; }
         if(!others) {
             rtype = rts_.get_rtype_by_resname(spl[0]);

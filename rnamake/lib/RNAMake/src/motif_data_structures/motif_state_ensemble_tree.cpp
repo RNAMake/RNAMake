@@ -15,7 +15,7 @@
 
 MotifStateEnsembleTree::MotifStateEnsembleTree():
     connections_(MotifConnections()),
-    tree_( TreeStatic<MotifStateEnsembleOP>()){}
+    tree_( data_structure::tree::TreeStatic<MotifStateEnsembleOP>()){}
 
 MotifStateEnsembleTree::MotifStateEnsembleTree(
     MotifTreeOP const & mt):

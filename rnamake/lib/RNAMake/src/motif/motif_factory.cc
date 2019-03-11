@@ -28,7 +28,7 @@ MotifFactory::motif_from_file(
     }
 
     parser_ = MotiftoSecondaryStructure();
-    auto fname = filename(path);
+    auto fname = base::filename(path);
     auto pdb_path = path;
     StructureOP structure;
     if (base::is_dir(path)) {

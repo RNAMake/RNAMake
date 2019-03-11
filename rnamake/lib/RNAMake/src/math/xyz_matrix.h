@@ -152,7 +152,7 @@ public: //creation
     xyzMatrix(
         String const & s) {
         
-        auto v = split_str_by_delimiter(s," ");
+        auto v = base::split_str_by_delimiter(s," ");
         assert(v.size() > 8);
         xx_ = std::stod(v[0]);
         xy_ = std::stod(v[1]);
@@ -709,7 +709,7 @@ Matrix
 matrix_from_str(
 	std::string const & s) {
 	
-    std::vector<std::string> values = split_str_by_delimiter(s," ");
+    std::vector<std::string> values = base::split_str_by_delimiter(s," ");
 	std::vector<double> point;
 	Matrix m(0);
 	int j = 0;

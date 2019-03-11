@@ -8,7 +8,7 @@ TEST_CASE( "Test general tree data structure", "[Tree]" ) {
 
     SECTION("test adding new data for dynamic trees") {
         
-        auto t = TreeDynamic<int>();
+        auto t = data_structure::tree::TreeDynamic<int>();
         t.add_data(0);        //index 0
         t.add_data(1);        //index 1
         t.add_data(2, 0);     //index 2
@@ -31,7 +31,7 @@ TEST_CASE( "Test general tree data structure", "[Tree]" ) {
     }
     
     SECTION("check for catching non existant nodes") {
-        auto t = TreeDynamic<int>();
+        auto t = data_structure::tree::TreeDynamic<int>();
         t.add_data(0);        //index 0
         
         auto n = t.get_node(0);
@@ -42,7 +42,7 @@ TEST_CASE( "Test general tree data structure", "[Tree]" ) {
     }
     
     SECTION("test adding new data for static trees") {
-        auto t = TreeStatic<int>();
+        auto t = data_structure::tree::TreeStatic<int>();
         t.add_data(0, 2);          //index 0, 2 children
         t.add_data(1, 2, 0, 0);
         t.add_data(2, 2, 0, 1);
@@ -66,7 +66,7 @@ TEST_CASE( "Test general tree data structure", "[Tree]" ) {
     }
     
     SECTION("test remove node level") {
-        auto t = TreeStatic<int>();
+        auto t = data_structure::tree::TreeStatic<int>();
         t.add_data(0, 2);          //index 0, 2 children
         t.add_data(1, 2, 0, 0);
         t.add_data(2, 2, 0, 1);
@@ -89,7 +89,7 @@ TEST_CASE( "Test general tree data structure", "[Tree]" ) {
     }
     
     SECTION("test removeing nodes") {
-        auto t = TreeStatic<int>();
+        auto t = data_structure::tree::TreeStatic<int>();
         t.add_data(0, 2);          //index 0, 2 children
         t.remove_node(0);
         

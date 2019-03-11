@@ -60,16 +60,16 @@ ResidueType::extend_res_specific_altnames() {
     // There has to be a better way to do this
     Strings alt_names;
     if      ( name_.compare("GUA") == 0 ) {
-        alt_names = split_str_by_delimiter("MIA GDP GTP M2G 1MG 7MG G7M QUO I YG", " ");
+        alt_names = base::split_str_by_delimiter("MIA GDP GTP M2G 1MG 7MG G7M QUO I YG", " ");
     }
     else if ( name_.compare("ADE") == 0 ) {
-        alt_names = split_str_by_delimiter("A23 3DA 1MA 12A AET 2MA", " ");
+        alt_names = base::split_str_by_delimiter("A23 3DA 1MA 12A AET 2MA", " ");
     }
     else if ( name_.compare("URA") == 0 ) {
-        alt_names = split_str_by_delimiter("PSU H2U 5MU 4SU 5BU 5MC U3H 2MU 70U BRU DT", " ");
+        alt_names = base::split_str_by_delimiter("PSU H2U 5MU 4SU 5BU 5MC U3H 2MU 70U BRU DT", " ");
     }
     else if ( name_.compare("CYT") == 0) {
-        alt_names = split_str_by_delimiter("CBR CCC", " ");
+        alt_names = base::split_str_by_delimiter("CBR CCC", " ");
     }
     
     else {

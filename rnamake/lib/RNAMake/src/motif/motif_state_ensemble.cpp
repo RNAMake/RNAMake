@@ -15,11 +15,11 @@ MotifStateEnsemble::MotifStateEnsemble(
     block_end_add_(0),
     members_(MotifStateEnsembleMemberOPs()) {
     
-    auto spl = split_str_by_delimiter(s, "{");
+    auto spl = base::split_str_by_delimiter(s, "{");
     id_ = spl[0];
     block_end_add_ = std::stoi(spl[1]);
     for(int i = 2; i < spl.size(); i++) {
-        auto spl2 = split_str_by_delimiter(spl[i], "#");
+        auto spl2 = base::split_str_by_delimiter(spl[i], "#");
         auto ms = std::make_shared<MotifState>(spl2[0]);
         auto energy = std::stof(spl2[1]);
         auto mem = std::make_shared<MotifStateEnsembleMember>(ms, energy);

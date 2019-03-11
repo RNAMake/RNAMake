@@ -254,7 +254,7 @@ public:
     
     
 protected:
-    GraphDynamic<MotifStateSelectorNodeDataOP> graph_;
+    data_structure::graph::GraphDynamic<MotifStateSelectorNodeDataOP> graph_;
     MotifStateandTypes motif_states_and_types_;
     String name_;
 };

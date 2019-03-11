@@ -37,7 +37,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
         for(auto const & l : lines) {
             i++;
             if(l.length() < 5) { break;}
-            auto spl = split_str_by_delimiter(l, "|");
+            auto spl = base::split_str_by_delimiter(l, "|");
             auto bp_state_1 = BasepairState(spl[0]);
             auto bp_state_2 = BasepairState(spl[1]);
             auto t = Point(spl[2]);
@@ -70,7 +70,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
         
         for(auto const & l : lines) {
             if(l.length() < 5) { break;}
-            auto spl = split_str_by_delimiter(l, "|");
+            auto spl = base::split_str_by_delimiter(l, "|");
             auto bp_state_1 = BasepairState(spl[0]);
             auto bp_state_2 = BasepairState(spl[1]);
             auto bp_result  = BasepairState(spl[2]);
@@ -94,7 +94,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
         auto path = unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
         auto lines =base::get_lines_from_file(path);
         
-        auto spl = split_str_by_delimiter(lines[0], "|");
+        auto spl = base::split_str_by_delimiter(lines[0], "|");
         auto bp_state_1 = BasepairState(spl[0]);
         auto bp_state_2 = BasepairState(spl[1]);
         auto dummy = BasepairState();
@@ -156,7 +156,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
         int fail = 0;
 
         for(int i = 0; i < 100; i++) {
-            auto spl = split_str_by_delimiter(lines[0], "|");
+            auto spl = base::split_str_by_delimiter(lines[0], "|");
             auto bp_state_1 = BasepairState(spl[0]);
             auto bp_state_2 = BasepairState(spl[1]);
 

@@ -54,7 +54,7 @@ RNAStructure::get_basepair(
 BasepairOPs
 RNAStructure::get_basepair(
     String const & name) {
-    Strings name_spl = split_str_by_delimiter(name, "-");
+    Strings name_spl = base::split_str_by_delimiter(name, "-");
     String alt_name = name_spl[1] + "-" + name_spl[0];
     for(auto const & bp : basepairs_) {
         if(name.compare(bp->name()) == 0 || alt_name.compare(bp->name()) == 0) {

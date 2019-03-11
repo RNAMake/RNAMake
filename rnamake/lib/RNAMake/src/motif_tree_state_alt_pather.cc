@@ -29,7 +29,7 @@ MotifTreeStateAltPather::MotifTreeStateAltPather() {
         i++;
         if(i == 0) { continue;}
         
-        Strings spl = split_str_by_delimiter(line, " ");
+        Strings spl = base::split_str_by_delimiter(line, " ");
         String key = spl[1];
         Strings alts (spl.size()-4);
         
@@ -56,7 +56,7 @@ MotifTreeStateAltPather::get_alt_paths(
     for(auto const & n : mtst.nodes()) {
         i++;
         if(i == 0) { continue; }
-        name_spl = split_str_by_delimiter(n->mts()->name(), "-");
+        name_spl = base::split_str_by_delimiter(n->mts()->name(), "-");
         mname = name_spl[0];
         rest = "";
         for(int j = 1; j < name_spl.size(); j++) {

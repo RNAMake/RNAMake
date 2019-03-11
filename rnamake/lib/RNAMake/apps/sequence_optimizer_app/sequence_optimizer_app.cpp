@@ -82,7 +82,7 @@ SequenceOptimizerApp::run() {
     out.open(get_string_option("out_file"));
 
     auto opt_num = 1;
-    auto spl = split_str_by_delimiter(get_string_option("end_1"), ",");
+    auto spl = base::split_str_by_delimiter(get_string_option("end_1"), ",");
     
     if(spl.size() != 2) {
         throw std::runtime_error(
@@ -92,7 +92,7 @@ SequenceOptimizerApp::run() {
     auto ni1 = std::stoi(spl[0]);
     auto ei1 = std::stoi(spl[1]);
     
-    spl = split_str_by_delimiter(get_string_option("end_2"), ",");
+    spl = base::split_str_by_delimiter(get_string_option("end_2"), ",");
     if(spl.size() != 2) {
         throw std::runtime_error(
             "incorrect format for end_2 must be graph_pos,end_pos, example 20,1 for the 20th node "
@@ -145,9 +145,9 @@ SequenceOptimizerApp::_get_end_connections(
         connections_.push_back(_parse_end_commandline_args());
     }
     else if(get_string_option("connections") != "") {
-        auto connection_strs = split_str_by_delimiter(get_string_option("connections"), ";");
+        auto connection_strs = base::split_str_by_delimiter(get_string_option("connections"), ";");
         for(auto const & connection_str : connection_strs) {
-            auto spl = split_str_by_delimiter(connection_str, " ");
+            auto spl = base::split_str_by_delimiter(connection_str, " ");
             auto ni1 = std::stoi(spl[0]);
             auto ei1 = mg->get_node(ni1)->data()->get_end_index(spl[1]);
 
@@ -171,7 +171,7 @@ SequenceOptimizerApp::_get_end_connections(
 
 ConnectionTemplate
 SequenceOptimizerApp::_parse_end_commandline_args() {
-    auto spl = split_str_by_delimiter(get_string_option("end_1"), ",");
+    auto spl = base::split_str_by_delimiter(get_string_option("end_1"), ",");
 
     if(spl.size() != 2) {
         throw std::runtime_error(
@@ -181,7 +181,7 @@ SequenceOptimizerApp::_parse_end_commandline_args() {
     auto ni1 = std::stoi(spl[0]);
     auto ei1 = std::stoi(spl[1]);
 
-    spl = split_str_by_delimiter(get_string_option("end_2"), ",");
+    spl = base::split_str_by_delimiter(get_string_option("end_2"), ",");
     if(spl.size() != 2) {
         throw std::runtime_error(
                 "incorrect format for end_2 must be graph_pos,end_pos, example 20,1 for the 20th node "

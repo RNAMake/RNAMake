@@ -60,12 +60,12 @@ PathBuilder::build() {
         auto lines2 =base::get_lines_from_file(get_string_option("mg"));
         mg = std::make_shared<MotifGraph>(lines2[0],  MotifGraphStringType::OLD);
         
-        auto spl = split_str_by_delimiter(lines2[1], " ");
+        auto spl = base::split_str_by_delimiter(lines2[1], " ");
         n1 = std::stoi(spl[0]);
         end_name = spl[1];
         
         if(lines2.size() > 3) {
-            spl = split_str_by_delimiter(lines2[2], " ");
+            spl = base::split_str_by_delimiter(lines2[2], " ");
             end_bp = mg->get_available_end(std::stoi(spl[0]), spl[1])->state();
         }
     }
@@ -307,7 +307,7 @@ int main(int argc, const char * argv[]) {
         auto lines2 =base::get_lines_from_file(cmd_opts.get_string("mg"));
         auto mg = std::make_shared<MotifGraph>(lines2[0], MotifGraphStringType::OLD);
         
-        auto spl = split_str_by_delimiter(lines2[1], " ");
+        auto spl = base::split_str_by_delimiter(lines2[1], " ");
         auto n1 = std::stoi(spl[0]);
         auto end_name = spl[1];
         

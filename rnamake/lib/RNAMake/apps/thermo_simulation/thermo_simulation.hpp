@@ -15,9 +15,9 @@
 
 #include "base/application.hpp"
 
-class ThermoSimulationApp : public Application {
+class ThermoSimulationApp : public base::Application {
 public:
-    ThermoSimulationApp() : Application() {}
+    ThermoSimulationApp() : base::Application() {}
     
     ~ThermoSimulationApp() {}
     

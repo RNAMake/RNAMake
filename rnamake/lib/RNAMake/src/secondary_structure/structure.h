@@ -47,7 +47,7 @@ public:
     Structure(
         String const & s) {
         chains_ = ChainOPs();
-        auto spl = split_str_by_delimiter(s, "|");
+        auto spl = base::split_str_by_delimiter(s, "|");
         for(auto const & c_str : spl) {
             auto c = std::make_shared<Chain>(c_str);
             chains_.push_back(c);

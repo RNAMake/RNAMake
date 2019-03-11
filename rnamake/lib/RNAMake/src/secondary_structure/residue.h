@@ -75,7 +75,7 @@ public:
     Residue(
         String const & s) {
         
-        Strings spl = split_str_by_delimiter(s, ",");
+        Strings spl = base::split_str_by_delimiter(s, ",");
         if(spl.size() < 4) {
             throw SecondaryStructureException("cannot build sstruct::Residue from str: " + s);
         }

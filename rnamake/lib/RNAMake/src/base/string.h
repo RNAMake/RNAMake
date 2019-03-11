@@ -14,35 +14,39 @@
 //RNAMake Headers
 #include "base/types.h"
 
+namespace base {
+
 Strings
 split_str_by_delimiter(
-    String,
-    String);
+        String,
+        String);
 
 String
 join_by_delimiter(
-    Strings const &,
-    String const &);
+        Strings const &,
+        String const &);
 
 String
 filename(
-    String const &);
+        String const &);
 
 String
 base_dir(
-    String const &);
+        String const &);
 
 bool
 is_number(
-    String const &);
+        String const &);
 
 String & ltrim(
-    String & s);
+        String & s);
 
-String& rtrim(
-    String & s);
+String & rtrim(
+        String & s);
 
-String& trim(
-    String & s);
+String & trim(
+        String & s);
+
+}
 
 #endif /* defined(__RNAMake__string__) */

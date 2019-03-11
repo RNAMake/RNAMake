@@ -51,7 +51,7 @@ SequenceOptimizer::get_optimized_sequences(
     //with multiple strands
     if(get_string_option("sub_sequence") != "") {
         sub_sequence_ = true;
-        auto spl = split_str_by_delimiter(get_string_option("sub_sequence"), ":");
+        auto spl = base::split_str_by_delimiter(get_string_option("sub_sequence"), ":");
         start_ = std::stoi(spl[0]);
         end_   = std::stoi(spl[1]);
         if (end_ == -1) {

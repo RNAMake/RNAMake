@@ -18,7 +18,7 @@
 void
 Structure::renumber() {
     int i = 1, j = 0;
-    auto chain_ids = split_str_by_delimiter("A B C D E F G H I J K L M", " ");
+    auto chain_ids = base::split_str_by_delimiter("A B C D E F G H I J K L M", " ");
     for(auto & c : chains_) {
         for(auto & r : c->residues()) {
             r->num(i);

@@ -76,7 +76,7 @@ public: // Creation
     
     inline
     xyzVector( String const & s) {
-        auto spl = split_str_by_delimiter(s, " ");
+        auto spl = base::split_str_by_delimiter(s, " ");
         assert(spl.size() >= 3);
         x_ = (Value)std::stod(spl[0]);
         y_ = (Value)std::stod(spl[1]);
@@ -740,7 +740,7 @@ Vector
 vector_from_str(
 	std::string const & s) {
 	
-	std::vector<std::string> values = split_str_by_delimiter(s," ");
+	std::vector<std::string> values = base::split_str_by_delimiter(s," ");
 	std::vector<double> point;
 	
 	for (std::vector<std::string>::iterator i = values.begin();
@@ -781,7 +781,7 @@ Vectors
 vectors_from_str(
 	std::string const & s) {
 	
-	std::vector<std::string> values = split_str_by_delimiter(s," ");
+	std::vector<std::string> values = base::split_str_by_delimiter(s," ");
 	std::vector<double> point;
 	
 	Vectors vecs;

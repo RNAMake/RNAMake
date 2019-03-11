@@ -20,64 +20,70 @@
 #include "data_structure/graph/graph_node.h"
 #include "data_structure/graph/graph_node.fwd.h"
 
+namespace data_structure {
+namespace graph {
 
-template <typename DataType>
+template<typename DataType>
 class GraphIterator;
 
-template <typename DataType>
+template<typename DataType>
 class Graph {
 public:
-    Graph():
-    index_(0),
-    level_(0) {}
-    
+    Graph() :
+            index_(0),
+            level_(0) {}
+
     virtual
     ~Graph() {
-        for(int i = 0; i < nodes_.size(); i++){
+        for (int i = 0; i < nodes_.size(); i++) {
             nodes_[i]->unset_connections();
         }
     }
-    
+
 public:
     typedef GraphIterator<DataType> iterator;
     typedef const GraphIterator<DataType> const_iterator;
+
     friend class GraphIterator<DataType>;
+
     iterator begin();
+
     iterator end();
-    
+
     const_iterator begin() const;
+
     const_iterator end() const;
-    
+
     iterator transverse(GraphNodeOP<DataType> const &) const;
-    
+
 public:
-    
+
     inline
     size_t
     size() const { return nodes_.size(); }
-    
+
     inline
     GraphNodeOP<DataType> const &
     get_node(
-        int index) const {
-        
-        for(auto const & n : nodes_) {
-            if(n->index() == index) { return n; }
+            int index) const {
+
+        for (auto const & n : nodes_) {
+            if (n->index() == index) { return n; }
         }
-        
+
         throw GraphException("cannot find node with index: " + std::to_string(index));
     }
-    
+
     inline
     GraphNodeOP<DataType>
     oldest_node() {
         auto node = last_node_;
         assert(node != nullptr && "attemped to call oldest_node but there are no nodes");
-        
-        for(auto const & n : nodes_) {
-            if(n->index() < node->index()) { node = n; }
+
+        for (auto const & n : nodes_) {
+            if (n->index() < node->index()) { node = n; }
         }
-        
+
         return node;
     }
 
@@ -85,48 +91,48 @@ public:
     inline
     void
     increase_level() { level_ += 1; }
-    
+
     inline
     void
     decrease_level() {
         level_ -= 1;
         assert(level_ > -1 && "level has to be positive");
     }
-    
-    
+
+
 public: //getters
-    
+
     inline
     GraphNodeOPs<DataType> const &
     nodes() const {
         return nodes_;
     }
-    
+
     inline
     GraphConnectionOPs<DataType> const &
     connections() const {
         return connections_;
     }
-    
+
     inline
     GraphNodeOP<DataType> const &
     last_node() { return last_node_; }
-    
+
     inline
     int
     level() { return level_; }
-    
+
     inline
     int
     index() { return index_; }
-    
+
 public: //setters
-    
+
     inline
     void
     index(int nindex) { index_ = nindex; }
-    
-    
+
+
 protected:
     GraphNodeOP<DataType> last_node_;
     GraphNodeOPs<DataType> nodes_;
@@ -135,292 +141,288 @@ protected:
     int index_, level_;
 };
 
-template <typename DataType>
+template<typename DataType>
 class GraphIterator {
     friend class Graph<DataType>;
-    
+
 public:
     GraphIterator() {}
-    
-public:
-    GraphIterator & operator++ ();
-    GraphIterator operator++ (int);
-    
-    bool operator== (const GraphIterator& rhs) const;
-    bool operator!= (const GraphIterator& rhs) const;
-    GraphNodeOP<DataType> & operator* ();
 
-    
+public:
+    GraphIterator & operator++();
+
+    GraphIterator operator++(int);
+
+    bool operator==(const GraphIterator & rhs) const;
+
+    bool operator!=(const GraphIterator & rhs) const;
+
+    GraphNodeOP<DataType> & operator*();
+
+
 private:
     GraphNodeOPs<DataType> nodes_, leafs_;
     GraphNodeOP<DataType> current_;
     GraphNodeQueue<DataType> queue_;
     std::map<GraphNodeOP<DataType>, int> seen_;
-    
+
     GraphIterator(
-        GraphNodeOPs<DataType> const & nodes):
-    nodes_(nodes) {
-        if(nodes_.size() == 0) {
+            GraphNodeOPs<DataType> const & nodes) :
+            nodes_(nodes) {
+        if (nodes_.size() == 0) {
             current_ = nullptr;
             return;
         }
-        
+
         queue_ = GraphNodeQueue<DataType>();
-        seen_  = std::map<GraphNodeOP<DataType>, int> ();
-        
-        for(auto const & n : nodes) {
+        seen_ = std::map<GraphNodeOP<DataType>, int>();
+
+        for (auto const & n : nodes) {
             int active_conn = 0;
             for (auto const & c : n->connections()) {
-                if(c != nullptr) { active_conn += 1; }
+                if (c != nullptr) { active_conn += 1; }
             }
-            
-            if(active_conn < 2) {
+
+            if (active_conn < 2) {
                 leafs_.push_back(n);
             }
         }
-                
-        if(leafs_.size() > 0) {
+
+        if (leafs_.size() > 0) {
             current_ = leafs_[0];
-        }
-        else {
+        } else {
             current_ = nodes_[0];
         }
-        
+
         seen_[current_] = 1;
-        
+
     }
-    
+
     GraphIterator(
-        GraphNodeOP<DataType> const & node):
-    nodes_(GraphNodeOPs<DataType>()),
-    queue_(GraphNodeQueue<DataType>()),
-    seen_(std::map<GraphNodeOP<DataType>, int> ()),
-    leafs_(GraphNodeOPs<DataType>()),
-    current_(node)
-    {
+            GraphNodeOP<DataType> const & node) :
+            nodes_(GraphNodeOPs<DataType>()),
+            queue_(GraphNodeQueue<DataType>()),
+            seen_(std::map<GraphNodeOP<DataType>, int>()),
+            leafs_(GraphNodeOPs<DataType>()),
+            current_(node) {
         seen_[current_] = 1;
     }
 };
 
 
-
-
-template <typename DataType>
+template<typename DataType>
 typename Graph<DataType>::iterator
-Graph<DataType>::begin()  {
+Graph<DataType>::begin() {
     return iterator(nodes_);
 }
 
-template <typename DataType>
+template<typename DataType>
 typename Graph<DataType>::iterator
-Graph<DataType>::end()  {
+Graph<DataType>::end() {
     return iterator(empty_);
 }
 
-template <typename DataType>
+template<typename DataType>
 typename Graph<DataType>::iterator
 Graph<DataType>::transverse(
-    GraphNodeOP<DataType> const & node) const {
+        GraphNodeOP<DataType> const & node) const {
     return iterator(node);
-    
+
 }
 
 
-template <typename DataType>
+template<typename DataType>
 typename Graph<DataType>::const_iterator
 Graph<DataType>::begin() const {
     return iterator(nodes_);
 }
 
-template <typename DataType>
+template<typename DataType>
 typename Graph<DataType>::const_iterator
-Graph<DataType>::end()  const {
+Graph<DataType>::end() const {
     return iterator(empty_);
 }
 
-template <typename DataType>
-GraphNodeOP<DataType>&
-GraphIterator<DataType>::operator* () {
+template<typename DataType>
+GraphNodeOP<DataType> &
+GraphIterator<DataType>::operator*() {
     return current_;
 }
 
-template <typename DataType>
-GraphIterator<DataType>&
+template<typename DataType>
+GraphIterator<DataType> &
 GraphIterator<DataType>::operator++() {
-    for(auto const & c : current_->connections()) {
-        if(c == nullptr) { continue; }
+    for (auto const & c : current_->connections()) {
+        if (c == nullptr) { continue; }
         auto n = c->partner(current_->index());
-        if(seen_.find(n) != seen_.end()) {
+        if (seen_.find(n) != seen_.end()) {
             continue;
         }
         queue_.push(n);
         seen_[n] = 1;
-        
+
     }
-    
-    if(!queue_.empty()) {
+
+    if (!queue_.empty()) {
         current_ = queue_.top();
         queue_.pop();
-    }
-    else {
+    } else {
         int found = 0;
-        for(auto const & n : leafs_) {
-            if(seen_.find(n) == seen_.end()) {
+        for (auto const & n : leafs_) {
+            if (seen_.find(n) == seen_.end()) {
                 seen_[n] = 1;
                 current_ = n;
                 found = 1;
                 break;
             }
         }
-        
-        if(!found) {
+
+        if (!found) {
             current_ = nullptr;
         }
     }
-    
-    
+
+
     return *this;
 }
 
-template <typename DataType>
+template<typename DataType>
 bool
-GraphIterator<DataType>::operator== (
-    GraphIterator<DataType> const & rhs) const {
+GraphIterator<DataType>::operator==(
+        GraphIterator<DataType> const & rhs) const {
     return current_ == rhs.current_;
 }
 
-template <typename DataType>
+template<typename DataType>
 bool
-GraphIterator<DataType>::operator!= (
-    GraphIterator<DataType> const& rhs) const {
+GraphIterator<DataType>::operator!=(
+        GraphIterator<DataType> const & rhs) const {
     return current_ != rhs.current_;
 }
 
 
-
-
-template <typename DataType>
+template<typename DataType>
 class GraphDynamic : public Graph<DataType> {
 public:
-    GraphDynamic(): Graph<DataType>() {}
-    
+    GraphDynamic() : Graph<DataType>() {}
+
     ~GraphDynamic() {
-        for(int i = 0; i < this->nodes_.size(); i++){
+        for (int i = 0; i < this->nodes_.size(); i++) {
             this->nodes_[i]->unset_connections();
         }
     }
-   
+
 public:
-    
+
     inline
     int
     add_data(
-        DataType const & data,
-        int parent_index = -1) {
-        
+            DataType const & data,
+            int parent_index = -1) {
+
         GraphNodeOP<DataType> parent = this->last_node_;
-        if(parent_index != -1) { parent = this->get_node(parent_index);}
-        
+        if (parent_index != -1) { parent = this->get_node(parent_index); }
+
         auto n = std::make_shared<GraphNodeDynamic<DataType>>(data, this->index_, this->level_);
-        
-        if(parent != nullptr) {
+
+        if (parent != nullptr) {
             auto c = std::make_shared<GraphConnection<DataType>>(parent, n, 0, 0);
             parent->add_connection(c);
             n->add_connection(c);
             this->connections_.push_back(c);
         }
-    
+
         this->nodes_.push_back(n);
         this->index_++;
         this->last_node_ = n;
-        return this->index_-1;
+        return this->index_ - 1;
     }
-    
+
     inline
     void
     connect(
-        int i,
-        int j) {
-        
+            int i,
+            int j) {
+
         auto n1 = this->get_node(i);
         auto n2 = this->get_node(j);
         auto c = std::make_shared<GraphConnection<DataType>>(n1, n2, 0, 0);
         n1->add_connection(c);
-        if(n1 != n2) { n2->add_connection(c); }
+        if (n1 != n2) { n2->add_connection(c); }
         this->connections_.push_back(c);
-        
-        
+
+
     }
-    
-    
+
+
 };
 
-template <typename DataType>
+template<typename DataType>
 class GraphStatic : public Graph<DataType> {
 public:
     inline
-    GraphStatic(): Graph<DataType>() {}
-    
+    GraphStatic() : Graph<DataType>() {}
+
     inline
     GraphStatic(
-        GraphStatic<DataType> const & g) {
+            GraphStatic<DataType> const & g) {
         this->nodes_ = GraphNodeOPs<DataType>(g.nodes_.size());
         int i = 0;
-        for(auto const & n : g.nodes_) {
+        for (auto const & n : g.nodes_) {
             this->nodes_[i] = std::make_shared<GraphNodeStatic<DataType>>(*n);
             i++;
         }
-        
+
         i = 0;
-        for(auto const & c : g.connections_) {
+        for (auto const & c : g.connections_) {
             i = c->node_1()->index();
             int j = c->node_2()->index();
             int ei = c->end_index(i);
             int ej = c->end_index(j);
             connect(i, j, ei, ej);
         }
-        
-        if(g.last_node_ != nullptr) {
+
+        if (g.last_node_ != nullptr) {
             this->last_node_ = this->get_node(g.last_node_->index());
         }
-        
+
         this->level_ = g.level_;
         this->index_ = g.index_;
     }
-    
+
     ~GraphStatic() {
-        for(int i = 0; i < this->nodes_.size(); i++){
+        for (int i = 0; i < this->nodes_.size(); i++) {
             this->nodes_[i]->unset_connections();
         }
     }
-    
+
 public:
-    
+
     inline
     int
     add_data(
-        DataType const & data,
-        int parent_index = -1,
-        int parent_pos = -1,
-        int child_pos = -1,
-        int n_children = 0,
-        int orphan = 0,
-        int index = -1) {
-        
+            DataType const & data,
+            int parent_index = -1,
+            int parent_pos = -1,
+            int child_pos = -1,
+            int n_children = 0,
+            int orphan = 0,
+            int index = -1) {
+
         int given_index = this->index_;
-        if(index != -1) {
+        if (index != -1) {
             given_index = index;
         }
-        
+
         auto parent = this->last_node_;
         auto n = std::make_shared<GraphNodeStatic<DataType>>(data, given_index, this->level_,
                                                              n_children);
-     
-        if(parent_index != -1) { parent = this->get_node(parent_index); }
-        if(orphan == 1) {
+
+        if (parent_index != -1) { parent = this->get_node(parent_index); }
+        if (orphan == 1) {
             parent = nullptr;
         }
-        if(parent != nullptr) {
+        if (parent != nullptr) {
             parent_pos = check_pos_is_valid(parent, parent_pos);
             child_pos = check_pos_is_valid(n, child_pos);
             auto c = std::make_shared<GraphConnection<DataType>>(parent, n, parent_pos, child_pos);
@@ -428,22 +430,22 @@ public:
             n->add_connection(c, child_pos);
             this->connections_.push_back(c);
         }
-        
+
         this->nodes_.push_back(n);
         this->index_++;
         this->last_node_ = n;
         return given_index;
-        
+
     }
-    
+
     inline
     void
     connect(
-        int i,
-        int j,
-        int i_pos,
-        int j_pos) {
-        
+            int i,
+            int j,
+            int i_pos,
+            int j_pos) {
+
         auto n1 = this->get_node(i);
         auto n2 = this->get_node(j);
         i_pos = check_pos_is_valid(n1, i_pos);
@@ -453,41 +455,38 @@ public:
         n2->add_connection(c, j_pos);
         this->connections_.push_back(c);
     }
-    
+
     inline
     int
     check_pos_is_valid(
-        GraphNodeOP<DataType> const & n,
-        int & pos) {
-        
-        if(pos == -1) {
+            GraphNodeOP<DataType> const & n,
+            int & pos) {
+
+        if (pos == -1) {
             Ints avail_pos = n->available_children_pos();
-            if(avail_pos.size() == 0) {
+            if (avail_pos.size() == 0) {
                 throw GraphException("cannot add connection to node, has not available ends");
             }
             return avail_pos[0];
-        }
-        
-        else {
-            if(n->available_pos(pos) == 0) {
+        } else {
+            if (n->available_pos(pos) == 0) {
                 throw GraphException("graph pos is not availabe");
             }
             return pos;
         }
-        
+
     }
-    
+
     inline
     Ints
     get_available_pos(
-        GraphNodeOP<DataType> const & n,
-        int & pos) {
-        
-        if(pos == -1) {
+            GraphNodeOP<DataType> const & n,
+            int & pos) {
+
+        if (pos == -1) {
             return n->available_children_pos();
-        }
-        else {
-            if(n->available_pos(pos) == 0) {
+        } else {
+            if (n->available_pos(pos) == 0) {
                 std::stringstream ss;
                 ss << "graph pos is not available " << pos << std::endl;
                 throw GraphException(ss.str());
@@ -496,52 +495,56 @@ public:
             r[0] = pos;
             return r;
         }
-        
+
     }
-    
+
     inline
     void
     remove_node(
-        int pos) {
-        
+            int pos) {
+
         auto n = this->get_node(pos);
-        for(auto c : n->connections()) {
-            if(c == nullptr) { continue; }
+        for (auto c : n->connections()) {
+            if (c == nullptr) { continue; }
             auto partner = c->partner(n->index());
             n->remove_connection(c);
             partner->remove_connection(c);
             this->connections_.erase(std::remove(this->connections_.begin(),
                                                  this->connections_.end(), c));
             c->disconnect();
-            
+
         }
-        
+
         this->nodes_.erase(std::remove(this->nodes_.begin(), this->nodes_.end(),
-                                             n), this->nodes_.end());
-        
-        if(this->nodes_.size() != 0) {
+                                       n), this->nodes_.end());
+
+        if (this->nodes_.size() != 0) {
             this->last_node_ = this->nodes_.back();
-        }
-        else { this->last_node_ = nullptr; }
+        } else { this->last_node_ = nullptr; }
     }
-    
+
     inline
     void
     remove_level(
-        int level) {
-        
+            int level) {
+
         int pos = 0;
-        while(pos < this->nodes_.size()) {
+        while (pos < this->nodes_.size()) {
             auto n = this->nodes_[pos];
-            if(n->level() >= level) { remove_node(n->index()); continue; }
+            if (n->level() >= level) {
+                remove_node(n->index());
+                continue;
+            }
             pos++;
         }
-        
+
     }
-    
-    
+
+
 };
 
+}
+}
 
 
 

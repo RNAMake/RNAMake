@@ -6,9 +6,9 @@
 
 
 MotifStateEnsembleGraph::MotifStateEnsembleGraph():
-        graph_(GraphStatic<MotifStateEnsembleOP>()),
+        graph_(data_structure::graph::GraphStatic<MotifStateEnsembleOP>()),
+        align_list_(data_structure::graph::GraphNodeOPs<MotifStateEnsembleOP>()),
         update_align_list_(1),
-        align_list_(GraphNodeOPs<MotifStateEnsembleOP>()),
         aligned_(std::map<int, int>()) { }
 
 
@@ -22,7 +22,7 @@ MotifStateEnsembleGraph::MotifStateEnsembleGraph(
 //add function helpers /////////////////////////////////////////////////////////////////////////////
 
 
-GraphNodeOP<MotifStateEnsembleOP>
+data_structure::graph::GraphNodeOP<MotifStateEnsembleOP>
 MotifStateEnsembleGraph::_get_parent(
         int parent_index) {
 
@@ -32,7 +32,7 @@ MotifStateEnsembleGraph::_get_parent(
     try {
         if(parent_index != -1) { parent = graph_.get_node(parent_index); }
     }
-    catch(GraphException const & e) {
+    catch(data_structure::graph::GraphException const & e) {
         throw MotifStateEnsembleGraphException (
                 "could not add state ensemble with parent index: " +
                 std::to_string(parent_index) + "there is no node with that index");
@@ -44,7 +44,7 @@ MotifStateEnsembleGraph::_get_parent(
 
 Ints
 MotifStateEnsembleGraph::_get_available_parent_end_pos(
-        GraphNodeOP<MotifStateEnsembleOP> const & parent,
+        data_structure::graph::GraphNodeOP<MotifStateEnsembleOP> const & parent,
         int parent_end_index) {
 
     auto avail_pos = Ints();

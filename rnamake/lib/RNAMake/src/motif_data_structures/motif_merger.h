@@ -70,7 +70,7 @@ struct ChainNodeData {
     int prime5_override, prime3_override;
 };
 
-typedef GraphNodeOP<ChainNodeData>   ChainNode;
+typedef data_structure::graph::GraphNodeOP<ChainNodeData> ChainNode;
 typedef std::vector<ChainNode>       ChainNodes;
 typedef std::unique_ptr<ChainNodes>  ChainNodesUP;
 
@@ -81,7 +81,7 @@ public:
     motifs_(std::map<Uuid, MotifOP, UuidCompare>()),
     res_overrides_(std::map<Uuid, Uuid, UuidCompare>()),
     bp_overrides_(std::map<Uuid, Uuid, UuidCompare>()),
-    graph_(GraphStatic<ChainNodeData>()),
+    graph_(data_structure::graph::GraphStatic<ChainNodeData>()),
     rebuild_structure_(1),
     rna_structure_(std::make_shared<RNAStructure>()){
         
@@ -95,7 +95,7 @@ public:
     res_overrides_(mm.res_overrides_),
     bp_overrides_(mm.bp_overrides_),
     rna_structure_(std::make_shared<RNAStructure>()),
-    graph_(GraphStatic<ChainNodeData>(mm.graph_)),
+    graph_(data_structure::graph::GraphStatic<ChainNodeData>(mm.graph_)),
     rebuild_structure_(1) {
     
         for(auto const & n : mm.graph_.nodes()) {
@@ -223,7 +223,7 @@ private:
     std::map<Uuid, BasepairOP, UuidCompare> all_bps_;
     std::map<Uuid, MotifOP, UuidCompare> motifs_;
     std::map<Uuid, Uuid, UuidCompare> res_overrides_, bp_overrides_;
-    GraphStatic<ChainNodeData> graph_;
+    data_structure::graph::GraphStatic<ChainNodeData> graph_;
     int rebuild_structure_;
     RNAStructureOP rna_structure_;
     

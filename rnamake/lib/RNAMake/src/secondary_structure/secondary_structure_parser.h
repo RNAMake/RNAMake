@@ -49,14 +49,14 @@ struct NodeData {
 class SecondaryStructureChainGraph {
 public:
     SecondaryStructureChainGraph():
-    graph_(GraphStatic<NodeData>())
+    graph_(data_structure::graph::GraphStatic<NodeData>())
     {}
     
     ~SecondaryStructureChainGraph() {}
     
 public:
-    typedef typename GraphStatic<NodeData>::iterator iterator;
-    typedef typename GraphStatic<NodeData>::const_iterator const_iterator;
+    typedef typename data_structure::graph::GraphStatic<NodeData>::iterator iterator;
+    typedef typename data_structure::graph::GraphStatic<NodeData>::const_iterator const_iterator;
     
     iterator begin() { return graph_.begin(); }
     iterator end()   { return graph_.end(); }
@@ -67,8 +67,8 @@ public:
 public:
     size_t
     size() { return graph_.size(); }
-    
-    GraphNodeOPs<NodeData> const &
+
+    data_structure::graph::GraphNodeOPs<NodeData> const &
     nodes() { return graph_.nodes(); }
 
 public:
@@ -115,12 +115,12 @@ public:
     
     
 private:
-    GraphStatic<NodeData> graph_;
+    data_structure::graph::GraphStatic<NodeData> graph_;
     
 };
 
 
-typedef std::shared_ptr<GraphNode<NodeData>> SSNodeOP;
+typedef std::shared_ptr<data_structure::graph::GraphNode<NodeData>> SSNodeOP;
 typedef std::shared_ptr<SecondaryStructureChainGraph> SecondaryStructureChainGraphOP;
 
 

@@ -43,8 +43,8 @@ int main(int argc, const char * argv[]) {
     }
     
     auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::TOP);
-    auto spl1 = split_str_by_delimiter(lines[1], " ");
-    auto spl2 = split_str_by_delimiter(lines[2], " ");
+    auto spl1 = base::split_str_by_delimiter(lines[1], " ");
+    auto spl2 = base::split_str_by_delimiter(lines[2], " ");
 
     auto start = mg->get_node(std::stoi(spl1[0]))->data()->get_basepair(spl1[1])[0];
     auto end   = mg->get_node(std::stoi(spl2[0]))->data()->get_basepair(spl2[1])[0];
