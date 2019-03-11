@@ -7,7 +7,7 @@
 class PointGenerator {
 public:
     PointGenerator():
-    test_p_(Point()),
+    test_p_(math::Point()),
     rng_(RandomNumberGenerator())
     {}
 
@@ -16,7 +16,7 @@ public:
 public:
 
     inline
-    Point const &
+    math::Point const &
     rand_point(int scale) {
         test_p_.x (rng_.rand() * rng_.randrange(scale));
         test_p_.y (rng_.rand() * rng_.randrange(scale));
@@ -31,7 +31,7 @@ public:
 
 
 private:
-    Point test_p_;
+    math::Point test_p_;
     RandomNumberGenerator rng_;
 };
 
@@ -42,13 +42,13 @@ TEST_CASE( "Test Steric Lookup for quick Sterics ", "[StericLookup]" ) {
 
     SECTION("Test adding points to lookup") {
         auto sl = StericLookupNew();
-        auto p = Point();
+        auto p = math::Point();
         sl.add_point(p);
         sl.to_pdb("grid.pdb");
         
         auto clash = 0, sl_clash = 0;
         double dist = 0;
-        auto test_p = Point();
+        auto test_p = math::Point();
         int count = 0;
         for(int i = 0; i < 1000; i++) {
             clash = 0;
@@ -68,7 +68,7 @@ TEST_CASE( "Test Steric Lookup for quick Sterics ", "[StericLookup]" ) {
     }
     
     SECTION("Test adding a set of points to lookup") {
-        auto points = Points();
+        auto points = math::Points();
         for(int i = 0; i < 1000; i++) {
             points.push_back(p_generator.rand_point(100));
         }
@@ -77,7 +77,7 @@ TEST_CASE( "Test Steric Lookup for quick Sterics ", "[StericLookup]" ) {
         sl.add_points(points);
         
         auto dist = 0.0f;
-        auto test_p = Point();
+        auto test_p = math::Point();
         auto clash = 0, miss_count = 0, sl_clash = 0;
         
         for(int i = 0; i < 10000; i++) {

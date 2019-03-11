@@ -35,7 +35,7 @@ public:
     inline
     Atom(
         String const & name,
-        Point const & coords):
+        math::Point const & coords):
     name_ ( name ),
     coords_ ( coords )
     {}
@@ -58,7 +58,7 @@ public:
         
         auto spl = base::split_str_by_delimiter(s, " ");
         name_   = spl[0];
-        coords_ = Point(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
+        coords_ = math::Point(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
     }
     
     /**
@@ -77,7 +77,7 @@ public:
     /**
      * Strigifies atom object
      * @code
-     *  auto a = Atom("P", Point(0, 1, 2));
+     *  auto a = Atom("P", math::Point(0, 1, 2));
      *  std::cout << a.to_str() << std::endl;
      *  //EXPECTED OUTPUT
      *  "H1 0.0 1.0 2.0"
@@ -90,7 +90,7 @@ public:
      * @param   acount  the number of the atom, default=1
      *
      * @code
-     *  auto a = Atom("P", Point(0, 1, 2));
+     *  auto a = Atom("P", math::Point(0, 1, 2));
      *  std::cout << a.to_pdb_str() << std::endl;
      *  //EXPECTED OUTPUT
      *  "ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P
@@ -102,17 +102,17 @@ public: // non const methods
 
     inline
     void
-    move(Point const & p) {
+    move(math::Point const & p) {
         coords_ = coords_ + p;
     }
 
     inline
     void
-    transform(Transform const & t) {
-        Matrix r = t.rotation().transpose();
-        Point trans = t.translation();
-        auto new_coords = Point();
-        dot_vector(r, coords_, new_coords);
+    transform(math::Transform const & t) {
+        math::Matrix r = t.rotation().transpose();
+        math::Point trans = t.translation();
+        auto new_coords = math::Point();
+        math::dot_vector(r, coords_, new_coords);
         new_coords += trans;
         coords_ = new_coords;
     }
@@ -130,7 +130,7 @@ public: //accessors
      * Accessor for coords_
      */
     inline
-    Point const
+    math::Point const
     coords() const { return coords_; }
 
 
@@ -142,7 +142,7 @@ public: // setters
     inline
     void
     coords(
-        Point const & ncoords) {
+        math::Point const & ncoords) {
         coords_ = ncoords;
     }
     
@@ -165,7 +165,7 @@ private:
     /**
      * private variable of 3D coordinates of atom
      */
-    Point coords_;
+    math::Point coords_;
     
 };
 

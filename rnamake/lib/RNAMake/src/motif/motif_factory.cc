@@ -325,7 +325,7 @@ MotifFactory::_align_chains(
     ChainOP closest;
     float best = 1000;
     auto c2 = center(ref_motif_->ends()[0]->atoms());
-    Point c1;
+    math::Point c1;
     for (auto const & c : chains) {
         c1 = center(c->first()->atoms());
         float dist = c1.distance(c2);
@@ -350,7 +350,7 @@ MotifFactory::_align_ends(
     BasepairOP closest;
     float best = 1000;
     auto c2 = center(ref_motif_->ends()[0]->atoms());
-    Point c1;
+    math::Point c1;
 
     for (auto const & end : m->ends()) {
         c1 = center(end->atoms());

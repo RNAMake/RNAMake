@@ -13,7 +13,7 @@ TEST_CASE( "Load all PDBs", "[PDBParser]" ) {
     
     SECTION("compare all parsed structures to python counterpart") {
         
-        auto path = unittest_resource_dir() + "/structure/seqs_in_structures.dat";
+        auto path = base::unittest_resource_dir() + "/structure/seqs_in_structures.dat";
         auto lines =base::get_lines_from_file(path);
         
         auto base = String("/Users/josephyesselman/projects/REDESIGN/resources/non-redundant-rnas/");

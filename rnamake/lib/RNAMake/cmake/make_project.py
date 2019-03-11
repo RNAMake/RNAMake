@@ -23,7 +23,7 @@ depends = {
 }
 
 libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
-#libs = "base math util primitives data_structures"
+#libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools "
 all_lib_paths = libs.split()
 
 
@@ -35,6 +35,7 @@ base_dir = "/".join(spl[:-2])
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-no_unittests', action="store_true")
+    parser.add_argument('-no_apps', default="store_false", action="store_true")
     parser.add_argument('-last_ta', action="store_true")
 
     args = parser.parse_args()
@@ -182,11 +183,12 @@ def write_cmake_lists(path, args):
         if not args.no_unittests:
             f.write(get_unittests_apps_for_library(lib))
 
-    f.write(get_pretty_lib_name("all"))
-    f.write("add_library(all_lib " + base_dir + "/src/main.cpp)\n")
-    f.write(get_linking_declaration("all"))
+    #f.write(get_pretty_lib_name("all"))
+    #f.write("add_library(all_lib " + base_dir + "/src/main.cpp)\n")
+    #f.write(get_linking_declaration("all"))
 
-    f.write(get_applications())
+    if not args.no_apps:
+        f.write(get_applications())
     f.close()
 
 if __name__ == '__main__':

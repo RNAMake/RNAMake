@@ -171,8 +171,8 @@ public:
         dot(r1_trans_.transposed(), r2_trans_, r_);
         r_.unitarize();
 
-        auto euler = Vector();
-        calc_euler(r_, euler);
+        auto euler = math::Vector();
+        math::calc_euler(r_, euler);
 
         d_ = d2_ - d1_;
         for(int i = 0; i < 3; i++) {
@@ -216,7 +216,7 @@ private:
             auto pos = _parse_constraint_position(spl2[0]);
             auto lower = std::stod(spl2[1]);
             auto upper = std::stod(spl2[2]);
-            constraints_[pos] = Real2{lower, upper};
+            constraints_[pos] = math::Real2{lower, upper};
         }
 
     }
@@ -238,16 +238,16 @@ private:
 
     void
     _setup_constraints() {
-        for(int i = 0; i < 3; i++) { constraints_[i] = Real2{ -10, 10}; }
-        for(int i = 3; i < 6; i++) { constraints_[i] = Real2{ 0, 360}; }
+        for(int i = 0; i < 3; i++) { constraints_[i] = math::Real2{ -10, 10}; }
+        for(int i = 3; i < 6; i++) { constraints_[i] = math::Real2{ 0, 360}; }
     }
 
 private:
     BasepairOP ref_bp_;
-    Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
-    Point d1_, d2_, d_;
-    std::array<Real2, 6> constraints_;
-    Real6 values_;
+    math::Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
+    math::Point d1_, d2_, d_;
+    std::array<math::Real2, 6> constraints_;
+    math::Real6 values_;
     float dist_;
     bool fail_;
 

@@ -12,12 +12,17 @@
 #include "math/xyz_vector.h"
 #include "math/xyz_matrix.h"
 
+namespace math {
+
 const double _EPS = 2.22044604925e-16 * 4.0;
 
 //assumes 3x3 matrices
 void
 calc_euler(
-    Matrix & M,
-    Vector & euler);
+        Matrix & M,
+        Vector & euler);
+
+}
 
 #endif
+

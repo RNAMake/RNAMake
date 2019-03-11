@@ -158,19 +158,19 @@ private:
 
 class MSS_PathFollow: public MotifStateSearchScorer {
 public:
-    MSS_PathFollow(Points const & path) {
+    MSS_PathFollow(math::Points const & path) {
         path_ = path;
-        beads_ = Points(10000);
+        beads_ = math::Points(10000);
         lengths_ = Floats(1000);
         seen_ = Ints(path_.size());
-        bead_arrays_ = std::vector<Points>(1000);
+        bead_arrays_ = std::vector<math::Points>(1000);
         bead_lengths_ = Floats(path_.size());
         bead_size_ = 0;
         weight_ = 2.0;
         path_length_ = 0;
         end_direction_ =  path[path_.size()-2] - path_.back();
         end_direction_ = end_direction_.normalize();
-        current_direction_ = Vector();
+        current_direction_ = math::Vector();
         bead_lengths_[0] = 0;
         for(int i = 1; i < path_.size(); i++) {
             path_length_ += path_[i-1].distance(path_[i]);
@@ -276,11 +276,11 @@ public:
     
 
 private:
-    Points path_;
+    math::Points path_;
     MotifStateSearchNodeOP current_;
-    Points beads_;
-    Vector end_direction_, current_direction_;
-    std::vector<Points> bead_arrays_;
+    math::Points beads_;
+    math::Vector end_direction_, current_direction_;
+    std::vector<math::Points> bead_arrays_;
     Floats bead_lengths_, lengths_;
     Ints seen_;
     int bead_size_;
@@ -292,19 +292,19 @@ private:
 
 class MSS_PathFollow_and_Astar: public MotifStateSearchScorer {
 public:
-    MSS_PathFollow_and_Astar(Points const & path) {
+    MSS_PathFollow_and_Astar(math::Points const & path) {
         path_ = path;
-        beads_ = Points(10000);
+        beads_ = math::Points(10000);
         lengths_ = Floats(1000);
         seen_ = Ints(path_.size());
-        bead_arrays_ = std::vector<Points>(1000);
+        bead_arrays_ = std::vector<math::Points>(1000);
         bead_lengths_ = Floats(path_.size());
         bead_size_ = 0;
         weight_ = 2.0;
         path_length_ = 0;
         end_direction_ =  path[path_.size()-2] - path_.back();
         end_direction_ = end_direction_.normalize();
-        current_direction_ = Vector();
+        current_direction_ = math::Vector();
         bead_lengths_[0] = 0;
         for(int i = 1; i < path_.size(); i++) {
             path_length_ += path_[i-1].distance(path_[i]);
@@ -417,11 +417,11 @@ private:
     }
     
 private:
-    Points path_;
+    math::Points path_;
     MotifStateSearchNodeOP current_;
-    Points beads_;
-    Vector end_direction_, current_direction_;
-    std::vector<Points> bead_arrays_;
+    math::Points beads_;
+    math::Vector end_direction_, current_direction_;
+    std::vector<math::Points> bead_arrays_;
     Floats bead_lengths_, lengths_;
     Ints seen_;
     int bead_size_;

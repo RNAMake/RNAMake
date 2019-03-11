@@ -29,7 +29,7 @@ public:
     selector_(default_selector()),
     scorer_(std::make_shared<MotifStateSearchScorer>(MSS_Astar())),
     solutions_(MotifStateSearchSolutionOPs()),
-    beads_(Points()),
+    beads_(math::Points()),
     aligner_(MotifStateAligner()),
     lookup_(StericLookup()),
     using_lookup_(0),
@@ -94,7 +94,7 @@ public: //option wrappers
 public:
     inline
     void
-    beads(Points const & beads) { beads_ = beads; }
+    beads(math::Points const & beads) { beads_ = beads; }
     
     inline
     void
@@ -149,7 +149,7 @@ private:
     MotifStateAligner aligner_;
     MotifStateandTypes possible_children_;
     StericLookup lookup_;
-    Points beads_;
+    math::Points beads_;
     int no_more_solutions_;
     base::Options options_;
     //options

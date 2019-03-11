@@ -123,7 +123,7 @@ public:
 
     inline
     void
-    move(Point const & p) {
+    move(math::Point const & p) {
         for(auto & a : atoms()) {
             a->coords(a->coords() + p);
         }
@@ -131,11 +131,11 @@ public:
 
     inline
     void
-    transform(Transform const & t) {
-        Matrix r = t.rotation().transpose();
-        Point trans = t.translation();
+    transform(math::Transform const & t) {
+        math::Matrix r = t.rotation().transpose();
+        math::Point trans = t.translation();
         for( auto & a : atoms() ) {
-            dot_vector(r, a->coords(), dummy_);
+            math::dot_vector(r, a->coords(), dummy_);
             dummy_ += trans;
             a->coords(dummy_);
         }
@@ -164,9 +164,9 @@ public: // getters
     
 private:
     ChainOPs chains_;
-    Point dummy_; // resuable place in memory
-    Points coords_;
-    Points org_coords_;
+    math::Point dummy_; // resuable place in memory
+    math::Points coords_;
+    math::Points org_coords_;
     
 };
 

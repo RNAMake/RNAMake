@@ -87,7 +87,7 @@ protected:
             MotifStateGraphOP msg,
             StericLookupNewOP lookup) {
 
-        auto beads = Points();
+        auto beads = math::Points();
         for (auto & n : *msg) {
             for(auto const & b : n->data()->cur_state->beads()) {
                 beads.push_back(b);
@@ -248,7 +248,7 @@ public:
             lookup_ = std::make_shared<StericLookupNew>();
             //this->_setup_sterics(msg, lookup_);
 
-            auto points = Points();
+            auto points = math::Points();
             for(auto const & b : scaffold_->beads()) {
                 points.push_back(b.center());
             }

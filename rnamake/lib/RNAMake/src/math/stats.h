@@ -7,6 +7,8 @@
 
 #include <base/types.h>
 
+namespace math {
+
 double
 sum(
         std::vector<double> const &);
@@ -32,5 +34,7 @@ double
 avg_unsigned_diff(
         std::vector<double> const &,
         std::vector<double> const &);
+
+}
 
 #endif //TEST_STATS_H

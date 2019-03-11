@@ -27,7 +27,7 @@ struct EndStateInfo {
 };
 
 
-class DesignRNAScaffold : public Application {
+class DesignRNAScaffold : public base::Application {
 public:
 
     DesignRNAScaffold();

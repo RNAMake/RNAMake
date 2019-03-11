@@ -18,7 +18,7 @@ public:
     {}
 };
 
-class AptNewInterface : public Application {
+class AptNewInterface : public base::Application {
 public:
     AptNewInterface();
 

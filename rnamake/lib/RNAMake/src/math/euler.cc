@@ -4,6 +4,8 @@
 
 #include <math/euler.h>
 
+namespace math {
+
 void
 calc_euler(
         Matrix & M,
@@ -37,4 +39,5 @@ calc_euler(
     euler[2] = -euler[2];
 
 
+}
 }

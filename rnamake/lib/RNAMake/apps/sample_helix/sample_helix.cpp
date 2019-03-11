@@ -14,7 +14,7 @@
 #include "resources/resource_manager.h"
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
-SampleHelixApp::SampleHelixApp() : Application(),
+SampleHelixApp::SampleHelixApp() : base::Application(),
         sampler_(ThermoFlucSampler())
 {}
 
@@ -23,11 +23,11 @@ SampleHelixApp::SampleHelixApp() : Application(),
 
 void
 SampleHelixApp::setup_options() {
-    add_option("seq", "", OptionType::STRING, true);
-    add_option("s", 1000000, OptionType::INT);
-    add_option("output_freq", 100, OptionType::INT);
-    add_option("output_filename", "test.out", OptionType::STRING);
-    add_option("pdbs", false, OptionType::BOOL);
+    add_option("seq", "", base::OptionType::STRING, true);
+    add_option("s", 1000000, base::OptionType::INT);
+    add_option("output_freq", 100, base::OptionType::INT);
+    add_option("output_filename", "test.out", base::OptionType::STRING);
+    add_option("pdbs", false, base::OptionType::BOOL);
 
 
 
@@ -37,7 +37,7 @@ void
 SampleHelixApp::parse_command_line(
         int argc,
         const char ** argv) {
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
 }
 
 void

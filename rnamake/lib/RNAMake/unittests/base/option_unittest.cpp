@@ -8,21 +8,21 @@ TEST_CASE( "Test Options for storing options for classes", "[Options]" ) {
     
     SECTION("Test creation of Option, make sure type is inforced") {
         
-        auto opt = Option("test", 6, OptionType::FLOAT);
+        auto opt = base::Option("test", 6, base::OptionType::FLOAT);
         REQUIRE(opt.get_float() == 6);
         
-        opt = Option("test", "test", OptionType::STRING);
+        opt = base::Option("test", "test", base::OptionType::STRING);
         REQUIRE(opt.get_string() == "test");
         
-        opt = Option("test", false, OptionType::BOOL);
+        opt = base::Option("test", false, base::OptionType::BOOL);
         REQUIRE(opt.get_bool() == false);
         
         SECTION("specifying wrong option type should return an error") {
-            REQUIRE_THROWS_AS(Option("test", 6.0f, OptionType::STRING), OptionException);
-            REQUIRE_THROWS_AS(Option("test", 6, OptionType::STRING), OptionException);
-            REQUIRE_THROWS_AS(Option("test", "test", OptionType::FLOAT), OptionException);
-            REQUIRE_THROWS_AS(Option("test", "test", OptionType::BOOL), OptionException);
-            REQUIRE_THROWS_AS(Option("test", false, OptionType::STRING), OptionException);
+            REQUIRE_THROWS_AS(base::Option("test", 6.0f, base::OptionType::STRING),  base::OptionException);
+            REQUIRE_THROWS_AS(base::Option("test", 6, base::OptionType::STRING),     base::OptionException);
+            REQUIRE_THROWS_AS(base::Option("test", "test", base::OptionType::FLOAT), base::OptionException);
+            REQUIRE_THROWS_AS(base::Option("test", "test", base::OptionType::BOOL),  base::OptionException);
+            REQUIRE_THROWS_AS(base::Option("test", false, base::OptionType::STRING), base::OptionException);
 
         }
         
@@ -31,36 +31,36 @@ TEST_CASE( "Test Options for storing options for classes", "[Options]" ) {
     SECTION("Test getting correct value from option ") {
         
         SECTION("float option cannot be converted to string or bool") {
-            auto opt = Option("test", 6, OptionType::FLOAT);
+            auto opt = base::Option("test", 6, base::OptionType::FLOAT);
         
-            REQUIRE_THROWS_AS(opt.get_string(), OptionException);
-            REQUIRE_THROWS_AS(opt.get_bool(), OptionException);
+            REQUIRE_THROWS_AS(opt.get_string(), base::OptionException);
+            REQUIRE_THROWS_AS(opt.get_bool(), base::OptionException);
         }
 
         SECTION("string option cannot be converted to anything else") {
         
-            auto opt = Option("test", "test", OptionType::STRING);
-            REQUIRE_THROWS_AS(opt.get_int(), OptionException);
-            REQUIRE_THROWS_AS(opt.get_float(), OptionException);
-            REQUIRE_THROWS_AS(opt.get_bool(), OptionException);
+            auto opt = base::Option("test", "test", base::OptionType::STRING);
+            REQUIRE_THROWS_AS(opt.get_int(),   base::OptionException);
+            REQUIRE_THROWS_AS(opt.get_float(), base::OptionException);
+            REQUIRE_THROWS_AS(opt.get_bool(),  base::OptionException);
 
         }
         
         SECTION("int option cannot be converted to string or bool") {
-            auto opt = Option("test", 6, OptionType::INT);
+            auto opt = base::Option("test", 6, base::OptionType::INT);
             
-            REQUIRE_THROWS_AS(opt.get_string(), OptionException);
-            REQUIRE_THROWS_AS(opt.get_bool(), OptionException);
+            REQUIRE_THROWS_AS(opt.get_string(), base::OptionException);
+            REQUIRE_THROWS_AS(opt.get_bool(),   base::OptionException);
 
         }
         
         
         SECTION("bool option cannot be converted to anything else") {
             
-            auto opt = Option("test", false, OptionType::BOOL);
-            REQUIRE_THROWS_AS(opt.get_int(), OptionException);
-            REQUIRE_THROWS_AS(opt.get_float(), OptionException);
-            REQUIRE_THROWS_AS(opt.get_string(), OptionException);
+            auto opt = base::Option("test", false, base::OptionType::BOOL);
+            REQUIRE_THROWS_AS(opt.get_int(),    base::OptionException);
+            REQUIRE_THROWS_AS(opt.get_float(),  base::OptionException);
+            REQUIRE_THROWS_AS(opt.get_string(), base::OptionException);
             
         }
     }
@@ -69,62 +69,62 @@ TEST_CASE( "Test Options for storing options for classes", "[Options]" ) {
         
         SECTION("test setting float options should be able to accept float and int") {
         
-            auto opt = Option("test", 6, OptionType::FLOAT);
+            auto opt = base::Option("test", 6, base::OptionType::FLOAT);
             opt.value(3);
             REQUIRE(opt.get_float() == 3);
             
             opt.value(3.5f);
             REQUIRE(opt.get_float() == 3.5);
             
-            REQUIRE_THROWS_AS(opt.value("test"), OptionException);
-            REQUIRE_THROWS_AS(opt.value(false), OptionException);
+            REQUIRE_THROWS_AS(opt.value("test"), base::OptionException);
+            REQUIRE_THROWS_AS(opt.value(false),  base::OptionException);
 
             
         }
         
         SECTION("test setting int options should be able to accept float and int") {
-            auto opt = Option("test", 6, OptionType::INT);
+            auto opt = base::Option("test", 6, base::OptionType::INT);
             opt.value(3);
             REQUIRE(opt.get_float() == 3);
             
             opt.value(3.5f);
             REQUIRE(opt.get_float() == 3.0);
             
-            REQUIRE_THROWS_AS(opt.value("test"), OptionException);
-            REQUIRE_THROWS_AS(opt.value(false), OptionException);
+            REQUIRE_THROWS_AS(opt.value("test"), base::OptionException);
+            REQUIRE_THROWS_AS(opt.value(false),  base::OptionException);
 
         }
         
         SECTION("test setting string options should be able to accept only str") {
-            auto opt = Option("test", "test", OptionType::STRING);
+            auto opt = base::Option("test", "test", base::OptionType::STRING);
             opt.value("test2");
             REQUIRE(opt.get_string() == "test2");
-            
-            REQUIRE_THROWS_AS(opt.value(5), OptionException);
-            REQUIRE_THROWS_AS(opt.value(5.0f), OptionException);
-            REQUIRE_THROWS_AS(opt.value(false), OptionException);
+
+            REQUIRE_THROWS_AS(opt.value(5),     base::OptionException);
+            REQUIRE_THROWS_AS(opt.value(5.0f),  base::OptionException);
+            REQUIRE_THROWS_AS(opt.value(false), base::OptionException);
     
         }
         
         SECTION("test setting bool options should be able to accept only bool") {
-            auto opt = Option("test", false, OptionType::BOOL);
+            auto opt = base::Option("test", false, base::OptionType::BOOL);
             opt.value(true);
             REQUIRE(opt.get_bool() == true);
             
-            REQUIRE_THROWS_AS(opt.value(5), OptionException);
-            REQUIRE_THROWS_AS(opt.value(5.0f), OptionException);
-            REQUIRE_THROWS_AS(opt.value("test"), OptionException);
+            REQUIRE_THROWS_AS(opt.value(5),      base::OptionException);
+            REQUIRE_THROWS_AS(opt.value(5.0f),   base::OptionException);
+            REQUIRE_THROWS_AS(opt.value("test"), base::OptionException);
             
         }
         
     }
     
     SECTION("Test getting option objects in options class") {
-        auto opts = Options();
+        auto opts = base::Options();
         
-        opts.add_option("test", "test", OptionType::STRING);
-        opts.add_option("test2", 5, OptionType::FLOAT);
-        opts.add_option("test3", false, OptionType::BOOL);
+        opts.add_option("test", "test", base::OptionType::STRING);
+        opts.add_option("test2", 5, base::OptionType::FLOAT);
+        opts.add_option("test3", false, base::OptionType::BOOL);
 
         REQUIRE(opts.get_bool("test3") == false);
         

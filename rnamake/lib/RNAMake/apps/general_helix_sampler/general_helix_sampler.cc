@@ -11,7 +11,7 @@
 #include "resources/resource_manager.h"
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
-GeneralHelixSampler::GeneralHelixSampler() : Application(),
+GeneralHelixSampler::GeneralHelixSampler() : base::Application(),
         tfs_(ThermoFlucSimulation())
 {}
 
@@ -19,21 +19,21 @@ GeneralHelixSampler::GeneralHelixSampler() : Application(),
 
 void
 GeneralHelixSampler::setup_options() {
-    add_option("pdb", "", OptionType::STRING, false);
-    add_option("motif", "", OptionType::STRING, false);
-    add_option("start_bp", "", OptionType::STRING, true);
-    add_option("end_bp", "", OptionType::STRING, true);
-    add_option("seq", "", OptionType::STRING, true);
-    add_option("all", false, OptionType::BOOL, false);
-    add_option("get_ideal", false, OptionType::BOOL, false);
-    add_option("get_dist_from_ideal", false, OptionType::BOOL, false);
+    add_option("pdb", "", base::OptionType::STRING, false);
+    add_option("motif", "", base::OptionType::STRING, false);
+    add_option("start_bp", "", base::OptionType::STRING, true);
+    add_option("end_bp", "", base::OptionType::STRING, true);
+    add_option("seq", "", base::OptionType::STRING, true);
+    add_option("all", false, base::OptionType::BOOL, false);
+    add_option("get_ideal", false, base::OptionType::BOOL, false);
+    add_option("get_dist_from_ideal", false, base::OptionType::BOOL, false);
 }
 
 void
 GeneralHelixSampler::parse_command_line(
         int argc,
         const char ** argv) {
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
 }
 
 String

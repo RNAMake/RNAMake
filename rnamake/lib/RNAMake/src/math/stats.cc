@@ -5,6 +5,8 @@
 #include <math.h>
 #include "math/stats.h"
 
+namespace math {
+
 double
 sum(
         std::vector<double> const & a) {
@@ -19,8 +21,7 @@ double
 sqsum(
         std::vector<double> const & a) {
     double s = 0;
-    for (int i = 0; i < a.size(); i++)
-    {
+    for (int i = 0; i < a.size(); i++) {
         s += pow(a[i], 2);
     }
     return s;
@@ -47,11 +48,11 @@ pearson_coeff(
     double sum = 0;
     auto mean_x = mean(x);
     auto mean_y = mean(y);
-    for(int i = 0; i < y.size(); i++) {
-        sum += (x[i] - mean_x)*(y[i] - mean_y) ;
+    for (int i = 0; i < y.size(); i++) {
+        sum += (x[i] - mean_x) * (y[i] - mean_y);
     }
 
-    return sum / (x.size()*stdev(x)*stdev(y));
+    return sum / (x.size() * stdev(x) * stdev(y));
 
     //return sum((X - mean(X))*(Y - mean(Y))) / (X.size()*stdev(X)* stdev(Y));
 }
@@ -61,8 +62,10 @@ avg_unsigned_diff(
         std::vector<double> const & x,
         std::vector<double> const & y) {
     double diff = 0;
-    for(int i = 0; i < x.size(); i++) {
+    for (int i = 0; i < x.size(); i++) {
         diff += abs(x[i] - y[i]);
     }
     return diff / x.size();
+}
+
 }

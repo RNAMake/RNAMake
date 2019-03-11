@@ -8,11 +8,11 @@
 #include "motif/motif_state.h"
 #include "motif/motif.h"
 
-Matrix
+math::Matrix
 rotation_about_x_axis(
         float degrees) {
     float a = 3.14/180*degrees;
-    return Matrix(1.0, 0.0, 0.0,
+    return math::Matrix(1.0, 0.0, 0.0,
                   0.0, cos(a), sin(a),
                   0.0, -sin(a), cos(a));
 }
@@ -36,7 +36,7 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         i++;
         REQUIRE(end->name() == ms->end_names()[i]);
         REQUIRE(end->d() == ms->end_states()[i]->d());
-        REQUIRE(are_xyzMatrix_equal(end->r(), ms->end_states()[i]->r()));
+        REQUIRE(math::are_xyzMatrix_equal(end->r(), ms->end_states()[i]->r()));
     }
     
     SECTION("test copy constructor") {
@@ -47,7 +47,7 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
             i++;
             REQUIRE(ms_copy->end_names()[i] == ms->end_names()[i]);
             REQUIRE(ms_copy->end_states()[i]->d() == ms->end_states()[i]->d());
-            REQUIRE(are_xyzMatrix_equal(ms_copy->end_states()[i]->r(),
+            REQUIRE(math::are_xyzMatrix_equal(ms_copy->end_states()[i]->r(),
                                         ms->end_states()[i]->r()));
         }
         
@@ -61,10 +61,10 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         for(auto const & end : ms->end_states()) {
             i++;
             REQUIRE(ms_copy->end_names()[i] == ms->end_names()[i]);
-            REQUIRE(are_xyzVector_equal(ms_copy->end_states()[i]->d(),
+            REQUIRE(math::are_xyzVector_equal(ms_copy->end_states()[i]->d(),
                                         ms->end_states()[i]->d()));
             
-            REQUIRE(are_xyzMatrix_equal(ms_copy->end_states()[i]->r(),
+            REQUIRE(math::are_xyzMatrix_equal(ms_copy->end_states()[i]->r(),
                                         ms->end_states()[i]->r()));
         }
 
@@ -81,10 +81,10 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         get_aligned_motif_state(ms->end_states()[1], ms2, ms3);
         
 
-        REQUIRE(are_xyzVector_equal(m_aligned->ends()[1]->d(),
+        REQUIRE(math::are_xyzVector_equal(m_aligned->ends()[1]->d(),
                                     ms2->end_states()[1]->d()));
         
-        REQUIRE(are_xyzMatrix_equal(m_aligned->ends()[1]->r(),
+        REQUIRE(math::are_xyzMatrix_equal(m_aligned->ends()[1]->r(),
                                     ms2->end_states()[1]->r()));
         
     }
@@ -120,7 +120,7 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         bp_state->transform(dummy.r().transposed(), dummy.d());
         bp->transform(dummy.r().transposed(), dummy.d());
 
-        REQUIRE(are_xyzVector_equal(bp_state->d(), bp->d()));
+        REQUIRE(math::are_xyzVector_equal(bp_state->d(), bp->d()));
 
     }
 
@@ -129,7 +129,7 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         auto ms_copy = std::make_shared<MotifState>(*ms);
         auto m_copy = std::make_shared<Motif>(*m);
 
-        auto t = Point(0, 0, 0);
+        auto t = math::Point(0, 0, 0);
         auto r = rotation_about_x_axis(60);
 
         for(int i = 0; i < 5; i++) {
@@ -139,7 +139,7 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         }
 
         // should be at a 300 degree rotation thus not in the same place
-        REQUIRE(!are_xyzVector_equal(ms->end_states()[1]->d(), ms_copy->end_states()[1]->d()));
+        REQUIRE(!math::are_xyzVector_equal(ms->end_states()[1]->d(), ms_copy->end_states()[1]->d()));
 
         ms->transform(r, t);
         auto dist = ms->end_states()[1]->d().distance(ms_copy->end_states()[1]->d());

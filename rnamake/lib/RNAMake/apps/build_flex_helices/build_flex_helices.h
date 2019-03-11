@@ -208,7 +208,7 @@ public:
     {}
 };
 
-class BuildFlexHelicesApp : public Application {
+class BuildFlexHelicesApp : public base::Application {
 public:
     BuildFlexHelicesApp();
 

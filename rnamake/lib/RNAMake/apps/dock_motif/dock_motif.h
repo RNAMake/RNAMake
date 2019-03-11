@@ -31,7 +31,7 @@ public:
 
 };
 
-class DockMotifApp : public Application {
+class DockMotifApp : public base::Application {
 public:
     DockMotifApp();
 
@@ -61,25 +61,25 @@ private: // search functions
     MotifStateOP
     _get_starting_state(
             StericLookup &,
-            Point const &);
+            math::Point const &);
 
 private:
     ResidueOP
     _parse_ligand_for_center_coords();
 
-    Point
+    math::Point
     _calc_motif_center(
             MotifOP);
 
-    Matrix
+    math::Matrix
     _rotation_about_x_axis(
             float);
 
-    Matrix
+    math::Matrix
     _rotation_about_y_axis(
             float);
 
-    Matrix
+    math::Matrix
     _rotation_about_z_axis(
             float);
 
@@ -90,13 +90,13 @@ private:
 private:
     MotifStateOPs rotations_;
     StericLookup lookup_;
-    Point center_;
+    math::Point center_;
     MotifStateandScores results_;
     MotifStateOP helix_;
 
 };
 
-Point
+math::Point
 get_random_point(
         RandomNumberGenerator &,
         int);

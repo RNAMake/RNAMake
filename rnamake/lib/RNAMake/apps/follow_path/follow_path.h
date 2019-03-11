@@ -18,7 +18,7 @@
 #include "motif_state_search/motif_state_search.h"
 
 
-CommandLineOptions
+base::CommandLineOptions
 parse_command_line(int, const char **);
 
 struct PathBuilderNode {
@@ -93,7 +93,7 @@ public:
     
     void
     setup(
-        CommandLineOptions const &);
+        base::CommandLineOptions const &);
     
     void
     build();
@@ -131,13 +131,13 @@ public: //option wrappers
     
 private:
     
-    std::vector<Points>
+    std::vector<math::Points>
     _get_segments(
-        Points const &);
+        math::Points const &);
     
-    std::vector<Points>
+    std::vector<math::Points>
     _get_sub_pathes(
-        std::vector<Points> const &);
+        std::vector<math::Points> const &);
 
 private:
     void

@@ -12,65 +12,68 @@
 #include "math/xyz_vector.h"
 #include "math/xyz_matrix.h"
 
+namespace math {
+
 int
 are_floats_equal(
-	double const a,
-	double const b,
-    double tol) {
-	if (fabs(a - b) < tol) { return 1; }
-	else					 { return 0; }
+        double const a,
+        double const b,
+        double tol) {
+    if (fabs(a - b) < tol) { return 1; }
+    else { return 0; }
 }
 
 int
 are_xyzVector_equal(
-	Vector const & vec,
-	Vector const & correct_vec,
-    float tol) {
-    
-	if (are_floats_equal(vec.x(), correct_vec.x(), tol) &&
-		are_floats_equal(vec.y(), correct_vec.y(), tol) &&
-		are_floats_equal(vec.z(), correct_vec.z(), tol)) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+        Vector const & vec,
+        Vector const & correct_vec,
+        float tol) {
+
+    if (are_floats_equal(vec.x(), correct_vec.x(), tol) &&
+        are_floats_equal(vec.y(), correct_vec.y(), tol) &&
+        are_floats_equal(vec.z(), correct_vec.z(), tol)) {
+        return 1;
+    } else {
+        return 0;
+    }
 }
 
 int
 are_xyzVectors_equal(
-	Vectors const & v,
-	Vectors const & vc) {
-	
-	if(v.size() != vc.size()) { return 0; }
-	
-	for(int i = 0; i < v.size(); i++) {
-		if(! are_xyzVector_equal(v[i], vc[i])) { return 0; }
-	}
-	
-	return 1;
-	
+        Vectors const & v,
+        Vectors const & vc) {
+
+    if (v.size() != vc.size()) { return 0; }
+
+    for (int i = 0; i < v.size(); i++) {
+        if (!are_xyzVector_equal(v[i], vc[i])) { return 0; }
+    }
+
+    return 1;
+
 }
 
 
 int
 are_xyzMatrix_equal(
-	Matrix const & m,
-	Matrix const & mc) {
-	
-	if(!are_floats_equal(m.xx(),mc.xx()) ||
-	   !are_floats_equal(m.xy(),mc.xy()) ||
-	   !are_floats_equal(m.xz(),mc.xz()) ||
-	   !are_floats_equal(m.yx(),mc.yx()) ||
-	   !are_floats_equal(m.yz(),mc.yz()) ||
-	   !are_floats_equal(m.zx(),mc.zx()) ||
-	   !are_floats_equal(m.zy(),mc.zy()) ||
-	   !are_floats_equal(m.zz(),mc.zz())) {
-		return 0;
-	}
-	
-	return 1;
-	
+        Matrix const & m,
+        Matrix const & mc) {
+
+    if (!are_floats_equal(m.xx(), mc.xx()) ||
+        !are_floats_equal(m.xy(), mc.xy()) ||
+        !are_floats_equal(m.xz(), mc.xz()) ||
+        !are_floats_equal(m.yx(), mc.yx()) ||
+        !are_floats_equal(m.yz(), mc.yz()) ||
+        !are_floats_equal(m.zx(), mc.zx()) ||
+        !are_floats_equal(m.zy(), mc.zy()) ||
+        !are_floats_equal(m.zz(), mc.zz())) {
+        return 0;
+    }
+
+    return 1;
+
+}
+
 }
 
 

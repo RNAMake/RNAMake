@@ -15,7 +15,7 @@
 #include "simulate_tectos.h"
 
 
-SimulateTectosApp::SimulateTectosApp() : Application(),
+SimulateTectosApp::SimulateTectosApp() : base::Application(),
 tfs_(ThermoFlucSimulation())
 {}
 
@@ -25,12 +25,12 @@ tfs_(ThermoFlucSimulation())
 
 void
 SimulateTectosApp::setup_options() {
-    add_option("fseq", "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", OptionType::STRING);
-    add_option("fss",  "((((((....((((((((((((....))))))))))))....))))))", OptionType::STRING);
+    add_option("fseq", "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", base::OptionType::STRING);
+    add_option("fss",  "((((((....((((((((((((....))))))))))))....))))))", base::OptionType::STRING);
     add_option("cseq", "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG",  OptionType::STRING);
     add_option("css",  "(((((((..((((((((((((....))))))))))))...)))))))",  OptionType::STRING);
-    add_option("s", 1000000, OptionType::INT);
-    add_option("start_pose", false, OptionType::BOOL);
+    add_option("s", 1000000, base::OptionType::INT);
+    add_option("start_pose", false, base::OptionType::BOOL);
     
     add_cl_options(tfs_.options(), "simulation");
     
@@ -42,7 +42,7 @@ SimulateTectosApp::parse_command_line(
     const char ** argv) {
     
 
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
     
     cl_parser_.assign_options(cl_options_, tfs_.options(), "simulation");
     tfs_.update_var_options();

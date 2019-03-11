@@ -143,7 +143,7 @@ X3dna::_get_dssr_file_path(
     return dssr_file_path;
 }
 
-Point
+math::Point
 X3dna::_convert_strings_to_point(Strings const & spl) {
     std::vector<double> f;
     for (auto const & s : spl) {
@@ -152,7 +152,7 @@ X3dna::_convert_strings_to_point(Strings const & spl) {
         }
         if(f.size() == 3) { break; }
     }
-    return Point(f);
+    return math::Point(f);
 }
 
 void
@@ -160,9 +160,9 @@ X3dna::_parse_ref_frame_file(String const & ref_frames_path) {
     Strings lines = base::get_lines_from_file(ref_frames_path);
     basepairs_ = X3Basepairs();
 
-    Point d;
-    Points rs;
-    Matrix r;
+    math::Point d;
+    math::Points rs;
+    math::Matrix r;
     int res_num_1=0, res_num_2=0;
     String res_id_1, res_id_2, res_num_1p, res_num_2p;
     int start_bp = 0;
@@ -311,7 +311,7 @@ X3dna::get_basepairs(
         }
         
         if(!found) {
-            basepairs_.push_back(X3Basepair(res1, res2, Matrix(), Point(-1,-1,-1)));
+            basepairs_.push_back(X3Basepair(res1, res2, math::Matrix(), math::Point(-1,-1,-1)));
         }
         
     }    

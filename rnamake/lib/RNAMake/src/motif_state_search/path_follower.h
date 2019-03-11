@@ -29,7 +29,7 @@ public:
     
     void
     setup(
-        Points const & path,
+        math::Points const & path,
         MotifGraphOP const & mg,
         int ni,
         String const & end_name) {
@@ -46,7 +46,7 @@ public:
         search_.set_option_value("verbose", true);
         
         auto beads = mg_->beads();
-        auto centers = Points();
+        auto centers = math::Points();
         for(auto const & b : beads) {
             if(b.btype() == BeadType::PHOS) {
                 continue;
@@ -63,7 +63,7 @@ public:
     
     void
     setup(
-        Points const & path) {
+        math::Points const & path) {
         path_ = path;
         
         //set default search values
@@ -86,9 +86,9 @@ public:
     
     void
     setup(
-        Points const & path,
+        math::Points const & path,
         BasepairStateOP const & start,
-        Points const & centers) {
+        math::Points const & centers) {
         
         path_ = path;
         start_state_ = start;
@@ -110,10 +110,10 @@ public:
     
     void
     setup(
-        Points const & path,
+        math::Points const & path,
         BasepairStateOP const & start,
         BasepairStateOP const & end,
-        Points const & centers) {
+        math::Points const & centers) {
         
         path_ = path;
         start_state_ = start;
@@ -185,7 +185,7 @@ private:
         
 private:
     MotifGraphOP mg_;
-    Points path_;
+    math::Points path_;
     int ni_;
     BasepairOP start_;
     BasepairStateOP start_state_;

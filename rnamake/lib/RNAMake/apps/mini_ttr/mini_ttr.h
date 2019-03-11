@@ -21,7 +21,7 @@
 
 
 
-CommandLineOptions
+base::CommandLineOptions
 parse_command_line(
     int argc,
     const char ** argv);
@@ -40,7 +40,7 @@ public:
     
     virtual
     void
-    setup(CommandLineOptions const & opts) {
+    setup(base::CommandLineOptions const & opts) {
         setup_options();
         search_.set_option_value("max_node_level", 10);
         search_.set_option_value("min_node_level", 0);
@@ -52,16 +52,16 @@ public:
         for(auto const & opt : opts) {
             if(! search_.has_option(opt->name())) { continue; }
             if(! opts.is_filled(opt->name())) { continue; }
-            if     (opt->type() == OptionType::INT) {
+            if     (opt->type() == base::OptionType::INT) {
                 search_.set_option_value(opt->name(), opt->get_int());
             }
-            else if(opt->type() == OptionType::FLOAT) {
+            else if(opt->type() == base::OptionType::FLOAT) {
                 search_.set_option_value(opt->name(), opt->get_float());
             }
-            else if(opt->type() == OptionType::BOOL) {
+            else if(opt->type() == base::OptionType::BOOL) {
                 search_.set_option_value(opt->name(), opt->get_bool());
             }
-            else if(opt->type() == OptionType::STRING) {
+            else if(opt->type() == base::OptionType::STRING) {
                 search_.set_option_value(opt->name(), opt->get_string());
             }
         }
@@ -104,9 +104,9 @@ private:
     virtual
     void
     setup_options() {
-        options_.add_option("test_run", false, OptionType::BOOL);
-        options_.add_option("out", String("solutions.top"), OptionType::STRING);
-        options_.add_option("opt_seq", true, OptionType::BOOL);
+        options_.add_option("test_run", false, base::OptionType::BOOL);
+        options_.add_option("out", String("solutions.top"), base::OptionType::STRING);
+        options_.add_option("opt_seq", true, base::OptionType::BOOL);
         options_.lock_option_adding();
         update_var_options();
     }
@@ -131,7 +131,7 @@ public:
     
 public:
     void
-    setup(CommandLineOptions const & opts) {
+    setup(base::CommandLineOptions const & opts) {
         setup_options();
         search_.set_option_value("max_node_level", 400);
         search_.set_option_value("min_node_level", 0);
@@ -142,16 +142,16 @@ public:
         for(auto const & opt : opts) {
             if(! search_.has_option(opt->name())) { continue; }
             if(! opts.is_filled(opt->name())) { continue; }
-            if     (opt->type() == OptionType::INT) {
+            if     (opt->type() == base::OptionType::INT) {
                 search_.set_option_value(opt->name(), opt->get_int());
             }
-            else if(opt->type() == OptionType::FLOAT) {
+            else if(opt->type() == base::OptionType::FLOAT) {
                 search_.set_option_value(opt->name(), opt->get_float());
             }
-            else if(opt->type() == OptionType::BOOL) {
+            else if(opt->type() == base::OptionType::BOOL) {
                 search_.set_option_value(opt->name(), opt->get_bool());
             }
-            else if(opt->type() == OptionType::STRING) {
+            else if(opt->type() == base::OptionType::STRING) {
                 search_.set_option_value(opt->name(), opt->get_string());
             }
         }
@@ -179,8 +179,8 @@ private:
     
     void
     setup_options() {
-        options_.add_option("path", String(""), OptionType::STRING);
-        options_.add_option("test_run", false, OptionType::BOOL);
+        options_.add_option("path", String(""), base::OptionType::STRING);
+        options_.add_option("test_run", false, base::OptionType::BOOL);
         options_.lock_option_adding();
         update_var_options();
     }

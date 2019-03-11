@@ -17,7 +17,7 @@ public:
             std::runtime_error(message) {}
 };
 
-class StructureInfoApp : public Application {
+class StructureInfoApp : public base::Application {
 public:
     StructureInfoApp();
 

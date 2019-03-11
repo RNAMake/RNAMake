@@ -19,7 +19,7 @@ TEST_CASE( "Test PDB Parser", "[PDBParser]" ) {
     SECTION("compare parsed structure to stringifed structure") {
     
         auto rts = ResidueTypeSet();
-        String path = unittest_resource_dir() + "/structure/test_str_to_structure.dat";
+        String path = base::unittest_resource_dir() + "/structure/test_str_to_structure.dat";
         auto lines =base::get_lines_from_file(path);
         auto s_org = std::make_shared<Structure>(lines[0], rts);
         

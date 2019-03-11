@@ -10,24 +10,24 @@
 class TestSearch {
 public:
     TestSearch() {
-        options_ = Options();
-        options_.add_option("accept_score", 10, OptionType::FLOAT);
+        options_ = base::Options();
+        options_.add_option("accept_score", 10, base::OptionType::FLOAT);
     }
     
     ~TestSearch() {}
     
 public:
     inline
-    Options &
+    base::Options &
     options() { return options_; }
     
 private:
-    Options options_;
+    base::Options options_;
 };
 
-class TestApplication : public Application {
+class TestApplication : public base::Application {
 public:
-    TestApplication() : Application(),
+    TestApplication() : base::Application(),
     search_(TestSearch())
     { setup_options(); }
     
@@ -37,7 +37,7 @@ public:
     
     void
     setup_options() {
-        add_option("test", String(""), OptionType::STRING, false);
+        add_option("test", String(""), base::OptionType::STRING, false);
         add_cl_options(search_.options(), "search");
     }
     
@@ -46,7 +46,7 @@ public:
         int argc,
         const char ** argv) {
         
-        Application::parse_command_line(argc, argv);
+        base::Application::parse_command_line(argc, argv);
         cl_parser_.assign_options(cl_options_, search_.options(), "search");
         
     }

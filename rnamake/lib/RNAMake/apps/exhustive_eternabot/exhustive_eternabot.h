@@ -15,7 +15,7 @@
 #include "base/cl_option.h"
 #include "secondary_structure/pose.h"
 
-CommandLineOptions
+base::CommandLineOptions
 parse_command_line(int, const char **);
 
 class ExhustiveEternabot {
@@ -30,7 +30,7 @@ public:
 public:
     
     void
-    setup(CommandLineOptions const &);
+    setup(base::CommandLineOptions const &);
     
     void
     run();

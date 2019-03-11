@@ -185,7 +185,7 @@ MotifStateSearch::_search() {
         possible_children_ = selector_->get_children_ms(current);
         pos = possible_children_.pos();
         test_node_->parent(current);
-        Point center;
+        math::Point center;
         i = -1;
         
         for(auto const & end : current->cur_state()->end_states()) {
@@ -281,7 +281,7 @@ MotifStateSearch::_start_node(
     auto ms = std::make_shared<MotifState>("start", Strings {"start", "start"},
                                            Strings {"", ""},
                                            BasepairStateOPs { start_bp, start_bp},
-                                           Points(), 0, 0, 0);
+                                           math::Points(), 0, 0, 0);
     
     auto n = std::make_shared<MotifStateSearchNode>(ms, nullptr, -1, -1);
     n->setup_node_type_usage(selector_->size());

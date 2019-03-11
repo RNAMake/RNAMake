@@ -62,7 +62,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     }
     
     SECTION("test aligning motifs") {
-        m->move(Point(10, 10, 10));
+        m->move(math::Point(10, 10, 10));
         auto m_aligned = get_aligned_motif(ref_m->ends()[0], m->ends()[0], m);
         
         auto dist = ref_m->ends()[0]->d().distance(m_aligned->ends()[0]->d());
@@ -74,7 +74,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     }
     
     SECTION("test that repeat aligning does not cause error") {
-        m->move(Point(10, 10, 10));
+        m->move(math::Point(10, 10, 10));
         auto ref_bp = ref_m->ends()[0]->state();
         
         auto dist = 0.0f, r_dist = 0.0f;
@@ -144,7 +144,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
         auto path = base::motif_dirs() + "ref.motif";
         auto m1 = file_to_motif(path);
         auto lookup = StericLookupNew();
-        auto points = Points();
+        auto points = math::Points();
         for(auto const & b : m1->get_beads()) {
             points.push_back(b.center());
         }

@@ -17,7 +17,7 @@
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 #include "design_rna/design_rna.hpp"
 
-DesignRNAApp::DesignRNAApp() : Application(),
+DesignRNAApp::DesignRNAApp() : base::Application(),
         search_(MotifStateSearch()),
         mg_(std::make_shared<MotifGraph>()),
         lookup_(StericLookup()),
@@ -27,34 +27,34 @@ void
 DesignRNAApp::setup_options() {
 
     // start from pdb
-    add_option("pdb", String(""), OptionType::STRING, false);
-    add_option("start_bp", String(""), OptionType::STRING, false);
-    add_option("end_bp", String(""), OptionType::STRING, false);
-    //add_option("no_segment", false, OptionType::BOOL, false);
+    add_option("pdb", String(""), base::OptionType::STRING, false);
+    add_option("start_bp", String(""), base::OptionType::STRING, false);
+    add_option("end_bp", String(""), base::OptionType::STRING, false);
+    //add_option("no_segment", false, base::OptionType::BOOL, false);
 
     // start from motif graph
-    add_option("mg", String(""), OptionType::STRING, false);
+    add_option("mg", String(""), base::OptionType::STRING, false);
 
     // general options
-    add_option("out_file", "default.out", OptionType::STRING, false);
-    add_option("score_file", "default.scores", OptionType::STRING, false);
-    add_option("designs", 1, OptionType::INT, false);
-    add_option("seqs_per_design", 1, OptionType::INT, false);
-    add_option("pdbs", false, OptionType::BOOL, false);
-    add_option("design_pdbs", false, OptionType::BOOL, false);
-    add_option("show_sections", false, OptionType::BOOL, false);
-    add_option("defined_motif_path", "", OptionType::STRING, false);
-    add_option("only_existing_motifs", false, OptionType::BOOL, false);
-    add_option("flex_helices", false, OptionType::BOOL, false);
-    add_option("include_nways", false, OptionType::BOOL, false);
-    add_option("mc", false, OptionType::BOOL, false);
-    add_option("verbose", false, OptionType::BOOL, false);
-    add_option("no_sterics", false, OptionType::BOOL, false);
-    add_option("info", false, OptionType::BOOL, false);
-    add_option("return_best", false, OptionType::BOOL, false);
+    add_option("out_file", "default.out", base::OptionType::STRING, false);
+    add_option("score_file", "default.scores", base::OptionType::STRING, false);
+    add_option("designs", 1, base::OptionType::INT, false);
+    add_option("seqs_per_design", 1, base::OptionType::INT, false);
+    add_option("pdbs", false, base::OptionType::BOOL, false);
+    add_option("design_pdbs", false, base::OptionType::BOOL, false);
+    add_option("show_sections", false, base::OptionType::BOOL, false);
+    add_option("defined_motif_path", "", base::OptionType::STRING, false);
+    add_option("only_existing_motifs", false, base::OptionType::BOOL, false);
+    add_option("flex_helices", false, base::OptionType::BOOL, false);
+    add_option("include_nways", false, base::OptionType::BOOL, false);
+    add_option("mc", false, base::OptionType::BOOL, false);
+    add_option("verbose", false, base::OptionType::BOOL, false);
+    add_option("no_sterics", false, base::OptionType::BOOL, false);
+    add_option("info", false, base::OptionType::BOOL, false);
+    add_option("return_best", false, base::OptionType::BOOL, false);
 
     //no sequence opt
-    add_option("only_ideal", false, OptionType::BOOL, false);
+    add_option("only_ideal", false, base::OptionType::BOOL, false);
 
     add_cl_options(search_.options(), "search");
     add_cl_options(optimizer_.options(), "optimizer");
@@ -66,7 +66,7 @@ DesignRNAApp::parse_command_line(
         int argc,
         const char **argv) {
 
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
     cl_parser_.assign_options(cl_options_, search_.options(), "search");
     cl_parser_.assign_options(cl_options_, optimizer_.options(), "optimizer");
     search_.update_var_options();
@@ -76,7 +76,7 @@ DesignRNAApp::parse_command_line(
 
 void
 DesignRNAApp::_setup_sterics() {
-    auto beads = Points();
+    auto beads = math::Points();
     //std::cout << mg_->size() << std::endl;
     //for(int i = 0; i < 8; i++) {
     //    auto n = mg_->get_node(i);
@@ -297,12 +297,12 @@ DesignRNAApp::run() {
 
         // calc rotation between ref frames
         auto r_T = start->r();
-        Matrix transformed;
+        math::Matrix transformed;
         r_T.transpose();
         dot(end->r(), r_T, transformed);
 
-        auto euler_v = Vector();
-        calc_euler(transformed, euler_v);
+        auto euler_v = math::Vector();
+        math::calc_euler(transformed, euler_v);
 
         std::cout << "DESIGN RNA: rotation= " << euler_v.to_str() << std::endl;
 

@@ -65,10 +65,10 @@ public:
     inline
     void
     transform(
-        Transform const & t) {
+        math::Transform const & t) {
         
-        Matrix r_T = t.rotation();
-        Matrix transformed;
+        math::Matrix r_T = t.rotation();
+        math::Matrix transformed;
         r_T.transpose();
         for (auto & bp : basepairs_) {
             dot(bp->r(), r_T, transformed);
@@ -80,7 +80,7 @@ public:
     inline
     void
     move(
-        Point const & p) { structure_->move(p); }
+        math::Point const & p) { structure_->move(p); }
 
     String const
     to_str();

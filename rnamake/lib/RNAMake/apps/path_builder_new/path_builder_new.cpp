@@ -19,14 +19,14 @@
 
 void
 PathBuilderNewApp::setup_options() {
-    add_option("pdb", String(""), OptionType::STRING, false);
-    add_option("start_bp", String(""), OptionType::STRING, false);
-    add_option("end_bp", String(""), OptionType::STRING, false);
-    add_option("mg", String(""), OptionType::STRING, false);
+    add_option("pdb", String(""), base::OptionType::STRING, false);
+    add_option("start_bp", String(""), base::OptionType::STRING, false);
+    add_option("end_bp", String(""), base::OptionType::STRING, false);
+    add_option("mg", String(""), base::OptionType::STRING, false);
     
-    add_option("out", String("default.out"), OptionType::STRING, false);
-    add_option("no_sterics", 0, OptionType::BOOL, false);
-    add_option("write_pdbs", 0, OptionType::BOOL, false);
+    add_option("out", String("default.out"), base::OptionType::STRING, false);
+    add_option("no_sterics", 0, base::OptionType::BOOL, false);
+    add_option("write_pdbs", 0, base::OptionType::BOOL, false);
     
     add_cl_options(search_.options(), "search");
     
@@ -37,7 +37,7 @@ PathBuilderNewApp::parse_command_line(
     int argc,
     const char ** argv) {
     
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
     cl_parser_.assign_options(cl_options_, search_.options(), "search");
     search_.update_var_options();
 }
@@ -72,7 +72,7 @@ PathBuilderNewApp::run() {
     int count = 0;
     float dist = 0;
     
-    auto beads = Points();
+    auto beads = math::Points();
     for(auto & n : mg_) {
         for(auto const & b : n->data()->beads()) {
             if(b.btype() == BeadType::PHOS) { continue; }

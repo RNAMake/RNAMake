@@ -37,7 +37,7 @@ TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
     }
     
     SECTION("test miniTTR") {
-        RM::instance().add_motif(unittest_resource_dir() + "motif/GAAA_tetraloop");
+        RM::instance().add_motif(base::unittest_resource_dir() + "motif/GAAA_tetraloop");
         
         auto mt = MotifTree();
         auto m1 = RM::instance().motif("GAAA_tetraloop", "", "A229-A245");
@@ -51,7 +51,7 @@ TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
         auto start = mt.get_node(1)->data()->ends()[1]->state();
         auto end = mt.get_node(2)->data()->ends()[1]->state();
         auto beads = mt.beads();
-        auto centers = Points();
+        auto centers = math::Points();
 
         for(auto const & b : beads) {
             if(b.btype() != BeadType::PHOS) {

@@ -36,9 +36,9 @@ typedef data_structure::tree::TreeNodeOP<MotifStateEnsembleOP> MotifStateEnsembl
 //assumes 3x3 matrices
 inline
 void
-calc_euler2(
-    Matrix & M,
-    Vector & euler) {
+math::calc_euler2(
+    math::Matrix & M,
+    math::Vector & euler) {
     
     double cy = sqrt(M.xx()*M.xx() + M.yx()*M.yx());
     if(cy > _EPS) {

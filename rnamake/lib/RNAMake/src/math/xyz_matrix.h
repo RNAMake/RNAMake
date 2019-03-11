@@ -17,6 +17,7 @@
 #include "base/types.h"
 #include "math/xyz_vector.h"
 
+namespace math {
 
 template< typename T >
 class xyzMatrix {
@@ -27,7 +28,7 @@ public:
 	typedef  std::vector<Vector> Vectors;
 
 
-private:
+public:
 	template< typename > friend class xyzMatrix;
 	friend class Transform;
 
@@ -50,36 +51,7 @@ private:
 		b.yz_ = a.zy_;
 		b.zy_ = a.yz_;
 	}
-	
-	friend
-	inline
-	void
-	dot_vector(
-		xyzMatrix< T > const & m,
-		xyzVector< T > const & v,
-		xyzVector< T > & vr) {
-		
-		vr.x ( m.xx_ * v.x() + m.yx_ * v.y() + m.zx_ * v.z()) ;
-		vr.y ( m.xy_ * v.x() + m.yy_ * v.y() + m.zy_ * v.z());
-		vr.z ( m.xz_ * v.x() + m.yz_ * v.y() + m.zz_ * v.z());
-		
-	}
-	
-	friend
-	inline
-	void
-	dot_vectors(
-			   xyzMatrix< T > const & m,
-			   Vectors const & v,
-			   Vectors & vr) {
-		
-		int i;
-		for(i = 0; i < v.size(); i++) {
-			dot_vector(m,v[i],vr[i]);
-		}
-		
-	}
-	
+
 	friend
 	inline
 	void
@@ -704,6 +676,34 @@ typedef xyzMatrix<double> Matrix;
 typedef std::vector<Matrix> Matrices;
 
 inline
+void
+dot_vector(
+		Matrix const & m,
+		Vector const & v,
+		Vector & vr) {
+
+	vr.x ( m.xx() * v.x() + m.yx() * v.y() + m.zx() * v.z()) ;
+	vr.y ( m.xy() * v.x() + m.yy() * v.y() + m.zy() * v.z());
+	vr.z ( m.xz() * v.x() + m.yz() * v.y() + m.zz() * v.z());
+
+}
+
+inline
+void
+dot_vectors(
+        Matrix const & m,
+		Vectors const & v,
+		Vectors & vr) {
+
+	int i;
+	for(i = 0; i < v.size(); i++) {
+		dot_vector(m,v[i],vr[i]);
+	}
+
+}
+
+
+inline
 const
 Matrix
 matrix_from_str(
@@ -772,7 +772,7 @@ matrix_to_str(Matrix const & m) {
     return ss.str();
 }
 
-
+}
 
 
 #endif

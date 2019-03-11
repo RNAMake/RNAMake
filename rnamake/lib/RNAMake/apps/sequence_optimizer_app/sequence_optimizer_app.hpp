@@ -34,9 +34,9 @@ struct ConnectionTemplate {
     String type;
 };
 
-class SequenceOptimizerApp : public Application {
+class SequenceOptimizerApp : public base::Application {
 public:
-    SequenceOptimizerApp() : Application(),
+    SequenceOptimizerApp() : base::Application(),
     optimizer_(SequenceOptimizer3D()) {}
     
     ~SequenceOptimizerApp() {}

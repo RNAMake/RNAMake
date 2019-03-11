@@ -11,7 +11,7 @@
 TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
 
     SECTION("test loading basepair from string") {
-        auto path = unittest_resource_dir() + "/structure/test_str_to_basepairstate.dat";
+        auto path = base::unittest_resource_dir() + "/structure/test_str_to_basepairstate.dat";
         auto lines =base::get_lines_from_file(path);
         auto bp_state = BasepairStateOP(nullptr);
         
@@ -28,7 +28,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
     }
     
     SECTION("test generating rotation and translation between basepairs") {
-        auto path = unittest_resource_dir() + "/structure/get_transforming_r_and_t_test.dat";
+        auto path = base::unittest_resource_dir() + "/structure/get_transforming_r_and_t_test.dat";
         auto lines =base::get_lines_from_file(path);
 
         auto dummy = BasepairState();
@@ -40,17 +40,17 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
             auto spl = base::split_str_by_delimiter(l, "|");
             auto bp_state_1 = BasepairState(spl[0]);
             auto bp_state_2 = BasepairState(spl[1]);
-            auto t = Point(spl[2]);
-            auto r = Matrix(spl[3]);
+            auto t = math::Point(spl[2]);
+            auto r = math::Matrix(spl[3]);
             
             bp_state_1.get_transforming_r_and_t(bp_state_2, dummy);
             auto result_t = t + bp_state_1.d();
             
-            if(! are_xyzVector_equal(result_t, dummy.d())) {
+            if(! math::are_xyzVector_equal(result_t, dummy.d())) {
                 fail = 1;
             }
             
-            if(! are_xyzMatrix_equal(r, dummy.r())) {
+            if(! math::are_xyzMatrix_equal(r, dummy.r())) {
                 fail = 1;
             }
             
@@ -61,7 +61,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
     }
     
     SECTION("test random tranformation between basepairs") {
-        auto path = unittest_resource_dir() + "/structure/test_get_transformed_state.dat";
+        auto path = base::unittest_resource_dir() + "/structure/test_get_transformed_state.dat";
         auto lines =base::get_lines_from_file(path);
         auto dummy = BasepairState();
         auto dummy_2 = BasepairState();
@@ -91,7 +91,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
     }
     
     SECTION("test repeated alignment") {
-        auto path = unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
+        auto path = base::unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
         auto lines =base::get_lines_from_file(path);
         
         auto spl = base::split_str_by_delimiter(lines[0], "|");
@@ -148,7 +148,7 @@ TEST_CASE( "Test Basepair State for Structure", "[BasepairState]" ) {
     }
     
     SECTION("test transform() instead of get_transformed_state()") {
-        auto path = unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
+        auto path = base::unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
         auto lines =base::get_lines_from_file(path);
 
         auto dist = 0.0;

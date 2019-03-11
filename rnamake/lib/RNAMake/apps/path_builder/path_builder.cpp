@@ -16,13 +16,13 @@
 #include "motif_state_search/motif_state_search.h"
 #include "eternabot/sequence_designer.h"
 
-CommandLineOptions
+base::CommandLineOptions
 parse_command_line(
     int argc,
     const char ** argv) {
     
-    CommandLineOptions cl_opts;
-    cl_opts.add_option("mg", String(""), OptionType::STRING, true);
+    base::CommandLineOptions cl_opts;
+    cl_opts.add_option("mg", String(""), base::OptionType::STRING, true);
     cl_opts.parse_command_line(argc, argv);
     
     return cl_opts;
@@ -50,7 +50,7 @@ int main(int argc, const char * argv[]) {
     auto end   = mg->get_node(std::stoi(spl2[0]))->data()->get_basepair(spl2[1])[0];
 
     auto beads = mg->beads();
-    auto centers = Points();
+    auto centers = math::Points();
     for(auto const & b : beads) {
         if(b.btype() != BeadType::PHOS) {
             centers.push_back(b.center());

@@ -12,15 +12,15 @@
 #include "secondary_structure/secondary_structure_parser.h"
 #include "eternabot/sequence_designer.h"
 
-CommandLineOptions
+base::CommandLineOptions
 parse_command_line(
     int argc,
     const char ** argv) {
     
-    CommandLineOptions cl_opts;
-    cl_opts.add_option("seq", String("NNNNAAAANNNN"), OptionType::STRING, true);
-    cl_opts.add_option("ss",  String("((((....))))"), OptionType::STRING, true);
-    cl_opts.add_option("steps", 100, OptionType::INT, false);
+    base::CommandLineOptions cl_opts;
+    cl_opts.add_option("seq", String("NNNNAAAANNNN"), base::OptionType::STRING, true);
+    cl_opts.add_option("ss",  String("((((....))))"), base::OptionType::STRING, true);
+    cl_opts.add_option("steps", 100, base::OptionType::INT, false);
 
     cl_opts.parse_command_line(argc, argv);
     return cl_opts;

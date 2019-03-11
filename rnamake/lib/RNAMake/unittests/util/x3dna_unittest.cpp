@@ -13,8 +13,8 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
         auto x = X3dna();
         x.generate_ref_frame(m_path);
     
-        REQUIRE(file_exists("ref_frames.dat"));
-        REQUIRE(!file_exists("basepairs.pdb"));
+        REQUIRE(base::file_exists("ref_frames.dat"));
+        REQUIRE(!base::file_exists("basepairs.pdb"));
         
         std::remove("ref_frames.dat");
         
@@ -31,7 +31,7 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
         auto x = X3dna();
         x.generate_dssr_file(m_path);
         
-        REQUIRE(file_exists("p4p6_2_dssr.out"));
+        REQUIRE(base::file_exists("p4p6_2_dssr.out"));
         
         std::remove("p4p6_2_dssr.out");
  
@@ -56,8 +56,8 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
             auto m_path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
             auto basepairs = x.get_basepairs(m_path);
         
-            REQUIRE(!file_exists("ref_frames.dat"));
-            REQUIRE(!file_exists("p4p6_dssr.out"));
+            REQUIRE(!base::file_exists("ref_frames.dat"));
+            REQUIRE(!base::file_exists("p4p6_dssr.out"));
         }
         
         SECTION("needs to build new ref frame and dssr files") {
@@ -65,8 +65,8 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
             auto m_path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6_2/p4p6_2.pdb";
             auto basepairs = x.get_basepairs(m_path);
             
-            REQUIRE(file_exists("ref_frames.dat"));
-            REQUIRE(file_exists("p4p6_2_dssr.out"));
+            REQUIRE(base::file_exists("ref_frames.dat"));
+            REQUIRE(base::file_exists("p4p6_2_dssr.out"));
             
             std::remove("ref_frames.dat");
             std::remove("p4p6_2_dssr.out");
@@ -77,8 +77,8 @@ TEST_CASE( "Test wrapper for x3dna calls", "[X3DNA]" ) {
             auto m_path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
             auto basepairs = x.get_basepairs(m_path, true);
             
-            REQUIRE(file_exists("ref_frames.dat"));
-            REQUIRE(file_exists("p4p6_dssr.out"));
+            REQUIRE(base::file_exists("ref_frames.dat"));
+            REQUIRE(base::file_exists("p4p6_dssr.out"));
             
             std::remove("ref_frames.dat");
             std::remove("p4p6_dssr.out");

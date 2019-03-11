@@ -179,15 +179,15 @@ MotifStateEnsembleTreeEnumerator::record(
     auto mst = mtst_->to_mst();
     CartesianProduct<int> iterator(ranges);
     Ints c, last_combo;
-    Matrix r;
-    Point d;
-    Vector euler;
+    math::Matrix r;
+    math::Point d;
+    math::Vector euler;
     int j = 0;
     float mag;
     float r_diff, r_diff_flip, r_best;
     
-    Matrix I = Matrix::identity();
-    Matrix I_flip = I.get_flip_orientation();
+    math::Matrix I = math::Matrix::identity();
+    math::Matrix I_flip = I.get_flip_orientation();
 
     std::ofstream out(fname + ".out");
     while(!iterator.end()) {
@@ -213,7 +213,7 @@ MotifStateEnsembleTreeEnumerator::record(
             r_best = r_diff_flip;
         }
         
-        calc_euler(r, euler);
+        math::calc_euler(r, euler);
         out << vector_to_str(d) << "," << matrix_to_str(r) << "," << mag << "," << r_diff << "," << r_best << "," << euler[0] << "," << euler[1] << "," << euler[2] << " " <<
             mtst_->get_node(0)->data()->members()[c[0]]->energy << std::endl;
 

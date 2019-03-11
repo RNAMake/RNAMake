@@ -17,8 +17,8 @@ StericLookup::StericLookup():
         grid_size_(0.5),
         cutoff_(2.65),
         radius_(6),
-        additions_(Points()){
-    check_additions_ = Points();
+        additions_(math::Points()){
+    check_additions_ = math::Points();
     _setup_additions();
 }
 
@@ -30,8 +30,8 @@ StericLookup::StericLookup(
         grid_size_(grid_size),
         cutoff_(cutoff),
         radius_(6),
-        additions_(Points()){
-    check_additions_ = Points();
+        additions_(math::Points()){
+    check_additions_ = math::Points();
     _setup_additions();
 }
 
@@ -47,12 +47,12 @@ StericLookup::_setup_additions() {
     }
     
     float dist = 0;
-    Point p;
-    Point origin(0,0,0);
+    math::Point p;
+    math::Point origin(0,0,0);
     for(auto const & x : add) {
         for(auto const & y : add) {
             for(auto const & z : add) {
-                p = Point(x,y,z);
+                p = math::Point(x,y,z);
                 dist = p.distance(origin);
                 if (dist < cutoff_ ) {
                     additions_.push_back(p);
@@ -64,13 +64,13 @@ StericLookup::_setup_additions() {
 
 void
 StericLookup::add_point(
-    Point const & p) {
+    math::Point const & p) {
     
     rounded_.x (round(p.x() / grid_size_)*grid_size_);
     rounded_.y (round(p.y() / grid_size_)*grid_size_);
     rounded_.z (round(p.z() / grid_size_)*grid_size_);
     
-    auto gp = Point();
+    auto gp = math::Point();
     double k;
 
     for(auto const & add : additions_) {
@@ -87,7 +87,7 @@ StericLookup::add_point(
 
 void
 StericLookup::add_points(
-    Points const & points) {
+    math::Points const & points) {
     
     for(auto const & p : points) {
         add_point(p);
@@ -97,7 +97,7 @@ StericLookup::add_points(
 
 int
 StericLookup::clash(
-    Point const & p) {
+    math::Point const & p) {
     
     rounded_.x (round(p.x() / grid_size_)*grid_size_);
     rounded_.y (round(p.y() / grid_size_)*grid_size_);
@@ -113,7 +113,7 @@ StericLookup::clash(
 
 int
 StericLookup::clash(
-    Points const & points) {
+    math::Points const & points) {
     
     int is_clash = 0;
     for(auto const & p : points) {
@@ -128,7 +128,7 @@ StericLookup::clash(
 
 int
 StericLookup::better_clash(
-    Point const & p) {
+    math::Point const & p) {
     
     rounded_.x (round(p.x() / grid_size_)*grid_size_);
     rounded_.y (round(p.y() / grid_size_)*grid_size_);
@@ -155,7 +155,7 @@ StericLookup::better_clash(
 
 int
 StericLookup::total_clash(
-        Point const & p) {
+        math::Point const & p) {
     rounded_.x (round(p.x() / grid_size_)*grid_size_);
     rounded_.y (round(p.y() / grid_size_)*grid_size_);
     rounded_.z (round(p.z() / grid_size_)*grid_size_);
@@ -171,7 +171,7 @@ StericLookup::total_clash(
 
 int
 StericLookup::total_clash(
-        Points const & points) {
+        math::Points const & points) {
     int clash_count = 0;
     for(auto const & p : points) {
         clash_count += clash(p);
@@ -185,14 +185,14 @@ StericLookup::total_clash(
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 StericLookupNew::StericLookupNew() {
-    auto bb = BoundingBox(Point(-200, -200, -200), Point(100, 100, 100));
-    //auto bb = BoundingBox(Point(-10, -10, -10), Point(10, 10, 10));
-    auto bin_widths = Real3{0.25, 0.25, 0.25};
-    histo_ = ThreeDHistogram(bb, bin_widths);
+    auto bb = math::BoundingBox(math::Point(-200, -200, -200), math::Point(100, 100, 100));
+    //auto bb = math::BoundingBox(math::Point(-10, -10, -10), math::Point(10, 10, 10));
+    auto bin_widths = math::Real3{0.25, 0.25, 0.25};
+    histo_ = math::ThreeDHistogram(bb, bin_widths);
     grid_size_ = 0.25;
     cutoff_ = 2.65;
     radius_ = 10;
-    additions_ = Points();
+    additions_ = math::Points();
     _setup_additions();
 }
 
@@ -208,12 +208,12 @@ StericLookupNew::_setup_additions() {
     }
 
     float dist = 0;
-    Point p;
-    Point origin(0,0,0);
+    math::Point p;
+    math::Point origin(0,0,0);
     for(auto const & x : add) {
         for(auto const & y : add) {
             for(auto const & z : add) {
-                p = Point(x,y,z);
+                p = math::Point(x,y,z);
                 dist = p.distance(origin);
                 if (dist < cutoff_ ) {
                     additions_.push_back(p);
@@ -225,7 +225,7 @@ StericLookupNew::_setup_additions() {
 
 void
 StericLookupNew::add_point(
-        Point const & p) {
+        math::Point const & p) {
     for(auto const & add : additions_) {
         dummy_ = p + add;
         histo_.add(dummy_);
@@ -234,19 +234,19 @@ StericLookupNew::add_point(
 
 void
 StericLookupNew::add_points(
-        Points const & points) {
+        math::Points const & points) {
     for(auto const & p : points) { add_point(p); }
 }
 
 bool
 StericLookupNew::clash(
-        Point const & p) {
+        math::Point const & p) {
     return histo_.contains(p);
 }
 
 bool
 StericLookupNew::clash(
-        Points const & points) {
+        math::Points const & points) {
 
     bool is_clash = 0;
     for(auto const & p : points) {

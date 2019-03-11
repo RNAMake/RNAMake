@@ -33,7 +33,7 @@ struct CompareConstructDG {
 
 typedef std::vector<Construct> Constructs;
 
-class OptTectoCutoff : public Application {
+class OptTectoCutoff : public base::Application {
 public:
     OptTectoCutoff();
 
@@ -57,12 +57,12 @@ private:
 
     double
     _score(
-            std::array<Real2, 6> const &);
+            std::array<math::Real2, 6> const &);
 
     void
     _vary_constraints(
-            std::array<Real2, 6> const &,
-            std::array<Real2, 6> &,
+            std::array<math::Real2, 6> const &,
+            std::array<math::Real2, 6> &,
             RandomNumberGenerator &);
 
     void
@@ -83,9 +83,9 @@ private:
             RandomNumberGenerator &);
 
 private:
-    std::vector<SixDHistogram> histos_;
+    std::vector<math::SixDHistogram> histos_;
     Constructs constructs_;
-    std::array<Real2, 6> constraints_, new_constraints_;
+    std::array<math::Real2, 6> constraints_, new_constraints_;
     std::vector<double> exp_dgs_, norm_exp_dgs_, pred_dgs_;
     std::vector<double> avg_hit_counts_;
     double r_, avg_diff_;

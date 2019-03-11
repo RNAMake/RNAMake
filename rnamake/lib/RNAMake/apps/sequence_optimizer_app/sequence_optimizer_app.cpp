@@ -18,19 +18,19 @@
 
 void
 SequenceOptimizerApp::setup_options() {
-    add_option("mg", String(""), OptionType::STRING, true);
-    add_option("end_1", String(""), OptionType::STRING, false);
-    add_option("end_2", String(""), OptionType::STRING, false);
+    add_option("mg", String(""), base::OptionType::STRING, true);
+    add_option("end_1", String(""), base::OptionType::STRING, false);
+    add_option("end_2", String(""), base::OptionType::STRING, false);
 
-    add_option("connections", String(""), OptionType::STRING, false);
+    add_option("connections", String(""), base::OptionType::STRING, false);
     
     
-    add_option("v", false, OptionType::BOOL);
-    add_option("out_file", "default.out", OptionType::STRING);
-    add_option("score_file", "default.scores", OptionType::STRING);
-    add_option("n", 1, OptionType::INT);
-    add_option("opt", String("Internal"), OptionType::STRING);
-    add_option("pdbs", false, OptionType::BOOL);
+    add_option("v", false, base::OptionType::BOOL);
+    add_option("out_file", "default.out", base::OptionType::STRING);
+    add_option("score_file", "default.scores", base::OptionType::STRING);
+    add_option("n", 1, base::OptionType::INT);
+    add_option("opt", String("Internal"), base::OptionType::STRING);
+    add_option("pdbs", false, base::OptionType::BOOL);
     
     add_cl_options(optimizer_.options(), "optimizer");
 }
@@ -40,7 +40,7 @@ SequenceOptimizerApp::parse_command_line(
     int argc,
     const char ** argv) {
     
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
     cl_parser_.assign_options(cl_options_, optimizer_.options(), "optimizer");
     optimizer_.set_option_value("verbose", get_bool_option("v"));
 }

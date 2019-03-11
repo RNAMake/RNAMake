@@ -41,7 +41,7 @@ public:
         Strings const & end_names,
         Strings const & end_ids,
         BasepairStateOPs const & end_states,
-        Points const & beads,
+        math::Points const & beads,
         float const & score,
         int const & size,
         int const & block_end_add):
@@ -62,7 +62,7 @@ public:
         Strings const & end_names,
         Strings const & end_ids,
         BasepairStateOPs const & end_states,
-        Points const & beads,
+        math::Points const & beads,
         float const & score,
         int const & size,
         int const & block_end_add,
@@ -106,7 +106,7 @@ public:
         score_ = std::stof(spl[1]);
         size_ = std::stoi(spl[2]);
         block_end_add_ = std::stoi(spl[3]);
-        beads_ = vectors_from_str(spl[4]);
+        beads_ = math::vectors_from_str(spl[4]);
         end_names_ = base::split_str_by_delimiter(spl[5], ",");
         end_ids_ = base::split_str_by_delimiter(spl[6], ",");
         end_states_ = BasepairStateOPs();
@@ -126,7 +126,7 @@ public: // non const methods
     inline
     void
     move(
-            Point const & p) {
+            math::Point const & p) {
         for(auto & end_state : end_states_) {
             end_state->move(p);
         }
@@ -139,16 +139,16 @@ public: // non const methods
     inline
     void
     transform(
-            Matrix const & r,
-            Vector const & t,
-            Point & dummy) {
+            math::Matrix const & r,
+            math::Vector const & t,
+            math::Point & dummy) {
 
         for(auto & end_state : end_states_) {
             end_state->transform(r, t, dummy);
         }
 
         for( auto & b : beads_) {
-            dot_vector(r, b, dummy);
+            math::dot_vector(r, b, dummy);
             dummy += t;
             b = dummy;
         }
@@ -157,9 +157,9 @@ public: // non const methods
     inline
     void
     transform(
-            Matrix const & r,
-            Vector const & t) {
-        auto dummy = Point();
+            math::Matrix const & r,
+            math::Vector const & t) {
+        auto dummy = math::Point();
         transform(r, t, dummy);
     }
 
@@ -200,7 +200,7 @@ public: // getters
     end_states() { return end_states_; }
     
     inline
-    Points const &
+    math::Points const &
     beads() { return beads_; }
     
     inline
@@ -238,7 +238,7 @@ public:
     inline
     void
     beads(
-        Points const & beads) { beads_ = beads; }
+        math::Points const & beads) { beads_ = beads; }
     
     inline
     void
@@ -253,7 +253,7 @@ private:
     Strings end_names_;
     Strings end_ids_;
     BasepairStateOPs end_states_;
-    Points beads_;
+    math::Points beads_;
     float score_;
     int size_;
     int block_end_add_;
@@ -279,8 +279,8 @@ align_motif_state(
         org_state->update_end_state(i, bp_state_final);
     }
     
-    Points t_beads (org_state->beads().size());
-    dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
+    math::Points t_beads (org_state->beads().size());
+    math::dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
     for(int i = 0; i < t_beads.size();  i++) { t_beads[i] += bp_state.d(); }
     org_state->beads(t_beads);
     
@@ -301,8 +301,8 @@ get_aligned_motif_state(
         cur_state->update_end_state(i, bp_state_final);
     }
     
-    Points t_beads (org_state->beads().size());
-    dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
+    math::Points t_beads (org_state->beads().size());
+    math::dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
     for(int i = 0; i < t_beads.size();  i++) { t_beads[i] += bp_state.d(); }
     cur_state->beads(t_beads);
     

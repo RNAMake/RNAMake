@@ -16,32 +16,32 @@
 
 void
 PathBuilder::setup_options() {
-    options_.add_option("path", String(""), OptionType::STRING);
-    options_.add_option("mg", String(""), OptionType::STRING);
-    options_.add_option("solutions", 1, OptionType::INT);
-    options_.add_option("verbose", true, OptionType::BOOL);
+    options_.add_option("path", String(""), base::OptionType::STRING);
+    options_.add_option("mg", String(""), base::OptionType::STRING);
+    options_.add_option("solutions", 1, base::OptionType::INT);
+    options_.add_option("verbose", true, base::OptionType::BOOL);
     options_.lock_option_adding();
     update_var_options();
 }
 
 void
 PathBuilder::setup(
-    CommandLineOptions const & cmd_opts) {
+    base::CommandLineOptions const & cmd_opts) {
     
     for(auto const & opt: cmd_opts) {
         if(! has_option(opt->name())) { continue; }
         if(! opt->filled()) { continue; }
         
-        if     (opt->type() == OptionType::INT) {
+        if     (opt->type() == base::OptionType::INT) {
             set_option_value(opt->name(), opt->get_int());
         }
-        else if(opt->type() == OptionType::FLOAT) {
+        else if(opt->type() == base::OptionType::FLOAT) {
             set_option_value(opt->name(), opt->get_float());
         }
-        else if(opt->type() == OptionType::BOOL) {
+        else if(opt->type() == base::OptionType::BOOL) {
             set_option_value(opt->name(), opt->get_bool());
         }
-        else if(opt->type() == OptionType::STRING) {
+        else if(opt->type() == base::OptionType::STRING) {
             set_option_value(opt->name(), opt->get_string());
         }
     }
@@ -50,7 +50,7 @@ PathBuilder::setup(
 void
 PathBuilder::build() {
     auto lines = base::get_lines_from_file(get_string_option("path"));
-    auto path_points = vectors_from_str(lines[0]);
+    auto path_points = math::vectors_from_str(lines[0]);
     
     auto mg = MotifGraphOP(nullptr);
     int n1;
@@ -186,14 +186,14 @@ PathBuilder::build() {
 }
 
 
-std::vector<Points>
+std::vector<math::Points>
 PathBuilder::_get_segments(
-    Points const & path) {
+    math::Points const & path) {
     
-    auto direction = Vector();
-    auto new_direction = Vector();
-    auto segment = Points();
-    auto segments = std::vector<Points>();
+    auto direction = math::Vector();
+    auto new_direction = math::Vector();
+    auto segment = math::Points();
+    auto segments = std::vector<math::Points>();
     
     int i = -1;
     for(auto const & p : path) {
@@ -212,7 +212,7 @@ PathBuilder::_get_segments(
         
         if(direction.distance(new_direction) > 0.1) {
             segments.push_back(segment);
-            segment = Points();
+            segment = math::Points();
             segment.push_back(p);
             direction = new_direction;
         }
@@ -230,13 +230,13 @@ PathBuilder::_get_segments(
 }
 
 
-std::vector<Points>
+std::vector<math::Points>
 PathBuilder::_get_sub_pathes(
-    std::vector<Points> const & segments) {
+    std::vector<math::Points> const & segments) {
     
-    auto pathes = std::vector<Points>();
+    auto pathes = std::vector<math::Points>();
     for(int i = 1; i < segments.size(); i++) {
-        auto p = Points();
+        auto p = math::Points();
         if(i == 1) {
             for(auto const & e : segments[0]) { p.push_back(e); }
         }
@@ -263,18 +263,18 @@ PathBuilder::_get_sub_pathes(
 /**************************************************************************************************/
 
 
-CommandLineOptions
+base::CommandLineOptions
 parse_command_line(
     int argc,
     const char ** argv) {
     
-    CommandLineOptions cl_opts;
+    base::CommandLineOptions cl_opts;
     auto search = MotifStateSearch();
     cl_opts.add_options(search.options());
-    cl_opts.add_option("path", String(""), OptionType::STRING, false);
-    cl_opts.add_option("mg", String(""), OptionType::STRING, false);
-    cl_opts.add_option("only_one", 1, OptionType::INT, false);
-    cl_opts.add_option("full_path", false, OptionType::BOOL, false);
+    cl_opts.add_option("path", String(""), base::OptionType::STRING, false);
+    cl_opts.add_option("mg", String(""), base::OptionType::STRING, false);
+    cl_opts.add_option("only_one", 1, base::OptionType::INT, false);
+    cl_opts.add_option("full_path", false, base::OptionType::BOOL, false);
     cl_opts.parse_command_line(argc, argv);
     
     return cl_opts;
@@ -300,7 +300,7 @@ int main(int argc, const char * argv[]) {
     }
     
     auto lines =base::get_lines_from_file(cmd_opts.get_string("path"));
-    auto path_points = vectors_from_str(lines[0]);
+    auto path_points = math::vectors_from_str(lines[0]);
 
     auto pf = PathFollower();
     if(cmd_opts.is_filled("mg")) {

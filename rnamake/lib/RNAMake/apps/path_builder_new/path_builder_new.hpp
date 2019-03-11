@@ -21,9 +21,9 @@ struct EndStateInfo {
 };
 
 
-class PathBuilderNewApp : public Application {
+class PathBuilderNewApp : public base::Application {
 public:
-    PathBuilderNewApp() : Application(),
+    PathBuilderNewApp() : base::Application(),
     search_(MotifStateSearch())
     {}
     

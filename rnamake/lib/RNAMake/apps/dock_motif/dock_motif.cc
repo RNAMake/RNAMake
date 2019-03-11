@@ -10,15 +10,15 @@
 #include "resources/resource_manager.h"
 #include "dock_motif/dock_motif.h"
 
-DockMotifApp::DockMotifApp() : Application() {}
+DockMotifApp::DockMotifApp() : base::Application() {}
 
 void
 DockMotifApp::setup_options() {
 
-    add_option("scaffold", String(""), OptionType::STRING, true);
-    add_option("motif", String(""), OptionType::STRING, true);
-    add_option("origin", String(""), OptionType::STRING, false);
-    add_option("ligand", String(""), OptionType::STRING, false);
+    add_option("scaffold", String(""), base::OptionType::STRING, true);
+    add_option("motif", String(""), base::OptionType::STRING, true);
+    add_option("origin", String(""), base::OptionType::STRING, false);
+    add_option("ligand", String(""), base::OptionType::STRING, false);
 }
 
 void
@@ -26,7 +26,7 @@ DockMotifApp::parse_command_line(
         int argc,
         const char ** argv) {
 
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
 
 }
 
@@ -50,14 +50,14 @@ DockMotifApp::run() {
 
     auto screening_lookup = StericLookup(1.0, 5.0, 6);
     lookup_ = StericLookup(1.0, 4.0, 6);
-    auto bead_centers = Points();
+    auto bead_centers = math::Points();
     for(auto const & b: scaffold->get_beads()) {
         bead_centers.push_back(b.center());
     }
     screening_lookup.add_points(bead_centers);
     lookup_.add_points(bead_centers);
 
-    auto center = Point();
+    auto center = math::Point();
     if(get_string_option("ligand") != "") {
         auto ligand = _parse_ligand_for_center_coords();
         center_ = ligand->center();
@@ -97,11 +97,11 @@ DockMotifApp::run() {
 MotifStateOP
 DockMotifApp::_get_starting_state(
         StericLookup & screening_lookup,
-        Point const & center) {
+        math::Point const & center) {
 
     auto ms = rotations_[0];
     auto rng = RandomNumberGenerator();
-    auto p = Point();
+    auto p = math::Point();
     int bound = 2;
 
     ms->move(center - ms->end_states()[0]->d());
@@ -124,7 +124,7 @@ DockMotifApp::_search() {
     auto last_ms = ms;
     auto rng = RandomNumberGenerator();
     int bound = 2;
-    auto p = Point();
+    auto p = math::Point();
 
     auto current = _score(ms);
     auto best = current;
@@ -190,20 +190,20 @@ DockMotifApp::_score(
 }
 
 
-Point
+math::Point
 get_random_point(
         RandomNumberGenerator & rng,
         int bound) {
     auto x = bound - rng.rand()*2*bound;
     auto y = bound - rng.rand()*2*bound;
     auto z = bound - rng.rand()*2*bound;
-    return Point(x, y, z);
+    return math::Point(x, y, z);
 }
 
-Point
+math::Point
 DockMotifApp::_calc_motif_center(
         MotifOP m ) {
-    auto m_center = Point();
+    auto m_center = math::Point();
     for(auto b : m->beads()) {
         m_center += b.center();
     }
@@ -229,29 +229,29 @@ DockMotifApp::_parse_ligand_for_center_coords() {
     return res[0];
 }
 
-Matrix
+math::Matrix
 DockMotifApp::_rotation_about_x_axis(
         float degrees) {
     float a = 3.14/180*degrees;
-    return Matrix(1.0, 0.0, 0.0,
+    return math::Matrix(1.0, 0.0, 0.0,
                   0.0, cos(a), sin(a),
                   0.0, -sin(a), cos(a));
 }
 
-Matrix
+math::Matrix
 DockMotifApp::_rotation_about_y_axis(
         float degrees) {
     float b = 3.14/180*degrees;
-    return Matrix(cos(b), 0.0, -sin(b),
+    return math::Matrix(cos(b), 0.0, -sin(b),
                   0.0, 1.0, 0.0,
                   sin(b), 0.0, cos(b));
 }
 
-Matrix
+math::Matrix
 DockMotifApp::_rotation_about_z_axis(
         float degrees) {
     float g = 3.14/180*degrees;
-    return Matrix(cos(g), sin(g), 0.0,
+    return math::Matrix(cos(g), sin(g), 0.0,
                   -sin(g), cos(g), 0.0,
                   0.0, 0.0, 1.0);
 }
@@ -263,7 +263,7 @@ DockMotifApp::_precompute_rotations(
     auto r_y = _rotation_about_y_axis(30);
     auto r_z = _rotation_about_z_axis(30);
 
-    auto p = Point(0, 0, 0);
+    auto p = math::Point(0, 0, 0);
 
     ms->move(-ms->end_states()[0]->d());
 

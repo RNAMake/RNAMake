@@ -139,10 +139,10 @@ ThermoFlucSimulationDevel::run() {
     int clash = 0;
     int pdb_count = 0;
 
-    auto r1_trans = Matrix();
-    auto r2_trans = Matrix();
-    auto r_result = Matrix();
-    auto rot      = Matrix();
+    auto r1_trans = math::Matrix();
+    auto r2_trans = math::Matrix();
+    auto r_result = math::Matrix();
+    auto rot      = math::Matrix();
 
     auto mf = MotifFactory();
 

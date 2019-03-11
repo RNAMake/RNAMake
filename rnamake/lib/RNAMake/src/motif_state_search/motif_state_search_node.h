@@ -161,7 +161,7 @@ public: //getters
     parent_end_index() { return parent_end_index_; }
     
     inline
-    Point const &
+    math::Point const &
     center() { return center_; }
     
 
@@ -185,7 +185,7 @@ public: //setters
 private:
     MotifStateOP ref_state_, cur_state_;
     MotifStateSearchNodeOP parent_;
-    Point center_;
+    math::Point center_;
     Ints node_type_usages_;
     int parent_end_index_, level_, size_, ntype_;
     float ss_score_, score_;

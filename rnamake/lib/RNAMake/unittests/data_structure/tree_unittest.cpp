@@ -16,14 +16,14 @@ TEST_CASE( "Test general tree data structure", "[Tree]" ) {
         REQUIRE(t.get_node(0)->children().size() == 2);
         
         SECTION("cannot add to no existent parent") {
-            REQUIRE_THROWS_AS(t.add_data(3, 5), TreeException);
+            REQUIRE_THROWS_AS(t.add_data(3, 5), data_structure::tree::TreeException);
         }
         
         t.remove_node(2);
         REQUIRE(t.get_node(0)->children().size() == 1);
         
         SECTION("cannot add to no existent parent") {
-            REQUIRE_THROWS_AS(t.add_data(3, 2), TreeException);
+            REQUIRE_THROWS_AS(t.add_data(3, 2), data_structure::tree::TreeException);
         }
         
         t.add_data(2, 0);    //index 3
@@ -36,8 +36,8 @@ TEST_CASE( "Test general tree data structure", "[Tree]" ) {
         
         auto n = t.get_node(0);
         REQUIRE(n != nullptr);
-        REQUIRE_THROWS_AS(t.get_node(2), TreeException);
-        REQUIRE_THROWS_AS(t.remove_node(2), TreeException);
+        REQUIRE_THROWS_AS(t.get_node(2), data_structure::tree::TreeException);
+        REQUIRE_THROWS_AS(t.remove_node(2), data_structure::tree::TreeException);
         
     }
     
@@ -48,11 +48,11 @@ TEST_CASE( "Test general tree data structure", "[Tree]" ) {
         t.add_data(2, 2, 0, 1);
         
         SECTION("cannot add node connected to index 0 since it has no free children slots") {
-            REQUIRE_THROWS_AS(t.add_data(3, 2, 0), TreeException);
+            REQUIRE_THROWS_AS(t.add_data(3, 2, 0), data_structure::tree::TreeException);
         }
         
         SECTION("cannot add node conected to index 2 does not have a slot 2") {
-            REQUIRE_THROWS_AS(t.add_data(3, 2, 2, 2), TreeException);
+            REQUIRE_THROWS_AS(t.add_data(3, 2, 2, 2), data_structure::tree::TreeException);
         }
         
         REQUIRE(t.size() == 3);

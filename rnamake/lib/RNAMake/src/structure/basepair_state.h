@@ -25,51 +25,51 @@ public:
 	
 	inline
 	BasepairState():
-	d_( Point(0.0) ),
-	r_( Matrix(0.0) ),
-	r_T_( Matrix(0.0) ),
-	sugars_ ( Points(2) ),
-	diff_ ( Vector(0.0) ),
-	diff_sugars_( Vectors(2) )
+	d_( math::Point(0.0) ),
+	r_( math::Matrix(0.0) ),
+	r_T_( math::Matrix(0.0) ),
+	sugars_ ( math::Points(2) ),
+	diff_ ( math::Vector(0.0) ),
+	diff_sugars_( math::Vectors(2) )
  	{}
 	
 	inline
 	BasepairState(
-		Point const & d,
-		Matrix const & r,
-		Points const & sugars):
+		math::Point const & d,
+		math::Matrix const & r,
+		math::Points const & sugars):
 	d_( d ),
 	r_( r ),
-	r_T_( Matrix(0) ),
+	r_T_( math::Matrix(0) ),
 	sugars_( sugars ),
-	diff_ ( Vector(0.0) ),
-	diff_sugars_( Vectors(2) )
+	diff_ ( math::Vector(0.0) ),
+	diff_sugars_( math::Vectors(2) )
 	{ transpose(r_, r_T_); }
 	
     inline
     BasepairState(BasepairState const & b):
     d_( b.d_ ),
     r_( b.r_ ),
-    r_T_( Matrix(0) ),
+    r_T_( math::Matrix(0) ),
     sugars_ (b.sugars_),
-    diff_ ( Vector(0.0) ),
-    diff_sugars_( Vectors(2) )
+    diff_ ( math::Vector(0.0) ),
+    diff_sugars_( math::Vectors(2) )
     { transpose(r_, r_T_); }
 
     inline
     BasepairState(String const & s):
-    r_T_( Matrix(0) ),
-    diff_ ( Vector(0.0) ),
-    diff_sugars_( Vectors(2) )
+    r_T_( math::Matrix(0) ),
+    diff_ ( math::Vector(0.0) ),
+    diff_sugars_( math::Vectors(2) )
     {
         auto spl = base::split_str_by_delimiter(s, ";");
         if(spl.size() < 3) {
             throw "cannot load BasepairState from String, not the right number of elements\n";
         }
         
-        d_ = Point(spl[0]);
-        r_ = Matrix(spl[1]);
-        sugars_ = vectors_from_str(spl[2]);
+        d_ = math::Point(spl[0]);
+        r_ = math::Matrix(spl[1]);
+        sugars_ = math::vectors_from_str(spl[2]);
         transpose(r_, r_T_);
     }
     
@@ -90,7 +90,7 @@ public: // non const methods
 	inline
 	void
 	move(
-			Point const & p) {
+			math::Point const & p) {
 		d_ = d_ + p;
 		sugars_[0] = sugars_[0] + p;
 		sugars_[1] = sugars_[1] + p;
@@ -99,19 +99,19 @@ public: // non const methods
 	inline
 	void
 	transform(
-			Matrix const & r,
-			Vector const & t,
-			Point & dummy) {
-		dot_vector(r, d_, dummy);
+			math::Matrix const & r,
+			math::Vector const & t,
+			math::Point & dummy) {
+		math::dot_vector(r, d_, dummy);
 		d_ = dummy + t;
 
-		dot_vector(r, sugars_[0], dummy);
+		math::dot_vector(r, sugars_[0], dummy);
 		sugars_[0] = dummy + t;
 
-		dot_vector(r, sugars_[1], dummy);
+		math::dot_vector(r, sugars_[1], dummy);
 		sugars_[1] = dummy + t;
 
-		auto r_new = Matrix();
+		auto r_new = math::Matrix();
 		dot(r_, r, r_new);
 		r_ = r_new;
 		r_.unitarize();
@@ -120,9 +120,9 @@ public: // non const methods
 	inline
 	void
 	transform(
-			Matrix const & r,
-			Vector const & t) {
-		auto dummy = Point();
+			math::Matrix const & r,
+			math::Vector const & t) {
+		auto dummy = math::Point();
 		transform(r, t, dummy);
 	}
 
@@ -147,7 +147,7 @@ public:
         r_state.calculate_r_T();
         
 		//rotate sugars to new position and store them in r_state
-		dot_vectors(r_state.r_T_, o_state.sugars_, r_state.sugars_);
+		math::dot_vectors(r_state.r_T_, o_state.sugars_, r_state.sugars_);
 		
 		diff_ = -o_state.d() + d_;
 		int i;
@@ -173,8 +173,8 @@ public:
 
 		dot        (r_, o_state.r_T_, r_state.r_);
         r_state.r_.unitarize();
-		dot_vector (o_state.r_T_, d_, r_state.d_);
-		dot_vectors(o_state.r_T_, sugars_, r_state.sugars_);
+		math::dot_vector (o_state.r_T_, d_, r_state.d_);
+		math::dot_vectors(o_state.r_T_, sugars_, r_state.sugars_);
 
 		int i;
 		for(i = 0; i < 2; i++) {
@@ -228,56 +228,56 @@ public: //getters
 	
 	inline
 	const
-	Point &
+	math::Point &
 	d() {
 		return d_;
 	}
 	
 	inline
 	const
-	Point &
+	math::Point &
 	d() const {
 		return d_;
 	}
 	
 	inline
 	const
-	Matrix &
+	math::Matrix &
 	r() {
 		return r_;
 	}
 	
 	inline
 	const
-	Matrix &
+	math::Matrix &
 	r() const {
 		return r_;
 	}
 	
 	inline
 	const
-	Matrix &
+	math::Matrix &
 	r_T() {
 		return r_T_;
 	}
 	
 	inline
 	const
-	Matrix &
+	math::Matrix &
 	r_T() const {
 		return r_T_;
 	}
 	
 	inline
 	const
-	Points &
+	math::Points &
 	sugars() {
 		return sugars_;
 	}
 	
 	inline
 	const
-	Points &
+	math::Points &
 	sugars() const {
 		return sugars_;
 	}
@@ -287,15 +287,15 @@ public: //setters
 	
 	inline
 	void
-	d(Point const & newd) { d_ = newd; }
+	d(math::Point const & newd) { d_ = newd; }
 	
 	inline
 	void
-	r( Matrix const & newr) { r_ = newr; }
+	r( math::Matrix const & newr) { r_ = newr; }
 	
 	inline
 	void
-	sugars( Points const & newsug) { sugars_ = newsug; }
+	sugars( math::Points const & newsug) { sugars_ = newsug; }
 	
     inline
 	void
@@ -308,10 +308,10 @@ public: //setters
 	
 	
 private:	
-	Point d_;
-	Matrix r_;
-	Matrix r_T_; //holds the transpose of r_ for speed
-	Points sugars_;
+	math::Point d_;
+	math::Matrix r_;
+	math::Matrix r_T_; //holds the transpose of r_ for speed
+	math::Points sugars_;
 	
 	/*
 	Inclusion of these two tempory variables increases the speed of
@@ -320,8 +320,8 @@ private:
 	done in the algorithm -JDY 2014.10.4
 	*/
 	
-	Vector diff_; //stores partial products to speed up algorithm
-	Vectors diff_sugars_; //stores partial products to speed up algorithm
+	math::Vector diff_; //stores partial products to speed up algorithm
+	math::Vectors diff_sugars_; //stores partial products to speed up algorithm
 
 	
 };

@@ -15,27 +15,31 @@
 #include "math/xyz_vector.h"
 #include "math/xyz_matrix.h"
 
+namespace math {
+
 int
 are_floats_equal(
-	double const a,
-	double const b,
-    double tol= 0.001);
+        double const a,
+        double const b,
+        double tol = 0.001);
 
 int
 are_xyzVector_equal(
-	Vector const & vec,
-	Vector const & correct_vec,
-    float tol= 0.001);
+        Vector const & vec,
+        Vector const & correct_vec,
+        float tol = 0.001);
 
 int
 are_xyzVectors_equal(
-	Vectors const &,
-	Vectors const &
+        Vectors const &,
+        Vectors const &
 );
 
 int
 are_xyzMatrix_equal(
-	Matrix const &,
-	Matrix const &);
+        Matrix const &,
+        Matrix const &);
+
+}
 
 #endif /* defined(__REDESIGNC__Numeric_Test__) */

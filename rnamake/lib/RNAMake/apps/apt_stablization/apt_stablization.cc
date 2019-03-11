@@ -11,18 +11,18 @@
 
 
 
-APTStablization::APTStablization() : Application() {}
+APTStablization::APTStablization() : base::Application() {}
 
 void
 APTStablization::setup_options() {
-    add_option("pdb", String(""), OptionType::STRING, true);
+    add_option("pdb", String(""), base::OptionType::STRING, true);
 
     // general options
-    add_option("out_file", "default.out", OptionType::STRING, false);
-    add_option("score_file", "default.scores", OptionType::STRING, false);
-    add_option("designs", 1, OptionType::INT, false);
-    add_option("only_existing_motifs", false, OptionType::BOOL, false);
-    add_option("only_ideal", false, OptionType::BOOL, false);
+    add_option("out_file", "default.out", base::OptionType::STRING, false);
+    add_option("score_file", "default.scores", base::OptionType::STRING, false);
+    add_option("designs", 1, base::OptionType::INT, false);
+    add_option("only_existing_motifs", false, base::OptionType::BOOL, false);
+    add_option("only_ideal", false, base::OptionType::BOOL, false);
 }
 
 void
@@ -30,7 +30,7 @@ APTStablization::parse_command_line(
         int argc,
         const char **argv) {
 
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
 }
 
 
@@ -220,7 +220,7 @@ APTStablization::_get_libraries(
 void
 APTStablization::_setup_sterics(
         MotifStateGraphOP msg) {
-    auto beads = Points();
+    auto beads = math::Points();
     for (auto & n : *msg) {
         for(auto const & b : n->data()->cur_state->beads()) {
             beads.push_back(b);

@@ -64,8 +64,8 @@ public:
     X3Basepair(
         X3Residue const & nres1,
         X3Residue const & nres2,
-        Matrix const & nr,
-        Point const & nd):
+        math::Matrix const & nr,
+        math::Point const & nd):
     res1(nres1),
     res2(nres2),
     r(nr),
@@ -77,8 +77,8 @@ public:
 
 public:
     X3Residue res1, res2;
-    Point d;
-    Matrix r;
+    math::Point d;
+    math::Matrix r;
     String bp_type;
     
 };
@@ -131,7 +131,7 @@ private:
     _get_dssr_file_path(String const & pdb_path,
                         bool force_build_files = false);
     
-    Point
+    math::Point
     _convert_strings_to_point(Strings const &);
     
     void

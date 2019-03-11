@@ -30,7 +30,7 @@ struct EndStateInfo {
 };
 
 
-class DesignRNAApp : public Application {
+class DesignRNAApp : public base::Application {
 public:
 
     DesignRNAApp();

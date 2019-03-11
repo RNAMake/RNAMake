@@ -26,12 +26,12 @@ PDBParser::parse(
     Strings lines = base::get_lines_from_file(pdb_file);
     String startswith;
     String atomname, resname, resnum, chid, alt;
-    Point coords;
+    math::Point coords;
     String sx, sy, sz;
     double x, y, z;
     
     Strings atomnames, resnames, chainids, icodes, resnums;
-    Points coordinates;
+    math::Points coordinates;
     
     for(auto const & line : lines) {
         startswith = line.substr(0,6);
@@ -55,7 +55,7 @@ PDBParser::parse(
             x        = std::stod(sx);
             y        = std::stod(sy);
             z        = std::stod(sz);
-            coords   = Point(x, y, z);
+            coords   = math::Point(x, y, z);
             
             resnum  = line.substr(22, 4);
             resnum  = base::trim(resnum);

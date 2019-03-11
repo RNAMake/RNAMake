@@ -150,7 +150,7 @@ PoseFactory::_add_motifs_to_pose(
     
     //int j = 0;
     float dist, best_dist;
-    Point r1_cent, r2_cent;
+    math::Point r1_cent, r2_cent;
     ResidueOP best_match;
     std::map<MotifType, MotifOPs> motif_map;
     motif_map[MotifType::ALL] = MotifOPs();

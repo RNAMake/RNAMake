@@ -75,13 +75,13 @@ public: //option wrappers
             auto name = prefix + "." + opt->name();
 
             if (opt->type() == OptionType::STRING) {
-                cl_options_.add_option(name, opt->get_string(), OptionType::STRING, false);
+                cl_options_.add_option(name, opt->get_string(), base::OptionType::STRING, false);
             } else if (opt->type() == OptionType::FLOAT) {
-                cl_options_.add_option(name, opt->get_float(), OptionType::FLOAT, false);
+                cl_options_.add_option(name, opt->get_float(), base::OptionType::FLOAT, false);
             } else if (opt->type() == OptionType::INT) {
-                cl_options_.add_option(name, opt->get_int(), OptionType::INT, false);
+                cl_options_.add_option(name, opt->get_int(), base::OptionType::INT, false);
             } else if (opt->type() == OptionType::BOOL) {
-                cl_options_.add_option(name, opt->get_bool(), OptionType::BOOL, false);
+                cl_options_.add_option(name, opt->get_bool(), base::OptionType::BOOL, false);
 
             }
 

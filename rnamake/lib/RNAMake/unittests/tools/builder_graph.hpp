@@ -9,7 +9,7 @@ class BuilderGraph {
 public:
     
     BuilderGraph() {
-        g_ = GraphStatic<MotifType>();
+        g_ = data_structure::graph::GraphStatic<MotifType>();
     }
     
     size_t
@@ -52,13 +52,13 @@ public:
     }
     
     inline
-    GraphNodeOP<MotifType> const &
+    data_structure::graph::GraphNodeOP<MotifType> const &
     get_node(int i) { return g_.get_node(i); }
     
 public: //iterators
     
-    typedef typename GraphStatic<MotifType>::iterator iterator;
-    typedef typename GraphStatic<MotifType>::const_iterator const_iterator;
+    typedef typename data_structure::graph::GraphStatic<MotifType>::iterator iterator;
+    typedef typename data_structure::graph::GraphStatic<MotifType>::const_iterator const_iterator;
     
     iterator begin() { return g_.begin(); }
     iterator end()   { return g_.end(); }
@@ -68,7 +68,7 @@ public: //iterators
     
     
 private:
-    GraphStatic<MotifType> g_;
+    data_structure::graph::GraphStatic<MotifType> g_;
 };
 
 

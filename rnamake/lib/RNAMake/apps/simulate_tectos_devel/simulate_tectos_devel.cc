@@ -146,8 +146,8 @@ public:
         dot(r1_trans_.transposed(), r2_trans_, r_);
         r_.unitarize();
 
-        auto euler = Vector();
-        calc_euler(r_, euler);
+        auto euler = math::Vector();
+        math::calc_euler(r_, euler);
 
         d_ = d2_ - d1_;
 
@@ -200,7 +200,7 @@ private:
             auto pos = _parse_constraint_position(spl2[0]);
             auto lower = std::stod(spl2[1]);
             auto upper = std::stod(spl2[2]);
-            constraints_[pos] = Real2{lower, upper};
+            constraints_[pos] = math::Real2{lower, upper};
         }
     }
 
@@ -221,16 +221,16 @@ private:
 
     void
     _setup_constraints() {
-        for(int i = 0; i < 3; i++) { constraints_[i] = Real2{ -100, 100}; }
-        for(int i = 3; i < 6; i++) { constraints_[i] = Real2{ -180, 180}; }
+        for(int i = 0; i < 3; i++) { constraints_[i] = math::Real2{ -100, 100}; }
+        for(int i = 3; i < 6; i++) { constraints_[i] = math::Real2{ -180, 180}; }
     }
 
 private:
     BasepairOP ref_bp_;
-    Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
-    Point d1_, d2_, d_;
-    Real6 value_;
-    std::array<Real2, 6> constraints_;
+    math::Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
+    math::Point d1_, d2_, d_;
+    math::Real6 value_;
+    std::array<math::Real2, 6> constraints_;
     double dist_;
 
 
@@ -244,16 +244,16 @@ public:
             BasepairOP ref_bp ):
             ThermoFlucSimulationLogger("out.out"),
             ref_bp_(ref_bp),
-            histo_(SixDHistogram(BoundingBox(), Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1})),
+            histo_(math::SixDHistogram(math::BoundingBox(), math::Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1})),
             file_name_(fname) {
         ref_r_t_ = ref_bp_->r().transposed();
         _setup_constraints();
         _parse_constraints(constraints);
-        auto lower = Point(constraints_[0][0], constraints_[1][0], constraints_[2][0]);
-        auto upper = Point(constraints_[0][1], constraints_[1][1], constraints_[2][1]);
-        auto bb = BoundingBox(lower, upper);
-        auto bin_widths = Real6{0.25, 0.25, 0.25, 5.0, 5.0, 5.0};
-        histo_ = SixDHistogram(bb, bin_widths);
+        auto lower = math::Point(constraints_[0][0], constraints_[1][0], constraints_[2][0]);
+        auto upper = math::Point(constraints_[0][1], constraints_[1][1], constraints_[2][1]);
+        auto bb = math::BoundingBox(lower, upper);
+        auto bin_widths = math::Real6{0.25, 0.25, 0.25, 5.0, 5.0, 5.0};
+        histo_ = math::SixDHistogram(bb, bin_widths);
     }
 
 public:
@@ -282,8 +282,8 @@ public:
         dot(r1_trans_.transposed(), r2_trans_, r_);
         r_.unitarize();
 
-        auto euler = Vector();
-        calc_euler(r_, euler);
+        auto euler = math::Vector();
+        math::calc_euler(r_, euler);
 
         d_ = d2_ - d1_;
         for(int i = 0; i < 3; i++) {
@@ -334,7 +334,7 @@ private:
             auto pos = _parse_constraint_position(spl2[0]);
             auto lower = std::stod(spl2[1]);
             auto upper = std::stod(spl2[2]);
-            constraints_[pos] = Real2{lower, upper};
+            constraints_[pos] = math::Real2{lower, upper};
         }
 
     }
@@ -356,25 +356,25 @@ private:
 
     void
     _setup_constraints() {
-        for(int i = 0; i < 3; i++) { constraints_[i] = Real2{ -100, 100}; }
-        for(int i = 3; i < 6; i++) { constraints_[i] = Real2{ 0, 360}; }
+        for(int i = 0; i < 3; i++) { constraints_[i] = math::Real2{ -100, 100}; }
+        for(int i = 3; i < 6; i++) { constraints_[i] = math::Real2{ 0, 360}; }
     }
 
 private:
     BasepairOP ref_bp_;
-    Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
-    Point d1_, d2_, d_;
+    math::Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
+    math::Point d1_, d2_, d_;
     String file_name_;
-    SixDHistogram histo_;
-    Real6 values_;
-    std::array<Real2, 6> constraints_;
+    math::SixDHistogram histo_;
+    math::Real6 values_;
+    std::array<math::Real2, 6> constraints_;
     double dist_;
 
 
 
 };
 
-SimulateTectosApp::SimulateTectosApp() : Application(),
+SimulateTectosApp::SimulateTectosApp() : base::Application(),
         tfs_(ThermoFlucSimulationDevel()),
         motif_names_(Strings()),
         ggaa_ttr_end_names_(Strings()),
@@ -385,37 +385,37 @@ SimulateTectosApp::SimulateTectosApp() : Application(),
 
 void
 SimulateTectosApp::setup_options() {
-    add_option("fseq", "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", OptionType::STRING);
-    add_option("fss",  "((((((....((((((((((((....))))))))))))....))))))", OptionType::STRING);
+    add_option("fseq", "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", base::OptionType::STRING);
+    add_option("fss",  "((((((....((((((((((((....))))))))))))....))))))", base::OptionType::STRING);
     add_option("cseq", "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG",  OptionType::STRING);
     add_option("css",  "(((((((..((((((((((((....))))))))))))...)))))))",  OptionType::STRING);
-    add_option("s", 1000000, OptionType::INT);
-    add_option("start_pose", false, OptionType::BOOL);
-    add_option("start_pdbs", false, OptionType::BOOL);
-    add_option("coorigin", false, OptionType::BOOL);
-    add_option("gaaa_coorigin", false, OptionType::BOOL);
+    add_option("s", 1000000, base::OptionType::INT);
+    add_option("start_pose", false, base::OptionType::BOOL);
+    add_option("start_pdbs", false, base::OptionType::BOOL);
+    add_option("coorigin", false, base::OptionType::BOOL);
+    add_option("gaaa_coorigin", false, base::OptionType::BOOL);
 
     //extra ensembles
-    add_option("extra_me", "", OptionType::STRING);
+    add_option("extra_me", "", base::OptionType::STRING);
 
     //new ggaa loop
-    add_option("new_ggaa_model", false, OptionType::BOOL);
-    add_option("ggaa_model", "", OptionType::STRING);
+    add_option("new_ggaa_model", false, base::OptionType::BOOL);
+    add_option("ggaa_model", "", base::OptionType::STRING);
     
-    add_option("extra_motifs", "", OptionType::STRING);
+    add_option("extra_motifs", "", base::OptionType::STRING);
 
     // recording info from simulation
-    add_option("record", false, OptionType::BOOL);
-    add_option("record_constraints", "", OptionType::STRING);
-    add_option("record_file", "test.out", OptionType::STRING);
-    add_option("record_only_bound", false, OptionType::BOOL);
-    add_option("record_only_unbound", false, OptionType::BOOL);
-    add_option("record_file_type", "", OptionType::STRING);
-    add_option("dump_state", false, OptionType::BOOL);
-    add_option("dump_pdbs", false, OptionType::BOOL);
+    add_option("record", false, base::OptionType::BOOL);
+    add_option("record_constraints", "", base::OptionType::STRING);
+    add_option("record_file", "test.out", base::OptionType::STRING);
+    add_option("record_only_bound", false, base::OptionType::BOOL);
+    add_option("record_only_unbound", false, base::OptionType::BOOL);
+    add_option("record_file_type", "", base::OptionType::STRING);
+    add_option("dump_state", false, base::OptionType::BOOL);
+    add_option("dump_pdbs", false, base::OptionType::BOOL);
 
-    add_option("scorer", "", OptionType::STRING);
-    add_option("constraints", "", OptionType::STRING);
+    add_option("scorer", "", base::OptionType::STRING);
+    add_option("constraints", "", base::OptionType::STRING);
 
 
     //add_cl_options(tfs_.options(), "simulation");
@@ -428,7 +428,7 @@ SimulateTectosApp::parse_command_line(
     const char ** argv) {
     
     
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
     
     //cl_parser_.assign_options(cl_options_, tfs_.options(), "simulation");
     tfs_.update_var_options();

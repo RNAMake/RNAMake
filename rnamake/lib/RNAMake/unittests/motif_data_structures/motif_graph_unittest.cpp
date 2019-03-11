@@ -178,7 +178,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     SECTION("test replacing idealized helices 2") {
         auto mg = std::make_shared<MotifGraph>();
         auto m = RM::instance().motif("HELIX.IDEAL.6");
-        m->move(Point(40, 0, 0));
+        m->move(math::Point(40, 0, 0));
         mg->add_motif(m);
         
         auto new_mg = std::make_shared<MotifGraph>(*mg);
@@ -188,7 +188,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto struc2 = new_mg->get_structure();
         
         auto d1 = struc1->ends()[1]->d();
-        auto ds_2 = Points{struc1->ends()[0]->d(), struc1->ends()[1]->d()};
+        auto ds_2 = math::Points{struc1->ends()[0]->d(), struc1->ends()[1]->d()};
         
         auto dist_1 = d1.distance(ds_2[0]);
         auto dist_2 = d1.distance(ds_2[1]);
@@ -224,7 +224,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     SECTION("test replacing helices with new sequence 2") {
         auto mg = std::make_shared<MotifGraph>();
         auto m = RM::instance().motif("HELIX.IDEAL.6");
-        m->move(Point(40, 0, 0));
+        m->move(math::Point(40, 0, 0));
         mg->add_motif(m);
         mg->replace_ideal_helices();
         
@@ -237,7 +237,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto struc2 = new_mg->get_structure();
         
         auto d1 = struc1->ends()[1]->d();
-        auto ds_2 = Points{struc1->ends()[0]->d(), struc1->ends()[1]->d()};
+        auto ds_2 = math::Points{struc1->ends()[0]->d(), struc1->ends()[1]->d()};
         
         auto dist_1 = d1.distance(ds_2[0]);
         auto dist_2 = d1.distance(ds_2[1]);
@@ -345,7 +345,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         
         auto s = mg2.to_pretty_str();
         
-        auto path = unittest_resource_dir() + "motif_tree/pretty_str_1.dat";
+        auto path = base::unittest_resource_dir() + "motif_tree/pretty_str_1.dat";
         auto lines =base::get_lines_from_file(path);
         
         auto spl = base::split_str_by_delimiter(s, "\n");
@@ -370,7 +370,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         auto s = mt2.to_pretty_str();
         //std::cout << s << std::endl;
         
-        auto path = unittest_resource_dir() + "motif_tree/pretty_str_2.dat";
+        auto path = base::unittest_resource_dir() + "motif_tree/pretty_str_2.dat";
         auto lines =base::get_lines_from_file(path);
         
         auto spl = base::split_str_by_delimiter(s, "\n");

@@ -33,15 +33,15 @@ public:
             cur_state->update_end_state(i, bp_state_final_);
         }
         
-        t_beads_ =  Points(org_state->beads().size());
-        dot_vectors(bp_state_.r_T(), org_state->beads(), t_beads_);
+        t_beads_ =  math::Points(org_state->beads().size());
+        math::dot_vectors(bp_state_.r_T(), org_state->beads(), t_beads_);
         for(int i = 0; i < t_beads_.size();  i++) { t_beads_[i] += bp_state_.d(); }
         cur_state->beads(t_beads_);
     }
     
 private:
     BasepairState bp_state_, bp_state_final_;
-    Points t_beads_;
+    math::Points t_beads_;
     
 };
 

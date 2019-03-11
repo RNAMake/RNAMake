@@ -38,7 +38,7 @@ TEST_CASE( "Test Resource Manager ", "[ResourceManager]" ) {
     
     SECTION("test adding motif_state_ensembles") {
         
-        auto path = unittest_resource_dir() + "resources/test.dat";
+        auto path = base::unittest_resource_dir() + "resources/test.dat";
         REQUIRE_NOTHROW(RM::instance().register_extra_motif_ensembles(path));
         
         // should exist
@@ -54,7 +54,7 @@ TEST_CASE( "Test Resource Manager ", "[ResourceManager]" ) {
 
     SECTION("test adding new motifs to resource manager") {
         
-        REQUIRE_NOTHROW(RM::instance().add_motif(unittest_resource_dir() + "motif/GAAA_tetraloop"));
+        REQUIRE_NOTHROW(RM::instance().add_motif(base::unittest_resource_dir() + "motif/GAAA_tetraloop"));
 
         auto m1 = RM::instance().motif("GAAA_tetraloop");
         REQUIRE(m1->name() == "GAAA_tetraloop");

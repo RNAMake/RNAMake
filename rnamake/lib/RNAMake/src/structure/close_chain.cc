@@ -5,13 +5,13 @@
 #include <math.h>
 #include "structure/close_chain.h"
 
-Matrix
+math::Matrix
 create_coord_system(
         AtomOPs const & atoms) {
     auto e1 = (atoms[0]->coords() - atoms[1]->coords()).normalize();
     auto e3 = cross(e1, atoms[2]->coords() - atoms[1]->coords()).normalize();
     auto e2 = cross(e3, e1);
-    auto m = Matrix(
+    auto m = math::Matrix(
                  e1.x(), e1.y(), e1.z(),
                  e2.x(), e2.y(), e2.z(),
                  e3.x(), e3.y(), e3.z());
@@ -19,11 +19,11 @@ create_coord_system(
     return m;
 }
 
-Vector
+math::Vector
 m_dot_v(
-        Matrix const & m,
-        Vector const & v) {
-    return Vector(
+        math::Matrix const & m,
+        math::Vector const & v) {
+    return math::Vector(
             m.xx()*v.x() + m.xy()*v.y() + m.xz()*v.z(),
             m.yx()*v.x() + m.yy()*v.y() + m.yz()*v.z(),
             m.zx()*v.x() + m.zy()*v.y() + m.zz()*v.z());
@@ -39,7 +39,7 @@ virtual_atom(
     theta = to_radians(theta);
     phi   = to_radians(phi);
     auto m = create_coord_system(parent_atoms);
-    auto v = Vector(
+    auto v = math::Vector(
             l*cos(theta),
             l*sin(theta)*cos(phi),
             l*sin(theta)*sin(phi));
@@ -54,19 +54,19 @@ to_radians(
     return (degrees*M_PI)/180;
 }
 
-Vector
+math::Vector
 get_projection(
-        Point const & coord,
-        Point const & current_pos,
-        Vector const & projection_axis) {
+        math::Point const & coord,
+        math::Point const & current_pos,
+        math::Vector const & projection_axis) {
     auto r = coord - current_pos;
     return r - r.dot(projection_axis)*projection_axis;
 }
 
-Matrix
+math::Matrix
 axis_angle_to_rot_matrix(
         float angle,
-        Vector const & al) {
+        math::Vector const & al) {
 
     auto c = cos(angle);
     auto s = sin(angle);
@@ -90,7 +90,7 @@ axis_angle_to_rot_matrix(
     auto m21 = tmp1 + tmp2;
     auto m12 = tmp1 - tmp2;
 
-    return Matrix(m00, m01, m02,
+    return math::Matrix(m00, m01, m02,
                   m10, m11, m12,
                   m20, m21, m22);
 
@@ -105,7 +105,7 @@ close_torsion(
         AtomOPs const & match_atoms_2) {
     auto matrix = create_coord_system(parent_atoms);
     matrix = matrix.transpose();
-    auto x = Vector(matrix.xx(), matrix.xy(), matrix.xz());
+    auto x = math::Vector(matrix.xx(), matrix.xy(), matrix.xz());
     auto current_atom_xyz = parent_atoms[0]->coords();
     auto weighted_sine = 0.0;
     auto weighted_cosine = 0.0;
@@ -127,11 +127,11 @@ close_torsion(
 
 }
 
-Matrix
+math::Matrix
 get_res_ref_frame(
         ResidueOP r) {
-    auto vec1 = Point();
-    auto vec2 = Point();
+    auto vec1 = math::Point();
+    auto vec2 = math::Point();
     auto beads = r->get_beads();
     auto b = beads[0];
     for(auto const & bead : beads) {
@@ -147,7 +147,7 @@ get_res_ref_frame(
         vec2 = (r->get_atom("N1")->coords() - b.center()).normalize();
     }
     auto cross = vec1.cross(vec2);
-    auto m = Matrix(
+    auto m = math::Matrix(
             vec1.x(), vec1.y(), vec1.z(),
             vec2.x(), vec2.y(), vec2.z(),
             cross.x(), cross.y(), cross.z());
@@ -165,12 +165,12 @@ replace_missing_phosphate_backbone(
     auto ref_frame_1 = get_res_ref_frame(r);
     auto ref_frame_2 = get_res_ref_frame(r_template);
 
-    auto rot = Matrix();
+    auto rot = math::Matrix();
     dot(ref_frame_1.transpose(), ref_frame_2, rot);
     auto trans = -r_template->center();
     auto c4p_atom =  r->get_atom("C4'");
 
-    auto t = Transform(rot, trans);
+    auto t = math::Transform(rot, trans);
 
     r_template->transform(t);
     r_template->move(c4p_atom->coords() - r_template->get_atom("C4'")->coords());

@@ -12,19 +12,19 @@
 #include "opt_tecto_cutoff/opt_tecto_cutoff.h"
 
 
-OptTectoCutoff::OptTectoCutoff() : Application() {}
+OptTectoCutoff::OptTectoCutoff() : base::Application() {}
 
 // application setups functions ////////////////////////////////////////////////////////////////////
 
 void
 OptTectoCutoff::setup_options() {
-    //add_option("pdb", "", OptionType::STRING, true);
-    add_option("histos", "", OptionType::STRING, true);
-    add_option("data", "", OptionType::STRING, true);
-    add_option("divide_set", false, OptionType::BOOL, false);
-    add_option("divide_set_num", 2, OptionType::INT, false);
-    add_option("constraints", "", OptionType::STRING, false);
-    add_option("constraint_file", "", OptionType::STRING, false);
+    //add_option("pdb", "", base::OptionType::STRING, true);
+    add_option("histos", "", base::OptionType::STRING, true);
+    add_option("data", "", base::OptionType::STRING, true);
+    add_option("divide_set", false, base::OptionType::BOOL, false);
+    add_option("divide_set_num", 2, base::OptionType::INT, false);
+    add_option("constraints", "", base::OptionType::STRING, false);
+    add_option("constraint_file", "", base::OptionType::STRING, false);
 
 
 }
@@ -33,7 +33,7 @@ void
 OptTectoCutoff::parse_command_line(
         int argc,
         const char ** argv) {
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
 }
 
 
@@ -53,9 +53,9 @@ OptTectoCutoff::_setup() {
 
     std::ifstream in;
     in.open(get_string_option("histos"), std::ios::binary);
-    histos_ =  std::vector<SixDHistogram>();
+    histos_ =  std::vector<math::SixDHistogram>();
     while (in.good()) {
-        histos_.push_back(SixDHistogram(in));
+        histos_.push_back(math::SixDHistogram(in));
         if(histos_.back().size() == 0) {
             exp_dgs_.erase(exp_dgs_.begin()+histos_.size()-1);
             constructs_.erase(constructs_.begin()+histos_.size()-1);
@@ -117,7 +117,7 @@ OptTectoCutoff::_get_scored_dataset() {
         auto pos = _parse_constraint_position(spl2[0]);
         auto lower = std::stod(spl2[1]);
         auto upper = std::stod(spl2[2]);
-        constraints_[pos] = Real2{lower, upper};
+        constraints_[pos] = math::Real2{lower, upper};
     }
 
     auto score = _score(constraints_);
@@ -171,7 +171,7 @@ OptTectoCutoff::_score_constraint_file() {
         auto spl = base::split_str_by_delimiter(line, ",");
         int j = 0;
         for(int k = 0; k < 12; k += 2) {
-            constraints_[j] = Real2{std::stod(spl[k]), std::stod(spl[k+1])};
+            constraints_[j] = math::Real2{std::stod(spl[k]), std::stod(spl[k+1])};
             j += 1;
         }
 
@@ -203,7 +203,7 @@ OptTectoCutoff::_score_constraint_file() {
 
 double
 OptTectoCutoff::_score(
-        std::array<Real2, 6> const & constraints) {
+        std::array<math::Real2, 6> const & constraints) {
 
     lowest_ = 1000000;
     for(int i = 0; i < histos_.size(); i++) {
@@ -240,8 +240,8 @@ OptTectoCutoff::_score(
 
 void
 OptTectoCutoff::_vary_constraints(
-        std::array<Real2, 6> const & constraints,
-        std::array<Real2, 6> & new_constraints,
+        std::array<math::Real2, 6> const & constraints,
+        std::array<math::Real2, 6> & new_constraints,
         RandomNumberGenerator & rng) {
 
     new_constraints = constraints;
@@ -277,7 +277,7 @@ OptTectoCutoff::_vary_constraints(
 void
 OptTectoCutoff::_get_initial_constraints(
         RandomNumberGenerator & rng) {
-    constraints_ = std::array<Real2, 6>();
+    constraints_ = std::array<math::Real2, 6>();
 
     bool done = false;
     while(!done) {
@@ -323,11 +323,11 @@ OptTectoCutoff::run() {
     auto mc = MonteCarlo(0.05);
     _get_initial_constraints(rng);
 
-    //constraints_ = {Real2{-5, 5}, Real2{-5, 5}, Real2{-5, 5}, Real2{10, 340}, Real2{130, 190}, Real2{170, 190}};
-    //constraints_ = {Real2{-4.5, 4.0}, Real2{-4.5, 4.5}, Real2{-4.5, 4.5}, Real2{10, 340}, Real2{150, 190}, Real2{180, 200}};
-    //constraints_ = {Real2{-4.5, 4.0}, Real2{-4.5, 4.5}, Real2{-4.5, 4.5}, Real2{10, 340}, Real2{150, 190}, Real2{140, 200}};
+    //constraints_ = {math::Real2{-5, 5}, math::Real2{-5, 5}, math::Real2{-5, 5}, math::Real2{10, 340}, math::Real2{130, 190}, math::Real2{170, 190}};
+    //constraints_ = {math::Real2{-4.5, 4.0}, math::Real2{-4.5, 4.5}, math::Real2{-4.5, 4.5}, math::Real2{10, 340}, math::Real2{150, 190}, math::Real2{180, 200}};
+    //constraints_ = {math::Real2{-4.5, 4.0}, math::Real2{-4.5, 4.5}, math::Real2{-4.5, 4.5}, math::Real2{10, 340}, math::Real2{150, 190}, math::Real2{140, 200}};
 
-    new_constraints_ = std::array<Real2, 6>();
+    new_constraints_ = std::array<math::Real2, 6>();
 
 
     auto current_score = _score(constraints_);

@@ -179,7 +179,7 @@ Motif::copy_uuids_from_motif(
 MotifStateOP
 Motif::get_state() {
     auto beads = get_beads(ends_[0]);
-    Points bead_centers;
+    math::Points bead_centers;
     for(auto const & b : beads) {
         if(b.btype() == BeadType::PHOS) { continue; }
         bead_centers.push_back(b.center());
@@ -201,15 +201,15 @@ align_motif(
     BasepairOP const & motif_end,
     MotifOP & motif) {
     
-    Matrix ref_T;
+    math::Matrix ref_T;
     transpose(ref_bp_state->r(), ref_T);
-    Matrix r;
+    math::Matrix r;
     dot(ref_T, motif_end->r(), r);
     r.unitarize();
-    Point trans = -motif_end->d();
-    Transform t(r, trans);
+    math::Point trans = -motif_end->d();
+    math::Transform t(r, trans);
     motif->transform(t);
-    Point bp_pos_diff = ref_bp_state->d() - motif_end->d();
+    math::Point bp_pos_diff = ref_bp_state->d() - motif_end->d();
     motif->move(bp_pos_diff);
     
     //align sugars for better overlap
@@ -219,7 +219,7 @@ align_motif(
     motif->get_beads(motif_end);
     if (dist1 > 5 && dist2 > 5) { return; }
     
-    Point sugar_diff_1, sugar_diff_2;
+    math::Point sugar_diff_1, sugar_diff_2;
     if( dist1 < dist2 ) {
         sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res1()->get_atom("C1'")->coords();
         sugar_diff_2 = ref_bp_state->sugars()[1] - motif_end->res2()->get_atom("C1'")->coords();

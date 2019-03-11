@@ -13,18 +13,18 @@
 #include "motif_state_search/motif_state_search.h"
 #include "motif_state_search/motif_state_search_scorer.h"
 
-CommandLineOptions
+base::CommandLineOptions
 parse_command_line(
     int argc,
     const char ** argv) {
     
-    CommandLineOptions cl_opts;
+    base::CommandLineOptions cl_opts;
     auto search = MotifStateSearch();
     cl_opts.add_options(search.options());
-    cl_opts.add_option("path", String(""), OptionType::STRING, false);
-    cl_opts.add_option("test_run", false, OptionType::BOOL, false);
-    cl_opts.add_option("out", String("solutions.top"), OptionType::STRING, false);
-    cl_opts.add_option("opt_seq", true, OptionType::BOOL, false);
+    cl_opts.add_option("path", String(""), base::OptionType::STRING, false);
+    cl_opts.add_option("test_run", false, base::OptionType::BOOL, false);
+    cl_opts.add_option("out", String("solutions.top"), base::OptionType::STRING, false);
+    cl_opts.add_option("opt_seq", true, base::OptionType::BOOL, false);
     
     cl_opts.parse_command_line(argc, argv);
     return cl_opts;
@@ -40,7 +40,7 @@ MiniTTR::run() {
     mg_.increase_level();
     
     auto beads = mg_.beads();
-    auto centers = Points();
+    auto centers = math::Points();
     for(auto const & b : beads) {
         if(b.btype() == BeadType::PHOS) {
             continue;
@@ -134,7 +134,7 @@ void
 MiniTTRPathFollow::run() {
     
     auto lines =base::get_lines_from_file(options_.get_string("path"));
-    auto path_points = vectors_from_str(lines[0]);
+    auto path_points = math::vectors_from_str(lines[0]);
     auto scorer = std::make_shared<MSS_PathFollow>(path_points);
     
     auto end = mg_.get_available_end(0, "A222-A251");
@@ -142,7 +142,7 @@ MiniTTRPathFollow::run() {
     auto end_pos = mg_.last_node()->index();
     
     auto beads = mg_.beads();
-    auto centers = Points();
+    auto centers = math::Points();
     for(auto const & b : beads) {
         if(b.btype() == BeadType::PHOS) {
             continue;
@@ -178,7 +178,7 @@ MiniTTRPathFollow::run() {
         search_2.set_option_value("accept_score", 10.0f);
         
         beads = mg_.beads();
-        centers = Points();
+        centers = math::Points();
         for(auto const & b : beads) {
             centers.push_back(b.center());
         }

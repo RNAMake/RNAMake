@@ -4710,7 +4710,7 @@ namespace Catch {
 
         std::string line;
         while( std::getline( f, line ) ) {
-            line = base::trim(line);
+            line = trim(line);
             if( !line.empty() && !startsWith( line, "#" ) )
                 addTestOrTags( config, "\"" + line + "\"," );
         }
@@ -9404,7 +9404,7 @@ namespace Catch {
         void writeSection(  std::string const& className,
                             std::string const& rootName,
                             SectionNode const& sectionNode ) {
-            std::string name = base::trim( sectionNode.stats.sectionInfo.name );
+            std::string name = trim( sectionNode.stats.sectionInfo.name );
             if( !rootName.empty() )
                 name = rootName + "/" + name;
 

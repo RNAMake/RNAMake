@@ -29,31 +29,31 @@ public:
 public:
     void
     add_point(
-            Point const &);
+            math::Point const &);
     
     void
     add_points(
-            Points const &);
+            math::Points const &);
 
     int
     clash(
-            Point const &);
+            math::Point const &);
     
     int
     clash(
-            Points const &);
+            math::Points const &);
     
     int
     better_clash(
-            Point const &);
+            math::Point const &);
 
     int
     total_clash(
-            Point const &);
+            math::Point const &);
 
     int
     total_clash(
-            Points const &);
+            math::Points const &);
     
 private:
     void
@@ -61,9 +61,9 @@ private:
 
 private:
     std::map<double, int> bhash_;
-    Points additions_, check_additions_;
-    Point rounded_;
-    Point p_;
+    math::Points additions_, check_additions_;
+    math::Point rounded_;
+    math::Point p_;
     float grid_size_;
     float cutoff_;
     int radius_;
@@ -79,19 +79,19 @@ public:
 public:
     void
     add_point(
-            Point const &);
+            math::Point const &);
 
     void
     add_points(
-            Points const &);
+            math::Points const &);
 
     bool
     clash(
-            Point const &);
+            math::Point const &);
 
     bool
     clash(
-            Points const &);
+            math::Points const &);
 
 public:
     void
@@ -106,9 +106,9 @@ private:
     float grid_size_;
     float cutoff_;
     int radius_;
-    Points additions_;
-    ThreeDHistogram histo_;
-    Point dummy_;
+    math::Points additions_;
+    math::ThreeDHistogram histo_;
+    math::Point dummy_;
 };
 
 typedef std::shared_ptr<StericLookup> StericLookupOP;

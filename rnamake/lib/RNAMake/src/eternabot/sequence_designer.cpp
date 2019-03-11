@@ -12,8 +12,8 @@ namespace eternabot {
  /*
 void
 SequenceDesigner::setup_options() {
-    options_.add_option("designs", 1, OptionType::INT);
-    options_.add_option("steps", 1000, OptionType::INT);
+    options_.add_option("designs", 1, base::OptionType::INT);
+    options_.add_option("steps", 1000, base::OptionType::INT);
     options_.lock_option_adding();
     update_var_options();
     

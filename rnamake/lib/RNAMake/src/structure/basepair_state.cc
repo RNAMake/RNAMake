@@ -21,9 +21,9 @@ str_to_basepairstate(
 		throw "cannot load BasepairState from String, not the right number of elements\n";
 	}
 	
-	Vector d = vector_from_str(strs[0]);
-	Matrix r = matrix_from_str(strs[1]);
-	Vectors sug = vectors_from_str(strs[2]);
+	math::Vector d = math::vector_from_str(strs[0]);
+	math::Matrix r = math::matrix_from_str(strs[1]);
+	math::Vectors sug = math::vectors_from_str(strs[2]);
 	
 	BasepairState bp(d,r,sug);
 	return bp;
@@ -66,7 +66,7 @@ get_bpstate_rotation_diff(
 	BasepairState const & bp2) {
 	
 	float r_diff   = bp1.r().difference(bp2.r());
-	Matrix flipped = bp2.r().get_flip_orientation();
+	math::Matrix flipped = bp2.r().get_flip_orientation();
 	float r_diff_2 = bp1.r().difference(flipped);
 
 	if(r_diff > r_diff_2) {
@@ -86,13 +86,13 @@ are_basepair_states_equal(
     BasepairState const & a,
     BasepairState const & b) {
     
-    if(!are_xyzVector_equal(a.d(),b.d()) ||
-       !are_xyzMatrix_equal(a.r(),b.r())) {
+    if(!math::are_xyzVector_equal(a.d(),b.d()) ||
+       !math::are_xyzMatrix_equal(a.r(),b.r())) {
         return 0;
     }
     
     for(int i = 0; i < 2; i++) {
-        if(!are_xyzVector_equal(a.sugars()[i], b.sugars()[i])) { return 0; }
+        if(!math::are_xyzVector_equal(a.sugars()[i], b.sugars()[i])) { return 0; }
     }
     
     return 1;

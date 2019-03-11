@@ -31,7 +31,7 @@ BuildFlexHelicesApp::parse_command_line(
         int argc,
         const char **argv) {
 
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
 }
 
 void
@@ -133,9 +133,9 @@ BuildFlexHelicesApp::get_avg_helix(
     auto iterator = HelixStructureIterator();
     iterator.setup(length);
 
-    auto q = Quaternion();
-    auto q_averager = AverageQuaternionCalculator();
-    auto t_average = Point(0, 0, 0);
+    auto q = math::Quaternion();
+    auto q_averager = math::AverageQuaternionCalculator();
+    auto t_average = math::Point(0, 0, 0);
 
     int i = 0;
     while(!iterator.end()) {

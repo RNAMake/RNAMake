@@ -11,7 +11,7 @@
 
 String
 points_to_pdb_str(
-    Points const & points) {
+    math::Points const & points) {
     
     String s;
     int i = 1;
@@ -29,7 +29,7 @@ points_to_pdb_str(
 void
 points_to_pdb(
     String const & filename,
-    Points const & points) {
+    math::Points const & points) {
     
     auto s = points_to_pdb_str(points);
     std::ofstream out;

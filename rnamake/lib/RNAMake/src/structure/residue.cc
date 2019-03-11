@@ -12,11 +12,11 @@
 //RNAMake Headers
 #include "structure/residue.h"
 
-Point
+math::Point
 center(
     AtomOPs const & atoms) {
     assert(atoms.size() > 0);
-    Point center(0, 0, 0);
+    math::Point center(0, 0, 0);
     for(auto const & a : atoms) {
         if(a == nullptr) {
             continue;

@@ -28,7 +28,7 @@ public:
 };
 
 
-class SimulateTectosApp : public Application {
+class SimulateTectosApp : public base::Application {
 public:
     
     SimulateTectosApp();

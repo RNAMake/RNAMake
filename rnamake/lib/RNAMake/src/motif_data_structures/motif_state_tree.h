@@ -156,9 +156,9 @@ public: // outputting functions
 public: // getters
     
     inline
-    Points
+    math::Points
     centers() {
-        auto centers = Points();
+        auto centers = math::Points();
         for(auto const & n : tree_) {
             for(auto const & b : n->data()->cur_state->beads()) {
                 centers.push_back(b);

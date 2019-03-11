@@ -8,8 +8,8 @@
 
 
 TEST_CASE( "Test Structure", "[Structure]" ) {
-    auto path = unittest_resource_dir() + "/structure/test_str_to_structure.dat";
-    auto lines =base::get_lines_from_file(path);
+    auto path = base::unittest_resource_dir() + "/structure/test_str_to_structure.dat";
+    auto lines = base::get_lines_from_file(path);
     auto rts = ResidueTypeSet();
     auto s = std::make_shared<Structure>(lines[0], rts);
     
@@ -69,7 +69,7 @@ TEST_CASE( "Test Structure", "[Structure]" ) {
     }
     
     SECTION("Test moving structure") {
-        auto p = Point(10, 0, 0);
+        auto p = math::Point(10, 0, 0);
         auto s2 = std::make_shared<Structure>(*s);
         s2->move(p);
         
@@ -90,12 +90,12 @@ TEST_CASE( "Test Structure", "[Structure]" ) {
     }
     
     SECTION("Test applying a tranform to coordinates") {
-        auto path = unittest_resource_dir() + "/structure/test_transform.dat";
+        auto path = base::unittest_resource_dir() + "/structure/test_transform.dat";
         auto lines =base::get_lines_from_file(path);
         
-        auto r = matrix_from_str(lines[0]);
-        auto trans = vector_from_str(lines[1]);
-        auto t = Transform(r, trans);
+        auto r = math::matrix_from_str(lines[0]);
+        auto trans = math::vector_from_str(lines[1]);
+        auto t = math::Transform(r, trans);
         auto s2 = std::make_shared<Structure>(*s);
         
         s2->transform(t);

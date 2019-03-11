@@ -6,7 +6,7 @@
 #include "resources/resource_manager.h"
 #include "structure_info/structure_info.h"
 
-StructureInfoApp::StructureInfoApp() : Application() {
+StructureInfoApp::StructureInfoApp() : base::Application() {
 
 }
 
@@ -14,15 +14,15 @@ StructureInfoApp::StructureInfoApp() : Application() {
 
 void
 StructureInfoApp::setup_options() {
-    add_option("pdb", "", OptionType::STRING, true);
-    add_option("basepairs", false, OptionType::BOOL, false);
+    add_option("pdb", "", base::OptionType::STRING, true);
+    add_option("basepairs", false, base::OptionType::BOOL, false);
 }
 
 void
 StructureInfoApp::parse_command_line(
         int argc,
         const char ** argv) {
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
 }
 
 void

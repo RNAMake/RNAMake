@@ -31,7 +31,7 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
 
         auto s = mt2.to_pretty_str();
         
-        auto path = unittest_resource_dir() + "motif_tree/pretty_str_1.dat";
+        auto path = base::unittest_resource_dir() + "motif_tree/pretty_str_1.dat";
         auto lines =base::get_lines_from_file(path);
         
         auto spl = base::split_str_by_delimiter(s, "\n");
@@ -55,7 +55,7 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         
         auto s = mt2.to_pretty_str();
         
-        auto path = unittest_resource_dir() + "motif_tree/pretty_str_2.dat";
+        auto path = base::unittest_resource_dir() + "motif_tree/pretty_str_2.dat";
         auto lines =base::get_lines_from_file(path);
         
         auto spl = base::split_str_by_delimiter(s, "\n");

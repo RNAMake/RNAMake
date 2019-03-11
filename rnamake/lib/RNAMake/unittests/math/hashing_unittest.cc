@@ -15,17 +15,17 @@
 TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
 
     SECTION("test binner from rosetta example") {
-        auto lower = Point(12.5, 16.25, 4.25);
-        auto upper = Point(15.5, 20, 8.5);
-        auto bb = BoundingBox(lower, upper);
+        auto lower = math::Point(12.5, 16.25, 4.25);
+        auto upper = math::Point(15.5, 20, 8.5);
+        auto bb = math::BoundingBox(lower, upper);
 
-        Real6 binwidths;
+        math::Real6 binwidths;
         binwidths[0] = binwidths[1] = binwidths[2] = 0.25;
         binwidths[3] = binwidths[4] = binwidths[5] = 10;
 
-        auto binner = SixDCoordinateBinner(bb, binwidths);
+        auto binner = math::SixDCoordinateBinner(bb, binwidths);
 
-        Real6 pA;
+        math::Real6 pA;
         pA[0] = 13.6;   pA[1] = 19.4;   pA[2] = 5.3;
         pA[3] = 50;     pA[4] = 127;    pA[5] = 76;
 
@@ -41,17 +41,17 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
     }
 
     SECTION("test binner wrapping") {
-        auto lower = Point(-5.0, -5.0, -5.0);
-        auto upper = Point(5.0, 5.0, 5.0);
-        auto bb = BoundingBox(lower, upper);
+        auto lower = math::Point(-5.0, -5.0, -5.0);
+        auto upper = math::Point(5.0, 5.0, 5.0);
+        auto bb = math::BoundingBox(lower, upper);
 
-        Real6 binwidths;
+        math::Real6 binwidths;
         binwidths[0] = binwidths[1] = binwidths[2] = 0.10;
         binwidths[3] = binwidths[4] = binwidths[5] = 5;
 
-        auto binner = SixDCoordinateBinner(bb, binwidths);
+        auto binner = math::SixDCoordinateBinner(bb, binwidths);
 
-        Real6 pA;
+        math::Real6 pA;
         pA[0] = -4.25;  pA[1] = 3.42;  pA[2] = -1.3;
         pA[3] = 360;    pA[4] = 12.2;  pA[5] = 2;
 
@@ -68,17 +68,17 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
 
     SECTION("test histogram") {
 
-        auto lower = Point(-5.0, -5.0, -5.0);
-        auto upper = Point(5.0, 5.0, 5.0);
-        auto bb = BoundingBox(lower, upper);
+        auto lower = math::Point(-5.0, -5.0, -5.0);
+        auto upper = math::Point(5.0, 5.0, 5.0);
+        auto bb = math::BoundingBox(lower, upper);
 
-        Real6 binwidths;
+        math::Real6 binwidths;
         binwidths[0] = binwidths[1] = binwidths[2] = 0.10;
         binwidths[3] = binwidths[4] = binwidths[5] = 5;
 
-        auto histo = SixDHistogram(bb, binwidths);
+        auto histo = math::SixDHistogram(bb, binwidths);
 
-        Real6 pA;
+        math::Real6 pA;
         pA[0] = -4.25;  pA[1] = 3.42;  pA[2] = -1.3;
         pA[3] = 360;    pA[4] = 12.2;  pA[5] = 2;
 
@@ -86,14 +86,14 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         histo.to_text_file("test.csv");
 
         auto lines =base::get_lines_from_file("test.csv");
-        auto histo_2 = SixDHistogram(lines, SixDHistogramStrType::TEXT);
+        auto histo_2 = math::SixDHistogram(lines, math::SixDHistogramStrType::TEXT);
         REQUIRE(histo_2.contains(pA));
 
         histo.to_binary_file("test.bin");
 
         std::ifstream in;
         in.open("test.bin", std::ios::binary);
-        auto histo_3 = SixDHistogram(in);
+        auto histo_3 = math::SixDHistogram(in);
 
         REQUIRE(histo_3.contains(pA));
 
@@ -105,12 +105,12 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         //std::cout << test << std::endl;
 
         //auto lines2 =base::get_lines_from_file("test.bin");
-        //auto histo_3 = SixDHistogram(lines2, SixDHistogramStrType::BINARY);
+        //auto histo_3 = math::SixDHistogram(lines2, math::SixDHistogramStrType::BINARY);
 
     }
 
     SECTION("test two histograms in one file") {
-        Real6 pA;
+        math::Real6 pA;
         pA[0] = -4.25;  pA[1] = 3.42;  pA[2] = -1.3;
         pA[3] = 360;    pA[4] = 12.2;  pA[5] = 2;
 
@@ -118,8 +118,8 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         std::ifstream in;
         in.open(path, std::ios::binary);
 
-        auto histo = SixDHistogram(in);
-        auto histo_2 = SixDHistogram(in);
+        auto histo = math::SixDHistogram(in);
+        auto histo_2 = math::SixDHistogram(in);
 
         REQUIRE(histo.contains(pA));
         REQUIRE(histo_2.contains(pA));
@@ -132,7 +132,7 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         std::ifstream in;
         in.open(path, std::ios::binary);
 
-        auto histo = SixDHistogram(in);
+        auto histo = math::SixDHistogram(in);
     }
 
     /*SECTION("test histo on tecto data") {
@@ -141,10 +141,10 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         auto line = String();
         int i = -1;
 
-        auto bb = BoundingBox(Point(-10, -10, -10), Point(10, 10, 10));
-        auto bin_widths = Real6{0.25, 0.25, 0.25, 5, 5, 5};
-        auto histo = SixDHistogram(bb, bin_widths);
-        auto values = Real6();
+        auto bb = math::BoundingBox(math::Point(-10, -10, -10), math::Point(10, 10, 10));
+        auto bin_widths = math::Real6{0.25, 0.25, 0.25, 5, 5, 5};
+        auto histo = math::SixDHistogram(bb, bin_widths);
+        auto values = math::Real6();
 
         while ( in.good() ) {
             i++;
@@ -170,26 +170,26 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         auto line = String();
         int i = -1;
 
-        auto constraints = std::array<Real2, 6>{
-                Real2{-3.5,5.25},
-                Real2{-3.5,4.75},
-                Real2{-4.00,4.75},
-                Real2{9.99999,300},
-                Real2{45,335},
-                Real2{170,200}};
+        auto constraints = std::array<math::Real2, 6>{
+                math::Real2{-3.5,5.25},
+                math::Real2{-3.5,4.75},
+                math::Real2{-4.00,4.75},
+                math::Real2{9.99999,300},
+                math::Real2{45,335},
+                math::Real2{170,200}};
 
-        auto constraints_2 = std::array<Real2, 6>{
-                Real2{-3.5,5.0},
-                Real2{-3.5,4.5},
-                Real2{-4.0,4.5},
-                Real2{5,300},
-                Real2{45,330},
-                Real2{170,195}};
+        auto constraints_2 = std::array<math::Real2, 6>{
+                math::Real2{-3.5,5.0},
+                math::Real2{-3.5,4.5},
+                math::Real2{-4.0,4.5},
+                math::Real2{5,300},
+                math::Real2{45,330},
+                math::Real2{170,195}};
 
-        auto values = Real6();
-        auto bb = BoundingBox(Point(-10, -10, -10), Point(10, 10, 10));
-        auto bin_widths = Real6{0.25, 0.25, 0.25, 5, 5, 5};
-        auto binner = SixDCoordinateBinner(bb, bin_widths);
+        auto values = math::Real6();
+        auto bb = math::BoundingBox(math::Point(-10, -10, -10), math::Point(10, 10, 10));
+        auto bin_widths = math::Real6{0.25, 0.25, 0.25, 5, 5, 5};
+        auto binner = math::SixDCoordinateBinner(bb, bin_widths);
 
         auto count = 0;
         auto count_2 = 0;
@@ -261,16 +261,16 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
     }
 
     SECTION("test 3d binner from rosetta example") {
-        auto lower = Point(12.5, 16.25, 4.25);
-        auto upper = Point(15.5, 20, 8.5);
-        auto bb = BoundingBox(lower, upper);
+        auto lower = math::Point(12.5, 16.25, 4.25);
+        auto upper = math::Point(15.5, 20, 8.5);
+        auto bb = math::BoundingBox(lower, upper);
 
-        Real3 binwidths;
+        math::Real3 binwidths;
         binwidths[0] = binwidths[1] = binwidths[2] = 0.25;
 
-        auto binner = ThreeDCoordinateBinner(bb, binwidths);
+        auto binner = math::ThreeDCoordinateBinner(bb, binwidths);
 
-        auto pA = Point(13.6, 19.4, 5.3);
+        auto pA = math::Point(13.6, 19.4, 5.3);
 
         auto bin = binner.bin3(pA);
         auto bin_center = binner.bin_center_point(bin);
@@ -284,17 +284,17 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
     }
 
     SECTION("test 3d histogram") {
-        auto bb = BoundingBox(Point(-100, -100, -100), Point(100, 100, 100));
-        auto bin_widths = Real3{0.5, 0.5, 0.5};
-        auto histo = ThreeDHistogram(bb, bin_widths);
+        auto bb = math::BoundingBox(math::Point(-100, -100, -100), math::Point(100, 100, 100));
+        auto bin_widths = math::Real3{0.5, 0.5, 0.5};
+        auto histo = math::ThreeDHistogram(bb, bin_widths);
 
         std::random_device rd;
         std::mt19937 gen(rd()); //Standard mersenne_twister_engine seeded with rd()
         std::uniform_real_distribution<> dis(-100.0, 100.0);
 
-        auto points = Points();
+        auto points = math::Points();
         for(int i = 0; i < 100; i++) {
-            auto p = Point(dis(gen), dis(gen), dis(gen));
+            auto p = math::Point(dis(gen), dis(gen), dis(gen));
             histo.add(p);
             points.push_back(p);
         }

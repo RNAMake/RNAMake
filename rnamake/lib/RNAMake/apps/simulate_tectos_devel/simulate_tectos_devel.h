@@ -31,7 +31,7 @@ String
 remove_Us(String const &);
 
 
-class SimulateTectosApp : public Application {
+class SimulateTectosApp : public base::Application {
 public:
     SimulateTectosApp();
     

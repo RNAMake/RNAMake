@@ -13,8 +13,8 @@
 /*
 void
 SequenceOptimizer::setup_options() {
-    options_.add_option("sub_sequence", String(""), OptionType::STRING);
-    options_.add_option("solutions", 100, OptionType::INT);
+    options_.add_option("sub_sequence", String(""), base::OptionType::STRING);
+    options_.add_option("solutions", 100, base::OptionType::INT);
     options_.lock_option_adding();
     update_var_options();
 }
@@ -70,7 +70,7 @@ SequenceOptimizer::get_optimized_sequences(
     auto designed_seq = String("");
     int i = 0;
     int new_node_j = 0;
-    Point d1, d2;
+    math::Point d1, d2;
     float dist;
     
     auto best_seq = String();

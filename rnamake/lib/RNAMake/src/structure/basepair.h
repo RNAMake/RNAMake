@@ -27,7 +27,7 @@ public:
     Basepair(
         ResidueOP & res1,
         ResidueOP & res2,
-        Matrix const & r,
+        math::Matrix const & r,
         String const & bp_type):
         bp_type_(bp_type),
         uuid_( Uuid() ),
@@ -44,8 +44,8 @@ public:
             if(a != nullptr) { atoms_.push_back(a); }
         }
         
-        Point d = center(atoms_);
-        Points sugars(2);
+        math::Point d = center(atoms_);
+        math::Points sugars(2);
         sugars[0] = res1_->get_atom("C1'")->coords();
         sugars[1] = res2_->get_atom("C1'")->coords();
         bp_state_ = std::make_shared<BasepairState>(d, r, sugars);
@@ -68,7 +68,7 @@ public: // non const methods
     inline
     void
     move(
-            Point const & p) {
+            math::Point const & p) {
         bp_state_->move(p);
         for(auto & a : atoms_) {
             a->coords(a->coords() + p);
@@ -78,12 +78,12 @@ public: // non const methods
     inline
     void
     transform(
-            Matrix const & r,
-            Vector const & t,
-            Point & dummy) {
+            math::Matrix const & r,
+            math::Vector const & t,
+            math::Point & dummy) {
         bp_state_->transform(r, t, dummy);
         for( auto & a : atoms() ) {
-            dot_vector(r, a->coords(), dummy);
+            math::dot_vector(r, a->coords(), dummy);
             dummy += t;
             a->coords(dummy);
         }
@@ -92,9 +92,9 @@ public: // non const methods
     inline
     void
     transform(
-            Matrix const & r,
-            Vector const & t) {
-        auto dummy = Point();
+            math::Matrix const & r,
+            math::Vector const & t) {
+        auto dummy = math::Point();
         transform(r, t, dummy);
     }
 
@@ -105,7 +105,7 @@ public: // getters
     BasepairStateOP const &
     state() {
         bp_state_->d(center(atoms_));
-        bp_state_->sugars(Points{ res1_->get_atom("C1'")->coords(), res2_->get_atom("C1'")->coords() });
+        bp_state_->sugars(math::Points{ res1_->get_atom("C1'")->coords(), res2_->get_atom("C1'")->coords() });
         return bp_state_;
     }
     
@@ -155,11 +155,11 @@ public: // getters
     flip() { bp_state_->flip(); }
     
     inline
-    Matrix const &
+    math::Matrix const &
     r() const { return bp_state_->r(); }
     
     inline
-    Point const
+    math::Point const
     d()  const { return center(atoms_); }
     
     inline
@@ -190,7 +190,7 @@ public: // setters
     
     inline
     void
-    r(Matrix const & nr) { bp_state_->r(nr); }
+    r(math::Matrix const & nr) { bp_state_->r(nr); }
     
     inline
     void

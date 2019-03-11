@@ -99,7 +99,7 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
     SECTION("test to motif graph 2") {
         auto m1 = RM::instance().motif("HELIX.IDEAL.2");
         auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        m2->move(Point{40, 0, 0});
+        m2->move(math::Point{40, 0, 0});
         
         auto mg = std::make_shared<MotifGraph>();
         mg->add_motif(m1);

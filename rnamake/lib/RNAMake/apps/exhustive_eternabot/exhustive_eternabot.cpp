@@ -13,15 +13,15 @@
 #include "eternabot/scorer.h"
 #include "secondary_structure/secondary_structure_parser.h"
 
-CommandLineOptions
+base::CommandLineOptions
 parse_command_line(
     int argc,
     const char ** argv) {
     
-    CommandLineOptions cl_opts;
-    cl_opts.add_option("seq", String("NNNNAAAANNNN"), OptionType::STRING, false);
-    cl_opts.add_option("ss",  String("((((....))))"), OptionType::STRING, false);
-    cl_opts.add_option("out", String("4bp.out"), OptionType::STRING, false);
+    base::CommandLineOptions cl_opts;
+    cl_opts.add_option("seq", String("NNNNAAAANNNN"), base::OptionType::STRING, false);
+    cl_opts.add_option("ss",  String("((((....))))"), base::OptionType::STRING, false);
+    cl_opts.add_option("out", String("4bp.out"), base::OptionType::STRING, false);
 
     
     cl_opts.parse_command_line(argc, argv);
@@ -29,7 +29,7 @@ parse_command_line(
 }
 
 void
-ExhustiveEternabot::setup(CommandLineOptions const & opts) {
+ExhustiveEternabot::setup(base::CommandLineOptions const & opts) {
     
     out_name_ = opts.get_string("out");
     auto parser = sstruct::SecondaryStructureParser();

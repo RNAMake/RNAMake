@@ -16,13 +16,13 @@
 
 void
 ThermoSimulationApp::setup_options() {
-    add_option("mt", String(""), OptionType::STRING, true);
-    add_option("n1", 0, OptionType::INT, true);
-    add_option("e1", 0, OptionType::INT, true);
-    add_option("n2", 0, OptionType::INT, true);
-    add_option("e2", 0, OptionType::INT, true);
-    add_option("extra_me", String(""), OptionType::STRING, false);
-    add_option("start_pdbs", false, OptionType::BOOL, false);
+    add_option("mt", String(""), base::OptionType::STRING, true);
+    add_option("n1", 0, base::OptionType::INT, true);
+    add_option("e1", 0, base::OptionType::INT, true);
+    add_option("n2", 0, base::OptionType::INT, true);
+    add_option("e2", 0, base::OptionType::INT, true);
+    add_option("extra_me", String(""), base::OptionType::STRING, false);
+    add_option("start_pdbs", false, base::OptionType::BOOL, false);
 }
 
 
@@ -31,7 +31,7 @@ ThermoSimulationApp::parse_command_line(
     int argc,
     const char ** argv) {
     
-    Application::parse_command_line(argc, argv);
+    base::Application::parse_command_line(argc, argv);
     //cl_parser_.assign_options(cl_options _, optimizer_.options(), "optimizer");
 }
 

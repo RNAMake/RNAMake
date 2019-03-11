@@ -18,7 +18,7 @@
 #include "structure/residue_type.h"
 #include "structure/residue_type_set.h"
 
-Point
+math::Point
 center(AtomOPs const &);
 
 /**
@@ -58,7 +58,7 @@ public:
      * Empty constructor for Bead object.
      */
     Bead():
-    center_(Point(0,0,0)),
+    center_(math::Point(0,0,0)),
     btype_(BeadType(0))
     {}
     
@@ -69,7 +69,7 @@ public:
      */
     inline
     Bead(
-        Point const & center,
+        math::Point const & center,
         BeadType const btype):
         center_ ( center ),
         btype_ ( btype )
@@ -80,7 +80,7 @@ public:
     Bead(
         String const & s) {
         auto spl = base::split_str_by_delimiter(s, ",");
-        center_ = vector_from_str(spl[0]);
+        center_ = math::vector_from_str(spl[0]);
         btype_ = BeadType(std::stoi(spl[1]));
     }
     
@@ -110,7 +110,7 @@ public: //accessors
      * Accessor for center_
      */
     inline
-    Point
+    math::Point
     center() const { return center_; }
     
     /**
@@ -124,7 +124,7 @@ private:
     /**
      * private variable for the 3D coordinates of the center of atoms the bead represents
      */
-    Point center_;
+    math::Point center_;
     
     /**
      * private variable of the type of the bead PHOS, SUGAR or BASE)
@@ -434,7 +434,7 @@ public: // non const methods
 
     inline
     void
-    move(Point const & p) {
+    move(math::Point const & p) {
         for(auto & a : atoms_) {
             if(a == nullptr) { continue; }
             a->coords(a->coords() + p);
@@ -443,13 +443,13 @@ public: // non const methods
 
     inline
     void
-    transform(Transform const & t) {
-        Matrix r = t.rotation().transpose();
-        Point trans = t.translation();
-        auto dummy = Point();
+    transform(math::Transform const & t) {
+        math::Matrix r = t.rotation().transpose();
+        math::Point trans = t.translation();
+        auto dummy = math::Point();
         for( auto & a : atoms_ ) {
             if(a == nullptr) { continue; }
-            dot_vector(r, a->coords(), dummy);
+            math::dot_vector(r, a->coords(), dummy);
             dummy += trans;
             a->coords(dummy);
         }
@@ -486,7 +486,7 @@ public: // setters
 public: // getters
 
     inline
-    Point
+    math::Point
     center() const {
         return ::center(atoms_);
     }

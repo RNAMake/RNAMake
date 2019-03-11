@@ -13,7 +13,7 @@
 #include "base/application.hpp"
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
-class SampleHelixApp : public Application {
+class SampleHelixApp : public base::Application {
 public:
     SampleHelixApp();
 

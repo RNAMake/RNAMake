@@ -8,7 +8,7 @@
 #include <math/xyz_matrix.h>
 #include <structure/chain.h>
 
-Matrix
+math::Matrix
 create_coord_system(
         AtomOPs const &);
 
@@ -24,16 +24,16 @@ virtual_atom(
         float,
         AtomOPs const &);
 
-Vector
+math::Vector
 get_projection(
-        Point const &,
-        Point const &,
-        Vector const &);
+        math::Point const &,
+        math::Point const &,
+        math::Vector const &);
 
-Matrix
+math::Matrix
 axis_angle_to_rot_matrix(
         float,
-        Vector const &);
+        math::Vector const &);
 
 void
 close_torsion(
@@ -43,7 +43,7 @@ close_torsion(
         AtomOPs const &,
         AtomOPs const &);
 
-Matrix
+math::Matrix
 get_res_ref_frame(
         ResidueOP);
 

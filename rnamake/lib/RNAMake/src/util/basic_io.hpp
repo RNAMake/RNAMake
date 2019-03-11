@@ -15,11 +15,11 @@
 
 String
 points_to_pdb_str(
-    Points const &);
+    math::Points const &);
 
 void
 points_to_pdb(
     String const &,
-    Points const &);
+    math::Points const &);
 
 #endif /* basic_io_hpp */

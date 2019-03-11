@@ -17,13 +17,13 @@
 #include "sequence_optimizer/sequence_optimizer.h"
 
 
-CommandLineOptions
+base::CommandLineOptions
 parse_command_line(
     int argc,
     const char ** argv) {
     
-    CommandLineOptions cl_opts;
-    cl_opts.add_option("f", String(""), OptionType::STRING, true);
+    base::CommandLineOptions cl_opts;
+    cl_opts.add_option("f", String(""), base::OptionType::STRING, true);
     cl_opts.parse_command_line(argc, argv);
     
     return cl_opts;

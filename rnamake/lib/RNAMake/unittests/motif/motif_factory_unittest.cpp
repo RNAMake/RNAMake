@@ -31,7 +31,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         REQUIRE_THROWS_AS(mf.motif_from_file("fake.pdb"), MotifFactoryException);
         REQUIRE_THROWS_AS(mf.motif_from_file("fake"), MotifFactoryException);
         
-        auto path = unittest_resource_dir() + "/motif/empty";
+        auto path = base::unittest_resource_dir() + "/motif/empty";
         REQUIRE_THROWS_AS(mf.motif_from_file(path), MotifFactoryException);
     }
  

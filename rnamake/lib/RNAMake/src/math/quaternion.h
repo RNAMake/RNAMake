@@ -12,16 +12,18 @@
 
 #include "math/xyz_matrix.h"
 
+namespace math {
+
 class Quaternion {
 public:
-    Quaternion():
+    Quaternion() :
             a_(0),
             b_(0),
             c_(0),
             d_(0) {}
 
     Quaternion(
-            double val):
+            double val) :
             a_(val),
             b_(val),
             c_(val),
@@ -31,42 +33,42 @@ public:
             double a,
             double b,
             double c,
-            double d):
+            double d) :
             a_(a),
             b_(b),
             c_(c),
             d_(d) {}
 
     Quaternion(
-            Quaternion const & q):
+            Quaternion const & q) :
             a_(q.a_),
             b_(q.b_),
             c_(q.c_),
-            d_(q.d_){}
+            d_(q.d_) {}
 
 public:
     friend
     std::ostream &
-    operator<< (
-            std::ostream & ,
+    operator<<(
+            std::ostream &,
             Quaternion const &);
 
     inline
     double
-    operator[] (
+    operator[](
             int i) const {
-        if     (i == 0) { return a_; }
-        else if(i == 1) { return b_; }
-        else if(i == 2) { return c_; }
-        else if(i == 3) { return d_; }
-        else            {
+        if (i == 0) { return a_; }
+        else if (i == 1) { return b_; }
+        else if (i == 2) { return c_; }
+        else if (i == 3) { return d_; }
+        else {
             throw std::runtime_error("invalid index");
         }
     }
 
     inline
     void
-    operator += (
+    operator+=(
             double const v) {
         a_ += v;
         b_ += v;
@@ -76,7 +78,7 @@ public:
 
     inline
     void
-    operator *= (
+    operator*=(
             double const v) {
         a_ *= v;
         b_ *= v;
@@ -86,11 +88,9 @@ public:
 
     inline
     Quaternion
-    operator -() const
-    {
-        return Quaternion( -a_, -b_, -c_, -d_ );
+    operator-() const {
+        return Quaternion(-a_, -b_, -c_, -d_);
     }
-
 
 
 public:
@@ -100,7 +100,7 @@ public:
     double
     dot(
             Quaternion const & q) const {
-        return a_*q.a_ + b_*q.b_ + c_*q.c_ + d_*q.d_;
+        return a_ * q.a_ + b_ * q.b_ + c_ * q.c_ + d_ * q.d_;
     }
 
     Matrix
@@ -109,7 +109,7 @@ public:
 public:
     inline
     double
-    get_a() const{ return a_; }
+    get_a() const { return a_; }
 
     inline
     double
@@ -143,10 +143,10 @@ dot_vector(
         std::vector<double> const & v,
         std::vector<double> & vr) {
 
-    for(int i = 0; i < m.size(); i++) {
+    for (int i = 0; i < m.size(); i++) {
         vr[i] = 0;
-        for(int j = 0; j < m[i].size(); j++) {
-            vr[i] += m[i][j]*v[j];
+        for (int j = 0; j < m[i].size(); j++) {
+            vr[i] += m[i][j] * v[j];
         }
     }
 
@@ -157,8 +157,8 @@ double
 norm(
         std::vector<double> const & v) {
     double norm = 0;
-    for(auto const & e : v) {
-        norm += e*e;
+    for (auto const & e : v) {
+        norm += e * e;
     }
     return sqrt(norm);
 }
@@ -193,16 +193,16 @@ public:
             Quaternion const & q) {
 
         auto q1 = Quaternion(q);
-        if(q1[0] < 0) { q1 = -q1;}
+        if (q1[0] < 0) { q1 = -q1; }
 
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
-                qq_[i][j] = q1[i]*q1[j];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                qq_[i][j] = q1[i] * q1[j];
             }
         }
 
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
                 A_[i][j] = A_[i][j] + qq_[i][j];
             }
         }
@@ -212,11 +212,11 @@ public:
 
     Quaternion
     get_average() {
-        if(count_ < 1) { return Quaternion(); }
+        if (count_ < 1) { return Quaternion(); }
 
-        for(int i = 0; i < 4; i++) {
-            for(int j = 0; j < 4; j++) {
-                A_scaled_[i][j] = (1 / count_)*A_[i][j];
+        for (int i = 0; i < 4; i++) {
+            for (int j = 0; j < 4; j++) {
+                A_scaled_[i][j] = (1 / count_) * A_[i][j];
             }
         }
 
@@ -230,6 +230,8 @@ private:
     std::vector<double> eigen_values_;
 
 };
+
+}
 
 #endif //RNAMAKE_NEW_QUATERNION_H
 

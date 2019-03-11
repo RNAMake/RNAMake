@@ -25,7 +25,7 @@ String
 remove_Us(String const &);
 
 
-class GeneralHelixSampler : public Application {
+class GeneralHelixSampler : public base::Application {
 public:
     GeneralHelixSampler();
 
