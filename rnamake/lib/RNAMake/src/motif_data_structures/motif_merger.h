@@ -39,7 +39,7 @@ struct ChainNodeData {
     inline
     ChainNodeData(
         ChainOP const & nc,
-        Uuid const & nm_id,
+        util::Uuid const & nm_id,
         int nprime5_override = 0,
         int nprime3_override = 0):
     c(nc),
@@ -66,7 +66,7 @@ struct ChainNodeData {
     }
     
     ChainOP c;
-    Uuid m_id;
+    util::Uuid m_id;
     int prime5_override, prime3_override;
 };
 
@@ -77,10 +77,10 @@ typedef std::unique_ptr<ChainNodes>  ChainNodesUP;
 class MotifMerger {
 public:
     MotifMerger():
-    all_bps_(std::map<Uuid, BasepairOP, UuidCompare>()),
-    motifs_(std::map<Uuid, MotifOP, UuidCompare>()),
-    res_overrides_(std::map<Uuid, Uuid, UuidCompare>()),
-    bp_overrides_(std::map<Uuid, Uuid, UuidCompare>()),
+    all_bps_(std::map<util::Uuid, BasepairOP, util::UuidCompare>()),
+    motifs_(std::map<util::Uuid, MotifOP, util::UuidCompare>()),
+    res_overrides_(std::map<util::Uuid, util::Uuid, util::UuidCompare>()),
+    bp_overrides_(std::map<util::Uuid, util::Uuid, util::UuidCompare>()),
     graph_(data_structure::graph::GraphStatic<ChainNodeData>()),
     rebuild_structure_(1),
     rna_structure_(std::make_shared<RNAStructure>()){
@@ -90,8 +90,8 @@ public:
     MotifMerger(
         MotifMerger const & mm,
         MotifOPs const & motifs):
-    all_bps_(std::map<Uuid, BasepairOP, UuidCompare>()),
-    motifs_(std::map<Uuid, MotifOP, UuidCompare>()),
+    all_bps_(std::map<util::Uuid, BasepairOP, util::UuidCompare>()),
+    motifs_(std::map<util::Uuid, MotifOP, util::UuidCompare>()),
     res_overrides_(mm.res_overrides_),
     bp_overrides_(mm.bp_overrides_),
     rna_structure_(std::make_shared<RNAStructure>()),
@@ -146,14 +146,14 @@ public:
         _link_motifs(m1, m1_end, m2, m2_end);
     }
     
-    sstruct::PoseOP
+    secondary_structure::PoseOP
     secondary_structure();
     
 public:
     
     inline
     ResidueOP
-    get_residue(Uuid const & uuid) {
+    get_residue(util::Uuid const & uuid) {
         auto r = ResidueOP(nullptr);
         for(auto const & kv : motifs_) {
             r = kv.second->get_residue(uuid);
@@ -164,7 +164,7 @@ public:
     
     inline
     BasepairOP
-    get_basepair(Uuid const & uuid) {
+    get_basepair(util::Uuid const & uuid) {
         if(all_bps_.find(uuid) != all_bps_.end()) {
             return all_bps_[uuid];
         }
@@ -220,9 +220,9 @@ private:
         MotifOP const &);
     
 private:
-    std::map<Uuid, BasepairOP, UuidCompare> all_bps_;
-    std::map<Uuid, MotifOP, UuidCompare> motifs_;
-    std::map<Uuid, Uuid, UuidCompare> res_overrides_, bp_overrides_;
+    std::map<util::Uuid, BasepairOP, util::UuidCompare> all_bps_;
+    std::map<util::Uuid, MotifOP, util::UuidCompare> motifs_;
+    std::map<util::Uuid, util::Uuid, util::UuidCompare> res_overrides_, bp_overrides_;
     data_structure::graph::GraphStatic<ChainNodeData> graph_;
     int rebuild_structure_;
     RNAStructureOP rna_structure_;

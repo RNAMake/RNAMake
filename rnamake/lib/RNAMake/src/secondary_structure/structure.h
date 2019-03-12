@@ -15,7 +15,7 @@
 #include "base/types.h"
 #include "secondary_structure/chain.h"
 
-namespace sstruct {
+namespace secondary_structure {
     
 class Structure {
 public:
@@ -105,7 +105,7 @@ public:
     
     ResidueOP 
     get_residue(
-        Uuid const &);
+        util::Uuid const &);
     
     String
     to_str() {

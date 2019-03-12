@@ -10,17 +10,17 @@
 TEST_CASE( "Test Parsing secondary structure into objects", "[SSParser]" ) {
     
     SECTION("test basic parsing errors") {
-        auto p = sstruct::SecondaryStructureParser();
+        auto p = secondary_structure::Parser();
         
-        REQUIRE_THROWS_AS(p.parse("GG+CC", "(((+))"), sstruct::SecondaryStructureException);
-        REQUIRE_THROWS_AS(p.parse("GG+CC", "()+))"), sstruct::SecondaryStructureException);
-        REQUIRE_THROWS_AS(p.parse("GGG+CC", "(((+))"), sstruct::SecondaryStructureException);
-        REQUIRE_THROWS_AS(p.parse("GG+CC", "(.+))"), sstruct::SecondaryStructureException);
+        REQUIRE_THROWS_AS(p.parse("GG+CC", "(((+))"), secondary_structure::Exception);
+        REQUIRE_THROWS_AS(p.parse("GG+CC", "()+))"), secondary_structure::Exception);
+        REQUIRE_THROWS_AS(p.parse("GGG+CC", "(((+))"), secondary_structure::Exception);
+        REQUIRE_THROWS_AS(p.parse("GG+CC", "(.+))"), secondary_structure::Exception);
 
     }
     
     SECTION("test parsing into graph") {
-        auto p = sstruct::SecondaryStructureParser();
+        auto p = secondary_structure::Parser();
         auto g = p.parse("GGG+CC", ".((+))");
         REQUIRE(g->size() == 5);
         
@@ -34,7 +34,7 @@ TEST_CASE( "Test Parsing secondary structure into objects", "[SSParser]" ) {
     }
     
     SECTION("test parsing into single motifs") {
-        auto p = sstruct::SecondaryStructureParser();
+        auto p = secondary_structure::Parser();
         
         auto m = p.parse_to_motif("GG+CC", "((+))");
         REQUIRE(m->residues().size() == 4);
@@ -54,22 +54,22 @@ TEST_CASE( "Test Parsing secondary structure into objects", "[SSParser]" ) {
     }
     
     SECTION("test parsing into set of motifs") {
-        auto p = sstruct::SecondaryStructureParser();
+        auto p = secondary_structure::Parser();
         auto motifs = p.parse_to_motifs("GGAGG+CAACCC", "((.((+)..)))");
         REQUIRE(motifs.size() == 3);
-        REQUIRE(motifs[0]->mtype() == HELIX);
-        REQUIRE(motifs[1]->mtype() == TWOWAY);
+        REQUIRE(motifs[0]->mtype() == util::MotifType::HELIX);
+        REQUIRE(motifs[1]->mtype() == util::MotifType::TWOWAY);
         
         p.reset();
         motifs = p.parse_to_motifs("GGAAGACAAGACAACC", "((..(.)..(.)..))");
         REQUIRE(motifs.size() == 4);
-        REQUIRE(motifs[1]->mtype() == NWAY);
+        REQUIRE(motifs[1]->mtype() == util::MotifType::NWAY);
 
         p.reset();
         motifs = p.parse_to_motifs("GGAAGACAAGACAAGACAAGACCC",
                                    "((..(.)..(.)..(.)..(.)))");
         REQUIRE(motifs.size() == 6);
-        REQUIRE(motifs[1]->mtype() == NWAY);
+        REQUIRE(motifs[1]->mtype() == util::MotifType::NWAY);
 
 
     }

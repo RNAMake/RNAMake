@@ -57,12 +57,12 @@ public:
     
 private:
     String
-    _get_lib_name(MotifType const & type) {
-        if     (type == HELIX)   { return "ideal_helices"; }
-        else if(type == TWOWAY)  { return "twoway"; }
-        else if(type == NWAY)    { return "nway"; }
-        else if(type == HAIRPIN) { return "hairpin"; }
-        else if(type == TCONTACT){ return "tcontact"; }
+    _get_lib_name(util::MotifType const & type) {
+        if     (type == util::MotifType::HELIX)   { return "ideal_helices"; }
+        else if(type == util::MotifType::TWOWAY)  { return "twoway"; }
+        else if(type == util::MotifType::NWAY)    { return "nway"; }
+        else if(type == util::MotifType::HAIRPIN) { return "hairpin"; }
+        else if(type == util::MotifType::TCONTACT){ return "tcontact"; }
         else { throw std::runtime_error("cannot convert type"); }
         
     }

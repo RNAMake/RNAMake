@@ -12,13 +12,13 @@ namespace eternabot {
 
 
 void
-Scorer::setup(sstruct::PoseOP const & p) {
+Scorer::setup(secondary_structure::PoseOP const & p) {
     features_ = generator_.get_features(p);
     
 }
 
 float
-Scorer::score_secondary_structure(sstruct::PoseOP const & p) {
+Scorer::score_secondary_structure(secondary_structure::PoseOP const & p) {
     generator_.update_features(features_, p);
     
     total_score_ = 0;

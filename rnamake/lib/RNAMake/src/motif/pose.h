@@ -20,8 +20,8 @@
 class Pose : public Motif {
 public:
     Pose():
-    designable_ (std::map<Uuid, int, UuidCompare>()),
-    motifs_(std::map<MotifType, MotifOPs>())
+    designable_ (std::map<util::Uuid, int, util::UuidCompare>()),
+    motifs_(std::map<util::MotifType, MotifOPs>())
     {}
     
     Pose(MotifOP const &);
@@ -34,7 +34,7 @@ public:
     
     MotifOPs const &
     motifs(
-        MotifType const &);
+        util::MotifType const &);
 
 public:
     
@@ -48,21 +48,21 @@ public:
     
     inline
     void
-    designable(std::map<Uuid, int, UuidCompare> const & ndesignable) { designable_ = ndesignable; }
+    designable(std::map<util::Uuid, int, util::UuidCompare> const & ndesignable) { designable_ = ndesignable; }
     
     inline
     void
-    set_motifs(std::map<MotifType, MotifOPs> const & motifs) { motifs_ = motifs; }
+    set_motifs(std::map<util::MotifType, MotifOPs> const & motifs) { motifs_ = motifs; }
     
     /*inline
     void
-    set_ss_motifs(std::map<String, sstruct::MotifOPs> & ss_motifs) {
+    set_ss_motifs(std::map<String, secondary_structure::MotifOPs> & ss_motifs) {
         secondary_structure_->set_motifs(ss_motifs);
     }*/
     
 private:
-    std::map<Uuid, int, UuidCompare> designable_;
-    std::map<MotifType, MotifOPs> motifs_;
+    std::map<util::Uuid, int, util::UuidCompare> designable_;
+    std::map<util::MotifType, MotifOPs> motifs_;
 
     
 };

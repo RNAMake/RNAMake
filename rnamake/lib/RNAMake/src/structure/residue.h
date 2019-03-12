@@ -196,7 +196,7 @@ public:
     chain_id_ ( chain_id ),
     i_code_ ( i_code ),
     atoms_ ( AtomOPs() ),
-    uuid_ ( Uuid() )
+    uuid_ ( util::Uuid() )
     {}
     
     /**
@@ -333,7 +333,7 @@ public:
     
     void
     new_uuid() {
-        uuid_ = Uuid();
+        uuid_ = util::Uuid();
     }
     
     
@@ -480,7 +480,7 @@ public: // setters
      */
     inline
     void
-    uuid(Uuid const & uuid) { uuid_ = uuid; }
+    uuid(util::Uuid const & uuid) { uuid_ = uuid; }
     
     
 public: // getters
@@ -537,7 +537,7 @@ public: // getters
      * getter for residue unique indentifier
      */
     inline
-    Uuid const &
+    util::Uuid const &
     uuid() const { return uuid_; }
     
 private:
@@ -574,7 +574,7 @@ private:
     /**
      * unique residue indentifier so each residue can be be found in larger structures
      */
-    Uuid uuid_;
+    util::Uuid uuid_;
     
 };
 

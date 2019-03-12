@@ -30,7 +30,7 @@ class Motif : public RNAStructure {
 public:
     Motif():
     RNAStructure(),
-    id_(Uuid()),
+    id_(util::Uuid()),
     block_end_add_(0)
     {}
     
@@ -39,7 +39,7 @@ public:
         BasepairOPs const & basepairs,
         BasepairOPs const & ends):
     RNAStructure(structure, basepairs, ends),
-    id_(Uuid()),
+    id_(util::Uuid()),
     block_end_add_(0)
     {}
         
@@ -51,10 +51,10 @@ public:
 
     Motif(RNAStructure const & rs):
         RNAStructure(rs) {
-        id_ = Uuid();
+        id_ = util::Uuid();
         block_end_add_ = -1;
-        secondary_structure_ = std::make_shared<sstruct::Motif>();
-        mtype_ = MotifType::UNKNOWN;
+        secondary_structure_ = std::make_shared<secondary_structure::Motif>();
+        mtype_ = util::MotifType::UNKNOWN;
     }
     
     ~Motif() {}
@@ -108,11 +108,11 @@ public: //wrappers from secondary structure
 public: //getters
     
     inline
-    MotifType const &
+    util::MotifType const &
     mtype() { return mtype_; }
     
     inline
-    sstruct::MotifOP const &
+    secondary_structure::MotifOP const &
     secondary_structure() { return secondary_structure_; }
     
     inline
@@ -120,7 +120,7 @@ public: //getters
     block_end_add() { return block_end_add_; }
     
     inline
-    Uuid const &
+    util::Uuid const &
     id() { return id_; }
     
     inline
@@ -132,16 +132,16 @@ public: // setters
     
     inline
     void
-    id(Uuid const & nid) { id_ = nid; }
+    id(util::Uuid const & nid) { id_ = nid; }
     
     inline
     void
-    mtype(MotifType const & mtype) { mtype_ = mtype; }
+    mtype(util::MotifType const & mtype) { mtype_ = mtype; }
     
     inline
     void
     secondary_structure(
-        sstruct::MotifOP const & ss) {
+        secondary_structure::MotifOP const & ss) {
         secondary_structure_ = ss;
     }
     
@@ -161,10 +161,10 @@ public: // setters
     
    
 private:
-    MotifType mtype_;
-    sstruct::MotifOP secondary_structure_;
+    util::MotifType mtype_;
+    secondary_structure::MotifOP secondary_structure_;
     int block_end_add_;
-    Uuid id_;
+    util::Uuid id_;
 };
 
 

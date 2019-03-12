@@ -29,8 +29,8 @@ SequenceOptimizer::update_var_options() {
 OptimizedSequenceOPs
 SequenceOptimizer::get_optimized_sequences(
     MotifGraphOP & mg,
-    Uuid const & uuid_1,
-    Uuid const & uuid_2,
+    util::Uuid const & uuid_1,
+    util::Uuid const & uuid_2,
     int end_1,
     int end_2) {
     
@@ -60,7 +60,7 @@ SequenceOptimizer::get_optimized_sequences(
         
         auto seq = start_dss->sequence().substr(start_, (end_-start_));
         auto db  = start_dss->dot_bracket().substr(start_, (end_-start_));
-        auto parser = sstruct::SecondaryStructureParser();
+        auto parser = secondary_structure::Parser();
         auto new_p = parser.parse_to_pose(seq, db);
         start_dss = new_p;
     }

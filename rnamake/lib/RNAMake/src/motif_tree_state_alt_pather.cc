@@ -86,7 +86,7 @@ MotifTreeStateAltPather::get_alt_paths(
         
     }
    
-    CartesianProduct<MotifTreeStateOP> product(mts_alts);
+    util::CartesianProduct<MotifTreeStateOP> product(mts_alts);
     MotifTreeStateOPs c;
     MotifTreeStateNodeOP parent, node;
     int end_index, count = 0;

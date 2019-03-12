@@ -15,20 +15,22 @@
 //RNAMake Headers
 #include "base/types.h"
 
-template< typename T >
+namespace util {
+
+template<typename T>
 class CartesianProduct {
 public:
     typedef T Value;
     typedef std::vector<Value> Values;
-    
+
 public:
-    CartesianProduct():
+    CartesianProduct() :
             setup_(false) {
 
     }
 
     CartesianProduct(
-            std::vector<Values> const & values):
+            std::vector<Values> const & values) :
             setup_(false) {
         setup(values);
     }
@@ -44,47 +46,50 @@ public:
 
         int i = 0;
         for (auto const & v : values_) {
-            maxes_[i] = (int)v.size();
+            maxes_[i] = (int) v.size();
             i++;
         }
         setup_ = true;
 
     }
-    
+
     inline
     int const
     end() { return end_; }
-    
+
     Values
     const &
     next() {
-        if(!setup_) {
+        if (!setup_) {
             throw std::runtime_error("CartesianProduct is not setup! must call setup() first");
         }
 
         int j = 0;
-        for(auto const & v : values_) {
-            current_ [j] = v [ indices_ [j] ];
+        for (auto const & v : values_) {
+            current_[j] = v[indices_[j]];
             j++;
         }
-        
-        
-        int i = (int)indices_.size()-1;
-        while(i > -1) {
+
+
+        int i = (int) indices_.size() - 1;
+        while (i > -1) {
             indices_[i]++;
-            
-            if(indices_[i] == maxes_[i]) {
-                if( i == 0) { end_ = 1; break; }
+
+            if (indices_[i] == maxes_[i]) {
+                if (i == 0) {
+                    end_ = 1;
+                    break;
+                }
                 indices_[i] = 0;
                 i--;
                 continue;
             }
-            
+
             break;
         }
         return current_;
     }
-    
+
 private:
     Ints indices_;
     Ints maxes_;
@@ -92,7 +97,9 @@ private:
     Values current_;
     int end_;
     bool setup_;
-    
+
 };
+
+}
 
 #endif /* defined(__RNAMake__cartesian_product__) */

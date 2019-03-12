@@ -61,8 +61,8 @@ public:
     OptimizedSequenceOPs
     get_optimized_sequences(
         MotifGraphOP & mg,
-        Uuid const & uuid_1,
-        Uuid const & uuid_2,
+        util::Uuid const & uuid_1,
+        util::Uuid const & uuid_2,
         int end_i,
         int end_j);
        

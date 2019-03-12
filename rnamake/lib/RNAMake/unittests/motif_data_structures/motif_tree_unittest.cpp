@@ -209,12 +209,12 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         auto builder = MotifTreeBuilder();
         auto mt = builder.build();
         REQUIRE(mt->size() == 2);
-        REQUIRE(mt->get_node(0)->data()->mtype() == HELIX);
-        REQUIRE(mt->get_node(1)->data()->mtype() == TWOWAY);
+        REQUIRE(mt->get_node(0)->data()->mtype() == util::MotifType::HELIX);
+        REQUIRE(mt->get_node(1)->data()->mtype() == util::MotifType::TWOWAY);
         
         auto mt2 = builder.build(3);
         REQUIRE(mt2->size() == 6);
-        REQUIRE(mt2->get_node(2)->data()->mtype() == HELIX);
+        REQUIRE(mt2->get_node(2)->data()->mtype() == util::MotifType::HELIX);
 
     }
     
@@ -229,10 +229,10 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     
     SECTION("test more complex builds of random motif trees") {
         auto g = std::make_shared<BuilderGraph>();
-        g->add_node(HELIX, 2);
-        g->add_node(NWAY, 3);
-        g->add_node(HELIX, 2, 1, 1);
-        g->add_node(HELIX, 2, 1, 2);
+        g->add_node(util::MotifType::HELIX, 2);
+        g->add_node(util::MotifType::NWAY, 3);
+        g->add_node(util::MotifType::HELIX, 2, 1, 1);
+        g->add_node(util::MotifType::HELIX, 2, 1, 2);
         
         auto builder = MotifTreeBuilder(g);
         auto mt = builder.build(2);

@@ -11,6 +11,8 @@
 
 #include <stdio.h>
 
+namespace vienna {
+
 #define INF       10000000
 #define NBPAIRS   7
 #define MAXLOOP   30
@@ -19,8 +21,6 @@
 #define BONUS 10000
 #define TURN 3
 #define FORBIDDEN 9999
-
-namespace vienna {
 
 extern double lxc37;   /* parameter for logarithmic loop
                         energy extrapolation            */
@@ -103,7 +103,9 @@ extern int  Hexaloop37[40]; /* Bonus energy for special Triloops */
 extern int  HexaloopdH[40]; /* Bonus energy for special Triloops */
 
 extern double Tmeasure;
-    
+
 }
+
+
 
 #endif /* defined(__RNAMake__energy_par__) */

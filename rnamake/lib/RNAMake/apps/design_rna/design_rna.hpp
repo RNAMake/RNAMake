@@ -69,7 +69,7 @@ private:
     MotifStateSearch search_;
     MotifGraphOP mg_;
     EndStateInfo start_, end_;
-    StericLookup lookup_;
+    util::StericLookup lookup_;
     SequenceOptimizer3D optimizer_;
     
     

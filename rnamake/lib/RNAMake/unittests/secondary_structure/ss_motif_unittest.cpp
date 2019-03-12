@@ -7,11 +7,11 @@
 #include "secondary_structure/secondary_structure_parser.h"
 
 TEST_CASE( "Test Motifs for secondary structure", "[SSMotif]" ) {
-    auto p = sstruct::SecondaryStructureParser();
+    auto p = secondary_structure::Parser();
     auto m = p.parse_to_motif("GG+CC", "((+))");
     
     SECTION("test copy constructor") {
-        auto m_copy = std::make_shared<sstruct::Motif>(*m);
+        auto m_copy = std::make_shared<secondary_structure::Motif>(*m);
         
         SECTION("all the residues have been copied correctly") {
             for(auto const & r : m->residues()) {
@@ -28,7 +28,7 @@ TEST_CASE( "Test Motifs for secondary structure", "[SSMotif]" ) {
     
     SECTION("test stringifing motif") {
         auto s = m->to_str();
-        auto m_copy = std::make_shared<sstruct::Motif>(s);
+        auto m_copy = std::make_shared<secondary_structure::Motif>(s);
         
         REQUIRE(m_copy->residues().size() == 4);
         REQUIRE(m_copy->basepairs().size() == 2);

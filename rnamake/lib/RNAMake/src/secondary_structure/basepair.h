@@ -15,7 +15,7 @@
 //RNAMake Headers
 #include "secondary_structure/residue.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 class Basepair {
 public:
@@ -23,7 +23,7 @@ public:
     Basepair(
         ResidueOP const & res1,
         ResidueOP const & res2,
-        Uuid const & uuid):
+        util::Uuid const & uuid):
     res1_(res1),
     res2_(res2),
     uuid_(uuid)
@@ -55,7 +55,7 @@ public:
         if     (r == res1_) { return res2_; }
         else if(r == res2_) { return res1_; }
         else {
-            throw std::runtime_error("called partner with a resiude not in basepair in sstruct");
+            throw std::runtime_error("called partner with a resiude not in basepair in secondary_structure");
         }
         
     }
@@ -79,12 +79,12 @@ public:
     res2() const { return res2_; }
     
     inline
-    Uuid const &
+    util::Uuid const &
     uuid() { return uuid_; }
     
 private:
     ResidueOP res1_, res2_;
-    Uuid uuid_;
+    util::Uuid uuid_;
     
 };
 

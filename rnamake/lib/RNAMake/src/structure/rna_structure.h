@@ -64,7 +64,7 @@ public: // get specific basepairs
 
     BasepairOPs
     get_basepair(
-            Uuid const &);
+            util::Uuid const &);
 
     BasepairOPs
     get_basepair(
@@ -73,8 +73,8 @@ public: // get specific basepairs
 
     BasepairOPs
     get_basepair(
-            Uuid const &,
-            Uuid const &);
+            util::Uuid const &,
+            util::Uuid const &);
 
 
 public: // get steric beads
@@ -142,7 +142,7 @@ public: //wrappers from structure
     inline
     ResidueOP const
     get_residue(
-            Uuid const & uuid) {
+            util::Uuid const & uuid) {
         return structure_->get_residue(uuid);
     }
 

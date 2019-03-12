@@ -8,33 +8,36 @@
 
 #include "util/motif_type.h"
 
+namespace util {
+
 String const
 type_to_str(MotifType const mtype) {
-    if     (mtype == TWOWAY             ) {   return "TWOWAY";          }
-    else if(mtype == NWAY               ) {   return "NWAY";            }
-    else if(mtype == HAIRPIN            ) {   return "HAIRPIN";         }
-    else if(mtype == T_T                ) {   return "2X_TWOWAY";       }
-    else if(mtype == T_T_T              ) {   return "3X_TWOWAY";       }
-    else if(mtype == TWOWAY_SEGMENTS    ) {   return "TWOWAY_SEGMENTS"; }
-    else if(mtype == HELIX              ) {   return "HELIX";           }
-    else if(mtype == UNKNOWN            ) {   return "UNKNOWN";         }
+    if (mtype == MotifType::TWOWAY) { return "TWOWAY"; }
+    else if (mtype == MotifType::NWAY) { return "NWAY"; }
+    else if (mtype == MotifType::HAIRPIN) { return "HAIRPIN"; }
+    else if (mtype == MotifType::T_T) { return "2X_TWOWAY"; }
+    else if (mtype == MotifType::T_T_T) { return "3X_TWOWAY"; }
+    else if (mtype == MotifType::TWOWAY_SEGMENTS) { return "TWOWAY_SEGMENTS"; }
+    else if (mtype == MotifType::HELIX) { return "HELIX"; }
+    else if (mtype == MotifType::UNKNOWN) { return "UNKNOWN"; }
     else { throw "cannot indentify type "; }
 }
 
 MotifType const
 str_to_type(String const s) {
-    if     (s.compare("TWOWAY") == 0           ) {   return TWOWAY;          }
-    else if(s.compare("NWAY") == 0             ) {   return NWAY;            }
-    else if(s.compare("HAIRPIN") == 0          ) {   return HAIRPIN;         }
-    else if(s.compare("2X_TWOWAY") == 0        ) {   return T_T;             }
-    else if(s.compare("3X_TWOWAY") == 0        ) {   return T_T_T;           }
-    else if(s.compare("TWOWAY_SEGMENTS") == 0  ) {   return TWOWAY_SEGMENTS; }
-    else if(s.compare("HELIX") == 0            ) {   return HELIX;           }
-    else if(s.compare("UNKNOWN") == 0          ) {   return UNKNOWN;         }
+    if (s.compare("TWOWAY") == 0) { return MotifType::TWOWAY; }
+    else if (s.compare("NWAY") == 0) { return MotifType::NWAY; }
+    else if (s.compare("HAIRPIN") == 0) { return MotifType::HAIRPIN; }
+    else if (s.compare("2X_TWOWAY") == 0) { return MotifType::T_T; }
+    else if (s.compare("3X_TWOWAY") == 0) { return MotifType::T_T_T; }
+    else if (s.compare("TWOWAY_SEGMENTS") == 0) { return MotifType::TWOWAY_SEGMENTS; }
+    else if (s.compare("HELIX") == 0) { return MotifType::HELIX; }
+    else if (s.compare("UNKNOWN") == 0) { return MotifType::UNKNOWN; }
     else { throw "cannot indentify str for type"; }
 
 }
 
+}
 
 
 

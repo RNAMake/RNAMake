@@ -30,7 +30,7 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
         auto found_supplied = RM::instance().has_supplied_motif_ensemble(
                                     n->data()->name(), n->data()->end_name(0));
                 
-        if(n->data()->mtype() == MotifType::HELIX) {
+        if(n->data()->mtype() == util::MotifType::HELIX) {
             if(n->data()->residues().size() > 4) {
                 throw MotifStateTreeEnsembleException(
                     "helix: " + n->data()->name() + " has more then 2 basepairs "
@@ -177,7 +177,7 @@ MotifStateEnsembleTreeEnumerator::record(
     }
     
     auto mst = mtst_->to_mst();
-    CartesianProduct<int> iterator(ranges);
+    util::CartesianProduct<int> iterator(ranges);
     Ints c, last_combo;
     math::Matrix r;
     math::Point d;

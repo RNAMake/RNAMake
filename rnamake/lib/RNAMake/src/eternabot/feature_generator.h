@@ -34,7 +34,7 @@ public:
     float meltpoint, fe;
     vienna::plists dotplot;
     std::map<int, int> pairmap;
-    sstruct::MotifOPs helices;
+    secondary_structure::MotifOPs helices;
     
 };
 
@@ -51,12 +51,12 @@ public:
     
     FeaturesOP
     get_features(
-        sstruct::PoseOP const &);
+        secondary_structure::PoseOP const &);
     
     void
     update_features(
         FeaturesOP &,
-        sstruct::PoseOP const &);
+        secondary_structure::PoseOP const &);
     
   
 private:

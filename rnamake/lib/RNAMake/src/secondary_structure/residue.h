@@ -19,11 +19,11 @@
 #include "base/string.h"
 #include "util/uuid.h"
 
-namespace sstruct {
+namespace secondary_structure {
     
-class SecondaryStructureException : public std::runtime_error {
+class Exception : public std::runtime_error {
 public:
-    SecondaryStructureException(
+    Exception(
         String const & message) :
     std::runtime_error(message)
     {}
@@ -39,7 +39,7 @@ public:
         String const & dot_bracket,
         int const & num,
         String const & chain_id,
-        Uuid const & uuid,
+        util::Uuid const & uuid,
         String const & i_code=""):
     name_(name),
     dot_bracket_(dot_bracket),
@@ -54,8 +54,8 @@ public:
         else if(name_ == "T") { res_type_ = 3; }
         else if(name_ == "N") { res_type_ = -1; }
         else {
-            throw SecondaryStructureException(
-                "in sstruct::Residue encountered a unknown name: "  + name_);
+            throw Exception(
+                "in secondary_structure::Residue encountered a unknown name: "  + name_);
         }
         
     }
@@ -77,14 +77,14 @@ public:
         
         Strings spl = base::split_str_by_delimiter(s, ",");
         if(spl.size() < 4) {
-            throw SecondaryStructureException("cannot build sstruct::Residue from str: " + s);
+            throw Exception("cannot build secondary_structure::Residue from str: " + s);
         }
         
         name_         = spl[0];
         dot_bracket_  = spl[1];
         num_          = std::stoi(spl[2]);
         chain_id_     = spl[3];
-        uuid_         = Uuid();
+        uuid_         = util::Uuid();
         if(spl.size() == 5) {
             i_code_ = spl[4];
         }
@@ -96,8 +96,8 @@ public:
         else if(name_ == "T") { res_type_ = 3; }
         else if(name_ == "N") { res_type_ = -1; }
         else {
-            throw SecondaryStructureException(
-                "in sstruct::Residue encountered a unknown name: " + name_);
+            throw Exception(
+                "in secondary_structure::Residue encountered a unknown name: " + name_);
         }
 
     }
@@ -137,7 +137,7 @@ public: //getters
     i_code() { return i_code_; }
     
     inline
-    Uuid const &
+    util::Uuid const &
     uuid() { return uuid_; }
 
     inline
@@ -148,7 +148,7 @@ public: //setters
     
     inline
     void
-    uuid(Uuid const & nuuid) { uuid_ = nuuid; }
+    uuid(util::Uuid const & nuuid) { uuid_ = nuuid; }
     
     inline
     void
@@ -161,8 +161,8 @@ public: //setters
         else if(name_ == "T") { res_type_ = 3; }
         else if(name_ == "N") { res_type_ = -1; }
         else {
-            throw SecondaryStructureException(
-                "in sstruct::Residue encountered a unknown name: " + name_);
+            throw Exception(
+                "in secondary_structure::Residue encountered a unknown name: " + name_);
         }
     }
     
@@ -172,7 +172,7 @@ private:
     //A=0,C=1,G=2,U=3
     int res_type_;
     String name_, dot_bracket_, chain_id_, i_code_;
-    Uuid uuid_;
+    util::Uuid uuid_;
 
 };
     
@@ -187,6 +187,6 @@ struct res_less_than_key {
     }
 };
     
-} //sstruct
+} //secondary_structure
 
 #endif /* defined(__RNAMake__ss_residue__) */

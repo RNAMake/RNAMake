@@ -38,7 +38,7 @@ void
 APTStablization::run() {
 
     // add motif to resource manager
-    RM::instance().add_motif(get_string_option("pdb"), "aptamer", MotifType::TWOWAY);
+    RM::instance().add_motif(get_string_option("pdb"), "aptamer", util::MotifType::TWOWAY);
     std::cout << "APT STABLIZATION: loaded pdb from file: " << get_string_option("pdb") << std::endl;
 
     auto m = RM::instance().motif("aptamer");
@@ -100,10 +100,10 @@ APTStablization::run() {
         auto motif_names = String("");
         for(auto & n : *mg) {
             if(n->data()->name().substr(0,5) == "HELIX") {
-                n->data()->mtype(MotifType::HELIX);
+                n->data()->mtype(util::MotifType::HELIX);
             }
             if(n->data()->name().substr(0,4) == "GAAA") {
-                n->data()->mtype(MotifType::NWAY);
+                n->data()->mtype(util::MotifType::NWAY);
             }
 
             motif_names += n->data()->name() + ";";

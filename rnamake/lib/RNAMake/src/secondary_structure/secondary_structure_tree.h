@@ -15,7 +15,7 @@
 #include "secondary_structure/motif.h"
 #include "secondary_structure/pose.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 class SecondaryStructureTree {
 public:

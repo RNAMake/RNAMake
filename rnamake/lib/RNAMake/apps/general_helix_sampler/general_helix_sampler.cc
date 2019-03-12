@@ -58,7 +58,7 @@ GeneralHelixSampler::get_motifs_from_seq_and_ss(
         String const & seq,
         String const & ss) {
 
-    auto parser = sstruct::SecondaryStructureParser();
+    auto parser = secondary_structure::Parser();
     auto ss_motifs = parser.parse_to_motifs(seq, ss);
     auto motifs = MotifOPs();
 
@@ -66,7 +66,7 @@ GeneralHelixSampler::get_motifs_from_seq_and_ss(
     auto motif = MotifOP(nullptr);
     for(auto const & m : ss_motifs) {
         //basepair step
-        if(m->mtype() == MotifType::HELIX) {
+        if(m->mtype() == util::MotifType::HELIX) {
             motif = RM::instance().bp_step(m->end_ids()[0]);
             motifs.push_back(motif);
         }
@@ -152,7 +152,7 @@ GeneralHelixSampler::run() {
         all_pairs[i] = pairs;
     }
 
-    auto pair_iterator = CartesianProduct<Strings>(all_pairs);
+    auto pair_iterator = util::CartesianProduct<Strings>(all_pairs);
     auto current = std::vector<Strings>();
     auto new_seq = String();
     auto seq1 = String();
@@ -220,7 +220,7 @@ GeneralHelixSampler::_get_hit_count(
 
 int main(int argc, const char * argv[]) {
     //must add this for all apps!
-    std::set_terminate(print_backtrace);
+    std::set_terminate(base::print_backtrace);
 
     auto app = GeneralHelixSampler();
     app.setup_options();

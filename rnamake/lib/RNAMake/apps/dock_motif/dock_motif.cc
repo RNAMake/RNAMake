@@ -39,7 +39,7 @@ DockMotifApp::run() {
 
     auto scaffold = RM::instance().get_structure(get_string_option("scaffold"), "scaffold");
 
-    RM::instance().add_motif(get_string_option("motif"), "motif", MotifType::HAIRPIN);
+    RM::instance().add_motif(get_string_option("motif"), "motif", util::MotifType::HAIRPIN);
     auto motif = RM::instance().motif("motif");
     motif->ends()[0]->flip();
 
@@ -48,8 +48,8 @@ DockMotifApp::run() {
     auto start_ms = motif->get_state();
     _precompute_rotations(start_ms);
 
-    auto screening_lookup = StericLookup(1.0, 5.0, 6);
-    lookup_ = StericLookup(1.0, 4.0, 6);
+    auto screening_lookup = util::StericLookup(1.0, 5.0, 6);
+    lookup_ = util::StericLookup(1.0, 4.0, 6);
     auto bead_centers = math::Points();
     for(auto const & b: scaffold->get_beads()) {
         bead_centers.push_back(b.center());
@@ -96,11 +96,11 @@ DockMotifApp::run() {
 
 MotifStateOP
 DockMotifApp::_get_starting_state(
-        StericLookup & screening_lookup,
+        util::StericLookup & screening_lookup,
         math::Point const & center) {
 
     auto ms = rotations_[0];
-    auto rng = RandomNumberGenerator();
+    auto rng = util::RandomNumberGenerator();
     auto p = math::Point();
     int bound = 2;
 
@@ -122,14 +122,14 @@ DockMotifApp::_search() {
     auto next_pos = 0;
     auto ms = rotations_[pos];
     auto last_ms = ms;
-    auto rng = RandomNumberGenerator();
+    auto rng = util::RandomNumberGenerator();
     int bound = 2;
     auto p = math::Point();
 
     auto current = _score(ms);
     auto best = current;
     auto next = current;
-    auto mc = MonteCarlo();
+    auto mc = util::MonteCarlo();
     auto best_ms = std::make_shared<MotifState>(*ms);
 
     for (int i = 0; i < 100000; i++) {
@@ -192,7 +192,7 @@ DockMotifApp::_score(
 
 math::Point
 get_random_point(
-        RandomNumberGenerator & rng,
+        util::RandomNumberGenerator & rng,
         int bound) {
     auto x = bound - rng.rand()*2*bound;
     auto y = bound - rng.rand()*2*bound;

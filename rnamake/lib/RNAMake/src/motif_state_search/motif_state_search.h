@@ -31,7 +31,7 @@ public:
     solutions_(MotifStateSearchSolutionOPs()),
     beads_(math::Points()),
     aligner_(MotifStateAligner()),
-    lookup_(StericLookup()),
+    lookup_(util::StericLookup()),
     using_lookup_(0),
     options_(base::Options()) {
         setup_options();
@@ -99,7 +99,7 @@ public:
     inline
     void
     lookup(
-        StericLookup const & sl) {
+        util::StericLookup const & sl) {
         using_lookup_ = 1;
         lookup_ = sl;
     }
@@ -148,7 +148,7 @@ private:
     MotifStateSearchSolutionOPs solutions_;
     MotifStateAligner aligner_;
     MotifStateandTypes possible_children_;
-    StericLookup lookup_;
+    util::StericLookup lookup_;
     math::Points beads_;
     int no_more_solutions_;
     base::Options options_;

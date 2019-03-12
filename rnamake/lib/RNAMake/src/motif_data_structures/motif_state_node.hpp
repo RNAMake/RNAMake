@@ -55,14 +55,14 @@ public: //wrappers for current state
     end_name(int i) { return cur_state->end_names()[i]; }
     
     inline
-    Uuid const &
+    util::Uuid const &
     uuid() { return cur_state->uuid(); }
     
 public: //wrappers to set some values
     
     inline
     void
-    uuid(Uuid const & uuid) {
+    uuid(util::Uuid const & uuid) {
         cur_state->uuid(uuid);
         ref_state->uuid(uuid);
     }

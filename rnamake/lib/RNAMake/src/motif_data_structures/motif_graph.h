@@ -434,7 +434,7 @@ public: //graph wrappers
     
     inline
     data_structure::graph::GraphNodeOP<MotifOP> const
-    get_node(Uuid const & uuid) const {
+    get_node(util::Uuid const & uuid) const {
         for(auto const & n : graph_) {
             if(n->data()->id() == uuid) {
                 return n;
@@ -479,7 +479,7 @@ public: //designing functions
     
     void
     replace_helical_sequence(
-            sstruct::PoseOP const &);
+            secondary_structure::PoseOP const &);
     
     inline
     void
@@ -490,11 +490,11 @@ public: //designing functions
         replace_helical_sequence(dss);
     }
     
-    sstruct::PoseOP
+    secondary_structure::PoseOP
     designable_secondary_structure() {
         _update_merger();
         auto ss = merger_->secondary_structure();
-        auto ss_r = sstruct::ResidueOP(nullptr);
+        auto ss_r = secondary_structure::ResidueOP(nullptr);
         
         for(auto const & n : graph_) {
             if(n->data()->name() != "HELIX.IDEAL") { continue; }
@@ -600,7 +600,7 @@ public: //Motif Merger Wrappers
         }
     }
     
-    sstruct::PoseOP
+    secondary_structure::PoseOP
     secondary_structure() {
 
         _update_merger();

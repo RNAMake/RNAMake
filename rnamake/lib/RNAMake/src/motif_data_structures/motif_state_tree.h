@@ -198,7 +198,7 @@ public: //tree wrapers
 
     inline
     MotifStateTreeNodeOP const &
-    get_node(Uuid const & uuid) {
+    get_node(util::Uuid const & uuid) {
         for(auto const & n : tree_) {
             if(n->data()->uuid() == uuid) {
                 return n;

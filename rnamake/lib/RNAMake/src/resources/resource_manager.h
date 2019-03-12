@@ -87,7 +87,7 @@ public: // adding functions
     add_motif(
         String const & path,
         String name = "",
-        MotifType mtype = MotifType::UNKNOWN);
+        util::MotifType mtype = util::MotifType::UNKNOWN);
     
     void
     add_motif(

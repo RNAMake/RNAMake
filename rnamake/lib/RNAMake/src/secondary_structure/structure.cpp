@@ -8,7 +8,7 @@
 
 #include "secondary_structure/structure.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 void
 Structure::_setup_chains(
@@ -16,16 +16,16 @@ Structure::_setup_chains(
     String const & dot_bracket) {
     
     if(sequence.length() != dot_bracket.length()) {
-        throw SecondaryStructureException("cannot construct new SecondaryStructure object: new sequence and dot bracket are not the same length");
+        throw Exception("cannot construct new SecondaryStructure object: new sequence and dot bracket are not the same length");
     }
     
     if(sequence.length() == 0) {
-        throw SecondaryStructureException("cannot construct new SecondaryStructure object: sequence is of lenght zero!");
+        throw Exception("cannot construct new SecondaryStructure object: sequence is of lenght zero!");
     }
     
     if(dot_bracket[0] != '(' && dot_bracket[0] != '.' &&
        dot_bracket[0] != '&' && dot_bracket[0] != '+') {
-        throw SecondaryStructureException("cannot construct new SecondaryStructure object: dot bracket notation for secondary structure is not valid. perhaps you flipped seq and ss?");
+        throw Exception("cannot construct new SecondaryStructure object: dot bracket notation for secondary structure is not valid. perhaps you flipped seq and ss?");
     }
     
     ResidueOPs res;
@@ -40,16 +40,16 @@ Structure::_setup_chains(
             String name = "", db = "", chain_id = "";
             name += s; db += dot_bracket[i]; chain_id += chain_ids[ci];
             if(valid_seq.find(name) == std::string::npos) {
-                throw SecondaryStructureException(
+                throw Exception(
                     name + " is not a valid name for a residue valid names are: AGUCTN");
             }
             
             if(valid_ss.find(db) == std::string::npos) {
-                throw SecondaryStructureException(
+                throw Exception(
                     db + " is not a valid structure element for a residue valid elements are: [{(.)}]");
             }
             
-            auto r = std::make_shared<Residue>(name, db, count, chain_id, Uuid());
+            auto r = std::make_shared<Residue>(name, db, count, chain_id, util::Uuid());
             res.push_back(r);
             count++;
         }
@@ -89,7 +89,7 @@ Structure::get_residue(
 
 ResidueOP 
 Structure::get_residue(
-    Uuid const & uuid) {
+    util::Uuid const & uuid) {
     for( auto & c : chains_) {
         for (auto & r : c->residues() ){
             if ( r->uuid() == uuid) { return r; }

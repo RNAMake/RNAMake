@@ -160,7 +160,7 @@ private:
     struct DesignableBP {
         inline
         DesignableBP(
-            sstruct::BasepairOP const & nbp):
+            secondary_structure::BasepairOP const & nbp):
             bp(nbp),
             last_state(Strings{"", ""}),
             m_id_bot(nullptr),
@@ -183,9 +183,9 @@ private:
         }
         
         
-        sstruct::BasepairOP bp;
+        secondary_structure::BasepairOP bp;
         Strings last_state;
-        std::shared_ptr<Uuid> m_id_bot, m_id_top;
+        std::shared_ptr<util::Uuid> m_id_bot, m_id_top;
         
     };
     
@@ -225,21 +225,21 @@ private:
     _update_designable_bp(
         DesignableBPOP const &,
         MotifStateGraphOP &,
-        sstruct::PoseOP &);
+        secondary_structure::PoseOP &);
     
     String
     _validate_sequence(
         MotifStateGraphOP const &,
-        sstruct::PoseOP const &);
+        secondary_structure::PoseOP const &);
     
     DesignableBPOPs
     _get_designable_bps(
-        sstruct::PoseOP &);
+        secondary_structure::PoseOP &);
     
     void
     _initiate_sequence_in_msg(
         MotifStateGraphOP &,
-        sstruct::PoseOP const &);
+        secondary_structure::PoseOP const &);
 
     int
     convert_char_to_res_code(
@@ -251,18 +251,18 @@ private:
         else if(c == 'T') { return 3; }
         else if(c == 'N') { return -1; }
         else {
-            throw sstruct::SecondaryStructureException("incorrect character for secondary string");
+            throw secondary_structure::Exception("incorrect character for secondary string");
         }
     }
 
     void
     find_seq_violations(
-            sstruct::PoseOP,
+            secondary_structure::PoseOP,
             Ints &);
 
     int
     find_gc_helix_stretches(
-            sstruct::PoseOP);
+            secondary_structure::PoseOP);
 
     bool
     new_seq_violations() {
@@ -316,7 +316,7 @@ protected:
 private:
     base::Options options_;
     eternabot::Scorer eterna_scorer_;
-    RandomNumberGenerator rng_;
+    util::RandomNumberGenerator rng_;
     SequenceOptimizerScorerOP scorer_;
     std::vector<Strings> possible_bps_;
     // option vars

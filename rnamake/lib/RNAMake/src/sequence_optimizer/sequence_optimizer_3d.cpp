@@ -14,7 +14,7 @@
 SequenceOptimizer3D::SequenceOptimizer3D():
 eterna_scorer_(eternabot::Scorer()),
 scorer_(nullptr),
-rng_(RandomNumberGenerator()) {
+rng_(util::RandomNumberGenerator()) {
     possible_bps_ = std::vector<Strings>({{"A", "U"}, {"U", "A"}, {"G", "C"}, {"C", "G"}});
 
     disallowed_sequences_ = Strings();
@@ -44,7 +44,7 @@ void
 SequenceOptimizer3D::_update_designable_bp(
     DesignableBPOP const & d_bp,
     MotifStateGraphOP & msg,
-    sstruct::PoseOP & ss) {
+    secondary_structure::PoseOP & ss) {
     
     if(d_bp->m_id_bot != nullptr ) {
         ss->update_motif(*d_bp->m_id_bot);
@@ -64,7 +64,7 @@ SequenceOptimizer3D::_update_designable_bp(
 String
 SequenceOptimizer3D::_validate_sequence(
     MotifStateGraphOP const & msg,
-    sstruct::PoseOP const & ss) {
+    secondary_structure::PoseOP const & ss) {
     
     auto s1 = msg->to_motif_graph()->secondary_structure()->sequence();
     auto s2 = ss->sequence();
@@ -84,7 +84,7 @@ SequenceOptimizer3D::_validate_sequence(
 
 void
 SequenceOptimizer3D::find_seq_violations(
-        sstruct::PoseOP ss,
+        secondary_structure::PoseOP ss,
         Ints & violations) {
     auto pos = 0;
     for(int i = 0; i < violations.size(); i++) {
@@ -116,7 +116,7 @@ SequenceOptimizer3D::find_seq_violations(
 
 int
 SequenceOptimizer3D::find_gc_helix_stretches(
-        sstruct::PoseOP ss) {
+        secondary_structure::PoseOP ss) {
     int count = 0;
     int violations = 0;
     for(auto const & h : ss->helices()) {
@@ -140,7 +140,7 @@ SequenceOptimizer3D::find_gc_helix_stretches(
 
 SequenceOptimizer3D::DesignableBPOPs
 SequenceOptimizer3D::_get_designable_bps(
-    sstruct::PoseOP & ss) {
+    secondary_structure::PoseOP & ss) {
     
     auto designable_bps = DesignableBPOPs();
     for(auto const & bp : ss->basepairs()) {
@@ -157,8 +157,8 @@ SequenceOptimizer3D::_get_designable_bps(
     for(auto const & d_bp : designable_bps) {
         for(auto const & m : ss->motifs()) {
             if(m->name() != "HELIX.IDEAL") { continue; }
-            if(m->ends()[0] == d_bp->bp) { d_bp->m_id_bot = std::make_shared<Uuid>(m->id()); }
-            if(m->ends()[1] == d_bp->bp) { d_bp->m_id_top = std::make_shared<Uuid>(m->id()); }
+            if(m->ends()[0] == d_bp->bp) { d_bp->m_id_bot = std::make_shared<util::Uuid>(m->id()); }
+            if(m->ends()[1] == d_bp->bp) { d_bp->m_id_top = std::make_shared<util::Uuid>(m->id()); }
         }
         
         auto state = possible_bps_[rng_.randrange(possible_bps_.size())];
@@ -188,7 +188,7 @@ SequenceOptimizer3D::_get_designable_bps(
 void
 SequenceOptimizer3D::_initiate_sequence_in_msg(
     MotifStateGraphOP & msg,
-    sstruct::PoseOP const & ss) {
+    secondary_structure::PoseOP const & ss) {
     
     for(auto const & m : ss->motifs()) {
         if(m->name() != "HELIX.IDEAL") { continue; }
@@ -232,7 +232,7 @@ SequenceOptimizer3D::get_optimized_sequences(
     auto new_score = 0.0f, eterna_score = 0.0f;
     
     //std::cout << designable_bps.size() << std::endl;
-    auto mc = MonteCarlo(1.0f);
+    auto mc = util::MonteCarlo(1.0f);
     
     auto best = 1000.0f;
     auto best_seq = String("");
@@ -333,7 +333,7 @@ SequenceOptimizer3D::get_optimized_mg(
     auto last_score = scorer_->score(msg);
     auto new_score = 0.0f, eterna_score = 0.0f;
     
-    auto mc = MonteCarlo(1.0f);
+    auto mc = util::MonteCarlo(1.0f);
     auto best = 1000.0f;
     auto best_seq = String("");
     

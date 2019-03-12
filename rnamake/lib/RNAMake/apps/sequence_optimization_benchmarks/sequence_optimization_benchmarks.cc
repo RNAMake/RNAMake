@@ -71,7 +71,7 @@ SequenceOptimizationBenchmarks::run() {
         // fix flex helices
         for(auto & n : *sol->mg) {
             if(n->data()->name().substr(0,1) == "H") {
-                n->data()->mtype(MotifType::HELIX);
+                n->data()->mtype(util::MotifType::HELIX);
             }
         }
 
@@ -102,15 +102,15 @@ SequenceOptimizationBenchmarks::_get_libraries() {
 
     auto num = parameters_.motifs*2 + 1;
     auto motif_lib_names = Strings(num);
-    auto motif_types = std::vector<MotifType>(num);
+    auto motif_types = std::vector<util::MotifType>(num);
     for(int i = 0; i < num; i++) {
         if (i % 2 == 0) {
             motif_lib_names[i] = parameters_.helices;
-            motif_types[i]     = MotifType::HELIX;
+            motif_types[i]     = util::MotifType::HELIX;
         }
         else            {
             motif_lib_names[i] = "twoway";
-            motif_types[i]     = MotifType::TWOWAY;
+            motif_types[i]     = util::MotifType::TWOWAY;
         }
     }
 
@@ -122,7 +122,7 @@ SequenceOptimizationBenchmarks::_get_libraries() {
         ms_lib.load_all();
         motif_states = MotifStateOPs();
 
-        if(motif_types[i] == MotifType::HELIX) {
+        if(motif_types[i] == util::MotifType::HELIX) {
             for (auto const & ms : ms_lib) {
                 if(ms->size() >= parameters_.min_helix_size && ms->size() <= parameters_.max_helix_size) {
 

@@ -196,7 +196,7 @@ MotifMerger::MotifMergerType
 MotifMerger::_assign_merger_type(
     MotifOP const & m) {
     
-    if(m->mtype() != MotifType::HELIX) {
+    if(m->mtype() != util::MotifType::HELIX) {
         return MotifMergerType::SPECIFIC_SEQUENCE;
     }
     else {
@@ -266,7 +266,7 @@ MotifMerger::remove_motif(MotifOP const & m) {
         if(bp_overrides_.find(end->uuid()) != bp_overrides_.end() ) {
             bp_overrides_.erase(end->uuid());
         }
-        auto remove = std::vector<Uuid>();
+        auto remove = std::vector<util::Uuid>();
         for(auto const & kv : bp_overrides_) {
             if(kv.second == end->uuid()) { remove.push_back(kv.first); }
         }
@@ -352,20 +352,20 @@ MotifMerger::update_motif(MotifOP const & m) {
     rebuild_structure_ = 1;
 }
 
-sstruct::PoseOP
+secondary_structure::PoseOP
 MotifMerger::secondary_structure() {
     MotiftoSecondaryStructure parser;
     auto ss = parser.to_secondary_structure(get_structure());
-    auto ss_motifs = sstruct::MotifOPs();
+    auto ss_motifs = secondary_structure::MotifOPs();
     
     auto r_cur = ResidueOP(nullptr);
     auto current_bp = BasepairOP(nullptr);
-    auto ss_bp = sstruct::BasepairOPs();
+    auto ss_bp = secondary_structure::BasepairOPs();
     for(auto const & kv : motifs_) {
         auto m = kv.second;
-        auto ss_chains = sstruct::ChainOPs();
+        auto ss_chains = secondary_structure::ChainOPs();
         for(auto const & c : kv.second->chains()) {
-            auto ss_res = sstruct::ResidueOPs();
+            auto ss_res = secondary_structure::ResidueOPs();
             for(auto const & r : c->residues()) {
                 r_cur = r;
                 if(res_overrides_.find(r->uuid()) != res_overrides_.end()) {
@@ -380,11 +380,11 @@ MotifMerger::secondary_structure() {
                 ss_res.push_back(ss_r);
             }
             
-            ss_chains.push_back(std::make_shared<sstruct::Chain>(ss_res));
+            ss_chains.push_back(std::make_shared<secondary_structure::Chain>(ss_res));
         }
         
-        auto ss_struc = std::make_shared<sstruct::Structure>(ss_chains);
-        auto ss_bps = sstruct::BasepairOPs();
+        auto ss_struc = std::make_shared<secondary_structure::Structure>(ss_chains);
+        auto ss_bps = secondary_structure::BasepairOPs();
         for(auto const & bp : kv.second->basepairs()) {
             if(bp->bp_type() != "cW-W")     { continue; }
             if(! wc_bp(bp) && ! gu_bp(bp) ) { continue; }
@@ -399,7 +399,7 @@ MotifMerger::secondary_structure() {
             ss_bps.push_back(ss_bp[0]);
         }
         
-        auto ss_ends = sstruct::BasepairOPs();
+        auto ss_ends = secondary_structure::BasepairOPs();
         for(auto const & end : kv.second->ends()) {
             current_bp = end;
             if(bp_overrides_.find(current_bp->uuid()) != bp_overrides_.end()) {
@@ -412,14 +412,14 @@ MotifMerger::secondary_structure() {
             ss_ends.push_back(ss_bp[0]);
         }
         
-        auto ss_motif = std::make_shared<sstruct::Motif>(ss_struc, ss_bps, ss_ends, m->end_ids(),
+        auto ss_motif = std::make_shared<secondary_structure::Motif>(ss_struc, ss_bps, ss_ends, m->end_ids(),
                                                          m->name(), m->path(), m->score());
         ss_motif->id(m->id());
         ss_motif->mtype(m->mtype());
         ss_motifs.push_back(ss_motif);
     }
     
-    return std::make_shared<sstruct::Pose>(ss, ss_motifs);
+    return std::make_shared<secondary_structure::Pose>(ss, ss_motifs);
 }
 
 

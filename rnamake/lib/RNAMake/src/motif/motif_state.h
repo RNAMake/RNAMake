@@ -53,7 +53,7 @@ public:
     score_(score),
     size_(size),
     block_end_add_(block_end_add),
-    uuid_(Uuid())
+    uuid_(util::Uuid())
     {}
     
     inline
@@ -66,7 +66,7 @@ public:
         float const & score,
         int const & size,
         int const & block_end_add,
-        Uuid const & uuid):
+        util::Uuid const & uuid):
     name_(name),
     end_names_(end_names),
     end_ids_(end_ids),
@@ -114,7 +114,7 @@ public:
             auto bp_state = std::make_shared<BasepairState>(spl[i]);
             end_states_.push_back(bp_state);
         }
-        uuid_ = Uuid();
+        uuid_ = util::Uuid();
 
         
     }
@@ -216,14 +216,14 @@ public: // getters
     block_end_add() { return block_end_add_; }
     
     inline
-    Uuid const &
+    util::Uuid const &
     uuid() { return uuid_; }
     
 public: //setters
   
     inline
     void
-    uuid(Uuid const & uuid) { uuid_ = uuid; }
+    uuid(util::Uuid const & uuid) { uuid_ = uuid; }
     
     
 public:
@@ -243,7 +243,7 @@ public:
     inline
     void
     new_uuids() {
-        uuid_ = Uuid();
+        uuid_ = util::Uuid();
     }
     
     
@@ -257,7 +257,7 @@ private:
     float score_;
     int size_;
     int block_end_add_;
-    Uuid uuid_;
+    util::Uuid uuid_;
     
 };
 

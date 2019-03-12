@@ -69,8 +69,8 @@ int main(int argc, const char * argv[]) {
     auto mt = std::make_shared<MotifTree>();
     mt->add_motif(m);
     
-    sstruct::SS_Tree ss_tree(flip_sequence, ss);
-    sstruct::SS_TreeNodeOP last_node = nullptr;
+    secondary_structure::SS_Tree ss_tree(flip_sequence, ss);
+    secondary_structure::SS_TreeNodeOP last_node = nullptr;
     
     int i = -1;
     for(auto const & n : ss_tree) {

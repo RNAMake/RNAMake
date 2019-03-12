@@ -785,27 +785,27 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
         String const & seq,
         String const & ss) {
     
-    auto parser = sstruct::SecondaryStructureParser();
+    auto parser = secondary_structure::Parser();
     auto ss_motifs = parser.parse_to_motifs(seq, ss);
     auto motifs = MotifOPs();
     
     auto start = 0;
     auto motif = MotifOP(nullptr);
     for(auto const & m : ss_motifs) {
-        if(m->mtype() == MotifType::TWOWAY && start == 0) {
+        if(m->mtype() == util::MotifType::TWOWAY && start == 0) {
             start = 1;
             continue;
         }
         
-        if(m->mtype() == MotifType::HAIRPIN) { break; }
+        if(m->mtype() == util::MotifType::HAIRPIN) { break; }
         if(!start) { continue; }
                 
         //basepair step
-        if(m->mtype() == MotifType::HELIX) {
+        if(m->mtype() == util::MotifType::HELIX) {
             motif = RM::instance().bp_step(m->end_ids()[0]);
             motifs.push_back(motif);
         }
-        else if(m->mtype() == MotifType::TWOWAY) {
+        else if(m->mtype() == util::MotifType::TWOWAY) {
             auto end_id = m->end_ids()[0];
             try {
                 motif = RM::instance().motif("", end_id);

@@ -24,14 +24,14 @@ typedef std::map<String, MotifOP> StringMotifMap;
 class MotifLibrary {
 public:
     
-    MotifLibrary(MotifType const & mtype):
+    MotifLibrary(util::MotifType const & mtype):
         connection_ ( MotifSqliteConnection(get_db_path(mtype))),
         mtype_ ( mtype ) {
         mdict_ = StringMotifMap();
         rts_ = ResidueTypeSet();
     }
     
-    MotifLibrary(String const & path, MotifType const & mtype = UNKNOWN):
+    MotifLibrary(String const & path, util::MotifType const & mtype = UNKNOWN):
         connection_(MotifSqliteConnection(path)),
         mtype_(mtype) {
         mdict_ = StringMotifMap();
@@ -66,11 +66,11 @@ public:
 private:
     
     String
-    get_db_path(MotifType const & mtype);
+    get_db_path(util::MotifType const & mtype);
     
 private:
     MotifSqliteConnection connection_;
-    MotifType mtype_;
+    util::MotifType mtype_;
     StringMotifMap mdict_;
     ResidueTypeSet rts_;
 };

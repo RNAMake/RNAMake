@@ -49,7 +49,7 @@ private:
             String const &);
 
 private:
-    StericLookup lookup_;
+    util::StericLookup lookup_;
 
 };
 

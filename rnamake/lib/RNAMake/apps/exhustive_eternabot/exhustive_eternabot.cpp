@@ -32,7 +32,7 @@ void
 ExhustiveEternabot::setup(base::CommandLineOptions const & opts) {
     
     out_name_ = opts.get_string("out");
-    auto parser = sstruct::SecondaryStructureParser();
+    auto parser = secondary_structure::Parser();
     p_ = parser.parse_to_pose(opts.get_string("seq"), opts.get_string("ss"));
     
     for(auto const & bp : p_->basepairs()) {
@@ -62,7 +62,7 @@ ExhustiveEternabot::run() {
         all_pairs[i] = pairs_;
     }
     
-    auto pair_iterator = CartesianProduct<Strings>(all_pairs);
+    auto pair_iterator = util::CartesianProduct<Strings>(all_pairs);
     auto current = std::vector<Strings>();
     
     auto scorer = eternabot::Scorer();

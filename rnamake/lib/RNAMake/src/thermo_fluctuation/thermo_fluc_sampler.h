@@ -28,7 +28,7 @@ class ThermoFlucSampler {
 public:
     ThermoFlucSampler():
     temperature_(298.15),
-    rng_(RandomNumberGenerator())
+    rng_(util::RandomNumberGenerator())
     {}
     
     ~ThermoFlucSampler() {}
@@ -86,8 +86,8 @@ public: // setters
     
 private:
     float temperature_;
-    MonteCarlo mc_;
-    RandomNumberGenerator rng_;
+    util::MonteCarlo mc_;
+    util::RandomNumberGenerator rng_;
     MotifStateEnsembleTreeOP mset_;
     MotifStateTreeOP mst_;
     Ints states_;

@@ -16,7 +16,7 @@
 #include "secondary_structure/rna_structure.h"
 #include "secondary_structure/pose.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 
 String

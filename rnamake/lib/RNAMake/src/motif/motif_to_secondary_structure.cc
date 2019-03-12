@@ -11,13 +11,13 @@
 #include "structure/chain.h"
 
 
-sstruct::RNAStructureOP
+secondary_structure::RNAStructureOP
 MotiftoSecondaryStructure::to_secondary_structure(
     RNAStructureOP const & motif) {
     
     BasepairOP saved_bp;
     BasepairOPs bps;
-    sstruct::ChainOPs ss_chains;
+    secondary_structure::ChainOPs ss_chains;
     
     reset();
     for(auto const & c : motif->chains()) { chains_.push_back(c); }
@@ -32,7 +32,7 @@ MotiftoSecondaryStructure::to_secondary_structure(
         auto c = open_chains_.front();
         open_chains_.pop();
         
-        sstruct::ResidueOPs ss_res;
+        secondary_structure::ResidueOPs ss_res;
         for(auto const & r : c->residues()) {
             ss = ".";
             bps = motif->get_basepair(r->uuid());
@@ -68,12 +68,12 @@ MotiftoSecondaryStructure::to_secondary_structure(
             }
             
             if(saved_bp != nullptr) { seen_bp_[saved_bp->uuid()] = saved_bp; }
-            ss_res.push_back(std::make_shared<sstruct::Residue>(r->short_name(), ss, r->num(),
+            ss_res.push_back(std::make_shared<secondary_structure::Residue>(r->short_name(), ss, r->num(),
                                                                 r->chain_id(), r->uuid(),
                                                                 r->i_code()));
         }
         
-        ss_chains.push_back(std::make_shared<sstruct::Chain>(ss_res));
+        ss_chains.push_back(std::make_shared<secondary_structure::Chain>(ss_res));
         best_chain = _get_next_chain(motif);
         
         if(best_chain == nullptr) { break; }
@@ -82,7 +82,7 @@ MotiftoSecondaryStructure::to_secondary_structure(
         
     }
     
-    auto struc = std::make_shared<sstruct::Structure>(ss_chains);
+    auto struc = std::make_shared<secondary_structure::Structure>(ss_chains);
     for(auto const & r : struc->residues()) {
     }
     
@@ -152,12 +152,12 @@ MotiftoSecondaryStructure::_get_next_chain(
     
 }
 
-sstruct::RNAStructureOP
+secondary_structure::RNAStructureOP
 MotiftoSecondaryStructure::_setup_basepairs_and_ends(
-    sstruct::StructureOP & struc,
+    secondary_structure::StructureOP & struc,
     RNAStructureOP const & motif) {
     
-    sstruct::BasepairOPs ss_bps, ss_ends;
+    secondary_structure::BasepairOPs ss_bps, ss_ends;
     for(auto const & kv : seen_bp_) {
         auto bp = kv.second;
         auto res1 = struc->get_residue(bp->res1()->uuid());
@@ -166,13 +166,13 @@ MotiftoSecondaryStructure::_setup_basepairs_and_ends(
         if(res1 == nullptr || res2 == nullptr) {
             throw std::runtime_error("did not properly find residues for basepairs in ss");
         }
-        ss_bps.push_back(std::make_shared<sstruct::Basepair>(res1, res2, bp->uuid()));
+        ss_bps.push_back(std::make_shared<secondary_structure::Basepair>(res1, res2, bp->uuid()));
     }
     
     for(auto const & end : motif->ends()) {
         auto res1 = struc->get_residue(end->res1()->uuid());
         auto res2 = struc->get_residue(end->res2()->uuid());
-        auto end_bp = sstruct::BasepairOP(nullptr);
+        auto end_bp = secondary_structure::BasepairOP(nullptr);
         for(auto const & bp : ss_bps) {
             if(bp->res1()->uuid() == res1->uuid() &&
                bp->res2()->uuid() == res2->uuid()) {
@@ -186,7 +186,7 @@ MotiftoSecondaryStructure::_setup_basepairs_and_ends(
         ss_ends.push_back(end_bp);
     }
 
-    return std::make_shared<sstruct::RNAStructure>(struc, ss_bps, ss_ends);
+    return std::make_shared<secondary_structure::RNAStructure>(struc, ss_bps, ss_ends);
     
 }
 

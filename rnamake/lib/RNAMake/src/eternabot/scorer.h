@@ -52,10 +52,10 @@ public:
 public:
 
     void
-    setup(sstruct::PoseOP const &);
+    setup(secondary_structure::PoseOP const &);
     
     float
-    score_secondary_structure(sstruct::PoseOP const &);
+    score_secondary_structure(secondary_structure::PoseOP const &);
     
 public:
     

@@ -16,7 +16,7 @@
 
 
 BasepairOPs
-RNAStructure::get_basepair(Uuid const & bp_uuid) {
+RNAStructure::get_basepair(util::Uuid const & bp_uuid) {
     BasepairOPs bps;
     for( auto const & bp : basepairs_) {
         if(bp->uuid() == bp_uuid) { bps.push_back(bp); }
@@ -40,8 +40,8 @@ RNAStructure::get_basepair(
 
 BasepairOPs
 RNAStructure::get_basepair(
-    Uuid const & uuid1,
-    Uuid const & uuid2) {
+    util::Uuid const & uuid1,
+    util::Uuid const & uuid2) {
     
     BasepairOPs bps;
     for( auto const & bp : basepairs_) {
@@ -163,7 +163,7 @@ end_from_basepairs(
         }
     }
     
-    auto res_map = std::map<Uuid, ResidueOP, UuidCompare>();
+    auto res_map = std::map<util::Uuid, ResidueOP, util::UuidCompare>();
     for(auto const & r : chain_ends ) { res_map[r->uuid()] = r;}
 
     auto ends = std::make_shared<BasepairOPs>();
@@ -184,7 +184,7 @@ subselect_basepairs_with_res(
     ResidueOPs const & res,
     BasepairOPs const & all_bps) {
     
-    auto res_map = std::map<Uuid, ResidueOP, UuidCompare>();
+    auto res_map = std::map<util::Uuid, ResidueOP, util::UuidCompare>();
     auto bps = std::make_shared<BasepairOPs>();
     
     for(auto const & r : res ) { res_map[r->uuid()] = r;}

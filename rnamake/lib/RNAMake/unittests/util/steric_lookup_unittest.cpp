@@ -8,7 +8,7 @@ class PointGenerator {
 public:
     PointGenerator():
     test_p_(math::Point()),
-    rng_(RandomNumberGenerator())
+    rng_(util::RandomNumberGenerator())
     {}
 
     ~PointGenerator() {}
@@ -32,16 +32,16 @@ public:
 
 private:
     math::Point test_p_;
-    RandomNumberGenerator rng_;
+    util::RandomNumberGenerator rng_;
 };
 
 
-TEST_CASE( "Test Steric Lookup for quick Sterics ", "[StericLookup]" ) {
+TEST_CASE( "Test Steric Lookup for quick Sterics ", "[util::StericLookup]" ) {
     
     auto p_generator = PointGenerator();
 
     SECTION("Test adding points to lookup") {
-        auto sl = StericLookupNew();
+        auto sl = util::StericLookupNew();
         auto p = math::Point();
         sl.add_point(p);
         sl.to_pdb("grid.pdb");
@@ -73,7 +73,7 @@ TEST_CASE( "Test Steric Lookup for quick Sterics ", "[StericLookup]" ) {
             points.push_back(p_generator.rand_point(100));
         }
         
-        auto sl = StericLookup();
+        auto sl = util::StericLookup();
         sl.add_points(points);
         
         auto dist = 0.0f;

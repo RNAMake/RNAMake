@@ -83,7 +83,7 @@ BuildFlexHelicesApp::generate_helices(
         all_pairs[i] = pairs;
     }
 
-    auto pair_iterator = CartesianProduct<Strings>(all_pairs);
+    auto pair_iterator = util::CartesianProduct<Strings>(all_pairs);
     auto current = std::vector<Strings>();
     auto new_seq = String();
     auto seq1 = String();
@@ -209,7 +209,7 @@ BuildFlexHelicesApp::get_avg_helix(
 
     auto scorer = MotifScorer();
 
-    m->mtype(MotifType::HELIX);
+    m->mtype(util::MotifType::HELIX);
     m->name("HELIX.AVG."+std::to_string(length));
     mf_._setup_secondary_structure(m);
     m->block_end_add(0);

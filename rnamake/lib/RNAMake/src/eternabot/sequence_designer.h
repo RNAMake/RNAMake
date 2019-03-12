@@ -40,7 +40,7 @@ public:
     SequenceDesigner():
     scorer_(Scorer()),
     results_(SequenceDesignerResultOPs()),
-    rng_(RandomNumberGenerator())
+    rng_(util::RandomNumberGenerator())
     { setup_options(); }
     
     ~SequenceDesigner() {}
@@ -51,7 +51,7 @@ public:
     setup();
     
     SequenceDesignerResultOPs const &
-    design(sstruct::PoseOP const &);
+    design(secondary_structure::PoseOP const &);
     
     
 public: //option wrappers
@@ -100,14 +100,14 @@ protected:
 private:
     bool
     _row_of_gc_bps(
-        sstruct::ResidueOP const &,
-        sstruct::ResidueOPs const &);
+        secondary_structure::ResidueOP const &,
+        secondary_structure::ResidueOPs const &);
 
 private:
     Scorer scorer_;
     SequenceDesignerResultOPs results_;
-    sstruct::BasepairOPs designable_bps_;
-    RandomNumberGenerator rng_;
+    secondary_structure::BasepairOPs designable_bps_;
+    util::RandomNumberGenerator rng_;
     Options options_;
     int designs_, steps_;
     float temperature_;

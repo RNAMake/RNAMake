@@ -13,6 +13,8 @@
 #include "util/uuid.h"
 #include "util/random_number_generator.h"
 
+namespace util {
+
 const char alphanum[] =
 "0123456789"
 "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -33,4 +35,6 @@ std::ostream &
 operator <<( std::ostream & stream, Uuid const & uuid) {
     stream << uuid.s_uuid();
     return stream;
+}
+
 }

@@ -136,7 +136,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         mg->replace_ideal_helices();
         auto mg_copy_2 = std::make_shared<MotifGraph>(*mg);
         auto dss = mg_copy_2->designable_secondary_structure();
-        sstruct::fill_basepairs_in_ss(dss);
+        secondary_structure::fill_basepairs_in_ss(dss);
         mg_copy_2->replace_helical_sequence(dss);
 
         
@@ -158,7 +158,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         
             auto expected_total = 0;
             for(auto const & n : *mg2) {
-                if(n->data()->mtype() != MotifType::HELIX) {
+                if(n->data()->mtype() != util::MotifType::HELIX) {
                     expected_total += 1;
                 }
                 else {
@@ -204,7 +204,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         mg.replace_ideal_helices();
 
         auto dss = mg.designable_secondary_structure();
-        sstruct::fill_basepairs_in_ss(dss);
+        secondary_structure::fill_basepairs_in_ss(dss);
         
         REQUIRE_NOTHROW(mg.replace_helical_sequence(dss));
         
@@ -214,7 +214,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
 
         dss = mg2->designable_secondary_structure();
         
-        sstruct::fill_basepairs_in_ss(dss);
+        secondary_structure::fill_basepairs_in_ss(dss);
 
         REQUIRE_NOTHROW(mg2->replace_helical_sequence(dss));
         REQUIRE(mg2->sequence() == dss->sequence());
@@ -230,7 +230,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         
         auto new_mg = std::make_shared<MotifGraph>(*mg);
         auto dss = new_mg->designable_secondary_structure();
-        sstruct::fill_basepairs_in_ss(dss);
+        secondary_structure::fill_basepairs_in_ss(dss);
         new_mg->replace_helical_sequence(dss);
 
         auto struc1 = mg->get_structure();
@@ -310,10 +310,10 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         
         auto g = std::make_shared<BuilderGraph>();
         auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        g->add_node(HELIX, 2);
-        g->add_node(NWAY, 3);
-        g->add_node(HELIX, 2, 1, 1);
-        g->add_node(HELIX, 2, 1, 2);
+        g->add_node(util::MotifType::HELIX, 2);
+        g->add_node(util::MotifType::NWAY, 3);
+        g->add_node(util::MotifType::HELIX, 2, 1, 1);
+        g->add_node(util::MotifType::HELIX, 2, 1, 2);
         
         auto builder = MotifTreeBuilder(g);
         auto mt = builder.build();
@@ -322,7 +322,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
         mg.add_motif(m1);
         REQUIRE_NOTHROW(mg.add_motif_tree(mt));
         REQUIRE(mg.size() == 5);
-        REQUIRE(mg.get_node(2)->data()->mtype() == MotifType::NWAY);
+        REQUIRE(mg.get_node(2)->data()->mtype() == util::MotifType::NWAY);
         
         auto mg2 = MotifGraph();
         mg2.add_motif(m1);

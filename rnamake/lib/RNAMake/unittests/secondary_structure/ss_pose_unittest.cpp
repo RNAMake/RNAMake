@@ -8,7 +8,7 @@
 
 TEST_CASE( "Test Poses for secondary structure", "[SSPose]" ) {
 
-    auto parser = sstruct::SecondaryStructureParser();
+    auto parser = secondary_structure::Parser();
     auto p = parser.parse_to_pose("GGGAGAAAACCCC",
                                   "(((.(....))))");
     
@@ -18,7 +18,7 @@ TEST_CASE( "Test Poses for secondary structure", "[SSPose]" ) {
     REQUIRE(p->ends().size() == 1);
     
     SECTION("test copy constructor for pose") {
-        auto p_copy = std::make_shared<sstruct::Pose>(*p);
+        auto p_copy = std::make_shared<secondary_structure::Pose>(*p);
         
         REQUIRE(p_copy->ends().size() == 1);
         REQUIRE(p_copy->motifs().size() == 4);
@@ -42,10 +42,10 @@ TEST_CASE( "Test Poses for secondary structure", "[SSPose]" ) {
     
     SECTION("test replacing the sequence of pose") {
         
-        REQUIRE_THROWS_AS(p->replace_sequence("A"), sstruct::SecondaryStructureException);
+        REQUIRE_THROWS_AS(p->replace_sequence("A"), secondary_structure::Exception);
         
         REQUIRE_THROWS_AS(p->replace_sequence("GGGAGAA&AACCCC"),
-                          sstruct::SecondaryStructureException);
+                          secondary_structure::Exception);
         
         
         p->replace_sequence("CCCAGAAAACGGG");

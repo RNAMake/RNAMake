@@ -13,7 +13,7 @@
 #include "secondary_structure/util.h"
 #include "util/random_number_generator.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 
 String
@@ -28,7 +28,7 @@ assign_end_id(
     }
     
     if(!found) {
-        throw SecondaryStructureException("supplied an end that is not in current ss element");
+        throw Exception("supplied an end that is not in current ss element");
     }
     
     ChainOPs all_chains;
@@ -161,7 +161,7 @@ assign_end_id(
                 ss_id += "U";
             }
             else {
-                throw SecondaryStructureException("unexpected symbol in dot bracket notation: " + std::to_string(e));
+                throw Exception("unexpected symbol in dot bracket notation: " + std::to_string(e));
             }
         }
         if(i != id_chains.size()-1) { ss_id += "_"; }
@@ -175,7 +175,7 @@ assign_end_id(
 
 void
 fill_basepairs_in_ss(PoseOP & ss) {
-    auto rng = RandomNumberGenerator();
+    auto rng = util::RandomNumberGenerator();
     auto pairs = Strings{"AU", "UA", "GC", "CG"};
     
     for(auto & bp : ss->basepairs()) {

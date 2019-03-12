@@ -61,7 +61,7 @@ GraphtoTree::convert(
 
             //currently a hack to make sure that if we start building not at an end and trying to add
             //somethign on the 0th end of a HELIX this stops it
-            if (parent->data()->mtype() == MotifType::HELIX && parent->children()[1] != nullptr) {
+            if (parent->data()->mtype() == util::MotifType::HELIX && parent->children()[1] != nullptr) {
                 seen_nodes.erase(current->node->index());
                 continue;
             }
@@ -122,14 +122,14 @@ GraphtoTree::convert(
             if (mt_n2->parent() == mt_n1) { continue; }
 
             auto n1_ei = c->end_index(n->index());
-            if (n->data()->mtype() == MotifType::HELIX) { n1_ei = 1; }
+            if (n->data()->mtype() == util::MotifType::HELIX) { n1_ei = 1; }
 
             auto n1_end_name = n->data()->end_name(n1_ei);
 
             if (mt_->connections().in_connection(mt_n1->index(), n1_end_name)) { continue; }
 
             auto n2_ei = c->end_index(partner->index());
-            if (partner->data()->mtype() == MotifType::HELIX) { n2_ei = 1; }
+            if (partner->data()->mtype() == util::MotifType::HELIX) { n2_ei = 1; }
 
             auto n2_end_name = partner->data()->end_name(n2_ei);
 
@@ -179,7 +179,7 @@ GraphtoTree::_get_reoriented_motif(
     // dont need to do anything already oriented
     if (end_index == 0) { return m; }
 
-    if (m->mtype() != MotifType::HELIX) {
+    if (m->mtype() != util::MotifType::HELIX) {
         try {
             auto new_m = RM::instance().motif(m->name(), "", m->end_name(end_index));
             new_m->copy_uuids_from_motif(*m);
@@ -255,7 +255,7 @@ GraphtoTree::_get_new_parent_end_index(
         data_structure::graph::GraphNodeOP <MotifOP> const & parent,
         data_structure::graph::GraphConnectionOP <MotifOP> const & c) {
 
-    if (parent->data()->mtype() != MotifType::HELIX) {
+    if (parent->data()->mtype() != util::MotifType::HELIX) {
         auto parent_end_index = c->end_index(parent->index());
         auto parent_end_name = parent->data()->end_name(parent_end_index);
         auto tree_parent = mt_->get_node(parent->data()->id());

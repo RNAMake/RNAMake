@@ -41,17 +41,17 @@ AptNewInterface::run() {
     auto scaffold_rm = RM::instance().get_structure(get_string_option("scaffold"), "scaffold", 3);
     auto scaffold_m = std::make_shared<Motif>(*scaffold_rm);
     scaffold_m->name("scaffold");
-    scaffold_m->mtype(MotifType::TCONTACT);
+    scaffold_m->mtype(util::MotifType::TCONTACT);
     mf._setup_secondary_structure(scaffold_m);
     RM::instance().register_motif(scaffold_m);
 
-    //RM::instance().add_motif(get_string_option("scaffold"), "scaffold", MotifType::TCONTACT);
+    //RM::instance().add_motif(get_string_option("scaffold"), "scaffold", util::MotifType::TCONTACT);
     auto rs = RM::instance().get_structure(get_string_option("docked_motif"), "docked_motif");
 
     auto prna = RM::instance().motif("prna", "", "A7-C10");
     auto scaffold = RM::instance().motif("scaffold", "", get_string_option("scaffold_end"));
     auto docked_motif = std::make_shared<Motif>(*rs);
-    docked_motif->mtype(MotifType::HAIRPIN);
+    docked_motif->mtype(util::MotifType::HAIRPIN);
     mf._setup_secondary_structure(docked_motif);
 
     RM::instance().register_motif(docked_motif);
@@ -66,7 +66,7 @@ AptNewInterface::run() {
 
     auto msg_copy = std::make_shared<MotifStateGraph>(*msg);
 
-    lookup_ = StericLookup(1.0, 5.0, 7);
+    lookup_ = util::StericLookup(1.0, 5.0, 7);
     _setup_sterics(msg_copy);
 
     auto start_path_1 = String("flex_helices,twoway,flex_helices");

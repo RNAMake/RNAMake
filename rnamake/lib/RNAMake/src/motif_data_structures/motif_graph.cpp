@@ -537,7 +537,7 @@ MotifGraph::replace_ideal_helices() {
     while(found) {
         found =0;
         for(auto const & n : graph_) {
-            if(n->data()->mtype() != MotifType::HELIX) { continue; }
+            if(n->data()->mtype() != util::MotifType::HELIX) { continue; }
             if(n->data()->residues().size() == 4) { continue; }
             
             found = 1;
@@ -626,9 +626,9 @@ MotifGraph::replace_ideal_helices() {
 }
 
 void
-MotifGraph::replace_helical_sequence(sstruct::PoseOP const & ss) {
+MotifGraph::replace_helical_sequence(secondary_structure::PoseOP const & ss) {
     for(auto & n : graph_.nodes()) {
-        if(n->data()->mtype() != MotifType::HELIX) { continue; }
+        if(n->data()->mtype() != util::MotifType::HELIX) { continue; }
         
         auto ss_m = ss->motif(n->data()->id());
         if(ss_m == nullptr) {

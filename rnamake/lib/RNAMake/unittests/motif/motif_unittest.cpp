@@ -143,7 +143,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     SECTION("test steric look based on beads and atoms") {
         auto path = base::motif_dirs() + "ref.motif";
         auto m1 = file_to_motif(path);
-        auto lookup = StericLookupNew();
+        auto lookup = util::StericLookupNew();
         auto points = math::Points();
         for(auto const & b : m1->get_beads()) {
             points.push_back(b.center());

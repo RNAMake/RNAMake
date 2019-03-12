@@ -26,12 +26,12 @@ struct MotifEnsembleSqliteData {
 
 typedef std::shared_ptr<MotifEnsembleSqliteData> MotifEnsembleSqliteDataOP;
 
-class MotifEnsembleSqliteConnection : public Sqlite3Connection {
+class MotifEnsembleSqliteConnection : public util::Sqlite3Connection {
 public:
     MotifEnsembleSqliteConnection() {}
     
     MotifEnsembleSqliteConnection(String const & path):
-    Sqlite3Connection(path),
+    util::Sqlite3Connection(path),
     data_(std::make_shared<MotifEnsembleSqliteData>())
     {}
     

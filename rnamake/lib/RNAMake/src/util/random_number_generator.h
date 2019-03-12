@@ -11,13 +11,15 @@
 #include <random>
 #include <math/xyz_vector.h>
 
+namespace util {
+
 class RandomNumberGenerator {
 public:
     RandomNumberGenerator() {
         srand(unsigned(time(NULL)));
         std::random_device rd;
         std::mt19937 mt(rd());
-        std::uniform_real_distribution<float> dist(0,1);
+        std::uniform_real_distribution<float> dist(0, 1);
 
         mt_ = mt;
         dist_ = dist;
@@ -30,12 +32,14 @@ public:
 
     inline
     int
-    randrange(int i) { return (int)(i*rand()); }
+    randrange(int i) { return (int) (i * rand()); }
 
 private:
     std::mt19937 mt_;
     std::uniform_real_distribution<float> dist_;
 
 };
+
+}
 
 #endif

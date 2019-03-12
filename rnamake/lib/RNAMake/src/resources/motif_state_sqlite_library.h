@@ -23,7 +23,7 @@ public:
         String const & libname) {
         
         libnames_ = get_libnames();
-        rng_ = RandomNumberGenerator();
+        rng_ = util::RandomNumberGenerator();
         auto path = _get_path(libname);
         MotifSqliteConnection conn(path);
         connection_ = conn;
@@ -105,7 +105,7 @@ private:
     
     MotifSqliteConnection connection_;
     std::map<String, MotifStateOP> data_;
-    RandomNumberGenerator rng_;
+    util::RandomNumberGenerator rng_;
     
 };
 

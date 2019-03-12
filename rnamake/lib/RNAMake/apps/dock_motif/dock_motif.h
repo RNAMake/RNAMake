@@ -60,7 +60,7 @@ private: // search functions
 
     MotifStateOP
     _get_starting_state(
-            StericLookup &,
+            util::StericLookup &,
             math::Point const &);
 
 private:
@@ -89,7 +89,7 @@ private:
 
 private:
     MotifStateOPs rotations_;
-    StericLookup lookup_;
+    util::StericLookup lookup_;
     math::Point center_;
     MotifStateandScores results_;
     MotifStateOP helix_;
@@ -98,7 +98,7 @@ private:
 
 math::Point
 get_random_point(
-        RandomNumberGenerator &,
+        util::RandomNumberGenerator &,
         int);
 
 #endif //TEST_DOCK_MOTIF_H

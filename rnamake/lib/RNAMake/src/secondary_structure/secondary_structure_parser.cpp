@@ -9,10 +9,10 @@
 #include "secondary_structure/secondary_structure_parser.h"
 #include "secondary_structure/util.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 SecondaryStructureChainGraphOP
-SecondaryStructureParser::parse(
+Parser::parse(
     String const & sequence,
     String const & dot_bracket) {
 
@@ -51,7 +51,7 @@ SecondaryStructureParser::parse(
         }
         
         else {
-            throw SecondaryStructureException("unexpected symbol in dot bracket: " + r->dot_bracket());
+            throw Exception("unexpected symbol in dot bracket: " + r->dot_bracket());
         }
     }
     
@@ -61,7 +61,7 @@ SecondaryStructureParser::parse(
 }
     
 void
-SecondaryStructureParser::_add_unpaired_residues_to_graph(
+Parser::_add_unpaired_residues_to_graph(
     SecondaryStructureChainGraphOP & g,
     ResidueOPs const & res,
     int is_start_res) {
@@ -74,14 +74,14 @@ SecondaryStructureParser::_add_unpaired_residues_to_graph(
 
     
 void
-SecondaryStructureParser::_add_paired_res_to_graph(
+Parser::_add_paired_res_to_graph(
     SecondaryStructureChainGraphOP & g,
     ResidueOP const & r,
     int is_start_res) {
     
     auto pair_res = _get_bracket_pair(r);
     int parent_index = g->get_node_by_res(_previous_res(r));
-    auto pair = std::make_shared<Basepair>(r, pair_res, Uuid());
+    auto pair = std::make_shared<Basepair>(r, pair_res, util::Uuid());
     pairs_.push_back(pair);
     auto new_data = NodeData(ResidueOPs{r}, NodeType::PAIRED);
     g->add_chain(new_data, parent_index, is_start_res);
@@ -90,7 +90,7 @@ SecondaryStructureParser::_add_paired_res_to_graph(
     
     
 BasepairOP
-SecondaryStructureParser::_get_previous_pair(
+Parser::_get_previous_pair(
     ResidueOP const & r)  {
     
     BasepairOP pair = nullptr;
@@ -102,7 +102,7 @@ SecondaryStructureParser::_get_previous_pair(
     }
 
     if(pair == nullptr) {
-        throw SecondaryStructureException(
+        throw Exception(
             "cannot parse secondary structure: \n" + structure_->sequence() + "\n" +
             structure_->dot_bracket() + "\n position: " + std::to_string(r->num()) +
             " has no matching pair");
@@ -114,7 +114,7 @@ SecondaryStructureParser::_get_previous_pair(
 
 
 MotifOPs
-SecondaryStructureParser::parse_to_motifs(
+Parser::parse_to_motifs(
     String const & sequence,
     String const & dot_bracket) {
     
@@ -143,7 +143,7 @@ SecondaryStructureParser::parse_to_motifs(
 }
 
 MotifOP
-SecondaryStructureParser::parse_to_motif(
+Parser::parse_to_motif(
     String const & sequence,
     String const & dot_bracket) {
     
@@ -153,7 +153,7 @@ SecondaryStructureParser::parse_to_motif(
 }
     
 PoseOP
-SecondaryStructureParser::parse_to_pose(
+Parser::parse_to_pose(
     String const & sequence,
     String const & dot_bracket) {
     
@@ -165,7 +165,7 @@ SecondaryStructureParser::parse_to_pose(
 
     
 SSNodeOP
-SecondaryStructureParser::_walk_nodes(
+Parser::_walk_nodes(
     SSNodeOP const & n) {
     
     int bps_count = 0;
@@ -198,7 +198,7 @@ SecondaryStructureParser::_walk_nodes(
 
     
 MotifOP
-SecondaryStructureParser::_generate_motif(
+Parser::_generate_motif(
     SSNodeOP const & n) {
     
     auto next_n = _walk_nodes(n);
@@ -219,7 +219,7 @@ SecondaryStructureParser::_generate_motif(
 }
     
 MotifOP
-SecondaryStructureParser::_build_motif(
+Parser::_build_motif(
     StructureOP const & struc) {
     
     auto res = std::map<ResidueOP, int>();
@@ -258,16 +258,16 @@ SecondaryStructureParser::_build_motif(
     m->end_ids(end_ids);
     
     if(m->residues().size() == 4) {
-        m->mtype(MotifType::HELIX);
+        m->mtype(util::MotifType::HELIX);
     }
     else if(m->chains().size() == 2) {
-        m->mtype(MotifType::TWOWAY);
+        m->mtype(util::MotifType::TWOWAY);
     }
     else if(m->chains().size() == 1) {
-        m->mtype(MotifType::HAIRPIN);
+        m->mtype(util::MotifType::HAIRPIN);
     }
     else {
-        m->mtype(MotifType::NWAY);
+        m->mtype(util::MotifType::NWAY);
     }
     
     

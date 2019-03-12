@@ -13,7 +13,7 @@ namespace eternabot {
 
 FeaturesOP
 FeatureGenerator::get_features(
-    sstruct::PoseOP const & p) {
+    secondary_structure::PoseOP const & p) {
     
     auto features = std::make_shared<Features>();
     for(auto const & bp : p->basepairs()) {
@@ -31,16 +31,16 @@ FeatureGenerator::get_features(
 void
 FeatureGenerator::update_features(
     FeaturesOP & features,
-    sstruct::PoseOP const & p) {
+    secondary_structure::PoseOP const & p) {
     
     features->gc = 0; features->ua = 0; features->gu = 0;
     features->a_count = 0; features->c_count = 0;
     features->g_count = 0; features->u_count = 0;
     
     for(auto const & bp : p->basepairs()) {
-        if     (sstruct::is_gc_pair(bp)) { features->gc += 1; }
-        else if(sstruct::is_au_pair(bp)) { features->ua += 1; }
-        else if(sstruct::is_gu_pair(bp)) { features->gu += 1; }
+        if     (secondary_structure::is_gc_pair(bp)) { features->gc += 1; }
+        else if(secondary_structure::is_au_pair(bp)) { features->ua += 1; }
+        else if(secondary_structure::is_gu_pair(bp)) { features->gu += 1; }
     }
     
     for(auto const & r : p->residues()) {

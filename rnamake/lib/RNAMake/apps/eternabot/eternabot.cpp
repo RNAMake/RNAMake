@@ -36,7 +36,7 @@ int main(int argc, const char * argv[]) {
     }
     
     designer.setup();
-    auto parser = sstruct::SecondaryStructureParser();
+    auto parser = secondary_structure::Parser();
     auto p = parser.parse_to_pose(cl_opts.get_string("seq"),
                                   cl_opts.get_string("ss"));
     auto results = designer.design(p);

@@ -63,7 +63,7 @@ private:
     _vary_constraints(
             std::array<math::Real2, 6> const &,
             std::array<math::Real2, 6> &,
-            RandomNumberGenerator &);
+            util::RandomNumberGenerator &);
 
     void
     _divide_dataset();
@@ -80,7 +80,7 @@ private:
 
     void
     _get_initial_constraints(
-            RandomNumberGenerator &);
+            util::RandomNumberGenerator &);
 
 private:
     std::vector<math::SixDHistogram> histos_;

@@ -143,7 +143,7 @@ void
 RM::add_motif(
         String const & path,
         String name,
-        MotifType mtype) {
+        util::MotifType mtype) {
 
     auto m = mf_.motif_from_file(path, 0, 1);
     m->mtype(mtype);
@@ -151,7 +151,7 @@ RM::add_motif(
     if(name != "") { m->name(name); }
     
     MotifOPs motifs;
-    std::map<Uuid, String, UuidCompare> end_ids;
+    std::map<util::Uuid, String, util::UuidCompare> end_ids;
     for( int i = 0; i < m->ends().size(); i++) {
         auto m_added = mf_.get_oriented_motif(m, i);
 
@@ -184,7 +184,7 @@ RM::add_motif(
     if(name != "") { m->name(name); }
     
     MotifOPs motifs;
-    std::map<Uuid, String, UuidCompare> end_ids;
+    std::map<util::Uuid, String, util::UuidCompare> end_ids;
     for( int i = 0; i < m->ends().size(); i++) {
         auto m_added = mf_.can_align_motif_to_end(m, i);
         if(m_added == nullptr) {

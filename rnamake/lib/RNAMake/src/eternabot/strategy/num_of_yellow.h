@@ -48,7 +48,7 @@ public:
             count ++;
             for(auto const & bp : helix->basepairs()) {
                 //is a bp of AU or UA
-                if(sstruct::is_au_pair(bp)) { yellow_count ++; }
+                if(secondary_structure::is_au_pair(bp)) { yellow_count ++; }
             }
             
             if(helix->basepairs().size() > 9) {

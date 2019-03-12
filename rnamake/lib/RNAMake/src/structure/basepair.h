@@ -30,7 +30,7 @@ public:
         math::Matrix const & r,
         String const & bp_type):
         bp_type_(bp_type),
-        uuid_( Uuid() ),
+        uuid_( util::Uuid() ),
         res1_( res1 ),
         res2_( res2 ),
         flipped_ ( 0 )
@@ -163,7 +163,7 @@ public: // getters
     d()  const { return center(atoms_); }
     
     inline
-    Uuid const &
+    util::Uuid const &
     uuid() const { return uuid_; }
     
     inline
@@ -194,7 +194,7 @@ public: // setters
     
     inline
     void
-    uuid(Uuid const & nuuid) { uuid_ = nuuid; }
+    uuid(util::Uuid const & nuuid) { uuid_ = nuuid; }
     
     inline
     void
@@ -246,7 +246,7 @@ private:
     BasepairStateOP bp_state_;
     String bp_type_;
     int flipped_;
-    Uuid uuid_;
+    util::Uuid uuid_;
     
 };
 

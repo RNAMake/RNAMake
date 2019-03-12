@@ -14,21 +14,23 @@
 
 #include "base/types.h"
 
-enum MotifType {
-    TWOWAY            = 0,
-    NWAY              = 1,
-    HAIRPIN           = 2,
-    TCONTACT_HP_HP    = 3,
-    TCONTACT_H_HP     = 4,
-    TCONTACT_H_H      = 5,
-    T_T               = 6,
-    T_T_T             = 7,
-    TWOWAY_SEGMENTS   = 8,
-    HELIX             = 9,
-    SSTRAND           = 10,
-    TCONTACT          = 11,
-    UNKNOWN           = 99,
-    ALL               = 999
+namespace util {
+
+enum class MotifType {
+    TWOWAY = 0,
+    NWAY = 1,
+    HAIRPIN = 2,
+    TCONTACT_HP_HP = 3,
+    TCONTACT_H_HP = 4,
+    TCONTACT_H_H = 5,
+    T_T = 6,
+    T_T_T = 7,
+    TWOWAY_SEGMENTS = 8,
+    HELIX = 9,
+    SSTRAND = 10,
+    TCONTACT = 11,
+    UNKNOWN = 99,
+    ALL = 999
 };
 
 String const
@@ -39,5 +41,6 @@ str_to_type(String const);
 
 typedef std::vector<MotifType> MotifTypes;
 
+}
 
 #endif /* defined(__RNAMake__motif_type__) */

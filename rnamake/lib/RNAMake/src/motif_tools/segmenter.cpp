@@ -96,7 +96,7 @@ Segmenter::_get_segments(
         
     }
     
-    auto res_uuids = std::map<Uuid, int, UuidCompare>();
+    auto res_uuids = std::map<util::Uuid, int, util::UuidCompare>();
     
     for(auto const & r : other_res) {
         res_uuids[r->uuid()] = 1;
@@ -159,7 +159,7 @@ Segmenter::apply(
 
     for(auto const & s : sols) {
         auto subchains = ChainOPs();
-        auto sub_res = std::map<Uuid, int, UuidCompare>();
+        auto sub_res = std::map<util::Uuid, int, util::UuidCompare>();
         auto sub_res_array = ResidueOPs();
         
         for(auto const & r: res) {

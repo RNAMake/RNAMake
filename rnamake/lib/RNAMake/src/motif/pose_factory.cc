@@ -19,7 +19,7 @@ PoseFactory::pose_from_motif_tree(
     StructureOP const & structure,
     BasepairOPs const & basepairs,
     MotifOPs const & motifs,
-    std::map<Uuid, int, UuidCompare> const & designable) {
+    std::map<util::Uuid, int, util::UuidCompare> const & designable) {
     
     auto ends = mf_._setup_basepair_ends(structure, basepairs);
     auto m = std::make_shared<Motif>(structure, basepairs, ends);
@@ -60,7 +60,7 @@ PoseFactory::_setup_motifs_from_x3dna(
         pdb_path = pdb_path + "/" + fname + ".pdb";
     }
     
-    X3dna x;
+    util::X3dna x;
     auto x3_motifs = x.get_motifs(pdb_path);
     MotifOPs motifs;
     
@@ -70,13 +70,13 @@ PoseFactory::_setup_motifs_from_x3dna(
     }
     
     
-    std::map<MotifType, MotifOPs> motif_map;
-    motif_map[MotifType::ALL] = MotifOPs();
+    std::map<util::MotifType, MotifOPs> motif_map;
+    motif_map[util::MotifType::ALL] = MotifOPs();
     for(auto const & m : motifs) {
         if(motif_map.find(m->mtype()) == motif_map.end() ) {
             motif_map[m->mtype()] = MotifOPs();
         }
-        motif_map[MotifType::ALL].push_back(m);
+        motif_map[util::MotifType::ALL].push_back(m);
         motif_map[m->mtype()].push_back(m);
     }
     
@@ -92,19 +92,19 @@ PoseFactory::_add_secondary_structure_motifs(
     /*auto ss = p->secondary_structure();
     int i = 0;
     String type_name;
-    std::map<String, sstruct::MotifOPs> ss_motif_map;
-    ss_motif_map["ALL"] = sstruct::MotifOPs();
-    for(auto const & m : p->motifs(MotifType::ALL)) {
-        sstruct::BasepairOPs ss_ends, ss_bps;
-        sstruct::ChainOPs ss_chains;
+    std::map<String, secondary_structure::MotifOPs> ss_motif_map;
+    ss_motif_map["ALL"] = secondary_structure::MotifOPs();
+    for(auto const & m : p->motifs(util::MotifType::ALL)) {
+        secondary_structure::BasepairOPs ss_ends, ss_bps;
+        secondary_structure::ChainOPs ss_chains;
         Strings ss_end_ids;
         for(auto const & c : m->chains()) {
-            sstruct::ResidueOPs ss_res;
+            secondary_structure::ResidueOPs ss_res;
             for(auto const & r : c->residues()) {
                 auto ss_r = ss->get_residue(r->uuid());
                 ss_res.push_back(ss_r);
             }
-            ss_chains.push_back(std::make_shared<sstruct::Chain>(ss_res));
+            ss_chains.push_back(std::make_shared<secondary_structure::Chain>(ss_res));
         }
         for(auto const & bp : m->basepairs()) {
             auto res1 = ss->get_residue(bp->res1()->uuid());
@@ -126,13 +126,13 @@ PoseFactory::_add_secondary_structure_motifs(
             i++;
         }
         type_name = type_to_str(m->mtype());
-        auto ss_motif = std::make_shared<sstruct::Motif>(type_name, ss_ends, ss_chains);
+        auto ss_motif = std::make_shared<secondary_structure::Motif>(type_name, ss_ends, ss_chains);
         //ss_motif->basepairs(ss_bps);
         ss_motif->name(m->name());
         ss_motif->end_ids(ss_end_ids);
         
         if(ss_motif_map.find(type_name) == ss_motif_map.end()) {
-            ss_motif_map[type_name] = sstruct::MotifOPs();
+            ss_motif_map[type_name] = secondary_structure::MotifOPs();
         }
         
         ss_motif_map[type_name].push_back(ss_motif);
@@ -152,8 +152,8 @@ PoseFactory::_add_motifs_to_pose(
     float dist, best_dist;
     math::Point r1_cent, r2_cent;
     ResidueOP best_match;
-    std::map<MotifType, MotifOPs> motif_map;
-    motif_map[MotifType::ALL] = MotifOPs();
+    std::map<util::MotifType, MotifOPs> motif_map;
+    motif_map[util::MotifType::ALL] = MotifOPs();
     for(auto const & m : motifs) {
         BasepairOPs bps;
         std::map<ResidueOP, ResidueOP> residue_map;
@@ -231,7 +231,7 @@ PoseFactory::_add_motifs_to_pose(
         BasepairOP best_end;
         String best_end_id;
         int i = 0;
-        if(m_copy->mtype() != MotifType::HELIX) {
+        if(m_copy->mtype() != util::MotifType::HELIX) {
             BasepairOPs best_ends;
             Strings best_end_ids;
             for(auto const & end : m->ends()) {
@@ -255,7 +255,7 @@ PoseFactory::_add_motifs_to_pose(
         if(motif_map.find(m_copy->mtype()) == motif_map.end() ) {
             motif_map[m_copy->mtype()] = MotifOPs();
         }
-        motif_map[MotifType::ALL].push_back(m_copy);
+        motif_map[util::MotifType::ALL].push_back(m_copy);
         motif_map[m_copy->mtype()].push_back(m_copy);        
         
     }
@@ -300,7 +300,7 @@ PoseFactory::_steric_clash(
 
 MotifOP
 PoseFactory::_convert_x3dna_to_motif(
-    X3Motif const & xm,
+    util::X3Motif const & xm,
     PoseOP const & p) {
     
     ResidueOPs res;
@@ -322,7 +322,7 @@ PoseFactory::_convert_x3dna_to_motif(
     }
     
     auto m = mf_.motif_from_res(res, basepairs);
-    m->mtype(str_to_type(xm.mtype));
+    m->mtype(util::str_to_type(xm.mtype));
     return m;
     
 }

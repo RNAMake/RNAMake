@@ -21,7 +21,7 @@
 #include "secondary_structure/motif.h"
 #include "secondary_structure/pose.h"
 
-namespace sstruct {
+namespace secondary_structure {
     
 
 enum NodeType {
@@ -124,16 +124,16 @@ typedef std::shared_ptr<data_structure::graph::GraphNode<NodeData>> SSNodeOP;
 typedef std::shared_ptr<SecondaryStructureChainGraph> SecondaryStructureChainGraphOP;
 
 
-class SecondaryStructureParser {
+class Parser {
 public:
-    SecondaryStructureParser():
+    Parser():
     seen_(std::map<SSNodeOP, int>()),
     structure_(StructureOP()),
     residues_(ResidueOPs()),
     pairs_(BasepairOPs())
     {}
     
-    ~SecondaryStructureParser() {}
+    ~Parser() {}
 
 public:
     
@@ -224,7 +224,7 @@ private:
             
         }
         
-        throw SecondaryStructureException("cannot find pair in _get_bracket_pair");
+        throw Exception("cannot find pair in _get_bracket_pair");
         
     }
     

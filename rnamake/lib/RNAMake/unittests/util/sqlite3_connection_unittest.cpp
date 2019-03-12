@@ -7,16 +7,16 @@
 TEST_CASE( "Test basic connection sqlite3 connection utilty", "[Sqlite3Connection]" ) {
     
     SECTION("test catching nonexistant database files") {
-        REQUIRE_THROWS_AS(Sqlite3Connection("test.db"), Sqlite3ConnectionException);
+        REQUIRE_THROWS_AS(util::Sqlite3Connection("test.db"), util::Sqlite3ConnectionException);
     }
     
     SECTION("require a database file to perform query") {
-        auto sql_con = Sqlite3Connection();
-        REQUIRE_THROWS_AS(sql_con.query("SELECT *"), Sqlite3ConnectionException);
+        auto sql_con = util::Sqlite3Connection();
+        REQUIRE_THROWS_AS(sql_con.query("SELECT *"), util::Sqlite3ConnectionException);
     }
     
     auto path = base::resources_path()+"/motif_libraries_new/bp_steps.db";
-    auto sql_con = Sqlite3Connection(path);
+    auto sql_con = util::Sqlite3Connection(path);
 
     SECTION("fetch first row of database") {
         auto row = sql_con.fetch_one("SELECT * from data_table");

@@ -21,7 +21,7 @@ Motif::Motif(
     String const & s,
     ResidueTypeSet const & rts):
 RNAStructure(),
-id_(Uuid()) {
+id_(util::Uuid()) {
  
     if(s.length() < 10) {
         throw "tried to construct Motif object from string, with a string too short";
@@ -32,7 +32,7 @@ id_(Uuid()) {
     name_          = spl[1];
     score_         = std::stof(spl[2]);
     block_end_add_ = std::stoi(spl[3]);
-    mtype_         = static_cast<MotifType>(std::stoi(spl[4]));
+    mtype_         = static_cast<util::MotifType>(std::stoi(spl[4]));
     structure_     = std::make_shared<Structure>(spl[5], rts);
     auto basepair_str = base::split_str_by_delimiter(spl[6], "@");
     for (auto const & bp_str : basepair_str) {
@@ -58,7 +58,7 @@ id_(Uuid()) {
         ends_.push_back( basepairs_ [ std::stoi(index) ]);
     }
     end_ids_ = base::split_str_by_delimiter(spl[8], " ");
-    secondary_structure_ = std::make_shared<sstruct::Motif>(spl[9]);
+    secondary_structure_ = std::make_shared<secondary_structure::Motif>(spl[9]);
     
     auto ss_res = secondary_structure_->residues();
     int i = 0;
@@ -90,7 +90,7 @@ Motif::Motif(
     end_ids_    = m.end_ids_;
     id_         = m.id_;
     block_end_add_ = m.block_end_add_;
-    secondary_structure_ = std::make_shared<sstruct::Motif>(*m.secondary_structure_);
+    secondary_structure_ = std::make_shared<secondary_structure::Motif>(*m.secondary_structure_);
     protein_beads_ = Beads(m.protein_beads_.size());
 
     int i = 0;
@@ -124,7 +124,7 @@ Motif::Motif(
 String const
 Motif::to_str() {
     std::stringstream ss;
-    ss << path_ << "&" << name_ << "&" << score_ << "&" << block_end_add_ << "&" << mtype_;
+    ss << path_ << "&" << name_ << "&" << score_ << "&" << block_end_add_ << "&" << (int)mtype_;
     ss << "&" << structure_->to_str() << "&";
     for ( auto const & bp : basepairs_ ) {
         ss << bp->to_str() << "@";
@@ -151,13 +151,13 @@ Motif::to_str() {
 
 void
 Motif::new_res_uuids() {
-    id_ = Uuid();
+    id_ = util::Uuid();
     for(auto & r : residues()) {
         auto ss_r = secondary_structure_->get_residue(r->uuid());
         r->new_uuid();
         ss_r->uuid(r->uuid());
     }
-    for(auto & bp : basepairs()) { bp->uuid(Uuid()); }
+    for(auto & bp : basepairs()) { bp->uuid(util::Uuid()); }
 }
 
 void

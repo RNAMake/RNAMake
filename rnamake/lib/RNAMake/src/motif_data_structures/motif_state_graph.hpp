@@ -149,7 +149,7 @@ public: // graph wrappers
     
     inline
     data_structure::graph::GraphNodeOP<MSNodeDataOP> const
-    get_node(Uuid const & uuid) const {
+    get_node(util::Uuid const & uuid) const {
         for(auto const & n : graph_) {
             if(n->data()->uuid() == uuid) {
                 return n;

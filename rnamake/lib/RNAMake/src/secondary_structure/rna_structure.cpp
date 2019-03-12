@@ -9,11 +9,11 @@
 #include <cassert>
 #include "secondary_structure/rna_structure.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 BasepairOPs
 RNAStructure::get_basepair(
-    Uuid const & bp_uuid) {
+    util::Uuid const & bp_uuid) {
     BasepairOPs bps;
     for( auto const & bp : basepairs_) {
         if(bp->uuid() == bp_uuid) { bps.push_back(bp); }
@@ -37,8 +37,8 @@ RNAStructure::get_basepair(
 
 BasepairOPs
 RNAStructure::get_basepair(
-    Uuid const & uuid1,
-    Uuid const & uuid2) {
+    util::Uuid const & uuid1,
+    util::Uuid const & uuid2) {
     
     BasepairOPs bps;
     for( auto const & bp : basepairs_) {
@@ -72,13 +72,13 @@ RNAStructure::replace_sequence(
     }
     
     if(spl.size() != chains().size()) {
-        throw SecondaryStructureException(
+        throw Exception(
             "cannot replace sequence with one with a differnt number of chains: \n org: " +
             sequence() + "\n new: " + seq);
     }
     
     if(seq2.length() != residues().size()) {
-        throw SecondaryStructureException(
+        throw Exception(
             "cannot replace sequence with a different length sequence: \n org: " + sequence() +
             "\n new: " + seq );
     }

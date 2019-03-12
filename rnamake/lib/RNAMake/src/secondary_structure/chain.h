@@ -13,7 +13,7 @@
 
 #include "secondary_structure/residue.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 class Chain {
 public:
@@ -68,7 +68,7 @@ public:
             return residues_.at(0);
         }
         catch(std::out_of_range e) {
-            throw SecondaryStructureException("called first() on a chain without any residues in it");
+            throw Exception("called first() on a chain without any residues in it");
         }
         catch(...) {
             throw std::runtime_error("unexpected error in chain.first()");
@@ -79,7 +79,7 @@ public:
     ResidueOP const &
     last() {
         if(residues_.size() == 0) {
-            throw SecondaryStructureException("called last() on a chain without any residues in it");
+            throw Exception("called last() on a chain without any residues in it");
         }
      
         return residues_.back();
@@ -134,7 +134,7 @@ typedef std::shared_ptr<Chain> ChainOP;
 typedef std::vector<ChainOP> ChainOPs;
     
     
-} //sstruct
+} //secondary_structure
 
 
 #endif /* defined(__RNAMake__chain__) */

@@ -14,7 +14,7 @@ ThermoFlucSampler::setup(
     mset_ = mset;
     mst_ = mset_->to_mst();
     //set MonteCarlo temperature to kBT, Boltzmann constant in pN.A/K
-    mc_ = MonteCarlo(temperature_*1.3806488e-1);
+    mc_ = util::MonteCarlo(temperature_*1.3806488e-1);
     states_ = Ints(mset_->size());
     for(int i = 0; i < mset_->size(); i++) { states_[i] = 0; }
     

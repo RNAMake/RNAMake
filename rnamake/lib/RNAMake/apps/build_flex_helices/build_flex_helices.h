@@ -45,7 +45,7 @@ public:
         for(int i = 0; i < all_pairs.size(); i++) {
             all_pairs[i] = pairs;
         }
-        pair_iterator_ = CartesianProduct<Strings>(all_pairs);
+        pair_iterator_ = util::CartesianProduct<Strings>(all_pairs);
         motifs_ = MotifStateOPs(length-1);
         num_seq_ = Ints(length);
 
@@ -118,7 +118,7 @@ private:
             String const & seq,
             String const & ss,
             MotifStateOPs & motifs) {
-        auto parser = sstruct::SecondaryStructureParser();
+        auto parser = secondary_structure::Parser();
         auto ss_motifs = parser.parse_to_motifs(seq, ss);
 
         auto start = 0;
@@ -126,7 +126,7 @@ private:
         int i = 0;
         for(auto const & m : ss_motifs) {
             //basepair step
-            if(m->mtype() == MotifType::HELIX) {
+            if(m->mtype() == util::MotifType::HELIX) {
                 motif = RM::instance().bp_step(m->end_ids()[0])->get_state();
                 motifs[i] = motif;
             }
@@ -192,7 +192,7 @@ private:
 
 private:
     MotifStateTreeOP mst_;
-    CartesianProduct<Strings> pair_iterator_;
+    util::CartesianProduct<Strings> pair_iterator_;
     std::vector<Ints> disallowed_num_sequences_;
     String seq1_, seq2_, seq_full_, structure_;
     Ints num_seq_;

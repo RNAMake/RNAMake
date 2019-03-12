@@ -17,7 +17,7 @@
 #include "secondary_structure/basepair.h"
 #include "secondary_structure/rna_structure.h"
 
-namespace sstruct {
+namespace secondary_structure {
  
 class Motif : public RNAStructure {
 public: // RNA Structure Constructors
@@ -79,7 +79,7 @@ public: // Motif specific constructors
     Motif(
         String const & s) {
         auto spl = base::split_str_by_delimiter(s, "!");
-        mtype_      = static_cast<MotifType>(std::stoi(spl[0]));
+        mtype_      = static_cast<util::MotifType>(std::stoi(spl[0]));
         name_       = spl[1];
         path_       = spl[2];
         structure_  = std::make_shared<Structure>(spl[3]);
@@ -91,7 +91,7 @@ public: // Motif specific constructors
             auto res_is = base::split_str_by_delimiter(bp_str, " ");
             auto res1   = res[std::stoi(res_is[0])];
             auto res2   = res[std::stoi(res_is[1])];
-            auto bp     = std::make_shared<Basepair>(res1, res2, Uuid());
+            auto bp     = std::make_shared<Basepair>(res1, res2, util::Uuid());
             basepairs_.push_back(bp);
         }
         for(auto const & end_i : base::split_str_by_delimiter(spl[5], " ") ) {
@@ -106,7 +106,7 @@ public:
     String
     to_str() {
         auto s = String("");
-        s.append(std::to_string(mtype_) + "!" + name_ + "!" + path_ + "!");
+        s.append(std::to_string((int)mtype_) + "!" + name_ + "!" + path_ + "!");
         s.append(structure_->to_str() + "!");
         auto res = structure_->residues();
         
@@ -133,11 +133,11 @@ public:
 public: //getters
     
     inline
-    MotifType const &
+    util::MotifType const &
     mtype() { return mtype_; }
     
     inline
-    Uuid const &
+    util::Uuid const &
     id() { return id_; }
     
 
@@ -145,16 +145,16 @@ public: //setters
     
     inline
     void
-    mtype(MotifType const & mtype) { mtype_ = mtype; }
+    mtype(util::MotifType const & mtype) { mtype_ = mtype; }
     
     inline
     void
-    id(Uuid const & uuid) { id_ = uuid; }
+    id(util::Uuid const & uuid) { id_ = uuid; }
     
     
 private:
-    MotifType mtype_;
-    Uuid id_;
+    util::MotifType mtype_;
+    util::Uuid id_;
     
 };
     

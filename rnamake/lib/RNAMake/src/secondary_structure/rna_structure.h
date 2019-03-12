@@ -17,7 +17,7 @@
 #include "secondary_structure/basepair.h"
 #include "secondary_structure/structure.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 
 class RNAStructure {
@@ -105,7 +105,7 @@ public:
     
     BasepairOPs
     get_basepair(
-        Uuid const &);
+        util::Uuid const &);
     
     BasepairOPs
     get_basepair(
@@ -114,8 +114,8 @@ public:
     
     BasepairOPs
     get_basepair(
-        Uuid const &,
-        Uuid const &);
+        util::Uuid const &,
+        util::Uuid const &);
     
     virtual
     void
@@ -136,7 +136,7 @@ public: //wrappers for structure
     inline
     ResidueOP
     get_residue(
-        Uuid const & uuid) {
+        util::Uuid const & uuid) {
         return structure_->get_residue(uuid);
     }
 

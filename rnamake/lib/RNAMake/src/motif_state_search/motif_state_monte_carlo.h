@@ -44,8 +44,8 @@ public:
     MotifStateMonteCarlo(
             std::vector<MotifStateOPs> const & mses):
             mses_(mses),
-            mc_(MonteCarlo(0.5f)),
-            rng_(RandomNumberGenerator()),
+            mc_(util::MonteCarlo(0.5f)),
+            rng_(util::RandomNumberGenerator()),
             options_(base::Options()){
         using_lookup_ = 0;
         setup_options();
@@ -81,7 +81,7 @@ public:
     inline
     void
     lookup(
-            StericLookupNew const & sl) {
+            util::StericLookupNew const & sl) {
         using_lookup_ = 1;
         lookup_ = sl;
     }
@@ -148,9 +148,9 @@ public: //option wrappers
     }
 
 private:
-    MonteCarlo mc_;
-    RandomNumberGenerator rng_;
-    StericLookupNew lookup_;
+    util::MonteCarlo mc_;
+    util::RandomNumberGenerator rng_;
+    util::StericLookupNew lookup_;
     math::Points beads_;
     base::Options options_;
     std::vector<MotifStateOPs> mses_;

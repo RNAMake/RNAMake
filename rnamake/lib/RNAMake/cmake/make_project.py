@@ -48,6 +48,8 @@ def get_lib_paths(args):
 def get_cmake_lists_header():
     s =  "cmake_minimum_required(VERSION 2.8.12)\n"
     s += "project(rnamake_new)\n\n"
+    s += "SET(CMAKE_C_ARCHIVE_FINISH   \"<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>\")"
+    s += "SET(CMAKE_CXX_ARCHIVE_FINISH \"<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>\")"
     s += "set(CMAKE_BUILD_TYPE Release)\n"
     s += "include(%s)\n\n" % (base_dir + "/cmake/build/compiler.cmake")
     s += "# Include path for Python header files\n"

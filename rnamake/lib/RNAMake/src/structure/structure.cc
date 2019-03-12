@@ -58,7 +58,7 @@ Structure::get_residue(
 
 ResidueOP const
 Structure::get_residue(
-    Uuid const & uuid) {
+    util::Uuid const & uuid) {
     for( auto & c : chains_) {
         for (auto & r : c->residues() ){
             if ( r->uuid() == uuid) { return r; }

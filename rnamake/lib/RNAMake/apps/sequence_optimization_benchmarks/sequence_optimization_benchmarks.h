@@ -49,7 +49,7 @@ public:
             NodeIndexandEdge const & n_end,
             String const & n_start_name,
             String const & n_end_name,
-            StericLookupNewOP n_lookup,
+            util::StericLookupNewOP n_lookup,
             bool n_target_an_aligned_end):
             msg(n_msg),
             start(n_start),
@@ -63,7 +63,7 @@ public:
     MotifStateGraphOP msg;
     NodeIndexandEdge start, end;
     String start_name, end_name;
-    StericLookupNewOP lookup;
+    util::StericLookupNewOP lookup;
     bool target_an_aligned_end;
 };
 
@@ -85,7 +85,7 @@ protected:
     void
     _setup_sterics(
             MotifStateGraphOP msg,
-            StericLookupNewOP lookup) {
+            util::StericLookupNewOP lookup) {
 
         auto beads = math::Points();
         for (auto & n : *msg) {
@@ -119,7 +119,7 @@ public:
         msg->add_state(ttr->get_state());
 
         if (!has_setup_) {
-            lookup_ = std::make_shared<StericLookup>();
+            lookup_ = std::make_shared<util::StericLookup>();
             this->_setup_sterics(msg, lookup_);
 
             start_name_ = "A222-A251";
@@ -146,7 +146,7 @@ public:
 
 private:
     bool has_setup_;
-    StericLookupOP lookup_;
+    util::StericLookupOP lookup_;
     NodeIndexandEdge start_, end_;
     String start_name_, end_name_;
     bool target_an_aligned_end_;
@@ -185,7 +185,7 @@ public:
         msg->add_state(prna_->get_state());
 
         if (!has_setup_) {
-            lookup_ = std::make_shared<StericLookup>();
+            lookup_ = std::make_shared<util::StericLookup>();
             this->_setup_sterics(msg, lookup_);
 
             start_name_ = "B14-C7";
@@ -213,7 +213,7 @@ public:
 
 private:
     bool has_setup_;
-    StericLookupOP lookup_;
+    util::StericLookupOP lookup_;
     NodeIndexandEdge start_, end_;
     String start_name_, end_name_;
     bool target_an_aligned_end_;
@@ -236,7 +236,7 @@ public:
     get_problem() {
         if(! has_setup_) {
             auto path = base::base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/";
-            RM::instance().add_motif(path + "short.out.1.pdb", "scaffold", MotifType::TWOWAY);
+            RM::instance().add_motif(path + "short.out.1.pdb", "scaffold", util::MotifType::TWOWAY);
             scaffold_ = RM::instance().motif("scaffold", "", "A1019-A3915");
         }
 
@@ -245,7 +245,7 @@ public:
         msg->add_state(scaffold_->get_state());
 
         if(! has_setup_) {
-            lookup_ = std::make_shared<StericLookupNew>();
+            lookup_ = std::make_shared<util::StericLookupNew>();
             //this->_setup_sterics(msg, lookup_);
 
             auto points = math::Points();
@@ -278,7 +278,7 @@ public:
 
 private:
     bool has_setup_;
-    StericLookupNewOP lookup_;
+    util::StericLookupNewOP lookup_;
     NodeIndexandEdge start_, end_;
     String start_name_, end_name_;
     bool target_an_aligned_end_;

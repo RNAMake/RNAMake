@@ -12,10 +12,10 @@
 //RNAMake Headers
 #include "base/types.h"
 
+namespace vienna {
+
 #define NBASES 8
 /*@notnull@*/
-
-namespace vienna {
 
 static const char Law_and_Order[] = "_ACGUTXKI";
 static int BP_pair[NBASES][NBASES]= {{ 0, 0, 0, 0, 0, 0, 0, 0},

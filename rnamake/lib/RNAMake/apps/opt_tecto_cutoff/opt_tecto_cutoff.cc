@@ -242,7 +242,7 @@ void
 OptTectoCutoff::_vary_constraints(
         std::array<math::Real2, 6> const & constraints,
         std::array<math::Real2, 6> & new_constraints,
-        RandomNumberGenerator & rng) {
+        util::RandomNumberGenerator & rng) {
 
     new_constraints = constraints;
     double val = 0;
@@ -276,7 +276,7 @@ OptTectoCutoff::_vary_constraints(
 
 void
 OptTectoCutoff::_get_initial_constraints(
-        RandomNumberGenerator & rng) {
+        util::RandomNumberGenerator & rng) {
     constraints_ = std::array<math::Real2, 6>();
 
     bool done = false;
@@ -319,8 +319,8 @@ OptTectoCutoff::run() {
         return;
     }
 
-    auto rng = RandomNumberGenerator();
-    auto mc = MonteCarlo(0.05);
+    auto rng = util::RandomNumberGenerator();
+    auto mc = util::MonteCarlo(0.05);
     _get_initial_constraints(rng);
 
     //constraints_ = {math::Real2{-5, 5}, math::Real2{-5, 5}, math::Real2{-5, 5}, math::Real2{10, 340}, math::Real2{130, 190}, math::Real2{170, 190}};

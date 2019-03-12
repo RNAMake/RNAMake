@@ -67,26 +67,26 @@ public:
         for(auto const & helix : features->helices) {
             stack_count++;
             if     (helix->basepairs().size() == 1) {
-                if(sstruct::is_gc_pair(helix->basepairs()[0])) { cap_score += 1;   }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[0])) { cap_score += 1;   }
             }
             else if(helix->basepairs().size() == 2) {
-                if(sstruct::is_gc_pair(helix->basepairs()[0])) { cap_score += 0.5; }
-                if(sstruct::is_gc_pair(helix->basepairs()[1])) { cap_score += 0.5; }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[0])) { cap_score += 0.5; }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[1])) { cap_score += 0.5; }
                 
             }
             
             else if(helix->basepairs().size() == 3) {
-                if(sstruct::is_gc_pair(helix->basepairs()[0])) { cap_score += 0.4; }
-                if(sstruct::is_gc_pair(helix->basepairs()[1])) { cap_score += 0.4; }
-                if(sstruct::is_gc_pair(helix->basepairs()[2])) { cap_score += 0.4; }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[0])) { cap_score += 0.4; }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[1])) { cap_score += 0.4; }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[2])) { cap_score += 0.4; }
             }
             
             else {
                 length = (int)helix->basepairs().size();
-                if(sstruct::is_gc_pair(helix->basepairs()[0])) { cap_score += 1.0 / 3.0; }
-                if(sstruct::is_gc_pair(helix->basepairs()[1])) { cap_score += 1.0 / 6.0; }
-                if(sstruct::is_gc_pair(helix->basepairs()[length-2])) { cap_score += 1.0 / 6.0; }
-                if(sstruct::is_gc_pair(helix->basepairs()[length-1])) { cap_score += 1.0 / 3.0; }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[0])) { cap_score += 1.0 / 3.0; }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[1])) { cap_score += 1.0 / 6.0; }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[length-2])) { cap_score += 1.0 / 6.0; }
+                if(secondary_structure::is_gc_pair(helix->basepairs()[length-1])) { cap_score += 1.0 / 3.0; }
             }
         }
         

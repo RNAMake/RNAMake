@@ -34,7 +34,7 @@ SequenceDesigner::setup() {
 }
     
 SequenceDesignerResultOPs const &
-SequenceDesigner::design(sstruct::PoseOP const & p) {
+SequenceDesigner::design(secondary_structure::PoseOP const & p) {
 
     scorer_.setup(p);
     auto pairs = std::vector<Strings>();
@@ -42,7 +42,7 @@ SequenceDesigner::design(sstruct::PoseOP const & p) {
     pairs.push_back(Strings{"U", "A"});
     pairs.push_back(Strings{"C", "G"});
     pairs.push_back(Strings{"G", "C"});
-    designable_bps_ = sstruct::BasepairOPs();
+    designable_bps_ = secondary_structure::BasepairOPs();
     temperature_ = 4.0f;
  
     
@@ -168,8 +168,8 @@ SequenceDesigner::design(sstruct::PoseOP const & p) {
     
 bool
 SequenceDesigner::_row_of_gc_bps(
-    sstruct::ResidueOP const & r,
-    sstruct::ResidueOPs const & res) {
+    secondary_structure::ResidueOP const & r,
+    secondary_structure::ResidueOPs const & res) {
     
     int max_gc_count = 0;
     int gc_count = 0;

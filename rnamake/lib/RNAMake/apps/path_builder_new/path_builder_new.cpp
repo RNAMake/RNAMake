@@ -83,7 +83,7 @@ PathBuilderNewApp::run() {
         for(auto const & b : n->data()->protein_beads()) { beads.push_back(b.center()); }
     }
     
-    auto sl = StericLookup();
+    auto sl = util::StericLookup();
     sl.add_points(beads);
  
     search_.lookup(sl);

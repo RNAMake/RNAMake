@@ -248,7 +248,7 @@ MotifFactory::_setup_basepairs(
         bool rebuild_x3dna) {
 
     auto basepairs = BasepairOPs();
-    auto x3dna_parser = X3dna();
+    auto x3dna_parser = util::X3dna();
     auto x_basepairs = x3dna_parser.get_basepairs(path, rebuild_x3dna);
     ResidueOP res1, res2;
     //BasepairOP bp;
@@ -306,13 +306,13 @@ MotifFactory::_setup_secondary_structure(
         auto res1 = ss->get_residue(end->res1()->uuid());
         auto res2 = ss->get_residue(end->res2()->uuid());
         auto ss_end = ss->get_basepair(res1, res2)[0];
-        end_ids[i] = sstruct::assign_end_id(ss, ss_end);
+        end_ids[i] = secondary_structure::assign_end_id(ss, ss_end);
         i++;
     }
 
     ss->end_ids(end_ids);
     m->end_ids(end_ids);
-    m->secondary_structure(std::static_pointer_cast<sstruct::Motif>(ss));
+    m->secondary_structure(std::static_pointer_cast<secondary_structure::Motif>(ss));
 
 
 }

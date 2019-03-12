@@ -15,6 +15,8 @@
 #include "math/xyz_vector.h"
 #include "math/hashing.h"
 
+namespace util {
+
 class StericLookup {
 public:
     StericLookup();
@@ -23,14 +25,14 @@ public:
             float,
             float,
             int);
-    
+
     ~StericLookup() {}
 
 public:
     void
     add_point(
             math::Point const &);
-    
+
     void
     add_points(
             math::Points const &);
@@ -38,11 +40,11 @@ public:
     int
     clash(
             math::Point const &);
-    
+
     int
     clash(
             math::Points const &);
-    
+
     int
     better_clash(
             math::Point const &);
@@ -54,7 +56,7 @@ public:
     int
     total_clash(
             math::Points const &);
-    
+
 private:
     void
     _setup_additions();
@@ -68,8 +70,8 @@ private:
     float cutoff_;
     int radius_;
     double k_;
-    
-    
+
+
 };
 
 class StericLookupNew {
@@ -113,6 +115,8 @@ private:
 
 typedef std::shared_ptr<StericLookup> StericLookupOP;
 typedef std::shared_ptr<StericLookupNew> StericLookupNewOP;
+
+}
 
 #endif /* steric_lookup_hpp */
 

@@ -387,7 +387,7 @@ public: //tree wrappers
     
     inline
     data_structure::tree::TreeNodeOP<MotifOP> const &
-    get_node(Uuid const & uuid) {
+    get_node(util::Uuid const & uuid) {
         for(auto const & n : tree_) {
             if(n->data()->id() == uuid) {
                 return n;
@@ -453,7 +453,7 @@ public: //merger wrappers
         }
     }
     
-    sstruct::PoseOP
+    secondary_structure::PoseOP
     secondary_structure() {
         try {
             _update_merger();
@@ -467,10 +467,10 @@ public: //merger wrappers
         
     }
     
-    sstruct::PoseOP
+    secondary_structure::PoseOP
     designable_secondary_structure() {
         auto ss = merger_->secondary_structure();
-        auto ss_r = sstruct::ResidueOP(nullptr);
+        auto ss_r = secondary_structure::ResidueOP(nullptr);
         
         for(auto const & n : tree_) {
             if(n->data()->name() != "HELIX.IDEAL") { continue;}

@@ -30,7 +30,7 @@ public:
         StructureOP const &,
         BasepairOPs const &,
         MotifOPs const &,
-        std::map<Uuid, int, UuidCompare> const &);
+        std::map<util::Uuid, int, util::UuidCompare> const &);
     
     PoseOP
     pose_from_file(
@@ -65,7 +65,7 @@ private:
     
     MotifOP
     _convert_x3dna_to_motif(
-        X3Motif const &,
+        util::X3Motif const &,
         PoseOP const &);
     
     

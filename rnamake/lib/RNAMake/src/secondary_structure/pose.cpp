@@ -9,13 +9,13 @@
 #include "secondary_structure/pose.h"
 #include "secondary_structure/util.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 void
 Pose::_build_helices() {
     auto steps = MotifOPs();
     for(auto const & m : motifs_) {
-        if(m->mtype() != MotifType::HELIX) { continue; }
+        if(m->mtype() != util::MotifType::HELIX) { continue; }
         steps.push_back(m);
     }
     
@@ -111,7 +111,7 @@ Pose::replace_sequence(
 }
 
 void
-Pose::update_motif(Uuid const & uuid) {
+Pose::update_motif(util::Uuid const & uuid) {
     auto m = motif(uuid);
     auto end_ids = Strings(m->ends().size());
     int i = 0;

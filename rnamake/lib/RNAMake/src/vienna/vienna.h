@@ -8,13 +8,6 @@
 
 #ifndef __RNAMake__vienna_clone__
 #define __RNAMake__vienna_clone__
-#define TURN 3
-#define MAXSECTORS        500
-#define MIN2(A, B)      ((A) < (B) ? (A) : (B))
-#define MIN3(A, B, C)   (MIN2(  (MIN2((A),(B))) ,(C)))
-#define MAX2(A, B)      ((A) > (B) ? (A) : (B))
-#define MAX3(A, B, C)   (MAX2(  (MAX2((A),(B))) ,(C)))
-#define GASCONST 1.98717  /* in [cal/K] */
 
 #include <stdio.h>
 #include <math.h>
@@ -25,8 +18,15 @@
 #include "vienna/energy_par.h"
 #include "vienna/pair_mat.h"
 
-
 namespace vienna {
+
+#define TURN 3
+#define MAXSECTORS        500
+#define MIN2(A, B)      ((A) < (B) ? (A) : (B))
+#define MIN3(A, B, C)   (MIN2(  (MIN2((A),(B))) ,(C)))
+#define MAX2(A, B)      ((A) > (B) ? (A) : (B))
+#define MAX3(A, B, C)   (MAX2(  (MAX2((A),(B))) ,(C)))
+#define GASCONST 1.98717  /* in [cal/K] */
 
 struct bondT {
     unsigned int i;

@@ -20,7 +20,7 @@
 DesignRNAApp::DesignRNAApp() : base::Application(),
         search_(MotifStateSearch()),
         mg_(std::make_shared<MotifGraph>()),
-        lookup_(StericLookup()),
+        lookup_(util::StericLookup()),
         optimizer_(SequenceOptimizer3D()) {}
 
 void
@@ -145,7 +145,7 @@ DesignRNAApp::_setup_from_pdb() {
     auto bps = BasepairOPs{start_bps[0], end_bps[0]};
 
     //if (get_bool_option("no_segment")) {
-    RM::instance().add_motif(get_string_option("pdb"), "scaffold", MotifType::TWOWAY);
+    RM::instance().add_motif(get_string_option("pdb"), "scaffold", util::MotifType::TWOWAY);
     auto m = RM::instance().motif("scaffold", "", end_bp_name);
     mg_->add_motif(m);
     start_ = EndStateInfo{start_bp_name, 0};
@@ -164,7 +164,7 @@ DesignRNAApp::_setup_from_pdb() {
         segments->remaining->to_pdb("remaining.pdb");
         segments->removed->to_pdb("removed.pdb");
     }
-    segments->remaining->mtype(MotifType::TWOWAY);
+    segments->remaining->mtype(util::MotifType::TWOWAY);
 
     RM::instance().register_motif(segments->remaining);
 

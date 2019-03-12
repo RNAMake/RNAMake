@@ -10,17 +10,17 @@
 
 TEST_CASE( "Test Residues for Secondary Structure", "[SSResidue]" ) {
     
-    auto ss_r = std::make_shared<sstruct::Residue>("G", ".", 1, "A", Uuid());
+    auto ss_r = std::make_shared<secondary_structure::Residue>("G", ".", 1, "A", util::Uuid());
     
     REQUIRE(ss_r->res_type() == 2);
     
     SECTION("check for valid residue name") {
-        REQUIRE_THROWS_AS(sstruct::Residue("K", ".", 1, "A", Uuid()),
-                          sstruct::SecondaryStructureException);
+        REQUIRE_THROWS_AS(secondary_structure::Residue("K", ".", 1, "A", util::Uuid()),
+                          secondary_structure::Exception);
     }
     
     SECTION("test residue copy") {
-        auto ss_r_copy = std::make_shared<sstruct::Residue>(*ss_r);
+        auto ss_r_copy = std::make_shared<secondary_structure::Residue>(*ss_r);
         
         REQUIRE(ss_r_copy->name() == ss_r->name());
         REQUIRE(ss_r_copy->res_type() == ss_r->res_type());
@@ -29,13 +29,13 @@ TEST_CASE( "Test Residues for Secondary Structure", "[SSResidue]" ) {
     
     SECTION("test stringifying residue" ) {
         auto s = ss_r->to_str();
-        auto ss_r2 = std::make_shared<sstruct::Residue>(s);
+        auto ss_r2 = std::make_shared<secondary_structure::Residue>(s);
         
         REQUIRE(ss_r2->name() == ss_r->name());
         REQUIRE(ss_r2->res_type() == ss_r->res_type());
 
         SECTION("catch bad string to build from") {
-            REQUIRE_THROWS_AS(sstruct::Residue(""), sstruct::SecondaryStructureException);
+            REQUIRE_THROWS_AS(secondary_structure::Residue(""), secondary_structure::Exception);
         }
     }
 

@@ -15,7 +15,7 @@
 #include "secondary_structure/rna_structure.h"
 #include "secondary_structure/motif.h"
 
-namespace sstruct {
+namespace secondary_structure {
 
 class Pose : public RNAStructure {
 public:
@@ -63,7 +63,7 @@ public:
     motifs() { return motifs_; }
     
     MotifOP
-    motif(Uuid const & uuid) {
+    motif(util::Uuid const & uuid) {
         for(auto const & m : motifs_) {
             if(m->id() == uuid) { return m; }
         }
@@ -76,7 +76,7 @@ public:
     
     void
     update_motif(
-        Uuid const &);
+        util::Uuid const &);
 
     
 private:

@@ -102,7 +102,7 @@ public:
     
     ResidueOP const
     get_residue(
-        Uuid const &);
+        util::Uuid const &);
 
     ResidueOPs const
     residues() const;

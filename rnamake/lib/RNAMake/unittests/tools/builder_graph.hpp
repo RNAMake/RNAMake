@@ -9,7 +9,7 @@ class BuilderGraph {
 public:
     
     BuilderGraph() {
-        g_ = data_structure::graph::GraphStatic<MotifType>();
+        g_ = data_structure::graph::GraphStatic<util::MotifType>();
     }
     
     size_t
@@ -17,7 +17,7 @@ public:
     
     int
     add_node(
-        MotifType type,
+        util::MotifType type,
         int ends,
         int parent_index = -1,
         int parent_end_index = -1) {
@@ -52,13 +52,13 @@ public:
     }
     
     inline
-    data_structure::graph::GraphNodeOP<MotifType> const &
+    data_structure::graph::GraphNodeOP<util::MotifType> const &
     get_node(int i) { return g_.get_node(i); }
     
 public: //iterators
     
-    typedef typename data_structure::graph::GraphStatic<MotifType>::iterator iterator;
-    typedef typename data_structure::graph::GraphStatic<MotifType>::const_iterator const_iterator;
+    typedef typename data_structure::graph::GraphStatic<util::MotifType>::iterator iterator;
+    typedef typename data_structure::graph::GraphStatic<util::MotifType>::const_iterator const_iterator;
     
     iterator begin() { return g_.begin(); }
     iterator end()   { return g_.end(); }
@@ -68,7 +68,7 @@ public: //iterators
     
     
 private:
-    data_structure::graph::GraphStatic<MotifType> g_;
+    data_structure::graph::GraphStatic<util::MotifType> g_;
 };
 
 
@@ -77,8 +77,8 @@ typedef std::shared_ptr<BuilderGraph> BuilderGraphOP;
 BuilderGraphOP
 helix_and_two_way() {
     auto g = std::make_shared<BuilderGraph>();
-    g->add_node(HELIX, 2);
-    g->add_node(TWOWAY, 2);
+    g->add_node(util::MotifType::HELIX, 2);
+    g->add_node(util::MotifType::TWOWAY, 2);
     
     return g;
 }
@@ -87,12 +87,12 @@ helix_and_two_way() {
 BuilderGraphOP
 helix_and_two_way_and_hairpin() {
     auto g = std::make_shared<BuilderGraph>();
-    g->add_node(HELIX, 2);
-    g->add_node(TWOWAY, 2);
-    g->add_node(HELIX, 2);
-    g->add_node(HAIRPIN, 1);
-    
+    g->add_node(util::MotifType::HELIX, 2);
+    g->add_node(util::MotifType::TWOWAY, 2);
+    g->add_node(util::MotifType::HELIX, 2);
+    g->add_node(util::MotifType::HAIRPIN, 1);
     return g;
+
 }
 
 

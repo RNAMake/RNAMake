@@ -13,7 +13,7 @@
 #include "secondary_structure/secondary_structure_tree.h"
 
 
-namespace sstruct {
+namespace secondary_structure {
     
 int
 SecondaryStructureTree::add_motif(
@@ -83,7 +83,7 @@ tree_from_pose(PoseOP const & p) {
     }
     
     if(start_m == nullptr) {
-        std::runtime_error("could not find start motif to build tree in sstruct::tree_from_pose");
+        std::runtime_error("could not find start motif to build tree in secondary_structure::tree_from_pose");
     }
     
     auto open_nodes = std::queue<TreePreNode>();

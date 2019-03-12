@@ -60,7 +60,7 @@ SequenceOptimizerApp::run() {
 
     for(auto & n : *mg) {
         if(n->data()->name().substr(0, 5) == "HELIX") {
-            n->data()->mtype(MotifType::HELIX);
+            n->data()->mtype(util::MotifType::HELIX);
         }
     }
 
