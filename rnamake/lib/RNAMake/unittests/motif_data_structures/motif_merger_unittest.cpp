@@ -11,11 +11,11 @@
 #include "motif_data_structures/motif_merger.h"
 
 TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
-    auto m1 = RM::instance().motif("HELIX.IDEAL.3");
-    auto m2 = RM::instance().motif("HELIX.IDEAL.3");
-    auto m3 = RM::instance().motif("HELIX.IDEAL.3");
-    auto hairpin = RM::instance().motif("HAIRPIN.4P95.2");
-    auto hairpin_2 = RM::instance().motif("HAIRPIN.4P95.2");
+    auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.3");
+    auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.3");
+    auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.3");
+    auto hairpin = resources::Manager::instance().motif("HAIRPIN.4P95.2");
+    auto hairpin_2 = resources::Manager::instance().motif("HAIRPIN.4P95.2");
     
     SECTION("test adding two motifs in isolation") {
     
@@ -98,8 +98,8 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
     }
  
     SECTION("test simple") {
-        auto m1 = RM::instance().motif("HELIX.IDEAL");
-        auto m2 = RM::instance().motif("HELIX.IDEAL");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL");
         
         align_motif(m1->ends()[1]->state(), m2->ends()[0], m2);
         auto mm = MotifMerger();
@@ -117,8 +117,8 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
     }
     
     SECTION("test conserve sequence indentity with twoway") {
-        auto m1 = RM::instance().motif("HELIX.IDEAL.1");
-        auto m2 = RM::instance().motif("TWOWAY.3P59.1");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.1");
+        auto m2 = resources::Manager::instance().motif("TWOWAY.3P59.1");
         
         align_motif(m1->ends()[1]->state(), m2->ends()[0], m2);
         auto mm = MotifMerger();
@@ -129,8 +129,8 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
         REQUIRE(rna_struc->get_residue(m1->ends()[0]->res1()->uuid()) != nullptr);
         REQUIRE(rna_struc->get_residue(m1->ends()[1]->res1()->uuid()) == nullptr);
      
-        m1 = RM::instance().motif("HELIX.IDEAL.1");
-        m2 = RM::instance().motif("TWOWAY.3P59.1");
+        m1 = resources::Manager::instance().motif("HELIX.IDEAL.1");
+        m2 = resources::Manager::instance().motif("TWOWAY.3P59.1");
         mm = MotifMerger();
         
         align_motif(m2->ends()[1]->state(), m1->ends()[0], m1);
@@ -142,8 +142,8 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
     }
     
     SECTION("test sequence indenity conflict") {
-        auto m1 = RM::instance().bp_step("GG_LL_CC_RR");
-        auto m2 = RM::instance().bp_step("AA_LL_UU_RR");
+        auto m1 = resources::Manager::instance().bp_step("GG_LL_CC_RR");
+        auto m2 = resources::Manager::instance().bp_step("AA_LL_UU_RR");
         align_motif(m1->ends()[1]->state(), m2->ends()[0], m2);
         auto mm = MotifMerger();
         

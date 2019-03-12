@@ -29,7 +29,7 @@ MotifStateTree::MotifStateTree(
     for(auto const & n : *mt) {
         i++;
         
-        auto ms = RM::instance().motif_state(n->data()->name(),
+        auto ms = resources::Manager::instance().motif_state(n->data()->name(),
                                              n->data()->end_ids()[0],
                                              n->data()->ends()[0]->name());
         
@@ -85,9 +85,9 @@ MotifStateTree::MotifStateTree(
         auto ms = motif::MotifStateOP(nullptr);
         
         try {
-            ms = RM::instance().motif_state(n_spl[0], n_spl[2], n_spl[1]);
+            ms = resources::Manager::instance().motif_state(n_spl[0], n_spl[2], n_spl[1]);
         }
-        catch(ResourceManagerException const & e) {
+        catch(resources::ResourceManagerException const & e) {
             throw MotifStateTreeException(
                 String("could not get state did you forget to add it to the resource manager: ") +
                 e.what());
@@ -577,12 +577,12 @@ MotifStateTree::to_motif_tree() {
         i++;
         motif::MotifOP m;
         /*if(n->data()->ref_state->name() != "") {
-            m = RM::instance().motif(n->data()->ref_state->name(), n->data()->ref_state->end_ids()[0]);
+            m = resources::Manager::instance().motif(n->data()->ref_state->name(), n->data()->ref_state->end_ids()[0]);
         }
         else {
-            m = RM::instance().motif("", n->data()->ref_state->end_ids()[0]);
+            m = resources::Manager::instance().motif("", n->data()->ref_state->end_ids()[0]);
         }*/
-        m = RM::instance().motif(n->data()->name(), "",
+        m = resources::Manager::instance().motif(n->data()->name(), "",
                                  n->data()->end_name(0));
         m->new_res_uuids();
 

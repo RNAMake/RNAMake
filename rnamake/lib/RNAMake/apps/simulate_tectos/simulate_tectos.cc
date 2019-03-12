@@ -89,15 +89,15 @@ SimulateTectosApp::get_mset_old(
     String const & cseq,
     String const & css) {
     
-    auto ggaa_ttr = RM::instance().motif("GGAA_tetraloop", "", "A14-A15");
-    auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
+    auto ggaa_ttr = resources::Manager::instance().motif("GGAA_tetraloop", "", "A14-A15");
+    auto gaaa_ttr = resources::Manager::instance().motif("GAAA_tetraloop", "", "A149-A154");
     
     auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
     auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
 
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto m = RM::instance().motif("", "GG_LL_CC_RR");
+    auto m = resources::Manager::instance().motif("", "GG_LL_CC_RR");
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
     mt->add_motif(flow_motifs[1], 1, "A7-A22");
@@ -137,15 +137,15 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
         
         //basepair step
         if(m->mtype() == util::MotifType::HELIX) {
-            motif = RM::instance().motif("", m->end_ids()[0]);
+            motif = resources::Manager::instance().motif("", m->end_ids()[0]);
             motifs.push_back(motif);
         }
         else if(m->mtype() == util::MotifType::TWOWAY) {
             auto end_id = m->end_ids()[0];
             try {
-                motif = RM::instance().motif("", end_id);
+                motif = resources::Manager::instance().motif("", end_id);
             }
-            catch(ResourceManagerException const & e) {
+            catch(resources::ResourceManagerException const & e) {
                 throw SimulateTectosAppException(
                     "cannot find a motif that corresponds to the sequence: " + motif->sequence() +
                     " and secondary structure: " + motif->dot_bracket() + "for the simulation");
@@ -191,8 +191,8 @@ int main(int argc, const char * argv[]) {
     
     //load extra motifs being used
     String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
-    RM::instance().add_motif(base_path+"GAAA_tetraloop");
-    RM::instance().add_motif(base_path+"GGAA_tetraloop");
+    resources::Manager::instance().add_motif(base_path+"GAAA_tetraloop");
+    resources::Manager::instance().add_motif(base_path+"GGAA_tetraloop");
     
     auto app = SimulateTectosApp();
     app.setup_options();

@@ -151,8 +151,8 @@ private: // new functions to add to new code
 
 
 private:
-    MotiftoSecondaryStructure parser_;
     structure::PDBParser pdb_parser_;
+    MotiftoSecondaryStructure parser_;
     MotifScorer scorer_;
     MotifOP ref_motif_, base_motif_, added_helix_;
     float clash_radius_;

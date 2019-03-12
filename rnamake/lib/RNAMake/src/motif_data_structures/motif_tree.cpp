@@ -41,9 +41,9 @@ MotifTree::MotifTree(
         auto m = motif::MotifOP(nullptr);
         
         try {
-            m = RM::instance().motif(n_spl[0], n_spl[2], n_spl[1]);
+            m = resources::Manager::instance().motif(n_spl[0], n_spl[2], n_spl[1]);
         }
-        catch(ResourceManagerException const & e) {
+        catch(resources::ResourceManagerException const & e) {
             throw MotifTreeException(
                 String("could not get motif did you forget to add it to the resource manager: ") +
                 e.what());
@@ -120,9 +120,9 @@ MotifTree::_setup_from_str(
         auto m = std::make_shared<motif::Motif>(n_spl[0],
                                          structure::ResidueTypeSetManager::getInstance().residue_type_set());
         try {
-            auto m2 = RM::instance().motif(m->name());
-        } catch(ResourceManagerException const & e) {
-            RM::instance().register_motif(m);
+            auto m2 = resources::Manager::instance().motif(m->name());
+        } catch(resources::ResourceManagerException const & e) {
+            resources::Manager::instance().register_motif(m);
         }
 
         if(m->ends().size() > 1) {

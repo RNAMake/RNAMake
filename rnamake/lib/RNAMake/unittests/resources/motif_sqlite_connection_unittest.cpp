@@ -9,10 +9,9 @@
 
 TEST_CASE( "Test Motif Sqlite3 Connection", "[MotifSqliteConnection]" ) {
     auto path = base::resources_path() + "motif_libraries_new/ideal_helices.db";
-    auto conn = MotifSqliteConnection(path);
+    auto conn = resources::MotifSqliteConnection(path);
     
     SECTION("try querying for a motif") {
-    
         auto query_str = String("SELECT * from data_table WHERE name='HELIX.IDEAL.3'");
     
         conn.query(query_str);
@@ -21,10 +20,9 @@ TEST_CASE( "Test Motif Sqlite3 Connection", "[MotifSqliteConnection]" ) {
         REQUIRE(row->name == "HELIX.IDEAL.3");
         conn.clear();
     }
-    
 
     SECTION("invalid path") {
-        REQUIRE_THROWS(MotifSqliteConnection("fake.db"));
+        REQUIRE_THROWS(resources::MotifSqliteConnection("fake.db"));
     }
     
 }

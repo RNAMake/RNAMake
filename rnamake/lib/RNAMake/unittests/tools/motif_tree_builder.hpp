@@ -13,14 +13,14 @@ class MotifTreeBuilder {
 public:
     MotifTreeBuilder() {
         g_ = helix_and_two_way();
-        mlibs_ = std::map<String, MotifSqliteLibraryOP>();
+        mlibs_ = std::map<String, resources::MotifSqliteLibraryOP>();
     }
     
     MotifTreeBuilder(
         BuilderGraphOP const & g) {
         
         g_ = g;
-        mlibs_ = std::map<String, MotifSqliteLibraryOP>();
+        mlibs_ = std::map<String, resources::MotifSqliteLibraryOP>();
     }
     
     
@@ -67,10 +67,10 @@ private:
         
     }
     
-    MotifSqliteLibraryOP const &
+    resources::MotifSqliteLibraryOP const &
     _get_lib(String const & name) {
         if(mlibs_.find(name) == mlibs_.end()) {
-            mlibs_[name] = std::make_shared<MotifSqliteLibrary>(name);
+            mlibs_[name] = std::make_shared<resources::MotifSqliteLibrary>(name);
         }
         
         return mlibs_[name];
@@ -80,7 +80,7 @@ private:
     int
     _add_motif_to_tree(
         MotifTreeOP & mt,
-        MotifSqliteLibraryOP const & mlib,
+        resources::MotifSqliteLibraryOP const & mlib,
         int parent_index,
         int parent_end_index) {
         
@@ -102,7 +102,7 @@ private:
     
 private:
     BuilderGraphOP g_;
-    std::map<String, MotifSqliteLibraryOP> mlibs_;
+    std::map<String, resources::MotifSqliteLibraryOP> mlibs_;
     
 };
 

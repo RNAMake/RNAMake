@@ -12,7 +12,7 @@ TEST_CASE( "Test Added Motif Library", "[AddedMotifLibrary]" ) {
     auto path = base::motif_dirs() + "base.motif";
     auto m = motif::file_to_motif(path);
     
-    auto mlib = AddedMotifLibrary();
+    auto mlib = resources::AddedMotifLibrary();
     mlib.add_motif(m);
     
     SECTION("try getting back motif that was stored in library") {
@@ -21,15 +21,15 @@ TEST_CASE( "Test Added Motif Library", "[AddedMotifLibrary]" ) {
         REQUIRE_NOTHROW(mlib.get("", "", m->ends()[0]->name()));
         REQUIRE_NOTHROW(mlib.get(m->name(), m->end_ids()[0], m->ends()[0]->name()));
         
-        REQUIRE_THROWS_AS(mlib.get(), AddedMotifLibraryException);
-        REQUIRE_THROWS_AS(mlib.get("TEST"), AddedMotifLibraryException);
-        REQUIRE_THROWS_AS(mlib.get("", "TEST"), AddedMotifLibraryException);
-        REQUIRE_THROWS_AS(mlib.get("", "", "TEST"), AddedMotifLibraryException);
+        REQUIRE_THROWS_AS(mlib.get(), resources::AddedMotifLibraryException);
+        REQUIRE_THROWS_AS(mlib.get("TEST"), resources::AddedMotifLibraryException);
+        REQUIRE_THROWS_AS(mlib.get("", "TEST"), resources::AddedMotifLibraryException);
+        REQUIRE_THROWS_AS(mlib.get("", "", "TEST"), resources::AddedMotifLibraryException);
 
     }
     
     SECTION("trying to catch adding the same motif twice") {
-        REQUIRE_THROWS_AS(mlib.add_motif(m), AddedMotifLibraryException);
+        REQUIRE_THROWS_AS(mlib.add_motif(m), resources::AddedMotifLibraryException);
     }
     
     SECTION("test detecting whether a motif exists in the library") {

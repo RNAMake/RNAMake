@@ -19,10 +19,10 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     
     SECTION("test pretty printing tree") {
         auto mt2 = MotifTree();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
-        auto nway = RM::instance().motif("NWAY.1GID.0");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
 
         mt2.add_motif(m1);
         mt2.add_motif(m2);
@@ -43,10 +43,10 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     
     SECTION("test pretty printing tree with branching") {
         auto mt2 = MotifTree();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
-        auto nway = RM::instance().motif("NWAY.1GID.0");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
         
         mt2.add_motif(m1);
         mt2.add_motif(nway);
@@ -68,9 +68,9 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     SECTION("test adding motifs to tree") {
         auto mt = MotifTree();
         
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         REQUIRE_NOTHROW(mt.add_motif(m1));
         REQUIRE(mt.size() == 1);
         
@@ -92,8 +92,8 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     }
     
     SECTION("make sure weird chain topologies are caught") {
-        auto hairpin1 = RM::instance().motif("HAIRPIN.4P95.2");
-        auto hairpin2 = RM::instance().motif("HAIRPIN.4P95.2");
+        auto hairpin1 = resources::Manager::instance().motif("HAIRPIN.4P95.2");
+        auto hairpin2 = resources::Manager::instance().motif("HAIRPIN.4P95.2");
         auto mt = MotifTree();
         mt.set_option_value("sterics", false);
         mt.add_motif(hairpin1);
@@ -107,10 +107,10 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     
     SECTION("test getting nodes") {
         auto mt = MotifTree();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.3");
-        auto m4 = RM::instance().motif("HELIX.IDEAL.3");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.3");
+        auto m4 = resources::Manager::instance().motif("HELIX.IDEAL.3");
         mt.add_motif(m1);
         mt.add_motif(m2);
         mt.add_motif(m3);
@@ -128,8 +128,8 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     SECTION("test remove motifs from tree") {
         
         auto mt = MotifTree();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         mt.add_motif(m1);
         mt.add_motif(m2);
         REQUIRE_NOTHROW(mt.remove_node(1));
@@ -138,9 +138,9 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     
     SECTION("test remove node levels from tree") {
         auto mt = MotifTree();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
 
         mt.add_motif(m1);
         mt.increase_level();
@@ -162,9 +162,9 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     
     SECTION("test loading motif tree from topology str") {
         auto mt = MotifTree();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         mt.add_motif(m1);
         mt.add_motif(m2);
         mt.add_motif(m3);
@@ -182,10 +182,10 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     
     SECTION("test connecting nodes") {
         auto mt = MotifTree();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
-        auto nway = RM::instance().motif("NWAY.1GID.0");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
         mt.add_motif(m1);
         mt.add_motif(nway);
         mt.add_motif(m2);
@@ -243,10 +243,10 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
     
     SECTION("test copying") {
         auto mt2 = MotifTree();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
-        auto nway = RM::instance().motif("NWAY.1GID.0");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
         
         mt2.add_motif(m1);
         mt2.add_motif(nway);
@@ -259,7 +259,7 @@ TEST_CASE( "Test Assembling Motifs together in Tree ", "[MotifTree]" ) {
         
         REQUIRE(mt_copy.size() == mt2.size());
         
-        auto m4 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m4 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         REQUIRE(mt_copy.add_motif(m4) == -1);
         
         auto rna_struct = mt_copy.get_structure();

@@ -457,7 +457,7 @@ SimulateTectosApp::run() {
         for(auto const & path : spl) {
             std::cout << path << std::endl;
             auto m = motif::file_to_motif(path);
-            RM::instance().add_motif(m);
+            resources::Manager::instance().add_motif(m);
             
         }
     }
@@ -471,7 +471,7 @@ SimulateTectosApp::run() {
     if(get_string_option("extra_me") != "") {
         std::cout << "SIMULATE_TECTOS: registered extra motif ensembles from file: ";
         std::cout << get_string_option("extra_me") << std::endl;
-        RM::instance().register_extra_motif_ensembles(get_string_option("extra_me"));
+        resources::Manager::instance().register_extra_motif_ensembles(get_string_option("extra_me"));
     }
 
     if     (get_bool_option("new_ggaa_model")) {
@@ -578,8 +578,8 @@ SimulateTectosApp::get_mset_old(
     String const & cseq,
     String const & css) {
     
-    auto ggaa_ttr = RM::instance().motif("GGAA_tetraloop", "", "A14-A15");
-    auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
+    auto ggaa_ttr = resources::Manager::instance().motif("GGAA_tetraloop", "", "A14-A15");
+    auto gaaa_ttr = resources::Manager::instance().motif("GAAA_tetraloop", "", "A149-A154");
 
     for(auto const & end : gaaa_ttr->ends()) { gaaa_ttr_end_names_.push_back(end->name()); }
     for(auto const & end : ggaa_ttr->ends()) { ggaa_ttr_end_names_.push_back(end->name()); }
@@ -589,7 +589,7 @@ SimulateTectosApp::get_mset_old(
     
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto m = RM::instance().bp_step("GG_LL_CC_RR");
+    auto m = resources::Manager::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
     motif_names_.push_back("ggaa_ttr");
@@ -631,7 +631,7 @@ SimulateTectosApp::get_mset_new_receptor(
         auto new_ggaa_tetraloop = std::make_shared<motif::Motif>(
                 lines[0],
                 structure::ResidueTypeSetManager::getInstance().residue_type_set());
-        RM::instance().add_motif(new_ggaa_tetraloop);
+        resources::Manager::instance().add_motif(new_ggaa_tetraloop);
     }
     else {
         auto lines =base::get_lines_from_file(get_string_option("ggaa_model"));
@@ -640,12 +640,12 @@ SimulateTectosApp::get_mset_new_receptor(
         auto new_ggaa_tetraloop = std::make_shared<motif::Motif>(
             lines[0],
             structure::ResidueTypeSetManager::getInstance().residue_type_set());
-        RM::instance().add_motif(new_ggaa_tetraloop);
+        resources::Manager::instance().add_motif(new_ggaa_tetraloop);
 
     }
     
-    auto ggaa_ttr = RM::instance().motif("new_ggaa_tetraloop", "", "A13-A16");
-    auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
+    auto ggaa_ttr = resources::Manager::instance().motif("new_ggaa_tetraloop", "", "A13-A16");
+    auto gaaa_ttr = resources::Manager::instance().motif("GAAA_tetraloop", "", "A149-A154");
 
     for(auto const & end : gaaa_ttr->ends()) { gaaa_ttr_end_names_.push_back(end->name()); }
     for(auto const & end : ggaa_ttr->ends()) { ggaa_ttr_end_names_.push_back(end->name()); }
@@ -655,7 +655,7 @@ SimulateTectosApp::get_mset_new_receptor(
     
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto m = RM::instance().bp_step("GG_LL_CC_RR");
+    auto m = resources::Manager::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
     mt->add_motif(ggaa_ttr);
     mt->add_motif(flow_motifs[1], 1, "A7-A22");
@@ -687,8 +687,8 @@ SimulateTectosApp::get_mset_old_coorigin(
         String const & cseq,
         String const & css) {
 
-    auto ggaa_ttr = RM::instance().motif("GGAA_tetraloop", "", "A14-A15");
-    auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A149-A154");
+    auto ggaa_ttr = resources::Manager::instance().motif("GGAA_tetraloop", "", "A14-A15");
+    auto gaaa_ttr = resources::Manager::instance().motif("GAAA_tetraloop", "", "A149-A154");
 
     for(auto const & end : gaaa_ttr->ends()) { gaaa_ttr_end_names_.push_back(end->name()); }
     for(auto const & end : ggaa_ttr->ends()) { ggaa_ttr_end_names_.push_back(end->name()); }
@@ -698,7 +698,7 @@ SimulateTectosApp::get_mset_old_coorigin(
 
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto m = RM::instance().bp_step("GG_LL_CC_RR");
+    auto m = resources::Manager::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
     auto pos = mt->add_motif(ggaa_ttr);
     motif_names_.push_back("ggaa_ttr");
@@ -712,7 +712,7 @@ SimulateTectosApp::get_mset_old_coorigin(
     mt->add_motif(gaaa_ttr);
     auto new_chip_motifs = motif::MotifOPs();
     for(int i = chip_motifs.size()-1; i > -1; i--) {
-        auto m = RM::instance().motif(chip_motifs[i]->name(), chip_motifs[i]->end_ids()[1], "");
+        auto m = resources::Manager::instance().motif(chip_motifs[i]->name(), chip_motifs[i]->end_ids()[1], "");
         new_chip_motifs.push_back(m);
     }
 
@@ -738,8 +738,8 @@ SimulateTectosApp::get_mset_old_gaaa_coorigin(
         String const & cseq,
         String const & css) {
 
-    auto gaaa_ttr = RM::instance().motif("GAAA_tetraloop", "", "A229-A245");
-    auto ggaa_ttr = RM::instance().motif("GGAA_tetraloop", "", "A7-A22");
+    auto gaaa_ttr = resources::Manager::instance().motif("GAAA_tetraloop", "", "A229-A245");
+    auto ggaa_ttr = resources::Manager::instance().motif("GGAA_tetraloop", "", "A7-A22");
 
     for(auto const & end : gaaa_ttr->ends()) { gaaa_ttr_end_names_.push_back(end->name()); }
     for(auto const & end : ggaa_ttr->ends()) { ggaa_ttr_end_names_.push_back(end->name()); }
@@ -749,13 +749,13 @@ SimulateTectosApp::get_mset_old_gaaa_coorigin(
 
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto m = RM::instance().bp_step("GG_LL_CC_RR");
+    auto m = resources::Manager::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
     auto pos = mt->add_motif(gaaa_ttr);
     motif_names_.push_back("gaaa_ttr");
     auto new_flow_motifs = motif::MotifOPs();
     for(int i = flow_motifs.size()-1; i > -1; i--) {
-        auto m = RM::instance().motif(flow_motifs[i]->name(), flow_motifs[i]->end_ids()[1], "");
+        auto m = resources::Manager::instance().motif(flow_motifs[i]->name(), flow_motifs[i]->end_ids()[1], "");
         new_flow_motifs.push_back(m);
     }
     mt->add_motif(new_flow_motifs[0], pos, "A149-A154");
@@ -802,15 +802,15 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
                 
         //basepair step
         if(m->mtype() == util::MotifType::HELIX) {
-            motif = RM::instance().bp_step(m->end_ids()[0]);
+            motif = resources::Manager::instance().bp_step(m->end_ids()[0]);
             motifs.push_back(motif);
         }
         else if(m->mtype() == util::MotifType::TWOWAY) {
             auto end_id = m->end_ids()[0];
             try {
-                motif = RM::instance().motif("", end_id);
+                motif = resources::Manager::instance().motif("", end_id);
             }
-            catch(ResourceManagerException const & e) {
+            catch(resources::ResourceManagerException const & e) {
                 throw SimulateTectosAppException(
                     "cannot find a motif that corresponds to the sequence: " + m->sequence() +
                     " and secondary structure: " + m->dot_bracket() + "for the simulation");

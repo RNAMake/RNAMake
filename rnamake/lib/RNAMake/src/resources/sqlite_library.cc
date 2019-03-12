@@ -12,22 +12,25 @@
 #include "base/settings.h"
 #include "resources/sqlite_library.h"
 
+namespace resources {
 
 String
 SqliteLibrary::_get_path(
-    String const & libname) {
-    
+        String const & libname) {
+
     name_ = libname;
-    if(libnames_.find(libname) == libnames_.end()) {
+    if (libnames_.find(libname) == libnames_.end()) {
         auto options = String("");
-        for(auto const & kv : libnames_) {
+        for (auto const & kv : libnames_) {
             options += kv.first + " ";
         }
-        
+
         throw SqliteLibraryException(
-            "cannot find library type in sqlite_library: " + libname + 
-            " valid options are: " + options );
+                "cannot find library type in sqlite_library: " + libname +
+                " valid options are: " + options);
     }
-    return base::resources_path()+libnames_[libname];
-    
+    return base::resources_path() + libnames_[libname];
+
+}
+
 }

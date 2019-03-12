@@ -10,10 +10,10 @@
 MotifStateTreeOP
 _get_sub_tree() {
     auto mst = std::make_shared<MotifStateTree>();
-    auto m1 = RM::instance().motif_state("HELIX.IDEAL.2");
-    auto m2 = RM::instance().motif_state("HELIX.IDEAL.2");
-    auto m3 = RM::instance().motif_state("HELIX.IDEAL.2");
-    auto nway = RM::instance().motif_state("NWAY.1GID.0");
+    auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+    auto m2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+    auto m3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+    auto nway = resources::Manager::instance().motif_state("NWAY.1GID.0");
     mst->add_state(m1);
     mst->add_state(nway);
     mst->add_state(m2);
@@ -25,9 +25,9 @@ _get_sub_tree() {
 TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
     
     SECTION("test add states") {
-        auto ms1 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto ms2 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto ms3 = RM::instance().motif_state("HELIX.IDEAL.2");
+        auto ms1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto ms2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto ms3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto mst = MotifStateTree();
         REQUIRE_NOTHROW(mst.add_state(ms1));
         
@@ -65,7 +65,7 @@ TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
         REQUIRE(mst.size() == 8);
 
         auto mst2 = MotifStateTree();
-        auto ms1 = RM::instance().motif_state("HELIX.IDEAL.2");
+        auto ms1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         mst2.add_state(ms1);
         
         REQUIRE_NOTHROW(mst2.add_mst(mst_add, 0, "A1-A8"));
@@ -75,10 +75,10 @@ TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
     
     SECTION("test adding connections") {
         auto mst = std::make_shared<MotifStateTree>();
-        auto ms1 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto ms2 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto ms3 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto nway = RM::instance().motif_state("NWAY.1GID.0", "", "A138-A180");
+        auto ms1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto ms2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto ms3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto nway = resources::Manager::instance().motif_state("NWAY.1GID.0", "", "A138-A180");
         mst->add_state(ms1);
         mst->add_state(nway);
         mst->add_state(ms2);
@@ -102,10 +102,10 @@ TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
     
     SECTION("test copy") {
         auto mst2 = MotifStateTree();
-        auto m1 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto nway = RM::instance().motif_state("NWAY.1GID.0");
+        auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto nway = resources::Manager::instance().motif_state("NWAY.1GID.0");
         
         mst2.add_state(m1);
         mst2.add_state(nway);
@@ -118,7 +118,7 @@ TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
         
         REQUIRE(mst_copy.size() == mst2.size());
         
-        auto m4 = RM::instance().motif_state("HELIX.IDEAL.2");
+        auto m4 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         REQUIRE(mst_copy.add_state(m4) == -1);
         
         auto rna_struct = mst_copy.get_structure();
@@ -162,16 +162,16 @@ TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
     SECTION("test replacing a state in the tree") {
         //auto mt = builder.build(3);
         auto mst = std::make_shared<MotifStateTree>();
-        mst->add_state(RM::instance().motif_state("HELIX.IDEAL.7"));
-        mst->add_state(RM::instance().motif_state("HELIX.IDEAL.7"));
-        mst->add_state(RM::instance().motif_state("HELIX.IDEAL.7"));
+        mst->add_state(resources::Manager::instance().motif_state("HELIX.IDEAL.7"));
+        mst->add_state(resources::Manager::instance().motif_state("HELIX.IDEAL.7"));
+        mst->add_state(resources::Manager::instance().motif_state("HELIX.IDEAL.7"));
 
-        auto new_state = RM::instance().motif_state("HELIX.IDEAL.2");
+        auto new_state = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         mst->replace_state(2, new_state);
 
         auto mt2 = std::make_shared<MotifTree>();
         for(auto const & n : *mst) {            
-            auto m = RM::instance().motif(n->data()->name(), "", n->data()->end_name(0));
+            auto m = resources::Manager::instance().motif(n->data()->name(), "", n->data()->end_name(0));
             mt2->add_motif(m);
         }
         
@@ -183,9 +183,9 @@ TEST_CASE( "Test Assembling MotifStates together", "[MotifStateTree]" ) {
     }
 
     SECTION("test removing nodes from tree") {
-        auto ms1 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto ms2 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto ms3 = RM::instance().motif_state("HELIX.IDEAL.2");
+        auto ms1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto ms2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto ms3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto mst = MotifStateTree();
         mst.add_state(ms1);
         mst.add_state(ms2);

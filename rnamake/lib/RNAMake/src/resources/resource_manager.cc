@@ -6,10 +6,12 @@
 //  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
 //
 
-#include "resources/resource_manager.h"
 #include "structure/residue_type_set_manager.h"
+#include "resources/resource_manager.h"
 
-RM::RM() {
+namespace resources {
+
+Manager::Manager() {
     mf_ = motif::MotifFactory();
     added_motifs_ = AddedMotifLibrary();
     mlibs_ = std::map<String, MotifSqliteLibraryOP>();
@@ -37,19 +39,19 @@ RM::RM() {
 // getting functions  //////////////////////////////////////////////////////////////////////////////
 
 motif::MotifOP
-RM::bp_step(
+Manager::bp_step(
         String const & end_id) {
     return mlibs_["new_bp_steps"]->get("", end_id);
 }
 
 motif::MotifStateOP
-RM::bp_step_state(
+Manager::bp_step_state(
         String const & end_id) {
     return bp_step(end_id)->get_state();
 }
 
 motif::MotifOP
-RM::motif(
+Manager::motif(
         String const & name,
         String const & end_id,
         String const & end_name) {
@@ -71,7 +73,7 @@ RM::motif(
 }
 
 motif::MotifStateOP
-RM::motif_state(
+Manager::motif_state(
         String const & name,
         String const & end_id,
         String const & end_name) {
@@ -92,7 +94,7 @@ RM::motif_state(
 }
 
 motif::MotifStateEnsembleOP
-RM::motif_state_ensemble(
+Manager::motif_state_ensemble(
         String const & name) {
 
     for (auto const & kv : mse_libs_) {
@@ -110,7 +112,7 @@ RM::motif_state_ensemble(
 // add functions  //////////////////////////////////////////////////////////////////////////////////
 
 structure::RNAStructureOP
-RM::get_structure(
+Manager::get_structure(
         String const & path,
         String name,
         int force_num_chains) {
@@ -140,7 +142,7 @@ RM::get_structure(
 
 
 void
-RM::add_motif(
+Manager::add_motif(
         String const & path,
         String name,
         util::MotifType mtype) {
@@ -177,7 +179,7 @@ RM::add_motif(
 }
 
 void
-RM::add_motif(
+Manager::add_motif(
         motif::MotifOP const & m,
         String name) {
 
@@ -221,7 +223,7 @@ RM::add_motif(
 
 
 void
-RM::register_motif(
+Manager::register_motif(
         motif::MotifOP const & m) {
 
     /*if(m->name() == "") {
@@ -236,7 +238,7 @@ RM::register_motif(
 }
 
 void
-RM::register_extra_motif_ensembles(
+Manager::register_extra_motif_ensembles(
         String const & f_name) {
 
     auto lines = base::get_lines_from_file(f_name);
@@ -245,7 +247,7 @@ RM::register_extra_motif_ensembles(
         if (l.length() < 10) { continue; }
         auto spl = base::split_str_by_delimiter(l, "!!");
         extra_me_[spl[0]] = std::make_shared<motif::MotifEnsemble>(spl[1],
-                                                            structure::ResidueTypeSetManager::getInstance().residue_type_set());
+                                                                   structure::ResidueTypeSetManager::getInstance().residue_type_set());
 
         for (auto const & mem : extra_me_[spl[0]]->members()) {
             try {
@@ -259,7 +261,7 @@ RM::register_extra_motif_ensembles(
 }
 
 int
-RM::has_supplied_motif_ensemble(
+Manager::has_supplied_motif_ensemble(
         String const & m_name,
         String const & end_name) {
 
@@ -270,7 +272,7 @@ RM::has_supplied_motif_ensemble(
 }
 
 motif::MotifEnsembleOP const &
-RM::get_supplied_motif_ensemble(
+Manager::get_supplied_motif_ensemble(
         String const & m_name,
         String const & end_name) {
 
@@ -286,7 +288,7 @@ RM::get_supplied_motif_ensemble(
 
 }
 
-
+}
 
 
 

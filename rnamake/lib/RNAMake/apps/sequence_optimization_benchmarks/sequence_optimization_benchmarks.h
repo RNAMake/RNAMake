@@ -110,9 +110,9 @@ public:
 public:
     SequenceOptProblemOP
     get_problem() {
-        auto ttr = RM::instance().motif("GAAA_tetraloop", "", "A229-A245");
-        auto bp_step_1 = RM::instance().bp_step("GC_LL_GC_RR");
-        auto bp_step_2 = RM::instance().bp_step("CG_LL_CG_RR");
+        auto ttr = resources::Manager::instance().motif("GAAA_tetraloop", "", "A229-A245");
+        auto bp_step_1 = resources::Manager::instance().bp_step("GC_LL_GC_RR");
+        auto bp_step_2 = resources::Manager::instance().bp_step("CG_LL_CG_RR");
         auto msg = std::make_shared<MotifStateGraph>();
         msg->add_state(bp_step_1->get_state());
         msg->add_state(bp_step_2->get_state());
@@ -166,22 +166,22 @@ public:
     get_problem() {
         if (!has_setup_) {
             String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";
-            RM::instance().add_motif(base_path+"pRNA_3WJ.pdb", "prna");
+            resources::Manager::instance().add_motif(base_path+"pRNA_3WJ.pdb", "prna");
 
             auto path = base::base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/start.pdb";
-            auto scaffold_rm = RM::instance().get_structure(path, "scaffold", 3);
+            auto scaffold_rm = resources::Manager::instance().get_structure(path, "scaffold", 3);
             auto scaffold_m = std::make_shared<motif::Motif>(*scaffold_rm);
             mf_._setup_secondary_structure(scaffold_m);
-            RM::instance().register_motif(scaffold_m);
+            resources::Manager::instance().register_motif(scaffold_m);
 
-            prna_ = RM::instance().motif("prna", "", "A7-C10");
-            scaffold_ = RM::instance().motif("scaffold");
+            prna_ = resources::Manager::instance().motif("prna", "", "A7-C10");
+            scaffold_ = resources::Manager::instance().motif("scaffold");
         }
 
         auto msg = std::make_shared<MotifStateGraph>();
         msg->set_option_value("sterics", false);
         msg->add_state(scaffold_->get_state());
-        msg->add_state(RM::instance().motif_state("HELIX.IDEAL.1"), 0, 2);
+        msg->add_state(resources::Manager::instance().motif_state("HELIX.IDEAL.1"), 0, 2);
         msg->add_state(prna_->get_state());
 
         if (!has_setup_) {
@@ -236,8 +236,8 @@ public:
     get_problem() {
         if(! has_setup_) {
             auto path = base::base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/";
-            RM::instance().add_motif(path + "short.out.1.pdb", "scaffold", util::MotifType::TWOWAY);
-            scaffold_ = RM::instance().motif("scaffold", "", "A1019-A3915");
+            resources::Manager::instance().add_motif(path + "short.out.1.pdb", "scaffold", util::MotifType::TWOWAY);
+            scaffold_ = resources::Manager::instance().motif("scaffold", "", "A1019-A3915");
         }
 
         auto msg = std::make_shared<MotifStateGraph>();

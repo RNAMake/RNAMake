@@ -38,28 +38,28 @@ AptNewInterface::run() {
     auto mf = motif::MotifFactory();
 
     // add new motifs to resource manager
-    auto scaffold_rm = RM::instance().get_structure(get_string_option("scaffold"), "scaffold", 3);
+    auto scaffold_rm = resources::Manager::instance().get_structure(get_string_option("scaffold"), "scaffold", 3);
     auto scaffold_m = std::make_shared<motif::Motif>(*scaffold_rm);
     scaffold_m->name("scaffold");
     scaffold_m->mtype(util::MotifType::TCONTACT);
     mf._setup_secondary_structure(scaffold_m);
-    RM::instance().register_motif(scaffold_m);
+    resources::Manager::instance().register_motif(scaffold_m);
 
-    //RM::instance().add_motif(get_string_option("scaffold"), "scaffold", util::MotifType::TCONTACT);
-    auto rs = RM::instance().get_structure(get_string_option("docked_motif"), "docked_motif");
+    //resources::Manager::instance().add_motif(get_string_option("scaffold"), "scaffold", util::MotifType::TCONTACT);
+    auto rs = resources::Manager::instance().get_structure(get_string_option("docked_motif"), "docked_motif");
 
-    auto prna = RM::instance().motif("prna", "", "A7-C10");
-    auto scaffold = RM::instance().motif("scaffold", "", get_string_option("scaffold_end"));
+    auto prna = resources::Manager::instance().motif("prna", "", "A7-C10");
+    auto scaffold = resources::Manager::instance().motif("scaffold", "", get_string_option("scaffold_end"));
     auto docked_motif = std::make_shared<motif::Motif>(*rs);
     docked_motif->mtype(util::MotifType::HAIRPIN);
     mf._setup_secondary_structure(docked_motif);
 
-    RM::instance().register_motif(docked_motif);
+    resources::Manager::instance().register_motif(docked_motif);
 
     auto msg = std::make_shared<MotifStateGraph>();
     msg->set_option_value("sterics", false);
     msg->add_state(scaffold->get_state());
-    msg->add_state(RM::instance().motif_state("HELIX.IDEAL.1"), 0, 2);
+    msg->add_state(resources::Manager::instance().motif_state("HELIX.IDEAL.1"), 0, 2);
     msg->add_state(prna->get_state());
     msg->add_state(docked_motif->get_state(), -1, -1, 1);
     msg->increase_level();
@@ -201,12 +201,12 @@ AptNewInterface::_get_libraries(
             libraries.push_back(motif_states);
         }
         else {
-            auto m = RM::instance().motif(name);
+            auto m = resources::Manager::instance().motif(name);
             motif_states = motif::MotifStateOPs();
 
             for(auto const & end : m->ends()) {
                 try {
-                    auto m_new = RM::instance().motif(name, "", end->name());
+                    auto m_new = resources::Manager::instance().motif(name, "", end->name());
                     m_new->new_res_uuids();
                     motif_states.push_back(m_new->get_state());
                 }
@@ -248,7 +248,7 @@ main(
 
     //load extra motifs being used
     String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";
-    RM::instance().add_motif(base_path+"pRNA_3WJ.pdb", "prna");
+    resources::Manager::instance().add_motif(base_path+"pRNA_3WJ.pdb", "prna");
 
     auto app = AptNewInterface();
     app.setup_options();

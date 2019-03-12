@@ -8,15 +8,17 @@
 #include "thermo_fluctuation/thermo_fluc_simulation.h"
 
 TEST_CASE( "Test Thermo Flucuation Simulation ", "[ThermoFluctuationSimulation" ) {
-    
+
+    auto & rm = resources::Manager::instance();
+
     SECTION("test running simulation") {
         auto tfs = ThermoFlucSimulation();
         tfs.set_option_value("cutoff", 20);
         auto mset = std::make_shared<MotifStateEnsembleTree>();
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(rm.motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(rm.motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(rm.motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(rm.motif_state_ensemble("GG_LL_CC_RR"));
         tfs.setup(mset, 0, 3, 0, 1);
         auto count = tfs.run();
         REQUIRE(count > 0);
@@ -29,10 +31,10 @@ TEST_CASE( "Test Thermo Flucuation Simulation ", "[ThermoFluctuationSimulation" 
         REQUIRE_THROWS_AS(tfs.run(), ThermoFlucSimulationException);
         
         auto mset = std::make_shared<MotifStateEnsembleTree>();
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(rm.motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(rm.motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(rm.motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(rm.motif_state_ensemble("GG_LL_CC_RR"));
 
         // try using node indexes and end indexes that dont exist
         REQUIRE_THROWS_AS(tfs.setup(mset, 5, 2, 0, 1), ThermoFlucSimulationException);

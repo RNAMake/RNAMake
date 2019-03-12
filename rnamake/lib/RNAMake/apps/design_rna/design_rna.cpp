@@ -94,7 +94,7 @@ DesignRNAApp::_setup_sterics() {
 
 void
 DesignRNAApp::_setup_from_pdb() {
-    auto struc = RM::instance().get_structure(get_string_option("pdb"), "scaffold");
+    auto struc = resources::Manager::instance().get_structure(get_string_option("pdb"), "scaffold");
     std::cout << "DESIGN RNA: loaded pdb from file: " << get_string_option("pdb") << std::endl;
 
     auto start_bp_name = get_string_option("start_bp");
@@ -145,8 +145,8 @@ DesignRNAApp::_setup_from_pdb() {
     auto bps = structure::BasepairOPs{start_bps[0], end_bps[0]};
 
     //if (get_bool_option("no_segment")) {
-    RM::instance().add_motif(get_string_option("pdb"), "scaffold", util::MotifType::TWOWAY);
-    auto m = RM::instance().motif("scaffold", "", end_bp_name);
+    resources::Manager::instance().add_motif(get_string_option("pdb"), "scaffold", util::MotifType::TWOWAY);
+    auto m = resources::Manager::instance().motif("scaffold", "", end_bp_name);
     mg_->add_motif(m);
     start_ = EndStateInfo{start_bp_name, 0};
     end_ = EndStateInfo{end_bp_name, 0};
@@ -166,7 +166,7 @@ DesignRNAApp::_setup_from_pdb() {
     }
     segments->remaining->mtype(util::MotifType::TWOWAY);
 
-    RM::instance().register_motif(segments->remaining);
+    resources::Manager::instance().register_motif(segments->remaining);
 
     //auto new_struc = std::make_shared<RNAStructure>(*struc);
     segments->remaining->block_end_add(-1);
@@ -210,12 +210,12 @@ DesignRNAApp::_setup_path() {
             selector->add(name);
         }
         else {
-            auto m = RM::instance().motif(name);
+            auto m = resources::Manager::instance().motif(name);
             auto motif_states = motif::MotifStateOPs();
             auto scores = Floats();
 
             for(auto const & end : m->ends()) {
-                auto m_new = RM::instance().motif(name, "", end->name());
+                auto m_new = resources::Manager::instance().motif(name, "", end->name());
                 m_new->new_res_uuids();
                 //m_new->ends()[1]->flip();
                 //std::cout << m_new->name() << std::endl;
@@ -260,11 +260,11 @@ DesignRNAApp::_get_libraries() {
             libraries.push_back(motif_states);
         }
         else {
-            auto m = RM::instance().motif(name);
+            auto m = resources::Manager::instance().motif(name);
             motif_states = motif::MotifStateOPs();
 
             for(auto const & end : m->ends()) {
-                auto m_new = RM::instance().motif(name, "", end->name());
+                auto m_new = resources::Manager::instance().motif(name, "", end->name());
                 m_new->new_res_uuids();
                 //m_new->ends()[1]->flip();
                 //std::cout << m_new->name() << std::endl;
@@ -523,10 +523,10 @@ int main(int argc, const char *argv[]) {
 
     //load extra motifs being used
     String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
-    //RM::instance().add_motif(base_path+"GAAA_tetraloop");
-    //RM::instance().add_motif(base_path+"GGAA_tetraloop");
-    RM::instance().add_motif(base_path+"ATP_apt.pdb");
-    RM::instance().add_motif(base_path+"spinach_apt.pdb");
+    //resources::Manager::instance().add_motif(base_path+"GAAA_tetraloop");
+    //resources::Manager::instance().add_motif(base_path+"GGAA_tetraloop");
+    resources::Manager::instance().add_motif(base_path+"ATP_apt.pdb");
+    resources::Manager::instance().add_motif(base_path+"spinach_apt.pdb");
 
     auto app = DesignRNAApp();
     app.setup_options();

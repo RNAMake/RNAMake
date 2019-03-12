@@ -8,17 +8,19 @@
 
 #include "resources/added_motif_library.h"
 
+namespace resources {
+
 motif::MotifOPs
 AddedMotifLibrary::_find_motifs(
-    String const & name,
-    String const & end_id,
-    String const & end_name) {
-    
+        String const & name,
+        String const & end_id,
+        String const & end_name) {
+
     motif::MotifOPs motifs;
-    for(auto const & m : motifs_) {
-        if(name.length() > 0 && name != m->name()) { continue; }
-        if(end_id.length() > 0 && end_id != m->end_ids()[0]) { continue; }
-        if(end_name.length() > 0 && end_name != m->ends()[0]->name()) { continue; }
+    for (auto const & m : motifs_) {
+        if (name.length() > 0 && name != m->name()) { continue; }
+        if (end_id.length() > 0 && end_id != m->end_ids()[0]) { continue; }
+        if (end_name.length() > 0 && end_name != m->ends()[0]->name()) { continue; }
         motifs.push_back(m);
     }
     return motifs;
@@ -26,40 +28,42 @@ AddedMotifLibrary::_find_motifs(
 
 motif::MotifOP
 AddedMotifLibrary::get(
-    String const & name,
-    String const & end_id,
-    String const & end_name) {
-    
-    if(name == "" && end_id == "" && end_name == "") {
+        String const & name,
+        String const & end_id,
+        String const & end_name) {
+
+    if (name == "" && end_id == "" && end_name == "") {
         throw AddedMotifLibraryException(
-            "must specify atleast one thing to get, either name, end_id or end_name");
+                "must specify atleast one thing to get, either name, end_id or end_name");
     }
-    
-    auto motifs =  _find_motifs(name, end_id, end_name);
-    if(motifs.size() == 0) {
+
+    auto motifs = _find_motifs(name, end_id, end_name);
+    if (motifs.size() == 0) {
         throw AddedMotifLibraryException("called get in AddedMotifLibrary but returned no motifs");
     }
     return motifs[0];
-    
+
 }
 
 motif::MotifOPs
 AddedMotifLibrary::get_multi(
-    String const & name,
-    String const & end_id,
-    String const & end_name) {
-    
+        String const & name,
+        String const & end_id,
+        String const & end_name) {
+
     return _find_motifs(name, end_id, end_name);
 }
 
 int
 AddedMotifLibrary::contains(
-    String const & name,
-    String const & end_id,
-    String const & end_name) {
-    
+        String const & name,
+        String const & end_id,
+        String const & end_name) {
+
     auto motifs = _find_motifs(name, end_id, end_name);
     if (motifs.size() == 0) { return 0; }
-    else                    { return 1; }
-    
+    else { return 1; }
+
+}
+
 }

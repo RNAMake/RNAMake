@@ -27,7 +27,7 @@ StructureInfoApp::parse_command_line(
 
 void
 StructureInfoApp::run() {
-    auto struc = RM::instance().get_structure(get_string_option("pdb"), "test");
+    auto struc = resources::Manager::instance().get_structure(get_string_option("pdb"), "test");
 
     std::cout << "loaded pdb: " << get_string_option("pdb") << std::endl;
     std::cout << "sequence: ";

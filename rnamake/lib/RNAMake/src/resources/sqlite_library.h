@@ -13,6 +13,8 @@
 
 #include "base/types.h"
 
+namespace resources {
+
 /*
  * Exception for sqlite library
  */
@@ -22,32 +24,30 @@ public:
      * Standard constructor for SqliteLibraryException
      * @param   message   Error message for sqlite libraries
      */
-    SqliteLibraryException(String const & message):
-    std::runtime_error(message)
-    {}
+    SqliteLibraryException(String const & message) :
+            std::runtime_error(message) {}
 };
-
-
 
 class SqliteLibrary {
 public:
-    SqliteLibrary()
-    {}
-    
+    SqliteLibrary() {}
+
 protected:
     void
     _setup(
-        String const &);
-    
+            String const &);
+
     String
     _get_path(
-        String const &);
-    
+            String const &);
+
 protected:
     StringStringMap libnames_;
     String name_;
     int max_size_;
-    
+
 };
+
+}
 
 #endif /* defined(__RNAMake__sqlite_library__) */

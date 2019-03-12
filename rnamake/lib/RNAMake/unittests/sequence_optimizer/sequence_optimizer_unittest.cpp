@@ -18,9 +18,9 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     SECTION("test simple hairpin") {
         auto mg = std::make_shared<MotifGraph>();
         for(int i = 0; i < 10; i++) {
-            mg->add_motif(RM::instance().motif("HELIX.IDEAL"));
+            mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL"));
         }
-        mg->add_motif(RM::instance().motif("HAIRPIN.1GID.0"));
+        mg->add_motif(resources::Manager::instance().motif("HAIRPIN.1GID.0"));
         auto end1 = std::make_shared<structure::Basepair>(*mg->get_node(9)->data()->ends()[1]);
         auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(), 8, 1, true);
         auto so = SequenceOptimizer3D();
@@ -37,9 +37,9 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     SECTION("test simple hairpin 2") {
         auto mg = std::make_shared<MotifGraph>();
         for(int i = 0; i < 10; i++) {
-            mg->add_motif(RM::instance().motif("HELIX.IDEAL"));
+            mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL"));
         }
-        mg->add_motif(RM::instance().motif("HAIRPIN.1GID.0"));
+        mg->add_motif(resources::Manager::instance().motif("HAIRPIN.1GID.0"));
         auto end1 = std::make_shared<structure::Basepair>(*mg->get_node(9)->data()->ends()[1]);
         auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(), 8, 1, true);
         auto so = SequenceOptimizer3D();

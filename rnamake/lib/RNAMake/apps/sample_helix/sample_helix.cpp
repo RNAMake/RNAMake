@@ -116,7 +116,7 @@ SampleHelixApp::get_motifs_from_seq_and_ss(
     for(auto const & m : ss_motifs) {
         //basepair step
         if(m->mtype() == util::MotifType::HELIX) {
-            motif = RM::instance().bp_step(m->end_ids()[0]);
+            motif = resources::Manager::instance().bp_step(m->end_ids()[0]);
             motifs.push_back(motif);
         }
         else {

@@ -13,10 +13,10 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[ThermoFluctuationSampler]" ) {
     SECTION("test moving one frame") {
         auto sampler = ThermoFlucSampler();
         auto mset = std::make_shared<MotifStateEnsembleTree>();
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
         sampler.setup(mset);
 
         auto names = Strings();
@@ -40,10 +40,10 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[ThermoFluctuationSampler]" ) {
     SECTION("test graph sampler") {
         auto sampler = ThermoFlucGraphSampler();
         /*auto mset = std::make_shared<MotifStateEnsembleTree>();
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
-        mset->add_ensemble(RM::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
+        mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
         sampler.setup(mset);
 
         auto names = Strings();

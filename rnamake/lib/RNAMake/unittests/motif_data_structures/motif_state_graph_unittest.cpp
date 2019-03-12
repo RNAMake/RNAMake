@@ -20,9 +20,9 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
     
     SECTION("test adding states") {
         auto msg = std::make_shared<MotifStateGraph>();
-        auto ms1 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto ms2 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto ms3 = RM::instance().motif_state("HELIX.IDEAL.2");
+        auto ms1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto ms2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto ms3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         
         SECTION("cannot find end if there is not parent") {
             REQUIRE_THROWS_AS(msg->add_state(ms1, -1, "A1-A8"), MotifStateGraphException);
@@ -51,9 +51,9 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
     }
  
     SECTION("test setup from mg") {
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto tc = RM::instance().motif("TC.1S72.0");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto tc = resources::Manager::instance().motif("TC.1S72.0");
         auto mg = std::make_shared<MotifGraph>();
         mg->add_motif(tc);
         mg->add_motif(m1);
@@ -66,9 +66,9 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
     }
     
     SECTION("test to motif graph") {
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto tc = RM::instance().motif("TC.1S72.0");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto tc = resources::Manager::instance().motif("TC.1S72.0");
         auto mg = std::make_shared<MotifGraph>();
         mg->add_motif(tc);
         mg->add_motif(m1);
@@ -97,19 +97,19 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
     }
     
     SECTION("test to motif graph 2") {
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         m2->move(math::Point{40, 0, 0});
         
         auto mg = std::make_shared<MotifGraph>();
         mg->add_motif(m1);
         mg->add_motif(m2, -1, -1, 1);
-        mg->add_motif(RM::instance().motif("HELIX.IDEAL.2"));
-        mg->add_motif(RM::instance().motif("HELIX.IDEAL.2"));
-        mg->add_motif(RM::instance().motif("HELIX.IDEAL.2"));
-        mg->add_motif(RM::instance().motif("HELIX.IDEAL.2"), 0);
-        mg->add_motif(RM::instance().motif("HELIX.IDEAL.2"));
-        mg->add_motif(RM::instance().motif("HELIX.IDEAL.2"));
+        mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL.2"));
+        mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL.2"));
+        mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL.2"));
+        mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL.2"), 0);
+        mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL.2"));
+        mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL.2"));
         
         auto msg = std::make_shared<MotifStateGraph>(mg);
         auto mg2 = msg->to_motif_graph();
@@ -123,9 +123,9 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
     }
     
     SECTION("test adding connections") {
-        auto m1 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto tc = RM::instance().motif("TC.1S72.0")->get_state();
+        auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto tc = resources::Manager::instance().motif("TC.1S72.0")->get_state();
         auto msg = std::make_shared<MotifStateGraph>();
         msg->add_state(tc);
         msg->add_state(m1);
@@ -141,9 +141,9 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
     }
     
     SECTION("test remove state") {
-        auto m1 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif_state("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto msg = std::make_shared<MotifStateGraph>();
         msg->add_state(m1);
         msg->add_state(m2);
@@ -161,9 +161,9 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
     }
     
     SECTION("test remove node level") {
-        auto m1 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif_state("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto msg = std::make_shared<MotifStateGraph>();
         msg->add_state(m1);
         msg->increase_level();
@@ -174,23 +174,23 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[MotifStateGraph
     }
     
     SECTION("test replace state") {
-        auto m1 = RM::instance().motif_state("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif_state("TWOWAY.2PN4.4");
-        auto m3 = RM::instance().motif_state("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif_state("TWOWAY.2PN4.4");
+        auto m3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto msg = std::make_shared<MotifStateGraph>();
         
         msg->add_state(m1);
         msg->add_state(m2);
         msg->add_state(m3);
         
-        msg->replace_state(1, RM::instance().motif_state("HELIX.IDEAL.2"));
+        msg->replace_state(1, resources::Manager::instance().motif_state("HELIX.IDEAL.2"));
         
         REQUIRE(msg->get_node(1)->data()->name() == "HELIX.IDEAL.2");
         
         auto msg2 = std::make_shared<MotifStateGraph>();
         msg2->add_state(m1);
         msg2->add_state(m3);
-        msg2->add_state(RM::instance().motif_state("HELIX.IDEAL.2"));
+        msg2->add_state(resources::Manager::instance().motif_state("HELIX.IDEAL.2"));
         
         auto d1 = msg->get_node(2)->data()->get_end_state(1)->d();
         auto d2 = msg2->get_node(2)->data()->get_end_state(1)->d();

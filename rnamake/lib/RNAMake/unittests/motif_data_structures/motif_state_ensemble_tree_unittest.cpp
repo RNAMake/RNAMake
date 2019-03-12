@@ -15,7 +15,7 @@ TEST_CASE( "Test Assembling MotifEnsembleStates together", "[MotifStateEnsembleT
     SECTION("test adding ensembles to tree") {
     
         auto mset = MotifStateEnsembleTree();
-        auto mse = RM::instance().motif_state_ensemble("GG_LL_CC_RR");
+        auto mse = resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR");
         mset.add_ensemble(mse);
         mset.add_ensemble(mse);
         
@@ -25,7 +25,7 @@ TEST_CASE( "Test Assembling MotifEnsembleStates together", "[MotifStateEnsembleT
     SECTION("test getting a motif state tree from the ensemble tree") {
         
         auto mset = MotifStateEnsembleTree();
-        auto mse = RM::instance().motif_state_ensemble("GG_LL_CC_RR");
+        auto mse = resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR");
         mset.add_ensemble(mse);
         mset.add_ensemble(mse);
         mset.add_ensemble(mse);
@@ -38,12 +38,12 @@ TEST_CASE( "Test Assembling MotifEnsembleStates together", "[MotifStateEnsembleT
     
     SECTION("setup from motif tree") {
         auto mt = std::make_shared<MotifTree>();
-        auto m1 = RM::instance().motif("HELIX.IDEAL");
-        auto m2 = RM::instance().motif("HELIX.IDEAL");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL");
         mt->add_motif(m1);
         mt->add_motif(m2);
 
-        auto ms1 = RM::instance().motif_state("HELIX.IDEAL");
+        auto ms1 = resources::Manager::instance().motif_state("HELIX.IDEAL");
         
         auto mset = MotifStateEnsembleTree(mt);
         
@@ -53,8 +53,8 @@ TEST_CASE( "Test Assembling MotifEnsembleStates together", "[MotifStateEnsembleT
         //REQUIRE(mst->get_node(0)->data()->name() == "CG=CG.0");
         
         auto mt2 = std::make_shared<MotifTree>();
-        auto m3 = RM::instance().motif("HELIX.IDEAL");
-        auto nway = RM::instance().motif("NWAY.1GID.0");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL");
+        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
         
         mt2->add_motif(m1);
         mt2->add_motif(nway);
@@ -70,7 +70,7 @@ TEST_CASE( "Test Assembling MotifEnsembleStates together", "[MotifStateEnsembleT
     SECTION("test adding ensembles to graph") {
 
         auto mseg = MotifStateEnsembleGraph();
-        auto mse = RM::instance().motif_state_ensemble("GG_LL_CC_RR");
+        auto mse = resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR");
         mseg.add_ensemble(mse);
         mseg.add_ensemble(mse);
 
@@ -79,8 +79,8 @@ TEST_CASE( "Test Assembling MotifEnsembleStates together", "[MotifStateEnsembleT
 
     SECTION("setup from motif tree with graph") {
         auto mg = std::make_shared<MotifGraph>();
-        auto m1 = RM::instance().motif("HELIX.IDEAL");
-        auto m2 = RM::instance().motif("HELIX.IDEAL");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL");
         mg->add_motif(m1);
         mg->add_motif(m2);
 

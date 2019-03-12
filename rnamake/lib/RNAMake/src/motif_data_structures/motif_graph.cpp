@@ -49,7 +49,7 @@ MotifGraph::_setup_from_top_str(String const & s) {
     int max_index = 0;
     for(auto const & n_spl : node_spl) {
         sspl = base::split_str_by_delimiter(n_spl, ",");
-        auto m = RM::instance().motif(sspl[0], "", sspl[1]);
+        auto m = resources::Manager::instance().motif(sspl[0], "", sspl[1]);
 
         m->get_beads(m->ends());
         graph_.add_data(m, -1, -1, -1, (int)m->ends().size(), 1,
@@ -87,9 +87,9 @@ MotifGraph::_setup_from_str(String const & s) {
                                          structure::ResidueTypeSetManager::getInstance().residue_type_set());
         
         try {
-            auto m2 = RM::instance().motif(m->name());
-        } catch(ResourceManagerException const & e) {
-            RM::instance().register_motif(m);
+            auto m2 = resources::Manager::instance().motif(m->name());
+        } catch(resources::ResourceManagerException const & e) {
+            resources::Manager::instance().register_motif(m);
         }
 
         if(m->ends().size() > 1) {
@@ -575,7 +575,7 @@ MotifGraph::replace_ideal_helices() {
             
             remove_motif(n->index());
             int pos = 0;
-            auto h = RM::instance().motif("HELIX.IDEAL");
+            auto h = resources::Manager::instance().motif("HELIX.IDEAL");
             if(parent == nullptr) {
                 h->get_beads(h->ends()[0]);
                 pos = _add_motif_to_graph(h, nullptr, -1);
@@ -600,7 +600,7 @@ MotifGraph::replace_ideal_helices() {
             
             int old_pos = pos;
             for(int j = 0; j < count; j++) {
-                auto h = RM::instance().motif("HELIX.IDEAL");
+                auto h = resources::Manager::instance().motif("HELIX.IDEAL");
                 auto parent = get_node(old_pos);
                 auto m_added = get_aligned_motif(parent->data()->ends()[1],
                                                  h->ends()[0], h);
@@ -639,7 +639,7 @@ MotifGraph::replace_helical_sequence(secondary_structure::PoseOP const & ss) {
         if(n->data()->end_ids()[0] == ss_m->end_ids()[0] && n->data()->name() != "HELIX.IDEAL") {
             continue;
         }
-        auto m = RM::instance().bp_step(ss_m->end_ids()[0]);
+        auto m = resources::Manager::instance().bp_step(ss_m->end_ids()[0]);
         m->id(n->data()->id());
         auto org_res = n->data()->residues();
         auto new_res = m->residues();

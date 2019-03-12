@@ -35,7 +35,7 @@ int main(int argc, const char * argv[]) {
     
     //load TTR
     auto ttr_dir = String(base_dir()+"/rnamake/lib/RNAMake/apps/mini_ttr");
-    RM::instance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
+    resources::Manager::instance().add_motif(ttr_dir+"/resources/GAAA_tetraloop");
     
     std::ofstream out;
     out.open("finished.out");

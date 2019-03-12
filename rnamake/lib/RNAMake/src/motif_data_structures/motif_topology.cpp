@@ -181,17 +181,17 @@ GraphtoTree::_get_reoriented_motif(
 
     if (m->mtype() != util::MotifType::HELIX) {
         try {
-            auto new_m = RM::instance().motif(m->name(), "", m->end_name(end_index));
+            auto new_m = resources::Manager::instance().motif(m->name(), "", m->end_name(end_index));
             new_m->copy_uuids_from_motif(*m);
             return new_m;
         }
-        catch (ResourceManagerException const & e) {
+        catch (resources::ResourceManagerException const & e) {
             throw MotifTopologyException(
                     String("cannot convert graph to tree because ") + e.what());
         }
     } else {
         if (m->name().substr(0, 5) == "HELIX") {
-            auto new_m = RM::instance().motif(m->name());
+            auto new_m = resources::Manager::instance().motif(m->name());
             new_m->copy_uuids_from_motif(*m);
             return new_m;
 
@@ -199,7 +199,7 @@ GraphtoTree::_get_reoriented_motif(
         } else {
             auto spl = base::split_str_by_delimiter(m->name(), "=");
             auto new_name = spl[1] + "=" + spl[0];
-            auto new_m = RM::instance().motif(m->name());
+            auto new_m = resources::Manager::instance().motif(m->name());
             //since each basepair step has a different motif to represent it
             //these are likly two different motifs cannot do copy_uuids_from_motif
             new_m->id(m->id());
@@ -336,9 +336,9 @@ graph_to_tree(
                     name = spl[1] + "=" + spl[0];
                 }
 
-                m = RM::instance().motif(name);
+                m = resources::Manager::instance().motif(name);
             } else {
-                m = RM::instance().motif(name, "", current->data()->ends()[0]->name());
+                m = resources::Manager::instance().motif(name, "", current->data()->ends()[0]->name());
             }
             mt->add_motif(m);
             mt->get_node(0)->data()->id(current->data()->id());
@@ -386,9 +386,9 @@ graph_to_tree(
             if (current->data()->name()[2] == '=' && c_end_index == 1) {
                 auto spl = base::split_str_by_delimiter(current->data()->name(), "=");
                 auto name = spl[1] + "=" + spl[0];
-                m = RM::instance().motif(name);
+                m = resources::Manager::instance().motif(name);
             } else {
-                m = RM::instance().motif(current->data()->name(), "", c_end_name);
+                m = resources::Manager::instance().motif(current->data()->name(), "", c_end_name);
             }
 
             seen_connections[std::to_string(p_index) + " " + std::to_string(index)] = 1;

@@ -56,7 +56,7 @@ TEST_CASE( "Test Changes in Motif Topology", "[MotifTopology]" ) {
     
     SECTION("test with minittr construct") {
         auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
-        RM::instance().add_motif(base_path+"GAAA_tetraloop");
+        resources::Manager::instance().add_motif(base_path+"GAAA_tetraloop");
         
         auto path = base::base_dir() + "/rnamake/unittests/resources/motif_graph/mini_ttr.mg";
         auto lines =base::get_lines_from_file(path);

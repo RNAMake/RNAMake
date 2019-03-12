@@ -18,9 +18,9 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
 
     SECTION("test adding motifs") {
         auto mg = MotifGraph();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         
         SECTION("cannot find end if there is not parent") {
             REQUIRE_THROWS_AS(mg.add_motif(m1, -1, "A1-A8"), MotifGraphException);
@@ -49,9 +49,9 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test removing motifs") {
         auto mg = MotifGraph();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         
         mg.add_motif(m1);
         mg.add_motif(m2);
@@ -68,8 +68,8 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test getting nodes") {
         auto mg = MotifGraph();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         mg.add_motif(m1);
         mg.add_motif(m2);
         
@@ -145,7 +145,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
  
     SECTION("test replacing idealized helices") {
         auto mg = MotifGraph();
-        auto m = RM::instance().motif("HELIX.IDEAL.6");
+        auto m = resources::Manager::instance().motif("HELIX.IDEAL.6");
         mg.add_motif(m);
         mg.replace_ideal_helices();
         
@@ -177,7 +177,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
   
     SECTION("test replacing idealized helices 2") {
         auto mg = std::make_shared<MotifGraph>();
-        auto m = RM::instance().motif("HELIX.IDEAL.6");
+        auto m = resources::Manager::instance().motif("HELIX.IDEAL.6");
         m->move(math::Point(40, 0, 0));
         mg->add_motif(m);
         
@@ -199,7 +199,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test replacing helices with new sequence") {
         auto mg = MotifGraph();
-        auto m = RM::instance().motif("HELIX.IDEAL.6");
+        auto m = resources::Manager::instance().motif("HELIX.IDEAL.6");
         mg.add_motif(m);
         mg.replace_ideal_helices();
 
@@ -223,7 +223,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test replacing helices with new sequence 2") {
         auto mg = std::make_shared<MotifGraph>();
-        auto m = RM::instance().motif("HELIX.IDEAL.6");
+        auto m = resources::Manager::instance().motif("HELIX.IDEAL.6");
         m->move(math::Point(40, 0, 0));
         mg->add_motif(m);
         mg->replace_ideal_helices();
@@ -248,13 +248,13 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test get end for easy building ") {
         auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
 
-        RM::instance().add_motif(base_path+"GAAA_tetraloop", "ttr");
+        resources::Manager::instance().add_motif(base_path+"GAAA_tetraloop", "ttr");
         
         auto mg = MotifGraph();
-        auto ttr_m = RM::instance().motif("ttr", "", "A229-A245");
+        auto ttr_m = resources::Manager::instance().motif("ttr", "", "A229-A245");
         mg.add_motif(m1);
         mg.add_motif(ttr_m);
         mg.add_motif(m2);
@@ -280,10 +280,10 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test connecting motifs") {
         auto mg = MotifGraph();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
-        auto nway = RM::instance().motif("NWAY.1GID.0");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
         mg.add_motif(m1);
         mg.add_motif(nway);
         mg.add_motif(m2);
@@ -309,7 +309,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     SECTION("test adding motif tree to motif graph") {
         
         auto g = std::make_shared<BuilderGraph>();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         g->add_node(util::MotifType::HELIX, 2);
         g->add_node(util::MotifType::NWAY, 3);
         g->add_node(util::MotifType::HELIX, 2, 1, 1);
@@ -334,10 +334,10 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test pretty printing graph") {
         auto mg2 = MotifGraph();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
-        auto nway = RM::instance().motif("NWAY.1GID.0");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
         
         mg2.add_motif(m1);
         mg2.add_motif(m2);
@@ -357,10 +357,10 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[MotifGraph]" ) {
     
     SECTION("test pretty printing tree with branching") {
         auto mt2 = MotifGraph();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.2");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.2");
-        auto nway = RM::instance().motif("NWAY.1GID.0");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
         
         mt2.add_motif(m1);
         mt2.add_motif(nway);

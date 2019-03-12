@@ -165,7 +165,7 @@ public:
         int required_uses=0) {
         
         if(lib_name.length() > 0) {
-            MotifStateSqliteLibrary ms_lib (lib_name);
+            auto ms_lib = resources::MotifStateSqliteLibrary(lib_name);
             ms_lib.load_all();
             motif::MotifStateOPs motif_states;
             for(auto const & ms : ms_lib) { motif_states.push_back(ms); }

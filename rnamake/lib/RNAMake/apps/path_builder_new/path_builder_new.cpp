@@ -147,7 +147,7 @@ PathBuilderNewApp::_setup_from_motif() {
             "-end_bp respectively when using -pdb option");
     }
 
-    RM::instance().add_motif(get_string_option("pdb"));
+    resources::Manager::instance().add_motif(get_string_option("pdb"));
 
     auto m = motif::MotifOP(nullptr);
 
@@ -155,7 +155,7 @@ PathBuilderNewApp::_setup_from_motif() {
         m = get_motif_from_resource_manager(pdb_name);
     }
     
-    catch(ResourceManagerException const & e) {
+    catch(resources::ResourceManagerException const & e) {
         throw std::runtime_error(
             "cannot load supplied pdb: " + get_string_option("pdb") + " as it is not possible to "
             "build from any basepair ends or it contains no basepair ends. In ability to build "
@@ -176,7 +176,7 @@ PathBuilderNewApp::_setup_from_motif() {
                 break;
                 
             }
-            catch(ResourceManagerException const & e) { continue; }
+            catch(resources::ResourceManagerException const & e) { continue; }
         }
         
         if(!found) {

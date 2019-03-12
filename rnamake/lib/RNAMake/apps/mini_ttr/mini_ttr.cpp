@@ -201,7 +201,7 @@ MiniTTRPathFollow::run() {
 
 int main(int argc, const char * argv[]) {
     auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
-    RM::instance().add_motif(base_path+"GAAA_tetraloop");
+    resources::Manager::instance().add_motif(base_path+"GAAA_tetraloop");
 
     auto options = parse_command_line(argc, argv);
     auto app = std::make_shared<MiniTTR>();

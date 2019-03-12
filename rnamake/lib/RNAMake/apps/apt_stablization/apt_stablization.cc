@@ -38,10 +38,10 @@ void
 APTStablization::run() {
 
     // add motif to resource manager
-    RM::instance().add_motif(get_string_option("pdb"), "aptamer", util::MotifType::TWOWAY);
+    resources::Manager::instance().add_motif(get_string_option("pdb"), "aptamer", util::MotifType::TWOWAY);
     std::cout << "APT STABLIZATION: loaded pdb from file: " << get_string_option("pdb") << std::endl;
 
-    auto m = RM::instance().motif("aptamer");
+    auto m = resources::Manager::instance().motif("aptamer");
     if(m->ends().size() < 2) {
         throw APTStablizationException("aptamer does not have not have two basepair ends");
     }
@@ -55,9 +55,9 @@ APTStablization::run() {
     auto ms_libraries = _get_libraries(start_path);
 
     // setup initial graph
-    auto ttr = RM::instance().motif("GAAA_tetraloop", "", "A229-A245");
-    auto bp_step_1 = RM::instance().bp_step("GC_LL_GC_RR");
-    auto bp_step_2 = RM::instance().bp_step("CG_LL_CG_RR");
+    auto ttr = resources::Manager::instance().motif("GAAA_tetraloop", "", "A229-A245");
+    auto bp_step_1 = resources::Manager::instance().bp_step("GC_LL_GC_RR");
+    auto bp_step_2 = resources::Manager::instance().bp_step("CG_LL_CG_RR");
     auto msg = std::make_shared<MotifStateGraph>();
     msg->add_state(bp_step_1->get_state());
     msg->add_state(bp_step_2->get_state());
@@ -196,12 +196,12 @@ APTStablization::_get_libraries(
             libraries.push_back(motif_states);
         }
         else {
-            auto m = RM::instance().motif(name);
+            auto m = resources::Manager::instance().motif(name);
             motif_states = motif::MotifStateOPs();
 
             for(auto const & end : m->ends()) {
                 try {
-                    auto m_new = RM::instance().motif(name, "", end->name());
+                    auto m_new = resources::Manager::instance().motif(name, "", end->name());
                     m_new->new_res_uuids();
                     motif_states.push_back(m_new->get_state());
                 }
@@ -234,7 +234,7 @@ int main(int argc, const char *argv[]) {
     std::set_terminate(base::print_backtrace);
 
     String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
-    RM::instance().add_motif(base_path+"GAAA_tetraloop");
+    resources::Manager::instance().add_motif(base_path+"GAAA_tetraloop");
 
     auto app = APTStablization();
     app.setup_options();

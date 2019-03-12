@@ -27,7 +27,7 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
         i++;
         
         auto mse = motif::MotifStateEnsembleOP();
-        auto found_supplied = RM::instance().has_supplied_motif_ensemble(
+        auto found_supplied = resources::Manager::instance().has_supplied_motif_ensemble(
                                     n->data()->name(), n->data()->end_name(0));
                 
         if(n->data()->mtype() == util::MotifType::HELIX) {
@@ -40,9 +40,9 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
             
             
             try {
-                mse = RM::instance().motif_state_ensemble(n->data()->end_ids()[0]);
+                mse = resources::Manager::instance().motif_state_ensemble(n->data()->end_ids()[0]);
             }
-            catch(ResourceManagerException const & e) {
+            catch(resources::ResourceManagerException const & e) {
                 throw MotifStateTreeEnsembleException(
                     "cannot find motif state ensemble for a basepair with id: " +
                     n->data()->end_ids()[0] + " is this a WC basepair?");
@@ -53,7 +53,7 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
         else if(found_supplied) {
             std::cout << "MOTIF STATE ENSEMBLE TREE: found supplied ensemble for name=";
             std::cout << n->data()->name() << " endname=" << n->data()->end_name(0) << std::endl;
-            mse = RM::instance().get_supplied_motif_ensemble(
+            mse = resources::Manager::instance().get_supplied_motif_ensemble(
                                     n->data()->name(), n->data()->end_name(0))->get_state();
             //std::cout << mse->size() <<std::endl;
         }

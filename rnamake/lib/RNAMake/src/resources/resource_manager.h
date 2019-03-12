@@ -21,6 +21,7 @@
 #include "resources/motif_state_ensemble_sqlite_library.h"
 #include "resources/added_motif_library.h"
 
+namespace resources {
 
 class ResourceManagerException : public std::runtime_error {
 public:
@@ -30,22 +31,22 @@ public:
 };
 
 
-class RM { //RM for ResourceManager
+class Manager { //RM for ResourceManager
 protected:
 
-    RM();
+    Manager();
 
-    RM(RM const &); //Prevent construction
-    void operator=(RM const &);
+    Manager(Manager const &); //Prevent construction
+    void operator=(Manager const &);
 
 private:
 
-    ~RM() {}
+    ~Manager() {}
 
 public:
 
-    static RM & instance() {
-        static RM instance;
+    static Manager & instance() {
+        static Manager instance;
         return instance;
     }
 
@@ -144,7 +145,9 @@ get_motif_from_resource_manager(
         String const & end_id = dummy_end_id,
         String const & end_name = dummy_name) {
 
-    return RM::instance().motif(name, end_id, end_name);
+    return Manager::instance().motif(name, end_id, end_name);
+
+}
 
 }
 

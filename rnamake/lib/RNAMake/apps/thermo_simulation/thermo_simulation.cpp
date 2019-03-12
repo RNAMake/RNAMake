@@ -40,7 +40,7 @@ ThermoSimulationApp::run() {
     if(get_string_option("extra_me") != "") {
         std::cout << "THERMO_SIMULATION: registered extra motif ensembles from file: ";
         std::cout << get_string_option("extra_me") << std::endl;
-        RM::instance().register_extra_motif_ensembles(get_string_option("extra_me"));
+        resources::Manager::instance().register_extra_motif_ensembles(get_string_option("extra_me"));
     }
 
     auto lines =base::get_lines_from_file(get_string_option("mt"));
@@ -68,8 +68,8 @@ int main(int argc, const char * argv[]) {
     
     //load tectos
     auto tecto_dir = String(base_dir()+"/rnamake/lib/RNAMake/apps/simulate_tectos");
-    RM::instance().add_motif(tecto_dir+"/resources/GAAA_tetraloop");
-    RM::instance().add_motif(tecto_dir+"/resources/GGAA_tetraloop");
+    resources::Manager::instance().add_motif(tecto_dir+"/resources/GAAA_tetraloop");
+    resources::Manager::instance().add_motif(tecto_dir+"/resources/GGAA_tetraloop");
     
     auto app = ThermoSimulationApp();
     app.setup_options();

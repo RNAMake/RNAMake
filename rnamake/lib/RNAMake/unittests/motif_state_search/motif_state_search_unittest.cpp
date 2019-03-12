@@ -14,9 +14,9 @@ TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
 
     SECTION("test simple search") {
         auto mt = MotifTree();
-        auto m1 = RM::instance().motif("HELIX.IDEAL.3");
-        auto m2 = RM::instance().motif("TWOWAY.2PN4.4");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.3");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.3");
+        auto m2 = resources::Manager::instance().motif("TWOWAY.2PN4.4");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.3");
         mt.add_motif(m1);
         mt.add_motif(m2);
         mt.add_motif(m3);
@@ -37,12 +37,12 @@ TEST_CASE( "Test Searching Motif States", "[MotifStateSearch]" ) {
     }
     
     SECTION("test miniTTR") {
-        RM::instance().add_motif(base::unittest_resource_dir() + "motif/GAAA_tetraloop");
+        resources::Manager::instance().add_motif(base::unittest_resource_dir() + "motif/GAAA_tetraloop");
         
         auto mt = MotifTree();
-        auto m1 = RM::instance().motif("GAAA_tetraloop", "", "A229-A245");
-        auto m2 = RM::instance().motif("HELIX.IDEAL.3");
-        auto m3 = RM::instance().motif("HELIX.IDEAL.3");
+        auto m1 = resources::Manager::instance().motif("GAAA_tetraloop", "", "A229-A245");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.3");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.3");
 
         mt.add_motif(m1);
         mt.add_motif(m2);

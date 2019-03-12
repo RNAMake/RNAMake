@@ -37,7 +37,7 @@ BuildFlexHelicesApp::parse_command_line(
 void
 BuildFlexHelicesApp::run() {
 
-    auto ideal = RM::instance().motif("HELIX.IDEAL.1");
+    auto ideal = resources::Manager::instance().motif("HELIX.IDEAL.1");
     ideal->to_pdb("ideal.pdb", 1, 1);
 
     std::ofstream out;
@@ -239,7 +239,7 @@ main(
 
     //load extra motifs being used
     //String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";
-    //RM::instance().add_motif(base_path+"pRNA_3WJ.pdb", "prna");
+    //resources::Manager::instance().add_motif(base_path+"pRNA_3WJ.pdb", "prna");
 
     auto app = BuildFlexHelicesApp();
     app.setup_options();

@@ -67,7 +67,7 @@ GeneralHelixSampler::get_motifs_from_seq_and_ss(
     for(auto const & m : ss_motifs) {
         //basepair step
         if(m->mtype() == util::MotifType::HELIX) {
-            motif = RM::instance().bp_step(m->end_ids()[0]);
+            motif = resources::Manager::instance().bp_step(m->end_ids()[0]);
             motifs.push_back(motif);
         }
         else {
@@ -92,7 +92,7 @@ GeneralHelixSampler::run() {
 
     if(get_string_option("pdb") != "") {
         auto pdb = get_string_option("pdb");
-        auto rs = RM::instance().get_structure(pdb, "pdb");
+        auto rs = resources::Manager::instance().get_structure(pdb, "pdb");
         start_bp = rs->get_basepair(start_bp_str)[0];
         end_bp = rs->get_basepair(end_bp_str)[0];
     }
@@ -115,7 +115,7 @@ GeneralHelixSampler::run() {
     start->name("start");
     start->block_end_add(-1);
 
-    RM::instance().register_motif(start);
+    resources::Manager::instance().register_motif(start);
 
     auto seq = get_string_option("seq");
     auto struc = _generate_structure(seq);

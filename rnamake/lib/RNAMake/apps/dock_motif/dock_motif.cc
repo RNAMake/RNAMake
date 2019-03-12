@@ -37,13 +37,13 @@ DockMotifApp::run() {
     auto added_helix = mf.added_helix();
     auto motif_path = get_string_option("motif");
 
-    auto scaffold = RM::instance().get_structure(get_string_option("scaffold"), "scaffold");
+    auto scaffold = resources::Manager::instance().get_structure(get_string_option("scaffold"), "scaffold");
 
-    RM::instance().add_motif(get_string_option("motif"), "motif", util::MotifType::HAIRPIN);
-    auto motif = RM::instance().motif("motif");
+    resources::Manager::instance().add_motif(get_string_option("motif"), "motif", util::MotifType::HAIRPIN);
+    auto motif = resources::Manager::instance().motif("motif");
     motif->ends()[0]->flip();
 
-    helix_ = RM::instance().motif_state("HELIX.IDEAL.2");
+    helix_ = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
 
     auto start_ms = motif->get_state();
     _precompute_rotations(start_ms);
@@ -77,13 +77,13 @@ DockMotifApp::run() {
     int i = 0;
     for(auto const & result : results_) {
         std::cout << i << " : " << result.score << std::endl;
-        auto m = RM::instance().get_motif_from_state(result.ms);
+        auto m = resources::Manager::instance().get_motif_from_state(result.ms);
         m->to_pdb("docked." + std::to_string(i) + ".pdb");
         i++;
         if(i > 9) { break; }
     }
 
-    //RM::instance().add_motif()
+    //resources::Manager::instance().add_motif()
 
 
     //points_to_pdb("grid.pdb", valid_start_points);
@@ -165,7 +165,7 @@ DockMotifApp::_search() {
 
     results_.push_back(MotifStateandScore{best_ms, best});
 
-    //auto m = RM::instance().get_motif_from_state(best_ms);
+    //auto m = resources::Manager::instance().get_motif_from_state(best_ms);
     //std::cout << best << std::endl;
     //m->to_pdb("docked.pdb");
 }
@@ -277,7 +277,7 @@ DockMotifApp::_precompute_rotations(
             for(int k = 0; k < 12; k++) {
                 ms->transform(r_z, p);
                 rotations_.push_back(std::make_shared<motif::motif::MotifState>(*ms));
-                //auto m = RM::instance().get_motif_from_state(ms);
+                //auto m = resources::Manager::instance().get_motif_from_state(ms);
                 //m->to_pdb("frame."+std::to_string(count)+".pdb");
                 //count++;
 

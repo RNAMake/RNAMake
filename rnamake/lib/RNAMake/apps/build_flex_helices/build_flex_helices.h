@@ -127,7 +127,7 @@ private:
         for(auto const & m : ss_motifs) {
             //basepair step
             if(m->mtype() == util::MotifType::HELIX) {
-                motif = RM::instance().bp_step(m->end_ids()[0])->get_state();
+                motif = resources::Manager::instance().bp_step(m->end_ids()[0])->get_state();
                 motifs[i] = motif;
             }
             else {

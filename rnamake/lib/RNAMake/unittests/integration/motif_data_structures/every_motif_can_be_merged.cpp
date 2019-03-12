@@ -9,13 +9,13 @@
 #include "motif_data_structures/motif_merger.h"
 
 TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
-    auto m1 = RM::instance().motif("HELIX.IDEAL.3");
-    auto m2 = RM::instance().motif("HELIX.IDEAL.3");
+    auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.3");
+    auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.3");
     m2->new_res_uuids();
     
     SECTION("test merging all two way junctions with flanking helices") {
         
-        auto mlib = MotifSqliteLibrary("twoway");
+        auto mlib = resources::resources::MotifSqliteLibrary("twoway");
         mlib.load_all();
         
         auto mm = MotifMerger();
@@ -53,7 +53,7 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
     }
     
     SECTION("test merging all hairpins with a helix") {
-        auto mlib = MotifSqliteLibrary("hairpin");
+        auto mlib = resources::resources::MotifSqliteLibrary("hairpin");
         mlib.load_all();
         
         auto mm = MotifMerger();
@@ -73,7 +73,7 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
     }
     
     SECTION("test merging all nway junctions") {
-        auto mlib = MotifSqliteLibrary("nway");
+        auto mlib = resources::resources::MotifSqliteLibrary("nway");
         mlib.load_all();
         
         auto mm = MotifMerger();

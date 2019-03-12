@@ -53,13 +53,13 @@ SequenceOptimizer3D::_update_designable_bp(
         ss->update_motif(*d_bp->m_id_bot);
         auto m = ss->motif(*d_bp->m_id_bot);
         auto n = msg->get_node(*d_bp->m_id_bot);
-        msg->replace_state(n->index(), RM::instance().bp_step_state(m->end_ids()[0]));
+        msg->replace_state(n->index(), resources::Manager::instance().bp_step_state(m->end_ids()[0]));
     }
     if (d_bp->m_id_top != nullptr) {
         ss->update_motif(*d_bp->m_id_top);
         auto m = ss->motif(*d_bp->m_id_top);
         auto n = msg->get_node(*d_bp->m_id_top);
-        msg->replace_state(n->index(), RM::instance().bp_step_state(m->end_ids()[0]));
+        msg->replace_state(n->index(), resources::Manager::instance().bp_step_state(m->end_ids()[0]));
     }
 
 }
@@ -198,7 +198,7 @@ SequenceOptimizer3D::_initiate_sequence_in_msg(
         auto name = String("");
         auto n_msg = msg->get_node(m->id());
 
-        msg->replace_state(n_msg->index(), RM::instance().bp_step_state(m->end_ids()[0]));
+        msg->replace_state(n_msg->index(), resources::Manager::instance().bp_step_state(m->end_ids()[0]));
     }
 }
 

@@ -372,7 +372,7 @@ MotifStateGraph::to_motif_graph() {
     _update_align_list();
 
     for(auto const & n : align_list_) {
-        auto m = RM::instance().motif(n->data()->name(), "", n->data()->end_name(0));
+        auto m = resources::Manager::instance().motif(n->data()->name(), "", n->data()->end_name(0));
         
         if(std::find(non_aligned_nodes.begin(), non_aligned_nodes.end(), n) != non_aligned_nodes.end() ) {
             align_motif(n->data()->get_end_state(0), m->ends()[0], m);
