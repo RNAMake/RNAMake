@@ -29,7 +29,7 @@ public:
     {}
 };
 
-typedef data_structure::tree::TreeNodeOP<MotifStateEnsembleOP> MotifStateEnsembleTreeNodeOP;
+typedef data_structure::tree::TreeNodeOP<motif::MotifStateEnsembleOP> MotifStateEnsembleTreeNodeOP;
 
 /*const double _EPS = 2.22044604925e-16 * 4.0;
 
@@ -81,8 +81,8 @@ public:
     
 public: //iterators
     
-    typedef typename data_structure::tree::TreeStatic<MotifStateEnsembleOP>::iterator iterator;
-    typedef typename data_structure::tree::TreeStatic<MotifStateEnsembleOP>::const_iterator const_iterator;
+    typedef typename data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP>::iterator iterator;
+    typedef typename data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP>::const_iterator const_iterator;
     
     iterator begin() { return tree_.begin(); }
     iterator end()   { return tree_.end(); }
@@ -94,7 +94,7 @@ public: // add functions
         
     int
     add_ensemble(
-        MotifStateEnsembleOP const & ensemble,
+        motif::MotifStateEnsembleOP const & ensemble,
         int parent_index = -1,
         int parent_end_index = -1);
     
@@ -119,7 +119,7 @@ public:
     
 
 private:
-    data_structure::tree::TreeStatic<MotifStateEnsembleOP> tree_;
+    data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP> tree_;
     MotifConnections connections_;
 
 };

@@ -42,7 +42,7 @@ typedef std::shared_ptr<MotifStateMonteCarloSolutionNew> MotifStateMonteCarloSol
 class MotifStateMonteCarlo {
 public:
     MotifStateMonteCarlo(
-            std::vector<MotifStateOPs> const & mses):
+            std::vector<motif::MotifStateOPs> const & mses):
             mses_(mses),
             mc_(util::MonteCarlo(0.5f)),
             rng_(util::RandomNumberGenerator()),
@@ -153,9 +153,9 @@ private:
     util::StericLookupNew lookup_;
     math::Points beads_;
     base::Options options_;
-    std::vector<MotifStateOPs> mses_;
+    std::vector<motif::MotifStateOPs> mses_;
     structure::BasepairStateOP end_, end_flip_;
-    MotifStateOP start_m_;
+    motif::MotifStateOP start_m_;
     MotifStateGraphOP msg_;
     double score_, r_diff_, r_diff_flip_;
     int ni_, nj_, ei_, ej_;

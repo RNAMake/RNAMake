@@ -10,13 +10,13 @@
 
 TEST_CASE( "Test Motif Ensembles", "[MotifEnsemble]" ) {
     auto path = base::motif_dirs() + "base.motif";
-    auto m = file_to_motif(path);
+    auto m = motif::file_to_motif(path);
 
-    auto me = MotifEnsemble(MotifOPs{m}, Floats{1});
+    auto me = motif::MotifEnsemble(motif::MotifOPs{m}, Floats{1});
     REQUIRE(me.size() == 1);
     
     SECTION("test copy constructor") {
-        auto me_copy = MotifEnsemble(me);
+        auto me_copy = motif::MotifEnsemble(me);
 
         REQUIRE(me_copy.size() == 1);
         
@@ -25,7 +25,7 @@ TEST_CASE( "Test Motif Ensembles", "[MotifEnsemble]" ) {
     SECTION("test stringifying motif ensemble") {
         auto s = me.to_str();
         auto rts = structure::ResidueTypeSet();
-        auto me_copy = MotifEnsemble(s, rts);
+        auto me_copy = motif::MotifEnsemble(s, rts);
         
         REQUIRE(me_copy.size() == 1);
 

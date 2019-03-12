@@ -20,7 +20,7 @@ class MotifStateSearchNode {
 public:
     inline
     MotifStateSearchNode(
-        MotifStateOP const & ref_state,
+        motif::MotifStateOP const & ref_state,
         MotifStateSearchNodeOP const & parent,
         int parent_end_index,
         int ntype):
@@ -37,7 +37,7 @@ public:
             ss_score_ += parent_->ss_score_;
             size_ += parent_->size_;
         }
-        cur_state_ = std::make_shared<MotifState>(*ref_state_);
+        cur_state_ = std::make_shared<motif::MotifState>(*ref_state_);
         score_ = 1000;
     }
     
@@ -49,7 +49,7 @@ public:
     parent_end_index_(n.parent_end_index_),
     ntype_(n.ntype_),
     node_type_usages_(n.node_type_usages_),
-    cur_state_(std::make_shared<MotifState>(*n.cur_state_)),
+    cur_state_(std::make_shared<motif::MotifState>(*n.cur_state_)),
     ss_score_(n.ss_score_),
     level_(n.level_),
     size_(n.size_),
@@ -61,7 +61,7 @@ public:
     MotifStateSearchNode
     copy() {
         MotifStateSearchNode new_n(ref_state_, parent_, parent_end_index_, ntype_);
-        new_n.cur_state_ = std::make_shared<MotifState>(*cur_state_);
+        new_n.cur_state_ = std::make_shared<motif::MotifState>(*cur_state_);
         new_n.score_ = score_;
         new_n.ss_score_ = ss_score_;
         new_n.level_ = level_;
@@ -105,7 +105,7 @@ public:
     inline
     void
     replace_ms(
-        MotifStateOP const & ms,
+        motif::MotifStateOP const & ms,
         int ntype) {
         ref_state_ = ms;
         cur_state_ = ms;
@@ -129,11 +129,11 @@ public: //getters
     parent() { return parent_; }
     
     inline
-    MotifStateOP  &
+    motif::MotifStateOP  &
     cur_state() { return cur_state_; }
     
     inline
-    MotifStateOP const &
+    motif::MotifStateOP const &
     ref_state() { return ref_state_; }
     
     inline
@@ -183,7 +183,7 @@ public: //setters
            MotifStateSearchNodeOP const & parent) { parent_ = parent; }
     
 private:
-    MotifStateOP ref_state_, cur_state_;
+    motif::MotifStateOP ref_state_, cur_state_;
     MotifStateSearchNodeOP parent_;
     math::Point center_;
     Ints node_type_usages_;

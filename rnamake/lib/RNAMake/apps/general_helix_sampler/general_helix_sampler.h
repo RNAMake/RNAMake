@@ -48,14 +48,14 @@ private:
     _generate_structure(
             String const &);
 
-    MotifOPs
+    motif::MotifOPs
     get_motifs_from_seq_and_ss(
             String const &,
             String const &);
 
     int
     _get_hit_count(
-            MotifOP const &,
+            motif::MotifOP const &,
             String const &,
             String const &);
 

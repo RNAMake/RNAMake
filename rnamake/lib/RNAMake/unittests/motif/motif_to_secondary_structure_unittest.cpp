@@ -9,11 +9,11 @@
 TEST_CASE( "Test converting 3D motifs into secondary structure objects", "[MotiftoSS]" ) {
     
     auto path = base::motif_dirs() + "base.motif";
-    auto m = file_to_motif(path);
+    auto m = motif::file_to_motif(path);
     path = base::motif_dirs() + "ref.motif";
-    auto ref_m = file_to_motif(path);;
+    auto ref_m = motif::file_to_motif(path);;
   
-    auto converter = MotiftoSecondaryStructure();
+    auto converter = motif::MotiftoSecondaryStructure();
     auto ss = converter.to_secondary_structure(m);
     
     REQUIRE(ss->basepairs().size() == m->basepairs().size());

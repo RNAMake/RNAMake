@@ -16,16 +16,16 @@ struct MSNodeData {
 public:
     inline
     MSNodeData(
-        MotifStateOP const & nref_state):
+        motif::MotifStateOP const & nref_state):
     ref_state(nref_state),
-    cur_state(std::make_shared<MotifState>(*nref_state))
+    cur_state(std::make_shared<motif::MotifState>(*nref_state))
     {}
     
     inline
     MSNodeData(
         MSNodeData const & ndata):
-    ref_state(std::make_shared<MotifState>(*ndata.ref_state)),
-    cur_state(std::make_shared<MotifState>(*ndata.cur_state))
+    ref_state(std::make_shared<motif::MotifState>(*ndata.ref_state)),
+    cur_state(std::make_shared<motif::MotifState>(*ndata.cur_state))
     {}
     
 public: //wrappers for current state
@@ -69,7 +69,7 @@ public: //wrappers to set some values
     
     
 public:
-    MotifStateOP ref_state, cur_state;
+    motif::MotifStateOP ref_state, cur_state;
     
 };
 

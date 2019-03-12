@@ -75,7 +75,7 @@ class MotifMerger {
 public:
     MotifMerger():
             all_bps_(std::map<util::Uuid, structure::BasepairOP, util::UuidCompare>()),
-            motifs_(std::map<util::Uuid, MotifOP, util::UuidCompare>()),
+            motifs_(std::map<util::Uuid, motif::MotifOP, util::UuidCompare>()),
             res_overrides_(std::map<util::Uuid, util::Uuid, util::UuidCompare>()),
             bp_overrides_(std::map<util::Uuid, util::Uuid, util::UuidCompare>()),
             graph_(data_structure::graph::GraphStatic<ChainNodeData>()),
@@ -86,9 +86,9 @@ public:
 
     MotifMerger(
             MotifMerger const & mm,
-            MotifOPs const & motifs) :
+            motif::MotifOPs const & motifs) :
             all_bps_(std::map<util::Uuid, structure::BasepairOP, util::UuidCompare>()),
-            motifs_(std::map<util::Uuid, MotifOP, util::UuidCompare>()),
+            motifs_(std::map<util::Uuid, motif::MotifOP, util::UuidCompare>()),
             res_overrides_(mm.res_overrides_),
             bp_overrides_(mm.bp_overrides_),
             rna_structure_(std::make_shared<structure::RNAStructure>()),
@@ -115,13 +115,13 @@ private:
 
 public:
     void
-    add_motif(MotifOP const &);
+    add_motif(motif::MotifOP const &);
 
     void
     add_motif(
-            MotifOP const &,
+            motif::MotifOP const &,
             structure::BasepairOP const &,
-            MotifOP const &,
+            motif::MotifOP const &,
             structure::BasepairOP const &);
 
     structure::RNAStructureOP const &
@@ -129,15 +129,15 @@ public:
 
 
     void
-    remove_motif(MotifOP const &);
+    remove_motif(motif::MotifOP const &);
 
     void
-    update_motif(MotifOP const &);
+    update_motif(motif::MotifOP const &);
 
     void
     connect_motifs(
-            MotifOP const & m1,
-            MotifOP const & m2,
+            motif::MotifOP const & m1,
+            motif::MotifOP const & m2,
             structure::BasepairOP const & m1_end,
             structure::BasepairOP const & m2_end) {
         _link_motifs(m1, m1_end, m2, m2_end);
@@ -183,9 +183,9 @@ public:
 private:
     void
     _link_motifs(
-            MotifOP const &,
+            motif::MotifOP const &,
             structure::BasepairOP const &,
-            MotifOP const &,
+            motif::MotifOP const &,
             structure::BasepairOP const &);
 
     ChainNodes
@@ -214,11 +214,11 @@ private:
 
     MotifMergerType
     _assign_merger_type(
-            MotifOP const &);
+            motif::MotifOP const &);
 
 private:
     std::map<util::Uuid, structure::BasepairOP, util::UuidCompare> all_bps_;
-    std::map<util::Uuid, MotifOP, util::UuidCompare> motifs_;
+    std::map<util::Uuid, motif::MotifOP, util::UuidCompare> motifs_;
     std::map<util::Uuid, util::Uuid, util::UuidCompare> res_overrides_, bp_overrides_;
     data_structure::graph::GraphStatic<ChainNodeData> graph_;
     int rebuild_structure_;

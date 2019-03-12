@@ -149,7 +149,7 @@ PathBuilderNewApp::_setup_from_motif() {
 
     RM::instance().add_motif(get_string_option("pdb"));
 
-    auto m = MotifOP(nullptr);
+    auto m = motif::MotifOP(nullptr);
 
     try {
         m = get_motif_from_resource_manager(pdb_name);

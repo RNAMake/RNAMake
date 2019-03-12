@@ -157,7 +157,7 @@ public:
     Add3WAYProblemFactory():
             SequenceOptProblemFactory(),
             has_setup_(false),
-            mf_(MotifFactory()) {}
+            mf_(motif::MotifFactory()) {}
 
     ~Add3WAYProblemFactory() {}
 
@@ -170,7 +170,7 @@ public:
 
             auto path = base::base_dir() + "/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/resources/start.pdb";
             auto scaffold_rm = RM::instance().get_structure(path, "scaffold", 3);
-            auto scaffold_m = std::make_shared<Motif>(*scaffold_rm);
+            auto scaffold_m = std::make_shared<motif::Motif>(*scaffold_rm);
             mf_._setup_secondary_structure(scaffold_m);
             RM::instance().register_motif(scaffold_m);
 
@@ -217,8 +217,8 @@ private:
     NodeIndexandEdge start_, end_;
     String start_name_, end_name_;
     bool target_an_aligned_end_;
-    MotifFactory mf_;
-    MotifOP scaffold_, prna_;
+    motif::MotifFactory mf_;
+    motif::MotifOP scaffold_, prna_;
 
 };
 */
@@ -282,7 +282,7 @@ private:
     NodeIndexandEdge start_, end_;
     String start_name_, end_name_;
     bool target_an_aligned_end_;
-    MotifOP scaffold_;
+    motif::MotifOP scaffold_;
 };
 
 
@@ -324,13 +324,13 @@ public:
 
 private:
 
-    std::vector<MotifStateOPs>
+    std::vector<motif::MotifStateOPs>
     _get_libraries();
 
     MotifStateMonteCarloOP
     _get_search(
             SequenceOptProblemOP,
-            std::vector<MotifStateOPs> const &);
+            std::vector<motif::MotifStateOPs> const &);
 
     SequenceOptimizer3DOP
     _get_optimizer(

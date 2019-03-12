@@ -19,78 +19,75 @@ namespace secondary_structure {
 
 class Pose : public RNAStructure {
 public:
-    Pose():
-    RNAStructure()
-    {}
-    
+    Pose() :
+            RNAStructure() {}
+
     Pose(
-        StructureOP const & structure,
-        BasepairOPs const & basepairs,
-        BasepairOPs const & ends):
-    RNAStructure(structure, basepairs, ends)
-    {}
-    
+            StructureOP const & structure,
+            BasepairOPs const & basepairs,
+            BasepairOPs const & ends) :
+            RNAStructure(structure, basepairs, ends) {}
+
     Pose(
-        StructureOP const & structure,
-        BasepairOPs const & basepairs,
-        BasepairOPs const & ends,
-        MotifOPs const & motifs):
-    RNAStructure(structure, basepairs, ends),
-    motifs_(motifs)
-    {}
-    
+            StructureOP const & structure,
+            BasepairOPs const & basepairs,
+            BasepairOPs const & ends,
+            MotifOPs const & motifs) :
+            RNAStructure(structure, basepairs, ends),
+            motifs_(motifs) {}
+
     Pose(
-        RNAStructureOP const & rs,
-        MotifOPs const & motifs):
-    motifs_(motifs) {
+            RNAStructureOP const & rs,
+            MotifOPs const & motifs) :
+            motifs_(motifs) {
         this->structure_ = rs->structure();
         this->basepairs_ = rs->basepairs();
-        this->ends_      = rs->ends();
-        this->end_ids_   = rs->end_ids();
-    
+        this->ends_ = rs->ends();
+        this->end_ids_ = rs->end_ids();
     }
-    
+
 public:
     MotifOPs const &
     helices() {
-        if(helices_.size() == 0) {
+        if (helices_.size() == 0) {
             _build_helices();
         }
         return helices_;
     }
-    
+
     MotifOPs const &
     motifs() { return motifs_; }
-    
+
     MotifOP
-    motif(util::Uuid const & uuid) {
-        for(auto const & m : motifs_) {
-            if(m->id() == uuid) { return m; }
+    motif(
+            util::Uuid const & uuid) {
+        for (auto const & m : motifs_) {
+            if (m->id() == uuid) { return m; }
         }
         return nullptr;
     }
-    
+
     void
     replace_sequence(
-        String const &);
-    
+            String const &);
+
     void
     update_motif(
-        util::Uuid const &);
+            util::Uuid const &);
 
-    
+
 private:
     void
     _build_helices();
-    
+
 private:
     MotifOPs motifs_;
     MotifOPs helices_;
 
-    
+
 };
 
 typedef std::shared_ptr<Pose> PoseOP;
-    
+
 }
 #endif /* defined(__RNAMake__pose__) */

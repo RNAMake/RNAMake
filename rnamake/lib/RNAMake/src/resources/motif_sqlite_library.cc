@@ -32,7 +32,7 @@ MotifSqliteLibrary::get_libnames() {
 }
 
 
-MotifOP
+motif::MotifOP
 MotifSqliteLibrary::get(
     String const & name,
     String const & end_id,
@@ -51,24 +51,24 @@ MotifSqliteLibrary::get(
 
     
     if(data_.find(row->id) == data_.end() ) {
-        data_[row->id] = std::make_shared<Motif>(row->data,
+        data_[row->id] = std::make_shared<motif::Motif>(row->data,
                                                  structure::ResidueTypeSetManager::getInstance().residue_type_set());
     }
     
-    auto m = std::make_shared<Motif>(*data_[row->id]);
+    auto m = std::make_shared<motif::Motif>(*data_[row->id]);
     m->new_res_uuids();
     return m;
     
 }
 
-MotifOPs
+motif::MotifOPs
 MotifSqliteLibrary::get_multi(
     String const & name,
     String const & end_id,
     String const & end_name,
     String const & id) {
     
-    auto motifs = MotifOPs();
+    auto motifs = motif::MotifOPs();
     auto query = _generate_query(name, end_id, end_name, id);
     connection_.query(query);
     auto row = connection_.next();
@@ -80,11 +80,11 @@ MotifSqliteLibrary::get_multi(
     
     while(row->data.length() != 0) {
         if(data_.find(row->id) == data_.end()) {
-            data_[row->id] = std::make_shared<Motif>(row->data,
+            data_[row->id] = std::make_shared<motif::Motif>(row->data,
                                                      structure::ResidueTypeSetManager::getInstance().residue_type_set());
         }
         
-        motifs.push_back(std::make_shared<Motif>(*data_[row->id]));
+        motifs.push_back(std::make_shared<motif::Motif>(*data_[row->id]));
         row = connection_.next();
     }
     
@@ -118,7 +118,7 @@ MotifSqliteLibrary::contains(
 
 
 
-MotifOP
+motif::MotifOP
 MotifSqliteLibrary::get_random() {
     int pos = 1 +rng_.randrange(max_size_-1);
     return get("", "", "", std::to_string(pos));

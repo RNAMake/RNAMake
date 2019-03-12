@@ -62,7 +62,7 @@ private:
     std::shared_ptr<MSS_Path>
     _setup_path();
 
-    std::vector<MotifStateOPs>
+    std::vector<motif::MotifStateOPs>
     _get_libraries();
 
 private:

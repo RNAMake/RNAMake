@@ -102,17 +102,17 @@ SampleHelixApp::_generate_structure(
     return structure;
 }
 
-MotifOPs
+motif::MotifOPs
 SampleHelixApp::get_motifs_from_seq_and_ss(
         String const & seq,
         String const & ss) {
 
     auto parser = secondary_structure::Parser();
     auto ss_motifs = parser.parse_to_motifs(seq, ss);
-    auto motifs = MotifOPs();
+    auto motifs = motif::MotifOPs();
 
     auto start = 0;
-    auto motif = MotifOP(nullptr);
+    auto motif = motif::MotifOP(nullptr);
     for(auto const & m : ss_motifs) {
         //basepair step
         if(m->mtype() == util::MotifType::HELIX) {

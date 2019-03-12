@@ -30,7 +30,7 @@ public:
     scorer_(std::make_shared<MotifStateSearchScorer>(MSS_Astar())),
     solutions_(MotifStateSearchSolutionOPs()),
     beads_(math::Points()),
-    aligner_(MotifStateAligner()),
+    aligner_(motif::MotifStateAligner()),
     lookup_(util::StericLookup()),
     using_lookup_(0),
     options_(base::Options()) {
@@ -146,7 +146,7 @@ private:
     MotifStateSearchScorerOP scorer_;
     MotifStateSearchNodeOP test_node_;
     MotifStateSearchSolutionOPs solutions_;
-    MotifStateAligner aligner_;
+    motif::MotifStateAligner aligner_;
     MotifStateandTypes possible_children_;
     util::StericLookup lookup_;
     math::Points beads_;

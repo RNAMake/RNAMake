@@ -97,7 +97,7 @@ SequenceOptimizationBenchmarks::run() {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
-std::vector<MotifStateOPs>
+std::vector<motif::MotifStateOPs>
 SequenceOptimizationBenchmarks::_get_libraries() {
 
     auto num = parameters_.motifs*2 + 1;
@@ -114,13 +114,13 @@ SequenceOptimizationBenchmarks::_get_libraries() {
         }
     }
 
-    auto libraries = std::vector<MotifStateOPs>();
-    auto motif_states = MotifStateOPs();
+    auto libraries = std::vector<motif::MotifStateOPs>();
+    auto motif_states = motif::MotifStateOPs();
     int i = 0;
     for(auto const & name : motif_lib_names) {
         auto ms_lib =  MotifStateSqliteLibrary(name);
         ms_lib.load_all();
-        motif_states = MotifStateOPs();
+        motif_states = motif::MotifStateOPs();
 
         if(motif_types[i] == util::MotifType::HELIX) {
             for (auto const & ms : ms_lib) {
@@ -144,7 +144,7 @@ SequenceOptimizationBenchmarks::_get_libraries() {
 MotifStateMonteCarloOP
 SequenceOptimizationBenchmarks::_get_search(
         SequenceOptProblemOP problem,
-        std::vector<MotifStateOPs> const & ms_libraries) {
+        std::vector<motif::MotifStateOPs> const & ms_libraries) {
 
     auto mc = std::make_shared<MotifStateMonteCarlo>(ms_libraries);
     mc->setup(problem->msg, problem->start.ni, problem->end.ni,

@@ -56,12 +56,12 @@ struct Pair {
 struct Segments {
     inline
     Segments(
-        MotifOP const & nremoved,
-        MotifOP const & nremaining):
+        motif::MotifOP const & nremoved,
+        motif::MotifOP const & nremaining):
         removed(nremoved),
         remaining(nremaining) {}
     
-    MotifOP removed, remaining;
+    motif::MotifOP removed, remaining;
 };
 
 typedef std::shared_ptr<Pair> PairOP;
@@ -230,7 +230,7 @@ private:
 class Segmenter {
 public:
     Segmenter():
-    mf_(MotifFactory()){}
+    mf_(motif::MotifFactory()){}
     
     ~Segmenter() {}
     
@@ -262,7 +262,7 @@ private:
     
 private:
     
-    MotifFactory mf_;
+    motif::MotifFactory mf_;
     PairOPs pairs_, end_pairs_;
     
 };

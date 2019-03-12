@@ -78,7 +78,7 @@ public:
         auto scorer = std::make_shared<MSS_PathFollow>(path);
         auto f_path = base::motif_dirs() + "ref.motif";
 
-        start_ = file_to_motif(f_path)->ends()[0];
+        start_ = motif::file_to_motif(f_path)->ends()[0];
         search_.setup(start_->state(), start_->state());
         search_.scorer(scorer);
         

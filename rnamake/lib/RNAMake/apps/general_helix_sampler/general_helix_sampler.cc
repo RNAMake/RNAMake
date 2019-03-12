@@ -53,17 +53,17 @@ GeneralHelixSampler::_generate_structure(
     return structure;
 }
 
-MotifOPs
+motif::MotifOPs
 GeneralHelixSampler::get_motifs_from_seq_and_ss(
         String const & seq,
         String const & ss) {
 
     auto parser = secondary_structure::Parser();
     auto ss_motifs = parser.parse_to_motifs(seq, ss);
-    auto motifs = MotifOPs();
+    auto motifs = motif::MotifOPs();
 
     auto start = 0;
-    auto motif = MotifOP(nullptr);
+    auto motif = motif::MotifOP(nullptr);
     for(auto const & m : ss_motifs) {
         //basepair step
         if(m->mtype() == util::MotifType::HELIX) {
@@ -98,7 +98,7 @@ GeneralHelixSampler::run() {
     }
     else {
         auto motif_file = get_string_option("motif");
-        auto m = file_to_motif(motif_file);
+        auto m = motif::file_to_motif(motif_file);
         start_bp = m->get_basepair(start_bp_str)[0];
         end_bp = m->get_basepair(end_bp_str)[0];
     }
@@ -107,7 +107,7 @@ GeneralHelixSampler::run() {
     start_bp->bp_type("cW-W");
     end_bp->bp_type("cW-W");
 
-    auto mf = MotifFactory();
+    auto mf = motif::MotifFactory();
     auto start = mf.motif_from_bps(structure::BasepairOPs{start_bp, end_bp});
     start->ends(structure::BasepairOPs{start_bp, end_bp});
     auto ref_m = mf.ref_motif();
@@ -174,7 +174,7 @@ GeneralHelixSampler::run() {
 
 int
 GeneralHelixSampler::_get_hit_count(
-        MotifOP const & start,
+        motif::MotifOP const & start,
         String const & seq,
         String const & ss) {
 

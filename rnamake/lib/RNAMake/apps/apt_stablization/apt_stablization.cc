@@ -168,20 +168,20 @@ APTStablization::run() {
 }
 
 
-std::vector<MotifStateOPs>
+std::vector<motif::MotifStateOPs>
 APTStablization::_get_libraries(
         String const & motif_path) {
     auto spl = base::split_str_by_delimiter(motif_path, ",");
     auto i = 0;
     auto libraries = std::vector<MotifStateOPs>();
-    auto motif_states = MotifStateOPs();
+    auto motif_states = motif::MotifStateOPs();
     for(auto const & name : spl) {
         if(name.length() < 2) { continue; }
         if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact" ||
            name == "twoway" || name == "flex_helices" || name == "existing") {
             auto ms_lib =  MotifStateSqliteLibrary(name);
             ms_lib.load_all();
-            motif_states = MotifStateOPs();
+            motif_states = motif::MotifStateOPs();
             if(name == "flex_helices") {
                 for (auto const & ms : ms_lib) {
                     if(ms->size() < 20) {
@@ -197,7 +197,7 @@ APTStablization::_get_libraries(
         }
         else {
             auto m = RM::instance().motif(name);
-            motif_states = MotifStateOPs();
+            motif_states = motif::MotifStateOPs();
 
             for(auto const & end : m->ends()) {
                 try {

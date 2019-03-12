@@ -7,10 +7,10 @@
 
 TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     
-    auto mf = MotifFactory();
+    auto mf = motif::MotifFactory();
     
     auto path = base::motif_dirs() + "ref.motif";
-    auto ref_m = file_to_motif(path);;
+    auto ref_m = motif::file_to_motif(path);;
     
     SECTION("test loading motif from pdb file") {
         auto path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6/p4p6.pdb";
@@ -28,11 +28,11 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
 
     SECTION("returns errors if file does not exist") {
-        REQUIRE_THROWS_AS(mf.motif_from_file("fake.pdb"), MotifFactoryException);
-        REQUIRE_THROWS_AS(mf.motif_from_file("fake"), MotifFactoryException);
+        REQUIRE_THROWS_AS(mf.motif_from_file("fake.pdb"), motif::MotifFactoryException);
+        REQUIRE_THROWS_AS(mf.motif_from_file("fake"), motif::MotifFactoryException);
         
         auto path = base::unittest_resource_dir() + "/motif/empty";
-        REQUIRE_THROWS_AS(mf.motif_from_file(path), MotifFactoryException);
+        REQUIRE_THROWS_AS(mf.motif_from_file(path), motif::MotifFactoryException);
     }
  
     SECTION("test standardizing motifs, i.e. making sure they all behave the same") {
@@ -72,7 +72,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         SECTION("will not have two basepair ends should throw error as user is not expecting this") {
         
             bps[1]->bp_type("c...");
-            REQUIRE_THROWS_AS(m_bps = mf.motif_from_bps(bps), MotifFactoryException);
+            REQUIRE_THROWS_AS(m_bps = mf.motif_from_bps(bps), motif::MotifFactoryException);
         
         }
         
@@ -92,8 +92,8 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         auto m = mf.motif_from_file(path);
 
         path = base::motif_dirs() + "base.motif";
-        auto base_motif_1 = file_to_motif(path);
-        auto base_motif_2 = file_to_motif(path);
+        auto base_motif_1 = motif::file_to_motif(path);
+        auto base_motif_2 = motif::file_to_motif(path);
 
         auto aligned_motif_1 = get_aligned_motif(base_motif_1->ends()[1], m->ends()[0], m);
         auto aligned_motif_2 = get_aligned_motif(aligned_motif_1->ends()[1], base_motif_2->ends()[0], base_motif_2);

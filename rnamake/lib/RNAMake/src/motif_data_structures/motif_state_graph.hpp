@@ -105,14 +105,14 @@ public: // add functions
     
     int
     add_state(
-            MotifStateOP const & state,
+            motif::MotifStateOP const & state,
             int parent_index=-1,
             int parent_end_index=-1,
             int orphan = 0);
     
     int
     add_state(
-        MotifStateOP const & state,
+        motif::MotifStateOP const & state,
         int parent_index,
         String const & parent_end_name);
     
@@ -126,7 +126,7 @@ public: // add functions
     void
     replace_state(
         int i,
-        MotifStateOP const &);
+        motif::MotifStateOP const &);
 
     void
     remove_state(int);

@@ -278,7 +278,7 @@ MotifStateSearchNodeOP
 MotifStateSearch::_start_node(
     structure::BasepairStateOP const & start_bp) {
     
-    auto ms = std::make_shared<MotifState>("start", Strings {"start", "start"},
+    auto ms = std::make_shared<motif::MotifState>("start", Strings {"start", "start"},
                                            Strings {"", ""},
                                            structure::BasepairStateOPs { start_bp, start_bp},
                                            math::Points(), 0, 0, 0);

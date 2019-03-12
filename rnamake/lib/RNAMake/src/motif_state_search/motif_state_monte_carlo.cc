@@ -219,8 +219,8 @@ MotifStateMonteCarlo::run() {
 
     auto score_num = 0;
     auto pos = 0;
-    auto new_ms = MotifStateOP(nullptr);
-    auto last_ms = MotifStateOP(nullptr);
+    auto new_ms = motif::MotifStateOP(nullptr);
+    auto last_ms = motif::MotifStateOP(nullptr);
     auto cur_score = get_score(msg_->last_node()->data()->cur_state->end_states()[1]);
     auto new_score = 0.0;
     auto best_score = cur_score;
@@ -333,8 +333,8 @@ MotifStateMonteCarlo::_steric_clash(
 float
 MotifStateMonteCarlo::perform_motif_swap(
         float cur_score) {
-    auto new_ms = MotifStateOP(nullptr);
-    auto last_ms = MotifStateOP(nullptr);
+    auto new_ms = motif::MotifStateOP(nullptr);
+    auto last_ms = motif::MotifStateOP(nullptr);
     auto pos = rng_.randrange((int)mses_.size() - 1);
     new_ms = mses_[pos][rng_.randrange((int) mses_[pos].size() - 1)];
     last_ms = msg_->get_node(pos+org_num_)->data()->cur_state;

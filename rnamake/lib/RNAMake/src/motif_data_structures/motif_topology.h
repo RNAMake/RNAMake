@@ -31,19 +31,19 @@ private:
     struct _GraphtoTreeNode {
         inline
         _GraphtoTreeNode(
-                data_structure::graph::GraphNodeOP<MotifOP> const & nparent,
+                data_structure::graph::GraphNodeOP<motif::MotifOP> const & nparent,
                 int nparent_end_index,
-                data_structure::graph::GraphNodeOP<MotifOP> const & nnode,
-                MotifOP nmotif) :
+                data_structure::graph::GraphNodeOP<motif::MotifOP> const & nnode,
+                motif::MotifOP nmotif) :
                 parent(nparent),
                 parent_end_index(nparent_end_index),
                 node(nnode),
                 motif(nmotif) {}
 
-        data_structure::graph::GraphNodeOP <MotifOP> parent;
+        data_structure::graph::GraphNodeOP <motif::MotifOP> parent;
         int parent_end_index;
-        data_structure::graph::GraphNodeOP <MotifOP> node;
-        MotifOP motif;
+        data_structure::graph::GraphNodeOP <motif::MotifOP> node;
+        motif::MotifOP motif;
     };
 
     typedef std::shared_ptr<_GraphtoTreeNode> _GraphtoTreeNodeOP;
@@ -54,20 +54,20 @@ public:
     MotifTreeOP
     convert(
             MotifGraphOP const & mg,
-            data_structure::graph::GraphNodeOP<MotifOP> start = nullptr,
+            data_structure::graph::GraphNodeOP<motif::MotifOP> start = nullptr,
             int start_end_index = -1,
-            data_structure::graph::GraphNodeOP<MotifOP> last_node = nullptr);
+            data_structure::graph::GraphNodeOP<motif::MotifOP> last_node = nullptr);
 
 private:
     _GraphtoTreeNodeOP
     _get_start_node(
             MotifGraphOP const &,
-            data_structure::graph::GraphNodeOP<MotifOP> const &,
+            data_structure::graph::GraphNodeOP<motif::MotifOP> const &,
             int);
 
-    MotifOP
+    motif::MotifOP
     _get_reoriented_motif(
-            MotifOP const &,
+            motif::MotifOP const &,
             int);
 
     _GraphtoTreeNodeOPs
@@ -76,8 +76,8 @@ private:
 
     int
     _get_new_parent_end_index(
-            data_structure::graph::GraphNodeOP<MotifOP> const &,
-            data_structure::graph::GraphConnectionOP<MotifOP> const &);
+            data_structure::graph::GraphNodeOP<motif::MotifOP> const &,
+            data_structure::graph::GraphConnectionOP<motif::MotifOP> const &);
 
 private:
     MotifTreeOP mt_;
@@ -86,7 +86,7 @@ private:
 MotifTreeOP
 graph_to_tree(
         MotifGraphOP const & mg,
-        data_structure::graph::GraphNodeOP<MotifOP> start = nullptr,
+        data_structure::graph::GraphNodeOP<motif::MotifOP> start = nullptr,
         structure::BasepairOP last_end = nullptr);
 
 

@@ -14,7 +14,7 @@
 
 
 MotifTree::MotifTree():
-    tree_(data_structure::tree::TreeStatic<MotifOP>()),
+    tree_(data_structure::tree::TreeStatic<motif::MotifOP>()),
     merger_(nullptr),
     update_merger_(1),
     connections_(MotifConnections()),
@@ -22,7 +22,7 @@ MotifTree::MotifTree():
 
 MotifTree::MotifTree(
     String const & s):
-    tree_(data_structure::tree::TreeStatic<MotifOP>()),
+    tree_(data_structure::tree::TreeStatic<motif::MotifOP>()),
     merger_(nullptr),
     update_merger_(1),
     connections_(MotifConnections()),
@@ -38,7 +38,7 @@ MotifTree::MotifTree(
     for(auto const & e : node_spl) {
         i++;
         auto n_spl = base::split_str_by_delimiter(e, ",");
-        auto m = MotifOP(nullptr);
+        auto m = motif::MotifOP(nullptr);
         
         try {
             m = RM::instance().motif(n_spl[0], n_spl[2], n_spl[1]);
@@ -80,7 +80,7 @@ MotifTree::MotifTree(
 MotifTree::MotifTree(
         String const & s,
         MotifTreeStringType type):
-        tree_(data_structure::tree::TreeStatic<MotifOP>()),
+        tree_(data_structure::tree::TreeStatic<motif::MotifOP>()),
         merger_(nullptr),
         update_merger_(1),
         connections_(MotifConnections()),
@@ -95,11 +95,11 @@ MotifTree::MotifTree(
 
 MotifTree::MotifTree(
     MotifTree const & mt):
-    tree_(data_structure::tree::TreeStatic<MotifOP>(mt.tree_)) {
-    auto motifs = MotifOPs();
+    tree_(data_structure::tree::TreeStatic<motif::MotifOP>(mt.tree_)) {
+    auto motifs = motif::MotifOPs();
     // dear god this is horrible but cant figure out a better way to do a copy
     for(auto const & n : mt) {
-        tree_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
+        tree_.get_node(n->index())->data() = std::make_shared<motif::Motif>(*n->data());
         motifs.push_back(tree_.get_node(n->index())->data());
     }
     options_ = base::Options(mt.options_);
@@ -117,7 +117,7 @@ MotifTree::_setup_from_str(
     for(auto const & n_str : node_spl) {
         if(n_str.length() < 10) { break; }
         auto n_spl = base::split_str_by_delimiter(n_str, "^");
-        auto m = std::make_shared<Motif>(n_spl[0],
+        auto m = std::make_shared<motif::Motif>(n_spl[0],
                                          structure::ResidueTypeSetManager::getInstance().residue_type_set());
         try {
             auto m2 = RM::instance().motif(m->name());
@@ -144,7 +144,7 @@ MotifTree::_setup_from_str(
 
 //add functions ////////////////////////////////////////////////////////////////////////////////////
 
-data_structure::tree::TreeNodeOP<MotifOP>
+data_structure::tree::TreeNodeOP<motif::MotifOP>
 MotifTree::_get_parent(
     int parent_index) {
     
@@ -165,7 +165,7 @@ MotifTree::_get_parent(
 
 Ints
 MotifTree::_get_available_parent_end_pos(
-    data_structure::tree::TreeNodeOP<MotifOP> const & parent,
+    data_structure::tree::TreeNodeOP<motif::MotifOP> const & parent,
     int parent_end_index) {
     
     auto avail_pos = Ints();
@@ -215,7 +215,7 @@ MotifTree::_get_available_parent_end_pos(
 }
 
 int
-MotifTree::_steric_clash(MotifOP const & m) {
+MotifTree::_steric_clash(motif::MotifOP const & m) {
     float dist = 0;
     for(auto const & n : tree_) {
         for(auto const & c1 : n->data()->beads()) {
@@ -232,7 +232,7 @@ MotifTree::_steric_clash(MotifOP const & m) {
 
 int
 MotifTree::_get_connection_end(
-    data_structure::tree::TreeNodeOP<MotifOP> const & node,
+    data_structure::tree::TreeNodeOP<motif::MotifOP> const & node,
     String const & bp_name) {
     
     int node_end_index = -1;
@@ -283,7 +283,7 @@ MotifTree::_get_connection_end(
 
 int
 MotifTree::add_motif(
-    MotifOP const & m,
+    motif::MotifOP const & m,
     int parent_index,
     String parent_end_name) {
     
@@ -304,7 +304,7 @@ MotifTree::add_motif(
 
 int
 MotifTree::add_motif(
-    MotifOP const & m,
+    motif::MotifOP const & m,
     int parent_index,
     int parent_end_index) {
     
@@ -319,7 +319,7 @@ MotifTree::add_motif(
     auto parent = _get_parent(parent_index);
     
     if(parent == nullptr) {
-        auto m_copy = std::make_shared<Motif>(*m);
+        auto m_copy = std::make_shared<motif::Motif>(*m);
         m_copy->get_beads(m_copy->ends()[0]);
         int pos = tree_.add_data(m_copy, (int)m_copy->ends().size(), -1, -1);
         return pos;
@@ -347,8 +347,8 @@ MotifTree::add_connection(
     String const & i_bp_name,
     String const & j_bp_name) {
     
-    auto node_i = data_structure::tree::TreeNodeOP<MotifOP>(nullptr);
-    auto node_j = data_structure::tree::TreeNodeOP<MotifOP>(nullptr);
+    auto node_i = data_structure::tree::TreeNodeOP<motif::MotifOP>(nullptr);
+    auto node_j = data_structure::tree::TreeNodeOP<motif::MotifOP>(nullptr);
 
     try {  node_i = tree_.get_node(i); }
     catch(data_structure::tree::TreeException) {
@@ -405,7 +405,7 @@ MotifTree::remove_node_level(
     
     if(level == -1) { level = tree_.level(); }
     
-    auto remove = data_structure::tree::TreeNodeOPs<MotifOP>();
+    auto remove = data_structure::tree::TreeNodeOPs<motif::MotifOP>();
     for(auto const & n : tree_) {
         if(n->level() >= level) {
             remove.push_back(n);

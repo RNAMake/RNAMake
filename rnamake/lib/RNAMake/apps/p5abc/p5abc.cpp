@@ -34,7 +34,7 @@ void
 setup_motif() {
     auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/p5abc/";
     
-    auto mf = MotifFactory();
+    auto mf = motif::MotifFactory();
     auto m = mf.motif_from_file(base_path+"p4p6_start.pdb");
     m->block_end_add(-1);
     m->ends()[0]->flip();
@@ -61,8 +61,8 @@ int main(int argc, const char * argv[]) {
     
 
     auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/p5abc/";
-    auto m = file_to_motif(base_path+"start.motif");
-    auto m_clash_section = file_to_motif(base_path+"clash_section.motif");
+    auto m = motif::file_to_motif(base_path+"start.motif");
+    auto m_clash_section = motif::file_to_motif(base_path+"clash_section.motif");
     
     ResourceManager::getInstance().register_motif(m);
     

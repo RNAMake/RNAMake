@@ -12,7 +12,7 @@
 
 MotifStateTree::MotifStateTree():
     tree_(data_structure::tree::TreeStatic<MSNodeDataOP>()),
-    aligner_(MotifStateAligner()),
+    aligner_(motif::MotifStateAligner()),
     queue_(std::queue<MotifStateTreeNodeOP>()),
     connections_(MotifConnections()),
     options_(base::Options()) {
@@ -56,7 +56,7 @@ MotifStateTree::MotifStateTree(
 
 MotifStateTree::MotifStateTree(
     MotifStateTree const & mst):
-    aligner_(MotifStateAligner()),
+    aligner_(motif::MotifStateAligner()),
     queue_(std::queue<MotifStateTreeNodeOP>()),
     options_(base::Options(mst.options_)),
     connections_(MotifConnections(mst.connections_)),
@@ -82,7 +82,7 @@ MotifStateTree::MotifStateTree(
     for(auto const & e : node_spl) {
         i++;
         auto n_spl = base::split_str_by_delimiter(e, ",");
-        auto ms = MotifStateOP(nullptr);
+        auto ms = motif::MotifStateOP(nullptr);
         
         try {
             ms = RM::instance().motif_state(n_spl[0], n_spl[2], n_spl[1]);
@@ -205,7 +205,7 @@ MotifStateTree::_get_parent_index_from_name(
     try{
         parent_end_index = parent->data()->get_end_index(parent_end_name);
     }
-    catch(MotifStateException) {
+    catch(motif::MotifStateException) {
         throw MotifStateTreeException(
             "cannot find parent_end_name: " + parent_end_name + " while trying to "
             "add a state to tree");
@@ -306,7 +306,7 @@ MotifStateTree::_get_connection_end(
 
 int
 MotifStateTree::add_state(
-    MotifStateOP const & state,
+    motif::MotifStateOP const & state,
     int parent_index,
     int parent_end_index) {
     
@@ -345,7 +345,7 @@ MotifStateTree::add_state(
 
 int
 MotifStateTree::add_state(
-    MotifStateOP const & state,
+    motif::MotifStateOP const & state,
     int parent_index,
     String const & parent_end_name) {
     
@@ -446,7 +446,7 @@ MotifStateTree::add_connection(
 void
 MotifStateTree::replace_state(
     int i,
-    MotifStateOP const & new_state) {
+    motif::MotifStateOP const & new_state) {
     
     auto n = tree_.get_node(i);
     if(new_state->end_states().size() != n->data()->ref_state->end_states().size()) {
@@ -456,7 +456,7 @@ MotifStateTree::replace_state(
     
     auto old_state = n->data()->ref_state;
     n->data()->ref_state = new_state;
-    n->data()->cur_state = std::make_shared<MotifState>(*new_state);
+    n->data()->cur_state = std::make_shared<motif::MotifState>(*new_state);
     n->data()->uuid(old_state->uuid());
     
     for(int i = 0; i < new_state->end_states().size(); i++) {
@@ -575,7 +575,7 @@ MotifStateTree::to_motif_tree() {
     int parent_index = -1, parent_end_index = -1;
     for(auto const & n : tree_) {
         i++;
-        MotifOP m;
+        motif::MotifOP m;
         /*if(n->data()->ref_state->name() != "") {
             m = RM::instance().motif(n->data()->ref_state->name(), n->data()->ref_state->end_ids()[0]);
         }

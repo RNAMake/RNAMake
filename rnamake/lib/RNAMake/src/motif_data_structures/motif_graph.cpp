@@ -17,14 +17,14 @@
 
 
 MotifGraph::MotifGraph():
-    graph_(data_structure::graph::GraphStatic<MotifOP>()),
+    graph_(data_structure::graph::GraphStatic<motif::MotifOP>()),
     merger_(nullptr),
     clash_radius_(2.5),
     sterics_(1),
     options_(base::Options()),
     update_merger_(1),
     update_align_list_(1),
-    align_list_(data_structure::graph::GraphNodeOPs<MotifOP>()),
+    align_list_(data_structure::graph::GraphNodeOPs<motif::MotifOP>()),
     aligned_(std::map<int, int>()) {  setup_options(); }
 
 
@@ -83,7 +83,7 @@ MotifGraph::_setup_from_str(String const & s) {
     for(auto const & n_str : node_spl) {
         if(n_str.length() < 10) { break; }
         auto n_spl = base::split_str_by_delimiter(n_str, "^");
-        auto m = std::make_shared<Motif>(n_spl[0],
+        auto m = std::make_shared<motif::Motif>(n_spl[0],
                                          structure::ResidueTypeSetManager::getInstance().residue_type_set());
         
         try {
@@ -122,11 +122,11 @@ MotifGraph::_setup_from_str(String const & s) {
 MotifGraph::MotifGraph(
     MotifGraph const & mg):
     options_(base::Options()),
-    graph_(data_structure::graph::GraphStatic<MotifOP>(mg.graph_)) {
+    graph_(data_structure::graph::GraphStatic<motif::MotifOP>(mg.graph_)) {
         
     // dear god this is horrible but cant figure out a better way to do a copy
     for(auto const & n : mg.graph_.nodes()) {
-        graph_.get_node(n->index())->data() = std::make_shared<Motif>(*n->data());
+        graph_.get_node(n->index())->data() = std::make_shared<motif::Motif>(*n->data());
     }
         
     options_ = base::Options(mg.options_);
@@ -147,7 +147,7 @@ MotifGraph::update_indexes(std::map<int, int> const & index_hash) {
     
     auto largest = 0;
     auto new_aligned = std::map<int, int>();
-    auto nodes = data_structure::graph::GraphNodeOPs<MotifOP>();
+    auto nodes = data_structure::graph::GraphNodeOPs<motif::MotifOP>();
     for(auto const & kv : invert_hash) {
         auto n = get_node(kv.first);
         nodes.push_back(n);
@@ -172,7 +172,7 @@ MotifGraph::update_indexes(std::map<int, int> const & index_hash) {
 //add function helpers /////////////////////////////////////////////////////////////////////////////
 
 
-data_structure::graph::GraphNodeOP<MotifOP>
+data_structure::graph::GraphNodeOP<motif::MotifOP>
 MotifGraph::_get_parent(
     String const & m_name,
     int parent_index) {
@@ -194,7 +194,7 @@ MotifGraph::_get_parent(
 
 Ints
 MotifGraph::_get_available_parent_end_pos(
-    data_structure::graph::GraphNodeOP<MotifOP> const & parent,
+    data_structure::graph::GraphNodeOP<motif::MotifOP> const & parent,
     int parent_end_index) {
     
     auto avail_pos = Ints();
@@ -231,8 +231,8 @@ MotifGraph::_get_available_parent_end_pos(
 
 int
 MotifGraph::_add_motif_to_graph(
-    MotifOP & m,
-    data_structure::graph::GraphNodeOP<MotifOP> const & parent,
+    motif::MotifOP & m,
+    data_structure::graph::GraphNodeOP<motif::MotifOP> const & parent,
     int parent_end_index) {
     
     m->new_res_uuids();
@@ -266,7 +266,7 @@ MotifGraph::_add_motif_to_graph(
 }
 
 int
-MotifGraph::_steric_clash(MotifOP const & m) {
+MotifGraph::_steric_clash(motif::MotifOP const & m) {
     float dist = 0;
     for(auto const & n : graph_) {
         for(auto const & c1 : n->data()->beads()) {
@@ -283,7 +283,7 @@ MotifGraph::_steric_clash(MotifOP const & m) {
 
 int
 MotifGraph::_get_connection_end(
-    data_structure::graph::GraphNodeOP<MotifOP> const & node,
+    data_structure::graph::GraphNodeOP<motif::MotifOP> const & node,
     String const & bp_name) {
     
     int node_end_index = -1;
@@ -350,7 +350,7 @@ MotifGraph::_align_motifs_all_motifs() {
 
 int
 MotifGraph::add_motif(
-    MotifOP const & m,
+    motif::MotifOP const & m,
     int parent_index,
     String const & p_end_name) {
     
@@ -382,7 +382,7 @@ MotifGraph::add_motif(
 
 int
 MotifGraph::add_motif(
-    MotifOP const & m,
+    motif::MotifOP const & m,
     int parent_index,
     int parent_end_index,
     int orphan) {
@@ -398,7 +398,7 @@ MotifGraph::add_motif(
     auto parent = _get_parent(m->name(), parent_index);
 
     if(parent == nullptr || orphan) {
-        auto m_copy = std::make_shared<Motif>(*m);
+        auto m_copy = std::make_shared<motif::Motif>(*m);
         m_copy->get_beads(m_copy->ends()[0]);
         return _add_motif_to_graph(m_copy, nullptr, -1);
     }
@@ -474,8 +474,8 @@ MotifGraph::add_connection(
     String const & i_bp_name,
     String const & j_bp_name) {
     
-    auto node_i = data_structure::graph::GraphNodeOP<MotifOP>(nullptr);
-    auto node_j = data_structure::graph::GraphNodeOP<MotifOP>(nullptr);
+    auto node_i = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
+    auto node_j = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
     
     try {  node_i = graph_.get_node(i); }
     catch(data_structure::graph::GraphException) {
@@ -542,9 +542,9 @@ MotifGraph::replace_ideal_helices() {
             
             found = 1;
             
-            auto parent = data_structure::graph::GraphNodeOP<MotifOP>(nullptr);
+            auto parent = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
             auto parent_end_index = 0;
-            auto other  = data_structure::graph::GraphNodeOP<MotifOP>(nullptr);
+            auto other  = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
             auto other_end_index = 0;
             
             if(n->connections()[0] != nullptr) {
@@ -741,14 +741,14 @@ MotifGraph::_update_align_list() {
     if(!update_align_list_) { return; }
     
     auto non_aligned_nodes = unaligned_nodes();
-    auto open = std::queue<data_structure::graph::GraphNodeOP<MotifOP>>();
-    auto used_nodes = std::map<data_structure::graph::GraphNodeOP<MotifOP>, int>();
+    auto open = std::queue<data_structure::graph::GraphNodeOP<motif::MotifOP>>();
+    auto used_nodes = std::map<data_structure::graph::GraphNodeOP<motif::MotifOP>, int>();
 
-    align_list_ = data_structure::graph::GraphNodeOPs<MotifOP>();
+    align_list_ = data_structure::graph::GraphNodeOPs<motif::MotifOP>();
     
     for(auto const & start : non_aligned_nodes) {
         open.push(start);
-        auto seen_nodes = std::map<data_structure::graph::GraphNodeOP<MotifOP>, int>();
+        auto seen_nodes = std::map<data_structure::graph::GraphNodeOP<motif::MotifOP>, int>();
 
         while (!open.empty()) {
             auto n = open.front();
@@ -803,7 +803,7 @@ MotifGraph::_update_merger() {
     _update_align_list();
     merger_ = std::make_shared<MotifMerger>();
     auto non_aligned_nodes = unaligned_nodes();
-    auto seen_connections = std::map<data_structure::graph::GraphConnectionOP<MotifOP>, int>();
+    auto seen_connections = std::map<data_structure::graph::GraphConnectionOP<motif::MotifOP>, int>();
     
     for(auto const & n : align_list_) {
         if(std::find(non_aligned_nodes.begin(), non_aligned_nodes.end(), n) != non_aligned_nodes.end() ) {
@@ -874,7 +874,7 @@ MotifGraph::get_available_end(
     String const & m_name,
     String const & end_name) {
     
-    auto node = data_structure::graph::GraphNodeOP<MotifOP>(nullptr);
+    auto node = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
     for(auto const & n : graph_.nodes()) {
         if(n->data()->name() == m_name) {
             if(node != nullptr) {
@@ -924,9 +924,9 @@ MotifGraph::get_available_end(
     
 }
 
-data_structure::graph::GraphNodeOPs<MotifOP> const
+data_structure::graph::GraphNodeOPs<motif::MotifOP> const
 MotifGraph::unaligned_nodes() const {
-    auto nodes = data_structure::graph::GraphNodeOPs<MotifOP>();
+    auto nodes = data_structure::graph::GraphNodeOPs<motif::MotifOP>();
     for(auto const & kv : aligned_) {
         if(kv.second == 0) { nodes.push_back(get_node(kv.first)); }
     }

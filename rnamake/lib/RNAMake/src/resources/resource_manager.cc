@@ -10,100 +10,100 @@
 #include "structure/residue_type_set_manager.h"
 
 RM::RM() {
-    mf_ = MotifFactory();
+    mf_ = motif::MotifFactory();
     added_motifs_ = AddedMotifLibrary();
     mlibs_ = std::map<String, MotifSqliteLibraryOP>();
     ms_libs_ = std::map<String, MotifStateSqliteLibraryOP>();
     mse_libs_ = std::map<String, MotifStateEnsembleSqliteLibraryOP>();
-    extra_me_ = std::map<String, MotifEnsembleOP>();
-    
-    for(auto const & kv : MotifSqliteLibrary::get_libnames()) {
+    extra_me_ = std::map<String, motif::MotifEnsembleOP>();
+
+    for (auto const & kv : MotifSqliteLibrary::get_libnames()) {
         //if(kv.first == "bp_steps") { continue; }
         mlibs_[kv.first] = std::make_shared<MotifSqliteLibrary>(kv.first);
     }
-    
-    for(auto const & kv : MotifStateSqliteLibrary::get_libnames()) {
+
+    for (auto const & kv : MotifStateSqliteLibrary::get_libnames()) {
         //if(kv.first == "bp_steps") { continue; }
         ms_libs_[kv.first] = std::make_shared<MotifStateSqliteLibrary>(kv.first);
     }
-    
-    for(auto const & kv : MotifStateEnsembleSqliteLibrary::get_libnames()) {
+
+    for (auto const & kv : MotifStateEnsembleSqliteLibrary::get_libnames()) {
         mse_libs_[kv.first] = std::make_shared<MotifStateEnsembleSqliteLibrary>(kv.first);
     }
-    
+
 }
 
 
 // getting functions  //////////////////////////////////////////////////////////////////////////////
 
-MotifOP
+motif::MotifOP
 RM::bp_step(
-    String const & end_id) {
+        String const & end_id) {
     return mlibs_["new_bp_steps"]->get("", end_id);
 }
 
-MotifStateOP
+motif::MotifStateOP
 RM::bp_step_state(
-    String const & end_id) {
+        String const & end_id) {
     return bp_step(end_id)->get_state();
 }
 
-MotifOP
+motif::MotifOP
 RM::motif(
-    String const & name,
-    String const & end_id,
-    String const & end_name) {
-    
-    for(auto const & kv : mlibs_) {
-        if(kv.second->contains(name, end_id, end_name)) {
+        String const & name,
+        String const & end_id,
+        String const & end_name) {
+
+    for (auto const & kv : mlibs_) {
+        if (kv.second->contains(name, end_id, end_name)) {
             return kv.second->get(name, end_id, end_name);
         }
     }
-    
-    if(added_motifs_.contains(name, end_id, end_name)) {
+
+    if (added_motifs_.contains(name, end_id, end_name)) {
         return added_motifs_.get(name, end_id, end_name);
     }
-    
+
     throw ResourceManagerException(
-        "cannot find motif in resource manager with search: "
-        "name=" + name + " end_id=" + end_id + " end_name= " + end_name);
-    
+            "cannot find motif in resource manager with search: "
+                    "name=" + name + " end_id=" + end_id + " end_name= " + end_name);
+
 }
 
-MotifStateOP
+motif::MotifStateOP
 RM::motif_state(
-    String const & name,
-    String const & end_id,
-    String const & end_name) {
+        String const & name,
+        String const & end_id,
+        String const & end_name) {
 
-    for(auto const & kv : ms_libs_) {
-        if(kv.second->contains(name, end_id, end_name)) {
+    for (auto const & kv : ms_libs_) {
+        if (kv.second->contains(name, end_id, end_name)) {
             return kv.second->get(name, end_id, end_name);
         }
     }
-    
-    if(added_motifs_.contains(name, end_id, end_name)) {
+
+    if (added_motifs_.contains(name, end_id, end_name)) {
         return added_motifs_.get(name, end_id, end_name)->get_state();
     }
-    
+
     throw ResourceManagerException(
-        "cannot find motif state in resource manager with search: "
-        "name=" + name + " end_id=" + end_id + " end_name= " + end_name);
+            "cannot find motif state in resource manager with search: "
+                    "name=" + name + " end_id=" + end_id + " end_name= " + end_name);
 }
 
-MotifStateEnsembleOP
+motif::MotifStateEnsembleOP
 RM::motif_state_ensemble(
-    String const & name) {
-    
-    for(auto const & kv : mse_libs_) {
-        if(kv.second->contains(name)) {
+        String const & name) {
+
+    for (auto const & kv : mse_libs_) {
+        if (kv.second->contains(name)) {
             return kv.second->get(name);
         }
     }
-    
+
     throw ResourceManagerException(
-        "cannot find motif state ensemble in resource manager with search: "
-        "name=" + name);
+            "cannot find motif state ensemble in resource manager with search: "
+                    "name=" + name);
 }
 
 
@@ -114,27 +114,27 @@ RM::get_structure(
         String const & path,
         String name,
         int force_num_chains) {
-    
-    auto m = mf_.motif_from_file(path, false, false, force_num_chains);
-    if(name != "") { m->name(name); }
 
-    for(auto & end : m->ends()) {
+    auto m = mf_.motif_from_file(path, false, false, force_num_chains);
+    if (name != "") { m->name(name); }
+
+    for (auto & end : m->ends()) {
         int flip_res = 0;
         for (auto const & c : m->chains()) {
-            if(c->first() == end->res2()) {
+            if (c->first() == end->res2()) {
                 flip_res = 1;
                 break;
             }
         }
-        
-        if(!flip_res) { continue; }
-        
+
+        if (!flip_res) { continue; }
+
         auto temp = end->res1();
         end->res1(end->res2());
         end->res2(temp);
     }
-    
-    
+
+
     return m;
 }
 
@@ -148,70 +148,70 @@ RM::add_motif(
     auto m = mf_.motif_from_file(path, 0, 1);
     m->mtype(mtype);
 
-    if(name != "") { m->name(name); }
-    
-    MotifOPs motifs;
+    if (name != "") { m->name(name); }
+
+    motif::MotifOPs motifs;
     std::map<util::Uuid, String, util::UuidCompare> end_ids;
-    for( int i = 0; i < m->ends().size(); i++) {
+    for (int i = 0; i < m->ends().size(); i++) {
         auto m_added = mf_.get_oriented_motif(m, i);
 
         motifs.push_back(m_added);
         end_ids[m_added->ends()[0]->uuid()] = m_added->end_ids()[0];
     }
-    
-    if(motifs.size() == 0) {
+
+    if (motifs.size() == 0) {
         throw ResourceManagerException(
-            "attempted to add motif from path " + path + " unforunately it has no viable "
-            "basepair ends to be build from ");
+                "attempted to add motif from path " + path + " unforunately it has no viable "
+                        "basepair ends to be build from ");
     }
-    
-    for(auto & m : motifs) {
+
+    for (auto & m : motifs) {
         Strings final_end_ids;
-        for(auto const & end : m->ends()) {
+        for (auto const & end : m->ends()) {
             final_end_ids.push_back(end_ids[end->uuid()]);
         }
         m->end_ids(final_end_ids);
         added_motifs_.add_motif(m);
     }
-    
+
 }
 
 void
 RM::add_motif(
-    MotifOP const & m,
-    String name) {
-    
-    if(name != "") { m->name(name); }
-    
-    MotifOPs motifs;
-    std::map<util::Uuid, String, util::UuidCompare> end_ids;
-    for( int i = 0; i < m->ends().size(); i++) {
+        motif::MotifOP const & m,
+        String name) {
+
+    if (name != "") { m->name(name); }
+
+    auto motifs = motif::MotifOPs();
+    auto end_ids = std::map<util::Uuid, String, util::UuidCompare>();
+    for (int i = 0; i < m->ends().size(); i++) {
         auto m_added = mf_.can_align_motif_to_end(m, i);
-        if(m_added == nullptr) {
+        if (m_added == nullptr) {
             std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
             std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
             continue;
         }
         m_added = mf_.align_motif_to_common_frame(m_added, i);
-        if(m_added == nullptr) {
+        if (m_added == nullptr) {
             std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
             std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
             continue;
         }
-        
+
         motifs.push_back(m_added);
         end_ids[m_added->ends()[0]->uuid()] = m_added->end_ids()[0];
     }
-    
-    if(motifs.size() == 0) {
+
+    if (motifs.size() == 0) {
         throw ResourceManagerException(
-            "attempted to add motif " + m->name() + " unforunately it has no viable "
-            "basepair ends to be build from ");
+                "attempted to add motif " + m->name() + " unforunately it has no viable "
+                        "basepair ends to be build from ");
     }
-    
-    for(auto & m : motifs) {
-        Strings final_end_ids;
-        for(auto const & end : m->ends()) {
+
+    for (auto & m : motifs) {
+        auto final_end_ids = Strings();
+        for (auto const & end : m->ends()) {
             final_end_ids.push_back(end_ids[end->uuid()]);
         }
         m->end_ids(final_end_ids);
@@ -220,72 +220,70 @@ RM::add_motif(
 }
 
 
-
 void
 RM::register_motif(
-    MotifOP const & m) {
-    
+        motif::MotifOP const & m) {
+
     /*if(m->name() == "") {
         throw ResourceManagerException(
             "attempted to register motif with no name this will make it "
             "extremely unlikely you will be able to retrieve it properly!");
     }*/
-    
-    added_motifs_.add_motif(m);
-    
 
-    
+    added_motifs_.add_motif(m);
+
+
 }
 
 void
 RM::register_extra_motif_ensembles(
-    String const & f_name) {
-    
+        String const & f_name) {
+
     auto lines = base::get_lines_from_file(f_name);
-    
-    for(auto const & l : lines) {
-        if(l.length() < 10) { continue; }
+
+    for (auto const & l : lines) {
+        if (l.length() < 10) { continue; }
         auto spl = base::split_str_by_delimiter(l, "!!");
-        extra_me_[spl[0]] = std::make_shared<MotifEnsemble>(spl[1],
-            structure::ResidueTypeSetManager::getInstance().residue_type_set());
-        
-        for(auto const & mem : extra_me_[spl[0]]->members()) {
-            try{
+        extra_me_[spl[0]] = std::make_shared<motif::MotifEnsemble>(spl[1],
+                                                            structure::ResidueTypeSetManager::getInstance().residue_type_set());
+
+        for (auto const & mem : extra_me_[spl[0]]->members()) {
+            try {
                 added_motifs_.add_motif(mem->motif);
-            } catch(AddedMotifLibraryException) { }
+            } catch (AddedMotifLibraryException) {}
         }
-        
-        std::cout << "RESOURCE MANAGER: motif ensemble for " <<  spl[0] << " registered" << std::endl;
+
+        std::cout << "RESOURCE MANAGER: motif ensemble for " << spl[0] << " registered" << std::endl;
     }
-    
+
 }
 
 int
 RM::has_supplied_motif_ensemble(
-    String const & m_name,
-    String const & end_name) {
-    
+        String const & m_name,
+        String const & end_name) {
+
     auto key = m_name + "-" + end_name;
-    if(extra_me_.find(key) == extra_me_.end()) { return 0; }
-    else                                       { return 1; }
-    
+    if (extra_me_.find(key) == extra_me_.end()) { return 0; }
+    else { return 1; }
+
 }
 
-MotifEnsembleOP const &
+motif::MotifEnsembleOP const &
 RM::get_supplied_motif_ensemble(
-    String const & m_name,
-    String const & end_name) {
-    
+        String const & m_name,
+        String const & end_name) {
+
     auto key = m_name + "-" + end_name;
-    if(extra_me_.find(key) == extra_me_.end()) {
+    if (extra_me_.find(key) == extra_me_.end()) {
         throw ResourceManagerException(
-            "motif ensemble with name: " + m_name + " and end_name: " + end_name +
-            " has not been supplied please use register_extra_motif_ensembles to "
-            "do so");
+                "motif ensemble with name: " + m_name + " and end_name: " + end_name +
+                " has not been supplied please use register_extra_motif_ensembles to "
+                        "do so");
     }
-    
+
     return extra_me_[key];
-    
+
 }
 
 

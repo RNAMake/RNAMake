@@ -25,129 +25,127 @@
 class ResourceManagerException : public std::runtime_error {
 public:
     ResourceManagerException(
-        String const & message) :
-    std::runtime_error(message)
-    {}
+            String const & message) :
+            std::runtime_error(message) {}
 };
 
 
 class RM { //RM for ResourceManager
 protected:
-    
+
     RM();
-    
+
     RM(RM const &); //Prevent construction
-    void operator= (RM const &);
-    
+    void operator=(RM const &);
+
 private:
 
     ~RM() {}
-    
+
 public:
-    
+
     static RM & instance() {
         static RM instance;
         return instance;
     }
 
 public: // getting functions
-    MotifOP
+    motif::MotifOP
     bp_step(
-        String const &);
-    
-    MotifStateOP
+            String const &);
+
+    motif::MotifStateOP
     bp_step_state(
-        String const &);
-    
-    MotifOP
+            String const &);
+
+    motif::MotifOP
     motif(
-        String const & name = dummy_name,
-        String const & end_id = dummy_end_id,
-        String const & end_name = dummy_name);
-    
-    MotifStateOP
+            String const & name = dummy_name,
+            String const & end_id = dummy_end_id,
+            String const & end_name = dummy_name);
+
+    motif::MotifStateOP
     motif_state(
-        String const & name = dummy_name,
-        String const & end_id = dummy_end_id,
-        String const & end_name = dummy_name);
-    
-    MotifStateEnsembleOP
+            String const & name = dummy_name,
+            String const & end_id = dummy_end_id,
+            String const & end_name = dummy_name);
+
+    motif::MotifStateEnsembleOP
     motif_state_ensemble(
-        String const & name = dummy_name);
-    
+            String const & name = dummy_name);
+
 public: // adding functions
 
     structure::RNAStructureOP
     get_structure(
-        String const & path,
-        String name = "",
-        int force_num_chains = -1);
-    
+            String const & path,
+            String name = "",
+            int force_num_chains = -1);
+
     void
     add_motif(
-        String const & path,
-        String name = "",
-        util::MotifType mtype = util::MotifType::UNKNOWN);
-    
+            String const & path,
+            String name = "",
+            util::MotifType mtype = util::MotifType::UNKNOWN);
+
     void
     add_motif(
-        MotifOP const & m,
-        String name = "");
+            motif::MotifOP const & m,
+            String name = "");
 
     void
     register_motif(
-        MotifOP const &);
-    
+            motif::MotifOP const &);
+
     void
     register_extra_motif_ensembles(
-        String const &);
-    
+            String const &);
+
     int
     has_supplied_motif_ensemble(
-        String const &,
-        String const &);
-    
-    MotifEnsembleOP const & 
+            String const &,
+            String const &);
+
+    motif::MotifEnsembleOP const &
     get_supplied_motif_ensemble(
-        String const &,
-        String const &);
-    
+            String const &,
+            String const &);
+
     String
     get_helix_name(
-        String const &);
+            String const &);
 
 public: // new functions that I would like in new code
 
-    MotifOP
+    motif::MotifOP
     get_motif_from_state(
-            MotifStateOP ms) {
+            motif::MotifStateOP ms) {
         auto m = motif(ms->name(), "", ms->end_names()[0]);
         align_motif(ms->end_states()[0], m->ends()[0], m);
         return m;
     }
 
-    
-    
+
 private:
     std::map<String, MotifSqliteLibraryOP> mlibs_;
     std::map<String, MotifStateSqliteLibraryOP> ms_libs_;
     std::map<String, MotifStateEnsembleSqliteLibraryOP> mse_libs_;
-    std::map<String, MotifEnsembleOP> extra_me_;
-    MotifFactory mf_;
+    std::map<String, motif::MotifEnsembleOP> extra_me_;
+    motif::MotifFactory mf_;
     AddedMotifLibrary added_motifs_;
 
-    
+
 };
 
 inline
-MotifOP
+motif::MotifOP
 get_motif_from_resource_manager(
-    String const & name = dummy_name,
-    String const & end_id = dummy_end_id,
-    String const & end_name = dummy_name) {
-    
+        String const & name = dummy_name,
+        String const & end_id = dummy_end_id,
+        String const & end_name = dummy_name) {
+
     return RM::instance().motif(name, end_id, end_name);
-    
+
 }
 
 

@@ -46,7 +46,7 @@ public:
             all_pairs[i] = pairs;
         }
         pair_iterator_ = util::CartesianProduct<Strings>(all_pairs);
-        motifs_ = MotifStateOPs(length-1);
+        motifs_ = motif::MotifStateOPs(length-1);
         num_seq_ = Ints(length);
 
         for(int i = 0; i < length; i++) { structure_ += "("; }
@@ -117,12 +117,12 @@ private:
     get_motifs_from_seq_and_ss(
             String const & seq,
             String const & ss,
-            MotifStateOPs & motifs) {
+            motif::MotifStateOPs & motifs) {
         auto parser = secondary_structure::Parser();
         auto ss_motifs = parser.parse_to_motifs(seq, ss);
 
         auto start = 0;
-        auto motif = MotifStateOP(nullptr);
+        auto motif = motif::MotifStateOP(nullptr);
         int i = 0;
         for(auto const & m : ss_motifs) {
             //basepair step
@@ -196,7 +196,7 @@ private:
     std::vector<Ints> disallowed_num_sequences_;
     String seq1_, seq2_, seq_full_, structure_;
     Ints num_seq_;
-    MotifStateOPs motifs_;
+    motif::MotifStateOPs motifs_;
 };
 
 
@@ -231,12 +231,12 @@ private:
     generate_helices(
             int);
 
-    MotifOP
+    motif::MotifOP
     get_avg_helix(
             int);
 
 private:
-    MotifFactory mf_;
+    motif::MotifFactory mf_;
 };
 
 

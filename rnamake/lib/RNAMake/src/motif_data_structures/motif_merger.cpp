@@ -11,7 +11,7 @@
 
 void
 MotifMerger::add_motif(
-        MotifOP const & m) {
+        motif::MotifOP const & m) {
     if (motifs_.find(m->id()) != motifs_.end()) {
         throw MotifMergerException("a motif with this id already exists in merger cannot add");
     }
@@ -38,9 +38,9 @@ MotifMerger::add_motif(
 
 void
 MotifMerger::add_motif(
-        MotifOP const & m,
+        motif::MotifOP const & m,
         structure::BasepairOP const & m_end,
-        MotifOP const & parent,
+        motif::MotifOP const & parent,
         structure::BasepairOP const & parent_end) {
     add_motif(m);
     try {
@@ -57,9 +57,9 @@ MotifMerger::add_motif(
 
 void
 MotifMerger::_link_motifs(
-        MotifOP const & m1,
+        motif::MotifOP const & m1,
         structure::BasepairOP const & m1_end,
-        MotifOP const & m2,
+        motif::MotifOP const & m2,
         structure::BasepairOP const & m2_end) {
     auto m1_end_nodes = _get_end_nodes(graph_.nodes(), m1_end);
     auto m2_end_nodes = _get_end_nodes(graph_.nodes(), m2_end);
@@ -177,7 +177,7 @@ MotifMerger::_connect_chains(
 
 MotifMerger::MotifMergerType
 MotifMerger::_assign_merger_type(
-        MotifOP const & m) {
+        motif::MotifOP const & m) {
 
     if (m->mtype() != util::MotifType::HELIX) {
         return MotifMergerType::SPECIFIC_SEQUENCE;
@@ -244,7 +244,7 @@ MotifMerger::get_structure() {
 }
 
 void
-MotifMerger::remove_motif(MotifOP const & m) {
+MotifMerger::remove_motif(motif::MotifOP const & m) {
     for (auto const & end : m->ends()) {
         if (bp_overrides_.find(end->uuid()) != bp_overrides_.end()) {
             bp_overrides_.erase(end->uuid());
@@ -303,7 +303,7 @@ MotifMerger::remove_motif(MotifOP const & m) {
 }
 
 void
-MotifMerger::update_motif(MotifOP const & m) {
+MotifMerger::update_motif(motif::MotifOP const & m) {
 
     int found = 0;
     for (auto const & n : graph_.nodes()) {
@@ -336,7 +336,7 @@ MotifMerger::update_motif(MotifOP const & m) {
 
 secondary_structure::PoseOP
 MotifMerger::secondary_structure() {
-    MotiftoSecondaryStructure parser;
+    auto parser = motif::MotiftoSecondaryStructure();
     auto ss = parser.to_secondary_structure(get_structure());
     auto ss_motifs = secondary_structure::MotifOPs();
 

@@ -441,7 +441,7 @@ SimulateTectosApp::run() {
     auto mt = std::make_shared<MotifTree>(lines[0], MotifTreeStringType::MT_STR);
 
     auto path = base::motif_dirs() + "ref.motif";
-    auto ref_motif = file_to_motif(path);
+    auto ref_motif = motif::file_to_motif(path);
     auto logger = std::make_shared<SimulateTectosRecord6D>(
             "new.out",
             ref_motif->basepairs()[0]);
@@ -456,7 +456,7 @@ SimulateTectosApp::run() {
         auto spl = base::split_str_by_delimiter(get_string_option("extra_motifs"), ",");
         for(auto const & path : spl) {
             std::cout << path << std::endl;
-            auto m = file_to_motif(path);
+            auto m = motif::file_to_motif(path);
             RM::instance().add_motif(m);
             
         }
@@ -628,7 +628,7 @@ SimulateTectosApp::get_mset_new_receptor(
         std::cout << "SIMULATE_TECTOS: using custom ggaa_model: ";
         std::cout << base_path+"new_ggaa_tetraloop.motif" << std::endl;
 
-        auto new_ggaa_tetraloop = std::make_shared<Motif>(
+        auto new_ggaa_tetraloop = std::make_shared<motif::Motif>(
                 lines[0],
                 structure::ResidueTypeSetManager::getInstance().residue_type_set());
         RM::instance().add_motif(new_ggaa_tetraloop);
@@ -637,7 +637,7 @@ SimulateTectosApp::get_mset_new_receptor(
         auto lines =base::get_lines_from_file(get_string_option("ggaa_model"));
         std::cout << "SIMULATE_TECTOS: using custom ggaa_model: ";
         std::cout << get_string_option("ggaa_model") << std::endl;
-        auto new_ggaa_tetraloop = std::make_shared<Motif>(
+        auto new_ggaa_tetraloop = std::make_shared<motif::Motif>(
             lines[0],
             structure::ResidueTypeSetManager::getInstance().residue_type_set());
         RM::instance().add_motif(new_ggaa_tetraloop);
@@ -710,7 +710,7 @@ SimulateTectosApp::get_mset_old_coorigin(
     }
 
     mt->add_motif(gaaa_ttr);
-    auto new_chip_motifs = MotifOPs();
+    auto new_chip_motifs = motif::MotifOPs();
     for(int i = chip_motifs.size()-1; i > -1; i--) {
         auto m = RM::instance().motif(chip_motifs[i]->name(), chip_motifs[i]->end_ids()[1], "");
         new_chip_motifs.push_back(m);
@@ -753,7 +753,7 @@ SimulateTectosApp::get_mset_old_gaaa_coorigin(
     mt->add_motif(m);
     auto pos = mt->add_motif(gaaa_ttr);
     motif_names_.push_back("gaaa_ttr");
-    auto new_flow_motifs = MotifOPs();
+    auto new_flow_motifs = motif::MotifOPs();
     for(int i = flow_motifs.size()-1; i > -1; i--) {
         auto m = RM::instance().motif(flow_motifs[i]->name(), flow_motifs[i]->end_ids()[1], "");
         new_flow_motifs.push_back(m);
@@ -780,17 +780,17 @@ SimulateTectosApp::get_mset_old_gaaa_coorigin(
     return mset;
 }
 
-MotifOPs
+motif::MotifOPs
 SimulateTectosApp::get_motifs_from_seq_and_ss(
         String const & seq,
         String const & ss) {
     
     auto parser = secondary_structure::Parser();
     auto ss_motifs = parser.parse_to_motifs(seq, ss);
-    auto motifs = MotifOPs();
+    auto motifs = motif::MotifOPs();
     
     auto start = 0;
-    auto motif = MotifOP(nullptr);
+    auto motif = motif::MotifOP(nullptr);
     for(auto const & m : ss_motifs) {
         if(m->mtype() == util::MotifType::TWOWAY && start == 0) {
             start = 1;
@@ -848,7 +848,7 @@ SimulateTectosApp::_get_logger(
 
     else if(name == "Record6D") {
         auto path = base::motif_dirs() + "ref.motif";
-        auto ref_motif = file_to_motif(path);
+        auto ref_motif = motif::file_to_motif(path);
         return std::make_shared<SimulateTectosRecord6D>(
                 get_string_option("record_file"),
                 get_string_option("record_constraints"),
@@ -856,7 +856,7 @@ SimulateTectosApp::_get_logger(
     }
     else if(name == "Record6DHisto" || name == "Record6DHistogram") {
         auto path = base::motif_dirs() + "ref.motif";
-        auto ref_motif = file_to_motif(path);
+        auto ref_motif = motif::file_to_motif(path);
         return std::make_shared<SimulateTectosRecord6DHistogram>(
                 get_string_option("record_file"),
                 get_string_option("record_constraints"),
@@ -882,7 +882,7 @@ SimulateTectosApp::_get_scorer(
 
     else if(name == "SixDScorer") {
         auto path = base::motif_dirs() + "ref.motif";
-        auto ref_motif = file_to_motif(path);
+        auto ref_motif = motif::file_to_motif(path);
         return std::make_shared<SixDScorer>(
                 get_string_option("constraints"),
                 ref_motif->basepairs()[0]);

@@ -55,7 +55,7 @@ ThermoFlucSampler::next() {
 void
 ThermoFlucSampler::update(
     int node_num,
-    MotifStateEnsembleMemberOP const & new_mem) {
+    motif::MotifStateEnsembleMemberOP const & new_mem) {
     
     last_state_pos_ = states_[node_num];
     states_[node_num_] = mset_node_->data()->member_index(new_mem);

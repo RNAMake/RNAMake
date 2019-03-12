@@ -17,29 +17,33 @@
 #include "structure/basepair.h"
 #include "motif/motif.h"
 
+namespace motif {
+
 class MotifScorer {
 public:
     MotifScorer();
-    
+
     ~MotifScorer() {}
-    
+
 public:
     float
     score(
-        MotifOP const &);
-    
+            MotifOP const &);
+
 private:
-    
+
     float
     _score_cWW_bp(
-        structure::BasepairOP const &);
-    
+            structure::BasepairOP const &);
+
     void
     _bp_reference_energy_table();
-    
+
 private:
     StringFloatMap bp_ref_energy_;
     float unpaired_pentalty_;
 };
+
+}
 
 #endif /* defined(__RNAMake__motif_scorer__) */

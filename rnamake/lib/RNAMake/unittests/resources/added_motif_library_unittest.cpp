@@ -10,7 +10,7 @@
 TEST_CASE( "Test Added Motif Library", "[AddedMotifLibrary]" ) {
     
     auto path = base::motif_dirs() + "base.motif";
-    auto m = file_to_motif(path);
+    auto m = motif::file_to_motif(path);
     
     auto mlib = AddedMotifLibrary();
     mlib.add_motif(m);

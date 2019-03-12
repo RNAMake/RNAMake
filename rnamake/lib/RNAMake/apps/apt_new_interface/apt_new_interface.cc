@@ -35,11 +35,11 @@ AptNewInterface::parse_command_line(
 
 void
 AptNewInterface::run() {
-    auto mf = MotifFactory();
+    auto mf = motif::MotifFactory();
 
     // add new motifs to resource manager
     auto scaffold_rm = RM::instance().get_structure(get_string_option("scaffold"), "scaffold", 3);
-    auto scaffold_m = std::make_shared<Motif>(*scaffold_rm);
+    auto scaffold_m = std::make_shared<motif::Motif>(*scaffold_rm);
     scaffold_m->name("scaffold");
     scaffold_m->mtype(util::MotifType::TCONTACT);
     mf._setup_secondary_structure(scaffold_m);
@@ -50,7 +50,7 @@ AptNewInterface::run() {
 
     auto prna = RM::instance().motif("prna", "", "A7-C10");
     auto scaffold = RM::instance().motif("scaffold", "", get_string_option("scaffold_end"));
-    auto docked_motif = std::make_shared<Motif>(*rs);
+    auto docked_motif = std::make_shared<motif::Motif>(*rs);
     docked_motif->mtype(util::MotifType::HAIRPIN);
     mf._setup_secondary_structure(docked_motif);
 
@@ -173,20 +173,20 @@ AptNewInterface::run() {
 // private functions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-std::vector<MotifStateOPs>
+std::vector<motif::MotifStateOPs>
 AptNewInterface::_get_libraries(
         String const & motif_path) {
     auto spl = base::split_str_by_delimiter(motif_path, ",");
     auto i = 0;
-    auto libraries = std::vector<MotifStateOPs>();
-    auto motif_states = MotifStateOPs();
+    auto libraries = std::vector<motif::MotifStateOPs>();
+    auto motif_states = motif::MotifStateOPs();
     for(auto const & name : spl) {
         if(name.length() < 2) { continue; }
         if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact" ||
            name == "twoway" || name == "flex_helices" || name == "existing") {
             auto ms_lib =  MotifStateSqliteLibrary(name);
             ms_lib.load_all();
-            motif_states = MotifStateOPs();
+            motif_states = motif::MotifStateOPs();
             if(name == "flex_helices") {
                 for (auto const & ms : ms_lib) {
                     if(ms->size() < 20) {
@@ -202,7 +202,7 @@ AptNewInterface::_get_libraries(
         }
         else {
             auto m = RM::instance().motif(name);
-            motif_states = MotifStateOPs();
+            motif_states = motif::MotifStateOPs();
 
             for(auto const & end : m->ends()) {
                 try {

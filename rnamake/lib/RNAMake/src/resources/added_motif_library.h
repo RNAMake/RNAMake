@@ -32,7 +32,7 @@ public:
 class AddedMotifLibrary {
 public:
     AddedMotifLibrary():
-    motifs_(MotifOPs())
+    motifs_(motif::MotifOPs())
     {}
     
     ~AddedMotifLibrary() {}
@@ -41,7 +41,7 @@ public:
     
     void
     add_motif(
-        MotifOP const & m) {
+        motif::MotifOP const & m) {
         if(_find_motifs(m->name(), m->end_ids()[0], m->ends()[0]->name()).size() != 0) {
             throw AddedMotifLibraryException("trying to add the same motif twice to library");
         }
@@ -49,13 +49,13 @@ public:
         motifs_.push_back(m);
     }
     
-    MotifOP
+    motif::MotifOP
     get(
         String const & name = dummy_name,
         String const & end_id = dummy_end_id,
         String const & end_name = dummy_name);
     
-    MotifOPs
+    motif::MotifOPs
     get_multi(
         String const & name = dummy_name,
         String const & end_id = dummy_end_id,
@@ -69,14 +69,14 @@ public:
     
 private:
     
-    MotifOPs
+    motif::MotifOPs
     _find_motifs(
         String const & name = dummy_name,
         String const & end_id = dummy_end_id,
         String const & end_name = dummy_name);
     
 private:
-    MotifOPs motifs_;
+    motif::MotifOPs motifs_;
 };
 
 #endif /* defined(__RNAMake__added_motif_library__) */

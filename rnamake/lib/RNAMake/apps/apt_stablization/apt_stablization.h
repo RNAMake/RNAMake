@@ -44,7 +44,7 @@ private:
 
 private:
 
-    std::vector<MotifStateOPs>
+    std::vector<motif::MotifStateOPs>
     _get_libraries(
             String const &);
 

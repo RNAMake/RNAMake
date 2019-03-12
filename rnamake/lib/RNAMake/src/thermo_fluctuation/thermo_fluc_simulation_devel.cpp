@@ -144,7 +144,7 @@ ThermoFlucSimulationDevel::run() {
     auto r_result = math::Matrix();
     auto rot      = math::Matrix();
 
-    auto mf = MotifFactory();
+    auto mf = motif::MotifFactory();
 
     std::ofstream out, out_state, out_all, out_motifs, out_dump_state;
 

@@ -15,7 +15,7 @@
 
 MotifStateEnsembleTree::MotifStateEnsembleTree():
     connections_(MotifConnections()),
-    tree_( data_structure::tree::TreeStatic<MotifStateEnsembleOP>()){}
+    tree_( data_structure::tree::TreeStatic<motif::MotifStateEnsembleOP>()){}
 
 MotifStateEnsembleTree::MotifStateEnsembleTree(
     MotifTreeOP const & mt):
@@ -26,7 +26,7 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
     for(auto const & n : *mt) {
         i++;
         
-        auto mse = MotifStateEnsembleOP();
+        auto mse = motif::MotifStateEnsembleOP();
         auto found_supplied = RM::instance().has_supplied_motif_ensemble(
                                     n->data()->name(), n->data()->end_name(0));
                 
@@ -59,7 +59,7 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
         }
         
         else {
-            mse = std::make_shared<MotifStateEnsemble>(n->data()->get_state());
+            mse = std::make_shared<motif::MotifStateEnsemble>(n->data()->get_state());
         }
         
     
@@ -96,7 +96,7 @@ MotifStateEnsembleTree::MotifStateEnsembleTree(
 
 int
 MotifStateEnsembleTree::add_ensemble(
-    MotifStateEnsembleOP const & ensemble,
+    motif::MotifStateEnsembleOP const & ensemble,
     int parent_index,
     int parent_end_index) {
     
@@ -106,7 +106,7 @@ MotifStateEnsembleTree::add_ensemble(
     }
     
     if(parent == nullptr) {
-        return tree_.add_data(std::make_shared<MotifStateEnsemble>(*ensemble),
+        return tree_.add_data(std::make_shared<motif::MotifStateEnsemble>(*ensemble),
                               ensemble->num_end_states());
     }
     
@@ -115,7 +115,7 @@ MotifStateEnsembleTree::add_ensemble(
     for(auto const & p : avail_pos) {
         if(p == parent->data()->block_end_add()) { continue; }
         
-        return tree_.add_data(std::make_shared<MotifStateEnsemble>(*ensemble),
+        return tree_.add_data(std::make_shared<motif::MotifStateEnsemble>(*ensemble),
                               ensemble->num_end_states(),
                               parent->index(),
                               p);

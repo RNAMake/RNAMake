@@ -9,7 +9,7 @@
 #include "base/application.hpp"
 
 struct MotifStateandScore {
-    MotifStateOP ms;
+    motif::MotifStateOP ms;
     float score;
 };
 
@@ -53,12 +53,12 @@ public: // application interface functions
 private: // search functions
     float
     _score(
-            MotifStateOP);
+            motif::MotifStateOP);
 
     void
     _search();
 
-    MotifStateOP
+    motif::MotifStateOP
     _get_starting_state(
             util::StericLookup &,
             math::Point const &);
@@ -69,7 +69,7 @@ private:
 
     math::Point
     _calc_motif_center(
-            MotifOP);
+            motif::MotifOP);
 
     math::Matrix
     _rotation_about_x_axis(
@@ -85,14 +85,14 @@ private:
 
     void
     _precompute_rotations(
-            MotifStateOP);
+            motif::MotifStateOP);
 
 private:
-    MotifStateOPs rotations_;
+    motif::MotifStateOPs rotations_;
     util::StericLookup lookup_;
     math::Point center_;
     MotifStateandScores results_;
-    MotifStateOP helix_;
+    motif::MotifStateOP helix_;
 
 };
 

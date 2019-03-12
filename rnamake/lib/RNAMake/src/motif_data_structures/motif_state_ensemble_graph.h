@@ -33,8 +33,8 @@ public:
 
 public: // iterator
 
-    typedef typename data_structure::graph::GraphStatic<MotifStateEnsembleOP>::iterator iterator;
-    typedef typename data_structure::graph::GraphStatic<MotifStateEnsembleOP>::const_iterator const_iterator;
+    typedef typename data_structure::graph::GraphStatic<motif::MotifStateEnsembleOP>::iterator iterator;
+    typedef typename data_structure::graph::GraphStatic<motif::MotifStateEnsembleOP>::const_iterator const_iterator;
 
     iterator begin() { return graph_.begin(); }
     iterator end()   { return graph_.end(); }
@@ -49,14 +49,14 @@ public:
 
 private: //add function helpers
 
-    data_structure::graph::GraphNodeOP<MotifStateEnsembleOP>
+    data_structure::graph::GraphNodeOP<motif::MotifStateEnsembleOP>
     _get_parent(
             int);
 
 
     Ints
     _get_available_parent_end_pos(
-            data_structure::graph::GraphNodeOP<MotifStateEnsembleOP> const &,
+            data_structure::graph::GraphNodeOP<motif::MotifStateEnsembleOP> const &,
             int);
 
 
@@ -64,7 +64,7 @@ public: // add functions
 
     int
     add_ensemble(
-            MotifStateEnsembleOP const & ensemble,
+            motif::MotifStateEnsembleOP const & ensemble,
             int parent_index = -1,
             int parent_end_index = -1);
 
@@ -77,8 +77,8 @@ public: // add functions
 
 
 private:
-    data_structure::graph::GraphStatic<MotifStateEnsembleOP> graph_;
-    data_structure::graph::GraphNodeOPs<MotifStateEnsembleOP> align_list_;
+    data_structure::graph::GraphStatic<motif::MotifStateEnsembleOP> graph_;
+    data_structure::graph::GraphNodeOPs<motif::MotifStateEnsembleOP> align_list_;
     std::map<int, int> aligned_;
     int update_align_list_;
 

@@ -8,13 +8,13 @@
 
 #include "resources/added_motif_library.h"
 
-MotifOPs
+motif::MotifOPs
 AddedMotifLibrary::_find_motifs(
     String const & name,
     String const & end_id,
     String const & end_name) {
     
-    MotifOPs motifs;
+    motif::MotifOPs motifs;
     for(auto const & m : motifs_) {
         if(name.length() > 0 && name != m->name()) { continue; }
         if(end_id.length() > 0 && end_id != m->end_ids()[0]) { continue; }
@@ -24,7 +24,7 @@ AddedMotifLibrary::_find_motifs(
     return motifs;
 }
 
-MotifOP
+motif::MotifOP
 AddedMotifLibrary::get(
     String const & name,
     String const & end_id,
@@ -43,7 +43,7 @@ AddedMotifLibrary::get(
     
 }
 
-MotifOPs
+motif::MotifOPs
 AddedMotifLibrary::get_multi(
     String const & name,
     String const & end_id,

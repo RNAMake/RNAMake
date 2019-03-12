@@ -102,13 +102,13 @@ public: // add functions
     
     int
     add_state(
-        MotifStateOP const & state,
+        motif::MotifStateOP const & state,
         int parent_index=-1,
         int parent_end_index=-1);
     
     int
     add_state(
-        MotifStateOP const & state,
+        motif::MotifStateOP const & state,
         int parent_index,
         String const & parent_end_name);
     
@@ -135,7 +135,7 @@ public: // add functions
     void
     replace_state(
         int i,
-        MotifStateOP const &);
+        motif::MotifStateOP const &);
 
 public: //removal functions
     
@@ -279,7 +279,7 @@ private:
 private:
     data_structure::tree::TreeStatic<MSNodeDataOP> tree_;
     std::queue<MotifStateTreeNodeOP> queue_;
-    MotifStateAligner aligner_;
+    motif::MotifStateAligner aligner_;
     MotifConnections connections_;
     base::Options options_;
     int sterics_;

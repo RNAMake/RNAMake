@@ -15,7 +15,7 @@
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
 BuildFlexHelicesApp::BuildFlexHelicesApp():
-        mf_(MotifFactory()){}
+        mf_(motif::MotifFactory()){}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // app functions
@@ -94,7 +94,7 @@ BuildFlexHelicesApp::generate_helices(
     structure += "&";
     for(int i = 0; i < length; i++) { structure += ")"; }
 
-    auto motifs = MotifStateOPs();
+    auto motifs = motif::MotifStateOPs();
 
     std::ofstream out;
     out.open("length_"+std::to_string(length)+"_helices.dat");
@@ -125,7 +125,7 @@ BuildFlexHelicesApp::generate_helices(
 
 }
 
-MotifOP
+motif::MotifOP
 BuildFlexHelicesApp::get_avg_helix(
         int length) {
 
@@ -180,7 +180,7 @@ BuildFlexHelicesApp::get_avg_helix(
 
     auto best_mst = iterator.get_tree_with_sequence(best_seq);
     auto rs = best_mst->to_motif_tree()->get_structure();
-    auto m = std::make_shared<Motif>(*rs);
+    auto m = std::make_shared<motif::Motif>(*rs);
     auto num = 1;
     for(auto & c : m->chains()) {
        for(auto & r : c->residues()) {
@@ -217,7 +217,7 @@ BuildFlexHelicesApp::get_avg_helix(
     m->score(score);
 
     //auto s = m->to_str();
-    //auto m2 = std::make_shared<Motif>(s, structure::ResidueTypeSetManager::getInstance().residue_type_set());
+    //auto m2 = std::make_shared<motif::Motif>(s, structure::ResidueTypeSetManager::getInstance().residue_type_set());
 
     //std::cout << i << std::endl;
 

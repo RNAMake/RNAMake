@@ -36,7 +36,7 @@ private:
     _generate_structure(
             String const &);
 
-    MotifOPs
+    motif::MotifOPs
     get_motifs_from_seq_and_ss(
             String const &,
             String const &);

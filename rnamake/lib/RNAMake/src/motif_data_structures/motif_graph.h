@@ -37,13 +37,13 @@ class MotifGraph {
 private:
     struct _MotifGraphBuildPoint {
         _MotifGraphBuildPoint(
-                data_structure::graph::GraphNodeOP<MotifOP> const & nnode,
+                data_structure::graph::GraphNodeOP<motif::MotifOP> const & nnode,
                 int nend_index ):
                 node(nnode),
                 end_index(nend_index)
         {}
 
-        data_structure::graph::GraphNodeOP<MotifOP> node;
+        data_structure::graph::GraphNodeOP<motif::MotifOP> node;
         int end_index;
     };
     
@@ -62,7 +62,7 @@ private:
         nodes_per_level_(std::map<int, int>()),
         branch_length_(25),
         start_pos_(100),
-        nodes_(data_structure::graph::GraphNodeOPs<MotifOP>()){
+        nodes_(data_structure::graph::GraphNodeOPs<motif::MotifOP>()){
             
             _setup_node_positions(mg);
         }
@@ -75,7 +75,7 @@ private:
             MotifGraph const & mg) {
             auto s = String("\n");
 
-            auto nodes_per_level = std::map<int, data_structure::graph::GraphNodeOPs<MotifOP>>();
+            auto nodes_per_level = std::map<int, data_structure::graph::GraphNodeOPs<motif::MotifOP>>();
             for(auto const & n : mg) {
                 nodes_per_level[levels_[n->index()]].push_back(n);
             }
@@ -95,25 +95,25 @@ private:
         
     private:
         String
-        _print_level(data_structure::graph::GraphNodeOPs<MotifOP> const & nodes) {
+        _print_level(data_structure::graph::GraphNodeOPs<motif::MotifOP> const & nodes) {
             auto s = String("");
             auto strings = std::vector<Strings>();
             
             //sort nodes by pos, using a lambda statement and std::pair
             //probably can be cleaned up
-            auto pairs = std::vector<std::pair<data_structure::graph::GraphNodeOP<MotifOP>, int>>();
+            auto pairs = std::vector<std::pair<data_structure::graph::GraphNodeOP<motif::MotifOP>, int>>();
             for(auto const & n : nodes) {
-                auto p = std::pair<data_structure::graph::GraphNodeOP<MotifOP>, int>(n, node_pos_[n->index()]);
+                auto p = std::pair<data_structure::graph::GraphNodeOP<motif::MotifOP>, int>(n, node_pos_[n->index()]);
                 pairs.push_back(p);
             }
             
             std::sort(pairs.begin(), pairs.end(),
-                      [](std::pair<data_structure::graph::GraphNodeOP<MotifOP>, int> const & p1,
-                         std::pair<data_structure::graph::GraphNodeOP<MotifOP>, int> const & p2) {
+                      [](std::pair<data_structure::graph::GraphNodeOP<motif::MotifOP>, int> const & p1,
+                         std::pair<data_structure::graph::GraphNodeOP<motif::MotifOP>, int> const & p2) {
                           return p1.second < p2.second; });
             
             
-            auto sorted_nodes = data_structure::graph::GraphNodeOPs<MotifOP>();
+            auto sorted_nodes = data_structure::graph::GraphNodeOPs<motif::MotifOP>();
             for(auto const & p : pairs) { sorted_nodes.push_back(p.first); }
 
             
@@ -158,7 +158,7 @@ private:
             int current_pos = 0;
             int hit = 0;
             for(auto const & n : sorted_nodes) {
-                auto children = data_structure::graph::GraphNodeOPs<MotifOP>();
+                auto children = data_structure::graph::GraphNodeOPs<motif::MotifOP>();
                 int j = -1;
                 for(auto const & c : n->connections()) {
                     j++;
@@ -205,7 +205,7 @@ private:
                     node_pos_[n->index()] = start_pos_;
                 }
                 
-                auto children = data_structure::graph::GraphNodeOPs<MotifOP>();
+                auto children = data_structure::graph::GraphNodeOPs<motif::MotifOP>();
                 int j = -1;
                 for(auto const & c : n->connections()) {
                     j++;
@@ -257,7 +257,7 @@ private:
             
             auto start = nodes[0]->index();
             
-            auto n = data_structure::graph::GraphNodeOP<MotifOP>();
+            auto n = data_structure::graph::GraphNodeOP<motif::MotifOP>();
             for(auto it = mg.graph_.transverse(mg.graph_.get_node(start));
                 it != mg.graph_.end();
                 ++it) {
@@ -285,7 +285,7 @@ private:
         std::map<int, int> nodes_per_level_;
         int branch_length_;
         int start_pos_;
-        data_structure::graph::GraphNodeOPs<MotifOP> nodes_;
+        data_structure::graph::GraphNodeOPs<motif::MotifOP> nodes_;
         
         
     };
@@ -313,8 +313,8 @@ public: //setup helpers
     
 public: //iterators
     
-    typedef typename data_structure::graph::GraphStatic<MotifOP>::iterator iterator;
-    typedef typename data_structure::graph::GraphStatic<MotifOP>::const_iterator const_iterator;
+    typedef typename data_structure::graph::GraphStatic<motif::MotifOP>::iterator iterator;
+    typedef typename data_structure::graph::GraphStatic<motif::MotifOP>::const_iterator const_iterator;
     
     iterator begin() { return graph_.begin(); }
     iterator end()   { return graph_.end(); }
@@ -324,8 +324,8 @@ public: //iterators
 
 public:
 
-    typedef typename data_structure::graph::GraphNodeOPs<MotifOP>::const_iterator node_const_iterator;
-    typedef typename data_structure::graph::GraphNodeOPs<MotifOP>::iterator node_iterator;
+    typedef typename data_structure::graph::GraphNodeOPs<motif::MotifOP>::const_iterator node_const_iterator;
+    typedef typename data_structure::graph::GraphNodeOPs<motif::MotifOP>::iterator node_iterator;
 
     node_iterator node_begin() { _update_align_list(); return align_list_.begin(); }
     node_iterator node_end()   { return align_list_.end(); }
@@ -333,20 +333,20 @@ public:
 
 private://add function helpers
 
-    data_structure::graph::GraphNodeOP<MotifOP>
+    data_structure::graph::GraphNodeOP<motif::MotifOP>
     _get_parent(
         String const &,
         int);
     
     int
     _add_motif_to_graph(
-            MotifOP &,
-            data_structure::graph::GraphNodeOP<MotifOP> const &,
+            motif::MotifOP &,
+            data_structure::graph::GraphNodeOP<motif::MotifOP> const &,
             int);
 
     Ints
     _get_available_parent_end_pos(
-            data_structure::graph::GraphNodeOP<MotifOP> const &,
+            data_structure::graph::GraphNodeOP<motif::MotifOP> const &,
             int);
     
     void
@@ -357,12 +357,12 @@ private://add function helpers
     
     int
     _steric_clash(
-        MotifOP const &);
+        motif::MotifOP const &);
     
     
     int
     _get_connection_end(
-            data_structure::graph::GraphNodeOP<MotifOP> const &,
+            data_structure::graph::GraphNodeOP<motif::MotifOP> const &,
             String const &);
     
     void
@@ -372,14 +372,14 @@ public: //add functions
     
     int
     add_motif(
-        MotifOP const & m,
+        motif::MotifOP const & m,
         int parent_index = -1,
         int parent_end_index = -1,
         int orphan = 0);
     
     int
     add_motif(
-        MotifOP const &,
+        motif::MotifOP const &,
         int,
         String const &);
     
@@ -421,19 +421,19 @@ public: //graph wrappers
     increase_level() { return graph_.increase_level(); }
     
     inline
-    data_structure::graph::GraphNodeOP<MotifOP> const &
+    data_structure::graph::GraphNodeOP<motif::MotifOP> const &
     last_node() { return graph_.last_node(); }
     
     inline
-    data_structure::graph::GraphNodeOP<MotifOP>
+    data_structure::graph::GraphNodeOP<motif::MotifOP>
     oldest_node() { return graph_.oldest_node(); }
     
     inline
-    data_structure::graph::GraphNodeOP<MotifOP> const &
+    data_structure::graph::GraphNodeOP<motif::MotifOP> const &
     get_node(int i) const { return graph_.get_node(i); }
     
     inline
-    data_structure::graph::GraphNodeOP<MotifOP> const
+    data_structure::graph::GraphNodeOP<motif::MotifOP> const
     get_node(util::Uuid const & uuid) const {
         for(auto const & n : graph_) {
             if(n->data()->id() == uuid) {
@@ -444,9 +444,9 @@ public: //graph wrappers
     }
     
     inline
-    data_structure::graph::GraphNodeOP<MotifOP> const
+    data_structure::graph::GraphNodeOP<motif::MotifOP> const
     get_node(String const & m_name) const {
-        auto node = data_structure::graph::GraphNodeOP<MotifOP>(nullptr);
+        auto node = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
         for(auto const & n : graph_) {
             if(n->data()->name() == m_name) {
                 if(node != nullptr) {
@@ -569,7 +569,7 @@ public: // getters
         String const &,
         String const &);
 
-    data_structure::graph::GraphNodeOPs<MotifOP> const
+    data_structure::graph::GraphNodeOPs<motif::MotifOP> const
     unaligned_nodes() const;
     
     _MotifGraphBuildPointOPs
@@ -579,7 +579,7 @@ public: // getters
     std::map<int, int>
     aligned() { return aligned_; }
 
-    data_structure::graph::GraphConnectionOPs<MotifOP> const &
+    data_structure::graph::GraphConnectionOPs<motif::MotifOP> const &
     connections() { return graph_.connections(); }
     
     
@@ -695,8 +695,8 @@ private:
     _setup_from_str(String const &);
     
 private:
-    data_structure::graph::GraphStatic<MotifOP> graph_;
-    data_structure::graph::GraphNodeOPs<MotifOP> align_list_;
+    data_structure::graph::GraphStatic<motif::MotifOP> graph_;
+    data_structure::graph::GraphNodeOPs<motif::MotifOP> align_list_;
     MotifMergerOP merger_;
     base::Options options_;
     std::map<int, int> aligned_;

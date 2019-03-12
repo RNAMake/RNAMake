@@ -14,6 +14,8 @@
 
 #include "motif/motif_state.h"
 
+namespace motif {
+
 /*
  * Exception for motif state ensemble
  */
@@ -170,6 +172,7 @@ private:
 typedef std::shared_ptr<MotifStateEnsemble> MotifStateEnsembleOP;
 typedef std::vector<MotifStateEnsembleOP>   MotifStateEnsembleOPs;
 
+}
 
 #endif /* defined(__RNAMake__motif_state_ensemble__) */
 

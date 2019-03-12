@@ -38,17 +38,17 @@ public: //iterator stuff
     class iterator {
     public:
         iterator(
-            std::map<String, MotifStateOP>::iterator const & i ):
+            std::map<String, motif::MotifStateOP>::iterator const & i ):
         i_(i)
         {}
         
         iterator operator++() { i_++; return *this; }
-        MotifStateOP const & operator*() { return i_->second; }
+        motif::MotifStateOP const & operator*() { return i_->second; }
         bool operator== (iterator const & rhs) const { return i_ == rhs.i_; }
         bool operator!= (iterator const & rhs) const { return i_ != rhs.i_; }
         
     private:
-        std::map<String, MotifStateOP>::iterator i_;
+        std::map<String, motif::MotifStateOP>::iterator i_;
         
     };
     
@@ -63,14 +63,14 @@ public:
     StringStringMap
     get_libnames();
     
-    MotifStateOP
+    motif::MotifStateOP
     get(
         String const & name = dummy_name,
         String const & end_id = dummy_end_id,
         String const & end_name = dummy_name,
         String const & id = dummy_id);
     
-    MotifStateOPs
+    motif::MotifStateOPs
     get_multi(
         String const & name = dummy_name,
         String const & end_id = dummy_end_id,
@@ -84,7 +84,7 @@ public:
         String const & end_name = dummy_name,
         String const & id = dummy_id);
     
-    MotifStateOP
+    motif::MotifStateOP
     get_random();
     
     void
@@ -104,7 +104,7 @@ private:
 private:
     
     MotifSqliteConnection connection_;
-    std::map<String, MotifStateOP> data_;
+    std::map<String, motif::MotifStateOP> data_;
     util::RandomNumberGenerator rng_;
     
 };

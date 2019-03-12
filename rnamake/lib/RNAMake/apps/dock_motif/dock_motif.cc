@@ -33,7 +33,7 @@ DockMotifApp::parse_command_line(
 void
 DockMotifApp::run() {
 
-    auto mf = MotifFactory();
+    auto mf = motif::MotifFactory();
     auto added_helix = mf.added_helix();
     auto motif_path = get_string_option("motif");
 
@@ -94,7 +94,7 @@ DockMotifApp::run() {
 // private functions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-MotifStateOP
+motif::MotifStateOP
 DockMotifApp::_get_starting_state(
         util::StericLookup & screening_lookup,
         math::Point const & center) {
@@ -130,7 +130,7 @@ DockMotifApp::_search() {
     auto best = current;
     auto next = current;
     auto mc = util::MonteCarlo();
-    auto best_ms = std::make_shared<MotifState>(*ms);
+    auto best_ms = std::make_shared<motif::motif::MotifState>(*ms);
 
     for (int i = 0; i < 100000; i++) {
         last_ms = ms;
@@ -159,7 +159,7 @@ DockMotifApp::_search() {
         current = next;
         if(current < best) {
             best = current;
-            best_ms = std::make_shared<MotifState>(*ms);
+            best_ms = std::make_shared<motif::motif::MotifState>(*ms);
         }
     }
 
@@ -172,7 +172,7 @@ DockMotifApp::_search() {
 
 float
 DockMotifApp::_score(
-        MotifStateOP ms) {
+        motif::MotifStateOP ms) {
     /*float avg = 0;
     for(auto const & b : ms->beads()) {
         avg += b.distance(center_);
@@ -202,7 +202,7 @@ get_random_point(
 
 math::Point
 DockMotifApp::_calc_motif_center(
-        MotifOP m ) {
+        motif::MotifOP m ) {
     auto m_center = math::Point();
     for(auto b : m->beads()) {
         m_center += b.center();
@@ -258,7 +258,7 @@ DockMotifApp::_rotation_about_z_axis(
 
 void
 DockMotifApp::_precompute_rotations(
-        MotifStateOP ms) {
+        motif::MotifStateOP ms) {
     auto r_x = _rotation_about_x_axis(30);
     auto r_y = _rotation_about_y_axis(30);
     auto r_z = _rotation_about_z_axis(30);
@@ -267,7 +267,7 @@ DockMotifApp::_precompute_rotations(
 
     ms->move(-ms->end_states()[0]->d());
 
-    rotations_ = MotifStateOPs();
+    rotations_ = motif::MotifStateOPs();
 
     auto count = 0;
     for(int i = 0; i < 12; i++) {
@@ -276,7 +276,7 @@ DockMotifApp::_precompute_rotations(
             ms->transform(r_y, p);
             for(int k = 0; k < 12; k++) {
                 ms->transform(r_z, p);
-                rotations_.push_back(std::make_shared<MotifState>(*ms));
+                rotations_.push_back(std::make_shared<motif::motif::MotifState>(*ms));
                 //auto m = RM::instance().get_motif_from_state(ms);
                 //m->to_pdb("frame."+std::to_string(count)+".pdb");
                 //count++;

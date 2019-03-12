@@ -15,6 +15,8 @@
 #include "util/x3dna.h"
 
 
+namespace motif {
+
 MotifOP
 MotifFactory::motif_from_file(
         String const & path,
@@ -47,8 +49,8 @@ MotifFactory::motif_from_file(
         fname = fname.substr(0, fname.length() - 4);
     }
 
-    if(force_num_chains != -1 && structure->chains().size() != force_num_chains) {
-        if(force_num_chains > structure->chains().size()) {
+    if (force_num_chains != -1 && structure->chains().size() != force_num_chains) {
+        if (force_num_chains > structure->chains().size()) {
             throw MotifFactoryException(
                     "force_num_chains must be smaller than current number in motif");
         }
@@ -82,10 +84,9 @@ MotifFactory::motif_from_file(
 
     }
 
-    if(m->ends().size() > 0) {
+    if (m->ends().size() > 0) {
         return get_oriented_motif(m, 0);
-    }
-    else {
+    } else {
         return m;
     }
 
@@ -103,16 +104,16 @@ MotifFactory::get_oriented_motif(
     auto m_added_2_1 = get_aligned_motif(m->ends()[end_pos], m_added->ends()[0], m_added);
 
     auto count_1 = _bead_overlap(m, m_added_2_1);
-    if(count_1 == 0) { return m_added_2_1; }
+    if (count_1 == 0) { return m_added_2_1; }
 
     m->ends()[end_pos]->flip();
     auto m_added_2_2 = get_aligned_motif(m->ends()[end_pos], m_added->ends()[0], m_added);
     auto count_2 = _bead_overlap(m, m_added_2_2);
 
-    if(count_2 == 0) { return m_added_2_2; }
+    if (count_2 == 0) { return m_added_2_2; }
 
-    if(count_1 > count_2) { return m_added_2_2; }
-    else                  { return m_added_2_1; }
+    if (count_1 > count_2) { return m_added_2_2; }
+    else { return m_added_2_1; }
 
 }
 
@@ -163,7 +164,6 @@ MotifFactory::motif_from_bps(
     return m;
 
 }
-
 
 
 MotifOP
@@ -428,9 +428,9 @@ MotifFactory::_bead_overlap(
 
     auto count = 0;
     auto dist = 0.0;
-    for(int i = 0; i < m1->beads().size(); i++) {
+    for (int i = 0; i < m1->beads().size(); i++) {
         dist = m1->beads()[i].distance(m2->beads()[i]);
-        if(dist < 0.2) { count += 1; }
+        if (dist < 0.2) { count += 1; }
     }
 
     return count;
@@ -444,7 +444,7 @@ MotifFactory::_get_reduced_chain_num_structure(
 
     auto chains = start.chains();
 
-    for(int round = 0; round < (chains.size() - chain_num); round++) {
+    for (int round = 0; round < (chains.size() - chain_num); round++) {
         auto best_i = -1;
         auto best_j = -1;
         auto best_score = 1000;
@@ -456,7 +456,7 @@ MotifFactory::_get_reduced_chain_num_structure(
                 auto o3_atom = chains[i]->last()->get_atom("O3'");
                 auto p_atom = chains[j]->first()->get_atom("P");
                 dist = o3_atom->coords().distance(p_atom->coords());
-                if(dist < best_score) {
+                if (dist < best_score) {
                     best_i = i;
                     best_j = j;
                     best_score = dist;
@@ -467,16 +467,16 @@ MotifFactory::_get_reduced_chain_num_structure(
 
         auto new_chains = structure::ChainOPs();
         auto residues = structure::ResidueOPs();
-        for(auto const & r : chains[best_i]->residues()) {
+        for (auto const & r : chains[best_i]->residues()) {
             residues.push_back(r);
         }
-        for(auto const & r : chains[best_j]->residues()) {
+        for (auto const & r : chains[best_j]->residues()) {
             residues.push_back(r);
         }
         auto new_chain = std::make_shared<structure::Chain>(residues);
         new_chains.push_back(new_chain);
-        for(int i = 0; i < chains.size(); i++) {
-            if(i == best_i || i == best_j) { continue; }
+        for (int i = 0; i < chains.size(); i++) {
+            if (i == best_i || i == best_j) { continue; }
             new_chains.push_back(chains[i]);
         }
         chains = new_chains;
@@ -485,6 +485,7 @@ MotifFactory::_get_reduced_chain_num_structure(
     return std::make_shared<structure::Structure>(chains);
 }
 
+}
 
 
 

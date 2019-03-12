@@ -211,7 +211,7 @@ DesignRNAApp::_setup_path() {
         }
         else {
             auto m = RM::instance().motif(name);
-            auto motif_states = MotifStateOPs();
+            auto motif_states = motif::MotifStateOPs();
             auto scores = Floats();
 
             for(auto const & end : m->ends()) {
@@ -222,7 +222,7 @@ DesignRNAApp::_setup_path() {
                 motif_states.push_back(m_new->get_state());
                 scores.push_back(1);
             }
-            auto mse = std::make_shared<MotifStateEnsemble>(motif_states, scores);
+            auto mse = std::make_shared<motif::MotifStateEnsemble>(motif_states, scores);
             selector->add("", mse);
         }
         if(i > 0) {
@@ -233,19 +233,19 @@ DesignRNAApp::_setup_path() {
     return selector;
 }
 
-std::vector<MotifStateOPs>
+std::vector<motif::MotifStateOPs>
 DesignRNAApp::_get_libraries() {
     auto spl = base::split_str_by_delimiter(get_string_option("defined_motif_path"), ",");
     auto i = 0;
-    auto libraries = std::vector<MotifStateOPs>();
-    auto motif_states = MotifStateOPs();
+    auto libraries = std::vector<motif::MotifStateOPs>();
+    auto motif_states = motif::MotifStateOPs();
     for(auto const & name : spl) {
         if(name.length() < 2) { continue; }
         if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact" ||
            name == "twoway" || name == "flex_helices") {
             auto ms_lib =  MotifStateSqliteLibrary(name);
             ms_lib.load_all();
-            motif_states = MotifStateOPs();
+            motif_states = motif::MotifStateOPs();
             if(name == "flex_helices") {
                 for (auto const & ms : ms_lib) {
                     if(ms->size() < 20) {
@@ -261,7 +261,7 @@ DesignRNAApp::_get_libraries() {
         }
         else {
             auto m = RM::instance().motif(name);
-            motif_states = MotifStateOPs();
+            motif_states = motif::MotifStateOPs();
 
             for(auto const & end : m->ends()) {
                 auto m_new = RM::instance().motif(name, "", end->name());

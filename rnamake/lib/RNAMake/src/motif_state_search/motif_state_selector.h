@@ -24,7 +24,7 @@
 struct MotifStateSelectorNodeData {
     MotifStateSelectorNodeData(
         String const & nname,
-        MotifStateOPs const & nmotif_states,
+        motif::MotifStateOPs const & nmotif_states,
         int nmax_uses=1000,
         int nrequired_uses=0):
     name(nname),
@@ -34,7 +34,7 @@ struct MotifStateSelectorNodeData {
     {}
     
     String name;
-    MotifStateOPs motif_states;
+    motif::MotifStateOPs motif_states;
     int max_uses, required_uses;
 };
 
@@ -47,13 +47,13 @@ struct MotifStateandType {
     
     inline
     MotifStateandType(
-        MotifStateOP const & nmotif_state,
+        motif::MotifStateOP const & nmotif_state,
         int ntype):
     motif_state(nmotif_state),
     type(ntype)
     {}
     
-    MotifStateOP motif_state;
+    motif::MotifStateOP motif_state;
     int type;
 };
 
@@ -102,7 +102,7 @@ public:
     inline
     void
     add(
-        MotifStateOP const & ms,
+        motif::MotifStateOP const & ms,
         int type) {
         motif_states_and_types_[pos_].motif_state = ms;
         motif_states_and_types_[pos_].type = type;
@@ -159,15 +159,15 @@ public:
     void
     add(
         String lib_name = "",
-        MotifStateEnsembleOP mse = nullptr,
-        MotifOP m = nullptr,
+        motif::MotifStateEnsembleOP mse = nullptr,
+        motif::MotifOP m = nullptr,
         int max_uses=1000,
         int required_uses=0) {
         
         if(lib_name.length() > 0) {
             MotifStateSqliteLibrary ms_lib (lib_name);
             ms_lib.load_all();
-            MotifStateOPs motif_states;
+            motif::MotifStateOPs motif_states;
             for(auto const & ms : ms_lib) { motif_states.push_back(ms); }
             auto d = std::make_shared<MotifStateSelectorNodeData>(lib_name, motif_states,
                                                                   max_uses, required_uses);
@@ -177,13 +177,13 @@ public:
         else if(m != nullptr) {
 
             auto d = std::make_shared<MotifStateSelectorNodeData>(m->name(),
-                                                                  MotifStateOPs { m->get_state() },
+                                                                  motif::MotifStateOPs { m->get_state() },
                                                                   max_uses,  required_uses);
             graph_.add_data(d);
         }
 
         else if(mse != nullptr) {
-            auto motif_states = MotifStateOPs();
+            auto motif_states = motif::MotifStateOPs();
             for(auto const & mem : mse->members()) {
                 motif_states.push_back(mem->motif_state);
             }
@@ -270,8 +270,8 @@ public:
     void
     add(
         String lib_name = "",
-        MotifStateEnsembleOP mse = nullptr,
-        MotifOP m = nullptr,
+        motif::MotifStateEnsembleOP mse = nullptr,
+        motif::MotifOP m = nullptr,
         int max_uses=1000,
         int required_uses=0) {
     
@@ -298,8 +298,8 @@ public:
     void
     add(
         String lib_name = "",
-        MotifStateEnsembleOP mse = nullptr,
-        MotifOP m = nullptr,
+        motif::MotifStateEnsembleOP mse = nullptr,
+        motif::MotifOP m = nullptr,
         int max_uses=1000,
         int required_uses=0) {
         

@@ -29,7 +29,7 @@ MotifStateSearchSolution::to_mst() {
     mst->set_option_value("sterics", false);
     int i = 0, j = 0;
     for(auto const & n : path_) {
-        auto cur_state = std::make_shared<MotifState>(n->ref_state()->name(),
+        auto cur_state = std::make_shared<motif::MotifState>(n->ref_state()->name(),
                                                       n->ref_state()->end_names(),
                                                       n->ref_state()->end_ids(),
                                                       n->cur_state()->end_states(),

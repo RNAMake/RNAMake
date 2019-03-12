@@ -149,7 +149,7 @@ MotifStateGraph::_get_parent_index_from_name(
     try{
         parent_end_index = parent->data()->get_end_index(parent_end_name);
     }
-    catch(MotifStateException) {
+    catch(motif::MotifStateException) {
         throw MotifStateGraphException(
             "cannot find parent_end_name: " + parent_end_name + " while trying to "
             "add a state to graph");
@@ -221,7 +221,7 @@ MotifStateGraph::_get_connection_end(
 
 int
 MotifStateGraph::add_state(
-    MotifStateOP const & state,
+    motif::MotifStateOP const & state,
     int parent_index,
     int parent_end_index,
     int orphan) {
@@ -270,7 +270,7 @@ MotifStateGraph::add_state(
 
 int
 MotifStateGraph::add_state(
-    MotifStateOP const & state,
+    motif::MotifStateOP const & state,
     int parent_index,
     String const & parent_end_name) {
     
@@ -316,7 +316,7 @@ MotifStateGraph::add_connection(
 void
 MotifStateGraph::replace_state(
     int i,
-    MotifStateOP const & new_state) {
+    motif::MotifStateOP const & new_state) {
     
     auto n = graph_.get_node(i);
     /*if(new_state->end_states().size() != n->data()->ref_state->end_states().size()) {
@@ -326,7 +326,7 @@ MotifStateGraph::replace_state(
 
     auto old_state = n->data()->ref_state;
     n->data()->ref_state = new_state;
-    n->data()->cur_state = std::make_shared<MotifState>(*new_state);
+    n->data()->cur_state = std::make_shared<motif::MotifState>(*new_state);
     n->data()->uuid(old_state->uuid());
     _align_states(i);
     

@@ -20,6 +20,7 @@
 #include "motif/motif_scorer.h"
 #include "motif/motif.h"
 
+namespace motif {
 
 /*
  * Exception for Motif Factory
@@ -158,5 +159,7 @@ private:
 
 
 };
+
+}
 
 #endif /* defined(__RNAMake__motif_factory__) */

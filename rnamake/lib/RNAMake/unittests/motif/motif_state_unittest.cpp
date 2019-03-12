@@ -19,9 +19,9 @@ rotation_about_x_axis(
 
 TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]" ) {
     auto path = base::motif_dirs() + "base.motif";
-    auto m = file_to_motif(path);
+    auto m = motif::file_to_motif(path);
     path = base::motif_dirs() + "ref.motif";
-    auto ref_m = file_to_motif(path);
+    auto ref_m = motif::file_to_motif(path);
 
     auto ms = m->get_state();
     
@@ -40,7 +40,7 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
     }
     
     SECTION("test copy constructor") {
-        auto ms_copy = std::make_shared<MotifState>(*ms);
+        auto ms_copy = std::make_shared<motif::MotifState>(*ms);
         
         int i = -1 ;
         for(auto const & end : ms->end_states()) {
@@ -55,7 +55,7 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
     
     SECTION("test stringifying motif state") {
         auto s = ms->to_str();
-        auto ms_copy = std::make_shared<MotifState>(s);
+        auto ms_copy = std::make_shared<motif::MotifState>(s);
         
         int i = -1 ;
         for(auto const & end : ms->end_states()) {
@@ -73,11 +73,11 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
     }
     
     SECTION("compare motif state align to motif align") {
-        auto m2 = std::make_shared<Motif>(*m);
+        auto m2 = std::make_shared<motif::Motif>(*m);
         auto m_aligned = get_aligned_motif(m->ends()[1], m2->ends()[0], m2);
         
-        auto ms2 = std::make_shared<MotifState>(*ms);
-        auto ms3 = std::make_shared<MotifState>(*ms);
+        auto ms2 = std::make_shared<motif::MotifState>(*ms);
+        auto ms3 = std::make_shared<motif::MotifState>(*ms);
         get_aligned_motif_state(ms->end_states()[1], ms2, ms3);
         
 
@@ -91,10 +91,10 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
     
     SECTION("test getting motif end information") {
         REQUIRE_NOTHROW(ms->get_end_index("A5-A6"));
-        REQUIRE_THROWS_AS(ms->get_end_index("FAKE"), MotifStateException);
+        REQUIRE_THROWS_AS(ms->get_end_index("FAKE"), motif::MotifStateException);
         
         REQUIRE_NOTHROW(ms->get_end_state("A5-A6"));
-        REQUIRE_THROWS_AS(ms->get_end_state("FAKE"), MotifStateException);
+        REQUIRE_THROWS_AS(ms->get_end_state("FAKE"), motif::MotifStateException);
 
         auto end = ms->end_states()[0];
         
@@ -103,7 +103,7 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
     }
 
     SECTION("Test behavior between basepair and basepair state") {
-        auto m_copy = std::make_shared<Motif>(*m);
+        auto m_copy = std::make_shared<motif::Motif>(*m);
 
         auto bp = m_copy->ends()[0];
         auto bp_target = m_copy->ends()[1];
@@ -126,8 +126,8 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
 
     SECTION("test transformation of motif states") {
         auto ms = m->get_state();
-        auto ms_copy = std::make_shared<MotifState>(*ms);
-        auto m_copy = std::make_shared<Motif>(*m);
+        auto ms_copy = std::make_shared<motif::MotifState>(*ms);
+        auto m_copy = std::make_shared<motif::Motif>(*m);
 
         auto t = math::Point(0, 0, 0);
         auto r = rotation_about_x_axis(60);

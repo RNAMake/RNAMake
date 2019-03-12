@@ -12,6 +12,11 @@ TEST_CASE( "Test Resource Manager ", "[ResourceManager]" ) {
     SECTION("test construction of singleton") {
         REQUIRE_NOTHROW(RM::instance());
     }
+
+    SECTION("test storing instance") {
+        auto & rm = RM::instance();
+        auto m = rm.motif("HELIX.IDEAL");
+    }
     
     SECTION("test individual queries") {
         REQUIRE_NOTHROW(RM::instance().motif("HELIX.IDEAL"));

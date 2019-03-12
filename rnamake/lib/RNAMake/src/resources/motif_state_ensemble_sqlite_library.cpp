@@ -20,7 +20,7 @@ MotifStateEnsembleSqliteLibrary::get_libnames() {
 }
 
 
-MotifStateEnsembleOP
+motif::MotifStateEnsembleOP
 MotifStateEnsembleSqliteLibrary::get(
     String const & name,
     String const & id) {
@@ -34,20 +34,20 @@ MotifStateEnsembleSqliteLibrary::get(
     }
     
     if(data_.find(row->id) == data_.end() ) {
-        data_[row->id] = std::make_shared<MotifStateEnsemble>(row->data);
+        data_[row->id] = std::make_shared<motif::MotifStateEnsemble>(row->data);
         
     }
     
-    return std::make_shared<MotifStateEnsemble>(*data_[row->id]);
+    return std::make_shared<motif::MotifStateEnsemble>(*data_[row->id]);
     
 }
 
-MotifStateEnsembleOPs
+motif::MotifStateEnsembleOPs
 MotifStateEnsembleSqliteLibrary::get_multi(
     String const & name,
     String const & id) {
     
-    MotifStateEnsembleOPs motif_state_ensembles;
+    motif::MotifStateEnsembleOPs motif_state_ensembles;
     String query = _generate_query(name, id);
     connection_.query(query);
     auto row = connection_.next();
@@ -58,11 +58,11 @@ MotifStateEnsembleSqliteLibrary::get_multi(
     
     while(row->data.length() != 0) {
         if(data_.find(row->id) == data_.end()) {
-            data_[row->id] = std::make_shared<MotifStateEnsemble>(row->data);
+            data_[row->id] = std::make_shared<motif::MotifStateEnsemble>(row->data);
             
         }
         
-        motif_state_ensembles.push_back(std::make_shared<MotifStateEnsemble>(*data_[row->id]));
+        motif_state_ensembles.push_back(std::make_shared<motif::MotifStateEnsemble>(*data_[row->id]));
         row = connection_.next();
     }
     
@@ -85,7 +85,7 @@ MotifStateEnsembleSqliteLibrary::contains(
     
 }
 
-MotifStateEnsembleOP
+motif::MotifStateEnsembleOP
 MotifStateEnsembleSqliteLibrary::get_random() {
     int pos = rng_.randrange(max_size_);
     return get("", std::to_string(pos));

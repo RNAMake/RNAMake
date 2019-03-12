@@ -12,16 +12,16 @@
 TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     
     auto path = base::motif_dirs() + "base.motif";
-    auto m = file_to_motif(path);
+    auto m = motif::file_to_motif(path);
     path = base::motif_dirs() + "ref.motif";
-    auto ref_m = file_to_motif(path);
+    auto ref_m = motif::file_to_motif(path);
     auto rts = structure::ResidueTypeSet();
     
     REQUIRE(m->ends().size() == 2);
     REQUIRE(m->basepairs().size() == 5);
     
     SECTION("test copy constuctor for motif") {
-        auto m_copy = Motif(*m);
+        auto m_copy = motif::Motif(*m);
         
         REQUIRE(m_copy.ends().size() == 2);
         REQUIRE(m_copy.basepairs().size() == 5);
@@ -45,7 +45,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     
     SECTION("test stringifying motif") {
         auto s = m->to_str();
-        auto m_copy = Motif(s, rts);
+        auto m_copy = motif::Motif(s, rts);
         
         REQUIRE(m_copy.ends().size() == 2);
         REQUIRE(m_copy.basepairs().size() == 5);
@@ -93,7 +93,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     }
     
     SECTION("test getting new unique indentifers") {
-        auto m_copy = Motif(*m);
+        auto m_copy = motif::Motif(*m);
         m_copy.new_res_uuids();
         
         SECTION("all residues and basepairs have new indentifers cant search with originals anymore") {
@@ -118,8 +118,8 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     
     SECTION("test copying uuids from one motif to another") {
         auto path = base::motif_dirs() + "base.motif";
-        auto m1 = file_to_motif(path);
-        auto m2 = file_to_motif(path);
+        auto m1 = motif::file_to_motif(path);
+        auto m2 = motif::file_to_motif(path);
 
         REQUIRE(m1->id() != m2->id());
         m1->copy_uuids_from_motif(*m2);
@@ -142,7 +142,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
 
     SECTION("test steric look based on beads and atoms") {
         auto path = base::motif_dirs() + "ref.motif";
-        auto m1 = file_to_motif(path);
+        auto m1 = motif::file_to_motif(path);
         auto lookup = util::StericLookupNew();
         auto points = math::Points();
         for(auto const & b : m1->get_beads()) {

@@ -26,6 +26,8 @@
 #include "util/motif_type.h"
 #include "motif/motif_state.h"
 
+namespace motif {
+
 class Motif : public structure::RNAStructure {
 public:
     Motif() :
@@ -170,7 +172,7 @@ private:
 
 
 typedef std::shared_ptr<Motif> MotifOP;
-typedef std::vector<MotifOP> MotifOPs;
+typedef std::vector<MotifOP>   MotifOPs;
 
 void
 align_motif(
@@ -207,6 +209,8 @@ clash_between_motifs(
         }
     }
     return 0;
+}
+
 }
 
 

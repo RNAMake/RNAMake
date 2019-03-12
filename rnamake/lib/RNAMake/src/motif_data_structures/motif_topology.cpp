@@ -16,9 +16,9 @@
 MotifTreeOP
 GraphtoTree::convert(
         MotifGraphOP const & mg,
-        data_structure::graph::GraphNodeOP<MotifOP> start,
+        data_structure::graph::GraphNodeOP<motif::MotifOP> start,
         int start_end_index,
-        data_structure::graph::GraphNodeOP<MotifOP> last_node) {
+        data_structure::graph::GraphNodeOP<motif::MotifOP> last_node) {
 
     mt_ = std::make_shared<MotifTree>();
     mt_->set_option_value("sterics", false);
@@ -110,8 +110,8 @@ GraphtoTree::convert(
             auto partner = c->partner(n->index());
             auto pn_id = partner->data()->id();
 
-            auto mt_n1 = data_structure::tree::TreeNodeOP<MotifOP>(nullptr);
-            auto mt_n2 = data_structure::tree::TreeNodeOP<MotifOP>(nullptr);
+            auto mt_n1 = data_structure::tree::TreeNodeOP<motif::MotifOP>(nullptr);
+            auto mt_n2 = data_structure::tree::TreeNodeOP<motif::MotifOP>(nullptr);
             try {
                 mt_n1 = mt_->get_node(n_id);
                 mt_n2 = mt_->get_node(pn_id);
@@ -150,7 +150,7 @@ GraphtoTree::convert(
 GraphtoTree::_GraphtoTreeNodeOP
 GraphtoTree::_get_start_node(
         MotifGraphOP const & mg,
-        data_structure::graph::GraphNodeOP <MotifOP> const & start,
+        data_structure::graph::GraphNodeOP <motif::MotifOP> const & start,
         int start_end_index) {
 
     auto start_n = _GraphtoTreeNodeOP(nullptr);
@@ -171,9 +171,9 @@ GraphtoTree::_get_start_node(
 
 }
 
-MotifOP
+motif::MotifOP
 GraphtoTree::_get_reoriented_motif(
-        MotifOP const & m,
+        motif::MotifOP const & m,
         int end_index) {
 
     // dont need to do anything already oriented
@@ -216,8 +216,8 @@ GraphtoTree::_get_new_nodes(
         GraphtoTree::_GraphtoTreeNodeOP const & current) {
 
     auto new_nodes = _GraphtoTreeNodeOPs();
-    auto partner = data_structure::graph::GraphNodeOP<MotifOP>();
-    auto n = data_structure::tree::TreeNodeOP<MotifOP>();
+    auto partner = data_structure::graph::GraphNodeOP<motif::MotifOP>();
+    auto n = data_structure::tree::TreeNodeOP<motif::MotifOP>();
     auto found = 1;
 
     for (auto const & c : current->node->connections()) {
@@ -252,8 +252,8 @@ GraphtoTree::_get_new_nodes(
 
 int
 GraphtoTree::_get_new_parent_end_index(
-        data_structure::graph::GraphNodeOP <MotifOP> const & parent,
-        data_structure::graph::GraphConnectionOP <MotifOP> const & c) {
+        data_structure::graph::GraphNodeOP <motif::MotifOP> const & parent,
+        data_structure::graph::GraphConnectionOP <motif::MotifOP> const & c) {
 
     if (parent->data()->mtype() != util::MotifType::HELIX) {
         auto parent_end_index = c->end_index(parent->index());
@@ -282,7 +282,7 @@ GraphtoTree::_get_new_parent_end_index(
 MotifTreeOP
 graph_to_tree(
         MotifGraphOP const & mg,
-        data_structure::graph::GraphNodeOP<MotifOP> start,
+        data_structure::graph::GraphNodeOP<motif::MotifOP> start,
         structure::BasepairOP last_end) {
 
     if (start == nullptr) {
@@ -291,23 +291,23 @@ graph_to_tree(
 
     auto mt = std::make_shared<MotifTree>();
     mt->set_option_value("sterics", false);
-    auto open = std::queue<data_structure::graph::GraphNodeOP<MotifOP>>
+    auto open = std::queue<data_structure::graph::GraphNodeOP<motif::MotifOP>>
     ();
-    auto current = data_structure::graph::GraphNodeOP<MotifOP>(nullptr);
+    auto current = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
     auto index = 0;
-    auto m = MotifOP(nullptr);
+    auto m = motif::MotifOP(nullptr);
     open.push(start);
 
-    auto seen_nodes = std::map<data_structure::graph::GraphNodeOP<MotifOP>,
+    auto seen_nodes = std::map<data_structure::graph::GraphNodeOP<motif::MotifOP>,
     int > ();
-    auto current_nodes = std::map<data_structure::graph::GraphNodeOP<MotifOP>,
+    auto current_nodes = std::map<data_structure::graph::GraphNodeOP<motif::MotifOP>,
     int > ();
     auto seen_connections = std::map<String, int>();
     current_nodes[start] = 1;
 
     int highest = -1, pos = -1;
-    auto p = data_structure::graph::GraphNodeOP<MotifOP>(nullptr);
-    auto p_new = data_structure::graph::GraphNodeOP<MotifOP>(nullptr);
+    auto p = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
+    auto p_new = data_structure::graph::GraphNodeOP<motif::MotifOP>(nullptr);
     auto p_end_name = String("");
     auto p_end_index = -1;
     auto p_index = -1;

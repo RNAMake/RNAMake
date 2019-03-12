@@ -6,8 +6,8 @@
 
 
 MotifStateEnsembleGraph::MotifStateEnsembleGraph():
-        graph_(data_structure::graph::GraphStatic<MotifStateEnsembleOP>()),
-        align_list_(data_structure::graph::GraphNodeOPs<MotifStateEnsembleOP>()),
+        graph_(data_structure::graph::GraphStatic<motif::MotifStateEnsembleOP>()),
+        align_list_(data_structure::graph::GraphNodeOPs<motif::MotifStateEnsembleOP>()),
         update_align_list_(1),
         aligned_(std::map<int, int>()) { }
 
@@ -22,7 +22,7 @@ MotifStateEnsembleGraph::MotifStateEnsembleGraph(
 //add function helpers /////////////////////////////////////////////////////////////////////////////
 
 
-data_structure::graph::GraphNodeOP<MotifStateEnsembleOP>
+data_structure::graph::GraphNodeOP<motif::MotifStateEnsembleOP>
 MotifStateEnsembleGraph::_get_parent(
         int parent_index) {
 
@@ -44,7 +44,7 @@ MotifStateEnsembleGraph::_get_parent(
 
 Ints
 MotifStateEnsembleGraph::_get_available_parent_end_pos(
-        data_structure::graph::GraphNodeOP<MotifStateEnsembleOP> const & parent,
+        data_structure::graph::GraphNodeOP<motif::MotifStateEnsembleOP> const & parent,
         int parent_end_index) {
 
     auto avail_pos = Ints();
@@ -85,13 +85,13 @@ MotifStateEnsembleGraph::_get_available_parent_end_pos(
 
 int
 MotifStateEnsembleGraph::add_ensemble(
-        MotifStateEnsembleOP const & ensemble,
+        motif::MotifStateEnsembleOP const & ensemble,
         int parent_index,
         int parent_end_index) {
 
     auto parent = _get_parent(parent_index);
     if(parent == nullptr) {
-        auto pos = graph_.add_data(std::make_shared<MotifStateEnsemble>(*ensemble), -1, -1, -1,
+        auto pos = graph_.add_data(std::make_shared<motif::MotifStateEnsemble>(*ensemble), -1, -1, -1,
                                    (int)ensemble->num_end_states());
         return pos;
     }
@@ -104,7 +104,7 @@ MotifStateEnsembleGraph::add_ensemble(
         throw MotifStateEnsembleGraphException("more than one positions to add ensemble too");
     }
 
-    auto pos = graph_.add_data(std::make_shared<MotifStateEnsemble>(*ensemble), parent->index(), avail_pos[0], 0,
+    auto pos = graph_.add_data(std::make_shared<motif::MotifStateEnsemble>(*ensemble), parent->index(), avail_pos[0], 0,
                                (int)ensemble->num_end_states());
     if(pos != -1) {
         update_align_list_ = 1;

@@ -56,7 +56,7 @@ private: // run helper functions
         String const &,
         String const &);
     
-    MotifOPs
+    motif::MotifOPs
     get_motifs_from_seq_and_ss(
         String const &,
         String const &);

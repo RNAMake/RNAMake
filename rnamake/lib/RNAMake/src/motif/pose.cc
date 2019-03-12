@@ -9,6 +9,8 @@
 #include "structure/chain.h"
 #include "motif/pose.h"
 
+namespace motif {
+
 Pose::Pose(MotifOP const & m) {
     /*structure_ = m->structure();
     basepairs_ = m->basepairs();
@@ -19,19 +21,19 @@ Pose::Pose(MotifOP const & m) {
 }
 
 Pose::Pose(
-    structure::StructureOP const & structure,
-    structure::BasepairOPs const & basepairs) {
+        structure::StructureOP const & structure,
+        structure::BasepairOPs const & basepairs) {
     structure_ = structure;
     basepairs_ = basepairs;
-    designable_ = std::map<util::Uuid, int, util::UuidCompare> ();
+    designable_ = std::map<util::Uuid, int, util::UuidCompare>();
 }
 
-MotifOPs const &
+motif::MotifOPs const &
 Pose::motifs(
-    util::MotifType const & mtype) {
-    
-    if(motifs_.find(mtype) == motifs_.end()) {
-        motifs_[mtype] = MotifOPs();
+        util::MotifType const & mtype) {
+
+    if (motifs_.find(mtype) == motifs_.end()) {
+        motifs_[mtype] = motif::MotifOPs();
     }
     return motifs_[mtype];
 
@@ -45,19 +47,22 @@ Pose::designable_sequence() {
             structure::BasepairOPs bps = get_basepair(r->uuid());
             s = r->short_name();
             for (auto const & bp : bps) {
-                if(designable_.find(bp->uuid()) != designable_.end() ){
-                    s = "N"; break;
+                if (designable_.find(bp->uuid()) != designable_.end()) {
+                    s = "N";
+                    break;
                 }
             }
             seq += s;
         }
         seq += "&";
     }
-    
-    return seq.substr(0, seq.length()-1);
+
+    return seq.substr(0, seq.length() - 1);
 }
 
 void
 Pose::set_bp_designable(structure::BasepairOP const & bp) {
     designable_[bp->uuid()] = 1;
+}
+
 }

@@ -59,7 +59,7 @@ private:
     void
     update(
         int,
-        MotifStateEnsembleMemberOP const &);
+        motif::MotifStateEnsembleMemberOP const &);
     
 
     
@@ -95,10 +95,10 @@ private:
     float energy_;
     MotifStateEnsembleTreeNodeOP mset_node_;
     MotifStateTreeNodeOP mst_node_;
-    MotifStateEnsembleMemberOP new_mem_;
+    motif::MotifStateEnsembleMemberOP new_mem_;
     //hold last move to undo
     int last_state_pos_, last_num_;
-    MotifStateOP last_state_;
+    motif::MotifStateOP last_state_;
     
     
 };

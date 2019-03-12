@@ -101,7 +101,7 @@ private:
     _get_scorer(
             String const &);
 
-    MotifOPs
+    motif::MotifOPs
     get_motifs_from_seq_and_ss(
         String const &,
         String const &);
