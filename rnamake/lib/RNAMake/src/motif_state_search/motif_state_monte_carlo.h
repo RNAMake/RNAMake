@@ -90,7 +90,7 @@ private:
 
     double
     get_score(
-            BasepairStateOP);
+            structure::BasepairStateOP);
 
     float
     perform_motif_swap(
@@ -154,7 +154,7 @@ private:
     math::Points beads_;
     base::Options options_;
     std::vector<MotifStateOPs> mses_;
-    BasepairStateOP end_, end_flip_;
+    structure::BasepairStateOP end_, end_flip_;
     MotifStateOP start_m_;
     MotifStateGraphOP msg_;
     double score_, r_diff_, r_diff_flip_;

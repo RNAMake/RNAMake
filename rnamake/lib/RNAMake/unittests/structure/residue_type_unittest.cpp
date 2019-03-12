@@ -13,7 +13,7 @@ TEST_CASE("Test ResidueType for Structure", "[ResidueType]" ) {
         auto name = String("GUA");
         auto atom_map = StringIntMap();
         atom_map["P"] = 0;
-        auto rt = ResidueType(name, atom_map, SetType::RNA);
+        auto rt = structure::ResidueType(name, atom_map, structure::SetType::RNA);
         
         REQUIRE(rt.short_name() == "G");
         REQUIRE(rt.atom_pos_by_name("P") == 0);
@@ -24,7 +24,7 @@ TEST_CASE("Test ResidueType for Structure", "[ResidueType]" ) {
         auto name = String("GUA");
         auto atom_map = StringIntMap();
         atom_map["P"] = 0;
-        auto rt = ResidueType(name, atom_map, SetType::RNA);
+        auto rt = structure::ResidueType(name, atom_map, structure::SetType::RNA);
         auto names = Strings{"GUA", "G", "rG"};
         
         for(auto const & n : names) {
@@ -35,7 +35,7 @@ TEST_CASE("Test ResidueType for Structure", "[ResidueType]" ) {
 
     }
     
-    auto rts = ResidueTypeSet();
+    auto rts = structure::ResidueTypeSet();
     
     SECTION("Does a residue type exist in set") {
         
@@ -58,7 +58,7 @@ TEST_CASE("Test ResidueType for Structure", "[ResidueType]" ) {
         auto rt = rts.get_rtype_by_resname("GUA");
         
         REQUIRE(rt.short_name() == "G");
-        REQUIRE_THROWS_AS(rts.get_rtype_by_resname("FAKE"), ResidueTypeException);
+        REQUIRE_THROWS_AS(rts.get_rtype_by_resname("FAKE"), structure::ResidueTypeException);
         
     }
     

@@ -180,7 +180,7 @@ public: //motif tree wrappers
     }
     
     inline
-    RNAStructureOP 
+    structure::RNAStructureOP
     get_structure() { return to_motif_tree()->get_structure(); }
     
 public: //tree wrapers

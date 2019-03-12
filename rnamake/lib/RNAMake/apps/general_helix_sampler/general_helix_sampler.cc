@@ -85,8 +85,8 @@ GeneralHelixSampler::run() {
         throw GeneralHelixSamplerException("must supply pdb or motif");
     }
 
-    auto start_bp = BasepairOP(nullptr);
-    auto end_bp = BasepairOP(nullptr);
+    auto start_bp = structure::BasepairOP(nullptr);
+    auto end_bp = structure::BasepairOP(nullptr);
     auto start_bp_str = get_string_option("start_bp");
     auto end_bp_str = get_string_option("end_bp");
 
@@ -108,8 +108,8 @@ GeneralHelixSampler::run() {
     end_bp->bp_type("cW-W");
 
     auto mf = MotifFactory();
-    auto start = mf.motif_from_bps(BasepairOPs{start_bp, end_bp});
-    start->ends(BasepairOPs{start_bp, end_bp});
+    auto start = mf.motif_from_bps(structure::BasepairOPs{start_bp, end_bp});
+    start->ends(structure::BasepairOPs{start_bp, end_bp});
     auto ref_m = mf.ref_motif();
 
     start->name("start");

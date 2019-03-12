@@ -13,10 +13,10 @@
 
 secondary_structure::RNAStructureOP
 MotiftoSecondaryStructure::to_secondary_structure(
-    RNAStructureOP const & motif) {
+    structure::RNAStructureOP const & motif) {
     
-    BasepairOP saved_bp;
-    BasepairOPs bps;
+    structure::BasepairOP saved_bp;
+    structure::BasepairOPs bps;
     secondary_structure::ChainOPs ss_chains;
     
     reset();
@@ -24,8 +24,8 @@ MotiftoSecondaryStructure::to_secondary_structure(
     open_chains_.push(chains_[0]);
     chains_.erase(chains_.begin());
     
-    ChainOP best_chain;
-    ResidueOP partner_r;
+    structure::ChainOP best_chain;
+    structure::ResidueOP partner_r;
     String ss;
     int passes = 0;
     while (! open_chains_.empty() ) {
@@ -90,11 +90,11 @@ MotiftoSecondaryStructure::to_secondary_structure(
 
 }
 
-ChainOP
+structure::ChainOP
 MotiftoSecondaryStructure::_get_next_chain(
-    RNAStructureOP const & motif) {
+    structure::RNAStructureOP const & motif) {
     
-    BasepairOPs bps;
+    structure::BasepairOPs bps;
     int best_score = -1;
     int score = 0;
     for(auto const & c : chains_) {
@@ -112,7 +112,7 @@ MotiftoSecondaryStructure::_get_next_chain(
         }
     }
     
-    ChainOPs best_chains;
+    structure::ChainOPs best_chains;
     for(auto const & c : chains_) {
         score = 0;
         for(auto const & r : c->residues()) {
@@ -128,7 +128,7 @@ MotiftoSecondaryStructure::_get_next_chain(
         }
     }
     
-    ChainOP best_chain;
+    structure::ChainOP best_chain;
     best_score = 10000;
     for(auto const & c : best_chains) {
         int pos = 1000;
@@ -155,7 +155,7 @@ MotiftoSecondaryStructure::_get_next_chain(
 secondary_structure::RNAStructureOP
 MotiftoSecondaryStructure::_setup_basepairs_and_ends(
     secondary_structure::StructureOP & struc,
-    RNAStructureOP const & motif) {
+    structure::RNAStructureOP const & motif) {
     
     secondary_structure::BasepairOPs ss_bps, ss_ends;
     for(auto const & kv : seen_bp_) {

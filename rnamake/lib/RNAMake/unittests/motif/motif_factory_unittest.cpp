@@ -76,7 +76,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         
         }
         
-        m_bps = mf.motif_from_bps(BasepairOPs{bps[0]});
+        m_bps = mf.motif_from_bps(structure::BasepairOPs{bps[0]});
         REQUIRE(m_bps->ends().size() == 1);
         
     }

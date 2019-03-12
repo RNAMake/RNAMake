@@ -8,8 +8,8 @@
 #include "structure/is_equal.hpp"
 
 
-TEST_CASE( "Load all PDBs", "[PDBParser]" ) {
-    auto parser = PDBParser();
+TEST_CASE( "Load all PDBs", "[structure::PDBParser]" ) {
+    auto parser = structure::PDBParser();
     
     SECTION("compare all parsed structures to python counterpart") {
         
@@ -25,7 +25,7 @@ TEST_CASE( "Load all PDBs", "[PDBParser]" ) {
             auto s_path = base + "/" + spl[0] + "/" + spl[0] + ".pdb";
             auto res = parser.parse(s_path);
             
-            auto chains = ChainOPs();
+            auto chains = structure::ChainOPs();
             connect_residues_into_chains(res, chains);
             auto seq = String("");
             for(auto const & c : chains) {

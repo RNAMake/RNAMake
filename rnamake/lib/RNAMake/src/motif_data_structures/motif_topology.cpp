@@ -283,7 +283,7 @@ MotifTreeOP
 graph_to_tree(
         MotifGraphOP const & mg,
         data_structure::graph::GraphNodeOP<MotifOP> start,
-        BasepairOP last_end) {
+        structure::BasepairOP last_end) {
 
     if (start == nullptr) {
         start = mg->oldest_node();

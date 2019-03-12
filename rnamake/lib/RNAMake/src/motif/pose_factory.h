@@ -27,8 +27,8 @@ public:
 public:
     PoseOP
     pose_from_motif_tree(
-        StructureOP const &,
-        BasepairOPs const &,
+        structure::StructureOP const &,
+        structure::BasepairOPs const &,
         MotifOPs const &,
         std::map<util::Uuid, int, util::UuidCompare> const &);
     

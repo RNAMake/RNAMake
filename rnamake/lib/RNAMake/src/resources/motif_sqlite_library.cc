@@ -52,7 +52,7 @@ MotifSqliteLibrary::get(
     
     if(data_.find(row->id) == data_.end() ) {
         data_[row->id] = std::make_shared<Motif>(row->data,
-                                                 ResidueTypeSetManager::getInstance().residue_type_set());
+                                                 structure::ResidueTypeSetManager::getInstance().residue_type_set());
     }
     
     auto m = std::make_shared<Motif>(*data_[row->id]);
@@ -81,7 +81,7 @@ MotifSqliteLibrary::get_multi(
     while(row->data.length() != 0) {
         if(data_.find(row->id) == data_.end()) {
             data_[row->id] = std::make_shared<Motif>(row->data,
-                                                     ResidueTypeSetManager::getInstance().residue_type_set());
+                                                     structure::ResidueTypeSetManager::getInstance().residue_type_set());
         }
         
         motifs.push_back(std::make_shared<Motif>(*data_[row->id]));

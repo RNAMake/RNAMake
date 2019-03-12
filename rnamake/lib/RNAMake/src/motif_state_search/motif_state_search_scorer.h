@@ -26,16 +26,16 @@ public:
     
     void
     set_target(
-            BasepairStateOP const & target,
+            structure::BasepairStateOP const & target,
             bool target_an_aligned_end = false);
 
 
     inline
     float
     weighted_score(
-            BasepairStateOP const & current,
-            BasepairStateOP const & end,
-            BasepairStateOP const & endflip) {
+            structure::BasepairStateOP const & current,
+            structure::BasepairStateOP const & end,
+            structure::BasepairStateOP const & endflip) {
 
         float d_diff = current->d().distance(end->d());
 
@@ -100,7 +100,7 @@ public:
     }
     
 protected:
-    BasepairStateOP target_, target_flip_;
+    structure::BasepairStateOP target_, target_flip_;
     float best_score_, score_, r_diff_, r_diff_flip_;
     bool target_an_aligned_end_;
     

@@ -24,7 +24,7 @@ TEST_CASE( "Test Motif Ensembles", "[MotifEnsemble]" ) {
     
     SECTION("test stringifying motif ensemble") {
         auto s = me.to_str();
-        auto rts = ResidueTypeSet();
+        auto rts = structure::ResidueTypeSet();
         auto me_copy = MotifEnsemble(s, rts);
         
         REQUIRE(me_copy.size() == 1);

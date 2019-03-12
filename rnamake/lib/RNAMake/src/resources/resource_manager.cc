@@ -109,7 +109,7 @@ RM::motif_state_ensemble(
 
 // add functions  //////////////////////////////////////////////////////////////////////////////////
 
-RNAStructureOP
+structure::RNAStructureOP
 RM::get_structure(
         String const & path,
         String name,
@@ -247,7 +247,7 @@ RM::register_extra_motif_ensembles(
         if(l.length() < 10) { continue; }
         auto spl = base::split_str_by_delimiter(l, "!!");
         extra_me_[spl[0]] = std::make_shared<MotifEnsemble>(spl[1],
-            ResidueTypeSetManager::getInstance().residue_type_set());
+            structure::ResidueTypeSetManager::getInstance().residue_type_set());
         
         for(auto const & mem : extra_me_[spl[0]]->members()) {
             try{

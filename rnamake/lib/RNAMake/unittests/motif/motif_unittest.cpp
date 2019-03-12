@@ -15,7 +15,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     auto m = file_to_motif(path);
     path = base::motif_dirs() + "ref.motif";
     auto ref_m = file_to_motif(path);
-    auto rts = ResidueTypeSet();
+    auto rts = structure::ResidueTypeSet();
     
     REQUIRE(m->ends().size() == 2);
     REQUIRE(m->basepairs().size() == 5);

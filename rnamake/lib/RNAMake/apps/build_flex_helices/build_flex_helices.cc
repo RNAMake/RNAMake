@@ -217,7 +217,7 @@ BuildFlexHelicesApp::get_avg_helix(
     m->score(score);
 
     //auto s = m->to_str();
-    //auto m2 = std::make_shared<Motif>(s, ResidueTypeSetManager::getInstance().residue_type_set());
+    //auto m2 = std::make_shared<Motif>(s, structure::ResidueTypeSetManager::getInstance().residue_type_set());
 
     //std::cout << i << std::endl;
 

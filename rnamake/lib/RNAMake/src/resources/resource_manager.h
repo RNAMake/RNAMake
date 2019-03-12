@@ -77,7 +77,7 @@ public: // getting functions
     
 public: // adding functions
 
-    RNAStructureOP
+    structure::RNAStructureOP
     get_structure(
         String const & path,
         String name = "",

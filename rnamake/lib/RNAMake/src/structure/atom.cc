@@ -10,6 +10,8 @@
 #include "math/xyz_vector.h"
 #include "structure/atom.h"
 
+namespace structure {
+
 String
 Atom::to_str() {
     return name_ + " " + vector_to_str(coords_);
@@ -17,10 +19,13 @@ Atom::to_str() {
 
 String
 Atom::to_pdb_str(
-    int acount) {
+        int acount) {
 
-    char buffer [200];
-    std::sprintf(buffer, "ATOM %6d  P   C   A   1 %11.3f%8.3f%8.3f  1.00 62.18           P\n", acount, coords_[0], coords_[1], coords_[2]);
+    char buffer[200];
+    std::sprintf(buffer, "ATOM %6d  P   C   A   1 %11.3f%8.3f%8.3f  1.00 62.18           P\n", acount, coords_[0],
+                 coords_[1], coords_[2]);
     return String(buffer);
+
+}
 
 }

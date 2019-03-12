@@ -52,7 +52,7 @@ int main(int argc, const char * argv[]) {
     auto beads = mg->beads();
     auto centers = math::Points();
     for(auto const & b : beads) {
-        if(b.btype() != BeadType::PHOS) {
+        if(b.btype() != structure::BeadType::PHOS) {
             centers.push_back(b.center());
         }
     }

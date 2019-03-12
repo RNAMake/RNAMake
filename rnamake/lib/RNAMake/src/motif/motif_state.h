@@ -40,7 +40,7 @@ public:
         String const & name,
         Strings const & end_names,
         Strings const & end_ids,
-        BasepairStateOPs const & end_states,
+        structure::BasepairStateOPs const & end_states,
         math::Points const & beads,
         float const & score,
         int const & size,
@@ -61,7 +61,7 @@ public:
         String const & name,
         Strings const & end_names,
         Strings const & end_ids,
-        BasepairStateOPs const & end_states,
+        structure::BasepairStateOPs const & end_states,
         math::Points const & beads,
         float const & score,
         int const & size,
@@ -84,7 +84,7 @@ public:
     name_(ms.name_),
     end_names_(ms.end_names_),
     end_ids_(ms.end_ids_),
-    end_states_(BasepairStateOPs(ms.end_states_.size())),
+    end_states_(structure::BasepairStateOPs(ms.end_states_.size())),
     beads_(ms.beads_),
     score_(ms.score_),
     size_(ms.size_),
@@ -92,7 +92,7 @@ public:
     uuid_(ms.uuid_) {
         int i = 0;
         for(auto const & bp_state : ms.end_states_) {
-            end_states_[i] = std::make_shared<BasepairState>(*bp_state);
+            end_states_[i] = std::make_shared<structure::BasepairState>(*bp_state);
             i++;
         }
     }
@@ -109,9 +109,9 @@ public:
         beads_ = math::vectors_from_str(spl[4]);
         end_names_ = base::split_str_by_delimiter(spl[5], ",");
         end_ids_ = base::split_str_by_delimiter(spl[6], ",");
-        end_states_ = BasepairStateOPs();
+        end_states_ = structure::BasepairStateOPs();
         for(int i = 7; i < spl.size(); i++) {
-            auto bp_state = std::make_shared<BasepairState>(spl[i]);
+            auto bp_state = std::make_shared<structure::BasepairState>(spl[i]);
             end_states_.push_back(bp_state);
         }
         uuid_ = util::Uuid();
@@ -169,13 +169,13 @@ public:
     String
     to_str();
     
-    BasepairStateOP const &
+    structure::BasepairStateOP const &
     get_end_state(
         String const &);
     
     int
     get_end_index(
-        BasepairStateOP const &);
+        structure::BasepairStateOP const &);
     
     int
     get_end_index(
@@ -196,7 +196,7 @@ public: // getters
     end_ids() { return end_ids_; }
     
     inline
-    BasepairStateOPs  &
+    structure::BasepairStateOPs  &
     end_states() { return end_states_; }
     
     inline
@@ -231,7 +231,7 @@ public:
     void
     update_end_state(
         int i,
-        BasepairState const & new_state) {
+        structure::BasepairState const & new_state) {
         end_states_[i]->set(new_state);
     }
     
@@ -252,7 +252,7 @@ private:
     String name_;
     Strings end_names_;
     Strings end_ids_;
-    BasepairStateOPs end_states_;
+    structure::BasepairStateOPs end_states_;
     math::Points beads_;
     float score_;
     int size_;
@@ -268,10 +268,10 @@ typedef std::vector<MotifStateOP>   MotifStateOPs;
 inline
 void
 align_motif_state(
-    BasepairStateOP const & ref_bp_state,
+    structure::BasepairStateOP const & ref_bp_state,
     MotifStateOP & org_state) {
     
-    BasepairState bp_state, bp_state_final;
+    structure::BasepairState bp_state, bp_state_final;
     
     ref_bp_state->get_transforming_r_and_t(*org_state->end_states()[0], bp_state);
     for(int i = 0; i < org_state->end_states().size(); i++) {
@@ -289,11 +289,11 @@ align_motif_state(
 inline
 void
 get_aligned_motif_state(
-    BasepairStateOP const & ref_bp_state,
+    structure::BasepairStateOP const & ref_bp_state,
     MotifStateOP & cur_state,
     MotifStateOP const & org_state) {
     
-    BasepairState bp_state, bp_state_final;
+    structure::BasepairState bp_state, bp_state_final;
     
     ref_bp_state->get_transforming_r_and_t(*org_state->end_states()[0], bp_state);
     for(int i = 0; i < org_state->end_states().size(); i++) {

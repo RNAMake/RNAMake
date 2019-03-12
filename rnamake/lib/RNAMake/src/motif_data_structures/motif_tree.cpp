@@ -118,7 +118,7 @@ MotifTree::_setup_from_str(
         if(n_str.length() < 10) { break; }
         auto n_spl = base::split_str_by_delimiter(n_str, "^");
         auto m = std::make_shared<Motif>(n_spl[0],
-                                         ResidueTypeSetManager::getInstance().residue_type_set());
+                                         structure::ResidueTypeSetManager::getInstance().residue_type_set());
         try {
             auto m2 = RM::instance().motif(m->name());
         } catch(ResourceManagerException const & e) {
@@ -219,9 +219,9 @@ MotifTree::_steric_clash(MotifOP const & m) {
     float dist = 0;
     for(auto const & n : tree_) {
         for(auto const & c1 : n->data()->beads()) {
-            if(c1.btype() == BeadType::PHOS) { continue; }
+            if(c1.btype() == structure::BeadType::PHOS) { continue; }
             for(auto const & c2 : m->beads()) {
-                if(c2.btype() == BeadType::PHOS) { continue; }
+                if(c2.btype() == structure::BeadType::PHOS) { continue; }
                 dist = c1.center().distance(c2.center());
                 if(dist < clash_radius_) { return 1; }
             }
@@ -293,7 +293,7 @@ MotifTree::add_motif(
     try{
         parent_end_index = parent->data()->get_end_index(parent_end_name);
     }
-    catch(RNAStructureException) {
+    catch(structure::RNAStructureException) {
         throw MotifTreeException(
             "cannot find parent_end_name: " + parent_end_name +
             " cannot add motif: " + m->name());
@@ -500,9 +500,9 @@ MotifTree::_update_merger() {
 //getters //////////////////////////////////////////////////////////////////////////////////////////
 
 
-Beads
+structure::Beads
 MotifTree::beads() {
-    auto beads = Beads();
+    auto beads = structure::Beads();
     for(auto const & n : tree_) {
         for(auto b : n->data()->beads()) {
             beads.push_back(b);

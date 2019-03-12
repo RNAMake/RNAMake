@@ -8,10 +8,11 @@
 
 #include "structure/basepair.h"
 
+namespace structure {
 
 Basepair
 Basepair::copy() {
-    Basepair cbp ( res1_, res2_, bp_state_->r(), bp_type_);
+    Basepair cbp(res1_, res2_, bp_state_->r(), bp_type_);
     cbp.flipped_ = flipped_;
     cbp.uuid_ = uuid_;
     return cbp;
@@ -48,18 +49,19 @@ Basepair::to_pdb(String const fname) const {
 bool
 wc_bp(BasepairOP const & bp) {
     String bp_str = bp->res1()->short_name() + bp->res2()->short_name();
-    if(bp_str.compare("GC") == 0) { return true; }
-    if(bp_str.compare("CG") == 0) { return true; }
-    if(bp_str.compare("AU") == 0) { return true; }
-    if(bp_str.compare("UA") == 0) { return true; }
+    if (bp_str.compare("GC") == 0) { return true; }
+    if (bp_str.compare("CG") == 0) { return true; }
+    if (bp_str.compare("AU") == 0) { return true; }
+    if (bp_str.compare("UA") == 0) { return true; }
     return false;
 }
 
 bool
 gu_bp(BasepairOP const & bp) {
     String bp_str = bp->res1()->short_name() + bp->res2()->short_name();
-    if(bp_str.compare("GU") == 0) { return true; }
-    if(bp_str.compare("UG") == 0) { return true; }
+    if (bp_str.compare("GU") == 0) { return true; }
+    if (bp_str.compare("UG") == 0) { return true; }
     return false;
 }
 
+}

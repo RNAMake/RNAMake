@@ -83,7 +83,7 @@ DesignRNAApp::_setup_sterics() {
     for (auto & n : *mg_) {
         n->data()->get_beads(n->data()->ends());
         for (auto const & b : n->data()->beads()) {
-            if (b.btype() == BeadType::PHOS) { continue; }
+            if (b.btype() == structure::BeadType::PHOS) { continue; }
             beads.push_back(b.center());
         }
 
@@ -142,7 +142,7 @@ DesignRNAApp::_setup_from_pdb() {
     }
 
 
-    auto bps = BasepairOPs{start_bps[0], end_bps[0]};
+    auto bps = structure::BasepairOPs{start_bps[0], end_bps[0]};
 
     //if (get_bool_option("no_segment")) {
     RM::instance().add_motif(get_string_option("pdb"), "scaffold", util::MotifType::TWOWAY);

@@ -19,8 +19,8 @@ Pose::Pose(MotifOP const & m) {
 }
 
 Pose::Pose(
-    StructureOP const & structure,
-    BasepairOPs const & basepairs) {
+    structure::StructureOP const & structure,
+    structure::BasepairOPs const & basepairs) {
     structure_ = structure;
     basepairs_ = basepairs;
     designable_ = std::map<util::Uuid, int, util::UuidCompare> ();
@@ -42,7 +42,7 @@ Pose::designable_sequence() {
     String seq, s;
     for (auto const & c : chains()) {
         for (auto const & r : c->residues()) {
-            BasepairOPs bps = get_basepair(r->uuid());
+            structure::BasepairOPs bps = get_basepair(r->uuid());
             s = r->short_name();
             for (auto const & bp : bps) {
                 if(designable_.find(bp->uuid()) != designable_.end() ){
@@ -58,6 +58,6 @@ Pose::designable_sequence() {
 }
 
 void
-Pose::set_bp_designable(BasepairOP const & bp) {
+Pose::set_bp_designable(structure::BasepairOP const & bp) {
     designable_[bp->uuid()] = 1;
 }

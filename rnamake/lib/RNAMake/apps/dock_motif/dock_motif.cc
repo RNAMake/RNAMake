@@ -211,10 +211,10 @@ DockMotifApp::_calc_motif_center(
     return m_center;
 }
 
-ResidueOP
+structure::ResidueOP
 DockMotifApp::_parse_ligand_for_center_coords() {
     auto ligand_pdb_path = get_string_option("ligand");
-    auto pdb_parser = PDBParser();
+    auto pdb_parser = structure::PDBParser();
     auto res = pdb_parser.parse(ligand_pdb_path, 0, 0, 1);
     if(res.size() == 0) {
         throw DockMotifAppException(

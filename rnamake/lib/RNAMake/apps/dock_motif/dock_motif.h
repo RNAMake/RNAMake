@@ -64,7 +64,7 @@ private: // search functions
             math::Point const &);
 
 private:
-    ResidueOP
+    structure::ResidueOP
     _parse_ligand_for_center_coords();
 
     math::Point

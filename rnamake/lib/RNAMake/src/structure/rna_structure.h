@@ -18,6 +18,7 @@
 #include "structure/basepair.h"
 #include "structure/residue.h"
 
+namespace structure {
 
 /*
  * Exception for RNA Structure
@@ -45,7 +46,7 @@ public:
             ends_(ends) {}
 
     RNAStructure(
-            RNAStructure const & rs):
+            RNAStructure const & rs) :
             structure_(rs.structure_),
             basepairs_(rs.basepairs_),
             ends_(rs.ends_),
@@ -185,29 +186,35 @@ public: //setters
 
     inline
     void
-    name(String const & nname) { name_ = nname; }
+    name(
+            String const & nname) { name_ = nname; }
 
     inline
     void
-    path(String const & npath) { path_ = npath; }
+    path(
+            String const & npath) { path_ = npath; }
 
     inline
     void
-    score(float const & nscore) { score_ = nscore; }
+    score(
+            float const & nscore) { score_ = nscore; }
 
     inline
     void
-    end_ids(Strings const & end_ids) {
+    end_ids(
+            Strings const & end_ids) {
         end_ids_ = end_ids;
     }
 
     inline
     void
-    ends(BasepairOPs const & ends) { ends_ = ends; }
+    ends(
+            BasepairOPs const & ends) { ends_ = ends; }
 
     inline
     void
-    protein_beads(Beads const & beads) { protein_beads_ = beads; }
+    protein_beads(
+            Beads const & beads) { protein_beads_ = beads; }
 
 
 protected:
@@ -233,6 +240,7 @@ subselect_basepairs_with_res(
         ResidueOPs const &,
         BasepairOPs const &);
 
+}
 
 #endif /* defined(RNAMAKE_LIB_RNAMAKE_SRC_STRUCTURE_RNA_STRUCTURE_H_) */
 

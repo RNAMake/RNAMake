@@ -14,20 +14,21 @@
 #include "structure/chain.h"
 #include "structure/chain.fwd.h"
 
+namespace structure {
 
 void
 Structure::renumber() {
     int i = 1, j = 0;
     auto chain_ids = base::split_str_by_delimiter("A B C D E F G H I J K L M", " ");
-    for(auto & c : chains_) {
-        for(auto & r : c->residues()) {
+    for (auto & c : chains_) {
+        for (auto & r : c->residues()) {
             r->num(i);
             r->chain_id(chain_ids[j]);
             i++;
         }
         j++;
     }
-    
+
 }
 
 ResidueOPs const
@@ -43,11 +44,11 @@ Structure::residues() const {
 
 ResidueOP const
 Structure::get_residue(
-    int const & num,
-    String const & chain_id,
-    String const & i_code) {
-    for( auto & c : chains_) {
-        for (auto & r : c->residues() ){
+        int const & num,
+        String const & chain_id,
+        String const & i_code) {
+    for (auto & c : chains_) {
+        for (auto & r : c->residues()) {
             if (num == r->num() && chain_id.compare(r->chain_id()) == 0 && i_code.compare(r->i_code()) == 0) {
                 return r;
             }
@@ -58,47 +59,47 @@ Structure::get_residue(
 
 ResidueOP const
 Structure::get_residue(
-    util::Uuid const & uuid) {
-    for( auto & c : chains_) {
-        for (auto & r : c->residues() ){
-            if ( r->uuid() == uuid) { return r; }
+        util::Uuid const & uuid) {
+    for (auto & c : chains_) {
+        for (auto & r : c->residues()) {
+            if (r->uuid() == uuid) { return r; }
         }
     }
-    
+
     return ResidueOP(NULL);
 }
 
 String
 Structure::to_pdb_str(
-    int renumber,
-    int conect_statements) {
-    
+        int renumber,
+        int conect_statements) {
+
     int rnum = -1;
     String chain_id = "";
-    
-    if(renumber != -1) {
+
+    if (renumber != -1) {
         rnum = 1;
         chain_id = "A";
     }
-    
+
     int acount = 1;
     String s;
     for (auto const & c : chains_) {
         s += c->to_pdb_str(acount, rnum, chain_id);
-        if(renumber != -1) {
-            rnum += (int)c->residues().size();
+        if (renumber != -1) {
+            rnum += (int) c->residues().size();
         }
         s += "TER\n";
     }
 
-    if(conect_statements) {
+    if (conect_statements) {
         int a_count = 0;
         int o3_pos = 9;
         int p_pos = 1;
-        for(auto const & c : chains_) {
-            for(int i = 0; i < c->residues().size()-1; i++) {
+        for (auto const & c : chains_) {
+            for (int i = 0; i < c->residues().size() - 1; i++) {
                 int r_size = c->residues()[i]->atoms().size();
-                if(!c->residues()[i]->connected_to(*c->residues()[i+1], 1.8)) {
+                if (!c->residues()[i]->connected_to(*c->residues()[i + 1], 1.8)) {
                     s += "CONECT " + std::to_string(a_count + o3_pos) + " " + std::to_string(a_count + r_size + p_pos) +
                          "\n";
                 }
@@ -131,6 +132,8 @@ Structure::to_pdb(
     String s = to_pdb_str(renumber, conect_statements);
     out << s << std::endl;
     out.close();
+}
+
 }
 
 

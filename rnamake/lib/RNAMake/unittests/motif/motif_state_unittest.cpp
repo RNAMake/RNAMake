@@ -112,8 +112,8 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         auto bp_state = bp->state();
         auto bp_state_target = bp_target->state();
         auto s = bp_state->to_str();
-        auto dummy = BasepairState();
-        bp_state = std::make_shared<BasepairState>(s);
+        auto dummy = structure::BasepairState();
+        bp_state = std::make_shared<structure::BasepairState>(s);
 
         bp_state_target->get_transforming_r_and_t(*bp_state, dummy);
 

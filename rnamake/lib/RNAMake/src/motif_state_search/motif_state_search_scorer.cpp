@@ -10,11 +10,11 @@
 
 void
 MotifStateSearchScorer::set_target(
-        BasepairStateOP const & target,
+        structure::BasepairStateOP const & target,
         bool target_an_aligned_end) {
     target_ = target;
     target_an_aligned_end_ = target_an_aligned_end;
-    target_flip_ = BasepairStateOP ( new BasepairState ( target_->copy() ));
+    target_flip_ = structure::BasepairStateOP ( new structure::BasepairState ( target_->copy() ));
     target_flip_->flip();
     
 }

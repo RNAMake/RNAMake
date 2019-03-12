@@ -55,8 +55,8 @@ MotifStateSearch::update_var_options() {
 
 void
 MotifStateSearch::setup(
-        BasepairStateOP const & start,
-        BasepairStateOP const & end,
+        structure::BasepairStateOP const & start,
+        structure::BasepairStateOP const & end,
         bool target_an_aligned_end) {
 
     target_an_aligned_end_ = target_an_aligned_end;
@@ -276,11 +276,11 @@ MotifStateSearch::_search() {
 
 MotifStateSearchNodeOP
 MotifStateSearch::_start_node(
-    BasepairStateOP const & start_bp) {
+    structure::BasepairStateOP const & start_bp) {
     
     auto ms = std::make_shared<MotifState>("start", Strings {"start", "start"},
                                            Strings {"", ""},
-                                           BasepairStateOPs { start_bp, start_bp},
+                                           structure::BasepairStateOPs { start_bp, start_bp},
                                            math::Points(), 0, 0, 0);
     
     auto n = std::make_shared<MotifStateSearchNode>(ms, nullptr, -1, -1);

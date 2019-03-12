@@ -24,7 +24,7 @@ MotifState::to_str() {
     return s;
 }
 
-BasepairStateOP const &
+structure::BasepairStateOP const &
 MotifState::get_end_state(
     String const & name) {
     
@@ -41,7 +41,7 @@ MotifState::get_end_state(
 
 int
 MotifState::get_end_index(
-    BasepairStateOP const & end_state) {
+    structure::BasepairStateOP const & end_state) {
     
     if(std::find(end_states_.begin(), end_states_.end(), end_state) == end_states_.end()) {
         throw MotifStateException(

@@ -9,6 +9,8 @@
 #include "math/xyz_vector.h"
 #include "math/transform.h"
 
+namespace structure {
+
 /**
  * Stores atomic information from pdb file, design is to be extremely
  * lightweight only storing the atom name and coordinates.
@@ -26,7 +28,7 @@
 
 class Atom {
 public:
-  
+
     /**
      * Standard constructor for Atom object.
      * @param   name    name of atom
@@ -34,12 +36,11 @@ public:
      */
     inline
     Atom(
-        String const & name,
-        math::Point const & coords):
-    name_ ( name ),
-    coords_ ( coords )
-    {}
-    
+            String const & name,
+            math::Point const & coords) :
+            name_(name),
+            coords_(coords) {}
+
     /**
      * Construction from String, used in reading data from files
      * @param   s   string generated from to_str()
@@ -54,26 +55,25 @@ public:
      */
     inline
     Atom(
-        String const & s) {
-        
+            String const & s) {
+
         auto spl = base::split_str_by_delimiter(s, " ");
-        name_   = spl[0];
+        name_ = spl[0];
         coords_ = math::Point(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
     }
-    
+
     /**
      * Copy constructor
      * @param   a   atom object to from
      */
     inline
     Atom(
-         Atom const & a):
-    name_(a.name_),
-    coords_(a.coords_)
-    { }
-    
+            Atom const & a) :
+            name_(a.name_),
+            coords_(a.coords_) {}
+
 public:
-    
+
     /**
      * Strigifies atom object
      * @code
@@ -84,7 +84,7 @@ public:
      * @endcode
      */
     String to_str();
-    
+
     /**
      * Strigifies atom into PDB format
      * @param   acount  the number of the atom, default=1
@@ -118,14 +118,14 @@ public: // non const methods
     }
 
 public: //accessors
-    
+
     /**
      * Accessor for name_
      */
     inline
     String const &
     name() const { return name_; }
-    
+
     /**
      * Accessor for coords_
      */
@@ -135,38 +135,38 @@ public: //accessors
 
 
 public: // setters
-    
+
     /**
      * Setter for coords_
      */
     inline
     void
     coords(
-        math::Point const & ncoords) {
+            math::Point const & ncoords) {
         coords_ = ncoords;
     }
-    
+
     /**
      * Setter for name_
      */
     inline
     void
     name(
-        String const & nname) {
+            String const & nname) {
         name_ = nname;
     }
-    
+
 private:
     /**
      * private variable of name of atom
      */
     String name_;
-    
+
     /**
      * private variable of 3D coordinates of atom
      */
     math::Point coords_;
-    
+
 };
 
 /**
@@ -179,7 +179,7 @@ typedef std::shared_ptr<Atom> AtomOP;
  */
 typedef std::vector<AtomOP> AtomOPs;
 
-
+}
 
 
 #endif /* defined(__RNAMake__atom__) */

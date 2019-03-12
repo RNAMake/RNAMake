@@ -31,11 +31,11 @@ public:
 public: //wrappers for current state
     
     inline
-    BasepairStateOP
+    structure::BasepairStateOP
     get_end_state(String const & name) { return cur_state->get_end_state(name); }
     
     inline
-    BasepairStateOP
+    structure::BasepairStateOP
     get_end_state(int i) { return cur_state->end_states()[i]; }
     
     inline

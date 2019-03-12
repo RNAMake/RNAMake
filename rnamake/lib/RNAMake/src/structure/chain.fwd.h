@@ -11,9 +11,13 @@
 #include <vector>
 #include <memory>
 
+namespace structure {
+
 class Chain;
 
 typedef std::shared_ptr<Chain> ChainOP;
 typedef std::vector<ChainOP> ChainOPs;
+
+}
 
 #endif

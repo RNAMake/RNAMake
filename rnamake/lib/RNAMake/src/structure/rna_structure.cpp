@@ -12,58 +12,59 @@
 #include "structure/close_chain.h"
 #include "structure/rna_structure.h"
 
+namespace structure {
+
 // get basepair functions //////////////////////////////////////////////////////////////////////////
 
-
 BasepairOPs
-RNAStructure::get_basepair(util::Uuid const & bp_uuid) {
+structure::RNAStructure::get_basepair(util::Uuid const & bp_uuid) {
     BasepairOPs bps;
-    for( auto const & bp : basepairs_) {
-        if(bp->uuid() == bp_uuid) { bps.push_back(bp); }
-        if(bp->res1()->uuid() == bp_uuid || bp->res2()->uuid() == bp_uuid ) { bps.push_back(bp); }
-        
+    for (auto const & bp : basepairs_) {
+        if (bp->uuid() == bp_uuid) { bps.push_back(bp); }
+        if (bp->res1()->uuid() == bp_uuid || bp->res2()->uuid() == bp_uuid) { bps.push_back(bp); }
+
     }
     return bps;
 }
 
 BasepairOPs
-RNAStructure::get_basepair(
-    ResidueOP const & res1,
-    ResidueOP const & res2) {
+structure::RNAStructure::get_basepair(
+        ResidueOP const & res1,
+        ResidueOP const & res2) {
     BasepairOPs bps;
-    for(auto & bp : basepairs_) {
-        if(bp->res1()->uuid() == res1->uuid() && bp->res2()->uuid() == res2->uuid()) { bps.push_back(bp); }
-        if(bp->res1()->uuid() == res2->uuid() && bp->res2()->uuid() == res1->uuid()) { bps.push_back(bp); }
+    for (auto & bp : basepairs_) {
+        if (bp->res1()->uuid() == res1->uuid() && bp->res2()->uuid() == res2->uuid()) { bps.push_back(bp); }
+        if (bp->res1()->uuid() == res2->uuid() && bp->res2()->uuid() == res1->uuid()) { bps.push_back(bp); }
     }
     return bps;
 }
 
 BasepairOPs
-RNAStructure::get_basepair(
-    util::Uuid const & uuid1,
-    util::Uuid const & uuid2) {
-    
+structure::RNAStructure::get_basepair(
+        util::Uuid const & uuid1,
+        util::Uuid const & uuid2) {
+
     BasepairOPs bps;
-    for( auto const & bp : basepairs_) {
-        if(bp->res1()->uuid() == uuid1 && bp->res2()->uuid() == uuid2) { bps.push_back(bp); }
-        if(bp->res1()->uuid() == uuid2 && bp->res2()->uuid() == uuid1) { bps.push_back(bp); }
+    for (auto const & bp : basepairs_) {
+        if (bp->res1()->uuid() == uuid1 && bp->res2()->uuid() == uuid2) { bps.push_back(bp); }
+        if (bp->res1()->uuid() == uuid2 && bp->res2()->uuid() == uuid1) { bps.push_back(bp); }
     }
     return bps;
 }
 
 BasepairOPs
-RNAStructure::get_basepair(
-    String const & name) {
+structure::RNAStructure::get_basepair(
+        String const & name) {
     Strings name_spl = base::split_str_by_delimiter(name, "-");
     String alt_name = name_spl[1] + "-" + name_spl[0];
-    for(auto const & bp : basepairs_) {
-        if(name.compare(bp->name()) == 0 || alt_name.compare(bp->name()) == 0) {
-            return BasepairOPs{ bp };
+    for (auto const & bp : basepairs_) {
+        if (name.compare(bp->name()) == 0 || alt_name.compare(bp->name()) == 0) {
+            return BasepairOPs{bp};
         }
     }
-    
+
     throw "could not find basepair with name " + name;
-    
+
 }
 
 
@@ -71,9 +72,9 @@ RNAStructure::get_basepair(
 
 
 Beads const &
-RNAStructure::get_beads(
-    BasepairOPs const & excluded_ends) {
-    
+structure::RNAStructure::get_beads(
+        BasepairOPs const & excluded_ends) {
+
     ResidueOPs excluded_res;
     for (auto const & end : excluded_ends) {
         excluded_res.push_back(end->res1());
@@ -84,9 +85,9 @@ RNAStructure::get_beads(
 }
 
 Beads const &
-RNAStructure::get_beads(
-    BasepairOP const & excluded_end) {
-    
+structure::RNAStructure::get_beads(
+        BasepairOP const & excluded_end) {
+
     ResidueOPs excluded_res;
     excluded_res.push_back(excluded_end->res1());
     excluded_res.push_back(excluded_end->res2());
@@ -99,23 +100,23 @@ RNAStructure::get_beads(
 
 
 int
-RNAStructure::get_end_index(BasepairOP const & end) {
-    if(std::find(ends_.begin(), ends_.end(), end) == ends_.end()) {
-        throw RNAStructureException("cannot find end: " + end->name() + " in ends ");
+structure::RNAStructure::get_end_index(BasepairOP const & end) {
+    if (std::find(ends_.begin(), ends_.end(), end) == ends_.end()) {
+        throw structure::RNAStructureException("cannot find end: " + end->name() + " in ends ");
     }
-    
-    int pos = (int)(std::find(ends_.begin(), ends_.end(), end) - ends_.begin());
+
+    int pos = (int) (std::find(ends_.begin(), ends_.end(), end) - ends_.begin());
     return pos;
 }
 
 int
-RNAStructure::get_end_index(String const & end_name) {
-    for(int i = 0; i < ends_.size(); i++) {
-        if(ends_[i]->name() == end_name) { return i; }
+structure::RNAStructure::get_end_index(String const & end_name) {
+    for (int i = 0; i < ends_.size(); i++) {
+        if (ends_[i]->name() == end_name) { return i; }
     }
-    
-    throw RNAStructureException("could not find a end basepair with name: " + end_name);
-    
+
+    throw structure::RNAStructureException("could not find a end basepair with name: " + end_name);
+
     return -1;
 }
 
@@ -124,21 +125,21 @@ RNAStructure::get_end_index(String const & end_name) {
 
 
 String const
-RNAStructure::to_pdb_str(
-    int renumber,
-    int close_chains) {
+structure::RNAStructure::to_pdb_str(
+        int renumber,
+        int close_chains) {
     return structure_->to_pdb_str(renumber);
 }
 
 void
-RNAStructure::to_pdb(
-    String const fname,
-    int renumber,
-    int close_chains,
-    int conect_statements) {
+structure::RNAStructure::to_pdb(
+        String const fname,
+        int renumber,
+        int close_chains,
+        int conect_statements) {
 
-    if(close_chains) {
-        for(auto & c : structure_->chains()) {
+    if (close_chains) {
+        for (auto & c : structure_->chains()) {
             close_chain(c);
         }
     }
@@ -152,51 +153,53 @@ RNAStructure::to_pdb(
 
 std::shared_ptr<BasepairOPs>
 end_from_basepairs(
-    StructureOP const & s,
-    BasepairOPs const & bps) {
-    
+        StructureOP const & s,
+        BasepairOPs const & bps) {
+
     auto chain_ends = ResidueOPs();
-    for(auto const & c : s->chains()) {
+    for (auto const & c : s->chains()) {
         chain_ends.push_back(c->first());
-        if(c->length() > 1) {
+        if (c->length() > 1) {
             chain_ends.push_back(c->last());
         }
     }
-    
+
     auto res_map = std::map<util::Uuid, ResidueOP, util::UuidCompare>();
-    for(auto const & r : chain_ends ) { res_map[r->uuid()] = r;}
+    for (auto const & r : chain_ends) { res_map[r->uuid()] = r; }
 
     auto ends = std::make_shared<BasepairOPs>();
-    for(auto const & bp : bps) {
-        if(bp->bp_type() != "cW-W") { continue; }
-        if(res_map.find(bp->res1()->uuid()) != res_map.end() &&
-           res_map.find(bp->res2()->uuid()) != res_map.end() ) {
+    for (auto const & bp : bps) {
+        if (bp->bp_type() != "cW-W") { continue; }
+        if (res_map.find(bp->res1()->uuid()) != res_map.end() &&
+            res_map.find(bp->res2()->uuid()) != res_map.end()) {
             ends->push_back(bp);
         }
     }
-    
+
     return ends;
-    
+
 }
 
 std::shared_ptr<BasepairOPs>
 subselect_basepairs_with_res(
-    ResidueOPs const & res,
-    BasepairOPs const & all_bps) {
-    
+        ResidueOPs const & res,
+        BasepairOPs const & all_bps) {
+
     auto res_map = std::map<util::Uuid, ResidueOP, util::UuidCompare>();
     auto bps = std::make_shared<BasepairOPs>();
-    
-    for(auto const & r : res ) { res_map[r->uuid()] = r;}
 
-    for(auto const & bp : all_bps) {
-        if(res_map.find(bp->res1()->uuid()) != res_map.end() &&
-           res_map.find(bp->res2()->uuid()) != res_map.end() )  {
+    for (auto const & r : res) { res_map[r->uuid()] = r; }
+
+    for (auto const & bp : all_bps) {
+        if (res_map.find(bp->res1()->uuid()) != res_map.end() &&
+            res_map.find(bp->res2()->uuid()) != res_map.end()) {
             bps->push_back(bp);
         }
     }
 
     return bps;
+}
+
 }
 
 

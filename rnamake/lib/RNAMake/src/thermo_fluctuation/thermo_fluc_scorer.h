@@ -30,8 +30,8 @@ public:
     inline
     float
     score(
-        BasepairStateOP & state_1,
-        BasepairStateOP & state_2) {
+        structure::BasepairStateOP & state_1,
+        structure::BasepairStateOP & state_2) {
         return 0;
     }
     
@@ -53,8 +53,8 @@ public:
     inline
     float
     score(
-        BasepairStateOP & state_1,
-        BasepairStateOP & state_2) {
+        structure::BasepairStateOP & state_1,
+        structure::BasepairStateOP & state_2) {
         
         frame_score_ = state_1->d().distance(state_2->d());
         r_diff_ = state_1->r().difference(state_2->r());
@@ -91,8 +91,8 @@ public:
     inline
     float
     score(
-        BasepairStateOP & state_1,
-        BasepairStateOP & state_2) {
+        structure::BasepairStateOP & state_1,
+        structure::BasepairStateOP & state_2) {
         
         frame_score_ = state_1->d().distance(state_2->d())*weight_d_;
         r_diff_ = state_1->r().difference(state_2->r());
@@ -138,7 +138,7 @@ class SixDScorer : public ThermoFlucScorer {
 public:
     SixDScorer(
             String const & constraints,
-            BasepairOP ref_bp):
+            structure::BasepairOP ref_bp):
             ThermoFlucScorer(),
             ref_bp_(ref_bp) {
         ref_r_t_ = ref_bp_->r().transposed();
@@ -151,8 +151,8 @@ public:
     inline
     float
     score(
-            BasepairStateOP & state_1,
-            BasepairStateOP & state_2) {
+            structure::BasepairStateOP & state_1,
+            structure::BasepairStateOP & state_2) {
 
         r1_ = state_1->r();
         d1_ = state_1->d();
@@ -243,7 +243,7 @@ private:
     }
 
 private:
-    BasepairOP ref_bp_;
+    structure::BasepairOP ref_bp_;
     math::Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
     math::Point d1_, d2_, d_;
     std::array<math::Real2, 6> constraints_;

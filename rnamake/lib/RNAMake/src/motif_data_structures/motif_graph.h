@@ -545,9 +545,9 @@ public: // misc functions
 public: // getters
     
     inline
-    Beads
+    structure::Beads
     beads() {
-        Beads beads;
+        structure::Beads beads;
         for(auto const & n : graph_.nodes()) {
             std::copy(n->data()->beads().begin(),
                       n->data()->beads().end(),
@@ -556,15 +556,15 @@ public: // getters
         return beads;
     }
     
-    BasepairOP const &
+    structure::BasepairOP const &
     get_available_end(int);
     
-    BasepairOP const &
+    structure::BasepairOP const &
     get_available_end(
         int,
         String const &);
     
-    BasepairOP 
+    structure::BasepairOP
     get_available_end(
         String const &,
         String const &);
@@ -587,7 +587,7 @@ public: // getters
 public: //Motif Merger Wrappers
     
     inline
-    RNAStructureOP const &
+    structure::RNAStructureOP const &
     get_structure() {
         try {
             _update_merger();

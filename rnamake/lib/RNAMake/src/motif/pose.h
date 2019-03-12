@@ -26,7 +26,7 @@ public:
     
     Pose(MotifOP const &);
     
-    Pose(StructureOP const &, BasepairOPs const &);
+    Pose(structure::StructureOP const &, structure::BasepairOPs const &);
     
     ~Pose() { }
     
@@ -39,7 +39,7 @@ public:
 public:
     
     void
-    set_bp_designable(BasepairOP const &);
+    set_bp_designable(structure::BasepairOP const &);
     
     String
     designable_sequence();

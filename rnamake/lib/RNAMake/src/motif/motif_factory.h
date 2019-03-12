@@ -38,7 +38,7 @@ class MotifFactory {
 public:
     MotifFactory() :
             parser_(MotiftoSecondaryStructure()),
-            pdb_parser_(PDBParser()) {
+            pdb_parser_(structure::PDBParser()) {
         auto path = base::motif_dirs() + "ref.motif";
         ref_motif_ = file_to_motif(path);
         path = base::motif_dirs() + "base.motif";
@@ -66,12 +66,12 @@ public:
 
     MotifOP
     motif_from_res(
-            ResidueOPs &,
-            BasepairOPs const &);
+            structure::ResidueOPs &,
+            structure::BasepairOPs const &);
 
     MotifOP
     motif_from_bps(
-            BasepairOPs const &);
+            structure::BasepairOPs const &);
 
     MotifOP
     can_align_motif_to_end(
@@ -87,10 +87,10 @@ public:
     standardize_rna_structure_ends(
             MotifOP &);
 
-    BasepairOPs
+    structure::BasepairOPs
     _setup_basepair_ends(
-            StructureOP const &,
-            BasepairOPs const &);
+            structure::StructureOP const &,
+            structure::BasepairOPs const &);
 
     void
     _setup_secondary_structure(
@@ -112,10 +112,10 @@ private:
     _standardize_motif(
             MotifOP &);
 
-    BasepairOPs
+    structure::BasepairOPs
     _setup_basepairs(
             String const &,
-            StructureOP const &,
+            structure::StructureOP const &,
             bool);
 
 
@@ -143,15 +143,15 @@ private:
             MotifOP const &);
 
 private: // new functions to add to new code
-    StructureOP
+    structure::StructureOP
     _get_reduced_chain_num_structure(
-            Structure const &,
+            structure::Structure const &,
             int);
 
 
 private:
     MotiftoSecondaryStructure parser_;
-    PDBParser pdb_parser_;
+    structure::PDBParser pdb_parser_;
     MotifScorer scorer_;
     MotifOP ref_motif_, base_motif_, added_helix_;
     float clash_radius_;

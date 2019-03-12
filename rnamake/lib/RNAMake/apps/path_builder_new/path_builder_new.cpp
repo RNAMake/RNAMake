@@ -75,7 +75,7 @@ PathBuilderNewApp::run() {
     auto beads = math::Points();
     for(auto & n : mg_) {
         for(auto const & b : n->data()->beads()) {
-            if(b.btype() == BeadType::PHOS) { continue; }
+            if(b.btype() == structure::BeadType::PHOS) { continue; }
             beads.push_back(b.center());
             
         }

@@ -55,7 +55,7 @@ PathBuilder::build() {
     auto mg = MotifGraphOP(nullptr);
     int n1;
     String end_name = "";
-    auto end_bp = BasepairStateOP(nullptr);
+    auto end_bp = structure::BasepairStateOP(nullptr);
     if(get_string_option("mg").size() > 0) {
         auto lines2 =base::get_lines_from_file(get_string_option("mg"));
         mg = std::make_shared<MotifGraph>(lines2[0],  MotifGraphStringType::OLD);

@@ -101,7 +101,7 @@ public:
     
     MotifEnsemble(
         String const & s,
-        ResidueTypeSet const & rts) {
+        structure::ResidueTypeSet const & rts) {
         
         auto spl = base::split_str_by_delimiter(s, "{");
         id_ = spl[0];

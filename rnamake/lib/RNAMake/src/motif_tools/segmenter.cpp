@@ -13,13 +13,13 @@
 
 void
 Segmenter::_get_pairs(
-    RNAStructureOP const & m,
-    ResidueOPs const & res) {
+    structure::RNAStructureOP const & m,
+    structure::ResidueOPs const & res) {
     
     pairs_ = PairOPs();
     end_pairs_ = PairOPs();
     
-    ChainOP sc, sc1, sc2;
+    structure::ChainOP sc, sc1, sc2;
     float dist;
     
     for(auto const & c : m->chains()) {
@@ -32,16 +32,16 @@ Segmenter::_get_pairs(
                 if(i >= j) { continue; }
                 try {
                     sc = c->subchain(res1, res2);
-                } catch(ChainException) {continue; }
+                } catch(structure::ChainException) {continue; }
                 dist = (int)sc->length();
                 pairs_.push_back(std::make_shared<Pair>(res1, res2, dist));
             }
             try {
                 sc1 = c->subchain(res1, c->last());
-            } catch(ChainException) { continue; }
+            } catch(structure::ChainException) { continue; }
             try {
                 sc2 = c->subchain(c->first(), res1);
-            } catch(ChainException) { continue; }
+            } catch(structure::ChainException) { continue; }
             if(res1 != c->last() &&
                std::find(res.begin(), res.end(), c->last()) == res.end()) {
                 auto pair = std::make_shared<Pair>(res1, c->last(), sc1->length());
@@ -57,9 +57,9 @@ Segmenter::_get_pairs(
 }
 
 
-ChainOP
+structure::ChainOP
 Segmenter::_get_subchain(
-    RNAStructureOP const & m,
+    structure::RNAStructureOP const & m,
     PairOP const & pair) {
     
     for(auto const & c : m->chains()) {
@@ -67,7 +67,7 @@ Segmenter::_get_subchain(
             auto sc = c->subchain(pair->res1, pair->res2);
             return sc;
         }
-        catch(ChainException) { continue; }
+        catch(structure::ChainException) { continue; }
     }
     
     throw SegmenterException("cannot get sub chain");
@@ -77,13 +77,13 @@ Segmenter::_get_subchain(
 
 SegmentsOP
 Segmenter::_get_segments(
-    RNAStructureOP const & m,
-    ResidueOPs & res,
-    BasepairOPs const & bps,
-    ResidueOPs const & cutpoints,
-    BasepairOPs const & cut_bps) {
+    structure::RNAStructureOP const & m,
+    structure::ResidueOPs & res,
+    structure::BasepairOPs const & bps,
+    structure::ResidueOPs const & cutpoints,
+    structure::BasepairOPs const & cut_bps) {
 
-    auto other_res = ResidueOPs();
+    auto other_res = structure::ResidueOPs();
     for(auto const & r : cutpoints) { other_res.push_back(r); }
     for(auto const & r : m->residues()) {
         int found = 0;
@@ -106,7 +106,7 @@ Segmenter::_get_segments(
     removed->name(m->name() + ".removed");
     mf_.standardize_rna_structure_ends(removed);
 
-    auto other_bps = BasepairOPs();
+    auto other_bps = structure::BasepairOPs();
     
     for(auto const & bp : m->basepairs()) {
         if(res_uuids.find(bp->res1()->uuid()) != res_uuids.end() &&
@@ -143,10 +143,10 @@ Segmenter::_get_segments(
 
 SegmentsOP
 Segmenter::apply(
-    RNAStructureOP const & m,
-    BasepairOPs const & bps) {
+    structure::RNAStructureOP const & m,
+    structure::BasepairOPs const & bps) {
     
-    ResidueOPs res;
+    structure::ResidueOPs res;
     for(auto const & bp : bps) {
         for(auto const & r : bp->residues()) {
             res.push_back(r);
@@ -158,9 +158,9 @@ Segmenter::apply(
     auto sols = pair_search.search(res, pairs_, end_pairs_);
 
     for(auto const & s : sols) {
-        auto subchains = ChainOPs();
+        auto subchains = structure::ChainOPs();
         auto sub_res = std::map<util::Uuid, int, util::UuidCompare>();
-        auto sub_res_array = ResidueOPs();
+        auto sub_res_array = structure::ResidueOPs();
         
         for(auto const & r: res) {
             sub_res[r->uuid()] = 1;
@@ -176,7 +176,7 @@ Segmenter::apply(
             }
         }
         
-        auto basepairs = BasepairOPs();
+        auto basepairs = structure::BasepairOPs();
         int missed_bps = 0;
         
         for(auto const & bp : m->basepairs()) {

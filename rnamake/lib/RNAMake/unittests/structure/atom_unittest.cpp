@@ -6,7 +6,7 @@
 
 
 TEST_CASE( "Test Atoms for Structure", "[Atom]" ) {
-    auto a = std::make_shared<Atom>("P", math::Point(0, 1, 2));
+    auto a = std::make_shared<structure::Atom>("P", math::Point(0, 1, 2));
     auto p = math::Point(0, 1, 2);
     
     REQUIRE(a->coords() == p);
@@ -27,7 +27,7 @@ TEST_CASE( "Test Atoms for Structure", "[Atom]" ) {
     
     SECTION("do atoms stringify properly") {
         auto s = a->to_str();
-        auto a2 = std::make_shared<Atom>(s);
+        auto a2 = std::make_shared<structure::Atom>(s);
         
         REQUIRE(s == "P 0 1 2");
         REQUIRE(are_atoms_equal(a, a2));
@@ -35,8 +35,8 @@ TEST_CASE( "Test Atoms for Structure", "[Atom]" ) {
     }
     
     SECTION("do atoms copy properly") {
-        auto a = std::make_shared<Atom>("P", math::Point(0, 1, 2));
-        auto a2 = std::make_shared<Atom>(*a);
+        auto a = std::make_shared<structure::Atom>("P", math::Point(0, 1, 2));
+        auto a2 = std::make_shared<structure::Atom>(*a);
 
         REQUIRE(are_atoms_equal(a, a2));
     }

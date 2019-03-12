@@ -31,7 +31,7 @@ MotifScorer::score(
         }
     }
     
-    BasepairOPs bps;
+    structure::BasepairOPs bps;
     for(auto const & r : m->residues()) {
         bps = m->get_basepair(r->uuid());
         if(bps.size() == 0) {
@@ -47,7 +47,7 @@ MotifScorer::score(
 
 float
 MotifScorer::_score_cWW_bp(
-    BasepairOP const & bp) {
+    structure::BasepairOP const & bp) {
     
     if(! (wc_bp(bp) || gu_bp(bp))) { return 2; }
     String bpstr = bp->res1()->short_name()+bp->res2()->short_name();

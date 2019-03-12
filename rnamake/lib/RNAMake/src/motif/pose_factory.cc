@@ -16,8 +16,8 @@
 
 PoseOP
 PoseFactory::pose_from_motif_tree(
-    StructureOP const & structure,
-    BasepairOPs const & basepairs,
+    structure::StructureOP const & structure,
+    structure::BasepairOPs const & basepairs,
     MotifOPs const & motifs,
     std::map<util::Uuid, int, util::UuidCompare> const & designable) {
     
@@ -95,8 +95,8 @@ PoseFactory::_add_secondary_structure_motifs(
     std::map<String, secondary_structure::MotifOPs> ss_motif_map;
     ss_motif_map["ALL"] = secondary_structure::MotifOPs();
     for(auto const & m : p->motifs(util::MotifType::ALL)) {
-        secondary_structure::BasepairOPs ss_ends, ss_bps;
-        secondary_structure::ChainOPs ss_chains;
+        secondary_structure::structure::BasepairOPs ss_ends, ss_bps;
+        secondary_structure::structure::ChainOPs ss_chains;
         Strings ss_end_ids;
         for(auto const & c : m->chains()) {
             secondary_structure::ResidueOPs ss_res;
@@ -104,7 +104,7 @@ PoseFactory::_add_secondary_structure_motifs(
                 auto ss_r = ss->get_residue(r->uuid());
                 ss_res.push_back(ss_r);
             }
-            ss_chains.push_back(std::make_shared<secondary_structure::Chain>(ss_res));
+            ss_chains.push_back(std::make_shared<secondary_structure::structure::Chain>(ss_res));
         }
         for(auto const & bp : m->basepairs()) {
             auto res1 = ss->get_residue(bp->res1()->uuid());
@@ -151,12 +151,12 @@ PoseFactory::_add_motifs_to_pose(
     //int j = 0;
     float dist, best_dist;
     math::Point r1_cent, r2_cent;
-    ResidueOP best_match;
+    structure::ResidueOP best_match;
     std::map<util::MotifType, MotifOPs> motif_map;
     motif_map[util::MotifType::ALL] = MotifOPs();
     for(auto const & m : motifs) {
-        BasepairOPs bps;
-        std::map<ResidueOP, ResidueOP> residue_map;
+        structure::BasepairOPs bps;
+        std::map<structure::ResidueOP, structure::ResidueOP> residue_map;
         
         for(auto const & bp : m->basepairs()) {
             auto new_bp = p->get_basepair(bp->uuid());
@@ -166,7 +166,7 @@ PoseFactory::_add_motifs_to_pose(
             }
             
             int best = 1000;
-            BasepairOP best_bp = nullptr;
+            structure::BasepairOP best_bp = nullptr;
             for(auto const & m2 : motifs) {
                 if(m == m2) { continue; }
                 for(auto const & end : m2->ends()) {
@@ -181,13 +181,13 @@ PoseFactory::_add_motifs_to_pose(
             }
             
             if(best_bp == nullptr) { continue; }
-            new_bp = BasepairOPs { best_bp };
+            new_bp = structure::BasepairOPs { best_bp };
             for(auto const & r1 : best_bp->residues()) {
-                r1_cent = center(r1->atoms());
+                r1_cent = structure::center(r1->atoms());
                 best_dist = 1000;
                 best_match = nullptr;
                 for (auto const & r2 : bp->residues()) {
-                    r2_cent = center(r2->atoms());
+                    r2_cent = structure::center(r2->atoms());
                     dist = r1_cent.distance(r2_cent);
                     if(dist < best_dist) {
                         best_dist = dist;
@@ -199,9 +199,9 @@ PoseFactory::_add_motifs_to_pose(
             bps.push_back(new_bp[0]);
         }
         
-        ChainOPs chains;
+        structure::ChainOPs chains;
         for(auto const & c : m->chains()) {
-            ResidueOPs res;
+            structure::ResidueOPs res;
             for(auto const & r : c->residues()) {
                 auto new_r = p->get_residue(r->uuid());
                 if     (new_r != nullptr) {
@@ -214,25 +214,25 @@ PoseFactory::_add_motifs_to_pose(
                     throw std::runtime_error("cannot find residue in PoseFactory::_add_motifs_to_pose");
                 }
             }
-            chains.push_back(std::make_shared<Chain>(res));
+            chains.push_back(std::make_shared<structure::Chain>(res));
         }
 
         if(bps.size() != m->basepairs().size()) {
             throw std::runtime_error("something went horribly wrong, did not find all basepairs  in PoseFactory::_add_motifs_to_pose");
         }
         
-        auto structure = std::make_shared<Structure>(chains);
+        auto structure = std::make_shared<structure::Structure>(chains);
         auto ends = mf_._setup_basepair_ends(structure, bps);
         auto m_copy = std::make_shared<Motif>(structure, bps, ends);
         m_copy->mtype(m->mtype());
         m_copy->path(m->path());
         m_copy->name(m->name());
         mf_._setup_secondary_structure(m_copy);
-        BasepairOP best_end;
+        structure::BasepairOP best_end;
         String best_end_id;
         int i = 0;
         if(m_copy->mtype() != util::MotifType::HELIX) {
-            BasepairOPs best_ends;
+            structure::BasepairOPs best_ends;
             Strings best_end_ids;
             for(auto const & end : m->ends()) {
                 best_dist = 1000;
@@ -288,7 +288,7 @@ PoseFactory::_steric_clash(
     float dist;
     for(auto const & c1 : m1->beads()) {
         for(auto const & c2 : m2->beads()) {
-            if(c1.btype() == BeadType::PHOS || c2.btype() == BeadType::PHOS) {continue; }
+            if(c1.btype() == structure::BeadType::PHOS || c2.btype() == structure::BeadType::PHOS) {continue; }
             dist = c1.center().distance(c2.center());
             if( dist < clash_radius_) { return 1; }
         }
@@ -303,13 +303,13 @@ PoseFactory::_convert_x3dna_to_motif(
     util::X3Motif const & xm,
     PoseOP const & p) {
     
-    ResidueOPs res;
+    structure::ResidueOPs res;
     for(auto const & xr : xm.residues) {
         auto r = p->get_residue(xr.num, xr.chain_id, xr.i_code);
         res.push_back(r);
     }
     
-    BasepairOPs basepairs;
+    structure::BasepairOPs basepairs;
     for(auto const & r : res) {
         auto bps = p->get_basepair(r->uuid());
         for(auto const & bp : bps) {

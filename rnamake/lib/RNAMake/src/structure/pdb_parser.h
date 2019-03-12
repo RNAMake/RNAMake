@@ -15,23 +15,26 @@
 #include "structure/residue.h"
 #include "structure/residue_type_set.h"
 
+
+namespace structure {
+
 class PDBParser {
 public:
-    PDBParser():
-    residues_(ResidueOPs()),
-    rts_(ResidueTypeSet())
-    {}
-    
+    PDBParser() :
+            residues_(ResidueOPs()),
+            rts_(ResidueTypeSet()) {}
+
     ~PDBParser() {}
-    
+
 public:
-    
+
     ResidueOPs const &
     parse(
             String const & pdb_file,
-            int protein=0,
-            int rna=1,
-            int others=0);
+            int protein = 0,
+            int rna = 1,
+            int others = 0);
+
 private:
 
     ResidueType
@@ -42,7 +45,9 @@ private:
 private:
     ResidueOPs residues_;
     ResidueTypeSet rts_;
-    
+
 };
+
+}
 
 #endif /* defined(__RNAMake__pdb_parser__) */

@@ -87,7 +87,7 @@ MotifTreeOP
 graph_to_tree(
         MotifGraphOP const & mg,
         data_structure::graph::GraphNodeOP<MotifOP> start = nullptr,
-        BasepairOP last_end = nullptr);
+        structure::BasepairOP last_end = nullptr);
 
 
 #endif /* defined(__RNAMake__motif_toplogy__) */

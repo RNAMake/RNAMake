@@ -30,7 +30,7 @@ MotifFactory::motif_from_file(
     parser_ = MotiftoSecondaryStructure();
     auto fname = base::filename(path);
     auto pdb_path = path;
-    StructureOP structure;
+    structure::StructureOP structure;
     if (base::is_dir(path)) {
         rebuild_x3dna = false;
 
@@ -41,9 +41,9 @@ MotifFactory::motif_from_file(
                             " in it expected: dir_name/dir_name.pdb");
         }
 
-        structure = std::make_shared<Structure>(pdb_path);
+        structure = std::make_shared<structure::Structure>(pdb_path);
     } else {
-        structure = std::make_shared<Structure>(path);
+        structure = std::make_shared<structure::Structure>(path);
         fname = fname.substr(0, fname.length() - 4);
     }
 
@@ -71,10 +71,10 @@ MotifFactory::motif_from_file(
 
     if (include_protein) {
         auto res = pdb_parser_.parse(pdb_path, true, false);
-        auto beads = Beads();
+        auto beads = structure::Beads();
         for (auto const & r : res) {
             try {
-                auto bead = Bead(r->get_atom("CA")->coords(), BeadType::BASE);
+                auto bead = structure::Bead(r->get_atom("CA")->coords(), structure::BeadType::BASE);
                 beads.push_back(bead);
             } catch (...) { continue; }
         }
@@ -118,12 +118,12 @@ MotifFactory::get_oriented_motif(
 
 MotifOP
 MotifFactory::motif_from_res(
-        ResidueOPs & res,
-        BasepairOPs const & bps) {
+        structure::ResidueOPs & res,
+        structure::BasepairOPs const & bps) {
 
-    auto chains = ChainOPs();
+    auto chains = structure::ChainOPs();
     connect_residues_into_chains(res, chains);
-    auto structure = std::make_shared<Structure>(chains);
+    auto structure = std::make_shared<structure::Structure>(chains);
     auto ends = _setup_basepair_ends(structure, bps);
 
     if (ends.size() == 0 && bps.size() >= 2) {
@@ -140,17 +140,17 @@ MotifFactory::motif_from_res(
 
 MotifOP
 MotifFactory::motif_from_bps(
-        BasepairOPs const & bps) {
+        structure::BasepairOPs const & bps) {
 
-    auto res = ResidueOPs();
+    auto res = structure::ResidueOPs();
     for (auto const & bp : bps) {
         res.push_back(bp->res1());
 
         res.push_back(bp->res2());
     }
-    auto chains = ChainOPs();
+    auto chains = structure::ChainOPs();
     connect_residues_into_chains(res, chains);
-    auto structure = std::make_shared<Structure>(chains);
+    auto structure = std::make_shared<structure::Structure>(chains);
     auto ends = _setup_basepair_ends(structure, bps);
 
     if (ends.size() != 2 && bps.size() >= 2) {
@@ -241,16 +241,16 @@ MotifFactory::_standardize_motif(
 }
 
 
-BasepairOPs
+structure::BasepairOPs
 MotifFactory::_setup_basepairs(
         String const & path,
-        StructureOP const & structure,
+        structure::StructureOP const & structure,
         bool rebuild_x3dna) {
 
-    auto basepairs = BasepairOPs();
+    auto basepairs = structure::BasepairOPs();
     auto x3dna_parser = util::X3dna();
     auto x_basepairs = x3dna_parser.get_basepairs(path, rebuild_x3dna);
-    ResidueOP res1, res2;
+    structure::ResidueOP res1, res2;
     //BasepairOP bp;
     for (auto const & xbp : x_basepairs) {
         res1 = structure->get_residue(xbp.res1.num, xbp.res1.chain_id, xbp.res1.i_code);
@@ -261,25 +261,25 @@ MotifFactory::_setup_basepairs(
         }
 
         // Emplacement constructs the object in-place
-        basepairs.emplace_back(new Basepair(res1, res2, xbp.r, xbp.bp_type));
+        basepairs.emplace_back(new structure::Basepair(res1, res2, xbp.r, xbp.bp_type));
     }
 
     return basepairs;
 
 }
 
-BasepairOPs
+structure::BasepairOPs
 MotifFactory::_setup_basepair_ends(
-        StructureOP const & structure,
-        BasepairOPs const & basepairs) {
+        structure::StructureOP const & structure,
+        structure::BasepairOPs const & basepairs) {
 
-    ResidueOPs chain_ends;
+    structure::ResidueOPs chain_ends;
     for (auto const & c : structure->chains()) {
         chain_ends.push_back(c->first());
         if (c->residues().size() > 1) { chain_ends.push_back(c->last()); }
     }
 
-    BasepairOPs ends;
+    structure::BasepairOPs ends;
     for (auto const & bp : basepairs) {
         for (auto const & ce1 : chain_ends) {
             for (auto const & ce2 : chain_ends) {
@@ -322,12 +322,12 @@ MotifFactory::_align_chains(
         MotifOP & m) {
 
     auto chains = m->chains();
-    ChainOP closest;
+    structure::ChainOP closest;
     float best = 1000;
-    auto c2 = center(ref_motif_->ends()[0]->atoms());
+    auto c2 = structure::center(ref_motif_->ends()[0]->atoms());
     math::Point c1;
     for (auto const & c : chains) {
-        c1 = center(c->first()->atoms());
+        c1 = structure::center(c->first()->atoms());
         float dist = c1.distance(c2);
         if (dist < best) {
             best = dist;
@@ -335,25 +335,25 @@ MotifFactory::_align_chains(
         }
     }
 
-    auto updated_chains = ChainOPs{closest};
+    auto updated_chains = structure::ChainOPs{closest};
     for (auto const & c : chains) {
         if (c != closest) { updated_chains.push_back(c); }
     }
 
-    m->structure(std::make_shared<Structure>(updated_chains));
+    m->structure(std::make_shared<structure::Structure>(updated_chains));
 }
 
 void
 MotifFactory::_align_ends(
         MotifOP & m) {
 
-    BasepairOP closest;
+    structure::BasepairOP closest;
     float best = 1000;
-    auto c2 = center(ref_motif_->ends()[0]->atoms());
+    auto c2 = structure::center(ref_motif_->ends()[0]->atoms());
     math::Point c1;
 
     for (auto const & end : m->ends()) {
-        c1 = center(end->atoms());
+        c1 = structure::center(end->atoms());
         float dist = c1.distance(c2);
         if (dist < best) {
             best = dist;
@@ -361,7 +361,7 @@ MotifFactory::_align_ends(
         }
     }
 
-    auto updated_ends = BasepairOPs{closest};
+    auto updated_ends = structure::BasepairOPs{closest};
     for (auto const & end : m->ends()) {
         if (end != closest) { updated_ends.push_back(end); }
     }
@@ -393,7 +393,7 @@ MotifFactory::_steric_clash(
 
     for (auto const & c1 : m1->beads()) {
         for (auto const & c2 : m2->beads()) {
-            if (c1.btype() == BeadType::PHOS || c2.btype() == BeadType::PHOS) { continue; }
+            if (c1.btype() == structure::BeadType::PHOS || c2.btype() == structure::BeadType::PHOS) { continue; }
             float dist = c1.center().distance(c2.center());
             if (dist < clash_radius_) { return 1; }
         }
@@ -411,7 +411,7 @@ MotifFactory::_steric_clash_count(
     auto count = 0;
     for (auto const & c1 : m1->beads()) {
         for (auto const & c2 : m2->beads()) {
-            if (c1.btype() == BeadType::PHOS || c2.btype() == BeadType::PHOS) { continue; }
+            if (c1.btype() == structure::BeadType::PHOS || c2.btype() == structure::BeadType::PHOS) { continue; }
             float dist = c1.center().distance(c2.center());
             if (dist < clash_radius_) { count += 1; }
         }
@@ -437,9 +437,9 @@ MotifFactory::_bead_overlap(
 
 }
 
-StructureOP
+structure::StructureOP
 MotifFactory::_get_reduced_chain_num_structure(
-        Structure const & start,
+        structure::Structure const & start,
         int chain_num) {
 
     auto chains = start.chains();
@@ -465,15 +465,15 @@ MotifFactory::_get_reduced_chain_num_structure(
             }
         }
 
-        auto new_chains = ChainOPs();
-        auto residues = ResidueOPs();
+        auto new_chains = structure::ChainOPs();
+        auto residues = structure::ResidueOPs();
         for(auto const & r : chains[best_i]->residues()) {
             residues.push_back(r);
         }
         for(auto const & r : chains[best_j]->residues()) {
             residues.push_back(r);
         }
-        auto new_chain = std::make_shared<Chain>(residues);
+        auto new_chain = std::make_shared<structure::Chain>(residues);
         new_chains.push_back(new_chain);
         for(int i = 0; i < chains.size(); i++) {
             if(i == best_i || i == best_j) { continue; }
@@ -482,7 +482,7 @@ MotifFactory::_get_reduced_chain_num_structure(
         chains = new_chains;
     }
 
-    return std::make_shared<Structure>(chains);
+    return std::make_shared<structure::Structure>(chains);
 }
 
 

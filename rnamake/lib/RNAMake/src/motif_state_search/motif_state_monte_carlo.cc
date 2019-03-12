@@ -45,7 +45,7 @@ MotifStateMonteCarlo::setup(
     target_an_aligned_end_ = target_an_aligned_end;
 
     end_ = msg_->get_node(nj_)->data()->get_end_state(ej_);
-    end_flip_ = BasepairStateOP(new BasepairState(end_->copy()));
+    end_flip_ = structure::BasepairStateOP(new structure::BasepairState(end_->copy()));
     end_flip_->flip();
 
     org_num_ = msg_->size();
@@ -296,7 +296,7 @@ MotifStateMonteCarlo::run() {
 
 double
 MotifStateMonteCarlo::get_score(
-        BasepairStateOP last_bp) {
+        structure::BasepairStateOP last_bp) {
 
     score_ = last_bp->d().distance(end_->d());
 

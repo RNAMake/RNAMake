@@ -46,7 +46,7 @@ setup_motif() {
 
 int main(int argc, const char * argv[]) {
     auto opts = parse_command_line(argc, argv);
-    auto rts = ResidueTypeSet();
+    auto rts = structure::ResidueTypeSet();
 
     
     auto seq = opts.option<String>("seq");
@@ -102,7 +102,7 @@ int main(int argc, const char * argv[]) {
     sampler.setup(mset);
 
     auto cut_off = 4.5f;
-    auto bp_state = BasepairStateOP();
+    auto bp_state = structure::BasepairStateOP();
     auto score = 0.0f;
     auto count = 0;
     for(int i = 0; i < 1000000; i++) {

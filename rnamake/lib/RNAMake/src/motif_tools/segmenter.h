@@ -32,8 +32,8 @@ public:
 
 struct Pair {
     Pair(
-        ResidueOP const & nres1,
-        ResidueOP const & nres2,
+        structure::ResidueOP const & nres1,
+        structure::ResidueOP const & nres2,
         int ndist):
         res1(nres1),
         res2(nres2),
@@ -43,13 +43,13 @@ struct Pair {
     int
     inline
     contains(
-        ResidueOP const & res) const {
+        structure::ResidueOP const & res) const {
         
         if(res == res1 || res == res2) { return 1; }
         else                           { return 0; }
     }
     
-    ResidueOP res1, res2;
+    structure::ResidueOP res1, res2;
     int dist;
 };
 
@@ -84,7 +84,7 @@ struct PairSearchNode {
     inline
     int
     contains(
-        ResidueOP const & res) const {
+        structure::ResidueOP const & res) const {
         
         for(auto const & p : pairs) {
             if(p->contains(res)) { return 1; }
@@ -128,7 +128,7 @@ public:
     PairSearch():
     queue_(PairSearchNodePriortyQueue()),
     solutions_(PairSearchNodes()),
-    values_(std::map<ResidueOP, float>())
+    values_(std::map<structure::ResidueOP, float>())
     {}
     
     ~PairSearch() {}
@@ -138,7 +138,7 @@ public:
     
     PairSearchNodes const &
     search(
-        ResidueOPs const & res,
+        structure::ResidueOPs const & res,
         PairOPs const & pairs,
         PairOPs const & end_pairs) {
         res_ = res;
@@ -186,7 +186,7 @@ public:
 private:
     void
     _get_default_values(
-        ResidueOPs const & res,
+        structure::ResidueOPs const & res,
         PairOPs const & pairs,
         PairOPs const & end_pairs) {
         
@@ -223,8 +223,8 @@ private:
 private:
     PairSearchNodePriortyQueue queue_;
     PairSearchNodes solutions_;
-    std::map<ResidueOP, float> values_;
-    ResidueOPs res_;
+    std::map<structure::ResidueOP, float> values_;
+    structure::ResidueOPs res_;
 };
 
 class Segmenter {
@@ -237,28 +237,28 @@ public:
 public:
     SegmentsOP
     apply(
-        RNAStructureOP const &,
-        BasepairOPs const &);
+        structure::RNAStructureOP const &,
+        structure::BasepairOPs const &);
     
 private:
     
-    ChainOP
+    structure::ChainOP
     _get_subchain(
-        RNAStructureOP const &,
+        structure::RNAStructureOP const &,
         PairOP const &);
     
     void
     _get_pairs(
-        RNAStructureOP const &,
-        ResidueOPs const &);
+        structure::RNAStructureOP const &,
+        structure::ResidueOPs const &);
     
     SegmentsOP
     _get_segments(
-        RNAStructureOP const &,
-        ResidueOPs &,
-        BasepairOPs const &,
-        ResidueOPs const &,
-        BasepairOPs const &);
+        structure::RNAStructureOP const &,
+        structure::ResidueOPs &,
+        structure::BasepairOPs const &,
+        structure::ResidueOPs const &,
+        structure::BasepairOPs const &);
     
 private:
     

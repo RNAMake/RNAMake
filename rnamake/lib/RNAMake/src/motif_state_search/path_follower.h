@@ -48,7 +48,7 @@ public:
         auto beads = mg_->beads();
         auto centers = math::Points();
         for(auto const & b : beads) {
-            if(b.btype() == BeadType::PHOS) {
+            if(b.btype() == structure::BeadType::PHOS) {
                 continue;
             }
             centers.push_back(b.center());
@@ -87,7 +87,7 @@ public:
     void
     setup(
         math::Points const & path,
-        BasepairStateOP const & start,
+        structure::BasepairStateOP const & start,
         math::Points const & centers) {
         
         path_ = path;
@@ -111,8 +111,8 @@ public:
     void
     setup(
         math::Points const & path,
-        BasepairStateOP const & start,
-        BasepairStateOP const & end,
+        structure::BasepairStateOP const & start,
+        structure::BasepairStateOP const & end,
         math::Points const & centers) {
         
         path_ = path;
@@ -187,8 +187,8 @@ private:
     MotifGraphOP mg_;
     math::Points path_;
     int ni_;
-    BasepairOP start_;
-    BasepairStateOP start_state_;
+    structure::BasepairOP start_;
+    structure::BasepairStateOP start_state_;
     MotifStateSearch search_;
     base::Options options_;
 

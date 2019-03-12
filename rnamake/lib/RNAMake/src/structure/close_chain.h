@@ -8,6 +8,8 @@
 #include <math/xyz_matrix.h>
 #include <structure/chain.h>
 
+namespace structure {
+
 math::Matrix
 create_coord_system(
         AtomOPs const &);
@@ -57,7 +59,7 @@ void
 close_chain(
         ChainOP);
 
-
+}
 
 
 #endif //TEST_CLOSE_CHAIN_H

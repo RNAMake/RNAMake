@@ -13,13 +13,13 @@
 
 
 TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
-    auto rts = ResidueTypeSet();
+    auto rts  = structure::ResidueTypeSet();
     auto path = base::unittest_resource_dir() + "residue/test_str_to_residue.dat";
-    auto lines =base::get_lines_from_file(path);
-    auto residues  = ResidueOPs();
+    auto lines= base::get_lines_from_file(path);
+    auto residues  = structure::ResidueOPs();
     for(auto const & l : lines) {
         if(l.size() < 10) { break; } // end of file
-        auto r = std::make_shared<Residue>(l, rts);
+        auto r = std::make_shared<structure::Residue>(l, rts);
         residues.push_back(r);
     }
     
@@ -31,7 +31,7 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         REQUIRE(a != nullptr);
         REQUIRE(a->name() == "C1'");
         
-        REQUIRE_THROWS_AS(r->get_atom("fake"), ResidueException);
+        REQUIRE_THROWS_AS(r->get_atom("fake"), structure::ResidueException);
     }
     
     SECTION("are residues detecting connections properly") {
@@ -46,34 +46,31 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
     }
     
     SECTION("are residues generating steric beads properly") {
-
         auto r = residues[1];
         auto beads = r->get_beads();
         
         SECTION("produced the right number of beads") { REQUIRE(beads.size() == 3); }
         
-        REQUIRE(beads[0].btype() == BeadType::PHOS);
-        REQUIRE(beads[1].btype() == BeadType::SUGAR);
-        REQUIRE(beads[2].btype() == BeadType::BASE);
+        REQUIRE(beads[0].btype() == structure::BeadType::PHOS);
+        REQUIRE(beads[1].btype() == structure::BeadType::SUGAR);
+        REQUIRE(beads[2].btype() == structure::BeadType::BASE);
 
     }
     
     SECTION("are residues copying correctly") {
-
         auto r = residues[0];
-        auto r2 = std::make_shared<Residue>(*r);
+        auto r2 = std::make_shared<structure::Residue>(*r);
         
         REQUIRE(are_residues_equal(r, r2));
-    
     }
     
     SECTION("are residues stringifing correctly") {
         auto r = residues[0];
         auto s = r->to_str();
-        auto r2 = std::make_shared<Residue>(s, rts);
+        auto r2 = std::make_shared<structure::Residue>(s, rts);
         
         SECTION("residues should be the same but not have the same id") {
-            REQUIRE(are_residues_equal(r, r2, 0));
+            REQUIRE(structure::are_residues_equal(r, r2, 0));
         }
     }
     

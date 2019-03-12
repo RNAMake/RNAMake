@@ -11,8 +11,13 @@
 #include <memory>
 #include <vector>
 
+namespace structure {
+
 class BasepairState;
+
 typedef std::shared_ptr<BasepairState> BasepairStateOP;
 typedef std::vector<BasepairStateOP> BasepairStateOPs;
+
+}
 
 #endif

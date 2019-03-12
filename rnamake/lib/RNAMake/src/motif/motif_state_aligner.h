@@ -23,7 +23,7 @@ public:
     inline
     void
     get_aligned_motif_state(
-        BasepairStateOP const & ref_bp_state,
+        structure::BasepairStateOP const & ref_bp_state,
         MotifStateOP & cur_state,
         MotifStateOP const & org_state) {
         
@@ -40,7 +40,7 @@ public:
     }
     
 private:
-    BasepairState bp_state_, bp_state_final_;
+    structure::BasepairState bp_state_, bp_state_final_;
     math::Points t_beads_;
     
 };

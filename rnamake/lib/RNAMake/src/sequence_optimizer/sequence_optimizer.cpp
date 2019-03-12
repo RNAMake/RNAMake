@@ -76,9 +76,9 @@ SequenceOptimizer::get_optimized_sequences(
     auto best_seq = String();
     auto best = 100000;
     
-    auto end_state_1 = BasepairStateOP();
-    auto end_state_2 = BasepairStateOP();
-    auto end_state_2_flip = BasepairStateOP();
+    auto end_state_1 = structure::BasepairStateOP();
+    auto end_state_2 = structure::BasepairStateOP();
+    auto end_state_2_flip = structure::BasepairStateOP();
     
     auto node_1 = mg->get_node(uuid_1);
     
@@ -99,7 +99,7 @@ SequenceOptimizer::get_optimized_sequences(
         end_state_1 = mt_->get_node(uuid_1)->data()->ends()[end_1]->state();
         end_state_2 = mt_->get_node(uuid_2)->data()->ends()[end_2]->state();
         end_state_2->flip();
-        end_state_2_flip = std::make_shared<BasepairState>(end_state_2->copy());
+        end_state_2_flip = std::make_shared<structure::BasepairState>(end_state_2->copy());
         end_state_2->flip();
         dist = new_score_function_new(end_state_1, end_state_2, end_state_2_flip);
         

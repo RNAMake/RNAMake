@@ -19,10 +19,10 @@
 class MotiftoSecondaryStructure {
 public:
     MotiftoSecondaryStructure():
-    chains_(ChainOPs()),
-    open_chains_(std::queue<ChainOP>()),
+    chains_(structure::ChainOPs()),
+    open_chains_(std::queue<structure::ChainOP>()),
     seen_res_(std::map<util::Uuid, int, util::UuidCompare>()),
-    seen_bp_(std::map<util::Uuid, BasepairOP, util::UuidCompare>())
+    seen_bp_(std::map<util::Uuid, structure::BasepairOP, util::UuidCompare>())
     {}
     
 public:
@@ -30,32 +30,32 @@ public:
     inline
     void
     reset() {
-        chains_ = ChainOPs();
-        open_chains_ = std::queue<ChainOP>();
+        chains_ = structure::ChainOPs();
+        open_chains_ = std::queue<structure::ChainOP>();
         seen_res_ = std::map<util::Uuid, int, util::UuidCompare>();
-        seen_bp_ = std::map<util::Uuid, BasepairOP, util::UuidCompare>();
+        seen_bp_ = std::map<util::Uuid, structure::BasepairOP, util::UuidCompare>();
     }
 
     secondary_structure::RNAStructureOP
     to_secondary_structure(
-        RNAStructureOP const &);
+        structure::RNAStructureOP const &);
     
 private:
     
-    ChainOP
+    structure::ChainOP
     _get_next_chain(
-        RNAStructureOP const &);
+        structure::RNAStructureOP const &);
     
     secondary_structure::RNAStructureOP
     _setup_basepairs_and_ends(
         secondary_structure::StructureOP &,
-        RNAStructureOP const &);
+        structure::RNAStructureOP const &);
     
 private:
-    ChainOPs chains_;
-    std::queue<ChainOP> open_chains_;
+    structure::ChainOPs chains_;
+    std::queue<structure::ChainOP> open_chains_;
     std::map<util::Uuid, int, util::UuidCompare> seen_res_;
-    std::map<util::Uuid, BasepairOP, util::UuidCompare> seen_bp_;
+    std::map<util::Uuid, structure::BasepairOP, util::UuidCompare> seen_bp_;
     
     
 };

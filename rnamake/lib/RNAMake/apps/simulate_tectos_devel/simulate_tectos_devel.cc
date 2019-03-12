@@ -112,7 +112,7 @@ public:
     SimulateTectosRecord6D(
             String const & fname,
             String const & record_constraints,
-            BasepairOP ref_bp ):
+            structure::BasepairOP ref_bp ):
             ThermoFlucSimulationLogger(fname),
             ref_bp_(ref_bp) {
         _setup_constraints();
@@ -226,7 +226,7 @@ private:
     }
 
 private:
-    BasepairOP ref_bp_;
+    structure::BasepairOP ref_bp_;
     math::Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
     math::Point d1_, d2_, d_;
     math::Real6 value_;
@@ -241,7 +241,7 @@ public:
     SimulateTectosRecord6DHistogram(
             String const & fname,
             String const & constraints,
-            BasepairOP ref_bp ):
+            structure::BasepairOP ref_bp ):
             ThermoFlucSimulationLogger("out.out"),
             ref_bp_(ref_bp),
             histo_(math::SixDHistogram(math::BoundingBox(), math::Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1})),
@@ -361,7 +361,7 @@ private:
     }
 
 private:
-    BasepairOP ref_bp_;
+    structure::BasepairOP ref_bp_;
     math::Matrix rot_, rot_t_, ref_r_t_, r_, r1_, r2_, r1_trans_, r2_trans_;
     math::Point d1_, d2_, d_;
     String file_name_;
@@ -630,7 +630,7 @@ SimulateTectosApp::get_mset_new_receptor(
 
         auto new_ggaa_tetraloop = std::make_shared<Motif>(
                 lines[0],
-                ResidueTypeSetManager::getInstance().residue_type_set());
+                structure::ResidueTypeSetManager::getInstance().residue_type_set());
         RM::instance().add_motif(new_ggaa_tetraloop);
     }
     else {
@@ -639,7 +639,7 @@ SimulateTectosApp::get_mset_new_receptor(
         std::cout << get_string_option("ggaa_model") << std::endl;
         auto new_ggaa_tetraloop = std::make_shared<Motif>(
             lines[0],
-            ResidueTypeSetManager::getInstance().residue_type_set());
+            structure::ResidueTypeSetManager::getInstance().residue_type_set());
         RM::instance().add_motif(new_ggaa_tetraloop);
 
     }

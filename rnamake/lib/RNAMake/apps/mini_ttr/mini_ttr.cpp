@@ -42,7 +42,7 @@ MiniTTR::run() {
     auto beads = mg_.beads();
     auto centers = math::Points();
     for(auto const & b : beads) {
-        if(b.btype() == BeadType::PHOS) {
+        if(b.btype() == structure::BeadType::PHOS) {
             continue;
         }
         centers.push_back(b.center());
@@ -144,7 +144,7 @@ MiniTTRPathFollow::run() {
     auto beads = mg_.beads();
     auto centers = math::Points();
     for(auto const & b : beads) {
-        if(b.btype() == BeadType::PHOS) {
+        if(b.btype() == structure::BeadType::PHOS) {
             continue;
         }
         centers.push_back(b.center());

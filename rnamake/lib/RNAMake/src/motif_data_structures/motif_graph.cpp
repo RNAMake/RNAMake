@@ -84,7 +84,7 @@ MotifGraph::_setup_from_str(String const & s) {
         if(n_str.length() < 10) { break; }
         auto n_spl = base::split_str_by_delimiter(n_str, "^");
         auto m = std::make_shared<Motif>(n_spl[0],
-                                         ResidueTypeSetManager::getInstance().residue_type_set());
+                                         structure::ResidueTypeSetManager::getInstance().residue_type_set());
         
         try {
             auto m2 = RM::instance().motif(m->name());
@@ -270,9 +270,9 @@ MotifGraph::_steric_clash(MotifOP const & m) {
     float dist = 0;
     for(auto const & n : graph_) {
         for(auto const & c1 : n->data()->beads()) {
-            if(c1.btype() == BeadType::PHOS) { continue; }
+            if(c1.btype() == structure::BeadType::PHOS) { continue; }
             for(auto const & c2 : m->beads()) {
-                if(c2.btype() == BeadType::PHOS) { continue; }
+                if(c2.btype() == structure::BeadType::PHOS) { continue; }
                 dist = c1.center().distance(c2.center());
                 if(dist < clash_radius_) { return 1; }
             }
@@ -365,7 +365,7 @@ MotifGraph::add_motif(
     try {
         parent_end_index = parent->data()->get_end_index(p_end_name);
     }
-    catch (RNAStructureException const & e) {
+    catch (structure::RNAStructureException const & e) {
         throw MotifGraphException(
             "cannot find parent_end_name: " + p_end_name + " in "
             "parent motif: " + parent->data()->name());
@@ -839,7 +839,7 @@ MotifGraph::_update_merger() {
 //getters functions ////////////////////////////////////////////////////////////////////////////////
 
 
-BasepairOP const &
+structure::BasepairOP const &
 MotifGraph::get_available_end(int pos) {
     auto n = graph_.get_node(pos);
     auto avail_pos = n->available_children_pos();
@@ -853,7 +853,7 @@ MotifGraph::get_available_end(int pos) {
     return n->data()->ends()[avail_pos[1]];
 }
 
-BasepairOP const &
+structure::BasepairOP const &
 MotifGraph::get_available_end(
     int pos,
     String const & end_name) {
@@ -869,7 +869,7 @@ MotifGraph::get_available_end(
     return n->data()->ends()[end_index];
 }
 
-BasepairOP 
+structure::BasepairOP
 MotifGraph::get_available_end(
     String const & m_name,
     String const & end_name) {
@@ -893,7 +893,7 @@ MotifGraph::get_available_end(
 
     }
     
-    auto end = BasepairOP(nullptr);
+    auto end = structure::BasepairOP(nullptr);
     for(auto const & e : node->data()->ends()) {
         if(e->name() == end_name) {
             if(end != nullptr) {

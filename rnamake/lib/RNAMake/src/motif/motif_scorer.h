@@ -32,7 +32,7 @@ private:
     
     float
     _score_cWW_bp(
-        BasepairOP const &);
+        structure::BasepairOP const &);
     
     void
     _bp_reference_energy_table();

@@ -208,7 +208,7 @@ private:
     ThermoFlucScorerOP scorer_;
     ThermoFlucSimulationLoggerOP logger_;
     ThermoFlucSampler sampler_;
-    BasepairStateOP end_state_1_, end_state_2_;
+    structure::BasepairStateOP end_state_1_, end_state_2_;
     base::Options options_;
     int ni1_, ni2_, ei1_, ei2_;
     int clash_;

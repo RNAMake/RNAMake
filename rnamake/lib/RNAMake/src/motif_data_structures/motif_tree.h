@@ -364,7 +364,7 @@ public: //getters
     MotifConnections const &
     connections() { return connections_; }
     
-    Beads
+    structure::Beads
     beads();
     
     
@@ -440,7 +440,7 @@ public: //tree wrappers
 public: //merger wrappers
     
     inline
-    RNAStructureOP const &
+    structure::RNAStructureOP const &
     get_structure() {
         try {
             _update_merger();

@@ -43,8 +43,8 @@ public:
     
     void
     setup(
-        BasepairStateOP const & start,
-        BasepairStateOP const & end,
+        structure::BasepairStateOP const & start,
+        structure::BasepairStateOP const & end,
         bool target_an_aligned_end = false);
     
     MotifStateSearchSolutionOP
@@ -134,7 +134,7 @@ private:
     
     MotifStateSearchNodeOP
     _start_node(
-        BasepairStateOP const &);
+        structure::BasepairStateOP const &);
     
     MotifStateSearchSolutionOP
     _search();

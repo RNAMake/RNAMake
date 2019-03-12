@@ -20,29 +20,29 @@
 #include "structure/residue.h"
 #include "structure/pdb_parser.h"
 
+namespace structure {
+
 class Structure {
 public:
     inline
-    Structure():
-    chains_ (ChainOPs())
-    {}
-    
+    Structure() :
+            chains_(ChainOPs()) {}
+
     inline
     Structure(
-        ChainOPs const & chains):
-    chains_ (chains)
-    {}
-    
+            ChainOPs const & chains) :
+            chains_(chains) {}
+
     Structure(
-        String const & path) {
+            String const & path) {
         PDBParser pdb_parser;
         auto residues = pdb_parser.parse(path);
         chains_ = ChainOPs();
         connect_residues_into_chains(residues, chains_);
     }
-    
+
     Structure(
-        Structure const & s) {
+            Structure const & s) {
         chains_ = ChainOPs(s.chains_.size());
         int i = 0;
         for (auto const & c : s.chains_) {
@@ -50,34 +50,37 @@ public:
             i++;
         }
     }
-    
+
     Structure(
-        String const & s,
-        ResidueTypeSet const & rts) {
+            String const & s,
+            ResidueTypeSet const & rts) {
         chains_ = ChainOPs();
         Strings spl = base::split_str_by_delimiter(s, ":");
-        for( auto const & c_str : spl) {
+        for (auto const & c_str : spl) {
             chains_.push_back(std::make_shared<Chain>(c_str, rts));
         }
     }
-    
+
     ~Structure() {}
-    
+
 public:
-    
+
     void
     renumber();
-    
+
     inline
     Beads
     get_beads(
-        ResidueOPs const & excluded_res) {
+            ResidueOPs const & excluded_res) {
         auto beads = Beads();
         int found = 0;
-        for ( auto const & r : residues()) {
+        for (auto const & r : residues()) {
             found = 0;
             for (auto const & er : excluded_res) {
-                if( r->uuid() == er->uuid()) {found = 1; break;}
+                if (r->uuid() == er->uuid()) {
+                    found = 1;
+                    break;
+                }
             }
             if (found) { continue; }
             for (auto const & b : r->get_beads()) {
@@ -86,34 +89,34 @@ public:
         }
         return beads;
     }
-    
+
     inline
     Beads
     get_beads() {
         auto res = ResidueOPs();
         return get_beads(res);
     }
-    
+
     ResidueOP const
     get_residue(
-        int const & ,
-        String const & ,
-        String const & );
-    
+            int const &,
+            String const &,
+            String const &);
+
     ResidueOP const
     get_residue(
-        util::Uuid const &);
+            util::Uuid const &);
 
     ResidueOPs const
     residues() const;
-    
+
     inline
     AtomOPs const
     atoms() {
         AtomOPs atoms;
         for (auto const & r : residues()) {
             for (auto const & a : r->atoms()) {
-                if(a.get() != NULL) {
+                if (a.get() != NULL) {
                     atoms.push_back(a);
                 }
             }
@@ -123,54 +126,57 @@ public:
 
     inline
     void
-    move(math::Point const & p) {
-        for(auto & a : atoms()) {
+    move(
+            math::Point const & p) {
+        for (auto & a : atoms()) {
             a->coords(a->coords() + p);
         }
     }
 
     inline
     void
-    transform(math::Transform const & t) {
-        math::Matrix r = t.rotation().transpose();
-        math::Point trans = t.translation();
-        for( auto & a : atoms() ) {
+    transform(
+            math::Transform const & t) {
+        auto r = t.rotation().transpose();
+        auto trans = t.translation();
+        for (auto & a : atoms()) {
             math::dot_vector(r, a->coords(), dummy_);
             dummy_ += trans;
             a->coords(dummy_);
         }
     }
-    
+
     String
     to_pdb_str(
-        int renumber = -1,
-        int conect_statements = 0);
-    
+            int renumber = -1,
+            int conect_statements = 0);
+
     String
     to_str();
-    
+
     void
     to_pdb(
-        String const,
-        int renumber = -1,
-        int conect_statements = 0);
-    
+            String const,
+            int renumber = -1,
+            int conect_statements = 0);
+
 public: // getters
-    
+
     inline
     ChainOPs const &
     chains() const { return chains_; }
 
-    
+
 private:
     ChainOPs chains_;
     math::Point dummy_; // resuable place in memory
     math::Points coords_;
     math::Points org_coords_;
-    
+
 };
 
 typedef std::shared_ptr<Structure> StructureOP;
 
+}
 
 #endif /* defined(__RNAMake__structure__) */
