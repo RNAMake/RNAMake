@@ -15,10 +15,10 @@
 #include "base/option.h"
 #include "util/random_number_generator.h"
 #include "eternabot/scorer.h"
-#include "motif_data_structures/motif_tree.h"
-#include "motif_data_structures/motif_graph.h"
-#include "motif_data_structures/motif_state_tree.h"
-#include "motif_data_structures/motif_state_graph.hpp"
+#include "motif_data_structure/motif_tree.h"
+#include "motif_data_structure/motif_graph.h"
+#include "motif_data_structure/motif_state_tree.h"
+#include "motif_data_structure/motif_state_graph.hpp"
 
 
 class SequenceOptimizerScorer {
@@ -31,7 +31,7 @@ public:
     virtual
     float
     score(
-            MotifStateGraphOP const &) = 0;
+            motif_data_structure::MotifStateGraphOP const &) = 0;
 
 public:
     float
@@ -71,7 +71,7 @@ public:
 public:
     float
     score(
-            MotifStateGraphOP const & msg) {
+            motif_data_structure::MotifStateGraphOP const & msg) {
         state_ = msg->get_node(ni_)->data()->get_end_state(ei_);
         return motif_state_diff(state_, target_);
     }
@@ -98,7 +98,8 @@ public:
 
 public:
     float
-    score(MotifStateGraphOP const & msg) {
+    score(
+            motif_data_structure::MotifStateGraphOP const & msg) {
         state1_ = msg->get_node(ni1_)->data()->get_end_state(ei1_);
         state2_ = msg->get_node(ni2_)->data()->get_end_state(ei2_);
         //return state1_->diff(state2_);
@@ -121,7 +122,8 @@ public:
 
 public:
     float
-    score(MotifStateGraphOP const & msg) {
+    score(
+            motif_data_structure::MotifStateGraphOP const & msg) {
         score_ = 0;
         for (auto const & sub_scorer : sub_scorers_) {
             score_ += sub_scorer->score(msg);
@@ -198,7 +200,7 @@ public:
     inline
     OptimizedSequenceOPs
     get_optimized_sequences(
-            MotifGraphOP const & mg,
+            motif_data_structure::MotifGraphOP const & mg,
             SequenceOptimizerScorerOP const & scorer) {
         set_scorer(scorer);
         return get_optimized_sequences(mg);
@@ -206,31 +208,31 @@ public:
 
     OptimizedSequenceOPs
     get_optimized_sequences(
-            MotifGraphOP const &);
+            motif_data_structure::MotifGraphOP const &);
 
     inline
-    MotifGraphOP
+    motif_data_structure::MotifGraphOP
     get_optimized_mg(
-            MotifGraphOP const & mg,
+            motif_data_structure::MotifGraphOP const & mg,
             SequenceOptimizerScorerOP const & scorer) {
         set_scorer(scorer);
         return get_optimized_mg(mg);
     }
 
-    MotifGraphOP
+    motif_data_structure::MotifGraphOP
     get_optimized_mg(
-            MotifGraphOP const &);
+            motif_data_structure::MotifGraphOP const &);
 
 private:
     void
     _update_designable_bp(
             DesignableBPOP const &,
-            MotifStateGraphOP &,
+            motif_data_structure::MotifStateGraphOP &,
             secondary_structure::PoseOP &);
 
     String
     _validate_sequence(
-            MotifStateGraphOP const &,
+            motif_data_structure::MotifStateGraphOP const &,
             secondary_structure::PoseOP const &);
 
     DesignableBPOPs
@@ -239,7 +241,7 @@ private:
 
     void
     _initiate_sequence_in_msg(
-            MotifStateGraphOP &,
+            motif_data_structure::MotifStateGraphOP &,
             secondary_structure::PoseOP const &);
 
     int

@@ -13,9 +13,9 @@
 
 #include "base/option.h"
 #include "base/cl_option.h"
-#include "motif_state_search/path_follower.h"
-#include "motif_data_structures/motif_state_tree.h"
-#include "motif_state_search/motif_state_search.h"
+#include "motif_search/path_follower.h"
+#include "motif_data_structure/motif_state_tree.h"
+#include "motif_search/motif_state_search.h"
 
 
 base::CommandLineOptions
@@ -42,7 +42,7 @@ struct PathBuilderNode {
     inline
     PathBuilderNode(
         PathBuilderNode const & n):
-    mst(std::make_shared<MotifStateTree>(*n.mst)),
+    mst(std::make_shared<motif_data_structure::MotifStateTree>(*n.mst)),
     path_score(n.path_score),
     ss_score(n.ss_score),
     diversity_score(n.diversity_score)
@@ -50,7 +50,7 @@ struct PathBuilderNode {
     
     void
     add_solution(
-        MotifStateSearchSolutionOP const & sol) {
+        motif_search::MotifStateSearchSolutionOP const & sol) {
         
         auto sol_mst = sol->to_mst();
         mst->add_mst(sol_mst, -1, 1, "", true);

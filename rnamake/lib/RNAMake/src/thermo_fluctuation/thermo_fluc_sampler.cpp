@@ -8,55 +8,56 @@
 
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
+namespace thermo_fluctuation {
+
 void
 ThermoFlucSampler::setup(
-    MotifStateEnsembleTreeOP const & mset) {
+        motif_data_structure::MotifStateEnsembleTreeOP const & mset) {
     mset_ = mset;
     mst_ = mset_->to_mst();
     //set MonteCarlo temperature to kBT, Boltzmann constant in pN.A/K
-    mc_ = util::MonteCarlo(temperature_*1.3806488e-1);
+    mc_ = util::MonteCarlo(temperature_ * 1.3806488e-1);
     states_ = Ints(mset_->size());
-    for(int i = 0; i < mset_->size(); i++) { states_[i] = 0; }
-    
+    for (int i = 0; i < mset_->size(); i++) { states_[i] = 0; }
+
 }
 
 void
 ThermoFlucSampler::sample(
-    int steps) {
-    for(int i = 0; i < steps; i++) { next(); }
+        int steps) {
+    for (int i = 0; i < steps; i++) { next(); }
 }
 
 int
 ThermoFlucSampler::next() {
-    
-    node_num_ = rng_.randrange((int)mst_->size());
-    if(node_num_ == mst_->size()) { node_num_--; }
+
+    node_num_ = rng_.randrange((int) mst_->size());
+    if (node_num_ == mst_->size()) { node_num_--; }
 
     mset_node_ = mset_->get_node(node_num_);
-    mst_node_  = mst_->get_node(node_num_);
+    mst_node_ = mst_->get_node(node_num_);
     pos_ = states_[node_num_];
     mem_pos_ = rng_.randrange(mset_node_->data()->size());
-    if(mem_pos_ == mset_node_->data()->size()) { mem_pos_--; }
+    if (mem_pos_ == mset_node_->data()->size()) { mem_pos_--; }
 
     energy_ = mset_node_->data()->get_member(pos_)->energy;
     new_mem_ = mset_node_->data()->get_member(mem_pos_);
-    
+
     accept_ = mc_.accept(energy_, new_mem_->energy);
-        
-    if(accept_) {
+
+    if (accept_) {
         update(node_num_, new_mem_);
         return 1;
-    }
-    else {
+    } else {
         return 0;
     }
 }
 
 void
 ThermoFlucSampler::update(
-    int node_num,
-    motif::MotifStateEnsembleMemberOP const & new_mem) {
-    
+        int node_num,
+        motif::MotifStateEnsembleMemberOP const & new_mem) {
+
     last_state_pos_ = states_[node_num];
     states_[node_num_] = mset_node_->data()->member_index(new_mem);
     last_state_ = mst_node_->data()->ref_state;
@@ -66,7 +67,9 @@ ThermoFlucSampler::update(
 
 void
 ThermoFlucSampler::to_pdb(
-    String fname,
-    int renumber) {
+        String fname,
+        int renumber) {
     mst_->to_motif_tree()->to_pdb(fname, renumber);
+}
+
 }

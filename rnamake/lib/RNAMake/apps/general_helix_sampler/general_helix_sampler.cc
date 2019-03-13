@@ -6,13 +6,13 @@
 #include "base/backtrace.hpp"
 #include "util/cartesian_product.h"
 #include "secondary_structure/secondary_structure_parser.h"
-#include "motif_data_structures/motif_tree.h"
-#include "motif_data_structures/motif_state_ensemble_tree.h"
+#include "motif_data_structure/motif_tree.h"
+#include "motif_data_structure/motif_state_ensemble_tree.h"
 #include "resources/resource_manager.h"
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
 GeneralHelixSampler::GeneralHelixSampler() : base::Application(),
-        tfs_(ThermoFlucSimulation())
+        tfs_(thermo_fluctuation::ThermoFlucSimulation())
 {}
 
 // application setups functions ////////////////////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ GeneralHelixSampler::run() {
 
     auto bp_steps = get_motifs_from_seq_and_ss(seq, struc);
 
-    auto mt = std::make_shared<MotifTree>();
+    auto mt = std::make_shared<motif_data_structure::MotifTree>();
     mt->set_option_value("sterics", false);
 
     mt->add_motif(start);
@@ -179,7 +179,7 @@ GeneralHelixSampler::_get_hit_count(
         String const & ss) {
 
     auto bp_steps = get_motifs_from_seq_and_ss(seq, ss);
-    auto mt = std::make_shared<MotifTree>();
+    auto mt = std::make_shared<motif_data_structure::MotifTree>();
     mt->set_option_value("sterics", false);
     mt->add_motif(start);
     int i = 0;
@@ -188,7 +188,7 @@ GeneralHelixSampler::_get_hit_count(
     }
 
     if(get_bool_option("get_ideal")) {
-        auto mt2 = std::make_shared<MotifTree>();
+        auto mt2 = std::make_shared<motif_data_structure::MotifTree>();
         for(auto const & n : *mt) {
             if(n->data()->name() == "start") { continue; }
             mt2->add_motif(n->data());
@@ -210,7 +210,7 @@ GeneralHelixSampler::_get_hit_count(
 
     }
 
-    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>(mt);
     tfs_.setup(mset, 0, mt->last_node()->index(), 1, 1);
     return tfs_.run();
 

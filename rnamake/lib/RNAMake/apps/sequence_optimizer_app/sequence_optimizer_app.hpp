@@ -57,7 +57,7 @@ public:
 private:
     void
     _get_end_connections(
-            MotifGraphOP);
+            motif_data_structure::MotifGraphOP);
 
     ConnectionTemplate
     _parse_end_commandline_args();

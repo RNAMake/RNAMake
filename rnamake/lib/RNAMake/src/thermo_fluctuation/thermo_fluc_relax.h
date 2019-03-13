@@ -7,10 +7,12 @@
 
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
+namespace thermo_fluctuation {
+
 class ThermoFlucRelax {
 public:
-    ThermoFlucRelax():
-            sampler_(ThermoFlucSampler()){
+    ThermoFlucRelax() :
+            sampler_(ThermoFlucSampler()) {
         sampler_.temperature(1000);
 
     }
@@ -25,5 +27,6 @@ private:
     ThermoFlucSampler sampler_;
 };
 
+}
 
 #endif //TEST_THERMO_FLUC_RELAX_H

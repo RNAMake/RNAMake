@@ -11,8 +11,8 @@
 #include "base/file_io.h"
 #include "util/basic_io.hpp"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_topology.h"
-#include "motif_data_structures/motif_graph.h"
+#include "motif_data_structure/motif_topology.h"
+#include "motif_data_structure/motif_graph.h"
 
 void
 PathBuilder::setup_options() {
@@ -52,13 +52,13 @@ PathBuilder::build() {
     auto lines = base::get_lines_from_file(get_string_option("path"));
     auto path_points = math::vectors_from_str(lines[0]);
     
-    auto mg = MotifGraphOP(nullptr);
+    auto mg = motif_data_structure::MotifGraphOP(nullptr);
     int n1;
     String end_name = "";
     auto end_bp = structure::BasepairStateOP(nullptr);
     if(get_string_option("mg").size() > 0) {
         auto lines2 =base::get_lines_from_file(get_string_option("mg"));
-        mg = std::make_shared<MotifGraph>(lines2[0],  MotifGraphStringType::OLD);
+        mg = std::make_shared<motif_data_structure::MotifGraph>(lines2[0],  motif_data_structure::MotifGraphStringType::OLD);
         
         auto spl = base::split_str_by_delimiter(lines2[1], " ");
         n1 = std::stoi(spl[0]);
@@ -74,7 +74,7 @@ PathBuilder::build() {
     auto pathes = _get_sub_pathes(segments);
     
     auto mt = graph_to_tree(mg, mg->get_node(0));
-    auto mst = std::make_shared<MotifStateTree>(mt);
+    auto mst = std::make_shared<motif_data_structure::MotifStateTree>(mt);
     
     auto pf = PathFollower();
     pf.setup(pathes[0], mg, n1, end_name);
@@ -85,7 +85,7 @@ PathBuilder::build() {
     nodes_ = PathBuilderNodes();
     for(int i = 0; i < sol_org.size(); i++) {
         auto sol_mst = sol_org[i]->to_mst();
-        auto n = PathBuilderNode { std::make_shared<MotifStateTree>(*mst), 0, 0, 0 };
+        auto n = PathBuilderNode { std::make_shared<motif_data_structure::MotifStateTree>(*mst), 0, 0, 0 };
         n.mst->add_mst(sol_mst, n1, -1, end_name);
         n.add_score(sol_mst, sol_org[i]->score());
         nodes_.push_back(n);
@@ -171,7 +171,7 @@ PathBuilder::build() {
     out2.close();
     
     
-    auto final_mst = std::make_shared<MotifStateTree>();
+    auto final_mst = std::make_shared<motif_data_structure::MotifStateTree>();
     for(auto const & n : *nodes_[0].mst) {
         if(n->level() == 0) { continue; }
         final_mst->add_state(n->data()->cur_state, -1, -1, "", true);
@@ -269,7 +269,7 @@ parse_command_line(
     const char ** argv) {
     
     base::CommandLineOptions cl_opts;
-    auto search = MotifStateSearch();
+    auto search = motif_search::MotifStateSearch();
     cl_opts.add_options(search.options());
     cl_opts.add_option("path", String(""), base::OptionType::STRING, false);
     cl_opts.add_option("mg", String(""), base::OptionType::STRING, false);
@@ -305,7 +305,7 @@ int main(int argc, const char * argv[]) {
     auto pf = PathFollower();
     if(cmd_opts.is_filled("mg")) {
         auto lines2 =base::get_lines_from_file(cmd_opts.get_string("mg"));
-        auto mg = std::make_shared<MotifGraph>(lines2[0], MotifGraphStringType::OLD);
+        auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines2[0], motif_data_structure::MotifGraphStringType::OLD);
         
         auto spl = base::split_str_by_delimiter(lines2[1], " ");
         auto n1 = std::stoi(spl[0]);

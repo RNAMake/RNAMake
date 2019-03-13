@@ -9,7 +9,7 @@
 #include "motif/motif_factory.h"
 #include "motif_tools/segmenter.h"
 
-TEST_CASE( "Test Segmenting RNA Structures", "[Segmenter]" ) {
+TEST_CASE( "Test Segmenting RNA Structures", "[motif_tools::Segmenter]" ) {
     auto mf = motif::MotifFactory();
     auto path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6/";
     auto m = mf.motif_from_file(path);
@@ -17,7 +17,7 @@ TEST_CASE( "Test Segmenting RNA Structures", "[Segmenter]" ) {
     auto end2 = m->get_basepair("A134-A189")[0];
     auto bps = structure::BasepairOPs{end1, end2};
     
-    auto segmenter = Segmenter();
+    auto segmenter = motif_tools::Segmenter();
     auto segments = segmenter.apply(m, bps);
     
     REQUIRE(segments->removed->ends().size() == 2);

@@ -11,12 +11,12 @@
 #include "base/backtrace.hpp"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_tree.h"
+#include "motif_data_structure/motif_tree.h"
 #include "simulate_tectos.h"
 
 
 SimulateTectosApp::SimulateTectosApp() : base::Application(),
-tfs_(ThermoFlucSimulation())
+tfs_(thermo_fluctuation::ThermoFlucSimulation())
 {}
 
 
@@ -82,7 +82,7 @@ SimulateTectosApp::run() {
 }
 
 
-MotifStateEnsembleTreeOP
+motif_data_structure::MotifStateEnsembleTreeOP
 SimulateTectosApp::get_mset_old(
     String const & fseq,
     String const & fss,
@@ -95,7 +95,7 @@ SimulateTectosApp::get_mset_old(
     auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
     auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
 
-    auto mt = std::make_shared<MotifTree>();
+    auto mt = std::make_shared<motif_data_structure::MotifTree>();
     mt->set_option_value("sterics", false);
     auto m = resources::Manager::instance().motif("", "GG_LL_CC_RR");
     mt->add_motif(m);
@@ -111,7 +111,7 @@ SimulateTectosApp::get_mset_old(
         mt->add_motif(chip_motifs[i]);
     }
 
-    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>(mt);
     return mset;
 }
 

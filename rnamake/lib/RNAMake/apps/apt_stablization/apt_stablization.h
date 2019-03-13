@@ -40,7 +40,7 @@ public:
 private:
     void
     _setup_sterics(
-            MotifStateGraphOP);
+            motif_data_structure::MotifStateGraphOP);
 
 private:
 

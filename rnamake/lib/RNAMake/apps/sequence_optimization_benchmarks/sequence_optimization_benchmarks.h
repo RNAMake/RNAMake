@@ -8,8 +8,8 @@
 #include "base/application.hpp"
 #include "util/basic_io.hpp"
 #include "util/steric_lookup.hpp"
-#include "motif_data_structures/motif_state_graph.hpp"
-#include "motif_state_search/motif_state_monte_carlo.h"
+#include "motif_data_structure/motif_state_graph.hpp"
+#include "motif_search/motif_state_monte_carlo.h"
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 
 struct NodeIndexandEdge {
@@ -44,7 +44,7 @@ struct SequenceOptProblem {
 public:
     inline
     SequenceOptProblem(
-            MotifStateGraphOP n_msg,
+            motif_data_structure::MotifStateGraphOP n_msg,
             NodeIndexandEdge const & n_start,
             NodeIndexandEdge const & n_end,
             String const & n_start_name,
@@ -60,7 +60,7 @@ public:
             target_an_aligned_end(n_target_an_aligned_end) {}
 
 public:
-    MotifStateGraphOP msg;
+    motif_data_structure::MotifStateGraphOP msg;
     NodeIndexandEdge start, end;
     String start_name, end_name;
     util::StericLookupNewOP lookup;
@@ -84,7 +84,7 @@ public:
 protected:
     void
     _setup_sterics(
-            MotifStateGraphOP msg,
+            motif_data_structure::MotifStateGraphOP msg,
             util::StericLookupNewOP lookup) {
 
         auto beads = math::Points();
@@ -113,7 +113,7 @@ public:
         auto ttr = resources::Manager::instance().motif("GAAA_tetraloop", "", "A229-A245");
         auto bp_step_1 = resources::Manager::instance().bp_step("GC_LL_GC_RR");
         auto bp_step_2 = resources::Manager::instance().bp_step("CG_LL_CG_RR");
-        auto msg = std::make_shared<MotifStateGraph>();
+        auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
         msg->add_state(bp_step_1->get_state());
         msg->add_state(bp_step_2->get_state());
         msg->add_state(ttr->get_state());
@@ -178,7 +178,7 @@ public:
             scaffold_ = resources::Manager::instance().motif("scaffold");
         }
 
-        auto msg = std::make_shared<MotifStateGraph>();
+        auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
         msg->set_option_value("sterics", false);
         msg->add_state(scaffold_->get_state());
         msg->add_state(resources::Manager::instance().motif_state("HELIX.IDEAL.1"), 0, 2);
@@ -240,7 +240,7 @@ public:
             scaffold_ = resources::Manager::instance().motif("scaffold", "", "A1019-A3915");
         }
 
-        auto msg = std::make_shared<MotifStateGraph>();
+        auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
         msg->set_option_value("sterics", false);
         msg->add_state(scaffold_->get_state());
 
@@ -327,7 +327,7 @@ private:
     std::vector<motif::MotifStateOPs>
     _get_libraries();
 
-    MotifStateMonteCarloOP
+    motif_search::MotifStateMonteCarloOP
     _get_search(
             SequenceOptProblemOP,
             std::vector<motif::MotifStateOPs> const &);
@@ -335,11 +335,11 @@ private:
     SequenceOptimizer3DOP
     _get_optimizer(
             SequenceOptProblemOP,
-            MotifGraphOP);
+            motif_data_structure::MotifGraphOP);
 
     String const &
     _get_motif_names(
-            MotifGraphOP);
+            motif_data_structure::MotifGraphOP);
 
 private:
     SequenceOptimizationParameters parameters_;

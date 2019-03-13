@@ -14,7 +14,7 @@
 //RNAMake Headers
 #include "base/application.hpp"
 #include "thermo_fluctuation/thermo_fluc_simulation.h"
-#include "motif_data_structures/motif_state_ensemble_tree.h"
+#include "motif_data_structure/motif_state_ensemble_tree.h"
 
 String
 remove_Us(String const &);
@@ -49,7 +49,7 @@ public:
 
 private: // run helper functions
     
-    MotifStateEnsembleTreeOP
+    motif_data_structure::MotifStateEnsembleTreeOP
     get_mset_old(
         String const &,
         String const &,
@@ -63,7 +63,7 @@ private: // run helper functions
     
     
 private:
-    ThermoFlucSimulation tfs_;
+    thermo_fluctuation::ThermoFlucSimulation tfs_;
     
     
 };

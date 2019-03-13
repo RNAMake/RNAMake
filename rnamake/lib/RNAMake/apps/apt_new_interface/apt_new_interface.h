@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "base/application.hpp"
 #include "util/steric_lookup.hpp"
-#include "motif_data_structures/motif_state_graph.hpp"
+#include "motif_data_structure/motif_state_graph.hpp"
 
 class AptNewInterfaceException : public std::runtime_error {
 public:
@@ -40,7 +40,7 @@ public:
 private:
     void
     _setup_sterics(
-            MotifStateGraphOP);
+            motif_data_structure::MotifStateGraphOP);
 
 private:
 

@@ -9,9 +9,9 @@
 #include "mini_ttr.h"
 #include "base/cl_option.h"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_graph.h"
-#include "motif_state_search/motif_state_search.h"
-#include "motif_state_search/motif_state_search_scorer.h"
+#include "motif_data_structure/motif_graph.h"
+#include "motif_search/motif_state_search.h"
+#include "motif_search/motif_state_search_scorer.h"
 
 base::CommandLineOptions
 parse_command_line(
@@ -19,7 +19,7 @@ parse_command_line(
     const char ** argv) {
     
     base::CommandLineOptions cl_opts;
-    auto search = MotifStateSearch();
+    auto search = motif_search::MotifStateSearch();
     cl_opts.add_options(search.options());
     cl_opts.add_option("path", String(""), base::OptionType::STRING, false);
     cl_opts.add_option("test_run", false, base::OptionType::BOOL, false);
@@ -100,9 +100,9 @@ MiniTTR::run() {
 }
 
 void
-MiniTTR::optimize_sequence(MotifGraph & org_mg) {
+MiniTTR::optimize_sequence(motif_data_structure::MotifGraph & org_mg) {
     auto str = org_mg.topology_to_str();
-    auto mg = std::make_shared<MotifGraph>(str, MotifGraphStringType::OLD);
+    auto mg = std::make_shared<motif_data_structure::MotifGraph>(str, motif_data_structure::MotifGraphStringType::OLD);
     mg->replace_ideal_helices();
     
     int free_end_node = 0;
@@ -174,7 +174,7 @@ MiniTTRPathFollow::run() {
         exit(0);
         auto start_2 = mg_.get_available_end(mg_.last_node()->index());
         
-        auto search_2 = MotifStateSearch();
+        auto search_2 = motif_search::MotifStateSearch();
         search_2.set_option_value("accept_score", 10.0f);
         
         beads = mg_.beads();

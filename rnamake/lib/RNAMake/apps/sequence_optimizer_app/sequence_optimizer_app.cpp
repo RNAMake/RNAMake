@@ -10,8 +10,8 @@
 
 #include "base/backtrace.hpp"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_topology.h"
-#include "motif_data_structures/motif_graph.h"
+#include "motif_data_structure/motif_topology.h"
+#include "motif_data_structure/motif_graph.h"
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 #include "sequence_optimizer_app.hpp"
 
@@ -50,7 +50,7 @@ SequenceOptimizerApp::run() {
 
     // load motif graph from file
     auto lines =base::get_lines_from_file(get_string_option("mg"));
-    auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
+    auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0], motif_data_structure::MotifGraphStringType::MG);
 
     // parse connection info
     _get_end_connections(mg);
@@ -106,7 +106,7 @@ SequenceOptimizerApp::run() {
         scorer = std::make_shared<InternalTargetScorer>(ni1, ei1, ni2, ei2, false);
     }
     
-    auto mg_copy = std::make_shared<MotifGraph>(*mg);
+    auto mg_copy = std::make_shared<motif_data_structure::MotifGraph>(*mg);
     auto write_pdbs = get_bool_option("pdbs");
     
     for(int i = 0; i < get_int_option("n"); i++) {
@@ -136,7 +136,7 @@ SequenceOptimizerApp::run() {
 
 void
 SequenceOptimizerApp::_get_end_connections(
-        MotifGraphOP mg) {
+        motif_data_structure::MotifGraphOP mg) {
     connections_ = std::vector<ConnectionTemplate>();
     if(get_string_option("end_1") == "" && get_string_option("end_2") == "" && get_string_option("connections") == "") {
         throw SequenceOptimizerAppException("please supply either end_1 / end_2 or connections");

@@ -14,7 +14,7 @@
 //RNAMake Headers
 #include "base/application.hpp"
 #include "thermo_fluctuation/thermo_fluc_simulation_devel.h"
-#include "motif_data_structures/motif_state_ensemble_tree.h"
+#include "motif_data_structure/motif_state_ensemble_tree.h"
 
 
 
@@ -51,53 +51,53 @@ public:
 private:
     
     //old code for comparision
-    MotifStateEnsembleTreeOP
+    motif_data_structure::MotifStateEnsembleTreeOP
     get_mset_old(
         String const &,
         String const &,
         String const &,
         String const &);
     
-    MotifStateEnsembleTreeOP
+    motif_data_structure::MotifStateEnsembleTreeOP
     get_mset_new_receptor(
         String const &,
         String const &,
         String const &,
         String const &);
     
-    MotifStateEnsembleTreeOP
+    motif_data_structure::MotifStateEnsembleTreeOP
     get_mset_old_full_seq(
         String const &,
         String const &,
         String const &,
         String const &);
     
-    MotifStateEnsembleTreeOP
+    motif_data_structure::MotifStateEnsembleTreeOP
     get_mset_old_reverse(
         String const &,
         String const &,
         String const &,
         String const &);
     
-    MotifStateEnsembleTreeOP
+    motif_data_structure::MotifStateEnsembleTreeOP
     get_mset_old_coorigin(
         String const &,
         String const &,
         String const &,
         String const &);
 
-    MotifStateEnsembleTreeOP
+    motif_data_structure::MotifStateEnsembleTreeOP
     get_mset_old_gaaa_coorigin(
             String const &,
             String const &,
             String const &,
             String const &);
 
-    ThermoFlucSimulationLoggerOP
+    thermo_fluctuation::ThermoFlucSimulationLoggerOP
     _get_logger(
             String const &);
 
-    ThermoFlucScorerOP
+    thermo_fluctuation::ThermoFlucScorerOP
     _get_scorer(
             String const &);
 
@@ -108,7 +108,7 @@ private:
     
     
 private:
-    ThermoFlucSimulationDevel tfs_;
+    thermo_fluctuation::ThermoFlucSimulationDevel tfs_;
     Strings motif_names_;
     Strings ggaa_ttr_end_names_;
     Strings gaaa_ttr_end_names_;

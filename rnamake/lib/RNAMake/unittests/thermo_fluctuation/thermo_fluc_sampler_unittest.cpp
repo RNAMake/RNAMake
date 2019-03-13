@@ -8,11 +8,11 @@
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 #include "thermo_fluctuation/thermo_fluc_graph_sampler.h"
 
-TEST_CASE( "Test Thermo Flucuation Sampler ", "[ThermoFluctuationSampler]" ) {
+TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctuationSampler]" ) {
     
     SECTION("test moving one frame") {
-        auto sampler = ThermoFlucSampler();
-        auto mset = std::make_shared<MotifStateEnsembleTree>();
+        auto sampler = thermo_fluctuation::ThermoFlucSampler();
+        auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>();
         mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
         mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
         mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
@@ -38,8 +38,8 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[ThermoFluctuationSampler]" ) {
     }
 
     SECTION("test graph sampler") {
-        auto sampler = ThermoFlucGraphSampler();
-        /*auto mset = std::make_shared<MotifStateEnsembleTree>();
+        auto sampler = thermo_fluctuation::ThermoFlucGraphSampler();
+        /*auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>();
         mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
         mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
         mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));

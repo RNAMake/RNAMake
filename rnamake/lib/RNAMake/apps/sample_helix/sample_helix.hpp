@@ -42,7 +42,7 @@ private:
             String const &);
 
 private:
-    ThermoFlucSampler sampler_;
+    thermo_fluctuation::ThermoFlucSampler sampler_;
 
 };
 

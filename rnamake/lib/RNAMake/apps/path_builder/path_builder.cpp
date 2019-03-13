@@ -12,8 +12,8 @@
 #include "base/file_io.h"
 #include "base/settings.h"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_graph.h"
-#include "motif_state_search/motif_state_search.h"
+#include "motif_data_structure/motif_graph.h"
+#include "motif_search/motif_state_search.h"
 #include "eternabot/sequence_designer.h"
 
 base::CommandLineOptions
@@ -42,7 +42,7 @@ int main(int argc, const char * argv[]) {
                                  "topology followed by starting basepair and end basepair");
     }
     
-    auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::TOP);
+    auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0], motif_data_structure::MotifGraphStringType::TOP);
     auto spl1 = base::split_str_by_delimiter(lines[1], " ");
     auto spl2 = base::split_str_by_delimiter(lines[2], " ");
 
@@ -57,7 +57,7 @@ int main(int argc, const char * argv[]) {
         }
     }
     
-    auto search = MotifStateSearch();
+    auto search = motif_search::MotifStateSearch();
     search.setup(start->state(), end->state());
     search.beads(centers);
     search.set_option_value("max_size", 80);

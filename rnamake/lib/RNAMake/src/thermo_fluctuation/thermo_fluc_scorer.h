@@ -18,57 +18,57 @@
 #include "structure/basepair_state.fwd.h"
 #include "structure/basepair_state.h"
 
+namespace thermo_fluctuation {
 
 class ThermoFlucScorer {
 public:
     ThermoFlucScorer() {}
-    
+
     virtual
     ~ThermoFlucScorer() {}
-    
+
     virtual
     inline
     float
     score(
-        structure::BasepairStateOP & state_1,
-        structure::BasepairStateOP & state_2) {
+            structure::BasepairStateOP & state_1,
+            structure::BasepairStateOP & state_2) {
         return 0;
     }
-    
+
 };
 
 
 class FrameScorer : public ThermoFlucScorer {
 public:
     FrameScorer() : ThermoFlucScorer(),
-        frame_score_( 0 ),
-        r_diff_( 0 ),
-        r_diff_flip_( 0 )
-    {}
-    
+            frame_score_(0),
+            r_diff_(0),
+            r_diff_flip_(0) {}
+
     ~FrameScorer() {}
 
 public:
-    
+
     inline
     float
     score(
-        structure::BasepairStateOP & state_1,
-        structure::BasepairStateOP & state_2) {
-        
+            structure::BasepairStateOP & state_1,
+            structure::BasepairStateOP & state_2) {
+
         frame_score_ = state_1->d().distance(state_2->d());
         r_diff_ = state_1->r().difference(state_2->r());
         state_2->flip();
         r_diff_flip_ = state_1->r().difference(state_2->r());;
         state_2->flip();
 
-        if(r_diff_ > r_diff_flip_) { frame_score_ += r_diff_flip_; }
-        else                       { frame_score_ += r_diff_;      }
-        
+        if (r_diff_ > r_diff_flip_) { frame_score_ += r_diff_flip_; }
+        else { frame_score_ += r_diff_; }
+
         return frame_score_;
-        
+
     }
-    
+
 private:
     float frame_score_ = 0, r_diff_ = 0, r_diff_flip_ = 0;
 };
@@ -77,58 +77,57 @@ private:
 class FrameScorerDevel : public ThermoFlucScorer {
 public:
     FrameScorerDevel() : ThermoFlucScorer(),
-        frame_score_( 0 ),
-        r_diff_( 0 ),
-        r_diff_flip_( 0 ),
-        weight_d_( 1 ),
-        weight_r_( 1 )
-    {}
-    
+            frame_score_(0),
+            r_diff_(0),
+            r_diff_flip_(0),
+            weight_d_(1),
+            weight_r_(1) {}
+
     ~FrameScorerDevel() {}
-    
+
 public:
-    
+
     inline
     float
     score(
-        structure::BasepairStateOP & state_1,
-        structure::BasepairStateOP & state_2) {
-        
-        frame_score_ = state_1->d().distance(state_2->d())*weight_d_;
+            structure::BasepairStateOP & state_1,
+            structure::BasepairStateOP & state_2) {
+
+        frame_score_ = state_1->d().distance(state_2->d()) * weight_d_;
         r_diff_ = state_1->r().difference(state_2->r());
         state_2->flip();
         r_diff_flip_ = state_1->r().difference(state_2->r());
         state_2->flip();
-        if(r_diff_ > r_diff_flip_) { frame_score_ += r_diff_flip_*weight_r_; }
-        else                       { frame_score_ += r_diff_*weight_r_;      }
-        
+        if (r_diff_ > r_diff_flip_) { frame_score_ += r_diff_flip_ * weight_r_; }
+        else { frame_score_ += r_diff_ * weight_r_; }
+
         return frame_score_;
-        
+
     }
-    
+
 public:
-    
+
     inline
     void
     weight_d(
-             float weight_d) {  weight_d_ = weight_d; }
-    
+            float weight_d) { weight_d_ = weight_d; }
+
     inline
     void
     weight_r(
-             float weight_r) {  weight_r_ = weight_r; }
-    
+            float weight_r) { weight_r_ = weight_r; }
+
 
 public:
-    
+
     inline
     float
     weight_d() { return weight_d_; }
-    
+
     inline
     float
     weight_r() { return weight_r_; }
-    
+
 private:
     float frame_score_ = 0, r_diff_ = 0, r_diff_flip_ = 0;
     float weight_d_ = 0, weight_r_ = 0;
@@ -138,7 +137,7 @@ class SixDScorer : public ThermoFlucScorer {
 public:
     SixDScorer(
             String const & constraints,
-            structure::BasepairOP ref_bp):
+            structure::BasepairOP ref_bp) :
             ThermoFlucScorer(),
             ref_bp_(ref_bp) {
         ref_r_t_ = ref_bp_->r().transposed();
@@ -175,8 +174,8 @@ public:
         math::calc_euler(r_, euler);
 
         d_ = d2_ - d1_;
-        for(int i = 0; i < 3; i++) {
-            euler[i] = euler[i]*180/M_PI;
+        for (int i = 0; i < 3; i++) {
+            euler[i] = euler[i] * 180 / M_PI;
             euler[i] += 180;
         }
 
@@ -187,19 +186,25 @@ public:
         values_[4] = euler[1];
         values_[5] = euler[2];
 
-        dist_ = sqrt(values_[0]*values_[0] + values_[1]*values_[1] + values_[2]*values_[2]);
-        if(dist_ > 7) { return 99; }
+        dist_ = sqrt(values_[0] * values_[0] + values_[1] * values_[1] + values_[2] * values_[2]);
+        if (dist_ > 7) { return 99; }
 
         fail_ = 0;
-        for(int i = 0; i < 6; i++) {
-            if(i != 3 &&
-               (constraints_[i][0] > values_[i] || values_[i] > constraints_[i][1])) { fail_ = 1; break; }
-            if(i == 3 &&
-               (constraints_[i][0] < values_[i] && values_[i] < constraints_[i][1])) { fail_ = 1; break; }
+        for (int i = 0; i < 6; i++) {
+            if (i != 3 &&
+                (constraints_[i][0] > values_[i] || values_[i] > constraints_[i][1])) {
+                fail_ = 1;
+                break;
+            }
+            if (i == 3 &&
+                (constraints_[i][0] < values_[i] && values_[i] < constraints_[i][1])) {
+                fail_ = 1;
+                break;
+            }
         }
 
-        if(fail_) { return 99; }
-        else      { return 0; }
+        if (fail_) { return 99; }
+        else { return 0; }
 
     }
 
@@ -210,9 +215,9 @@ private:
             String const & constraints) {
 
         auto spl = base::split_str_by_delimiter(constraints, ";");
-        for(auto const & s : spl) {
+        for (auto const & s : spl) {
             auto spl2 = base::split_str_by_delimiter(s, ",");
-            if(spl2.size() != 3) { throw std::runtime_error("invalid record constraint: " + s); }
+            if (spl2.size() != 3) { throw std::runtime_error("invalid record constraint: " + s); }
             auto pos = _parse_constraint_position(spl2[0]);
             auto lower = std::stod(spl2[1]);
             auto upper = std::stod(spl2[2]);
@@ -224,12 +229,12 @@ private:
     int
     _parse_constraint_position(
             String const & constraint_name) {
-        if     (constraint_name == "x") { return 0; }
-        else if(constraint_name == "y") { return 1; }
-        else if(constraint_name == "z") { return 2; }
-        else if(constraint_name == "a") { return 3; }
-        else if(constraint_name == "b") { return 4; }
-        else if(constraint_name == "g") { return 5; }
+        if (constraint_name == "x") { return 0; }
+        else if (constraint_name == "y") { return 1; }
+        else if (constraint_name == "z") { return 2; }
+        else if (constraint_name == "a") { return 3; }
+        else if (constraint_name == "b") { return 4; }
+        else if (constraint_name == "g") { return 5; }
         else {
             throw std::runtime_error("unknown constraint name: " + constraint_name);
         }
@@ -238,8 +243,8 @@ private:
 
     void
     _setup_constraints() {
-        for(int i = 0; i < 3; i++) { constraints_[i] = math::Real2{ -10, 10}; }
-        for(int i = 3; i < 6; i++) { constraints_[i] = math::Real2{ 0, 360}; }
+        for (int i = 0; i < 3; i++) { constraints_[i] = math::Real2{-10, 10}; }
+        for (int i = 3; i < 6; i++) { constraints_[i] = math::Real2{0, 360}; }
     }
 
 private:
@@ -253,8 +258,8 @@ private:
 
 };
 
-
 typedef std::shared_ptr<ThermoFlucScorer> ThermoFlucScorerOP;
 
+}
 
 #endif /* defined(__RNAMake__thermo_fluc_scorer__) */

@@ -14,8 +14,8 @@
 //RNAMake Headers
 #include "base/option.h"
 #include "base/cl_option.h"
-#include "motif_data_structures/motif_graph.h"
-#include "motif_state_search/motif_state_search.h"
+#include "motif_data_structure/motif_graph.h"
+#include "motif_search/motif_state_search.h"
 #include "resources/resource_manager.h"
 #include "sequence_optimizer/sequence_optimizer.h"
 
@@ -29,7 +29,7 @@ parse_command_line(
 class MiniTTR {
 public:
     MiniTTR():
-    search_(MotifStateSearch()),
+    search_(motif_search::MotifStateSearch()),
     optimizer_(SequenceOptimizer()),
     options_(Options("MiniTTROptions"))
     {}
@@ -75,7 +75,7 @@ public:
          if(! opts.is_filled(opt->name())) { continue; }
          }*/
         
-        mg_ = MotifGraph();
+        mg_ = motif_data_structure::MotifGraph();
         /*mg_.add_motif("HELIX.IDEAL.2");
         mg_.add_motif("GAAA_tetraloop", "A229-A245");
         mg_.add_motif("HELIX.IDEAL.3", -1, "A149-A154");
@@ -92,14 +92,14 @@ public:
     
 protected:
     Options options_;
-    MotifStateSearch search_;
+    motif_search::MotifStateSearch search_;
     SequenceOptimizer optimizer_;
-    MotifGraph mg_;
+    motif_data_structure::MotifGraph mg_;
     bool test_run_, opt_seq_;
 
 private:
     void
-    optimize_sequence(MotifGraph &);
+    optimize_sequence(motif_data_structure::MotifGraph &);
     
     virtual
     void
@@ -166,7 +166,7 @@ public:
             if(! opts.is_filled(opt->name())) { continue; }
         }*/
         
-        mg_ = MotifGraph();
+        mg_ = motif_data_structure::MotifGraph();
         mg_.set_option_value("sterics", false);
         /*mg_.add_motif("GAAA_tetraloop", "A229-A245");
         mg_.add_motif("HELIX.IDEAL.6", -1, "A149-A154");*/

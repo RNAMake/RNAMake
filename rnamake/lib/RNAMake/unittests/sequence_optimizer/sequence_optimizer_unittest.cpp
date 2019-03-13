@@ -10,13 +10,13 @@
 #include "motif/motif.h"
 #include "motif/motif_factory.h"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_topology.h"
+#include "motif_data_structure/motif_topology.h"
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 
 TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     
     SECTION("test simple hairpin") {
-        auto mg = std::make_shared<MotifGraph>();
+        auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         for(int i = 0; i < 10; i++) {
             mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL"));
         }
@@ -35,7 +35,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     }
     
     SECTION("test simple hairpin 2") {
-        auto mg = std::make_shared<MotifGraph>();
+        auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         for(int i = 0; i < 10; i++) {
             mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL"));
         }
@@ -65,7 +65,8 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     SECTION("test optimizing miniTTR sequence") {
         auto path = base::base_dir() + "/rnamake/unittests/test_problems/mini_ttr/sol.mg";
         auto lines =base::get_lines_from_file(path);
-        auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
+        auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0],
+                                                                     motif_data_structure::MotifGraphStringType::MG);
         
         mg->replace_ideal_helices();
         auto scorer = std::make_shared<InternalTargetScorer>(11, 1, 19, 1, false);
@@ -93,7 +94,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     /*SECTION("test optimizing chip sequence") {
         auto base_path = base::base_dir() + "/rnamake/unittests/resources/motif_graph";
         auto lines =base::get_lines_from_file(base_path+"/tecto_chip_only.mg");
-        auto mg = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
+        auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0], motif_data_structure::MotifGraphStringType::MG);
         auto so = SequenceOptimizer3D();
         so.set_option_value("return_lowest", true);
         so.set_option_value("verbose", false);

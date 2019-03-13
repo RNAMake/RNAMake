@@ -17,6 +17,8 @@
 #include "thermo_fluctuation/thermo_fluc_scorer.h"
 
 
+namespace thermo_fluctuation {
+
 class RunningAverage {
 private:
     double val;
@@ -28,7 +30,7 @@ public:
     }
 
     double Update(double valIn) {
-        double scaling = 1. / (double)(count + 1);
+        double scaling = 1. / (double) (count + 1);
         val = valIn * scaling + val * (1. - scaling);
         count++;
         return val;
@@ -38,18 +40,15 @@ public:
         return val;
     }
 
-    size_t Count()
-    {
+    size_t Count() {
         return count;
     }
 
-    void Reset()
-    {
+    void Reset() {
         val = 0.;
         count = 0;
     }
 };
-
 
 
 class ThermoFlucSimulation : public base::OptionClass {
@@ -62,7 +61,7 @@ public:
 
     void
     setup(
-            MotifStateEnsembleTreeOP const &,
+            motif_data_structure::MotifStateEnsembleTreeOP const &,
             int,
             int,
             int,
@@ -74,18 +73,18 @@ public: //run
     int
     _check_sterics() {
         clash_ = 0;
-        for(auto const & i : check_nodes_1_) {
-            for(auto const & j : check_nodes_2_) {
-                for(auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
-                    for(auto const & b1 : sampler_.mst()->get_node(j)->data()->cur_state->beads()) {
-                        if(b1.distance(b2) < 2.2) { clash_ = 1; }
+        for (auto const & i : check_nodes_1_) {
+            for (auto const & j : check_nodes_2_) {
+                for (auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
+                    for (auto const & b1 : sampler_.mst()->get_node(j)->data()->cur_state->beads()) {
+                        if (b1.distance(b2) < 2.2) { clash_ = 1; }
                     }
 
-                    if(clash_) { break; }
+                    if (clash_) { break; }
                 }
-                if(clash_) { break; }
+                if (clash_) { break; }
             }
-            if(clash_) { break; }
+            if (clash_) { break; }
         }
         return clash_;
     }
@@ -95,7 +94,8 @@ public: //run
 
     double
     get_avg() {
-        return avg_.Get(); }
+        return avg_.Get();
+    }
 
 public: //option wrappers
 
@@ -156,10 +156,11 @@ private:
 class ThermoFlucSimulationException : public std::runtime_error {
 public:
     ThermoFlucSimulationException(
-        String const & message) :
-    std::runtime_error(message)
-    {}
+            String const & message) :
+            std::runtime_error(message) {}
 };
+
+}
 
 
 #endif /* defined(__RNAMake__thermo_fluc_simulation__) */

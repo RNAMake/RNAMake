@@ -6,9 +6,9 @@
 #include "base/settings.h"
 #include "resources/resource_manager.h"
 #include "resources/motif_sqlite_library.h"
-#include "motif_data_structures/motif_merger.h"
+#include "motif_data_structure/motif_merger.h"
 
-TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
+TEST_CASE( "Test Mergering Motifs into single structure ", "[motif_data_structure::MotifMerger]" ) {
     auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.3");
     auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.3");
     m2->new_res_uuids();
@@ -18,7 +18,7 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
         auto mlib = resources::resources::MotifSqliteLibrary("twoway");
         mlib.load_all();
         
-        auto mm = MotifMerger();
+        auto mm = motif_data_structure::MotifMerger();
         mm.add_motif(m1);
         int res_count = 0;
         
@@ -56,7 +56,7 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
         auto mlib = resources::resources::MotifSqliteLibrary("hairpin");
         mlib.load_all();
         
-        auto mm = MotifMerger();
+        auto mm = motif_data_structure::MotifMerger();
         mm.add_motif(m1);
         int res_count = 0;
 
@@ -76,7 +76,7 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[MotifMerger]" ) {
         auto mlib = resources::resources::MotifSqliteLibrary("nway");
         mlib.load_all();
         
-        auto mm = MotifMerger();
+        auto mm = motif_data_structure::MotifMerger();
         mm.add_motif(m1);
         int res_count = 0;
         

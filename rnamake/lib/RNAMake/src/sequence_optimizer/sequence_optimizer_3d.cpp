@@ -46,7 +46,7 @@ SequenceOptimizer3D::SequenceOptimizer3D() :
 void
 SequenceOptimizer3D::_update_designable_bp(
         DesignableBPOP const & d_bp,
-        MotifStateGraphOP & msg,
+        motif_data_structure::MotifStateGraphOP & msg,
         secondary_structure::PoseOP & ss) {
 
     if (d_bp->m_id_bot != nullptr) {
@@ -66,7 +66,7 @@ SequenceOptimizer3D::_update_designable_bp(
 
 String
 SequenceOptimizer3D::_validate_sequence(
-        MotifStateGraphOP const & msg,
+        motif_data_structure::MotifStateGraphOP const & msg,
         secondary_structure::PoseOP const & ss) {
 
     auto s1 = msg->to_motif_graph()->secondary_structure()->sequence();
@@ -189,7 +189,7 @@ SequenceOptimizer3D::_get_designable_bps(
 
 void
 SequenceOptimizer3D::_initiate_sequence_in_msg(
-        MotifStateGraphOP & msg,
+        motif_data_structure::MotifStateGraphOP & msg,
         secondary_structure::PoseOP const & ss) {
 
     for (auto const & m : ss->motifs()) {
@@ -207,7 +207,7 @@ SequenceOptimizer3D::_initiate_sequence_in_msg(
 
 SequenceOptimizer3D::OptimizedSequenceOPs
 SequenceOptimizer3D::get_optimized_sequences(
-        MotifGraphOP const & mg) {
+        motif_data_structure::MotifGraphOP const & mg) {
     update_var_options();
 
     if (scorer_ == nullptr) {
@@ -218,7 +218,7 @@ SequenceOptimizer3D::get_optimized_sequences(
 
     auto sols = OptimizedSequenceOPs();
     auto ss = mg->designable_secondary_structure();
-    auto msg = std::make_shared<MotifStateGraph>(mg);
+    auto msg = std::make_shared<motif_data_structure::MotifStateGraph>(mg);
 
 
     /*if(ss->chains().size() > 1) {
@@ -307,9 +307,9 @@ SequenceOptimizer3D::get_optimized_sequences(
 }
 
 
-MotifGraphOP
+motif_data_structure::MotifGraphOP
 SequenceOptimizer3D::get_optimized_mg(
-        MotifGraphOP const & mg) {
+        motif_data_structure::MotifGraphOP const & mg) {
     update_var_options();
 
     if (scorer_ == nullptr) {
@@ -319,7 +319,7 @@ SequenceOptimizer3D::get_optimized_mg(
     }
 
     auto ss = mg->designable_secondary_structure();
-    auto msg = std::make_shared<MotifStateGraph>(mg);
+    auto msg = std::make_shared<motif_data_structure::MotifStateGraph>(mg);
 
 
     if (ss->chains().size() > 1) {
@@ -341,7 +341,7 @@ SequenceOptimizer3D::get_optimized_mg(
     int i = -1;
     auto d_bp = DesignableBPOP(nullptr);
     auto new_bp_state = Strings();
-    auto best_msg = std::make_shared<MotifStateGraph>();
+    auto best_msg = std::make_shared<motif_data_structure::MotifStateGraph>();
     while (i < steps_) {
         i++;
 
@@ -363,7 +363,7 @@ SequenceOptimizer3D::get_optimized_mg(
 
         if (best > new_score) {
             best = new_score;
-            best_msg = std::make_shared<MotifStateGraph>(*msg);
+            best_msg = std::make_shared<motif_data_structure::MotifStateGraph>(*msg);
             if (verbose_) {
                 std::cout << "SEQUENCE OPTIMIZER: best_score=" << best << std::endl;
             }

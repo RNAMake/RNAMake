@@ -50,7 +50,6 @@ MotifSqliteLibrary::get(
 
     connection_.clear();
 
-
     if (data_.find(row->id) == data_.end()) {
         data_[row->id] = std::make_shared<motif::Motif>(row->data,
                                                         structure::ResidueTypeSetManager::getInstance().residue_type_set());

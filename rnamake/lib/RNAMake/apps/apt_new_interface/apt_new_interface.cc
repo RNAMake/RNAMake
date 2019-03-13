@@ -4,8 +4,8 @@
 
 #include "base/backtrace.hpp"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_state_graph.hpp"
-#include "motif_state_search/motif_state_monte_carlo.h"
+#include "motif_data_structure/motif_state_graph.hpp"
+#include "motif_search/motif_state_monte_carlo.h"
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 #include "apt_new_interface/apt_new_interface.h"
 
@@ -56,7 +56,7 @@ AptNewInterface::run() {
 
     resources::Manager::instance().register_motif(docked_motif);
 
-    auto msg = std::make_shared<MotifStateGraph>();
+    auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
     msg->set_option_value("sterics", false);
     msg->add_state(scaffold->get_state());
     msg->add_state(resources::Manager::instance().motif_state("HELIX.IDEAL.1"), 0, 2);
@@ -64,7 +64,7 @@ AptNewInterface::run() {
     msg->add_state(docked_motif->get_state(), -1, -1, 1);
     msg->increase_level();
 
-    auto msg_copy = std::make_shared<MotifStateGraph>(*msg);
+    auto msg_copy = std::make_shared<motif_data_structure::MotifStateGraph>(*msg);
 
     lookup_ = util::StericLookup(1.0, 5.0, 7);
     _setup_sterics(msg_copy);
@@ -81,7 +81,7 @@ AptNewInterface::run() {
     auto start_end_pos = msg->get_node(2)->data()->get_end_index("B14-C7");
     auto end_end_pos = msg->get_node(0)->data()->get_end_index("A41-A87");
 
-    auto mc_1 = MotifStateMonteCarlo(ms_libraries_1);
+    auto mc_1 = motif_search::MotifStateMonteCarlo(ms_libraries_1);
     mc_1.setup(msg_copy, 2, 0, start_end_pos, end_end_pos, false);
     mc_1.set_option_value("accept_score", 10);
     mc_1.set_option_value("max_solutions", 1);
@@ -125,7 +125,7 @@ AptNewInterface::run() {
     start_end_pos = msg->get_node(2)->data()->get_end_index("A10-B9");
     end_end_pos = msg->get_node(3)->data()->get_end_index("A60-A65");
 
-    auto mc_2 = MotifStateMonteCarlo(ms_libraries_2);
+    auto mc_2 = motif_search::MotifStateMonteCarlo(ms_libraries_2);
     mc_2.setup(sol_1_msg, 2, 3, start_end_pos, end_end_pos, true);
     mc_2.set_option_value("accept_score", 15);
     mc_2.set_option_value("max_solutions", 1);
@@ -224,7 +224,7 @@ AptNewInterface::_get_libraries(
 
 void
 AptNewInterface::_setup_sterics(
-        MotifStateGraphOP msg) {
+        motif_data_structure::MotifStateGraphOP msg) {
     auto beads = math::Points();
     for (auto & n : *msg) {
         for(auto const & b : n->data()->cur_state->beads()) {

@@ -6,9 +6,13 @@
 #define TEST_THERMO_FLUC_GRAPH_SAMPLER_H
 
 
+namespace thermo_fluctuation {
+
 class ThermoFlucGraphSampler {
 
 };
+
+}
 
 
 #endif //TEST_THERMO_FLUC_GRAPH_SAMPLER_H

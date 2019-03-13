@@ -12,8 +12,8 @@
 #include "base/settings.h"
 #include "util/basic_io.hpp"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_topology.h"
-#include "motif_data_structures/motif_graph.h"
+#include "motif_data_structure/motif_topology.h"
+#include "motif_data_structure/motif_graph.h"
 #include "sequence_optimizer/sequence_optimizer.h"
 
 
@@ -45,8 +45,8 @@ int main(int argc, const char * argv[]) {
     for(auto const & l : lines) {
         
         std::cout << i << std::endl;
-        auto mt = std::make_shared<MotifTree>(l);
-        auto mg = std::make_shared<MotifGraph>();
+        auto mt = std::make_shared<motif_data_structure::MotifTree>(l);
+        auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         mg->set_option_value("sterics", false);
         mg->add_motif_tree(mt);
         mg->add_connection(3, mg->last_node()->index(), "", "");

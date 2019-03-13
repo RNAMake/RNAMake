@@ -13,20 +13,20 @@
 #include "structure/residue_type_set_manager.h"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_tree.h"
+#include "motif_data_structure/motif_tree.h"
 #include "simulate_tectos_devel.h"
 #include "math/euler.h"
 
 // loggers               ////////////////////////////////////////////////////////////////////////////
 
-class SimulateTectosRecordAllLogger : public ThermoFlucSimulationLogger {
+class SimulateTectosRecordAllLogger : public thermo_fluctuation::ThermoFlucSimulationLogger {
 public:
     SimulateTectosRecordAllLogger(
             String const & fname,
             Strings const & motif_names,
             Strings const & ggaa_ttr_end_names,
             Strings const & gaaa_ttr_end_names):
-            ThermoFlucSimulationLogger(fname),
+            thermo_fluctuation::ThermoFlucSimulationLogger(fname),
             motif_names_(motif_names),
             ggaa_ttr_end_names_(ggaa_ttr_end_names),
             gaaa_ttr_end_names_(gaaa_ttr_end_names) {
@@ -107,13 +107,13 @@ private:
 
 };
 
-class SimulateTectosRecord6D : public ThermoFlucSimulationLogger {
+class SimulateTectosRecord6D : public thermo_fluctuation::ThermoFlucSimulationLogger {
 public:
     SimulateTectosRecord6D(
             String const & fname,
             String const & record_constraints,
             structure::BasepairOP ref_bp ):
-            ThermoFlucSimulationLogger(fname),
+            thermo_fluctuation::ThermoFlucSimulationLogger(fname),
             ref_bp_(ref_bp) {
         _setup_constraints();
         _parse_constraints(record_constraints);
@@ -236,13 +236,13 @@ private:
 
 };
 
-class SimulateTectosRecord6DHistogram : public ThermoFlucSimulationLogger {
+class SimulateTectosRecord6DHistogram : public thermo_fluctuation::ThermoFlucSimulationLogger {
 public:
     SimulateTectosRecord6DHistogram(
             String const & fname,
             String const & constraints,
             structure::BasepairOP ref_bp ):
-            ThermoFlucSimulationLogger("out.out"),
+            thermo_fluctuation::ThermoFlucSimulationLogger("out.out"),
             ref_bp_(ref_bp),
             histo_(math::SixDHistogram(math::BoundingBox(), math::Real6{0.1, 0.1, 0.1, 0.1, 0.1, 0.1})),
             file_name_(fname) {
@@ -375,7 +375,7 @@ private:
 };
 
 SimulateTectosApp::SimulateTectosApp() : base::Application(),
-        tfs_(ThermoFlucSimulationDevel()),
+        tfs_(thermo_fluctuation::ThermoFlucSimulationDevel()),
         motif_names_(Strings()),
         ggaa_ttr_end_names_(Strings()),
         gaaa_ttr_end_names_(Strings()) {}
@@ -438,14 +438,14 @@ void
 SimulateTectosApp::run() {
 
     /*auto lines =base::get_lines_from_file("state.out");
-    auto mt = std::make_shared<MotifTree>(lines[0], MotifTreeStringType::MT_STR);
+    auto mt = std::make_shared<motif_data_structure::MotifTree>(lines[0], MotifTreeStringType::MT_STR);
 
     auto path = base::motif_dirs() + "ref.motif";
     auto ref_motif = motif::file_to_motif(path);
     auto logger = std::make_shared<SimulateTectosRecord6D>(
             "new.out",
             ref_motif->basepairs()[0]);
-    auto mst = std::make_shared<MotifStateTree>(mt);
+    auto mst = std::make_shared<motif_data_structure::MotifStateTree>(mt);
     logger->setup(mst, 1, 23, 1, 1);
     logger->log(mst, 0);
 
@@ -466,7 +466,7 @@ SimulateTectosApp::run() {
     auto fss  = get_string_option("fss");
     auto cseq = get_string_option("cseq");
     auto css  = get_string_option("css");
-    auto mset = MotifStateEnsembleTreeOP(nullptr);
+    auto mset = motif_data_structure::MotifStateEnsembleTreeOP(nullptr);
     
     if(get_string_option("extra_me") != "") {
         std::cout << "SIMULATE_TECTOS: registered extra motif ensembles from file: ";
@@ -571,7 +571,7 @@ SimulateTectosApp::run() {
 }
 
 
-MotifStateEnsembleTreeOP
+motif_data_structure::MotifStateEnsembleTreeOP
 SimulateTectosApp::get_mset_old(
     String const & fseq,
     String const & fss,
@@ -587,7 +587,7 @@ SimulateTectosApp::get_mset_old(
     auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
     auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
     
-    auto mt = std::make_shared<MotifTree>();
+    auto mt = std::make_shared<motif_data_structure::MotifTree>();
     mt->set_option_value("sterics", false);
     auto m = resources::Manager::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
@@ -611,11 +611,11 @@ SimulateTectosApp::get_mset_old(
     mt->add_connection(1, mt->last_node()->index(), "A1-A6", mt->last_node()->data()->end_name(1));
 
     //mt->write_pdbs();
-    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>(mt);
     return mset;
 }
 
-MotifStateEnsembleTreeOP
+motif_data_structure::MotifStateEnsembleTreeOP
 SimulateTectosApp::get_mset_new_receptor(
     String const & fseq,
     String const & fss,
@@ -653,7 +653,7 @@ SimulateTectosApp::get_mset_new_receptor(
     auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
     auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
     
-    auto mt = std::make_shared<MotifTree>();
+    auto mt = std::make_shared<motif_data_structure::MotifTree>();
     mt->set_option_value("sterics", false);
     auto m = resources::Manager::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
@@ -675,12 +675,12 @@ SimulateTectosApp::get_mset_new_receptor(
         mt->add_motif(chip_motifs[i]);
     }
     
-    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>(mt);
     return mset;
     
 }
 
-MotifStateEnsembleTreeOP
+motif_data_structure::MotifStateEnsembleTreeOP
 SimulateTectosApp::get_mset_old_coorigin(
         String const & fseq,
         String const & fss,
@@ -696,7 +696,7 @@ SimulateTectosApp::get_mset_old_coorigin(
     auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
     auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
 
-    auto mt = std::make_shared<MotifTree>();
+    auto mt = std::make_shared<motif_data_structure::MotifTree>();
     mt->set_option_value("sterics", false);
     auto m = resources::Manager::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
@@ -726,12 +726,12 @@ SimulateTectosApp::get_mset_old_coorigin(
         j--;
     }
 
-    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>(mt);
     return mset;
 
 }
 
-MotifStateEnsembleTreeOP
+motif_data_structure::MotifStateEnsembleTreeOP
 SimulateTectosApp::get_mset_old_gaaa_coorigin(
         String const & fseq,
         String const & fss,
@@ -747,7 +747,7 @@ SimulateTectosApp::get_mset_old_gaaa_coorigin(
     auto flow_motifs = get_motifs_from_seq_and_ss(fseq, fss);
     auto chip_motifs = get_motifs_from_seq_and_ss(cseq, css);
 
-    auto mt = std::make_shared<MotifTree>();
+    auto mt = std::make_shared<motif_data_structure::MotifTree>();
     mt->set_option_value("sterics", false);
     auto m = resources::Manager::instance().bp_step("GG_LL_CC_RR");
     mt->add_motif(m);
@@ -776,7 +776,7 @@ SimulateTectosApp::get_mset_old_gaaa_coorigin(
         mt->add_motif(chip_motifs[i]);
     }
 
-    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>(mt);
     return mset;
 }
 
@@ -828,7 +828,7 @@ SimulateTectosApp::get_motifs_from_seq_and_ss(
     return motifs;
 }
 
-ThermoFlucSimulationLoggerOP
+thermo_fluctuation::ThermoFlucSimulationLoggerOP
 SimulateTectosApp::_get_logger(
         String const & name) {
     if(name.length() == 0) {
@@ -868,7 +868,7 @@ SimulateTectosApp::_get_logger(
     }
 }
 
-ThermoFlucScorerOP
+thermo_fluctuation::ThermoFlucScorerOP
 SimulateTectosApp::_get_scorer(
         String const & name) {
 

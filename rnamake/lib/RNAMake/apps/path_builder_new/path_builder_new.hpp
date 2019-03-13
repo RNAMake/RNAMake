@@ -12,8 +12,8 @@
 #include <stdio.h>
 
 #include "base/application.hpp"
-#include "motif_state_search/motif_state_search.h"
-#include "motif_data_structures/motif_graph.h"
+#include "motif_search/motif_state_search.h"
+#include "motif_data_structure/motif_graph.h"
 
 struct EndStateInfo {
     String name;
@@ -24,7 +24,7 @@ struct EndStateInfo {
 class PathBuilderNewApp : public base::Application {
 public:
     PathBuilderNewApp() : base::Application(),
-    search_(MotifStateSearch())
+    search_(motif_search::MotifStateSearch())
     {}
     
     ~PathBuilderNewApp() {}
@@ -51,8 +51,8 @@ private:
     _setup_from_mg();
     
 private:
-    MotifStateSearch search_;
-    MotifGraph mg_;
+    motif_search::MotifStateSearch search_;
+    motif_data_structure::MotifGraph mg_;
     EndStateInfo start_, end_;
     
 };

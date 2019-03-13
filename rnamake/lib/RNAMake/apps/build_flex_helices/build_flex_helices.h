@@ -25,7 +25,7 @@ public:
             disallowed_num_sequences_.push_back(disallowed_sequence);
         }
 
-        mst_ = std::make_shared<MotifStateTree>();
+        mst_ = std::make_shared<motif_data_structure::MotifStateTree>();
         mst_->set_option_value("sterics", false);
     }
 
@@ -104,7 +104,7 @@ public:
         }
         get_motifs_from_seq_and_ss(seq, structure_, motifs_);
 
-        auto new_mst = std::make_shared<MotifStateTree>();
+        auto new_mst = std::make_shared<motif_data_structure::MotifStateTree>();
         for(auto const & m : motifs_) {
             new_mst->add_state(m);
         }

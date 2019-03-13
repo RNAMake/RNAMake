@@ -14,15 +14,15 @@ depends = {
     'motif' : ['structure', 'secondary_structure'],
     'motif_tools' : ['motif'],
     'resources' : ['motif'],
-    'motif_data_structures' : ['resources', 'data_structure'],
-    'thermo_fluctuation' : ['motif_data_structures'],
-    'motif_state_search' : ['motif_data_structures'],
-    'sequence_optimizer' : ['motif_data_structures', 'eternabot'],
-    'all' : ['motif_tools', 'thermo_fluctuation', 'motif_state_search',
+    'motif_data_structure' : ['resources', 'data_structure'],
+    'thermo_fluctuation' : ['motif_data_structure'],
+    'motif_search' : ['motif_data_structure'],
+    'sequence_optimizer' : ['motif_data_structure', 'eternabot'],
+    'all' : ['motif_tools', 'thermo_fluctuation', 'motif_search',
                   'sequence_optimizer']
 }
 
-libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structures thermo_fluctuation motif_state_search sequence_optimizer"
+libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimizer"
 #libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools "
 all_lib_paths = libs.split()
 
@@ -48,8 +48,6 @@ def get_lib_paths(args):
 def get_cmake_lists_header():
     s =  "cmake_minimum_required(VERSION 2.8.12)\n"
     s += "project(rnamake_new)\n\n"
-    s += "SET(CMAKE_C_ARCHIVE_FINISH   \"<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>\")"
-    s += "SET(CMAKE_CXX_ARCHIVE_FINISH \"<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>\")"
     s += "set(CMAKE_BUILD_TYPE Release)\n"
     s += "include(%s)\n\n" % (base_dir + "/cmake/build/compiler.cmake")
     s += "# Include path for Python header files\n"

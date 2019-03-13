@@ -16,20 +16,20 @@
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 #include "thermo_fluctuation/thermo_fluc_scorer.h"
 
+namespace thermo_fluctuation {
 
 class ThermoFlucSimulationException : public std::runtime_error {
 public:
     ThermoFlucSimulationException(
-        String const & message) :
-    std::runtime_error(message)
-    {}
+            String const & message) :
+            std::runtime_error(message) {}
 };
 
 class ThermoFlucSimulationLogger {
 public:
     ThermoFlucSimulationLogger(
-            String const & fname = "test.out"):
-            outputed_header_(false){
+            String const & fname = "test.out") :
+            outputed_header_(false) {
         out_.open(fname);
     }
 
@@ -41,21 +41,21 @@ public:
     virtual
     void
     log(
-            MotifStateTreeOP const & mst,
+            motif_data_structure::MotifStateTreeOP const & mst,
             float score) {
 
         auto end_state_1 = mst->get_node(ni1_)->data()->get_end_state(ei1_);
         auto end_state_2 = mst->get_node(ni2_)->data()->get_end_state(ei2_);
 
         out_ << vector_to_str(end_state_1->d()) << "," << matrix_to_str(end_state_1->r()) << ",";
-        out_ << vector_to_str(end_state_2->d()) << "," << matrix_to_str(end_state_2->r()) << ","  << score;
+        out_ << vector_to_str(end_state_2->d()) << "," << matrix_to_str(end_state_2->r()) << "," << score;
         out_ << std::endl;
     }
 
     virtual
     void
     setup(
-            MotifStateTreeOP const & mst,
+            motif_data_structure::MotifStateTreeOP const & mst,
             int ni1,
             int ni2,
             int ei1,
@@ -64,7 +64,7 @@ public:
         ni2_ = ni2;
         ei1_ = ei1;
         ei2_ = ei2;
-        if(! outputed_header_) {
+        if (!outputed_header_) {
             _output_header(mst);
         }
     }
@@ -79,7 +79,7 @@ protected:
     virtual
     void
     _output_header(
-            MotifStateTreeOP const & mst) {
+            motif_data_structure::MotifStateTreeOP const & mst) {
         out_ << "d_target,r_target,d_variable,r_variable,score" << std::endl;
         outputed_header_ = true;
     }
@@ -99,15 +99,15 @@ public:
     ThermoFlucSimulationDevel() {
         scorer_ = std::make_shared<FrameScorerDevel>(FrameScorerDevel());
         sampler_ = ThermoFlucSampler();
-        check_nodes_1_ = {  };
-        check_nodes_2_ = {  };
+        check_nodes_1_ = {};
+        check_nodes_2_ = {};
         record_state_ = 0;
         record_all_ = 0;
         steric_radius_ = 2.2;
         setup_options();
-        
+
     }
-    
+
     ~ThermoFlucSimulationDevel() {}
 
 private:
@@ -115,35 +115,35 @@ private:
     int
     _check_sterics() {
         clash_ = 0;
-        for(auto const & i : check_nodes_1_) {
-            for(auto const & j : check_nodes_2_) {
-                for(auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
-                    for(auto const & b1 : sampler_.mst()->get_node(j)->data()->cur_state->beads()) {
-                        if(b1.distance(b2) < steric_radius_) { clash_ = 1; }
+        for (auto const & i : check_nodes_1_) {
+            for (auto const & j : check_nodes_2_) {
+                for (auto const & b2 : sampler_.mst()->get_node(i)->data()->cur_state->beads()) {
+                    for (auto const & b1 : sampler_.mst()->get_node(j)->data()->cur_state->beads()) {
+                        if (b1.distance(b2) < steric_radius_) { clash_ = 1; }
                     }
-                    
-                    if(clash_) { break; }
+
+                    if (clash_) { break; }
                 }
-                if(clash_) { break; }
+                if (clash_) { break; }
             }
-            if(clash_) { break; }
+            if (clash_) { break; }
         }
         return clash_;
     }
-    
+
 public:
-    
+
     void
     setup(
-        MotifStateEnsembleTreeOP const &,
-        int,
-        int,
-        int,
-        int);
+            motif_data_structure::MotifStateEnsembleTreeOP const &,
+            int,
+            int,
+            int,
+            int);
 
     int
     run();
-    
+
     String
     static_run();
 
@@ -161,49 +161,48 @@ public:
             ThermoFlucScorerOP scorer) {
         scorer_ = scorer;
     }
-   
+
 public: //option wrappers
-    
+
     inline
     base::Options &
     options() { return options_; }
-    
+
     inline
     float
     get_int_option(String const & name) { return options_.get_int(name); }
-    
+
     inline
     float
     get_float_option(String const & name) { return options_.get_float(name); }
-    
+
     inline
     String
     get_string_option(String const & name) { return options_.get_string(name); }
-    
+
     inline
     bool
     get_bool_option(String const & name) { return options_.get_bool(name); }
-    
-    
+
+
     template<typename T>
     void
     set_option_value(
-        String const & name,
-        T const & val) {
+            String const & name,
+            T const & val) {
         options_.set_value(name, val);
         update_var_options();
     }
-    
+
     void
     update_var_options();
-    
-    
+
+
 protected:
     void
     setup_options();
-    
-    
-    
+
+
 private:
     ThermoFlucScorerOP scorer_;
     ThermoFlucSimulationLoggerOP logger_;
@@ -223,5 +222,7 @@ private:
     bool dump_state_;
     bool dump_pdbs_;
 };
+
+}
 
 #endif /* defined(__RNAMake__thermo_fluc_simulation_devel__) */

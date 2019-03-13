@@ -7,7 +7,7 @@
 //
 
 #include "secondary_structure/secondary_structure_parser.h"
-#include "motif_data_structures/motif_topology.h"
+#include "motif_data_structure/motif_topology.h"
 #include "sequence_optimizer/sequence_optimizer.h"
 
 /*
@@ -28,7 +28,7 @@ SequenceOptimizer::update_var_options() {
 
 OptimizedSequenceOPs
 SequenceOptimizer::get_optimized_sequences(
-    MotifGraphOP & mg,
+    motif_data_structure::MotifGraphOP & mg,
     util::Uuid const & uuid_1,
     util::Uuid const & uuid_2,
     int end_1,

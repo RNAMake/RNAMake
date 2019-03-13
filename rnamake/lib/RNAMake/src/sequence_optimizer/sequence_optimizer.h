@@ -12,19 +12,19 @@
 #include <stdio.h>
 #include "base/option.h"
 #include "eternabot/sequence_designer.h"
-#include "motif_data_structures/motif_graph.h"
-#include "motif_data_structures/motif_tree.h"
+#include "motif_data_structure/motif_graph.h"
+#include "motif_data_structure/motif_tree.h"
 /*
 struct SequenceOptimizerResult {
     inline
     SequenceOptimizerResult(
-        MotifTreeOP const & nmt,
+        motif_data_structure::MotifTreeOP const & nmt,
         float nscore):
     motif_tree(nmt),
     score(nscore)
     {}
     
-    MotifTreeOP motif_tree;
+    motif_data_structure::MotifTreeOP motif_tree;
     float score;
 };
 
@@ -60,7 +60,7 @@ public:
     
     OptimizedSequenceOPs
     get_optimized_sequences(
-        MotifGraphOP & mg,
+        motif_data_structure::MotifGraphOP & mg,
         util::Uuid const & uuid_1,
         util::Uuid const & uuid_2,
         int end_i,
@@ -117,7 +117,7 @@ protected:
     
 private:
     Options options_;
-    MotifTreeOP mt_;
+    motif_data_structure::MotifTreeOP mt_;
     eternabot::SequenceDesigner designer_;
     eternabot::SequenceDesignerResultOPs designer_results_;
     //options

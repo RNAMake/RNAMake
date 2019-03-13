@@ -11,7 +11,7 @@
 #include "base/file_io.h"
 #include "base/settings.h"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_state_ensemble_tree.h"
+#include "motif_data_structure/motif_state_ensemble_tree.h"
 #include "thermo_fluctuation/thermo_fluc_simulation_devel.h"
 
 void
@@ -44,8 +44,8 @@ ThermoSimulationApp::run() {
     }
 
     auto lines =base::get_lines_from_file(get_string_option("mt"));
-    auto mt = std::make_shared<MotifTree>(lines[0], MotifTreeStringType::MT_STR);
-    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    auto mt = std::make_shared<motif_data_structure::MotifTree>(lines[0], MotifTreeStringType::MT_STR);
+    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>(mt);
 
     if(get_bool_option("start_pdbs")) {
         auto mt = mset->to_mst()->to_motif_tree();
@@ -54,7 +54,7 @@ ThermoSimulationApp::run() {
 
     }
 
-    auto tfs = ThermoFlucSimulationDevel();
+    auto tfs = thermo_fluctuation::ThermoFlucSimulationDevel();
     tfs.set_option_value("steps", 1000000);
     tfs.setup(mset, get_int_option("n1"), get_int_option("n2"), get_int_option("e1"), get_int_option("e2"));
     auto score = tfs.run();

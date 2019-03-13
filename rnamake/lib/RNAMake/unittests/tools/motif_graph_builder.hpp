@@ -5,7 +5,7 @@
 
 #include "builder_graph.hpp"
 
-#include "motif_data_structures/motif_graph.h"
+#include "motif_data_structure/motif_graph.h"
 #include "resources/motif_sqlite_library.h"
 
 
@@ -25,9 +25,9 @@ public:
     
     
 public:
-    MotifGraphOP
+    motif_data_structure::MotifGraphOP
     build(int repeat=1) {
-        auto mg = std::make_shared<MotifGraph>();
+        auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         
         for(int i = 0; i < repeat; i++) {
             auto index_map = std::map<int, int>();
@@ -79,7 +79,7 @@ private:
     inline
     int
     _add_motif_to_graph(
-        MotifGraphOP & mg,
+        motif_data_structure::MotifGraphOP & mg,
         resources::MotifSqliteLibraryOP const & mlib,
         int parent_index,
         int parent_end_index) {

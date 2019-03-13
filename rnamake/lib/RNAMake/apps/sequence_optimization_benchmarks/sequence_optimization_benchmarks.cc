@@ -6,8 +6,8 @@
 
 #include "base/backtrace.hpp"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_state_graph.hpp"
-#include "motif_state_search/motif_state_monte_carlo.h"
+#include "motif_data_structure/motif_state_graph.hpp"
+#include "motif_search/motif_state_monte_carlo.h"
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 #include "sequence_optimization_benchmarks/sequence_optimization_benchmarks.h"
 
@@ -141,12 +141,12 @@ SequenceOptimizationBenchmarks::_get_libraries() {
 }
 
 
-MotifStateMonteCarloOP
+motif_search::MotifStateMonteCarloOP
 SequenceOptimizationBenchmarks::_get_search(
         SequenceOptProblemOP problem,
         std::vector<motif::MotifStateOPs> const & ms_libraries) {
 
-    auto mc = std::make_shared<MotifStateMonteCarlo>(ms_libraries);
+    auto mc = std::make_shared<motif_search::MotifStateMonteCarlo>(ms_libraries);
     mc->setup(problem->msg, problem->start.ni, problem->end.ni,
               problem->start.ei, problem->end.ei, problem->target_an_aligned_end);
     mc->set_option_value("accept_score", 7.0f);
@@ -159,7 +159,7 @@ SequenceOptimizationBenchmarks::_get_search(
 SequenceOptimizer3DOP
 SequenceOptimizationBenchmarks::_get_optimizer(
         SequenceOptProblemOP problem,
-        MotifGraphOP mg) {
+        motif_data_structure::MotifGraphOP mg) {
 
     auto end_node = mg->get_node(problem->end.ni);
     auto target_state = end_node->data()->ends()[problem->end.ei]->state();
@@ -179,7 +179,7 @@ SequenceOptimizationBenchmarks::_get_optimizer(
 
 String const &
 SequenceOptimizationBenchmarks::_get_motif_names(
-        MotifGraphOP mg) {
+        motif_data_structure::MotifGraphOP mg) {
     motif_names_ = "";
     for (auto const & n : *mg) {
         motif_names_ += n->data()->name() + ";";

@@ -11,15 +11,15 @@
 #include "math/euler.h"
 #include "resources/resource_manager.h"
 #include "motif_tools/segmenter.h"
-#include "motif_data_structures/motif_topology.h"
-#include <motif_state_search/motif_state_monte_carlo.h>
+#include "motif_data_structure/motif_topology.h"
+#include <motif_search/motif_state_monte_carlo.h>
 #include <motif_data_structures/motif_state_graph.hpp>
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 #include "design_rna/design_rna.hpp"
 
 DesignRNAApp::DesignRNAApp() : base::Application(),
-        search_(MotifStateSearch()),
-        mg_(std::make_shared<MotifGraph>()),
+        search_(motif_search::MotifStateSearch()),
+        mg_(std::make_shared<motif_data_structure::MotifGraph>()),
         lookup_(util::StericLookup()),
         optimizer_(SequenceOptimizer3D()) {}
 
@@ -153,7 +153,7 @@ DesignRNAApp::_setup_from_pdb() {
     return;
     //}
     // TODO not using this anymore make an option for segmentation
-    /*auto segmenter = Segmenter();
+    /*auto segmenter = motif_tools::Segmenter();
     auto segments = segmenter.apply(struc, bps);
 
     std::cout << "DESIGN RNA: segmentation success" << std::endl;
@@ -179,7 +179,7 @@ void
 DesignRNAApp::_setup_from_mg() {
 
     auto lines =base::get_lines_from_file(get_string_option("mg"));
-    mg_ = std::make_shared<MotifGraph>(lines[0], MotifGraphStringType::MG);
+    mg_ = std::make_shared<motif_data_structure::MotifGraph>(lines[0], motif_data_structure::MotifGraphStringType::MG);
     mg_->set_option_value("sterics", false);
     auto spl = base::split_str_by_delimiter(lines[1], " ");
     start_ = EndStateInfo{spl[1], std::stoi(spl[0])};
@@ -320,7 +320,7 @@ DesignRNAApp::run() {
         if(get_string_option("defined_motif_path") == "") {
             throw DesignRNAAppException("if using monte carlo must also supply definted_motif_path");
         }
-        auto msg = std::make_shared<MotifStateGraph>();
+        auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
         for(auto const & n : *mg_) {
             auto ms = n->data()->get_state();
             if(n->parent() == nullptr) {
@@ -334,7 +334,7 @@ DesignRNAApp::run() {
 
         }
         auto ms_libraries = _get_libraries();
-        auto mc = MotifStateMonteCarlo(ms_libraries);
+        auto mc = motif_search::MotifStateMonteCarlo(ms_libraries);
         auto start_end_pos = mg_->get_node(start_.n_pos)->data()->get_end_index(start_.name);
         auto end_end_pos = mg_->get_node(end_.n_pos)->data()->get_end_index(end_.name);
         mc.setup(msg, start_.n_pos, end_.n_pos, start_end_pos, end_end_pos, target_an_aligned_end);
@@ -473,7 +473,7 @@ DesignRNAApp::run() {
                 opt_num++;
 
                 try {
-                    auto copy_mg = std::make_shared<MotifGraph>(*mg_);
+                    auto copy_mg = std::make_shared<motif_data_structure::MotifGraph>(*mg_);
                     auto dss = copy_mg->designable_secondary_structure();
                     dss->replace_sequence(s->sequence);
                     copy_mg->replace_helical_sequence(dss);

@@ -12,8 +12,8 @@
 #include <stdio.h>
 #include "base/application.hpp"
 #include "util/steric_lookup.hpp"
-#include "motif_state_search/motif_state_search.h"
-#include "motif_data_structures/motif_graph.h"
+#include "motif_search/motif_state_search.h"
+#include "motif_data_structure/motif_graph.h"
 
 class DesignRNAAppException : public std::runtime_error {
 public:
@@ -66,8 +66,8 @@ private:
     _get_libraries();
 
 private:
-    MotifStateSearch search_;
-    MotifGraphOP mg_;
+    motif_search::MotifStateSearch search_;
+    motif_data_structure::MotifGraphOP mg_;
     EndStateInfo start_, end_;
     util::StericLookup lookup_;
     SequenceOptimizer3D optimizer_;

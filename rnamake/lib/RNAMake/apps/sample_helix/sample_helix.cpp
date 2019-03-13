@@ -9,13 +9,13 @@
 #include "sample_helix/sample_helix.hpp"
 #include "base/backtrace.hpp"
 #include "secondary_structure/secondary_structure_parser.h"
-#include "motif_data_structures/motif_tree.h"
-#include "motif_data_structures/motif_state_ensemble_tree.h"
+#include "motif_data_structure/motif_tree.h"
+#include "motif_data_structure/motif_state_ensemble_tree.h"
 #include "resources/resource_manager.h"
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
 SampleHelixApp::SampleHelixApp() : base::Application(),
-        sampler_(ThermoFlucSampler())
+        sampler_(thermo_fluctuation::ThermoFlucSampler())
 {}
 
 
@@ -48,12 +48,12 @@ SampleHelixApp::run() {
     auto structure = _generate_structure(sequence);
 
     auto motifs = get_motifs_from_seq_and_ss(sequence, structure);
-    auto mt = std::make_shared<MotifTree>();
+    auto mt = std::make_shared<motif_data_structure::MotifTree>();
     for(auto const & m : motifs) {
         mt->add_motif(m);
     }
 
-    auto mset = std::make_shared<MotifStateEnsembleTree>(mt);
+    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>(mt);
 
     sampler_.setup(mset);
 

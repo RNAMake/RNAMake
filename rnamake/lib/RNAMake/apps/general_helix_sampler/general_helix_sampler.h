@@ -11,7 +11,7 @@
 //RNAMake Headers
 #include "base/application.hpp"
 #include "thermo_fluctuation/thermo_fluc_simulation.h"
-#include "motif_data_structures/motif_state_ensemble_tree.h"
+#include "motif_data_structure/motif_state_ensemble_tree.h"
 
 class GeneralHelixSamplerException : public std::runtime_error {
 public:
@@ -60,7 +60,7 @@ private:
             String const &);
 
 private:
-    ThermoFlucSimulation tfs_;
+    thermo_fluctuation::ThermoFlucSimulation tfs_;
 
 
 

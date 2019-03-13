@@ -9,8 +9,8 @@
 #include "math/quaternion.h"
 #include "util/cartesian_product.h"
 #include "secondary_structure/secondary_structure_parser.h"
-#include "motif_data_structures/motif_tree.h"
-#include "motif_data_structures/motif_state_tree.h"
+#include "motif_data_structure/motif_tree.h"
+#include "motif_data_structure/motif_state_tree.h"
 #include "resources/resource_manager.h"
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 
@@ -54,7 +54,7 @@ BuildFlexHelicesApp::run() {
     auto ss  = String("(((((&)))))");
 
     auto motifs = get_motifs_from_seq_and_ss(seq, ss);
-    auto mst = std::make_shared<MotifStateTree>();
+    auto mst = std::make_shared<motif_data_structure::MotifStateTree>();
     for(auto const & m : motifs) {
         mst->add_state(m);
     }
@@ -111,7 +111,7 @@ BuildFlexHelicesApp::generate_helices(
         new_seq = seq1 + "&" + seq2;
         motifs = get_motifs_from_seq_and_ss(new_seq, structure);
 
-        auto mst = std::make_shared<MotifStateTree>();
+        auto mst = std::make_shared<motif_data_structure::MotifStateTree>();
         for(auto const & m : motifs) {
             mst->add_state(m);
         }

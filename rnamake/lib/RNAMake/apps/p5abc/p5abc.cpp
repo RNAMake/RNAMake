@@ -66,7 +66,7 @@ int main(int argc, const char * argv[]) {
     
     ResourceManager::getInstance().register_motif(m);
     
-    auto mt = std::make_shared<MotifTree>();
+    auto mt = std::make_shared<motif_data_structure::MotifTree>();
     mt->add_motif(m);
     
     secondary_structure::SS_Tree ss_tree(flip_sequence, ss);
@@ -95,10 +95,10 @@ int main(int argc, const char * argv[]) {
     auto scorer = FrameScorer();
     auto ref_bp_end = m_clash_section->ends()[0]->state();
     
-    auto mset = std::make_shared<MotifStateEnsembleTree>();
+    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>();
     mset->setup_from_mt(mt);
     
-    auto sampler = ThermoFlucSampler();
+    auto sampler = thermo_fluctuation::ThermoFlucSampler();
     sampler.setup(mset);
 
     auto cut_off = 4.5f;

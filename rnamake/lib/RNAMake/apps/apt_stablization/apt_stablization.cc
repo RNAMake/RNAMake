@@ -4,8 +4,8 @@
 
 #include "base/backtrace.hpp"
 #include "resources/resource_manager.h"
-#include "motif_data_structures/motif_state_graph.hpp"
-#include "motif_state_search/motif_state_monte_carlo.h"
+#include "motif_data_structure/motif_state_graph.hpp"
+#include "motif_search/motif_state_monte_carlo.h"
 #include "sequence_optimizer/sequence_optimizer_3d.hpp"
 #include "apt_stablization/apt_stablization.h"
 
@@ -58,7 +58,7 @@ APTStablization::run() {
     auto ttr = resources::Manager::instance().motif("GAAA_tetraloop", "", "A229-A245");
     auto bp_step_1 = resources::Manager::instance().bp_step("GC_LL_GC_RR");
     auto bp_step_2 = resources::Manager::instance().bp_step("CG_LL_CG_RR");
-    auto msg = std::make_shared<MotifStateGraph>();
+    auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
     msg->add_state(bp_step_1->get_state());
     msg->add_state(bp_step_2->get_state());
     msg->add_state(ttr->get_state());
@@ -80,7 +80,7 @@ APTStablization::run() {
 
     out.open(get_string_option("out_file"));
 
-    auto mc = MotifStateMonteCarlo(ms_libraries);
+    auto mc = motif_search::MotifStateMonteCarlo(ms_libraries);
     mc.setup(msg, 2, 2, start_end_pos, end_end_pos, target_an_aligned_end);
     mc.lookup(lookup_);
     mc.start();
@@ -141,7 +141,7 @@ APTStablization::run() {
             continue;
         }
 
-        auto copy_mg = std::make_shared<MotifGraph>(*mg);
+        auto copy_mg = std::make_shared<motif_data_structure::MotifGraph>(*mg);
         auto dss = copy_mg->designable_secondary_structure();
         dss->replace_sequence(sols[0]->sequence);
         copy_mg->replace_helical_sequence(dss);
@@ -219,7 +219,7 @@ APTStablization::_get_libraries(
 
 void
 APTStablization::_setup_sterics(
-        MotifStateGraphOP msg) {
+        motif_data_structure::MotifStateGraphOP msg) {
     auto beads = math::Points();
     for (auto & n : *msg) {
         for(auto const & b : n->data()->cur_state->beads()) {
