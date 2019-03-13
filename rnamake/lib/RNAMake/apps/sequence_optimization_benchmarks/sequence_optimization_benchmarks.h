@@ -10,7 +10,7 @@
 #include "util/steric_lookup.hpp"
 #include "motif_data_structure/motif_state_graph.hpp"
 #include "motif_search/motif_state_monte_carlo.h"
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 
 struct NodeIndexandEdge {
     int ni; //node index
@@ -332,7 +332,7 @@ private:
             SequenceOptProblemOP,
             std::vector<motif::MotifStateOPs> const &);
 
-    SequenceOptimizer3DOP
+    sequence_optimization::SequenceOptimizer3DOP
     _get_optimizer(
             SequenceOptProblemOP,
             motif_data_structure::MotifGraphOP);

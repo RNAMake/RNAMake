@@ -50,7 +50,7 @@ private:
 
 
 private:
-    util::StericLookup lookup_;
+    util::StericLookupNew lookup_;
 };
 
 

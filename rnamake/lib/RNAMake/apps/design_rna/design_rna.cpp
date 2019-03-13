@@ -14,14 +14,14 @@
 #include "motif_data_structure/motif_topology.h"
 #include <motif_search/motif_state_monte_carlo.h>
 #include <motif_data_structures/motif_state_graph.hpp>
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include "design_rna/design_rna.hpp"
 
 DesignRNAApp::DesignRNAApp() : base::Application(),
         search_(motif_search::MotifStateSearch()),
         mg_(std::make_shared<motif_data_structure::MotifGraph>()),
         lookup_(util::StericLookup()),
-        optimizer_(SequenceOptimizer3D()) {}
+        optimizer_(sequence_optimization::SequenceOptimizer3D()) {}
 
 void
 DesignRNAApp::setup_options() {

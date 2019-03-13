@@ -1,5 +1,5 @@
 //
-//  sequence_optimizer.cpp
+//  sequence_optimization.cpp
 //  RNAMake
 //
 //  Created by Joseph Yesselman on 4/2/16.
@@ -12,7 +12,7 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_topology.h"
 #include "motif_data_structure/motif_graph.h"
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include "sequence_optimizer_app.hpp"
 
 
@@ -50,7 +50,8 @@ SequenceOptimizerApp::run() {
 
     // load motif graph from file
     auto lines =base::get_lines_from_file(get_string_option("mg"));
-    auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0], motif_data_structure::MotifGraphStringType::MG);
+    auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0],
+                                                                 motif_data_structure::MotifGraphStringType::MG);
 
     // parse connection info
     _get_end_connections(mg);
@@ -65,7 +66,6 @@ SequenceOptimizerApp::run() {
     }
 
     mg->replace_ideal_helices();
-    mg->write_pdbs("org");
     auto test_sols = optimizer_.get_optimized_sequences(mg, scorer);
     std::cout << test_sols[0]->dist_score << std::endl;
 
@@ -103,7 +103,7 @@ SequenceOptimizerApp::run() {
     auto ei2 = std::stoi(spl[1]);
 
     if(get_string_option("opt") == "Internal") {
-        scorer = std::make_shared<InternalTargetScorer>(ni1, ei1, ni2, ei2, false);
+        scorer = std::make_shared<sequence_optimization::InternalTargetScorer>(ni1, ei1, ni2, ei2, false);
     }
     
     auto mg_copy = std::make_shared<motif_data_structure::MotifGraph>(*mg);
@@ -157,6 +157,7 @@ SequenceOptimizerApp::_get_end_connections(
             auto start = NodeIndexandEdge{ni1, ei1};
             auto end   = NodeIndexandEdge{ni2, ei2};
             connections_.push_back(ConnectionTemplate{start, end, "Internal"});
+            break;
         }
 
         if(connections_.size() == 0) {
@@ -196,19 +197,21 @@ SequenceOptimizerApp::_parse_end_commandline_args() {
     return ConnectionTemplate{start, end, "Internal"};
 }
 
-SequenceOptimizerScorerOP
+sequence_optimization::SequenceOptimizerScorerOP
 SequenceOptimizerApp::_setup_optimizer_scorer() {
     if(connections_.size() == 1) {
         auto c = connections_[0];
-        return std::make_shared<InternalTargetScorer>(c.start.ni, c.start.ei, c.end.ni, c.end.ei, false);
+        return std::make_shared<sequence_optimization::InternalTargetScorer>(
+                c.start.ni, c.start.ei, c.end.ni, c.end.ei, false);
     }
     else {
-        auto sub_scorers = std::vector<SequenceOptimizerScorerOP>();
+        auto sub_scorers = std::vector<sequence_optimization::SequenceOptimizerScorerOP>();
         for(auto const & c : connections_) {
-            auto scorer = std::make_shared<InternalTargetScorer>(c.start.ni, c.start.ei, c.end.ni, c.end.ei, false);
+            auto scorer = std::make_shared<sequence_optimization::InternalTargetScorer>(
+                    c.start.ni, c.start.ei, c.end.ni, c.end.ei, false);
             sub_scorers.push_back(scorer);
         }
-        return std::make_shared<MultiTargetScorer>(sub_scorers);
+        return std::make_shared<sequence_optimization::MultiTargetScorer>(sub_scorers);
     }
 }
 
@@ -216,10 +219,10 @@ SequenceOptimizerApp::_setup_optimizer_scorer() {
 
 int main(int argc, const char * argv[]) {
     //must add this for all apps!
-    std::set_terminate(print_backtrace);
+    std::set_terminate(base::print_backtrace);
     
     //load tectos
-    auto tecto_dir = String(base_dir()+"/rnamake/lib/RNAMake/apps/simulate_tectos");
+    auto tecto_dir = String(base::base_dir()+"/rnamake/lib/RNAMake/apps/simulate_tectos");
     resources::Manager::instance().add_motif(tecto_dir+"/resources/GAAA_tetraloop");
     resources::Manager::instance().add_motif(tecto_dir+"/resources/GGAA_tetraloop");
 

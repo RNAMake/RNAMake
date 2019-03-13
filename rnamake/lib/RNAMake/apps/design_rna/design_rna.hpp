@@ -70,7 +70,7 @@ private:
     motif_data_structure::MotifGraphOP mg_;
     EndStateInfo start_, end_;
     util::StericLookup lookup_;
-    SequenceOptimizer3D optimizer_;
+    sequence_optimization::SequenceOptimizer3D optimizer_;
     
     
 };

@@ -17,12 +17,12 @@ depends = {
     'motif_data_structure' : ['resources', 'data_structure'],
     'thermo_fluctuation' : ['motif_data_structure'],
     'motif_search' : ['motif_data_structure'],
-    'sequence_optimizer' : ['motif_data_structure', 'eternabot'],
+    'sequence_optimization' : ['motif_data_structure', 'eternabot'],
     'all' : ['motif_tools', 'thermo_fluctuation', 'motif_search',
-                  'sequence_optimizer']
+                  'sequence_optimization']
 }
 
-libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimizer"
+libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimization"
 #libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools "
 all_lib_paths = libs.split()
 
@@ -183,12 +183,12 @@ def write_cmake_lists(path, args):
         if not args.no_unittests:
             f.write(get_unittests_apps_for_library(lib))
 
-    #f.write(get_pretty_lib_name("all"))
-    #f.write("add_library(all_lib " + base_dir + "/src/main.cpp)\n")
-    #f.write(get_linking_declaration("all"))
+    f.write(get_pretty_lib_name("all"))
+    f.write("add_library(all_lib " + base_dir + "/src/main.cpp)\n")
+    f.write(get_linking_declaration("all"))
 
-    if not args.no_apps:
-        f.write(get_applications())
+    #if not args.no_apps:
+    f.write(get_applications())
     f.close()
 
 if __name__ == '__main__':

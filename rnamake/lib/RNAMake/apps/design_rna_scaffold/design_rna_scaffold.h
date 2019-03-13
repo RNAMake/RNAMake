@@ -10,7 +10,7 @@
 #include "util/steric_lookup.hpp"
 #include "motif_search/motif_state_search.h"
 #include "motif_data_structure/motif_graph.h"
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 
 class DesignRNAScaffoldAppException : public std::runtime_error {
 public:
@@ -67,7 +67,7 @@ private:
     motif_data_structure::MotifGraphOP mg_;
     EndStateInfo start_, end_;
     util::StericLookup lookup_;
-    SequenceOptimizer3D optimizer_;
+    sequence_optimization::SequenceOptimizer3D optimizer_;
 
 
 };

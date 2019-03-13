@@ -20,6 +20,7 @@
 #include "motif_data_structure/motif_state_tree.h"
 #include "motif_data_structure/motif_state_graph.hpp"
 
+namespace sequence_optimization {
 
 class SequenceOptimizerScorer {
 public:
@@ -337,5 +338,7 @@ private:
 };
 
 typedef std::shared_ptr<SequenceOptimizer3D> SequenceOptimizer3DOP;
+
+}
 
 #endif /* sequence_optimizer_3d_hpp */

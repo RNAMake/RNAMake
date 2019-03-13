@@ -14,7 +14,7 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_topology.h"
 #include "motif_data_structure/motif_graph.h"
-#include "sequence_optimizer/sequence_optimizer.h"
+#include "sequence_optimization/sequence_optimizer.h"
 
 
 base::CommandLineOptions

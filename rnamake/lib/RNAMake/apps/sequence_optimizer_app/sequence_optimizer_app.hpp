@@ -1,5 +1,5 @@
 //
-//  sequence_optimizer.hpp
+//  sequence_optimization.hpp
 //  RNAMake
 //
 //  Created by Joseph Yesselman on 4/2/16.
@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 #include "base/application.hpp"
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 
 class SequenceOptimizerAppException : public std::runtime_error {
 public:
@@ -37,7 +37,7 @@ struct ConnectionTemplate {
 class SequenceOptimizerApp : public base::Application {
 public:
     SequenceOptimizerApp() : base::Application(),
-    optimizer_(SequenceOptimizer3D()) {}
+    optimizer_(sequence_optimization::SequenceOptimizer3D()) {}
     
     ~SequenceOptimizerApp() {}
     
@@ -62,7 +62,7 @@ private:
     ConnectionTemplate
     _parse_end_commandline_args();
 
-    SequenceOptimizerScorerOP
+    sequence_optimization::SequenceOptimizerScorerOP
     _setup_optimizer_scorer();
 
 
@@ -70,7 +70,7 @@ private:
     
 private:
     std::vector<ConnectionTemplate> connections_;
-    SequenceOptimizer3D optimizer_;
+    sequence_optimization::SequenceOptimizer3D optimizer_;
     
     
 };

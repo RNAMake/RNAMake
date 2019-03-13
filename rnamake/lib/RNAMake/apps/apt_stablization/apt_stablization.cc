@@ -6,7 +6,7 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_state_graph.hpp"
 #include "motif_search/motif_state_monte_carlo.h"
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include "apt_stablization/apt_stablization.h"
 
 
@@ -132,7 +132,7 @@ APTStablization::run() {
             continue;
         }
 
-        auto optimizer = SequenceOptimizer3D();
+        auto optimizer = sequence_optimization::SequenceOptimizer3D();
         optimizer.set_option_value("verbose", true);
         optimizer.set_option_value("cutoff", 7.0f);
 

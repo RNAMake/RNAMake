@@ -6,7 +6,7 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_state_graph.hpp"
 #include "motif_search/motif_state_monte_carlo.h"
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include "apt_new_interface/apt_new_interface.h"
 
 
@@ -35,42 +35,42 @@ AptNewInterface::parse_command_line(
 
 void
 AptNewInterface::run() {
+    auto & rm = resources::Manager::instance();
     auto mf = motif::MotifFactory();
 
     // add new motifs to resource manager
-    auto scaffold_rm = resources::Manager::instance().get_structure(get_string_option("scaffold"), "scaffold", 3);
+    auto scaffold_rm = rm.get_structure(get_string_option("scaffold"), "scaffold", 3);
     auto scaffold_m = std::make_shared<motif::Motif>(*scaffold_rm);
     scaffold_m->name("scaffold");
     scaffold_m->mtype(util::MotifType::TCONTACT);
     mf._setup_secondary_structure(scaffold_m);
-    resources::Manager::instance().register_motif(scaffold_m);
+    rm.register_motif(scaffold_m);
 
-    //resources::Manager::instance().add_motif(get_string_option("scaffold"), "scaffold", util::MotifType::TCONTACT);
-    auto rs = resources::Manager::instance().get_structure(get_string_option("docked_motif"), "docked_motif");
+    auto rs = rm.get_structure(get_string_option("docked_motif"), "docked_motif");
 
-    auto prna = resources::Manager::instance().motif("prna", "", "A7-C10");
-    auto scaffold = resources::Manager::instance().motif("scaffold", "", get_string_option("scaffold_end"));
+    auto prna = rm.motif("prna", "", "A7-C10");
+    auto scaffold = rm.motif("scaffold", "", get_string_option("scaffold_end"));
     auto docked_motif = std::make_shared<motif::Motif>(*rs);
     docked_motif->mtype(util::MotifType::HAIRPIN);
     mf._setup_secondary_structure(docked_motif);
 
-    resources::Manager::instance().register_motif(docked_motif);
+    rm.register_motif(docked_motif);
 
     auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
     msg->set_option_value("sterics", false);
     msg->add_state(scaffold->get_state());
-    msg->add_state(resources::Manager::instance().motif_state("HELIX.IDEAL.1"), 0, 2);
+    msg->add_state(rm.motif_state("HELIX.IDEAL.1"), 0, 2);
     msg->add_state(prna->get_state());
     msg->add_state(docked_motif->get_state(), -1, -1, 1);
     msg->increase_level();
 
     auto msg_copy = std::make_shared<motif_data_structure::MotifStateGraph>(*msg);
 
-    lookup_ = util::StericLookup(1.0, 5.0, 7);
+    lookup_ = util::StericLookupNew();
     _setup_sterics(msg_copy);
 
-    auto start_path_1 = String("flex_helices,twoway,flex_helices");
-    auto start_path_2 = String("flex_helices,twoway,flex_helices,twoway,flex_helices");
+    auto start_path_1 = String("ideal_helices_min,twoway,ideal_helices_min,twoway,ideal_helices_min");
+    auto start_path_2 = String("ideal_helices_min,twoway,ideal_helices_min,twoway,ideal_helices_min,twoway,ideal_helices_min,twoway,ideal_helices_min");
 
     //auto start_path_1 = String("ideal_helices_min,twoway,ideal_helices_min");
     //auto start_path_2 = String("ideal_helices_min,twoway,ideal_helices_min,twoway,ideal_helices_min");
@@ -83,7 +83,7 @@ AptNewInterface::run() {
 
     auto mc_1 = motif_search::MotifStateMonteCarlo(ms_libraries_1);
     mc_1.setup(msg_copy, 2, 0, start_end_pos, end_end_pos, false);
-    mc_1.set_option_value("accept_score", 10);
+    mc_1.set_option_value("accept_score", 5);
     mc_1.set_option_value("max_solutions", 1);
     mc_1.lookup(lookup_);
     mc_1.start();
@@ -127,7 +127,7 @@ AptNewInterface::run() {
 
     auto mc_2 = motif_search::MotifStateMonteCarlo(ms_libraries_2);
     mc_2.setup(sol_1_msg, 2, 3, start_end_pos, end_end_pos, true);
-    mc_2.set_option_value("accept_score", 15);
+    mc_2.set_option_value("accept_score", 5);
     mc_2.set_option_value("max_solutions", 1);
     mc_2.lookup(lookup_);
     mc_2.start();
@@ -176,6 +176,7 @@ AptNewInterface::run() {
 std::vector<motif::MotifStateOPs>
 AptNewInterface::_get_libraries(
         String const & motif_path) {
+    auto & rm = resources::Manager::instance();
     auto spl = base::split_str_by_delimiter(motif_path, ",");
     auto i = 0;
     auto libraries = std::vector<motif::MotifStateOPs>();
@@ -184,7 +185,7 @@ AptNewInterface::_get_libraries(
         if(name.length() < 2) { continue; }
         if(name == "ideal_helices_min" || name == "unique_twoway" || name == "tcontact" ||
            name == "twoway" || name == "flex_helices" || name == "existing") {
-            auto ms_lib =  MotifStateSqliteLibrary(name);
+            auto ms_lib =  resources::MotifStateSqliteLibrary(name);
             ms_lib.load_all();
             motif_states = motif::MotifStateOPs();
             if(name == "flex_helices") {
@@ -193,7 +194,6 @@ AptNewInterface::_get_libraries(
                         motif_states.push_back(ms);
                     }
                 }
-
             }
             else {
                 for (auto const & ms : ms_lib) { motif_states.push_back(ms); }
@@ -201,12 +201,12 @@ AptNewInterface::_get_libraries(
             libraries.push_back(motif_states);
         }
         else {
-            auto m = resources::Manager::instance().motif(name);
+            auto m = rm.motif(name);
             motif_states = motif::MotifStateOPs();
 
             for(auto const & end : m->ends()) {
                 try {
-                    auto m_new = resources::Manager::instance().motif(name, "", end->name());
+                    auto m_new = rm.motif(name, "", end->name());
                     m_new->new_res_uuids();
                     motif_states.push_back(m_new->get_state());
                 }
@@ -244,7 +244,7 @@ main(
         const char ** argv) {
 
     //must add this for all apps!
-    std::set_terminate(print_backtrace);
+    std::set_terminate(base::print_backtrace);
 
     //load extra motifs being used
     String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/apt_new_interface/resources/";

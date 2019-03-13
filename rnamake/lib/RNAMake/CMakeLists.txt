@@ -393,37 +393,104 @@ add_executable(thermo_fluc_simulation_unittest /Users/jyesselm/projects/RNAMake/
 target_link_libraries(thermo_fluc_simulation_unittest thermo_fluctuation_lib)
 
 ###########################################################################
-# motif_state_search
+# motif_search
 ###########################################################################
 
-set(motif_state_search_files
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_state_search/motif_state_search_solution.cpp
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_state_search/motif_state_search.cpp
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_state_search/motif_state_monte_carlo.cc
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_state_search/motif_state_search_node.cpp
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_state_search/motif_state_selector.cpp
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_state_search/path_follower.cpp
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_state_search/motif_state_search_scorer.cpp
+set(motif_search_files
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_search_solution.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_search.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_monte_carlo.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_search_node.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_selector.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_follower.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_search_scorer.cpp
 )
 
-add_library(motif_state_search_lib ${motif_state_search_files})
-target_link_libraries(motif_state_search_lib motif_data_structure_lib )
+add_library(motif_search_lib ${motif_search_files})
+target_link_libraries(motif_search_lib motif_data_structure_lib )
 
-add_executable(motif_state_search_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/motif_state_search/motif_state_search_unittest.cpp)
-target_link_libraries(motif_state_search_unittest motif_state_search_lib)
+add_executable(motif_state_search_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/motif_search/motif_state_search_unittest.cpp)
+target_link_libraries(motif_state_search_unittest motif_search_lib)
 
 ###########################################################################
-# sequence_optimizer
+# sequence_optimization
 ###########################################################################
 
-set(sequence_optimizer_files
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/sequence_optimizer/sequence_optimizer.cpp
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/sequence_optimizer/sequence_optimizer_3d.cpp
+set(sequence_optimization_files
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/sequence_optimization/sequence_optimizer.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/sequence_optimization/sequence_optimizer_3d.cpp
 )
 
-add_library(sequence_optimizer_lib ${sequence_optimizer_files})
-target_link_libraries(sequence_optimizer_lib motif_data_structure_lib  eternabot_lib )
+add_library(sequence_optimization_lib ${sequence_optimization_files})
+target_link_libraries(sequence_optimization_lib motif_data_structure_lib  eternabot_lib )
 
-add_executable(sequence_optimizer_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/sequence_optimizer/sequence_optimizer_unittest.cpp)
-target_link_libraries(sequence_optimizer_unittest sequence_optimizer_lib)
+add_executable(sequence_optimizer_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/sequence_optimization/sequence_optimizer_unittest.cpp)
+target_link_libraries(sequence_optimizer_unittest sequence_optimization_lib)
+
+###########################################################################
+# all
+###########################################################################
+
+add_library(all_lib /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/main.cpp)
+target_link_libraries(all_lib motif_tools_lib  thermo_fluctuation_lib  motif_search_lib  sequence_optimization_lib )
+
+add_executable(structure_info /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/structure_info/structure_info.cc )
+target_link_libraries(structure_info all_lib)
+
+
+add_executable(design_rna /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/design_rna/design_rna.cpp )
+target_link_libraries(design_rna all_lib)
+
+
+add_executable(simulate_tectos /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/simulate_tectos/simulate_tectos.cc )
+target_link_libraries(simulate_tectos all_lib)
+
+
+add_executable(simulate_tectos_devel /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/simulate_tectos_devel/simulate_tectos_devel.cc /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/simulate_tectos_devel/main.cpp )
+target_link_libraries(simulate_tectos_devel all_lib)
+
+
+add_executable(sequence_optimizer_app /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/sequence_optimizer_app/sequence_optimizer_app.cpp )
+target_link_libraries(sequence_optimizer_app all_lib)
+
+
+add_executable(sample_helix /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/sample_helix/sample_helix.cpp )
+target_link_libraries(sample_helix all_lib)
+
+
+add_executable(thermo_simulation /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/thermo_simulation/thermo_simulation.cpp )
+target_link_libraries(thermo_simulation all_lib)
+
+
+add_executable(general_helix_sampler /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/general_helix_sampler/general_helix_sampler.cc )
+target_link_libraries(general_helix_sampler all_lib)
+
+
+add_executable(opt_tecto_cutoff /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/opt_tecto_cutoff/opt_tecto_cutoff.cc )
+target_link_libraries(opt_tecto_cutoff all_lib)
+
+
+add_executable(apt_stablization /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/apt_stablization/apt_stablization.cc )
+target_link_libraries(apt_stablization all_lib)
+
+
+add_executable(dock_motif /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/dock_motif/dock_motif.cc )
+target_link_libraries(dock_motif all_lib)
+
+
+add_executable(apt_new_interface /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/apt_new_interface/apt_new_interface.cc )
+target_link_libraries(apt_new_interface all_lib)
+
+
+add_executable(build_flex_helices /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/build_flex_helices/build_flex_helices.cc )
+target_link_libraries(build_flex_helices all_lib)
+
+
+add_executable(sequence_optimization_benchmarks /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/sequence_optimization_benchmarks.cc )
+target_link_libraries(sequence_optimization_benchmarks all_lib)
+
+
+add_executable(design_rna_scaffold /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/design_rna_scaffold/design_rna_scaffold.cc )
+target_link_libraries(design_rna_scaffold all_lib)
+
 

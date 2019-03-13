@@ -8,7 +8,7 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_state_graph.hpp"
 #include "motif_search/motif_state_monte_carlo.h"
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include "sequence_optimization_benchmarks/sequence_optimization_benchmarks.h"
 
 SequenceOptimizationBenchmarks::SequenceOptimizationBenchmarks():
@@ -156,7 +156,7 @@ SequenceOptimizationBenchmarks::_get_search(
     return mc;
 }
 
-SequenceOptimizer3DOP
+sequence_optimization::SequenceOptimizer3DOP
 SequenceOptimizationBenchmarks::_get_optimizer(
         SequenceOptProblemOP problem,
         motif_data_structure::MotifGraphOP mg) {
@@ -164,10 +164,10 @@ SequenceOptimizationBenchmarks::_get_optimizer(
     auto end_node = mg->get_node(problem->end.ni);
     auto target_state = end_node->data()->ends()[problem->end.ei]->state();
     auto partner = end_node->connections()[problem->end.ei]->partner(end_node->index());
-    auto scorer = std::make_shared<InternalTargetScorer>(problem->end.ni, problem->end.ei, partner->index(), 1,
-                                                         problem->target_an_aligned_end);
+    auto scorer = std::make_shared<sequence_optimization::InternalTargetScorer>(
+            problem->end.ni, problem->end.ei, partner->index(), 1, problem->target_an_aligned_end);
 
-    auto optimizer = std::make_shared<SequenceOptimizer3D>();
+    auto optimizer = std::make_shared<sequence_optimization::SequenceOptimizer3D>();
     //optimizer.set_option_value("verbose", true);
     optimizer->set_option_value("cutoff", 0.01f);
     optimizer->set_option_value("return_lowest", true);

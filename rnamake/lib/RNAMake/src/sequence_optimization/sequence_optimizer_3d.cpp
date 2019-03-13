@@ -8,8 +8,9 @@
 
 #include "util/monte_carlo.h"
 #include "secondary_structure/util.h"
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 
+namespace sequence_optimization {
 
 SequenceOptimizer3D::SequenceOptimizer3D() :
         eterna_scorer_(eternabot::Scorer()),
@@ -261,6 +262,8 @@ SequenceOptimizer3D::get_optimized_sequences(
 
         new_score = scorer_->score(msg);
 
+        std::cout << last_score << " " << new_score << std::endl;
+
         if (mc.accept(last_score, new_score)) {
             last_score = new_score;
         } else {
@@ -412,6 +415,7 @@ SequenceOptimizer3D::update_var_options() {
     steps_ = options_.get_int("steps");
 }
 
+}
 
 
 

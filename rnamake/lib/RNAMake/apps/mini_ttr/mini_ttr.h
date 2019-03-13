@@ -17,9 +17,7 @@
 #include "motif_data_structure/motif_graph.h"
 #include "motif_search/motif_state_search.h"
 #include "resources/resource_manager.h"
-#include "sequence_optimizer/sequence_optimizer.h"
-
-
+#include "sequence_optimization/sequence_optimizer.h"
 
 base::CommandLineOptions
 parse_command_line(

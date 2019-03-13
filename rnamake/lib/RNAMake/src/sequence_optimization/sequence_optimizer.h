@@ -1,5 +1,5 @@
 //
-//  sequence_optimizer.h
+//  sequence_optimization.h
 //  RNAMake
 //
 //  Created by Joseph Yesselman on 1/11/16.
@@ -14,6 +14,9 @@
 #include "eternabot/sequence_designer.h"
 #include "motif_data_structure/motif_graph.h"
 #include "motif_data_structure/motif_tree.h"
+
+namespace sequence_optimization {
+
 /*
 struct SequenceOptimizerResult {
     inline
@@ -127,6 +130,9 @@ private:
     int solutions_;
 };
 */
+
+}
+
 #endif /* defined(__RNAMake__sequence_optimizer__) */
 
 

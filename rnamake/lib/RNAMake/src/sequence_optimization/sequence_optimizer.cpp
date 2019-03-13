@@ -1,5 +1,5 @@
 //
-//  sequence_optimizer.cpp
+//  sequence_optimization.cpp
 //  RNAMake
 //
 //  Created by Joseph Yesselman on 1/11/16.
@@ -8,7 +8,9 @@
 
 #include "secondary_structure/secondary_structure_parser.h"
 #include "motif_data_structure/motif_topology.h"
-#include "sequence_optimizer/sequence_optimizer.h"
+#include "sequence_optimization/sequence_optimizer.h"
+
+namespace sequence_optimization {
 
 /*
 void
@@ -134,7 +136,7 @@ SequenceOptimizer::get_final_sequence(
 }
 */
 
-
+}
 
 
 

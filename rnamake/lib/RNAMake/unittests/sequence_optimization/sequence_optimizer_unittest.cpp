@@ -3,7 +3,6 @@
 #include "../common.hpp"
 #include "../tools/motif_graph_builder.hpp"
 
-
 //RNAMake Headers
 #include "base/settings.h"
 #include "math/numerical.h"
@@ -11,7 +10,7 @@
 #include "motif/motif_factory.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_topology.h"
-#include "sequence_optimizer/sequence_optimizer_3d.hpp"
+#include "sequence_optimization/sequence_optimizer_3d.hpp"
 
 TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     
@@ -22,8 +21,9 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         }
         mg->add_motif(resources::Manager::instance().motif("HAIRPIN.1GID.0"));
         auto end1 = std::make_shared<structure::Basepair>(*mg->get_node(9)->data()->ends()[1]);
-        auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(), 8, 1, true);
-        auto so = SequenceOptimizer3D();
+        auto scorer = std::make_shared<sequence_optimization::ExternalTargetScorer>(
+                mg->get_node(9)->data()->ends()[1]->state(), 8, 1, true);
+        auto so = sequence_optimization::SequenceOptimizer3D();
         auto sols = so.get_optimized_sequences(mg, scorer);
         mg->replace_helical_sequence(sols[0]->sequence);
         auto end2 = mg->get_node(8)->data()->ends()[1];
@@ -41,8 +41,9 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         }
         mg->add_motif(resources::Manager::instance().motif("HAIRPIN.1GID.0"));
         auto end1 = std::make_shared<structure::Basepair>(*mg->get_node(9)->data()->ends()[1]);
-        auto scorer = std::make_shared<ExternalTargetScorer>(mg->get_node(9)->data()->ends()[1]->state(), 8, 1, true);
-        auto so = SequenceOptimizer3D();
+        auto scorer = std::make_shared<sequence_optimization::ExternalTargetScorer>(
+                mg->get_node(9)->data()->ends()[1]->state(), 8, 1, true);
+        auto so = sequence_optimization::SequenceOptimizer3D();
         auto mg_opt = so.get_optimized_mg(mg, scorer);
         
         mg->replace_helical_sequence(mg_opt->sequence());
@@ -69,8 +70,8 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
                                                                      motif_data_structure::MotifGraphStringType::MG);
         
         mg->replace_ideal_helices();
-        auto scorer = std::make_shared<InternalTargetScorer>(11, 1, 19, 1, false);
-        auto so = SequenceOptimizer3D();
+        auto scorer = std::make_shared<sequence_optimization::InternalTargetScorer>(11, 1, 19, 1, false);
+        auto so = sequence_optimization::SequenceOptimizer3D();
         auto mg_opt = so.get_optimized_mg(mg, scorer);
         
         mg->replace_helical_sequence(mg_opt->sequence());
@@ -95,7 +96,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         auto base_path = base::base_dir() + "/rnamake/unittests/resources/motif_graph";
         auto lines =base::get_lines_from_file(base_path+"/tecto_chip_only.mg");
         auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0], motif_data_structure::MotifGraphStringType::MG);
-        auto so = SequenceOptimizer3D();
+        auto so = sequence_optimization::SequenceOptimizer3D();
         so.set_option_value("return_lowest", true);
         so.set_option_value("verbose", false);
         
