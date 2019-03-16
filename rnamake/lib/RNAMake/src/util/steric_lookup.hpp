@@ -100,6 +100,10 @@ public:
     to_pdb(
             String const &);
 
+    int
+    size() {
+        return histo_.size(); }
+
 private:
     void
     _setup_additions();

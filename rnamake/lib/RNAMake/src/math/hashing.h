@@ -199,7 +199,8 @@ public:
             BoundingBox const & bounding_box,
             Real6 const & bin_widths) :
             bounding_box_(bounding_box),
-            bin_widths_(bin_widths) {
+            bin_widths_(bin_widths),
+            bin_values_(Real6()){
 
         auto span = bounding_box_.upper() - bounding_box_.lower();
         auto new_upper = bounding_box_.upper();
@@ -335,6 +336,7 @@ private:
     Size6 dimprods_;
     Real6 bin_widths_;
     Real6 halfbin_widths_;
+    Real6 bin_values_;
 
 
 };

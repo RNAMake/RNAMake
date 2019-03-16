@@ -118,7 +118,7 @@ SequenceOptimizationBenchmarks::_get_libraries() {
     auto motif_states = motif::MotifStateOPs();
     int i = 0;
     for(auto const & name : motif_lib_names) {
-        auto ms_lib =  MotifStateSqliteLibrary(name);
+        auto ms_lib =  resources::MotifStateSqliteLibrary(name);
         ms_lib.load_all();
         motif_states = motif::MotifStateOPs();
 
@@ -149,7 +149,7 @@ SequenceOptimizationBenchmarks::_get_search(
     auto mc = std::make_shared<motif_search::MotifStateMonteCarlo>(ms_libraries);
     mc->setup(problem->msg, problem->start.ni, problem->end.ni,
               problem->start.ei, problem->end.ei, problem->target_an_aligned_end);
-    mc->set_option_value("accept_score", 7.0f);
+    mc->set_option_value("accept_score", 5.0f);
     mc->lookup(*problem->lookup);
     mc->start();
 
@@ -162,7 +162,6 @@ SequenceOptimizationBenchmarks::_get_optimizer(
         motif_data_structure::MotifGraphOP mg) {
 
     auto end_node = mg->get_node(problem->end.ni);
-    auto target_state = end_node->data()->ends()[problem->end.ei]->state();
     auto partner = end_node->connections()[problem->end.ei]->partner(end_node->index());
     auto scorer = std::make_shared<sequence_optimization::InternalTargetScorer>(
             problem->end.ni, problem->end.ei, partner->index(), 1, problem->target_an_aligned_end);

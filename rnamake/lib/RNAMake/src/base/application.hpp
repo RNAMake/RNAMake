@@ -16,6 +16,14 @@
 
 namespace base {
 
+class ApplicationException : public std::runtime_error {
+public:
+    ApplicationException(
+            String const & message):
+            std::runtime_error(message) {}
+};
+
+
 class Application {
 public:
     inline

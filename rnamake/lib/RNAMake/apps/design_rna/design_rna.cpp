@@ -13,7 +13,7 @@
 #include "motif_tools/segmenter.h"
 #include "motif_data_structure/motif_topology.h"
 #include <motif_search/motif_state_monte_carlo.h>
-#include <motif_data_structures/motif_state_graph.hpp>
+#include <motif_data_structure/motif_state_graph.hpp>
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include "design_rna/design_rna.hpp"
 

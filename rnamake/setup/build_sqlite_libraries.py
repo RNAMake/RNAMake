@@ -837,18 +837,17 @@ builder = BuildSqliteLibraries()
 
 #builder.build_ideal_helices_old()
 #builder.build_ideal_helices()
-#builder.build_basic_libraries()
+builder.build_basic_libraries()
 #builder.build_existing_motif_library()
-#builder.build_helix_ensembles()
-#builder.build_flex_helix_library()
+builder.build_helix_ensembles()
+builder.build_flex_helix_library()
 #builder.build_new_bp_steps()
 #builder.build_ss_and_seq_libraries()
 #builder.build_le_helix_lib()
-builder.build_avg_helix_library()
+#builder.build_avg_helix_library()
 #builder.build_unique_twoway_library()
 builder.build_motif_state_libraries()
-#builder.build_motif_ensemble_state_libraries()
-#builder.build_flex_helices()
+builder.build_motif_ensemble_state_libraries()
 
 
 

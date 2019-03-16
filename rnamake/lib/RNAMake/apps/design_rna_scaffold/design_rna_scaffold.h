@@ -12,18 +12,14 @@
 #include "motif_data_structure/motif_graph.h"
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 
-class DesignRNAScaffoldAppException : public std::runtime_error {
-public:
-    DesignRNAScaffoldAppException(
-            String const & message):
-            std::runtime_error(message)
-    {}
-};
-
-
 struct EndStateInfo {
     String name;
     int n_pos;
+};
+
+struct DesignRNAScaffoldParameters {
+    String pdb, start_bp, end_bp, mg;
+    bool skip_sequence_optimization, no_basepair_checks;
 };
 
 
@@ -56,11 +52,15 @@ private:
     void
     _setup_from_mg();
 
-    std::shared_ptr<MSS_Path>
-    _setup_path();
-
     std::vector<motif::MotifStateOPs>
     _get_libraries();
+
+private:
+    void
+    check_bp(
+            String const &,
+            structure::RNAStructureOP,
+            String const &);
 
 private:
     motif_search::MotifStateSearch search_;
@@ -68,6 +68,8 @@ private:
     EndStateInfo start_, end_;
     util::StericLookup lookup_;
     sequence_optimization::SequenceOptimizer3D optimizer_;
+    resources::Manager & rm_;
+    DesignRNAScaffoldParameters parameters_;
 
 
 };

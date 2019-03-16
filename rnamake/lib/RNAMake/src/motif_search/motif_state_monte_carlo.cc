@@ -3,6 +3,8 @@
 //
 
 #include <fstream>
+#include "base/log.h"
+
 #include <motif_search/motif_state_monte_carlo.h>
 
 namespace motif_search {
@@ -12,7 +14,7 @@ MotifStateMonteCarlo::setup_options() {
     options_.add_option("sterics", false, base::OptionType::BOOL);
     options_.add_option("max_solutions", 1, base::OptionType::INT);
     options_.add_option("accept_score", 5, base::OptionType::FLOAT);
-    options_.add_option("stages", 100, base::OptionType::INT);
+    options_.add_option("stages", 50, base::OptionType::INT);
     options_.add_option("steps", 500000, base::OptionType::INT);
     options_.lock_option_adding();
 
@@ -38,7 +40,7 @@ MotifStateMonteCarlo::setup(
         int ej,
         bool target_an_aligned_end) {
 
-    msg_ = msg;
+    msg_ = std::make_shared<motif_data_structure::MotifStateGraph>(*msg);
     msg_->set_option_value("sterics", false);
     ni_ = ni;
     nj_ = nj;
@@ -74,6 +76,23 @@ MotifStateMonteCarlo::next() {
     // do not call run() now, getting one solution at a time
     enumerating_ = true;
 
+    // initial search to not be clashing
+    auto done = false;
+    auto count = 0;
+    while(!done) {
+        count += 1;
+        for(int i = 0; i < 10; i++) {
+            perform_motif_swap_no_clash();
+        }
+        if(!_steric_clash(msg_)) {
+            break;
+        }
+
+        if(count > 1000) {
+            LOG_WARNING << "no suitable starting solutions!";
+        }
+    }
+
     auto score_num = 0;
     auto pos = 0;
     auto cur_score = get_score(msg_->last_node()->data()->cur_state->end_states()[1]);
@@ -92,6 +111,20 @@ MotifStateMonteCarlo::next() {
 
             // accept solution?
             if (new_score < accept_score_) {
+                auto dist = 0.0;
+                /*for(int k = org_num_; k < msg_->size(); k++) {
+                    for(auto const & b1 : msg_->get_node(k)->data()->cur_state->beads()) {
+                        for(int l = 0; l < org_num_; l++) {
+                            for (auto const & b2 : msg_->get_node(l)->data()->cur_state->beads()) {
+                                dist = b1.distance(b2);
+                                if(dist < 2.65) {
+                                    std::cout << "made it" << std::endl;
+                                }
+                            }
+                        }
+                    }
+                }*/
+
                 if (_seen_solution(msg_)) { continue; }
                 auto mg = msg_->to_motif_graph();
                 auto last_n = msg_->last_node()->index();
@@ -102,22 +135,19 @@ MotifStateMonteCarlo::next() {
             }
 
         }
-        std::cout << "stage: " << stage_ << " best_score: " << best_score << " cur_score: " << cur_score << std::endl;
+        LOGI << "stage: " << stage_ << " best_score: " << best_score << " cur_score: " << cur_score;
 
-        // heat back up
-        /*mc_.set_temperature(1000.0);
-        for(int i = 0; i < 100; i++) {
-            new_score = perform_motif_swap(cur_score);
-            // monte carlo move accepted
-            if(new_score > 0) { cur_score = new_score; }
-            else              { continue; }
-        }
-        mc_.set_temperature(1.0);
-        */
         int j = 0;
         for (int i = org_num_; i < org_num_ + mses_.size(); i++) {
-            auto new_ms = mses_[j][rng_.randrange((int) mses_[pos].size() - 1)];
-            msg_->replace_state(i, new_ms);
+            bool found = 0;
+            for(int k = 0; k < 100; k++) {
+                auto new_ms = mses_[j][rng_.randrange((int) mses_[pos].size() - 1)];
+                msg_->replace_state(i, new_ms);
+                if (!_steric_clash(msg_)) {  found = 1; break; }
+            }
+            if(!found) {
+                LOG_WARNING << "could not find viable swap during heat up";
+            }
             j++;
         }
 
@@ -135,6 +165,23 @@ MotifStateMonteCarloSolutionNewOP
 MotifStateMonteCarlo::next_state() {
     // do not call run() now, getting one solution at a time
     enumerating_ = true;
+
+    // initial search to not be clashing
+    auto done = false;
+    auto count = 0;
+    while(!done) {
+        count += 1;
+        for(int i = 0; i < 10; i++) {
+            perform_motif_swap_no_clash();
+        }
+        if(!_steric_clash(msg_)) {
+            break;
+        }
+
+        if(count > 1000) {
+            LOG_WARNING << "no suitable starting solutions!";
+        }
+    }
 
     auto score_num = 0;
     auto pos = 0;
@@ -164,12 +211,19 @@ MotifStateMonteCarlo::next_state() {
             }
 
         }
-        std::cout << "stage: " << stage_ << " best_score: " << best_score << " cur_score: " << cur_score << std::endl;
+        LOGI << "stage: " << stage_ << " best_score: " << best_score << " cur_score: " << cur_score;
 
         int j = 0;
         for (int i = org_num_; i < org_num_ + mses_.size(); i++) {
-            auto new_ms = mses_[j][rng_.randrange((int) mses_[pos].size() - 1)];
-            msg_->replace_state(i, new_ms);
+            bool found = 0;
+            for(int k = 0; k < 100; k++) {
+                auto new_ms = mses_[j][rng_.randrange((int) mses_[pos].size() - 1)];
+                msg_->replace_state(i, new_ms);
+                if (!_steric_clash(msg_)) {  found = 1; break; }
+            }
+            if(!found) {
+                LOG_WARNING << "could not find viable swap during heat up";
+            }
             j++;
         }
 
@@ -315,11 +369,10 @@ bool
 MotifStateMonteCarlo::_steric_clash(
         motif_data_structure::MotifStateGraphOP msg) {
 
-    if (!sterics_) { return false; }
-
+    //if (!sterics_) { return false; }
     auto clash = false;
     if (using_lookup_) {
-        for (int i = org_num_ + 1; i < msg->size(); i++) {
+        for (int i = org_num_; i < msg->size(); i++) {
             for (auto const & b : msg->get_node(i)->data()->cur_state->beads()) {
                 clash = lookup_.clash(b);
                 if (clash) { return true; }
@@ -355,6 +408,17 @@ MotifStateMonteCarlo::perform_motif_swap(
     }
 
 }
+
+float
+MotifStateMonteCarlo::perform_motif_swap_no_clash() {
+    auto new_ms = motif::MotifStateOP(nullptr);
+    auto last_ms = motif::MotifStateOP(nullptr);
+    auto pos = rng_.randrange((int) mses_.size() - 1);
+    new_ms = mses_[pos][rng_.randrange((int) mses_[pos].size() - 1)];
+    last_ms = msg_->get_node(pos + org_num_)->data()->cur_state;
+    msg_->replace_state(pos + org_num_, new_ms);
+}
+
 
 
 bool

@@ -135,7 +135,7 @@ public: // add functions
             motif::MotifStateOP const &);
 
     void
-    remove_state(int);
+    remove_state(int pos = -1);
 
 public: //remove functions
 

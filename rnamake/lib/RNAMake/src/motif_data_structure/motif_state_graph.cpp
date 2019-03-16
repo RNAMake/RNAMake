@@ -338,6 +338,9 @@ MotifStateGraph::replace_state(
 
 void
 MotifStateGraph::remove_state(int pos) {
+    if(pos == -1) {
+        pos = graph_.last_node()->index();
+    }
     auto n = graph_.get_node(pos);
     graph_.remove_node(pos);
     aligned_.erase(pos);
@@ -431,6 +434,15 @@ MotifStateGraph::_update_align_list() {
                 auto c = n->connections()[0];
                 auto parent = c->partner(n->index());
                 if (used_nodes.find(parent) == used_nodes.end()) { continue; }
+                // don't add unaligned nodes twice
+                auto found = 0;
+                for (auto const & na_node : non_aligned_nodes) {
+                    if (na_node == n) {
+                        found = 1;
+                        break;
+                    }
+                }
+                if (found) { continue; }
                 align_list_.push_back(n);
             }
 

@@ -494,3 +494,7 @@ add_executable(design_rna_scaffold /Users/jyesselm/projects/RNAMake/rnamake/lib/
 target_link_libraries(design_rna_scaffold all_lib)
 
 
+add_executable(hash_motifs /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/hash_motifs/hash_motifs.cc )
+target_link_libraries(hash_motifs all_lib)
+
+

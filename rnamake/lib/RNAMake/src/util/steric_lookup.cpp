@@ -191,8 +191,8 @@ StericLookupNew::StericLookupNew() {
     auto bin_widths = math::Real3{0.25, 0.25, 0.25};
     histo_ = math::ThreeDHistogram(bb, bin_widths);
     grid_size_ = 0.25;
-    cutoff_ = 2.65;
-    radius_ = 10;
+    cutoff_ = 2.70;
+    radius_ = 12;
     additions_ = math::Points();
     _setup_additions();
 }

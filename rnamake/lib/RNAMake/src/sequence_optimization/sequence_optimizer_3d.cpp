@@ -262,8 +262,6 @@ SequenceOptimizer3D::get_optimized_sequences(
 
         new_score = scorer_->score(msg);
 
-        std::cout << last_score << " " << new_score << std::endl;
-
         if (mc.accept(last_score, new_score)) {
             last_score = new_score;
         } else {

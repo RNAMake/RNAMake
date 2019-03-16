@@ -98,6 +98,10 @@ private:
     perform_motif_swap(
             float);
 
+    float
+    perform_motif_swap_no_clash();
+
+
     bool
     _steric_clash(
             motif_data_structure::MotifStateGraphOP);

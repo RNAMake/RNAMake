@@ -14,6 +14,7 @@
 #include "motif_data_structure/motif_graph.h"
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include "sequence_optimizer_app.hpp"
+#include "util/steric_lookup.hpp"
 
 
 void
@@ -22,7 +23,7 @@ SequenceOptimizerApp::setup_options() {
     add_option("end_1", String(""), base::OptionType::STRING, false);
     add_option("end_2", String(""), base::OptionType::STRING, false);
 
-    add_option("connections", String(""), base::OptionType::STRING, false);
+    add_option("join_points", String(""), base::OptionType::STRING, false);
     
     
     add_option("v", false, base::OptionType::BOOL);
@@ -53,25 +54,34 @@ SequenceOptimizerApp::run() {
     auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0],
                                                                  motif_data_structure::MotifGraphStringType::MG);
 
-    // parse connection info
-    _get_end_connections(mg);
-
-    // get sequence optimizer scorer
-    auto scorer = _setup_optimizer_scorer();
-
     for(auto & n : *mg) {
         if(n->data()->name().substr(0, 5) == "HELIX") {
             n->data()->mtype(util::MotifType::HELIX);
         }
     }
 
+
+    mg->to_pdb("test.pdb", 1, 1);
+
+
+    exit(0);
+
     mg->replace_ideal_helices();
+
+    // parse connection info
+    _get_end_connections(mg);
+
+    // get sequence optimizer scorer
+    auto scorer = _setup_optimizer_scorer();
+
+    optimizer_.set_option_value("verbose", true);
+
     auto test_sols = optimizer_.get_optimized_sequences(mg, scorer);
     std::cout << test_sols[0]->dist_score << std::endl;
 
-    auto dss = mg->designable_secondary_structure();
     mg->replace_helical_sequence(test_sols[0]->sequence);
-    mg->write_pdbs("new");
+    mg->to_pdb("test.pdb", 1, 1);
+    //mg->write_pdbs("new");
 
     exit(0);
 
@@ -138,26 +148,26 @@ void
 SequenceOptimizerApp::_get_end_connections(
         motif_data_structure::MotifGraphOP mg) {
     connections_ = std::vector<ConnectionTemplate>();
-    if(get_string_option("end_1") == "" && get_string_option("end_2") == "" && get_string_option("connections") == "") {
+    if(get_string_option("end_1") == "" && get_string_option("end_2") == "" && get_string_option("join_points") == "") {
         throw SequenceOptimizerAppException("please supply either end_1 / end_2 or connections");
     }
     else if(get_string_option("end_1") != "" && get_string_option("end_2") != "") {
         connections_.push_back(_parse_end_commandline_args());
     }
-    else if(get_string_option("connections") != "") {
-        auto connection_strs = base::split_str_by_delimiter(get_string_option("connections"), ";");
+    else if(get_string_option("join_points") != "") {
+        auto connection_strs = base::split_str_by_delimiter(get_string_option("join_points"), ";");
         for(auto const & connection_str : connection_strs) {
             auto spl = base::split_str_by_delimiter(connection_str, " ");
-            auto ni1 = std::stoi(spl[0]);
-            auto ei1 = mg->get_node(ni1)->data()->get_end_index(spl[1]);
+            auto ni = std::stoi(spl[0]);
+            auto ei = mg->get_node(ni)->data()->get_end_index(spl[1]);
+            auto end_node = mg->get_node(ni);
+            auto partner = end_node->connections()[ei]->partner(end_node->index());
 
-            auto ni2 = std::stoi(spl[2]);
-            auto ei2 = mg->get_node(ni2)->data()->get_end_index(spl[3]);
+            std::cout << ni << " " << ei << " " << partner->index() << " " << 1 << std::endl;
 
-            auto start = NodeIndexandEdge{ni1, ei1};
-            auto end   = NodeIndexandEdge{ni2, ei2};
+            auto start = NodeIndexandEdge{ni, ei};
+            auto end   = NodeIndexandEdge{partner->index(), 1};
             connections_.push_back(ConnectionTemplate{start, end, "Internal"});
-            break;
         }
 
         if(connections_.size() == 0) {
@@ -214,6 +224,8 @@ SequenceOptimizerApp::_setup_optimizer_scorer() {
         return std::make_shared<sequence_optimization::MultiTargetScorer>(sub_scorers);
     }
 }
+
+
 
 
 
