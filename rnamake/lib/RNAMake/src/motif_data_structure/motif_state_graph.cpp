@@ -482,12 +482,16 @@ MotifStateGraph::_align_states(int pos) {
 
         if (element_in_vector(n, non_aligned_nodes)) { continue; }
 
+        std::cout << n->index() << " " << size() << std::endl;
+
         auto parent = n->connections()[0]->partner(n->index());
         auto pei = n->connections()[0]->end_index(parent->index());
         get_aligned_motif_state(parent->data()->get_end_state(pei),
                                 n->data()->cur_state,
                                 n->data()->ref_state);
     }
+
+    exit(0);
 
 }
 

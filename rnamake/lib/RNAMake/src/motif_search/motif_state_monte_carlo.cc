@@ -415,7 +415,6 @@ MotifStateMonteCarlo::perform_motif_swap_no_clash() {
     auto last_ms = motif::MotifStateOP(nullptr);
     auto pos = rng_.randrange((int) mses_.size() - 1);
     new_ms = mses_[pos][rng_.randrange((int) mses_[pos].size() - 1)];
-    last_ms = msg_->get_node(pos + org_num_)->data()->cur_state;
     msg_->replace_state(pos + org_num_, new_ms);
 }
 
