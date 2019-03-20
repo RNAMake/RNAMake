@@ -400,10 +400,16 @@ set(motif_search_files
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_search_solution.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_search.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_monte_carlo.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/problem.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/search.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_search_node.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_selector.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_follower.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_search_scorer.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/node.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/scorer.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/search.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/selector.cc
 )
 
 add_library(motif_search_lib ${motif_search_files})
@@ -496,5 +502,9 @@ target_link_libraries(design_rna_scaffold all_lib)
 
 add_executable(hash_motifs /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/hash_motifs/hash_motifs.cc )
 target_link_libraries(hash_motifs all_lib)
+
+
+add_executable(get_best_solutions /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/get_best_solutions/get_best_solutions.cc )
+target_link_libraries(get_best_solutions all_lib)
 
 

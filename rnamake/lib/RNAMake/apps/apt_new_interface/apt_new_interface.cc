@@ -173,6 +173,7 @@ AptNewInterface::_setup_new_motifs() {
     auto scaffold_m = std::make_shared<motif::Motif>(*scaffold_rm);
     scaffold_m->name("scaffold");
     scaffold_m->mtype(util::MotifType::TCONTACT);
+    scaffold_m->score(0);
     //scaffold_m->block_end_add(0);
     mf._setup_secondary_structure(scaffold_m);
     rm_.register_motif(scaffold_m);
@@ -182,6 +183,7 @@ AptNewInterface::_setup_new_motifs() {
     auto docked_motif = std::make_shared<motif::Motif>(*rs);
     docked_motif->mtype(util::MotifType::HAIRPIN);
     docked_motif->block_end_add(0);
+    docked_motif->score(0);
     mf._setup_secondary_structure(docked_motif);
 
     rm_.register_motif(docked_motif);
@@ -278,7 +280,7 @@ AptNewInterface::_get_design_problem() {
     auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
     msg->set_option_value("sterics", false);
     msg->add_state(scaffold->get_state());
-    msg->add_state(rm_.motif_state("HELIX.IDEAL.1"), 0, 2);
+    msg->add_state(rm_.motif_state("HELIX.IDEAL.3"), 0, 2);
     msg->add_state(prna->get_state());
     msg->add_state(docked_motif->get_state(), -1, -1, 1);
     msg->increase_level();

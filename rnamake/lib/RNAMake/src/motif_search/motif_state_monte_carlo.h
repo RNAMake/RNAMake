@@ -98,7 +98,7 @@ private:
     perform_motif_swap(
             float);
 
-    float
+    void
     perform_motif_swap_no_clash();
 
 

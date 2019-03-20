@@ -409,7 +409,7 @@ MotifStateMonteCarlo::perform_motif_swap(
 
 }
 
-float
+void
 MotifStateMonteCarlo::perform_motif_swap_no_clash() {
     auto new_ms = motif::MotifStateOP(nullptr);
     auto last_ms = motif::MotifStateOP(nullptr);

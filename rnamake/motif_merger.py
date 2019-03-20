@@ -228,7 +228,7 @@ class MotifMerger(object):
         if m.mtype != motif_type.HELIX:
             return MotifMergerType.SPECIFIC_SEQUENCE
         else:
-            if m.name[0:5] == "HELIX":
+            if m.name[0:5] == "HELIX" or m.name[0:2] == "BP":
                 return MotifMergerType.NON_SPECIFIC_SEQUENCE
             else:
                 return MotifMergerType.SPECIFIC_SEQUENCE

@@ -60,7 +60,7 @@ private: // search functions
 
     motif::MotifStateOP
     _get_starting_state(
-            util::StericLookup &,
+            util::StericLookupNew &,
             math::Point const &);
 
 private:
@@ -89,7 +89,7 @@ private:
 
 private:
     motif::MotifStateOPs rotations_;
-    util::StericLookup lookup_;
+    util::StericLookupNew lookup_;
     math::Point center_;
     MotifStateandScores results_;
     motif::MotifStateOP helix_;

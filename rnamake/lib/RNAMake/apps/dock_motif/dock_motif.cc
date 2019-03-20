@@ -43,18 +43,21 @@ DockMotifApp::run() {
     auto motif = resources::Manager::instance().motif("motif");
     motif->ends()[0]->flip();
 
-    helix_ = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
+    helix_ = resources::Manager::instance().motif_state("HELIX.IDEAL.3");
 
     auto start_ms = motif->get_state();
+    auto all_beads = math::Points();
+    for(auto const & b : motif->beads()) {
+        all_beads.push_back(b.center());
+    }
+    start_ms->beads(all_beads);
     _precompute_rotations(start_ms);
 
-    auto screening_lookup = util::StericLookup(1.0, 5.0, 6);
-    lookup_ = util::StericLookup(1.0, 4.0, 6);
+    lookup_ = util::StericLookupNew();
     auto bead_centers = math::Points();
-    for(auto const & b: scaffold->get_beads()) {
-        bead_centers.push_back(b.center());
+    for(auto const & b: scaffold->atoms()) {
+        bead_centers.push_back(b->coords());
     }
-    screening_lookup.add_points(bead_centers);
     lookup_.add_points(bead_centers);
 
     auto center = math::Point();
@@ -67,7 +70,7 @@ DockMotifApp::run() {
 
     for (int i = 0; i < 1000; i++) {
         std::cout << i << std::endl;
-        _get_starting_state(screening_lookup, center_);
+        _get_starting_state(lookup_, center_);
         _search();
 
     }
@@ -80,7 +83,7 @@ DockMotifApp::run() {
         auto m = resources::Manager::instance().get_motif_from_state(result.ms);
         m->to_pdb("docked." + std::to_string(i) + ".pdb");
         i++;
-        if(i > 9) { break; }
+        if(i > 99) { break; }
     }
 
     //resources::Manager::instance().add_motif()
@@ -96,7 +99,7 @@ DockMotifApp::run() {
 
 motif::MotifStateOP
 DockMotifApp::_get_starting_state(
-        util::StericLookup & screening_lookup,
+        util::StericLookupNew & screening_lookup,
         math::Point const & center) {
 
     auto ms = rotations_[0];
@@ -109,6 +112,12 @@ DockMotifApp::_get_starting_state(
     while(1) {
         p = get_random_point(rng, bound);
         ms->move(p);
+
+        align_motif_state(ms->end_states()[0], helix_);
+        if(lookup_.clash(helix_->beads())) {
+            continue;
+        }
+
         if(! screening_lookup.clash(ms->beads())) {
             return ms;
         }
@@ -130,7 +139,7 @@ DockMotifApp::_search() {
     auto best = current;
     auto next = current;
     auto mc = util::MonteCarlo();
-    auto best_ms = std::make_shared<motif::motif::MotifState>(*ms);
+    auto best_ms = std::make_shared<motif::MotifState>(*ms);
 
     for (int i = 0; i < 100000; i++) {
         last_ms = ms;
@@ -155,37 +164,37 @@ DockMotifApp::_search() {
             continue;
         }
 
-
         current = next;
         if(current < best) {
             best = current;
-            best_ms = std::make_shared<motif::motif::MotifState>(*ms);
+            best_ms = std::make_shared<motif::MotifState>(*ms);
         }
     }
 
     results_.push_back(MotifStateandScore{best_ms, best});
 
-    //auto m = resources::Manager::instance().get_motif_from_state(best_ms);
-    //std::cout << best << std::endl;
-    //m->to_pdb("docked.pdb");
+    /*auto m = resources::Manager::instance().get_motif_from_state(best_ms);
+    std::cout << best << std::endl;
+    m->to_pdb("docked.pdb");
+    exit(0);*/
 }
 
 float
 DockMotifApp::_score(
         motif::MotifStateOP ms) {
-    /*float avg = 0;
+    float avg = 0;
     for(auto const & b : ms->beads()) {
         avg += b.distance(center_);
     }
-    return avg /= (float)ms->beads().size();*/
+    return avg /= (float)ms->beads().size();
 
-    float best = 1000;
+    /*float best = 1000;
     float dist = 0;
     for(auto const & b : ms->beads()) {
         dist = b.distance(center_);
         if(dist < best) { best = dist; }
     }
-    return best;
+    return best;*/
 
 }
 
@@ -259,9 +268,9 @@ DockMotifApp::_rotation_about_z_axis(
 void
 DockMotifApp::_precompute_rotations(
         motif::MotifStateOP ms) {
-    auto r_x = _rotation_about_x_axis(30);
-    auto r_y = _rotation_about_y_axis(30);
-    auto r_z = _rotation_about_z_axis(30);
+    auto r_x = _rotation_about_x_axis(15);
+    auto r_y = _rotation_about_y_axis(15);
+    auto r_z = _rotation_about_z_axis(15);
 
     auto p = math::Point(0, 0, 0);
 
@@ -270,13 +279,13 @@ DockMotifApp::_precompute_rotations(
     rotations_ = motif::MotifStateOPs();
 
     auto count = 0;
-    for(int i = 0; i < 12; i++) {
+    for(int i = 0; i < 24; i++) {
         ms->transform(r_x, p);
-        for(int j = 0; j < 12; j++) {
+        for(int j = 0; j < 24; j++) {
             ms->transform(r_y, p);
-            for(int k = 0; k < 12; k++) {
+            for(int k = 0; k < 24; k++) {
                 ms->transform(r_z, p);
-                rotations_.push_back(std::make_shared<motif::motif::MotifState>(*ms));
+                rotations_.push_back(std::make_shared<motif::MotifState>(*ms));
                 //auto m = resources::Manager::instance().get_motif_from_state(ms);
                 //m->to_pdb("frame."+std::to_string(count)+".pdb");
                 //count++;
@@ -298,7 +307,7 @@ main(
         const char ** argv) {
 
     //must add this for all apps!
-    std::set_terminate(print_backtrace);
+    std::set_terminate(base::print_backtrace);
 
     //load extra motifs being used
     //String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";

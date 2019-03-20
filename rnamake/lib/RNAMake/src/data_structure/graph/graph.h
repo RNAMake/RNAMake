@@ -318,14 +318,15 @@ public:
     int
     add_data(
             DataType const & data,
-            int parent_index = -1) {
+            int parent_index = -1,
+            int orphan = 0) {
 
         GraphNodeOP<DataType> parent = this->last_node_;
         if (parent_index != -1) { parent = this->get_node(parent_index); }
 
         auto n = std::make_shared<GraphNodeDynamic<DataType>>(data, this->index_, this->level_);
 
-        if (parent != nullptr) {
+        if (parent != nullptr && !orphan) {
             auto c = std::make_shared<GraphConnection<DataType>>(parent, n, 0, 0);
             parent->add_connection(c);
             n->add_connection(c);
