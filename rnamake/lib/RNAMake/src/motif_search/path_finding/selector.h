@@ -47,6 +47,12 @@ public:
     virtual
     ~Selector() {}
 
+    virtual
+    Selector *
+    clone() const {
+        return new Selector(*this);
+    }
+
 public:
 
     virtual
@@ -94,32 +100,43 @@ public:
 public:
     void
     start(
-            int parent_type) {
-        if(parent_type == -1) {
-            parent_type = 0;
-        }
+            int parent_type) const {
         parent_type_ = parent_type;
-        max_ = graph_.get_node(parent_type)->connections().size()-1;
+        if(parent_type == -1) {
+            max_ = 0;
+        }
+        else {
+            max_ = graph_.get_node(parent_type)->connections().size() - 1;
+        }
         pos_ = -1;
+
     }
 
     SelectorNodeDataOP
-    next() {
+    next() const {
         if(finished()) {
             throw SelectorException("cannot enumerate anymore selector is done enumerating");
         }
         pos_ += 1;
-        auto c = graph_.get_node(parent_type_)->connections()[pos_];
-        return c->partner(parent_type_)->data();
+
+        if(parent_type_ == -1) {
+            return graph_.get_node(0)->data();
+        }
+
+        else {
+            auto c = graph_.get_node(parent_type_)->connections()[pos_];
+            return c->partner(parent_type_)->data();
+        }
+
     }
 
     bool
-    finished() {
+    finished() const {
         return pos_ == max_;
     }
 
     size_t
-    size() { return graph_.size(); }
+    size() const { return graph_.size(); }
 
 
 protected:
@@ -137,7 +154,7 @@ protected:
 
 protected:
     data_structure::graph::GraphDynamic<SelectorNodeDataOP> graph_;
-    int pos_, max_, parent_type_;
+    mutable int pos_, max_, parent_type_;
 
 };
 
@@ -146,6 +163,11 @@ public:
     RoundRobinSelector(): Selector() {}
 
     ~RoundRobinSelector() {}
+
+    Selector *
+    clone() const {
+        return new RoundRobinSelector(*this);
+    }
 
 public:
     virtual

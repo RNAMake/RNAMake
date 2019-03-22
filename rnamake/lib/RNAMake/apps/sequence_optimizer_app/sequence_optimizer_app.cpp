@@ -61,11 +61,6 @@ SequenceOptimizerApp::run() {
     }
 
 
-    mg->to_pdb("test.pdb", 1, 1);
-
-
-    exit(0);
-
     mg->replace_ideal_helices();
 
     // parse connection info
@@ -80,8 +75,12 @@ SequenceOptimizerApp::run() {
     std::cout << test_sols[0]->dist_score << std::endl;
 
     mg->replace_helical_sequence(test_sols[0]->sequence);
-    mg->to_pdb("test.pdb", 1, 1);
-    //mg->write_pdbs("new");
+    mg->to_pdb("sequence_opt.pdb", 1, 1);
+    mg->write_pdbs();
+
+    std::cout << mg->sequence() << std::endl;
+    std::cout << mg->dot_bracket() << std::endl;
+
 
     exit(0);
 

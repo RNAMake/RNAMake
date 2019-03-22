@@ -41,6 +41,18 @@ public:
         cur_state->beads(t_beads_);
     }
 
+    inline
+    void
+    get_aligned_motif_state(
+            structure::BasepairStateOP ref_bp_state,
+            MotifStateOP state) {
+
+        ref_bp_state->get_transforming_r_and_t(*state->end_states()[0], bp_state_);
+        state->transform(bp_state_.r().transposed(), bp_state_.d());
+    }
+
+
+
 private:
     structure::BasepairState bp_state_, bp_state_final_;
     math::Points t_beads_;

@@ -26,6 +26,7 @@ set(base_files
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/application.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/cl_option.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/command_line_parser.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/global_constants.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/backtrace.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/log.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/base/option.cc

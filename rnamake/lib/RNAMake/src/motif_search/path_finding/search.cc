@@ -2,7 +2,9 @@
 // Created by Joseph Yesselman on 3/17/19.
 //
 
-#include "motif_search/path_finding/search.h"
+#include <base/log.h>
+#include <motif_search/path_finding/search.h>
+#include <base/global_constants.h>
 
 namespace motif_search {
 namespace path_finding {
@@ -44,6 +46,10 @@ Search::update_var_options() {
     parameters_.return_best = options_.get_bool("return_best");
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// search functions
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 void
 Search::setup(
@@ -54,10 +60,172 @@ Search::setup(
             structure::BasepairStateOPs {p->start, p->start},
             math::Points(), 0, 0, 0);
 
+    auto start_n = std::make_shared<Node>(ms, nullptr, 100000, 0, 0, -1);
+    queue_ = NodeQueue();
+    queue_.push(start_n);
 
+    scorer_->set_target(p->end, p->target_an_aligned_end);
+
+    if(p->lookup->size() != 0) {
+        lookup_ = p->lookup;
+        using_lookup_ = true;
+    }
+    else {
+        using_lookup_ = false;
+    }
+}
+
+SolutionOP
+Search::next() {
+
+    auto current = NodeOP(nullptr);
+    auto child = NodeOP(nullptr);
+    auto selector_data= SelectorNodeDataOP(nullptr);
+    int steps = 0;
+    float score = 0, best = 1000, new_score = 0;
+
+    while (! queue_.empty()) {
+        current = queue_.top();
+        queue_.pop();
+
+        steps += 1;
+
+        if(steps > parameters_.max_steps) { LOG_VERBOSE << "reached max steps"; break; }
+
+        score = scorer_->accept_score(*current);
+        if(score < best) {
+            best = score;
+            LOG_VERBOSE << "best_score=" << best << " motifs_in_solution= " << current->level()-1;
+            LOG_VERBOSE << " steps=" << steps;
+        }
+
+        // accept solution
+        if(score < parameters_.accept_score && _accept_node(*current)) {
+            LOG_VERBOSE << "solution found!";
+            auto msg = _graph_from_node(current);
+            return std::make_shared<Solution>(msg, score);
+        }
+
+        if(current->level()+1 > parameters_.max_node_level) { continue; }
+
+        int j = 0;
+        selector_->start(current->node_type());
+        while(! selector_->finished()) {
+            selector_data = selector_->next();
+
+            j = -1;
+            for(auto const & end : current->state()->end_states()) {
+                j++;
+                if(j == 0) { continue; }
+
+                for (auto & ms : selector_data->motif_states) {
+
+                    aligner_.get_aligned_motif_state(end, ms);
+                    new_score = scorer_->score(*ms, *current);
+
+                    if(new_score > current->score()) { continue; }
+                    if(parameters_.sterics && _steric_clash(*ms, *current)) { continue; }
+
+                    child = std::make_shared<Node>(std::make_shared<motif::MotifState>(*ms),
+                                                   current, new_score, current->level() + 1,
+                                                   j, selector_data->type);
+                    queue_.push(child);
+
+                }
+            }
+        }
+    }
+
+
+    return SolutionOP(nullptr);
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// private functions
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+motif_data_structure::MotifStateGraphOP
+Search::_graph_from_node(
+        NodeOP node) {
+    auto current = node;
+    auto nodes = NodeOPs();
+    while(current != nullptr) {
+        nodes.push_back(current);
+        current = current->parent();
+    }
+    std::reverse(nodes.begin(), nodes.end());
+    auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
+    msg->set_option_value("sterics", false);
+    int i = 0, j = 0;
+    for(auto const & n : nodes) {
+        auto ms = std::make_shared<motif::MotifState>(*n->state());
+        if(i == 0) {
+            msg->add_state(ms);
+        }
+        else {
+            j = msg->add_state(ms, -1, n->parent_end_index());
+            if(j == -1) {
+                LOG_ERROR << "something went horribly wrong, cannot build solution";
+            }
+        }
+    }
+    return msg;
+}
+
+bool
+Search::_steric_clash(
+        motif::MotifState const & ms,
+        Node const & n) {
+    auto clash = false;
+    if(using_lookup_) {
+        clash = lookup_->clash(ms.beads());
+        if(clash) { return true; }
+    }
+
+    auto current = n.parent();
+    if(current == nullptr) { return false;}
+    float dist = 0;
+    // first node will be start node, so no reason to compute the start node as its a dummy
+    // might need to add a check to see if state has beads or this will seg fault ... -- JDY
+    while(current->parent() != nullptr) {
+        // quick check to see how far these two motifs are from each other. If too far sterics calc is probably
+        // not worth, need to benchamark -- JDY
+        dist = ms.beads()[0].distance(current->state()->beads()[0]);
+        if(dist > 25) {
+            current = current->parent();
+            continue;
+        }
+        for(auto const & b1 : ms.beads()) {
+            for(auto const & b2 : current->state()->beads()) {
+                dist = b1.distance(b2);
+                if(dist < STERIC_CLASH_RADIUS) {
+                    return true;
+                }
+            }
+        }
+
+    }
+    return false;
+}
+
+
+}
 }
 
 
 
-}
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -201,7 +201,7 @@ public: // getters
 
     inline
     math::Points const &
-    beads() { return beads_; }
+    beads() const { return beads_; }
 
     inline
     float const &

@@ -7,9 +7,8 @@
 #include "resources/resource_manager.h"
 #include "motif_search/motif_state_search.h"
 
-
+#include <base/log.h>
 #include <motif_search/path_finding/search.h>
-
 
 TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
     auto & rm = resources::Manager::instance();
@@ -103,8 +102,8 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
     SECTION("test nodes") {
         using namespace motif_search::path_finding;
         auto ms = rm.motif_state("HELIX.IDEAL.3");
-        auto n1 = std::make_shared<Node>(ms, nullptr, 0);
-        auto n2 = std::make_shared<Node>(ms, n1, 10);
+        auto n1 = std::make_shared<Node>(ms, nullptr, 0, 0, 0, 0);
+        auto n2 = std::make_shared<Node>(ms, n1, 10, 0, 0, 0);
 
         auto comparer = NodeCompare();
         comparer(n1, n2);
@@ -121,22 +120,25 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
 
     SECTION("test simple search") {
         using namespace motif_search::path_finding;
+        base::init_logging(base::LogLevel::INFO);
 
         auto mt = motif_data_structure::MotifTree();
         mt.add_motif(rm.motif("HELIX.IDEAL.3"));
-        mt.add_motif(rm.motif("TWOWAY.2PN4.4"));
-        mt.add_motif(rm.motif("HELIX.IDEAL.3"));
 
         auto start = mt.get_node(0)->data()->ends()[0]->state();
-        auto end = mt.get_node(2)->data()->ends()[1]->state();
+        auto end = mt.get_node(0)->data()->ends()[1]->state();
         auto lookup = std::make_shared<util::StericLookupNew>();
-        auto p = std::make_shared<motif_search::Problem>(start, end, lookup, false);
+        auto p = std::make_shared<motif_search::Problem>(start, end, lookup, true);
 
-        auto scorer = GreedyBestFirst();
+        auto scorer = std::make_shared<GreedyBestFirst>();
         auto selector = default_selector();
 
-        auto search = Search(scorer, *selector);
+        auto search = Search(scorer, selector);
+
         search.setup(p);
+        auto sol = search.next();
+        REQUIRE(sol != nullptr);
+
     }
 
 

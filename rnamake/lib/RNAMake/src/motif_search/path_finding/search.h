@@ -6,6 +6,8 @@
 #define RNAMAKE_NEW_PATH_FINDING_SEARCH_H
 
 #include <base/option.h>
+#include <motif/motif_state_aligner.h>
+#include <motif_data_structure/motif_state_graph.hpp>
 #include <motif_search/search.h>
 #include <motif_search/path_finding/scorer.h>
 #include <motif_search/path_finding/selector.h>
@@ -15,7 +17,15 @@ namespace motif_search {
 namespace path_finding {
 
 struct Solution : public motif_search::Solution {
+    inline
+    Solution(
+            motif_data_structure::MotifStateGraphOP n_graph,
+            float n_score):
+            graph(n_graph),
+            score(n_score) {}
 
+    motif_data_structure::MotifStateGraphOP graph;
+    float score;
 };
 
 typedef std::shared_ptr<Solution> SolutionOP;
@@ -30,15 +40,18 @@ struct Parameters {
 
 class Search : public motif_search::Search<Solution> {
 public:
+
     Search(
-            Scorer const & scorer,
-            Selector const & selector):
+            ScorerOP scorer,
+            SelectorOP selector):
             motif_search::Search<Solution>(),
-            scorer_(scorer),
-            selector_(selector) {
-
+            scorer_(scorer->clone()),
+            selector_(selector->clone()),
+            aligner_(motif::MotifStateAligner()) {
+        parameters_ = Parameters();
+        setup_options();
+        update_var_options();
     }
-
 
 public:
     void
@@ -52,9 +65,7 @@ public:
     finished() {}
 
     SolutionOP
-    next() {
-        return SolutionOP(nullptr);
-    }
+    next();
 
 
 public: //option wrappers
@@ -94,15 +105,35 @@ protected:
 
 private:
 
+    motif_data_structure::MotifStateGraphOP
+    _graph_from_node(
+            NodeOP);
+
+    inline
+    bool
+    _accept_node(
+            Node const & n) {
+        if(n.ss_score() > parameters_.min_ss_score) { return false; }
+        return true;
+
+    }
+
+    bool
+    _steric_clash(
+            motif::MotifState const &,
+            Node const &);
+
+
 private:
-    Scorer const & scorer_;
-    Selector const & selector_;
+    ScorerOP scorer_;
+    SelectorOP selector_;
     Parameters parameters_;
     NodeQueue queue_;
-
+    motif::MotifStateAligner aligner_;
+    util::StericLookupNewOP lookup_;
 
     base::Options options_;
-    int using_lookup_;
+    bool using_lookup_;
     bool enumerating_;
 };
 

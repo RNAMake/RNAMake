@@ -21,21 +21,22 @@ public:
     inline
     Node(
             motif::MotifStateOP ms,
-            float score):
-            state_(ms),
-            parent_(nullptr),
-            score_(score),
-            ss_score_(){}
-
-    inline
-    Node(
-            motif::MotifStateOP ms,
             NodeOP parent,
-            float score):
+            float score,
+            int level,
+            int parent_end_index,
+            int node_type):
             state_(ms),
             parent_(parent),
-            score_(score){}
-
+            score_(score),
+            level_(level),
+            parent_end_index_(parent_end_index),
+            node_type_(node_type),
+            ss_score_(ms->score()) {
+        if(parent_ != nullptr) {
+            ss_score_ += parent_->ss_score();
+        }
+    }
 
     ~Node() {}
 
@@ -43,19 +44,19 @@ public:
 public: // getters
 
     int
-    level() { return level_; }
+    level() const { return level_; }
 
     inline
     int
-    size() { return size_; }
+    size() const { return size_; }
 
     inline
     int
-    ntype() { return ntype_; }
+    node_type() const { return node_type_; }
 
     inline
     float
-    ss_score() { return ss_score_; }
+    ss_score() const { return ss_score_; }
 
     inline
     float
@@ -63,16 +64,20 @@ public: // getters
 
     inline
     int
-    parent_end_index() { return parent_end_index_; }
+    parent_end_index() const { return parent_end_index_; }
 
     inline
     motif::MotifStateOP
     state() const { return state_;}
 
+    inline
+    NodeOP
+    parent() const { return parent_; }
+
 private:
     NodeOP parent_;
     motif::MotifStateOP state_;
-    int parent_end_index_, level_, size_, ntype_;
+    int parent_end_index_, level_, size_, node_type_;
     float ss_score_, score_;
 };
 

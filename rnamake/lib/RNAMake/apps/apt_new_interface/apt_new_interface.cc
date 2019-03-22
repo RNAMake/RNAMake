@@ -66,6 +66,8 @@ AptNewInterface::run() {
     for(auto const & n : *problem->msg) {
         org_res += n->data()->cur_state->size();
     }
+    std::cout << org_res << std::endl;
+    exit(0);
     auto design_num = 0;
 
     for(int i = 0; i < 1; i++) {
