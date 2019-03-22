@@ -1,0 +1,10 @@
+//
+// Created by Joseph Yesselman on 3/22/19.
+//
+
+#ifndef RNAMAKE_NEW_GLOBAL_CONSTANTS_H
+#define RNAMAKE_NEW_GLOBAL_CONSTANTS_H
+
+const float STERIC_CLASH_RADIUS = 2.7;
+
+#endif //RNAMAKE_NEW_GLOBAL_CONSTANTS_H

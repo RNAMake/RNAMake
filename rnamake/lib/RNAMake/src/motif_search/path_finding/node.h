@@ -32,9 +32,11 @@ public:
             level_(level),
             parent_end_index_(parent_end_index),
             node_type_(node_type),
+            size_(ms->size()),
             ss_score_(ms->score()) {
         if(parent_ != nullptr) {
             ss_score_ += parent_->ss_score();
+            size_ += parent->size();
         }
     }
 

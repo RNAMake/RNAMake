@@ -120,7 +120,7 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
 
     SECTION("test simple search") {
         using namespace motif_search::path_finding;
-        base::init_logging(base::LogLevel::INFO);
+        //base::init_logging(base::LogLevel::INFO);
 
         auto mt = motif_data_structure::MotifTree();
         mt.add_motif(rm.motif("HELIX.IDEAL.3"));
@@ -138,6 +138,38 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
         search.setup(p);
         auto sol = search.next();
         REQUIRE(sol != nullptr);
+
+    }
+
+    SECTION("test contrained searches") {
+        using namespace motif_search::path_finding;
+        base::init_logging(base::LogLevel::INFO);
+        auto mt = motif_data_structure::MotifTree();
+        mt.add_motif(rm.motif("HELIX.IDEAL.3"));
+        mt.add_motif(rm.motif("TWOWAY.2PN4.4"));
+        mt.add_motif(rm.motif("HELIX.IDEAL.3"));
+
+        auto start = mt.get_node(0)->data()->ends()[0]->state();
+        auto end = mt.get_node(2)->data()->ends()[1]->state();
+        auto lookup = std::make_shared<util::StericLookupNew>();
+        auto p = std::make_shared<motif_search::Problem>(start, end, lookup, true);
+
+        auto scorer = std::make_shared<GreedyBestFirst>();
+        auto selector = default_selector();
+
+        auto search = Search(scorer, selector);
+        search.setup(p);
+        auto sol = search.next();
+        REQUIRE(sol != nullptr);
+
+        // max number of motifs
+        search = Search(scorer, selector);
+        search.setup(p);
+        search.set_option_value("max_node_level", 3);
+        sol = search.next();
+        //REQUIRE(sol != nullptr);
+        //REQUIRE(sol->graph->size() <= 3);
+
 
     }
 

@@ -17,7 +17,7 @@ void
 Search::setup_options() {
     options_.add_option("sterics", true, base::OptionType::BOOL);
     options_.add_option("max_node_level", 100, base::OptionType::INT);
-    options_.add_option("min_node_level", 0, base::OptionType::INT);
+    options_.add_option("min_node_level", -1, base::OptionType::INT);
     options_.add_option("min_size", 0, base::OptionType::INT);
     options_.add_option("max_size", 1000000, base::OptionType::INT);
     options_.add_option("max_solutions", 1, base::OptionType::INT);
@@ -82,8 +82,7 @@ Search::next() {
     auto child = NodeOP(nullptr);
     auto selector_data= SelectorNodeDataOP(nullptr);
     int steps = 0;
-    float score = 0, best = 1000, new_score = 0;
-
+    float score = 0, best = 10000, new_score = 0;
     while (! queue_.empty()) {
         current = queue_.top();
         queue_.pop();
@@ -95,8 +94,7 @@ Search::next() {
         score = scorer_->accept_score(*current);
         if(score < best) {
             best = score;
-            LOG_VERBOSE << "best_score=" << best << " motifs_in_solution= " << current->level()-1;
-            LOG_VERBOSE << " steps=" << steps;
+            LOG_VERBOSE << "best_score=" << best << " motifs_in_solution=" << current->level() << " steps=" << steps;
         }
 
         // accept solution
@@ -119,6 +117,7 @@ Search::next() {
                 if(j == 0) { continue; }
 
                 for (auto & ms : selector_data->motif_states) {
+                    if(current->size() + ms->size() > parameters_.max_size) { continue; }
 
                     aligner_.get_aligned_motif_state(end, ms);
                     new_score = scorer_->score(*ms, *current);
@@ -136,7 +135,7 @@ Search::next() {
         }
     }
 
-
+    LOG_VERBOSE << "search ran out of options";
     return SolutionOP(nullptr);
 }
 
@@ -204,6 +203,7 @@ Search::_steric_clash(
                 }
             }
         }
+        current = current->parent();
 
     }
     return false;

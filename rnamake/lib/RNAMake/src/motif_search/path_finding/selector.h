@@ -125,6 +125,7 @@ public:
 
         else {
             auto c = graph_.get_node(parent_type_)->connections()[pos_];
+            std::cout << c->end_index_1() << " " << c->end_index_2() << " " << c->node_1() << " " << c->node_2() << std::endl;
             return c->partner(parent_type_)->data();
         }
 

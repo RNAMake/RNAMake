@@ -34,11 +34,7 @@ public:
             level_(0) {}
 
     virtual
-    ~Graph() {
-        for (int i = 0; i < nodes_.size(); i++) {
-            nodes_[i]->unset_connections();
-        }
-    }
+    ~Graph() {}
 
 public:
     typedef GraphIterator<DataType> iterator;
@@ -308,7 +304,7 @@ public:
 
     ~GraphDynamic() {
         for (int i = 0; i < this->nodes_.size(); i++) {
-            this->nodes_[i]->unset_connections();
+            //this->nodes_[i]->unset_connections();
         }
     }
 
@@ -391,11 +387,7 @@ public:
         this->index_ = g.index_;
     }
 
-    ~GraphStatic() {
-        for (int i = 0; i < this->nodes_.size(); i++) {
-            this->nodes_[i]->unset_connections();
-        }
-    }
+    ~GraphStatic() {}
 
 public:
 

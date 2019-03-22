@@ -114,8 +114,10 @@ private:
     _accept_node(
             Node const & n) {
         if(n.ss_score() > parameters_.min_ss_score) { return false; }
+        if(n.level() < parameters_.min_node_level)  { return false; }
+        // this is bad ... at motif_type to MotifState? -- JDY
+        if(parameters_.helix_end && n.state()->name()[0] != 'H') { return false;}
         return true;
-
     }
 
     bool
