@@ -157,8 +157,8 @@ public:
     AstarScorer() : Scorer() {
         g_ = 0;
         h_ = 0;
-        ss_score_weight_ = 0.25;
-        level_weight_ = 2;
+        ss_score_weight_ = 0.10;
+        level_weight_ = 3;
     }
 
     Scorer *
@@ -183,7 +183,7 @@ public:
         }
         h_ = best_score_;
         g_ = node.ss_score() * ss_score_weight_;
-        if(node.level() > 2) {
+        if(node.level() > 3) {
             g_ += node.level() * level_weight_;
         }
         std::cout << h_ << " " << g_ << std::endl;
@@ -210,7 +210,7 @@ public:
 
         h_ = best_score_;
         g_ = (node.ss_score() + ms.score() ) * ss_score_weight_;
-        if(node.level() + 1 > 2) {
+        if(node.level() + 1 > 3) {
             g_ += (node.level() + 1) * level_weight_;
         }
         return h_ + g_;

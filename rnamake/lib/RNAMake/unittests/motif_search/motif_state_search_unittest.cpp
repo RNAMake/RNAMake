@@ -5,7 +5,6 @@
 
 //RNAMake Headers
 #include "resources/resource_manager.h"
-#include "motif_search/motif_state_search.h"
 
 #include <base/log.h>
 #include <motif_search/path_finding/search.h>
@@ -13,7 +12,7 @@
 TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
     auto & rm = resources::Manager::instance();
 
-    /*SECTION("test selector") {
+    SECTION("test selector") {
         using namespace motif_search::path_finding;
 
         SECTION("test adding") {
@@ -166,7 +165,7 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
         // max number of motifs
         search = Search(scorer, selector, filter);
         search.setup(p);
-        search.set_option_value("max_node_level", 3);
+        search.set_option_value("max_node_level", 4);
         sol = search.next();
         REQUIRE(sol != nullptr);
         REQUIRE(sol->graph->size() <= 3);
@@ -195,14 +194,14 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
         // should return no solution
         search = Search(scorer, selector, filter);
         search.setup(p);
-        search.set_option_value("max_node_level", 1);
+        search.set_option_value("max_node_level", 2);
         sol = search.next();
         REQUIRE(sol == nullptr);
 
         // should return the best solution but not within cutoff
         search = Search(scorer, selector, filter);
         search.setup(p);
-        search.set_option_value("max_node_level", 1);
+        search.set_option_value("max_node_level", 2);
         search.set_option_value("return_best", true);
         sol = search.next();
         REQUIRE(sol != nullptr);
@@ -225,50 +224,13 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
         // should accept new solution
         REQUIRE(filter->accept(m_names_3) == true);
 
-    }*/
-
-    /*SECTION("test speed miniTTR") {
-        rm.add_motif(base::unittest_resource_dir() + "motif/GAAA_tetraloop");
-
-        auto mt = motif_data_structure::MotifTree();
-        auto m1 = rm.motif("GAAA_tetraloop", "", "A229-A245");
-        auto m2 = rm.motif("HELIX.IDEAL.3");
-        auto m3 = rm.motif("HELIX.IDEAL.3");
-
-        mt.add_motif(m1);
-        mt.add_motif(m2);
-        mt.add_motif(m3, 0);
-
-        auto start = mt.get_node(1)->data()->ends()[1]->state();
-        auto end = mt.get_node(2)->data()->ends()[1]->state();
-        auto beads = mt.beads();
-        auto centers = math::Points();
-
-        for(auto const & b : beads) {
-            if(b.btype() != structure::BeadType::PHOS) {
-                centers.push_back(b.center());
-            }
-        }
-
-
-        auto search = motif_search::MotifStateSearch();
-        search.set_option_value("verbose", false);
-        //search.beads(centers);
-        //search.set_option_value("max_node_level", 6);
-        search.setup(start, end);
-        search.set_option_value("max_solutions", 1000);
-        int i = 0;
-        while(!search.finished()) {
-            auto sol = search.next();
-            //std::cout << sol->score() << std::endl;
-            i += 1;
-        }
-    }*/
+    }
 
     SECTION("test miniTTR") {
         using namespace motif_search::path_finding;
-        //base::init_logging(base::LogLevel::VERBOSE);
+        base::init_logging(base::LogLevel::VERBOSE);
         rm.add_motif(base::unittest_resource_dir() + "motif/GAAA_tetraloop");
+
 
         auto mt = motif_data_structure::MotifTree();
         auto m1 = rm.motif("GAAA_tetraloop", "", "A229-A245");
@@ -292,18 +254,16 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
                 centers.push_back(b.center());
             }
         }
-        lookup->add_points(centers);
+        //lookup->add_points(centers);
 
-        auto scorer = std::make_shared<GreedyScorer>();
+        auto scorer = std::make_shared<AstarScorer>();
         auto selector = default_selector();
         auto filter = std::make_shared<motif_search::NoExclusionFilter>();
 
         auto search = Search(scorer, selector, filter);
+        search.set_option_value("accept_score", 5);
         search.setup(p);
-        for(int i = 0; i < 1000; i++) {
-            auto sol = search.next();
-           // std::cout << i << " " << sol->score << std::endl;
-        };
+        auto sol = search.next();
         //REQUIRE(sol != nullptr);
 
     }
