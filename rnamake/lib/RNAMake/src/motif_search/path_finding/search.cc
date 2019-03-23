@@ -58,7 +58,7 @@ Search::setup(
             structure::BasepairStateOPs {p->start, p->start},
             math::Points(), 0, 0, 0);
 
-    auto start_n = std::make_shared<Node>(ms, nullptr, 100000, 0, 0, -1);
+    auto start_n = std::make_shared<Node>(ms, nullptr, 100000, 1, 0, -1);
     queue_ = NodeQueue();
     queue_.push(start_n);
 
@@ -99,6 +99,9 @@ Search::next() {
 
         // accept solution
         if(score < parameters_.accept_score && _accept_node(*current)) {
+            _get_solution_motif_names(current, motif_names_);
+            if(! solution_filter_->accept(motif_names_)) { continue; }
+
             LOG_VERBOSE << "solution found!";
             auto msg = _graph_from_node(current);
             return std::make_shared<Solution>(msg, score);
@@ -213,6 +216,18 @@ Search::_steric_clash(
 
     }
     return false;
+}
+
+void
+Search::_get_solution_motif_names(
+        NodeOP n,
+        Strings & motif_names) {
+    motif_names_.resize(0);
+    motif_names.push_back(n->state()->name());
+    while(n->parent() != nullptr) {
+        n = n->parent();
+        motif_names_.push_back(n->state()->name());
+    }
 }
 
 

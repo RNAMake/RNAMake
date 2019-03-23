@@ -407,6 +407,7 @@ set(motif_search_files
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_selector.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_follower.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_search_scorer.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/solution_filter.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/node.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/scorer.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/search.cc

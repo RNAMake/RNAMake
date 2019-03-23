@@ -186,6 +186,7 @@ public:
         if(node.level() > 2) {
             g_ += node.level() * level_weight_;
         }
+        std::cout << h_ << " " << g_ << std::endl;
         return g_ + h_;
     }
 
@@ -208,8 +209,8 @@ public:
         }
 
         h_ = best_score_;
-        g_ =(node.ss_score() + ms.score() ) * ss_score_weight_;
-        if(node.level() + 1> 2) {
+        g_ = (node.ss_score() + ms.score() ) * ss_score_weight_;
+        if(node.level() + 1 > 2) {
             g_ += (node.level() + 1) * level_weight_;
         }
         return h_ + g_;

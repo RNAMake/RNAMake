@@ -9,6 +9,7 @@
 #include <motif/motif_state_aligner.h>
 #include <motif_data_structure/motif_state_graph.hpp>
 #include <motif_search/search.h>
+#include <motif_search/solution_filter.h>
 #include <motif_search/path_finding/scorer.h>
 #include <motif_search/path_finding/selector.h>
 #include <motif_search/path_finding/node.h>
@@ -42,11 +43,15 @@ public:
 
     Search(
             ScorerOP scorer,
-            SelectorOP selector):
+            SelectorOP selector,
+            SolutionFilterOP solution_filter):
             motif_search::Search<Solution>(),
             scorer_(scorer->clone()),
             selector_(selector->clone()),
+            solution_filter_(solution_filter->clone()),
             aligner_(motif::MotifStateAligner()) {
+        motif_names_ = Strings();
+        motif_names_.reserve(100);
         parameters_ = Parameters();
         setup_options();
         update_var_options();
@@ -124,16 +129,23 @@ private:
             motif::MotifState const &,
             Node const &);
 
+    void
+    _get_solution_motif_names(
+            NodeOP,
+            Strings &);
+
 
 private:
     ScorerOP scorer_;
     SelectorOP selector_;
+    SolutionFilterOP solution_filter_;
     Parameters parameters_;
     NodeQueue queue_;
     motif::MotifStateAligner aligner_;
     util::StericLookupNewOP lookup_;
 
     base::Options options_;
+    Strings motif_names_;
     bool using_lookup_, enumerating_;
 };
 

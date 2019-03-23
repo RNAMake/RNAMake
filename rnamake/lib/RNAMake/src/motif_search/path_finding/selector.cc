@@ -29,8 +29,8 @@ Selector::connect(
 SelectorOP
 default_selector() {
     auto s = std::make_shared<RoundRobinSelector>();
-    s->add("ideal_helices");
-    s->add("twoway");
+    s->add("ideal_helices_min");
+    s->add("unique_twoway");
     return s;
 }
 
