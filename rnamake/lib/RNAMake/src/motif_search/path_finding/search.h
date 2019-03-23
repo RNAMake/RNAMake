@@ -31,9 +31,8 @@ struct Solution : public motif_search::Solution {
 typedef std::shared_ptr<Solution> SolutionOP;
 
 struct Parameters {
-    bool sterics, verbose, helix_end;
-    int max_node_level, min_size, max_size, max_solutions;
-    int sol_count, min_node_level;
+    bool sterics, helix_end;
+    int max_node_level, min_size, max_size, max_solutions, min_node_level;
     float accept_score, min_ss_score, max_steps;
     bool return_best;
 };
@@ -135,8 +134,7 @@ private:
     util::StericLookupNewOP lookup_;
 
     base::Options options_;
-    bool using_lookup_;
-    bool enumerating_;
+    bool using_lookup_, enumerating_;
 };
 
 }

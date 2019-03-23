@@ -102,12 +102,12 @@ protected:
 
 typedef std::shared_ptr<Scorer> ScorerOP;
 
-class GreedyBestFirst : public Scorer {
+class GreedyScorer : public Scorer {
 public:
-    GreedyBestFirst() : Scorer() {}
+    GreedyScorer() : Scorer() {}
 
     Scorer *
-    clone() const { return new GreedyBestFirst(*this); };
+    clone() const { return new GreedyScorer(*this); };
 
 public:
     inline
@@ -150,6 +150,75 @@ public:
 
     }
 
+};
+
+class AstarScorer : public Scorer {
+public:
+    AstarScorer() : Scorer() {
+        g_ = 0;
+        h_ = 0;
+        ss_score_weight_ = 0.25;
+        level_weight_ = 2;
+    }
+
+    Scorer *
+    clone() const { return new AstarScorer(*this); };
+
+public:
+    inline
+    float
+    score(
+            Node const & node) {
+        best_score_ = 1000;
+        int i = -1;
+        for (auto const & state : node.state()->end_states()) {
+            i++;
+            if (i == 0) { continue; }
+
+            score_ = _weighted_score(state, target_, target_flip_);
+
+            if (score_ < best_score_) {
+                best_score_ = score_;
+            }
+        }
+        h_ = best_score_;
+        g_ = node.ss_score() * ss_score_weight_;
+        if(node.level() > 2) {
+            g_ += node.level() * level_weight_;
+        }
+        return g_ + h_;
+    }
+
+    inline
+    float
+    score(
+            motif::MotifState & ms,
+            Node const & node) {
+        best_score_ = 1000;
+        int i = -1;
+        for (auto const & state : ms.end_states()) {
+            i++;
+            if (i == 0) { continue; }
+
+            score_ = _weighted_score(state, target_, target_flip_);
+
+            if (score_ < best_score_) {
+                best_score_ = score_;
+            }
+        }
+
+        h_ = best_score_;
+        g_ =(node.ss_score() + ms.score() ) * ss_score_weight_;
+        if(node.level() + 1> 2) {
+            g_ += (node.level() + 1) * level_weight_;
+        }
+        return h_ + g_;
+
+    }
+
+private:
+    float g_, h_;
+    float ss_score_weight_, level_weight_;
 };
 
 

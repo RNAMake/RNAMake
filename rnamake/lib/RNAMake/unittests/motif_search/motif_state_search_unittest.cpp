@@ -130,7 +130,7 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
         auto lookup = std::make_shared<util::StericLookupNew>();
         auto p = std::make_shared<motif_search::Problem>(start, end, lookup, true);
 
-        auto scorer = std::make_shared<GreedyBestFirst>();
+        auto scorer = std::make_shared<GreedyScorer>();
         auto selector = default_selector();
 
         auto search = Search(scorer, selector);
@@ -143,7 +143,6 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
 
     SECTION("test contrained searches") {
         using namespace motif_search::path_finding;
-        base::init_logging(base::LogLevel::INFO);
         auto mt = motif_data_structure::MotifTree();
         mt.add_motif(rm.motif("HELIX.IDEAL.3"));
         mt.add_motif(rm.motif("TWOWAY.2PN4.4"));
@@ -154,7 +153,7 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
         auto lookup = std::make_shared<util::StericLookupNew>();
         auto p = std::make_shared<motif_search::Problem>(start, end, lookup, true);
 
-        auto scorer = std::make_shared<GreedyBestFirst>();
+        auto scorer = std::make_shared<GreedyScorer>();
         auto selector = default_selector();
 
         auto search = Search(scorer, selector);
@@ -167,12 +166,76 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
         search.setup(p);
         search.set_option_value("max_node_level", 3);
         sol = search.next();
-        //REQUIRE(sol != nullptr);
-        //REQUIRE(sol->graph->size() <= 3);
+        REQUIRE(sol != nullptr);
+        REQUIRE(sol->graph->size() <= 3);
 
+        // max number of residues in solution
+        search = Search(scorer, selector);
+        search.setup(p);
+        search.set_option_value("max_size", 30);
+        sol = search.next();
+        REQUIRE(sol != nullptr);
+
+        auto res_count = 2;
+        for(auto const & n : *sol->graph) {
+            res_count += n->data()->cur_state->size() - 2;
+        }
+        REQUIRE(res_count <= 30);
+
+        // solution must end in helix
+        search = Search(scorer, selector);
+        search.setup(p);
+        search.set_option_value("helix_end", true);
+        sol = search.next();
+        REQUIRE(sol != nullptr);
+        REQUIRE(sol->graph->last_node()->data()->cur_state->name()[0] == 'H');
+
+        // should return no solution
+        search = Search(scorer, selector);
+        search.setup(p);
+        search.set_option_value("max_node_level", 1);
+        sol = search.next();
+        REQUIRE(sol == nullptr);
+
+        // should return the best solution but not within cutoff
+        search = Search(scorer, selector);
+        search.setup(p);
+        search.set_option_value("max_node_level", 1);
+        search.set_option_value("return_best", true);
+        sol = search.next();
+        REQUIRE(sol != nullptr);
+        REQUIRE(sol->score > 10);
 
     }
 
+    SECTION("test miniTTR") {
+        using namespace motif_search::path_finding;
+        base::init_logging(base::LogLevel::VERBOSE);
+        rm.add_motif(base::unittest_resource_dir() + "motif/GAAA_tetraloop");
+
+        auto mt = motif_data_structure::MotifTree();
+        auto m1 = rm.motif("GAAA_tetraloop", "", "A229-A245");
+        auto m2 = rm.motif("HELIX.IDEAL.3");
+        auto m3 = rm.motif("HELIX.IDEAL.3");
+
+        mt.add_motif(m1);
+        mt.add_motif(m2);
+        mt.add_motif(m3, 0);
+
+        auto start = mt.get_node(1)->data()->ends()[1]->state();
+        auto end = mt.get_node(2)->data()->ends()[1]->state();
+        auto lookup = std::make_shared<util::StericLookupNew>();
+        auto p = std::make_shared<motif_search::Problem>(start, end, lookup, false);
+
+        auto scorer = std::make_shared<AstarScorer>();
+        auto selector = default_selector();
+
+        auto search = Search(scorer, selector);
+        search.setup(p);
+        search.set_option_value("max_node_level", 7);
+        auto sol = search.next();
+        REQUIRE(sol != nullptr);
+    }
 
     /*SECTION("test simple search") {
         auto mt = motif_data_structure::MotifTree();

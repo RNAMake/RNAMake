@@ -118,14 +118,11 @@ public:
             throw SelectorException("cannot enumerate anymore selector is done enumerating");
         }
         pos_ += 1;
-
         if(parent_type_ == -1) {
             return graph_.get_node(0)->data();
         }
-
         else {
             auto c = graph_.get_node(parent_type_)->connections()[pos_];
-            std::cout << c->end_index_1() << " " << c->end_index_2() << " " << c->node_1() << " " << c->node_2() << std::endl;
             return c->partner(parent_type_)->data();
         }
 

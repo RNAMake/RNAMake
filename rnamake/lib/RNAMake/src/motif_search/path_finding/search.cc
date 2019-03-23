@@ -24,7 +24,6 @@ Search::setup_options() {
     options_.add_option("accept_score", 10, base::OptionType::FLOAT);
     options_.add_option("min_ss_score", 10000, base::OptionType::FLOAT);
     options_.add_option("max_steps", 1000000000, base::OptionType::FLOAT);
-    options_.add_option("verbose", true, base::OptionType::BOOL);
     options_.add_option("return_best", false, base::OptionType::BOOL);
     options_.add_option("helix_end", false, base::OptionType::BOOL);
     options_.lock_option_adding();
@@ -41,7 +40,6 @@ Search::update_var_options() {
     parameters_.accept_score = options_.get_float("accept_score");
     parameters_.min_ss_score = options_.get_float("min_ss_score");
     parameters_.max_steps = options_.get_float("max_steps");
-    parameters_.verbose = options_.get_bool("verbose");
     parameters_.helix_end = options_.get_bool("helix_end");
     parameters_.return_best = options_.get_bool("return_best");
 }
@@ -80,6 +78,7 @@ Search::next() {
 
     auto current = NodeOP(nullptr);
     auto child = NodeOP(nullptr);
+    auto best_node = NodeOP(nullptr);
     auto selector_data= SelectorNodeDataOP(nullptr);
     int steps = 0;
     float score = 0, best = 10000, new_score = 0;
@@ -94,6 +93,7 @@ Search::next() {
         score = scorer_->accept_score(*current);
         if(score < best) {
             best = score;
+            best_node = current;
             LOG_VERBOSE << "best_score=" << best << " motifs_in_solution=" << current->level() << " steps=" << steps;
         }
 
@@ -104,13 +104,12 @@ Search::next() {
             return std::make_shared<Solution>(msg, score);
         }
 
-        if(current->level()+1 > parameters_.max_node_level) { continue; }
+        if(current->level()+1 >= parameters_.max_node_level) { continue; }
 
         int j = 0;
         selector_->start(current->node_type());
         while(! selector_->finished()) {
             selector_data = selector_->next();
-
             j = -1;
             for(auto const & end : current->state()->end_states()) {
                 j++;
@@ -129,10 +128,15 @@ Search::next() {
                                                    current, new_score, current->level() + 1,
                                                    j, selector_data->type);
                     queue_.push(child);
-
                 }
             }
         }
+    }
+
+    if(parameters_.return_best) {
+        LOG_VERBOSE << "no solution met constraints, returning best";
+        auto msg = _graph_from_node(best_node);
+        return std::make_shared<Solution>(msg, best);
     }
 
     LOG_VERBOSE << "search ran out of options";
@@ -153,12 +157,14 @@ Search::_graph_from_node(
         nodes.push_back(current);
         current = current->parent();
     }
+    nodes.pop_back();
     std::reverse(nodes.begin(), nodes.end());
     auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
     msg->set_option_value("sterics", false);
     int i = 0, j = 0;
     for(auto const & n : nodes) {
         auto ms = std::make_shared<motif::MotifState>(*n->state());
+        ms->new_uuids();
         if(i == 0) {
             msg->add_state(ms);
         }

@@ -36,7 +36,8 @@ public:
             ss_score_(ms->score()) {
         if(parent_ != nullptr) {
             ss_score_ += parent_->ss_score();
-            size_ += parent->size();
+            // -2 for shared base pair
+            size_ += parent->size() - 2;
         }
     }
 
