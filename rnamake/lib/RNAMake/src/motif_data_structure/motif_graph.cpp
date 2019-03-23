@@ -924,21 +924,6 @@ MotifGraph::unaligned_nodes() const {
     return nodes;
 }
 
-MotifGraph::_MotifGraphBuildPointOPs
-MotifGraph::get_build_points() {
-    auto build_points = _MotifGraphBuildPointOPs();
-    for (auto const & n : graph_.nodes()) {
-        int i = -1;
-        for (auto c : n->connections()) {
-            i++;
-            if (c == nullptr && i != 0) {
-                build_points.push_back(std::make_shared<_MotifGraphBuildPoint>(n, i));
-            }
-        }
-    }
-    return build_points;
-}
-
 
 //option functions ////////////////////////////////////////////////////////////////////////////////
 

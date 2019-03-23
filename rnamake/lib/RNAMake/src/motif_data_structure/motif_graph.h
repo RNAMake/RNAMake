@@ -35,256 +35,6 @@ public:
 };
 
 class MotifGraph {
-private:
-    struct _MotifGraphBuildPoint {
-        _MotifGraphBuildPoint(
-                data_structure::graph::GraphNodeOP<motif::MotifOP> const & nnode,
-                int nend_index) :
-                node(nnode),
-                end_index(nend_index) {}
-
-        data_structure::graph::GraphNodeOP<motif::MotifOP> node;
-        int end_index;
-    };
-
-    typedef std::shared_ptr<_MotifGraphBuildPoint> _MotifGraphBuildPointOP;
-    typedef std::vector<_MotifGraphBuildPointOP> _MotifGraphBuildPointOPs;
-
-    friend class MotifGraphPrinter;
-
-    class MotifGraphPrinter {
-    public:
-        inline
-        MotifGraphPrinter(
-                MotifGraph const & mg) :
-                levels_(std::map<int, int>()),
-                node_pos_(std::map<int, int>()),
-                nodes_per_level_(std::map<int, int>()),
-                branch_length_(25),
-                start_pos_(100),
-                nodes_(data_structure::graph::GraphNodeOPs<motif::MotifOP>()) {
-
-            _setup_node_positions(mg);
-        }
-
-        ~MotifGraphPrinter() {}
-
-    public:
-        String
-        print_graph(
-                MotifGraph const & mg) {
-            auto s = String("\n");
-
-            auto nodes_per_level = std::map<int, data_structure::graph::GraphNodeOPs<motif::MotifOP>>();
-            for (auto const & n : mg) {
-                nodes_per_level[levels_[n->index()]].push_back(n);
-            }
-
-            int found = 1, level = 1;
-
-            while (found) {
-                if (nodes_per_level.find(level) == nodes_per_level.end()) { break; }
-                auto node_level = nodes_per_level[level];
-                s += _print_level(node_level);
-                level += 1;
-
-            }
-
-            return s;
-        }
-
-    private:
-        String
-        _print_level(data_structure::graph::GraphNodeOPs<motif::MotifOP> const & nodes) {
-            auto s = String("");
-            auto strings = std::vector<Strings>();
-
-            //sort nodes by pos, using a lambda statement and std::pair
-            //probably can be cleaned up
-            auto pairs = std::vector<std::pair<data_structure::graph::GraphNodeOP<motif::MotifOP>, int>>();
-            for (auto const & n : nodes) {
-                auto p = std::pair<data_structure::graph::GraphNodeOP<motif::MotifOP>, int>(n, node_pos_[n->index()]);
-                pairs.push_back(p);
-            }
-
-            std::sort(pairs.begin(), pairs.end(),
-                      [](std::pair<data_structure::graph::GraphNodeOP<motif::MotifOP>, int> const & p1,
-                              std::pair<data_structure::graph::GraphNodeOP<motif::MotifOP>, int> const & p2) {
-                          return p1.second < p2.second;
-                      });
-
-
-            auto sorted_nodes = data_structure::graph::GraphNodeOPs<motif::MotifOP>();
-            for (auto const & p : pairs) { sorted_nodes.push_back(p.first); }
-
-
-            for (auto const & n : sorted_nodes) {
-                auto strs = Strings();
-                if (n->parent() != nullptr) {
-                    auto parent_end_index = n->parent_end_index();
-                    auto parent_end_name = n->parent()->data()->ends()[parent_end_index]->name();
-                    strs.push_back("|");
-                    strs.push_back("E" + std::to_string(parent_end_index) + " - " + parent_end_name);
-                    strs.push_back("|");
-                }
-
-                strs.push_back("N" + std::to_string(n->index()) + " - " + n->data()->name());
-                strs.push_back("|  - " + n->data()->ends()[0]->name());
-                strings.push_back(strs);
-            }
-
-            auto transposed_strings = std::vector<Strings>();
-            for (int i = 0; i < strings[0].size(); i++) {
-                auto transposed = Strings();
-                for (auto const & strs: strings) {
-                    transposed.push_back(strs[i]);
-                }
-                transposed_strings.push_back(transposed);
-            }
-
-            for (auto const & strs : transposed_strings) {
-                int current_pos = 0;
-                int j = 0;
-                for (auto const & n : sorted_nodes) {
-                    int pos = node_pos_[n->index()];
-                    int diff = pos - current_pos;
-                    for (int i = 0; i < diff; i++) { s += " "; }
-                    s += strs[j];
-                    current_pos = pos + strs[j].length();
-                    j += 1;
-                }
-                s += "\n";
-            }
-
-            int current_pos = 0;
-            int hit = 0;
-            for (auto const & n : sorted_nodes) {
-                auto children = data_structure::graph::GraphNodeOPs<motif::MotifOP>();
-                int j = -1;
-                for (auto const & c : n->connections()) {
-                    j++;
-                    if (j == 0) { continue; }
-                    if (c != nullptr) {
-                        children.push_back(c->partner(n->index()));
-                    }
-                }
-
-                if (children.size() > 1) {
-                    hit = 1;
-                    auto min = node_pos_[children[0]->index()];
-                    auto max = node_pos_[children.back()->index()];
-                    auto diff = min + 1 - current_pos;
-                    for (int i = 0; i < diff; i++) { s += " "; }
-                    for (int i = 0; i < max - min - 1; i++) { s += "_"; }
-                    current_pos = max;
-                }
-            }
-
-            if (hit) { s += "\n"; }
-
-            return s;
-        }
-
-        void
-        _setup_node_positions(
-                MotifGraph const & mg) {
-
-            _assign_node_levels(mg);
-
-            for (auto const & n : nodes_) {
-                auto n_level = levels_[n->index()];
-                if (nodes_per_level_.find(n_level) == nodes_per_level_.end()) {
-                    nodes_per_level_[n_level] = 0;
-                }
-                nodes_per_level_[n_level] += 1;
-            }
-
-            int i = -1;
-            for (auto const & n : nodes_) {
-                i++;
-                if (i == 0) {
-                    node_pos_[n->index()] = start_pos_;
-                }
-
-                auto children = data_structure::graph::GraphNodeOPs<motif::MotifOP>();
-                int j = -1;
-                for (auto const & c : n->connections()) {
-                    j++;
-                    if (j == 0) { continue; }
-                    if (c != nullptr) {
-                        auto child = c->partner(n->index());
-                        if (child->connections()[0] != c) { continue; }
-                        if (node_pos_.find(child->index()) != node_pos_.end()) { continue; }
-
-                        children.push_back(child);
-                    }
-                }
-
-                if (children.size() == 1) {
-                    node_pos_[children[0]->index()] = node_pos_[n->index()];
-                } else if (children.size() == 2) {
-                    auto level = levels_[n->index()];
-                    auto nodes_per_level = nodes_per_level_[level + 1];
-                    auto extra = nodes_per_level - 2;
-                    auto parent_pos = node_pos_[n->index()];
-                    if (extra == 0) {
-                        node_pos_[children[0]->index()] = parent_pos - branch_length_;
-                        node_pos_[children[1]->index()] = parent_pos + branch_length_;
-                    } else {
-                        node_pos_[children[0]->index()] = parent_pos - branch_length_ / extra;
-                        node_pos_[children[1]->index()] = parent_pos + branch_length_ / extra;
-                    }
-                } else if (children.size() > 2) {
-                    throw MotifGraphException(
-                            "Greater then two children is not supported for pretty_printing");
-                }
-
-            }
-        }
-
-        void
-        _assign_node_levels(
-                MotifGraph const & mg) {
-
-            auto nodes = mg.unaligned_nodes();
-
-            if (nodes.size() == 0) {
-                throw MotifGraphException(
-                        "cannot find a place to start printing in motif_graph to_pretty_str");
-            }
-
-            auto start = nodes[0]->index();
-
-            auto n = data_structure::graph::GraphNodeOP<motif::MotifOP>();
-            for (auto it = mg.graph_.transverse(mg.graph_.get_node(start));
-                 it != mg.graph_.end();
-                 ++it) {
-
-                n = (*it);
-
-                if (levels_.size() == 0) {
-                    levels_[n->index()] = 1;
-                } else {
-                    auto c = n->connections()[0];
-                    auto parent = c->partner(n->index());
-                    levels_[n->index()] = levels_[parent->index()] + 1;
-                }
-                nodes_.push_back(n);
-
-            }
-        }
-
-
-    private:
-        std::map<int, int> levels_;
-        std::map<int, int> node_pos_;
-        std::map<int, int> nodes_per_level_;
-        int branch_length_;
-        int start_pos_;
-        data_structure::graph::GraphNodeOPs<motif::MotifOP> nodes_;
-
-
-    };
 
 public: //construction
 
@@ -307,30 +57,19 @@ public: //setup helpers
     void
     update_indexes(std::map<int, int> const &);
 
-public: //iterators
-
-    typedef typename data_structure::graph::GraphStatic<motif::MotifOP>::iterator iterator;
-    typedef typename data_structure::graph::GraphStatic<motif::MotifOP>::const_iterator const_iterator;
-
-    iterator begin() { return graph_.begin(); }
-
-    iterator end() { return graph_.end(); }
-
-    const_iterator begin() const { return graph_.begin(); }
-
-    const_iterator end() const { return graph_.end(); }
-
 public:
 
-    typedef typename data_structure::graph::GraphNodeOPs<motif::MotifOP>::const_iterator node_const_iterator;
-    typedef typename data_structure::graph::GraphNodeOPs<motif::MotifOP>::iterator node_iterator;
+    typedef typename data_structure::graph::GraphNodeOPs<motif::MotifOP>::const_iterator const_iterator;
+    typedef typename data_structure::graph::GraphNodeOPs<motif::MotifOP>::iterator iterator;
 
-    node_iterator node_begin() {
+    iterator begin() {
         _update_align_list();
         return align_list_.begin();
     }
 
-    node_iterator node_end() { return align_list_.end(); }
+    iterator end() {
+        return align_list_.end();
+    }
 
 
 private://add function helpers
@@ -529,12 +268,6 @@ public: // outputing functions
     String
     to_str();
 
-    String
-    to_pretty_str() {
-        auto printer = MotifGraphPrinter(*this);
-        return printer.print_graph(*this);
-    }
-
 public: // misc functions
 
     void
@@ -572,9 +305,6 @@ public: // getters
 
     data_structure::graph::GraphNodeOPs<motif::MotifOP> const
     unaligned_nodes() const;
-
-    _MotifGraphBuildPointOPs
-    get_build_points();
 
     // this is bad
     std::map<int, int>

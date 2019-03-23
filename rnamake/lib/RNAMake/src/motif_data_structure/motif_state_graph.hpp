@@ -36,28 +36,15 @@ public:
 
 public: //iterators
 
-    typedef typename data_structure::graph::GraphStatic<MSNodeDataOP>::iterator iterator;
-    typedef typename data_structure::graph::GraphStatic<MSNodeDataOP>::const_iterator const_iterator;
+    typedef typename data_structure::graph::GraphNodeOPs<MSNodeDataOP>::iterator iterator;
+    typedef typename data_structure::graph::GraphNodeOPs<MSNodeDataOP>::const_iterator const_iterator;
 
-    iterator begin() { return graph_.begin(); }
-
-    iterator end() { return graph_.end(); }
-
-    const_iterator begin() const { return graph_.begin(); }
-
-    const_iterator end() const { return graph_.end(); }
-
-public:
-
-    typedef typename data_structure::graph::GraphNodeOPs<MSNodeDataOP>::iterator node_iterator;
-    typedef typename data_structure::graph::GraphNodeOPs<MSNodeDataOP>::const_iterator node_const_iterator;
-
-    node_iterator node_begin() {
+    iterator begin() {
         _update_align_list();
         return align_list_.begin();
     }
 
-    node_iterator node_end() { return align_list_.end(); }
+    iterator end() { return align_list_.end(); }
 
 
 private:

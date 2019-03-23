@@ -331,55 +331,6 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
 
         
     }
-    
-    SECTION("test pretty printing graph") {
-        auto mg2 = motif_data_structure::MotifGraph();
-        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
-        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
-        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
-        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
-        
-        mg2.add_motif(m1);
-        mg2.add_motif(m2);
-       
-        
-        auto s = mg2.to_pretty_str();
-        
-        auto path = base::unittest_resource_dir() + "motif_tree/pretty_str_1.dat";
-        auto lines =base::get_lines_from_file(path);
-        
-        auto spl = base::split_str_by_delimiter(s, "\n");
-        for(int i = 1; i < spl.size(); i++) {
-            REQUIRE(spl[i] == lines[i-1]);
-        }
-        
-    }
-    
-    SECTION("test pretty printing tree with branching") {
-        auto mt2 = motif_data_structure::MotifGraph();
-        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
-        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
-        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
-        auto nway = resources::Manager::instance().motif("NWAY.1GID.0");
-        
-        mt2.add_motif(m1);
-        mt2.add_motif(nway);
-        mt2.add_motif(m2);
-        mt2.add_motif(m3, 1);
-        
-        auto s = mt2.to_pretty_str();
-        //std::cout << s << std::endl;
-        
-        auto path = base::unittest_resource_dir() + "motif_tree/pretty_str_2.dat";
-        auto lines =base::get_lines_from_file(path);
-        
-        auto spl = base::split_str_by_delimiter(s, "\n");
-        for(int i = 1; i < spl.size(); i++) {
-            REQUIRE(spl[i] == lines[i-1]);
-        }
-        
-    }
-    
 }
 
 

@@ -5,8 +5,10 @@
 #ifndef RNAMAKE_NEW_LOG_H
 #define RNAMAKE_NEW_LOG_H
 
-#include "plog/Log.h"
-#include "plog/Appenders/ColorConsoleAppender.h"
+#include <plog/Log.h>
+#include <plog/Appenders/ColorConsoleAppender.h>
+
+#include <base/types.h>
 
 namespace plog  {
 
@@ -40,6 +42,10 @@ enum class LogLevel {
     DEBUG   = plog::debug,
     VERBOSE = plog::verbose
 };
+
+LogLevel
+log_level_from_str(
+        String const &);
 
 void
 init_logging(

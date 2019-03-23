@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include "base/application.hpp"
 #include "util/steric_lookup.hpp"
-#include "motif_search/motif_state_search.h"
+#include "motif_search/path_finding/search.h"
 #include "motif_data_structure/motif_graph.h"
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 
@@ -63,7 +63,7 @@ private:
             String const &);
 
 private:
-    motif_search::MotifStateSearch search_;
+    //motif_search::MotifStateSearch search_;
     motif_data_structure::MotifGraphOP mg_;
     EndStateInfo start_, end_;
     util::StericLookup lookup_;

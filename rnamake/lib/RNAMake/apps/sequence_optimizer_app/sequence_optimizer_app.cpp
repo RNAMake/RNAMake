@@ -9,6 +9,7 @@
 #include <stdexcept>
 
 #include "base/backtrace.hpp"
+#include <base/log.h>
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_topology.h"
 #include "motif_data_structure/motif_graph.h"
@@ -19,21 +20,18 @@
 
 void
 SequenceOptimizerApp::setup_options() {
-    add_option("mg", String(""), base::OptionType::STRING, true);
-    add_option("end_1", String(""), base::OptionType::STRING, false);
-    add_option("end_2", String(""), base::OptionType::STRING, false);
-
+    add_option("design_file", String(""), base::OptionType::STRING, true);
     add_option("join_points", String(""), base::OptionType::STRING, false);
     
     
-    add_option("v", false, base::OptionType::BOOL);
+    add_option("log_level", "info", base::OptionType::STRING, false);
     add_option("out_file", "default.out", base::OptionType::STRING);
     add_option("score_file", "default.scores", base::OptionType::STRING);
     add_option("n", 1, base::OptionType::INT);
     add_option("opt", String("Internal"), base::OptionType::STRING);
     add_option("pdbs", false, base::OptionType::BOOL);
-    
-    add_cl_options(optimizer_.options(), "optimizer");
+
+
 }
 
 void
@@ -43,14 +41,19 @@ SequenceOptimizerApp::parse_command_line(
     
     base::Application::parse_command_line(argc, argv);
     cl_parser_.assign_options(cl_options_, optimizer_.options(), "optimizer");
-    optimizer_.set_option_value("verbose", get_bool_option("v"));
 }
 
 void
 SequenceOptimizerApp::run() {
+    auto log_level = base::log_level_from_str(get_string_option("log_level"));
+    base::init_logging(log_level);
+    LOG_INFO << "log level set to: " << get_string_option("log_level");
 
     // load motif graph from file
-    auto lines =base::get_lines_from_file(get_string_option("mg"));
+    auto lines =base::get_lines_from_file(get_string_option("design_file"));
+    LOG_INFO << lines.size() << " designs loaded from " << get_string_option("design_file");
+
+
     auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0],
                                                                  motif_data_structure::MotifGraphStringType::MG);
 
@@ -60,11 +63,22 @@ SequenceOptimizerApp::run() {
         }
     }
 
-
     mg->replace_ideal_helices();
 
     // parse connection info
-    _get_end_connections(mg);
+    //_get_end_connections(mg);
+
+    int i = 0;
+    for(auto const & n : *mg) {
+        i += 1;
+    }
+    std::cout << mg->size() << " " << i << std::endl;
+
+    //auto start = NodeIndexandEdge{ni1, ei1};
+    //auto end   = NodeIndexandEdge{ni2, ei2};
+    //return ConnectionTemplate{start, end, "Internal"};
+
+    exit(0);
 
     // get sequence optimizer scorer
     auto scorer = _setup_optimizer_scorer();
@@ -147,13 +161,7 @@ void
 SequenceOptimizerApp::_get_end_connections(
         motif_data_structure::MotifGraphOP mg) {
     connections_ = std::vector<ConnectionTemplate>();
-    if(get_string_option("end_1") == "" && get_string_option("end_2") == "" && get_string_option("join_points") == "") {
-        throw SequenceOptimizerAppException("please supply either end_1 / end_2 or connections");
-    }
-    else if(get_string_option("end_1") != "" && get_string_option("end_2") != "") {
-        connections_.push_back(_parse_end_commandline_args());
-    }
-    else if(get_string_option("join_points") != "") {
+    if(get_string_option("join_points") != "") {
         auto connection_strs = base::split_str_by_delimiter(get_string_option("join_points"), ";");
         for(auto const & connection_str : connection_strs) {
             auto spl = base::split_str_by_delimiter(connection_str, " ");
@@ -231,13 +239,7 @@ SequenceOptimizerApp::_setup_optimizer_scorer() {
 int main(int argc, const char * argv[]) {
     //must add this for all apps!
     std::set_terminate(base::print_backtrace);
-    
-    //load tectos
-    auto tecto_dir = String(base::base_dir()+"/rnamake/lib/RNAMake/apps/simulate_tectos");
-    resources::Manager::instance().add_motif(tecto_dir+"/resources/GAAA_tetraloop");
-    resources::Manager::instance().add_motif(tecto_dir+"/resources/GGAA_tetraloop");
 
-    
     auto app = SequenceOptimizerApp();
     app.setup_options();
     app.parse_command_line(argc, argv);
