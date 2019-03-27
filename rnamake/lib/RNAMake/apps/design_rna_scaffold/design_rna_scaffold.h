@@ -17,7 +17,7 @@ struct EndStateInfo {
     int n_pos;
 };
 
-struct DesignRNAScaffoldParameters {
+struct Parameters {
     String pdb, start_bp, end_bp, mg;
     bool skip_sequence_optimization, no_basepair_checks;
 };
@@ -63,13 +63,13 @@ private:
             String const &);
 
 private:
-    //motif_search::MotifStateSearch search_;
+    motif_search::SearchOP search_;
     motif_data_structure::MotifGraphOP mg_;
     EndStateInfo start_, end_;
     util::StericLookup lookup_;
     sequence_optimization::SequenceOptimizer3D optimizer_;
     resources::Manager & rm_;
-    DesignRNAScaffoldParameters parameters_;
+    Parameters parameters_;
 
 
 };

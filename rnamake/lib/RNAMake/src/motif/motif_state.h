@@ -189,7 +189,7 @@ public: // getters
 
     inline
     Strings const &
-    end_names() { return end_names_; }
+    end_names() const { return end_names_; }
 
     inline
     Strings const &

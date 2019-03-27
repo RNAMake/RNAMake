@@ -73,7 +73,7 @@ Search::setup(
     }
 }
 
-SolutionOP
+motif_search::SolutionOP
 Search::next() {
 
     auto current = NodeOP(nullptr);

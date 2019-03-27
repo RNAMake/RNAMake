@@ -6,6 +6,7 @@
 //  Copyright © 2016 Joseph Yesselman. All rights reserved.
 //
 
+#include <base/log.h>
 #include "util/monte_carlo.h"
 #include "secondary_structure/util.h"
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
@@ -273,9 +274,7 @@ SequenceOptimizer3D::get_optimized_sequences(
         if (best > new_score) {
             best = new_score;
             best_seq = ss->sequence();
-            if (verbose_) {
-                std::cout << "SEQUENCE OPTIMIZER: best_score=" << best << std::endl;
-            }
+            LOG_VERBOSE << "best_score=" << best;
         }
 
         if (cutoff_ < new_score) { continue; }

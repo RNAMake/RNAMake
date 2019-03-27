@@ -7,7 +7,6 @@
 
 #include <base/option.h>
 #include <motif/motif_state_aligner.h>
-#include <motif_data_structure/motif_state_graph.hpp>
 #include <motif_search/search.h>
 #include <motif_search/solution_filter.h>
 #include <motif_search/path_finding/scorer.h>
@@ -17,20 +16,6 @@
 namespace motif_search {
 namespace path_finding {
 
-struct Solution : public motif_search::Solution {
-    inline
-    Solution(
-            motif_data_structure::MotifStateGraphOP n_graph,
-            float n_score):
-            graph(n_graph),
-            score(n_score) {}
-
-    motif_data_structure::MotifStateGraphOP graph;
-    float score;
-};
-
-typedef std::shared_ptr<Solution> SolutionOP;
-
 struct Parameters {
     bool sterics, helix_end;
     int max_node_level, min_size, max_size, max_solutions, min_node_level;
@@ -38,14 +23,14 @@ struct Parameters {
     bool return_best;
 };
 
-class Search : public motif_search::Search<Solution> {
+class Search : public motif_search::Search {
 public:
 
     Search(
             ScorerOP scorer,
             SelectorOP selector,
             SolutionFilterOP solution_filter):
-            motif_search::Search<Solution>(),
+            motif_search::Search(),
             scorer_(scorer->clone()),
             selector_(selector->clone()),
             solution_filter_(solution_filter->clone()),
@@ -56,6 +41,11 @@ public:
         setup_options();
         update_var_options();
     }
+
+    ~Search() {}
+
+    motif_search::Search *
+    clone() const { return new Search(*this); };
 
 public:
     void
@@ -68,7 +58,7 @@ public:
     void
     finished() {}
 
-    SolutionOP
+    motif_search::SolutionOP
     next();
 
 

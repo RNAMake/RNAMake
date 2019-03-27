@@ -76,6 +76,10 @@ target_link_libraries(hashing_unittest math_lib)
 ###########################################################################
 
 set(data_structure_files
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/data_structure/graph.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/data_structure/graph_adjacency_list.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/data_structure/graph_base.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/data_structure/graph_iter_list.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/data_structure/tree/tree.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/data_structure/tree/tree_node.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/data_structure/graph/graph.cc
@@ -85,11 +89,17 @@ set(data_structure_files
 add_library(data_structure_lib ${data_structure_files})
 target_link_libraries(data_structure_lib base_lib )
 
+add_executable(graph_adjacency_list_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/data_structure/graph_adjacency_list_unittest.cc)
+target_link_libraries(graph_adjacency_list_unittest data_structure_lib)
+
 add_executable(graph_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/data_structure/graph_unittest.cc)
 target_link_libraries(graph_unittest data_structure_lib)
 
 add_executable(tree_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/data_structure/tree_unittest.cpp)
 target_link_libraries(tree_unittest data_structure_lib)
+
+add_executable(graph_iter_list_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/data_structure/graph_iter_list_unittest.cc)
+target_link_libraries(graph_iter_list_unittest data_structure_lib)
 
 ###########################################################################
 # util
@@ -409,10 +419,16 @@ set(motif_search_files
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/scorer.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/search.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/selector.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/monte_carlo/scorer.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/monte_carlo/search.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/monte_carlo/solution_topology.cc
 )
 
 add_library(motif_search_lib ${motif_search_files})
 target_link_libraries(motif_search_lib motif_data_structure_lib )
+
+add_executable(monte_carlo_search_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/motif_search/monte_carlo_search_unittest.cc)
+target_link_libraries(monte_carlo_search_unittest motif_search_lib)
 
 add_executable(motif_state_search_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/motif_search/motif_state_search_unittest.cpp)
 target_link_libraries(motif_state_search_unittest motif_search_lib)

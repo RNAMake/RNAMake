@@ -97,7 +97,7 @@ public:
         }
         
     }
-    
+
     MotifStateEnsemble(
         MotifStateOPs const &,
         Floats const &);
@@ -114,8 +114,8 @@ public:
     
     inline
     int
-    num_end_states() {
-        return (int)members_[0]->motif_state->end_states().size(); }
+    num_end_states() const {
+        return (int)members_[0]->motif_state->end_names().size(); }
     
     inline
     MotifStateOP const &

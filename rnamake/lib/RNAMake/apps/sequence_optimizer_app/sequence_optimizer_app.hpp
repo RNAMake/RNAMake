@@ -26,13 +26,58 @@ public:
 struct NodeIndexandEdge {
     int ni; //node index
     int ei; //end index
+
+    inline
+    bool
+    operator == (
+            NodeIndexandEdge const & nie) const {
+        return(nie.ni == ni && nie.ei == ei);
+    }
 };
 
 struct ConnectionTemplate {
     NodeIndexandEdge start;
     NodeIndexandEdge end;
     String type;
+
+    inline
+    bool
+    operator == (
+            ConnectionTemplate const & c) const {
+        return (c.start == start && c.end == end && type == c.type);
+    }
 };
+
+class ScoreFileWriter {
+public:
+
+
+    ScoreFileWriter(
+            String const & score_file_path) {
+        out_ = std::make_shared<std::ofstream>();
+        out_->open(score_file_path);
+        *out_ << "design_num,opt_num,opt_score,sequence" << std::endl;
+    }
+
+    ~ScoreFileWriter() {
+        out_->close();
+    }
+
+public:
+    void
+    write(
+            int design_num,
+            int opt_num,
+            float opt_score,
+            String sequence) {
+        *out_ << design_num << "," << opt_num << "," << opt_score << "," << sequence << std::endl;
+    }
+
+private:
+    std::shared_ptr<std::ofstream> out_;
+
+};
+
 
 class SequenceOptimizerApp : public base::Application {
 public:
@@ -55,18 +100,24 @@ public:
     run();
 
 private:
-    void
-    _get_end_connections(
+    std::vector<ConnectionTemplate>
+    _parse_connections_from_str(
+            String const &,
             motif_data_structure::MotifGraphOP);
 
-    ConnectionTemplate
-    _parse_end_commandline_args();
+    std::vector<ConnectionTemplate>
+    _guess_connections(
+            motif_data_structure::MotifGraphOP);
 
     sequence_optimization::SequenceOptimizerScorerOP
-    _setup_optimizer_scorer();
+    _setup_optimizer_scorer(
+            std::vector<ConnectionTemplate> const &,
+            motif_data_structure::MotifGraphOP);
 
+    void
+    _fix_flex_helices_mtype(
+            motif_data_structure::MotifGraphOP);
 
-    
     
 private:
     std::vector<ConnectionTemplate> connections_;

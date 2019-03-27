@@ -70,20 +70,23 @@ TEST_CASE( "Test Assembling MotifEnsembleStates together", "[motif_data_structur
 
         auto mseg = motif_data_structure::MotifStateEnsembleGraph();
         auto mse = resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR");
-        mseg.add_ensemble(mse);
-        mseg.add_ensemble(mse);
-
+        mseg.add_ensemble(*mse);
+        mseg.add_ensemble(*mse);
         REQUIRE(mseg.size() == 2);
+
+        auto mseg2 = motif_data_structure::MotifStateEnsembleOPGraph();
+        mseg2.add_ensemble(mse);
+        mseg2.add_ensemble(mse);
+        REQUIRE(mseg2.size() == 2);
+        REQUIRE(mseg2.get_ensemble(0) == mseg2.get_ensemble(1));
+
     }
 
     SECTION("setup from motif tree with graph") {
-        auto mg = std::make_shared<motif_data_structure::MotifGraph>();
+        /*auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL");
         mg->add_motif(m1);
-        mg->add_motif(m2);
-
-
-
+        mg->add_motif(m2);*/
     }
 }

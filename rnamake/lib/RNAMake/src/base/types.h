@@ -14,7 +14,13 @@
 #include <vector>
 #include <map>
 
+typedef int Index;
+typedef int Size;
+typedef bool Flag;
+
 using Ints = std::vector<int>;
+using Indexes = std::vector<int>;
+
 using Chars = std::vector<char>;
 using Shorts = std::vector<short>;
 using Floats = std::vector<float>;

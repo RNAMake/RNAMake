@@ -9,7 +9,7 @@
 DesignRNAScaffold::DesignRNAScaffold():
         base::Application(),
         rm_(resources::Manager::instance()),
-        parameters_(DesignRNAScaffoldParameters()) {
+        parameters_(Parameters()) {
 
 }
 
@@ -32,13 +32,17 @@ DesignRNAScaffold::setup_options() {
     add_option("dump_pdbs", false, base::OptionType::BOOL, false);
     add_option("dump_scaffold_pdbs", false, base::OptionType::BOOL, false);
     add_option("helix_type", "ideal_helices", base::OptionType::STRING, false);
-    add_option("search_type", "astar", base::OptionType::STRING, false);
+    add_option("log_level", "info", base::OptionType::STRING, false);
+    add_option("search_type", "path_finding", base::OptionType::STRING, false);
     add_option("search_cutoff", 5.0f, base::OptionType::FLOAT, false);
     add_option("skip_sequence_optimization", false, base::OptionType::BOOL, false);
     add_option("sequence_opt_cutoff", 5.0f, base::OptionType::FLOAT, false);
 
     // less common options
     add_option("no_basepair_checks", false, base::OptionType::BOOL, false);
+    add_option("no_out_file", false, base::OptionType::BOOL, false);
+    add_option("max_helix_length", 10, base::OptionType::INT, false);
+    add_option("min_helix_length", 3, base::OptionType::INT, false);
 
 }
 

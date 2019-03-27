@@ -121,9 +121,7 @@ MotifGraph::_setup_from_str(String const & s) {
 
 
 MotifGraph::MotifGraph(
-        MotifGraph const
-& mg):
-
+        MotifGraph const & mg):
 options_ (base::Options()),
 graph_(data_structure::graph::GraphStatic<motif::MotifOP>(mg.graph_)) {
 
