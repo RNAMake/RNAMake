@@ -414,14 +414,17 @@ set(motif_search_files
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/motif_state_monte_carlo.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/problem.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/search.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/solution_topology.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/solution_filter.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/exhaustive/scorer.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/exhaustive/motif_state_enumerator.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/exhaustive/search.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/node.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/scorer.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/search.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/path_finding/selector.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/monte_carlo/scorer.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/monte_carlo/search.cc
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/motif_search/monte_carlo/solution_topology.cc
 )
 
 add_library(motif_search_lib ${motif_search_files})
@@ -429,6 +432,9 @@ target_link_libraries(motif_search_lib motif_data_structure_lib )
 
 add_executable(monte_carlo_search_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/motif_search/monte_carlo_search_unittest.cc)
 target_link_libraries(monte_carlo_search_unittest motif_search_lib)
+
+add_executable(exhaustive_search_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/motif_search/exhaustive_search_unittest.cc)
+target_link_libraries(exhaustive_search_unittest motif_search_lib)
 
 add_executable(motif_state_search_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/motif_search/motif_state_search_unittest.cpp)
 target_link_libraries(motif_state_search_unittest motif_search_lib)
@@ -465,6 +471,10 @@ target_link_libraries(sequence_optimization_benchmarks all_lib)
 
 add_executable(design_rna_scaffold /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/design_rna_scaffold/design_rna_scaffold.cc )
 target_link_libraries(design_rna_scaffold all_lib)
+
+
+add_executable(hash_motifs /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/hash_motifs/hash_motifs.cc )
+target_link_libraries(hash_motifs all_lib)
 
 
 add_executable(get_best_solutions /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/get_best_solutions/get_best_solutions.cc )

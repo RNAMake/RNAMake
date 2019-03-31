@@ -106,6 +106,16 @@ public:
         String const &);
     
     ~MotifStateEnsemble() {}
+
+public:
+    typedef typename MotifStateEnsembleMemberOPs::const_iterator const_iterator;
+    typedef typename MotifStateEnsembleMemberOPs::iterator iterator;
+
+    iterator begin() { return members_.begin(); }
+    iterator end()   { return members_.end(); }
+
+    const_iterator begin() const noexcept { return members_.begin(); }
+    const_iterator end()   const noexcept { return members_.end(); }
     
 public:
     

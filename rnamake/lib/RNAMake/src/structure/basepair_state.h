@@ -202,11 +202,10 @@ public:
     _rot_diff(
             BasepairStateOP const & state) {
         float r_diff = r_.difference(state->r());
-        state->flip();
-        float r_diff_2 = r_.difference(state->r());
-        state->flip();
-
-        if (r_diff > r_diff_2) { r_diff = r_diff_2; }
+        //state->flip();
+        //float r_diff_2 = r_.difference(state->r());
+        //state->flip();
+        //if (r_diff > r_diff_2) { r_diff = r_diff_2; }
 
         return r_diff;
     }

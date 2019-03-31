@@ -11,8 +11,8 @@
 #include <motif_data_structure/motif_state_graph.hpp>
 #include <motif_search/search.h>
 #include <motif_search/solution_filter.h>
+#include <motif_search/solution_topology.h>
 #include <motif_search/monte_carlo/scorer.h>
-#include <motif_search/monte_carlo/solution_topology.h>
 
 namespace motif_search {
 namespace monte_carlo {
@@ -148,8 +148,8 @@ public:
     start() {}
 
     virtual
-    void
-    finished() {}
+    bool
+    finished() { return false; }
 
     virtual
     SolutionOP

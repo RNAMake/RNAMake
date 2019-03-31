@@ -55,8 +55,8 @@ public:
     void
     start() {}
 
-    void
-    finished() {}
+    bool
+    finished() { return false; }
 
     motif_search::SolutionOP
     next();

@@ -10,7 +10,6 @@
 #include <resources/motif_state_sqlite_library.h>
 
 namespace motif_search {
-namespace monte_carlo {
 
 class SolutionTopologyTemplate {
 public:
@@ -258,6 +257,17 @@ public:
     }
 
 public:
+
+    typedef typename motif_data_structure::MotifStateEnsembleOPGraph::const_iterator const_iterator;
+    typedef typename motif_data_structure::MotifStateEnsembleOPGraph::iterator iterator;
+
+    iterator begin() { return mseg_->begin(); }
+    iterator end()   { return mseg_->end(); }
+
+    const_iterator begin() const noexcept { return mseg_->begin(); }
+    const_iterator end()   const noexcept { return mseg_->end(); }
+
+public:
     motif_data_structure::MotifStateGraphOP
     initialize_solution(
             structure::BasepairStateOP bp_state) {
@@ -296,6 +306,12 @@ public:
         return solution_nie_;
     }
 
+    inline
+    size_t
+    size() {
+        return mseg_->size();
+    }
+
 private:
     motif_data_structure::MotifStateEnsembleOPGraphOP mseg_;
     util::RandomNumberGenerator rng_;
@@ -303,7 +319,6 @@ private:
     std::vector<data_structure::NodeIndexandEdge> solution_nie_;
 };
 
-}
 }
 
 #endif //RNAMAKE_NEW_SOLUTION_TOPOLOGY_H

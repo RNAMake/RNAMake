@@ -49,7 +49,7 @@ public:
     start() = 0;
 
     virtual
-    void
+    bool
     finished() = 0;
 
     virtual

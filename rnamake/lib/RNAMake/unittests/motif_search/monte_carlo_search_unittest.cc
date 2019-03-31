@@ -31,7 +31,7 @@ TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
 
     SECTION("test solution topology template") {
         using namespace motif_search::monte_carlo;
-        auto sol_template = SolutionTopologyTemplate();
+        auto sol_template = motif_search::SolutionTopologyTemplate();
         sol_template.add_library("flex_helices");
         sol_template.add_library("twoway", data_structure::NodeIndexandEdge{0, 1});
         auto ms = rm.motif_state("HELIX.IDEAL.3");
@@ -45,12 +45,12 @@ TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
 
     SECTION("test solution toplogy factory") {
         using namespace motif_search::monte_carlo;
-        auto sol_template = SolutionTopologyTemplate();
+        auto sol_template = motif_search::SolutionTopologyTemplate();
         sol_template.add_library("flex_helices");
         sol_template.add_library("twoway", data_structure::NodeIndexandEdge{0, 1});
         sol_template.add_library("flex_helices", data_structure::NodeIndexandEdge{1, 1});
 
-        auto factory = SolutionToplogyFactory();
+        auto factory = motif_search::SolutionToplogyFactory();
         auto sol_toplogy = factory.generate_toplogy(sol_template);
 
         auto ms = rm.motif_state("HELIX.IDEAL.3");
@@ -65,7 +65,7 @@ TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
         }*/
     }
 
-    SECTION("test") {
+    SECTION("test state") {
         using namespace motif_search::monte_carlo;
         auto mt = motif_data_structure::MotifTree();
         mt.add_motif(rm.motif("HELIX.IDEAL.3"));
@@ -77,17 +77,25 @@ TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
         auto lookup = std::make_shared<util::StericLookupNew>();
         auto p = std::make_shared<motif_search::Problem>(start, end, lookup, true);
 
-        auto sol_template = SolutionTopologyTemplate();
+        auto sol_template = motif_search::SolutionTopologyTemplate();
         sol_template.add_library("flex_helices");
         sol_template.add_library("twoway", data_structure::NodeIndexandEdge{0, 1});
         sol_template.add_library("flex_helices", data_structure::NodeIndexandEdge{1, 1});
 
-        auto factory = SolutionToplogyFactory();
+        auto factory = motif_search::SolutionToplogyFactory();
         auto sol_toplogy = factory.generate_toplogy(sol_template);
 
         auto scorer = std::make_shared<GreedyScorer>();
-        auto search = Search(scorer, *sol_toplogy);
-        search.setup(p);
+        scorer->set_target(p->end, p->target_an_aligned_end);
+        auto msg = sol_toplogy->initialize_solution(p->start);
+        auto state = std::make_shared<State>(*msg, *sol_toplogy, p->lookup, scorer);
+
+        REQUIRE(state->score == state->get_score());
+        REQUIRE(state->steric_clash() == false);
+
+
+        //auto search = Search(scorer, *sol_toplogy);
+        //search.setup(p);
 
     }
 

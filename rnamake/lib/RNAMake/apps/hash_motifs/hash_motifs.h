@@ -53,8 +53,8 @@ public:
             unsigned size;
             in.read(reinterpret_cast<char *>(&key), sizeof(key));
             in.read(reinterpret_cast<char *>(&size), sizeof(size));
-            std::vector<u_int64_t> values(size);
-            in.read(reinterpret_cast<char *>(&values[0]), size*sizeof(u_int64_t));
+            std::vector<int> values(size);
+            in.read(reinterpret_cast<char *>(&values[0]), size*sizeof(int));
             stored_[key] = values;
         }
     }
@@ -113,26 +113,49 @@ private:
         }
     }
 
+
+public:
+    std::vector<Ints>
+    search(
+            math::Real6 const & values) {
+        auto all_vals = std::vector<Ints>();
+        auto bin_index = u_int64_t();
+        for(auto const & add : additions_) {
+            for (int i = 0; i < 6; i++) {
+                dummy_[i] = values[i] + add[i];
+            }
+            bin_index = binner_.bin_index(dummy_);
+            if(stored_.find(bin_index) != stored_.end()) {
+                all_vals.push_back(stored_[bin_index]);
+            }
+        }
+        return all_vals;
+    }
+
+
 public:
     void
     add(
-            math::Real6 const & values) {
+            math::Real6 const & values,
+            Ints const & motifs) {
         auto bin_index = binner_.bin_index(values);
         if (stored_.find(bin_index) == stored_.end()) {
-            stored_[bin_index] = std::vector<u_int64_t>();
+            stored_[bin_index] = std::vector<int>();
         }
-        stored_[bin_index].push_back(bin_index);
+        for(auto const & i : motifs) {
+            stored_[bin_index].push_back(i);
+        }
     }
 
     void
     add_value(
             math::Real6 const & values) {
-        for(auto const & add : additions_) {
+        /*for(auto const & add : additions_) {
             for(int i = 0; i < 6; i++) {
                 dummy_[i] = values[i] + add[i];
             }
             MotifPathHash::add(dummy_);
-        }
+        }*/
 
 
     }
@@ -162,7 +185,7 @@ public:
             out.write((const char *) &kv.first, sizeof(kv.first));
             size = kv.second.size();
             out.write((const char *) &size, sizeof(unsigned));
-            out.write((const char *) &kv.second[0], kv.second.size()*sizeof(u_int64_t));
+            out.write((const char *) &kv.second[0], kv.second.size()*sizeof(int));
         }
 
     }
@@ -171,7 +194,7 @@ private:
     std::vector<math::Real6> additions_;
     math::Real6 dummy_;
     math::SixDCoordinateBinner binner_;
-    std::unordered_map<u_int64_t, std::vector<u_int64_t>> stored_;
+    std::unordered_map<u_int64_t, std::vector<int>> stored_;
 
 };
 
@@ -194,6 +217,14 @@ public: // application functions
 
     void
     run();
+
+public:
+    void
+    _generate_pairwise_map();
+
+    void
+    _old_buildup();
+
 };
 
 

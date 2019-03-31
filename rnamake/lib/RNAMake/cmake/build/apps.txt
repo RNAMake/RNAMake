@@ -13,7 +13,7 @@ sequence_optimizer_app ../../apps/sequence_optimizer/sequence_optimizer_app.cpp
 #build_flex_helices ../../apps/build_flex_helices/build_flex_helices.cc
 sequence_optimization_benchmarks ../../apps/sequence_optimization_benchmarks/sequence_optimization_benchmarks.cc
 design_rna_scaffold ../../apps/design_rna_scaffold/design_rna_scaffold.cc
-#hash_motifs ../../apps/hash_motifs/hash_motifs.cc
+hash_motifs ../../apps/hash_motifs/hash_motifs.cc
 get_best_solutions ../../apps/get_best_solutions/get_best_solutions.cc
 #mini_ttr ../../apps/mini_ttr/mini_ttr.cpp 
 #exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp
