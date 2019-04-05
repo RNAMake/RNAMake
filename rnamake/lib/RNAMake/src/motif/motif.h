@@ -60,6 +60,10 @@ public:
         mtype_ = util::MotifType::UNKNOWN;
     }
 
+    /*Motif(
+            structure::RNAStructure const & rs,
+            secondary_structure::Motif const & ss)
+    */
     ~Motif() {}
 
 public:

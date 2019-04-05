@@ -120,6 +120,7 @@ public:
     Search(
             ScorerOP scorer,
             SolutionToplogy const & sol_top):
+            motif_search::Search("monte_carlo"),
             scorer_(scorer->clone()),
             sol_top_(sol_top) {
 
@@ -156,7 +157,14 @@ public:
     next() { return SolutionOP(nullptr); }
 
 
-private:
+protected:
+
+    void
+    setup_options() {}
+
+    void
+    update_var_options() {}
+
 
 private:
     StateOP state_;

@@ -57,8 +57,21 @@ RNAStructure::get_basepair(
         }
     }
     
-    throw "could not find basepair with name " + name;
+    throw std::runtime_error("could not find basepair with name " + name);
     
+}
+
+BasepairOP
+RNAStructure::get_end(
+        String const & name) {
+    for(auto const & bp : ends_) {
+        if(name.compare(bp->name()) == 0) {
+            return bp ;
+        }
+    }
+
+    throw std::runtime_error("could not find basepair with name " + name);
+
 }
 
 

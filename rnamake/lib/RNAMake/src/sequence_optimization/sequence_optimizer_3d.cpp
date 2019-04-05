@@ -207,7 +207,7 @@ SequenceOptimizer3D::_initiate_sequence_in_msg(
 
 //optimizing sequence  /////////////////////////////////////////////////////////////////////////////
 
-SequenceOptimizer3D::OptimizedSequenceOPs
+OptimizedSequenceOPs
 SequenceOptimizer3D::get_optimized_sequences(
         motif_data_structure::MotifGraphOP const & mg) {
     update_var_options();

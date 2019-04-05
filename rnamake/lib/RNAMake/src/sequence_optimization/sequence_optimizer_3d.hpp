@@ -137,6 +137,13 @@ private:
     float score_;
 };
 
+struct OptimizedSequence {
+    String sequence;
+    float dist_score, eterna_score;
+};
+
+typedef std::shared_ptr<OptimizedSequence> OptimizedSequenceOP;
+typedef std::vector<OptimizedSequenceOP> OptimizedSequenceOPs;
 
 class SequenceOptimizer3D {
 public:
@@ -153,14 +160,6 @@ public: //setup
     }
 
 private:
-
-    struct OptimizedSequence {
-        String sequence;
-        float dist_score, eterna_score;
-    };
-
-    typedef std::shared_ptr<OptimizedSequence> OptimizedSequenceOP;
-    typedef std::vector<OptimizedSequenceOP> OptimizedSequenceOPs;
 
     struct DesignableBP {
         inline

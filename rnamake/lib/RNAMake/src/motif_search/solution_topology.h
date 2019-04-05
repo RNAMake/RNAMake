@@ -172,6 +172,8 @@ private:
 
 };
 
+typedef std::shared_ptr<SolutionTopologyTemplate> SolutionTopologyTemplateOP;
+
 class SolutionToplogy;
 typedef std::shared_ptr<SolutionToplogy> SolutionToplogyOP;
 

@@ -116,7 +116,12 @@ public:
     get_basepair(
         util::Uuid const &,
         util::Uuid const &);
-    
+
+public:
+    BasepairOP
+    get_end(
+            String const &);
+
     virtual
     void
     replace_sequence(

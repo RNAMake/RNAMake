@@ -461,6 +461,36 @@ MotifGraph::_add_motif_tree(
 }
 
 void
+MotifGraph::add_motif_graph(
+        MotifGraph & mg,
+        int parent_index,
+        int parent_end_index) {
+    auto parent = _get_parent("motif_graph", parent_index);
+
+    auto avail_pos = Ints();
+    try { avail_pos = graph_.get_available_pos(parent, parent_end_index); }
+    catch (data_structure::graph::GraphException const & e) {
+        throw MotifGraphException("could not add motif_graph with parent: "
+                                  + std::to_string(parent_index));
+    }
+
+    int i = 0, j = 0;
+    auto index_hash = std::map<int, int>();
+    for (auto const & n : mg) {
+        if (i == 0) {
+            j = add_motif(n->data(), parent_index, parent_end_index);
+        } else {
+            int pi = index_hash[n->parent_index()];
+            j = add_motif(n->data(), pi, n->parent_end_index());
+        }
+        index_hash[n->index()] = j;
+        i++;
+    }
+
+}
+
+
+void
 MotifGraph::add_connection(
         int i,
         int j,

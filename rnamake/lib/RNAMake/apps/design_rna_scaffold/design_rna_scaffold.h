@@ -6,20 +6,22 @@
 #define TEST_DESIGN_RNA_SCAFFOLD_H
 
 #include <stdio.h>
+#include <data_structure/graph_base.h>
 #include "base/application.hpp"
 #include "util/steric_lookup.hpp"
-#include "motif_search/path_finding/search.h"
+#include "motif_search/search.h"
+#include "motif_search/solution_topology.h"
+#include <motif_search/solution_filter.h>
 #include "motif_data_structure/motif_graph.h"
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 
-struct EndStateInfo {
-    String name;
-    int n_pos;
-};
-
 struct Parameters {
     String pdb, start_bp, end_bp, mg;
+    String starting_helix, ending_helix, search_type, motif_path;
+    String out_file, score_file, solution_filter;
     bool skip_sequence_optimization, no_basepair_checks;
+    bool all_designs, dump_pdbs, dump_scaffold_pdbs;
+    float search_cutoff;
 };
 
 
@@ -55,6 +57,36 @@ private:
     std::vector<motif::MotifStateOPs>
     _get_libraries();
 
+    motif_search::SearchOP
+    _setup_search();
+
+    motif_search::ProblemOP
+    _setup_problem();
+
+    motif_search::SolutionTopologyTemplateOP
+    _setup_sol_template_from_path(
+            String const &);
+
+    motif_search::SolutionFilterOP
+    _setup_sol_filter(
+            String const &);
+
+    void
+    _record_solution(
+            motif_data_structure::MotifGraphOP,
+            motif_search::SolutionOP,
+            sequence_optimization::OptimizedSequenceOP,
+            int,
+            int);
+
+    void
+    _fix_flex_helices_mtype(
+            motif_data_structure::MotifGraphOP);
+
+    String const &
+    _get_motif_names(
+            motif_data_structure::MotifGraphOP);
+
 private:
     void
     check_bp(
@@ -63,13 +95,15 @@ private:
             String const &);
 
 private:
+    std::ofstream out_, score_out_;
     motif_search::SearchOP search_;
-    motif_data_structure::MotifGraphOP mg_;
-    EndStateInfo start_, end_;
-    util::StericLookup lookup_;
+    motif_search::ProblemOP problem_;
+    motif_data_structure::MotifStateGraphOP msg_;
+    data_structure::NodeIndexandEdge start_, end_;
     sequence_optimization::SequenceOptimizer3D optimizer_;
     resources::Manager & rm_;
     Parameters parameters_;
+    String motif_names_;
 
 
 };

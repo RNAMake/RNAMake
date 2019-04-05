@@ -30,7 +30,7 @@ public:
             ScorerOP scorer,
             SelectorOP selector,
             SolutionFilterOP solution_filter):
-            motif_search::Search(),
+            motif_search::Search("path_finding"),
             scorer_(scorer->clone()),
             selector_(selector->clone()),
             solution_filter_(solution_filter->clone()),
@@ -61,36 +61,7 @@ public:
     motif_search::SolutionOP
     next();
 
-
-public: //option wrappers
-
-    inline
-    float
-    get_int_option(String const & name) { return options_.get_int(name); }
-
-    inline
-    float
-    get_float_option(String const & name) { return options_.get_float(name); }
-
-    inline
-    String
-    get_string_option(String const & name) { return options_.get_string(name); }
-
-    inline
-    bool
-    get_bool_option(String const & name) { return options_.get_bool(name); }
-
-    template<typename T>
-    void
-    set_option_value(
-            String const & name,
-            T const & val) {
-        options_.set_value(name, val);
-        update_var_options();
-    }
-
 protected:
-
     void
     update_var_options();
 
@@ -134,7 +105,6 @@ private:
     motif::MotifStateAligner aligner_;
     util::StericLookupNewOP lookup_;
 
-    base::Options options_;
     Strings motif_names_;
     bool using_lookup_, enumerating_;
 };

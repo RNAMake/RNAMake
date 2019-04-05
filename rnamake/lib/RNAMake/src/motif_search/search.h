@@ -29,9 +29,13 @@ class Search {
 public:
 
 public:
-    Search() {}
+    Search(
+            String const & name):
+            name_(name) {
+    }
 
-    ~Search() {}
+    virtual
+    ~Search() = default;
 
     virtual
     Search *
@@ -55,6 +59,52 @@ public:
     virtual
     SolutionOP
     next() = 0;
+
+public:
+    String const &
+    name() { return name_; }
+
+
+public: //option wrappers
+
+    inline
+    float
+    get_int_option(String const & name) { return options_.get_int(name); }
+
+    inline
+    float
+    get_float_option(String const & name) { return options_.get_float(name); }
+
+    inline
+    String
+    get_string_option(String const & name) { return options_.get_string(name); }
+
+    inline
+    bool
+    get_bool_option(String const & name) { return options_.get_bool(name); }
+
+    template<typename T>
+    void
+    set_option_value(
+            String const & name,
+            T const & val) {
+        options_.set_value(name, val);
+        update_var_options();
+    }
+
+protected:
+    virtual
+    void
+    setup_options() = 0;
+
+    virtual
+    void
+    update_var_options() = 0;
+
+
+protected:
+    base::Options options_;
+    String name_;
 
 };
 

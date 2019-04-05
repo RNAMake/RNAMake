@@ -137,6 +137,12 @@ public: //add functions
             String const &);
 
     void
+    add_motif_graph(
+            MotifGraph & mg,
+            int parent_index = -1,
+            int parent_end_index = -1);
+
+    void
     add_connection(
             int,
             int,

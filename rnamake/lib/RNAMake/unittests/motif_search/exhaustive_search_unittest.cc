@@ -29,7 +29,12 @@ TEST_CASE( "Test Searching Motif States", "[ExhaustiveSearch]" ) {
             auto flex_helices = resources::MotifStateSqliteLibrary("flex_helices");
             flex_helices.load_all();
             auto size = 0;
-            for (auto const & ms : flex_helices) { size += 1; }
+            for (auto const & ms : flex_helices) {
+                if(ms->size() > 14) {
+                    continue;
+                }
+                size += 1;
+            }
 
             auto sol_template = motif_search::SolutionTopologyTemplate();
             sol_template.add_library("flex_helices");
@@ -65,7 +70,12 @@ TEST_CASE( "Test Searching Motif States", "[ExhaustiveSearch]" ) {
             twoway.load_all();
             auto size_1 = 0;
             auto size_2 = 0;
-            for (auto const & ms : flex_helices) { size_1 += 1; }
+            for (auto const & ms : flex_helices) {
+                if(ms->size() > 14) {
+                    continue;
+                }
+                size_1 += 1;
+            }
             for (auto const & ms : twoway) { size_2 += 1; }
             auto total_size = size_1 * size_2;
 
@@ -127,7 +137,6 @@ TEST_CASE( "Test Searching Motif States", "[ExhaustiveSearch]" ) {
             REQUIRE(sol->score < 10);
 
         }
-
     }
 }
 
