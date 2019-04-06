@@ -54,5 +54,41 @@ TEST_CASE( "Test Graph Data Structure ", "[Graph]" ) {
 
         REQUIRE(g1.get_node_data(0).x == 0);
 
+        g1.setup_transversal(0);
+        int i = 0;
+        for(auto const & n : g1) {
+            i ++;
+        }
     }
+
+    SECTION("test iteration forwarding") {
+        struct GraphStruct {
+        public:
+            GraphStruct():
+            graph_(data_structure::FixedEdgeDirectedGraph<int>()) {}
+
+        public:
+            typedef typename data_structure::FixedEdgeDirectedGraph<int>::const_iterator const_iterator;
+            typedef typename data_structure::FixedEdgeDirectedGraph<int>::iterator iterator;
+
+            iterator begin() { return graph_.begin(); }
+            iterator end()   { return graph_.end(); }
+
+            const_iterator begin() const { return graph_.begin(); }
+            const_iterator end()   const { return graph_.end(); }
+
+        private:
+            data_structure::FixedEdgeDirectedGraph<int> graph_;
+
+        };
+
+        int i = 0;
+        auto gs = GraphStruct();
+        for(auto & n : gs) {
+            i++;
+        }
+
+
+    }
+
 }

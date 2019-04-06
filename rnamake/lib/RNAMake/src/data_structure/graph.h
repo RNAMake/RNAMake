@@ -33,8 +33,8 @@ public:
     iterator begin(){ return iter_list_.begin(); }
     iterator end()  { return iter_list_.end(); }
 
-    const_iterator begin() const noexcept { return iter_list_.begin(); }
-    const_iterator end() const noexcept   { return iter_list_.end(); }
+    const_iterator begin() const { return iter_list_.begin(); }
+    const_iterator end() const   { return iter_list_.end(); }
 
 public:
     void

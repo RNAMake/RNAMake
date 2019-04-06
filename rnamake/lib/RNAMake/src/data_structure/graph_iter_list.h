@@ -57,7 +57,7 @@ public:
 
 public:
     IterList():
-            iter_list_(std::vector<Node<DataType> *>()),
+            iter_list_(std::vector<Node<DataType> const *>()),
     open_(std::queue<Index>()),
     seen_(std::map<Index, int>()) {
         iter_list_.reserve(100);
@@ -65,13 +65,13 @@ public:
 
 public:
     typedef typename std::vector<Node<DataType> const *>::const_iterator const_iterator;
-    typedef typename std::vector<Node<DataType> *>::iterator iterator;
+    typedef typename std::vector<Node<DataType> const *>::iterator iterator;
 
     iterator begin() { return iter_list_.begin(); }
     iterator end()   { return iter_list_.end(); }
 
-    const_iterator begin() const noexcept { return iter_list_.begin(); }
-    const_iterator end() const noexcept   { return iter_list_.end(); }
+    const_iterator begin() const { return iter_list_.begin(); }
+    const_iterator end() const   { return iter_list_.end(); }
 
 public:
     virtual
@@ -205,7 +205,7 @@ protected:
     }
 
 protected:
-    std::vector<Node<DataType> *> iter_list_;
+    std::vector<Node<DataType> const *> iter_list_;
     std::queue<Index> open_;
     std::map<Index, int> seen_;
 
@@ -216,6 +216,7 @@ class DirectedIterList : public IterList<DataType, AdjacencyListType> {
 public:
     typedef IterList<DataType, AdjacencyListType> BaseClass;
     typedef typename BaseClass::VisitedNodeOP VisitedNodeOP;
+
 
 public:
     DirectedIterList():
