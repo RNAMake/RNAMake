@@ -32,7 +32,11 @@ Motif::Motif(
     auto spl = base::split_str_by_delimiter(s, "&");
     path_ = spl[0];
     name_ = spl[1];
-    score_ = std::stof(spl[2]);
+    try {
+        score_ = std::stof(spl[2]);
+    } catch(...) {
+        score_ = 0;
+    }
     block_end_add_ = std::stoi(spl[3]);
     mtype_ = static_cast<util::MotifType>(std::stoi(spl[4]));
     structure_ = std::make_shared<structure::Structure>(spl[5], rts);
