@@ -32,11 +32,16 @@ public:
 
     inline
     int
-    randrange(int i) { return (int) (i * rand()); }
+    randrange(int i) {
+        val_ = (int) (i * this->rand());
+        if(val_ == i) { return i-1; }
+        else          { return val_; }
+    }
 
 private:
     std::mt19937 mt_;
     std::uniform_real_distribution<float> dist_;
+    int val_;
 
 };
 

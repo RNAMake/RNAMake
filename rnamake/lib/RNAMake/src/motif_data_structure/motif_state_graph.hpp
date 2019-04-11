@@ -12,6 +12,7 @@
 #include <stdio.h>
 #include "base/option.h"
 #include "data_structure/graph/graph.h"
+#include <motif/motif_state_aligner.h>
 #include "motif_data_structure/motif_graph.h"
 #include "motif_data_structure/motif_state_node.hpp"
 
@@ -240,6 +241,7 @@ private:
 private:
     data_structure::graph::GraphStatic<MSNodeDataOP> graph_;
     data_structure::graph::GraphNodeOPs<MSNodeDataOP> align_list_;
+    motif::MotifStateAligner aligner_;
     base::Options options_;
     std::map<int, int> aligned_;
     int update_align_list_;

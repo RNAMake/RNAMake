@@ -47,6 +47,17 @@ public:
     set_temperature(
             float new_temp) { temperature_ = new_temp; }
 
+    inline
+    float
+    get_temperature() { return temperature_; }
+
+
+    inline
+    void
+    scale_temperature(
+            float scale) {
+        temperature_ *= scale;
+    }
 
 private:
     float temperature_;

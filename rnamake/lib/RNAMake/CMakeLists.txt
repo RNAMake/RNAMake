@@ -389,12 +389,14 @@ target_link_libraries(motif_tree_unittest motif_data_structure_lib)
 ###########################################################################
 
 set(thermo_fluctuation_files
-	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/thermo_fluc_graph_sampler.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/thermo_fluc_simulation.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/thermo_fluc_sampler.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/thermo_fluc_scorer.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/thermo_fluc_relax.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/thermo_fluc_simulation_devel.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/graph/sampler.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/graph/scorer.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/graph/simulation.cc
 )
 
 add_library(thermo_fluctuation_lib ${thermo_fluctuation_files})
@@ -463,6 +465,10 @@ target_link_libraries(all_lib motif_tools_lib  thermo_fluctuation_lib  motif_sea
 
 add_executable(sequence_optimizer_app /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/sequence_optimizer_app/sequence_optimizer_app.cpp )
 target_link_libraries(sequence_optimizer_app all_lib)
+
+
+add_executable(thermo_simulation /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/thermo_simulation/thermo_simulation.cpp )
+target_link_libraries(thermo_simulation all_lib)
 
 
 add_executable(sequence_optimization_benchmarks /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/sequence_optimization_benchmarks/sequence_optimization_benchmarks.cc )

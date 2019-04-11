@@ -135,7 +135,7 @@ public:
     inline
     MotifStateEnsembleMemberOP const &
     get_member(
-        int i) {
+        int i) const {
         if(i >= members_.size()) {
             throw MotifStateEnsembleException(
                 "cannot get member " + std::to_string(i) + " it does not exist, size of members is"
@@ -160,7 +160,7 @@ public:
 public:
     
     size_t
-    size() { return members_.size(); }
+    size() const { return members_.size(); }
     
 public:
     

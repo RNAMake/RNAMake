@@ -13,11 +13,35 @@
 
 #include <stdio.h>
 
-#include "base/application.hpp"
+#include <base/application.hpp>
+#include <data_structure/graph.h>
+#include <motif_data_structure/motif_graph.h>
+#include <motif_data_structure/motif_state_ensemble_graph.h>
+#include <resources/resource_manager.h>
+
+struct ConnectionTemplate {
+    data_structure::NodeIndexandEdge start;
+    data_structure::NodeIndexandEdge end;
+
+    inline
+    bool
+    operator == (
+            ConnectionTemplate const & c) const {
+        return (c.start == start && c.end == end);
+    }
+};
 
 class ThermoSimulationApp : public base::Application {
 public:
-    ThermoSimulationApp() : base::Application() {}
+    struct Parameters {
+        String mg_file, log_level;
+    };
+
+
+public:
+    ThermoSimulationApp():
+            base::Application(),
+            rm_(resources::Manager::instance()){}
     
     ~ThermoSimulationApp() {}
     
@@ -33,9 +57,36 @@ public:
     
     void
     run();
+
+private:
+
+    ConnectionTemplate
+    _guess_connection(
+            motif_data_structure::MotifGraphOP);
+
+
+    struct EnsembleConversionResults {
+        inline
+        EnsembleConversionResults(
+                motif_data_structure::MotifStateEnsembleGraphOP n_mseg,
+                std::map<int, int> const & n_index_hash):
+                mseg(n_mseg),
+                index_hash(n_index_hash) {}
+
+        motif_data_structure::MotifStateEnsembleGraphOP mseg;
+        std::map<int, int> index_hash;
+    };
+
+    typedef std::shared_ptr<EnsembleConversionResults> EnsembleConversionResultsOP;
+
+    EnsembleConversionResultsOP
+    _get_mseg(
+            motif_data_structure::MotifGraphOP);
     
     
 private:
+    resources::Manager & rm_;
+    Parameters parameters_;
         
 };
 

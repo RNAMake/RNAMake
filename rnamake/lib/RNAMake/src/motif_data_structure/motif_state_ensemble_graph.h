@@ -28,6 +28,12 @@ public:
             graph_(data_structure::FixedEdgeDirectedGraph<motif::MotifStateEnsemble>()) {
     }
 
+    MotifStateEnsembleGraph(
+            MotifStateEnsembleGraph const & mseg) {
+        graph_ = mseg.graph_;
+        _update_default_transveral();
+    }
+
 public: // iterator
 
     typedef typename data_structure::FixedEdgeDirectedGraph<motif::MotifStateEnsemble>::const_iterator const_iterator;
@@ -94,6 +100,22 @@ public:
         return graph_.get_parent_end_index(ni);
     }
 
+public: // getters for connections
+
+    inline
+    std::vector<data_structure::Edge const *> const &
+    get_ensemble_connections(
+            Index ni) const {
+        return graph_.get_node_edges(ni);
+    }
+
+    inline
+    bool
+    are_ensembles_connected(
+            Index n1,
+            Index n2) {
+        return graph_.edge_between_nodes(n1, n2);
+    }
 
 private:
     void

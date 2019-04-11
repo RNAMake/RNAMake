@@ -89,11 +89,25 @@ public:
     attempt(
             State &) = 0;
 
+public:
+
+    void
+    set_temperature(
+            float temp) { mc_.set_temperature(temp); }
+
+
+    void
+    scale_temperature(
+            float scale) { mc_.scale_temperature(scale); }
+
 protected:
     bool clash_;
     String name_;
     util::MonteCarlo mc_;
 };
+
+typedef std::shared_ptr<Move> MoveOP;
+typedef std::vector<MoveOP>   MoveOPs;
 
 class MotifSwapMove : Move {
 
@@ -108,6 +122,9 @@ private:
 };
 
 
+class MoveSet {
+
+};
 
 
 class Search : public motif_search::Search {

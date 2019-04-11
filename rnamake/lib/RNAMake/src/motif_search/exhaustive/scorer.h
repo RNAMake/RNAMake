@@ -45,8 +45,6 @@ public:
     float
     accept_score(
             structure::BasepairState const & bps)  {
-        int i = -1;
-
         score_ = bps.d().distance(target_->d());
 
         if (target_an_aligned_end_) { r_diff_ = bps.r().difference(target_->r());      }
