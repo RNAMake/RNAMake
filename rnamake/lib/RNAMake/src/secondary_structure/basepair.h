@@ -94,8 +94,8 @@ typedef std::vector<BasepairOP>   BasepairOPs;
 inline
 bool
 is_gc_pair(BasepairOP const & bp) {
-    if     (bp->res1()->res_type() == 2 && bp->res2()->res_type() == 1) { return true; }
-    else if(bp->res2()->res_type() == 2 && bp->res1()->res_type() == 1) { return true; }
+    if     (bp->res1()->res_type() == ResType::GUA && bp->res2()->res_type() == ResType::CYT) { return true; }
+    else if(bp->res2()->res_type() == ResType::CYT && bp->res1()->res_type() == ResType::GUA) { return true; }
     else { return false; }
 }
     
@@ -103,16 +103,16 @@ is_gc_pair(BasepairOP const & bp) {
 inline
 bool
 is_au_pair(BasepairOP const & bp) {
-    if     (bp->res1()->res_type() == 3 && bp->res2()->res_type() == 0) { return true; }
-    else if(bp->res2()->res_type() == 3 && bp->res1()->res_type() == 0) { return true; }
+    if     (bp->res1()->res_type() == ResType::ADE && bp->res2()->res_type() == ResType::URA) { return true; }
+    else if(bp->res2()->res_type() == ResType::URA && bp->res1()->res_type() == ResType::ADE) { return true; }
     else { return false; }
 }
     
 inline
 bool
 is_gu_pair(BasepairOP const & bp) {
-    if     (bp->res1()->res_type() == 3 && bp->res2()->res_type() == 2) { return true; }
-    else if(bp->res2()->res_type() == 3 && bp->res1()->res_type() == 2) { return true; }
+    if     (bp->res1()->res_type() == ResType::GUA && bp->res2()->res_type() == ResType::URA) { return true; }
+    else if(bp->res2()->res_type() == ResType::URA && bp->res1()->res_type() == ResType::GUA) { return true; }
     else { return false; }
 }
     

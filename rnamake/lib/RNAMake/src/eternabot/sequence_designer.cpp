@@ -6,10 +6,40 @@
 //  Copyright (c) 2016 Joseph Yesselman. All rights reserved.
 //
 
-#include "sequence_designer.h"
+#include <eternabot/sequence_designer.h>
 
 namespace eternabot {
- /*
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// setup functions
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+SequenceDesigner::SequenceDesigner():
+        scorer_(Scorer()),
+        results_(SequenceDesignerResultOPs()),
+        rng_(util::RandomNumberGenerator()) {
+
+    possible_bps_ = std::vector<Strings>({{"A", "U"}, {"U", "A"}, {"G", "C"}, {"C", "G"}});
+    disallowed_sequences_ = Strings{"AAAA", "CCCC", "GGGG", "UUUU"};
+
+    setup_options();
+}
+
+
+void
+SequenceDesigner::setup() {
+    if((int)results_.size() != steps_) { results_.resize(steps_); }
+    for(auto & r : results_) {
+        r = std::make_shared<SequenceDesignerResult>();
+    }
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// option functions
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 void
 SequenceDesigner::setup_options() {
     options_.add_option("designs", 1, base::OptionType::INT);
@@ -24,14 +54,12 @@ SequenceDesigner::update_var_options() {
     designs_ = options_.get_int("designs");
     steps_   = options_.get_int("steps");
 }
-    
-void
-SequenceDesigner::setup() {
-    if((int)results_.size() != steps_) { results_.resize(steps_); }
-    for(auto & r : results_) {
-        r = std::make_shared<SequenceDesignerResult>();
-    }
-}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// main functions
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     
 SequenceDesignerResultOPs const &
 SequenceDesigner::design(secondary_structure::PoseOP const & p) {
@@ -44,7 +72,11 @@ SequenceDesigner::design(secondary_structure::PoseOP const & p) {
     pairs.push_back(Strings{"G", "C"});
     designable_bps_ = secondary_structure::BasepairOPs();
     temperature_ = 4.0f;
- 
+
+    _setup_designable_bps();
+
+    exit(0);
+
     
     for(auto const & bp : p->basepairs()) {
         if     (bp->res1()->res_type() == -1 && bp->res2()->res_type() == -1) {
@@ -74,6 +106,8 @@ SequenceDesigner::design(secondary_structure::PoseOP const & p) {
         }
         
     }
+
+    std::cout << p->sequence() << std::endl;
     
     auto last_score = scorer_.score_secondary_structure(p);
     auto current_score = 0.0f;
@@ -164,7 +198,12 @@ SequenceDesigner::design(secondary_structure::PoseOP const & p) {
     return results_;
     
 }
-    
+
+
+void
+SequenceDesigner::_setup_designable_bps() {
+
+}
     
 bool
 SequenceDesigner::_row_of_gc_bps(
@@ -174,8 +213,8 @@ SequenceDesigner::_row_of_gc_bps(
     int max_gc_count = 0;
     int gc_count = 0;
     int resnum = (int)(std::find(res.begin(), res.end(), r) - res.begin());
-    int min = resnum - 4;
-    int max = resnum + 4;
+    int min = resnum - 3;
+    int max = resnum + 3;
     if(min < 0) { min = 0; }
     if(max > res.size()) { max = res.size(); }
     for(int i = min; i < max; i++) {
@@ -189,11 +228,30 @@ SequenceDesigner::_row_of_gc_bps(
         
     }
     
-    if(max_gc_count > 3) { return true; }
+    if(max_gc_count > 2) { return true; }
     else                 { return false; }
 }
 
- */   
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// private functions
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+int
+SequenceDesigner::_convert_char_to_res_code(
+        char c) {
+    if (c == 'A') { return 0; }
+    else if (c == 'C') { return 1; }
+    else if (c == 'G') { return 2; }
+    else if (c == 'U') { return 3; }
+    else if (c == 'T') { return 3; }
+    else if (c == 'N') { return -1; }
+    else {
+        throw secondary_structure::Exception("incorrect character for secondary string");
+    }
+}
+
+
 }
 
 

@@ -35,6 +35,7 @@ class ThermoSimulationApp : public base::Application {
 public:
     struct Parameters {
         String mg_file, log_level;
+        int steps, n;
     };
 
 

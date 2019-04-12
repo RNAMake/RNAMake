@@ -127,7 +127,8 @@ SequenceOptimizer3D::find_gc_helix_stretches(
     for (auto const & h : ss->helices()) {
         count = 0;
         for (auto const & r : h->chains()[0]->residues()) {
-            if (r->res_type() == 1 || r->res_type() == 2) {
+            if (r->res_type() == secondary_structure::ResType::GUA ||
+                r->res_type() == secondary_structure::ResType::CYT ) {
                 count += 1;
             } else {
                 count = 0;

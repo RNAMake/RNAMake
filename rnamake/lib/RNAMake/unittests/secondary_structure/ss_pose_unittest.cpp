@@ -3,8 +3,9 @@
 #include "../common.hpp"
 
 //RNAMake Headers
-#include "secondary_structure/pose.h"
-#include "secondary_structure/secondary_structure_parser.h"
+#include <secondary_structure/pose.h>
+#include <secondary_structure/secondary_structure_parser.h>
+#include <secondary_structure/sequence_tools.h>
 
 TEST_CASE( "Test Poses for secondary structure", "[SSPose]" ) {
 
@@ -50,8 +51,75 @@ TEST_CASE( "Test Poses for secondary structure", "[SSPose]" ) {
         
         p->replace_sequence("CCCAGAAAACGGG");
         REQUIRE(p->sequence() == "CCCAGAAAACGGG");
-        
+    }
+
+    SECTION("test sequence tools") {
+        SECTION("test convert_res_name_to_type()") {
+            REQUIRE(secondary_structure::convert_res_name_to_type('A') == secondary_structure::ResType::ADE);
+            REQUIRE_THROWS_AS(secondary_structure::convert_res_name_to_type('F'), secondary_structure::Exception);
+        }
+
+        SECTION("test get_res_types_from_sequence()") {
+            auto str = String("AUCG");
+            auto res_codes = secondary_structure::ResTypes();
+            secondary_structure::get_res_types_from_sequence(str, res_codes);
+            REQUIRE(res_codes.size() == 4);
+            REQUIRE(res_codes[0] == secondary_structure::ResType::ADE);
+            REQUIRE(res_codes[1] == secondary_structure::ResType::URA);
+            REQUIRE(res_codes[2] == secondary_structure::ResType::CYT);
+            REQUIRE(res_codes[3] == secondary_structure::ResType::GUA);
+        }
+
+        SECTION("test find_res_types_in_pose()") {
+            auto str = String("CCCC");
+            auto res_codes = secondary_structure::ResTypes();
+            secondary_structure::get_res_types_from_sequence(str, res_codes);
+            REQUIRE(secondary_structure::find_res_types_in_pose(p, res_codes) == 1);
+
+            auto p_new = parser.parse_to_pose("AAAAGAAAAUUUU",
+                                              "(((.(....))))");
+
+            // multiple instances
+            str = String("AAA");
+            res_codes = secondary_structure::ResTypes();
+            secondary_structure::get_res_types_from_sequence(str, res_codes);
+            REQUIRE(secondary_structure::find_res_types_in_pose(p_new, res_codes) == 2);
+
+            // target array too long
+            str = String("AAAAAAAAAAAAAAAAAAAA");
+            res_codes = secondary_structure::ResTypes();
+            secondary_structure::get_res_types_from_sequence(str, res_codes);
+            REQUIRE(secondary_structure::find_res_types_in_pose(p_new, res_codes) == 0);
+        }
+
+        SECTION("test find_gc_helix_stretches()") {
+            auto stretches = secondary_structure::find_gc_helix_stretches(p, 3);
+            REQUIRE(stretches == 1);
+        }
+
     }
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -148,6 +148,7 @@ target_link_libraries(vienna_lib base_lib )
 ###########################################################################
 
 set(secondary_structure_files
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/secondary_structure/sequence_tools.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/secondary_structure/util.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/secondary_structure/secondary_structure_tree.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/secondary_structure/structure.cpp
@@ -485,5 +486,9 @@ target_link_libraries(hash_motifs all_lib)
 
 add_executable(get_best_solutions /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/get_best_solutions/get_best_solutions.cc )
 target_link_libraries(get_best_solutions all_lib)
+
+
+add_executable(eternabot /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/eternabot/eternabot.cpp )
+target_link_libraries(eternabot all_lib)
 
 

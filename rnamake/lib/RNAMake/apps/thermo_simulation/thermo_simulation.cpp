@@ -30,6 +30,8 @@ ThermoSimulationApp::setup_options() {
     add_option("extra_me", String(""), base::OptionType::STRING, false);
     add_option("start_pdbs", false, base::OptionType::BOOL, false);*/
 
+    add_option("steps", 100000, base::OptionType::INT);
+    add_option("n", 1, base::OptionType::INT);
     add_option("log_level", "info", base::OptionType::STRING);
 
 }
@@ -44,6 +46,8 @@ ThermoSimulationApp::parse_command_line(
 
     parameters_.mg_file   = get_string_option("mg_file");
     parameters_.log_level = get_string_option("log_level");
+    parameters_.steps     = get_int_option("steps");
+    parameters_.n         = get_int_option("n");
 
 }
 
@@ -60,58 +64,31 @@ ThermoSimulationApp::run() {
     auto mg = motif_data_structure::MotifGraphOP(nullptr);
     auto scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
     auto sim = std::make_shared<thermo_fluctuation::graph::Simulation>(scorer);
+    int design_count = 0;
     for(auto const & l : lines) {
         // make sure its not the dummy line at the end
         if(l.size() < 10) { break; }
 
         mg = std::make_shared<motif_data_structure::MotifGraph>(l, motif_data_structure::MotifGraphStringType::MG);
         auto r = _get_mseg(mg);
-        //std::cout << mseg->size() << " " << mg->size() << std::endl;
         auto c = _guess_connection(mg);
-        std::cout << r->index_hash[c.start.node_index] << " " << r->index_hash[c.end.node_index] << std::endl;
 
         auto start = data_structure::NodeIndexandEdge{r->index_hash[c.start.node_index], c.start.edge_index};
         auto end = data_structure::NodeIndexandEdge{r->index_hash[c.end.node_index], c.end.edge_index};
 
         int avg = 0;
-        for(int j = 0; j < 5; j++) {
+        for(int j = 0; j < parameters_.n; j++) {
             sim->setup(*r->mseg, start, end);
             int count = 0;
-            for (int i = 0; i < 1000000; i++) {
+            for (int i = 0; i < parameters_.steps; i++) {
                 count += sim->next();
             }
             avg += count;
         }
-        avg /= 5;
-        std::cout << avg << std::endl;
-
-
+        avg /= parameters_.n;
+        LOG_INFO << "design num: " << design_count << " hits target " << avg;
+        design_count += 1;
     }
-
-    exit(0);
-
-    if(get_string_option("extra_me") != "") {
-        std::cout << "THERMO_SIMULATION: registered extra motif ensembles from file: ";
-        std::cout << get_string_option("extra_me") << std::endl;
-        resources::Manager::instance().register_extra_motif_ensembles(get_string_option("extra_me"));
-    }
-
-    /*auto lines =base::get_lines_from_file(get_string_option("mt"));
-    auto mt = std::make_shared<motif_data_structure::MotifTree>(lines[0], motif_data_structure::MotifTreeStringType::MT_STR);
-    auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>(mt);
-
-    if(get_bool_option("start_pdbs")) {
-        auto mt = mset->to_mst()->to_motif_tree();
-        mt->write_pdbs();
-        std::cout << "THERMO_SIMULATION: outputing each motif as nodes.*.pdb" << std::endl;
-
-    }
-
-    auto tfs = thermo_fluctuation::ThermoFlucSimulationDevel();
-    tfs.set_option_value("steps", 1000000);
-    tfs.setup(mset, get_int_option("n1"), get_int_option("n2"), get_int_option("e1"), get_int_option("e2"));
-    auto score = tfs.run();
-    std::cout << score << std::endl;*/
 
 }
 

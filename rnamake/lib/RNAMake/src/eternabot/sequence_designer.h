@@ -16,7 +16,7 @@
 #include "eternabot/scorer.h"
 
 namespace eternabot {
-/*
+
 struct SequenceDesignerResult {
     String sequence;
     float score;
@@ -37,11 +37,7 @@ struct sequence_designer_result_less_than_key {
     
 class SequenceDesigner {
 public:
-    SequenceDesigner():
-    scorer_(Scorer()),
-    results_(SequenceDesignerResultOPs()),
-    rng_(util::RandomNumberGenerator())
-    { setup_options(); }
+    SequenceDesigner();
     
     ~SequenceDesigner() {}
 
@@ -55,11 +51,7 @@ public:
     
     
 public: //option wrappers
-    
-    inline
-    Options const &
-    options() { return options_; }
-    
+
     inline
     float
     get_int_option(String const & name) { return options_.get_int(name); }
@@ -96,7 +88,15 @@ protected:
     
     void
     update_var_options();
-    
+
+private:
+    void
+    _setup_designable_bps();
+
+    int
+    _convert_char_to_res_code(
+            char);
+
 private:
     bool
     _row_of_gc_bps(
@@ -107,13 +107,15 @@ private:
     Scorer scorer_;
     SequenceDesignerResultOPs results_;
     secondary_structure::BasepairOPs designable_bps_;
+    std::vector<Strings> possible_bps_;
+    Strings disallowed_sequences_;
     util::RandomNumberGenerator rng_;
-    Options options_;
+    base::Options options_;
     int designs_, steps_;
     float temperature_;
     
     
-};*/
+};
     
 }
 
