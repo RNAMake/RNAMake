@@ -6,6 +6,7 @@
 #include <secondary_structure/pose.h>
 #include <secondary_structure/secondary_structure_parser.h>
 #include <secondary_structure/sequence_tools.h>
+#include <secondary_structure/sequence_constraint.h>
 
 TEST_CASE( "Test Poses for secondary structure", "[SSPose]" ) {
 
@@ -99,6 +100,22 @@ TEST_CASE( "Test Poses for secondary structure", "[SSPose]" ) {
 
     }
 
+    SECTION("test sequence constraints") {
+        auto seq_constraint = secondary_structure::DisallowedSequence("CCCC");
+        REQUIRE(seq_constraint.violations(p) == 1);
+
+        auto seq_constraint_2 = secondary_structure::GCHelixStretchLimit(3);
+        REQUIRE(seq_constraint_2.violations(p) == 1);
+
+        auto seq_constraints = secondary_structure::SequenceConstraints();
+        seq_constraints.add_disallowed_sequence("CCCC");
+        seq_constraints.add_gc_helix_stretch_limit(3);
+        auto violations = seq_constraints.violations(p);
+        REQUIRE(violations.size() == 2);
+        REQUIRE(violations[0] == 1);
+        REQUIRE(violations[1] == 1);
+
+    }
 
 }
 

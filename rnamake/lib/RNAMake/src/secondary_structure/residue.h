@@ -32,6 +32,9 @@ enum class ResType {
     ADE, CYT, GUA, URA, NONE
 };
 
+typedef std::vector<ResType> ResTypes;
+
+
 ResType
 convert_res_name_to_type(
         char);

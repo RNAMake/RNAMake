@@ -28,12 +28,10 @@ SequenceOptimizer3D::SequenceOptimizer3D() :
     disallowed_sequences_.push_back(String("GGGG"));
     disallowed_sequences_.push_back(String("UUUU"));
 
-    disallowed_res_types_sequences_ = std::vector<Ints>();
+    disallowed_res_types_sequences_ = std::vector<secondary_structure::ResTypes>();
     for (auto const & seq : disallowed_sequences_) {
-        auto disallowed_types = Ints();
-        for (auto const & c : seq) {
-            disallowed_types.push_back(convert_char_to_res_code(c));
-        }
+        auto disallowed_types = secondary_structure::ResTypes();
+        secondary_structure::get_res_types_from_sequence(seq, disallowed_types);
         disallowed_res_types_sequences_.push_back(disallowed_types);
     }
     current_violations_ = Ints(disallowed_res_types_sequences_.size());

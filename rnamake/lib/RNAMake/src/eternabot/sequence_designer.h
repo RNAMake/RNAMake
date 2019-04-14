@@ -90,27 +90,41 @@ protected:
     update_var_options();
 
 private:
-    void
-    _setup_designable_bps();
+    Strings const &
+    _get_random_pair();
 
-    int
-    _convert_char_to_res_code(
-            char);
+    void
+    _set_bp_sequence(
+            Strings const &,
+            secondary_structure::BasepairOP);
+
+    void
+    _find_designable_bps(
+            secondary_structure::PoseOP);
+
+    void
+    _generate_inital_sequence(
+            secondary_structure::PoseOP);
 
 private:
-    bool
-    _row_of_gc_bps(
-        secondary_structure::ResidueOP const &,
-        secondary_structure::ResidueOPs const &);
+    struct Parameters {
+
+    };
+
 
 private:
     Scorer scorer_;
     SequenceDesignerResultOPs results_;
     secondary_structure::BasepairOPs designable_bps_;
     std::vector<Strings> possible_bps_;
-    Strings disallowed_sequences_;
+    std::vector<secondary_structure::ResTypes> disallowed_res_type_arrays_;
     util::RandomNumberGenerator rng_;
     base::Options options_;
+    // tracking sequence constraints
+    Ints current_violations_;
+    Ints next_violations_;
+    int current_gc_stretches_, next_gc_stretches_;
+
     int designs_, steps_;
     float temperature_;
     

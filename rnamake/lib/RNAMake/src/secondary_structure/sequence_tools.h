@@ -10,9 +10,6 @@
 
 namespace secondary_structure {
 
-typedef std::vector<ResType> ResTypes;
-
-
 void
 get_res_types_from_sequence(
         String const &,

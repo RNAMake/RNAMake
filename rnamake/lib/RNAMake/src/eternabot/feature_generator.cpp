@@ -44,10 +44,10 @@ FeatureGenerator::update_features(
     }
     
     for(auto const & r : p->residues()) {
-        if     (r->res_type() == 0) { features->a_count += 1; }
-        else if(r->res_type() == 1) { features->c_count += 1; }
-        else if(r->res_type() == 2) { features->g_count += 1; }
-        else if(r->res_type() == 3) { features->u_count += 1; }
+        if     (r->res_type() == secondary_structure::ResType::ADE) { features->a_count += 1; }
+        else if(r->res_type() == secondary_structure::ResType::CYT) { features->c_count += 1; }
+        else if(r->res_type() == secondary_structure::ResType::GUA) { features->g_count += 1; }
+        else if(r->res_type() == secondary_structure::ResType::URA) { features->u_count += 1; }
     }
     
     features->helices = p->helices();

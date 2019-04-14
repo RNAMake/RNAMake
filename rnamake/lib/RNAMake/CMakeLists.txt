@@ -159,6 +159,7 @@ set(secondary_structure_files
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/secondary_structure/chain.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/secondary_structure/pose.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/secondary_structure/secondary_structure_parser.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/secondary_structure/sequence_constraint.cc
 )
 
 add_library(secondary_structure_lib ${secondary_structure_files})

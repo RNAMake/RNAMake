@@ -15,6 +15,7 @@
 #include "base/option.h"
 #include "util/random_number_generator.h"
 #include "eternabot/scorer.h"
+#include <secondary_structure/sequence_tools.h>
 #include "motif_data_structure/motif_tree.h"
 #include "motif_data_structure/motif_graph.h"
 #include "motif_data_structure/motif_state_tree.h"
@@ -328,7 +329,7 @@ private:
     float cutoff_, eterna_cutoff_;
     bool verbose_, return_lowest_;
     Strings disallowed_sequences_;
-    std::vector<Ints> disallowed_res_types_sequences_;
+    std::vector<secondary_structure::ResTypes> disallowed_res_types_sequences_;
     Ints current_violations_;
     Ints next_violations_;
     int current_gc_stretches_, next_gc_stretches_;

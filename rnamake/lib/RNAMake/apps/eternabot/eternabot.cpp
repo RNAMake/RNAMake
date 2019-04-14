@@ -43,11 +43,10 @@ EternabotApp::run() {
     auto p = parser.parse_to_pose(parameters_.seq, parameters_.ss);
     for(int i = 0; i < parameters_.n; i++) {
         auto results = designer.design(p);
-        std::cout << results[0]->score << " " << results[0]->sequence << std::endl;
+        //std::cout << results[0]->score << " " << results[0]->sequence << std::endl;
 
     }
 }
-
 
 
 int main(int argc, const char * argv[]) {
