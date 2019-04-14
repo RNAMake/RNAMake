@@ -36,6 +36,7 @@ public:
 private:
     struct Parameters {
         String seq, ss;
+        String out_file;
         int steps, n;
     };
 
