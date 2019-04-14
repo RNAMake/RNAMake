@@ -119,13 +119,15 @@ Parser::parse_to_motifs(
     String const & dot_bracket) {
     
     auto g = parse(sequence, dot_bracket);
-    
-    
+    return _parse_to_motifs(g);
+}
 
-    
+MotifOPs
+Parser::_parse_to_motifs(
+        SecondaryStructureChainGraphOP g) {
     auto motifs = MotifOPs();
     seen_ = std::map<SSNodeOP, int>();
-    
+
     for(auto const & n : *g) {
         if(n->connections()[1] == nullptr) {
             continue;
@@ -138,9 +140,10 @@ Parser::parse_to_motifs(
         if(m == nullptr) { continue; }
         motifs.push_back(m);
     }
-    
     return motifs;
+
 }
+
 
 MotifOP
 Parser::parse_to_motif(
@@ -159,8 +162,8 @@ Parser::parse_to_pose(
     
     auto motifs = parse_to_motifs(sequence, dot_bracket);
     auto m = _build_motif(structure_);
+
     return std::make_shared<Pose>(m, motifs);
-;
 }
 
     
@@ -178,9 +181,12 @@ Parser::_walk_nodes(
             return nullptr;
         }
         if(current->data().type == NodeType::PAIRED) { bps_count += 1; }
-        std::copy(current->data().residues.begin(),
+        for(auto & r : current->data().residues) {
+            res.push_back(r);
+        }
+        /*std::copy(current->data().residues.begin(),
                   current->data().residues.end(),
-                  std::inserter(res, res.end()));
+                  std::inserter(res, res.end()));*/
         last_node = current;
         if(current->connections()[1] != nullptr) {
             current = current->connections()[1]->partner(current->index());

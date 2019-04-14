@@ -72,7 +72,7 @@ Pose::_build_helices() {
 
         res1.push_back(helix_motifs[0]->chains()[0]->first());
         res2.push_back(helix_motifs[0]->chains()[1]->last());
-        bps.push_back(helix_motifs[0]->ends()[0]);
+        bps.push_back(helix_motifs[0]->basepairs()[0]);
         ends.push_back(helix_motifs[0]->ends()[0]);
         ends.push_back(helix_motifs.back()->ends()[1]);
 
@@ -80,7 +80,7 @@ Pose::_build_helices() {
         for (auto const & m : helix_motifs) {
             res1.push_back(m->chains()[0]->last());
             res2.push_back(m->chains()[1]->first());
-            bps.push_back(m->ends()[1]);
+            bps.push_back(m->basepairs()[1]);
         }
 
         std::reverse(res2.begin(), res2.end());

@@ -96,6 +96,11 @@ TEST_CASE( "Test Poses for secondary structure", "[SSPose]" ) {
         SECTION("test find_gc_helix_stretches()") {
             auto stretches = secondary_structure::find_gc_helix_stretches(p, 3);
             REQUIRE(stretches == 1);
+
+            auto p_new = parser.parse_to_pose("GCGAUAUGGGUCGAGCCCAAGUUAGGGAAACCUAGAGGGCAGUGAAAGACCCUAAGUCGC",
+                                              "(((((.((((((..((((....((((....))))..)))).......)))))..))))))");
+
+            REQUIRE(secondary_structure::find_gc_helix_stretches(p_new, 3) == 3);
         }
 
     }

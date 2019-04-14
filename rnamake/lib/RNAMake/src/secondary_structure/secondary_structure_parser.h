@@ -156,7 +156,7 @@ public:
     parse_to_pose(
         String const &,
         String const &);
-    
+
     void
     reset() {
         structure_ = StructureOP();
@@ -239,7 +239,13 @@ private:
     MotifOP
     _build_motif(
         StructureOP const &);
-    
+
+private:
+
+    MotifOPs
+    _parse_to_motifs(
+            SecondaryStructureChainGraphOP);
+
 private:
     BasepairOPs pairs_;
     ResidueOPs residues_;

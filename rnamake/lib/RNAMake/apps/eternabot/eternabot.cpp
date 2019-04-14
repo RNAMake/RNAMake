@@ -9,6 +9,7 @@
 #include "eternabot.h"
 
 #include <base/backtrace.hpp>
+#include <base/log.h>
 #include "base/cl_option.h"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "eternabot/sequence_designer.h"
@@ -35,15 +36,17 @@ EternabotApp::parse_command_line(
 
 void
 EternabotApp::run() {
+    base::init_logging();
+
     auto designer = eternabot::SequenceDesigner();
     designer.set_option_value("steps", parameters_.steps);
     designer.setup();
 
     auto parser = secondary_structure::Parser();
-    auto p = parser.parse_to_pose(parameters_.seq, parameters_.ss);
     for(int i = 0; i < parameters_.n; i++) {
+        auto p = parser.parse_to_pose(parameters_.seq, parameters_.ss);
         auto results = designer.design(p);
-        //std::cout << results[0]->score << " " << results[0]->sequence << std::endl;
+        std::cout << results[0]->score << " " << results[0]->sequence << " " << p->dot_bracket() << std::endl;
 
     }
 }

@@ -46,6 +46,7 @@ public:
         this->end_ids_ = rs->end_ids();
     }
 
+
 public:
     MotifOPs const &
     helices() {

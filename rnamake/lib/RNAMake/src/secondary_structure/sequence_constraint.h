@@ -122,6 +122,11 @@ public:
         return violations_;
     }
 
+    size_t
+    num_constraints() {
+        return seq_constraints_.size();
+    }
+
 private:
     Ints violations_;
     SequenceConstraintOPs seq_constraints_;

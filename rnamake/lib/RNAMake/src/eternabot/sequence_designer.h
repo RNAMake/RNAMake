@@ -11,13 +11,22 @@
 
 #include <stdio.h>
 
-#include "base/option.h"
-#include "util/random_number_generator.h"
-#include "eternabot/scorer.h"
+#include <base/option.h>
+#include <util/random_number_generator.h>
+#include <util/monte_carlo.h>
+#include <secondary_structure/sequence_constraint.h>
+#include <eternabot/scorer.h>
 
 namespace eternabot {
 
 struct SequenceDesignerResult {
+    inline
+    SequenceDesignerResult(
+            String const & n_sequence,
+            float n_score):
+            sequence(n_sequence),
+            score(n_score) {}
+
     String sequence;
     float score;
 };
@@ -106,6 +115,9 @@ private:
     _generate_inital_sequence(
             secondary_structure::PoseOP);
 
+    bool
+    _new_sequence_violations();
+
 private:
     struct Parameters {
 
@@ -113,17 +125,17 @@ private:
 
 
 private:
+    std::vector<Strings> possible_bps_;
+    base::Options options_;
+    util::RandomNumberGenerator rng_;
+    util::MonteCarlo mc_;
+    secondary_structure::BasepairOPs designable_bps_;
     Scorer scorer_;
     SequenceDesignerResultOPs results_;
-    secondary_structure::BasepairOPs designable_bps_;
-    std::vector<Strings> possible_bps_;
-    std::vector<secondary_structure::ResTypes> disallowed_res_type_arrays_;
-    util::RandomNumberGenerator rng_;
-    base::Options options_;
+
     // tracking sequence constraints
-    Ints current_violations_;
-    Ints next_violations_;
-    int current_gc_stretches_, next_gc_stretches_;
+    Ints current_violations_, next_violations_;
+    secondary_structure::SequenceConstraints seq_constraints_;
 
     int designs_, steps_;
     float temperature_;
