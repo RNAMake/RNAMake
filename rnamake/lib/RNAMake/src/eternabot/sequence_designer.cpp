@@ -185,7 +185,7 @@ SequenceDesigner::_generate_inital_sequence(
         auto pos = rng_.randrange(designable_bps_.size());
         auto & pair = _get_random_pair();
         _set_bp_sequence(pair, designable_bps_[pos]);
-        if(count > 10000) {
+        if(count > 1000000) {
             LOG_WARNING << "cannot find initial sequence that does not have sequence violations! ";
             current_violations_ = next_violations_;
             break;

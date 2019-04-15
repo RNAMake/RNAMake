@@ -65,6 +65,29 @@ find_gc_helix_stretches(
     return stretches;
 }
 
+int
+find_longest_gc_helix_stretch(
+        PoseOP p) {
+    int count = 0;
+    int longest = 0;
+    for(auto const & h : p->helices()) {
+        count = 0;
+        for(auto const & r: h->chains()[0]->residues()) {
+            if(r->res_type() == ResType::GUA || r->res_type() == ResType::CYT) {
+                count += 1;
+            }
+            else {
+                count = 0;
+            }
+            if(count >= longest) {
+                longest = count;
+            }
+        }
+    }
+    return longest;
+
+}
+
 }
 
 

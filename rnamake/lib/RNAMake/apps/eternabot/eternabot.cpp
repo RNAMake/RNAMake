@@ -46,14 +46,17 @@ EternabotApp::run() {
 
     auto out = std::ofstream();
     out.open(parameters_.out_file);
-    out << "opt_num,opt_score,opt_sequence" << std::endl;
+    out << "opt_num,opt_score,opt_sequence,longest_gc_stretch" << std::endl;
 
     auto parser = secondary_structure::Parser();
     for(int i = 0; i < parameters_.n; i++) {
         auto p = parser.parse_to_pose(parameters_.seq, parameters_.ss);
         auto results = designer.design(p);
+        p->replace_sequence(results[0]->sequence);
         std::cout << results[0]->score << " " << results[0]->sequence << " " << p->dot_bracket() << std::endl;
-        out << i << "," << results[0]->score << "," << results[0]->sequence << std::endl;
+        out << i << "," << results[0]->score << "," << results[0]->sequence << ",";
+        out << secondary_structure::find_longest_gc_helix_stretch(p) << std::endl;
+
     }
 }
 

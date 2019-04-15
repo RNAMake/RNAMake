@@ -25,6 +25,10 @@ find_gc_helix_stretches(
         PoseOP,
         int);
 
+int
+find_longest_gc_helix_stretch(
+        PoseOP);
+
 }
 
 #endif //RNAMAKE_NEW_SEQUENCE_TOOLS_H
