@@ -17,8 +17,6 @@
 #include "motif_data_structure/motif_state_ensemble_tree.h"
 #include "thermo_fluctuation/thermo_fluc_simulation_devel.h"
 
-#include <thermo_fluctuation/graph/simulation.h>
-
 void
 ThermoSimulationApp::setup_options() {
     add_option("mg_file", String(""), base::OptionType::STRING, true);
@@ -33,7 +31,8 @@ ThermoSimulationApp::setup_options() {
     add_option("steps", 100000, base::OptionType::INT);
     add_option("n", 1, base::OptionType::INT);
     add_option("log_level", "info", base::OptionType::STRING);
-
+    add_option("extra_sequences", "", base::OptionType::STRING);
+    add_option("score_file", "thermo_sim.scores", base::OptionType::STRING);
 }
 
 
@@ -44,10 +43,12 @@ ThermoSimulationApp::parse_command_line(
     
     base::Application::parse_command_line(argc, argv);
 
-    parameters_.mg_file   = get_string_option("mg_file");
-    parameters_.log_level = get_string_option("log_level");
-    parameters_.steps     = get_int_option("steps");
-    parameters_.n         = get_int_option("n");
+    parameters_.mg_file    = get_string_option("mg_file");
+    parameters_.log_level  = get_string_option("log_level");
+    parameters_.steps      = get_int_option("steps");
+    parameters_.n          = get_int_option("n");
+    parameters_.extra_sequences = get_string_option("extra_sequences");
+    parameters_.score_file = get_string_option("score_file");
 
 }
 
@@ -58,12 +59,18 @@ ThermoSimulationApp::run() {
     base::init_logging(log_level);
     LOG_INFO << "log level set to: " << parameters_.log_level;
 
+    if(parameters_.extra_sequences != "") { _parse_extra_sequences(parameters_.extra_sequences); }
     auto lines = base::get_lines_from_file(parameters_.mg_file);
     LOG_INFO << lines.size()-1 << " designs loaded from " << parameters_.mg_file;
+
+    auto score_out = std::ofstream();
+    score_out.open(parameters_.score_file);
+    score_out << "design_num,hits,opt_score,opt_sequence,opt_structure" << std::endl;
 
     auto mg = motif_data_structure::MotifGraphOP(nullptr);
     auto scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
     auto sim = std::make_shared<thermo_fluctuation::graph::Simulation>(scorer);
+    scorer->setup(true);
     int design_count = 0;
     for(auto const & l : lines) {
         // make sure its not the dummy line at the end
@@ -76,17 +83,22 @@ ThermoSimulationApp::run() {
         auto start = data_structure::NodeIndexandEdge{r->index_hash[c.start.node_index], c.start.edge_index};
         auto end = data_structure::NodeIndexandEdge{r->index_hash[c.end.node_index], c.end.edge_index};
 
-        int avg = 0;
-        for(int j = 0; j < parameters_.n; j++) {
-            sim->setup(*r->mseg, start, end);
-            int count = 0;
-            for (int i = 0; i < parameters_.steps; i++) {
-                count += sim->next();
-            }
-            avg += count;
-        }
-        avg /= parameters_.n;
+        int avg = _calc_num_hits(sim, *r->mseg, start, end, parameters_.n);
         LOG_INFO << "design num: " << design_count << " hits target " << avg;
+        score_out << design_count << "," << avg << "," << _calc_initial_score(scorer, mg, start, end) << ",";
+        score_out << mg->sequence() << "," << mg->dot_bracket() << std::endl;
+        if(extra_sequences_.find(design_count) == extra_sequences_.end()) {
+            design_count += 1;
+            continue;
+        }
+        for(auto const & seq : extra_sequences_[design_count]) {
+            mg->replace_helical_sequence(seq);
+            int avg = _calc_num_hits(sim, *r->mseg, start, end, parameters_.n);
+            LOG_INFO << "design num: " << design_count << " hits target " << avg << " with sequence: " << seq;
+            score_out << design_count << "," << avg << "," << _calc_initial_score(scorer, mg, start, end) << ",";
+            score_out << mg->sequence() << "," << mg->dot_bracket() << std::endl;
+        }
+
         design_count += 1;
     }
 
@@ -185,6 +197,59 @@ ThermoSimulationApp::_get_mseg(
 
 }
 
+void
+ThermoSimulationApp::_parse_extra_sequences(
+        String const & file_path) {
+    extra_sequences_ = std::map<int, Strings>();
+    auto lines = base::get_lines_from_file(file_path);
+    LOG_INFO << "loading extra sequences from: " << file_path << " contains " << lines.size()-2 << " sequences";
+    auto spl = Strings();
+    int i = -1;
+    int design_num;
+    for(auto const & l : lines) {
+        i++;
+        // make sure its not the dummy line at the end
+        if(l.size() < 10) { break; }
+        if(i == 0) { continue; }
+        spl = base::split_str_by_delimiter(l, ",");
+        design_num = std::stoi(spl[0]);
+        if(extra_sequences_.find(design_num) == extra_sequences_.end()) {
+            extra_sequences_[design_num] = Strings();
+        }
+        extra_sequences_[design_num].push_back(spl[1]);
+    }
+}
+
+int
+ThermoSimulationApp::_calc_num_hits(
+        thermo_fluctuation::graph::SimulationOP sim,
+        motif_data_structure::MotifStateEnsembleGraph const & mseg,
+        data_structure::NodeIndexandEdge const & start,
+        data_structure::NodeIndexandEdge const & end,
+        int n) {
+    int avg = 0;
+    for(int j = 0; j < n; j++) {
+        sim->setup(mseg, start, end);
+        int count = 0;
+        for (int i = 0; i < parameters_.steps; i++) {
+            count += sim->next();
+        }
+        avg += count;
+    }
+    avg /= n;
+    return avg;
+}
+
+float
+ThermoSimulationApp::_calc_initial_score(
+        thermo_fluctuation::graph::ScorerOP scorer,
+        motif_data_structure::MotifGraphOP mg,
+        data_structure::NodeIndexandEdge const & start,
+        data_structure::NodeIndexandEdge const & end) {
+    auto end_state_1 = mg->get_node(start.node_index)->data()->ends()[start.edge_index]->state();
+    auto end_state_2 = mg->get_node(end.node_index)->data()->ends()[end.edge_index]->state();
+    return scorer->score(*end_state_1, *end_state_2);
+}
 
 
 

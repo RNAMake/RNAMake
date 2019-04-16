@@ -18,6 +18,7 @@
 #include <motif_data_structure/motif_graph.h>
 #include <motif_data_structure/motif_state_ensemble_graph.h>
 #include <resources/resource_manager.h>
+#include <thermo_fluctuation/graph/simulation.h>
 
 struct ConnectionTemplate {
     data_structure::NodeIndexandEdge start;
@@ -34,7 +35,7 @@ struct ConnectionTemplate {
 class ThermoSimulationApp : public base::Application {
 public:
     struct Parameters {
-        String mg_file, log_level;
+        String mg_file, log_level, extra_sequences, score_file;
         int steps, n;
     };
 
@@ -61,6 +62,21 @@ public:
 
 private:
 
+    float
+    _calc_initial_score(
+            thermo_fluctuation::graph::ScorerOP,
+            motif_data_structure::MotifGraphOP,
+            data_structure::NodeIndexandEdge const &,
+            data_structure::NodeIndexandEdge const &);
+
+    int
+    _calc_num_hits(
+            thermo_fluctuation::graph::SimulationOP,
+            motif_data_structure::MotifStateEnsembleGraph const &,
+            data_structure::NodeIndexandEdge const &,
+            data_structure::NodeIndexandEdge const &,
+            int);
+
     ConnectionTemplate
     _guess_connection(
             motif_data_structure::MotifGraphOP);
@@ -83,11 +99,16 @@ private:
     EnsembleConversionResultsOP
     _get_mseg(
             motif_data_structure::MotifGraphOP);
+
+    void
+    _parse_extra_sequences(
+            String const &);
     
     
 private:
     resources::Manager & rm_;
     Parameters parameters_;
+    std::map<int, Strings> extra_sequences_;
         
 };
 

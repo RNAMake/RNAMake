@@ -85,6 +85,8 @@ private:
     base::Options options_;
 };
 
+typedef std::shared_ptr<Simulation> SimulationOP;
+
 }
 }
 
