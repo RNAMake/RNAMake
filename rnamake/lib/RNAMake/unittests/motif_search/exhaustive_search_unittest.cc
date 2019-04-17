@@ -107,11 +107,12 @@ TEST_CASE( "Test Searching Motif States", "[ExhaustiveSearch]" ) {
             auto aligner = motif::MotifStateAligner();
             auto ms1 = rm.motif_state(motif_states[0]->name(), "", motif_states[0]->end_names()[0]);
             auto ms2 = rm.motif_state(motif_states[1]->name(), "", motif_states[1]->end_names()[0]);
+
             aligner.get_aligned_motif_state(start_ms->end_states()[1], ms1);
             aligner.get_aligned_motif_state(ms1->end_states()[1], ms2);
 
-            REQUIRE(ms1->end_states()[1]->diff(motif_states[0]->end_states()[1]) == 0.0);
-            REQUIRE(ms2->end_states()[1]->diff(motif_states[1]->end_states()[1]) == 0.0);
+            REQUIRE(ms1->end_states()[1]->diff(motif_states[0]->end_states()[1]) < 0.1);
+            REQUIRE(ms2->end_states()[1]->diff(motif_states[1]->end_states()[1]) < 0.1);
         }
     }
 
@@ -122,9 +123,10 @@ TEST_CASE( "Test Searching Motif States", "[ExhaustiveSearch]" ) {
             sol_template.add_library("flex_helices");
             auto factory = motif_search::SolutionToplogyFactory();
             auto sol_toplogy = factory.generate_toplogy(sol_template);
+            auto filter = std::make_shared<motif_search::NoExclusionFilter>();
 
             auto scorer = std::make_shared<GreedyScorer>();
-            auto search = Search(scorer, *sol_toplogy);
+            auto search = Search(scorer, *sol_toplogy, filter);
 
             auto start = start_ms->end_states()[0];
             auto end =  start_ms->end_states()[1];

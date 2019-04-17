@@ -5,6 +5,7 @@
 //RNAMake Headers
 #include "base/settings.h"
 #include "math/numerical.h"
+#include <math/quaternion.h>
 #include "motif/motif_state.h"
 #include "motif/motif.h"
 #include <motif/motif_state_aligner.h>
@@ -164,6 +165,7 @@ TEST_CASE( "Test Motif states, motifs that dont have coordinates", "[MotifState]
         REQUIRE(math::are_xyzMatrix_equal(ms2->end_states()[1]->r(), ms4->end_states()[1]->r()));
 
     }
+
 }
 
 

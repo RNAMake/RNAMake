@@ -60,9 +60,10 @@ HashMotifs::run() {
 
     auto factory = motif_search::SolutionToplogyFactory();
     auto sol_toplogy = factory.generate_toplogy(sol_template);
+    auto filter = std::make_shared<motif_search::NoExclusionFilter>();
 
     auto scorer = std::make_shared<motif_search::exhaustive::GreedyScorer>();
-    auto search = motif_search::exhaustive::Search(scorer, *sol_toplogy);
+    auto search = motif_search::exhaustive::Search(scorer, *sol_toplogy, filter);
 
     auto lookup = std::make_shared<util::StericLookupNew>();
     auto p = std::make_shared<motif_search::Problem>(h->end_states()[1], end_bp, lookup, false);

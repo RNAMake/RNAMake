@@ -9,8 +9,13 @@
 #include "thermo_fluctuation/thermo_fluc_sampler.h"
 #include "thermo_fluctuation/graph/sampler.h"
 
+#include <math/quaternion.h>
+#include <resources/resource_manager.h>
+
 TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctuationSampler]" ) {
-    
+
+    auto & rm = resources::Manager::instance();
+
     SECTION("test moving one frame") {
         auto sampler = thermo_fluctuation::ThermoFlucSampler();
         auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>();
@@ -79,5 +84,35 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctu
 
     }
 
+    SECTION("test rotation invariance") {
+        auto m = rm.motif("HELIX.IDEAL.1");
+        auto ms = m->get_state();
+        auto r = math::get_random_quaternion().get_rotation_matrix();
+        auto t = math::Point(0, 0, 0);
+
+        auto dummy = structure::BasepairState();
+        ms->end_states()[0]->get_transformed_state(*ms->end_states()[1], dummy);
+        std::cout << dummy.r().to_str() << std::endl;
+
+        ms->transform(r.transposed(), t);
+
+        ms->end_states()[0]->get_transformed_state(*ms->end_states()[1], dummy);
+        std::cout << dummy.r().to_str() << std::endl;
+
+        auto new_m = rm.get_motif_from_state(ms);
+        auto new_ms = new_m->get_state();
+        new_ms->end_states()[0]->get_transformed_state(*new_ms->end_states()[1], dummy);
+        std::cout << dummy.r().to_str() << std::endl;
+
+        /*std::cout << ms->end_states()[0]->r().to_str() << std::endl;
+        std::cout << new_ms->end_states()[0]->r().to_str() << std::endl;
+
+        std::cout << ms->end_states()[1]->r().to_str() << std::endl;
+        std::cout << new_ms->end_states()[1]->r().to_str() << std::endl;*/
+
+        //ref_bp_state->get_transforming_r_and_t(*state->end_states()[0], bp_state_);
+
+
+    }
     
 }

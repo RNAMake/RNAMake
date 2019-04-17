@@ -66,10 +66,19 @@ public:
 
     void
     next() {
+        bool not_updated = true;
+        if(updated_ == false) {
+            not_updated = false;
+        }
         updated_ = false;
         int i = (int) indices_.size() - 1;
         while(i > -1) {
-            update_ = i;
+            if(not_updated) {
+                update_ = i;
+            }
+            else {
+                if(updated_ > i) { updated_ = i; }
+            }
             indices_[i]++;
             if(indices_[i] == maxes_[i]) {
                 if(i == 0) {

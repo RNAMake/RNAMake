@@ -112,6 +112,8 @@ public: // non const methods
         dot(r_, r, r_new);
         r_ = r_new;
         r_.unitarize();
+
+        transpose(r_, r_T_);
     }
 
     inline

@@ -12,7 +12,7 @@ TEST_CASE( "Test Residues for Secondary Structure", "[SSResidue]" ) {
     
     auto ss_r = std::make_shared<secondary_structure::Residue>("G", ".", 1, "A", util::Uuid());
     
-    REQUIRE(ss_r->res_type() == 2);
+    REQUIRE(ss_r->res_type() == secondary_structure::ResType::GUA);
     
     SECTION("check for valid residue name") {
         REQUIRE_THROWS_AS(secondary_structure::Residue("K", ".", 1, "A", util::Uuid()),

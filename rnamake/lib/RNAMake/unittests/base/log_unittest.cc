@@ -10,8 +10,8 @@
 TEST_CASE( "Test logging functions", "[Logger]" ) {
     base::init_logging(base::LogLevel::INFO);
 
-    LOGI << "Hello log!"; // short macro
-    LOG_ERROR << "Hello log!"; // long macro
-    LOG(plog::debug) << "Hello log!"; // function-style macro
+    //LOGI << "Hello log!"; // short macro
+    //LOG_ERROR << "Hello log!"; // long macro
+    //LOG(plog::debug) << "Hello log!"; // function-style macro
 
 }
