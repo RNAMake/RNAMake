@@ -85,7 +85,7 @@ ThermoSimulationApp::run() {
 
         int avg = _calc_num_hits(sim, *r->mseg, start, end, parameters_.n);
         LOG_INFO << "design num: " << design_count << " hits target " << avg;
-        score_out << design_count << "," << avg << "," << _calc_initial_score(scorer, mg, start, end) << ",";
+        score_out << design_count << "," << avg << "," << _calc_initial_score(scorer, mg, c.start, c.end) << ",";
         score_out << mg->sequence() << "," << mg->dot_bracket() << std::endl;
         if(extra_sequences_.find(design_count) == extra_sequences_.end()) {
             design_count += 1;
@@ -95,7 +95,7 @@ ThermoSimulationApp::run() {
             mg->replace_helical_sequence(seq);
             int avg = _calc_num_hits(sim, *r->mseg, start, end, parameters_.n);
             LOG_INFO << "design num: " << design_count << " hits target " << avg << " with sequence: " << seq;
-            score_out << design_count << "," << avg << "," << _calc_initial_score(scorer, mg, start, end) << ",";
+            score_out << design_count << "," << avg << "," << _calc_initial_score(scorer, mg, c.start, c.end) << ",";
             score_out << mg->sequence() << "," << mg->dot_bracket() << std::endl;
         }
 
