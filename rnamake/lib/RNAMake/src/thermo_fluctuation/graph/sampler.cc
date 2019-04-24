@@ -19,6 +19,9 @@ Sampler::get_initial_state() {
             indexes_.push_back(n->index());
         }
         auto ms = n->data().get_member(mem_pos_)->motif_state;
+        //auto ms = n->data().most_populated();
+        //mem_pos_ = 0;
+
         ms->new_uuids();
         energies_.push_back(n->data().get_member(mem_pos_)->energy);
         states_.push_back(mem_pos_);

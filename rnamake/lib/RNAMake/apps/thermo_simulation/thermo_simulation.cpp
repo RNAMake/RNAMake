@@ -69,7 +69,8 @@ ThermoSimulationApp::run() {
 
     auto mg = motif_data_structure::MotifGraphOP(nullptr);
     auto scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
-    auto sim = std::make_shared<thermo_fluctuation::graph::Simulation>(scorer);
+    auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
+    auto sim = std::make_shared<thermo_fluctuation::graph::Simulation>(scorer, sterics);
     scorer->setup(true);
     int design_count = 0;
     for(auto const & l : lines) {
@@ -79,6 +80,7 @@ ThermoSimulationApp::run() {
         mg = std::make_shared<motif_data_structure::MotifGraph>(l, motif_data_structure::MotifGraphStringType::MG);
         auto r = _get_mseg(mg);
         auto c = _guess_connection(mg);
+
 
         auto start = data_structure::NodeIndexandEdge{r->index_hash[c.start.node_index], c.start.edge_index};
         auto end = data_structure::NodeIndexandEdge{r->index_hash[c.end.node_index], c.end.edge_index};
@@ -186,11 +188,13 @@ ThermoSimulationApp::_get_mseg(
             j = mseg->add_ensemble(*mse);
         }
         else {
-            int pi = index_hash[n->parent_index()];
-            j = mseg->add_ensemble(*mse, data_structure::NodeIndexandEdge{pi, n->parent_end_index()});
+            int pi = index_hash[mg->parent_index(n->index())];
+            int pie = mg->parent_end_index(n->index());
+            j = mseg->add_ensemble(*mse, data_structure::NodeIndexandEdge{pi, pie});
         }
 
         index_hash[n->index()] = j;
+        i++;
 
     }
     return std::make_shared<EnsembleConversionResults>(mseg, index_hash);

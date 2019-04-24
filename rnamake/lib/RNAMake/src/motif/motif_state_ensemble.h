@@ -129,7 +129,7 @@ public:
     
     inline
     MotifStateOP const &
-    most_populated() {
+    most_populated() const {
         return members_[0]->motif_state; }
     
     inline

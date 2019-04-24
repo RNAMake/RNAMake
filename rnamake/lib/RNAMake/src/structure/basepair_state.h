@@ -195,6 +195,15 @@ public:
     diff(
             BasepairStateOP const & state) {
         float diff = d_.distance(state->d());
+        diff += _rot_diff(*state) * 2;
+        return diff;
+    }
+
+    inline
+    float
+    diff(
+            BasepairState const & state) {
+        float diff = d_.distance(state.d());
         diff += _rot_diff(state) * 2;
         return diff;
     }
@@ -202,8 +211,8 @@ public:
     inline
     float
     _rot_diff(
-            BasepairStateOP const & state) {
-        float r_diff = r_.difference(state->r());
+            BasepairState const & state) {
+        float r_diff = r_.difference(state.r());
         //state->flip();
         //float r_diff_2 = r_.difference(state->r());
         //state->flip();

@@ -38,6 +38,7 @@ public:
             float temp) {
         //set MonteCarlo temperature to kBT, Boltzmann constant in pN.A/K
         mc_.set_temperature(temp * 1.3806488e-1);
+
     }
 
 private:

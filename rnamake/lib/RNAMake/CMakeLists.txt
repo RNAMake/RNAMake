@@ -71,6 +71,9 @@ target_link_libraries(quaternion_unittest math_lib)
 add_executable(hashing_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/math/hashing_unittest.cc)
 target_link_libraries(hashing_unittest math_lib)
 
+add_executable(rotation_unittest /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/unittests/math/rotation_unittest.cc)
+target_link_libraries(rotation_unittest math_lib)
+
 ###########################################################################
 # data_structure
 ###########################################################################
@@ -398,7 +401,9 @@ set(thermo_fluctuation_files
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/thermo_fluc_simulation_devel.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/graph/sampler.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/graph/scorer.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/graph/sterics.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/graph/simulation.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/thermo_fluctuation/graph/logging.cc
 )
 
 add_library(thermo_fluctuation_lib ${thermo_fluctuation_files})
@@ -464,6 +469,14 @@ target_link_libraries(sequence_optimizer_unittest sequence_optimization_lib)
 
 add_library(all_lib /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/main.cpp)
 target_link_libraries(all_lib motif_tools_lib  thermo_fluctuation_lib  motif_search_lib  sequence_optimization_lib )
+
+add_executable(ddg_tecto /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/ddg_tecto/ddg_tecto.cc /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/ddg_tecto/tecto_graph_setup.cc )
+target_link_libraries(ddg_tecto all_lib)
+
+
+add_executable(simulate_tectos_devel /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/simulate_tectos_devel/simulate_tectos_devel.cc /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/simulate_tectos_devel/main.cpp )
+target_link_libraries(simulate_tectos_devel all_lib)
+
 
 add_executable(sequence_optimizer_app /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/apps/sequence_optimizer_app/sequence_optimizer_app.cpp )
 target_link_libraries(sequence_optimizer_app all_lib)

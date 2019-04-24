@@ -77,6 +77,37 @@ private:
 
 };
 
+// copy old code scoring
+class OldFrameScorer : public Scorer {
+public:
+    OldFrameScorer() : thermo_fluctuation::graph::Scorer() {}
+
+    ~OldFrameScorer() {}
+
+    thermo_fluctuation::graph::Scorer *
+    clone() const { return new OldFrameScorer(*this); };
+
+public:
+
+    inline
+    float
+    score(
+            structure::BasepairState const & state_1,
+            structure::BasepairState const & state_2) {
+        score_ = state_1.d().distance(state_2.d());
+        r_diff_ = state_1.r().difference(state_2.r());
+        flipped_ = state_2.r().get_flip_orientation();
+        r_diff_flip_ = state_1.r().difference(flipped_);
+        if (r_diff_ > r_diff_flip_) { score_ += r_diff_flip_; }
+        else { score_ += r_diff_; }
+        return score_;
+    }
+
+private:
+    float r_diff_, r_diff_flip_,  score_;
+    math::Matrix flipped_;
+};
+
 }
 }
 

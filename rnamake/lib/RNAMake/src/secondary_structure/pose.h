@@ -57,7 +57,7 @@ public:
     }
 
     MotifOPs const &
-    motifs() { return motifs_; }
+    motifs() const { return motifs_; }
 
     MotifOP
     motif(

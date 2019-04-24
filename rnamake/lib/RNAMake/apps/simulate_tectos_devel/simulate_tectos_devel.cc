@@ -36,7 +36,7 @@ public:
 
     void
     log(
-            MotifStateTreeOP const & mst,
+            motif_data_structure::MotifStateTreeOP const & mst,
             float score) {
         int i = 0;
         for(auto const & n : *mst) {
@@ -68,7 +68,7 @@ public:
 protected:
     void
     _output_header(
-            MotifStateTreeOP const & mst) {
+            motif_data_structure::MotifStateTreeOP const & mst) {
         for(auto const & name : motif_names_) {
             if(name.length() < 4) {
                 this->out_ << name + "_d," <<  name + "_r," << name + "_bp," << name << "_ei";
@@ -123,7 +123,7 @@ public:
 public:
     void
     log(
-            MotifStateTreeOP const & mst,
+            motif_data_structure::MotifStateTreeOP const & mst,
             float score) {
 
         auto end_state_1 = mst->get_node(ni1_)->data()->get_end_state(ei1_);
@@ -182,7 +182,7 @@ public:
 protected:
     void
     _output_header(
-            MotifStateTreeOP const & mst) {
+            motif_data_structure::MotifStateTreeOP const & mst) {
         this->out_ << "x,y,z,a,b,g,score" << std::endl;
         outputed_header_ = true;
 
@@ -193,7 +193,7 @@ private:
     _parse_constraints(
             String const & constraints) {
 
-        auto spl =  split_str_by_delimiter(constraints, ";");
+        auto spl =  base::split_str_by_delimiter(constraints, ";");
         for(auto const & s : spl) {
             auto spl2 = base::split_str_by_delimiter(s, ",");
             if(spl2.size() != 3) { throw SimulateTectosAppException("invalid record constraint: " + s); }
@@ -259,7 +259,7 @@ public:
 public:
     void
     log(
-            MotifStateTreeOP const & mst,
+            motif_data_structure::MotifStateTreeOP const & mst,
             float score) {
 
         auto end_state_1 = mst->get_node(ni1_)->data()->get_end_state(ei1_);
@@ -316,7 +316,7 @@ public:
 protected:
     void
     _output_header(
-            MotifStateTreeOP const & mst) {
+            motif_data_structure::MotifStateTreeOP const & mst) {
         outputed_header_ = true;
 
     }
@@ -327,7 +327,7 @@ private:
     _parse_constraints(
             String const & constraints) {
 
-        auto spl =  split_str_by_delimiter(constraints, ";");
+        auto spl =  base::split_str_by_delimiter(constraints, ";");
         for(auto const & s : spl) {
             auto spl2 = base::split_str_by_delimiter(s, ",");
             if(spl2.size() != 3) { throw SimulateTectosAppException("invalid record constraint: " + s); }
@@ -387,8 +387,8 @@ void
 SimulateTectosApp::setup_options() {
     add_option("fseq", "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", base::OptionType::STRING);
     add_option("fss",  "((((((....((((((((((((....))))))))))))....))))))", base::OptionType::STRING);
-    add_option("cseq", "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG",  OptionType::STRING);
-    add_option("css",  "(((((((..((((((((((((....))))))))))))...)))))))",  OptionType::STRING);
+    add_option("cseq", "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG",  base::OptionType::STRING);
+    add_option("css",  "(((((((..((((((((((((....))))))))))))...)))))))",  base::OptionType::STRING);
     add_option("s", 1000000, base::OptionType::INT);
     add_option("start_pose", false, base::OptionType::BOOL);
     add_option("start_pdbs", false, base::OptionType::BOOL);
@@ -873,17 +873,17 @@ SimulateTectosApp::_get_scorer(
         String const & name) {
 
     if(name.length() == 0) {
-        return std::make_shared<FrameScorerDevel>();
+        return std::make_shared<thermo_fluctuation::FrameScorerDevel>();
     }
 
     else if(name == "FrameScorer") {
-        return std::make_shared<FrameScorerDevel>();
+        return std::make_shared<thermo_fluctuation::FrameScorerDevel>();
     }
 
     else if(name == "SixDScorer") {
         auto path = base::motif_dirs() + "ref.motif";
         auto ref_motif = motif::file_to_motif(path);
-        return std::make_shared<SixDScorer>(
+        return std::make_shared<thermo_fluctuation::SixDScorer>(
                 get_string_option("constraints"),
                 ref_motif->basepairs()[0]);
     }

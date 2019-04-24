@@ -5,23 +5,21 @@
 #ifndef RNAMAKE_NEW_THERMO_FLUC_GRAPH_SIMULATION_H
 #define RNAMAKE_NEW_THERMO_FLUC_GRAPH_SIMULATION_H
 
-
 #include <thermo_fluctuation/graph/sampler.h>
 #include <thermo_fluctuation/graph/scorer.h>
+#include <thermo_fluctuation/graph/sterics.h>
 
 namespace thermo_fluctuation {
 namespace graph {
 
 
 class Simulation {
-    struct Parameters {
-        float temperature, steric_radius, cutoff;
-    };
-
 public:
     Simulation(
-            ScorerOP scorer):
-            scorer_(scorer->clone()) {
+            ScorerOP scorer,
+            sterics::StericsOP sterics_):
+            scorer_(scorer->clone()),
+            sterics_(sterics_->clone()) {
         options_ = base::Options();
         setup_options();
     }
@@ -38,6 +36,17 @@ public:
 
     bool
     next();
+
+public: // setters
+
+
+public: // outputs
+    void
+    write_pdbs(
+            String const & name = "nodes") {
+        msg_->to_motif_graph()->write_pdbs(name);
+    }
+
 
 public: //option wrappers
 
@@ -76,10 +85,16 @@ protected:
 
 
 private:
+    struct Parameters {
+        float temperature, steric_radius, cutoff;
+    };
+
+private:
     motif_data_structure::MotifStateGraphOP msg_;
     data_structure::NodeIndexandEdge start_, end_;
     structure::BasepairStateOP end_state_1_, end_state_2_;
     ScorerOP scorer_;
+    sterics::StericsOP sterics_;
     SamplerOP sampler_;
     Parameters parameters_;
     base::Options options_;

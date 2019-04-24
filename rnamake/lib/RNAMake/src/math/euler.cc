@@ -38,6 +38,61 @@ calc_euler(
     euler[1] = -euler[1];
     euler[2] = -euler[2];
 
-
 }
+
+void
+axis_angle_from_matrix(
+        Matrix & m,
+        AxisAngle & aa) {
+    auto epsilon = 0.01; // margin to allow for rounding errors
+    auto epsilon2 = 0.1; // margin to distinguish between 0 and 180 degrees
+    if(abs(m.xy() - m.yx()) < epsilon && abs(m.xz() - m.zx()) < epsilon && abs(m.yz() - m.zy()) < epsilon) {
+        // singularity found
+        // first check for identity matrix which must have +1 for all terms
+        //  in leading diagonaland zero in other terms
+        if(abs(m.xy() + m.yx()) < epsilon2 && abs(m.xz() + m.zx()) < epsilon2 && abs(m.yz() + m.zy()) < epsilon2 &&
+           abs(m.xx() + m.yy() + m.zz() - 3) < epsilon2) {
+            // this singularity is identity matrix so angle = 0
+            aa.angle = 0;
+            aa.axis.x(1); aa.axis.y(0); aa.axis.z(0);
+            return;
+        }
+        aa.angle = M_PI;
+        auto xx = (m.xx() + 1) / 2;
+        auto yy = (m.yy() + 1) / 2;
+        auto zz = (m.zz() + 1) / 2;
+        auto xy = (m.xy() + m.yx()) / 4;
+        auto xz = (m.xz() + m.zx()) / 4;
+        auto yz = (m.yz() + m.zy()) / 4;
+        if     ( xx > yy && xx > zz) {
+            if(xx < epsilon) { aa.axis.x(0); aa.axis.y(0.7071); aa.axis.z(0.7071); }
+            else             { aa.axis.x(sqrt(xx)); aa.axis.y(xy/aa.axis.x()); aa.axis.z(yz/aa.axis.x()); }
+        }
+        else if(yy > zz ) {
+            if(yy < epsilon) { aa.axis.x(0.7071); aa.axis.y(0); aa.axis.z(0.7071);}
+            else             { aa.axis.y(sqrt(yy)); aa.axis.x(xy/aa.axis.y()); aa.axis.z(yz/aa.axis.y());}
+        }
+        else {
+            if(zz < epsilon) { aa.axis.x(0.7071); aa.axis.y(0.7071); aa.axis.z(0); }
+            else             { aa.axis.z(sqrt(zz)); aa.axis.x(xz/aa.axis.z()); aa.axis.y(yz/aa.axis.z()); }
+        }
+        return;
+    }
+
+    auto s = sqrt((m.zy() - m.yz())*(m.zy() - m.yz()) + (m.xz() - m.zx())*(m.xz() - m.zx()) +
+                  (m.yx() - m.xy())*(m.yx() - m.xy()));
+    if(abs(s) < 0.001) { s = 1; }
+    aa.angle = acos((m.xx() + m.yy() + m.zz() - 1) / 2);
+    aa.axis.x((m.zy() - m.yz()) / s);
+    aa.axis.y((m.xz() - m.xz()) / s);
+    aa.axis.z((m.yx() - m.xy()) / s);
+}
+
+float
+degrees(
+        float radians) {
+    return radians*(180/M_PI);
+}
+
+
 }

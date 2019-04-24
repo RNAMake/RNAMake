@@ -149,6 +149,26 @@ public: //add functions
             String const &,
             String const &);
 
+public:
+    inline
+    int
+    parent_index(
+            int node_index) {
+        if(aligned_.find(node_index) == aligned_.end()) { return -1;}
+        if(aligned_[node_index] == 0) { return -1;}
+        return get_node(node_index)->connections()[0]->partner(node_index)->index();
+    }
+
+    inline
+    int
+    parent_end_index(
+            int node_index) {
+        if(aligned_.find(node_index) == aligned_.end()) { return -1;}
+        if(aligned_[node_index] == 0) { return -1;}
+        auto pi = parent_index(node_index);
+        return get_node(node_index)->connections()[0]->end_index(pi);
+    }
+
 public: //remove functions
 
     void

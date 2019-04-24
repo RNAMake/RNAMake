@@ -69,10 +69,10 @@ Simulation::next() {
             }
         }
         count = 0;
-
-        // TODO add steric check here
         done = true;
     }
+
+    if(sterics_->clash(msg_)) { return false; }
 
     end_state_1_ = msg_->get_node(start_.node_index)->data()->get_end_state(start_.edge_index);
     end_state_2_ = msg_->get_node(end_.node_index)->data()->get_end_state(end_.edge_index);

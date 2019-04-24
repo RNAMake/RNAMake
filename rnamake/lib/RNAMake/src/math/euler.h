@@ -22,6 +22,20 @@ calc_euler(
         Matrix & M,
         Vector & euler);
 
+struct AxisAngle {
+    float angle;
+    Point axis;
+};
+
+void
+axis_angle_from_matrix(
+        Matrix &,
+        AxisAngle &);
+
+float
+degrees(
+        float);
+
 }
 
 #endif
