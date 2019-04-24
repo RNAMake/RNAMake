@@ -20,18 +20,7 @@
 
 namespace structure {
 
-/*
- * Exception for chain
- */
-class ChainException : public std::runtime_error {
-public:
-    /**
-     * Standard constructor for ChainException
-     * @param   message   Error message for chain
-     */
-    ChainException(String const & message) :
-            std::runtime_error(message) {}
-};
+
 
 /**
  * Stored chain information from pdb file. Stores all residues in chain.

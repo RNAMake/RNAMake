@@ -29,16 +29,16 @@ center(
 void
 Residue::setup_atoms(
         AtomOPs & atoms) {
-    atoms_ = AtomOPs(rtype_.size());
+    _atoms = AtomOPs(_rtype.size());
     int count = 0;
     for (auto & a : atoms) {
         if (a == nullptr) { continue; }
-        auto name_change = rtype_.get_correct_atom_name(*a);
+        auto name_change = _rtype.get_correct_atom_name(*a);
         //check for misnamed atoms
         if (name_change.length() != 0) { a->name(name_change); }
-        auto pos = rtype_.atom_pos_by_name(a->name());
+        auto pos = _rtype.atom_pos_by_name(a->name());
         if (pos == -1) { continue; }
-        atoms_[pos] = a;
+        _atoms[pos] = a;
         count++;
     }
 
@@ -49,7 +49,7 @@ structure::Beads
 Residue::get_beads() const {
     AtomOPs phos_atoms, sugar_atoms, base_atoms;
     int i = -1;
-    for (auto const & a : atoms_) {
+    for (auto const & a : _atoms) {
         i++;
         if (a == nullptr) { continue; }
         if (i < 3) { phos_atoms.push_back(a); }
@@ -57,9 +57,15 @@ Residue::get_beads() const {
         else { base_atoms.push_back(a); }
     }
     auto beads = Beads();
-    if (phos_atoms.size() > 0) { beads.push_back(Bead(::structure::center(phos_atoms), BeadType::PHOS)); }
-    if (sugar_atoms.size() > 0) { beads.push_back(Bead(::structure::center(sugar_atoms), BeadType::SUGAR)); }
-    if (base_atoms.size() > 0) { beads.push_back(Bead(::structure::center(base_atoms), BeadType::BASE)); }
+    if (phos_atoms.size() > 0) {
+        beads.push_back(Bead(::structure::center(phos_atoms), BeadType::PHOS));
+    }
+    if (sugar_atoms.size() > 0) {
+        beads.push_back(Bead(::structure::center(sugar_atoms), BeadType::SUGAR));
+    }
+    if (base_atoms.size() > 0) {
+        beads.push_back(Bead(::structure::center(base_atoms), BeadType::BASE));
+    }
     return beads;
 }
 
@@ -67,8 +73,8 @@ Residue::get_beads() const {
 String
 Residue::to_str() const {
     auto s = String();
-    s = rtype_.name() + "," + name_ + "," + std::to_string(num_) + "," + chain_id_ + "," + i_code_ + ",";
-    for (auto const & a : atoms_) {
+    s = _rtype.name() + "," + _name + "," + std::to_string(_num) + "," + _chain_id + "," + _i_code + ",";
+    for (auto const & a : _atoms) {
         if (a == nullptr) { s += "N,"; }
         else { s += a->to_str() + ","; }
     }
@@ -81,17 +87,17 @@ Residue::to_pdb_str(
         int rnum,
         String const & chain_id) const {
 
-    auto num = num_;
+    auto num = _num;
     if (rnum != -1) {
         num = rnum;
     }
-    String cid = chain_id_;
+    auto cid = _chain_id;
     if (chain_id != "") {
         cid = chain_id;
     }
 
     auto s = String();
-    for (auto const & a : atoms_) {
+    for (auto const & a : _atoms) {
         if (a == nullptr) { continue; }
         char buffer[200];
         std::sprintf(buffer, "%-6s%5d %-4s%1s%3s %1s%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s\n", "ATOM", acount,

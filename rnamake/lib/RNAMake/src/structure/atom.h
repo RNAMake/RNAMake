@@ -27,7 +27,7 @@ namespace structure {
  */
 
 class Atom {
-public:
+public: // constructors
 
     /**
      * Standard constructor for Atom object.
@@ -37,9 +37,9 @@ public:
     inline
     Atom(
             String const & name,
-            math::Point const & coords) :
-            name_(name),
-            coords_(coords) {}
+            math::Point const & coords):
+            _name(name),
+            _coords(coords) {}
 
     /**
      * Construction from String, used in reading data from files
@@ -58,8 +58,8 @@ public:
             String const & s) {
 
         auto spl = base::split_str_by_delimiter(s, " ");
-        name_ = spl[0];
-        coords_ = math::Point(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
+        _name = spl[0];
+        _coords = math::Point(std::stof(spl[1]), std::stof(spl[2]), std::stof(spl[3]));
     }
 
     /**
@@ -68,11 +68,11 @@ public:
      */
     inline
     Atom(
-            Atom const & a) :
-            name_(a.name_),
-            coords_(a.coords_) {}
+            Atom const & a):
+            _name(a._name),
+            _coords(a._coords) {}
 
-public:
+public: // output functions
 
     /**
      * Strigifies atom object
@@ -83,7 +83,8 @@ public:
      *  "H1 0.0 1.0 2.0"
      * @endcode
      */
-    String to_str();
+    String
+    to_str();
 
     /**
      * Strigifies atom into PDB format
@@ -96,76 +97,83 @@ public:
      *  "ATOM      1  P   C   A   1       1.000   2.000   3.000  1.00 62.18           P
      * @endcode
      */
-    String to_pdb_str(int);
+    String
+    to_pdb_str(int);
 
 public: // non const methods
 
     inline
     void
-    move(math::Point const & p) {
-        coords_ = coords_ + p;
+    move(
+            math::Point const & p) {
+        _coords = _coords + p;
     }
 
     inline
     void
-    transform(math::Transform const & t) {
+    transform(
+            math::Transform const & t) {
         math::Matrix r = t.rotation().transpose();
         math::Point trans = t.translation();
         auto new_coords = math::Point();
-        math::dot_vector(r, coords_, new_coords);
+        math::dot_vector(r, _coords, new_coords);
         new_coords += trans;
-        coords_ = new_coords;
+        _coords = new_coords;
     }
 
 public: //accessors
 
     /**
-     * Accessor for name_
+     * Accessor for _name
      */
     inline
     String const &
-    name() const { return name_; }
+    name() const {
+        return _name;
+    }
 
     /**
-     * Accessor for coords_
+     * Accessor for _coords
      */
     inline
     math::Point const
-    coords() const { return coords_; }
+    coords() const {
+        return _coords;
+    }
 
 
 public: // setters
 
     /**
-     * Setter for coords_
+     * Setter for _coords
      */
     inline
     void
     coords(
             math::Point const & ncoords) {
-        coords_ = ncoords;
+        _coords = ncoords;
     }
 
     /**
-     * Setter for name_
+     * Setter for _name
      */
     inline
     void
     name(
             String const & nname) {
-        name_ = nname;
+        _name = nname;
     }
 
 private:
     /**
      * private variable of name of atom
      */
-    String name_;
+    String _name;
 
     /**
      * private variable of 3D coordinates of atom
      */
-    math::Point coords_;
+    math::Point _coords;
 
 };
 

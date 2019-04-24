@@ -215,9 +215,11 @@ set(structure_files
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/residue.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/basepair.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/structure.cc
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/exceptions.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/close_chain.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/pdb_parser.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/rna_structure.cpp
+	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/beads.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/chain.cc
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/is_equal.cpp
 	/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/src/structure/residue_type.cc

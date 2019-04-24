@@ -14,126 +14,17 @@
 //RNAMake Headers
 #include "base/types.h"
 #include "util/uuid.h"
+#include "structure/exceptions.h"
 #include "structure/atom.h"
+#include "structure/beads.h"
 #include "structure/residue_type.h"
 #include "structure/residue_type_set.h"
 
 namespace structure {
 
 math::Point
-center(AtomOPs const &);
-
-/**
- * BeadType is an ENUM type. This is to specify which center of atoms each bead
- * represents.
- *
- * Phosphate (0):  P, OP1, OP2\n
- * Sugar (1):  O5',C5',C4',O4',C3',O3',C1',C2',O2'\n
- * Base  (2):  All remaining atoms
- */
-enum class BeadType {
-    PHOS = 0, SUGAR = 1, BASE = 2
-};
-
-
-/*
- * Exception for residues
- */
-class ResidueException : public std::runtime_error {
-public:
-    /**
-     * Standard constructor for ResidueException
-     * @param   message   Error message for residue
-     */
-    ResidueException(String const & message) :
-            std::runtime_error(message) {}
-};
-
-
-/**
- * Bead class stores information related to keeping track of steric clashes
- * between residues during building. They are never used outside the Residue class
- *
- */
-class Bead {
-public:
-    /**
-     * Empty constructor for Bead object.
-     */
-    Bead() :
-            center_(math::Point(0, 0, 0)),
-            btype_(BeadType::PHOS) {}
-
-    /**
-     * Standard constructor for Bead object.
-     * @param   btype   type of bead (PHOS, SUGAR or BASE)
-     * @param   center  the average 3D position of all atoms represented by bead
-     */
-    inline
-    Bead(
-            math::Point const & center,
-            BeadType const btype) :
-            center_(center),
-            btype_(btype) {}
-
-
-    inline
-    Bead(
-            String const & s) {
-        auto spl = base::split_str_by_delimiter(s, ",");
-        center_ = math::vector_from_str(spl[0]);
-        btype_ = BeadType(std::stoi(spl[1]));
-    }
-
-    /**
-     * Copy constructor
-     * @param   b   Bead object copying from
-     */
-    inline
-    Bead(
-            Bead const & b) :
-            center_(b.center_),
-            btype_(b.btype_) {}
-
-public:
-
-    inline
-    double
-    distance(
-            Bead const & b) const {
-        return b.center_.distance(center_);
-    }
-
-public: //accessors
-
-    /**
-     * Accessor for center_
-     */
-    inline
-    math::Point
-    center() const { return center_; }
-
-    /**
-     * Accessor for btype_
-     */
-    inline
-    BeadType
-    btype() const { return btype_; }
-
-private:
-    /**
-     * private variable for the 3D coordinates of the center of atoms the bead represents
-     */
-    math::Point center_;
-
-    /**
-     * private variable of the type of the bead PHOS, SUGAR or BASE)
-     */
-    BeadType btype_;
-
-};
-
-typedef std::vector<Bead> Beads;
+center(
+        AtomOPs const &);
 
 /**
  * Store residue information from pdb file, stores all Atom objects that
@@ -190,13 +81,13 @@ public:
             int const & num,
             String const & chain_id,
             String const & i_code) :
-            rtype_(rtype),
-            name_(name),
-            num_(num),
-            chain_id_(chain_id),
-            i_code_(i_code),
-            atoms_(AtomOPs()),
-            uuid_(util::Uuid()) {}
+            _rtype(rtype),
+            _name(name),
+            _num(num),
+            _chain_id(chain_id),
+            _i_code(i_code),
+            _atoms(AtomOPs()),
+            _uuid(util::Uuid()) {}
 
     /**
      * Copy constructor
@@ -204,18 +95,18 @@ public:
      */
     Residue(
             Residue const & r) :
-            rtype_(r.rtype_),
-            name_(r.name_),
-            num_(r.num_),
-            chain_id_(r.chain_id_),
-            i_code_(r.i_code_),
-            atoms_(AtomOPs(r.atoms().size())),
-            uuid_(r.uuid_) {
+            _rtype(r._rtype),
+            _name(r._name),
+            _num(r._num),
+            _chain_id(r._chain_id),
+            _i_code(r._i_code),
+            _atoms(AtomOPs(r.atoms().size())),
+            _uuid(r._uuid) {
         int i = -1;
-        for (auto const & a : r.atoms_) {
+        for (auto const & a : r._atoms) {
             i++;
             if (a == nullptr) { continue; }
-            atoms_[i] = std::make_shared<Atom>(*a);
+            _atoms[i] = std::make_shared<Atom>(*a);
         }
     }
 
@@ -229,12 +120,12 @@ public:
             ResidueTypeSet const & rts) {
 
         Strings spl = base::split_str_by_delimiter(s, ",");
-        rtype_ = rts.get_rtype_by_resname(spl[0]);
-        name_ = spl[1];
-        num_ = std::stoi(spl[2]);
-        chain_id_ = spl[3];
-        i_code_ = spl[4];
-        atoms_ = AtomOPs();
+        _rtype = rts.get_rtype_by_resname(spl[0]);
+        _name = spl[1];
+        _num = std::stoi(spl[2]);
+        _chain_id = spl[3];
+        _i_code = spl[4];
+        _atoms = AtomOPs();
         auto atoms = AtomOPs();
         int i = 5;
         while (i < spl.size()) {
@@ -282,11 +173,11 @@ public:
     const &
     get_atom(
             String const & name) const {
-        int index = rtype_.atom_pos_by_name(name);
+        int index = _rtype.atom_pos_by_name(name);
         if (index == -1) {
             throw ResidueException("cannot find atom name " + name);
         }
-        return atoms_[index];
+        return _atoms[index];
     }
 
     /**
@@ -332,7 +223,7 @@ public:
 
     void
     new_uuid() {
-        uuid_ = util::Uuid();
+        _uuid = util::Uuid();
     }
 
 
@@ -426,7 +317,7 @@ public:
      */
     bool
     operator==(Residue const & r) const {
-        return uuid_ == r.uuid_;
+        return _uuid == r._uuid;
     }
 
 public: // non const methods
@@ -434,7 +325,7 @@ public: // non const methods
     inline
     void
     move(math::Point const & p) {
-        for (auto & a : atoms_) {
+        for (auto & a : _atoms) {
             if (a == nullptr) { continue; }
             a->coords(a->coords() + p);
         }
@@ -446,7 +337,7 @@ public: // non const methods
         math::Matrix r = t.rotation().transpose();
         math::Point trans = t.translation();
         auto dummy = math::Point();
-        for (auto & a : atoms_) {
+        for (auto & a : _atoms) {
             if (a == nullptr) { continue; }
             math::dot_vector(r, a->coords(), dummy);
             dummy += trans;
@@ -462,7 +353,8 @@ public: // setters
      */
     inline
     void
-    num(int nnum) { num_ = nnum; }
+    num(
+            int nnum) { _num = nnum; }
 
     /**
      * setter for nchain id
@@ -470,7 +362,8 @@ public: // setters
      */
     inline
     void
-    chain_id(String const & nchain_id) { chain_id_ = nchain_id; }
+    chain_id(
+            String const & nchain_id) { _chain_id = nchain_id; }
 
     /**
      * setter for the residue unique indentifier, do not do this without really knowing what you 
@@ -479,7 +372,8 @@ public: // setters
      */
     inline
     void
-    uuid(util::Uuid const & uuid) { uuid_ = uuid; }
+    uuid(
+            util::Uuid const & uuid) { _uuid = uuid; }
 
 
 public: // getters
@@ -487,7 +381,7 @@ public: // getters
     inline
     math::Point
     center() const {
-        return ::structure::center(atoms_);
+        return ::structure::center(_atoms);
     }
 
     /**
@@ -495,85 +389,99 @@ public: // getters
      */
     inline
     String const &
-    name() const { return name_; }
+    name() const {
+        return _name;
+    }
 
     /**
      * getter the chain_id
      */
     inline
     String const &
-    chain_id() const { return chain_id_; }
+    chain_id() const {
+        return _chain_id;
+    }
 
     /**
      * getter for the residue insertion code
      */
     inline
     String const &
-    i_code() const { return i_code_; }
+    i_code() const {
+        return _i_code;
+    }
 
     /**
      * getter for the residue num
      */
     inline
-    int const &
-    num() const { return num_; }
+    int
+    num() const {
+        return _num;
+    }
 
     /**
      * getter for the one letter residue type
      */
     inline
     String
-    short_name() const { return rtype_.short_name(); }
+    short_name() const {
+        return _rtype.short_name();
+    }
 
     /**
      * getter for the internal atom vector
      */
     inline
     AtomOPs const &
-    atoms() const { return atoms_; }
+    atoms() const {
+        return _atoms;
+    }
 
     /**
      * getter for residue unique indentifier
      */
     inline
     util::Uuid const &
-    uuid() const { return uuid_; }
+    uuid() const {
+        return _uuid;
+    }
 
 private:
     /**
      * residue type object which explains what atoms in belong in this residue.
      */
-    ResidueType rtype_;
+    ResidueType _rtype;
 
     /**
      * the name of the residue, only one letter.
      */
-    String name_;
+    String _name;
 
     /**
      * the chain_id of the residue, only one letter
      */
-    String chain_id_;
+    String _chain_id;
 
     /**
      * the residue insertion code, only one letter
      */
-    String i_code_;
+    String _i_code;
 
     /**
      * the residue number
      */
-    int num_;
+    int _num;
 
     /**
      * vector of the atom objects that belong to this residue
      */
-    AtomOPs atoms_;
+    AtomOPs _atoms;
 
     /**
      * unique residue indentifier so each residue can be be found in larger structures
      */
-    util::Uuid uuid_;
+    util::Uuid _uuid;
 
 };
 

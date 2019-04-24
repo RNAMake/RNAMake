@@ -16,8 +16,8 @@ class Logger {
 public:
     Logger(
             String const & log_file) {
-        _out = std::ofstream();
-        _out.open(log_file);
+        _out = std::make_shared<std::ofstream>();
+        _out->open(log_file);
     }
 
     ~Logger() {}
@@ -41,7 +41,7 @@ public:
             float) = 0;
 
 protected:
-    std::ofstream _out;
+    std::shared_ptr<std::ofstream> _out;
 };
 
 /**
@@ -58,7 +58,7 @@ public:
     ~TargetBPInfoLogger() {}
 
    Logger *
-    clone() const { return new TargetBPInfoLogger(*this) };
+    clone() const { return new TargetBPInfoLogger(*this); };
 
 public:
 
@@ -67,9 +67,16 @@ public:
             motif_data_structure::MotifStateGraphOP msg,
             data_structure::NodeIndexandEdge const & start,
             data_structure::NodeIndexandEdge const & end) {
-        _out << "d_bp1,r_bp1,d_bp2,r_bp2,score" << std::endl;
+        *_out << "d_bp1,r_bp1,d_bp2,r_bp2,score" << std::endl;
         _start = start;
         _end = end;
+    }
+
+    void
+    log(
+            motif_data_structure::MotifStateGraphOP msg,
+            float score) {
+
     }
 
 private:
