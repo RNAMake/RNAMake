@@ -77,6 +77,7 @@ public:
             motif_data_structure::MotifStateGraphOP msg,
             float score) {
 
+
     }
 
 private:
