@@ -17,115 +17,47 @@ namespace exhaustive {
  */
 
 class MotifStateEnumerator {
-public:
+public: // constructors
     MotifStateEnumerator(
-            motif_search::SolutionToplogy sol_toplogy) {
-        indices_ = Ints(sol_toplogy.size());
-        maxes_ = Ints(sol_toplogy.size());
-        motif_states_= std::vector<motif::MotifStateOPs>(sol_toplogy.size());
-        current_ = motif::MotifStateOPs(sol_toplogy.size());
-        end_ = 0;
-        int i = 0;
-        auto m_states = motif::MotifStateOPs();
-        for(auto const & n : sol_toplogy) {
-            m_states.resize(0);
-            for(auto const & mem : *n->data()) {
-                if(mem->motif_state->name().substr(0, 10) == "HELIX.FLEX") {
-                    if(mem->motif_state->size() > 14) {
-                        continue;
-                    }
-                }
-                mem->motif_state->new_uuids();
-                m_states.push_back(std::make_shared<motif::MotifState>(*mem->motif_state));
-            }
-            motif_states_[i] = m_states;
-            maxes_[i] = m_states.size();
-            indices_[i] = 0;
-            i++;
-        }
-        if(motif_states_.size() == 0) {
-            throw std::runtime_error("must supply a topology with atleast one node");
-        }
-    }
+            motif_search::SolutionToplogy);
 
-public:
+    ~MotifStateEnumerator() {}
+
+public: // main interface
     void
     start(
-            structure::BasepairStateOP start_bp) {
-        start_bp_ = start_bp;
-        update_ = 0;
-        end_ = 0;
-
-        for(auto & index : indices_) { index = 0; }
-    }
+            structure::BasepairStateOP);
 
     bool
-    finished() {
-        return end_;
-    }
+    finished();
 
     void
-    next() {
-        bool not_updated = true;
-        if(updated_ == false) {
-            not_updated = false;
-        }
-        updated_ = false;
-        int i = (int) indices_.size() - 1;
-        while(i > -1) {
-            if(not_updated) {
-                update_ = i;
-            }
-            else {
-                if(updated_ > i) { updated_ = i; }
-            }
-            indices_[i]++;
-            if(indices_[i] == maxes_[i]) {
-                if(i == 0) {
-                    end_ = 1;
-                    indices_[i]--;
-                    break;
-                }
-                indices_[i] = 0;
-                i--;
-                continue;
-            }
-            break;
-        }
-    }
+    next();
 
     motif::MotifStateOP
-    top_state() {
-        if(!end_ || !updated_) { _update_current_states(); }
-        return motif_states_.back()[indices_.back()];
-    }
+    top_state();
 
     motif::MotifStateOPs const &
-    all_states() {
-        if(!end_ || !updated_) { _update_current_states(); }
-        int j = 0;
-        for (auto const & v : motif_states_) {
-            current_[j] = v[indices_[j]];
-            j++;
-        }
-        return current_;
+    all_states();
 
+
+public: // setters
+    inline
+    void
+    set_size_limit(
+            int size_limit) {
+        size_limit_ = size_limit;
     }
 
 private:
     void
-    _update_current_states() {
-        updated_ = true;
-        if(update_ == 0) {
-            aligner_.get_aligned_motif_state(start_bp_, motif_states_[0][indices_[0]]);
-            update_ += 1;
-        }
-        for(int j = update_; j < indices_.size(); j++) {
-            aligner_.get_aligned_motif_state(
-                    motif_states_[j-1][indices_[j-1]]->end_states()[1],
-                    motif_states_[j][indices_[j]]);
-        }
-    }
+    _update_current_states();
+
+    void
+    _iterate();
+
+    bool
+    _within_size_limit();
 
 private:
     Ints indices_;
@@ -137,6 +69,7 @@ private:
     int update_;
     bool updated_;
     int end_;
+    int size_limit_;
 
 };
 

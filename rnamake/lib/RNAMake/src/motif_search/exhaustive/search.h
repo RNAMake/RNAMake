@@ -48,6 +48,7 @@ public:
     void
     setup(
             ProblemOP p)  {
+        enumerator_.set_size_limit(get_int_option("max_size"));
         enumerator_.start(p->start);
         scorer_->set_target(p->end, p->target_an_aligned_end);
     }

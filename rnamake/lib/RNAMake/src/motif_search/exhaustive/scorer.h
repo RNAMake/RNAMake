@@ -84,7 +84,7 @@ public:
             return ScorerOP(std::make_shared<DefaultScorer>());
         }
         else if(scorer_name == "sugar_dist") {
-
+            return ScorerOP(std::make_shared<DefaultScorer>());
         }
         else {
             throw std::runtime_error(scorer_name + " is not a valid scorer name");

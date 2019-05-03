@@ -40,6 +40,7 @@ DesignRNAScaffold::setup_options() {
     add_option("log_level", "info", base::OptionType::STRING, false);
     add_option("search_type", "path_finding", base::OptionType::STRING, false);
     add_option("search_cutoff", 5.0f, base::OptionType::FLOAT, false);
+    add_option("search_max_size", 999999, base::OptionType::INT, false);
     add_option("skip_sequence_optimization", false, base::OptionType::BOOL, false);
     add_option("sequence_opt_cutoff", 5.0f, base::OptionType::FLOAT, false);
     add_option("solution_path", "", base::OptionType::STRING, false);
@@ -61,7 +62,7 @@ DesignRNAScaffold::setup_options() {
     add_option("new_ensembles", "", base::OptionType::STRING, false);
 
     // scoring related options
-    add_option("exhastive_scorer", "default", base::OptionType::STRING, false);
+    add_option("exhaustive_scorer", "default", base::OptionType::STRING, false);
 
 }
 
@@ -87,6 +88,7 @@ DesignRNAScaffold::parse_command_line(
     parameters_.starting_helix = get_string_option("starting_helix");
     parameters_.ending_helix = get_string_option("ending_helix");
     parameters_.search_cutoff = get_float_option("search_cutoff");
+    parameters_.search_max_size = get_int_option("search_max_size");
     parameters_.new_ensembles = get_string_option("new_ensembles");
     // scoring related options
     parameters_.exhaustive_scorer = get_string_option("exhaustive_scorer");
@@ -237,6 +239,7 @@ DesignRNAScaffold::_setup_search() {
 
     // setup parameters
     search->set_option_value("accept_score", parameters_.search_cutoff);
+    search->set_option_value("max_size", parameters_.search_max_size);
 
     return search;
 
