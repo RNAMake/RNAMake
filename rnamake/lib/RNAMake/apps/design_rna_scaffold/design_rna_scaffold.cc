@@ -58,6 +58,10 @@ DesignRNAScaffold::setup_options() {
     add_option("flip_start_bp", false, base::OptionType::BOOL, false);
     add_option("flip_end_bp", false, base::OptionType::BOOL, false);
     add_option("motif_path", "", base::OptionType::STRING, false);
+    add_option("new_ensembles", "", base::OptionType::STRING, false);
+
+    // scoring related options
+    add_option("exhastive_scorer", "default", base::OptionType::STRING, false);
 
 }
 
@@ -67,8 +71,10 @@ DesignRNAScaffold::parse_command_line(
         const char ** argv) {
     base::Application::parse_command_line(argc, argv);
 
+    // core inputs
     parameters_.pdb       = get_string_option("pdb");     parameters_.start_bp   = get_string_option("start_bp");
     parameters_.end_bp    = get_string_option("end_bp");  parameters_.mg         = get_string_option("mg");
+    // common options
     parameters_.dump_pdbs = get_bool_option("dump_pdbs"); parameters_.dump_scaffold_pdbs = get_bool_option("dump_scaffold_pdbs");
     parameters_.out_file = get_string_option("out_file"); parameters_.score_file = get_string_option("score_file");
     parameters_.solution_filter = get_string_option("solution_filter");
@@ -76,14 +82,20 @@ DesignRNAScaffold::parse_command_line(
     parameters_.motif_path = get_string_option("motif_path");
     parameters_.all_designs = get_bool_option("all_designs");
     parameters_.skip_sequence_optimization = get_bool_option("skip_sequence_optimization");
+    // less common options
     parameters_.no_basepair_checks         = get_bool_option("no_basepair_checks");
     parameters_.starting_helix = get_string_option("starting_helix");
     parameters_.ending_helix = get_string_option("ending_helix");
     parameters_.search_cutoff = get_float_option("search_cutoff");
+    parameters_.new_ensembles = get_string_option("new_ensembles");
+    // scoring related options
+    parameters_.exhaustive_scorer = get_string_option("exhaustive_scorer");
 }
 
 void
 DesignRNAScaffold::run() {
+    if(parameters_.new_ensembles != "") { _build_new_ensembles(parameters_.new_ensembles); }
+
     if     (parameters_.pdb != "") { _setup_from_pdb(); }
     else if(parameters_.mg  != "") {}
     else                           {}
@@ -209,6 +221,8 @@ DesignRNAScaffold::_setup_search() {
 
     if(parameters_.search_type == "exhaustive") {
         using namespace motif_search::exhaustive;
+        auto score_factory = ScorerFactory();
+        auto scorer = score_factory.get_scorer(parameters_.exhaustive_scorer);
         //TODO setup default sol topology if user does not specify motif_path
         auto sol_template = std::make_shared<motif_search::SolutionTopologyTemplate>();
         if(parameters_.motif_path != "") {
@@ -216,7 +230,6 @@ DesignRNAScaffold::_setup_search() {
         }
         auto factory = motif_search::SolutionToplogyFactory();
         auto sol_toplogy = factory.generate_toplogy(*sol_template);
-        auto scorer = std::make_shared<GreedyScorer>();
         auto filter = _setup_sol_filter(parameters_.solution_filter);
         auto e_search = std::make_shared<Search>(scorer, *sol_toplogy, filter);
         search = motif_search::SearchOP(e_search->clone());
@@ -257,10 +270,13 @@ DesignRNAScaffold::_setup_sol_template_from_path(
     int i = 0;
     auto lib_names = resources::MotifStateSqliteLibrary::get_libnames();
     for(auto const & e : spl) {
-        // is a library
-        if(lib_names.find(e) != lib_names.end()) {
+        if(lib_names.find(e) != lib_names.end()) {  // is a library
             if(i == 0) { sol_template->add_library(e); }
             else       { sol_template->add_library(e, data_structure::NodeIndexandEdge{i-1, 1}); }
+        }
+        else if(new_motif_ensembles_.find(e) != new_motif_ensembles_.end()) { // found user specified ensemble
+            if(i == 0) { sol_template->add_ensemble(new_motif_ensembles_[e]); }
+            else       { sol_template->add_ensemble(new_motif_ensembles_[e], data_structure::NodeIndexandEdge{i-1, 1}); }
         }
         else {
             // TODO should try and get motif from every end!
@@ -338,7 +354,32 @@ DesignRNAScaffold::_get_motif_names(
     return motif_names_;
 }
 
+void
+DesignRNAScaffold::_build_new_ensembles(
+        String const & new_ensemble_path) {
+    auto lines = base::get_lines_from_file(new_ensemble_path);
+    auto ensemble = motif::MotifStateEnsembleOP(nullptr);
+    auto ms = motif::MotifStateOP(nullptr);
+    auto all_ms = motif::MotifStateOPs();
+    auto scores = Floats();
+    for(auto const & l : lines) {
+        auto spl = base::split_str_by_delimiter(l, " ");
+        if(spl.size() != 3) { continue;}
+        all_ms.resize(0); scores.resize(0);
+        for(auto const & m_name : base::split_str_by_delimiter(spl[2], ",")) {
+            ms = rm_.motif_state(m_name, "", "");
+            for(auto const & end_name : ms->end_names()) {
+                try {
+                    all_ms.push_back(rm_.motif_state(m_name, "", end_name));
+                    scores.push_back(0);
+                }
+                catch(...) { continue; }
+            }
+        }
+        new_motif_ensembles_[spl[0]] = std::make_shared<motif::MotifStateEnsemble>(all_ms, scores);
+    }
 
+}
 
 
 
@@ -369,3 +410,23 @@ main(
     return 0;
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

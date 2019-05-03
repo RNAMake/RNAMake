@@ -15,15 +15,6 @@
 #include "motif_data_structure/motif_graph.h"
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 
-struct Parameters {
-    String pdb, start_bp, end_bp, mg;
-    String starting_helix, ending_helix, search_type, motif_path;
-    String out_file, score_file, solution_filter;
-    bool skip_sequence_optimization, no_basepair_checks;
-    bool all_designs, dump_pdbs, dump_scaffold_pdbs;
-    float search_cutoff;
-};
-
 
 class DesignRNAScaffold : public base::Application {
 public:
@@ -87,12 +78,28 @@ private:
     _get_motif_names(
             motif_data_structure::MotifGraphOP);
 
+    void
+    _build_new_ensembles(
+            String const &);
+
 private:
     void
     check_bp(
             String const &,
             structure::RNAStructureOP,
             String const &);
+
+private:
+    struct Parameters {
+        String pdb, start_bp, end_bp, mg;
+        String starting_helix, ending_helix, search_type, motif_path;
+        String out_file, score_file, solution_filter, new_ensembles;
+        bool skip_sequence_optimization, no_basepair_checks;
+        bool all_designs, dump_pdbs, dump_scaffold_pdbs;
+        float search_cutoff;
+        //scoring related parameters
+        String exhaustive_scorer;
+    };
 
 private:
     std::ofstream out_, score_out_;
@@ -104,6 +111,7 @@ private:
     resources::Manager & rm_;
     Parameters parameters_;
     String motif_names_;
+    std::map<String, motif::MotifStateEnsembleOP> new_motif_ensembles_;
 
 
 };

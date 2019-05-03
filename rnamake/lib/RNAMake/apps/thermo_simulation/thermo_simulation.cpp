@@ -20,14 +20,6 @@
 void
 ThermoSimulationApp::setup_options() {
     add_option("mg_file", String(""), base::OptionType::STRING, true);
-    /*add_option("mt", String(""), base::OptionType::STRING, true);
-    add_option("n1", 0, base::OptionType::INT, true);
-    add_option("e1", 0, base::OptionType::INT, true);
-    add_option("n2", 0, base::OptionType::INT, true);
-    add_option("e2", 0, base::OptionType::INT, true);
-    add_option("extra_me", String(""), base::OptionType::STRING, false);
-    add_option("start_pdbs", false, base::OptionType::BOOL, false);*/
-
     add_option("steps", 100000, base::OptionType::INT);
     add_option("n", 1, base::OptionType::INT);
     add_option("log_level", "info", base::OptionType::STRING);

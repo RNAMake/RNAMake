@@ -29,40 +29,56 @@ TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
 
     }
 
-    SECTION("test solution topology template") {
-        using namespace motif_search::monte_carlo;
-        auto sol_template = motif_search::SolutionTopologyTemplate();
-        sol_template.add_library("flex_helices");
-        sol_template.add_library("twoway", data_structure::NodeIndexandEdge{0, 1});
-        auto ms = rm.motif_state("HELIX.IDEAL.3");
-        sol_template.add_motif_state(ms, data_structure::NodeIndexandEdge{1, 1});
-        auto count = 0;
-        for(auto const & n : sol_template) {
-            count += 1;
+    SECTION("test solution topology") {
+        SECTION("test solution topology template") {
+            auto sol_template = motif_search::SolutionTopologyTemplate();
+            sol_template.add_library("flex_helices");
+            sol_template.add_library("twoway", data_structure::NodeIndexandEdge{0, 1});
+            auto ms = rm.motif_state("HELIX.IDEAL.3");
+            sol_template.add_motif_state(ms, data_structure::NodeIndexandEdge{1, 1});
+            auto count = 0;
+            for (auto const & n : sol_template) {
+                count += 1;
+            }
+            REQUIRE(count == 3);
         }
-        REQUIRE(count == 3);
-    }
 
-    SECTION("test solution toplogy factory") {
-        using namespace motif_search::monte_carlo;
-        auto sol_template = motif_search::SolutionTopologyTemplate();
-        sol_template.add_library("flex_helices");
-        sol_template.add_library("twoway", data_structure::NodeIndexandEdge{0, 1});
-        sol_template.add_library("flex_helices", data_structure::NodeIndexandEdge{1, 1});
+        SECTION("test solution topoloy template ensembles") {
+            auto sol_template = motif_search::SolutionTopologyTemplate();
+            auto motif_states =  motif::MotifStateOPs{
+                rm.motif_state("HELIX.IDEAL.3"),
+                rm.motif_state("HELIX.IDEAL.4")
+            };
+            auto mse = std::make_shared<motif::MotifStateEnsemble>(motif_states, Floats{0, 0});
+            sol_template.add_ensemble(mse);
 
-        auto factory = motif_search::SolutionToplogyFactory();
-        auto sol_toplogy = factory.generate_toplogy(sol_template);
+            auto factory = motif_search::SolutionToplogyFactory();
+            auto sol_toplogy = factory.generate_toplogy(sol_template);
 
-        auto ms = rm.motif_state("HELIX.IDEAL.3");
-        auto msg = sol_toplogy->initialize_solution(ms->end_states()[1]);
+            REQUIRE(sol_toplogy->get_ensemble_size(0) == 2);
 
-        auto diff = ms->end_states()[1]->diff(msg->get_node(1)->data()->get_end_state(0));
-        REQUIRE(diff < 1);
+        }
 
-        /*rm.get_motif_from_state(ms)->to_pdb("start.pdb");
-        for(int i = 1; i < msg->size(); i++) {
-            rm.get_motif_from_state(msg->get_node(i)->data()->cur_state)->to_pdb("test."+std::to_string(i)+".pdb");
-        }*/
+        SECTION("test solution toplogy factory") {
+            auto sol_template = motif_search::SolutionTopologyTemplate();
+            sol_template.add_library("flex_helices");
+            sol_template.add_library("twoway", data_structure::NodeIndexandEdge{0, 1});
+            sol_template.add_library("flex_helices", data_structure::NodeIndexandEdge{1, 1});
+
+            auto factory = motif_search::SolutionToplogyFactory();
+            auto sol_toplogy = factory.generate_toplogy(sol_template);
+
+            auto ms = rm.motif_state("HELIX.IDEAL.3");
+            auto msg = sol_toplogy->initialize_solution(ms->end_states()[1]);
+
+            auto diff = ms->end_states()[1]->diff(msg->get_node(1)->data()->get_end_state(0));
+            REQUIRE(diff < 1);
+
+            /*rm.get_motif_from_state(ms)->to_pdb("start.pdb");
+            for(int i = 1; i < msg->size(); i++) {
+                rm.get_motif_from_state(msg->get_node(i)->data()->cur_state)->to_pdb("test."+std::to_string(i)+".pdb");
+            }*/
+        }
     }
 
     SECTION("test state") {
