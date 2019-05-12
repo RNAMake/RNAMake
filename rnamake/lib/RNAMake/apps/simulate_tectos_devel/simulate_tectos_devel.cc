@@ -416,6 +416,8 @@ SimulateTectosApp::setup_options() {
 
     add_option("scorer", "", base::OptionType::STRING);
     add_option("constraints", "", base::OptionType::STRING);
+    add_option("temperature", 298.15f, base::OptionType::FLOAT);
+    add_option("randomized_start", false, base::OptionType::BOOL);
 
 
     //add_cl_options(tfs_.options(), "simulation");
@@ -548,6 +550,7 @@ SimulateTectosApp::run() {
     }
 
     tfs_.set_option_value("steps", get_int_option("s"));
+    tfs_.set_option_value("temperature", get_float_option("temperature"));
     tfs_.set_option_value("steric_nodes", steric_node_str);
     tfs_.setup(mset, target_node_index, final_node_index, target_node_end_index, final_node_end_index);
 

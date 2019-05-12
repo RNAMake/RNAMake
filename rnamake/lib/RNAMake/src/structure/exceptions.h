@@ -5,6 +5,8 @@
 #ifndef RNAMAKE_NEW_STRUCTURE_EXCEPTIONS_H
 #define RNAMAKE_NEW_STRUCTURE_EXCEPTIONS_H
 
+#include "base/types.h"
+
 namespace structure {
 
 /**
