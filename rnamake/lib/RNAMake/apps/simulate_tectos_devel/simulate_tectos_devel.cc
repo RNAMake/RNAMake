@@ -385,11 +385,15 @@ SimulateTectosApp::SimulateTectosApp() : base::Application(),
 
 void
 SimulateTectosApp::setup_options() {
+    // most useed
     add_option("fseq", "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG", base::OptionType::STRING);
     add_option("fss",  "((((((....((((((((((((....))))))))))))....))))))", base::OptionType::STRING);
     add_option("cseq", "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG",  base::OptionType::STRING);
     add_option("css",  "(((((((..((((((((((((....))))))))))))...)))))))",  base::OptionType::STRING);
     add_option("s", 1000000, base::OptionType::INT);
+    add_option("cutoff", 4.5f, base::OptionType::FLOAT);
+    add_option("temperature", 298.15f, base::OptionType::FLOAT);
+
     add_option("start_pose", false, base::OptionType::BOOL);
     add_option("start_pdbs", false, base::OptionType::BOOL);
     add_option("coorigin", false, base::OptionType::BOOL);
@@ -416,7 +420,6 @@ SimulateTectosApp::setup_options() {
 
     add_option("scorer", "", base::OptionType::STRING);
     add_option("constraints", "", base::OptionType::STRING);
-    add_option("temperature", 298.15f, base::OptionType::FLOAT);
     add_option("randomized_start", false, base::OptionType::BOOL);
 
 
@@ -550,7 +553,9 @@ SimulateTectosApp::run() {
     }
 
     tfs_.set_option_value("steps", get_int_option("s"));
+    tfs_.set_option_value("cutoff", get_float_option("cutoff"));
     tfs_.set_option_value("temperature", get_float_option("temperature"));
+    tfs_.set_option_value("randomized_start", get_bool_option("randomized_start"));
     tfs_.set_option_value("steric_nodes", steric_node_str);
     tfs_.setup(mset, target_node_index, final_node_index, target_node_end_index, final_node_end_index);
 

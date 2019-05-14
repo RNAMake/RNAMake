@@ -11,6 +11,9 @@ class SimulateTectosWrapper(wrapper.Wrapper):
         self.add_cmd_option("cseq", "", required=False)
         self.add_cmd_option("css",  "", required=False)
         self.add_cmd_option("s", 1000000, required=False)
+        self.add_cmd_option("temperature", 298.15, required=False)
+        self.add_cmd_option("cutoff", 4.5, required=False)
+        
 
         self.add_cmd_option("extra_me", "", required=False)
         self.add_cmd_option("extra_motifs", "", required=False)
