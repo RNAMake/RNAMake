@@ -322,6 +322,8 @@ DesignRNAScaffold::_record_solution(
     score_out_ << design_num << "," << design_sol->score << "," << mg->designable_sequence() << ",";
     score_out_ << mg->dot_bracket() << "," << motif_names_ << ",";
 
+    mg->get_node(0)->data()->to_pdb("test.pdb");
+
     if(parameters_.dump_pdbs) {
         mg->to_pdb("design."+std::to_string(design_num)+".pdb", 1, 1);
     }

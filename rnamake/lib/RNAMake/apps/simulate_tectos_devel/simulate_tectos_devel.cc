@@ -840,11 +840,8 @@ thermo_fluctuation::ThermoFlucSimulationLoggerOP
 SimulateTectosApp::_get_logger(
         String const & name) {
     if(name.length() == 0) {
-        return std::make_shared<SimulateTectosRecordAllLogger>(
-                get_string_option("record_file"),
-                motif_names_,
-                ggaa_ttr_end_names_,
-                gaaa_ttr_end_names_);
+        return std::make_shared<thermo_fluctuation::ThermoFlucSimulationLogger>(
+                get_string_option("record_file"));
     }
     else if (name == "AllLoger") {
         return std::make_shared<SimulateTectosRecordAllLogger>(
