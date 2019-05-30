@@ -22,6 +22,7 @@ ThermoFlucSimulationDevel::setup(
 
     sampler_.setup(mset);
     sampler_.temperature(get_float_option("temperature"));
+    sampler_.randomized_start(get_bool_option("randomized_start"));
 
     ni1_ = ni1;
     ni2_ = ni2;
@@ -233,6 +234,7 @@ ThermoFlucSimulationDevel::setup_options() {
     options_.add_option("record_only_bound", false, base::OptionType::BOOL);
     options_.add_option("record_only_unbound", false, base::OptionType::BOOL);
     options_.add_option("steric_radius", 2.2f, base::OptionType::FLOAT);
+    options_.add_option("randomized_start", false, base::OptionType::BOOL);
     options_.lock_option_adding();
 
     /*
@@ -261,6 +263,7 @@ ThermoFlucSimulationDevel::update_var_options() {
     dump_pdbs_ = options_.get_bool("dump_pdbs");
     record_only_bound_ = options_.get_bool("record_only_bound");
     record_only_unbound_ = options_.get_bool("record_only_unbound");
+    randomized_start_ = options_.get_bool("randomized_start");
 
 }
 

@@ -27,21 +27,22 @@ public:
 
 class ThermoFlucSampler {
 public:
-    ThermoFlucSampler() :
-            temperature_(298.15),
-            rng_(util::RandomNumberGenerator()) {}
+    ThermoFlucSampler():
+            temperature_(298.15 * 1.3806488e-1),
+            rng_(util::RandomNumberGenerator()),
+            mc_(util::MonteCarlo(temperature_)) {}
 
     ~ThermoFlucSampler() {}
 
 public:
 
     void
-    setup(
-            motif_data_structure::MotifStateEnsembleTreeOP const &);
-
-    void
     sample(
             int steps = 1000);
+
+    void
+    setup(
+            motif_data_structure::MotifStateEnsembleTreeOP const &);
 
     int
     next();
@@ -81,10 +82,18 @@ public: // setters
                     "cannot set temperature lower then 0");
         }
 
-        temperature_ = temp;
+        temperature_ = temp * 1.3806488e-1;
+        mc_ = util::MonteCarlo(temperature_);
+    }
+
+    inline
+    void
+    randomized_start(bool random_start) {
+        randomized_start_ = random_start;
     }
 
 private:
+    bool randomized_start_;
     float temperature_;
     util::MonteCarlo mc_;
     util::RandomNumberGenerator rng_;

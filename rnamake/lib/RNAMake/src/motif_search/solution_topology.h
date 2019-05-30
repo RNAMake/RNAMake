@@ -33,6 +33,12 @@ public:
                 type_(NodeType::MOTIF_STATE),
                 motif_state_(ms) {}
 
+        inline
+        Node(
+                motif::MotifStateEnsembleOP mse):
+                type_(NodeType::ENSEMBLE),
+                ensemble_(mse) {}
+
     public:
         inline
         NodeType
@@ -54,6 +60,15 @@ public:
                 throw std::runtime_error("cannot get_motif_state(), wrong type");
             }
             return motif_state_;
+        }
+
+        inline
+        motif::MotifStateEnsembleOP
+        get_motif_state_ensemble() const {
+            if(type_ != NodeType::ENSEMBLE) {
+                throw std::runtime_error("cannot get_motif_state_ensemble(), wrong type");
+            }
+            return ensemble_;
         }
 
     private:
@@ -123,6 +138,26 @@ public:
         g_.add_node(n, ms->end_names().size(), 0, parent_nie);
         _update_default_transveral();
     }
+
+public:
+    void
+    add_ensemble(
+            motif::MotifStateEnsembleOP mse) {
+        auto n = Node(mse);
+        g_.add_node(n, mse->num_end_states());
+        _update_default_transveral();
+    }
+
+    void
+    add_ensemble(
+            motif::MotifStateEnsembleOP mse,
+            data_structure::NodeIndexandEdge const & parent_nie) {
+        auto n = Node(mse);
+        g_.add_node(n, mse->num_end_states(), 0, parent_nie);
+        _update_default_transveral();
+    }
+
+
 
 public:
     inline
@@ -196,6 +231,13 @@ public:
                 auto lib = _get_library(n->data().get_lib_name());
                 mse = _parse_library_into_ensemble(lib);
             }
+            else if(n->data().get_type() == SolutionTopologyTemplate::NodeType::ENSEMBLE) {
+                mse = n->data().get_motif_state_ensemble();
+            }
+            else if(n->data().get_type() == SolutionTopologyTemplate::NodeType::MOTIF_STATE) {
+                mse = std::make_shared<motif::MotifStateEnsemble>(n->data().get_motif_state());
+            }
+
             else {
                 throw std::runtime_error("not implemented");
             }
@@ -312,6 +354,13 @@ public:
     size_t
     size() {
         return mseg_->size();
+    }
+
+    inline
+    size_t
+    get_ensemble_size(
+          Index pos) {
+        return mseg_->get_ensemble(pos)->size();
     }
 
 private:

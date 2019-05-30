@@ -40,41 +40,6 @@ public:
     score(
             structure::BasepairState const & bps) = 0;
 
-    virtual
-    inline
-    float
-    accept_score(
-            structure::BasepairState const & bps)  {
-        score_ = bps.d().distance(target_->d());
-
-        if (target_an_aligned_end_) { r_diff_ = bps.r().difference(target_->r());      }
-        else                        { r_diff_ = bps.r().difference(target_flip_->r()); }
-        score_ += 2 * r_diff_;
-
-        return score_;
-    }
-
-
-protected:
-
-    inline
-    float
-    _weighted_score(
-            structure::BasepairStateOP const & current,
-            structure::BasepairStateOP const & end,
-            structure::BasepairStateOP const & endflip) {
-        d_diff_= current->d().distance(end->d());
-        if (d_diff_ > 25) { return d_diff_; }
-
-        if (target_an_aligned_end_) {  r_diff_ = current->r().difference(target_->r());      }
-        else                        {  r_diff_ = current->r().difference(target_flip_->r()); }
-
-        scale_ = (log(150 / d_diff_) - 1);
-        if (scale_ > 2) { scale_ = 2; }
-
-        return d_diff_ + scale_*r_diff_;
-    }
-
 
 protected:
     structure::BasepairStateOP target_, target_flip_;
@@ -84,25 +49,57 @@ protected:
 
 typedef std::shared_ptr<Scorer> ScorerOP;
 
-class GreedyScorer : public Scorer {
+class DefaultScorer : public Scorer {
 public:
-    GreedyScorer() : Scorer() {}
+    DefaultScorer() : Scorer() {}
 
     Scorer *
-    clone() const { return new GreedyScorer(*this); };
+    clone() const { return new DefaultScorer(*this); };
 
 public:
     inline
     float
     score(
             structure::BasepairState const & bps) {
-        return accept_score(bps);
+        score_ = bps.d().distance(target_->d());
+
+        if (target_an_aligned_end_) { r_diff_ = bps.r().difference(target_->r());      }
+        else                        { r_diff_ = bps.r().difference(target_flip_->r()); }
+        score_ += 2 * r_diff_;
+        //score_ += r_diff_;
+        //score_ = bps.sugars()[0].distance(target_->sugars()[1]) + bps.sugars()[1].distance(target_->sugars()[0]);
+        return score_;
+    }
+};
+
+class ScorerFactory  {
+public:
+    ScorerFactory() {}
+
+public:
+    ScorerOP
+    get_scorer(
+            String const & scorer_name) {
+        if(scorer_name == "default") {
+            return ScorerOP(std::make_shared<DefaultScorer>());
+        }
+        else if(scorer_name == "sugar_dist") {
+            return ScorerOP(std::make_shared<DefaultScorer>());
+        }
+        else {
+            throw std::runtime_error(scorer_name + " is not a valid scorer name");
+        }
+
     }
 
 };
 
 
 }
+
+
+
+
 }
 
 #endif //RNAMAKE_NEW_EXHAUSTIVE_SCORER_H

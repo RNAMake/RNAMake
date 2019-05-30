@@ -125,7 +125,7 @@ TEST_CASE( "Test Searching Motif States", "[ExhaustiveSearch]" ) {
             auto sol_toplogy = factory.generate_toplogy(sol_template);
             auto filter = std::make_shared<motif_search::NoExclusionFilter>();
 
-            auto scorer = std::make_shared<GreedyScorer>();
+            auto scorer = std::make_shared<DefaultScorer>();
             auto search = Search(scorer, *sol_toplogy, filter);
 
             auto start = start_ms->end_states()[0];

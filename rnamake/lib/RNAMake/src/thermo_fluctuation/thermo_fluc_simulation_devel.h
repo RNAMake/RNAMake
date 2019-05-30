@@ -221,6 +221,7 @@ private:
     bool record_only_bound_, record_only_unbound_;
     bool dump_state_;
     bool dump_pdbs_;
+    bool randomized_start_;
 };
 
 }
