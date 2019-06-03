@@ -4,6 +4,7 @@ import pandas as pd
 import subprocess
 
 from rnamake.wrappers.ddg_tecto_wrapper import DDGTectoWrapper
+from rnamake.wrappers import wrapper
 
 EXE_PATH = os.environ["RNAMAKE"] + "/rnamake/lib/RNAMake/cmake/build/ddg_tecto"
 
@@ -32,44 +33,20 @@ class DDGTectoUnittest(unittest.TestCase):
             'fseq' : "CTAGGAATCTGGAAGTACCGAGGAAACTCGGTACTTCCTGTGTCCTAG",
             'fss'  : "((((((....((((((((((((....))))))))))))....))))))",
             'cseq' : "CTAGGATATGGAAGATCCTCGGGAACGAGGATCTTCCTAAGTCCTAG",
-            'css'  : "(((((((..((((((((((((....))))))))))))...)))))))"
+            'css'  : "(((((((..((((((((((((....))))))))))))...)))))))",
+            'steps' :  1
         }
         w.run(**run_opts)
-        print w.get_output()
+        r = w.get_results()
+        self.failUnless(r.runs == 1)
+        self.failUnless(r.avg == 0.0)
+        self.failUnless(r.stdev == 0.0)
 
-    #def test_invalid_bp_name(self):
-    #    cmd = EXE_PATH + " -pdb ttr.pdb -start_bp \"A149-A154\" -end_bp \"A222-A25\""
-    #    lines = get_cmd_output(cmd)
-    #    self.failUnless(parse_output_line(lines[-1]) == LogStatus.ERROR)
+    def test_errors(self):
+        w = DDGTectoWrapper()
+        with self.assertRaises(wrapper.WrapperException) as context:
+            w.run()
 
-
-
-
-
-
-
-    """def tests(self):
-        path = RESOURCE_PATH + "design_rna_tests.txt"
-        df = pd.read_csv(path)
-
-        for i, r in df.iterrows():
-
-            cmd_opts = {
-                'pdb'      : RESOURCE_PATH + r.pdb,
-                'start_bp' : r.start_bp,
-                'end_bp'   : r.end_bp
-            }
-
-            print r.pdb
-
-            drw = design_rna_wrapper.DesignRNAWrapper()
-            drw.run(**cmd_opts)
-
-            self.failUnless(_out_files_exist(), "out files were not produced")
-            mg = _get_motif_graph()
-
-            self.failUnless(len(mg) > 1)
-            _remove_out_files()"""
 
 
 
