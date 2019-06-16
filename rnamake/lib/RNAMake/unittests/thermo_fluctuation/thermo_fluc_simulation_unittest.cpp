@@ -96,7 +96,7 @@ TEST_CASE( "Test Thermo Flucuation Simulation ", "[thermo_fluctuation::ThermoFlu
 
             sim.setup(*mseg, data_structure::NodeIndexandEdge{1, 1}, data_structure::NodeIndexandEdge{0, 0});
             sim.set_option_value("cutoff", 100);
-            REQUIRE(sim.next() == true)
+            REQUIRE(sim.next() == true);
         }
 
         /*SECTION("compare to old code") {
