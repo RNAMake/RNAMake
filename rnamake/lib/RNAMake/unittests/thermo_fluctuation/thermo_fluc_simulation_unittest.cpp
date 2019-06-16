@@ -87,7 +87,8 @@ TEST_CASE( "Test Thermo Flucuation Simulation ", "[thermo_fluctuation::ThermoFlu
 
         SECTION("Test simulation") {
             auto scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
-            auto sim = thermo_fluctuation::graph::Simulation(scorer);
+            auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
+            auto sim = thermo_fluctuation::graph::Simulation(scorer, sterics);
 
             auto mseg = std::make_shared<motif_data_structure::MotifStateEnsembleGraph>();
             mseg->add_ensemble(*rm.motif_state_ensemble("GG_LL_CC_RR"));
@@ -95,7 +96,7 @@ TEST_CASE( "Test Thermo Flucuation Simulation ", "[thermo_fluctuation::ThermoFlu
 
             sim.setup(*mseg, data_structure::NodeIndexandEdge{1, 1}, data_structure::NodeIndexandEdge{0, 0});
             sim.set_option_value("cutoff", 100);
-            REQUIRE(sim.next() == true);
+            REQUIRE(sim.next() == true)
         }
 
         /*SECTION("compare to old code") {

@@ -62,7 +62,7 @@ HashMotifs::run() {
     auto sol_toplogy = factory.generate_toplogy(sol_template);
     auto filter = std::make_shared<motif_search::NoExclusionFilter>();
 
-    auto scorer = std::make_shared<motif_search::exhaustive::GreedyScorer>();
+    auto scorer = std::make_shared<motif_search::exhaustive::DefaultScorer>();
     auto search = motif_search::exhaustive::Search(scorer, *sol_toplogy, filter);
 
     auto lookup = std::make_shared<util::StericLookupNew>();
