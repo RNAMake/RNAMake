@@ -124,6 +124,7 @@ DesignRNAScaffold::run() {
         if(sol == nullptr) { break; }
 
         sol_mg = sol->graph->to_motif_graph();
+        if(sol_mg->size() == 0) { break; }
         _get_motif_names(sol_mg);
 
         if(i == 0) {
@@ -134,6 +135,7 @@ DesignRNAScaffold::run() {
         }
 
         mg->add_motif_graph(*sol_mg, start_.node_index, start_.edge_index);
+        sol_mg->to_pdb("test.pdb", 1, 1);
         auto mg_copy = std::make_shared<motif_data_structure::MotifGraph>(*mg);
         mg_copy->add_connection(mg->last_node()->index(), end_.node_index,
                                 mg->last_node()->data()->end_name(1),
@@ -149,6 +151,14 @@ DesignRNAScaffold::run() {
             LOG_INFO << "found " << i << " designs, if you want more please use -designs num_of_design";
             exit(0);
         }
+    }
+
+    if(i == 0) {
+        LOG_INFO << "no solutions found";
+    }
+    else {
+        LOG_INFO << "no more solutions found";
+        LOG_INFO << "found a total of " << i << " solution(s)";
     }
 }
 
@@ -181,6 +191,8 @@ DesignRNAScaffold::_setup_from_pdb() {
 
     start_ = data_structure::NodeIndexandEdge{0, ei1};
     end_   = data_structure::NodeIndexandEdge{0, ei2};
+
+    std::cout << ei1 << " " << ei2 << std::endl;
 
     msg_ = std::make_shared<motif_data_structure::MotifStateGraph>();
     msg_->add_state(m->get_state());
