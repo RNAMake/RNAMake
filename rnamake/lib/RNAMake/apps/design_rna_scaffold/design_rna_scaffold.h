@@ -97,7 +97,7 @@ private:
         bool skip_sequence_optimization, no_basepair_checks;
         bool all_designs, dump_pdbs, dump_scaffold_pdbs;
         float search_cutoff;
-        int search_max_size;
+        int search_max_size, designs;
         //scoring related parameters
         String exhaustive_scorer;
     };

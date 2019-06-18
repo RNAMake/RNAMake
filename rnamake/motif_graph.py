@@ -555,7 +555,6 @@ class MotifGraph(base.Base):
         else:
             pos = self.graph.add_data(m, parent.index, parent_end_index,
                                       0, len(m.ends))
-
             if pos != -1:
                 self.aligned[pos] = 1
                 self.update_align_list = 1
@@ -584,13 +583,11 @@ class MotifGraph(base.Base):
 
         avail_pos = self._get_parent_available_ends(parent, parent_end_index,
                                                     parent_end_name)
-
         for p in avail_pos:
             m_added = motif.get_aligned_motif(parent.data.ends[p], m.ends[0], m)
             if self.option('sterics'):
                 if self._steric_clash(m_added):
                     continue
-
             return self._add_motif_to_graph(m_added, parent, p)
 
         return -1

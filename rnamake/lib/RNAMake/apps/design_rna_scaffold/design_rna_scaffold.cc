@@ -76,6 +76,7 @@ DesignRNAScaffold::parse_command_line(
     parameters_.pdb       = get_string_option("pdb");     parameters_.start_bp   = get_string_option("start_bp");
     parameters_.end_bp    = get_string_option("end_bp");  parameters_.mg         = get_string_option("mg");
     // common options
+    parameters_.designs   = get_int_option("designs");
     parameters_.dump_pdbs = get_bool_option("dump_pdbs"); parameters_.dump_scaffold_pdbs = get_bool_option("dump_scaffold_pdbs");
     parameters_.out_file = get_string_option("out_file"); parameters_.score_file = get_string_option("score_file");
     parameters_.solution_filter = get_string_option("solution_filter");
@@ -144,6 +145,10 @@ DesignRNAScaffold::run() {
         mg->remove_level(1);
 
         i++;
+        if(parameters_.designs <= i) {
+            LOG_INFO << "found " << i << " designs, if you want more please use -designs num_of_design";
+            exit(0);
+        }
     }
 }
 
