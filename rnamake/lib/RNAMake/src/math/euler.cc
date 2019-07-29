@@ -46,12 +46,12 @@ axis_angle_from_matrix(
         AxisAngle & aa) {
     auto epsilon = 0.01; // margin to allow for rounding errors
     auto epsilon2 = 0.1; // margin to distinguish between 0 and 180 degrees
-    if(abs(m.xy() - m.yx()) < epsilon && abs(m.xz() - m.zx()) < epsilon && abs(m.yz() - m.zy()) < epsilon) {
+    if(std::abs(m.xy() - m.yx()) < epsilon && std::abs(m.xz() - m.zx()) < epsilon && std::abs(m.yz() - m.zy()) < epsilon) {
         // singularity found
         // first check for identity matrix which must have +1 for all terms
         //  in leading diagonaland zero in other terms
-        if(abs(m.xy() + m.yx()) < epsilon2 && abs(m.xz() + m.zx()) < epsilon2 && abs(m.yz() + m.zy()) < epsilon2 &&
-           abs(m.xx() + m.yy() + m.zz() - 3) < epsilon2) {
+        if(std::abs(m.xy() + m.yx()) < epsilon2 && std::abs(m.xz() + m.zx()) < epsilon2 &&
+           std::abs(m.yz() + m.zy()) < epsilon2 && std::abs(m.xx() + m.yy() + m.zz() - 3) < epsilon2) {
             // this singularity is identity matrix so angle = 0
             aa.angle = 0;
             aa.axis.x(1); aa.axis.y(0); aa.axis.z(0);
@@ -81,7 +81,7 @@ axis_angle_from_matrix(
 
     auto s = sqrt((m.zy() - m.yz())*(m.zy() - m.yz()) + (m.xz() - m.zx())*(m.xz() - m.zx()) +
                   (m.yx() - m.xy())*(m.yx() - m.xy()));
-    if(abs(s) < 0.001) { s = 1; }
+    if(std::abs(s) < 0.001) { s = 1; }
     aa.angle = acos((m.xx() + m.yy() + m.zz() - 1) / 2);
     aa.axis.x((m.zy() - m.yz()) / s);
     aa.axis.y((m.xz() - m.xz()) / s);

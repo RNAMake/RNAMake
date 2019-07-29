@@ -107,6 +107,21 @@ class SqliteLibraryUnittest(unittest.TestCase):
         m2 = mlib.get(name="HELIX.IDEAL")
         self.failIf(m1.id == m2.id)
 
+    def test_make_a_csv_of_all_motifs(self):
+        mlib = sqlite_library.MotifSqliteLibrary("twoway")
+        mlib.load_all()
+
+        f = open("motif.csv", "w")
+        f.write("motif_name,pdb,chain_id_1,res_num_start_1,res_num_end_2,chain_id_2,res_num_start_2,")
+        f.write("res_num_end_2\n")
+        for m in mlib.all():
+            name = m.name.split(".")[1]
+            f.write(m.name + "," + name + ",")
+            for c in m.chains():
+                f.write(c.first().chain_id + "," + str(c.first().num) + "," + str(c.last().num) + ",")
+            f.write("\n")
+        f.close()
+
     def _test_get_all_bulges(self):
         mlib = sqlite_library.MotifSqliteLibrary("twoway")
         mlib.load_all()

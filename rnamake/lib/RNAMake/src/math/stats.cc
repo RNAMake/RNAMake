@@ -63,7 +63,7 @@ avg_unsigned_diff(
         std::vector<double> const & y) {
     double diff = 0;
     for (int i = 0; i < x.size(); i++) {
-        diff += abs(x[i] - y[i]);
+        diff += std::abs(x[i] - y[i]);
     }
     return diff / x.size();
 }

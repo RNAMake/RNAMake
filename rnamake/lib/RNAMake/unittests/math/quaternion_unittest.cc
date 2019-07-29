@@ -97,7 +97,7 @@ TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
             auto q_avg = averager.get_average();
 
             for (int i = 0; i < 4; i++) {
-                REQUIRE(math::are_floats_equal(abs(matlab_result_q[i]), abs(q_avg[i])));
+                REQUIRE(math::are_floats_equal(std::abs(matlab_result_q[i]), abs(q_avg[i])));
             }
 
         }
@@ -111,7 +111,7 @@ TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
             auto q1 = get_quaternion_from_matrix(r);
 
             for (int i = 0; i < 4; i++) {
-                REQUIRE(math::are_floats_equal(abs(q[i]), abs(q1[i])));
+                REQUIRE(math::are_floats_equal(std::abs(q[i]), abs(q1[i])));
             }
         }
     }

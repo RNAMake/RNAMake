@@ -220,7 +220,7 @@ OptTectoCutoff::_score(
     int closest_i = 0;
     double diff = 0;
     for(int i = 0; i < histos_.size(); i++) {
-        diff = abs(avg_hit_counts_[i] - avg_hit_count_mean);
+        diff = std::abs(avg_hit_counts_[i] - avg_hit_count_mean);
         if(diff < closest) {
             closest = diff;
             closest_i = i;

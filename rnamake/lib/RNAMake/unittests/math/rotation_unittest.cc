@@ -26,7 +26,7 @@ TEST_CASE( "Test Rotations ", "[Rotations]" ) {
         auto aa = math::AxisAngle();
         math::axis_angle_from_matrix(m, aa);
 
-        REQUIRE(abs(30 - math::degrees(aa.angle)) < 0.01);
+        REQUIRE(std::abs(30 - math::degrees(aa.angle)) < 0.01);
         REQUIRE(aa.axis.distance(math::Point(0, 0, -1)) < 0.01);
 
         m = math::Matrix( 0.866, -0.5, 0,
@@ -34,7 +34,7 @@ TEST_CASE( "Test Rotations ", "[Rotations]" ) {
                           0, 0, 1);
 
         math::axis_angle_from_matrix(m, aa);
-        REQUIRE(abs(30 - math::degrees(aa.angle)) < 0.01);
+        REQUIRE(std::abs(30 - math::degrees(aa.angle)) < 0.01);
         REQUIRE(aa.axis.distance(math::Point(0, 0, 1)) < 0.01);
 
     }

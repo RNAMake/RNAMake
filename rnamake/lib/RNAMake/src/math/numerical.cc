@@ -19,7 +19,7 @@ are_floats_equal(
         double const a,
         double const b,
         double tol) {
-    if (fabs(a - b) < tol) { return 1; }
+    if (std::abs(a - b) < tol) { return 1; }
     else { return 0; }
 }
 
