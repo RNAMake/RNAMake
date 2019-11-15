@@ -26,7 +26,9 @@ class Strategy(strategy_template.Strategy):
             if len(closing_pairs) < 3: continue
             multiloop_found = True
             for index, pair in enumerate(closing_pairs):
-                if (e_index == 1) and (index == 0): continue # loop closing pair connected with neck is allowed to turn any direction
+                #if (e_index == 1) and (index == 0):
+                #    print("made it")
+                #if (e_index == 1) and (index == 0): continue # loop closing pair connected with neck is allowed to turn any direction
                 if index == 0:
                     if pair == "CG": continue
                     elif pair == "GC": penalty += params[0]
@@ -37,6 +39,5 @@ class Strategy(strategy_template.Strategy):
                     elif pair == "CG": penalty += params[0]
                     else:
                         penalty += params[1]
-
         if not multiloop_found: return 100
         return 100 + penalty

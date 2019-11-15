@@ -2,6 +2,8 @@ import ensemble_utils
 import ensemble_design
 import settings
 
+import sys
+
 class SequenceDesignerData(object):
     def __init__(self, sequence, score):
         self.sequence, self.score = sequence, score
@@ -65,11 +67,20 @@ class SequenceDesigner:
 
 if __name__ == "__main__":
     designer = SequenceDesigner()
-    solutions = designer.design("((((((((((((((((((((....))))))))))))))))))))",
-                                "NNNNNNNNNNNNNNNNNNNNAAAANNNNNNNNNNNNNNNNNNNN")
-    #solutions = designer.design("(((((....)))))", "GGAGCUUCGGCUCC")
-    #solutions = designer.design("(((....)))", "NNNUUCGNNN")
+    #solutions = designer.design("(((((((....(((...........)))((((((((..(((((((((((((((((((...(((((......))))).)))))).)))))))))))))..))))))))..)))))))",
+    #                            "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
+
+    ss, seq  = "", ""
+    if len(sys.argv) == 2:
+        ss = sys.argv[1]
+        seq = "N" * len(ss)
+    else:
+        ss = sys.argv[1]
+        seq = sys.argv[2]
+
+
+    solutions = designer.design(ss, seq)
     print solutions[0].score, solutions[0].sequence
-    solutions = designer.design("((((((((((((((((((((....))))))))))))))))))))",
-                                "CGUUAUAUCAAUUAAUAAGCAAAAGCUUAUUAAUUGAUAUAACG")
-    print solutions[0].score, solutions[0].sequence
+    #solutions = designer.design("((((((((((((((((((((....))))))))))))))))))))",
+    #                            "CGUUAUAUCAAUUAAUAAGCAAAAGCUUAUUAAUUGAUAUAACG")
+    #print solutions[0].score, solutions[0].sequence

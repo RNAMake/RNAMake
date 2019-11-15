@@ -114,6 +114,7 @@ GeneralHelixSampler::run() {
 
     start->name("start");
     start->block_end_add(-1);
+    start->ends()[0]->flip();
 
     RM::instance().register_motif(start);
 

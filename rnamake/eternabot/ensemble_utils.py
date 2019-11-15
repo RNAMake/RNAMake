@@ -45,6 +45,7 @@ class Ensemble:
                 #if weights[i] > 0.0:
                 #    print strategy, weights[i]
 
+
             self.strategies_ = strategies
 
         except IOError:
@@ -166,6 +167,7 @@ class Ensemble:
             self.my_weights_ = my_weights
             self.strategies_ = strategies
 
+
     def test_weights(self,weights):
         my_weights = self.my_weights_
         strategies = self.strategies_
@@ -197,6 +199,8 @@ class Ensemble:
                 scores = strategies[ss].normalized_score(design,strategies[ss].default_params_)
                 score = scores['normalized']
                 scoresum += score * my_weights[ss]
+
+                #print(strategies[ss].title_, scores['unnormalized'], my_weights[ss])
 
                 #scoremap[strategies[ss].title_] = score * my_weights[ss];
                 scoremap[strategies[ss].title_] =  scores['unnormalized']

@@ -42,6 +42,7 @@ class Strategy(strategy_template.Strategy):
         score -= abs(float(u_count)/seqlen - params[2]) * params[3]
         score -= abs(float(c_count)/seqlen - params[4]) * params[5]
 
+
         if(fe < params[6]):
             score -= abs(fe - params[6]) * params[8]
         elif(fe > params[7]):
