@@ -2,6 +2,8 @@ import ensemble_utils
 import ensemble_design
 import settings
 
+import pandas as pd
+
 import sys
 
 class SequenceDesignerData(object):
@@ -48,12 +50,11 @@ class SequenceDesigner:
         self.ensemble = ensemble_utils.Ensemble("sparse", strategy_names, weights)
 
     def design(self, structure, sequence, count=1):
-        score_cutoff = 90
         if   len(structure) <= 50:
             score_cutoff = 70
         elif len(structure) <= 80:
             score_cutoff = 80
-
+        score_cutoff = 100
         solutions = []
         for i in range(count):
             res = ensemble_design.inverse_fold_whole(structure, sequence,
@@ -65,8 +66,71 @@ class SequenceDesigner:
             solutions.append(SequenceDesignerData(seq, score))
         return solutions
 
+def run_eterna_100(designer):
+    df = pd.read_csv("eterna100.csv")
+
+    for i, row in df.iterrows():
+        if i < 49:
+            continue
+        if len(row["Secondary Structure"]) > 150:
+            continue
+        print(i)
+
+
+        try:
+            f = open("outputs/" + str(i) + ".csv", "w")
+            f.write("sequence,structure,score\n")
+            for j in range(100):
+                ss = row["Secondary Structure"]
+                seq = "N"*len(row["Secondary Structure"])
+
+                solutions = designer.design(ss, seq)
+                print(solutions[0].sequence)
+                f.write(solutions[0].sequence + "," + ss + "," + str(solutions[0].score) + "\n")
+            f.close()
+        except:
+            pass
+
+def run_other_seqs(designer):
+    df = pd.read_csv("other_seqs.csv")
+
+    for i, row in df.iterrows():
+        if i != 3:
+            continue
+        print(i)
+
+        try:
+            f = open("other_out/" + str(i) + ".csv", "w")
+            f.write("sequence,structure,score\n")
+            for j in range(100):
+                ss = row["structure"]
+                seq = row["design_sequence"]
+
+                solutions = designer.design(ss, seq)
+                print(solutions[0].sequence, solutions[0].score)
+                f.write(solutions[0].sequence + "," + ss + "," + str(solutions[0].score) + "\n")
+            f.close()
+        except:
+            pass
+
+
+def run_training_data(designer):
+    f = open("org_data_process.csv", "w")
+    f.write("sequence,structure,computed_score\n")
+    df = pd.read_csv("org_data.csv")
+    for i, row in df.iterrows():
+        solutions = designer.design(".....(((((((((((((((((....))))))))(((((((((....)))))))))((((((((....)))))))))))))))))....................", "GGAAGGUAUAUAUCCUAUAUAGACGACUAUAUAGCUAUAUAUCACGAGAUAUAUAGGAUAUAUGACGACAUAUAUCGAUAUAUACAAAGAAACAACAACAACAAC")
+        #f.write(row.sequence + "," + row.structure + "," + str(solutions[0].score) + "\n")
+    #f.close()
+
 if __name__ == "__main__":
     designer = SequenceDesigner()
+
+    run_other_seqs(designer)
+    exit()
+    #run_training_data(designer)
+    #exit()
+
     #solutions = designer.design("(((((((....(((...........)))((((((((..(((((((((((((((((((...(((((......))))).)))))).)))))))))))))..))))))))..)))))))",
     #                            "NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN")
 

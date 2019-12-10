@@ -134,10 +134,10 @@ APTStablization::run() {
 
         auto optimizer = SequenceOptimizer3D();
         optimizer.set_option_value("verbose", true);
-        optimizer.set_option_value("cutoff", 7.0f);
+        optimizer.set_option_value("cutoff", 5.0f);
 
         auto sols = optimizer.get_optimized_sequences(mg, scorer);
-        if(sols[0]->dist_score > 7) {
+        if(sols[0]->dist_score > 5) {
             continue;
         }
 

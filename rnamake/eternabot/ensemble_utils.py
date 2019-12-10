@@ -13,6 +13,7 @@ import settings
 
 class Ensemble:
     def __init__(self, method, strategy_names, weights):
+        self.count = 0
         try:
             base_dir = settings.base_dir
             fw = open(base_dir + "/strategies/weights_%s.txt" % method, "r")
@@ -186,7 +187,7 @@ class Ensemble:
         print "MY WEIGHTS %s" % my_weights
 
     def score(self, design):
-
+        self.count += 1
         scores_mean = self.scores_mean_
         scores_stdev = self.scores_stdev_
         strategies = self.strategies_
