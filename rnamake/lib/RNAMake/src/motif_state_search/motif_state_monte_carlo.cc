@@ -9,7 +9,7 @@ void
 MotifStateMonteCarlo::setup_options() {
     options_.add_option("sterics", false, OptionType::BOOL);
     options_.add_option("max_solutions", 1, OptionType::INT);
-    options_.add_option("accept_score", 5, OptionType::FLOAT);
+    options_.add_option("accept_score", 10, OptionType::FLOAT);
     options_.add_option("stages", 100, OptionType::INT);
     options_.add_option("steps", 500000, OptionType::INT);
     options_.lock_option_adding();
@@ -193,18 +193,32 @@ MotifStateMonteCarlo::run() {
                 for (auto const & n : *msg_) {
                     j++;
                     if (j == 0) { continue; }
-                    motif_used_string += n->data()->name() + ";";
+                    if(n->data()->name().substr(0, 10) == "HELIX.FLEX") {
+                        auto spl = split_str_by_delimiter(n->data()->name(), ".");
+                        motif_used_string += spl[0] + "." + spl[1] + "." + spl[2] + ";";
+                    }
+                    else {
+                        motif_used_string += n->data()->name() + ";";
+
+                    }
                 }
                 if(seen.find(motif_used_string) != seen.end()) { continue; }
                 seen[motif_used_string] = 1;
-                if(seen.size() % 10 == 0) {
-                    msg_->to_motif_graph()->to_pdb("design."+std::to_string(seen.size()-1)+".pdb", 1);
-                    std::cout << "solutions: " << seen.size() << std::endl;
-                }
-                out << score_num << "," << cur_score << "," << motif_used_string << "," << std::endl;
+                //if(seen.size() % 10 == 0) {
+
+                auto mg =  msg_->to_motif_graph();
+                auto last_n = msg_->last_node()->index();
+                auto nj_name = msg_->get_node(nj_)->data()->end_name(ej_);
+                auto last_name = msg_->get_node(last_n)->data()->end_name(1);
+                mg->add_connection(nj_, last_n, nj_name, last_name);
+                mg->to_pdb("design."+std::to_string(seen.size()-1)+".pdb", 1);
+                std::cout << "solutions: " << seen.size() << std::endl;
+                //}
+                out << score_num << "," << cur_score << "," << motif_used_string << "," << mg->sequence() << " " << mg->dot_bracket() <<  std::endl;
                 out_str << msg_->to_motif_graph()->to_str() << std::endl;
-                msg_->to_motif_graph()->to_pdb("design."+std::to_string(seen.size()-1)+".pdb", 1);
-                exit(0);
+                score_num += 1;
+                //msg_->to_motif_graph()->to_pdb("design."+std::to_string(seen.size()-1)+".pdb", 1);
+                //exit(0);
 
             }
         }
@@ -242,7 +256,7 @@ MotifStateMonteCarlo::get_score(
     else {
         r_diff_flip_ = last_bp->r().difference(end_->r());
     }
-    score_ += r_diff_flip_*2;
+    score_ += r_diff_flip_*6;
 
     return score_;
 
