@@ -687,7 +687,6 @@ MotifGraph::replace_helical_sequence(secondary_structure::PoseOP const & ss) {
 
 //outputting functions /////////////////////////////////////////////////////////////////////////////
 
-
 void
 MotifGraph::write_pdbs(String const & fname) {
     std::stringstream ss;

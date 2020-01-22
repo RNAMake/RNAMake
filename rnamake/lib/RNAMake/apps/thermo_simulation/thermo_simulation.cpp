@@ -25,6 +25,7 @@ ThermoSimulationApp::setup_options() {
     add_option("log_level", "info", base::OptionType::STRING);
     add_option("extra_sequences", "", base::OptionType::STRING);
     add_option("score_file", "thermo_sim.scores", base::OptionType::STRING);
+    add_option("movie", false, base::OptionType::BOOL);
 }
 
 
@@ -41,6 +42,7 @@ ThermoSimulationApp::parse_command_line(
     parameters_.n          = get_int_option("n");
     parameters_.extra_sequences = get_string_option("extra_sequences");
     parameters_.score_file = get_string_option("score_file");
+    parameters_.movie = get_bool_option("movie");
 
 }
 
@@ -223,15 +225,32 @@ ThermoSimulationApp::_calc_num_hits(
         data_structure::NodeIndexandEdge const & start,
         data_structure::NodeIndexandEdge const & end,
         int n) {
+    std::ofstream out;
+
+    if(parameters_.movie) {
+        out.open("movie.pdb");
+    }
+
     int avg = 0;
+    int model_num = 1;
+
     for(int j = 0; j < n; j++) {
         sim->setup(mseg, start, end);
         int count = 0;
         for (int i = 0; i < parameters_.steps; i++) {
             count += sim->next();
+            if(i % 10000 == 0){
+                out << "MODEL " << model_num << std::endl;
+                out << sim->get_pdb_str();
+                out << "ENDMDL" << std::endl;
+            }
         }
+
+
         avg += count;
     }
+    out.close();
+
     avg /= n;
     return avg;
 }

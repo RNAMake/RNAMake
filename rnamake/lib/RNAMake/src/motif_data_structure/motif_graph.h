@@ -394,6 +394,15 @@ public: //Motif Merger Wrappers
 
     }
 
+    String
+    pdb_str(
+            int renumber = -1,
+            int close_chains = 0,
+            int conect_statement = 0) {
+        auto s = get_structure();
+        return s->to_pdb_str(1, 1);
+    }
+
     inline
     String
     sequence() {

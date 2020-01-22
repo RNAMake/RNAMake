@@ -47,6 +47,11 @@ public: // outputs
         msg_->to_motif_graph()->write_pdbs(name);
     }
 
+    String
+    get_pdb_str() {
+        return msg_->to_motif_graph()->pdb_str();
+    }
+
 
 public: //option wrappers
 

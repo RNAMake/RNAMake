@@ -37,6 +37,7 @@ public:
     struct Parameters {
         String mg_file, log_level, extra_sequences, score_file;
         int steps, n;
+        bool movie;
     };
 
 
