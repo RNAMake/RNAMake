@@ -268,14 +268,15 @@ private:
         return libraries_[lib_name];
     }
 
-    motif::MotifStateEnsembleOP
+    static motif::MotifStateEnsembleOP
     _parse_library_into_ensemble(
             resources::MotifStateSqliteLibraryOP library) {
         auto motif_states = motif::MotifStateOPs();
         auto energies = Floats();
 
         for(auto const & ms : *library) {
-            motif_states.push_back(ms);
+            ms->new_uuids();
+            motif_states.push_back(std::make_shared<motif::MotifState>(*ms));
             energies.push_back(1);
         }
 
@@ -312,6 +313,8 @@ public:
     const_iterator end()   const noexcept { return mseg_->end(); }
 
 public:
+    // TODO come up with better system to distingiush these too options
+    // This one is for Path finding
     motif_data_structure::MotifStateGraphOP
     initialize_solution(
             structure::BasepairStateOP bp_state) {
@@ -329,6 +332,27 @@ public:
             auto ms = get_motif_state(n->index());
             if (mseg_->has_parent(n->index())) {
                 msg->add_state(ms, mseg_->get_parent_index(n->index()) + 1, mseg_->get_parent_end_index(n->index()));
+            } else {
+                msg->add_state(ms);
+            }
+
+        }
+        return msg;
+    }
+
+    // this one is for MC
+    motif_data_structure::MotifStateGraphOP
+    initialize_solution_no_start(
+            structure::BasepairStateOP bp_state) {
+
+        auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
+        msg->set_option_value("sterics", false);
+        //msg->add_state(ms);
+
+        for (auto const & n : *mseg_) {
+            auto ms = get_motif_state(n->index());
+            if (mseg_->has_parent(n->index())) {
+                msg->add_state(ms, mseg_->get_parent_index(n->index()), mseg_->get_parent_end_index(n->index()));
             } else {
                 msg->add_state(ms);
             }

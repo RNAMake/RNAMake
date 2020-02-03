@@ -98,8 +98,10 @@ private:
         bool all_designs, dump_pdbs, dump_scaffold_pdbs;
         float search_cutoff;
         int search_max_size, designs;
+        float scaled_score_d, scaled_score_r;
         //scoring related parameters
-        String exhaustive_scorer;
+        String exhaustive_scorer, mc_scorer;
+
     };
 
 private:

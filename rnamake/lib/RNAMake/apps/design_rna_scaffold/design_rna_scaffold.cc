@@ -9,6 +9,7 @@
 #include <motif_search/solution_topology.h>
 #include <motif_search/path_finding/search.h>
 #include <motif_search/exhaustive/search.h>
+#include <motif_search/monte_carlo/search.h>
 
 
 DesignRNAScaffold::DesignRNAScaffold():
@@ -63,6 +64,9 @@ DesignRNAScaffold::setup_options() {
 
     // scoring related options
     add_option("exhaustive_scorer", "default", base::OptionType::STRING, false);
+    add_option("mc_scorer", "default", base::OptionType::STRING, false);
+    add_option("scaled_score_d", 1.0f, base::OptionType::FLOAT, false);
+    add_option("scaled_score_r", 2.0f, base::OptionType::FLOAT, false);
 
 }
 
@@ -93,6 +97,9 @@ DesignRNAScaffold::parse_command_line(
     parameters_.new_ensembles = get_string_option("new_ensembles");
     // scoring related options
     parameters_.exhaustive_scorer = get_string_option("exhaustive_scorer");
+    parameters_.mc_scorer = get_string_option("mc_scorer");
+    parameters_.scaled_score_d = get_float_option("scaled_score_d");
+    parameters_.scaled_score_r = get_float_option("scaled_score_r");
 }
 
 void
@@ -121,6 +128,7 @@ DesignRNAScaffold::run() {
     int i = 0;
     while(!search_->finished()) {
         sol = search_->next();
+        std::cout << sol << std::endl;
         if(sol == nullptr) { break; }
 
         sol_mg = sol->graph->to_motif_graph();
@@ -185,6 +193,7 @@ DesignRNAScaffold::_setup_from_pdb() {
     // TODO allow for construction of motif from RNA structure to allow for changes in base pair types
     rm_.add_motif(parameters_.pdb, "scaffold", util::MotifType::TCONTACT);
     auto m = rm_.motif("scaffold", "", parameters_.end_bp);
+    m->to_pdb("start.pdb");
 
     auto ei1 = m->get_end_index(parameters_.start_bp);
     auto ei2 = m->get_end_index(parameters_.end_bp);
@@ -192,7 +201,7 @@ DesignRNAScaffold::_setup_from_pdb() {
     start_ = data_structure::NodeIndexandEdge{0, ei1};
     end_   = data_structure::NodeIndexandEdge{0, ei2};
 
-    std::cout << ei1 << " " << ei2 << std::endl;
+    //std::cout << ei1 << " " << ei2 << std::endl;
 
     msg_ = std::make_shared<motif_data_structure::MotifStateGraph>();
     msg_->add_state(m->get_state());
@@ -230,6 +239,7 @@ DesignRNAScaffold::_setup_search() {
     auto search = motif_search::SearchOP(nullptr);
 
     if(parameters_.search_type == "path_finding") {
+        LOGI << "Using Path_Finding search";
         using namespace motif_search::path_finding;
         auto scorer = std::make_shared<AstarScorer>();
         auto selector = default_selector();
@@ -239,6 +249,7 @@ DesignRNAScaffold::_setup_search() {
     }
 
     if(parameters_.search_type == "exhaustive") {
+        LOGI << "Using Exhustive search";
         using namespace motif_search::exhaustive;
         auto score_factory = ScorerFactory();
         auto scorer = score_factory.get_scorer(parameters_.exhaustive_scorer);
@@ -254,9 +265,32 @@ DesignRNAScaffold::_setup_search() {
         search = motif_search::SearchOP(e_search->clone());
     }
 
+    if(parameters_.search_type == "mc") {
+        LOGI << "Using Monte Carlo search";
+        using namespace motif_search::monte_carlo;
+        auto scorer = ScorerOP(nullptr);
+        if(parameters_.mc_scorer == "default") {
+            scorer = std::make_shared<DefaultScorer>();
+        }
+        else if(parameters_.mc_scorer == "scaled_scorer") {
+            scorer = std::make_shared<ScaledScorer>(parameters_.scaled_score_d, parameters_.scaled_score_r);
+        }
+
+        if(parameters_.motif_path == "") {
+            LOGE << "must include a motif path when using Monte Carlo search"; exit(0);
+        }
+        auto sol_template = _setup_sol_template_from_path(parameters_.motif_path);
+        auto factory = motif_search::SolutionToplogyFactory();
+        auto sol_toplogy = factory.generate_toplogy(*sol_template);
+        auto filter = _setup_sol_filter("RemoveDuplicateHelices");
+        auto e_search = std::make_shared<Search>(scorer, *sol_toplogy, filter);
+        search = motif_search::SearchOP(e_search->clone());
+    }
+
     // setup parameters
     search->set_option_value("accept_score", parameters_.search_cutoff);
     search->set_option_value("max_size", parameters_.search_max_size);
+
 
     return search;
 
