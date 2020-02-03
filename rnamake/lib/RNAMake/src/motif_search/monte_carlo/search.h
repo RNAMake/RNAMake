@@ -191,7 +191,7 @@ public:
         hot_mover->set_temperature(1000.0f);
         mover->set_temperature(4.5f);
 
-        // TODO add temperature adjustmentt to get to 0.235 acceptance
+        // TODO add temperature adjustment to get to 0.235 acceptance
         // TODO add mnimization step
         auto accept = false;
         auto accepted_steps = 0.0;
@@ -204,6 +204,8 @@ public:
                 accepted_steps += 1;
                 cur_score = mover->score();
                 if(cur_score < parameters_.accept_score) {
+                    _get_solution_motif_names(msg_);
+                    if(!filter_->accept(motif_names_)) { continue; }
                     std::cout << cur_score << std::endl;
                     auto sol_msg = _get_solution_msg();
                     return std::make_shared<Solution>(sol_msg, cur_score);
@@ -218,7 +220,7 @@ public:
 
             // heatup
             int k = 0;
-            for(int i = 0; i < 200; i++) {
+            for(int i = 0; i < 100; i++) {
                 accept = hot_mover->apply(msg_, cur_score);
                 if(accept) {
                     cur_score = hot_mover->score();
@@ -230,6 +232,7 @@ public:
             stage_ += 1;
         }
 
+        std::cout << "exited" << std::endl;
 
         return SolutionOP(nullptr);
 
@@ -270,6 +273,15 @@ private:
 
     }
 
+    void
+    _get_solution_motif_names(
+            motif_data_structure::MotifStateGraphOP msg) {
+        motif_names_.resize(0);
+        for (auto const & n : *msg) {
+            motif_names_.push_back(n->data()->name());
+        }
+    }
+
 
 protected:
 
@@ -290,6 +302,7 @@ protected:
         parameters_.accept_score = options_.get_float("accept_score");
 
     }
+
 
 
 private:
