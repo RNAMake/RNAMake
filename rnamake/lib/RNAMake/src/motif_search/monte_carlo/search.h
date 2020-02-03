@@ -188,14 +188,20 @@ public:
         auto best_score = cur_score;
         auto mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
         auto hot_mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
-        hot_mover->set_temperature(100);
+        hot_mover->set_temperature(1000.0f);
+        mover->set_temperature(4.5f);
 
+        // TODO add temperature adjustmentt to get to 0.235 acceptance
+        // TODO add mnimization step
         auto accept = false;
+        auto accepted_steps = 0.0;
         while(stage_ < stages_) {
+            accepted_steps = 0.0;
             while(step_ < steps_) {
                 step_ += 1;
                 accept = mover->apply(msg_, cur_score);
                 if(!accept) { continue; }
+                accepted_steps += 1;
                 cur_score = mover->score();
                 if(cur_score < parameters_.accept_score) {
                     std::cout << cur_score << std::endl;
@@ -208,13 +214,15 @@ public:
 
             }
 
-            LOGI << "stage: " << stage_ << " best_score: " << best_score << " cur_score: " << cur_score;
+            LOGI << "stage: " << stage_ << " best_score: " << best_score << " acceptance: " <<  (float)(accepted_steps / steps_);
 
             // heatup
-            for(int i = 0; i < 100; i++) {
+            int k = 0;
+            for(int i = 0; i < 200; i++) {
                 accept = hot_mover->apply(msg_, cur_score);
                 if(accept) {
                     cur_score = hot_mover->score();
+                    k += 1;
                 }
             }
 

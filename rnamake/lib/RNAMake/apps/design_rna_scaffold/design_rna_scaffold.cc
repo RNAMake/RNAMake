@@ -121,6 +121,7 @@ DesignRNAScaffold::run() {
 
     auto mg = msg_->to_motif_graph();
     auto sol_mg = motif_data_structure::MotifGraphOP(nullptr);
+    mg->set_option_value("sterics", false);
     mg->increase_level();
 
     auto sol = motif_search::SolutionOP(nullptr);
@@ -128,10 +129,11 @@ DesignRNAScaffold::run() {
     int i = 0;
     while(!search_->finished()) {
         sol = search_->next();
-        std::cout << sol << std::endl;
+
         if(sol == nullptr) { break; }
 
         sol_mg = sol->graph->to_motif_graph();
+        sol_mg->write_pdbs();
         if(sol_mg->size() == 0) { break; }
         _get_motif_names(sol_mg);
 
