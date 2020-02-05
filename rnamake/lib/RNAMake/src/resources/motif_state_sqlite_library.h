@@ -26,6 +26,7 @@ public:
 
         libnames_ = get_libnames();
         rng_ = util::RandomNumberGenerator();
+        name_ = libname;
         auto path = _get_path(libname);
         MotifSqliteConnection conn(path);
         connection_ = conn;
@@ -99,6 +100,9 @@ public:
     load_all(
             int limit = 99999);
 
+    String const &
+    get_name() { return name_; }
+
 
 private:
 
@@ -114,6 +118,7 @@ private:
     MotifSqliteConnection connection_;
     std::map<String, motif::MotifStateOP> data_;
     util::RandomNumberGenerator rng_;
+    String name_;
 
 };
 

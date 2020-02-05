@@ -214,7 +214,10 @@ typedef std::shared_ptr<SolutionToplogy> SolutionToplogyOP;
 
 class SolutionToplogyFactory {
 public:
-    SolutionToplogyFactory()  {}
+    SolutionToplogyFactory()  {
+        setup_options();
+        update_var_options();
+    }
 
     ~SolutionToplogyFactory() {}
 
@@ -268,13 +271,22 @@ private:
         return libraries_[lib_name];
     }
 
-    static motif::MotifStateEnsembleOP
+    motif::MotifStateEnsembleOP
     _parse_library_into_ensemble(
             resources::MotifStateSqliteLibraryOP library) {
         auto motif_states = motif::MotifStateOPs();
         auto energies = Floats();
 
+        auto is_helix_lib = false;
+        if(library->get_name() == "flex_helices" || library->get_name() == "ideal_helices" ||
+           library->get_name() == "ideal_helices_min") {
+            is_helix_lib = true;
+        }
+
         for(auto const & ms : *library) {
+            if(is_helix_lib && (ms->size() > parameters_.max_helix_size || ms->size() < parameters_.min_helix_size)) {
+                continue;
+            }
             ms->new_uuids();
             motif_states.push_back(std::make_shared<motif::MotifState>(*ms));
             energies.push_back(1);
@@ -283,10 +295,57 @@ private:
         return std::make_shared<motif::MotifStateEnsemble>(motif_states, energies);
     }
 
+private:
+    struct Parameters {
+        int max_helix_size, min_helix_size;
+    };
+
+    void
+    setup_options() {
+        options_.add_option("max_helix_size", 99, base::OptionType::INT);
+        options_.add_option("min_helix_size", 6, base::OptionType::INT);
+        options_.lock_option_adding();
+
+    }
+
+    void
+    update_var_options() {
+        parameters_.max_helix_size = options_.get_int("max_helix_size");
+        parameters_.min_helix_size = options_.get_int("min_helix_size");
+
+    }
+
+public: //option wrappers
+
+    inline
+    float
+    get_int_option(String const & name) { return options_.get_int(name); }
+
+    inline
+    float
+    get_float_option(String const & name) { return options_.get_float(name); }
+
+    inline
+    String
+    get_string_option(String const & name) { return options_.get_string(name); }
+
+    inline
+    bool
+    get_bool_option(String const & name) { return options_.get_bool(name); }
+
+    template<typename T>
+    void
+    set_option_value(
+            String const & name,
+            T const & val) {
+        options_.set_value(name, val);
+        update_var_options();
+    }
 
 
 private:
     base::Options options_;
+    Parameters parameters_;
     std::map<String, resources::MotifStateSqliteLibraryOP> libraries_;
     std::map<String, motif::MotifStateEnsembleOP> ensembles_;
 
@@ -386,6 +445,8 @@ public:
           Index pos) {
         return mseg_->get_ensemble(pos)->size();
     }
+
+
 
 private:
     motif_data_structure::MotifStateEnsembleOPGraphOP mseg_;

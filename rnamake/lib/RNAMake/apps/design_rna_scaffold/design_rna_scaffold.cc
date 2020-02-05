@@ -11,6 +11,8 @@
 #include <motif_search/exhaustive/search.h>
 #include <motif_search/monte_carlo/search.h>
 
+#include <sequence_optimization/sequence_optimizer.h>
+#include <thermo_fluctuation/graph/simulation.h>
 
 DesignRNAScaffold::DesignRNAScaffold():
         base::Application(),
@@ -52,8 +54,8 @@ DesignRNAScaffold::setup_options() {
     // less common options
     add_option("no_basepair_checks", false, base::OptionType::BOOL, false);
     add_option("no_out_file", false, base::OptionType::BOOL, false);
-    add_option("max_helix_length", 10, base::OptionType::INT, false);
-    add_option("min_helix_length", 3, base::OptionType::INT, false);
+    add_option("max_helix_length", 99, base::OptionType::INT, false);
+    add_option("min_helix_length", 4, base::OptionType::INT, false);
     add_option("starting_helix", "", base::OptionType::STRING, false);
     add_option("ending_helix", "", base::OptionType::STRING, false);
     add_option("all_designs", false, base::OptionType::BOOL, false);
@@ -61,6 +63,7 @@ DesignRNAScaffold::setup_options() {
     add_option("flip_end_bp", false, base::OptionType::BOOL, false);
     add_option("motif_path", "", base::OptionType::STRING, false);
     add_option("new_ensembles", "", base::OptionType::STRING, false);
+    add_option("no_mg_file", false, base::OptionType::BOOL, false);
 
     // scoring related options
     add_option("exhaustive_scorer", "default", base::OptionType::STRING, false);
@@ -90,11 +93,15 @@ DesignRNAScaffold::parse_command_line(
     parameters_.skip_sequence_optimization = get_bool_option("skip_sequence_optimization");
     // less common options
     parameters_.no_basepair_checks         = get_bool_option("no_basepair_checks");
+    parameters_.no_mg_file = get_bool_option("no_mg_file");
     parameters_.starting_helix = get_string_option("starting_helix");
     parameters_.ending_helix = get_string_option("ending_helix");
     parameters_.search_cutoff = get_float_option("search_cutoff");
     parameters_.search_max_size = get_int_option("search_max_size");
     parameters_.new_ensembles = get_string_option("new_ensembles");
+    parameters_.max_helix_length = get_int_option("max_helix_length");
+    parameters_.min_helix_length = get_int_option("min_helix_length");
+
     // scoring related options
     parameters_.exhaustive_scorer = get_string_option("exhaustive_scorer");
     parameters_.mc_scorer = get_string_option("mc_scorer");
@@ -114,10 +121,19 @@ DesignRNAScaffold::run() {
     score_out_.open(parameters_.score_file);
 
     score_out_ << "design_num,design_score,design_sequence,design_structure,motifs_uses,opt_num,";
-    score_out_ << "opt_sequence,opt_score,eterna_score" << std::endl;
+    score_out_ << "opt_sequence,opt_score,eterna_score,hit_count" << std::endl;
 
     search_ = _setup_search();
     problem_ = _setup_problem();
+
+    //sequence optimziation setup
+    auto seq_optimizer = std::make_shared<sequence_optimization::SequenceOptimizer3D>();
+    seq_optimizer->set_option_value("steps", 1);
+
+    //thermo sim setup
+    auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
+    auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
+    auto sim = std::make_shared<thermo_fluctuation::graph::Simulation>(thermo_scorer, sterics);
 
     auto mg = msg_->to_motif_graph();
     auto sol_mg = motif_data_structure::MotifGraphOP(nullptr);
@@ -128,33 +144,66 @@ DesignRNAScaffold::run() {
     search_->setup(problem_);
     int i = 0;
     while(!search_->finished()) {
-        sol = search_->next();
 
-        if(sol == nullptr) { break; }
+        try {
+            sol = search_->next();
 
-        sol_mg = sol->graph->to_motif_graph();
-        sol_mg->write_pdbs();
-        if(sol_mg->size() == 0) { break; }
-        _get_motif_names(sol_mg);
+            if (sol == nullptr) { break; }
 
-        if(i == 0) {
-            LOG_INFO << "found a solution: " << motif_names_;
+            sol_mg = sol->graph->to_motif_graph();
+            if (sol_mg->size() == 0) { break; }
+            _get_motif_names(sol_mg);
+
+            if (i == 0) {
+                LOG_INFO << "found a solution: " << motif_names_;
+            } else if (i % 10 == 0) {
+                LOG_INFO << "found " << i << " solutions ";
+            }
+
+            mg->add_motif_graph(*sol_mg, start_.node_index, start_.edge_index);
+            auto mg_copy = std::make_shared<motif_data_structure::MotifGraph>(*mg);
+            mg_copy->add_connection(mg->last_node()->index(), end_.node_index,
+                                    mg->last_node()->data()->end_name(1),
+                                    mg->get_node(end_.node_index)->data()->end_name(end_.edge_index));
+            _fix_flex_helices_mtype(mg_copy);
+            mg_copy->replace_ideal_helices();
+
+            auto last_m = mg_copy->get_node(end_.node_index)->connections()[end_.edge_index]->partner(end_.node_index);
+            auto new_start = data_structure::NodeIndexandEdge{last_m->index(), 1};
+
+            for (int j = 0; j < 1; j++) {
+
+                // sequence optimization
+                auto opt_seq_scorer = std::make_shared<sequence_optimization::InternalTargetScorer>(
+                        new_start.node_index, new_start.edge_index, end_.node_index, end_.edge_index,
+                        problem_->target_an_aligned_end);
+
+                auto sols = seq_optimizer->get_optimized_sequences(mg_copy, opt_seq_scorer);
+                mg_copy->replace_helical_sequence(sols[0]->sequence);
+
+                // thermo sim
+                auto r = _get_mseg(mg_copy);
+
+                auto start = data_structure::NodeIndexandEdge{r->index_hash[new_start.node_index],
+                                                              new_start.edge_index};
+                auto end = data_structure::NodeIndexandEdge{r->index_hash[end_.node_index], end_.edge_index};
+
+                sim->setup(*r->mseg, start, end);
+                auto count = 0;
+                for (int s = 0; s < 1000000; s++) {
+                    count += sim->next();
+                }
+                _record_solution(mg_copy, sol, sols[0], count, i, j);
+
+            }
+
+
+            mg->remove_level(1);
         }
-        else if(i % 10 == 0) {
-            LOG_INFO << "found " << i << " solutions ";
+        catch(...) {
+            mg->remove_level(1);
+            continue;
         }
-
-        mg->add_motif_graph(*sol_mg, start_.node_index, start_.edge_index);
-        sol_mg->to_pdb("test.pdb", 1, 1);
-        auto mg_copy = std::make_shared<motif_data_structure::MotifGraph>(*mg);
-        mg_copy->add_connection(mg->last_node()->index(), end_.node_index,
-                                mg->last_node()->data()->end_name(1),
-                                mg->get_node(end_.node_index)->data()->end_name(end_.edge_index));
-        _fix_flex_helices_mtype(mg_copy);
-        mg_copy->replace_ideal_helices();
-
-        _record_solution(mg_copy, sol, nullptr, i, 0);
-        mg->remove_level(1);
 
         i++;
         if(parameters_.designs <= i) {
@@ -283,6 +332,8 @@ DesignRNAScaffold::_setup_search() {
         }
         auto sol_template = _setup_sol_template_from_path(parameters_.motif_path);
         auto factory = motif_search::SolutionToplogyFactory();
+        factory.set_option_value("max_helix_size", parameters_.max_helix_length);
+        factory.set_option_value("min_helix_size", parameters_.min_helix_length);
         auto sol_toplogy = factory.generate_toplogy(*sol_template);
         auto filter = _setup_sol_filter("RemoveDuplicateHelices");
         auto e_search = std::make_shared<Search>(scorer, *sol_toplogy, filter);
@@ -370,6 +421,7 @@ DesignRNAScaffold::_record_solution(
         motif_data_structure::MotifGraphOP mg,
         motif_search::SolutionOP design_sol,
         sequence_optimization::OptimizedSequenceOP sequence_opt_sol,
+        int hit_count,
         int design_num,
         int sequence_opt_num) {
     score_out_ << design_num << "," << design_sol->score << "," << mg->designable_sequence() << ",";
@@ -383,6 +435,10 @@ DesignRNAScaffold::_record_solution(
         score_out_ << ",,," << std::endl;
         out_ << mg->to_str() << std::endl;
         return;
+    }
+    else {
+        score_out_ << sequence_opt_sol->sequence << "," << sequence_opt_sol->dist_score << ",";
+        score_out_ << sequence_opt_sol->eterna_score << "," << hit_count << std::endl;
     }
 
     //score_out_ << "design_num,design_score,design_sequence,design_structure,motifs_uses,opt_num,";
@@ -437,7 +493,53 @@ DesignRNAScaffold::_build_new_ensembles(
 
 }
 
+DesignRNAScaffold::EnsembleConversionResultsOP
+DesignRNAScaffold::_get_mseg(
+        motif_data_structure::MotifGraphOP mg) {
 
+    auto index_hash = std::map<int, int>();
+    auto mseg = std::make_shared<motif_data_structure::MotifStateEnsembleGraph>();
+    int i = 0, j = 0;
+    for(auto const & n : *mg) {
+        // build / get motif state ensemble
+        auto mse = motif::MotifStateEnsembleOP(nullptr);
+
+        if(n->data()->mtype() == util::MotifType::HELIX) {
+            // is not a basepair step
+            if(n->data()->residues().size() > 4) {
+                LOG_ERROR << "supplied a helix motif: "+n->data()->name() +" that is not a basepair step, this is no supported";
+                exit(0);
+            }
+
+            try {
+                mse = rm_.motif_state_ensemble(n->data()->end_ids()[0]);
+            }
+            catch(resources::ResourceManagerException const & e) {
+                LOG_ERROR << "cannot find motif state ensemble for basepair with id: " + n->data()->end_ids()[0] <<
+                          "check to make sure its a Watson-Crick basepair step";
+                exit(0);
+            }
+        }
+        else {
+            mse = std::make_shared<motif::MotifStateEnsemble>(n->data()->get_state());
+        }
+
+        if(i == 0) {
+            j = mseg->add_ensemble(*mse);
+        }
+        else {
+            int pi = index_hash[mg->parent_index(n->index())];
+            int pie = mg->parent_end_index(n->index());
+            j = mseg->add_ensemble(*mse, data_structure::NodeIndexandEdge{pi, pie});
+        }
+
+        index_hash[n->index()] = j;
+        i++;
+
+    }
+    return std::make_shared<EnsembleConversionResults>(mseg, index_hash);
+
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // main

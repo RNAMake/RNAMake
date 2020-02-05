@@ -193,6 +193,7 @@ public:
 
         // TODO add temperature adjustment to get to 0.235 acceptance
         // TODO add mnimization step
+        // TODO add sterics
         auto accept = false;
         auto accepted_steps = 0.0;
         while(stage_ < stages_) {
@@ -206,7 +207,6 @@ public:
                 if(cur_score < parameters_.accept_score) {
                     _get_solution_motif_names(msg_);
                     if(!filter_->accept(motif_names_)) { continue; }
-                    std::cout << cur_score << std::endl;
                     auto sol_msg = _get_solution_msg();
                     return std::make_shared<Solution>(sol_msg, cur_score);
                 }
@@ -219,14 +219,14 @@ public:
             LOGI << "stage: " << stage_ << " best_score: " << best_score << " acceptance: " <<  (float)(accepted_steps / steps_);
 
             // heatup
-            int k = 0;
+            /*int k = 0;
             for(int i = 0; i < 100; i++) {
                 accept = hot_mover->apply(msg_, cur_score);
                 if(accept) {
                     cur_score = hot_mover->score();
                     k += 1;
                 }
-            }
+            }*/
 
             step_ = 0;
             stage_ += 1;
@@ -262,10 +262,10 @@ private:
         for(auto const & n : *msg_) {
             if(n->index() == 0) { continue; }
             if(n->index() == 1) {
-                new_msg->add_state(n->data()->cur_state);
+                new_msg->add_state(std::make_shared<motif::MotifState>(*n->data()->cur_state));
             }
             else {
-                new_msg->add_state(n->data()->cur_state, -1, n->parent_end_index());
+                new_msg->add_state(std::make_shared<motif::MotifState>(*n->data()->cur_state), -1, n->parent_end_index());
             }
 
         }
