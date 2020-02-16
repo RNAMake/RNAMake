@@ -35,7 +35,7 @@ set(base_files
 add_library(base_lib ${base_files})
 target_link_libraries(base_lib)
 
-add_executable(application_unittest /Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests/base/application_unittest.cpp)
+add_executable(application_unittest /Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests/base/application_unittest.cpp unittests/base/string_unittest.cpp)
 target_link_libraries(application_unittest base_lib)
 
 add_executable(option_unittest /Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests/base/option_unittest.cpp)
@@ -117,7 +117,7 @@ set(util_files
 	/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src/util/monte_carlo.cpp
 	/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src/util/basic_io.cpp
 	/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src/util/x3dna.cc
-)
+        src/util/csv.cpp src/util/csv.h)
 
 add_library(util_lib ${util_files})
 target_link_libraries(util_lib math_lib  ${SQLITE3_LIBRARY})
@@ -131,7 +131,7 @@ target_link_libraries(x3dna_unittest util_lib)
 add_executable(steric_lookup_unittest /Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests/util/steric_lookup_unittest.cpp)
 target_link_libraries(steric_lookup_unittest util_lib)
 
-add_executable(sqlite3_connection_unittest /Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests/util/sqlite3_connection_unittest.cpp)
+add_executable(sqlite3_connection_unittest /Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/unittests/util/sqlite3_connection_unittest.cpp unittests/util/csv_unittest.cpp)
 target_link_libraries(sqlite3_connection_unittest util_lib)
 
 ###########################################################################

@@ -86,6 +86,107 @@ is_number(
 
 }
 
+//adapted from https://www.geeksforgeeks.org/check-given-string-valid-number-integer-floating-point/
+StringContents
+determine_string_contents(
+        String const & str) {
+    int i = 0, j = str.length() - 1;
+
+    // Handling whitespaces
+    while (i < str.length() && str[i] == ' ') {
+        i++;
+    }
+    while (j >= 0 && str[j] == ' ') {
+        j--;
+    }
+
+    if (i > j) {
+        return StringContents::STRING;
+    }
+
+    // if string is of length 1 and the only
+    // character is not a digit
+    if (i == j && !(str[i] >= '0' && str[i] <= '9')) {
+        return StringContents::STRING;
+    }
+
+    // If the 1st char is not '+', '-', '.' or digit
+    if (str[i] != '.' && str[i] != '+' && str[i] != '-' && !(str[i] >= '0' && str[i] <= '9')) {
+        return StringContents::STRING;
+    }
+
+    // To check if a '.' or 'e' is found in given
+    // string. We use this flag to make sure that
+    // either of them appear only once.
+    bool flagDotOrE = false;
+    bool has_dot = false;
+    int char_count = 0;
+
+    for (i; i <= j; i++) {
+        // If any of the char does not belong to
+        // {digit, +, -, ., e}
+        if (str[i] != 'e' && str[i] != '.'
+            && str[i] != '+' && str[i] != '-'
+            && !(str[i] >= '0' && str[i] <= '9')) {
+            return StringContents::STRING;
+        }
+
+        if (str[i] == '.') {
+            has_dot = true;
+            // checks if the char 'e' has already
+            // occurred before '.' If yes, return 0.
+            if (flagDotOrE == true) {
+                return StringContents::STRING;
+            }
+
+            // If '.' is the last character.
+            if (i + 1 > str.length()) {
+                return StringContents::STRING;
+            }
+
+            // if '.' is not followed by a digit.
+            if (!(str[i + 1] >= '0' && str[i + 1] <= '9')) {
+                return StringContents::STRING;
+            }
+        }
+
+        else if (str[i] == 'e') {
+            // set flagDotOrE = 1 when e is encountered.
+            flagDotOrE = true;
+
+            // if there is no digit before 'e'.
+            if (!(str[i - 1] >= '0' && str[i - 1] <= '9')) {
+                return StringContents::STRING;
+            }
+
+            // If 'e' is the last Character
+            if (i + 1 > str.length()) {
+                return StringContents::STRING;
+            }
+
+            // if e is not followed either by
+            // '+', '-' or a digit
+            if (str[i + 1] != '+' && str[i + 1] != '-'
+                && (str[i + 1] >= '0' && str[i] <= '9')) {
+                return StringContents::STRING;
+            }
+        }
+
+        if(char_count > 0 && (str[i] == '+' || str[i] == '-')) {
+            return StringContents::STRING;
+        }
+
+        char_count++;
+
+    }
+
+    if(flagDotOrE || has_dot) { return StringContents::FLOAT; }
+    else                      { return StringContents::INT; }
+
+
+}
+
+
 /**
  * @brief Left Trim
  *

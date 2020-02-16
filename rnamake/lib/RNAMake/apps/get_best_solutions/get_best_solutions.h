@@ -5,24 +5,15 @@
 #ifndef RNAMAKE_NEW_GET_BEST_SOLUTIONS_H
 #define RNAMAKE_NEW_GET_BEST_SOLUTIONS_H
 
+#include <map>
+#include <fstream>
 #include <base/application.hpp>
-
-class Table {
-public:
-    Table(
-            String const & csv_file) {
-
-    }
-
-private:
-
-};
 
 
 class GetBestSolutions : public base::Application {
 public:
     struct Parameters {
-        String out_file, info_file, new_out_file, sequence_file, rows;
+        String out_file, info_file, score_file, new_out_file, sequence_file, rows;
         bool using_rows, using_info_file, using_new_out_file, using_sequence_file;
     };
 

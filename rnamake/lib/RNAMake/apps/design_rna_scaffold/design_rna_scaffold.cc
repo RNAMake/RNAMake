@@ -244,7 +244,6 @@ DesignRNAScaffold::_setup_from_pdb() {
     // TODO allow for construction of motif from RNA structure to allow for changes in base pair types
     rm_.add_motif(parameters_.pdb, "scaffold", util::MotifType::TCONTACT);
     auto m = rm_.motif("scaffold", "", parameters_.end_bp);
-    m->to_pdb("start.pdb");
 
     auto ei1 = m->get_end_index(parameters_.start_bp);
     auto ei2 = m->get_end_index(parameters_.end_bp);

@@ -34,6 +34,17 @@ String
 base_dir(
         String const &);
 
+
+enum class StringContents {
+    INT,
+    FLOAT,
+    STRING
+};
+
+StringContents
+determine_string_contents(
+        String const &);
+
 bool
 is_number(
         String const &);

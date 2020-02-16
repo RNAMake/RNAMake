@@ -18,12 +18,17 @@ GetBestSolutions::GetBestSolutions() {
 
 void
 GetBestSolutions::setup_options() {
-    add_option("out_file", String(""), base::OptionType::STRING, true);
-    //add_option("score_file", String(""), base::OptionType::STRING, true);
+    add_option("out_file", String(""), base::OptionType::STRING, false);
+    add_option("info_file", String(""), base::OptionType::STRING, false);
+
+    // from pdb
+    add_option("pdb", String(""), base::OptionType::STRING, false);
+    add_option("start_bp", String(""), base::OptionType::STRING, false);
+    add_option("end_bp", String(""), base::OptionType::STRING, false);
+    add_option("score_file", String(""), base::OptionType::STRING, false);
 
     // optional
     add_option("rows", String(""), base::OptionType::STRING, false);
-    add_option("info_file", String(""), base::OptionType::STRING, false);
     add_option("new_out_file", String(""), base::OptionType::STRING, false);
     add_option("sequence_file", String(""), base::OptionType::STRING, false);
 
@@ -39,10 +44,11 @@ GetBestSolutions::parse_command_line(
     parameters_.info_file = get_string_option("info_file");
     parameters_.new_out_file = get_string_option("new_out_file");
     parameters_.sequence_file = get_string_option("sequence_file");
+    parameters_.score_file = get_string_option("score_file");
     parameters_.rows = get_string_option("rows");
 
     // parse row selection info
-    if(parameters_.rows != "") {
+    /*if(parameters_.rows != "") {
         auto spl = base::split_str_by_delimiter(parameters_.rows, ",");
         for(auto const & s : spl) {
             auto row = std::stoi(s);
@@ -72,13 +78,16 @@ GetBestSolutions::parse_command_line(
         new_out_file_ = std::make_shared<std::ofstream>();
         new_out_file_->open(parameters_.new_out_file);
         parameters_.using_new_out_file = true;
-    }
+    }*/
 
 
 }
 
 void
 GetBestSolutions::run() {
+    //auto score_table = ScoreTable(parameters_.score_file);
+
+    exit(0);
 
     auto lines = base::get_lines_from_file(get_string_option("out_file"));
     auto i = -1;

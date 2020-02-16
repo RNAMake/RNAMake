@@ -1,4 +1,5 @@
 import math
+import pandas as pd
 from numba import jit
 import numpy
 import sys
@@ -9,6 +10,8 @@ from misprime import *
 from thermo import *
 from util import *
 
+class PrimerSetSolution(object):
+    pass
 
 class Primer_Assembly(object):
     def __init__(self, sequence, min_Tm=60.0, NUM_PRIMERS=0, MIN_LENGTH=15, MAX_LENGTH=60, prefix='primer'):
@@ -42,7 +45,9 @@ class Primer_Assembly(object):
             #print 'Doing dynamics programming calculation ...'
             (self.scores_start, self.scores_stop, self.scores_final, self.choice_start_p, self.choice_start_q, self.choice_stop_i, self.choice_stop_j, self.MAX_SCORE, self.N_primers) = dynamic_programming(self.NUM_PRIMERS, self.MIN_LENGTH, self.MAX_LENGTH, self.min_Tm, self.N_BP, self.misprime_score_forward, self.misprime_score_reverse, self.Tm_precalculated)
             #print 'Doing backtracking ...\n'
-            (self.is_solution, self.primers, self.primer_set, self.warnings) = back_tracking(self.N_BP, self.sequence, self.scores_final, self.choice_start_p, self.choice_start_q, self.choice_stop_i, self.choice_stop_j, self.N_primers, self.MAX_SCORE, self.num_match_forward, self.num_match_reverse, self.best_match_forward, self.best_match_reverse, self.WARN_CUTOFF)
+            (self.is_solution, self.primers, self.primer_set, self.warnings) = back_tracking_multi(self.N_BP, self.sequence, self.scores_final, self.choice_start_p, self.choice_start_q, self.choice_stop_i, self.choice_stop_j, self.N_primers, self.MAX_SCORE, self.num_match_forward, self.num_match_reverse, self.best_match_forward, self.best_match_reverse, self.WARN_CUTOFF)
+
+            #(self.is_solution, self.primers, self.primer_set, self.warnings) = back_tracking(self.N_BP, self.sequence, self.scores_final, self.choice_start_p, self.choice_start_q, self.choice_stop_i, self.choice_stop_j, self.N_primers, self.MAX_SCORE, self.num_match_forward, self.num_match_reverse, self.best_match_forward, self.best_match_reverse, self.WARN_CUTOFF)
             if self.is_solution:
                 (self.bp_lines, self.seq_lines, self.print_lines, self.Tm_overlaps) = draw_assembly(self.sequence, self.primers, self.name, self.COL_SIZE)
             else:
@@ -50,6 +55,9 @@ class Primer_Assembly(object):
         except:
             self.is_solution = False
             print traceback.format_exc()
+
+    def get_primer_options(self):
+        pass
 
 
     def print_misprime(self):
@@ -65,7 +73,7 @@ class Primer_Assembly(object):
                     allow_forward_line[j] = str(int(min(self.num_match_forward[0, pos] + 1, 9)))
                     allow_reverse_line[j] = str(int(min(self.num_match_reverse[0, pos] + 1, 9)))
 
-            print '%s\n%s\n%s\n' % (''.join(allow_forward_line).strip(), ''.join(sequence_line).strip(), ''.join(allow_reverse_line).strip())
+            #print '%s\n%s\n%s\n' % (''.join(allow_forward_line).strip(), ''.join(sequence_line).strip(), ''.join(allow_reverse_line).strip())
 
 
     def print_assembly(self):
@@ -260,12 +268,76 @@ def dynamic_programming(NUM_PRIMERS, MIN_LENGTH, MAX_LENGTH, min_Tm, N_BP, mispr
     return (scores_start, scores_stop, scores_final, choice_start_p, choice_start_q, choice_stop_i, choice_stop_j, MAX_SCORE, N_primers)
 
 
+def back_tracking_multi(N_BP, sequence, scores_final, choice_start_p, choice_start_q, choice_stop_i, choice_stop_j, N_primers, MAX_SCORE, num_match_forward, num_match_reverse, best_match_forward, best_match_reverse, WARN_CUTOFF):
+    y = numpy.amin(scores_final[:, :, N_primers - 1], axis=0)
+    idx = numpy.argmin(scores_final[:, :, N_primers - 1], axis=0)
+    min_scroe = numpy.amin(y)
+    q = numpy.argmin(y)
+    p = idx[q]
+
+    max_val = numpy.amax(y)
+
+    not_max = []
+    not_max_ind = []
+    for i, e in enumerate(y):
+        if e < max_val:
+            not_max.append(e)
+            not_max_ind.append(i)
+
+    for k, e in enumerate(not_max):
+        q = not_max_ind[k]
+        p = idx[q]
+        is_solution = True
+        primer_set = []
+        misprime_warn = []
+        primers = numpy.zeros((3, 2 * N_primers))
+        if (min_scroe == MAX_SCORE):
+            is_solution = False
+        else:
+            primers[:, 2 * N_primers - 1] = [q, N_BP - 1, -1]
+            for m in xrange(N_primers - 1, 0, -1):
+                i = int(choice_stop_i[p, q, m])
+                j = int(choice_stop_j[p, q, m])
+                primers[:, 2 * m] = [i, p, 1]
+                p = int(choice_start_p[i, j, m - 1])
+                q = int(choice_start_q[i, j, m - 1])
+                primers[:, 2 * m - 1] = [q, j, -1]
+
+            primers[:, 0] = [0, p, 1]
+            primers = primers.astype(int)
+
+            for i in xrange(2 * N_primers):
+                primer_seq = sequence[primers[0, i]:primers[1, i] + 1]
+                if primers[2, i] == -1:
+                    primer_set.append(reverse_complement(primer_seq))
+
+                    # mispriming "report"
+                    end_pos = primers[0, i]
+                    if (num_match_reverse[0, end_pos] >= WARN_CUTOFF):
+                        problem_primer = find_primers_affected(primers, best_match_reverse[0, end_pos])
+                        misprime_warn.append((i + 1, num_match_reverse[0, end_pos] + 1, best_match_reverse[0, end_pos] + 1, problem_primer))
+                else:
+                    primer_set.append(str(primer_seq))
+
+                    # mispriming "report"
+                    end_pos = primers[1, i]
+                    if (num_match_forward[0, end_pos] >= WARN_CUTOFF):
+                        problem_primer = find_primers_affected(primers, best_match_forward[0, end_pos])
+                        misprime_warn.append((i + 1, num_match_forward[0, end_pos] + 1, best_match_forward[0, end_pos] + 1, problem_primer))
+
+
+            #if len(misprime_warn) == 0:
+            print(primers), len(misprime_warn)
+
+    return (is_solution, primers, primer_set, misprime_warn)
+
 def back_tracking(N_BP, sequence, scores_final, choice_start_p, choice_start_q, choice_stop_i, choice_stop_j, N_primers, MAX_SCORE, num_match_forward, num_match_reverse, best_match_forward, best_match_reverse, WARN_CUTOFF):
     y = numpy.amin(scores_final[:, :, N_primers - 1], axis=0)
     idx = numpy.argmin(scores_final[:, :, N_primers - 1], axis=0)
     min_scroe = numpy.amin(y)
     q = numpy.argmin(y)
     p = idx[q]
+
 
     is_solution = True
     primer_set = []
@@ -282,6 +354,7 @@ def back_tracking(N_BP, sequence, scores_final, choice_start_p, choice_start_q, 
             p = int(choice_start_p[i, j, m - 1])
             q = int(choice_start_q[i, j, m - 1])
             primers[:, 2 * m - 1] = [q, j, -1]
+
         primers[:, 0] = [0, p, 1]
         primers = primers.astype(int)
 
@@ -318,15 +391,54 @@ def find_primers_affected(primers, pos):
 def design_primers_1D(sequence, min_Tm=60, NUM_PRIMERS=0, MIN_LENGTH=15, MAX_LENGTH=60, prefix='primer'):
     assembly = Primer_Assembly(sequence, min_Tm, NUM_PRIMERS, MIN_LENGTH, MAX_LENGTH, prefix)
     assembly.print_misprime()
-    if assembly.is_solution:
+    """if assembly.is_solution:
         print assembly.print_assembly()
         print assembly.print_primers()
         print assembly.print_warnings()
     else:
         print '** No solution found!'
+    """
+
+
+def get_common_5_prime_seq(seqs):
+    common_5_prime = ""
+    pos = 0
+    while pos < len(seqs[0]):
+        res = seqs[0][pos]
+        for s in seqs:
+            if res != s[pos]:
+                return common_5_prime
+        common_5_prime += res
+        pos += 1
+    return common_5_prime
+
+def get_common_3_prime_seq(seqs):
+    common_3_prime = ""
+    pos = 1
+    while pos < len(seqs[0]):
+        res = seqs[0][len(seqs[0])-pos]
+        for s in seqs:
+            if res != s[len(s)-pos]:
+                return common_3_prime
+        common_3_prime = res + common_3_prime
+        pos += 1
+    return common_3_prime
+
+
+
+def design_primers_1D_sequence_set():
+    df = pd.read_csv("test.csv")
+    common_5_prime = get_common_5_prime_seq(df.sequence)
+    common_3_prime = get_common_3_prime_seq(df.sequence)
+
+
+
 
 
 def main():
+    design_primers_1D_sequence_set()
+    exit()
+    #print(complement(sys.argv[1]))
     if len(sys.argv) > 1:
         for i in xrange(1):
             t0 = time.time()
