@@ -7,6 +7,7 @@
 #include <base/file_io.h>
 #include <motif_data_structure/motif_graph.h>
 #include <get_best_solutions/get_best_solutions.h>
+#include <util/csv.h>
 
 GetBestSolutions::GetBestSolutions() {
 
@@ -85,6 +86,8 @@ GetBestSolutions::parse_command_line(
 
 void
 GetBestSolutions::run() {
+    auto csv_reader = util::csv::Reader();
+    auto score_table = csv_reader.read_csv(parameters_.score_file);
     //auto score_table = ScoreTable(parameters_.score_file);
 
     exit(0);

@@ -11,9 +11,24 @@
 #include <base/types.h>
 #include <base/log.h>
 #include <base/string.h>
+#include <base/file_io.h>
 
 namespace util {
 namespace csv {
+
+class CSVException : public std::runtime_error {
+public:
+    CSVException(): std::runtime_error("") {}
+
+    /**
+     * Standard constructor for CSVException
+     * @param   message   Error message for csv parsing
+     */
+    CSVException(String const & message):
+    std::runtime_error(message) {}
+
+
+};
 
 struct Data {
     int i;
@@ -25,8 +40,8 @@ class RowTopology {
 public:
     inline
     RowTopology(
-            std::vector<DataType> const & data_types,
-            std::map<String, int> const & col_names):
+            DataTypes & data_types,
+            std::map<String, int> & col_names):
             data_types_(std::move(data_types)),
             col_names_(std::move(col_names)) {}
 
@@ -47,8 +62,7 @@ public:
     bool
     does_col_exist(
             String const & name) const {
-        if(col_names_.find(name) == col_names_.end()) { return false;}
-        else {                                          return true; }
+        return !(col_names_.find(name) == col_names_.end());
     }
 
 private:
@@ -63,7 +77,7 @@ private:
 
 private:
 
-    std::vector<DataType> data_types_;
+    DataTypes data_types_;
     std::map<String, int> col_names_;
 };
 
@@ -72,7 +86,7 @@ public:
     inline
     Row(
             RowTopology const & topology,
-            std::vector<Data> const & data):
+            std::vector<Data> & data):
             topology_(topology),
             data_(std::move(data)) {}
 
@@ -125,9 +139,10 @@ private:
 
 class Table {
 public:
+    explicit
     Table(
-            RowTopology const & topology):
-            topology_(topology) {}
+            RowTopology & topology):
+            topology_(std::move(topology)) {}
 
 public:
     typedef std::vector<Row>::iterator iterator;
@@ -148,14 +163,21 @@ public:
 public:
     void
     add_row(
-            std::vector<Data> const & data) {
-        rows_.push_back(Row(topology_, std::move(data)));
+            std::vector<Data> & data) {
+        rows_.emplace_back(topology_, data);
     }
 
 
     size_t
     num_rows() {
         return rows_.size();
+    }
+
+public: //row topology wrapper
+    bool
+    does_col_exist(
+            String const & name) {
+        return topology_.does_col_exist(name);
     }
 
 private:
@@ -168,83 +190,52 @@ typedef std::shared_ptr<Table> TableOP;
 
 class Reader {
 public:
-    Reader() {}
+    Reader() = default;
 
-    ~Reader() {}
+    ~Reader() = default;
 
 public:
     TableOP
     read_csv(
             String const & file_name) {
+        file_name_ = file_name;
         auto in = std::ifstream();
-        auto line = String();
+
+        // check to make sure file actually exists
+        if(!base::file_exists(file_name)) {
+            LOG_ERROR << "file does not exist: " << file_name; throw CSVException();
+        }
+
         in.open(file_name);
-        if(in.good()) {
-            getline(in, line);
-        }
-        else {
-            LOG_ERROR << "there are no lines in: " << file_name; exit(1);
-        }
 
-        auto col_names = base::split_str_by_delimiter(line, ",");
+        // get column names, which are always the first line
         auto col_name_map = std::map<String, int>();
-        auto i = 0;
-        for(auto const & name : col_names) {
-            col_name_map[name] = i;
-            i++;
-        }
+        _get_col_names(in, col_name_map);
+        int col_name_count = col_name_map.size();
 
         if(in.good()) {
-            getline(in, line);
+            getline(in, line_);
         }
         else {
-            LOG_ERROR << "there needs to be at least one data line in " << file_name; exit(1);
+            LOG_ERROR << "there needs to be at least one data line in " << file_name; throw CSVException();
         }
 
-        auto data_cols = base::split_str_by_delimiter(line, ",");
+        auto data_types = DataTypes(col_name_count);
+        auto data = std::vector<Data>(col_name_count);
 
-        if(data_cols.size() != col_names.size()) {
-            LOG_ERROR << " there are not the same number of data columns as there are data names in: " << file_name;
-            exit(1);
-        }
-
-        auto data_types = std::vector<DataType>();
-        auto data = std::vector<Data>();
-        for(auto const & data_col : data_cols) {
-            auto data_type = base::determine_string_data_type(data_col);
-            if(data_type == DataType::STRING) {
-                data.push_back(Data{-1, -1, data_col});
-            }
-            else if(data_type == DataType::INT) {
-                data.push_back(Data{std::stoi(data_col), -1, ""});
-            }
-            else {
-                data.push_back(Data{-1, std::stof(data_col), ""});
-            }
-            data_types.push_back(data_type);
-        }
+        _parse_data_col(line_, col_name_count, data_types, data);
 
         auto row_topology = RowTopology(data_types, col_name_map);
         auto table = std::make_shared<Table>(row_topology);
         table->add_row(data);
 
-
         while(in.good()) {
-            getline(in, line);
-            if(line.size() < 2) { break; }
-            data = std::vector<Data>();
-            for(auto const & data_col : data_cols) {
-                auto data_type = base::determine_string_data_type(data_col);
-                if(data_type == DataType::STRING) {
-                    data.push_back(Data{-1, -1, data_col});
-                }
-                else if(data_type == DataType::INT) {
-                    data.push_back(Data{std::stoi(data_col), -1, ""});
-                }
-                else {
-                    data.push_back(Data{-1, std::stof(data_col), ""});
-                }
-            }
+            getline(in, line_);
+            if(line_.size() < 2) { break; }
+            // need to reallocate since they were moved during construction of last row
+            data_types = DataTypes(col_name_count);
+            data = std::vector<Data>(col_name_count);
+            _parse_data_col(line_, col_name_count, data_types, data);
             table->add_row(data);
         }
 
@@ -252,6 +243,67 @@ public:
 
     }
 
+private: // helper functions
+
+    void
+    _get_col_names(
+            std::ifstream & in,
+            std::map<String, int> & col_name_map /* return */) {
+
+        // is there are first line?
+        if(in.good()) {
+            getline(in, line_);
+        }
+        else {
+            LOG_ERROR << "there are no lines in: " << file_name_; throw CSVException();
+        }
+
+        auto col_names = base::split_str_by_delimiter(line_, ",");
+        if(col_names.empty()) {
+            LOG_ERROR << "there are no columns in csv: " << file_name_ << ". Are you sure this is comma delimited?"; throw CSVException();
+        }
+        auto i = 0;
+        for (auto const & name : col_names) {
+            col_name_map[name] = i;
+            i++;
+        }
+    }
+
+    void
+    _parse_data_col(
+            String const & line,
+            int col_name_count,
+            DataTypes & data_types, /* return */
+            std::vector<Data> & data /* return */) {
+
+        auto data_cols = base::split_str_by_delimiter(line, ",");
+
+        if(data_cols.size() != col_name_count) {
+            LOG_ERROR << " there are not the same number of data columns as there are data names in: " << file_name_ << "\n";
+            LOG_ERROR << "there are " << data_cols.size() << " data column and " << col_name_count << " column names";
+            throw CSVException();
+        }
+        auto pos = 0;
+        for(auto const & data_col : data_cols) {
+            auto data_type = base::determine_string_data_type(data_col);
+            if(data_type == DataType::STRING) {
+                data[pos] = Data{-1, -1, data_col};
+            }
+            else if(data_type == DataType::INT) {
+                data[pos] = Data{std::stoi(data_col), -1, ""};
+            }
+            else {
+                data[pos] = Data{-1, std::stof(data_col), ""};
+            }
+            data_types[pos] = data_type;
+            pos += 1;
+        }
+
+    }
+
+private:
+    String line_;
+    String file_name_;
 
 };
 

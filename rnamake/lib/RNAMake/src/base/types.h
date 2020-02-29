@@ -51,5 +51,7 @@ enum class DataType {
     XYZ_MATRIX  // 3x3 matrix
 };
 
+typedef std::vector<DataType> DataTypes;
+
 
 #endif
