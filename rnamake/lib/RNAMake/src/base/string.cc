@@ -87,8 +87,8 @@ is_number(
 }
 
 //adapted from https://www.geeksforgeeks.org/check-given-string-valid-number-integer-floating-point/
-StringContents
-determine_string_contents(
+DataType
+determine_string_data_type(
         String const & str) {
     int i = 0, j = str.length() - 1;
 
@@ -101,18 +101,18 @@ determine_string_contents(
     }
 
     if (i > j) {
-        return StringContents::STRING;
+        return DataType::STRING;
     }
 
     // if string is of length 1 and the only
     // character is not a digit
     if (i == j && !(str[i] >= '0' && str[i] <= '9')) {
-        return StringContents::STRING;
+        return DataType::STRING;
     }
 
     // If the 1st char is not '+', '-', '.' or digit
     if (str[i] != '.' && str[i] != '+' && str[i] != '-' && !(str[i] >= '0' && str[i] <= '9')) {
-        return StringContents::STRING;
+        return DataType::STRING;
     }
 
     // To check if a '.' or 'e' is found in given
@@ -128,7 +128,7 @@ determine_string_contents(
         if (str[i] != 'e' && str[i] != '.'
             && str[i] != '+' && str[i] != '-'
             && !(str[i] >= '0' && str[i] <= '9')) {
-            return StringContents::STRING;
+            return DataType::STRING;
         }
 
         if (str[i] == '.') {
@@ -136,17 +136,17 @@ determine_string_contents(
             // checks if the char 'e' has already
             // occurred before '.' If yes, return 0.
             if (flagDotOrE == true) {
-                return StringContents::STRING;
+                return DataType::STRING;
             }
 
             // If '.' is the last character.
             if (i + 1 > str.length()) {
-                return StringContents::STRING;
+                return DataType::STRING;
             }
 
             // if '.' is not followed by a digit.
             if (!(str[i + 1] >= '0' && str[i + 1] <= '9')) {
-                return StringContents::STRING;
+                return DataType::STRING;
             }
         }
 
@@ -156,36 +156,35 @@ determine_string_contents(
 
             // if there is no digit before 'e'.
             if (!(str[i - 1] >= '0' && str[i - 1] <= '9')) {
-                return StringContents::STRING;
+                return DataType::STRING;
             }
 
             // If 'e' is the last Character
             if (i + 1 > str.length()) {
-                return StringContents::STRING;
+                return DataType::STRING;
             }
 
             // if e is not followed either by
             // '+', '-' or a digit
             if (str[i + 1] != '+' && str[i + 1] != '-'
                 && (str[i + 1] >= '0' && str[i] <= '9')) {
-                return StringContents::STRING;
+                return DataType::STRING;
             }
         }
 
         if(char_count > 0 && (str[i] == '+' || str[i] == '-')) {
-            return StringContents::STRING;
+            return DataType::STRING;
         }
 
         char_count++;
 
     }
 
-    if(flagDotOrE || has_dot) { return StringContents::FLOAT; }
-    else                      { return StringContents::INT; }
+    if(flagDotOrE || has_dot) { return DataType::FLOAT; }
+    else                      { return DataType::INT; }
 
 
 }
-
 
 /**
  * @brief Left Trim

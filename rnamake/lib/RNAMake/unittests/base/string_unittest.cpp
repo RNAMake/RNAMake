@@ -12,24 +12,24 @@
 #include <base/string.h>
 
 TEST_CASE("test string functions", "[String]" ) {
-    SECTION("test determine_string_contents") {
+    SECTION("test determine_string_data_type") {
         SECTION("should be a string") {
-            REQUIRE(base::determine_string_contents("") == base::StringContents::STRING);
-            REQUIRE(base::determine_string_contents(" ") == base::StringContents::STRING);
-            REQUIRE(base::determine_string_contents("a") == base::StringContents::STRING);
+            REQUIRE(base::determine_string_data_type("") == DataType::STRING);
+            REQUIRE(base::determine_string_data_type(" ") == DataType::STRING);
+            REQUIRE(base::determine_string_data_type("a") == DataType::STRING);
             // two dots in a row
-            REQUIRE(base::determine_string_contents("1..0") == base::StringContents::STRING);
+            REQUIRE(base::determine_string_data_type("1..0") == DataType::STRING);
             //char at the end
-            REQUIRE(base::determine_string_contents("1.0x") == base::StringContents::STRING);
+            REQUIRE(base::determine_string_data_type("1.0x") == DataType::STRING);
             // plus sign in the middle
-            REQUIRE(base::determine_string_contents("2+5") == base::StringContents::STRING);
+            REQUIRE(base::determine_string_data_type("2+5") == DataType::STRING);
 
         }
         // should be ints
-        REQUIRE(base::determine_string_contents("1") == base::StringContents::INT);
+        REQUIRE(base::determine_string_data_type("1") == DataType::INT);
 
         // should be floats
-        REQUIRE(base::determine_string_contents("1.0") == base::StringContents::FLOAT);
+        REQUIRE(base::determine_string_data_type("1.0") == DataType::FLOAT);
 
 
     }

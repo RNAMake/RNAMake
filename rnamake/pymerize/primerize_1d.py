@@ -45,9 +45,10 @@ class Primer_Assembly(object):
             #print 'Doing dynamics programming calculation ...'
             (self.scores_start, self.scores_stop, self.scores_final, self.choice_start_p, self.choice_start_q, self.choice_stop_i, self.choice_stop_j, self.MAX_SCORE, self.N_primers) = dynamic_programming(self.NUM_PRIMERS, self.MIN_LENGTH, self.MAX_LENGTH, self.min_Tm, self.N_BP, self.misprime_score_forward, self.misprime_score_reverse, self.Tm_precalculated)
             #print 'Doing backtracking ...\n'
-            (self.is_solution, self.primers, self.primer_set, self.warnings) = back_tracking_multi(self.N_BP, self.sequence, self.scores_final, self.choice_start_p, self.choice_start_q, self.choice_stop_i, self.choice_stop_j, self.N_primers, self.MAX_SCORE, self.num_match_forward, self.num_match_reverse, self.best_match_forward, self.best_match_reverse, self.WARN_CUTOFF)
+            (self.is_solution, self.primers, self.primer_set, self.warnings) = back_tracking(self.N_BP, self.sequence, self.scores_final, self.choice_start_p, self.choice_start_q, self.choice_stop_i, self.choice_stop_j, self.N_primers, self.MAX_SCORE, self.num_match_forward, self.num_match_reverse, self.best_match_forward, self.best_match_reverse, self.WARN_CUTOFF)
 
             #(self.is_solution, self.primers, self.primer_set, self.warnings) = back_tracking(self.N_BP, self.sequence, self.scores_final, self.choice_start_p, self.choice_start_q, self.choice_stop_i, self.choice_stop_j, self.N_primers, self.MAX_SCORE, self.num_match_forward, self.num_match_reverse, self.best_match_forward, self.best_match_reverse, self.WARN_CUTOFF)
+            print(self.primers)
             if self.is_solution:
                 (self.bp_lines, self.seq_lines, self.print_lines, self.Tm_overlaps) = draw_assembly(self.sequence, self.primers, self.name, self.COL_SIZE)
             else:
@@ -436,8 +437,8 @@ def design_primers_1D_sequence_set():
 
 
 def main():
-    design_primers_1D_sequence_set()
-    exit()
+    #design_primers_1D_sequence_set()
+    #exit()
     #print(complement(sys.argv[1]))
     if len(sys.argv) > 1:
         for i in xrange(1):

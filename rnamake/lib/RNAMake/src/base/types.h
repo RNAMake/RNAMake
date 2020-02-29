@@ -37,4 +37,19 @@ typedef std::map<String, String> StringStringMap;
 template<typename T>
 using   VectorUP = std::unique_ptr<std::vector<T>>;
 
+// to keep track of data that may be many different types
+enum class DataType {
+    INT,
+    FLOAT,
+    STRING,
+    BOOL,
+    STRINGS,    // vector of string
+    INTS,       // vector of ints
+    FLOATS,     // vector of floats
+    BOOLS,      // vector of bools
+    XYZ_VECTOR, // {x,y,z} coords
+    XYZ_MATRIX  // 3x3 matrix
+};
+
+
 #endif

@@ -12,7 +12,7 @@
 #include <stdio.h>
 
 //RNAMake Headers
-#include "base/types.h"
+#include <base/types.h>
 
 namespace base {
 
@@ -35,14 +35,8 @@ base_dir(
         String const &);
 
 
-enum class StringContents {
-    INT,
-    FLOAT,
-    STRING
-};
-
-StringContents
-determine_string_contents(
+DataType
+determine_string_data_type(
         String const &);
 
 bool

@@ -168,6 +168,12 @@ DesignRNAScaffold::run() {
             _fix_flex_helices_mtype(mg_copy);
             mg_copy->replace_ideal_helices();
 
+            if(parameters_.skip_sequence_optimization) {
+                _record_solution(mg_copy, sol, nullptr, 0, i, 0);
+                mg->remove_level(1);
+                continue;
+            }
+
             auto last_m = mg_copy->get_node(end_.node_index)->connections()[end_.edge_index]->partner(end_.node_index);
             auto new_start = data_structure::NodeIndexandEdge{last_m->index(), 1};
 
@@ -380,6 +386,11 @@ DesignRNAScaffold::_setup_sol_template_from_path(
             if(i == 0) { sol_template->add_library(e); }
             else       { sol_template->add_library(e, data_structure::NodeIndexandEdge{i-1, 1}); }
         }
+
+        else if(e == "tc_hairpin_hairpin") {
+            std::cout << "made it" << std::endl;
+        }
+
         else if(new_motif_ensembles_.find(e) != new_motif_ensembles_.end()) { // found user specified ensemble
             if(i == 0) { sol_template->add_ensemble(new_motif_ensembles_[e]); }
             else       { sol_template->add_ensemble(new_motif_ensembles_[e], data_structure::NodeIndexandEdge{i-1, 1}); }
