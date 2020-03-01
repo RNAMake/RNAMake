@@ -300,10 +300,10 @@ PoseFactory::_steric_clash(
 
 MotifOP
 PoseFactory::_convert_x3dna_to_motif(
-        util::X3Motif const & xm,
+        util::X3dna::X3Motif const & xm,
         PoseOP const & p) {
 
-    structure::ResidueOPs res;
+    /*structure::ResidueOPs res;
     for (auto const & xr : xm.residues) {
         auto r = p->get_residue(xr.num, xr.chain_id, xr.i_code);
         res.push_back(r);
@@ -322,8 +322,8 @@ PoseFactory::_convert_x3dna_to_motif(
     }
 
     auto m = mf_.motif_from_res(res, basepairs);
-    m->mtype(util::str_to_type(xm.mtype));
-    return m;
+    m->mtype(util::str_to_type(xm.mtype));*/
+    return MotifOP(nullptr);
 
 }
 

@@ -23,7 +23,7 @@ depends = {
 }
 
 libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimization"
-#libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools "
+#libs = "base math data_structure util "
 all_lib_paths = libs.split()
 
 

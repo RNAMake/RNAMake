@@ -10,7 +10,7 @@
 #include <motif_search/path_finding/search.h>
 
 TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
-    auto & rm = resources::Manager::instance();
+   auto & rm = resources::Manager::instance();
 
     SECTION("test selector") {
         using namespace motif_search::path_finding;
@@ -249,8 +249,8 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
         auto beads = mt.beads();
         auto centers = math::Points();
 
-        for(auto const & b : beads) {
-            if(b.btype() != structure::BeadType::PHOS) {
+        for (auto const &b : beads) {
+            if (b.btype() != structure::BeadType::PHOS) {
                 centers.push_back(b.center());
             }
         }
@@ -267,6 +267,5 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
         //REQUIRE(sol != nullptr);
 
     }
-
 
 }

@@ -21,7 +21,10 @@ class PoseFactory {
 public:
     PoseFactory() :
             mf_(MotifFactory()),
-            clash_radius_(2.9) {}
+            clash_radius_(2.9) {
+        throw std::runtime_error("Pose factory is not supported anymore!");
+
+    }
 
     ~PoseFactory() {}
 
@@ -66,7 +69,7 @@ private:
 
     MotifOP
     _convert_x3dna_to_motif(
-            util::X3Motif const &,
+            util::X3dna::X3Motif const &,
             PoseOP const &);
 
 

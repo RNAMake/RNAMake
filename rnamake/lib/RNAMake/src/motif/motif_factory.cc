@@ -244,24 +244,41 @@ MotifFactory::_standardize_motif(
 structure::BasepairOPs
 MotifFactory::_setup_basepairs(
         String const & path,
-        structure::StructureOP const & structure,
+        structure::StructureOP const & s,
         bool rebuild_x3dna) {
 
     auto basepairs = structure::BasepairOPs();
     auto x3dna_parser = util::X3dna();
-    auto x_basepairs = x3dna_parser.get_basepairs(path, rebuild_x3dna);
+    auto x_basepairs = x3dna_parser.get_basepairs(path);
     structure::ResidueOP res1, res2;
     //BasepairOP bp;
+    String i_code_1, i_code_2;
+
     for (auto const & xbp : x_basepairs) {
-        res1 = structure->get_residue(xbp.res1.num, xbp.res1.chain_id, xbp.res1.i_code);
-        res2 = structure->get_residue(xbp.res2.num, xbp.res2.chain_id, xbp.res2.i_code);
+        // super hacky way of converting back to the old string system.
+        if(xbp.res1.i_code == ' ') {
+            i_code_1 = "";
+        }
+        else {
+            i_code_1 = String(1, xbp.res1.i_code);
+        }
+
+        if(xbp.res2.i_code == ' ') {
+            i_code_2 = "";
+        }
+        else {
+            i_code_2 = String(1, xbp.res2.i_code);
+        }
+
+        res1 = s->get_residue(xbp.res1.num, String(1, xbp.res1.chain_id), i_code_1);
+        res2 = s->get_residue(xbp.res2.num, String(1, xbp.res2.chain_id), i_code_2);
         if (res1 == nullptr || res2 == nullptr) {
             std::cout << xbp.res1.num << " " << xbp.res2.num << std::endl;
             throw MotifFactoryException("cannot find residues in basepair during setup");
         }
 
         // Emplacement constructs the object in-place
-        basepairs.emplace_back(new structure::Basepair(res1, res2, xbp.r, xbp.bp_type));
+        basepairs.emplace_back(new structure::Basepair(res1, res2, xbp.r, util::get_str_from_x3dna_type(xbp.bp_type)));
     }
 
     return basepairs;
