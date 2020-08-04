@@ -47,7 +47,6 @@ public:
 
     static Manager & instance() {
         static Manager instance;
-        std::cout<<"HERE"<<std::endl; 
         return instance;
     }
 

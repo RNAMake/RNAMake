@@ -16,6 +16,7 @@
 #include "motif/motif.h"
 #include "resources/motif_sqlite_connection.h"
 #include "resources/sqlite_library.h"
+#include "base/settings.h"
 
 namespace resources {
 

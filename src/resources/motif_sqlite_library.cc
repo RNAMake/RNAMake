@@ -20,14 +20,14 @@ MotifSqliteLibrary::get_libnames() {
     libnames["twoway"] = "/motif_libraries_new/twoway.db";
     libnames["tcontact"] = "/motif_libraries_new/tcontact.db";
     libnames["hairpin"] = "/motif_libraries_new/hairpin.db";
-    libnames["nway"] = "/motif_libraries_new/nway.db";
-    libnames["unique_twoway"] = "/motif_libraries_new/unique_twoway.db";
-    libnames["bp_steps"] = "/motif_libraries_new/bp_steps.db";
-    libnames["new_bp_steps"] = "/motif_libraries_new/new_bp_steps.db";
-    libnames["flex_helices"] = "/motif_libraries_new/flex_helices.db";
-    libnames["existing"] = "/motif_libraries_new/existing.db";
-    libnames["le_helices"] = "/motif_libraries_new/le_helices.db";
-    libnames["avg_helices"] = "/motif_libraries_new/avg_helices.db";
+    libnames["nway"] =   "/motif_libraries_new/nway.db";
+    libnames["unique_twoway"] =   "/motif_libraries_new/unique_twoway.db";
+    libnames["bp_steps"] =   "/motif_libraries_new/bp_steps.db";
+    libnames["new_bp_steps"] =   "/motif_libraries_new/new_bp_steps.db";
+    libnames["flex_helices"] =   "/motif_libraries_new/flex_helices.db";
+    libnames["existing"] =   "/motif_libraries_new/existing.db";
+    libnames["le_helices"] =   "/motif_libraries_new/le_helices.db";
+    libnames["avg_helices"] =   "/motif_libraries_new/avg_helices.db";
 
     return libnames;
 }
