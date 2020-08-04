@@ -1,5 +1,0 @@
-   2 # base-pairs
-   0 # ***local base-pair & step parameters***
-#        Shear    Stretch   Stagger   Buckle   Prop-Tw   Opening     Shift     Slide     Rise      Tilt      Roll      Twist
-G-C     -0.142    -0.171     0.037    -0.273    13.724    -5.416     0.000     0.000     0.000     0.000     0.000     0.000
-G-C     -0.143    -0.170     0.037    -0.276    13.730    -5.403     0.047    -1.750     3.397    -0.155     8.904    31.493

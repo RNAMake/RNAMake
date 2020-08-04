@@ -1,5 +1,0 @@
-   2 # base-pairs
-   1 # ***local base-pair & helical parameters***
-#        Shear    Stretch   Stagger   Buckle   Prop-Tw   Opening     X-disp    Y-disp    h-Rise    Incl.     Tip     h-Twist
-G-C     -0.142    -0.171     0.037    -0.273    13.724    -5.416     0.000     0.000     0.000     0.000     0.000     0.000
-G-C     -0.143    -0.170     0.037    -0.276    13.730    -5.403    -4.599    -0.109     2.810    16.009     0.278    32.697
