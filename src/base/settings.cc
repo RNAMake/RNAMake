@@ -17,17 +17,20 @@ namespace base {
 
 String
 get_os_name() {
-#ifdef _WIN32 || _WIN64
+#if defined(_WIN32) || defined(_WIN64)
     return  String("Windows");
-#elif __unix || __unix__
+#elif defined(__unix) || defined(__unix__)
     return  String("unix");
-#elif __APPLE__ || __MACH__
+#elif defined(__APPLE__) || defined(__MACH__)
     return String("OSX");
-#elif __linux__
+#elif defined(__linux__)
     return String("Linux");
+#else
+#   warning "Could not deduce operating system type. You WILL encounter a runtime error."
+    
+    throw std::runtime_error("cannot determine operating system");
 #endif
 
-    throw std::runtime_error("cannot determine operating system");
 }
 
 String
@@ -45,19 +48,20 @@ base_dir() {
 String
 resources_path() {
     String base_path = base_dir();
-    return base_path + "/rnamake/resources/";
+    return base_path + "/resources/";
 }
 
 String
 lib_path() {
     String base_path = base_dir();
-    return base_path + "/rnamake/lib/RNAMake/";
+    return base_path; 
+    //return base_path + "/rnamake/lib/RNAMake/";
 }
 
 String
 motif_dirs() {
     String base_path = base_dir();
-    return base_path + "/rnamake/resources/motifs/";
+    return base_path + "/resources/motifs/";
 }
 
 String
@@ -71,7 +75,7 @@ x3dna_path() {
 
 String
 unittest_resource_dir() {
-    return base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/";
+    return base_dir() + "/unittests/unittest_resources/";
 }
 
 }

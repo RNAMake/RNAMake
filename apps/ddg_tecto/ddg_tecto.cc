@@ -187,17 +187,18 @@ SimulateTectosGraphApp::_get_updated_node_index_and_edge(
 int main(int argc, const char * argv[]) {
     //must add this for all apps!
     std::set_terminate(base::print_backtrace);
-
-    //load tectos
-    auto tecto_dir = String(base::base_dir()+"/rnamake/lib/RNAMake/apps/simulate_tectos");
+    try{
+    ////load tectos
+    auto tecto_dir = String(base::base_dir()+"/apps/simulate_tectos");
     resources::Manager::instance().add_motif(tecto_dir+"/resources/GAAA_tetraloop");
     resources::Manager::instance().add_motif(tecto_dir+"/resources/GGAA_tetraloop");
-
     auto app = SimulateTectosGraphApp();
     app.setup_options();
     app.parse_command_line(argc, argv);
     app.run();
-
+    } catch(std::exception& e) {
+        std::cout<<e.what()<<std::endl;
+    }
     return 0;
 
 }
