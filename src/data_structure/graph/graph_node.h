@@ -76,14 +76,12 @@ public:
 public: //Vitrual functions need to be implemented in derived clases
 
     virtual
-    inline
     void
     add_connection(
             GraphConnectionOP<DataType> const &,
             int pos = -1) = 0;
 
     virtual
-    inline
     void
     remove_connection(
             GraphConnectionOP<DataType> const & connection) = 0;
