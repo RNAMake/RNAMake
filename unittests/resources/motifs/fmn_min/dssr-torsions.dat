@@ -1,0 +1,147 @@
+******************************************************************************************
+Main chain conformational parameters:
+
+  alpha:   O3'(i-1)-P-O5'-C5'
+  beta:    P-O5'-C5'-C4'
+  gamma:   O5'-C5'-C4'-C3'
+  delta:   C5'-C4'-C3'-O3'
+  epsilon: C4'-C3'-O3'-P(i+1)
+  zeta:    C3'-O3'-P(i+1)-O5'(i+1)
+  e-z:     epsilon-zeta (BI/BII backbone classification)
+
+  chi for pyrimidines(Y): O4'-C1'-N1-C2; purines(R): O4'-C1'-N9-C4
+    Range [170, -50(310)] is assigned to anti, and [50, 90] to syn
+
+  phase-angle: the phase angle of pseudorotation and puckering
+  sugar-type: ~C2'-endo for C2'-endo like conformation, or
+               ~C3'-endo for C3'-endo like conformation
+              Note the ONE column offset (for easy visual distinction)
+
+ssZp: single-stranded Zp, defined as the z-coordinate of the 3' phosphorus atom
+      (P) expressed in the standard reference frame of preceding base; the value
+      is POSITIVE when P lies on the +z-axis side (base in anti conformation);
+      NEGATIVE if P is on the -z-axis side (base in syn conformation)
+  Dp: perpendicular distance of the 3' P atom to the glycosydic bond
+      [Ref: Chen et al. (2010): "MolProbity: all-atom structure
+            validation for macromolecular crystallography."
+            Acta Crystallogr D Biol Crystallogr, 66(1):12-21]
+
+        nt               alpha    beta   gamma   delta  epsilon   zeta     e-z        chi            phase-angle   sugar-type    ssZp     Dp
+ 1     A.U7               ---   -155.1    65.4   143.3  -146.9  -151.2      4       -111.4(anti)   154.1(C2'-endo) ~C2'-endo     2.13    2.14
+ 2     A.A8              110.9  -127.2  -173.1    78.8  -165.8   -79.8    -86(BI)   -163.9(anti)    58.7(C4'-exo)                3.76    3.77
+ 3     A.G9              150.5  -150.0   175.1    84.1  -135.0   -91.5    -43(BI)   -167.8(anti)    51.8(C4'-exo)   ~C3'-endo    3.94    4.02
+ 4     A.G10             172.4  -162.4   169.8    82.3  -159.1   -73.1    -86(BI)   -126.6(anti)    13.6(C3'-endo)  ~C3'-endo    2.96    4.49
+ 5     A.A11             161.0   178.7   -62.1    88.2  -130.4  -142.5     12       -142.0(anti)    21.1(C3'-endo)  ~C3'-endo    3.44    4.42
+ 6     A.U12             175.9   166.5    45.0    75.5  -162.7   -99.1    -64(BI)    178.4(anti)    16.4(C3'-endo)  ~C3'-endo    4.43    4.48
+ 7     A.A13             168.4  -127.0   170.4    81.2  -133.9   -57.0    -77(BI)    166.0(anti)    39.8(C4'-exo)   ~C3'-endo    4.00    4.14
+ 8     A.U14             117.5  -165.2  -177.6    85.1  -145.0   -74.9    -70(BI)   -173.5(anti)   353.4(C2'-exo)   ~C3'-endo    4.69    4.70
+ 9     A.G15             -70.4  -180.0    59.0    84.8    ---     ---     ---       -170.9(anti)     8.2(C3'-endo)  ~C3'-endo    ---     --- 
+ 10    A.C22              ---   -163.9   175.0    92.1  -151.6   -73.6    -78(BI)   -169.0(anti)   351.2(C2'-exo)   ~C3'-endo    4.45    4.46
+ 11    A.A23             152.7  -148.6   176.4    79.2  -126.7   -85.6    -41        171.3(anti)    38.7(C4'-exo)   ~C3'-endo    4.31    4.33
+ 12    A.G24             124.2  -149.3  -179.8    82.9  -128.0   -93.2    -35       -171.7(anti)   357.0(C2'-exo)   ~C3'-endo    4.72    4.83
+ 13    A.A25             -86.4    77.8   172.2    88.0  -138.6   -68.1    -70(BI)    170.4(anti)    29.0(C3'-endo)  ~C3'-endo    4.13    4.22
+ 14    A.A26             128.9  -165.3  -175.2    83.7  -141.6   -69.4    -72(BI)   -178.8(anti)    13.5(C3'-endo)  ~C3'-endo    4.60    4.60
+ 15    A.G27             144.5  -121.0   166.7    81.3  -149.2   -76.0    -73(BI)   -177.2(anti)    31.1(C3'-endo)  ~C3'-endo    4.25    4.26
+ 16    A.G28             137.5  -166.7  -178.6    85.4  -151.3   -84.7    -67(BI)   -175.5(anti)   356.4(C2'-exo)   ~C3'-endo    4.65    4.65
+ 17    A.A29             164.8  -173.6   173.3    93.4    ---     ---     ---        174.4(anti)   344.4(C2'-exo)   ~C3'-endo    ---     --- 
+
+******************************************************************************************
+Virtual eta/theta torsion angles: 
+
+  eta:    C4'(i-1)-P(i)-C4'(i)-P(i+1)
+  theta:  P(i)-C4'(i)-P(i+1)-C4'(i+1)
+
+  eta':   C1'(i-1)-P(i)-C1'(i)-P(i+1)
+  theta': P(i)-C1'(i)-P(i+1)-C1'(i+1)
+
+        nt                eta   theta     eta'  theta'
+ 1     A.U7               ---   -129.2    ---   -156.4
+ 2     A.A8              164.2  -154.5   169.4  -160.2
+ 3     A.G9              166.9  -139.3  -176.4  -140.0
+ 4     A.G10             164.2  -149.0  -174.0  -169.1
+ 5     A.A11             -77.4   128.6   -77.2   124.6
+ 6     A.U12              60.0  -143.4    59.7  -140.5
+ 7     A.A13            -176.3   -96.8  -163.6  -110.6
+ 8     A.U14             125.6  -171.6   162.5  -165.8
+ 9     A.G15              ---     ---     ---     --- 
+ 10    A.C22              ---   -128.6    ---   -136.9
+ 11    A.A23             166.9  -129.6  -171.9  -136.4
+ 12    A.G24             138.5   160.2   166.1   149.3
+ 13    A.A25            -132.6  -161.9  -157.9  -154.3
+ 14    A.A26             141.0  -119.0   168.7  -110.1
+ 15    A.G27             155.4  -121.1  -156.8  -137.8
+ 16    A.G28             144.9  -153.1   169.1  -156.6
+ 17    A.A29              ---     ---     ---     --- 
+
+******************************************************************************************
+Sugar conformational parameters:
+
+  v0: C4'-O4'-C1'-C2'
+  v1: O4'-C1'-C2'-C3'
+  v2: C1'-C2'-C3'-C4'
+  v3: C2'-C3'-C4'-O4'
+  v4: C3'-C4'-O4'-C1'
+
+  tm: the amplitude of pucker
+  P:  the phase angle of pseudorotation
+    [Ref: Altona & Sundaralingam (1972): "Conformational analysis
+          of the sugar ring in nucleosides and nucleotides. A new
+          description using the concept of pseudorotation."
+          J Am Chem Soc, 94(23):8205-8212]
+
+        nt                 v0      v1      v2      v3      v4      tm      P   Puckering
+ 1     A.U7              -31.6    44.7   -39.9    22.5     5.8    44.3   154.1  C2'-endo
+ 2     A.A8              -28.7     2.6    22.4   -39.4    43.1    43.2    58.7   C4'-exo
+ 3     A.G9              -20.5    -2.1    22.4   -34.4    34.8    36.2    51.8   C4'-exo
+ 4     A.G10               3.3   -25.4    37.1   -36.0    20.4    38.2    13.6  C3'-endo
+ 5     A.A11              -1.5   -18.3    30.2   -31.8    20.9    32.4    21.1  C3'-endo
+ 6     A.U12               1.6   -26.7    40.7   -40.8    24.5    42.4    16.4  C3'-endo
+ 7     A.A13             -14.4   -10.2    29.5   -38.2    33.3    38.4    39.8   C4'-exo
+ 8     A.U14              19.4   -39.3    44.3   -34.0     8.9    44.6   353.4   C2'-exo
+ 9     A.G15               6.5   -26.8    36.0   -32.6    16.6    36.4     8.2  C3'-endo
+ 10    A.C22              16.3   -31.5    34.5   -25.7     5.8    34.9   351.2   C2'-exo
+ 11    A.A23             -14.3   -11.5    31.5   -40.4    34.6    40.4    38.7   C4'-exo
+ 12    A.G24              16.8   -38.0    44.4   -35.9    11.8    44.5   357.0   C2'-exo
+ 13    A.A25              -5.8   -13.8    27.3   -31.1    23.4    31.2    29.0  C3'-endo
+ 14    A.A26               3.4   -25.5    37.2   -36.1    20.4    38.3    13.5  C3'-endo
+ 15    A.G27              -8.3   -15.0    31.7   -37.0    28.4    37.0    31.1  C3'-endo
+ 16    A.G28              15.8   -34.7    40.4   -32.4    10.2    40.5   356.4   C2'-exo
+ 17    A.A29              22.7   -37.5    37.9   -25.8     1.8    39.4   344.4   C2'-exo
+
+******************************************************************************************
+Assignment of sugar-phosphate backbone suites
+
+  bin: name of the 12 bins based on [delta(i-1), delta, gamma], where
+       delta(i-1) and delta can be either 3 (for C3'-endo sugar) or 2
+       (for C2'-endo) and gamma can be p/t/m (for gauche+/trans/gauche-
+       conformations, respectively) (2x2x3=12 combinations: 33p, 33t,
+       ... 22m); 'inc' refers to incomplete cases (i.e., with missing
+       torsions), and 'trig' to triages (i.e., with torsion angle
+       outliers)
+  cluster: 2-char suite name, for one of 53 reported clusters (46
+           certain and 6 wannabes), '__' for incomplete cases, and
+           '!!' for outliers
+  suiteness: measure of conformer-match quality (low to high in range 0 to 1)
+
+    [Ref: Richardson et al. (2008): "RNA backbone: consensus all-angle
+          conformers and modular string nomenclature (an RNA Ontology
+          Consortium contribution)." RNA, 14(3):465-481]
+
+        nt             bin    cluster   suiteness
+ 1     A.U7            inc      __       0.000
+ 2     A.A8            23t      4n       0.132
+ 3     A.G9            33t      1c       0.822
+ 4     A.G10           33t      1c       0.294
+ 5     A.A11           33m      !!       0.000
+ 6     A.U12           33p      !!       0.000
+ 7     A.A13           33t      1c       0.171
+ 8     A.U14           33t      1c       0.107
+ 9     A.G15           33p      1a       0.885
+ 10    A.C22           inc      __       0.000
+ 11    A.A23           33t      1c       0.548
+ 12    A.G24           33t      1c       0.122
+ 13    A.A25           33t      1e       0.269
+ 14    A.A26           33t      1c       0.355
+ 15    A.G27           33t      1c       0.193
+ 16    A.G28           33t      1c       0.714
+ 17    A.A29           33t      1c       0.555

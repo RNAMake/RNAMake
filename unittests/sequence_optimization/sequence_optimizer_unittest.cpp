@@ -3,7 +3,7 @@
 #include "../common.hpp"
 #include "../tools/motif_graph_builder.hpp"
 
-//RNAMake Headers
+// Headers
 #include "base/settings.h"
 #include "math/numerical.h"
 #include "motif/motif.h"
@@ -64,7 +64,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
     }
     
     SECTION("test optimizing miniTTR sequence") {
-        auto path = base::base_dir() + "/rnamake/unittests/test_problems/mini_ttr/sol.mg";
+        auto path = base::base_dir() + "//unittests/test_problems/mini_ttr/sol.mg";
         auto lines =base::get_lines_from_file(path);
         auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0],
                                                                      motif_data_structure::MotifGraphStringType::MG);
@@ -93,7 +93,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
 
     // messed up backward compadility
     /*SECTION("test optimizing chip sequence") {
-        auto base_path = base::base_dir() + "/rnamake/unittests/resources/motif_graph";
+        auto base_path = base::base_dir() + "//unittests/resources/motif_graph";
         auto lines =base::get_lines_from_file(base_path+"/tecto_chip_only.mg");
         auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0], motif_data_structure::MotifGraphStringType::MG);
         auto so = sequence_optimization::SequenceOptimizer3D();

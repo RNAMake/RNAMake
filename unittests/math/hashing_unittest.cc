@@ -114,7 +114,7 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         pA[0] = -4.25;  pA[1] = 3.42;  pA[2] = -1.3;
         pA[3] = 360;    pA[4] = 12.2;  pA[5] = 2;
 
-        auto path = base::base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/math/test_2.bin";
+        auto path = base::base_dir() + "//unittests/unittest_resources/math/test_2.bin";
         std::ifstream in;
         in.open(path, std::ios::binary);
 
@@ -127,7 +127,7 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
     }
 
     SECTION("test read tecto bin file") {
-        auto path = base::base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/math/test_tecto.bin";
+        auto path = base::base_dir() + "//unittests/unittest_resources/math/test_tecto.bin";
 
         std::ifstream in;
         in.open(path, std::ios::binary);
@@ -163,7 +163,7 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
     }*/
 
     SECTION("test on tecto data") {
-        auto path = base::base_dir() + "/rnamake/lib/RNAMake/unittests/unittest_resources/math/test.out";
+        auto path = base::base_dir() + "//unittests/unittest_resources/math/test.out";
 
         auto in = std::ifstream();
         in.open(path);
