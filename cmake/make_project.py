@@ -116,7 +116,7 @@ if __name__ == '__main__':
     if args.target == "mac":
         static=False
     elif args.target == "windows":
-        pass
+        static = True
     elif args.target == "linux":
         static=True
     else:
