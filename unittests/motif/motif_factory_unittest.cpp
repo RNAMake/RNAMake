@@ -2,7 +2,7 @@
 //headers for testing
 #include "../common.hpp"
 
-// Headers
+//RNAMake Headers
 #include "motif/motif_factory.h"
 
 TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
@@ -13,14 +13,14 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     auto ref_m = motif::file_to_motif(path);;
     
     SECTION("test loading motif from pdb file") {
-        auto path = base::base_dir() + "//unittests/resources/motifs/p4p6/p4p6.pdb";
+        auto path = base::base_dir() + "/unittests/unittest_resources/motifs/p4p6/p4p6.pdb";
         auto m = mf.motif_from_file(path);
         
         REQUIRE(m->residues().size() == 157);
     }
     
     SECTION("load motif from directory") {
-        auto path = base::base_dir() + "//unittests/resources/motifs/p4p6";
+        auto path = base::base_dir() + "/unittests/unittest_resources/motifs/p4p6";
         auto m = mf.motif_from_file(path);
         
         REQUIRE(m->residues().size() == 157);
@@ -57,7 +57,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
     
     SECTION("test generating motifs from basepairs") {
-        auto path = base::base_dir() + "//unittests/resources/motifs/HELIX.IDEAL";
+        auto path = base::base_dir() + "/unittests/unittest_resources/motifs/HELIX.IDEAL";
         auto m = mf.motif_from_file(path);
         auto bps = m->basepairs();
         
@@ -82,13 +82,13 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
     
     SECTION("Loading in proteins with RNA") {
-        auto path = base::base_dir() + "//unittests/resources/pdbs/5g2x.pdb";
+        auto path = base::base_dir() + "/unittests/unittest_resources/pdbs/5g2x.pdb";
         auto m = mf.motif_from_file(path, false, true);
         REQUIRE(m->protein_beads().size() != 0);
     }
 
     SECTION("test alignment setup") {
-        auto path = base::motif_dirs() + "helices/HELIX.IDEAL.2";
+        auto path = base::base_dir() + "/unittests/unittest_resources/motifs/HELIX.IDEAL";//.2";
         auto m = mf.motif_from_file(path);
 
         path = base::motif_dirs() + "base.motif";
@@ -105,7 +105,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     }
 
     SECTION("test forcing set number of chains") {
-        auto path = base::base_dir() + "//lib//unittests/unittest_resources/motif/construct_3.pdb";
+        auto path = base::base_dir() + "/unittests/unittest_resources/motif/construct_3.pdb";
         auto m = mf.motif_from_file(path, false, true, 1);
 
         REQUIRE(m->chains().size() == 1);

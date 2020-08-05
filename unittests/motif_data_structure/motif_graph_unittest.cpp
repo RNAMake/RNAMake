@@ -18,9 +18,9 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
 
     SECTION("test adding motifs") {
         auto mg = motif_data_structure::MotifGraph();
-        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
-        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
-        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL.2");
+        auto m1 = resources::Manager::instance().motif("HELIX.IDEAL");
+        auto m2 = resources::Manager::instance().motif("HELIX.IDEAL");
+        auto m3 = resources::Manager::instance().motif("HELIX.IDEAL");
         
         SECTION("cannot find end if there is not parent") {
             REQUIRE_THROWS_AS(mg.add_motif(m1, -1, "A1-A8"), motif_data_structure::MotifGraphException);
@@ -247,7 +247,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
     }
     
     SECTION("test get end for easy building ") {
-        auto base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/mini_ttr/resources/";
+        auto base_path = base::base_dir() + "/apps/mini_ttr/resources/";
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
 

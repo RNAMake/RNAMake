@@ -14,7 +14,7 @@
 TEST_CASE( "Test chain closure", "[ChainClosure]" ) {
 
     SECTION("test most basic fix") {
-        auto m_path = base::base_dir() + "//unittests/resources/motifs/HELIX.IDEAL/HELIX.IDEAL.pdb";
+        auto m_path = base::unittest_resource_dir() + "/motifs/HELIX.IDEAL/HELIX.IDEAL.pdb";
         auto parser = structure::PDBParser();
         auto residues = parser.parse(m_path);
         auto chains = structure::ChainOPs();
@@ -24,7 +24,7 @@ TEST_CASE( "Test chain closure", "[ChainClosure]" ) {
     }
 
     SECTION("test fixing missing phosphates") {
-        auto m_path = base::base_dir() + "//unittests/resources/motifs/BP.0.22.pdb";
+        auto m_path = base::base_dir() + "//unittests/unittest_resources/motifs/BP.0.22.pdb";
         auto parser = structure::PDBParser();
         auto residues = parser.parse(m_path);
         auto chains = structure::ChainOPs();
