@@ -35,7 +35,6 @@ public:
 
 public:
     virtual
-    inline
     float
     score(
             structure::BasepairState const & bps) = 0;
