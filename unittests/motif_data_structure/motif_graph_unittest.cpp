@@ -98,7 +98,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
     }
     
     SECTION("test compatibility with python stringification and topology serialization") {
-        auto path = base::base_dir() + "/rnamake/unittests/resources/motif_graph/";
+        auto path = base::base_dir() + "/unittests/unittest_resources/motif_graph/";
         auto lines =base::get_lines_from_file(path + "test.mg");
         auto mg = motif_data_structure::MotifGraph(lines[0], motif_data_structure::MotifGraphStringType::MG);
         auto s = mg.get_structure();

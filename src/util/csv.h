@@ -203,6 +203,7 @@ public:
 
         // check to make sure file actually exists
         if(!base::file_exists(file_name)) {
+            std::cout<<file_name<<std::endl;
             LOG_ERROR << "file does not exist: " << file_name; throw CSVException();
         }
 

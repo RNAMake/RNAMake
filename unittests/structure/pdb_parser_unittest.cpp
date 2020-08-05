@@ -9,7 +9,7 @@
 
 
 TEST_CASE( "Test PDB Parser", "[PDBParser]" ) {
-    auto m_path = base::base_dir() + "/unittests/resources/motifs/p4p6/p4p6.pdb";
+    auto m_path = base::base_dir() + "/unittests/unittest_resources/motifs/p4p6/p4p6.pdb";
     auto parser = structure::PDBParser();
     auto residues = parser.parse(m_path);
     auto chains = structure::ChainOPs();
