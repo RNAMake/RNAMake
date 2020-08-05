@@ -22,7 +22,7 @@ cmake -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc .
 #
 #echo "Assembling in make..."
 #
-make
+time make
 #
 #echo "Moving binaries to $RNAMAKE/linux-binaries/"
 #
@@ -38,4 +38,4 @@ rm -rf CMakeFiles/
 pushd /RNAMake//
 rm -rf src/
 pushd /
-tar -czvf rnamake-binaries-linux.tar.gz RNAMake/
+tar -czvf rnamake-binaries-linux.tar.gz RNAMake/cmake/build/
