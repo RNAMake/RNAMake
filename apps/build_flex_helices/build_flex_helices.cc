@@ -5,7 +5,7 @@
 #include "build_flex_helices/build_flex_helices.h"
 
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "math/quaternion.h"
 #include "util/cartesian_product.h"
 #include "secondary_structure/secondary_structure_parser.h"

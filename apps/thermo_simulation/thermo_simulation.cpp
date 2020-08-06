@@ -8,7 +8,7 @@
 
 #include "thermo_simulation.hpp"
 
-#include <base/backtrace.hpp>
+#include <base/backtrace.h>
 #include <base/log.h>
 
 #include "base/file_io.h"

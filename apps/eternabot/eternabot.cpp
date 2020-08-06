@@ -8,7 +8,7 @@
 
 #include "eternabot.h"
 
-#include <base/backtrace.hpp>
+#include <base/backtrace.h>
 #include <base/log.h>
 #include "base/cl_option.h"
 #include "secondary_structure/secondary_structure_parser.h"

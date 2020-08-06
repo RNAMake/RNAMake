@@ -4,7 +4,7 @@
 
 #include <util/steric_lookup.hpp>
 #include <util/monte_carlo.h>
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "util/basic_io.hpp"
 #include "structure/pdb_parser.h"
 #include "resources/resource_manager.h"

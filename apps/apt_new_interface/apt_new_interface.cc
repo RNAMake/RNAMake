@@ -4,7 +4,7 @@
 
 #include <algorithm>
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "base/log.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_state_graph.hpp"

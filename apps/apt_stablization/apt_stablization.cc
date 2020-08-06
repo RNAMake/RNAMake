@@ -2,7 +2,7 @@
 // Created by Joseph Yesselman on 4/12/18.
 //
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_state_graph.hpp"
 #include "motif_search/motif_state_monte_carlo.h"

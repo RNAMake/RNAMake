@@ -2,7 +2,7 @@
 // Created by Joseph Yesselman on 3/9/19.
 //
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "base/log.h"
 #include "design_rna_scaffold/design_rna_scaffold.h"
 

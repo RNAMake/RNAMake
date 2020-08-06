@@ -8,7 +8,7 @@
 
 #include "path_builder_new.hpp"
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "base/file_io.h"
 #include "base/settings.h"
 #include "util/basic_io.hpp"

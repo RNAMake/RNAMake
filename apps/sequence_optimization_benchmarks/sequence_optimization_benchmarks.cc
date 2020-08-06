@@ -4,7 +4,7 @@
 
 #include <chrono>
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_state_graph.hpp"
 #include "motif_search/motif_state_monte_carlo.h"

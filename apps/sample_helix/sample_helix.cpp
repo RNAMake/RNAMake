@@ -7,7 +7,7 @@
 //
 
 #include "sample_helix/sample_helix.hpp"
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "motif_data_structure/motif_tree.h"
 #include "motif_data_structure/motif_state_ensemble_tree.h"

@@ -4,7 +4,7 @@
 
 #include <ddg_tecto/ddg_tecto.h>
 #include <ddg_tecto/tecto_graph_setup.h>
-#include <base/backtrace.hpp>
+#include <base/backtrace.h>
 #include <math/stats.h>
 #include <secondary_structure/secondary_structure_parser.h>
 

@@ -8,7 +8,7 @@
 
 #include "base/cl_option.h"
 #include "base/settings.h"
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_tree.h"

@@ -3,7 +3,7 @@
 //
 #include <algorithm>
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "math/hashing.h"
 #include "math/stats.h"
 #include "util/monte_carlo.h"

@@ -2,7 +2,7 @@
 // Created by Joseph Yesselman on 3/19/19.
 //
 
-#include <base/backtrace.hpp>
+#include <base/backtrace.h>
 #include <base/log.h>
 #include <base/file_io.h>
 #include <motif_data_structure/motif_graph.h>

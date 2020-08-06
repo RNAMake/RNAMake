@@ -2,7 +2,7 @@
 // Created by Joseph Yesselman on 11/21/18.
 //
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "resources/resource_manager.h"
 #include "structure_info/structure_info.h"
 

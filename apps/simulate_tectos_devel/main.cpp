@@ -9,7 +9,7 @@
 #include <stdio.h>
 
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "resources/resource_manager.h"
 #include "simulate_tectos_devel.h"
 

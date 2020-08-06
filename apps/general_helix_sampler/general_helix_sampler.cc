@@ -3,7 +3,7 @@
 //
 
 #include "general_helix_sampler/general_helix_sampler.h"
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "util/cartesian_product.h"
 #include "secondary_structure/secondary_structure_parser.h"
 #include "motif_data_structure/motif_tree.h"
