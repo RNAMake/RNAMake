@@ -1,30 +1,21 @@
 ddg_tecto ../../apps/ddg_tecto/ddg_tecto.cc
-
 #structure_info ../../apps/structure_info/structure_info.cc
 #design_rna ../../apps/design_rna/design_rna.cpp
 #simulate_tectos ../../apps/simulate_tectos/simulate_tectos.cc
-
 simulate_tectos_devel ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc
 ##sequence_optimizer_app ../../apps/sequence_optimizer_app/sequence_optimizer_app.cpp
-
 #sample_helix ../../apps/sample_helix/sample_helix.cpp
-
 ##thermo_simulation ../../apps/thermo_simulation/thermo_simulation.cpp
-
 #general_helix_sampler ../../apps/general_helix_sampler/general_helix_sampler.cpp
 #opt_tecto_cutoff ../../apps/opt_tecto_cutoff/opt_tecto_cutoff.cc
 #apt_stablization ../../apps/apt_stablization/apt_stablization.cc
 #dock_motif ../../apps/dock_motif/dock_motif.cc
 #apt_new_interface ../../apps/apt_new_interface/apt_new_interface.cc
 #build_flex_helices ../../apps/build_flex_helices/build_flex_helices.cc
-
 ##sequence_optimization_benchmarks ../../apps/sequence_optimization_benchmarks/sequence_optimization_benchmarks.cc
 ##design_rna_scaffold ../../apps/design_rna_scaffold/design_rna_scaffold.cc
-
 #hash_motifs ../../apps/hash_motifs/hash_motifs.cc
-
 ##get_best_solutions ../../apps/get_best_solutions/get_best_solutions.cc
-
 #mini_ttr ../../apps/mini_ttr/mini_ttr.cpp
 #exhustive_eternabot ../../apps/exhustive_eternabot/exhustive_eternabot.cpp
 eternabot ../../apps/eternabot/eternabot.cpp
