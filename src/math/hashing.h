@@ -8,6 +8,7 @@
 #include <stdio.h>
 #include <map>
 #include <array>
+#include <stdint.h>
 #include "math/xyz_vector.h"
 
 namespace math {

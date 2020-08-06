@@ -9,6 +9,7 @@
 #ifndef RNAMake_random_number_generator_h
 #define RNAMake_random_number_generator_h
 #include <random>
+#include <ctime>
 #include <math/xyz_vector.h>
 
 namespace util {
