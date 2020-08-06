@@ -2,7 +2,7 @@ ddg_tecto ../../apps/ddg_tecto/ddg_tecto.cc
 #structure_info ../../apps/structure_info/structure_info.cc
 #design_rna ../../apps/design_rna/design_rna.cpp
 #simulate_tectos ../../apps/simulate_tectos/simulate_tectos.cc
-simulate_tectos_devel ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc
+##simulate_tectos_devel ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc
 ##sequence_optimizer_app ../../apps/sequence_optimizer_app/sequence_optimizer_app.cpp
 #sample_helix ../../apps/sample_helix/sample_helix.cpp
 ##thermo_simulation ../../apps/thermo_simulation/thermo_simulation.cpp
