@@ -77,7 +77,7 @@ def build_apps(base_dir,static):
     application_text += "#"*100 + '\n'
     return application_text
 
-def build_header(base_dir,static):
+def build_header(base_dir,static,target):
     """Method that creates the header for the CMakeLists.txt file"""
     header_contents = "#"*100 + "\n# Project Level Info\n" + "#"*100 + '\n'
     header_contents +=  "cmake_minimum_required(VERSION 3.0)\n"
@@ -99,6 +99,8 @@ def build_header(base_dir,static):
     header_contents+= "include_directories({DIR})\n".format(DIR=base_dir + "/src/plog/")
     header_contents+= "include_directories({DIR})\n\n".format(DIR=base_dir + "/unittests/")
     header_contents+= "include_directories({DIR})\n\n".format(DIR=base_dir + "/apps/")
+    if target == "windows":
+        header_contents += "include_directories(/sqlite/)"
     header_contents+= "# sqlite libraries\n"
     header_contents+= "find_library(SQLITE3_LIBRARY sqlite3 VARIANT {BUILD} )\n".format(
                 BUILD="static" if static else ""
@@ -149,7 +151,8 @@ if __name__ == '__main__':
         [
         build_header(
                 os.getcwd().replace("/cmake/build",""),
-                static
+                static,
+                args.target if args.target == "windows" else "NONE"
                 ),
         build_libraries(
                 libs,
