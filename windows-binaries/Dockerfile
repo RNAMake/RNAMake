@@ -1,31 +1,40 @@
 # using Ubuntu for the base image
-FROM ubuntu:18.04
+FROM ubuntu:latest
 FROM python:3.7.7
 
 MAINTAINER Chris Jurich <cjurich2@huskers.unl.edu>
 
+ARG DEBIAN_FRONTEND=noninteractive
+
 RUN apt-get update && 				\
 	apt-get install -y  mingw-w64 		\
-    git 	        \
+    libssl-dev              \
     cmake 					\
 	file     					\
+    git 	        \
 	libc6-dev               \
-    libssl-dev
+    unzip
+
+
+
     #git
+RUN curl https://www.sqlite.org/2020/sqlite-dll-win32-x86-3320300.zip >> sqlite.zip && unzip sqlite.zip
+
 
 COPY . /
 RUN git     clone    --branch client-binaries https://chrisjurich:Ilikesoccer5!@github.com/jyesselm/RNAMake.git
 WORKDIR /RNAMake/cmake/build/ 
 RUN python ../make_project.py -target "windows" &&                      \
-    cmake . -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc  \ 
+    cmake . -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc  -DCMAKE_TRY_COMPILE_TARGET_TYPE="STATIC_LIBRARY" \ 
+    -DSQLITE3_LIBRARY="/sqlite.dll" && \
     make 
 RUN rm -rf CMakeFiles/                          &&                      \
     cd /RNAMake//                            &&                      \
     rm -rf src/                                 &&                      \
     cd /                             
     
-#WORKDIR /
-#
+WORKDIR /
+
 #RUN    tar -czvf windows-binaries.tar.gz RNAMake/cmake/build/
 #ENTRYPOINT cat /windows-binaries.tar.gz
 
