@@ -70,7 +70,7 @@ def build_apps(base_dir,static):
                 source_file = re.sub("\.\./","",app_tokens[-1])
                 application_text += "#"*75 + "\n# {NAME}".format(NAME=app_tokens[0]) + "\n" + "#"*75 + "\n"
                 application_text += "\tadd_executable({NAME} {SRC})\n".format(NAME=app_tokens[0],SRC="/".join([base_dir,source_file]))
-                application_text += "\ttarget_link_libraries({NAME} all_lib {LINK} )\n".format(
+                application_text += "\ttarget_link_libraries({NAME} all_lib {LINK}  -)\n".format(
                         NAME=app_tokens[0],
                         LINK="-static" if static else ""
                         )
@@ -104,6 +104,7 @@ def build_header(base_dir,static,target):
     header_contents+= "include_directories({DIR})\n\n".format(DIR=base_dir + "/apps/")
     if target == "windows":
         header_contents += "include_directories(/sqlite/)\n"
+        header_contents += "link_directories(/sqlite/)\n"
         header_contents += "remove(CMAKE_CXX_FLAGS \"-rdynamic\")\n"
         header_contents += "remove(CMAKE_SHARED_LINKER_FLAGS \"-rdynamic\")\n"
         header_contents += "remove(CMAKE_EXE_LINKER_FLAGS \"-rdynamic\")\n"
