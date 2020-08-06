@@ -21,8 +21,7 @@ def build_libraries(lib_list, dependencies, base_dir,static):
         #library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} -static)\n".format(
         library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} {BUILD})\n".format(
             LIB=library,
-            #DEPENDS=' '.join([lib + "_lib" for lib in dependencies[library]] + ["${SQLITE3_LIBRARY} \"-ldl\"" if library == "util" else ""]),
-            DEPENDS=' '.join([lib + "_lib" for lib in dependencies[library]] + ["${SQLITE3_LIBRARY} " if library == "util" else ""]),
+            DEPENDS=' '.join([lib + "_lib" for lib in dependencies[library]] + ["${SQLITE3_LIBRARY} \"-ldl\"" if library == "util" else ""]),
             BUILD="-static" if static else ""
         )
     #library_declarations += "add_library(all_lib STATIC {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} -static)\n".format(
@@ -89,10 +88,9 @@ def build_header(base_dir,static,target):
     # header_contents += "set(CMAKE_CXX_COMPILER clang++)\n"
     header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
     if static == True:
-        #header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
-        header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed\")\n"
+        header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
     if static == True:
-        #header_contents+= "set(CMAKE_EXE_LINKER_FLAGS \" -lstdc++ -Wl,--no-as-needed,--no-export-dynamic -ldl \")\n"
+        header_contents+= "set(CMAKE_EXE_LINKER_FLAGS \" -lstdc++ -Wl,--no-as-needed,--no-export-dynamic -ldl \")\n"
         header_contents+= "set(CMAKE_EXE_LINKER_FLAGS \" -lstdc++ -Wl,--no-as-needed,--no-export-dynamic \")\n"
     # header_contents+= "set(CMAKE_HOST_SYSTEM_VERSION 2.5)\n"
     header_contents+= "include({CMAKE})\n\n".format(CMAKE=(base_dir + "/cmake/build/compiler.cmake"))
