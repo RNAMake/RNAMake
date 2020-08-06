@@ -90,7 +90,7 @@ def build_header(base_dir,static):
     if static == True:
         header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
     if static == True:
-        header_contents+= "set(CMAKE_EXE_LINKER_FLAGS \" -lstdc++ -Wl,--no-as-needed -ldl \")\n"
+        header_contents+= "set(CMAKE_EXE_LINKER_FLAGS \" -lstdc++ -Wl,--no-as-needed,--no-export-dynamic -ldl \")\n"
     # header_contents+= "set(CMAKE_HOST_SYSTEM_VERSION 2.5)\n"
     header_contents+= "include({CMAKE})\n\n".format(CMAKE=(base_dir + "/cmake/build/compiler.cmake"))
     header_contents+= "# Include path for Python header files\n"

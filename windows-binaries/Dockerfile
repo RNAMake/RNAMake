@@ -1,29 +1,33 @@
 # using Ubuntu for the base image
-FROM ubuntu:latest
+FROM ubuntu:18.04
 FROM python:3.7.7
 
 MAINTAINER Chris Jurich <cjurich2@huskers.unl.edu>
 
 RUN apt-get update && 				\
 	apt-get install -y  mingw-w64 		\
-	cmake 					\
-	file 					\
-	libc6-dev
-
+    git 	        \
+    cmake 					\
+	file     					\
+	libc6-dev               \
+    libssl-dev
+    #git
 
 COPY . /
-RUN git  clone    --branch client-binaries https://chrisjurich:Ilikesoccer5!@github.com/jyesselm/RNAMake.git
+RUN git     clone    --branch client-binaries https://chrisjurich:Ilikesoccer5!@github.com/jyesselm/RNAMake.git
 WORKDIR /RNAMake/cmake/build/ 
 RUN python ../make_project.py -target "windows" &&                      \
-    cmake . -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc  &&          \
+    cmake . -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc  \ 
     make 
 RUN rm -rf CMakeFiles/                          &&                      \
     cd /RNAMake//                            &&                      \
     rm -rf src/                                 &&                      \
-    cd /                                     &&                      \
-    tar -czvf windows-binaries.tar.gz RNAMake/cmake/build/
-
-ENTRYPOINT cat windows-binaries.tar.gz
+    cd /                             
+    
+#WORKDIR /
+#
+#RUN    tar -czvf windows-binaries.tar.gz RNAMake/cmake/build/
+#ENTRYPOINT cat /windows-binaries.tar.gz
 
 #RUN python ../make_project.py
 #RUN cmake .
