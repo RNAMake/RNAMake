@@ -32,14 +32,30 @@ file_exists(String const & name) {
 inline
 int
 is_dir(String const & path) {
-    if (!file_exists(path)) { return 0; }
-    struct stat st;
-    lstat(path.c_str(), &st);
-    if (S_ISDIR(st.st_mode)) {
+    struct stat info;
+
+    if( stat( path.c_str(), &info ) != 0 ) {
+        return 0;
+    } else if (info.st_mode & S_IFDIR) {
         return 1;
     } else {
         return 0;
     }
+
+    //    printf( "cannot access %s\n", pathname );
+    //else if( info.st_mode & S_IFDIR )  // S_ISDIR() doesn't exist on my windows 
+    //    printf( "%s is a directory\n", pathname );
+    //else
+    //printf( "%s is no directory\n", pathname );
+    //
+    //if (!file_exists(path)) { return 0; }
+    //struct stat st;
+    //lstat(path.c_str(), &st);
+    //if (S_ISDIR(st.st_mode)) {
+    //    return 1;
+    //} else {
+    //    return 0;
+    //}
 }
 
 
