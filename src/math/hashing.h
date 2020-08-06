@@ -489,8 +489,8 @@ public:
             in.read(reinterpret_cast<char *>(&bin_widths[i]), sizeof(bin_widths[i]));
         }
         binner_ = SixDCoordinateBinner(BoundingBox(lower, upper), bin_widths);
-        u_int64_t num;
-        u_int64_t key, count;
+        uint64_t num;
+        uint64_t key, count;
         in.read(reinterpret_cast<char *>(&num), sizeof(num));
         for (int i = 0; i < num; i++) {
             in.read(reinterpret_cast<char *>(&key), sizeof(key));
@@ -551,7 +551,7 @@ public:
 
     }
 
-    u_int64_t
+    uint64_t
     get(
             Real6 const & values) {
         auto bin_index = binner_.bin_index(values);
@@ -559,7 +559,7 @@ public:
     }
 
 
-    u_int64_t
+    uint64_t
     within_constraints(
             std::array<Real2, 6> const & constraints) {
         auto values = Real6();
@@ -597,9 +597,9 @@ public:
 
     }
 
-    u_int64_t
+    uint64_t
     total_count() {
-        u_int64_t count = 0;
+        uint64_t count = 0;
         for (auto const & kv : stored_values_) {
             count += kv.second;
         }
@@ -637,7 +637,7 @@ public:
     void
     to_binary_file(
             String const & fname,
-            u_int64_t cuttoff = 0) {
+            uint64_t cuttoff = 0) {
 
         std::ofstream out;
         out.open(fname, std::ios::binary);
@@ -649,7 +649,7 @@ public:
     void
     output_binary(
             std::ofstream & out,
-            u_int64_t cuttoff) {
+            uint64_t cuttoff) {
         auto lower = binner_.get_bounding_box().lower();
         auto upper = binner_.get_bounding_box().upper();
         out.write((const char *) &lower.x(), sizeof(lower.x()));
@@ -661,7 +661,7 @@ public:
         for (int i = 0; i < 6; i++) {
             out.write((const char *) &binner_.get_bin_widths()[i], sizeof(binner_.get_bin_widths()[i]));
         }
-        u_int64_t num = 0;
+        uint64_t num = 0;
         for (auto const & kv : stored_values_) {
             //if(kv.second <= cuttoff) { continue; }
             num += 1;
@@ -677,7 +677,7 @@ public:
 
 private:
     SixDCoordinateBinner binner_;
-    std::map<u_int64_t, u_int64_t> stored_values_;
+    std::map<uint64_t, uint64_t> stored_values_;
 
 };
 
@@ -729,7 +729,7 @@ public:
 
     }
 
-    u_int32_t
+    uint32_t
     get(
             Point const & values) {
         auto bin_index = binner_->bin_index(values);
@@ -761,7 +761,7 @@ public:
 
 private:
     std::shared_ptr<ThreeDCoordinateBinner> binner_;
-    std::map<u_int32_t, int> stored_values_;
+    std::map<uint32_t, int> stored_values_;
 
 };
 
