@@ -10,7 +10,7 @@
 
 inline
 std::string
-demangle( std::string trace ) {
+base::demangle( std::string trace ) {
     
     std::string::size_type begin, end;
     
@@ -60,7 +60,7 @@ demangle( std::string trace ) {
 ////////////////////////////////////////////////////////////////////
 
 void
-print_backtrace() {
+base::print_backtrace() {
 #if defined(_WIN32) || defined(_WIN64)
     std::cout<<"Backtraces currently not available on Windows"<<std::endl;
 #else
