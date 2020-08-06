@@ -10,8 +10,10 @@
 #include <iostream>
 #include <stdio.h>
 
-#if !defined(_WIN32) && !defined(_WIN64)
-#   include <execinfo.h>
+#if defined(_WIN32) || defined(_WIN64)
+ //woot woot
+#else
+#include <execinfo.h>
 #endif
 
 #include <cxxabi.h>

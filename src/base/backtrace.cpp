@@ -61,7 +61,9 @@ demangle( std::string trace ) {
 
 void
 print_backtrace() {
-#if !defined(_WIN32) && !defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
+    std::cout<<"Backtraces currently not available on Windows"<<std::endl;
+#else
     static int tried_throw = -1;
     
     try {
@@ -91,6 +93,5 @@ print_backtrace() {
     }
     //std::cerr << utility::CSI_Reset; // reset color of cerr
     free(strs);
-#else
-    std::cout<<"Backtraces currently not available on Windows"<<std::endl;
+#endif
 }
