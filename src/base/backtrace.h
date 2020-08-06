@@ -9,7 +9,11 @@
 
 #include <iostream>
 #include <stdio.h>
-#include <execinfo.h>
+
+#if !defined(_WIN32) && !defined(_WIN64)
+#   include <execinfo.h>
+#endif
+
 #include <cxxabi.h>
 
 
