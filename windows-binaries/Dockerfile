@@ -12,11 +12,19 @@ RUN apt-get update && 				\
 
 
 COPY . /
-RUN git clone  --branch client-binaries https://chrisjurich:Ilikesoccer5!@github.com/jyesselm/RNAMake.git
+RUN git  clone  --branch client-binaries https://chrisjurich:Ilikesoccer5!@github.com/jyesselm/RNAMake.git
 WORKDIR /RNAMake/cmake/build/ 
-RUN python ../make_project.py -target "windows" &&          \
-    cmake .                                         \
+RUN python ../make_project.py -target "windows" &&                      \
+    cmake . -DCMAKE_CXX_COMPILER=g++ -DCMAKE_C_COMPILER=gcc  &&          \
     make 
+RUN rm -rf CMakeFiles/                          &&                      \
+    cd /RNAMake//                            &&                      \
+    rm -rf src/                                 &&                      \
+    cd /                                     &&                      \
+    tar -czvf windows-binaries.tar.gz RNAMake/cmake/build/
+
+ENTRYPOINT cat windows-binaries.tar.gz
+
 #RUN python ../make_project.py
 #RUN cmake .
 #RUN pwd 
