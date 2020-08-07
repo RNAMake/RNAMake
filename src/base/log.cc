@@ -27,7 +27,11 @@ log_level_from_str(
     }
 
     if     (lower_str == "fatal")  { return LogLevel::FATAL;   }
+#if defined(_WIN32) || defined(_WIN64) 
+    else if(lower_str == "error")  { return LogLevel::WIN_ERROR;   }
+#else 
     else if(lower_str == "error")  { return LogLevel::ERROR;   }
+#endif
     else if(lower_str == "warn")   { return LogLevel::WARN;    }
     else if(lower_str == "info")   { return LogLevel::INFO;    }
     else if(lower_str == "debug")  { return LogLevel::DEBUG;   }
