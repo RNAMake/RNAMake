@@ -6,7 +6,7 @@
 
 //RNAMake Headers
 #include "base/settings.h"
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "resources/resource_manager.h"
 #include "secondary_structure/util.h"
 #include "structure/is_equal.hpp"

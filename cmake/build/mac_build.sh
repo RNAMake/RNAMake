@@ -26,3 +26,4 @@ mv ddg_tecto design_rna_scaffold eternabot get_best_solutions sequence_optimizat
 
 
 echo "Build complete!"
+

@@ -21,7 +21,7 @@ def build_libraries(lib_list, dependencies, base_dir,static):
         #library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} -static)\n".format(
         library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} {BUILD})\n".format(
             LIB=library,
-            DEPENDS=' '.join([lib + "_lib" for lib in dependencies[library]] + ["${SQLITE3_LIBRARY} " if library == "util" else ""]),
+            DEPENDS=' '.join([lib + "_lib" for lib in dependencies[library]] + ["sqlite3" if library == "util" else ""]),
             #DEPENDS=' '.join([lib + "_lib" for lib in dependencies[library]] + ["${SQLITE3_LIBRARY} \"-ldl\"" if library == "util" else ""]),
             BUILD="-static" if static else ""
         )
@@ -96,6 +96,8 @@ def build_header(base_dir,static,target):
         header_contents+= "set(CMAKE_EXE_LINKER_FLAGS \" -lstdc++ -Wl,--no-as-needed,--no-export-dynamic \")\n"
     # header_contents+= "set(CMAKE_HOST_SYSTEM_VERSION 2.5)\n"
     header_contents+= "include({CMAKE})\n\n".format(CMAKE=(base_dir + "/cmake/build/compiler.cmake"))
+    header_contents+= "include({CMAKE})\n\n".format(CMAKE=(base_dir + "/cmake/build/sqlite.cmake"))
+
     header_contents+= "# Include path for Python header files\n"
     header_contents+= "# Include paths for RNAMake src\n"
     header_contents+= "include_directories({DIR})\n".format(DIR=(base_dir + "/src/"))
@@ -110,10 +112,6 @@ def build_header(base_dir,static,target):
         header_contents += "remove(CMAKE_EXE_LINKER_FLAGS \"-rdynamic\")\n"
         header_contents+= "# sqlite libraries\n"
         header_contents += "add_library(SQLITE3_LIBRARY STATIC /sqlite/sqlite3.c)\ntarget_link_libraries(SQLITE3_LIBRARY -static)"
-    else:
-        header_contents+= "find_library(SQLITE3_LIBRARY sqlite3 VARIANT {BUILD} )\n".format(
-                BUILD="static" if static else ""
-            )
     #header_contents+= "find_library(SQLITE3_LIBRARY sqlite3 VARIANT static)\n"
     header_contents += "#"*100 + '\n'
     return header_contents
@@ -172,9 +170,9 @@ if __name__ == '__main__':
                 libs,os.getcwd().replace("/cmake/build","/unittests"),
                 static
                 ),
-        #build_apps(
-        #        os.getcwd().split("/cmake/build")[0],
-        #        static
-        #    )
+        build_apps(
+                os.getcwd().split("/cmake/build")[0],
+                static
+            )
         ]
         )
