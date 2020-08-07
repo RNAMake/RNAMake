@@ -11,7 +11,10 @@
 #include <stdio.h>
 
 #if defined(_WIN32) || defined(_WIN64)
- //woot woot
+
+#include <windows.h>
+#include <DbgHelp.h>
+
 #else
 #include <execinfo.h>
 #endif
