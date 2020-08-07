@@ -87,7 +87,7 @@ base::print_backtrace() {
     #elif _M_X64
       image = IMAGE_FILE_MACHINE_AMD64;
       stackframe.AddrPC.Offset = context.Rip;
-      stackfram.AddrPC.Mode = AddrModeFlat;
+      stackframe.AddrPC.Mode = AddrModeFlat;
       stackframe.AddrFrame.Offset = context.Rsp;
       stackframe.AddrFrame.Mode = AddrModeFlat;
       stackframe.AddrStack.Offset = context.Rsp;
