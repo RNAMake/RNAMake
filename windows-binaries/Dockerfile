@@ -15,20 +15,6 @@ RUN apt-get update && 				\
 	libc6-dev               \
     unzip
 
-ARG LD_LIBRARY_PATH=/sqlite3/:$LD_LIBRARY_PATH
-
-    #git
-RUN mkdir -p sqlite/ && \
-    curl https://www.sqlite.org/2020/sqlite-dll-win32-x86-3320300.zip >> sqlite.zip && \
-    unzip sqlite.zip && mv sqlite3.def sqlite3.dll sqlite/ && \
-    rm -f sqlite.zip && \
-    curl https://www.sqlite.org/2020/sqlite-amalgamation-3320300.zip >> sqlite.zip && \
-    unzip sqlite.zip && mv sqlite-amalgamation-3320300/* sqlite/
-
-###########################################################################################
-RUN x86_64-w64-mingw32-gcc  -c sqlite/sqlite3.c
-
-###########################################################################################
 
 
 
@@ -37,7 +23,7 @@ RUN     git     clone  --branch    client-binaries https://chrisjurich:Ilikesocc
 WORKDIR /RNAMake/cmake/build/ 
 RUN python ../make_project.py -target "windows" &&                      \
     cmake . -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc  -DCMAKE_TRY_COMPILE_TARGET_TYPE="STATIC_LIBRARY" \ 
-       -DCMAKE_SYSTEM_NAME="Windows"  -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++ -static" -G "MinGW Makefiles"
+       -DCMAKE_SYSTEM_NAME="Windows"  -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++ -static" 
 #-DSQLITE3_LIBRARY="/sqlite/sqlite3.o"
       #-DCMAKE_FIND_LIBRARY_SUFFIXES=".dll .a"
 RUN make 
