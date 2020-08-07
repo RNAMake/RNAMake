@@ -104,7 +104,7 @@ def build_header(base_dir,static,target):
     header_contents+= "include_directories({DIR})\n\n".format(DIR=base_dir + "/apps/")
     if target == "windows":
         header_contents += "include_directories(/sqlite/)\n"
-        header_contents += "link_directories(/sqlite/)\n"
+        #header_contents += "link_directories(/sqlite/)\n"
         header_contents += "remove(CMAKE_CXX_FLAGS \"-rdynamic\")\n"
         header_contents += "remove(CMAKE_SHARED_LINKER_FLAGS \"-rdynamic\")\n"
         header_contents += "remove(CMAKE_EXE_LINKER_FLAGS \"-rdynamic\")\n"
