@@ -38,3 +38,14 @@ foreach( flag ${COMPILE_FLAGS} )
 endforeach()
 
 MESSAGE(“${CMAKE_CXX_FLAGS}”)
+
+if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  
+    MESSAGE("HERE")
+    set_source_files_properties(
+            ../../src/base/backtrace.cpp 
+            PROPERTIES
+            LANGUAGE C
+            LINKER CXX_STATIC_LIBRARY_LINKER
+            )
+
+endif()
