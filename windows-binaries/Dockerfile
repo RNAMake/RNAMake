@@ -17,13 +17,13 @@ RUN apt-get update && 				\
 
 
 
-
 COPY . /
-RUN            git      clone  --branch    client-binaries https://chrisjurich:Ilikesoccer5!@github.com/jyesselm/RNAMake.git
+RUN     git      clone  --branch    client-binaries https://chrisjurich:Ilikesoccer5!@github.com/jyesselm/RNAMake.git
 WORKDIR /RNAMake/cmake/build/ 
 RUN python ../make_project.py -target "windows" &&                      \
     cmake . -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc  -DCMAKE_TRY_COMPILE_TARGET_TYPE="STATIC_LIBRARY" \ 
-       -DCMAKE_SYSTEM_NAME="Windows"  -DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++ -static -limagehlp" 
+       -DCMAKE_SYSTEM_NAME="Windows"  
+#-DCMAKE_EXE_LINKER_FLAGS="-static-libgcc -static-libstdc++ -static " 
 #-DSQLITE3_LIBRARY="/sqlite/sqlite3.o"
       #-DCMAKE_FIND_LIBRARY_SUFFIXES=".dll .a"
 RUN make 
@@ -33,9 +33,18 @@ RUN rm -rf CMakeFiles/                          &&                      \
     cd /                             
     
 WORKDIR /
+#
+#RUN    tar -czvf windows-binaries.tar.gz RNAMake/cmake/build/
+#ENTRYPOINT cat /windows-binaries.tar.gz
 
-RUN    tar -czvf windows-binaries.tar.gz RNAMake/cmake/build/
-ENTRYPOINT cat /windows-binaries.tar.gz
+
+
+
+
+
+
+
+
 
 #RUN python ../make_project.py
 #RUN cmake .
