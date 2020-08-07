@@ -109,7 +109,7 @@ def build_header(base_dir,static,target):
         header_contents += "remove(CMAKE_SHARED_LINKER_FLAGS \"-rdynamic\")\n"
         header_contents += "remove(CMAKE_EXE_LINKER_FLAGS \"-rdynamic\")\n"
         header_contents+= "# sqlite libraries\n"
-        header_contents += "add_libray(SQLITE3_LIBRARY /sqlite/sqlite3.c)"
+        header_contents += "add_library(SQLITE3_LIBRARY /sqlite/sqlite3.c)"
     else:
         header_contents+= "find_library(SQLITE3_LIBRARY sqlite3 VARIANT {BUILD} )\n".format(
                 BUILD="static" if static else ""
