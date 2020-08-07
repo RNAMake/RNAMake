@@ -13,6 +13,7 @@
 #if defined(_WIN32) || defined(_WIN64)
 
 #include <windows.h>
+#include <dbghelp.h>
 
 #else
 #include <execinfo.h>
