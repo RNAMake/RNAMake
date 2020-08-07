@@ -166,10 +166,10 @@ if __name__ == '__main__':
                 depends,os.getcwd().replace("/cmake/build","/src"),
                 static
                 ),
-        build_unittests(
-                libs,os.getcwd().replace("/cmake/build","/unittests"),
-                static
-                ),
+        #build_unittests(
+        #        libs,os.getcwd().replace("/cmake/build","/unittests"),
+        #        static
+        #        ),
         build_apps(
                 os.getcwd().split("/cmake/build")[0],
                 static
