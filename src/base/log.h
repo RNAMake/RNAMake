@@ -36,7 +36,11 @@ namespace base {
 // keep values in project
 enum class LogLevel {
     FATAL   = plog::fatal,
+#if defined(_WIN32) || defined(_WIN64)
+    WIN_ERROR   = plog::error,
+#else 
     ERROR   = plog::error,
+#endif 
     WARN    = plog::warning,
     INFO    = plog::info,
     DEBUG   = plog::debug,

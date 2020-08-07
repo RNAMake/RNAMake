@@ -19,7 +19,7 @@ RUN apt-get update && 				\
 
 
 COPY . /
-RUN     git     clone  --branch    client-binaries https://chrisjurich:Ilikesoccer5!@github.com/jyesselm/RNAMake.git
+RUN       git     clone  --branch    client-binaries https://chrisjurich:Ilikesoccer5!@github.com/jyesselm/RNAMake.git
 WORKDIR /RNAMake/cmake/build/ 
 RUN python ../make_project.py -target "windows" &&                      \
     cmake . -DCMAKE_CXX_COMPILER=x86_64-w64-mingw32-g++ -DCMAKE_C_COMPILER=x86_64-w64-mingw32-gcc  -DCMAKE_TRY_COMPILE_TARGET_TYPE="STATIC_LIBRARY" \ 
