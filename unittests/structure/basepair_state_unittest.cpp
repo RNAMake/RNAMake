@@ -5,7 +5,7 @@
 #include <base/settings.h>
 #include <structure/structure.h>
 #include <structure/basepair_state.h>
-#include <structure/is_equal.hpp>
+#include <structure/is_equal.h>
 
 TEST_CASE( "Test structure::Basepair State for Structure", "[structure::BasepairState]" ) {
 

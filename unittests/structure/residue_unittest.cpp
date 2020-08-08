@@ -9,7 +9,7 @@
 #include "base/settings.h"
 #include "structure/residue.h"
 #include "structure/residue_type_set.h"
-#include "structure/is_equal.hpp"
+#include "structure/is_equal.h"
 
 
 TEST_CASE( "Test Residues for Structure", "[Residue]" ) {

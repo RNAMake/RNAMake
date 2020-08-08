@@ -61,7 +61,7 @@ PDBParser::parse(
 
             resnum = line.substr(22, 4);
             resnum = base::trim(resnum);
-
+            
             atomnames.push_back(atomname);
             resnames.push_back(resname);
             chainids.push_back(chid);

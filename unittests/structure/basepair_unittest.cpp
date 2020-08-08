@@ -5,7 +5,7 @@
 #include "base/settings.h"
 #include "structure/structure.h"
 #include "structure/basepair.h"
-#include "structure/is_equal.hpp"
+#include "structure/is_equal.h"
 
 
 TEST_CASE( "Test Basepairs for Structure", "[Basepair]" ) {

@@ -2,7 +2,7 @@
 #include "../common.hpp"
 
 #include "structure/atom.h"
-#include "structure/is_equal.hpp"
+#include "structure/is_equal.h"
 
 
 TEST_CASE( "Test Atoms for Structure", "[Atom]" ) {

@@ -27,5 +27,6 @@ demangle( std::string );
 
 void
 print_backtrace();
+
 }
 #endif //BASE_LIB_BACKTRACE_H

@@ -33,6 +33,31 @@ split_str_by_delimiter(
 
 }
 
+Strings
+tokenize_line(String const & raw_line) {
+    auto tokens = Strings{};
+    auto token = String{}; 
+    const auto whitespace = std::string(" \f\v\t\r\n");
+    
+    for(char ch : raw_line) {
+        
+        if(whitespace.find(ch) == std::string::npos) {
+            token += ch;
+        } else {
+            if(!token.empty()) {
+                tokens.push_back(token);
+                token = "";
+            }
+        }
+    }
+    
+    if(!token.empty()) {
+        tokens.push_back(token);
+    }
+
+    return tokens;
+}
+
 String
 join_by_delimiter(
         Strings const & strs,

@@ -83,11 +83,14 @@ def build_header(base_dir,static,target):
     header_contents = "#"*100 + "\n# Project Level Info\n" + "#"*100 + '\n'
     header_contents +=  "cmake_minimum_required(VERSION 3.0)\n"
     header_contents+= "set(CMAKE_BUILD_TYPE Release)\n"
-    header_contents+= "project(rnamake_new)\n\n"
+    header_contents+= "project(RNAMake)\n\n"
     header_contents += "set(CMAKE_CXX_STANDARD 14)\n"
+    #header_contents += "set(CMAKE_SYSTEM_NAME {SYS})\n".format(
+    #        SYS="MAC"
+    #        )
     # header_contents += "set(CMAKE_C_COMPILER clang)\n"
     # header_contents += "set(CMAKE_CXX_COMPILER clang++)\n"
-    header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
+    #header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
     if static == True:
         #header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
         header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed \")\n"
@@ -154,6 +157,7 @@ if __name__ == '__main__':
 
     libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimization".split()
 
+    libs = "base math data_structure util vienna secondary_structure eternabot structure".split()
     write_CML_file(
         [
         build_header(
@@ -166,13 +170,13 @@ if __name__ == '__main__':
                 depends,os.getcwd().replace("/cmake/build","/src"),
                 static
                 ),
-        #build_unittests(
-        #        libs,os.getcwd().replace("/cmake/build","/unittests"),
-        #        static
-        #        ),
-        build_apps(
-                os.getcwd().split("/cmake/build")[0],
+        build_unittests(
+                libs,os.getcwd().replace("/cmake/build","/unittests"),
                 static
-            )
+                ),
+        #build_apps(
+        #        os.getcwd().split("/cmake/build")[0],
+        #        static
+        #    )
         ]
         )

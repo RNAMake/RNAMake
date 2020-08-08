@@ -21,6 +21,11 @@ split_str_by_delimiter(
         String,
         String);
 
+Strings
+tokenize_line(
+        String const &
+        );
+
 String
 join_by_delimiter(
         Strings const &,
@@ -51,6 +56,7 @@ String & rtrim(
 
 String & trim(
         String & s);
+
 
 }
 

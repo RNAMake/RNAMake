@@ -6,7 +6,7 @@
 //  Copyright © 2016 Joseph Yesselman. All rights reserved.
 //
 
-#include "is_equal.hpp"
+#include "structure/is_equal.h"
 #include "math/numerical.h"
 
 namespace structure {
@@ -90,6 +90,25 @@ are_structures_equal(
         StructureOP const & s1,
         StructureOP const & s2,
         int check_uuids) {
+    
+    const auto& chains1 = s1->chains();
+    const auto& chains2 = s2->chains();
+    
+    if(chains1.size() != chains2.size()) {
+        return false;
+    }
+
+    auto it_s1 = chains1.cbegin();
+    auto it_s2 = chains2.cbegin();
+    const auto stop = chains1.cend();
+    for( ; it_s1 != stop; ++it_s1, ++it_s2) {
+        if(!are_chains_equal(
+                    *it_s1,
+                    *it_s2
+                    )) {
+            return false;
+        }
+    }
 
     return true;
 
