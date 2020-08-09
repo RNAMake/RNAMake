@@ -7,6 +7,7 @@
 //
 #include <algorithm>
 #include <functional>
+#include <iostream>
 
 //RNAMake Headers
 #include "base/string.h"
@@ -35,26 +36,36 @@ split_str_by_delimiter(
 
 Strings
 tokenize_line(String const & raw_line) {
+    // note that this is specific to the CIF format grammar. DO NOT use this elsewhere 
     auto tokens = Strings{};
     auto token = String{}; 
     const auto whitespace = std::string(" \f\v\t\r\n");
+    const auto line_len = raw_line.size();
     
-    for(char ch : raw_line) {
+    for(auto it = 0; it<line_len;) {
         
-        if(whitespace.find(ch) == std::string::npos) {
-            token += ch;
-        } else {
+        char ch = raw_line[it];
+        const auto is_ws = whitespace.find(ch) != std::string::npos;
+       
+        if((ch == ';' || ch == '\'') && token.empty()) {
+            const auto matching = raw_line.find(ch,it+1); 
+            tokens.push_back(raw_line.substr(it+1,matching-it-1));
+            it = matching + 1;
+            token = "";
+ 
+        } else if (is_ws ||( it == (line_len -1)) ) {
             if(!token.empty()) {
                 tokens.push_back(token);
                 token = "";
             }
+            ++it;
+        } else if(!is_ws) {
+            token += ch;
+            ++it;
         }
+
     }
     
-    if(!token.empty()) {
-        tokens.push_back(token);
-    }
-
     return tokens;
 }
 

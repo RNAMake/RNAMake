@@ -61,7 +61,6 @@ PDBParser::parse(
 
             resnum = line.substr(22, 4);
             resnum = base::trim(resnum);
-            
             atomnames.push_back(atomname);
             resnames.push_back(resname);
             chainids.push_back(chid);
@@ -95,8 +94,6 @@ PDBParser::parse(
         if (already_has) { continue; }
         residue_atoms[key].push_back(AtomOP(new Atom(atomnames[i], coordinates[i])));
     }
-
-
     ResidueType rtype;
     Strings spl;
     String icode = "";

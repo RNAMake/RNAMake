@@ -44,7 +44,7 @@ are_residues_equal(
         ResidueOP const & r1,
         ResidueOP const & r2,
         int check_uuids) {
-
+    
     if (r1->name() != r2->name()) { return false; }
     if (check_uuids && r1->uuid() != r2->uuid()) { return false; }
 
@@ -78,9 +78,14 @@ are_chains_equal(
     auto c1_res = c1->residues();
     auto c2_res = c2->residues();
     auto result = 0;
-    for (int i = 0; i < c1->length(); i++) {
-        result = are_residues_equal(c1_res[i], c2_res[i], check_uuids);
-        if (!result) { return false; }
+    
+    const auto chain_len = c1->length();
+
+    for (int it = 0; it < chain_len; it++) {
+        if(!are_residues_equal(c1_res[it], c2_res[it], check_uuids)) {
+            return false;
+        }
+    
     }
     return true;
 }
@@ -97,7 +102,7 @@ are_structures_equal(
     if(chains1.size() != chains2.size()) {
         return false;
     }
-
+    
     auto it_s1 = chains1.cbegin();
     auto it_s2 = chains2.cbegin();
     const auto stop = chains1.cend();

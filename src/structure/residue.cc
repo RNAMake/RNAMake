@@ -14,8 +14,7 @@
 namespace structure {
 
 math::Point
-center(
-        AtomOPs const & atoms) {
+center( AtomOPs const & atoms) {
     assert(atoms.size() > 0);
     auto center = math::Point(0, 0, 0);
     for (auto const & a : atoms) {

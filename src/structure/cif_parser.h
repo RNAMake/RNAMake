@@ -21,10 +21,13 @@ namespace structure {
 class CIFParseError : public std::runtime_error {
     public:
         CIFParseError(
-                String& msg
+                String const & msg
                 ) : std::runtime_error(msg) {}
 };
 
+// This class is a compantion to PDBParser and is designed to carry out
+// a similar purpose. This is still a work in progress (as of aug 2020). The 
+// API will likely be improved/updated as time goes on
 
 class CIFParser {
 public:
@@ -56,9 +59,11 @@ private:
 
 private:
     std::unordered_set<int> 
-    _get_entity_ids(
-                String const &
-                    );
+    _get_entity_ids(String const &);
+
+private:
+    std::map<String,AtomOPs> 
+    _get_atoms(String const &  , std::unordered_set<int> const &);
 
 };
 
