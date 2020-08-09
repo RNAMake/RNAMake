@@ -176,8 +176,8 @@ CIFParser::parse(
     auto contents = std::map<String,String>{
                                     {"_entity" , ""},
                                     {"_atom_site" , ""},
-                                    {"_pdbx_poly_seq_scheme" , ""},
-                                    {"_ndb_struct_na_base_pair" , ""}
+                                    //{"_pdbx_poly_seq_scheme" , ""},
+                                    //{"_ndb_struct_na_base_pair" , ""}
                                  };
 
     auto var_start = std::regex("\n_[a-zA-Z_]*");
