@@ -1,8 +1,10 @@
 # what do we want to do here? 
-if( ${CMAKE_CXX_COMPILER} MATCHES ".*[g][+][+].*" )
+if( ${CMAKE_CXX_COMPILER} MATCHES "[g][+][+].*" )
     set(COMPILER gcc)
 elseif(${CMAKE_CXX_COMPILER} MATCHES ".*clang[+]{2}.*")
     set(COMPILER clang)
+else()
+    message(FATAL_ERROR "Specified C++ compiler is \"${CMAKE_CXX_COMPILER}\".\nOn this machine, the variable \"CMAKE_CXX_COMPILER\" is ambiguous.\nRNAMake's build currently supports clang and gcc. \nFor successful build, try the command:\n$ cmake [-G Ninja] -DCMAKE_CXX_COMPILER=[g++|clang] ." )
 endif()
 
 MESSAGE( ">> CMAKE identifies C++ compiler as '${CMAKE_CXX_COMPILER}', interpreting this as '${COMPILER}'" )
