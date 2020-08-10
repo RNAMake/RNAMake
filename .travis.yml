@@ -17,6 +17,8 @@ script:
   #- ln -s /usr/bin/gcc-6 /usr/local/bin/gcc
   #- ln -s /usr/bin/g++-6 /usr/local/bin/g++
   # Export CC and CXX to tell cmake which compiler to use
+  - pip install --user -U pip
+  - pip install --user pathlib
   - export CC=/usr/bin/gcc-6
   - export CXX=/usr/bin/g++-6
   # Check versions of gcc, g++ and cmake
