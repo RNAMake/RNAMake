@@ -22,4 +22,5 @@ script:
   # Check versions of gcc, g++ and cmake
   - gcc -v && g++ -v && cmake --version
   # Run your build commands next
+  - pip install pathlib
   - cd cmake/build/ && python ../make_project.py -target "linux" && cmake . && make
