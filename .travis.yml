@@ -14,7 +14,7 @@ addons:
       - gcc-6
       - g++-6
       - cmake
-      - pyhon
+      - python
 script:
   - python3 --version
   - pip3 install -U pip
