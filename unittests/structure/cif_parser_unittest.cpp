@@ -1,7 +1,5 @@
 #include "../common.hpp"
 
-#include <filesystem>
-
 #include "base/file_io.h"
 #include "base/settings.h"
 #include "structure/cif_parser.h"
@@ -109,20 +107,4 @@ TEST_CASE( "Test CIF Parser", "[CIFParser]" ) {
         REQUIRE_THROWS(cifparser.parse(cif_path + "/bad_headers.cif"));
         }
     
-    SECTION("Volume testing") {
-        auto cifparser = structure::CIFParser{}; 
-        auto failed_paths = Strings{};
-        auto bad_file_ct = 0; 
-        for (const auto & entry : std::__fs::filesystem::directory_iterator("../../data/")){
-            const auto fp = String{entry.path()}; 
-            if(fp.substr(fp.size()-3) != "cif") { continue; }
-            try{
-                cifparser.parse(fp);
-            } catch (structure::CIFParseError& e) {
-                ++bad_file_ct; 
-            }
-        }
-        REQUIRE(bad_file_ct == 0);
-    }
 }
-
