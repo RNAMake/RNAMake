@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/jyesselm/RNAMake.svg?token=Kxiycasibo9yqZt7eayf&branch=client-binaries)](https://travis-ci.com/jyesselm/RNAMake)
+
 RNAMake
 =======
 -----------
