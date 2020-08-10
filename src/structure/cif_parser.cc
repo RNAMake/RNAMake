@@ -193,7 +193,7 @@ CIFParser::parse(
         auto key = String{matches[0]};
         key = base::trim(key);
         
-        if(contents.find(key) != contents.end()) {
+        if(contents.find(key) != contents.end()) {
             contents[key] = section;
         }
     }
