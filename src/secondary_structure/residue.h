@@ -50,25 +50,25 @@ public:
         String const & chain_id,
         util::Uuid const & uuid,
         String const & i_code=""):
-    name_(name),
-    dot_bracket_(dot_bracket),
-    num_(num),
     chain_id_(chain_id),
-    uuid_(uuid),
-    i_code_(i_code) {
+    dot_bracket_(dot_bracket),
+    i_code_(i_code),
+    name_(name),
+    num_(num),
+    uuid_(uuid) {
         res_type_ = convert_res_name_to_type(name_[0]);
     }
     
     inline
     Residue(
         Residue const & r):
-    name_(r.name_),
-    dot_bracket_(r.dot_bracket_),
-    num_(r.num_),
     chain_id_(r.chain_id_),
-    uuid_(r.uuid_),
+    dot_bracket_(r.dot_bracket_),
     i_code_(r.i_code_),
-    res_type_(r.res_type_)
+    name_(r.name_),
+    num_(r.num_),
+    res_type_(r.res_type_),
+    uuid_(r.uuid_)
     {}
     
     Residue(

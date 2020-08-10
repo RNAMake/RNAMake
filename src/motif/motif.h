@@ -32,16 +32,17 @@ class Motif : public structure::RNAStructure {
 public:
     Motif() :
             structure::RNAStructure(),
-            id_(util::Uuid()),
-            block_end_add_(0) {}
+            block_end_add_(0),
+            id_(util::Uuid())
+    {}
 
     Motif(
             structure::StructureOP const & structure,
             structure::BasepairOPs const & basepairs,
             structure::BasepairOPs const & ends) :
-            structure::RNAStructure(structure, basepairs, ends),
+            block_end_add_(0),
             id_(util::Uuid()),
-            block_end_add_(0) {}
+            structure::RNAStructure(structure, basepairs, ends) {}
 
     Motif(
             String const &,

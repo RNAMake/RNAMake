@@ -81,12 +81,12 @@ public:
             int const & num,
             String const & chain_id,
             String const & i_code) :
+            _atoms(AtomOPs()),
+            _chain_id(chain_id),
+            _i_code(i_code),
             _rtype(rtype),
             _name(name),
             _num(num),
-            _chain_id(chain_id),
-            _i_code(i_code),
-            _atoms(AtomOPs()),
             _uuid(util::Uuid()) {}
 
     /**

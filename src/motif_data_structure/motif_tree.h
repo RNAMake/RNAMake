@@ -39,10 +39,10 @@ private:
         inline
         MotifTreePrinter(
                 MotifTree const & mt) :
+                branch_length_(25),
                 levels_(std::map<int, int>()),
                 node_pos_(std::map<int, int>()),
                 nodes_per_level_(std::map<int, int>()),
-                branch_length_(25),
                 start_pos_(100) {
             _setup_node_positions(mt);
         }

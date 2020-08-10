@@ -6,7 +6,7 @@
 #include "base/settings.h"
 #include "util/basic_io.hpp"
 #include "util/steric_lookup.hpp"
-#include "structure/is_equal.hpp"
+#include "structure/is_equal.h"
 #include "motif/motif.h"
 
 TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {

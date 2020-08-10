@@ -9,7 +9,7 @@
 #include "base/backtrace.h"
 #include "resources/resource_manager.h"
 #include "secondary_structure/util.h"
-#include "structure/is_equal.hpp"
+#include "structure/is_equal.h"
 #include "motif_data_structure/motif_graph.h"
 
 

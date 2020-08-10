@@ -22,7 +22,7 @@ public:
     Features():
     gu(0), gc(0), ua(0),
     meltpoint(97), fe(0),
-    a_count(0), g_count(0), c_count(0), u_count(0),
+    a_count(0), c_count(0), g_count(0),  u_count(0),
     pairmap ( std::map<int, int>() ),
     length(0)
     {}

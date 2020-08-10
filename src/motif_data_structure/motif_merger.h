@@ -76,12 +76,13 @@ class MotifMerger {
 public:
     MotifMerger() :
             all_bps_(std::map<util::Uuid, structure::BasepairOP, util::UuidCompare>()),
-            motifs_(std::map<util::Uuid, motif::MotifOP, util::UuidCompare>()),
-            res_overrides_(std::map<util::Uuid, util::Uuid, util::UuidCompare>()),
             bp_overrides_(std::map<util::Uuid, util::Uuid, util::UuidCompare>()),
             graph_(data_structure::graph::GraphStatic<ChainNodeData>()),
+            motifs_(std::map<util::Uuid, motif::MotifOP, util::UuidCompare>()),
             rebuild_structure_(1),
-            rna_structure_(std::make_shared<structure::RNAStructure>()) {
+            res_overrides_(std::map<util::Uuid, util::Uuid, util::UuidCompare>()),
+            rna_structure_(std::make_shared<structure::RNAStructure>())
+    {
 
     }
 

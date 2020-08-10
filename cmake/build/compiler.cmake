@@ -52,7 +52,8 @@ if( ${COMPILER} STREQUAL clang  OR ${COMPILER} STREQUAL AppleClang  )
         -std=gnu++1y
         -g
         -pedantic
-        #    -O4 
+        #-O4 
+        #-Wall
 	)
 endif()
 
@@ -60,9 +61,9 @@ if( ${COMPILER} STREQUAL gcc )
 	set(compile_flags
 	-std=c++14
     -w
-    #-O3
-    -pedantic
-    -Wall
+    -O3
+    #-pedantic
+    #-Wall
 	)
 endif()
 

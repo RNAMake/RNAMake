@@ -44,7 +44,6 @@ def build_unittests(lib_list, base_dir,static):
             unittest_declarations += "\tadd_executable({TEST} {SRC})\n".format(
                 TEST=unittest_name, SRC=source_file
             )
-            #unittest_declarations += "\ttarget_link_libraries({TEST} {LIB}_lib -static)\n".format(
             unittest_declarations += "\ttarget_link_libraries({TEST} {LIB}_lib {BUILD} )\n".format(
                 TEST=unittest_name,
                 LIB=library,
@@ -84,7 +83,6 @@ def build_header(base_dir,static,target):
     header_contents +=  "cmake_minimum_required(VERSION 3.0)\n"
     header_contents+= "set(CMAKE_BUILD_TYPE Release)\n"
     header_contents+= "project(RNAMake)\n\n"
-    header_contents += "set(CMAKE_CXX_STANDARD 14)\n"
     #header_contents += "set(CMAKE_SYSTEM_NAME {SYS})\n".format(
     #        SYS="MAC"
     #        )
@@ -98,30 +96,26 @@ def build_header(base_dir,static,target):
         #header_contents+= "set(CMAKE_EXE_LINKER_FLAGS \" -lstdc++ -Wl,--no-as-needed,--no-export-dynamic -ldl \")\n"
         header_contents+= "set(CMAKE_EXE_LINKER_FLAGS \" -lstdc++ -Wl,--no-as-needed,--no-export-dynamic \")\n"
     # header_contents+= "set(CMAKE_HOST_SYSTEM_VERSION 2.5)\n"
-    header_contents+= "include({CMAKE})\n\n".format(CMAKE=(base_dir + "/cmake/build/compiler.cmake"))
-    header_contents+= "include({CMAKE})\n\n".format(CMAKE=(base_dir + "/cmake/build/sqlite.cmake"))
-
-    header_contents+= "# Include path for Python header files\n"
-    header_contents+= "# Include paths for RNAMake src\n"
-    header_contents+= "include_directories({DIR})\n".format(DIR=(base_dir + "/src/"))
-    header_contents+= "include_directories({DIR})\n".format(DIR=base_dir + "/src/plog/")
-    header_contents+= "include_directories({DIR})\n\n".format(DIR=base_dir + "/unittests/")
-    header_contents+= "include_directories({DIR})\n\n".format(DIR=base_dir + "/apps/")
-    #if target == "windows":
-    #    header_contents += "include_directories(/sqlite/)\n"
-    #    header_contents += "link_directories(/sqlite/)\n"
-    #    header_contents += "remove(CMAKE_CXX_FLAGS \"-rdynamic\")\n"
-    #    header_contents += "remove(CMAKE_SHARED_LINKER_FLAGS \"-rdynamic\")\n"
-    #    header_contents += "remove(CMAKE_EXE_LINKER_FLAGS \"-rdynamic\")\n"
-    #    header_contents+= "# sqlite libraries\n"
-    #    header_contents += "add_library(SQLITE3_LIBRARY STATIC /sqlite/sqlite3.c)\ntarget_link_libraries(SQLITE3_LIBRARY -static)"
-    #header_contents+= "find_library(SQLITE3_LIBRARY sqlite3 VARIANT static)\n"
-    header_contents += "#"*100 + '\n'
+    header_contents+="""include({CMAKE})
+include({SQLITE})
+include_directories({BASE})
+include_directories({EXTERN})
+include_directories({UNITTESTS})
+include_directories({APPS})
+ """.format(
+    SQLITE="sqlite.cmake",
+    CMAKE="compiler.cmake",
+    EXTERN=base_dir + "/src/external/",
+    BASE=base_dir + "/src/",
+    UNITTESTS=base_dir + "/unittests/",
+    APPS=base_dir + "/apps/"
+         )
+    header_contents +=  "#"*100 + '\n'
     return header_contents
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("-target",type=str,required=True)
+    parser.add_argument("-target",help="enter the target system you are compiling for. Valid choices are: \"mac\", \"windows\", or \"linux\"",type=str,required=True)
 
     args = parser.parse_args()
 
@@ -157,7 +151,6 @@ if __name__ == '__main__':
 
     libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimization".split()
 
-    libs = "base math data_structure util vienna secondary_structure eternabot structure".split()
     write_CML_file(
         [
         build_header(
@@ -174,10 +167,10 @@ if __name__ == '__main__':
                 libs,os.getcwd().replace("/cmake/build","/unittests"),
                 static
                 ),
-        #build_apps(
-        #        os.getcwd().split("/cmake/build")[0],
-        #        static
-        #    )
+        build_apps(
+                os.getcwd().split("/cmake/build")[0],
+                static
+            )
         ]
         )
 #

@@ -58,21 +58,23 @@ public:
             int index,
             int level,
             size_t n_connections = 0) :
+            connections_(GraphConnectionOPs<DataType>(n_connections)),
             data_(DataType()),
-            level_(level),
             index_(index),
-            connections_(GraphConnectionOPs<DataType>(n_connections)) {}
+            level_(level) {}
 
     GraphNode(
             DataType const & data,
             int index,
             int level,
             size_t n_connections = 0) :
+            connections_(GraphConnectionOPs<DataType>(n_connections)),
             data_(data),
-            level_(level),
             index_(index),
-            connections_(GraphConnectionOPs<DataType>(n_connections)) {}
-
+            level_(level) {}
+    
+    virtual
+    ~GraphNode() {}
 public: //Vitrual functions need to be implemented in derived clases
 
     virtual

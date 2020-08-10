@@ -113,7 +113,7 @@ public:
     ~DefaultSetup() {}
 
     TectoGraphSetup *
-    clone() const { return new DefaultSetup(*this); };
+    clone() const override { return new DefaultSetup(*this); };
 
 public:
     TectoGraphInfoOP
