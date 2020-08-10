@@ -1,7 +1,9 @@
 dist: trusty
 sudo: required
-language:
+languages:
   - cpp
+  - python
+cache: pip
 compiler:
   - gcc
 addons:
@@ -14,6 +16,9 @@ addons:
       - cmake
       - pyhon
 script:
+  - python3 --version
+  - pip3 install -U pip
+  - pip3 install pathlib
   # Link gcc-6 and g++-6 to their standard commands
   #- ln -s /usr/bin/gcc-6 /usr/local/bin/gcc
   #- ln -s /usr/bin/g++-6 /usr/local/bin/g++
