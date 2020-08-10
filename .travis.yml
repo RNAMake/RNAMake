@@ -14,6 +14,7 @@ addons:
       - g++-6
       - cmake
 script:
+  - pip install --upgrade pip
   - pip install pathlib
   # Link gcc-6 and g++-6 to their standard commands
   #- ln -s /usr/bin/gcc-6 /usr/local/bin/gcc
