@@ -126,6 +126,7 @@ if __name__ == '__main__':
         static = True
     elif args.target == "linux":
         pass
+        static = True
         #static=True #TODO this needs to change
     else:
         raise Exception("Invalid value for \"-target\" flag. Acceptable values are \"mac\",\"windows\" and \"linux\"")
