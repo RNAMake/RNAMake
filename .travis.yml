@@ -1,7 +1,7 @@
 dist: bionic
 languages:
   - cpp
-  - python
+  - python3.7
 cache: pip
 compiler:
   - clang
@@ -11,7 +11,7 @@ addons:
       - ubuntu-toolchain-r-test
     packages:
       - cmake
-      - python3.7
+      - python
 script:
   - python3 --version
   - pip3 install -U pip
