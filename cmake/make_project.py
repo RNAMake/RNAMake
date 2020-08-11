@@ -19,9 +19,10 @@ def build_libraries(lib_list, dependencies, base_dir,static):
                 BUILD="STATIC" if static else ""
                 )
         #library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} -static)\n".format(
-        library_declarations += "target_link_libraries({LIB}_lib {DEPENDS})\n".format(
+        library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} {BUILD})\n".format(
             LIB=library,
             DEPENDS=' '.join([lib + "_lib" for lib in dependencies[library]] + ["sqlite3" if library == "util" else ""]),
+            BUILD="-static" if static else ""
         )
     #library_declarations += "add_library(all_lib STATIC {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} -static)\n".format(
     library_declarations += "add_library(all_lib {BUILD} {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} {LINK})\n".format(
@@ -123,7 +124,6 @@ if __name__ == '__main__':
     elif args.target == "windows":
         static = True
     elif args.target == "linux":
-        pass
         static = True
         #static=True #TODO this needs to change
     else:

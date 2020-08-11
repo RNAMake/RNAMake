@@ -20,10 +20,11 @@ set_source_files_properties(
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_library(sqlite3 STATIC ../../src/external/sqlite/sqlite3.c )
-    target_link_libraries(sqlite3)
+    target_link_libraries(sqlite3 -static)
 
 else()
-add_library(sqlite3 ../../src/external/sqlite/sqlite3.c )
+
+    add_library(sqlite3 ../../src/external/sqlite/sqlite3.c )
 target_link_libraries(sqlite3)
 
 

@@ -78,8 +78,10 @@ endforeach()
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  
     include(backtrace.cmake) 
+
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-	set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread " )
+    message("HERE")	
+    set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread " )
     set( COMPILE_FLAGS "${COMPILE_FLAGS} -pthread " )
     set( CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -ldl " )
     set( CMAKE_SHARED_LINKER_FLAGS " -Wl,--no-as-needed ")
