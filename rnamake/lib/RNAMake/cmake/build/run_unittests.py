@@ -4,7 +4,7 @@ import glob
 import subprocess
 import os
 
-unittests = glob.glob("../../bin/unittests/*")
+unittests = glob.glob("*_unittest")
 for test in unittests:
 
     try:
