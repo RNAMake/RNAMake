@@ -19,10 +19,9 @@ def build_libraries(lib_list, dependencies, base_dir,static):
                 BUILD="STATIC" if static else ""
                 )
         #library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} -static)\n".format(
-        library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} {BUILD})\n".format(
+        library_declarations += "target_link_libraries({LIB}_lib {DEPENDS})\n".format(
             LIB=library,
             DEPENDS=' '.join([lib + "_lib" for lib in dependencies[library]] + ["sqlite3" if library == "util" else ""]),
-            BUILD="-static" if static else ""
         )
     #library_declarations += "add_library(all_lib STATIC {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} -static)\n".format(
     library_declarations += "add_library(all_lib {BUILD} {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} {LINK})\n".format(
@@ -87,8 +86,8 @@ def build_header(base_dir,static,target):
     #        )
     # header_contents += "set(CMAKE_C_COMPILER clang)\n"
     # header_contents += "set(CMAKE_CXX_COMPILER clang++)\n"
-    if target == "linux":
-        header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
+    #if target == "linux":
+    #    header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
     if static == True:
         #header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
         header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed \")\n"
@@ -124,7 +123,7 @@ if __name__ == '__main__':
     elif args.target == "windows":
         static = True
     elif args.target == "linux":
-        static=False #TODO this needs to change
+        static=True #TODO this needs to change
     else:
         raise Exception("Invalid value for \"-target\" flag. Acceptable values are \"mac\",\"windows\" and \"linux\"")
 
