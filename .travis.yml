@@ -5,6 +5,7 @@ languages:
 cache: pip
 compiler:
   - gcc
+  - clang
 addons:
   apt:
     sources:
