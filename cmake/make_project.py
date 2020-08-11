@@ -88,8 +88,6 @@ def build_header(base_dir,static,target):
     # header_contents += "set(CMAKE_CXX_COMPILER clang++)\n"
     #if target == "linux":
     #    header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
-    if target == "linux":
-        header_contents += "set( CMAKE_CXX_FLAGS \" -pthread \" )\n"
     if static == True:
         #header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
         header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed \")\n"
