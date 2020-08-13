@@ -19,8 +19,12 @@ typedef int Index;
 typedef int Size;
 typedef bool Flag;
 
+using FLOATING_POINT_ACCURACY = double;
+
 using Ints = std::vector<int>;
 using Indexes = std::vector<int>;
+
+using Reals = std::vector<FLOATING_POINT_ACCURACY>;
 
 using Chars = std::vector<char>;
 using Shorts = std::vector<short>;

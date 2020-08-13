@@ -106,12 +106,13 @@ public:
     struct X3Residue {
         inline
         X3Residue(
-                int nnum,
-                char nchain_id,
-                char ni_code):
+                int nnum=-1,
+                char nchain_id=' ',
+                char ni_code=' '):
                 num(nnum),
                 chain_id(nchain_id),
                 i_code(ni_code) {}
+
 
         inline
         bool
@@ -175,6 +176,11 @@ public:
     X3Basepairs
     get_basepairs(
             String const &) const;
+    
+    X3Basepairs
+    get_basepairs_json(
+            String const &) const;
+    
 
     X3Motifs
     get_motifs(
@@ -249,6 +255,9 @@ get_x3dna_by_type(String const &);
 
 String
 get_str_from_x3dna_type(X3dnaBPType);
+
+void
+compare_bps(X3dna::X3Basepairs&, X3dna::X3Basepairs&);
 
 }
 

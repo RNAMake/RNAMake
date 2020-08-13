@@ -8,12 +8,15 @@
 
 #include <map>
 #include <ctype.h>
+#include <set>
 
 //RNAMake Headers
+#include <base/sys_interface.h>
 #include <base/file_io.h>
 #include <base/settings.h>
 #include <base/log.h>
 #include <util/x3dna.h>
+#include <math/numerical.h>
 
 namespace util {
 
@@ -29,7 +32,7 @@ X3dna::X3dna() :
     putenv(s_);
 
     bin_path_ = x3dna_path + "/bin/";
-    // make sure have the correct x3dna programs for this operating system
+    // make sure have the correct x3dna programs for this operaing system
     if (!base::file_exists(bin_path_ + "find_pair")) {
         throw X3dnaException("x3dna's find_pair program is not available for your operating system");
     }
@@ -126,7 +129,7 @@ X3dna::_parse_ref_frame_file(
             }
         }
     }
-
+    
     if (no_ref_frames_) { return; }
 
     auto lines = base::get_lines_from_file(ref_frames_path);
@@ -185,9 +188,6 @@ X3dna::generate_dssr_file(
 
     auto fname = base::filename(pdb_path);
     fname = fname.substr(0, fname.length() - 4);
-    if (!base::file_exists(pdb_path)) {
-        throw X3dnaException("cannot find pdb for generate_dssr_file\n");
-    }
 
     auto dssr_path = bin_path_ + "x3dna-dssr ";
     auto command = dssr_path + "-i=" + pdb_path + " -o=" + fname + "_dssr.out --non-pair >& /dev/null";
@@ -297,6 +297,63 @@ X3dna::_parse_dssr_res_str(
 }
 
 X3dna::X3Basepairs
+X3dna::get_basepairs_json(
+        String const &pdb_path) const {
+
+    // get the dssr json object
+    //TODO fix this
+    auto dssr_json = base::execute_command_json("../../resources/x3dna/osx/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null");
+    // loop through the nucleotides and store them in a map 
+    auto res_map = std::map<String,X3Residue>{}; 
+    for(auto& nt : *dssr_json.find("nts")) {
+        auto residue_it = nt.find("nt_id")->get<String>();
+        auto ii = nt.find("nt_resnum")->get<int>();
+        auto chain = nt.find("chain_name")->get<String>()[0];
+        res_map[residue_it] = X3Residue(ii,chain,' ');
+    
+    }
+    // now the basepairs can be constructed
+    auto basepairs = X3Basepairs();
+    auto pairings = dssr_json.find("pairs"); 
+    // loop through the pairings 
+    for(auto pp : *pairings) {
+        auto name = pp.find("name")->get<String>();
+        auto ii = pp.find("Saenger")->get<String>();
+        
+        auto nt_1 = pp.find("nt1")->get<String>();
+        auto nt_2 = pp.find("nt2")->get<String>();
+        auto type = pp.find("DSSR")->get<String>();
+        // get the reference frame information 
+        auto frame_it = pp.find("frame"); 
+        auto coords = frame_it->find("origin")->get<Reals>(); 
+        auto x_axis = frame_it->find("x_axis")->get<Reals>();
+        auto y_axis = frame_it->find("y_axis")->get<Reals>();
+        auto z_axis = frame_it->find("z_axis")->get<Reals>(); 
+        auto origin = math::Point( coords[0],coords[1],coords[2] );
+        auto frame = math::Matrix(
+                                    x_axis[0],x_axis[1],x_axis[2],
+                                    y_axis[0],y_axis[1],y_axis[2],
+                                    z_axis[0],z_axis[1],z_axis[2]
+                                    );
+        // define the basepair type and residues        
+        auto bp_type = get_x3dna_by_type(type); 
+        auto res1 = res_map.at(nt_1);
+        auto res2 = res_map.at(nt_2);
+        //if (N.find(res1.num) != N.end() || N.find(res2.num) != N.end()){std::cout<<"------"<<pp<<std::endl;} //std::cout<<name<<std::endl;
+        //else {std::cout<<pp<<std::endl;}
+        
+        // add the new basepair i 
+        basepairs.emplace_back(
+                X3Basepair{res1,res2,origin,frame,bp_type}
+                );
+        
+
+    }
+    return basepairs; 
+}
+
+
+X3dna::X3Basepairs
 X3dna::get_basepairs(
         String const &pdb_path) const {
 
@@ -314,10 +371,11 @@ X3dna::get_basepairs(
     auto dssr_file_sections = _parse_dssr_file_into_sections(pdb_path);
     if (dssr_file_sections.find("base") == dssr_file_sections.end()) { return basepairs; }
     auto dssr_bp_section = dssr_file_sections["base"];
-
+    
     for (auto const &l : dssr_bp_section) {
         // line to short to have base pair declartion on it
-        if (l.length() < 3) { continue; }
+        if (l.length() < 3) {
+            continue; }
         auto spl = _split_over_white_space(l);
 
         // first element should be a digit for a valid line
@@ -327,7 +385,6 @@ X3dna::get_basepairs(
         auto bp_type_str = spl.back();
         auto bp_type = X3dnaBPType::cDDD;
 
-        // check to make sure is valid X3dnaBPType
         try {
             bp_type = get_x3dna_by_type(bp_type_str);
         }
@@ -492,19 +549,12 @@ get_str_from_x3dna_type(
 }
 
 /*
-
-
-
-
-
-
 X3dna::X3Motifs
 X3dna::get_motifs(
     String const & pdb_path) {
     
     auto dssr_file_path = _get_dssr_file_path(pdb_path);
     auto sections = _divide_dssr_file_into_sections(dssr_file_path);
-
     X3Motifs all_motifs;
     
     StringStringMap types;
@@ -528,7 +578,6 @@ X3dna::get_motifs(
     return all_motifs;
     
 }
-
 X3dna::X3Motifs
 X3dna::_parse_dssr_section(
     Strings const & section,
@@ -551,7 +600,6 @@ X3dna::_parse_dssr_section(
             auto res_obj = _parse_dssr_res_str(res_str);
             res.push_back(res_obj);
         }
-
         count = 0;
         for(auto const & r : res) {
             for(auto const & r2 : seen_res) {
@@ -569,7 +617,6 @@ X3dna::_parse_dssr_section(
     return motifs;
     
 }
-
 X3dna::X3Motifs
 X3dna::_parse_dssr_helix_section(
     Strings const & section) {
@@ -583,7 +630,6 @@ X3dna::_parse_dssr_helix_section(
         try {
             i = std::stoi(spl[0]);
         } catch(...) { continue; }
-
         if(i == 1 && res.size() > 0) {
             motifs.push_back(X3Motif{res, "HELIX"});
             res = X3Residues();
@@ -598,37 +644,76 @@ X3dna::_parse_dssr_helix_section(
     
     return motifs;
 }
-
-
 */
+    //struct X3Basepair {
+    //    X3Residue res1, res2;
+    //    math::Point d;
+    //    math::Matrix r;
+    //    X3dnaBPType bp_type;
+    //};
+void
+util::compare_bps(X3dna::X3Basepairs& lhs, X3dna::X3Basepairs& rhs) {
+    // first, we want to build the maps 
+    auto left_map = std::map<std::pair<int,int>,X3dna::X3Basepair>(); 
+    auto right_map = std::map<std::pair<int,int>,X3dna::X3Basepair>(); 
+    
+    for(auto& bp :lhs) {
+        const auto res1 = bp.res1.num;
+        const auto res2 = bp.res2.num;
+        left_map[{std::min(res1,res2),std::max(res1,res2)}] = bp;
+    }
+    
+    for(auto& bp : rhs) {
+        const auto res1 = bp.res1.num;
+        const auto res2 = bp.res2.num;
+        right_map[{std::min(res1,res2),std::max(res1,res2)}] = bp;
+    }
+    // quick check that there are no basepair repeats 
+    if (left_map.size() != lhs.size()) {
+        throw std::runtime_error("error, redudant residue numbers in lhs bps");
+    }
+    
+    if (right_map.size() != rhs.size()) {
+        throw std::runtime_error("error, redudant residue numbers in rhs bps");
+    }
+
+    auto lhs_it = left_map.begin();
+    const auto lhs_end = left_map.end();
+
+    while(lhs_it != lhs_end) {
+        // check if right_map has the iterator
+        auto rhs_it = right_map.find(lhs_it->first);
+        // if so, then check if the two are equivalent. delete if so 
+        if(rhs_it != right_map.end()) {
+            // need to check that the reference frame, origin and bp_type are identical 
+            if(rhs_it->second.bp_type == lhs_it->second.bp_type  && 
+                    are_xyzVector_equal(rhs_it->second.d,lhs_it->second.d)  && 
+                    are_xyzMatrix_equal(rhs_it->second.r,lhs_it->second.r)) {
+                // if they are equivalent, delete the elements from the map
+                lhs_it = left_map.erase(lhs_it);
+                right_map.erase(rhs_it);
+            } else {
+                // otherwise iterate
+                ++lhs_it; 
+            }
+        } else {
+                ++lhs_it;
+        }
+
+    }
+
+    // check the sizes of the maps... anything leftotver means they are not unique to that method
+    if(!left_map.empty()) {
+        std::cout<<"EXTRA IN LHS "<<left_map.size()<<std::endl;
+
+    }
+
+
+    if (!right_map.empty()) {
+
+        std::cout<<"EXTRA IN RHS "<<right_map.size()<<std::endl;
+
+    }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+}

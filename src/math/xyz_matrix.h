@@ -72,7 +72,6 @@ public:
 		c.zz_ = a.zx_*b.xz_ + a.zy_*b.yz_ + a.zz_*b.zz_;
 	}
 	
-
 public: //creation
 	/// @brief Default constructor
 	/// @note  Values are uninitialized for efficiency

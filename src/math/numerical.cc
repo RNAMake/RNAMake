@@ -58,20 +58,17 @@ int
 are_xyzMatrix_equal(
         Matrix const & m,
         Matrix const & mc) {
+  
 
-    if (!are_floats_equal(m.xx(), mc.xx()) ||
-        !are_floats_equal(m.xy(), mc.xy()) ||
-        !are_floats_equal(m.xz(), mc.xz()) ||
-        !are_floats_equal(m.yx(), mc.yx()) ||
-        !are_floats_equal(m.yz(), mc.yz()) ||
-        !are_floats_equal(m.zx(), mc.zx()) ||
-        !are_floats_equal(m.zy(), mc.zy()) ||
-        !are_floats_equal(m.zz(), mc.zz())) {
-        return 0;
-    }
-
-    return 1;
-
+    return are_floats_equal(m.xx(), mc.xx()) &&
+           are_floats_equal(m.xy(), mc.xy()) && 
+           are_floats_equal(m.xz(), mc.xz()) &&
+           are_floats_equal(m.yx(), mc.yx()) &&
+           are_floats_equal(m.yy(), mc.yy()) &&
+           are_floats_equal(m.yz(), mc.yz()) &&
+           are_floats_equal(m.zx(), mc.zx()) &&
+           are_floats_equal(m.zy(), mc.zy()) &&
+           are_floats_equal(m.zz(), mc.zz());
 }
 
 }
