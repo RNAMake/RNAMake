@@ -15,8 +15,9 @@ addons:
 before_script:
   - sudo apt update && sudo apt install python3.7
   - python3 --version
-  - pip3 install -U pip
-  - pip3 install pathlib
+  - pip install -U pip
+  - pip install pathlib
+
 script:
   # Link gcc-6 and g++-6 to their standard commands
   #- ln -s /usr/bin/gcc-6 /usr/local/bin/gcc
