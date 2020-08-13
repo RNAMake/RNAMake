@@ -18,7 +18,8 @@ TEST_CASE( "Test X3dna parser ", "[X3dnaParser]" ) {
     auto path = base::unittest_resource_dir() + "/util/p4p6.pdb";
     auto x3dna_bps = x.get_basepairs(path);
     auto nts = util::DssrNts{}; 
-    get_elements(path,nts);
+    auto bps = util::DssrPairs{}; 
+    get_elements(path,nts,bps);
     REQUIRE(x3dna_bps.size() == 63);
     REQUIRE(!base::file_exists("ref_frames.dat"));
     REQUIRE(!base::file_exists("p4p6_dssr.out"));

@@ -51,7 +51,7 @@ if( ${COMPILER} STREQUAL clang  OR ${COMPILER} STREQUAL AppleClang  )
 		-Wno-c++11-extensions
         -std=gnu++1y
         -g
-        -pedantic
+        #-pedantic
         #-O4 
         #-Wall
 	)

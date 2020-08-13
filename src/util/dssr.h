@@ -4,11 +4,34 @@
 #include <vector>
 #include <limits>
 
+#include <math/quaternion.h>
 #include <math/xyz_vector.h>
 #include <base/types.h>
 #include <base/sys_interface.h>
 
 namespace util {
+
+
+double
+get_double(const nlohmann::json& , const String&);
+
+int
+get_int(const nlohmann::json& , const String& );
+
+char
+get_char(const nlohmann::json& , const String&);
+
+String
+get_string(const nlohmann::json& , const String&);
+
+math::Point
+get_point(const nlohmann::json& , const String&);
+
+math::Quaternion
+get_quaternion(const nlohmann::json&, const String&);
+
+math::Matrix
+get_matrix(const nlohmann::json&);
 
 struct DssrNt {
     math::Point C5prime_xyz{-1.,-1.,-1.};
@@ -21,55 +44,68 @@ struct DssrNt {
     String bin	{"NA"};
     char chain_name{' '};
     double chi{-1.};
-//cluster	"1a"
-//dbn	"."
-//delta	81.192
-//epsilon	null
-//epsilon_zeta	null
-//eta	null
-//eta_base	null
-//eta_prime	null
-//filter_rmsd	0.062
-//form	"-"
-//frame	{"origin":[-11.732,-46.663,84.768],"quaternion":[0.477,-0.164,0.863,-0.01],"rmsd":0.003,"x_axis":[-0.49,-0.293,-0.821],"y_axis":[-0.274,0.946,-0.175],"z_axis":[0.827,0.139,-0.544]}
-//gamma	56.59
-//glyco_bond	"anti"
-//index	157
-//index_chain	157
-//nt_code	"C"
-//nt_id	"A.C260"
-//nt_name	"C"
-//nt_resnum	260
-//phase_angle	14.044
-//puckering	"C3'-endo"
-//splay_angle	null
-//splay_distance	null
-//splay_ratio	null
-//ssZp	null
-//sugar_class	"~C3'-endo"
-//suiteness	0.377
-//summary	"anti,~C3'-endo,non-pir-contact,ss-non-loop"
-//theta	null
-//theta_base	null
-//theta_prime	null
-//v0	3.161
-//v1	-26.329
-//v2	38.105
-//v3	-37.31
-//v4	21.515
-//zeta	nulla
+    String cluster{"NA"};
+    char dbn{' '};
+    double delta{-1.};
+    double epsilon{-1.};
+    double epsilon_zeta{-1.};
+    double eta{-1.};
+    double eta_base{-1.};
+    double eta_prime{-1.};
+    double filter_rmsd{-1.};
+    char form{' '};
+    math::Point frame_origin{-1.,-1.,-1.};
+    math::Quaternion frame_quaternion{-1.,-1.,-1.,-1.};
+    double frame_rmsd {-1.}; 
+    math::Matrix ref_frame {-1.,-1.,-1., -1,-1.,-1., -1.,-1.,-1.};
+    double gamma {-1.};
+    String glyco_bond {"NA"};
+    int index{-1};
+    int index_chain{-1};
+    char nt_code{' '};
+    String nt_id{"NA"};
+    char nt_name{' '};
+    int nt_resnum{-1};
+    double phase_angle{-1.};
+    String  puckering{"NA"};
+    double splay_angle{-1.};
+    double splay_distance{-1.};
+    double splay_ratio{-1.};
+    double ssZp{-1.};
+    String sugar_class{"NA"};
+    double suiteness{-1.};
+    String summary{"NA"};
+    double theta{-1.};
+    double theta_null{-1.};
+    double theta_prime{-1.};
+    double v0{-1.};
+    double v1{-1.};
+    double v2{-1.};
+    double v3{-1.};
+    double v4{-1.};
+    double zeta{-1.};
+};
+
+struct DssrPair {
+
+
 };
 
 using DssrNts = std::vector<DssrNt>;
-
+using DssrPairs = std::vector<DssrPair>;
 
 DssrNts
 get_nts(const nlohmann::json& );
 
+DssrPairs
+get_pairs(const nlohmann::json&);
+
 void
 get_elements(
         String const & ,
-        DssrNts & 
+        DssrNts & ,
+        DssrPairs &
+
         ) ;
     //from typing import List, Dict
 //
