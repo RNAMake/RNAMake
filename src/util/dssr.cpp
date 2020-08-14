@@ -109,6 +109,43 @@ util::get_matrix(const nlohmann::json& json) {
 
 }
 
+Reals
+util::get_reals(const nlohmann::json& json, const String& key,int num_elements) {
+        
+    auto value = json.find(key);
+    if(value != json.end() && value->size() >= num_elements) {
+        auto values = Reals{}; 
+        for(auto ii = 0; ii<num_elements; ++ii) {
+            if (!value->at(ii).is_null()) {
+                values.push_back(value->at(ii));
+            } else {
+                values.push_back(-1);
+            }
+        }
+        return values;
+    } else {
+        return Reals(num_elements,-1.);
+    }
+}
+
+Ints
+util::get_ints(const nlohmann::json& json, const String& key,int num_elements) {
+        
+    auto value = json.find(key);
+    if(value != json.end() && value->size() >= num_elements) {
+        auto values = Ints{}; 
+        for(auto ii = 0; ii<num_elements; ++ii) {
+            if (!value->at(ii).is_null()) {
+                values.push_back(value->at(ii));
+            } else {
+                values.push_back(-1);
+            }
+        }
+        return values;
+    } else {
+        return Ints(num_elements,-1);
+    }
+}
 
 util::DssrNts
 util::get_nts(const nlohmann::json& data) {
@@ -121,7 +158,6 @@ util::get_nts(const nlohmann::json& data) {
         
         new_nt.C5prime_xyz = get_point(nt,"C5prime_xyz");
         new_nt.Dp = get_double(nt,"Dp");       
-    
         auto P_xyz = nt.find("P_xyz");
         new_nt.P_xyz = get_point(nt,"P_xyz"); 
         
@@ -186,25 +222,168 @@ util::get_nts(const nlohmann::json& data) {
 
 util::DssrPairs
 util::get_pairs(const nlohmann::json& data) {
+    auto pairs = util::DssrPairs{}; 
 
     for(auto& nt_pair : *data.find("pairs")) {
-        std::cout<<"----------------------------------------"<<std::endl;
-        for(auto& kv : nt_pair.items()) 
-            std::cout<<kv.key()<<"\t"<<kv.value()<<std::endl;
+        auto new_pair = util::DssrPair{}; 
+        
+        new_pair.C1C1_dist = get_double(nt_pair,"C1C1_dist");
+        new_pair.C6C8_dist = get_double(nt_pair,"C6C8_dist");     
+        new_pair.CNNC_torsion = get_double(nt_pair,"CNNC_torsion"); 
+        new_pair.DSSR = get_string(nt_pair,"DSSR");
+        new_pair.LW = get_string(nt_pair,"LW");
+        new_pair.N1N9_dist = get_double(nt_pair,"N1N9_dist");     
+        new_pair.Saenger = get_string(nt_pair,"Saenger");
+        new_pair.bp = get_string(nt_pair,"bp");
+        new_pair.bp_params = get_reals(nt_pair,"bp_params",6);
+        new_pair.chi1 = get_double(nt_pair,"chi1"); 
+        new_pair.chi2 = get_double(nt_pair,"chi2"); 
+        new_pair.conf1 = get_string(nt_pair,"conf1"); 
+        new_pair.conf2 = get_string(nt_pair,"conf2"); 
+
+        auto frame = nt_pair.find("frame");
+        
+        if(frame != nt_pair.end() && !frame->is_null()) {
+            
+            new_pair.frame_origin = get_point(*frame,"origin");
+            new_pair.frame_quaternion = get_quaternion(*frame,"quaternion");
+            new_pair.frame_rmsd = get_double(*frame,"rmsd"); 
+            new_pair.ref_frame = get_matrix(*frame);
+                            
+        }
+        
+        new_pair.hbonds_desc = get_string(nt_pair,"hbonds_desc"); 
+        new_pair.hbonds_num = get_int(nt_pair,"hbonds_num");
+        new_pair.index = get_int(nt_pair,"index");
+        new_pair.interBase_angle = get_double(nt_pair,"interBase_angle"); 
+        new_pair.lambda1 = get_double(nt_pair,"lambda1"); 
+        new_pair.lambda2 = get_double(nt_pair,"lambda2"); 
+        new_pair.name = get_string(nt_pair,"name"); 
+        new_pair.nt1 = get_string(nt_pair,"nt1"); 
+        new_pair.nt2 = get_string(nt_pair,"nt2"); 
+        new_pair.planarity = get_double(nt_pair,"planarity");
+        new_pair.pucker1 = get_string(nt_pair,"pucker1"); 
+        new_pair.pucker2 = get_string(nt_pair,"pucker2"); 
+        new_pair.simple_Buckle = get_double(nt_pair,"simple_Buckle"); 
+        new_pair.simple_Propeller = get_double(nt_pair,"simple_Propeller"); 
+        new_pair.simple_Shear = get_double(nt_pair,"simple_Shear"); 
+        new_pair.simple_Stretch = get_double(nt_pair,"simple_Stretch"); 
+
+        pairs.push_back(std::move(new_pair)); 
     }
 
-    return DssrPairs{};
+    return pairs;
 }
+
+util::DssrHairpins
+util::get_hairpins(const nlohmann::json& data) {
+    auto hairpins = util::DssrHairpins{};
+    
+    for(auto& hairpin : *data.find("hairpins")) {
+        
+        if(hairpin.is_null()) continue;  // need to add something like this for everywhere
+        
+        auto new_hairpin = util::DssrHairpin{};
+        new_hairpin.index = get_int(hairpin,"index");
+        new_hairpin.nts_long = get_string(hairpin,"nts_long");
+        new_hairpin.nts_short = get_string(hairpin,"nts_short");
+        new_hairpin.type = get_string(hairpin,"type"); 
+        new_hairpin.bridging_nts = get_ints(hairpin,"bridging_nts",1);
+        new_hairpin.stem_indices = get_ints(hairpin,"stem_indices",1);
+        new_hairpin.summary = get_string(hairpin,"summary"); 
+        new_hairpin.num_nts = get_int(hairpin,"num_nts"); 
+        new_hairpin.num_stems = get_int(hairpin,"num_stems"); 
+
+
+        hairpins.push_back(std::move(new_hairpin)); 
+    }
+    return hairpins;
+}
+
+util::DssrHelices
+util::get_helices(const nlohmann::json& data) {
+    auto helices = DssrHelices{};
+    for(auto& helix : *data.find("helices") ) {
+        auto new_helix = util::DssrHelix{};
+        new_helix.index = get_int(helix,"index");     
+        new_helix.num_stems = get_int(helix,"num_stems");     
+        new_helix.strand1 = get_string(helix,"strand1");
+        new_helix.strand2 = get_string(helix,"strand2");
+        new_helix.bp_type = get_string(helix,"bp_type");
+        new_helix.helix_form = get_string(helix,"helix_form");
+        new_helix.helical_rise = get_double(helix,"helical_rise");
+        new_helix.helical_rise_std = get_double(helix,"helical_rise_std");
+        new_helix.helical_radius = get_double(helix,"helical_radius");
+        new_helix.helical_radius_std = get_double(helix,"helical_radius_std");
+        new_helix.helical_axis = get_point(helix,"helical_axis"); 
+        new_helix.point1 = get_point(helix,"point2"); 
+        new_helix.point2 = get_point(helix,"point2"); 
+        new_helix.num_pairs = get_int(helix,"num_pairs");     
+        new_helix.pairs = get_pairs(helix);
+ 
+
+        helices.push_back(std::move(new_helix));
+    }
+    return helices;
+}
+
+util::DssrStems
+util::get_stems(const nlohmann::json& data) {
+    auto stems = DssrStems{};
+    for(auto& stem : *data.find("stems") ) {
+        auto new_stem = util::DssrStem{};
+        new_stem.index = get_int(stem,"index");     
+        new_stem.strand1 = get_string(stem,"strand1");
+        new_stem.strand2 = get_string(stem,"strand2");
+        new_stem.bp_type = get_string(stem,"bp_type");
+        new_stem.helix_form = get_string(stem,"helix_form");
+        new_stem.helical_rise = get_double(stem,"helical_rise");
+        new_stem.helical_rise_std = get_double(stem,"helical_rise_std");
+        new_stem.helical_radius = get_double(stem,"helical_radius");
+        new_stem.helical_radius_std = get_double(stem,"helical_radius_std");
+        new_stem.helical_axis = get_point(stem,"helical_axis"); 
+        new_stem.point1 = get_point(stem,"point2"); 
+        new_stem.point2 = get_point(stem,"point2"); 
+        new_stem.num_pairs = get_int(stem,"num_pairs");     
+        new_stem.pairs = get_pairs(stem);
+ 
+
+        stems.push_back(std::move(new_stem));
+    }
+    return stems;
+
+
+}
+
+util::DssrILoops
+util::get_iloops(const nlohmann::json& data ) {
+    auto iloops = DssrILoops{};
+    for(auto& iloop : *data.find("iloops")) {
+        for(auto& kv : iloop.items()) std::cout<<kv.key()<<std::endl;
+        std::cout<<"======================================"<<std::endl;
+    }
+    return iloops;
+}
+
+
 
 void
 util::get_elements(
         String const & pdb_path,
         util::DssrNts & nts,
-        util::DssrPairs & pairs
+        util::DssrPairs & pairs,
+        util::DssrHairpins & hairpins,
+        util::DssrHelices & helices,
+        util::DssrStems & stems,
+        util::DssrILoops & iloops
         ) {
     auto dssr_json = base::execute_command_json("../../resources/x3dna/osx/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null");
     if(!nts.empty()) {std::cout<<"Warning, nts vector is NOT empty, but data will be compeletely overwritten";}
-    for(auto kv :  dssr_json.items()) {std::cout<<kv.key()<<std::endl;}
+    for(auto& kv : dssr_json.items()) {std::cout<<kv.key()<<std::endl;} 
     nts = get_nts(dssr_json);
     pairs = get_pairs(dssr_json);
+    hairpins = get_hairpins(dssr_json);
+    helices = get_helices(dssr_json);
+    stems = get_stems(dssr_json);
+    iloops = get_iloops(dssr_json);
 }

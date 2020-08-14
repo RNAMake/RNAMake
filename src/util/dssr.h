@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <limits>
+#include <iostream>
 
 #include <math/quaternion.h>
 #include <math/xyz_vector.h>
@@ -33,7 +34,21 @@ get_quaternion(const nlohmann::json&, const String&);
 math::Matrix
 get_matrix(const nlohmann::json&);
 
-struct DssrNt {
+Reals
+get_reals(const nlohmann::json&, const String&,int);
+
+Ints
+get_ints(const nlohmann::json&, const String&,int);
+
+
+struct DssrElem {
+
+    virtual
+    bool
+    valid() const  = 0;
+};
+
+struct DssrNt : public DssrElem {
     math::Point C5prime_xyz{-1.,-1.,-1.};
     double Dp{-1.};
     math::Point P_xyz{-1.,-1.,-1.};
@@ -84,15 +99,147 @@ struct DssrNt {
     double v3{-1.};
     double v4{-1.};
     double zeta{-1.};
+    
+   
+    bool 
+    valid() const override {
+        //TODO add in the things this class needs to be used by the rest of the programs
+        return false;
+    }
 };
 
-struct DssrPair {
+struct DssrPair : public DssrElem {
+    double C1C1_dist{-1.};
+    double C6C8_dist{-1.};
+    double CNNC_torsion{-1};
+    String DSSR{"NA"}; //TODO make this an enum	"cW-W"
+    String LW{"NA"}; //TODO make this an enum"cWW"
+    double N1N9_dist{-1.};//9.305
+    String Saenger{"NA"};//	"19-XIX"h
+    String bp{"NA"}; //TODO make this an enum	"G-C"
+    Reals bp_params{-1.,-1.,-1.,-1.,-1.,-1.}; // TODO make this an array? 
+    double chi1 {-1.};	
+    double chi2	{-1.}; 
+    String conf1{"NA"}; //TODO enum	"anti"
+    String conf2{"NA"};	//TODO enum
+    math::Point frame_origin{-1.,-1.,-1.};
+    math::Quaternion frame_quaternion{-1.,-1.,-1.,-1.};
+    double frame_rmsd {-1.}; 
+    math::Matrix ref_frame {-1.,-1.,-1., -1,-1.,-1., -1.,-1.,-1.};
+    String hbonds_desc{"NA"}; //	"N1(imino)-N3[3.14],N2(amino)-O2(carbonyl)[3.27],O6(carbonyl)-N4(amino)[2.96]"
+    int hbonds_num{-1};
+    int index{-1};
+    double interBase_angle{-1.};
+    double lambda1{-1};
+    double lambda2{-1};
+    String name{"NA"}; // TODO turn this into an enum
+    String nt1{"NA"};
+    String nt2{"NA"};
+    double planarity{-1.};
+    String pucker1{"NA"};
+    String pucker2{"NA"};
+    double simple_Buckle{-1.};
+    double simple_Propeller{-1.};
+    double simple_Shear{-1.};
+    double simple_Stretch{-1.};
 
 
+    bool 
+    valid() const override {
+        return false;
+    }
+};
+
+struct DssrHairpin : public DssrElem {
+    //TODO bridges attribute
+    int index{-1};
+    String nts_long{"NA"};
+    String nts_short{"NA"};
+    String type{"NA"};
+    Ints bridging_nts{-1}; 
+    Ints stem_indices{-1}; 
+    String summary{"NA"};
+    int num_nts{-1};
+    int num_stems{-1};
+
+    bool 
+    valid() const override {
+        return false;
+    }
+};
+
+
+struct DssrHelix : public DssrElem {
+
+    int index{-1};
+    int num_stems{-1};
+    String strand1{"NA"};    
+    String strand2{"NA"};    
+    String bp_type{"NA"};
+    String helix_form{"NA"};
+    double helical_rise{-1};    
+    double helical_rise_std{-1};    
+    double helical_radius{-1};    
+    double helical_radius_std{-1};    
+    math::Point helical_axis{-1.,-1.,-1.};
+    math::Point point1{-1.,-1.,-1.};
+    math::Point point2{-1.,-1.,-1.};
+    int num_pairs{-1};
+    std::vector<DssrPair> pairs;
+
+    bool 
+    valid() const override {
+        return false;
+    }
+};
+
+struct DssrStem : public DssrElem {
+    int index{-1};
+    int helix_index{-1}; 
+    String strand1{"NA"};    
+    String strand2{"NA"};    
+    String bp_type{"NA"};
+    String helix_form{"NA"};
+    double helical_rise{-1};    
+    double helical_rise_std{-1};    
+    double helical_radius{-1};    
+    double helical_radius_std{-1};    
+    math::Point helical_axis{-1.,-1.,-1.};
+    math::Point point1{-1.,-1.,-1.};
+    math::Point point2{-1.,-1.,-1.};
+    int num_pairs{-1};
+    std::vector<DssrPair> pairs;
+
+    bool 
+    valid() const override {
+        return false;
+    }
+};
+
+struct DssrILoop : public DssrElem {
+    int index{-1};
+    //        self.type : str = None
+//        self.bridging_nts : list = None
+//        self.stem_indices : list = None
+//        self.summary : str = None
+//        self.num_nts : int = None
+//        self.nts_short : str = None
+//        self.nts_long : str = None
+//        self.num_stems : int = None
+//        self.bridges : list = None
+
+    bool 
+    valid() const override {
+        return false;
+    }
 };
 
 using DssrNts = std::vector<DssrNt>;
 using DssrPairs = std::vector<DssrPair>;
+using DssrHairpins =  std::vector<DssrHairpin>;
+using DssrHelices = std::vector<DssrHelix>;
+using DssrStems = std::vector<DssrStem>;
+using DssrILoops = std::vector<DssrILoop>;
 
 DssrNts
 get_nts(const nlohmann::json& );
@@ -100,185 +247,29 @@ get_nts(const nlohmann::json& );
 DssrPairs
 get_pairs(const nlohmann::json&);
 
+DssrHairpins
+get_hairpins(const nlohmann::json&);
+
+DssrHelices
+get_helices(const nlohmann::json&);
+
+DssrStems
+get_stems(const nlohmann::json&);
+
+DssrILoops
+get_iloops(const nlohmann::json&);
+
 void
 get_elements(
         String const & ,
         DssrNts & ,
-        DssrPairs &
-
+        DssrPairs &,
+        DssrHairpins &,
+        DssrHelices &,
+        DssrStems &,
+        DssrILoops &
         ) ;
-    //from typing import List, Dict
-//
-//
-//class DSSR_NT (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.index_chain : int = None
-//        self.chain_name : str = None
-//        self.nt_resnum : int = None
-//        self.nt_name : str = None
-//        self.nt_code : str = None
-//        self.nt_id : str = None
-//        self.dbn : str = None
-//        self.summary : str = None
-//        self.alpha = None
-//        self.beta = None
-//        self.gamma : float = None
-//        self.delta : float = None
-//        self.epsilon : float = None
-//        self.zeta : float = None
-//        self.epsilon_zeta : float = None
-//        self.bb_type : str = None
-//        self.chi : float = None
-//        self.glyco_bond : str = None
-//        self.C5prime_xyz : list = None
-//        self.P_xyz : list = None
-//        self.form : str = None
-//        self.ssZp : float = None
-//        self.Dp : float = None
-//        self.splay_angle : float = None
-//        self.splay_distance : float = None
-//        self.splay_ratio : float = None
-//        self.eta = None
-//        self.theta = None
-//        self.eta_prime = None
-//        self.theta_prime = None
-//        self.eta_base = None
-//        self.theta_base = None
-//        self.v0 : float = None
-//        self.v1 : float = None
-//        self.v2 : float = None
-//        self.v3 : float = None
-//        self.v4 : float = None
-//        self.amplitude : float = None
-//        self.phase_angle : float = None
-//        self.puckering : str = None
-//        self.sugar_class : str = None
-//        self.bin : str = None
-//        self.cluster : str = None
-//        self.suiteness : float = None
-//        self.filter_rmsd : float = None
-//        self.frame : dict = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_PAIR (object):
-//    def __init__(self, nt1 : DSSR_NT, nt2 : DSSR_NT, **kwargs):
-//        self.nt1 = nt1
-//        self.nt2 = nt2
-//        self.index : int = None
-//        self.bp : str = None
-//        self.name : str = None
-//        self.Saenger : str = None
-//        self.LW : str = None
-//        self.DSSR : str = None
-//        self.chi1 : float = None
-//        self.conf1 : str = None
-//        self.pucker1 : str = None
-//        self.lambda1 : float = None
-//        self.chi2 : float = None
-//        self.conf2 : str = None
-//        self.pucker2 : str = None
-//        self.lambda2 : float = None
-//        self.C1C1_dist : float = None
-//        self.N1N9_dist : float = None
-//        self.C6C8_dist : float = None
-//        self.CNNC_torsion : float = None
-//        self.hbonds_num : int = None
-//        self.hbonds_desc : str = None
-//        self.interBase_angle : float = None
-//        self.planarity : float = None
-//        self.simple_Shear : float = None
-//        self.simple_Stretch : float = None
-//        self.simple_Buckle : float = None
-//        self.simple_Propeller : float = None
-//        self.bp_params : list = None
-//        self.frame : dict = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_HAIRPIN (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.type : str = None
-//        self.bridging_nts : list = None
-//        self.stem_indices : list = None
-//        self.summary : str = None
-//        self.num_nts : int = None
-//        self.nts_short : str = None
-//        self.nts_long : str = None
-//        self.num_stems : int = None
-//        self.bridges : list = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_HELIX (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.num_stems : int = None
-//        self.strand1 : str = None
-//        self.strand2 : str = None
-//        self.bp_type : str = None
-//        self.helix_form : str = None
-//        self.helical_rise : float = None
-//        self.helical_rise_std : float = None
-//        self.helical_radius : float = None
-//        self.helical_radius_std : float = None
-//        self.helical_axis : list = None
-//        self.point1 : list = None
-//        self.point2 : list = None
-//        self.num_pairs : int = None
-//        self.pairs : list = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_STEM (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.helix_index : int = None
-//        self.strand1 : str = None
-//        self.strand2 : str = None
-//        self.bp_type : str = None
-//        self.helix_form : str = None
-//        self.helical_rise : float = None
-//        self.helical_rise_std : float = None
-//        self.helical_radius : float = None
-//        self.helical_radius_std : float = None
-//        self.helical_axis : list = None
-//        self.point1 : list = None
-//        self.point2 : list = None
-//        self.num_pairs : int = None
-//        self.pairs : list = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_ILOOP (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.type : str = None
-//        self.bridging_nts : list = None
-//        self.stem_indices : list = None
-//        self.summary : str = None
-//        self.num_nts : int = None
-//        self.nts_short : str = None
-//        self.nts_long : str = None
-//        self.num_stems : int = None
-//        self.bridges : list = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
+
 //class DSSR_JUNCTION (object):
 //    def __init__(self, **kwargs):
 //        self.index : int = None
