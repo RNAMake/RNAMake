@@ -110,40 +110,34 @@ util::get_matrix(const nlohmann::json& json) {
 }
 
 Reals
-util::get_reals(const nlohmann::json& json, const String& key,int num_elements) {
+util::get_reals(const nlohmann::json& json, const String& key) {
         
     auto value = json.find(key);
-    if(value != json.end() && value->size() >= num_elements) {
+    if(value != json.end() && !value->is_null()) {
         auto values = Reals{}; 
-        for(auto ii = 0; ii<num_elements; ++ii) {
-            if (!value->at(ii).is_null()) {
-                values.push_back(value->at(ii));
-            } else {
-                values.push_back(-1);
-            }
+        for(auto vv : *value) {
+            values.push_back(vv);
         }
+        
         return values;
     } else {
-        return Reals(num_elements,-1.);
+        return Reals{};
     }
 }
 
 Ints
-util::get_ints(const nlohmann::json& json, const String& key,int num_elements) {
+util::get_ints(const nlohmann::json& json, const String& key) {
         
     auto value = json.find(key);
-    if(value != json.end() && value->size() >= num_elements) {
+    if(value != json.end() && !value->is_null() ) {
         auto values = Ints{}; 
-        for(auto ii = 0; ii<num_elements; ++ii) {
-            if (!value->at(ii).is_null()) {
-                values.push_back(value->at(ii));
-            } else {
-                values.push_back(-1);
-            }
+        for(auto& vv : *value) {
+            values.push_back(vv);
         }
+
         return values;
     } else {
-        return Ints(num_elements,-1);
+        return Ints{};
     }
 }
 
@@ -235,7 +229,7 @@ util::get_pairs(const nlohmann::json& data) {
         new_pair.N1N9_dist = get_double(nt_pair,"N1N9_dist");     
         new_pair.Saenger = get_string(nt_pair,"Saenger");
         new_pair.bp = get_string(nt_pair,"bp");
-        new_pair.bp_params = get_reals(nt_pair,"bp_params",6);
+        new_pair.bp_params = get_reals(nt_pair,"bp_params");
         new_pair.chi1 = get_double(nt_pair,"chi1"); 
         new_pair.chi2 = get_double(nt_pair,"chi2"); 
         new_pair.conf1 = get_string(nt_pair,"conf1"); 
@@ -288,8 +282,8 @@ util::get_hairpins(const nlohmann::json& data) {
         new_hairpin.nts_long = get_string(hairpin,"nts_long");
         new_hairpin.nts_short = get_string(hairpin,"nts_short");
         new_hairpin.type = get_string(hairpin,"type"); 
-        new_hairpin.bridging_nts = get_ints(hairpin,"bridging_nts",1);
-        new_hairpin.stem_indices = get_ints(hairpin,"stem_indices",1);
+        new_hairpin.bridging_nts = get_ints(hairpin,"bridging_nts");
+        new_hairpin.stem_indices = get_ints(hairpin,"stem_indices");
         new_hairpin.summary = get_string(hairpin,"summary"); 
         new_hairpin.num_nts = get_int(hairpin,"num_nts"); 
         new_hairpin.num_stems = get_int(hairpin,"num_stems"); 
@@ -359,8 +353,19 @@ util::DssrILoops
 util::get_iloops(const nlohmann::json& data ) {
     auto iloops = DssrILoops{};
     for(auto& iloop : *data.find("iloops")) {
-        for(auto& kv : iloop.items()) std::cout<<kv.key()<<std::endl;
-        std::cout<<"======================================"<<std::endl;
+        auto new_loop = DssrILoop{};      
+        
+        new_loop.index = get_int(iloop,"index");
+        new_loop.type = get_string(iloop,"type"); 
+        new_loop.num_nts = get_int(iloop,"num_nts");  
+        new_loop.num_stems = get_int(iloop,"num_stems");  
+        new_loop.nts_short = get_string(iloop,"nts_short"); 
+        new_loop.nts_long = get_string(iloop,"nts_long"); 
+        new_loop.summary = get_string(iloop,"summary"); 
+        new_loop.bridging_nts = get_ints(iloop,"bridging_nts"); 
+        new_loop.stem_indices = get_ints(iloop,"stem_indices"); 
+        
+        iloops.push_back(std::move(new_loop)); 
     }
     return iloops;
 }

@@ -35,10 +35,10 @@ math::Matrix
 get_matrix(const nlohmann::json&);
 
 Reals
-get_reals(const nlohmann::json&, const String&,int);
+get_reals(const nlohmann::json&, const String&);
 
 Ints
-get_ints(const nlohmann::json&, const String&,int);
+get_ints(const nlohmann::json&, const String&);
 
 
 struct DssrElem {
@@ -217,21 +217,138 @@ struct DssrStem : public DssrElem {
 };
 
 struct DssrILoop : public DssrElem {
+    
     int index{-1};
-    //        self.type : str = None
-//        self.bridging_nts : list = None
-//        self.stem_indices : list = None
-//        self.summary : str = None
-//        self.num_nts : int = None
-//        self.nts_short : str = None
-//        self.nts_long : str = None
-//        self.num_stems : int = None
-//        self.bridges : list = None
+    String type{"NA"}; 
+    Ints bridging_nts{};
+    Ints stem_indices{};
+    String summary{"NA"};
+    int num_nts{-1};
+    String nts_short{"NA"};
+    String nts_long{"NA"};
+    int num_stems{-1};
+
+    //        self.bridges : list = None
 
     bool 
     valid() const override {
         return false;
     }
+};
+
+struct DssrJunc : public DssrElem {
+    int index{-1};
+    String type{"NA"};
+    Ints bridging_nts{};
+    Ints stem_indices{};
+    String summary{"NA"};
+    int num_nts{-1};
+    String nts_short{"NA"};
+    String nts_long{"NA"};
+    int num_stems{-1};
+
+    //        self.bridges : list = None
+
+    bool 
+    valid() const override {
+        return false;
+    }
+
+};
+
+struct DssrSingStrand : public DssrElem {
+
+
+    int index{-1};
+    int num_nts{-1};
+    String nts_short{"NA"};
+    String nts_long{"NA"};
+
+    bool 
+    valid() const override {
+        return false;
+    }
+};
+
+struct DssrKissingLoop : public DssrElem {
+
+    int index{-1};
+    int stem_index{-1};
+    Ints hairpin_indices{};
+
+    bool 
+    valid() const override {
+        return false;
+    }
+};
+
+struct DssrAMinor : public DssrElem {
+    int index{-1};
+    String type{"NA"};
+    String desc_short{"NA"};
+    String desc_long{"NA"};
+//        self.A_nt1 : dict = None TODO these objects... idk what they are yet
+//        self.A_nt2 : dict = None
+    bool 
+    valid() const override {
+        return false;
+    }
+};
+
+struct DssrRiboseZip : public DssrElem {
+    int index{-1};
+    int num_nts{-1};
+    String nts_short{"NA"};
+    String nts_long{"NA"};
+
+    bool 
+    valid() const override {
+        return false;
+    }
+
+};
+
+struct DssrPseudoKnot : public DssrElem {
+
+    int index{-1};
+    String desc{"NA"};
+
+    bool 
+    valid() const override {
+        return false;
+    }
+};
+
+struct DssrHBond : public DssrElem {
+    int index{-1};
+    int atom1_serNum{-1};
+    int atom2_serNum{-1};
+    String donAcc_type{"NA"};
+    double distance{-1};
+    String atom1_id{"NA"};
+    String atom2_id{"NA"};
+    String atom_pair{"NA"};
+    String residue_pair{"NA"};
+    
+    bool 
+    valid() const override {
+        return false;
+    }
+
+};
+
+struct DssrSplayUnits : public DssrElem {
+    int index{-1};
+    int num_nts{-1};
+    String nts_short{"NA"};
+    String nts_long{"NA"};
+
+    bool 
+    valid() const override {
+        return false;
+    }
+
+
 };
 
 using DssrNts = std::vector<DssrNt>;
@@ -240,6 +357,9 @@ using DssrHairpins =  std::vector<DssrHairpin>;
 using DssrHelices = std::vector<DssrHelix>;
 using DssrStems = std::vector<DssrStem>;
 using DssrILoops = std::vector<DssrILoop>;
+using DssrJuncs = std::vector<DssrJunc>;
+using DssrSingStrands = std::vector<DssrSingStrand>;
+using DssrKissingLoops = std::vector<DssrKissingLoop>;
 
 DssrNts
 get_nts(const nlohmann::json& );
@@ -259,6 +379,9 @@ get_stems(const nlohmann::json&);
 DssrILoops
 get_iloops(const nlohmann::json&);
 
+DssrJuncs
+get_juncs(const nlohmann::json&);
+
 void
 get_elements(
         String const & ,
@@ -267,106 +390,9 @@ get_elements(
         DssrHairpins &,
         DssrHelices &,
         DssrStems &,
-        DssrILoops &
+        DssrILoops &,
+        DrrsJuncs &
         ) ;
 
-//class DSSR_JUNCTION (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.type : str = None
-//        self.bridging_nts : list = None
-//        self.stem_indices : list = None
-//        self.summary : str = None
-//        self.num_nts : int = None
-//        self.nts_short : str = None
-//        self.nts_long : str = None
-//        self.num_stems : int = None
-//        self.bridges : list = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_SINGLE_STRAND (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.num_nts : int = None
-//        self.nts_short : str = None
-//        self.nts_long : str = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_KISSING_LOOP (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.stem_index : int = None
-//        self.hairpin_indices : list = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_AMINOR (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.type : str = None
-//        self.desc_short : str = None
-//        self.desc_long : str = None
-//        self.A_nt1 : dict = None
-//        self.A_nt2 : dict = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_RIBOSE_ZIPPER (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.num_nts : int = None
-//        self.nts_short : str = None
-//        self.nts_long : str = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_PSEUDOKNOT (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.desc : str = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_HBOND (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.atom1_serNum : int = None
-//        self.atom2_serNum : int = None
-//        self.donAcc_type : str = None
-//        self.distance : float = None
-//        self.atom1_id : str = None
-//        self.atom2_id : str = None
-//        self.atom_pair : str = None
-//        self.residue_pair : str = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
-//class DSSR_SPLAY_UNITS (object):
-//    def __init__(self, **kwargs):
-//        self.index : int = None
-//        self.num_nts : int = None
-//        self.nts_short : str = None
-//        self.nts_long : str = None
-//
-//        for key, value in kwargs.items():
-//            setattr(self, key, value)
-//
-//
 }
 #endif// __DSSR_H__
