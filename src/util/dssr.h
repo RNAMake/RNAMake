@@ -390,8 +390,8 @@ get_elements(
         DssrHairpins &,
         DssrHelices &,
         DssrStems &,
-        DssrILoops &,
-        DrrsJuncs &
+        DssrILoops &
+//        DrrsJuncs &
         ) ;
 
 }
