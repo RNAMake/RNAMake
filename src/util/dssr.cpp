@@ -19,7 +19,7 @@ util::get_int(const nlohmann::json& json, const String& key) {
         if(value != json.end() && !value->is_null()) {
             return value->get<int>(); 
         } else {
-            return -1;
+            return std::numeric_limits<int>::min();
         }
 }
 

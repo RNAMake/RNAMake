@@ -4,6 +4,7 @@
 #include <vector>
 #include <limits>
 #include <iostream>
+#include <limits>
 
 #include <math/quaternion.h>
 #include <math/xyz_vector.h>

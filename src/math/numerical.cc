@@ -71,6 +71,44 @@ are_xyzMatrix_equal(
            are_floats_equal(m.zz(), mc.zz());
 }
 
+template<>
+bool
+roughly_equal<double>(double const& v1, double const& v2, double tolerance) {
+    //TODO maybe add nan checking?? 
+    return std::abs(v1-v2) < tolerance;
+}
+
+template<>
+bool
+roughly_equal<float>(float const& v1, float const& v2, double tolerance) {
+    return std::abs(v1-v2) < tolerance;
+}
+
+
+
+template<>
+bool
+roughly_equal<Matrix>(Matrix const& m1, Matrix const& m2, double tolerance) {
+    
+    return roughly_equal(m1.xx(), m2.xx(),tolerance) &&
+           roughly_equal(m1.xy(), m2.xy(),tolerance) && 
+           roughly_equal(m1.xz(), m2.xz(),tolerance) &&
+           roughly_equal(m1.yx(), m2.yx(),tolerance) &&
+           roughly_equal(m1.yy(), m2.yy(),tolerance) &&
+           roughly_equal(m1.yz(), m2.yz(),tolerance) &&
+           roughly_equal(m1.zx(), m2.zx(),tolerance) &&
+           roughly_equal(m1.zy(), m2.zy(),tolerance) &&
+           roughly_equal(m1.zz(), m2.zz(),tolerance);
+}
+
+template<>
+bool
+roughly_equal<Vector>(Vector const& v1, Vector const& v2, double tolerance) {
+
+    return roughly_equal(v1.x(),v2.x(),tolerance) &&
+            roughly_equal(v1.y(),v2.y(),tolerance) &&
+            roughly_equal(v1.z(),v2.z(),tolerance);
+}
 }
 
 

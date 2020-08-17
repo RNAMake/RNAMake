@@ -16,10 +16,8 @@
 #include <base/settings.h>
 #include <base/log.h>
 #include <util/x3dna.h>
-#include <math/numerical.h>
 
-namespace util {
-
+namespace util { 
 X3dna::X3dna() :
         rebuild_files_(true),
         generated_dssr_(false),
@@ -302,53 +300,75 @@ X3dna::get_basepairs_json(
 
     // get the dssr json object
     //TODO fix this
-    auto dssr_json = base::execute_command_json("../../resources/x3dna/osx/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null");
+    auto dssr_json = base::execute_command_json("../../resources/x3dna/osx/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null"); 
+    auto nt_it = dssr_json.find("nts"); 
+    if (nt_it == dssr_json.end() || nt_it->is_null() || nt_it->empty()) {
+        std::cout<<dssr_json<<std::endl; 
+        std::cout<<pdb_path<<std::endl; 
+        return X3Basepairs{}; 
+    }
     // loop through the nucleotides and store them in a map 
     auto res_map = std::map<String,X3Residue>{}; 
     for(auto& nt : *dssr_json.find("nts")) {
-        auto residue_it = nt.find("nt_id")->get<String>();
-        auto ii = nt.find("nt_resnum")->get<int>();
-        auto chain = nt.find("chain_name")->get<String>()[0];
+        auto residue_it = util::get_string(nt,"nt_id");
+        auto ii = util::get_int(nt,"nt_resnum");
+        auto chain = util::get_char(nt,"chain_name");
         res_map[residue_it] = X3Residue(ii,chain,' ');
     
     }
     // now the basepairs can be constructed
     auto basepairs = X3Basepairs();
     auto pairings = dssr_json.find("pairs"); 
+    if(pairings == dssr_json.end() || pairings->empty()) {
+#ifdef DEBUG 
+        std::cout<<"Warning: "<<pdb_path<<" does not contain any pairs"<<std::endl;
+#else
+
+#endif
+        return basepairs;
+    }
     // loop through the pairings 
     for(auto pp : *pairings) {
-        auto name = pp.find("name")->get<String>();
-        auto ii = pp.find("Saenger")->get<String>();
+        auto name = util::get_string(pp,"name");
+        auto ii =  util::get_string(pp,"Saenger");
         
-        auto nt_1 = pp.find("nt1")->get<String>();
-        auto nt_2 = pp.find("nt2")->get<String>();
-        auto type = pp.find("DSSR")->get<String>();
+        auto nt_1 = util::get_string(pp,"nt1");
+        auto nt_2 = util::get_string(pp,"nt2");
+        auto type = util::get_string(pp,"DSSR");
         // get the reference frame information 
+        auto frame = math::Matrix{}; 
+        auto origin = math::Point{};
         auto frame_it = pp.find("frame"); 
-        auto coords = frame_it->find("origin")->get<Reals>(); 
-        auto x_axis = frame_it->find("x_axis")->get<Reals>();
-        auto y_axis = frame_it->find("y_axis")->get<Reals>();
-        auto z_axis = frame_it->find("z_axis")->get<Reals>(); 
-        auto origin = math::Point( coords[0],coords[1],coords[2] );
-        auto frame = math::Matrix(
-                                    x_axis[0],x_axis[1],x_axis[2],
-                                    y_axis[0],y_axis[1],y_axis[2],
-                                    z_axis[0],z_axis[1],z_axis[2]
-                                    );
+        
+        if(frame_it != pp.end() && !frame_it->is_null()) {
+            origin = get_point(*frame_it,"origin");
+            frame = get_matrix(*frame_it);
+                            
+        }
         // define the basepair type and residues        
         auto bp_type = get_x3dna_by_type(type); 
-        auto res1 = res_map.at(nt_1);
+        auto res1 = res_map.at(nt_1); // TODO maybe add an unkown thing?
         auto res2 = res_map.at(nt_2);
-        //if (N.find(res1.num) != N.end() || N.find(res2.num) != N.end()){std::cout<<"------"<<pp<<std::endl;} //std::cout<<name<<std::endl;
-        //else {std::cout<<pp<<std::endl;}
-        
+        // TODO add check that they are correct 
         // add the new basepair i 
-        basepairs.emplace_back(
-                X3Basepair{res1,res2,origin,frame,bp_type}
-                );
-        
+        auto new_bp = X3Basepair{res1,res2,origin,frame,bp_type} ;
+        //std::cout<<nt_1<<"\t"<<nt_2<<"\t"<<type<<std::endl; 
+        if(new_bp.valid()) {
+            basepairs.push_back(std::move(new_bp));
+        } else {
+            std::cout<<pp<<std::endl;
+            std::cout<<"HERE"<<std::endl;
+        }
 
     }
+    
+    const auto num_basepairs = util::get_int(dssr_json,"num_pairs");
+
+    if ( num_basepairs != basepairs.size() ) {
+        throw X3dnaException("Basepair count mismatch. Expected " + std::to_string(num_basepairs) \
+                + " but got " + std::to_string(basepairs.size()));
+    }
+    
     return basepairs; 
 }
 
@@ -424,7 +444,7 @@ X3dna::get_basepairs(
 
 X3dnaBPType
 get_x3dna_by_type(String const &name) {
-    if (name == "cm-") { return X3dnaBPType::cmU; }
+    if      (name == "cm-" ) { return X3dnaBPType::cmU; }
     else if (name == "cM-M") { return X3dnaBPType::cMUM; }
     else if (name == "tW+W") { return X3dnaBPType::tWPW; }
     else if (name == "c.+M") { return X3dnaBPType::cDPM; }
@@ -437,7 +457,7 @@ get_x3dna_by_type(String const &name) {
     else if (name == "c.-m") { return X3dnaBPType::cDUm; }
     else if (name == "cM+W") { return X3dnaBPType::cMPW; }
     else if (name == "tM+m") { return X3dnaBPType::tMPm; }
-    else if (name == "tM-W") { return X3dnaBPType::tMUW; }
+    else if (name == "tM-W") { return X3dnaBPType::tMUW; } 
     else if (name == "cm-m") { return X3dnaBPType::cmUm; }
     else if (name == "cM-W") { return X3dnaBPType::cMUW; }
     else if (name == "cW-W") { return X3dnaBPType::cWUW; }
@@ -481,6 +501,32 @@ get_x3dna_by_type(String const &name) {
     else if (name == "c.+.") { return X3dnaBPType::cDPD; }
     else if (name == "t.-m") { return X3dnaBPType::tDUm; }
     else if (name == "t.+M") { return X3dnaBPType::tDPM; }
+// added by CJ 
+    else if (name == "tW-.") { return X3dnaBPType::tWUD; }
+    else if (name == "tm-W") { return X3dnaBPType::tmUW; }
+    else if (name == "tM-M") { return X3dnaBPType::tMUM; }
+    else if (name == "tM+.") { return X3dnaBPType::tMPD; }
+    else if (name == "c.+W") { return X3dnaBPType::cDPW; }
+    else if (name == "tm+M") { return X3dnaBPType::tmPM; }
+    else if (name == "tW-m") { return X3dnaBPType::tWUm; }
+    else if (name == "cW+m") { return X3dnaBPType::cWPm; }
+    else if (name == "tm-.") { return X3dnaBPType::tmUD; }
+    else if (name == "tW+M") { return X3dnaBPType::tWPM; }
+    else if (name == ".W+m") { return X3dnaBPType::DWPm; }
+    else if (name == "tM+W") { return X3dnaBPType::tMPW; }
+    else if (name == "..+m") { return X3dnaBPType::DDPm; }
+    else if (name == "tW-W") { return X3dnaBPType::tWUW; }
+    else if (name == "cm+m") { return X3dnaBPType::cmPm; }
+    else if (name == ".W-m") { return X3dnaBPType::DWUm; }
+    else if (name == ".M+m") { return X3dnaBPType::DMPm; }
+    else if (name == ".W+M") { return X3dnaBPType::DWPM; }
+    else if (name == ".M+M") { return X3dnaBPType::DMPM; }
+    else if (name == ".m+W") { return X3dnaBPType::DmPW; }
+    else if (name == ".W-M") { return X3dnaBPType::DWUM; }
+    else if (name == ".m+m") { return X3dnaBPType::DmPm; }
+    else if (name == "..-M") { return X3dnaBPType::DDUM; }
+    else if (name == ".M-m") { return X3dnaBPType::DMUm; }
+    else if (name == "..-m") { return X3dnaBPType::DDUm; }
     else { throw X3dnaException("cannot get x3dna type with: " + name); }
 }
 
@@ -544,6 +590,33 @@ get_str_from_x3dna_type(
     else if (type == X3dnaBPType::cDPD) { return "c.+."; }
     else if (type == X3dnaBPType::tDUm) { return "t.-m"; }
     else if (type == X3dnaBPType::tDPM) { return "t.+M"; }
+// added by CJ
+    else if (type == X3dnaBPType::tWUD) { return "tW-."; }
+    else if (type == X3dnaBPType::tmUW) { return "tm-W"; }
+    else if (type == X3dnaBPType::tMUM) { return "tM-M"; }
+    else if (type == X3dnaBPType::tMPD) { return "tM+."; }
+    else if (type == X3dnaBPType::cDPW) { return "c.+W"; }
+    else if (type == X3dnaBPType::tmPM) { return "tm+M"; }
+    else if (type == X3dnaBPType::tWUm) { return "tW-m"; }
+    else if (type == X3dnaBPType::cWPm) { return "cW+m"; }
+    else if (type == X3dnaBPType::tmUD) { return "tm-."; }
+    else if (type == X3dnaBPType::tWPM) { return "tW+M"; }
+    else if (type == X3dnaBPType::DWPm) { return ".W+m"; }
+    else if (type == X3dnaBPType::tMPW) { return "tM+W"; }
+    else if (type == X3dnaBPType::DDPm) { return "..+m"; }
+    else if (type == X3dnaBPType::tWUW) { return "tW-W"; }
+    else if (type == X3dnaBPType::cmPm) { return "cm+m"; }
+    else if (type == X3dnaBPType::DWUm) { return ".W-m"; }
+    else if (type == X3dnaBPType::DMPm) { return ".M+m"; }
+    else if (type == X3dnaBPType::DWPM) { return ".W+M"; }
+    else if (type == X3dnaBPType::DMPM) { return ".M+M"; }
+    else if (type == X3dnaBPType::DmPW) { return ".m+W"; }
+    else if (type == X3dnaBPType::DWUM) { return ".W-M"; }
+    else if (type == X3dnaBPType::DmPm) { return ".m+m"; }
+    else if (type == X3dnaBPType::DDUM) { return "..-M"; }
+    else if (type == X3dnaBPType::DMUm) { return ".M-m"; }
+    else if (type == X3dnaBPType::DDUm) { return "..-m"; }
+
     else { throw X3dnaException("unknown x3dna bp type");}
 
 }

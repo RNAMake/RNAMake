@@ -15,12 +15,14 @@
 #include <cstring>
 #include <stdexcept>
 #include <regex>
-
+#include <limits>
 
 //RNAMake Headers
 #include <base/string.h>
 #include <math/xyz_vector.h>
 #include <math/xyz_matrix.h>
+#include <util/dssr.h>
+#include <math/numerical.h>
 
 namespace util {
 
@@ -93,6 +95,32 @@ enum class X3dnaBPType {
     cDPD = 54, //c.+.
     tDUm = 55, //t.-m
     tDPM = 56, //t.+M
+    // Added by CJ 
+    tWUD = 57, //tW-.
+    tmUW = 58, //tm-W 
+    tMUM = 59, //tM-M
+    tMPD = 60, //tM+.
+    cDPW = 61, //c.+W
+    tmPM = 62, //tm+M
+    tWUm = 63, //tW-m
+    cWPm = 64, //cW+m
+    tmUD = 65, //tm-.
+    tWPM = 66, //tW+m
+    DWPm = 67, //.W+m
+    tMPW = 68, //tM+W
+    DDPm = 69, //..+m
+    tWUW = 70, //tW-W
+    cmPm = 71, //cm+m
+    DWUm = 72, //.W-m
+    DMPm = 73, //.M+m
+    DWPM = 74, //.W+M
+    DMPM = 75, //.M+M
+    DmPW = 76, //.m+W
+    DWUM = 77, //.W+M
+    DmPm = 78, //.m+m
+    DDUM = 79, //..-M
+    DMUm = 80, //.M-m
+    DDUm = 81, //..-m
 };
 
 class X3dna {
@@ -121,7 +149,11 @@ public:
             if (num == r.num && chain_id == r.chain_id && i_code == r.i_code) { return 1; }
             else { return 0; }
         }
-
+        // added by CJ ... designed to chaeck that all data fields were filled out appropriately 
+        bool
+        valid() {
+            return num != std::numeric_limits<int>::min() && chain_id != ' '; // don't include ni_code bc it's usually none... change this?
+        }
         int num;
         char chain_id, i_code;
     };
@@ -133,6 +165,13 @@ public:
         math::Point d;
         math::Matrix r;
         X3dnaBPType bp_type;
+        // added by CJ... designed to check that all data fields were filled out appropriately 
+        bool 
+        valid() {
+            return res1.valid() && res1.valid() && \
+                !roughly_equal(r,math::Matrix{-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.}) && \
+                !roughly_equal(d,math::Point{-1.,-1.,-1.});
+        }
     };
 
     typedef std::vector<X3Basepair> X3Basepairs;
