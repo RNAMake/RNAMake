@@ -1,0 +1,216 @@
+****************************************************************************
+              DSSR: an Integrated Software Tool for
+             Dissecting the Spatial Structure of RNA
+             v1.9.9-2020feb06, by xiangjun@x3dna.org
+
+DSSR has been made possible by the NIH grant R01GM096889 (to X.J.Lu).
+It is being actively maintained and developed. As always, I greatly
+appreciate your feedback. Please report all DSSR-related issues on
+the 3DNA Forum (forum.x3dna.org). I strive to respond promptly to any
+questions posted there. DSSR is free of charge for NON-COMMERCIAL
+purposes, and it comes with ABSOLUTELY NO WARRANTY.
+
+****************************************************************************
+Note: By default, each nucleotide is identified by chainId.name#. So a
+      common case would be B.A1689, meaning adenosine #1689 on chain B.
+      One-letter base names for modified nucleotides are put in lower
+      case (e.g., 'c' for 5MC). For further information about the output
+      notation, please refer to the DSSR User Manual.
+    Questions and suggestions are *always* welcome on the 3DNA Forum.
+
+Command: x3dna-dssr -i=../../pdb/3HHZ.pdb --non-pair -o=3HHZ_dssr.out
+Date and time: Mon Aug 17 08:48:23 2020
+File name: 3HHZ.pdb
+    no. of DNA/RNA chains: 1 [R=45]
+    no. of nucleotides:    45
+    no. of atoms:          20415
+    no. of waters:         0
+    no. of metals:         0
+
+****************************************************************************
+List of 37 non-pairing interactions
+   1 R.U1     R.U2     stacking: 3.9(0.8)--pm(>>,forward) interBase-angle=6 connected min_baseDist=3.65
+   2 R.U2     R.U3     stacking: 4.3(1.5)--pm(>>,forward) interBase-angle=16 connected min_baseDist=3.18
+   3 R.U3     R.U4     stacking: 6.2(2.5)--pm(>>,forward) interBase-angle=12 connected min_baseDist=3.71
+   4 R.U5     R.U6     interBase-angle=26 H-bonds[1]: "O2'(hydroxyl)-O5'[3.29]" connected min_baseDist=9.44
+   5 R.U5     R.U7     stacking: 1.1(0.0)--pm(>>,forward) interBase-angle=18 H-bonds[1]: "O2'(hydroxyl)-O5'[3.13]" min_baseDist=3.49
+   6 R.U7     R.U8     stacking: 0.7(0.0)--pm(>>,forward) interBase-angle=10 connected min_baseDist=3.87
+   7 R.U9     R.U10    interBase-angle=23 H-bonds[1]: "O2'(hydroxyl)-O3'[3.49]" connected min_baseDist=8.25
+   8 R.U9     R.U11    interBase-angle=5 H-bonds[1]: "O2'(hydroxyl)-OP2[2.83]" min_baseDist=10.40
+   9 R.U10    R.U11    stacking: 0.3(0.0)--pm(>>,forward) interBase-angle=26 connected min_baseDist=3.23
+  10 R.U10    R.U12    stacking: 2.3(0.0)--pm(>>,forward) interBase-angle=45 min_baseDist=4.06
+  11 R.U11    R.U12    stacking: 2.2(0.0)--pm(>>,forward) interBase-angle=19 connected min_baseDist=3.18
+  12 R.U12    R.U13    stacking: 0.5(0.0)--pp(><,inward) interBase-angle=64 connected min_baseDist=3.07
+  13 R.U14    R.U16    stacking: 3.9(0.7)--pm(>>,forward) interBase-angle=12 min_baseDist=3.14
+  14 R.U15    R.U16    interBase-angle=40 H-bonds[1]: "O2'(hydroxyl)-OP2[2.86]" connected min_baseDist=9.80
+  15 R.U16    R.U17    interBase-angle=6 H-bonds[1]: "O2'(hydroxyl)-O4'[3.41]" connected min_baseDist=3.83
+  16 R.U17    R.U18    interBase-angle=82 H-bonds[1]: "O2'(hydroxyl)-OP1[3.07]" connected min_baseDist=3.12
+  17 R.U18    R.U19    interBase-angle=72 H-bonds[1]: "O2'(hydroxyl)-O4'[3.44]" connected min_baseDist=6.83
+  18 R.U19    R.U20    stacking: 5.2(3.1)--pm(>>,forward) interBase-angle=30 connected min_baseDist=3.85
+  19 R.U20    R.U21    stacking: 1.6(0.0)--pm(>>,forward) interBase-angle=43 connected min_baseDist=2.83
+  20 R.U21    R.U22    stacking: 7.5(3.6)--pm(>>,forward) interBase-angle=24 connected min_baseDist=3.44
+  21 R.U23    R.U25    stacking: 0.7(0.0)--pm(>>,forward) interBase-angle=12 H-bonds[1]: "O2'(hydroxyl)-OP1[2.40]" min_baseDist=3.64
+  22 R.U25    R.U26    stacking: 5.5(2.7)--pm(>>,forward) interBase-angle=5 H-bonds[1]: "O2'(hydroxyl)-O5'[3.13]" connected min_baseDist=3.30
+  23 R.U26    R.U28    interBase-angle=30 H-bonds[1]: "O2'(hydroxyl)-OP2[3.11]" min_baseDist=9.88
+  24 R.U27    R.U29    interBase-angle=84 H-bonds[2]: "O4'*O4(carbonyl)[3.33],O2'(hydroxyl)-OP2[3.24]" min_baseDist=5.24
+  25 R.U28    R.U29    stacking: 1.9(0.6)--pm(>>,forward) interBase-angle=12 connected min_baseDist=3.44
+  26 R.U29    R.U30    stacking: 4.3(1.1)--pm(>>,forward) interBase-angle=30 H-bonds[1]: "O5'*OP2[3.08]" connected min_baseDist=2.86
+  27 R.U30    R.U31    stacking: 1.2(0.0)--pm(>>,forward) interBase-angle=41 connected min_baseDist=3.44
+  28 R.U32    R.U33    interBase-angle=29 H-bonds[2]: "OP1*OP2[3.33],O2'(hydroxyl)-O5'[3.10]" connected min_baseDist=9.03
+  29 R.U32    R.U34    stacking: 2.9(0.0)--pp(><,inward) interBase-angle=11 H-bonds[2]: "O2'(hydroxyl)-OP1[3.09],O2'(hydroxyl)-O5'[2.72]" min_baseDist=3.05
+  30 R.U34    R.U35    stacking: 5.6(4.3)--mm(<>,outward) interBase-angle=7 H-bonds[1]: "O2'(hydroxyl)-O5'[2.80]" connected min_baseDist=3.67
+  31 R.U35    R.U36    interBase-angle=47 H-bonds[1]: "O2'(hydroxyl)-O4'[2.91]" connected min_baseDist=5.62
+  32 R.U37    R.U38    stacking: 1.7(0.6)--pm(>>,forward) interBase-angle=14 connected min_baseDist=3.46
+  33 R.U39    R.U40    stacking: 3.0(1.0)--pm(>>,forward) interBase-angle=24 connected min_baseDist=3.72
+  34 R.U40    R.U42    interBase-angle=15 H-bonds[1]: "O2'(hydroxyl)-OP1[3.32]" min_baseDist=5.61
+  35 R.U41    R.U43    stacking: 0.1(0.0)--pm(>>,forward) interBase-angle=21 H-bonds[1]: "O2'(hydroxyl)-OP1[3.13]" min_baseDist=3.97
+  36 R.U43    R.U44    stacking: 2.1(0.6)--pm(>>,forward) interBase-angle=10 connected min_baseDist=3.43
+  37 R.U44    R.U45    interBase-angle=89 H-bonds[1]: "O2'(hydroxyl)-O4'[3.27]" connected min_baseDist=3.42
+
+****************************************************************************
+List of 15 stacks
+  Note: a stack is an ordered list of nucleotides assembled together via
+        base-stacking interactions, regardless of backbone connectivity.
+        Stacking interactions within a stem are *not* included.
+   1 nts=2 RU K.ARG408,R.U24
+   2 nts=2 RU L.ARG408,R.U15
+   3 nts=2 RU N.ARG408,R.U42
+   4 nts=2 RU O.ARG408,R.U33
+   5 nts=2 UU R.U14,R.U16
+   6 nts=2 UU R.U37,R.U38
+   7 nts=2 UU R.U39,R.U40
+   8 nts=3 UUU R.U10,R.U12,R.U13
+   9 nts=3 UUU R.U23,R.U25,R.U26
+  10 nts=3 UUU R.U32,R.U34,R.U35
+  11 nts=4 RUUU M.ARG312,R.U5,R.U7,R.U8
+  12 nts=4 RUUU N.ARG143,R.U44,R.U43,R.U41
+  13 nts=4 UUUU R.U1,R.U2,R.U3,R.U4
+  14 nts=4 UUUU R.U19,R.U20,R.U21,R.U22
+  15 nts=4 UUUU R.U28,R.U29,R.U30,R.U31
+
+****************************************************************************
+Nucleotides not involved in stacking interactions
+     nts=7 UUUUUUU R.U6,R.U9,R.U17,R.U18,R.U27,R.U36,R.U45
+
+****************************************************************************
+List of 5 atom-base capping interactions
+    dv: vertical distance of the atom above the nucleotide base
+    -----------------------------------------------------------
+     type       atom                 nt             dv
+   1 sugar      O4'@R.U7             R.U5           3.32
+   2 sugar      O4'@R.U25            R.U23          3.39
+   3 sugar      O4'@R.U34            R.U32          3.23
+   4 phosphate  OP2@R.U38            R.U36          2.84
+   5 sugar      O2'@R.U44            R.U45          3.27
+
+****************************************************************************
+List of 1 non-loop single-stranded segment
+   1 nts=45 UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU R.U1,R.U2,R.U3,R.U4,R.U5,R.U6,R.U7,R.U8,R.U9,R.U10,R.U11,R.U12,R.U13,R.U14,R.U15,R.U16,R.U17,R.U18,R.U19,R.U20,R.U21,R.U22,R.U23,R.U24,R.U25,R.U26,R.U27,R.U28,R.U29,R.U30,R.U31,R.U32,R.U33,R.U34,R.U35,R.U36,R.U37,R.U38,R.U39,R.U40,R.U41,R.U42,R.U43,R.U44,R.U45
+
+****************************************************************************
+List of 18 splayed-apart dinucleotides
+   1 R.U4     R.U5     angle=137    distance=19.6     ratio=0.93
+   2 R.U5     R.U6     angle=116    distance=16.3     ratio=0.85
+   3 R.U6     R.U7     angle=125    distance=19.4     ratio=0.89
+   4 R.U9     R.U10    angle=127    distance=17.0     ratio=0.90
+   5 R.U13    R.U14    angle=169    distance=20.5     ratio=1.00
+   6 R.U14    R.U15    angle=119    distance=17.4     ratio=0.86
+   7 R.U15    R.U16    angle=140    distance=18.7     ratio=0.94
+   8 R.U18    R.U19    angle=95     distance=15.0     ratio=0.74
+   9 R.U22    R.U23    angle=140    distance=18.7     ratio=0.94
+  10 R.U23    R.U24    angle=106    distance=15.7     ratio=0.80
+  11 R.U24    R.U25    angle=151    distance=20.9     ratio=0.97
+  12 R.U27    R.U28    angle=98     distance=14.6     ratio=0.76
+  13 R.U31    R.U32    angle=145    distance=19.9     ratio=0.95
+  14 R.U32    R.U33    angle=105    distance=15.5     ratio=0.79
+  15 R.U33    R.U34    angle=135    distance=18.4     ratio=0.92
+  16 R.U40    R.U41    angle=115    distance=17.2     ratio=0.84
+  17 R.U41    R.U42    angle=108    distance=15.2     ratio=0.81
+  18 R.U42    R.U43    angle=116    distance=18.2     ratio=0.85
+----------------------------------------------------------------
+Summary of 8 splayed-apart units
+   1 nts=4 UUUU R.U4,R.U5,R.U6,R.U7
+   2 nts=2 UU R.U9,R.U10
+   3 nts=4 UUUU R.U13,R.U14,R.U15,R.U16
+   4 nts=2 UU R.U18,R.U19
+   5 nts=4 UUUU R.U22,R.U23,R.U24,R.U25
+   6 nts=2 UU R.U27,R.U28
+   7 nts=4 UUUU R.U31,R.U32,R.U33,R.U34
+   8 nts=4 UUUU R.U40,R.U41,R.U42,R.U43
+
+****************************************************************************
+Secondary structures in dot-bracket notation (dbn) as a whole and per chain
+>3HHZ nts=45 [whole]
+UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
+.............................................
+>3HHZ-R #1 nts=45 1.02(3.25) [chain] RNA
+UUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUUU
+.............................................
+
+****************************************************************************
+Summary of structural features of 45 nucleotides
+  Note: the first five columns are: (1) serial number, (2) one-letter
+    shorthand name, (3) dbn, (4) id string, (5) rmsd (~zero) of base
+    ring atoms fitted against those in a standard base reference
+    frame. The sixth (last) column contains a comma-separated list of
+    features whose meanings are mostly self-explanatory, except for:
+      turn: angle C1'(i-1)--C1'(i)--C1'(i+1) < 90 degrees
+      break: no backbone linkage between O3'(i-1) and P(i)
+   1  U . R.U1     0.012  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+   2  U . R.U2     0.012  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+   3  U . R.U3     0.012  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+   4  U . R.U4     0.012  anti,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+   5  U . R.U5     0.012  turn,anti,BI,non-pair-contact,ss-non-loop,cap-acceptor,phosphate,splayed-apart
+   6  U . R.U6     0.009  turn,anti,non-stack,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+   7  U . R.U7     0.013  anti,~C3'-endo,non-pair-contact,ss-non-loop,cap-donor,splayed-apart
+   8  U . R.U8     0.013  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+   9  U . R.U9     0.015  anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  10  U . R.U10    0.015  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,splayed-apart
+  11  U . R.U11    0.012  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,phosphate
+  12  U . R.U12    0.014  anti,non-pair-contact,ss-non-loop,phosphate
+  13  U . R.U13    0.011  anti,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  14  U . R.U14    0.010  turn,anti,~C3'-endo,non-pair-contact,ss-non-loop,splayed-apart
+  15  U . R.U15    0.014  turn,anti,~C3'-endo,non-pair-contact,ss-non-loop,splayed-apart
+  16  U . R.U16    0.013  anti,~C3'-endo,BII,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  17  U . R.U17    0.010  anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop
+  18  U . R.U18    0.013  anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  19  U . R.U19    0.009  turn,anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,splayed-apart
+  20  U . R.U20    0.011  anti,~C3'-endo,non-pair-contact,ss-non-loop
+  21  U . R.U21    0.012  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+  22  U . R.U22    0.012  anti,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  23  U . R.U23    0.012  turn,anti,BI,non-pair-contact,ss-non-loop,cap-acceptor,phosphate,splayed-apart
+  24  U . R.U24    0.008  turn,anti,~C3'-endo,ss-non-loop,splayed-apart
+  25  U . R.U25    0.012  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,cap-donor,phosphate,splayed-apart
+  26  U . R.U26    0.007  anti,~C3'-endo,BII,non-pair-contact,ss-non-loop
+  27  U . R.U27    0.012  anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  28  U . R.U28    0.013  turn,anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  29  U . R.U29    0.014  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+  30  U . R.U30    0.011  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,phosphate
+  31  U . R.U31    0.012  anti,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  32  U . R.U32    0.009  anti,BI,non-pair-contact,ss-non-loop,cap-acceptor,splayed-apart
+  33  U . R.U33    0.012  turn,anti,non-pair-contact,ss-non-loop,splayed-apart
+  34  U . R.U34    0.013  syn,~C3'-endo,BI,non-pair-contact,ss-non-loop,cap-donor,phosphate,splayed-apart
+  35  U . R.U35    0.009  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+  36  U . R.U36    0.014  anti,~C3'-endo,BI,non-stack,non-pair-contact,ss-non-loop,cap-acceptor,phosphate
+  37  U . R.U37    0.011  turn,anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  38  U . R.U38    0.011  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,cap-donor,phosphate
+  39  U . R.U39    0.011  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+  40  U . R.U40    0.013  anti,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  41  U . R.U41    0.014  turn,anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  42  U . R.U42    0.017  turn,anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  43  U . R.U43    0.012  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  44  U . R.U44    0.014  anti,~C3'-endo,non-pair-contact,ss-non-loop,cap-donor,phosphate
+  45  U . R.U45    0.013  anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop,cap-acceptor,phosphate
+
+****************************************************************************
+List of 7 additional files
+   1 dssr-2ndstrs.bpseq -- secondary structure in bpseq format
+   2 dssr-2ndstrs.ct -- secondary structure in connectivity table format
+   3 dssr-2ndstrs.dbn -- secondary structure in dot-bracket notation
+   4 dssr-torsions.txt -- backbone torsion angles and suite names
+   5 dssr-splays.pdb -- an ensemble of splayed-apart units
+   6 dssr-stacks.pdb -- an ensemble of stacks
+   7 dssr-atom2bases.pdb -- an ensemble of atom-base stacking interactions
+
+****************************************************************************
+Time used: 00:00:00:03

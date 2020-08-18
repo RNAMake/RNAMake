@@ -1,0 +1,132 @@
+****************************************************************************
+              DSSR: an Integrated Software Tool for
+             Dissecting the Spatial Structure of RNA
+             v1.9.9-2020feb06, by xiangjun@x3dna.org
+
+DSSR has been made possible by the NIH grant R01GM096889 (to X.J.Lu).
+It is being actively maintained and developed. As always, I greatly
+appreciate your feedback. Please report all DSSR-related issues on
+the 3DNA Forum (forum.x3dna.org). I strive to respond promptly to any
+questions posted there. DSSR is free of charge for NON-COMMERCIAL
+purposes, and it comes with ABSOLUTELY NO WARRANTY.
+
+****************************************************************************
+Note: By default, each nucleotide is identified by chainId.name#. So a
+      common case would be B.A1689, meaning adenosine #1689 on chain B.
+      One-letter base names for modified nucleotides are put in lower
+      case (e.g., 'c' for 5MC). For further information about the output
+      notation, please refer to the DSSR User Manual.
+    Questions and suggestions are *always* welcome on the 3DNA Forum.
+
+Command: x3dna-dssr -i=../../pdb/4C40.pdb --non-pair -o=4C40_dssr.out
+Date and time: Sun Aug 16 21:08:46 2020
+File name: 4C40.pdb
+    no. of DNA/RNA chains: 1 [A=19]
+    no. of nucleotides:    19
+    no. of atoms:          431
+    no. of waters:         14
+    no. of metals:         0
+
+****************************************************************************
+List of 17 non-pairing interactions
+   1 A.G1      A.G2      stacking: 2.3(0.8)--pm(>>,forward) interBase-angle=6 connected min_baseDist=3.18
+   2 A.G2      A.C3      stacking: 6.1(2.9)--pm(>>,forward) interBase-angle=9 connected min_baseDist=3.01
+   3 A.C3      A.G4      stacking: 1.6(0.9)--pm(>>,forward) interBase-angle=13 connected min_baseDist=3.19
+   4 A.G4      A.A8      interBase-angle=63 H-bonds[1]: "O2'(hydroxyl)-O4'[3.53]" min_baseDist=6.19
+   5 A.A5      A.A6      interBase-angle=82 H-bonds[2]: "OP1-O2'(hydroxyl)[2.48],O2'(hydroxyl)-OP2[3.56]" connected min_baseDist=9.16
+   6 A.A5      A.G7      stacking: 0.4(0.0)--pm(>>,forward) interBase-angle=33 H-bonds[1]: "O4'*O4'[3.27]" min_baseDist=3.31
+   7 A.G7      A.A8      interBase-angle=35 H-bonds[1]: "O2'(hydroxyl)-OP2[3.07]" connected min_baseDist=5.08
+   8 A.A8      A.A9      stacking: 1.9(1.9)--pm(>>,forward) interBase-angle=5 connected min_baseDist=3.32
+   9 A.A9      A.C10     stacking: 6.5(2.5)--pm(>>,forward) interBase-angle=12 connected min_baseDist=3.30
+  10 A.C10     A.C11     stacking: 0.2(0.0)--pm(>>,forward) interBase-angle=15 connected min_baseDist=3.48
+  11 A.C11     A.G12     stacking: 0.2(0.0)--pm(>>,forward) interBase-angle=14 connected min_baseDist=3.41
+  12 A.G12     A.G13     stacking: 3.7(2.2)--pm(>>,forward) interBase-angle=4 connected min_baseDist=3.31
+  13 A.G13     A.G14     stacking: 4.0(1.4)--pm(>>,forward) interBase-angle=11 connected min_baseDist=3.22
+  14 A.G14     A.G15     stacking: 8.3(5.0)--pm(>>,forward) interBase-angle=27 connected min_baseDist=2.93
+  15 A.A16     A.G17     interBase-angle=62 H-bonds[1]: "O4'*O4'[3.36]" connected min_baseDist=3.90
+  16 A.G17     A.C18     stacking: 4.7(2.2)--pm(>>,forward) interBase-angle=6 connected min_baseDist=3.06
+  17 A.C18     A.C19     stacking: 0.2(0.0)--pm(>>,forward) interBase-angle=7 connected min_baseDist=3.44
+
+****************************************************************************
+List of 4 stacks
+  Note: a stack is an ordered list of nucleotides assembled together via
+        base-stacking interactions, regardless of backbone connectivity.
+        Stacking interactions within a stem are *not* included.
+   1 nts=2 AG A.A5,A.G7
+   2 nts=3 GCC A.G17,A.C18,A.C19
+   3 nts=4 GGCG A.G1,A.G2,A.C3,A.G4
+   4 nts=8 AACCGGGG A.A8,A.A9,A.C10,A.C11,A.G12,A.G13,A.G14,A.G15
+
+****************************************************************************
+Nucleotides not involved in stacking interactions
+     nts=2 AA A.A6,A.A16
+
+****************************************************************************
+List of 1 atom-base capping interaction
+    dv: vertical distance of the atom above the nucleotide base
+    -----------------------------------------------------------
+     type       atom                 nt             dv
+   1 sugar      O4'@A.A5             A.G7           3.18
+
+****************************************************************************
+List of 1 non-loop single-stranded segment
+   1 nts=19 GGCGAAGAACCGGGGAGCC A.G1,A.G2,A.C3,A.G4,A.A5,A.A6,A.G7,A.A8,A.A9,A.C10,A.C11,A.G12,A.G13,A.G14,A.G15,A.A16,A.G17,A.C18,A.C19
+
+****************************************************************************
+List of 2 splayed-apart dinucleotides
+   1 A.A5      A.A6      angle=140    distance=17.3     ratio=0.94
+   2 A.A6      A.G7      angle=104    distance=15.5     ratio=0.79
+----------------------------------------------------------------
+Summary of 1 splayed-apart unit
+   1 nts=3 AAG A.A5,A.A6,A.G7
+
+****************************************************************************
+Secondary structures in dot-bracket notation (dbn) as a whole and per chain
+>4C40 nts=19 [whole]
+GGCGAAGAACCGGGGAGCC
+...................
+>4C40-A #1 nts=19 0.85(2.86) [chain] RNA
+GGCGAAGAACCGGGGAGCC
+...................
+
+****************************************************************************
+Summary of structural features of 19 nucleotides
+  Note: the first five columns are: (1) serial number, (2) one-letter
+    shorthand name, (3) dbn, (4) id string, (5) rmsd (~zero) of base
+    ring atoms fitted against those in a standard base reference
+    frame. The sixth (last) column contains a comma-separated list of
+    features whose meanings are mostly self-explanatory, except for:
+      turn: angle C1'(i-1)--C1'(i)--C1'(i+1) < 90 degrees
+      break: no backbone linkage between O3'(i-1) and P(i)
+   1  G . A.G1      0.013  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+   2  G . A.G2      0.008  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+   3  C . A.C3      0.007  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+   4  G . A.G4      0.007  anti,~C3'-endo,non-pair-contact,ss-non-loop
+   5  A . A.A5      0.014  turn,syn,~C2'-endo,non-pair-contact,ss-non-loop,cap-donor,phosphate,splayed-apart
+   6  A . A.A6      0.005  turn,anti,~C2'-endo,non-stack,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+   7  G . A.G7      0.018  anti,~C2'-endo,non-pair-contact,ss-non-loop,cap-acceptor,splayed-apart
+   8  A . A.A8      0.015  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,phosphate
+   9  A . A.A9      0.011  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  10  C . A.C10     0.006  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  11  C . A.C11     0.007  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  12  G . A.G12     0.012  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  13  G . A.G13     0.012  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  14  G . A.G14     0.015  anti,~C3'-endo,non-pair-contact,ss-non-loop
+  15  G . A.G15     0.017  anti,~C2'-endo,BII,non-pair-contact,ss-non-loop
+  16  A . A.A16     0.012  anti,~C2'-endo,non-stack,non-pair-contact,ss-non-loop
+  17  G . A.G17     0.010  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  18  C . A.C18     0.007  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  19  C . A.C19     0.004  anti,~C3'-endo,non-pair-contact,ss-non-loop
+
+****************************************************************************
+List of 7 additional files
+   1 dssr-2ndstrs.bpseq -- secondary structure in bpseq format
+   2 dssr-2ndstrs.ct -- secondary structure in connectivity table format
+   3 dssr-2ndstrs.dbn -- secondary structure in dot-bracket notation
+   4 dssr-torsions.txt -- backbone torsion angles and suite names
+   5 dssr-splays.pdb -- an ensemble of splayed-apart units
+   6 dssr-stacks.pdb -- an ensemble of stacks
+   7 dssr-atom2bases.pdb -- an ensemble of atom-base stacking interactions
+
+****************************************************************************
+Time used: 00:00:00:00

@@ -1,0 +1,90 @@
+****************************************************************************
+              DSSR: an Integrated Software Tool for
+             Dissecting the Spatial Structure of RNA
+             v1.9.9-2020feb06, by xiangjun@x3dna.org
+
+DSSR has been made possible by the NIH grant R01GM096889 (to X.J.Lu).
+It is being actively maintained and developed. As always, I greatly
+appreciate your feedback. Please report all DSSR-related issues on
+the 3DNA Forum (forum.x3dna.org). I strive to respond promptly to any
+questions posted there. DSSR is free of charge for NON-COMMERCIAL
+purposes, and it comes with ABSOLUTELY NO WARRANTY.
+
+****************************************************************************
+Note: By default, each nucleotide is identified by chainId.name#. So a
+      common case would be B.A1689, meaning adenosine #1689 on chain B.
+      One-letter base names for modified nucleotides are put in lower
+      case (e.g., 'c' for 5MC). For further information about the output
+      notation, please refer to the DSSR User Manual.
+    Questions and suggestions are *always* welcome on the 3DNA Forum.
+
+Command: x3dna-dssr -i=../../pdb/2I2Y.pdb --non-pair -o=2I2Y_dssr.out
+Date and time: Sun Aug 16 20:18:18 2020
+File name: 2I2Y.pdb
+    no. of DNA/RNA chains: 1 [B=4]
+    no. of nucleotides:    4
+    no. of atoms:          2429
+    no. of waters:         0
+    no. of metals:         0
+
+****************************************************************************
+List of 4 non-pairing interactions
+   1 B.C151   B.A152   interBase-angle=31 H-bonds[1]: "O5'*OP1[2.63]" connected min_baseDist=3.86
+   2 B.A152   B.U153   interBase-angle=65 H-bonds[1]: "O2'(hydroxyl)-OP2[2.62]" connected min_baseDist=6.15
+   3 B.A152   B.C154   stacking: 0.3(0.0)--mm(<>,outward) interBase-angle=44 min_baseDist=3.86
+   4 B.U153   B.C154   interBase-angle=63 H-bonds[1]: "OP2-N4(amino)[3.29]" connected min_baseDist=6.40
+
+****************************************************************************
+List of 2 stacks
+  Note: a stack is an ordered list of nucleotides assembled together via
+        base-stacking interactions, regardless of backbone connectivity.
+        Stacking interactions within a stem are *not* included.
+   1 nts=3 YCN A.TYR77,B.C151,A.ASN146
+   2 nts=3 FAC A.PHE114,B.A152,B.C154
+
+****************************************************************************
+List of 1 non-loop single-stranded segment
+   1 nts=4 CAUC B.C151,B.A152,B.U153,B.C154
+
+****************************************************************************
+List of 2 splayed-apart dinucleotides
+   1 B.A152   B.U153   angle=96     distance=14.2     ratio=0.75
+   2 B.U153   B.C154   angle=99     distance=15.1     ratio=0.76
+----------------------------------------------------------------
+Summary of 1 splayed-apart unit
+   1 nts=3 AUC B.A152,B.U153,B.C154
+
+****************************************************************************
+Secondary structures in dot-bracket notation (dbn) as a whole and per chain
+>2I2Y nts=4 [whole]
+CAUC
+....
+>2I2Y-B #1 nts=4 0.95(0.45) [chain] RNA
+CAUC
+....
+
+****************************************************************************
+Summary of structural features of 4 nucleotides
+  Note: the first five columns are: (1) serial number, (2) one-letter
+    shorthand name, (3) dbn, (4) id string, (5) rmsd (~zero) of base
+    ring atoms fitted against those in a standard base reference
+    frame. The sixth (last) column contains a comma-separated list of
+    features whose meanings are mostly self-explanatory, except for:
+      turn: angle C1'(i-1)--C1'(i)--C1'(i+1) < 90 degrees
+      break: no backbone linkage between O3'(i-1) and P(i)
+   1  C . B.C151   0.014  anti,BII,non-pair-contact,ss-non-loop
+   2  A . B.A152   0.034  syn,~C2'-endo,non-pair-contact,ss-non-loop,splayed-apart
+   3  U . B.U153   0.031  turn,anti,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+   4  C . B.C154   0.035  anti,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+
+****************************************************************************
+List of 6 additional files
+   1 dssr-2ndstrs.bpseq -- secondary structure in bpseq format
+   2 dssr-2ndstrs.ct -- secondary structure in connectivity table format
+   3 dssr-2ndstrs.dbn -- secondary structure in dot-bracket notation
+   4 dssr-torsions.txt -- backbone torsion angles and suite names
+   5 dssr-splays.pdb -- an ensemble of splayed-apart units
+   6 dssr-stacks.pdb -- an ensemble of stacks
+
+****************************************************************************
+Time used: 00:00:00:00

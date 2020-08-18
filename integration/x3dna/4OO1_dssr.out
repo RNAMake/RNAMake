@@ -1,0 +1,86 @@
+****************************************************************************
+              DSSR: an Integrated Software Tool for
+             Dissecting the Spatial Structure of RNA
+             v1.9.9-2020feb06, by xiangjun@x3dna.org
+
+DSSR has been made possible by the NIH grant R01GM096889 (to X.J.Lu).
+It is being actively maintained and developed. As always, I greatly
+appreciate your feedback. Please report all DSSR-related issues on
+the 3DNA Forum (forum.x3dna.org). I strive to respond promptly to any
+questions posted there. DSSR is free of charge for NON-COMMERCIAL
+purposes, and it comes with ABSOLUTELY NO WARRANTY.
+
+****************************************************************************
+Note: By default, each nucleotide is identified by chainId.name#. So a
+      common case would be B.A1689, meaning adenosine #1689 on chain B.
+      One-letter base names for modified nucleotides are put in lower
+      case (e.g., 'c' for 5MC). For further information about the output
+      notation, please refer to the DSSR User Manual.
+    Questions and suggestions are *always* welcome on the 3DNA Forum.
+
+Command: x3dna-dssr -i=../../pdb/4OO1.pdb --non-pair -o=4OO1_dssr.out
+Date and time: Mon Aug 17 08:55:32 2020
+File name: 4OO1.pdb
+    no. of DNA/RNA chains: 1 [S=6]
+    no. of nucleotides:    6
+    no. of atoms:          21590
+    no. of waters:         0
+    no. of metals:         2 [Mg=2]
+
+****************************************************************************
+List of 3 non-pairing interactions
+   1 S.A20     S.A21     interBase-angle=50 H-bonds[1]: "O2'(hydroxyl)-OP1[2.90]" connected min_baseDist=3.98
+   2 S.A21     S.A22     interBase-angle=47 H-bonds[1]: "O2'(hydroxyl)-OP1[2.61]" connected min_baseDist=4.02
+   3 S.A23     S.A24     stacking: 5.2(2.3)--pm(>>,forward) interBase-angle=16 connected min_baseDist=3.22
+
+****************************************************************************
+List of 2 stacks
+  Note: a stack is an ordered list of nucleotides assembled together via
+        base-stacking interactions, regardless of backbone connectivity.
+        Stacking interactions within a stem are *not* included.
+   1 nts=2 FA J.PHE294,S.A22
+   2 nts=2 AA S.A23,S.A24
+
+****************************************************************************
+Nucleotides not involved in stacking interactions
+     nts=2 AA S.A20,S.A21
+
+****************************************************************************
+List of 1 non-loop single-stranded segment
+   1 nts=6 AAAAAA S.A19,S.A20,S.A21,S.A22,S.A23,S.A24
+
+****************************************************************************
+Secondary structures in dot-bracket notation (dbn) as a whole and per chain
+>4OO1 nts=6 [whole]
+AAAAAA
+......
+>4OO1-S #1 nts=6 3.08(0.95) [chain] RNA
+AAAAAA
+......
+
+****************************************************************************
+Summary of structural features of 6 nucleotides
+  Note: the first five columns are: (1) serial number, (2) one-letter
+    shorthand name, (3) dbn, (4) id string, (5) rmsd (~zero) of base
+    ring atoms fitted against those in a standard base reference
+    frame. The sixth (last) column contains a comma-separated list of
+    features whose meanings are mostly self-explanatory, except for:
+      turn: angle C1'(i-1)--C1'(i)--C1'(i+1) < 90 degrees
+      break: no backbone linkage between O3'(i-1) and P(i)
+   1  A . S.A19     ---    ~C3'-endo,non-stack,ss-non-loop
+   2  A . S.A20     0.002  anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop
+   3  A . S.A21     0.002  anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop,phosphate
+   4  A . S.A22     0.002  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,phosphate
+   5  A . S.A23     0.002  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+   6  A . S.A24     0.001  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+
+****************************************************************************
+List of 5 additional files
+   1 dssr-2ndstrs.bpseq -- secondary structure in bpseq format
+   2 dssr-2ndstrs.ct -- secondary structure in connectivity table format
+   3 dssr-2ndstrs.dbn -- secondary structure in dot-bracket notation
+   4 dssr-torsions.txt -- backbone torsion angles and suite names
+   5 dssr-stacks.pdb -- an ensemble of stacks
+
+****************************************************************************
+Time used: 00:00:00:02

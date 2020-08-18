@@ -1,0 +1,113 @@
+****************************************************************************
+              DSSR: an Integrated Software Tool for
+             Dissecting the Spatial Structure of RNA
+             v1.9.9-2020feb06, by xiangjun@x3dna.org
+
+DSSR has been made possible by the NIH grant R01GM096889 (to X.J.Lu).
+It is being actively maintained and developed. As always, I greatly
+appreciate your feedback. Please report all DSSR-related issues on
+the 3DNA Forum (forum.x3dna.org). I strive to respond promptly to any
+questions posted there. DSSR is free of charge for NON-COMMERCIAL
+purposes, and it comes with ABSOLUTELY NO WARRANTY.
+
+****************************************************************************
+Note: By default, each nucleotide is identified by chainId.name#. So a
+      common case would be B.A1689, meaning adenosine #1689 on chain B.
+      One-letter base names for modified nucleotides are put in lower
+      case (e.g., 'c' for 5MC). For further information about the output
+      notation, please refer to the DSSR User Manual.
+    Questions and suggestions are *always* welcome on the 3DNA Forum.
+
+Command: x3dna-dssr -i=../../pdb/3IEV.pdb --non-pair -o=3IEV_dssr.out
+Date and time: Mon Aug 17 05:29:25 2020
+File name: 3IEV.pdb
+    no. of DNA/RNA chains: 1 [D=11]
+    no. of nucleotides:    12
+    no. of atoms:          2902
+    no. of waters:         245
+    no. of metals:         1 [Mg=1]
+
+****************************************************************************
+List of 1 type of 1 modified nucleotide
+      nt    count  list
+   1 GNP-g    1    A.GNP501
+
+****************************************************************************
+List of 7 non-pairing interactions
+   1 D.A1531   D.U1532   interBase-angle=71 H-bonds[1]: "O2'(hydroxyl)-O4'[3.10]" connected min_baseDist=6.48
+   2 D.C1533   D.A1534   interBase-angle=60 H-bonds[1]: "O2'(hydroxyl)-OP2[2.75]" connected min_baseDist=3.79
+   3 D.A1534   D.C1535   interBase-angle=29 H-bonds[1]: "N3-N4(amino)[3.29]" connected min_baseDist=3.29
+   4 D.C1536   D.U1537   stacking: 5.2(1.8)--pm(>>,forward) interBase-angle=13 connected min_baseDist=3.34
+   5 D.C1538   D.C1539   stacking: 5.8(3.3)--pm(>>,forward) interBase-angle=11 connected min_baseDist=3.38
+   6 D.C1539   D.U1540   stacking: 5.5(2.9)--pm(>>,forward) interBase-angle=13 connected min_baseDist=3.19
+   7 D.U1540   D.U1541   stacking: 7.5(3.2)--pm(>>,forward) interBase-angle=8 connected min_baseDist=3.53
+
+****************************************************************************
+List of 4 stacks
+  Note: a stack is an ordered list of nucleotides assembled together via
+        base-stacking interactions, regardless of backbone connectivity.
+        Stacking interactions within a stem are *not* included.
+   1 nts=2 RA A.ARG207,D.A1531
+   2 nts=2 WA A.TRP280,D.A1534
+   3 nts=3 YUC A.TYR276,D.U1537,D.C1536
+   4 nts=4 CCUU D.C1538,D.C1539,D.U1540,D.U1541
+
+****************************************************************************
+Nucleotides not involved in stacking interactions
+     nts=2 Ug D.U1532,A.GNP501
+
+****************************************************************************
+List of 2 non-loop single-stranded segments
+   1 nts=11 AUCACCUCCUU D.A1531,D.U1532,D.C1533,D.A1534,D.C1535,D.C1536,D.U1537,D.C1538,D.C1539,D.U1540,D.U1541
+   2 nts=1 g A.GNP501
+
+****************************************************************************
+List of 2 splayed-apart dinucleotides
+   1 D.A1531   D.U1532   angle=90     distance=12.4     ratio=0.72
+   2 D.U1532   D.C1533   angle=132    distance=18.1     ratio=0.91
+----------------------------------------------------------------
+Summary of 1 splayed-apart unit
+   1 nts=3 AUC D.A1531,D.U1532,D.C1533
+
+****************************************************************************
+Secondary structures in dot-bracket notation (dbn) as a whole and per chain
+>3IEV nts=12 [whole]
+AUCACCUCCUU&g
+...........&.
+>3IEV-D #1 nts=11 2.14(1.09) [chain] RNA
+AUCACCUCCUU
+...........
+
+****************************************************************************
+Summary of structural features of 12 nucleotides
+  Note: the first five columns are: (1) serial number, (2) one-letter
+    shorthand name, (3) dbn, (4) id string, (5) rmsd (~zero) of base
+    ring atoms fitted against those in a standard base reference
+    frame. The sixth (last) column contains a comma-separated list of
+    features whose meanings are mostly self-explanatory, except for:
+      turn: angle C1'(i-1)--C1'(i)--C1'(i+1) < 90 degrees
+      break: no backbone linkage between O3'(i-1) and P(i)
+   1  A . D.A1531   0.006  anti,~C2'-endo,non-pair-contact,ss-non-loop,splayed-apart
+   2  U . D.U1532   0.006  syn,~C2'-endo,non-stack,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+   3  C . D.C1533   0.007  anti,~C2'-endo,non-pair-contact,ss-non-loop,splayed-apart
+   4  A . D.A1534   0.007  anti,~C2'-endo,BII,non-pair-contact,ss-non-loop,phosphate
+   5  C . D.C1535   0.008  anti,~C2'-endo,non-pair-contact,ss-non-loop
+   6  C . D.C1536   0.007  anti,~C3'-endo,non-pair-contact,ss-non-loop
+   7  U . D.U1537   0.011  anti,~C3'-endo,non-pair-contact,ss-non-loop
+   8  C . D.C1538   0.009  anti,~C3'-endo,non-pair-contact,ss-non-loop
+   9  C . D.C1539   0.005  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  10  U . D.U1540   0.009  anti,~C3'-endo,non-pair-contact,ss-non-loop
+  11  U . D.U1541   0.005  anti,~C2'-endo,non-pair-contact,ss-non-loop
+  12  g . A.GNP501  0.007  modified,anti,~C2'-endo,non-stack,ss-non-loop
+
+****************************************************************************
+List of 6 additional files
+   1 dssr-2ndstrs.bpseq -- secondary structure in bpseq format
+   2 dssr-2ndstrs.ct -- secondary structure in connectivity table format
+   3 dssr-2ndstrs.dbn -- secondary structure in dot-bracket notation
+   4 dssr-torsions.txt -- backbone torsion angles and suite names
+   5 dssr-splays.pdb -- an ensemble of splayed-apart units
+   6 dssr-stacks.pdb -- an ensemble of stacks
+
+****************************************************************************
+Time used: 00:00:00:00

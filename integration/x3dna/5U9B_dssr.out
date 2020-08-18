@@ -1,0 +1,135 @@
+****************************************************************************
+              DSSR: an Integrated Software Tool for
+             Dissecting the Spatial Structure of RNA
+             v1.9.9-2020feb06, by xiangjun@x3dna.org
+
+DSSR has been made possible by the NIH grant R01GM096889 (to X.J.Lu).
+It is being actively maintained and developed. As always, I greatly
+appreciate your feedback. Please report all DSSR-related issues on
+the 3DNA Forum (forum.x3dna.org). I strive to respond promptly to any
+questions posted there. DSSR is free of charge for NON-COMMERCIAL
+purposes, and it comes with ABSOLUTELY NO WARRANTY.
+
+****************************************************************************
+Note: By default, each nucleotide is identified by chainId.name#. So a
+      common case would be B.A1689, meaning adenosine #1689 on chain B.
+      One-letter base names for modified nucleotides are put in lower
+      case (e.g., 'c' for 5MC). For further information about the output
+      notation, please refer to the DSSR User Manual.
+    Questions and suggestions are *always* welcome on the 3DNA Forum.
+
+Command: x3dna-dssr -i=../../pdb/5U9B.pdb --non-pair -o=5U9B_dssr.out
+Date and time: Sun Aug 16 19:48:34 2020
+File name: 5U9B.pdb
+    no. of DNA/RNA chains: 1 [B=15]
+    no. of nucleotides:    15
+    no. of atoms:          1934
+    no. of waters:         0
+    no. of metals:         2 [Zn=2]
+
+****************************************************************************
+List of 14 non-pairing interactions
+   1 B.G95   B.U96   interBase-angle=29 H-bonds[1]: "O5'*OP2[3.07]" connected min_baseDist=7.87
+   2 B.G95   B.C97   interBase-angle=39 H-bonds[1]: "N2(amino)-O2'(hydroxyl)[3.10]" min_baseDist=5.43
+   3 B.G95   B.U98   interBase-angle=88 H-bonds[2]: "N1(imino)-O4(carbonyl)[2.92],N2(amino)-OP1[3.03]" min_baseDist=2.92
+   4 B.U96   B.G100  interBase-angle=47 H-bonds[1]: "O2'(hydroxyl)-OP2[3.12]" min_baseDist=5.64
+   5 B.C97   B.C99   stacking: 2.5(0.0)--pp(><,inward) interBase-angle=10 min_baseDist=3.45
+   6 B.G100  B.C101  interBase-angle=88 H-bonds[2]: "O2'(hydroxyl)-O5'[3.00],O2'(hydroxyl)-O4'[3.34]" connected min_baseDist=5.62
+   7 B.C101  B.U102  interBase-angle=82 H-bonds[1]: "O5'*OP2[3.36]" connected min_baseDist=3.68
+   8 B.U102  B.U103  interBase-angle=79 H-bonds[1]: "OP1*OP1[3.20]" connected min_baseDist=7.44
+   9 B.U102  B.C109  interBase-angle=67 H-bonds[1]: "O2'(hydroxyl)-O2'(hydroxyl)[2.91]" min_baseDist=8.96
+  10 B.U103  B.U104  interBase-angle=40 H-bonds[2]: "O2'(hydroxyl)-O5'[2.92],O2'(hydroxyl)-O4'[3.11]" connected min_baseDist=3.43
+  11 B.U104  B.C108  interBase-angle=39 H-bonds[1]: "OP2-N4(amino)[3.22]" min_baseDist=7.79
+  12 B.C106  B.C107  stacking: 3.3(0.6)--pp(><,inward) interBase-angle=26 H-bonds[1]: "OP2*N3[3.12]" connected min_baseDist=3.45
+  13 B.C107  B.C108  stacking: 2.6(0.0)--mm(<>,outward) interBase-angle=30 connected min_baseDist=3.38
+  14 B.C108  B.C109  stacking: 3.7(0.8)--pp(><,inward) interBase-angle=28 H-bonds[1]: "OP2-N4(amino)[3.29]" connected min_baseDist=3.41
+
+****************************************************************************
+List of 5 stacks
+  Note: a stack is an ordered list of nucleotides assembled together via
+        base-stacking interactions, regardless of backbone connectivity.
+        Stacking interactions within a stem are *not* included.
+   1 nts=2 WU A.TRP13,B.U103
+   2 nts=2 RG A.ARG63,B.G100
+   3 nts=2 CC B.C97,B.C99
+   4 nts=3 FCY A.PHE54,B.C101,A.TYR68
+   5 nts=4 CCCC B.C106,B.C107,B.C108,B.C109
+
+****************************************************************************
+Nucleotides not involved in stacking interactions
+     nts=6 GUUUUU B.G95,B.U96,B.U98,B.U102,B.U104,B.U105
+
+****************************************************************************
+List of 4 atom-base capping interactions
+    dv: vertical distance of the atom above the nucleotide base
+    -----------------------------------------------------------
+     type       atom                 nt             dv
+   1 phosphate  OP2@B.C97            B.G95          3.09
+   2 phosphate  OP1@B.U96            B.U96          3.19
+   3 phosphate  OP1@B.U98            B.U98          3.03
+   4 sugar      O4'@B.C97            B.C99          2.97
+
+****************************************************************************
+List of 1 non-loop single-stranded segment
+   1 nts=15 GUCUCGCUUUUCCCC B.G95,B.U96,B.C97,B.U98,B.C99,B.G100,B.C101,B.U102,B.U103,B.U104,B.U105,B.C106,B.C107,B.C108,B.C109
+
+****************************************************************************
+List of 5 splayed-apart dinucleotides
+   1 B.G95   B.U96   angle=145    distance=15.1     ratio=0.96
+   2 B.C97   B.U98   angle=141    distance=14.8     ratio=0.95
+   3 B.C99   B.G100  angle=109    distance=14.9     ratio=0.82
+   4 B.U104  B.U105  angle=107    distance=15.8     ratio=0.80
+   5 B.U105  B.C106  angle=118    distance=16.8     ratio=0.86
+----------------------------------------------------------------
+Summary of 4 splayed-apart units
+   1 nts=2 GU B.G95,B.U96
+   2 nts=2 CU B.C97,B.U98
+   3 nts=2 CG B.C99,B.G100
+   4 nts=3 UUC B.U104,B.U105,B.C106
+
+****************************************************************************
+Secondary structures in dot-bracket notation (dbn) as a whole and per chain
+>5U9B nts=15 [whole]
+GUCUCGCUUUUCCCC
+...............
+>5U9B-B #1 nts=15 1.16(3.15) [chain] RNA
+GUCUCGCUUUUCCCC
+...............
+
+****************************************************************************
+Summary of structural features of 15 nucleotides
+  Note: the first five columns are: (1) serial number, (2) one-letter
+    shorthand name, (3) dbn, (4) id string, (5) rmsd (~zero) of base
+    ring atoms fitted against those in a standard base reference
+    frame. The sixth (last) column contains a comma-separated list of
+    features whose meanings are mostly self-explanatory, except for:
+      turn: angle C1'(i-1)--C1'(i)--C1'(i+1) < 90 degrees
+      break: no backbone linkage between O3'(i-1) and P(i)
+   1  G . B.G95   0.022  u-turn,anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop,cap-acceptor,splayed-apart
+   2  U . B.U96   0.032  turn,u-turn,anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop,cap-donor,cap-acceptor,phosphate,splayed-apart
+   3  C . B.C97   0.030  turn,u-turn,syn,~C2'-endo,non-pair-contact,ss-non-loop,cap-donor,phosphate,splayed-apart
+   4  U . B.U98   0.050  turn,u-turn,syn,non-stack,non-pair-contact,ss-non-loop,cap-donor,cap-acceptor,phosphate,splayed-apart
+   5  C . B.C99   0.020  syn,~C2'-endo,non-pair-contact,ss-non-loop,cap-acceptor,splayed-apart
+   6  G . B.G100  0.029  syn,~C2'-endo,BI,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+   7  C . B.C101  0.033  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+   8  U . B.U102  0.028  anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop,phosphate
+   9  U . B.U103  0.036  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  10  U . B.U104  0.025  turn,anti,~C3'-endo,non-stack,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  11  U . B.U105  0.024  anti,~C2'-endo,non-stack,ss-non-loop,phosphate,splayed-apart
+  12  C . B.C106  0.014  anti,~C3'-endo,non-pair-contact,ss-non-loop,splayed-apart
+  13  C . B.C107  0.016  syn,~C3'-endo,BI,non-pair-contact,ss-non-loop
+  14  C . B.C108  0.015  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+  15  C . B.C109  0.016  syn,~C3'-endo,non-pair-contact,ss-non-loop
+
+****************************************************************************
+List of 7 additional files
+   1 dssr-2ndstrs.bpseq -- secondary structure in bpseq format
+   2 dssr-2ndstrs.ct -- secondary structure in connectivity table format
+   3 dssr-2ndstrs.dbn -- secondary structure in dot-bracket notation
+   4 dssr-torsions.txt -- backbone torsion angles and suite names
+   5 dssr-splays.pdb -- an ensemble of splayed-apart units
+   6 dssr-stacks.pdb -- an ensemble of stacks
+   7 dssr-atom2bases.pdb -- an ensemble of atom-base stacking interactions
+
+****************************************************************************
+Time used: 00:00:00:00

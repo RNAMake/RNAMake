@@ -1,0 +1,112 @@
+****************************************************************************
+              DSSR: an Integrated Software Tool for
+             Dissecting the Spatial Structure of RNA
+             v1.9.9-2020feb06, by xiangjun@x3dna.org
+
+DSSR has been made possible by the NIH grant R01GM096889 (to X.J.Lu).
+It is being actively maintained and developed. As always, I greatly
+appreciate your feedback. Please report all DSSR-related issues on
+the 3DNA Forum (forum.x3dna.org). I strive to respond promptly to any
+questions posted there. DSSR is free of charge for NON-COMMERCIAL
+purposes, and it comes with ABSOLUTELY NO WARRANTY.
+
+****************************************************************************
+Note: By default, each nucleotide is identified by chainId.name#. So a
+      common case would be B.A1689, meaning adenosine #1689 on chain B.
+      One-letter base names for modified nucleotides are put in lower
+      case (e.g., 'c' for 5MC). For further information about the output
+      notation, please refer to the DSSR User Manual.
+    Questions and suggestions are *always* welcome on the 3DNA Forum.
+
+Command: x3dna-dssr -i=../../pdb/4XWW.pdb --non-pair -o=4XWW_dssr.out
+Date and time: Sun Aug 16 21:08:49 2020
+File name: 4XWW.pdb
+    no. of DNA/RNA chains: 2 [D=6,E=6]
+    no. of nucleotides:    12
+    no. of atoms:          9312
+    no. of waters:         759
+    no. of metals:         6 [Mn=2,Zn=4]
+
+****************************************************************************
+List of 7 non-pairing interactions
+   1 D.U1      D.U2      interBase-angle=64 H-bonds[1]: "O2'(hydroxyl)-OP2[3.44]" connected min_baseDist=3.50
+   2 D.U2      D.U3      interBase-angle=88 H-bonds[1]: "O2'(hydroxyl)-OP2[3.14]" connected min_baseDist=5.24
+   3 D.U3      D.U4      stacking: 6.4(3.4)--pm(>>,forward) interBase-angle=13 H-bonds[1]: "O2'(hydroxyl)-OP1[2.11]" connected min_baseDist=3.19
+   4 D.U4      D.U5      stacking: 4.3(2.1)--pm(>>,forward) interBase-angle=8 connected min_baseDist=3.57
+   5 E.U2      E.U3      interBase-angle=85 H-bonds[1]: "O2'(hydroxyl)-OP2[2.58]" connected min_baseDist=5.31
+   6 E.U3      E.U4      stacking: 3.9(0.7)--pp(><,inward) interBase-angle=17 connected min_baseDist=2.96
+   7 E.U4      E.U5      stacking: 4.1(1.8)--mm(<>,outward) interBase-angle=6 connected min_baseDist=3.66
+
+****************************************************************************
+List of 4 stacks
+  Note: a stack is an ordered list of nucleotides assembled together via
+        base-stacking interactions, regardless of backbone connectivity.
+        Stacking interactions within a stem are *not* included.
+   1 nts=2 FU A.PHE52,D.U2
+   2 nts=2 FU B.PHE52,E.U2
+   3 nts=4 RUUU A.ARG271,D.U5,D.U4,D.U3
+   4 nts=4 RUUU B.ARG271,E.U5,E.U4,E.U3
+
+****************************************************************************
+Nucleotides not involved in stacking interactions
+     nts=4 UUUU D.U1,D.U6,E.U1,E.U6
+
+****************************************************************************
+List of 2 non-loop single-stranded segments
+   1 nts=6 UUUUUU D.U1,D.U2,D.U3,D.U4,D.U5,D.U6
+   2 nts=6 UUUUUU E.U1,E.U2,E.U3,E.U4,E.U5,E.U6
+
+****************************************************************************
+List of 2 splayed-apart dinucleotides
+   1 D.U5      D.U6      angle=145    distance=18.0     ratio=0.95
+   2 E.U5      E.U6      angle=168    distance=17.9     ratio=0.99
+----------------------------------------------------------------
+Summary of 2 splayed-apart units
+   1 nts=2 UU D.U5,D.U6
+   2 nts=2 UU E.U5,E.U6
+
+****************************************************************************
+Secondary structures in dot-bracket notation (dbn) as a whole and per chain
+>4XWW nts=12 [whole]
+UUUUUU&UUUUUU
+......&......
+>4XWW-D #1 nts=6 1.20(0.77) [chain] RNA
+UUUUUU
+......
+>4XWW-E #2 nts=6 2.81(0.70) [chain] RNA
+UUUUUU
+......
+
+****************************************************************************
+Summary of structural features of 12 nucleotides
+  Note: the first five columns are: (1) serial number, (2) one-letter
+    shorthand name, (3) dbn, (4) id string, (5) rmsd (~zero) of base
+    ring atoms fitted against those in a standard base reference
+    frame. The sixth (last) column contains a comma-separated list of
+    features whose meanings are mostly self-explanatory, except for:
+      turn: angle C1'(i-1)--C1'(i)--C1'(i+1) < 90 degrees
+      break: no backbone linkage between O3'(i-1) and P(i)
+   1  U . D.U1      0.002  anti,~C2'-endo,non-stack,non-pair-contact,ss-non-loop,phosphate
+   2  U . D.U2      0.003  anti,~C2'-endo,non-pair-contact,ss-non-loop,phosphate
+   3  U . D.U3      0.002  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate
+   4  U . D.U4      0.004  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,phosphate
+   5  U . D.U5      0.006  anti,~C3'-endo,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+   6  U . D.U6      0.003  anti,~C2'-endo,non-stack,ss-non-loop,phosphate,splayed-apart
+   7  U . E.U1      0.002  syn,~C2'-endo,non-stack,ss-non-loop,phosphate
+   8  U . E.U2      0.003  anti,~C2'-endo,non-pair-contact,ss-non-loop,phosphate
+   9  U . E.U3      0.003  anti,~C3'-endo,BI,non-pair-contact,ss-non-loop,phosphate
+  10  U . E.U4      0.012  syn,~C3'-endo,BI,non-pair-contact,ss-non-loop,phosphate
+  11  U . E.U5      0.007  anti,~C3'-endo,BII,non-pair-contact,ss-non-loop,phosphate,splayed-apart
+  12  U . E.U6      0.004  anti,~C3'-endo,non-stack,ss-non-loop,phosphate,splayed-apart
+
+****************************************************************************
+List of 6 additional files
+   1 dssr-2ndstrs.bpseq -- secondary structure in bpseq format
+   2 dssr-2ndstrs.ct -- secondary structure in connectivity table format
+   3 dssr-2ndstrs.dbn -- secondary structure in dot-bracket notation
+   4 dssr-torsions.txt -- backbone torsion angles and suite names
+   5 dssr-splays.pdb -- an ensemble of splayed-apart units
+   6 dssr-stacks.pdb -- an ensemble of stacks
+
+****************************************************************************
+Time used: 00:00:00:01
