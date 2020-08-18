@@ -7,6 +7,7 @@
 //
 
 #include <map>
+#include <unordered_map>
 #include <ctype.h>
 #include <set>
 
@@ -303,8 +304,6 @@ X3dna::get_basepairs_json(
     auto dssr_json = base::execute_command_json("../../resources/x3dna/osx/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null"); 
     auto nt_it = dssr_json.find("nts"); 
     if (nt_it == dssr_json.end() || nt_it->is_null() || nt_it->empty()) {
-        std::cout<<dssr_json<<std::endl; 
-        std::cout<<pdb_path<<std::endl; 
         return X3Basepairs{}; 
     }
     // loop through the nucleotides and store them in a map 
@@ -355,11 +354,7 @@ X3dna::get_basepairs_json(
         //std::cout<<nt_1<<"\t"<<nt_2<<"\t"<<type<<std::endl; 
         if(new_bp.valid()) {
             basepairs.push_back(std::move(new_bp));
-        } else {
-            std::cout<<pp<<std::endl;
-            std::cout<<"HERE"<<std::endl;
         }
-
     }
     
     const auto num_basepairs = util::get_int(dssr_json,"num_pairs");
@@ -527,6 +522,7 @@ get_x3dna_by_type(String const &name) {
     else if (name == "..-M") { return X3dnaBPType::DDUM; }
     else if (name == ".M-m") { return X3dnaBPType::DMUm; }
     else if (name == "..-m") { return X3dnaBPType::DDUm; }
+    else if (name == ".M+W") { return X3dnaBPType::DMPW; }
     else { throw X3dnaException("cannot get x3dna type with: " + name); }
 }
 
@@ -616,6 +612,7 @@ get_str_from_x3dna_type(
     else if (type == X3dnaBPType::DDUM) { return "..-M"; }
     else if (type == X3dnaBPType::DMUm) { return ".M-m"; }
     else if (type == X3dnaBPType::DDUm) { return "..-m"; }
+    else if (type == X3dnaBPType::DMPW) { return ".M+W"; }
 
     else { throw X3dnaException("unknown x3dna bp type");}
 
@@ -717,29 +714,39 @@ X3dna::_parse_dssr_helix_section(
     
     return motifs;
 }
-*/
-    //struct X3Basepair {
+*/ //struct X3Basepair {
     //    X3Residue res1, res2;
     //    math::Point d;
     //    math::Matrix r;
     //    X3dnaBPType bp_type;
     //};
-void
-util::compare_bps(X3dna::X3Basepairs& lhs, X3dna::X3Basepairs& rhs) {
+
+String
+X3dna::X3Basepair::to_string(){
+    auto ss = std::stringstream();
+    ss << util::get_str_from_x3dna_type(bp_type) << "|" <<res1.num << "|" << res2.num << "|" << d << "|" << math::matrix_to_str(r);
+    return ss.str();
+}
+
+String
+compare_bps(X3dna::X3Basepairs& lhs, X3dna::X3Basepairs& rhs) {
     // first, we want to build the maps 
-    auto left_map = std::map<std::pair<int,int>,X3dna::X3Basepair>(); 
-    auto right_map = std::map<std::pair<int,int>,X3dna::X3Basepair>(); 
+    auto left_map = std::map<triplet<int,int,int>,X3dna::X3Basepair>(); 
+    auto right_map = std::map<triplet<int,int,int>,X3dna::X3Basepair>(); 
     
     for(auto& bp :lhs) {
-        const auto res1 = bp.res1.num;
-        const auto res2 = bp.res2.num;
-        left_map[{std::min(res1,res2),std::max(res1,res2)}] = bp;
+        auto key = triplet<int,int,int>(); 
+        key.first = round(10.*bp.d.x());
+        key.second = round(10.*bp.d.y());
+        key.third = round(10.*bp.d.z());
+        left_map[key] = bp;
     }
-    
     for(auto& bp : rhs) {
-        const auto res1 = bp.res1.num;
-        const auto res2 = bp.res2.num;
-        right_map[{std::min(res1,res2),std::max(res1,res2)}] = bp;
+        auto key = triplet<int,int,int>(); 
+        key.first = round(10.*bp.d.x());
+        key.second = round(10.*bp.d.y());
+        key.third = round(10.*bp.d.z());
+        right_map[key] = bp;
     }
     // quick check that there are no basepair repeats 
     if (left_map.size() != lhs.size()) {
@@ -749,22 +756,23 @@ util::compare_bps(X3dna::X3Basepairs& lhs, X3dna::X3Basepairs& rhs) {
     if (right_map.size() != rhs.size()) {
         throw std::runtime_error("error, redudant residue numbers in rhs bps");
     }
-
+    auto matches(0); 
     auto lhs_it = left_map.begin();
     const auto lhs_end = left_map.end();
-
     while(lhs_it != lhs_end) {
         // check if right_map has the iterator
         auto rhs_it = right_map.find(lhs_it->first);
         // if so, then check if the two are equivalent. delete if so 
         if(rhs_it != right_map.end()) {
             // need to check that the reference frame, origin and bp_type are identical 
-            if(rhs_it->second.bp_type == lhs_it->second.bp_type  && 
-                    are_xyzVector_equal(rhs_it->second.d,lhs_it->second.d)  && 
-                    are_xyzMatrix_equal(rhs_it->second.r,lhs_it->second.r)) {
-                // if they are equivalent, delete the elements from the map
+            const auto same_origin_flag = roughly_equal(rhs_it->second.d,lhs_it->second.d,0.1);
+            const auto same_frame_flag = roughly_equal(rhs_it->second.r,lhs_it->second.r,0.1) || \
+                                         roughly_equal(rhs_it->second.r.get_flip_orientation(),lhs_it->second.r,0.1);
+            const auto same_bp_type = rhs_it->second.bp_type == lhs_it->second.bp_type;
+            if(same_origin_flag && same_frame_flag && same_bp_type ) {
                 lhs_it = left_map.erase(lhs_it);
                 right_map.erase(rhs_it);
+                ++matches;
             } else {
                 // otherwise iterate
                 ++lhs_it; 
@@ -774,19 +782,26 @@ util::compare_bps(X3dna::X3Basepairs& lhs, X3dna::X3Basepairs& rhs) {
         }
 
     }
-
+    auto summary = std::to_string(matches) + "," + std::to_string(left_map.size()) + "," + std::to_string(right_map.size()) + ",";
     // check the sizes of the maps... anything leftotver means they are not unique to that method
     if(!left_map.empty()) {
-        std::cout<<"EXTRA IN LHS "<<left_map.size()<<std::endl;
-
+        auto diffs = Strings{}; 
+        for(auto& kv : left_map) { 
+            diffs.push_back(kv.second.to_string()); 
+        }
+        summary += base::join_by_delimiter(diffs,"_");
     }
-
-
+    summary += ",";
     if (!right_map.empty()) {
-
-        std::cout<<"EXTRA IN RHS "<<right_map.size()<<std::endl;
+        auto diffs = Strings{}; 
+        for(auto& kv : right_map) { 
+            diffs.push_back(kv.second.to_string()); 
+        }
+        summary += base::join_by_delimiter(diffs,"_");
 
     }
+    summary += "\n";
 
+    return summary;
 }
 }

@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <regex>
 #include <limits>
+#include <sstream>
 
 //RNAMake Headers
 #include <base/string.h>
@@ -121,6 +122,7 @@ enum class X3dnaBPType {
     DDUM = 79, //..-M
     DMUm = 80, //.M-m
     DDUm = 81, //..-m
+    DMPW = 82, //.M+W
 };
 
 class X3dna {
@@ -172,8 +174,19 @@ public:
                 !roughly_equal(r,math::Matrix{-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.}) && \
                 !roughly_equal(d,math::Point{-1.,-1.,-1.});
         }
-    };
+        
+        String
+        to_string();
 
+        unsigned int 
+        key() const {
+            const auto start = std::min(res1.num,res2.num);
+            const auto end = std::max(res1.num,res2.num);
+            return start*256*256 + end*256 + static_cast<int>(bp_type); 
+        }
+    };
+        
+        
     typedef std::vector<X3Basepair> X3Basepairs;
 
     struct X3Motif {
@@ -295,9 +308,32 @@ get_x3dna_by_type(String const &);
 String
 get_str_from_x3dna_type(X3dnaBPType);
 
-void
+String
 compare_bps(X3dna::X3Basepairs&, X3dna::X3Basepairs&);
 
 }
+
+template < typename T1, typename T2, typename T3>
+
+struct triplet {
+    T1 first;
+    T2 second;
+    T3 third;
+    
+    bool
+    operator<(const triplet& other) const {
+        if ( first == other.first ) {
+            if ( second == other.second) {
+                return third < other.third;
+            } else {
+                return second < other.second;
+            }
+        } else {
+            return first < other.first;
+        }
+
+    }
+
+};
 
 #endif /* defined(__RNAMake__x3dna__) */
