@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/6QIC.pdb --non-pair -o=6QIC_dssr.out
-Date and time: Mon Aug 17 02:49:54 2020
+Date and time: Tue Aug 18 20:29:26 2020
 File name: 6QIC.pdb
     no. of DNA/RNA chains: 4 [E=11,F=10,G=10,H=10]
     no. of nucleotides:    41

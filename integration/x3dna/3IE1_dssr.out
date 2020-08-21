@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/3IE1.pdb --non-pair -o=3IE1_dssr.out
-Date and time: Mon Aug 17 06:25:20 2020
+Date and time: Tue Aug 18 23:45:56 2020
 File name: 3IE1.pdb
     no. of DNA/RNA chains: 4 [E=4,F=4,G=2,H=4]
     no. of nucleotides:    14

@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/2BBV.pdb --non-pair -o=2BBV_dssr.out
-Date and time: Sun Aug 16 21:03:14 2020
+Date and time: Wed Aug 19 02:03:51 2020
 File name: 2BBV.pdb
     no. of DNA/RNA chains: 1 [N=10]
     no. of nucleotides:    10

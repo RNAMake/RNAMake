@@ -123,6 +123,10 @@ enum class X3dnaBPType {
     DMUm = 80, //.M-m
     DDUm = 81, //..-m
     DMPW = 82, //.M+W
+    DMPD = 83, //.M+.
+    DMUM = 84, //.M-M
+    DmUm = 85, //.m-m
+    DMUW = 86, //.M-W
 };
 
 class X3dna {
@@ -176,7 +180,7 @@ public:
         }
         
         String
-        to_string();
+        to_string() const ;
 
         unsigned int 
         key() const {

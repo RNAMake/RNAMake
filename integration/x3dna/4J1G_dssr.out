@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/4J1G.pdb --non-pair -o=4J1G_dssr.out
-Date and time: Sun Aug 16 18:52:09 2020
+Date and time: Wed Aug 19 00:21:37 2020
 File name: 4J1G.pdb
     no. of DNA/RNA chains: 1 [E=44]
     no. of nucleotides:    44

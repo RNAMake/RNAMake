@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/3QRR.pdb --non-pair -o=3QRR_dssr.out
-Date and time: Mon Aug 17 02:43:18 2020
+Date and time: Tue Aug 18 20:23:34 2020
 File name: 3QRR.pdb
     no. of DNA/RNA chains: 1 [B=18]
     no. of nucleotides:    18

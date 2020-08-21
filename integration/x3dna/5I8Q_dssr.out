@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/5I8Q.pdb --non-pair -o=5I8Q_dssr.out
-Date and time: Mon Aug 17 06:12:39 2020
+Date and time: Tue Aug 18 23:34:57 2020
 File name: 5I8Q.pdb
     no. of DNA/RNA chains: 2 [C=9,F=13]
     no. of nucleotides:    24

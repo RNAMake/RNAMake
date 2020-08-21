@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/5AOR.pdb --non-pair -o=5AOR_dssr.out
-Date and time: Mon Aug 17 04:29:20 2020
+Date and time: Tue Aug 18 22:01:54 2020
 File name: 5AOR.pdb
     no. of DNA/RNA chains: 2 [C=10,D=10]
     no. of nucleotides:    22

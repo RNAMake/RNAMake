@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/5VM9.pdb --non-pair -o=5VM9_dssr.out
-Date and time: Mon Aug 17 05:27:46 2020
+Date and time: Tue Aug 18 22:56:17 2020
 File name: 5VM9.pdb
     no. of DNA/RNA chains: 2 [B=12,D=14]
     no. of nucleotides:    26

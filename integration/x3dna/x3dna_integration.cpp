@@ -49,18 +49,36 @@ get_pdb_files(String const& dir) {
 }
 
 
-String
+void
 compare_outputs(Strings const& pdbs) {
-    auto contents = String{}; 
+    auto i = 0; 
     for(const auto& pdb : pdbs) { 
-        
-        auto generator = util::X3dna{}; 
-        auto bps = generator.get_basepairs(pdb);
-        auto bps_json = generator.get_basepairs_json(pdb);
-        const auto code = pdb.substr(pdb.find_last_of('/')+1);
-        contents += (code + "," + util::compare_bps(bps,bps_json));
+        std::cout<<"Starting "<<++i<<" of "<<pdbs.size();
+        try { 
+            auto generator = util::X3dna{}; 
+            const auto code = pdb.substr(pdb.find_last_of('/')+1);
+            
+            auto bps = generator.get_basepairs(pdb);
+            auto bps_json = generator.get_basepairs_json(pdb);
+             
+            auto orig_lines = Strings{}; 
+            auto json_lines = Strings{};
+            
+            for(const auto& bp : bps) orig_lines.push_back(bp.to_string());
+            for(const auto& bp : bps_json) json_lines.push_back(bp.to_string());
+
+            auto contents = String{base::join_by_delimiter(orig_lines,"_") + "," + base::join_by_delimiter(json_lines,"_") + "\n"}; 
+            
+            auto outfile = std::ofstream("all_results.csv",std::ios_base::app); 
+            outfile<<contents;
+            outfile.close();
+
+        } catch (std::runtime_error& r) {
+            std::cout<<"ERROR: "<<r.what()<<std::endl;
+            continue; 
+        }
+            std::cout<<" finished\n";
     }
-    return contents;
 }
 
 Strings
@@ -74,11 +92,7 @@ parse_cl(int argc, char** argv) {
 }
 
 int main(int argc, char** argv) {
-    auto paths = parse_cl(argc,argv);
-    auto ct = String{argv[1]};
-    
-    auto contents = compare_outputs(paths); 
-    auto outfile = std::ofstream(ct + ".csv");
-    outfile << contents<<std::endl;
-    outfile.close();
+
+    auto pdbs = get_pdb_files("../../pdb/");
+    compare_outputs(pdbs); 
 }

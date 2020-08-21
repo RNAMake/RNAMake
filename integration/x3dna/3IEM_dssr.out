@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/3IEM.pdb --non-pair -o=3IEM_dssr.out
-Date and time: Mon Aug 17 05:04:54 2020
+Date and time: Tue Aug 18 22:36:15 2020
 File name: 3IEM.pdb
     no. of DNA/RNA chains: 10 [G=5,H=3,I=4,J=2,K=3,L=2,M=1,N=2,O=2,P=1]
     no. of nucleotides:    25
@@ -176,4 +176,4 @@ List of 7 additional files
    7 dssr-atom2bases.pdb -- an ensemble of atom-base stacking interactions
 
 ****************************************************************************
-Time used: 00:00:00:02
+Time used: 00:00:00:01

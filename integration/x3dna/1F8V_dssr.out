@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/1F8V.pdb --non-pair -o=1F8V_dssr.out
-Date and time: Mon Aug 17 03:59:42 2020
+Date and time: Tue Aug 18 21:34:06 2020
 File name: 1F8V.pdb
     no. of DNA/RNA chains: 1 [R=25]
     no. of nucleotides:    25

@@ -523,6 +523,10 @@ get_x3dna_by_type(String const &name) {
     else if (name == ".M-m") { return X3dnaBPType::DMUm; }
     else if (name == "..-m") { return X3dnaBPType::DDUm; }
     else if (name == ".M+W") { return X3dnaBPType::DMPW; }
+    else if (name == ".M+.") { return X3dnaBPType::DMPD; }
+    else if (name == ".M-M") { return X3dnaBPType::DMUM; }
+    else if (name == ".m-m") { return X3dnaBPType::DmUm; }
+    else if (name == ".M-W") { return X3dnaBPType::DMUW; }
     else { throw X3dnaException("cannot get x3dna type with: " + name); }
 }
 
@@ -613,6 +617,10 @@ get_str_from_x3dna_type(
     else if (type == X3dnaBPType::DMUm) { return ".M-m"; }
     else if (type == X3dnaBPType::DDUm) { return "..-m"; }
     else if (type == X3dnaBPType::DMPW) { return ".M+W"; }
+    else if (type == X3dnaBPType::DMPD) { return ".M+."; }
+    else if (type == X3dnaBPType::DMUM) { return ".M-M"; }
+    else if (type == X3dnaBPType::DmUm) { return ".m-m"; }
+    else if (type == X3dnaBPType::DMUW) { return ".M-W"; }
 
     else { throw X3dnaException("unknown x3dna bp type");}
 
@@ -722,7 +730,7 @@ X3dna::_parse_dssr_helix_section(
     //};
 
 String
-X3dna::X3Basepair::to_string(){
+X3dna::X3Basepair::to_string() const {
     auto ss = std::stringstream();
     ss << util::get_str_from_x3dna_type(bp_type) << "|" <<res1.num << "|" << res2.num << "|" << d << "|" << math::matrix_to_str(r);
     return ss.str();
@@ -736,16 +744,16 @@ compare_bps(X3dna::X3Basepairs& lhs, X3dna::X3Basepairs& rhs) {
     
     for(auto& bp :lhs) {
         auto key = triplet<int,int,int>(); 
-        key.first = round(10.*bp.d.x());
-        key.second = round(10.*bp.d.y());
-        key.third = round(10.*bp.d.z());
+        key.first = round(100.*bp.d.x());
+        key.second = round(100.*bp.d.y());
+        key.third = round(100.*bp.d.z());
         left_map[key] = bp;
     }
     for(auto& bp : rhs) {
         auto key = triplet<int,int,int>(); 
-        key.first = round(10.*bp.d.x());
-        key.second = round(10.*bp.d.y());
-        key.third = round(10.*bp.d.z());
+        key.first = round(100.*bp.d.x());
+        key.second = round(100.*bp.d.y());
+        key.third = round(100.*bp.d.z());
         right_map[key] = bp;
     }
     // quick check that there are no basepair repeats 

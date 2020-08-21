@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/2XC7.pdb --non-pair -o=2XC7_dssr.out
-Date and time: Mon Aug 17 05:51:29 2020
+Date and time: Tue Aug 18 23:16:48 2020
 File name: 2XC7.pdb
     no. of DNA/RNA chains: 1 [P=4]
     no. of nucleotides:    4

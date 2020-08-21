@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/1WMQ.pdb --non-pair -o=1WMQ_dssr.out
-Date and time: Mon Aug 17 04:46:30 2020
+Date and time: Tue Aug 18 22:17:38 2020
 File name: 1WMQ.pdb
     no. of DNA/RNA chains: 2 [C=7,D=7]
     no. of nucleotides:    14

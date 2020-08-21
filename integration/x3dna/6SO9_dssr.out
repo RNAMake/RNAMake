@@ -19,7 +19,7 @@ Note: By default, each nucleotide is identified by chainId.name#. So a
     Questions and suggestions are *always* welcome on the 3DNA Forum.
 
 Command: x3dna-dssr -i=../../pdb/6SO9.pdb --non-pair -o=6SO9_dssr.out
-Date and time: Mon Aug 17 05:08:14 2020
+Date and time: Tue Aug 18 22:39:11 2020
 File name: 6SO9.pdb
     no. of DNA/RNA chains: 1 [B=6]
     no. of nucleotides:    6
