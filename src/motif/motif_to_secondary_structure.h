@@ -1,4 +1,4 @@
-//
+// }
 //  motif_to_secondary_structure.h
 //  RNAMake
 //

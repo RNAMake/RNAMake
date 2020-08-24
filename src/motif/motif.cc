@@ -84,12 +84,13 @@ Motif::Motif(
 
 Motif::Motif(
         Motif const & m) {
-
     name_ = m.name_;
     path_ = m.path_;
     score_ = m.score_;
     mtype_ = m.mtype_;
-    structure_ = std::make_shared<structure::Structure>(*m.structure_);
+    //if (m.structure_ != nullptr){ 
+        structure_ = std::make_shared<structure::Structure>(*(m.structure_));
+    //}
     beads_ = structure::Beads(m.beads_.size());
     basepairs_ = structure::BasepairOPs(m.basepairs_.size());
     ends_ = structure::BasepairOPs(m.ends().size());

@@ -49,6 +49,7 @@ Structure::get_residue(
         String const & i_code) {
     for (auto & c : chains_) {
         for (auto & r : c->residues()) {
+            if(r == nullptr) continue; 
             if (num == r->num() && chain_id.compare(r->chain_id()) == 0 && i_code.compare(r->i_code()) == 0) {
                 return r;
             }

@@ -21,14 +21,19 @@ MotiftoSecondaryStructure::to_secondary_structure(
     secondary_structure::ChainOPs ss_chains;
 
     reset();
+
     for (auto const & c : motif->chains()) { chains_.push_back(c); }
-    open_chains_.push(chains_[0]);
-    chains_.erase(chains_.begin());
+    
+    if(!chains_.empty()){
+        open_chains_.push(chains_[0]);
+        chains_.erase(chains_.begin());
+    }
 
     structure::ChainOP best_chain;
     structure::ResidueOP partner_r;
     String ss;
     int passes = 0;
+
     while (!open_chains_.empty()) {
         auto c = open_chains_.front();
         open_chains_.pop();
@@ -66,9 +71,13 @@ MotiftoSecondaryStructure::to_secondary_structure(
             }
 
             if (saved_bp != nullptr) { seen_bp_[saved_bp->uuid()] = saved_bp; }
-            ss_res.push_back(std::make_shared<secondary_structure::Residue>(r->short_name(), ss, r->num(),
+            if ( r != nullptr) {
+                ss_res.push_back(
+                        std::make_shared<secondary_structure::Residue>(r->short_name(), ss, r->num(),
                                                                             r->chain_id(), r->uuid(),
-                                                                            r->i_code()));
+                                                                            r->i_code()
+                                                                            ));
+            }
         }
 
         ss_chains.push_back(std::make_shared<secondary_structure::Chain>(ss_res));
@@ -82,8 +91,8 @@ MotiftoSecondaryStructure::to_secondary_structure(
 
     auto struc = std::make_shared<secondary_structure::Structure>(ss_chains);
     for (auto const & r : struc->residues()) {
+        // what is this?  
     }
-
     return _setup_basepairs_and_ends(struc, motif);
 
 }

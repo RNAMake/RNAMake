@@ -173,6 +173,7 @@ private:
     secondary_structure::MotifOP secondary_structure_;
     int block_end_add_;
     util::Uuid id_;
+    
 };
 
 

@@ -28,7 +28,6 @@ MotifFactory::motif_from_file(
     if (!base::file_exists(path)) {
         throw MotifFactoryException("cannot generate motif from file " + path + " does not exist");
     }
-
     parser_ = MotiftoSecondaryStructure();
     auto fname = base::filename(path);
     auto pdb_path = path;
@@ -49,6 +48,7 @@ MotifFactory::motif_from_file(
         fname = fname.substr(0, fname.length() - 4);
     }
 
+    
     if (force_num_chains != -1 && structure->chains().size() != force_num_chains) {
         if (force_num_chains > structure->chains().size()) {
             throw MotifFactoryException(
@@ -68,7 +68,6 @@ MotifFactory::motif_from_file(
         std::remove("ref_frames.dat");
         std::remove(String(fname + "_dssr.out").c_str());
     } catch (...) {}
-
     _setup_secondary_structure(m);
 
     if (include_protein) {
@@ -89,7 +88,6 @@ MotifFactory::motif_from_file(
     } else {
         return m;
     }
-
 }
 
 
@@ -249,6 +247,46 @@ MotifFactory::_setup_basepairs(
 
     auto basepairs = structure::BasepairOPs();
     auto x3dna_parser = util::X3dna();
+
+#ifdef JSON_BASEPAIRS 
+    auto x_basepairs = x3dna_parser.get_basepairs_json(path);
+    structure::ResidueOP res1, res2;
+    //BasepairOP bp;
+    String i_code_1, i_code_2;
+
+    for (auto const & xbp : x_basepairs) {
+        // super hacky way of converting back to the old string system.
+        if(xbp.bp_type != util::X3dnaBPType::cWUW) {
+            continue;
+        } 
+        
+        if(xbp.res1.i_code == ' ') {
+            i_code_1 = "";
+        }
+        else {
+            i_code_1 = String(1, xbp.res1.i_code);
+        }
+
+        if(xbp.res2.i_code == ' ') {
+            i_code_2 = "";
+        }
+        else {
+            i_code_2 = String(1, xbp.res2.i_code);
+        }
+        
+
+        res1 = s->get_residue(xbp.res1.num, String(1, xbp.res1.chain_id), i_code_1);
+        res2 = s->get_residue(xbp.res2.num, String(1, xbp.res2.chain_id), i_code_2);
+        if (res1 == nullptr || res2 == nullptr) {
+            std::cout << xbp.res1.num << " " << xbp.res2.num << std::endl;
+            throw MotifFactoryException("cannot find residues in basepair during setup");
+        }
+
+        // Emplacement constructs the object in-place
+        basepairs.emplace_back(new structure::Basepair(res1, res2, xbp.r, util::get_str_from_x3dna_type(xbp.bp_type)));
+    }
+
+#else 
     auto x_basepairs = x3dna_parser.get_basepairs(path);
     structure::ResidueOP res1, res2;
     //BasepairOP bp;
@@ -273,14 +311,15 @@ MotifFactory::_setup_basepairs(
         res1 = s->get_residue(xbp.res1.num, String(1, xbp.res1.chain_id), i_code_1);
         res2 = s->get_residue(xbp.res2.num, String(1, xbp.res2.chain_id), i_code_2);
         if (res1 == nullptr || res2 == nullptr) {
-            std::cout << xbp.res1.num << " " << xbp.res2.num << std::endl;
             throw MotifFactoryException("cannot find residues in basepair during setup");
         }
 
         // Emplacement constructs the object in-place
         basepairs.emplace_back(new structure::Basepair(res1, res2, xbp.r, util::get_str_from_x3dna_type(xbp.bp_type)));
     }
+#endif
 
+    std::cout<<basepairs.size()<<std::endl;
     return basepairs;
 
 }
@@ -315,7 +354,7 @@ MotifFactory::_setup_basepair_ends(
 void
 MotifFactory::_setup_secondary_structure(
         MotifOP & m) {
-
+    
     auto ss = parser_.to_secondary_structure(m);
     Strings end_ids(m->ends().size());
     int i = 0;
@@ -330,7 +369,6 @@ MotifFactory::_setup_secondary_structure(
     ss->end_ids(end_ids);
     m->end_ids(end_ids);
     m->secondary_structure(std::static_pointer_cast<secondary_structure::Motif>(ss));
-
 
 }
 

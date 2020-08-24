@@ -24,12 +24,21 @@ X3dna::X3dna() :
         generated_dssr_(false),
         generated_ref_frames_(false),
         no_ref_frames_(false) {
+    
     auto os_name = base::get_os_name();
     auto x3dna_path = base::resources_path() + "/x3dna/" + os_name + "/";
-    auto env = "X3DNA=" + x3dna_path;
-    s_ = strdup(env.c_str());
-    putenv(s_);
 
+//#ifndef JSON_BASEPAIRS
+//    char* value = getenv("X3DNA");
+//    if(value != NULL) {
+//        delete value;
+//
+//    } else { 
+//        auto env = "X3DNA=" + x3dna_path;
+//        s_ = strdup(env.c_str());
+//        putenv(s_);
+//    }
+//#endif
     bin_path_ = x3dna_path + "/bin/";
     // make sure have the correct x3dna programs for this operaing system
     if (!base::file_exists(bin_path_ + "find_pair")) {
@@ -49,7 +58,7 @@ X3dna::X3dna() :
 
     auto dssr_filename_str = "dssr-2ndstrs.ct,dssr-2ndstrs.dbn,dssr-helices.pdb,dssr-pairs.pdb,dssr-stems.pdb,hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb,dssr-torsions.dat,dssr-Kturns.pdb,dssr-multiplets.pdb,dssr-hairpins.pdb,dssr-Aminors.pdb";
     dssr_files_to_delete_ = base::split_str_by_delimiter(dssr_filename_str, ",");
-
+    
 }
 
 void
@@ -78,7 +87,6 @@ X3dna::_generate_ref_frame(
     auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin >& /dev/null";
     auto s = strdup(command.c_str());
     auto result = std::system(s);
-
     if (result != 0) {
         generated_ref_frames_ = true;
         no_ref_frames_ = true;
@@ -128,9 +136,7 @@ X3dna::_parse_ref_frame_file(
             }
         }
     }
-    
     if (no_ref_frames_) { return; }
-
     auto lines = base::get_lines_from_file(ref_frames_path);
     auto r = std::regex(
             "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
@@ -149,7 +155,6 @@ X3dna::_parse_ref_frame_file(
                 bp_info = new X3BPInfo(m);
             }
             catch (X3dnaException const &e) {
-                std::cout << l << std::endl;
                 throw e;
             }
             rs = math::Points();
@@ -527,6 +532,7 @@ get_x3dna_by_type(String const &name) {
     else if (name == ".M-M") { return X3dnaBPType::DMUM; }
     else if (name == ".m-m") { return X3dnaBPType::DmUm; }
     else if (name == ".M-W") { return X3dnaBPType::DMUW; }
+    else if (name == ".W-.") { return X3dnaBPType::DWUD; }
     else { throw X3dnaException("cannot get x3dna type with: " + name); }
 }
 
@@ -621,6 +627,7 @@ get_str_from_x3dna_type(
     else if (type == X3dnaBPType::DMUM) { return ".M-M"; }
     else if (type == X3dnaBPType::DmUm) { return ".m-m"; }
     else if (type == X3dnaBPType::DMUW) { return ".M-W"; }
+    else if (type == X3dnaBPType::DWUD) { return ".W-."; }
 
     else { throw X3dnaException("unknown x3dna bp type");}
 

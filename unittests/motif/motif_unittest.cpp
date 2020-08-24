@@ -8,6 +8,7 @@
 #include "util/steric_lookup.hpp"
 #include "structure/is_equal.h"
 #include "motif/motif.h"
+#include "motif/motif_factory.h"
 
 TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     
@@ -73,6 +74,14 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
         
     }
     
+    SECTION("Aligning motifs directly from pdbs") {
+        auto mf = motif::MotifFactory{};
+        auto motifs = mf.motif_from_file("../../pdb/124D.pdb");
+        std::cout<<motifs->dot_bracket()<<std::endl; 
+        REQUIRE(true);
+        REQUIRE(false);
+    }
+
     SECTION("test that repeat aligning does not cause error") {
         m->move(math::Point(10, 10, 10));
         auto ref_bp = ref_m->ends()[0]->state();

@@ -158,7 +158,7 @@ determine_string_data_type(
     bool has_dot = false;
     int char_count = 0;
 
-    for (i; i <= j; i++) {
+    for (; i <= j; i++) {
         // If any of the char does not belong to
         // {digit, +, -, ., e}
         if (str[i] != 'e' && str[i] != '.'

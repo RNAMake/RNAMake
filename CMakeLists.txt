@@ -4,6 +4,7 @@ project(rnamake_new)
 set(CMAKE_BUILD_TYPE Release)
 include(/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/cmake/build/compiler.cmake)
 
+
 # Include path for Python header files
 # Include paths for RNAMake src
 include_directories(/Users/josephyesselman/projects/RNAMake/rnamake/lib/RNAMake/src/)

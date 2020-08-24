@@ -20,6 +20,8 @@
 #include "motif/motif_scorer.h"
 #include "motif/motif.h"
 
+//#define JSON_BASEPAIRS 1
+
 namespace motif {
 
 /*

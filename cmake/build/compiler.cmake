@@ -50,7 +50,7 @@ if( ${COMPILER} STREQUAL clang  OR ${COMPILER} STREQUAL AppleClang  )
 	set(compile_flags 
 		-Wno-c++11-extensions
         -std=gnu++1y
-        -g
+        #-g
         #-pedantic
         #-O4 
         #-Wall
@@ -61,7 +61,7 @@ if( ${COMPILER} STREQUAL gcc )
 	set(compile_flags
 	-std=c++14
     -w
-    -O3
+    #-O3
     #-pedantic
     #-Wall
 	)

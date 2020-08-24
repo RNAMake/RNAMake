@@ -127,14 +127,19 @@ enum class X3dnaBPType {
     DMUM = 84, //.M-M
     DmUm = 85, //.m-m
     DMUW = 86, //.M-W
+    DWUD = 87, //.W-.
 };
+
 
 class X3dna {
 public:
 
     X3dna();
 
-    ~X3dna() { delete s_; }
+    ~X3dna() { 
+
+        //delete s_; 
+    }
 
 public:
     struct X3Residue {
@@ -157,7 +162,7 @@ public:
         }
         // added by CJ ... designed to chaeck that all data fields were filled out appropriately 
         bool
-        valid() {
+        valid() const {
             return num != std::numeric_limits<int>::min() && chain_id != ' '; // don't include ni_code bc it's usually none... change this?
         }
         int num;
@@ -173,7 +178,7 @@ public:
         X3dnaBPType bp_type;
         // added by CJ... designed to check that all data fields were filled out appropriately 
         bool 
-        valid() {
+        valid() const {
             return res1.valid() && res1.valid() && \
                 !roughly_equal(r,math::Matrix{-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.}) && \
                 !roughly_equal(d,math::Point{-1.,-1.,-1.});

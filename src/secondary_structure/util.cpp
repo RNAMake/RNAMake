@@ -21,7 +21,10 @@ assign_end_id(
     RNAStructureOP const & ss,
     BasepairOP const & end) {
     
-    
+    if(ss == nullptr && end == nullptr) {
+        throw Exception("NA"); 
+    }
+
     int found = 0;
     for(auto const & e : ss->ends()) {
         if(end->uuid() == e->uuid()) { found = 1; break; }
@@ -41,10 +44,12 @@ assign_end_id(
             break;
         }
     }
-    
-    all_chains.erase(std::remove(all_chains.begin(), all_chains.end(), open_chains.front()),
-                     all_chains.end());
-    
+    //REVIEW: I added the if loop to check that these aren't empy 
+    if(!all_chains.empty() && !open_chains.empty()) { 
+        all_chains.erase(std::remove(all_chains.begin(), all_chains.end(), open_chains.front()),
+                         all_chains.end());
+    }
+
     std::map<ResidueOP, int> seen_res;
     std::map<BasepairOP, int> seen_bp;
     BasepairOP saved_bp, bp;
@@ -55,6 +60,7 @@ assign_end_id(
     int score = 0, pos = 0, i =0;
     ChainOPs best_chains;
     ChainOP best_chain;
+    
     while( ! open_chains.empty() ) {
         ChainOP c = open_chains.front();
         open_chains.pop();

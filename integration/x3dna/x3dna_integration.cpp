@@ -3,6 +3,7 @@
 #include <string>
 #include <unordered_set>
 #include <fstream>
+#include <algorithm>
 
 #include <util/x3dna.h>
 #include <base/types.h>
@@ -48,12 +49,24 @@ get_pdb_files(String const& dir) {
     return pdb_paths;
 }
 
+Strings
+get_cif_files(String const& dir) {
+    auto pdb_paths = Strings{};
+    for (const auto & entry : std::__fs::filesystem::directory_iterator(dir)) {
+        if(entry.path().string().find("cif") != std::string::npos) {
+            pdb_paths.push_back(std::move(entry.path().string()));
+        } 
+    }
+    
+    return pdb_paths;
+}
+
 
 void
 compare_outputs(Strings const& pdbs) {
     auto i = 0; 
     for(const auto& pdb : pdbs) { 
-        std::cout<<"Starting "<<++i<<" of "<<pdbs.size();
+        std::cout<<"Starting "<<++i<<" of "<<pdbs.size()<<std::flush;
         try { 
             auto generator = util::X3dna{}; 
             const auto code = pdb.substr(pdb.find_last_of('/')+1);
@@ -67,12 +80,11 @@ compare_outputs(Strings const& pdbs) {
             for(const auto& bp : bps) orig_lines.push_back(bp.to_string());
             for(const auto& bp : bps_json) json_lines.push_back(bp.to_string());
 
-            auto contents = String{base::join_by_delimiter(orig_lines,"_") + "," + base::join_by_delimiter(json_lines,"_") + "\n"}; 
+            auto contents = String{ pdb + "," + base::join_by_delimiter(orig_lines,"_") + "," + base::join_by_delimiter(json_lines,"_") + "\n"}; 
             
-            auto outfile = std::ofstream("all_results.csv",std::ios_base::app); 
+            auto outfile = std::ofstream("missed_codes.csv",std::ios_base::app); 
             outfile<<contents;
             outfile.close();
-
         } catch (std::runtime_error& r) {
             std::cout<<"ERROR: "<<r.what()<<std::endl;
             continue; 
@@ -93,6 +105,7 @@ parse_cl(int argc, char** argv) {
 
 int main(int argc, char** argv) {
 
-    auto pdbs = get_pdb_files("../../pdb/");
-    compare_outputs(pdbs); 
+    auto cifs = get_cif_files("cif-transfer/");
+    std::reverse(cifs.begin(),cifs.end());
+    compare_outputs(cifs); 
 }
