@@ -114,7 +114,8 @@ TEST_CASE("Integration test for motif code") {
 
             const auto pt = random_point();
             motif->move(pt);
-
+            // check that they all can be loaded in 
+            // not guaranteed to have an end... keep that in mind
             auto motif2 = mf.motif_from_file(pdb);
             auto m_aligned = get_aligned_motif(motif2->ends()[0], motif->ends()[0], motif);
             
