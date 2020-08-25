@@ -34,5 +34,5 @@ script:
   # Run your build commands next
   #- cd cmake/build/ && python ../make_project.py -target "mac" && cmake -DCMAKE_SYSTEM_NAME="Linux" . && make
   #- cd cmake/build/ && python ../make_project.py -target "mac"
-  - cmake .. -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME="Linux" 
+  - cmake .. #-DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME="Linux" 
   - make
