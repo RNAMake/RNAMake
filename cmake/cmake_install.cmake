@@ -1,4 +1,4 @@
-# Install script for directory: /Users/cjurich/projects/RNAMake/cmake
+# Install script for directory: /Users/cjurich/projects/RNAMake/cmake/build
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

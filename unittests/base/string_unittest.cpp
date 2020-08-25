@@ -85,7 +85,7 @@ TEST_CASE("test string functions", "[String]" ) {
         SECTION("escape characters") { 
             // leading space(s) 
             const auto raw_line = String{"\0\t\t\t\a"}; 
-            const auto target = Strings{"\0","\a"};
+            const auto target = Strings{""};
             const auto actual = base::tokenize_line(raw_line);
 
             REQUIRE(target.size() == actual.size());

@@ -97,7 +97,6 @@ TEST_CASE( "Test Steric Lookup for quick Sterics ", "[util::StericLookup]" ) {
             if(sl_clash != clash) { miss_count += 1; }
         }
 
-        std::cout << miss_count << std::endl;
         REQUIRE(miss_count < 200);
     }
     

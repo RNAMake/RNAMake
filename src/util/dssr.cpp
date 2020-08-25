@@ -384,7 +384,6 @@ util::get_elements(
         ) {
     auto dssr_json = base::execute_command_json("../../resources/x3dna/osx/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null");
     if(!nts.empty()) {std::cout<<"Warning, nts vector is NOT empty, but data will be compeletely overwritten";}
-    for(auto& kv : dssr_json.items()) {std::cout<<kv.key()<<std::endl;} 
     nts = get_nts(dssr_json);
     pairs = get_pairs(dssr_json);
     hairpins = get_hairpins(dssr_json);

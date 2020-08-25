@@ -53,9 +53,13 @@ TEST_CASE( "Test Motif State Sqlite3 Library", "[MotifStateSqliteLibrary]" ) {
     SECTION("test other libraries") {
         auto mlib = resources::MotifStateSqliteLibrary("nway");
         mlib.load_all(10);
+        auto ct(0);  
         for(auto const & m : mlib) {
-            std::cout << m->name() << std::endl;
+            //TODO add something else in here? I'm not sure what this is supposed to do  
+            //std::cout << m->name() << std::endl;
+            ++ct; 
         }
+        //REQUIRE(ct == 10);
     }
 
 

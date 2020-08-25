@@ -12,7 +12,6 @@ TEST_CASE( "Test PDB Parser", "[PDBParser]" ) {
     auto m_path = base::base_dir() + "/unittests/unittest_resources/motifs/p4p6/p4p6.pdb";
     auto parser = structure::PDBParser();
     auto residues = parser.parse(m_path);
-    std::cout<<residues.size()<<std::endl; 
     auto chains = structure::ChainOPs();
     connect_residues_into_chains(residues, chains);
     auto s = std::make_shared<structure::Structure>(chains);

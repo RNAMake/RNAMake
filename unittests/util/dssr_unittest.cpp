@@ -5,6 +5,8 @@
 
 #include "../common.hpp"
 #include <nlohmann/json.hpp>
+#include <limits>
+
 
 #include <base/settings.h>
 #include <base/sys_interface.h>
@@ -44,7 +46,7 @@ TEST_CASE("get_TYPE methods for nlohman::json parsing","") {
         
         REQUIRE(util::get_char(json,"not real") == ' ');
         
-        REQUIRE(util::get_int(json, "not real") == -1);
+        REQUIRE(util::get_int(json, "not real") == std::numeric_limits<int>::min());
         
     }
 
@@ -52,7 +54,7 @@ TEST_CASE("get_TYPE methods for nlohman::json parsing","") {
         nlohmann::json json = "{\"string\" : null, \"double\" : null, \"int\" : null, \"char\" : null}"_json;
         
         REQUIRE(util::get_string(json,"string")  == "NA");        
-        REQUIRE(util::get_int(json,"int")  == -1);        
+        REQUIRE(util::get_int(json,"int")  == std::numeric_limits<int>::min());        
         REQUIRE(util::get_char(json,"char")  == ' ');        
         REQUIRE(math::roughly_equal(util::get_double(json,"double"),-1.));        
 

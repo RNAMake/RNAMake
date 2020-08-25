@@ -190,6 +190,7 @@ Manager::add_motif(
     for (int i = 0; i < m->ends().size(); i++) {
         auto m_added = mf_.can_align_motif_to_end(m, i);
         if (m_added == nullptr) {
+            //TODO switch this to logging system 
             std::cout << "RESOURCE MANAGER WARNING: cannot create standardized motif for ";
             std::cout << m->name() << " with end" << m->ends()[i]->name() << std::endl;
             continue;

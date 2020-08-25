@@ -278,7 +278,7 @@ MotifFactory::_setup_basepairs(
         res1 = s->get_residue(xbp.res1.num, String(1, xbp.res1.chain_id), i_code_1);
         res2 = s->get_residue(xbp.res2.num, String(1, xbp.res2.chain_id), i_code_2);
         if (res1 == nullptr || res2 == nullptr) {
-            std::cout << xbp.res1.num << " " << xbp.res2.num << std::endl;
+            //std::cout << xbp.res1.num << " " << xbp.res2.num << std::endl;
             throw MotifFactoryException("cannot find residues in basepair during setup");
         }
 
@@ -319,7 +319,6 @@ MotifFactory::_setup_basepairs(
     }
 #endif
 
-    std::cout<<basepairs.size()<<std::endl;
     return basepairs;
 
 }

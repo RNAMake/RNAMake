@@ -77,9 +77,6 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     SECTION("Aligning motifs directly from pdbs") {
         auto mf = motif::MotifFactory{};
         auto motifs = mf.motif_from_file("../../pdb/124D.pdb");
-        std::cout<<motifs->dot_bracket()<<std::endl; 
-        REQUIRE(true);
-        REQUIRE(false);
     }
 
     SECTION("test that repeat aligning does not cause error") {
