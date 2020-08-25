@@ -105,9 +105,9 @@ TEST_CASE("Integration test for motif code") {
             try{ 
 
             std::cout<<pdb<<std::endl;
-            //auto motif = mf.motif_from_file("../../pdb/1Y26.pdb");
-            auto motif = mf.motif_from_file(pdb);
-            
+            auto motif = mf.motif_from_file("../../pdb/4QJH.pdb");
+            //auto motif = mf.motif_from_file(pdb);
+            break; 
             if(motif->ends().empty()) {
                 continue;
             }

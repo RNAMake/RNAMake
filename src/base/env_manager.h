@@ -15,6 +15,7 @@
 #include <filesystem>
 
 #include <base/types.h>
+#include <base/settings.h>
 
 namespace base {
 
