@@ -1,12 +1,17 @@
 
 
 #include<base/env_manager.h>
+
 namespace base {
 
 void
 EnvManager::set_envs() {
-    
-    const auto cwd = std::__fs::filesystem::current_path().string();  
+    char buffer[500];
+    if(getcwd(buffer,500) == nullptr) {
+        std::cout<<"Error in getting current working directory\nExiting\n";
+        exit(1);
+    }
+    const auto cwd = String{buffer};  
     
     
     for(const auto& env : env_vars_) {
