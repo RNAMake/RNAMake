@@ -1,11 +1,11 @@
-include_directories(../../src/external/sqlite/)
+include_directories(${RNAMAKE}/src/external/sqlite/)
 
 set(sql_src
-        ../../src/external/sqlite/sqlite3.c
+        ${RNAMAKE}/src/external/sqlite/sqlite3.c
         )
 
 set_source_files_properties(
-        ../../src/external/sqlite/sqlite3.h
+        ${RNAMAKE}/src/external/sqlite/sqlite3.h
             PROPERTIES
             LANGUAGE CXX
             )
@@ -19,13 +19,13 @@ set_source_files_properties(
 
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    add_library(sqlite3 STATIC ../../src/external/sqlite/sqlite3.c )
+    add_library(sqlite3 STATIC ${RNAMAKE}/src/external/sqlite/sqlite3.c )
     target_link_libraries(sqlite3 -static ${CMAKE_DL_LIBS})
 
 else()
 
-    add_library(sqlite3 ../../src/external/sqlite/sqlite3.c )
-target_link_libraries(sqlite3)
+    add_library(sqlite3 ${RNAMAKE}/src/external/sqlite/sqlite3.c )
+    target_link_libraries(sqlite3)
 
 
 

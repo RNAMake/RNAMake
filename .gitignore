@@ -107,3 +107,4 @@ integration/motif/*.a
 integration/motif/*.pdb
 integration/x3dna/*.a
 *.out
+*unittest

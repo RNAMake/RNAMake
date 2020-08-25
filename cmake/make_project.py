@@ -61,7 +61,7 @@ def write_CML_file(content_list):
 def build_apps(base_dir,static):
     """Method that creates declarations for the applications"""
     application_text = "#"*100 + "\n" + "# App declarations\n" + "#"*100
-    with open("apps.txt", "r") as infile:
+    with open(base_dir + "/cmake/build/apps.txt", "r") as infile:
         for app_declaration in infile.readlines():
             if app_declaration.find("#") == -1:
                 app_tokens = app_declaration.split()
@@ -97,14 +97,16 @@ def build_header(base_dir,static,target):
         header_contents+= "set(CMAKE_EXE_LINKER_FLAGS \" -lstdc++ -Wl,--no-as-needed,--no-export-dynamic \")\n"
     # header_contents+= "set(CMAKE_HOST_SYSTEM_VERSION 2.5)\n"
     header_contents+="""include({CMAKE})
+set(RNAMAKE {RNAMAKE})
 include({SQLITE})
 include_directories({BASE})
 include_directories({EXTERN})
 include_directories({UNITTESTS})
 include_directories({APPS})
  """.format(
-    SQLITE="sqlite.cmake",
-    CMAKE="compiler.cmake",
+    RNAMAKE=base_dir,
+    SQLITE=base_dir+"/cmake/build/sqlite.cmake",
+    CMAKE=base_dir+"/cmake/build/compiler.cmake",
     EXTERN=base_dir + "/src/external/",
     BASE=base_dir + "/src/",
     UNITTESTS=base_dir + "/unittests/",
@@ -112,6 +114,14 @@ include_directories({APPS})
          )
     header_contents +=  "#"*100 + '\n'
     return header_contents
+
+def get_base_dir():
+    """Method that returns the base dir of RNAMake"""
+    cwd = os.getcwd()
+    rnamake_it = cwd.find("RNAMake")
+    if rnamake_it == -1:
+        raise Exception("you are not in RNAMake. Please move into the project and then call make_project.py")
+    return cwd[0:rnamake_it+7]
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -151,25 +161,27 @@ if __name__ == '__main__':
     }
 
     libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimization".split()
-
+    base_dir = get_base_dir()
     write_CML_file(
         [
         build_header(
-                os.getcwd().replace("/cmake/build",""),
+                base_dir,
                 static,
                 args.target if args.target == "windows" else "NONE"
                 ),
         build_libraries(
                 libs,
-                depends,os.getcwd().replace("/cmake/build","/src"),
+                depends,
+                base_dir + "/src",
                 static
                 ),
         build_unittests(
-                libs,os.getcwd().replace("/cmake/build","/unittests"),
+                libs,
+                base_dir + "/unittests",
                 static
                 ),
         build_apps(
-                os.getcwd().split("/cmake/build")[0],
+                base_dir,
                 static
             )
         ]
