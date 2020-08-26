@@ -1,4 +1,5 @@
 ddg_tecto ../../apps/ddg_tecto/ddg_tecto.cc
+build_sqlite_libraries ../../apps/build_sqlite_libraries/build_sqlite_libraries.cpp
 ##structure_info ../../apps/structure_info/structure_info.cc
 ##design_rna ../../apps/design_rna/design_rna.cpp
 ##simulate_tectos ../../apps/simulate_tectos/simulate_tectos.cc

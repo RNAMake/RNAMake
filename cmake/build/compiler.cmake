@@ -48,23 +48,33 @@ MESSAGE(
 
 if( ${COMPILER} STREQUAL clang  OR ${COMPILER} STREQUAL AppleClang  )
 	set(compile_flags 
-		-Wno-c++11-extensions
-        -std=gnu++1y
+		-Wno-c++11-extensions;
+        -std=gnu++1y;
         #-g
-        #-pedantic
-        #-O4 
+        -pedantic;
+        -O4 
         #-Wall
 	)
+
+    if(BUILD_TYPE STREQUAL Release) 
+    
+    else()
+    
+        list(APPEND compile_flags -fsanitize=address;-fno-omit-frame-pointer)
+    endif()
+
 endif()
 
 if( ${COMPILER} STREQUAL gcc )
 	set(compile_flags
-	-std=c++14
-    -w
-    #-O3
-    #-pedantic
+	-std=c++14;
+    -w;
+    -O3;
+    -pedantic;
     #-Wall
 	)
+    
+
 endif()
 
 foreach( flag ${compile_flags} )
