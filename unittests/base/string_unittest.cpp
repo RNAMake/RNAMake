@@ -83,9 +83,8 @@ TEST_CASE("test string functions", "[String]" ) {
         }
         
         SECTION("escape characters") { 
-            // leading space(s) 
             const auto raw_line = String{"\0\t\t\t\a"}; 
-            const auto target = Strings{""};
+            const auto target = Strings{};
             const auto actual = base::tokenize_line(raw_line);
 
             REQUIRE(target.size() == actual.size());
@@ -95,6 +94,21 @@ TEST_CASE("test string functions", "[String]" ) {
             for( ; targ_it != target.cend(); ++targ_it,++actual_it) {
                 REQUIRE(*targ_it == *actual_it);
             }
-        }    }
+        }
+
+        SECTION("quote behavior") { 
+            const auto raw_line = String{"\'this has spaces\' last_token"}; 
+            const auto target = Strings{"this has spaces", "last_token"};
+            const auto actual = base::tokenize_line(raw_line);
+
+            REQUIRE(target.size() == actual.size());
+            auto targ_it = target.cbegin();
+            auto actual_it = actual.cbegin();
+    
+            for( ; targ_it != target.cend(); ++targ_it,++actual_it) {
+                REQUIRE(*targ_it == *actual_it);
+            }
+        }
+    }
 
 }

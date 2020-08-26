@@ -109,7 +109,8 @@ are_structures_equal(
     for( ; it_s1 != stop; ++it_s1, ++it_s2) {
         if(!are_chains_equal(
                     *it_s1,
-                    *it_s2
+                    *it_s2,
+                    check_uuids
                     )) {
             return false;
         }

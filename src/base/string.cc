@@ -55,6 +55,9 @@ tokenize_line(String const & raw_line) {
  
         } else if (is_ws ||( it == (line_len -1)) ) {
             if(!token.empty()) {
+                if(!is_ws && it == line_len -1 )  {
+                    token += ch;
+                }
                 tokens.push_back(token);
                 token = "";
             }

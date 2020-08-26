@@ -19,6 +19,7 @@
 #include <sstream>
 
 //RNAMake Headers
+#include <base/settings.h>
 #include <base/string.h>
 #include <math/xyz_vector.h>
 #include <math/xyz_matrix.h>

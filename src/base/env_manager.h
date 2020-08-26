@@ -14,19 +14,22 @@
 #include <iostream>
 #include <unistd.h>
 
+
 #include <base/types.h>
 #include <base/settings.h>
+#include <base/log.h>
+
+
 
 namespace base {
 
 class EnvManager{
     private:
         Strings env_vars_;
+    
     public:
         EnvManager(Strings const& env_vars ) : 
-            env_vars_(env_vars) {
-
-            }
+            env_vars_(env_vars) { }
     public: 
         void
         add_env(String const& env) {

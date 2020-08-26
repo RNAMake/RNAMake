@@ -57,14 +57,3 @@ TEST_CASE( "Test X3dna parser JSON version", "[X3dnaParser]" ) {
 }
 
 
-
-TEST_CASE( "Comparing outputs for some small structures", "[X3dnaParser]" ) {
-    auto x = util::X3dna();
-    for(auto pdb : {"../../data/100D.pdb","../../data/157D.pdb","../../data/1DI2.pdb"}){
-        auto x3dna_bps = x.get_basepairs(pdb);
-        auto x3dna_bps_json = x.get_basepairs_json(pdb);
-        util::compare_bps(x3dna_bps,x3dna_bps_json); 
-    }
-    REQUIRE(true);
-
-}

@@ -22,7 +22,7 @@ TEST_CASE( "Test PDB Parser", "[PDBParser]" ) {
         String path = base::unittest_resource_dir() + "/structure/test_str_to_structure.dat";
         auto lines =base::get_lines_from_file(path);
         auto s_org = std::make_shared<structure::Structure>(lines[0], rts);
-        
+         
         REQUIRE(are_structures_equal(s, s_org, 0));
     }
 }

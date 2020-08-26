@@ -306,7 +306,11 @@ X3dna::get_basepairs_json(
 
     // get the dssr json object
     //TODO fix this
-    auto dssr_json = base::execute_command_json("../../resources/x3dna/osx/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null"); 
+    auto dssr_json = base::execute_command_json(base::x3dna_path() + "/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null"); 
+    
+    // get rid of temp files created by x3dna-dssr
+    base::json_cleanup();
+
     auto nt_it = dssr_json.find("nts"); 
     if (nt_it == dssr_json.end() || nt_it->is_null() || nt_it->empty()) {
         return X3Basepairs{}; 
@@ -362,6 +366,7 @@ X3dna::get_basepairs_json(
         }
     }
     
+
     const auto num_basepairs = util::get_int(dssr_json,"num_pairs");
 
     if ( num_basepairs != basepairs.size() ) {

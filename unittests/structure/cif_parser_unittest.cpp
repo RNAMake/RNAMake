@@ -8,12 +8,6 @@
 #include "structure/is_equal.h"
 
 
-// what do I want to test?
-// 1. doesn't return anything for a .cif with nothing in it
-// 2. returns the same for the pdb parser
-// 3. generic variation (i.e. small, medium, multi-chain, etc
-// 4. raises for the errors
-
 TEST_CASE( "Test CIF Parser", "[CIFParser]" ) {
     
     const auto cif_path = base::unittest_resource_dir() + "/cifs/";

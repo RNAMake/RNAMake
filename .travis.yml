@@ -20,25 +20,30 @@ before_script:
   - pip install -U pip
   - pip install pathlib
 
-script:
-  # Link gcc-6 and g++-6 to their standard commands
-  #- ln -s /usr/bin/gcc-6 /usr/local/bin/gcc
-  #- ln -s /usr/bin/g++-6 /usr/local/bin/g++
-  # Export CC and CXX to tell cmake which compiler to use
-  #- pip install --user -U pip
-  #- pip install --user pathlib
-  #- export CC=/usr/bin/clang
-  #- export CXX=/usr/bin/clang++
-  # Check versions of gcc, g++ and cmake
-  - gcc -v && g++ -v && cmake --version
-  # Run your build commands next
-  #- cd cmake/build/ && python ../make_project.py -target "mac" && cmake -DCMAKE_SYSTEM_NAME="Linux" . && make
-  #- cd cmake/build/ 
-  - cd cmake/build/ && python ../make_project.py -target "mac"
-  - cmake . -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME="Linux" 
-  - make
 
-  - cd ../../ && python cmake/make_project.py -target "mac"
-  - cmake . -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME="Linux" 
-  - make
-
+jobs:
+    include:
+        - stage: build
+          script:
+          # Link gcc-6 and g++-6 to their standard commands
+          #- ln -s /usr/bin/gcc-6 /usr/local/bin/gcc
+          #- ln -s /usr/bin/g++-6 /usr/local/bin/g++
+          # Export CC and CXX to tell cmake which compiler to use
+          #- pip install --user -U pip
+          #- pip install --user pathlib
+          #- export CC=/usr/bin/clang
+          #- export CXX=/usr/bin/clang++
+          # Check versions of gcc, g++ and cmake
+          - gcc -v && g++ -v && cmake --version
+          # Run your build commands next
+          #- cd cmake/build/ && python ../make_project.py -target "mac" && cmake -DCMAKE_SYSTEM_NAME="Linux" . && make
+          #- cd cmake/build/ 
+          - cd cmake/build/ && python ../make_project.py -target "mac"
+          - cmake . -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME="Linux" 
+          - make
+        
+          - cd ../../ && python cmake/make_project.py -target "mac"
+          - cmake . -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ -DCMAKE_SYSTEM_NAME="Linux" 
+          - make
+        - stage: unittests
+          script: for TEST in $(ls *unittest); do ./$TEST; done; 
