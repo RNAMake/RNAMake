@@ -117,11 +117,9 @@ include_directories({APPS})
 
 def get_base_dir():
     """Method that returns the base dir of RNAMake"""
-    cwd = os.getcwd()
-    rnamake_it = cwd.find("RNAMake")
-    if rnamake_it == -1:
-        raise Exception("you are not in RNAMake. Please move into the project and then call make_project.py")
-    return cwd[0:rnamake_it+7]
+    file_path = os.path.realpath(__file__)
+    spl = file_path.split("/")
+    return "/".join(spl[:-2])
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
