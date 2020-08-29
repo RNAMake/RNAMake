@@ -29,7 +29,7 @@ jobs:
             - export CC=gcc-7
             - export CXX=g++-7
             - cd cmake/build/ && python ../make_project.py -target "mac"
-            - cmake . -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=g++-7 -DCMAKE_SYSTEM_NAME="Linux" -DBUILD_TYPE="Release" -DCMAKE_CXX_STANDARD=17
+            - cmake .  -DCMAKE_SYSTEM_NAME="Linux" -DBUILD_TYPE="Release" 
             - make 
         
         - stage: unittests
