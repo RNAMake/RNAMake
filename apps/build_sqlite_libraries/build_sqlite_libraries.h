@@ -30,7 +30,8 @@ class BuildSqliteLibraries : public base::Application {
 
 public:
     BuildSqliteLibraries() :
-    lib_names_(resources::MotifSqliteLibrary::get_libnames())
+    lib_names_(resources::MotifSqliteLibrary::get_libnames()),
+    options(argparse::ArgumentParser("build_sqlite_libraries"))
     {}
 
 public:
@@ -51,6 +52,14 @@ public:
 
     void
     build_new_bp_steps();
+    
+    void
+    build_unique_twoway_library();
+
+    void
+    parse_command_line(int argc, const char** argv) override {
+        options.parse_args(argc, argv);
+    }
 
 private:
     StringStringMap

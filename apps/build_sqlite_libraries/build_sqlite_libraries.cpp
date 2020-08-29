@@ -137,19 +137,101 @@ BuildSqliteLibraries::build_ideal_helices() {
 }
 
 void
+BuildSqliteLibraries::build_unique_twoway_library() {
+
+}
+
+void
 BuildSqliteLibraries::build_new_bp_steps() {
+    
     auto sql_lib = resources::MotifSqliteLibrary{"bp_steps"};
     sql_lib.load_all();
 
     const auto keys = Strings{"data","name","end_name","end_id","id"};
-
+    auto motifs = motif::MotifOPs{};
     for(auto& motif : sql_lib)  {
         auto tokens = base::split_str_by_delimiter(motif->name(),".");
-        //if(tokens.size() == 1) {
+        if(tokens.size() == 1) {
 
-            std::cout<<motif->name()<<std::endl;
-        //}
+            motifs.push_back(motif);
+        }
     }
+    
+    auto ii(0);
+    auto motif_ct(0);
+    auto unique = std::unordered_set<String>();
+    auto mf = motif::MotifFactory{}; 
+
+    auto motif_data = std::vector<Strings>{};
+
+    for(auto& motif : motifs) {
+        auto tokens = base::split_str_by_delimiter(motif->name(),"=");
+        
+        const auto& ends = motif->end_ids();
+
+        if(unique.find(ends[0]) != unique.end() || 
+            unique.find(ends[1]) != unique.end() ) {
+            continue;
+        }
+        
+        const auto old_name = motif->name();
+        unique.insert(ends[0]); 
+        
+        if (unique.find(ends[1]) == unique.end()) {
+            unique.insert(ends[1]);
+        }
+    
+        motif->name("BP." + std::to_string(ii));
+        
+        auto motif_aligned = mf.can_align_motif_to_end(motif,1);
+        motif_aligned = mf.can_align_motif_to_end(motif_aligned,1);
+
+        auto entry = Strings{};
+        entry.reserve(keys.size());
+       
+        entry.push_back(motif->to_str());
+        entry.push_back(motif->name());
+        entry.push_back(motif->end_name(0));
+        entry.push_back(motif->end_ids()[0]);
+        entry.push_back(std::to_string(motif_ct));
+        
+        ++motif_ct;
+
+        for(auto& token : entry)  {
+            token = base::replace_all(token,"\'","\'\'");
+        }
+
+        motif_data.push_back(entry);
+
+        auto aligned_entry = Strings{};
+        aligned_entry.reserve(keys.size());
+       
+        aligned_entry.push_back(motif_aligned->to_str());
+        aligned_entry.push_back(motif_aligned->name());
+        aligned_entry.push_back(motif_aligned->end_name(0));
+        aligned_entry.push_back(motif_aligned->end_ids()[0]);
+        aligned_entry.push_back(std::to_string(motif_ct));
+
+        for(auto& token : aligned_entry)  {
+            token = base::replace_all(token,"\'","\'\'");
+        }
+        
+        ++motif_ct;
+
+        motif_data.push_back(aligned_entry);
+        
+        ++ii;
+
+     }
+
+
+    const auto path = base::resources_path() +"/motif_librariesV2/new_bp_steps.db";
+    resources::build_sqlite_library(
+                                    path,
+                                    motif_data,
+                                    keys,
+                                    "id"
+            );
 
 }
 
@@ -165,14 +247,14 @@ BuildSqliteLibraries::run()   {
 //    builder.build_helix_ensembles()
 //#builder.build_flex_helix_library()
 //#builder.build_ss_and_seq_libraries()
-//#builder.build_unique_twoway_library()
 //    builder.build_motif_state_libraries()
 //    builder.build_motif_ensemble_state_libraries()
 //#builder.build_flex_helices()
 //
 
 //DONE
-            build_new_bp_steps();
+            build_unique_twoway_library();
+            //build_new_bp_steps();
             //build_ideal_helices();
             //build_trimmed_ideal_helix_library();
     //build_helix_ensembles();
@@ -180,9 +262,15 @@ BuildSqliteLibraries::run()   {
 
 void
 BuildSqliteLibraries::setup_options()   {
+    
+    options.add_argument("-d","--directory")
+            .required();
+   
+    options.add_argument("-m","--motif_type")
+            .required();
 
-    add_option("dir", "", base::OptionType::STRING, true);
-    add_option("motif_type", "", base::OptionType::STRING, true);
+    //add_option("dir", "", base::OptionType::STRING, true);
+    //add_option("motif_type", "", base::OptionType::STRING, true);
 }
 
 void

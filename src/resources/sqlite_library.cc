@@ -70,7 +70,6 @@ build_sqlite_library(String const& path, std::vector<Strings>const & data, Strin
 
         sqlite_command += String{"INSERT INTO data_table VALUES(\'" +line + ");"};
     }
-
     sqlite3_exec(connection,sqlite_command.c_str(), nullptr, nullptr,&error);
 
     if(error) {
