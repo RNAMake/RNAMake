@@ -98,8 +98,9 @@ def build_header(base_dir,static,target):
     # header_contents+= "set(CMAKE_HOST_SYSTEM_VERSION 2.5)\n"
     header_contents+="""include({CMAKE})
 set(RNAMAKE {RNAMAKE})
-set(RNAMAKE {RNAMAKE})
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories({BASE})
 include_directories({EXTERN})
 include_directories({UNITTESTS})
