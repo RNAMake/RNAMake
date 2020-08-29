@@ -263,14 +263,14 @@ BuildSqliteLibraries::run()   {
 void
 BuildSqliteLibraries::setup_options()   {
     
-    options.add_argument("-d","--directory")
-            .required();
-   
-    options.add_argument("-m","--motif_type")
-            .required();
-
-    //add_option("dir", "", base::OptionType::STRING, true);
-    //add_option("motif_type", "", base::OptionType::STRING, true);
+//    options.add_argument("-d","--directory")
+//            .required();
+//   
+//    options.add_argument("-m","--motif_type")
+//            .required();
+//
+    add_option("dir", "", base::OptionType::STRING, true);
+    add_option("motif_type", "", base::OptionType::STRING, true);
 }
 
 void

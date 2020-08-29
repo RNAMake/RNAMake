@@ -23,15 +23,16 @@
 #include <resources/sqlite_library.h>
 #include <motif/motif_factory.h>
 
-
-#include <argparse/argparse.hpp>
+#if 0
+ #include <argparse/argparse.hpp>
+#endif
 
 class BuildSqliteLibraries : public base::Application {
 
 public:
     BuildSqliteLibraries() :
-    lib_names_(resources::MotifSqliteLibrary::get_libnames()),
-    options(argparse::ArgumentParser("build_sqlite_libraries"))
+    lib_names_(resources::MotifSqliteLibrary::get_libnames())
+    //options(argparse::ArgumentParser("build_sqlite_libraries"))
     {}
 
 public:
@@ -56,17 +57,17 @@ public:
     void
     build_unique_twoway_library();
 
-    void
-    parse_command_line(int argc, const char** argv) override {
-        options.parse_args(argc, argv);
-    }
+    //void
+    //parse_command_line(int argc, const char** argv) override {
+    //    options.parse_args(argc, argv);
+    //}
 
 private:
     StringStringMap
     _get_valid_dirs(String const&);
 
 private:
-    argparse::ArgumentParser options; 
+    //argparse::ArgumentParser options; 
     StringStringMap lib_names_; 
     std::map<String,motif::MotifOP> motif_map_;
 
