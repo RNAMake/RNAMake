@@ -199,8 +199,14 @@ replace_missing_phosphate_backbone(
 void
 close_chain(
         ChainOP chain) {
+    if(chain == nullptr) {
+        return; 
+    }
     auto r_template = ResidueOP(nullptr);
     for (auto const & r : chain->residues()) {
+        if(r == nullptr)  {
+            continue;
+        }
         if (r->get_atom("P") != nullptr && r->get_atom("OP1") != nullptr && r->get_atom("OP2") != nullptr) {
             r_template = std::make_shared<Residue>(*r);
             break;
@@ -211,9 +217,7 @@ close_chain(
         std::cout << " cannot rebuild phosphates, there is no residue with all phosphate atoms" << std::endl;
         return;
     }
-
     for (int i = 0; i < chain->length() - 1; i++) {
-
         auto res1 = chain->residues()[i];
         auto res2 = chain->residues()[i + 1];
 

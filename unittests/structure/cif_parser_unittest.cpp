@@ -12,9 +12,6 @@ TEST_CASE( "Test CIF Parser", "[CIFParser]" ) {
     
     const auto cif_path = base::unittest_resource_dir() + "/cifs/";
     const auto pdb_path = base::unittest_resource_dir() + "/pdbs/";
-    auto m_path = String{"../../data/255D.cif"};
-    auto parser = structure::CIFParser();
-
     SECTION("Simple comparison with PDBParser") {
         auto cifparser = structure::CIFParser();   
         auto pdbparser = structure::PDBParser();

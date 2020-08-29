@@ -35,6 +35,53 @@ TEST_CASE("test string functions", "[String]" ) {
 
     }
 
+    SECTION("Testing trim methods") {
+       
+        SECTION("left trim") {
+            const auto target = String{"trimmed"};
+            auto untrimmed = String{" trimmed"};
+            REQUIRE(base::ltrim(untrimmed) == target);
+            untrimmed = "      trimmed"; 
+            REQUIRE(base::ltrim(untrimmed) == target);
+            untrimmed = "\t\ttrimmed"; 
+            REQUIRE(base::ltrim(untrimmed) == target);
+            untrimmed = "\n\ttrimmed"; 
+            REQUIRE(base::ltrim(untrimmed) == target);
+            auto empty_str = String{"            "};
+            REQUIRE(base::ltrim(empty_str).empty());
+        }
+
+        SECTION("right trim") {
+            const auto target = String{"trimmed"};
+            auto untrimmed = String{"trimmed "};
+            REQUIRE(base::rtrim(untrimmed) == target);
+            untrimmed = "trimmed            "; 
+            REQUIRE(base::rtrim(untrimmed) == target);
+            untrimmed = "trimmed\t\t"; 
+            REQUIRE(base::rtrim(untrimmed) == target);
+            untrimmed = "trimmed\n\t"; 
+            REQUIRE(base::rtrim(untrimmed) == target);
+            auto empty_str = String{"            "};
+            REQUIRE(base::rtrim(empty_str).empty());
+        }
+
+        SECTION("trim") {
+            const auto target("trimmed");
+            auto untrimmed = String{" trimmed "};
+            REQUIRE(base::trim(untrimmed) == target);
+            untrimmed = "         trimmed            "; 
+            REQUIRE(base::trim(untrimmed) == target);
+            untrimmed = "\t\ttrimmed\t\t"; 
+            REQUIRE(base::trim(untrimmed) == target);
+            untrimmed = "\n\ttrimmed\n\t"; 
+            REQUIRE(base::trim(untrimmed) == target);
+            auto empty_str = String{"            "};
+            REQUIRE(base::trim(empty_str).empty());
+        }
+
+    }
+
+
     SECTION("testing string splitting methods") {
         
         SECTION("leading spaces") {

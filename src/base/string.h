@@ -10,6 +10,7 @@
 #define __RNAMake__string__
 
 #include <stdio.h>
+#include <cctype>
 
 //RNAMake Headers
 #include <base/types.h>
@@ -57,7 +58,7 @@ String & rtrim(
 String & trim(
         String & s);
 
-
+String& replace_all(String& , String const& , String const& );
 }
 
 #endif /* defined(__RNAMake__string__) */

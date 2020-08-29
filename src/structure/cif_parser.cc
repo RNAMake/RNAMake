@@ -157,6 +157,9 @@ CIFParser::parse(
     // 3. Used "_entity" information to determine which atoms should be used
     // 4. Organize atom objects for the atoms we would like to keep
     // 5. Contstruct Residues from the atom groupings... TODO this part of the method needs some work.
+    if(!base::file_exists(cif_file)) {
+        throw std::runtime_error("doesn't exist");
+    }
     // in case you use the same parser for multiple files  
     if(!residues_.empty()) {
         residues_.clear();
@@ -188,7 +191,6 @@ CIFParser::parse(
         if(section.find("loop_\n") == std::string::npos){
             continue;
         }
-        
         std::regex_search(section,matches,var_start); 
         auto key = String{matches[0]};
         key = base::trim(key);
@@ -207,7 +209,7 @@ CIFParser::parse(
             throw CIFParseError(msg);
         }
     }
-
+    
     // deal with entity information
     auto allowed_ids = _get_entity_ids(contents["_entity"]);
     // group the atoms 

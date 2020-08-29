@@ -25,8 +25,12 @@ namespace base {
 inline
 bool
 file_exists(String const & name) {
-    struct stat buffer;
-    return (stat(name.c_str(), &buffer) == 0);
+    auto testfile = std::ifstream(name);
+    const auto good = testfile.is_open();
+    testfile.close();
+    return good;
+    //struct stat buffer;
+    //return (stat(name.c_str(), &buffer) == 0);
 }
 
 inline

@@ -12,12 +12,16 @@
 #include <stdio.h>
 
 #include "base/types.h"
+#include <base/file_io.h>
+#include <base/string.h>
 
 namespace resources {
 
 /*
  * Exception for sqlite library
  */
+
+
 class SqliteLibraryException : public std::runtime_error {
 public:
     /**
@@ -48,6 +52,8 @@ protected:
 
 };
 
+void
+build_sqlite_library(String const& , std::vector<Strings>const & , Strings const& , String const& );
 }
 
 #endif /* defined(__RNAMake__sqlite_library__) */

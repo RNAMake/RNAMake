@@ -11,11 +11,12 @@ void
 get_res_types_from_sequence(
         String const & sequence,
         ResTypes & residue_types) {
-    residue_types.resize(sequence.length());
-    int i = 0;
+    if(sequence.empty()) {
+        return;
+    }
+    residue_types.reserve(sequence.size());
     for(auto const & res_name : sequence) {
-        residue_types[i] = convert_res_name_to_type(res_name);
-        i++;
+        residue_types.push_back(convert_res_name_to_type(res_name)); 
     }
 }
 
@@ -23,11 +24,14 @@ int
 find_res_types_in_pose(
         PoseOP p,
         ResTypes const & residue_types) {
+    if(p == nullptr) {
+        return 0;
+    }
     int i = 0, j = 0, count = 0;
     for(auto const & c : p->chains()) {
         i = 0; j = 0;
         for(auto const & r : c->residues()) {
-            if(r->res_type() == residue_types[j]) {
+            if(j < residue_types.size() /* added in this bounds check to avoid read to uninitalized memory -CJ 08/20  */  && r->res_type() == residue_types[j]) {
                 j++;
                 if(j == residue_types.size()) {
                     count += 1;

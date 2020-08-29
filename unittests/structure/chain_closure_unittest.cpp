@@ -24,14 +24,18 @@ TEST_CASE( "Test chain closure", "[ChainClosure]" ) {
     }
 
     SECTION("test fixing missing phosphates") {
+         
         auto m_path = base::base_dir() + "//unittests/unittest_resources/motifs/BP.0.22.pdb";
         auto parser = structure::PDBParser();
         auto residues = parser.parse(m_path);
         auto chains = structure::ChainOPs();
         connect_residues_into_chains(residues, chains);
         //chains[1]->to_pdb("org_test.pdb");
-        close_chain(chains[1]);
+        if(chains.size() > 1) { 
+            close_chain(chains[1]);
+        }
         //chains[1]->to_pdb("test.pdb");
+        
 
     }
 

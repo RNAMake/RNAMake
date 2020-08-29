@@ -7,7 +7,7 @@
 //
 
 #include <stdexcept>
-
+#include <sqlite3.h>
 //RNAMake Headers
 #include "base/settings.h"
 #include "resources/sqlite_library.h"
@@ -33,4 +33,51 @@ SqliteLibrary::_get_path(
 
 }
 
+void
+build_sqlite_library(String const& path, std::vector<Strings>const & data, Strings const& keys, String const& primary_key) {
+    if(data.empty()) {
+        throw SqliteLibraryException("data must be longer than 0");
+    }
+
+    if(data[0].size() != keys.size()) {
+        throw SqliteLibraryException("length of each row must be the same length as keys");
+    }
+
+    if(!base::file_exists(path)) {
+        auto outfile = std::ofstream(path);
+        outfile<<'\0';
+        outfile.close();
+    }
+
+    auto sqlite_command = String{"DROP TABLE IF EXISTS data_table; CREATE TABLE data_table("} + base::join_by_delimiter(keys," TEXT,") + " PRIMARY KEY (" + primary_key + "));";
+
+    sqlite3 *connection = nullptr ;
+
+    auto code = sqlite3_open(path.c_str(), &connection);
+
+    if(code || connection == nullptr) {
+        std::cout<<sqlite3_errstr(code)<<std::endl;
+        return;
+    }
+
+    char* error;
+
+    for(auto&& entry : data)  {
+
+        auto line = base::join_by_delimiter(entry,"\',\'");
+        line.pop_back();
+        line.pop_back();
+
+        sqlite_command += String{"INSERT INTO data_table VALUES(\'" +line + ");"};
+    }
+
+    sqlite3_exec(connection,sqlite_command.c_str(), nullptr, nullptr,&error);
+
+    if(error) {
+        std::cout<<error<<std::endl;
+        sqlite3_free(error);
+    }
+
+    sqlite3_close(connection);
+}
 }

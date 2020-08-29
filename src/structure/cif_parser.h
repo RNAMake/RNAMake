@@ -12,6 +12,8 @@
 #include <stdio.h>
 #include <exception>
 //RNAMake Headers
+#include <base/file_io.h>
+
 #include "structure/residue.h"
 #include "structure/residue_type_set.h"
 

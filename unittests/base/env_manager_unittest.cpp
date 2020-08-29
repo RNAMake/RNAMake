@@ -8,7 +8,7 @@
 
 TEST_CASE( "Test environment variable setting", "[EnvManager]" ) {
     
-    base::init_logging();
+    base::init_logging(base::LogLevel::FATAL);
 
     auto unset_vars(0);
     const auto rnamake_orig = std::getenv("RNAMAKE");

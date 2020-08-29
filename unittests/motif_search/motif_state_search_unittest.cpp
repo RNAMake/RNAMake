@@ -228,7 +228,7 @@ TEST_CASE( "Test Searching Motif States", "[motif_search::MotifStateSearch]" ) {
 
     SECTION("test miniTTR") {
         using namespace motif_search::path_finding;
-        base::init_logging(base::LogLevel::VERBOSE);
+        base::init_logging(base::LogLevel::WARN);
         rm.add_motif(base::unittest_resource_dir() + "motif/GAAA_tetraloop");
 
 

@@ -110,6 +110,18 @@ base_dir(
 
 }
 
+String& replace_all(String& context, String const& from, String const& to)
+{
+    std::size_t lookHere = 0;
+    std::size_t foundHere;
+    while((foundHere = context.find(from, lookHere)) != String::npos)
+    {
+        context.replace(foundHere, from.size(), to);
+        lookHere = foundHere + to.size();
+    }
+    return context;
+}
+
 
 bool
 is_number(
@@ -234,9 +246,27 @@ determine_string_data_type(
  *
  * @return The modified String&
  */
+
 String & ltrim(String & s) {
+
+#if __cplusplus < 201703L
+    
     s.erase(s.begin(), std::find_if(s.begin(), s.end(),
                                     std::ptr_fun<int, int>(std::isgraph)));
+#else
+    
+    auto ii(0);
+    for( ; ii<s.size();) {
+        if(std::isspace(s[ii])) {
+            ++ii;
+        } else {
+            break;
+        }
+    }
+    if(ii) {
+        s.erase(s.begin(),s.begin()+ii);
+    }
+#endif
     return s;
 }
 
@@ -250,8 +280,24 @@ String & ltrim(String & s) {
  * @return The modified String&
  */
 String & rtrim(String & s) {
+#if __cplusplus < 201703L
     s.erase(std::find_if(s.rbegin(), s.rend(),
                          std::ptr_fun<int, int>(std::isgraph)).base(), s.end());
+#else
+    auto ii(s.size() -1);
+    for( ; ii >= 0; ) {
+        if(std::isspace(s[ii])) {
+            --ii;
+        } else {
+            break;
+        }
+    }
+
+    if(ii != s.size() -1 ) {
+        s.erase(s.begin() + ii+1, s.end());
+    }
+
+#endif
     return s;
 }
 
@@ -264,6 +310,7 @@ String & rtrim(String & s) {
  *
  * @return The modified String&
  */
+
 String & trim(String & s) {
     return ltrim(rtrim(s));
 }
