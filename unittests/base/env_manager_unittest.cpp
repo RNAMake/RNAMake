@@ -9,10 +9,11 @@
 TEST_CASE( "Test environment variable setting", "[EnvManager]" ) {
     
     base::init_logging(base::LogLevel::FATAL);
-
+    REQUIRE(std::getenv("RNAMAKE") != nullptr);
+    REQUIRE(std::getenv("X3DNA") != nullptr);
     auto unset_vars(0);
     const auto rnamake_orig = std::getenv("RNAMAKE");
-    
+   /*
     if(rnamake_orig != nullptr) {
         LOGW<<"NOTE: Unsetting environment variable \"RNAMAKE\" for unittesting ...";
         unsetenv("RNAMAKE");
@@ -56,4 +57,5 @@ TEST_CASE( "Test environment variable setting", "[EnvManager]" ) {
     }
     
     REQUIRE(unset_vars == 0);    
-}
+*/
+    }

@@ -20,8 +20,9 @@ EnvManager::set_envs() {
         
         if(env.find("RNAMAKE") != std::string::npos ) {
                 const auto rnamake_it = cwd.find("RNAMake") ;
-                LOG_WARNING<<"\"RNAMAKE\" environment variable not set...";
-            if(rnamake_it != std::string::npos) {
+                LOG_WARNING<<"\"RNAMAKE\" environment variable not set...exiting";
+                exit(1);
+            /*if(rnamake_it != std::string::npos) {
                 const auto rnamake_var = cwd.substr(0,rnamake_it + 7);
                 LOG_WARNING<<"\tattempting to set equal to \""<<rnamake_var<<"\"...";
                 const auto error_code = setenv("RNAMAKE",rnamake_var.c_str(),1);     
@@ -36,12 +37,13 @@ EnvManager::set_envs() {
             } else {
                 std::cout<<"\tCannot determine \"RNAMAKE\" variable automatically.\n\tPlease set this variable and re-run the application. Exiting.";
                 exit(1);
-            }
+            } */
 
         } else if ( env.find("X3DNA") != std::string::npos) {
                 const auto rnamake_it = cwd.find("RNAMake") ;
-                LOG_WARNING<<"\"X3DNA\" environment variable not set...";
-            if(rnamake_it != std::string::npos) {
+                LOG_WARNING<<"\"X3DNA\" environment variable not set... exiting";
+                exit(0);
+            /*if(rnamake_it != std::string::npos) {
                 const auto x3dna_var = base::x3dna_path(); 
                 LOG_WARNING<<"\tattempting to set equal to \""<<x3dna_var<<"\"...";
                 const auto error_code = setenv("X3DNA",x3dna_var.c_str(),1);     
@@ -57,7 +59,7 @@ EnvManager::set_envs() {
                 LOG_ERROR<<"\tCannot determine \"X3DNA\" variable automatically.\n\tPlease set this variable and re-run the application. Exiting.";
                 exit(1);
             }
-
+            */
 
         } else {
 
