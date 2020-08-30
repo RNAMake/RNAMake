@@ -78,23 +78,23 @@ DesignRNAScaffold::setup_options() {
     // from pdb
      */
     //app_.set_help_all_flag();
-    app_.add_option("-i,--input_pdb",
+    app_.add_option("--pdb",
                     parameters_.pdb,
-                    "path to a.pdb with input structure"
+                    "path to a PDB file with input RNA structure"
                     )->required();
-    app_.add_option("-s,--start_bp",
+    app_.add_option("--start_bp",
                         parameters_.start_bp,
                         "starting basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]"
                     )->required();
-    app_.add_option("-e,--end_bp",
+    app_.add_option("--end_bp",
                     parameters_.end_bp,
                     "ending basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]"
                     )->required();
-    app_.add_option("-d,--designs",
+    app_.add_option("--designs",
                         parameters_.designs,
                         "number of designs to create. Default is 1"
                     )->default_val(1);
-    app_.add_option("-o,--out_file",
+    app_.add_option("--out_file",
                     parameters_.out_file,
                     "output file for design(s)"
                 )->default_val("default.out");
@@ -102,7 +102,11 @@ DesignRNAScaffold::setup_options() {
     //->add_option("start_bp", String(""), base::OptionType::STRING, false);
     //->add_option("end_bp", String(""), base::OptionType::STRING, false);
     // from motif graph (not used much)
-    add_option("mg", String(""), base::OptionType::STRING, false); parameters_.mg = "";
+    //add_option("mg", String(""), base::OptionType::STRING, false); parameters_.mg = "";
+    app_.add_option("--mg",
+                    parameters_.mg,
+                    "path to a motif graph file to use as a starting point instead of the --pdb, --start_bp and --end_bp approach");
+                    parameters_.mg = "";
     // common options
     //->add_option("designs", 1, base::OptionType::INT, false);
     add_option("dump_pdbs", false, base::OptionType::BOOL, false); parameters_.dump_pdbs = false;
