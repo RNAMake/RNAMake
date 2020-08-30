@@ -8,19 +8,84 @@ struct MotifandEnd{
 
 using MotifandEnds = std::vector<MotifandEnd>;
 
-struct SSandSeqCluster {
+struct MotifCluster {
     // everything is a string, my dude
     String end_id;
     MotifandEnds motif_and_ends;
 
     // methods
-    //bool
-    //motif_matches_end(m,ei) {
+    //bool //motif_matches_end(m,ei) { //} }; using SSandSeqClusters = std::vector<SSandSeqCluster>; struct MotifCluster{
+    MotifCluster(motif::MotifOP const& motif, structure::BasepairStateOP state) : state(std::move(state))
+    {
+        motifs.push_back(motif);
+    }
 
-    //}
+    structure::BasepairStateOP state; 
+    motif::MotifOPs motifs;
+
 };
 
-using SSandSeqClusters = std::vector<SSandSeqCluster>;
+using MotifClusters = std::vector<MotifCluster>;
+
+MotifClusters
+cluster_motifs(resources::MotifSqliteLibrary::iterator && start,resources::MotifSqliteLibrary::iterator const & end, float max_distance=1.5f) {
+    
+    if(start == end) {
+        return MotifClusters{};
+    }
+    
+    auto clusters = MotifClusters{};
+    clusters.emplace_back(*start, (*start)->ends()[0]->state());
+
+    for(; start != end; ++start) {
+
+        auto found(0);
+
+        for(auto& c : clusters) {
+            const auto dist = c.state->diff((*start)->ends()[1]->state());
+            if(dist < max_distance) {
+                ++found;
+                c.motifs.push_back((*start));
+                break;
+            }
+        }
+        if(!found) {
+            clusters.emplace_back(MotifCluster{(*start),(*start)->ends()[1]->state()});
+        }
+    }
+
+    return clusters;
+}
+MotifClusters
+cluster_motifs(motif::MotifOPs const & motifs, float max_distance=1.5f) {
+
+    if(motifs.empty()) {
+        LOGW << "Empty list of motifs encountered";
+        return MotifClusters{};
+    }
+
+    auto clusters = MotifClusters{};
+    clusters.emplace_back(motifs[0], motifs[0]->ends()[0]->state());
+
+    const auto num_motifs = motifs.size();
+    for(auto ii = 0; ii<num_motifs; ++ii) {
+        auto found(0);
+        const auto& curr_motif = motifs[ii];
+        for(auto& c : clusters) {
+            const auto dist = c.state->diff((curr_motif)->ends()[1]->state());
+            if(dist < max_distance) {
+                ++found;
+                c.motifs.push_back((curr_motif));
+                break;
+            }
+        }
+        if(!found) {
+            clusters.emplace_back(MotifCluster{(curr_motif),(curr_motif)->ends()[1]->state()});
+        }
+    }
+
+    return clusters;
+}
 
 void
 build_trimmed_ideal_helix_library();
@@ -138,6 +203,83 @@ BuildSqliteLibraries::build_ideal_helices() {
 
 void
 BuildSqliteLibraries::build_unique_twoway_library() {
+    auto valid_dirs = _get_valid_dirs(base::resources_path() + "/motifsV2/two_ways/");
+    auto motifs = motif::MotifOPs{};
+    auto mf = motif::MotifFactory{};
+    for(auto&& [motif_name,path] : valid_dirs) {
+        if(motif_name.find("TWOWAY") != std::string::npos) {
+            try {
+                motifs.push_back(
+                        mf.motif_from_file(path)
+                );
+            } catch(std::runtime_error& error ) {
+                LOGW<<error.what()<<" in file "<<path;
+            }
+        }
+    }
+    auto clusters = cluster_motifs(motifs,9.0f);
+    //auto motif_lib = resources::MotifSqliteLibrary{"twoway"};
+    //motif_lib.load_all();
+    //auto clusters = cluster_motifs(motif_lib.begin(), motif_lib.end(), 9.0f);
+
+    const auto keys = Strings{"data", "name", "end_name", "end_id", "id"};
+    auto data = std::vector<Strings>{};
+
+    const auto mes_keys = Strings{"data", "name", "id"};
+    auto mes_data = std::vector<Strings>{};
+
+    auto outfile = std::ofstream("sim_list_new");
+
+    auto count(0);
+
+    for(auto& c : clusters) {
+        auto lowest = c.motifs[0];
+        for(const auto& m : c.motifs) {
+            if (lowest->score() > m->score()) {
+                lowest = m;
+            }
+        }
+
+        if(lowest->name() == "TWOWAY.1GID.6" ||
+            lowest->name() == "TWOWAY.1GID.2" ||
+            lowest->name() == "TWOWAY.2GDI.4" ||
+            lowest->name() == "TWOWAY.2VQE.18" ) {
+            continue;
+        }
+
+        ++count;
+
+        outfile<<lowest->name()<<","<<lowest->ends()[0]->name()<<"|";
+
+        for(const auto& m : c.motifs) {
+            outfile<<lowest->name()<<","<<lowest->ends()[0]->name()<<"|";
+        }
+        outfile<<"\n";
+
+        auto entry = Strings{};
+        entry.reserve(5);
+
+        entry.push_back(lowest->to_str());
+        entry.push_back(lowest->name());
+        entry.push_back(lowest->ends()[0]->name());
+        entry.push_back(lowest->end_ids()[0]);
+        entry.push_back(std::to_string(count));
+
+        for(auto& token : entry)  {
+            token = base::replace_all(token,"\'","\'\'");
+        }
+
+        data.push_back(entry);
+    }
+
+    outfile.close();
+    const auto path = base::resources_path() + "/motif_librariesV2/unique_twoway.db";
+
+    resources::build_sqlite_library(
+                                    path,
+                                    data,
+                                    keys,
+                                    "id");
 
 }
 
@@ -236,14 +378,65 @@ BuildSqliteLibraries::build_new_bp_steps() {
 }
 
 void
+BuildSqliteLibraries::build_existing_motif_library() {
+    throw std::runtime_error(
+        "BuildSqliteLibraries::build_existing_motif_library() has not been implemented yet! Don't call it"
+            ) ;
+    //auto existing_motifs = Strings{};
+    //if(base::file_exists("existing.motifs")) {
+    //    existing_motifs = base::get_lines_from_file("existing.motifs");
+    //}
+    //auto motifs = motif::MotifOPs{};
+    //auto mf = motif::MotifFactory{};
+
+    //for(const auto& motif_str : existing_motifs) {
+    //    motifs.push_back(
+    //        motif::MotifOP{motif_str}
+    //            );
+    //}
+    //for(auto& c : existing_motifs) {
+    //    std::cout<<c<<std::endl;
+    //}
+}
+void
+BuildSqliteLibraries::build_basic_libraries() {
+    const auto motif_types = util::MotifTypes {
+        util::MotifType::TWOWAY,
+        util::MotifType::NWAY,
+        util::MotifType::HAIRPIN,
+        util::MotifType::TCONTACT
+    };
+    const auto bad_keys = Strings{
+            "TWOWAY.2GDI.4-X20-X45",
+            "TWOWAY.1S72.46-02097-02647",
+            "TWOWAY.2GDI.6-Y20-Y45"
+    };
+    /*j
+    auto file_lines = base::get_lines_from_file("motifs_extra_bps.csv");
+    file_lines.erase(file_lines.begin(),file_lines.begin()+1);
+
+
+    auto has_extra_bps = std::map<String,int>{};
+    for(const auto& line : file_lines ) {
+        auto tokens = base::split_str_by_delimiter(line,",");
+        if(tokens.size() > 1 && std::stof(tokens[2]) > 0 ) {
+            has_extra_bps[tokens[0]] = 1;
+        }
+    }
+*/
+    for(auto&& type : motif_types) {
+        std::cout<<util::type_to_str(type)<<std::endl;
+    }
+}
+
+void
 BuildSqliteLibraries::run()   {
 //TODO
-//#builder.build_basic_libraries()
 
 
+//build_existing_motif_library();
 
 
-//#builder.build_existing_motif_library()
 //    builder.build_helix_ensembles()
 //#builder.build_flex_helix_library()
 //#builder.build_ss_and_seq_libraries()
@@ -253,7 +446,8 @@ BuildSqliteLibraries::run()   {
 //
 
 //DONE
-            build_unique_twoway_library();
+            build_basic_libraries();
+            //build_unique_twoway_library();
             //build_new_bp_steps();
             //build_ideal_helices();
             //build_trimmed_ideal_helix_library();
@@ -269,8 +463,8 @@ BuildSqliteLibraries::setup_options()   {
 //    options.add_argument("-m","--motif_type")
 //            .required();
 //
-    add_option("dir", "", base::OptionType::STRING, true);
-    add_option("motif_type", "", base::OptionType::STRING, true);
+//    add_option("dir", "", base::OptionType::STRING, true);
+//    add_option("motif_type", "", base::OptionType::STRING, true);
 }
 
 void
@@ -361,7 +555,7 @@ BuildSqliteLibraries::build_helix_ensembles() {
         motif_map_[motif] = mf.motif_from_file(path);
         if(i==5) break;
     }
-    auto clusters =  SSandSeqClusters{};
+    //auto clusters =  SSandSeqClusters{};
     for(auto&& [name,motif] : motif_map_) {
         auto tks = base::split_str_by_delimiter(name,".");
         

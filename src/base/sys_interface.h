@@ -31,8 +31,6 @@ execute_command_json( const char* );
 nlohmann::json
 execute_command_json( String const &);
 
-void
-json_cleanup();
 
 }
 #endif // __SYS_INTERFACE_H__

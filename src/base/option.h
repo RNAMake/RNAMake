@@ -380,9 +380,10 @@ private:
     OptionOP const &
     _find_option(
             String const & name) {
-
         for (auto const & opt : options_) {
-            if (opt->name() == name) { return opt; }
+            if (opt->name() == name) {
+                return opt;
+            }
         }
 
         throw OptionException("cannot find option with name " + name);

@@ -37,30 +37,4 @@ execute_command_json( String const& cmd )  {
     return nlohmann::json::parse(execute_command(cmd));
 }
 
-void
-json_cleanup() {
-    const auto json_temp_files = Strings{
-                            "dssr-Aminors.pdb",
-                            "dssr-bulges.pdb",
-                            "dssr-iloops.pdb",
-                            "dssr-2ndstrs.bpseq",
-                            "dssr-2ndstrs.ct",
-                            "dssr-2ndstrs.dbn",
-                            "dssr-atom2bases.pdb",
-                            "dssr-hairpins.pdb",
-                            "dssr-helices.pdb",
-                            "dssr-junctions.pdb",
-                            "dssr-multiplets.pdb",
-                            "dssr-pairs.pdb",
-                            "dssr-splays.pdb",
-                            "dssr-stacks.pdb",
-                            "dssr-stems.pdb",
-                            "dssr-torsions.txt"};
-    
-    for(const auto& temp_file : json_temp_files) {
-        std::remove(temp_file.c_str());
-    }
- 
-}
-
 }

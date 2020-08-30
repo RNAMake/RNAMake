@@ -60,7 +60,7 @@ if( ${COMPILER} STREQUAL clang  OR ${COMPILER} STREQUAL AppleClang  )
     
     else()
     
-        list(APPEND compile_flags -fsanitize=address;-fno-omit-frame-pointer)
+        #list(APPEND compile_flags -fsanitize=address;-fno-omit-frame-pointer)
     endif()
 
 endif()
@@ -96,4 +96,13 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set( CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -ldl " )
     set( CMAKE_SHARED_LINKER_FLAGS " -Wl,--no-as-needed ")
     set( CMAKE_EXE_LINKER_FLAGS " -lstdc++ -Wl,--no-as-needed,--no-export-dynamic ")
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+
+    SET(CMAKE_C_ARCHIVE_CREATE   "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+    SET(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+    SET(CMAKE_C_ARCHIVE_FINISH   "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+    SET(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+
 endif()
+

@@ -321,6 +321,8 @@ get_str_from_x3dna_type(X3dnaBPType);
 String
 compare_bps(X3dna::X3Basepairs&, X3dna::X3Basepairs&);
 
+void
+json_cleanup();
 }
 
 template < typename T1, typename T2, typename T3>

@@ -17,7 +17,10 @@
 DesignRNAScaffold::DesignRNAScaffold():
         base::Application(),
         rm_(resources::Manager::instance()),
-        parameters_(Parameters()) {
+        parameters_(Parameters()),
+        app_("DesignRNAScaffold")
+        {
+
 
 }
 
@@ -29,6 +32,7 @@ void
 DesignRNAScaffold::setup_options() {
     // core inputs
     // from pdb
+    /*
     add_option("pdb", String(""), base::OptionType::STRING, false);
     add_option("start_bp", String(""), base::OptionType::STRING, false);
     add_option("end_bp", String(""), base::OptionType::STRING, false);
@@ -70,6 +74,93 @@ DesignRNAScaffold::setup_options() {
     add_option("mc_scorer", "default", base::OptionType::STRING, false);
     add_option("scaled_score_d", 1.0f, base::OptionType::FLOAT, false);
     add_option("scaled_score_r", 2.0f, base::OptionType::FLOAT, false);
+    // core inputs
+    // from pdb
+     */
+    //app_.set_help_all_flag();
+    app_.add_option("-i,--input_pdb",
+                    parameters_.pdb,
+                    "path to a.pdb with input structure"
+                    )->required();
+    app_.add_option("-s,--start_bp",
+                        parameters_.start_bp,
+                        "starting basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]"
+                    )->required();
+    app_.add_option("-e,--end_bp",
+                    parameters_.end_bp,
+                    "ending basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]"
+                    )->required();
+    app_.add_option("-d,--designs",
+                        parameters_.designs,
+                        "number of designs to create. Default is 1"
+                    )->default_val(1);
+    app_.add_option("-o,--out_file",
+                    parameters_.out_file,
+                    "output file for design(s)"
+                )->default_val("default.out");
+
+    //->add_option("start_bp", String(""), base::OptionType::STRING, false);
+    //->add_option("end_bp", String(""), base::OptionType::STRING, false);
+    // from motif graph (not used much)
+    add_option("mg", String(""), base::OptionType::STRING, false); parameters_.mg = "";
+    // common options
+    //->add_option("designs", 1, base::OptionType::INT, false);
+    add_option("dump_pdbs", false, base::OptionType::BOOL, false); parameters_.dump_pdbs = false;
+    add_option("dump_scaffold_pdbs", false, base::OptionType::BOOL, false); parameters_.dump_scaffold_pdbs = false;
+    add_option("helix_type", "ideal_helices", base::OptionType::STRING, false);
+    //->add_option("log_level", "info", base::OptionType::STRING, false);
+    add_option("search_type", "path_finding", base::OptionType::STRING, false); parameters_.search_type = "path_finding";
+    add_option("search_cutoff", 5.0f, base::OptionType::FLOAT, false); parameters_.search_cutoff = 5.0f;
+    //add_option("search_max_size", 999999, base::OptionType::INT, false); parameters_.search_max_size = 999999;
+    app_.add_option("--search_max_size",
+                    parameters_.search_max_size,
+                    "maximum number of steps for a design search"
+                    )->default_val(999999);
+    //add_option("skip_sequence_optimization", false, base::OptionType::BOOL, false); parameters_.skip_sequence_optimization = false;
+    app_.add_flag("--skip_sequence_optimization",
+                    parameters_.skip_sequence_optimization,
+                    "flag to skip sequence optimization of the design")->default_val(false);
+    add_option("sequence_opt_cutoff", 5.0f, base::OptionType::FLOAT, false);
+    add_option("solution_path", "", base::OptionType::STRING, false);
+    //->add_option("out_file", "default.out", base::OptionType::STRING, false);
+    add_option("score_file", "default.scores", base::OptionType::STRING, false); parameters_.score_file = "default.scores";
+    add_option("solution_filter", "NoFilter", base::OptionType::STRING, false); parameters_.solution_filter = "NoFilter";
+
+    // less common options
+    app_.add_flag("--no_basepair_checks",
+                    parameters_.no_basepair_checks,
+                    "flag to disable basepair checks")->default_val(false);
+    //add_option("no_basepair_checks", false, base::OptionType::BOOL, false); parameters_.no_basepair_checks = false;
+    add_option("no_out_file", false, base::OptionType::BOOL, false);
+    //add_option("max_helix_length", 99, base::OptionType::INT, false); parameters_.max_helix_length = 99;
+    app_.add_option("--max_helix_length",
+                parameters_.max_helix_length,
+                    "maximum number of basepairs in a solution helix")->default_val(99);
+    //add_option("min_helix_length", 4, base::OptionType::INT, false); parameters_.min_helix_length = 4;
+    app_.add_option("--min_helix_length",
+                    parameters_.min_helix_length,
+                    "minimum number of basepairs in a solution helix")->default_val(4);
+    app_.add_option("--starting_helix",
+                    parameters_.starting_helix,
+                    "starting helix for design solution. Format = [TODO]"
+                    )->default_val("");
+    //add_option("starting_helix", "", base::OptionType::STRING, false); parameters_.starting_helix = "";
+    app_.add_option("--ending_helix",
+                    parameters_.ending_helix,
+                    "ending helix for design solution. Format = [TODO]")->default_val("") ;
+    //add_option("ending_helix", "", base::OptionType::STRING, false); parameters_.ending_helix =  "";
+    add_option("all_designs", false, base::OptionType::BOOL, false); parameters_.all_designs = false;
+    add_option("flip_start_bp", false, base::OptionType::BOOL, false);
+    add_option("flip_end_bp", false, base::OptionType::BOOL, false);
+    add_option("motif_path", "", base::OptionType::STRING, false); parameters_.motif_path = "";
+    add_option("new_ensembles", "", base::OptionType::STRING, false); parameters_.new_ensembles = "";
+    add_option("no_mg_file", false, base::OptionType::BOOL, false); parameters_.no_mg_file = false;
+
+    // scoring related options
+    add_option("exhaustive_scorer", "default", base::OptionType::STRING, false); parameters_.exhaustive_scorer = "default";
+    add_option("mc_scorer", "default", base::OptionType::STRING, false); parameters_.mc_scorer = "default";
+    add_option("scaled_score_d", 1.0f, base::OptionType::FLOAT, false); parameters_.scaled_score_d = 1.0f;
+    add_option("scaled_score_r", 2.0f, base::OptionType::FLOAT, false); parameters_.scaled_score_r = 2.0f;
 
 }
 
@@ -77,14 +168,16 @@ void
 DesignRNAScaffold::parse_command_line(
         int argc,
         const char ** argv) {
-    base::Application::parse_command_line(argc, argv);
+
+        base::Application::parse_command_line(argc, argv);
 
     // core inputs
-    parameters_.pdb       = get_string_option("pdb");     parameters_.start_bp   = get_string_option("start_bp");
-    parameters_.end_bp    = get_string_option("end_bp");  parameters_.mg         = get_string_option("mg");
+    // parameters_.pdb       = get_string_option("pdb");
+    // parameters_.start_bp   = get_string_option("start_bp");
+    // parameters_.end_bp    = get_string_option("end_bp");
+    parameters_.mg         = get_string_option("mg");
     // common options
-    parameters_.designs   = get_int_option("designs");
-    parameters_.dump_pdbs = get_bool_option("dump_pdbs"); parameters_.dump_scaffold_pdbs = get_bool_option("dump_scaffold_pdbs");
+    parameters_.designs   = get_int_option("designs"); parameters_.dump_pdbs = get_bool_option("dump_pdbs"); parameters_.dump_scaffold_pdbs = get_bool_option("dump_scaffold_pdbs");
     parameters_.out_file = get_string_option("out_file"); parameters_.score_file = get_string_option("score_file");
     parameters_.solution_filter = get_string_option("solution_filter");
     parameters_.search_type = get_string_option("search_type");
@@ -107,7 +200,8 @@ DesignRNAScaffold::parse_command_line(
     parameters_.mc_scorer = get_string_option("mc_scorer");
     parameters_.scaled_score_d = get_float_option("scaled_score_d");
     parameters_.scaled_score_r = get_float_option("scaled_score_r");
-}
+
+ }
 
 void
 DesignRNAScaffold::run() {
@@ -225,6 +319,7 @@ DesignRNAScaffold::run() {
         LOG_INFO << "no more solutions found";
         LOG_INFO << "found a total of " << i << " solution(s)";
     }
+
 }
 
 
@@ -356,6 +451,7 @@ DesignRNAScaffold::_setup_search() {
 
 motif_search::ProblemOP
 DesignRNAScaffold::_setup_problem() {
+
     auto start_bp = msg_->get_node(start_.node_index)->data()->get_end_state(start_.edge_index);
     auto end_bp = msg_->get_node(end_.node_index)->data()->get_end_state(end_.edge_index);
 
@@ -565,36 +661,15 @@ main(
 
     //start logging
     base::init_logging();
-
     //load extra motifs being used
-    String base_path = base::base_dir() + "/rnamake/lib/RNAMake/apps/simulate_tectos/resources/";
+    String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
     resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
 
     auto app = DesignRNAScaffold();
     app.setup_options();
-    app.parse_command_line(argc, argv);
+    CLI11_PARSE(app.app_, argc, argv);
     app.run();
 
     return 0;
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

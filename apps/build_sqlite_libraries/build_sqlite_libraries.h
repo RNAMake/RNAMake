@@ -22,6 +22,8 @@
 #include <resources/motif_sqlite_library.h>
 #include <resources/sqlite_library.h>
 #include <motif/motif_factory.h>
+#include <structure/basepair_state.h>
+
 
 #if 0
  #include <argparse/argparse.hpp>
@@ -57,6 +59,11 @@ public:
     void
     build_unique_twoway_library();
 
+    void
+    build_existing_motif_library();
+
+    void
+    build_basic_libraries();
     //void
     //parse_command_line(int argc, const char** argv) override {
     //    options.parse_args(argc, argv);

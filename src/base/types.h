@@ -9,6 +9,7 @@
 #ifndef RNAMake_types_h
 #define RNAMake_types_h
 
+
 #include <memory>
 #include <string>
 #include <vector>

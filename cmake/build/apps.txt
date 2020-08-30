@@ -28,8 +28,8 @@ build_sqlite_libraries ../../apps/build_sqlite_libraries/build_sqlite_libraries.
 ##apt_stablization ../../apt_stablizationapt_stablization.cc
 ##build_flex_helices ../../build_flex_helicesbuild_flex_helices.cc
 ##ddg_tecto ../../ddg_tectoddg_tecto.cc tecto_graph_setup.cc
-##design_rna ../../design_rnadesign_rna.cpp
-##design_rna_scaffold ../../design_rna_scaffolddesign_rna_scaffold.cc
+#design_rna ../../apps/design_rna/design_rna.cpp
+design_rna_scaffold ../../apps/design_rna_scaffold/design_rna_scaffold.cc
 ##dock_motif ../../dock_motifdock_motif.cc
 ##eternabot ../../eternaboteternabot.cpp
 ##exhustive_eternabot ../../exhustive_eternabotexhustive_eternabot.cpp
@@ -38,7 +38,7 @@ build_sqlite_libraries ../../apps/build_sqlite_libraries/build_sqlite_libraries.
 ##general_helix_sampler ../../general_helix_samplergeneral_helix_sampler.cc
 ##get_best_solutions ../../get_best_solutionsget_best_solutions.cc
 ##hash_motifs ../../hash_motifshash_motifs.cc
-##mini_ttr ../../mini_ttrmini_ttr.cpp
+#mini_ttr ../../apps/mini_ttr/mini_ttr.cpp
 ##opt_tecto_cutoff ../../opt_tecto_cutoffopt_tecto_cutoff.cc
 ##p5abc ../../p5abcp5abc.cpp
 ##path_builder ../../path_builderpath_builder.cpp

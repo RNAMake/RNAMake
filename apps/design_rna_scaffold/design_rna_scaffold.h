@@ -15,6 +15,7 @@
 #include "motif_data_structure/motif_graph.h"
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 
+#include <CLI/CLI.hpp>
 
 class DesignRNAScaffold : public base::Application {
 public:
@@ -126,6 +127,9 @@ private:
         String exhaustive_scorer, mc_scorer;
 
     };
+
+public:
+    CLI::App app_; // added by CJ 08/20. has to be public to get the --help to work
 
 private:
     std::ofstream out_, score_out_;

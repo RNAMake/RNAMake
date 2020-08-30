@@ -15,7 +15,7 @@
 #include "base/option.h"
 #include "base/cl_option.h"
 #include "motif_data_structure/motif_graph.h"
-#include "motif_search/motif_state_search.h"
+#include <motif_search/motif_state_search.h>
 #include "resources/resource_manager.h"
 #include "sequence_optimization/sequence_optimizer.h"
 

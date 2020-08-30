@@ -309,7 +309,7 @@ X3dna::get_basepairs_json(
     auto dssr_json = base::execute_command_json(base::x3dna_path() + "/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null"); 
     
     // get rid of temp files created by x3dna-dssr
-    base::json_cleanup();
+    util::json_cleanup();
 
     auto nt_it = dssr_json.find("nts"); 
     if (nt_it == dssr_json.end() || nt_it->is_null() || nt_it->empty()) {
@@ -328,11 +328,6 @@ X3dna::get_basepairs_json(
     auto basepairs = X3Basepairs();
     auto pairings = dssr_json.find("pairs"); 
     if(pairings == dssr_json.end() || pairings->empty()) {
-#ifdef DEBUG 
-        std::cout<<"Warning: "<<pdb_path<<" does not contain any pairs"<<std::endl;
-#else
-
-#endif
         return basepairs;
     }
     // loop through the pairings 
@@ -746,6 +741,32 @@ X3dna::X3Basepair::to_string() const {
     auto ss = std::stringstream();
     ss << util::get_str_from_x3dna_type(bp_type) << "|" <<res1.num << "|" << res2.num << "|" << d << "|" << math::matrix_to_str(r);
     return ss.str();
+}
+
+void
+json_cleanup() {
+    const auto json_temp_files = Strings{
+            "dssr-Aminors.pdb",
+            "dssr-bulges.pdb",
+            "dssr-iloops.pdb",
+            "dssr-2ndstrs.bpseq",
+            "dssr-2ndstrs.ct",
+            "dssr-2ndstrs.dbn",
+            "dssr-atom2bases.pdb",
+            "dssr-hairpins.pdb",
+            "dssr-helices.pdb",
+            "dssr-junctions.pdb",
+            "dssr-multiplets.pdb",
+            "dssr-pairs.pdb",
+            "dssr-splays.pdb",
+            "dssr-stacks.pdb",
+            "dssr-stems.pdb",
+            "dssr-torsions.txt"};
+
+    for(const auto& temp_file : json_temp_files) {
+        std::remove(temp_file.c_str());
+    }
+
 }
 
 String
