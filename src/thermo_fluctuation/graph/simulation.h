@@ -52,6 +52,8 @@ public: // outputs
         return msg_->to_motif_graph()->pdb_str();
     }
 
+    //motif_data_structure::MotifGraphOP
+
 
 public: //option wrappers
 
