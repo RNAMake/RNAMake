@@ -167,6 +167,20 @@ public: // setters
         block_end_add_ = nblock_end_add;
     }
 
+public:
+    void
+    remove_bad_bps(const structure::BasepairOPs& bad_bps) { //added by CJ 08/20
+        auto it = basepairs_.begin();
+        const auto end = basepairs_.end();
+        while(it != end) {
+            if(std::find(bad_bps.begin(),bad_bps.end(),*it) != bad_bps.end()) {
+                it = basepairs_.erase(it);
+            } else {
+                ++it;
+            }
+        }
+
+    }
 
 private:
     util::MotifType mtype_;
