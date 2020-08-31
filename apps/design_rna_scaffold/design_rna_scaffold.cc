@@ -30,138 +30,178 @@ DesignRNAScaffold::DesignRNAScaffold():
 
 void
 DesignRNAScaffold::setup_options() {
-    // core inputs
-    // from pdb
-    /*
-    add_option("pdb", String(""), base::OptionType::STRING, false);
-    add_option("start_bp", String(""), base::OptionType::STRING, false);
-    add_option("end_bp", String(""), base::OptionType::STRING, false);
-    // from motif graph (not used much)
-    add_option("mg", String(""), base::OptionType::STRING, false);
 
-    // common options
-    add_option("designs", 1, base::OptionType::INT, false);
-    add_option("dump_pdbs", false, base::OptionType::BOOL, false);
-    add_option("dump_scaffold_pdbs", false, base::OptionType::BOOL, false);
-    add_option("helix_type", "ideal_helices", base::OptionType::STRING, false);
-    add_option("log_level", "info", base::OptionType::STRING, false);
-    add_option("search_type", "path_finding", base::OptionType::STRING, false);
-    add_option("search_cutoff", 5.0f, base::OptionType::FLOAT, false);
-    add_option("search_max_size", 999999, base::OptionType::INT, false);
-    add_option("skip_sequence_optimization", false, base::OptionType::BOOL, false);
-    add_option("sequence_opt_cutoff", 5.0f, base::OptionType::FLOAT, false);
-    add_option("solution_path", "", base::OptionType::STRING, false);
-    add_option("out_file", "default.out", base::OptionType::STRING, false);
-    add_option("score_file", "default.scores", base::OptionType::STRING, false);
-    add_option("solution_filter", "NoFilter", base::OptionType::STRING, false);
+    app_.add_option_group("Core Inputs");
+    app_.add_option_group("File Options");
+    app_.add_option_group("Search Parameters");
+    app_.add_option_group("Scoring Paramteres");
+    app_.add_option_group("TBD");
 
-    // less common options
-    add_option("no_basepair_checks", false, base::OptionType::BOOL, false);
-    add_option("no_out_file", false, base::OptionType::BOOL, false);
-    add_option("max_helix_length", 99, base::OptionType::INT, false);
-    add_option("min_helix_length", 4, base::OptionType::INT, false);
-    add_option("starting_helix", "", base::OptionType::STRING, false);
-    add_option("ending_helix", "", base::OptionType::STRING, false);
-    add_option("all_designs", false, base::OptionType::BOOL, false);
-    add_option("flip_start_bp", false, base::OptionType::BOOL, false);
-    add_option("flip_end_bp", false, base::OptionType::BOOL, false);
-    add_option("motif_path", "", base::OptionType::STRING, false);
-    add_option("new_ensembles", "", base::OptionType::STRING, false);
-    add_option("no_mg_file", false, base::OptionType::BOOL, false);
-
-    // scoring related options
-    add_option("exhaustive_scorer", "default", base::OptionType::STRING, false);
-    add_option("mc_scorer", "default", base::OptionType::STRING, false);
-    add_option("scaled_score_d", 1.0f, base::OptionType::FLOAT, false);
-    add_option("scaled_score_r", 2.0f, base::OptionType::FLOAT, false);
-    // core inputs
-    // from pdb
-     */
-    //app_.set_help_all_flag();
-    app_.add_option("-i,--input_pdb",
+    app_.add_option("--pdb",
                     parameters_.pdb,
-                    "path to a.pdb with input structure"
-                    )->required();
-    app_.add_option("-s,--start_bp",
-                        parameters_.start_bp,
-                        "starting basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]"
-                    )->required();
-    app_.add_option("-e,--end_bp",
-                    parameters_.end_bp,
-                    "ending basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]"
-                    )->required();
-    app_.add_option("-d,--designs",
-                        parameters_.designs,
-                        "number of designs to create. Default is 1"
-                    )->default_val(1);
-    app_.add_option("-o,--out_file",
-                    parameters_.out_file,
-                    "output file for design(s)"
-                )->default_val("default.out");
+                    "path to a PDB file with input RNA structure")
+                    ->required()
+                    ->check(CLI::ExistingFile)
+                    ->group("Core Inputs");
 
-    //->add_option("start_bp", String(""), base::OptionType::STRING, false);
-    //->add_option("end_bp", String(""), base::OptionType::STRING, false);
-    // from motif graph (not used much)
-    add_option("mg", String(""), base::OptionType::STRING, false); parameters_.mg = "";
-    // common options
-    //->add_option("designs", 1, base::OptionType::INT, false);
-    add_option("dump_pdbs", false, base::OptionType::BOOL, false); parameters_.dump_pdbs = false;
-    add_option("dump_scaffold_pdbs", false, base::OptionType::BOOL, false); parameters_.dump_scaffold_pdbs = false;
-    add_option("helix_type", "ideal_helices", base::OptionType::STRING, false);
-    //->add_option("log_level", "info", base::OptionType::STRING, false);
-    add_option("search_type", "path_finding", base::OptionType::STRING, false); parameters_.search_type = "path_finding";
-    add_option("search_cutoff", 5.0f, base::OptionType::FLOAT, false); parameters_.search_cutoff = 5.0f;
-    //add_option("search_max_size", 999999, base::OptionType::INT, false); parameters_.search_max_size = 999999;
+    app_.add_option("--start_bp",
+                        parameters_.start_bp,
+                        "starting basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]")
+                    ->required()
+                    ->group("Core Inputs");
+
+    app_.add_option("--end_bp",
+                    parameters_.end_bp,
+                    "ending basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]")
+                    ->required()
+                    ->group("Core Inputs");
+
+    app_.add_option("--designs",
+                        parameters_.designs,
+                        "number of designs to create. Default is 1")
+                    ->default_val(1)
+                    ->check(CLI::PositiveNumber)
+                    ->group("Core Inputs");
+
+    app_.add_option("--out_file",
+                    parameters_.out_file,
+                    "output file for design(s)")
+                    ->default_val("default.out")
+                    ->group("File Options");
+
+    parameters_.mg = "";
+
+    app_.add_flag("--dump_pdbs",
+                    parameters_.dump_pdbs,
+                    "flag to dump intermediate pdbs TODO")
+                    ->group("File Options");
+                parameters_.dump_pdbs = false;
+
+    app_.add_flag("--dump_scaffold_pdbs",
+                    parameters_.dump_scaffold_pdbs,
+                    "flag to output intermediate scaffold pdbs in the current directory")
+                    ->group("File Options");
+                    parameters_.dump_scaffold_pdbs = false;
+
+    app_.add_option("--search_type",
+                    parameters_.search_type,
+                    "search type for traversing motif space")
+                    ->default_val("path_finding")
+                    ->check(CLI::IsMember(std::set<String>{"path_finding", "exhaustive", "mc"}))
+                    ->group("Search Parameters");
+
+    app_.add_option("--search_cutoff",
+                    parameters_.search_cutoff,
+                    "TODO")
+                    ->default_val(5.0f)
+                    ->group("Search Parameters");
+
     app_.add_option("--search_max_size",
                     parameters_.search_max_size,
-                    "maximum number of steps for a design search"
-                    )->default_val(999999);
-    //add_option("skip_sequence_optimization", false, base::OptionType::BOOL, false); parameters_.skip_sequence_optimization = false;
+                    "maximum number of steps for a design search")
+                    ->default_val(999999)
+                    ->check(CLI::PositiveNumber) //TODO put a limit to this?? CJ 08/20
+                    ->group("Search Parameters");
+
     app_.add_flag("--skip_sequence_optimization",
                     parameters_.skip_sequence_optimization,
-                    "flag to skip sequence optimization of the design")->default_val(false);
-    add_option("sequence_opt_cutoff", 5.0f, base::OptionType::FLOAT, false);
-    add_option("solution_path", "", base::OptionType::STRING, false);
-    //->add_option("out_file", "default.out", base::OptionType::STRING, false);
-    add_option("score_file", "default.scores", base::OptionType::STRING, false); parameters_.score_file = "default.scores";
-    add_option("solution_filter", "NoFilter", base::OptionType::STRING, false); parameters_.solution_filter = "NoFilter";
+                    "flag to skip sequence optimization of the design")
+                    ->group("Search Parameters");
+                    parameters_.skip_sequence_optimization = false;
+
+    app_.add_option("--score_file",
+                    parameters_.score_file,
+                    "name of output file containining scoring information for design")
+                    ->default_val("default.scores")
+                    ->group("File Options");
+
+
+    app_.add_option("--solution_filter",
+                    parameters_.solution_filter,
+                    "TODO")
+                    ->default_val("NotFilter")
+                    ->check(CLI::IsMember(std::set<String>{"NoFilter","RemoveDuplicateHelices"}))
+                    ->group("Search Parameters");
 
     // less common options
     app_.add_flag("--no_basepair_checks",
                     parameters_.no_basepair_checks,
-                    "flag to disable basepair checks")->default_val(false);
-    //add_option("no_basepair_checks", false, base::OptionType::BOOL, false); parameters_.no_basepair_checks = false;
-    add_option("no_out_file", false, base::OptionType::BOOL, false);
-    //add_option("max_helix_length", 99, base::OptionType::INT, false); parameters_.max_helix_length = 99;
+                    "flag to disable basepair checks")
+                    ->group("Search Parameters");
+                    parameters_.no_basepair_checks = false;
+
     app_.add_option("--max_helix_length",
                 parameters_.max_helix_length,
-                    "maximum number of basepairs in a solution helix")->default_val(99);
-    //add_option("min_helix_length", 4, base::OptionType::INT, false); parameters_.min_helix_length = 4;
+                    "maximum number of basepairs in a solution helix")
+                    ->default_val(99)
+                    ->group("Search Parameters");
+
     app_.add_option("--min_helix_length",
                     parameters_.min_helix_length,
-                    "minimum number of basepairs in a solution helix")->default_val(4);
+                    "minimum number of basepairs in a solution helix")
+                    ->default_val(4)
+                    ->group("Search Parameters");
+
     app_.add_option("--starting_helix",
                     parameters_.starting_helix,
-                    "starting helix for design solution. Format = [TODO]"
-                    )->default_val("");
-    //add_option("starting_helix", "", base::OptionType::STRING, false); parameters_.starting_helix = "";
+                    "starting helix for design solution. Format = [TODO]")
+                    ->default_val("")
+                    ->group("Search Parameters");
+
     app_.add_option("--ending_helix",
                     parameters_.ending_helix,
-                    "ending helix for design solution. Format = [TODO]")->default_val("") ;
-    //add_option("ending_helix", "", base::OptionType::STRING, false); parameters_.ending_helix =  "";
-    add_option("all_designs", false, base::OptionType::BOOL, false); parameters_.all_designs = false;
-    add_option("flip_start_bp", false, base::OptionType::BOOL, false);
-    add_option("flip_end_bp", false, base::OptionType::BOOL, false);
-    add_option("motif_path", "", base::OptionType::STRING, false); parameters_.motif_path = "";
-    add_option("new_ensembles", "", base::OptionType::STRING, false); parameters_.new_ensembles = "";
-    add_option("no_mg_file", false, base::OptionType::BOOL, false); parameters_.no_mg_file = false;
+                    "ending helix for design solution. Format = [TODO]")
+                    ->default_val("")
+                    ->group("Search Parameters");
 
-    // scoring related options
-    add_option("exhaustive_scorer", "default", base::OptionType::STRING, false); parameters_.exhaustive_scorer = "default";
-    add_option("mc_scorer", "default", base::OptionType::STRING, false); parameters_.mc_scorer = "default";
-    add_option("scaled_score_d", 1.0f, base::OptionType::FLOAT, false); parameters_.scaled_score_d = 1.0f;
-    add_option("scaled_score_r", 2.0f, base::OptionType::FLOAT, false); parameters_.scaled_score_r = 2.0f;
+    app_.add_flag("--all_designs",
+                    parameters_.all_designs,
+                    "TBD")
+                    ->default_val(false)
+                    ->group("TBD");
 
+    app_.add_option("--motif_path",
+                    parameters_.motif_path,
+                    "TBD")
+                    ->default_val("")
+                    ->group("TBD");
+
+    app_.add_option("--new_ensembles",
+                    parameters_.new_ensembles,
+                    "TBD")
+                    ->default_val("")
+                    ->group("TBD");
+
+    app_.add_flag("--no_mg_file",
+                  parameters_.no_mg_file,
+                  "TBD")
+                  ->default_val(false)
+                  ->group("TBD");
+
+    app_.add_option("--exhaustive_scorer",
+                    parameters_.exhaustive_scorer,
+                    "TODO")
+                    ->default_val("default")
+                    ->group("Scoring Parameters");
+
+    app_.add_option("--mc_scorer",
+                    parameters_.mc_scorer,
+                    "TODO")
+                    ->default_val("default")
+                    ->check(CLI::IsMember(std::set<String>{"default","scaled_scorer"}))
+                    ->group("Scoring Parameters");
+
+    app_.add_option("--scaled_score_d",
+                    parameters_.scaled_score_d,
+                    "TODO")
+                    ->default_val(1.0f)
+                    ->group("Scoring Parameters");
+
+    app_.add_option("--scaled_score_r",
+                    parameters_.scaled_score_r,
+                    "TODO")
+                    ->default_val(2.0f)
+                    ->group("Scoring Parameters");
 }
 
 void

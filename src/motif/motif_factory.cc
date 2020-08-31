@@ -353,7 +353,6 @@ MotifFactory::_setup_basepair_ends(
 void
 MotifFactory::_setup_secondary_structure(
         MotifOP & m) {
-    
     auto ss = parser_.to_secondary_structure(m);
     Strings end_ids(m->ends().size());
     int i = 0;
