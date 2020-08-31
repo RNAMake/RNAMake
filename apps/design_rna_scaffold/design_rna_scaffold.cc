@@ -69,19 +69,15 @@ DesignRNAScaffold::setup_options() {
                     ->default_val("default.out")
                     ->group("File Options");
 
-    parameters_.mg = "";
-
     app_.add_flag("--dump_pdbs",
                     parameters_.dump_pdbs,
                     "flag to dump intermediate pdbs TODO")
                     ->group("File Options");
-                parameters_.dump_pdbs = false;
 
     app_.add_flag("--dump_scaffold_pdbs",
                     parameters_.dump_scaffold_pdbs,
                     "flag to output intermediate scaffold pdbs in the current directory")
                     ->group("File Options");
-                    parameters_.dump_scaffold_pdbs = false;
 
     app_.add_option("--search_type",
                     parameters_.search_type,
@@ -107,14 +103,17 @@ DesignRNAScaffold::setup_options() {
                     parameters_.skip_sequence_optimization,
                     "flag to skip sequence optimization of the design")
                     ->group("Search Parameters");
-                    parameters_.skip_sequence_optimization = false;
+
+    app_.add_flag("--skip_thermo_fluc",
+                  parameters_.skip_thermo_fluc,
+                  "flag to skip thermo fluc calculate to evaluate stability")
+                  ->group("TBD");
 
     app_.add_option("--score_file",
                     parameters_.score_file,
                     "name of output file containining scoring information for design")
                     ->default_val("default.scores")
                     ->group("File Options");
-
 
     app_.add_option("--solution_filter",
                     parameters_.solution_filter,
@@ -209,38 +208,6 @@ DesignRNAScaffold::parse_command_line(
         int argc,
         const char ** argv) {
 
-        base::Application::parse_command_line(argc, argv);
-
-    // core inputs
-    // parameters_.pdb       = get_string_option("pdb");
-    // parameters_.start_bp   = get_string_option("start_bp");
-    // parameters_.end_bp    = get_string_option("end_bp");
-    parameters_.mg         = get_string_option("mg");
-    // common options
-    parameters_.designs   = get_int_option("designs"); parameters_.dump_pdbs = get_bool_option("dump_pdbs"); parameters_.dump_scaffold_pdbs = get_bool_option("dump_scaffold_pdbs");
-    parameters_.out_file = get_string_option("out_file"); parameters_.score_file = get_string_option("score_file");
-    parameters_.solution_filter = get_string_option("solution_filter");
-    parameters_.search_type = get_string_option("search_type");
-    parameters_.motif_path = get_string_option("motif_path");
-    parameters_.all_designs = get_bool_option("all_designs");
-    parameters_.skip_sequence_optimization = get_bool_option("skip_sequence_optimization");
-    // less common options
-    parameters_.no_basepair_checks         = get_bool_option("no_basepair_checks");
-    parameters_.no_mg_file = get_bool_option("no_mg_file");
-    parameters_.starting_helix = get_string_option("starting_helix");
-    parameters_.ending_helix = get_string_option("ending_helix");
-    parameters_.search_cutoff = get_float_option("search_cutoff");
-    parameters_.search_max_size = get_int_option("search_max_size");
-    parameters_.new_ensembles = get_string_option("new_ensembles");
-    parameters_.max_helix_length = get_int_option("max_helix_length");
-    parameters_.min_helix_length = get_int_option("min_helix_length");
-
-    // scoring related options
-    parameters_.exhaustive_scorer = get_string_option("exhaustive_scorer");
-    parameters_.mc_scorer = get_string_option("mc_scorer");
-    parameters_.scaled_score_d = get_float_option("scaled_score_d");
-    parameters_.scaled_score_r = get_float_option("scaled_score_r");
-
  }
 
 void
@@ -262,7 +229,7 @@ DesignRNAScaffold::run() {
 
     //sequence optimziation setup
     auto seq_optimizer = std::make_shared<sequence_optimization::SequenceOptimizer3D>();
-    seq_optimizer->set_option_value("steps", 1);
+    seq_optimizer->set_option_value("steps", 1000);
 
     //thermo sim setup
     auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
@@ -277,11 +244,15 @@ DesignRNAScaffold::run() {
     auto sol = motif_search::SolutionOP(nullptr);
     search_->setup(problem_);
     int i = 0;
+    LOG_INFO << "###################";
+    LOG_INFO << "# starting search #";
+    LOG_INFO << "###################";
+    LOG_INFO << "search cutoff: " << search_->get_float_option("accept_score");
+
     while(!search_->finished()) {
 
         try {
             sol = search_->next();
-
             if (sol == nullptr) { break; }
 
             sol_mg = sol->graph->to_motif_graph();
@@ -289,7 +260,7 @@ DesignRNAScaffold::run() {
             _get_motif_names(sol_mg);
 
             if (i == 0) {
-                LOG_INFO << "found a solution: " << motif_names_;
+                LOG_INFO << "found a solution: " << motif_names_ << "with score: " << sol->score;
             } else if (i % 10 == 0) {
                 LOG_INFO << "found " << i << " solutions ";
             }
@@ -300,14 +271,14 @@ DesignRNAScaffold::run() {
                                     mg->last_node()->data()->end_name(1),
                                     mg->get_node(end_.node_index)->data()->end_name(end_.edge_index));
             _fix_flex_helices_mtype(mg_copy);
-            mg_copy->replace_ideal_helices();
-
             if(parameters_.skip_sequence_optimization) {
+                i += 1;
                 _record_solution(mg_copy, sol, nullptr, 0, i, 0);
                 mg->remove_level(1);
                 continue;
-            }
 
+            }
+            mg_copy->replace_ideal_helices();
             auto last_m = mg_copy->get_node(end_.node_index)->connections()[end_.edge_index]->partner(end_.node_index);
             auto new_start = data_structure::NodeIndexandEdge{last_m->index(), 1};
 
@@ -317,9 +288,11 @@ DesignRNAScaffold::run() {
                 auto opt_seq_scorer = std::make_shared<sequence_optimization::InternalTargetScorer>(
                         new_start.node_index, new_start.edge_index, end_.node_index, end_.edge_index,
                         problem_->target_an_aligned_end);
-
                 auto sols = seq_optimizer->get_optimized_sequences(mg_copy, opt_seq_scorer);
+                std::cout << seq_optimizer->get_float_option("cutoff") << std::endl;
+                std::cout << sols[0]->dist_score << std::endl;
                 mg_copy->replace_helical_sequence(sols[0]->sequence);
+
 
                 // thermo sim
                 auto r = _get_mseg(mg_copy);
@@ -331,7 +304,10 @@ DesignRNAScaffold::run() {
                 sim->setup(*r->mseg, start, end);
                 auto count = 0;
                 for (int s = 0; s < 1000000; s++) {
-                    count += sim->next();
+                    if(sim->next()) {
+                        count += 1;
+                    }
+
                 }
                 _record_solution(mg_copy, sol, sols[0], count, i, j);
 
@@ -340,7 +316,8 @@ DesignRNAScaffold::run() {
 
             mg->remove_level(1);
         }
-        catch(...) {
+        catch(std::runtime_error const & e) {
+            LOG_WARNING << "error was caught:" << e.what();
             mg->remove_level(1);
             continue;
         }
@@ -369,12 +346,22 @@ DesignRNAScaffold::run() {
 
 void
 DesignRNAScaffold::_setup_from_pdb() {
-    auto struc = rm_.get_structure(parameters_.pdb, "scaffold");
-    LOGI << "loaded pdb from file: " << parameters_.pdb;
+    LOG_INFO << "#########";
+    LOG_INFO << "# setup #";
+    LOG_INFO << "#########";
 
-    if (parameters_.start_bp == "" || parameters_.end_bp == "") {
-        LOG_ERROR << "must supply the name of the start_bp and end_bp using option -start_bp and "
-                    "-end_bp respectively when using -pdb option";
+    auto struc = rm_.get_structure(parameters_.pdb, "scaffold");
+    LOG_INFO << "loaded pdb from file: " << parameters_.pdb;
+    auto end_names = String();
+    for(auto const & end : struc->ends()) {
+          end_names += end->name() + " ";
+    }
+    LOG_INFO << "available ends to build off: " << end_names;
+
+    if (parameters_.start_bp.empty() || parameters_.end_bp.empty()) {
+        LOG_ERROR << "must supply the name of the start_bp and end_bp using option --start_bp and "
+                    "--end_bp respectively when using -pdb option";
+        exit(0);
     }
 
     check_bp(parameters_.start_bp, struc, "start");

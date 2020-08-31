@@ -117,9 +117,9 @@ private:
         String pdb, start_bp, end_bp, mg;
         String starting_helix, ending_helix, search_type, motif_path;
         String out_file, score_file, solution_filter, new_ensembles;
-        bool skip_sequence_optimization, no_basepair_checks, no_mg_file;
+        bool skip_sequence_optimization, skip_thermo_fluc, no_basepair_checks, no_mg_file;
         bool all_designs, dump_pdbs, dump_scaffold_pdbs;
-        float search_cutoff;
+        float search_cutoff, seq_opt_cutoff, thermo_sim_cutoff;
         int search_max_size, designs;
         int max_helix_length, min_helix_length;
         float scaled_score_d, scaled_score_r;

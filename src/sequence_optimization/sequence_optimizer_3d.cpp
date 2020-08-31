@@ -245,7 +245,6 @@ SequenceOptimizer3D::get_optimized_sequences(
     auto new_bp_state = Strings();
     while (i < steps_) {
         i++;
-
         d_bp = designable_bps[rng_.randrange(designable_bps.size())];
         new_bp_state = possible_bps_[rng_.randrange(possible_bps_.size())];
         d_bp->update_state(new_bp_state);
