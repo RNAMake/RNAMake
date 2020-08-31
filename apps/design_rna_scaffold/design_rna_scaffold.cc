@@ -290,24 +290,24 @@ DesignRNAScaffold::run() {
 
             if (i == 0) {
                 LOG_INFO << "found a solution: " << motif_names_;
+                LOG_INFO << "score: " << sol->score;
             } else if (i % 10 == 0) {
                 LOG_INFO << "found " << i << " solutions ";
             }
 
             mg->add_motif_graph(*sol_mg, start_.node_index, start_.edge_index);
+            mg->write_pdbs();
             auto mg_copy = std::make_shared<motif_data_structure::MotifGraph>(*mg);
             mg_copy->add_connection(mg->last_node()->index(), end_.node_index,
                                     mg->last_node()->data()->end_name(1),
                                     mg->get_node(end_.node_index)->data()->end_name(end_.edge_index));
             _fix_flex_helices_mtype(mg_copy);
-            mg_copy->replace_ideal_helices();
-
             if(parameters_.skip_sequence_optimization) {
                 _record_solution(mg_copy, sol, nullptr, 0, i, 0);
                 mg->remove_level(1);
                 continue;
             }
-
+            mg_copy->replace_ideal_helices();
             auto last_m = mg_copy->get_node(end_.node_index)->connections()[end_.edge_index]->partner(end_.node_index);
             auto new_start = data_structure::NodeIndexandEdge{last_m->index(), 1};
 
