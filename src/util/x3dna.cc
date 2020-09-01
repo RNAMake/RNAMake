@@ -304,10 +304,12 @@ X3dna::X3Basepairs
 X3dna::get_basepairs_json(
         String const &pdb_path) const {
 
-    // get the dssr json object
-    //TODO fix this
     auto dssr_json = base::execute_command_json(base::x3dna_path() + "/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null"); 
-    
+        
+    //deleting the temp files that we don't want. 
+    auto cleanup_cmd = String{base::x3dna_path()} +  String{"/bin/x3dna-dssr --clean 2> /dev/null"};
+    std::system(cleanup_cmd.c_str());
+   
     // get rid of temp files created by x3dna-dssr
     util::json_cleanup();
 
