@@ -16,6 +16,7 @@
 #include <motif_search/solution_filter.h>
 #include "motif_data_structure/motif_graph.h"
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
+#include <thermo_fluctuation/graph/simulation.h>
 
 #include <CLI/CLI.hpp>
 
@@ -40,13 +41,23 @@ public: // application functions
 private:
 
     void
+    setup();
+
+private:
+
+    bool
+    _get_motif_graph_solution();
+
+    bool
+    _get_sequence_optimization_solution(
+
+        );
+
+    void
     _setup_sterics();
 
     void
     _setup_from_pdb();
-
-    void
-    _setup_from_mg();
 
     std::vector<motif::MotifStateOPs>
     _get_libraries();
@@ -111,38 +122,93 @@ private:
     void
     check_bp(
             String const &,
-            structure::RNAStructureOP,
+            structure::RNAStructureOP const &,
             String const &);
 
 private:
-    struct Parameters {
-        String pdb, start_bp, end_bp, mg;
-        String starting_helix, ending_helix, search_type, motif_path;
-        String out_file, score_file, solution_filter, new_ensembles;
-        bool skip_sequence_optimization, skip_thermo_fluc, no_basepair_checks, no_mg_file;
-        bool all_designs, dump_pdbs, dump_scaffold_pdbs;
-        float search_cutoff, seq_opt_cutoff, thermo_sim_cutoff;
-        int search_max_size, designs;
-        int max_helix_length, min_helix_length;
-        float scaled_score_d, scaled_score_r;
-        //scoring related parameters
-        String exhaustive_scorer, mc_scorer;
 
+
+    struct Parameters {
+        // required options will exit if not supplied
+        struct Core {
+            String pdb = "";
+            String start_bp = "";
+            String end_bp = "";
+            int designs = 1;
+        };
+        // options related to what will be outputted
+        struct IO {
+            String out_file = "default.out";
+            String score_file = "default.scores";
+            String new_ensembles_file = "";
+            bool dump_pdbs = false;
+            bool dump_scaffold_pdbs = false;
+            bool dump_intermediate_pdbs = false;
+            bool no_out_file = false;
+        // options related to how the initial motif search is performed
+        };
+        struct Search {
+            String type = "path_finding";
+            String motif_path = "";
+            String starting_helix = "";
+            String ending_helix = "";
+            String solution_filter = "NotFilter";
+            float cutoff = 5.0f;
+            int max_helix_length = 99;
+            int min_helix_length = 4;
+            int max_size = 9999;
+            bool no_basepair_checks = false;
+            String exhaustive_scorer, mc_scorer;
+            float scaled_score_d, scaled_score_r;
+
+        };
+
+        struct SequenceOpt {
+            bool skip;
+            bool sequences_per_design;
+
+        };
+
+        struct ThermoFluc {
+            bool skip;
+
+        };
+
+        Core core = Core();
+        IO io = IO();
+        Search search = Search();
+        SequenceOpt seq_opt = SequenceOpt();
+        ThermoFluc thermo_fluc = ThermoFluc();
     };
 
 public:
     CLI::App app_; // added by CJ 08/20. has to be public to get the --help to work
 
 private:
-    std::ofstream out_, score_out_;
+    // must be initialized a runtime
+    resources::Manager & rm_;
+    // general vars
+    Parameters parameters_ = Parameters();
+    data_structure::NodeIndexandEdge start_ = data_structure::NodeIndexandEdge();
+    data_structure::NodeIndexandEdge end_ = data_structure::NodeIndexandEdge();
+    motif_data_structure::MotifStateGraphOP msg_;
+    motif_data_structure::MotifGraphOP mg_;
+    motif_data_structure::MotifGraphOP mg_w_sol_;
+
+
+    // search vars
     motif_search::SearchOP search_;
     motif_search::ProblemOP problem_;
-    motif_data_structure::MotifStateGraphOP msg_;
-    data_structure::NodeIndexandEdge start_, end_;
-    sequence_optimization::SequenceOptimizer3D optimizer_;
-    resources::Manager & rm_;
-    Parameters parameters_;
-    String motif_names_;
+    motif_search::SolutionOP solution_;
+    int design_num_ = 0;
+    // sequence opt vars
+    sequence_optimization::SequenceOptimizer3DOP seq_optimizer_;
+
+    // thermo sim vars
+    thermo_fluctuation::graph::SimulationOP thermo_sim_;
+    // other vars
+    std::ofstream out_, score_out_;
+    String motif_names_ = "";
     std::map<String, motif::MotifStateEnsembleOP> new_motif_ensembles_;
 
 
