@@ -352,6 +352,10 @@ DesignRNAScaffold::_setup_from_pdb() {
 
     auto struc = rm_.get_structure(parameters_.pdb, "scaffold");
     LOG_INFO << "loaded pdb from file: " << parameters_.pdb;
+    if(struc->ends().empty()) {
+        LOG_ERROR << "pdb has no ends available to build off of";
+        exit(0);
+    }
     auto end_names = String();
     for(auto const & end : struc->ends()) {
           end_names += end->name() + " ";
@@ -374,7 +378,9 @@ DesignRNAScaffold::_setup_from_pdb() {
     auto m = rm_.motif("scaffold", "", parameters_.end_bp);
 
     auto ei1 = m->get_end_index(parameters_.start_bp);
+    LOG_INFO << "start basepair: " << parameters_.start_bp << " is found!";
     auto ei2 = m->get_end_index(parameters_.end_bp);
+    LOG_INFO << "end basepair: " << parameters_.start_bp << " is found!";
 
     start_ = data_structure::NodeIndexandEdge{0, ei1};
     end_   = data_structure::NodeIndexandEdge{0, ei2};
@@ -393,13 +399,14 @@ DesignRNAScaffold::_setup_from_pdb() {
 void
 DesignRNAScaffold::check_bp(
         String const & name,
-        structure::RNAStructureOP struc,
+        structure::RNAStructureOP const & struc,
         String const & type) {
 
     auto bps = structure::BasepairOPs();
     try { bps = struc->get_basepair(name); }
-    catch(std::runtime_error) {
-        LOG_ERROR << "cannot find " + type  + " basepair " + name; exit(0);
+    catch(std::runtime_error const & e) {
+        LOG_ERROR << "cannot find " + type  + " basepair " + name;
+        exit(0);
     }
 
     if(bps[0]->bp_type() != "cW-W" && parameters_.no_basepair_checks) {
@@ -408,8 +415,10 @@ DesignRNAScaffold::check_bp(
     }
 
     if(bps[0]->bp_type() != "cW-W") {
-        LOG_ERROR << "basepair " + name + " is not a watson and crick bp "; exit(0);
+        LOG_ERROR << "basepair " + name + " is not a watson and crick bp ";
+        exit(0);
     }
+
 }
 
 motif_search::SearchOP
