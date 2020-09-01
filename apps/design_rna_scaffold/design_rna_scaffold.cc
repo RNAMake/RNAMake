@@ -48,22 +48,22 @@ DesignRNAScaffold::setup_options() {
     ////////////////////////////////////////////////////////////////////////////////
     // Core Inputs
     ////////////////////////////////////////////////////////////////////////////////
-
     app_.add_option_group("Core Inputs");
 
     app_.add_option("--pdb",parameters_.pdb,"path to a PDB file with input RNA structure")
-                    ->required()
                     ->check(CLI::ExistingFile&CLI::Validator(valid_pdb,"ends in .pdb","valid_pdb"))
                     ->group("Core Inputs");
 
     app_.add_option("--start_bp",parameters_.start_bp,"starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-                    ->required()
                     ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
                     ->group("Core Inputs");
 
     app_.add_option("--end_bp",parameters_.end_bp,"ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-                    ->required()
                     ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
+                    ->group("Core Inputs");
+
+    app_.add_option("--mg",parameters_.mg,"path to a motif graph file")
+                    ->check(CLI::ExistingFile)
                     ->group("Core Inputs");
 
     app_.add_option("--designs",parameters_.designs,"number of designs to create. Default is 1")
@@ -72,8 +72,8 @@ DesignRNAScaffold::setup_options() {
                     ->group("Core Inputs");
 
     app_.add_option("--log_level",parameters_.log_level,"level for global logging")
-                    ->check(CLI::IsMember(std::set<base::LogLevel>{base::LogLevel::DEBUG,base::LogLevel::ERROR,base::LogLevel::FATAL,base::LogLevel::INFO,base::LogLevel::VERBOSE,base::LogLevel::WARN}))//"fatal","warn","info","debug","verbose"}))
-                    ->default_val(base::LogLevel::INFO)
+                    ->check(CLI::IsMember(std::set<String>{"debug","error","fatal","info","verbose","warn"}))
+                    ->default_val("info")
                     ->group("Core Inputs");
     ////////////////////////////////////////////////////////////////////////////////
     // File Options 
@@ -132,7 +132,7 @@ DesignRNAScaffold::setup_options() {
                     ->group("Search Parameters");
 
     app_.add_option("--solution_filter",parameters_.solution_filter,"TODO")
-                    ->default_val("NotFilter")
+                    ->default_val("NoFilter")
                     ->check(CLI::IsMember(std::set<String>{"NoFilter","RemoveDuplicateHelices"}))
                     ->group("Search Parameters");
 
@@ -182,6 +182,13 @@ DesignRNAScaffold::setup_options() {
 
     app_.add_flag("--skip_thermo_fluc",parameters_.skip_thermo_fluc,"flag to skip thermo fluc calculate to evaluate stability")
                     ->group("TBD");
+
+
+    app_.get_option("--pdb")->needs("--start_bp")->needs("--end_bp");
+
+    app_.get_formatter();
+    app_.get_formatter()->column_width(80);
+
 }
 
 void
@@ -193,13 +200,12 @@ DesignRNAScaffold::parse_command_line(
 
 void
 DesignRNAScaffold::run() {
-    std::cout<<(int)parameters_.log_level<<std::endl;
-    return;
-    if(parameters_.new_ensembles != "") { _build_new_ensembles(parameters_.new_ensembles); }
+    if(!parameters_.new_ensembles.empty()) { _build_new_ensembles(parameters_.new_ensembles); }
 
-    if     (parameters_.pdb != "") { _setup_from_pdb(); }
-    else if(parameters_.mg  != "") {}
-    else                           {}
+    if     (!parameters_.pdb.empty()) { _setup_from_pdb(); }
+    else if(!parameters_.mg.empty()) {}
+    else                          {
+    }
 
     out_.open(parameters_.out_file);
     score_out_.open(parameters_.score_file);
@@ -212,7 +218,7 @@ DesignRNAScaffold::run() {
 
     //sequence optimziation setup
     auto seq_optimizer = std::make_shared<sequence_optimization::SequenceOptimizer3D>();
-    seq_optimizer->set_option_value("steps", 1000);
+    seq_optimizer->set_option_value("steps", 1000); // TODO parameterize this? CJ 09/20
 
     //thermo sim setup
     auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
@@ -254,6 +260,7 @@ DesignRNAScaffold::run() {
                                     mg->last_node()->data()->end_name(1),
                                     mg->get_node(end_.node_index)->data()->end_name(end_.edge_index));
             _fix_flex_helices_mtype(mg_copy);
+
             if(parameters_.skip_sequence_optimization) {
                 i += 1;
                 _record_solution(mg_copy, sol, nullptr, 0, i, 0);
@@ -272,8 +279,6 @@ DesignRNAScaffold::run() {
                         new_start.node_index, new_start.edge_index, end_.node_index, end_.edge_index,
                         problem_->target_an_aligned_end);
                 auto sols = seq_optimizer->get_optimized_sequences(mg_copy, opt_seq_scorer);
-                std::cout << seq_optimizer->get_float_option("cutoff") << std::endl;
-                std::cout << sols[0]->dist_score << std::endl;
                 mg_copy->replace_helical_sequence(sols[0]->sequence);
 
 
@@ -293,10 +298,7 @@ DesignRNAScaffold::run() {
 
                 }
                 _record_solution(mg_copy, sol, sols[0], count, i, j);
-
             }
-
-
             mg->remove_level(1);
         }
         catch(std::runtime_error const & e) {
@@ -306,6 +308,7 @@ DesignRNAScaffold::run() {
         }
 
         i++;
+
         if(parameters_.designs <= i) {
             LOG_INFO << "found " << i << " designs, if you want more please use -designs num_of_design";
             exit(0);
@@ -381,7 +384,8 @@ DesignRNAScaffold::check_bp(
 
     auto bps = structure::BasepairOPs();
     try { bps = struc->get_basepair(name); }
-    catch(std::runtime_error) {
+    catch(std::runtime_error const& error) {
+        LOG_ERROR<<error.what();
         LOG_ERROR << "cannot find " + type  + " basepair " + name; exit(0);
     }
 
@@ -416,7 +420,7 @@ DesignRNAScaffold::_setup_search() {
         auto scorer = score_factory.get_scorer(parameters_.exhaustive_scorer);
         //TODO setup default sol topology if user does not specify motif_path
         auto sol_template = std::make_shared<motif_search::SolutionTopologyTemplate>();
-        if(parameters_.motif_path != "") {
+        if(!parameters_.motif_path.empty() /* added by CJ 08/20 parameters_.motif_path != ""*/) {
             sol_template = _setup_sol_template_from_path(parameters_.motif_path);
         }
         auto factory = motif_search::SolutionToplogyFactory();
@@ -437,7 +441,7 @@ DesignRNAScaffold::_setup_search() {
             scorer = std::make_shared<ScaledScorer>(parameters_.scaled_score_d, parameters_.scaled_score_r);
         }
 
-        if(parameters_.motif_path == "") {
+        if(!parameters_.motif_path.empty() /* added by CJ 08/20 parameters_.motif_path != ""*/) {
             LOGE << "must include a motif path when using Monte Carlo search"; exit(0);
         }
         auto sol_template = _setup_sol_template_from_path(parameters_.motif_path);
@@ -453,7 +457,6 @@ DesignRNAScaffold::_setup_search() {
     // setup parameters
     search->set_option_value("accept_score", parameters_.search_cutoff);
     search->set_option_value("max_size", parameters_.search_max_size);
-
 
     return search;
 
@@ -534,31 +537,26 @@ DesignRNAScaffold::_setup_sol_filter(
 
 void
 DesignRNAScaffold::_record_solution(
-        motif_data_structure::MotifGraphOP mg,
-        motif_search::SolutionOP design_sol,
-        sequence_optimization::OptimizedSequenceOP sequence_opt_sol,
+        motif_data_structure::MotifGraphOP const & mg,
+        motif_search::SolutionOP const & design_sol,
+        sequence_optimization::OptimizedSequenceOP const &  sequence_opt_sol,
         int hit_count,
         int design_num,
         int sequence_opt_num) {
+
     score_out_ << design_num << "," << design_sol->score << "," << mg->designable_sequence() << ",";
     score_out_ << mg->dot_bracket() << "," << motif_names_ << ",";
 
     if(parameters_.dump_pdbs) {
         mg->to_pdb("design."+std::to_string(design_num)+".pdb", 1, 1);
     }
-
+    out_ << mg->to_str() << std::endl;
     if(sequence_opt_sol == nullptr) {
         score_out_ << ",,," << std::endl;
-        out_ << mg->to_str() << std::endl;
-        return;
-    }
-    else {
+    } else {
         score_out_ << sequence_opt_sol->sequence << "," << sequence_opt_sol->dist_score << ",";
         score_out_ << sequence_opt_sol->eterna_score << "," << hit_count << std::endl;
     }
-
-    //score_out_ << "design_num,design_score,design_sequence,design_structure,motifs_uses,opt_num,";
-    //score_out_ << "opt_sequence,opt_score,eterna_score" << std::endl;
 
 }
 
@@ -662,26 +660,31 @@ DesignRNAScaffold::_get_mseg(
 // main
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+
+
 int
 main(
         int argc,
         const char ** argv) {
 
     //must add this for all apps!
-    std::set_terminate(base::print_backtrace);
+    std::set_terminate(base::save_backtrace);
 
     //start logging
-    base::init_logging();
-    //load extra motifs being used
     String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
     resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
-
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
-
+    base::init_logging(app.log_level());
+    // hacky way of doing it but wtv, the app is guaranteed to have an input CJ 09/20
+    if(app.app_["--mg"]->empty() && app.app_["--pdb"]->empty()) {
+        LOGF<<"you must input a PDB or motif graph file via --pdb or --mg";
+        exit(1);
+    }
+    throw 10;
+    //load extra motifs being used
     app.run();
-
     return 0;
 
 }

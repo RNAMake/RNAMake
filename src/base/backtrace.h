@@ -6,9 +6,13 @@
 #ifndef BASE_LIB_BACKTRACE_H
 #define BASE_LIB_BACKTRACE_H
 
-
+#include <fstream>
 #include <iostream>
 #include <stdio.h>
+
+#include <base/log.h>
+#include <base/types.h>
+#include <base/file_io.h>
 
 #if defined(_WIN32) || defined(_WIN64)
 
@@ -20,6 +24,8 @@
 #endif
 
 #include <cxxabi.h>
+
+
 namespace base {
 
 std::string
@@ -27,6 +33,9 @@ demangle( std::string );
 
 void
 print_backtrace();
+
+void
+save_backtrace();
 
 }
 #endif //BASE_LIB_BACKTRACE_H

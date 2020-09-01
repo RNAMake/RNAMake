@@ -8,6 +8,7 @@
 
 #include <base/backtrace.h>
 
+
 inline
 std::string
 base::demangle( std::string trace ) {
@@ -94,4 +95,45 @@ base::print_backtrace() {
     //std::cerr << utility::CSI_Reset; // reset color of cerr
     free(strs);
 #endif
+}
+
+void
+base::save_backtrace() {
+    auto ii(0);
+    auto outfile_name = String{"stack.0"};
+    while(base::file_exists(outfile_name)){
+        outfile_name = String{"stack."} + std::to_string(++ii);
+
+    }
+    auto outfile = std::ofstream(outfile_name);
+    static int tried_throw = -1;
+
+    try {
+        // try once to re-throw currently active exception
+        tried_throw++;
+        if (tried_throw == 0) throw;
+    }
+    catch (const std::exception &e) {
+        outfile << __FUNCTION__ << " caught unhandled exception. what(): "
+               << e.what() << std::endl;
+    }
+    catch (...) {
+        outfile << __FUNCTION__ << " caught unknown/unhandled exception."
+                  << std::endl;
+    }
+
+    size_t const callstack_size = 128;
+    void* callstack[callstack_size];
+    const int nMaxFrames = sizeof(callstack) / sizeof(callstack[0]);
+    int i = 0;
+    int frames = backtrace(callstack, nMaxFrames);
+    char** strs = backtrace_symbols(callstack, frames);
+
+    for ( i = 3; i < frames; ++i ) {
+        outfile << demangle( strs[i] ).c_str() << std::endl;
+    }
+    free(strs);
+
+    LOGF<<"Fatal error encountered. Stack trace can be found in "<<outfile_name;
+
 }

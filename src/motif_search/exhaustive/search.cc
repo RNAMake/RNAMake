@@ -8,8 +8,7 @@
 // option functions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-namespace motif_search {
-namespace exhaustive {
+namespace motif_search::exhaustive {
 
 void
 Search::setup_options() {
@@ -65,5 +64,4 @@ Search::_get_graph_from_solution() {
 }
 
 
-}
 }

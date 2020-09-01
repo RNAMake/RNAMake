@@ -37,6 +37,10 @@ public: // application functions
     void
     run() override ;
 
+    base::LogLevel
+    log_level() const  { //added by CJ
+        return base::log_level_from_str(parameters_.log_level);
+    }
 private:
 
     void
@@ -67,9 +71,9 @@ private:
 
     void
     _record_solution(
-            motif_data_structure::MotifGraphOP,
-            motif_search::SolutionOP,
-            sequence_optimization::OptimizedSequenceOP,
+            motif_data_structure::MotifGraphOP const &,
+            motif_search::SolutionOP const &,
+            sequence_optimization::OptimizedSequenceOP const & ,
             int,
             int,
             int);
@@ -86,10 +90,7 @@ private:
     _build_new_ensembles(
             String const &);
 
-    base::LogLevel
-    log_level() const  {
-        return parameters_.log_level;
-    }
+
 
 private:
 
@@ -112,13 +113,11 @@ private:
             motif_data_structure::MotifGraphOP);
 
 
-private:
-    void
+private: void
     check_bp(
             String const &,
             structure::RNAStructureOP,
             String const &);
-
 private:
     struct Parameters {
         String pdb, start_bp, end_bp, mg;
@@ -132,7 +131,7 @@ private:
         float scaled_score_d, scaled_score_r;
         //scoring related parameters
         String exhaustive_scorer, mc_scorer;
-        base::LogLevel log_level;
+        String log_level;
 
     };
 
@@ -153,7 +152,5 @@ private:
 
 
 };
-
-
 
 #endif //TEST_DESIGN_RNA_SCAFFOLD_H
