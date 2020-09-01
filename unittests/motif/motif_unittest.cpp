@@ -155,9 +155,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
             points.push_back(b.center());
         }
         lookup.add_points(points);
-
     }
-
 }
 
 

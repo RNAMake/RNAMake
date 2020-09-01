@@ -22,8 +22,8 @@ LogLevel
 log_level_from_str(
         String const & s) {
     auto lower_str = s;
-    for (auto p = lower_str.begin(); p != lower_str.end(); ++p) {
-        *p = std::towlower(*p);
+    for (char & p : lower_str) {
+        p = std::towlower(p);
     }
 
     if     (lower_str == "fatal")  { return LogLevel::FATAL;   }

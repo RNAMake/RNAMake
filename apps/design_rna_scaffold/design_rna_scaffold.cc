@@ -32,10 +32,11 @@ valid_pdb(String& path) {
 
 String
 valid_bp(String& bp) {
-    auto bp_pattern = std::regex("[A-Z][0-9]{*}-[A-Z][0-9]{*}");
-    std::regex_match(bp.begin(),bp.end(),bp_pattern);
-    std::cout<<bp_pattern.mark_count()<<std::endl;
-    return String{"bad"};
+    const auto bp_pattern = std::regex("\\b[A-Z][0-9]*-[A-Z][0-9]*\\b");
+    auto sm = std::smatch{};
+    std::regex_match(bp,sm,bp_pattern);
+
+    return sm.size() == 1 ? String{""} : String{bp+ " is an invalid bp format"};
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // app functions
@@ -43,129 +44,99 @@ valid_bp(String& bp) {
 
 void
 DesignRNAScaffold::setup_options() {
-    
+
     ////////////////////////////////////////////////////////////////////////////////
-    // Core Inputs 
+    // Core Inputs
     ////////////////////////////////////////////////////////////////////////////////
 
     app_.add_option_group("Core Inputs");
 
-    app_.add_option("--pdb",
-                    parameters_.pdb,
-                    "path to a PDB file with input RNA structure")
+    app_.add_option("--pdb",parameters_.pdb,"path to a PDB file with input RNA structure")
                     ->required()
                     ->check(CLI::ExistingFile&CLI::Validator(valid_pdb,"ends in .pdb","valid_pdb"))
                     ->group("Core Inputs");
-    
-    app_.add_option("--end_bp",
-                    parameters_.end_bp,
-                    "ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
+
+    app_.add_option("--start_bp",parameters_.start_bp,"starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
                     ->required()
                     ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
                     ->group("Core Inputs");
 
-    app_.add_option("--start_bp",
-                    parameters_.start_bp,
-                    "starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
+    app_.add_option("--end_bp",parameters_.end_bp,"ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
                     ->required()
+                    ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
                     ->group("Core Inputs");
 
-    app_.add_option("--designs",
-                        parameters_.designs,
-                        "number of designs to create. Default is 1")
+    app_.add_option("--designs",parameters_.designs,"number of designs to create. Default is 1")
                     ->default_val(1)
                     ->check(CLI::PositiveNumber)
                     ->group("Core Inputs");
-    //CLI::Validator(std::function<std::string(std::string&)>,);
+
+    app_.add_option("--log_level",parameters_.log_level,"level for global logging")
+                    ->check(CLI::IsMember(std::set<base::LogLevel>{base::LogLevel::DEBUG,base::LogLevel::ERROR,base::LogLevel::FATAL,base::LogLevel::INFO,base::LogLevel::VERBOSE,base::LogLevel::WARN}))//"fatal","warn","info","debug","verbose"}))
+                    ->default_val(base::LogLevel::INFO)
+                    ->group("Core Inputs");
     ////////////////////////////////////////////////////////////////////////////////
     // File Options 
     ////////////////////////////////////////////////////////////////////////////////
-    
     app_.add_option_group("File Options");
 
-    app_.add_option("--out_file",
-                    parameters_.out_file,
-                    "output file for design(s)")
+    app_.add_flag("--dump_pdbs",parameters_.dump_pdbs,"flag to dump intermediate pdbs TODO")
+                    ->group("File Options");
+
+    app_.add_flag("--dump_scaffold_pdbs",parameters_.dump_scaffold_pdbs,"flag to output intermediate scaffold pdbs in the current directory")
+                    ->group("File Options");
+
+    app_.add_option("--out_file",parameters_.out_file,"output file for design(s)")
                     ->default_val("default.out")
                     ->group("File Options");
 
-    app_.add_flag("--dump_pdbs",
-                    parameters_.dump_pdbs,
-                    "flag to dump intermediate pdbs TODO")
-                    ->group("File Options");
-
-    app_.add_flag("--dump_scaffold_pdbs",
-                    parameters_.dump_scaffold_pdbs,
-                    "flag to output intermediate scaffold pdbs in the current directory")
-                    ->group("File Options");
-    app_.add_option("--score_file",
-                    parameters_.score_file,
-                    "name of output file containining scoring information for design")
+    app_.add_option("--score_file",parameters_.score_file,"name of output file containining scoring information for design")
                     ->default_val("default.scores")
                     ->group("File Options");
     ////////////////////////////////////////////////////////////////////////////////
     // Search Parameters 
     ////////////////////////////////////////////////////////////////////////////////
     app_.add_option_group("Search Parameters");
-    
-    app_.add_option("--search_type",
-                    parameters_.search_type,
-                    "search type for traversing motif space")
-                    ->default_val("path_finding")
-                    ->check(CLI::IsMember(std::set<String>{"path_finding", "exhaustive", "mc"}))
+
+    app_.add_option("--ending_helix",parameters_.ending_helix,"ending helix for design solution. Format = [TODO]")
+                    ->default_val("")
                     ->group("Search Parameters");
 
-    app_.add_option("--search_cutoff",
-                    parameters_.search_cutoff,
-                    "TODO")
+    app_.add_option("--max_helix_length",parameters_.max_helix_length,"maximum number of basepairs in a solution helix")
+                    ->default_val(99)
+                    ->group("Search Parameters");
+
+    app_.add_option("--min_helix_length",parameters_.min_helix_length,"minimum number of basepairs in a solution helix")
+                    ->default_val(4)
+                    ->group("Search Parameters");
+
+    app_.add_flag("--no_basepair_checks",parameters_.no_basepair_checks,"flag to disable basepair checks")
+                    ->default_val(false)
+                    ->group("Search Parameters");
+
+    app_.add_option("--search_cutoff",parameters_.search_cutoff,"TODO")
                     ->default_val(5.0f)
                     ->group("Search Parameters");
 
-    app_.add_option("--search_max_size",
-                    parameters_.search_max_size,
-                    "maximum number of steps for a design search")
+    app_.add_option("--search_max_size",parameters_.search_max_size,"maximum number of steps for a design search")
                     ->default_val(999999)
                     ->check(CLI::PositiveNumber) //TODO put a limit to this?? CJ 08/20
                     ->group("Search Parameters");
 
-    app_.add_flag("--skip_sequence_optimization",
-                    parameters_.skip_sequence_optimization,
-                    "flag to skip sequence optimization of the design")
+    app_.add_option("--search_type",parameters_.search_type,"search type for traversing motif space")
+                    ->default_val("path_finding")
+                    ->check(CLI::IsMember(std::set<String>{"path_finding", "exhaustive", "mc"}))
                     ->group("Search Parameters");
 
-    app_.add_option("--solution_filter",
-                    parameters_.solution_filter,
-                    "TODO")
+    app_.add_flag("--skip_sequence_optimization",parameters_.skip_sequence_optimization,"flag to skip sequence optimization of the design")
+                    ->group("Search Parameters");
+
+    app_.add_option("--solution_filter",parameters_.solution_filter,"TODO")
                     ->default_val("NotFilter")
                     ->check(CLI::IsMember(std::set<String>{"NoFilter","RemoveDuplicateHelices"}))
                     ->group("Search Parameters");
 
-    app_.add_flag("--no_basepair_checks",
-                    parameters_.no_basepair_checks,
-                    "flag to disable basepair checks")
-                    ->group("Search Parameters");
-                    parameters_.no_basepair_checks = false;
-
-    app_.add_option("--max_helix_length",
-                parameters_.max_helix_length,
-                    "maximum number of basepairs in a solution helix")
-                    ->default_val(99)
-                    ->group("Search Parameters");
-
-    app_.add_option("--min_helix_length",
-                    parameters_.min_helix_length,
-                    "minimum number of basepairs in a solution helix")
-                    ->default_val(4)
-                    ->group("Search Parameters");
-    app_.add_option("--starting_helix",
-                    parameters_.starting_helix,
-                    "starting helix for design solution. Format = [TODO]")
-                    ->default_val("")
-                    ->group("Search Parameters");
-
-    app_.add_option("--ending_helix",
-                    parameters_.ending_helix,
-                    "ending helix for design solution. Format = [TODO]")
+    app_.add_option("--starting_helix",parameters_.starting_helix,"starting helix for design solution. Format = [TODO]")
                     ->default_val("")
                     ->group("Search Parameters");
     ////////////////////////////////////////////////////////////////////////////////
@@ -173,65 +144,44 @@ DesignRNAScaffold::setup_options() {
     ////////////////////////////////////////////////////////////////////////////////
     app_.add_option_group("Scoring Paramteres");
 
-    app_.add_option("--exhaustive_scorer",
-                    parameters_.exhaustive_scorer,
-                    "TODO")
+    app_.add_option("--exhaustive_scorer",parameters_.exhaustive_scorer,"TODO")
                     ->default_val("default")
                     ->group("Scoring Parameters");
 
-    app_.add_option("--mc_scorer",
-                    parameters_.mc_scorer,
-                    "TODO")
+    app_.add_option("--mc_scorer",parameters_.mc_scorer,"TODO")
                     ->default_val("default")
                     ->check(CLI::IsMember(std::set<String>{"default","scaled_scorer"}))
                     ->group("Scoring Parameters");
 
-    app_.add_option("--scaled_score_d",
-                    parameters_.scaled_score_d,
-                    "TODO")
+    app_.add_option("--scaled_score_d",parameters_.scaled_score_d,"TODO")
                     ->default_val(1.0f)
                     ->group("Scoring Parameters");
 
-    app_.add_option("--scaled_score_r",
-                    parameters_.scaled_score_r,
-                    "TODO")
+    app_.add_option("--scaled_score_r",parameters_.scaled_score_r,"TODO")
                     ->default_val(2.0f)
                     ->group("Scoring Parameters");
     ////////////////////////////////////////////////////////////////////////////////
     // TBD 
     ////////////////////////////////////////////////////////////////////////////////
     app_.add_option_group("TBD");
-
-    app_.add_flag("--skip_thermo_fluc",
-                  parameters_.skip_thermo_fluc,
-                  "flag to skip thermo fluc calculate to evaluate stability")
-                  ->group("TBD");
-
-    app_.add_flag("--all_designs",
-                    parameters_.all_designs,
-                    "TBD")
+    app_.add_flag("--all_designs",parameters_.all_designs,"TBD")
                     ->default_val(false)
                     ->group("TBD");
 
-    app_.add_option("--motif_path",
-                    parameters_.motif_path,
-                    "TBD")
+    app_.add_option("--motif_path",parameters_.motif_path,"TBD")
                     ->default_val("")
                     ->group("TBD");
 
-    app_.add_option("--new_ensembles",
-                    parameters_.new_ensembles,
-                    "TBD")
+    app_.add_option("--new_ensembles",parameters_.new_ensembles,"TBD")
                     ->default_val("")
                     ->group("TBD");
 
-    app_.add_flag("--no_mg_file",
-                  parameters_.no_mg_file,
-                  "TBD")
-                  ->default_val(false)
-                  ->group("TBD");
+    app_.add_flag("--no_mg_file",parameters_.no_mg_file,"TBD")
+                    ->default_val(false)
+                    ->group("TBD");
 
-
+    app_.add_flag("--skip_thermo_fluc",parameters_.skip_thermo_fluc,"flag to skip thermo fluc calculate to evaluate stability")
+                    ->group("TBD");
 }
 
 void
@@ -243,6 +193,8 @@ DesignRNAScaffold::parse_command_line(
 
 void
 DesignRNAScaffold::run() {
+    std::cout<<(int)parameters_.log_level<<std::endl;
+    return;
     if(parameters_.new_ensembles != "") { _build_new_ensembles(parameters_.new_ensembles); }
 
     if     (parameters_.pdb != "") { _setup_from_pdb(); }
@@ -648,8 +600,9 @@ DesignRNAScaffold::_build_new_ensembles(
                 try {
                     all_ms.push_back(rm_.motif_state(m_name, "", end_name));
                     scores.push_back(0);
+                } catch (std::runtime_error const& error) {
+                    LOGW<<"Error: "<<error.what(); continue;
                 }
-                catch(...) { continue; }
             }
         }
         new_motif_ensembles_[spl[0]] = std::make_shared<motif::MotifStateEnsemble>(all_ms, scores);
@@ -726,6 +679,7 @@ main(
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
+
     app.run();
 
     return 0;

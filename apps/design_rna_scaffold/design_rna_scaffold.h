@@ -27,15 +27,15 @@ public:
 public: // application functions
 
     void
-    setup_options();
+    setup_options() override ;
 
     void
     parse_command_line(
             int,
-            const char **);
+            const char **) override ;
 
     void
-    run();
+    run() override ;
 
 private:
 
@@ -86,6 +86,11 @@ private:
     _build_new_ensembles(
             String const &);
 
+    base::LogLevel
+    log_level() const  {
+        return parameters_.log_level;
+    }
+
 private:
 
     struct EnsembleConversionResults {
@@ -127,6 +132,7 @@ private:
         float scaled_score_d, scaled_score_r;
         //scoring related parameters
         String exhaustive_scorer, mc_scorer;
+        base::LogLevel log_level;
 
     };
 
