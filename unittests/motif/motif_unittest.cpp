@@ -61,7 +61,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
         
         REQUIRE(are_atom_vectors_equal(atoms1, atoms2));
     }
-    
+
     SECTION("test aligning motifs") {
         m->move(math::Point(10, 10, 10));
         auto m_aligned = get_aligned_motif(ref_m->ends()[0], m->ends()[0], m);
@@ -157,7 +157,7 @@ TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
         lookup.add_points(points);
 
     }
-    
+
 }
 
 

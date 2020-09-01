@@ -24,35 +24,49 @@ DesignRNAScaffold::DesignRNAScaffold():
 
 }
 
+String
+valid_pdb(String& path) {
+    auto ending = path.substr(path.size()-4);
+    return ending == ".pdb" ? String{""} : String{"the file specified by --pdb must end in .pdb"};
+}
+
+String
+valid_bp(String& bp) {
+    auto bp_pattern = std::regex("[A-Z][0-9]{*}-[A-Z][0-9]{*}");
+    std::regex_match(bp.begin(),bp.end(),bp_pattern);
+    std::cout<<bp_pattern.mark_count()<<std::endl;
+    return String{"bad"};
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // app functions
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
 DesignRNAScaffold::setup_options() {
+    
+    ////////////////////////////////////////////////////////////////////////////////
+    // Core Inputs 
+    ////////////////////////////////////////////////////////////////////////////////
 
     app_.add_option_group("Core Inputs");
-    app_.add_option_group("File Options");
-    app_.add_option_group("Search Parameters");
-    app_.add_option_group("Scoring Paramteres");
-    app_.add_option_group("TBD");
 
     app_.add_option("--pdb",
                     parameters_.pdb,
                     "path to a PDB file with input RNA structure")
                     ->required()
-                    ->check(CLI::ExistingFile)
+                    ->check(CLI::ExistingFile&CLI::Validator(valid_pdb,"ends in .pdb","valid_pdb"))
+                    ->group("Core Inputs");
+    
+    app_.add_option("--end_bp",
+                    parameters_.end_bp,
+                    "ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
+                    ->required()
+                    ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
                     ->group("Core Inputs");
 
     app_.add_option("--start_bp",
-                        parameters_.start_bp,
-                        "starting basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]")
-                    ->required()
-                    ->group("Core Inputs");
-
-    app_.add_option("--end_bp",
-                    parameters_.end_bp,
-                    "ending basepair to be used in structure format: [CHAIN ID][NT1 NUM] - [CHAIN ID][NT2 NUM]")
+                    parameters_.start_bp,
+                    "starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
                     ->required()
                     ->group("Core Inputs");
 
@@ -62,6 +76,12 @@ DesignRNAScaffold::setup_options() {
                     ->default_val(1)
                     ->check(CLI::PositiveNumber)
                     ->group("Core Inputs");
+    //CLI::Validator(std::function<std::string(std::string&)>,);
+    ////////////////////////////////////////////////////////////////////////////////
+    // File Options 
+    ////////////////////////////////////////////////////////////////////////////////
+    
+    app_.add_option_group("File Options");
 
     app_.add_option("--out_file",
                     parameters_.out_file,
@@ -78,7 +98,16 @@ DesignRNAScaffold::setup_options() {
                     parameters_.dump_scaffold_pdbs,
                     "flag to output intermediate scaffold pdbs in the current directory")
                     ->group("File Options");
-
+    app_.add_option("--score_file",
+                    parameters_.score_file,
+                    "name of output file containining scoring information for design")
+                    ->default_val("default.scores")
+                    ->group("File Options");
+    ////////////////////////////////////////////////////////////////////////////////
+    // Search Parameters 
+    ////////////////////////////////////////////////////////////////////////////////
+    app_.add_option_group("Search Parameters");
+    
     app_.add_option("--search_type",
                     parameters_.search_type,
                     "search type for traversing motif space")
@@ -104,17 +133,6 @@ DesignRNAScaffold::setup_options() {
                     "flag to skip sequence optimization of the design")
                     ->group("Search Parameters");
 
-    app_.add_flag("--skip_thermo_fluc",
-                  parameters_.skip_thermo_fluc,
-                  "flag to skip thermo fluc calculate to evaluate stability")
-                  ->group("TBD");
-
-    app_.add_option("--score_file",
-                    parameters_.score_file,
-                    "name of output file containining scoring information for design")
-                    ->default_val("default.scores")
-                    ->group("File Options");
-
     app_.add_option("--solution_filter",
                     parameters_.solution_filter,
                     "TODO")
@@ -122,7 +140,6 @@ DesignRNAScaffold::setup_options() {
                     ->check(CLI::IsMember(std::set<String>{"NoFilter","RemoveDuplicateHelices"}))
                     ->group("Search Parameters");
 
-    // less common options
     app_.add_flag("--no_basepair_checks",
                     parameters_.no_basepair_checks,
                     "flag to disable basepair checks")
@@ -140,7 +157,6 @@ DesignRNAScaffold::setup_options() {
                     "minimum number of basepairs in a solution helix")
                     ->default_val(4)
                     ->group("Search Parameters");
-
     app_.add_option("--starting_helix",
                     parameters_.starting_helix,
                     "starting helix for design solution. Format = [TODO]")
@@ -152,30 +168,10 @@ DesignRNAScaffold::setup_options() {
                     "ending helix for design solution. Format = [TODO]")
                     ->default_val("")
                     ->group("Search Parameters");
-
-    app_.add_flag("--all_designs",
-                    parameters_.all_designs,
-                    "TBD")
-                    ->default_val(false)
-                    ->group("TBD");
-
-    app_.add_option("--motif_path",
-                    parameters_.motif_path,
-                    "TBD")
-                    ->default_val("")
-                    ->group("TBD");
-
-    app_.add_option("--new_ensembles",
-                    parameters_.new_ensembles,
-                    "TBD")
-                    ->default_val("")
-                    ->group("TBD");
-
-    app_.add_flag("--no_mg_file",
-                  parameters_.no_mg_file,
-                  "TBD")
-                  ->default_val(false)
-                  ->group("TBD");
+    ////////////////////////////////////////////////////////////////////////////////
+    // Scoring Paramters 
+    ////////////////////////////////////////////////////////////////////////////////
+    app_.add_option_group("Scoring Paramteres");
 
     app_.add_option("--exhaustive_scorer",
                     parameters_.exhaustive_scorer,
@@ -201,6 +197,41 @@ DesignRNAScaffold::setup_options() {
                     "TODO")
                     ->default_val(2.0f)
                     ->group("Scoring Parameters");
+    ////////////////////////////////////////////////////////////////////////////////
+    // TBD 
+    ////////////////////////////////////////////////////////////////////////////////
+    app_.add_option_group("TBD");
+
+    app_.add_flag("--skip_thermo_fluc",
+                  parameters_.skip_thermo_fluc,
+                  "flag to skip thermo fluc calculate to evaluate stability")
+                  ->group("TBD");
+
+    app_.add_flag("--all_designs",
+                    parameters_.all_designs,
+                    "TBD")
+                    ->default_val(false)
+                    ->group("TBD");
+
+    app_.add_option("--motif_path",
+                    parameters_.motif_path,
+                    "TBD")
+                    ->default_val("")
+                    ->group("TBD");
+
+    app_.add_option("--new_ensembles",
+                    parameters_.new_ensembles,
+                    "TBD")
+                    ->default_val("")
+                    ->group("TBD");
+
+    app_.add_flag("--no_mg_file",
+                  parameters_.no_mg_file,
+                  "TBD")
+                  ->default_val(false)
+                  ->group("TBD");
+
+
 }
 
 void

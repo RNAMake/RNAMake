@@ -6,6 +6,8 @@
 #define TEST_DESIGN_RNA_SCAFFOLD_H
 
 #include <stdio.h>
+#include <regex>
+
 #include <data_structure/graph_base.h>
 #include "base/application.hpp"
 #include "util/steric_lookup.hpp"
