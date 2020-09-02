@@ -190,13 +190,6 @@ DesignRNAScaffold::parse_command_line(
 
 void
 DesignRNAScaffold::run() {
-    if(!parameters_.io.new_ensembles_file.empty()) { _build_new_ensembles(parameters_.io.new_ensembles_file); }
-
-    if     (!parameters_.core.pdb.empty()) { _setup_from_pdb(); }
-    else if(!parameters_.core.mg.empty()) {}
-    else                          {
-    }
-
     // sets up all variables required
     setup();
 
