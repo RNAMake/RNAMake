@@ -39,9 +39,10 @@ public: // application functions
     run() override ;
 
     base::LogLevel
-    log_level() const  { //added by CJ
+    log_level() const { //added by CJ
         return base::log_level_from_str(parameters_.core.log_level);
     }
+
 private:
 
     void
@@ -61,7 +62,7 @@ private:
     _setup_sterics();
 
     void
-    _setup_from_pdb();
+    _setup_from_pdb()  ;
 
     std::vector<motif::MotifStateOPs>
     _get_libraries();
@@ -125,7 +126,7 @@ private: void
     check_bp(
             String const &,
             structure::RNAStructureOP const &,
-            String const &);
+            String const &) const;
 
 private:
 

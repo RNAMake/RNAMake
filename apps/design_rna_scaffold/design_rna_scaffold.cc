@@ -50,21 +50,20 @@ DesignRNAScaffold::setup_options() {
     // Core Inputs
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     app_.add_option("--pdb",parameters_.core.pdb,"path to a PDB file with input RNA structure")
-                    ->required()
                     ->check(CLI::ExistingFile&CLI::Validator(valid_pdb,"ends in .pdb","valid_pdb"))
                     ->group("Core Inputs");
 
     app_.add_option("--start_bp",parameters_.core.start_bp,"starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-                    ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
+                    //->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
                     ->group("Core Inputs");
 
     app_.add_option("--end_bp",parameters_.core.end_bp,"ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-                    ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
+                    //->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
                     ->group("Core Inputs");
 
-    app_.add_option("--mg",parameters_.core.mg,"path to a motif graph file")
-                    ->check(CLI::ExistingFile)
-                    ->group("Core Inputs");
+    //app_.add_option("--mg",parameters_.core.mg,"path to a motif graph file")
+    //                ->check(CLI::ExistingFile)
+    //                ->group("Core Inputs");
 
     app_.add_option("--designs",parameters_.core.designs,"number of designs to create. Default is 1")
                     ->default_val(1)
@@ -169,15 +168,13 @@ DesignRNAScaffold::setup_options() {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Sequence Optimization Options
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     app_.add_flag("--skip_sequence_optimization",parameters_.seq_opt.skip,"flag to skip sequence optimization of the design")
                     ->group("Sequence Optimization Parameters");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Setting some global parameters/variables for the parser
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    app_.get_option("--pdb")->needs("--start_bp")->needs("--end_bp");
-    app_.get_formatter();
+    //app_.get_option("--pdb");//->needs("--start_bp")->needs("--end_bp");
     app_.get_formatter()->column_width(80);
 
 }
@@ -322,7 +319,7 @@ DesignRNAScaffold::_get_motif_graph_solution() {
 }
 
 void
-DesignRNAScaffold::_setup_from_pdb() {
+DesignRNAScaffold::_setup_from_pdb()  {
     auto struc = rm_.get_structure(parameters_.core.pdb, "scaffold");
     LOG_INFO << "loaded pdb from file: " << parameters_.core.pdb;
     if(struc->ends().empty()) {
@@ -375,7 +372,7 @@ void
 DesignRNAScaffold::check_bp(
         String const & name,
         structure::RNAStructureOP const & struc,
-        String const & type) {
+        String const & type) const {
 
     auto bps = structure::BasepairOPs();
     try {
@@ -671,16 +668,17 @@ main(
     //start logging
     String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
     resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
+
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
     base::init_logging(app.log_level());
 
     // hacky way of doing it but wtv, the app is guaranteed to have an input CJ 09/20
-    if(app.app_["--mg"]->empty() && app.app_["--pdb"]->empty()) {
-        LOGF<<"you must input a PDB or motif graph file via --pdb or --mg";
-        exit(1);
-    }
+    //if(app.app_["--mg"]->empty() && app.app_["--pdb"]->empty()) {
+    //    LOGF<<"you must input a PDB or motif graph file via --pdb or --mg";
+    //    exit(1);
+    //}
 
     //load extra motifs being used
     app.run();
