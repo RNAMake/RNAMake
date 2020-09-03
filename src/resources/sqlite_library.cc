@@ -36,7 +36,8 @@ SqliteLibrary::_get_path(
 void
 build_sqlite_library(String const& path, std::vector<Strings>const & data, Strings const& keys, String const& primary_key) {
     if(data.empty()) {
-        throw SqliteLibraryException("data must be longer than 0");
+        LOGE<<"Error: no data provided. file write to "<<path<<" aborted";
+        return;
     }
 
     if(data[0].size() != keys.size()) {
@@ -65,18 +66,33 @@ build_sqlite_library(String const& path, std::vector<Strings>const & data, Strin
     for(auto&& entry : data)  {
 
         auto line = base::join_by_delimiter(entry,"\',\'");
+
         line.pop_back();
         line.pop_back();
 
         sqlite_command += String{"INSERT INTO data_table VALUES(\'" +line + ");"};
     }
-    sqlite3_exec(connection,sqlite_command.c_str(), nullptr, nullptr,&error);
 
+    sqlite3_exec(connection,sqlite_command.c_str(), nullptr, nullptr,&error);
     if(error) {
-        std::cout<<error<<std::endl;
+        LOGE<<"Error ecountered: "<<error<<". For file "<<path;
         sqlite3_free(error);
     }
 
     sqlite3_close(connection);
 }
+
+void
+sqlite3_escape(String & unescaped_string ) {
+    unescaped_string = base::replace_all(unescaped_string, "\'", "\'\'");
+}
+
+void
+sqlite3_escape(Strings & unescaped_strings) {
+    for(auto& u_string : unescaped_strings) {
+        sqlite3_escape(u_string);
+    }
+}
+
+
 }

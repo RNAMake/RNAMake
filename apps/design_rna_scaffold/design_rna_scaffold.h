@@ -46,7 +46,7 @@ public: // application functions
 public: // getters
 
     base::LogLevel
-    log_level() const  { //added by CJ
+    log_level() const { //added by CJ
         return base::log_level_from_str(parameters_.core.log_level);
     }
 
@@ -56,7 +56,7 @@ private: // setup functions
     setup();
 
     void
-    _setup_from_pdb();
+    _setup_from_pdb()  ;
 
     std::vector<motif::MotifStateOPs>
     _get_libraries();
@@ -76,10 +76,10 @@ private: // setup functions
         String const &);
 
     void
-    check_bp(
+    _check_bp(
         String const &,
         structure::RNAStructureOP const &,
-        String const &);
+        String const &) const;
 
 
 private: // run functions
