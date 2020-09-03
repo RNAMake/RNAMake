@@ -52,7 +52,16 @@ public: // outputs
         return msg_->to_motif_graph()->pdb_str();
     }
 
-    //motif_data_structure::MotifGraphOP
+    motif_data_structure::MotifGraphOP
+    get_motif_graph() {
+        return msg_->to_motif_graph();
+    }
+
+    float
+    get_score() {
+        return score_;
+    }
+
 
 
 public: //option wrappers
@@ -105,6 +114,7 @@ private:
     SamplerOP sampler_;
     Parameters parameters_;
     base::Options options_;
+    float score_;
 };
 
 typedef std::shared_ptr<Simulation> SimulationOP;

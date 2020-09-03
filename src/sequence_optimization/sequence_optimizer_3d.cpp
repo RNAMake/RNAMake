@@ -279,22 +279,18 @@ SequenceOptimizer3D::get_optimized_sequences(
 
         eterna_score = eterna_scorer_.score_secondary_structure(ss);
         if (eterna_score > eterna_cutoff_) {
-
             auto seq = _validate_sequence(msg, ss);
-
             sols.push_back(std::make_shared<OptimizedSequence>(OptimizedSequence{seq, new_score, eterna_score}));
-
-            if (verbose_) {
-                std::cout << "SEQUENCE OPTIMIZER: found solution! score=" << new_score;
-                std::cout << " eterna_score=" << eterna_score << std::endl;
-            }
-
+            LOG_DEBUG << "found solution! score=" << new_score;
+            LOG_DEBUG << seq;
             if (sols.size() >= solutions_) { return sols; }
         }
 
     }
 
     if (sols.size() == 0 && return_lowest_) {
+        LOG_DEBUG << "could not reach cutoff but returning best solution=" << best;
+        LOG_DEBUG << best_seq;
         ss->replace_sequence(best_seq);
         eterna_score = eterna_scorer_.score_secondary_structure(ss);
         sols.push_back(std::make_shared<OptimizedSequence>(OptimizedSequence{best_seq, best, eterna_score}));

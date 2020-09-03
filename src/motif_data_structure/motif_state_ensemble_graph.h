@@ -69,6 +69,11 @@ public: // add functions
         return ni;
     }
 
+    int
+    add_connection(
+
+        );
+
 public: // get
 
     inline

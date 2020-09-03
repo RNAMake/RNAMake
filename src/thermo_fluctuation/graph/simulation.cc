@@ -76,7 +76,8 @@ Simulation::next() {
 
     end_state_1_ = msg_->get_node(start_.node_index)->data()->get_end_state(start_.edge_index);
     end_state_2_ = msg_->get_node(end_.node_index)->data()->get_end_state(end_.edge_index);
-    if(scorer_->score(*end_state_1_, *end_state_2_) < parameters_.cutoff) {
+    score_ = scorer_->score(*end_state_1_, *end_state_2_);
+    if(score_ < parameters_.cutoff) {
         return true;
     }
 
