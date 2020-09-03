@@ -14,6 +14,7 @@
 #include "base/types.h"
 #include <base/file_io.h>
 #include <base/string.h>
+#include <base/log.h>
 
 namespace resources {
 
@@ -54,6 +55,13 @@ protected:
 
 void
 build_sqlite_library(String const& , std::vector<Strings>const & , Strings const& , String const& );
+
+void
+sqlite3_escape(String &);
+
+void
+sqlite3_escape(Strings &);
+
 }
 
 #endif /* defined(__RNAMake__sqlite_library__) */

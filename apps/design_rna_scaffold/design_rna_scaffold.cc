@@ -54,11 +54,11 @@ DesignRNAScaffold::setup_options() {
                     ->group("Core Inputs");
 
     app_.add_option("--start_bp",parameters_.core.start_bp,"starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-                    //->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
+                    ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
                     ->group("Core Inputs");
 
     app_.add_option("--end_bp",parameters_.core.end_bp,"ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-                    //->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
+                    ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
                     ->group("Core Inputs");
 
     //app_.add_option("--mg",parameters_.core.mg,"path to a motif graph file")
@@ -196,6 +196,7 @@ DesignRNAScaffold::run() {
     while(true) {
         auto found = _get_motif_graph_solution();
         if(!found) {
+            LOG_WARNING<<"Motif graph not found... exiting";
             break;
         }
         if(parameters_.seq_opt.skip) {
@@ -347,7 +348,7 @@ DesignRNAScaffold::_setup_from_pdb()  {
         LOG_ERROR << "end basepair: " << parameters_.core.end_bp << " was NOT FOUND!";
         exit(0);
     }
-    LOG_INFO << "end basepair: " << parameters_.core.start_bp << " is found!";
+    LOG_INFO << "end basepair: " << parameters_.core.end_bp << " is found!";
 
     start_ = data_structure::NodeIndexandEdge{0, ei1};
     end_   = data_structure::NodeIndexandEdge{0, ei2};
@@ -661,7 +662,6 @@ main(
     //start logging
     String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
     resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
-
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
