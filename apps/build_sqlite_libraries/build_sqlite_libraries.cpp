@@ -1103,13 +1103,16 @@ BuildSqliteLibraries::run()   {
 
     auto index(1);
 
-    for(auto& pair : build_opts_) {
-        if(pair.second.selected) {
-            LOGI<<"Beginning build "<<index<<" of "<<total<<": "<<pair.first<<"...";
-            pair.second.handle();
-            LOGI<<"Finishing build "<<index++<<" of "<<total<<": "<<pair.first;
+    for(const auto& method : method_order_)  {
+
+        auto& build = build_opts_.at(method);
+        if(build.selected) {
+            LOGI << "Beginning build " << index << " of " << total << ": " << method << "...";
+            build.handle();
+            LOGI << "Finishing build " << index++ << " of " << total << ": " << method;
         }
     }
+
 }
 
 int main(int argc, const char** argv) {

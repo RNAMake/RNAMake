@@ -59,8 +59,9 @@ public:
             {"motif_state_libraries",          BuildOpt{[this] { _build_motif_state_libraries(); },false,{nullptr}}},
             {"unique_twoway_library",          BuildOpt{[this] { _build_unique_twoway_library(); },false,{nullptr}}},
             {"ss_and_seq_libraries",           BuildOpt{[this] { _build_ss_and_seq_libraries(); },false,{nullptr}}},
-            //{"trimmed_ideal_helix_library",    BuildOpt{[this] { _build_trimmed_ideal_helix_library();},false,{nullptr}}}
-           // methods that don't work or don't have working python versions
+
+                // methods that don't work or don't have working python versions
+                //{"trimmed_ideal_helix_library",    BuildOpt{[this] { _build_trimmed_ideal_helix_library();},false,{nullptr}}}
                 //{"existing_motif_library",         BuildOpt{[this] { build_existing_motif_library(); },false}},
                 //{"flex_helix_library",             BuildOpt{[this] { build_flex_helix_library(); },false}},
                 //{"le_helix_lib",                   BuildOpt{[this] { build_le_helix_lib(); },false}},
@@ -73,25 +74,9 @@ public:
     // _build_basic_libraries & _build_flex_helix_library ->
     // _build_helix_ensembles & _build_new_bp_steps & _build_unique_twoway_library
     // -> _build_motif_state_libraries & _build_motif_ensemble_state_libraries
+    //
+
 public:
-    void
-    _generate_method_dependency_tree() {
-            // gotta build that tree!!
-            // flex_hleix_library and motif_
-            build_opts_.at("ideal_helices").children = {&build_opts_.at("basic_libraries"),
-                                                        //&build_opts_.at("flex_helix_library"),
-                                                        &build_opts_.at("ss_and_seq_libraries")
-            };
-            build_opts_.at("basic_libraries").children = {&build_opts_.at("helix_ensembles"),
-                                                          &build_opts_.at("new_bp_steps"),
-                                                          &build_opts_.at("unique_twoway_library")};
-            //build_opts_["flex_helix_library"].children = build_opts_["basic_libraries"].children;
-            build_opts_.at("helix_ensembles").children = {&build_opts_.at("motif_state_libraries"),
-                    //&build_opts_["motif_ensemble_state_libraries"]
-            };
-            build_opts_.at("new_bp_steps").children = build_opts_.at("helix_ensembles").children;
-            build_opts_.at("unique_twoway_library").children = build_opts_.at("helix_ensembles").children;
-    }
 
 public:
     void
@@ -101,7 +86,8 @@ public:
     void
     setup_options() override ;
 
-public:
+public: // librrary building methods
+
     void
 	_build_ideal_helices();
 
@@ -138,6 +124,7 @@ public:
     void
 	_build_trimmed_ideal_helix_library();
 
+public: // public helper methods
     void
     _directory_setup() {
         for( const auto& dir : {"/motif_librariesV2/","motif_state_librariesV2/","/motif_ensemble_librariesV2/"}) {
@@ -153,11 +140,36 @@ public:
         }
     }
 
-public:
     base::LogLevel
     log_level() const {
         return base::log_level_from_str(parameters_.log_level);
     }
+
+    void
+    _generate_method_dependency_tree() {
+        // gotta build that tree!!
+        // flex_hleix_library and motif_
+        build_opts_.at("ideal_helices").children = {&build_opts_.at("basic_libraries"),
+                //&build_opts_.at("flex_helix_library"),
+                                                    &build_opts_.at("ss_and_seq_libraries")
+        };
+        build_opts_.at("basic_libraries").children = {&build_opts_.at("helix_ensembles"),
+                                                      &build_opts_.at("new_bp_steps"),
+                                                      &build_opts_.at("unique_twoway_library")};
+        //build_opts_["flex_helix_library"].children = build_opts_["basic_libraries"].children;
+        build_opts_.at("helix_ensembles").children = {&build_opts_.at("motif_state_libraries"),
+                //&build_opts_["motif_ensemble_state_libraries"]
+        };
+        build_opts_.at("new_bp_steps").children = build_opts_.at("helix_ensembles").children;
+        build_opts_.at("unique_twoway_library").children = build_opts_.at("helix_ensembles").children;
+    }
+
+public: // public group members
+    CLI::App app_;
+
+private:
+    StringStringMap
+    _get_valid_dirs(String const&);
 
 private:
     struct Parameters {
@@ -166,21 +178,23 @@ private:
         String log_level;
     };
 
-public:
-    CLI::App app_;
-
-private:
-    StringStringMap
-    _get_valid_dirs(String const&);
-
-private:
     StringStringMap lib_names_;
     std::map<String,motif::MotifOP> motif_map_;
     std::map<String,BuildOpt> build_opts_;
     Parameters parameters_;
 
-private:
     const Strings motif_keys_{"data","name","end_name","end_id","id"};
     const Strings ensemble_keys_{"data","name","id"};
+    const Strings method_order_{
+                "motif_state_libraries",
+    //            "motif_ensemlble_state_libraries", // these are commented out for now... they will eventually be re-implemented CJ 09/20
+                "helix_ensembles",
+                "new_bp_steps",
+                "unique_twoway_library",
+                "basic_libraries",
+     //           "flex_helix_library",     // these are commented out for now... they will eventually be re-implemented CJ 09/20
+                "ideal_helices"
+    };
+
 };
 #endif // __BUILD_SQLITE_LIBRARIES_H__
