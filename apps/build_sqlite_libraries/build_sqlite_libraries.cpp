@@ -485,7 +485,7 @@ BuildSqliteLibraries::_build_existing_motif_library() {
     }
 }
 void
-/*REVIEW */BuildSqliteLibraries::_build_basic_libraries() {
+BuildSqliteLibraries::_build_basic_libraries() {
     const auto motif_types = util::MotifTypes {
         util::MotifType::TWOWAY,
         util::MotifType::NWAY,
@@ -1086,14 +1086,18 @@ BuildSqliteLibraries::setup_options()   {
 }
 void
 BuildSqliteLibraries::run()   {
+
+    _generate_method_dependency_tree();
     _directory_setup();
-    if(parameters_.all) {
-        for(auto& pairs : build_opts_)  {
-            pairs.second.selected = true;
+
+    for(auto& pairs : build_opts_) {
+        if(parameters_.all || pairs.second.selected) {
+            pairs.second.select();
         }
     }
 
-    const auto total = std::count_if(build_opts_.begin(),build_opts_.end(), [] (auto& pair) {
+
+    const auto total = std::count_if(build_opts_.cbegin(),build_opts_.cend(), [] (const auto& pair) {
         return pair.second.selected;
     });
 
@@ -1114,9 +1118,10 @@ int main(int argc, const char** argv) {
 
     auto env_mgr = base::EnvManager(Strings{"RNAMAKE"});    
     env_mgr.set_envs();
-
     auto app = BuildSqliteLibraries{};
+
     app.setup_options();
+
     CLI11_PARSE(app.app_,argc,argv);
     base::init_logging(app.log_level());
     app.run();

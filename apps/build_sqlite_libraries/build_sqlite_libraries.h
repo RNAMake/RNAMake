@@ -31,6 +31,17 @@
 struct BuildOpt {
     std::function<void()> handle;
     bool selected = false;
+    std::vector<BuildOpt*> children = {nullptr};
+
+    void
+    select() {
+        selected = true;
+        for(auto& child : children) {
+            if (child != nullptr) {
+                child->select();
+            }
+        }
+    }
 };
 
 class BuildSqliteLibraries : public base::Application {
@@ -41,15 +52,14 @@ public:
     app_("BuildSqliteLibraries"),
     build_opts_({
             // working methods
-            {"helix_ensembles",                BuildOpt{[this] { _build_helix_ensembles(); },false}},
-            {"ideal_helices",                  BuildOpt{[this] { _build_ideal_helices(); },false}},
-            {"basic_libraries",                BuildOpt{[this] { _build_basic_libraries(); },false}},
-            {"helix_ensembles",                BuildOpt{[this] { _build_helix_ensembles(); },false}},
-            {"new_bp_steps",                   BuildOpt{[this] { _build_new_bp_steps(); },false}},
-            {"motif_state_libraries",          BuildOpt{[this] { _build_motif_state_libraries(); },false}},
-            {"unique_twoway_library",          BuildOpt{[this] { _build_unique_twoway_library(); },false}},
-            {"ss_and_seq_libraries",           BuildOpt{[this] { _build_ss_and_seq_libraries(); },false}},
-            {"trimmed_ideal_helix_library",    BuildOpt{[this] { _build_trimmed_ideal_helix_library();},false}}
+            {"ideal_helices",                  BuildOpt{[this] { _build_ideal_helices(); },false,{nullptr}}},
+            {"basic_libraries",                BuildOpt{[this] { _build_basic_libraries(); },false,{nullptr}}},
+            {"helix_ensembles",                BuildOpt{[this] { _build_helix_ensembles(); },false,{nullptr}}},
+            {"new_bp_steps",                   BuildOpt{[this] { _build_new_bp_steps(); },false,{nullptr}}},
+            {"motif_state_libraries",          BuildOpt{[this] { _build_motif_state_libraries(); },false,{nullptr}}},
+            {"unique_twoway_library",          BuildOpt{[this] { _build_unique_twoway_library(); },false,{nullptr}}},
+            {"ss_and_seq_libraries",           BuildOpt{[this] { _build_ss_and_seq_libraries(); },false,{nullptr}}},
+            //{"trimmed_ideal_helix_library",    BuildOpt{[this] { _build_trimmed_ideal_helix_library();},false,{nullptr}}}
            // methods that don't work or don't have working python versions
                 //{"existing_motif_library",         BuildOpt{[this] { build_existing_motif_library(); },false}},
                 //{"flex_helix_library",             BuildOpt{[this] { build_flex_helix_library(); },false}},
@@ -58,6 +68,29 @@ public:
     })
     {
 
+    }
+    //_build_ideal_helices ->
+    // _build_basic_libraries & _build_flex_helix_library ->
+    // _build_helix_ensembles & _build_new_bp_steps & _build_unique_twoway_library
+    // -> _build_motif_state_libraries & _build_motif_ensemble_state_libraries
+public:
+    void
+    _generate_method_dependency_tree() {
+            // gotta build that tree!!
+            // flex_hleix_library and motif_
+            build_opts_.at("ideal_helices").children = {&build_opts_.at("basic_libraries"),
+                                                        //&build_opts_.at("flex_helix_library"),
+                                                        &build_opts_.at("ss_and_seq_libraries")
+            };
+            build_opts_.at("basic_libraries").children = {&build_opts_.at("helix_ensembles"),
+                                                          &build_opts_.at("new_bp_steps"),
+                                                          &build_opts_.at("unique_twoway_library")};
+            //build_opts_["flex_helix_library"].children = build_opts_["basic_libraries"].children;
+            build_opts_.at("helix_ensembles").children = {&build_opts_.at("motif_state_libraries"),
+                    //&build_opts_["motif_ensemble_state_libraries"]
+            };
+            build_opts_.at("new_bp_steps").children = build_opts_.at("helix_ensembles").children;
+            build_opts_.at("unique_twoway_library").children = build_opts_.at("helix_ensembles").children;
     }
 
 public:
