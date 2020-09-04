@@ -185,6 +185,7 @@ cluster_motifs(motif::MotifOPs const & motifs, float max_distance=1.5f) {
                 break;
             }
         }
+
         if(!found) {
             clusters.emplace_back(MotifCluster{(curr_motif),(curr_motif)->ends()[1]->state()});
         }

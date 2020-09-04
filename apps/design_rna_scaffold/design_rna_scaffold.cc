@@ -133,7 +133,10 @@ DesignRNAScaffold::setup_options() {
                     ->group("Search Parameters");
 
     app_.add_flag("--no_basepair_checks",parameters_.search.no_basepair_checks,"flag to disable basepair checks")
-                ->group("Search Parameters");
+                    ->group("Search Parameters");
+
+    app_.add_flag("--only_tether_opt",parameters_.search.only_tether_opt, "flag to run only tether during main design loop")
+                    ->group("Search Parameters");
 
     app_.add_option("--scaled_score_d",parameters_.search.scaled_score_d,"TODO")
                     ->default_val(1.0f)
@@ -221,6 +224,18 @@ DesignRNAScaffold::run() {
             sol_info_.design_num += 1;
             continue;
         }
+        motif_data_structure::MotifStateTree{}.to_motif_tree();
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        if(parameters_.search.only_tether_opt)  {
+            // what is the original doing?
+            /* 1. build in a new motif graph
+             * 2. loop through the existing motif tree and
+             *
+             *
+             */
+        }
+        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // remap node indexes with new base pair step motifs
         auto bp_step_indexes = GraphIndexes();
         _get_graph_indexes_after_bp_steps(*mg_w_sol, starting_indexes_, bp_step_indexes);

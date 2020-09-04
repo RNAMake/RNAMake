@@ -163,7 +163,7 @@ private:
             bool no_sterics = false;
             String exhaustive_scorer, mc_scorer;
             float scaled_score_d, scaled_score_r;
-
+            bool only_tether_opt = false;
         };
 
         struct SequenceOpt {

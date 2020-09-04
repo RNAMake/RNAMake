@@ -26,7 +26,9 @@
 #include <structure/basepair_state.h>
 #include <motif_data_structure/motif_tree.h>
 
+// external
 #include <CLI/CLI.hpp>
+#include <sqlite_modern/sqlite_modern_cpp.h>
 
 struct BuildOpt {
     std::function<void()> handle;

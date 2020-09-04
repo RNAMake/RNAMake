@@ -27,8 +27,8 @@ build_sqlite_libraries ../../apps/build_sqlite_libraries/build_sqlite_libraries.
 ##apt_new_interface ../../apt_new_interfaceapt_new_interface.cc
 ##apt_stablization ../../apt_stablizationapt_stablization.cc
 ##build_flex_helices ../../build_flex_helicesbuild_flex_helices.cc
-##ddg_tecto ../../ddg_tectoddg_tecto.cc tecto_graph_setup.cc
-#design_rna ../../apps/design_rna/design_rna.cpp
+##ddg_tecto ../../ddg_tectoddg_tecto.cc tecto_graph_setup.c
+design_rna ../../apps/design_rna/design_rna.cpp
 design_rna_scaffold ../../apps/design_rna_scaffold/design_rna_scaffold.cc
 ##dock_motif ../../dock_motifdock_motif.cc
 ##eternabot ../../eternaboteternabot.cpp

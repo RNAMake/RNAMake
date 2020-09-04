@@ -71,6 +71,5 @@ Sqlite3Connection::fetch_one(String const & query_statement) {
     sqlite3_finalize(stmt_);
     return results;
 }
-
 }
 
