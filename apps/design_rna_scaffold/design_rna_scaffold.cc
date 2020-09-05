@@ -259,6 +259,7 @@ DesignRNAScaffold::run() {
                  << parameters_.core.designs;
 
     }
+    LOG_DEBUG << "NON-ERROR EXIT";
 }
 
 
@@ -306,7 +307,7 @@ DesignRNAScaffold::setup() {
     }
     else {
         LOG_INFO << "set --skip_sequence_optimization -> skipping sequence optimization step!";
-        LOG_WARNING << "Note: skipping sequence_optimization may result in more chain breaks in outputed pdbs";
+        LOG_WARNING << "do not trust the sequence in the outputed PDBs!";
     }
 
     //thermo sim setup
@@ -621,7 +622,8 @@ DesignRNAScaffold::_perform_sequence_opt(
         return nullptr;
     }
     mg_seq_opt->replace_helical_sequence(sols[0]->sequence);
-    //sequence_opt_score_ = sols[0]->dist_score;
+    sol_info_.sequence = sols[0]->sequence;
+    sol_info_.sequence_opt_score = sols[0]->dist_score;
     return mg_seq_opt;
 }
 
@@ -786,12 +788,12 @@ main(
     //must add this for all apps!
     std::set_terminate(base::save_backtrace);
 
-    //start logging
     String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
     resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
+    //start logging
     base::init_logging(app.log_level());
 
     // hacky way of doing it but wtv, the app is guaranteed to have an input CJ 09/20
