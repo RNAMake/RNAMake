@@ -4,6 +4,7 @@ import os
 import logging
 import colorlog
 import glob
+import shutil
 
 
 def init_logger(dunder_name) -> logging.Logger:
@@ -57,6 +58,8 @@ def check_required_log_lines(name, required_log_lines, log_lines):
         logger.info("test: {} PASSED!".format(name))
         return
     logger.warning("test: {} FAILED!".format(name))
+    logger.warning("found {} out of {} required log statements".format(
+            len(seen), len(required_log_lines)))
     logger.warning("missing the following log statements:")
     for line in required_log_lines:
         if line not in seen:
@@ -104,9 +107,10 @@ def main():
         required_log_lines = get_required_log_lines("cmd/EXPECTED")
         check_required_log_lines(row["name"], required_log_lines, log_lines)
         files = get_produced_files()
+        for f in files:
+            shutil.move(f, "outputs/" + f)
 
         os.chdir(cur_path)
-        exit()
 
 
 if __name__ == "__main__":

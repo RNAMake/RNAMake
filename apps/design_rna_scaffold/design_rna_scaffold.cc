@@ -175,7 +175,7 @@ DesignRNAScaffold::setup_options () {
         ->group("Search Parameters");
 
     app_.add_option("--search_cutoff", parameters_.search.cutoff, "TODO")
-        ->default_val(5.0f)
+        ->default_val(7.5f)
         ->group("Search Parameters");
 
     app_.add_option("--search_max_size",
@@ -287,7 +287,7 @@ DesignRNAScaffold::run () {
                     seq_opt_fail = true;
                     break;
                 }
-                LOG_DEBUG << "seq opt did not a good enough solution, redoing attempt " << attempts;
+                LOG_DEBUG << "seq opt did not a good enough solution: " << sol_info_.sequence_opt_score << "redoing attempt " << attempts;
                 i -= 1;
                 continue;
             }

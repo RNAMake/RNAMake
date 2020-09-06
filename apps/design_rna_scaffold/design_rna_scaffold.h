@@ -152,7 +152,7 @@ private:
             String starting_helix = "";
             String ending_helix = "";
             String solution_filter = "RemoveDuplicateHelices";
-            float cutoff = 5.0f;
+            float cutoff = 7.5f;
             int max_helix_length = 99;
             int min_helix_length = 4;
             int max_size = 9999;

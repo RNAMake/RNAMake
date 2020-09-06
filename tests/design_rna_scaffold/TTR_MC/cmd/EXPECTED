@@ -1,0 +1,14 @@
+21:11:58 INFO  [DesignRNAScaffold::_setup_from_pdb] available ends to build off: A144-A159 A220-A253 A232-A242 
+21:11:59 INFO  [DesignRNAScaffold::_setup_from_pdb] start basepair: A220-A253 is found!
+21:11:59 INFO  [DesignRNAScaffold::_setup_from_pdb] end basepair: A144-A159 is found!
+21:11:59 INFO  [DesignRNAScaffold::setup] out file that contains all build solutions -> default.out can be set with --out_file
+21:11:59 INFO  [DesignRNAScaffold::setup] score file that contains summary information about solutions -> default.scores can be set with --score_file
+21:11:59 INFO  [DesignRNAScaffold::_setup_search] search type -> mc
+21:11:59 INFO  [DesignRNAScaffold::_setup_search] search solution filter -> RemoveDuplicateHelices
+21:11:59 INFO  [DesignRNAScaffold::_setup_search] search cutoff -> 7.500000
+21:12:00 DEBUG [DesignRNAScaffold::run] *** finished design: 0 ***
+21:12:02 DEBUG [DesignRNAScaffold::run] *** finished design: 1 ***
+21:12:05 DEBUG [DesignRNAScaffold::run] *** finished design: 2 ***
+21:12:09 DEBUG [DesignRNAScaffold::run]  successfully finished main design loop!
+21:12:09 INFO  [DesignRNAScaffold::run] found 3 designs, if you want more please use --designs num_of_design
+21:12:09 DEBUG [DesignRNAScaffold::run] NON-ERROR EXIT

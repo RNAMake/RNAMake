@@ -187,8 +187,11 @@ public:
         auto best_score = cur_score;
         auto mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
         auto hot_mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
-        hot_mover->set_temperature(10.0f);
-        mover->set_temperature(4.5f);
+        auto min_mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
+        hot_mover->set_temperature(100.0f);
+        min_mover->set_temperature(0.1f);
+        auto temp = 4.5;
+        mover->set_temperature(temp);
 
         // TODO add temperature adjustment to get to 0.235 acceptance
         // TODO add mnimization step
@@ -197,6 +200,8 @@ public:
         auto accepted_steps = 0.0;
         while(stage_ < stages_) {
             accepted_steps = 0.0;
+            auto round_best_score = 100000.0f;
+            auto best_sol = motif_data_structure::MotifStateGraphOP(nullptr);
             while(step_ < steps_) {
                 step_ += 1;
                 accept = mover->apply(msg_, cur_score);
@@ -213,11 +218,16 @@ public:
                 if(cur_score < best_score) {
                     best_score = cur_score;
                 }
+                if(cur_score < round_best_score) {
+                    round_best_score = cur_score;
+                }
 
             }
-            LOG_DEBUG << "stage: " << stage_ << " best_score: " << best_score << " acceptance: " <<  (float)(accepted_steps / steps_);
+            auto accept_ratio = (float)(accepted_steps / steps_);
+            LOG_DEBUG << "stage: " << stage_ << " best_score: " << best_score << " acceptance: " << accept_ratio << " temp: " << temp;
+            LOG_DEBUG << "round best score: " << round_best_score;
             // heatup
-            for(int i = 0; i < 100; i++) {
+            for(int i = 0; i < 1000; i++) {
                 accept = hot_mover->apply(msg_, cur_score);
                 if(accept) {
                     cur_score = hot_mover->score();
@@ -225,7 +235,9 @@ public:
             }
             // reset mover
             mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
-            mover->set_temperature(4.5f);
+            auto diff = (accept_ratio - 0.235)*10;
+            temp = temp - diff;
+            mover->set_temperature(temp);
 
             step_ = 0;
             stage_ += 1;
