@@ -546,7 +546,7 @@ int main(int argc, const char *argv[]) {
 //
 
 
-#include "base/backtrace.hpp"
+#include "base/backtrace.h"
 #include "math/euler.h"
 #include "resources/resource_manager.h"
 #include "motif_tools/segmenter.h"

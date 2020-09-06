@@ -64,7 +64,7 @@ public:
 
         if (target_an_aligned_end_) { r_diff_ = bps.r().difference(target_->r());      }
         else                        { r_diff_ = bps.r().difference(target_flip_->r()); }
-        score_ += 5 * r_diff_;
+        score_ += 2 * r_diff_;
         //score_ += r_diff_;
         //score_ = bps.sugars()[0].distance(target_->sugars()[1]) + bps.sugars()[1].distance(target_->sugars()[0]);
         return score_;
