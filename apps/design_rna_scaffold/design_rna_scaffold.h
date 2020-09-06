@@ -56,10 +56,7 @@ private: // setup functions
     setup();
 
     void
-    _setup_from_pdb()  ;
-
-    std::vector<motif::MotifStateOPs>
-    _get_libraries();
+    _setup_from_pdb();
 
     motif_search::SearchOP
     _setup_search();

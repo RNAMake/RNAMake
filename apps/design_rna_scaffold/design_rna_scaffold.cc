@@ -13,10 +13,10 @@
 
 #include <sequence_optimization/sequence_optimizer.h>
 
-DesignRNAScaffold::DesignRNAScaffold():
-        base::Application(),
-        rm_(resources::Manager::instance()),
-        app_("DesignRNAScaffold") {}
+DesignRNAScaffold::DesignRNAScaffold () :
+    base::Application(),
+    rm_(resources::Manager::instance()),
+    app_("DesignRNAScaffold") {}
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -24,22 +24,22 @@ DesignRNAScaffold::DesignRNAScaffold():
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 String
-valid_pdb(String& path) {
-    auto ending = path.substr(path.size()-4);
+valid_pdb (String &path) {
+    auto ending = path.substr(path.size() - 4);
     return ending == ".pdb" ? String{""} : String{"the file specified by --pdb must end in .pdb"};
 }
 
 String
-valid_bp(String& bp) {
+valid_bp (String &bp) {
     const auto bp_pattern = std::regex("\\b[A-Z][0-9]*-[A-Z][0-9]*\\b");
     auto sm = std::smatch{};
-    std::regex_match(bp,sm,bp_pattern);
+    std::regex_match(bp, sm, bp_pattern);
 
-    return sm.size() == 1 ? String{""} : String{bp+ " is an invalid bp format"};
+    return sm.size() == 1 ? String{""} : String{bp + " is an invalid bp format"};
 }
 
 void
-DesignRNAScaffold::setup_options() {
+DesignRNAScaffold::setup_options () {
 
     app_.add_option_group("Core Inputs");
     app_.add_option_group("I/O Options");
@@ -50,138 +50,183 @@ DesignRNAScaffold::setup_options() {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Core Inputs
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    app_.add_option("--pdb",parameters_.core.pdb,"path to a PDB file with input RNA structure")
-                    ->check(CLI::ExistingFile&CLI::Validator(valid_pdb,"ends in .pdb","valid_pdb"))
-                    ->group("Core Inputs");
+    app_.add_option("--pdb", parameters_.core.pdb, "path to a PDB file with input RNA structure")
+        ->check(CLI::ExistingFile & CLI::Validator(valid_pdb, "ends in .pdb", "valid_pdb"))
+        ->group("Core Inputs");
 
-    app_.add_option("--start_bp",parameters_.core.start_bp,"starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-                    ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
-                    ->group("Core Inputs");
+    app_.add_option("--start_bp",
+                    parameters_.core.start_bp,
+                    "starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
+        ->check(CLI::Validator(valid_bp,
+                               "format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]",
+                               "valid_bp"))
+        ->group("Core Inputs");
 
-    app_.add_option("--end_bp",parameters_.core.end_bp,"ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-                    ->check(CLI::Validator(valid_bp,"format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]","valid_bp"))
-                    ->group("Core Inputs");
+    app_.add_option("--end_bp",
+                    parameters_.core.end_bp,
+                    "ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
+        ->check(CLI::Validator(valid_bp,
+                               "format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]",
+                               "valid_bp"))
+        ->group("Core Inputs");
 
     //app_.add_option("--mg",parameters_.core.mg,"path to a motif graph file")
     //                ->check(CLI::ExistingFile)
     //                ->group("Core Inputs");
 
-    app_.add_option("--designs",parameters_.core.designs,"number of designs to create. Default is 1")
-                    ->default_val(1)
-                    ->check(CLI::PositiveNumber)
-                    ->group("Core Inputs");
+    app_.add_option("--designs",
+                    parameters_.core.designs,
+                    "number of designs to create. Default is 1")
+        ->default_val(1)
+        ->check(CLI::PositiveNumber)
+        ->group("Core Inputs");
 
-    app_.add_option("--log_level",parameters_.core.log_level,"level for global logging")
-                    ->check(CLI::IsMember(std::set<String>{"debug","error","fatal","info","verbose","warn"}))
-                    ->default_val("info")
-                    ->group("Core Inputs");
+    app_.add_option("--log_level", parameters_.core.log_level, "level for global logging")
+        ->check(CLI::IsMember(std::set<String>{"debug", "error", "fatal", "info", "verbose",
+                                               "warn"}))
+        ->default_val("info")
+        ->group("Core Inputs");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // I/O Options
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    app_.add_flag("--dump_intermediate_pdbs",parameters_.io.dump_intermediate_pdbs,"flag to dump intermediate pdbs")
-                    ->group("I/O Options");
+    app_.add_flag("--dump_intermediate_pdbs",
+                  parameters_.io.dump_intermediate_pdbs,
+                  "flag to dump intermediate pdbs")
+        ->group("I/O Options");
 
-    app_.add_flag("--dump_pdbs",parameters_.io.dump_pdbs,"TODO")
-                    ->group("I/O Options");
+    app_.add_flag("--dump_pdbs", parameters_.io.dump_pdbs, "TODO")
+        ->group("I/O Options");
 
-    app_.add_flag("--dump_scaffold_pdbs",parameters_.io.dump_scaffold_pdbs,"flag to output pdbs of just the design scaffold WITHOUT initial RNA structure useful for really big structures")
-                    ->group("I/O Options");
+    app_.add_flag("--dump_scaffold_pdbs",
+                  parameters_.io.dump_scaffold_pdbs,
+                  "flag to output pdbs of just the design scaffold WITHOUT initial RNA structure useful for really big structures")
+        ->group("I/O Options");
 
-    app_.add_option("--new_ensembles",parameters_.io.new_ensembles_file,"flag to include new structural ensembles")
-                    ->default_val("")
-                    ->group("I/O Options");
+    app_.add_option("--new_ensembles",
+                    parameters_.io.new_ensembles_file,
+                    "flag to include new structural ensembles")
+        ->default_val("")
+        ->group("I/O Options");
 
-    app_.add_flag("--no_out_file",parameters_.io.no_out_file,"if you only want the summary and not the actual structures")
-                    ->default_val(false)
-                    ->group("I/O Options");
+    app_.add_flag("--no_out_file",
+                  parameters_.io.no_out_file,
+                  "if you only want the summary and not the actual structures")
+        ->default_val(false)
+        ->group("I/O Options");
 
-    app_.add_option("--out_file",parameters_.io.out_file,"output file that contains all information to rebuild solutions")
-                    ->default_val("default.out")
-                    ->group("I/O Options");
+    app_.add_option("--out_file",
+                    parameters_.io.out_file,
+                    "output file that contains all information to rebuild solutions")
+        ->default_val("default.out")
+        ->group("I/O Options");
 
-    app_.add_option("--score_file",parameters_.io.score_file,"name of output file containining scoring information for design")
-                    ->default_val("default.scores")
-                    ->group("I/O Options");
+    app_.add_option("--score_file",
+                    parameters_.io.score_file,
+                    "name of output file containining scoring information for design")
+        ->default_val("default.scores")
+        ->group("I/O Options");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Search Parameters
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    app_.add_option("--ending_helix",parameters_.search.ending_helix,"ending helix for design solution. Format = [TODO]")
-                    ->default_val("")
-                    ->group("Search Parameters");
+    app_.add_option("--ending_helix",
+                    parameters_.search.ending_helix,
+                    "ending helix for design solution. Format = [TODO]")
+        ->default_val("")
+        ->group("Search Parameters");
 
-    app_.add_option("--exhaustive_scorer",parameters_.search.exhaustive_scorer,"TODO")
-                    ->default_val("default")
-                    ->group("Search Parameters");
+    app_.add_option("--exhaustive_scorer", parameters_.search.exhaustive_scorer, "TODO")
+        ->default_val("default")
+        ->group("Search Parameters");
 
-    app_.add_option("--max_helix_length",parameters_.search.max_helix_length,"maximum number of basepairs in a solution helix")
-                    ->default_val(99)
-                    ->group("Search Parameters");
+    app_.add_option("--max_helix_length",
+                    parameters_.search.max_helix_length,
+                    "maximum number of basepairs in a solution helix")
+        ->default_val(99)
+        ->group("Search Parameters");
 
-    app_.add_option("--mc_scorer",parameters_.search.mc_scorer,"TODO")
-                    ->default_val("default")
-                    ->check(CLI::IsMember(std::set<String>{"default","scaled_scorer"}))
-                    ->group("Search Parameters");
+    app_.add_option("--mc_scorer", parameters_.search.mc_scorer, "TODO")
+        ->default_val("default")
+        ->check(CLI::IsMember(std::set<String>{"default", "scaled_scorer"}))
+        ->group("Search Parameters");
 
-    app_.add_option("--min_helix_length",parameters_.search.min_helix_length,"minimum number of basepairs in a solution helix")
-                    ->default_val(4)
-                    ->group("Search Parameters");
+    app_.add_option("--min_helix_length",
+                    parameters_.search.min_helix_length,
+                    "minimum number of basepairs in a solution helix")
+        ->default_val(4)
+        ->group("Search Parameters");
 
-    app_.add_option("--motif_path",parameters_.search.motif_path,"TBD")
-                    ->group("Search Parameters");
+    app_.add_option("--motif_path", parameters_.search.motif_path, "TBD")
+        ->group("Search Parameters");
 
-    app_.add_flag("--no_basepair_checks",parameters_.search.no_basepair_checks,"flag to disable basepair checks")
-                ->group("Search Parameters");
+    app_.add_flag("--no_basepair_checks",
+                  parameters_.search.no_basepair_checks,
+                  "flag to disable basepair checks")
+        ->group("Search Parameters");
 
-    app_.add_option("--scaled_score_d",parameters_.search.scaled_score_d,"TODO")
-                    ->default_val(1.0f)
-                    ->group("Search Parameters");
+    app_.add_option("--scaled_score_d", parameters_.search.scaled_score_d, "TODO")
+        ->default_val(1.0f)
+        ->group("Search Parameters");
 
-    app_.add_option("--scaled_score_r",parameters_.search.scaled_score_r,"TODO")
-                    ->default_val(2.0f)
-                    ->group("Search Parameters");
+    app_.add_option("--scaled_score_r", parameters_.search.scaled_score_r, "TODO")
+        ->default_val(2.0f)
+        ->group("Search Parameters");
 
-    app_.add_option("--search_cutoff",parameters_.search.cutoff,"TODO")
-                    ->default_val(5.0f)
-                    ->group("Search Parameters");
+    app_.add_option("--search_cutoff", parameters_.search.cutoff, "TODO")
+        ->default_val(5.0f)
+        ->group("Search Parameters");
 
-    app_.add_option("--search_max_size",parameters_.search.max_size,"maximum number of steps for a design search")
-                    ->default_val(999999)
-                    ->check(CLI::PositiveNumber) //TODO put a limit to this?? CJ 08/20
-                    ->group("Search Parameters");
+    app_.add_option("--search_max_size",
+                    parameters_.search.max_size,
+                    "maximum number of steps for a design search")
+        ->default_val(999999)
+        ->check(CLI::PositiveNumber) //TODO put a limit to this?? CJ 08/20
+        ->group("Search Parameters");
 
-    app_.add_option("--search_type",parameters_.search.type,"search type for traversing motif space")
-                    ->default_val("path_finding")
-                    ->check(CLI::IsMember(std::set<String>{"path_finding", "exhaustive", "mc"}))
-                    ->group("Search Parameters");
+    app_.add_option("--search_type",
+                    parameters_.search.type,
+                    "search type for traversing motif space")
+        ->default_val("path_finding")
+        ->check(CLI::IsMember(std::set<String>{"path_finding", "exhaustive", "mc"}))
+        ->group("Search Parameters");
 
-    app_.add_option("--solution_filter",parameters_.search.solution_filter,"TODO")
-                    ->default_val("RemoveDuplicateHelices")
-                    ->check(CLI::IsMember(std::set<String>{"NoFilter","RemoveDuplicateHelices"}))
-                    ->group("Search Parameters");
+    app_.add_option("--solution_filter", parameters_.search.solution_filter, "TODO")
+        ->default_val("RemoveDuplicateHelices")
+        ->check(CLI::IsMember(std::set<String>{"NoFilter", "RemoveDuplicateHelices"}))
+        ->group("Search Parameters");
 
-    app_.add_option("--starting_helix",parameters_.search.starting_helix,"starting helix for design solution. Format = [TODO]")
-                    ->default_val("")
-                    ->group("Search Parameters");
+    app_.add_option("--starting_helix",
+                    parameters_.search.starting_helix,
+                    "starting helix for design solution. Format = [TODO]")
+        ->default_val("")
+        ->group("Search Parameters");
 
-    app_.add_flag("--no_sterics", parameters_.search.no_sterics, "turns off sterics checks againsts supplied RNA structure");
+    app_.add_flag("--no_sterics",
+                  parameters_.search.no_sterics,
+                  "turns off sterics checks againsts supplied RNA structure");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Sequence Optimization Options
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    app_.add_flag("--skip_sequence_optimization",parameters_.seq_opt.skip,"flag to skip sequence optimization of the design")
-                    ->group("Sequence Optimization Parameters");
+    app_.add_flag("--skip_sequence_optimization",
+                  parameters_.seq_opt.skip,
+                  "flag to skip sequence optimization of the design")
+        ->group("Sequence Optimization Parameters");
 
-    app_.add_option("--sequences_per_design",parameters_.seq_opt.sequences_per_design, "number of sequences to try per motif design")
+    app_.add_option("--sequences_per_design",
+                    parameters_.seq_opt.sequences_per_design,
+                    "number of sequences to try per motif design")
         ->default_val(1)
         ->group("Sequence Optimization Parameters");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Thermo fluc Options
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    app_.add_flag("--thermo_fluc",parameters_.thermo_fluc.perform,"run thermo fluc procedure to estimate thermo fluc of helices")
+    app_.add_flag("--thermo_fluc",
+                  parameters_.thermo_fluc.perform,
+                  "run thermo fluc procedure to estimate thermo fluc of helices")
         ->group("Thermo Fluc Parameters");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -193,13 +238,13 @@ DesignRNAScaffold::setup_options() {
 }
 
 void
-DesignRNAScaffold::parse_command_line(
-        int argc,
-        const char ** argv) {
- }
+DesignRNAScaffold::parse_command_line (
+    int argc,
+    const char **argv) {
+}
 
 void
-DesignRNAScaffold::run() {
+DesignRNAScaffold::run () {
     // sets up all variables required
     setup();
 
@@ -209,14 +254,14 @@ DesignRNAScaffold::run() {
     sol_info_ = SolutionInfo();
     sol_info_.design_num = 0;
     // main run loop
-    while(true) {
+    while (true) {
         LOG_DEBUG << "*** starting motif search ***";
         auto mg_w_sol = _get_motif_graph_solution();
-        if(mg_w_sol == nullptr) {
+        if (mg_w_sol == nullptr) {
             LOG_DEBUG << "no more solutions generated by motif search";
             break;
         }
-        if(parameters_.seq_opt.skip) {
+        if (parameters_.seq_opt.skip) {
             _record_solution(*mg_w_sol);
             sol_info_.design_num += 1;
             continue;
@@ -226,30 +271,46 @@ DesignRNAScaffold::run() {
         _get_graph_indexes_after_bp_steps(*mg_w_sol, starting_indexes_, bp_step_indexes);
         LOG_DEBUG << "*** starting sequence optimization ***";
         sol_info_.seqeunce_opt_num = 0;
-        for(int i = 0; i < parameters_.seq_opt.sequences_per_design; i++) {
+        auto attempts = 1;
+        auto seq_opt_fail = false;
+        for (int i = 0; i < parameters_.seq_opt.sequences_per_design; i++) {
             LOG_DEBUG << "starting sequence optimization attempt: " << i;
             auto mg_seq_opt = _perform_sequence_opt(*mg_w_sol, bp_step_indexes);
-            if(mg_seq_opt == nullptr) {
+            if (mg_seq_opt == nullptr) {
                 LOG_DEBUG << "did not find a valid solution for sequence opt";
                 continue;
             }
+            if (sol_info_.sequence_opt_score > 7) {
+                attempts += 1;
+                if (attempts > 3) {
+                    LOG_DEBUG << "no viable sequence determined skipping this design " << attempts;
+                    seq_opt_fail = true;
+                    break;
+                }
+                LOG_DEBUG << "seq opt did not a good enough solution, redoing attempt " << attempts;
+                i -= 1;
+                continue;
+            }
             sol_info_.seqeunce_opt_num += 1;
-            if(! parameters_.thermo_fluc.perform) {
+            if (!parameters_.thermo_fluc.perform) {
                 _record_solution(*mg_seq_opt);
                 continue;
             }
             _perform_thermo_fluc_sim(*mg_seq_opt, bp_step_indexes);
         }
+        if (seq_opt_fail) {
+            continue;
+        }
         LOG_DEBUG << "*** finished design: " << sol_info_.design_num << " ***";
         sol_info_.design_num += 1;
-        if(parameters_.core.designs <= sol_info_.design_num) {
+        if (parameters_.core.designs <= sol_info_.design_num) {
             LOG_DEBUG << " successfully finished main design loop!";
             break;
         }
 
     }
 
-    if(parameters_.core.designs <= sol_info_.design_num) {
+    if (parameters_.core.designs <= sol_info_.design_num) {
         LOG_INFO << "found " << sol_info_.design_num
                  << " designs, if you want more please use --designs num_of_design";
 
@@ -268,12 +329,12 @@ DesignRNAScaffold::run() {
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void
-DesignRNAScaffold::setup() {
+DesignRNAScaffold::setup () {
     LOG_INFO << "#########";
     LOG_INFO << "# setup #";
     LOG_INFO << "#########";
 
-    if(!parameters_.io.new_ensembles_file.empty()) {
+    if (!parameters_.io.new_ensembles_file.empty()) {
         _build_new_ensembles(parameters_.io.new_ensembles_file);
     }
     // setups up start_, end_ and msg_;
@@ -284,8 +345,10 @@ DesignRNAScaffold::setup() {
     mg_->increase_level();
 
     // sets up outputing files
-    LOG_INFO << "out file that contains all build solutions -> " + parameters_.io.out_file + " can be set with --out_file";
-    LOG_INFO << "score file that contains summary information about solutions -> " + parameters_.io.score_file + " can be set with --score_file";
+    LOG_INFO << "out file that contains all build solutions -> " + parameters_.io.out_file
+            + " can be set with --out_file";
+    LOG_INFO << "score file that contains summary information about solutions -> "
+            + parameters_.io.score_file + " can be set with --score_file";
     out_.open(parameters_.io.out_file);
     score_out_.open(parameters_.io.score_file);
 
@@ -301,8 +364,9 @@ DesignRNAScaffold::setup() {
     seq_optimizer_ = std::make_shared<sequence_optimization::SequenceOptimizer3D>();
     seq_optimizer_->set_option_value("steps", parameters_.seq_opt.steps);
 
-    if(! parameters_.seq_opt.skip) {
-        LOG_INFO << "sequence optimization cutoff -> " << seq_optimizer_->get_float_option("cutoff");
+    if (!parameters_.seq_opt.skip) {
+        LOG_INFO
+                << "sequence optimization cutoff -> " << seq_optimizer_->get_float_option("cutoff");
         LOG_INFO << "sequence optimization steps -> " << seq_optimizer_->get_int_option("steps");
     }
     else {
@@ -318,20 +382,20 @@ DesignRNAScaffold::setup() {
 }
 
 void
-DesignRNAScaffold::_setup_from_pdb()  {
+DesignRNAScaffold::_setup_from_pdb () {
     auto struc = rm_.get_structure(parameters_.core.pdb, "scaffold");
     LOG_INFO << "loaded pdb from file: " << parameters_.core.pdb;
-    if(struc->ends().empty()) {
+    if (struc->ends().empty()) {
         LOG_ERROR << "pdb has no ends available to build off of";
         exit(0);
     }
     auto end_names = String();
-    for(auto const & end : struc->ends()) {
-          end_names += end->name() + " ";
+    for (auto const &end : struc->ends()) {
+        end_names += end->name() + " ";
     }
     LOG_INFO << "available ends to build off: " << end_names;
     _check_bp(parameters_.core.start_bp, struc, "start");
-    _check_bp(parameters_.core.end_bp,  struc, "end");
+    _check_bp(parameters_.core.end_bp, struc, "end");
 
     // TODO allow for construction of motif from RNA structure to allow for changes in base pair types
     rm_.add_motif(parameters_.core.pdb, "scaffold", util::MotifType::TCONTACT);
@@ -341,7 +405,7 @@ DesignRNAScaffold::_setup_from_pdb()  {
     try {
         ei1 = m->get_end_index(parameters_.core.start_bp);
     }
-    catch(structure::RNAStructureException const & e) {
+    catch (structure::RNAStructureException const &e) {
         LOG_ERROR << "starting basepair: " << parameters_.core.start_bp << " was NOT FOUND!";
         exit(0);
     }
@@ -349,46 +413,47 @@ DesignRNAScaffold::_setup_from_pdb()  {
     try {
         ei2 = m->get_end_index(parameters_.core.end_bp);
     }
-    catch(structure::RNAStructureException const & e) {
+    catch (structure::RNAStructureException const &e) {
         LOG_ERROR << "end basepair: " << parameters_.core.end_bp << " was NOT FOUND!";
         exit(0);
     }
     LOG_INFO << "end basepair: " << parameters_.core.end_bp << " is found!";
 
     starting_indexes_.start = data_structure::NodeIndexandEdge{0, ei1};
-    starting_indexes_.end   = data_structure::NodeIndexandEdge{0, ei2};
+    starting_indexes_.end = data_structure::NodeIndexandEdge{0, ei2};
 
     msg_ = std::make_shared<motif_data_structure::MotifStateGraph>();
     msg_->add_state(m->get_state());
-    if(! parameters_.search.starting_helix.empty()) {
+    if (!parameters_.search.starting_helix.empty()) {
         auto h = rm_.motif_state(parameters_.search.starting_helix);
         msg_->add_state(h, starting_indexes_.start.node_index, starting_indexes_.start.edge_index);
         starting_indexes_.start = data_structure::NodeIndexandEdge{1, 1};
     }
 }
 
-
 void
-DesignRNAScaffold::_check_bp(
-        String const & name,
-        structure::RNAStructureOP const & struc,
-        String const & type) const {
+DesignRNAScaffold::_check_bp (
+    String const &name,
+    structure::RNAStructureOP const &struc,
+    String const &type) const {
 
     auto bps = structure::BasepairOPs();
     try {
         bps = struc->get_basepair(name);
-    } catch(std::runtime_error const & error) {
-        LOG_ERROR<<error.what();
-        LOG_ERROR << "cannot find " + type  + " basepair " + name; exit(0);
+    }
+    catch (std::runtime_error const &error) {
+        LOG_ERROR << error.what();
+        LOG_ERROR << "cannot find " + type + " basepair " + name;
         exit(0);
     }
 
-    if(bps[0]->bp_type() != "cW-W" && parameters_.search.no_basepair_checks) {
+    if (bps[0]->bp_type() != "cW-W" && parameters_.search.no_basepair_checks) {
         bps[0]->bp_type("cW-W");
-        LOG_WARNING << "basepair " + name + " is not a watson and crick bp, but forcing it to be, this may be bad";
+        LOG_WARNING << "basepair " + name
+                + " is not a watson and crick bp, but forcing it to be, this may be bad";
     }
 
-    if(bps[0]->bp_type() != "cW-W") {
+    if (bps[0]->bp_type() != "cW-W") {
         LOG_ERROR << "basepair " + name + " is not a watson and crick bp ";
         exit(0);
     }
@@ -396,17 +461,17 @@ DesignRNAScaffold::_check_bp(
 }
 
 motif_search::SearchOP
-DesignRNAScaffold::_setup_search() {
+DesignRNAScaffold::_setup_search () {
     auto search = motif_search::SearchOP(nullptr);
     auto filter = _setup_sol_filter(parameters_.search.solution_filter);
     LOG_INFO << "search type -> " + parameters_.search.type;
     LOG_INFO << "search solution filter -> " + parameters_.search.solution_filter;
-    if(parameters_.search.solution_filter == "NoFilter") {
+    if (parameters_.search.solution_filter == "NoFilter") {
         LOG_WARNING << "no solution filter is set, this will lead to duplicate solutions under "
                     << "certain conditions";
     }
 
-    if(parameters_.search.type == "path_finding") {
+    if (parameters_.search.type == "path_finding") {
         using namespace motif_search::path_finding;
         auto scorer = std::make_shared<AstarScorer>();
         auto selector = default_selector();
@@ -414,13 +479,13 @@ DesignRNAScaffold::_setup_search() {
         search = motif_search::SearchOP(pf_search->clone());
     }
 
-    if(parameters_.search.type == "exhaustive") {
+    if (parameters_.search.type == "exhaustive") {
         using namespace motif_search::exhaustive;
         auto score_factory = ScorerFactory();
         auto scorer = score_factory.get_scorer(parameters_.search.exhaustive_scorer);
         //TODO setup default sol topology if user does not specify motif_path
         auto sol_template = std::make_shared<motif_search::SolutionTopologyTemplate>();
-        if(!parameters_.search.motif_path.empty() /* added by CJ 08/20 parameters_.motif_path != ""*/) {
+        if (!parameters_.search.motif_path.empty() /* added by CJ 08/20 parameters_.motif_path != ""*/) {
             sol_template = _setup_sol_template_from_path(parameters_.search.motif_path);
         }
         auto factory = motif_search::SolutionToplogyFactory();
@@ -429,19 +494,20 @@ DesignRNAScaffold::_setup_search() {
         search = motif_search::SearchOP(e_search->clone());
     }
 
-    if(parameters_.search.type == "mc") {
+    if (parameters_.search.type == "mc") {
         using namespace motif_search::monte_carlo;
         auto scorer = ScorerOP(nullptr);
-        if(parameters_.search.mc_scorer == "default") {
+        if (parameters_.search.mc_scorer == "default") {
             scorer = std::make_shared<DefaultScorer>();
         }
-        else if(parameters_.search.mc_scorer == "scaled_scorer") {
+        else if (parameters_.search.mc_scorer == "scaled_scorer") {
             scorer = std::make_shared<ScaledScorer>(
                 parameters_.search.scaled_score_d,
                 parameters_.search.scaled_score_r);
         }
-        if(!parameters_.search.motif_path.empty() /* added by CJ 08/20 parameters_.motif_path != ""*/) {
-            LOGE << "must include a motif path when using Monte Carlo search"; exit(0);
+        if (parameters_.search.motif_path.empty()) {
+            LOG_ERROR << "must include a motif path when using Monte Carlo search";
+            exit(0);
         }
         auto sol_template = _setup_sol_template_from_path(parameters_.search.motif_path);
         auto factory = motif_search::SolutionToplogyFactory();
@@ -464,25 +530,26 @@ DesignRNAScaffold::_setup_search() {
 }
 
 motif_search::ProblemOP
-DesignRNAScaffold::_setup_problem() {
+DesignRNAScaffold::_setup_problem () {
     auto start = starting_indexes_.start;
     auto end = starting_indexes_.end;
     auto start_bp = msg_->get_node(start.node_index)->data()->get_end_state(start.edge_index);
     auto end_bp = msg_->get_node(end.node_index)->data()->get_end_state(end.edge_index);
 
     bool target_an_aligned_end = false;
-    if(end.edge_index == msg_->get_node(end.node_index)->data()->block_end_add()) {
+    if (end.edge_index == msg_->get_node(end.node_index)->data()->block_end_add()) {
         target_an_aligned_end = true;
     }
 
     auto lookup = std::make_shared<util::StericLookupNew>();
     auto total_beads = 0;
-    if(! parameters_.search.no_sterics) {
+    if (!parameters_.search.no_sterics) {
         for (auto const &n : *msg_) {
             total_beads += n->data()->cur_state->beads().size();
             lookup->add_points(n->data()->cur_state->beads());
         }
-        LOG_INFO << total_beads << " steric beads were found to block residue overlap with supplied structure";
+        LOG_INFO << total_beads
+                 << " steric beads were found to block residue overlap with supplied structure";
     }
     else {
         LOG_INFO << "no steric beads will be added based on --no_sterics flag";
@@ -490,36 +557,49 @@ DesignRNAScaffold::_setup_problem() {
 
     return std::make_shared<motif_search::Problem>(start_bp, end_bp, lookup, target_an_aligned_end);
 
-
 }
 
 motif_search::SolutionTopologyTemplateOP
-DesignRNAScaffold::_setup_sol_template_from_path(
-        String const & motif_path) {
+DesignRNAScaffold::_setup_sol_template_from_path (
+    String const &motif_path) {
     auto sol_template = std::make_shared<motif_search::SolutionTopologyTemplate>();
     auto spl = base::split_str_by_delimiter(motif_path, ",");
     int i = 0;
     auto lib_names = resources::MotifStateSqliteLibrary::get_libnames();
-    for(auto const & e : spl) {
-        if(lib_names.find(e) != lib_names.end()) {  // is a library
-            if(i == 0) { sol_template->add_library(e); }
-            else       { sol_template->add_library(e, data_structure::NodeIndexandEdge{i-1, 1}); }
+    for (auto const &e : spl) {
+        if (lib_names.find(e) != lib_names.end()) {  // is a library
+            if (i == 0) {
+                sol_template->add_library(e);
+            }
+            else {
+                sol_template->add_library(e, data_structure::NodeIndexandEdge{i - 1, 1});
+            }
         }
 
-        else if(e == "tc_hairpin_hairpin") {
+        else if (e == "tc_hairpin_hairpin") {
             LOG_ERROR << "tc_hairpin_hairpin not supported";
             exit(0);
         }
 
-        else if(new_motif_ensembles_.find(e) != new_motif_ensembles_.end()) { // found user specified ensemble
-            if(i == 0) { sol_template->add_ensemble(new_motif_ensembles_[e]); }
-            else       { sol_template->add_ensemble(new_motif_ensembles_[e], data_structure::NodeIndexandEdge{i-1, 1}); }
+        else if (new_motif_ensembles_.find(e)
+            != new_motif_ensembles_.end()) { // found user specified ensemble
+            if (i == 0) {
+                sol_template->add_ensemble(new_motif_ensembles_[e]);
+            }
+            else {
+                sol_template->add_ensemble(new_motif_ensembles_[e],
+                                           data_structure::NodeIndexandEdge{i - 1, 1});
+            }
         }
         else {
             // TODO should try and get motif from every end!
             auto ms = rm_.motif_state(e);
-            if(i == 0) { sol_template->add_motif_state(ms); }
-            else       { sol_template->add_motif_state(ms, data_structure::NodeIndexandEdge{i-1, 1}); }
+            if (i == 0) {
+                sol_template->add_motif_state(ms);
+            }
+            else {
+                sol_template->add_motif_state(ms, data_structure::NodeIndexandEdge{i - 1, 1});
+            }
         }
         i++;
     }
@@ -528,10 +608,10 @@ DesignRNAScaffold::_setup_sol_template_from_path(
 }
 
 motif_search::SolutionFilterOP
-DesignRNAScaffold::_setup_sol_filter(
-        String const & solution_filter_name) {
+DesignRNAScaffold::_setup_sol_filter (
+    String const &solution_filter_name) {
     auto sf = motif_search::SolutionFilterOP(nullptr);
-    if     (solution_filter_name == "NoFilter") {
+    if (solution_filter_name == "NoFilter") {
         auto new_sf = std::make_shared<motif_search::NoExclusionFilter>();
         sf = motif_search::SolutionFilterOP(new_sf->clone());
     }
@@ -540,7 +620,8 @@ DesignRNAScaffold::_setup_sol_filter(
         sf = motif_search::SolutionFilterOP(new_sf->clone());
     }
     else {
-        LOG_ERROR << "not a valid solution filter name: " << solution_filter_name; exit(0);
+        LOG_ERROR << "not a valid solution filter name: " << solution_filter_name;
+        exit(0);
     }
 
     return sf;
@@ -552,7 +633,7 @@ DesignRNAScaffold::_setup_sol_filter(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 motif_data_structure::MotifGraphOP
-DesignRNAScaffold::_get_motif_graph_solution() {
+DesignRNAScaffold::_get_motif_graph_solution () {
     auto solution = search_->next();
     // search could not find a solution
     if (solution == nullptr) {
@@ -570,7 +651,8 @@ DesignRNAScaffold::_get_motif_graph_solution() {
     if (sol_info_.design_num < 10) {
         LOG_INFO << "found a solution: " << sol_info_.motif_names << " with score: "
                  << sol_info_.design_score;
-    } else if (sol_info_.design_num % 10 == 0) {
+    }
+    else if (sol_info_.design_num % 10 == 0) {
         LOG_INFO << "found " << sol_info_.design_num << " solutions ";
     }
 
@@ -579,10 +661,9 @@ DesignRNAScaffold::_get_motif_graph_solution() {
     mg_->add_motif_graph(*sol_mg, start.node_index, start.edge_index);
     auto mg_w_sol = std::make_shared<motif_data_structure::MotifGraph>(*mg_);
     mg_w_sol->add_connection(mg_->last_node()->index(), end.node_index,
-                              mg_->last_node()->data()->end_name(1),
-                              mg_->get_node(end.node_index)->data()->end_name(end.edge_index));
+                             mg_->last_node()->data()->end_name(1),
+                             mg_->get_node(end.node_index)->data()->end_name(end.edge_index));
     _fix_flex_helices_mtype(mg_w_sol);
-
 
     mg_->remove_level(1);
     // currently necessary to generate correct designable secondary structure
@@ -597,27 +678,28 @@ DesignRNAScaffold::_get_motif_graph_solution() {
 }
 
 void
-DesignRNAScaffold::_get_graph_indexes_after_bp_steps(
-    motif_data_structure::MotifGraph const & mg,
-    GraphIndexes const & starting_indexes,
-    GraphIndexes & new_indexes /* return */) {
+DesignRNAScaffold::_get_graph_indexes_after_bp_steps (
+    motif_data_structure::MotifGraph const &mg,
+    GraphIndexes const &starting_indexes,
+    GraphIndexes &new_indexes /* return */) {
     auto end = starting_indexes.end;
-    auto last_m = mg.get_node(end.node_index)->connections()[end.edge_index]->partner(end.node_index);
+    auto last_m =
+        mg.get_node(end.node_index)->connections()[end.edge_index]->partner(end.node_index);
     new_indexes.start = data_structure::NodeIndexandEdge{last_m->index(), 1};
     new_indexes.end = end;
 }
 
 motif_data_structure::MotifGraphOP
-DesignRNAScaffold::_perform_sequence_opt(
-    motif_data_structure::MotifGraph const & mg_w_sol,
-    GraphIndexes const & bp_step_indexes) {
+DesignRNAScaffold::_perform_sequence_opt (
+    motif_data_structure::MotifGraph const &mg_w_sol,
+    GraphIndexes const &bp_step_indexes) {
     auto opt_seq_scorer = std::make_shared<sequence_optimization::InternalTargetScorer>(
         bp_step_indexes.start.node_index, bp_step_indexes.start.edge_index,
         bp_step_indexes.end.node_index, bp_step_indexes.end.edge_index,
         problem_->target_an_aligned_end);
     auto mg_seq_opt = std::make_shared<motif_data_structure::MotifGraph>(mg_w_sol);
     auto sols = seq_optimizer_->get_optimized_sequences(mg_seq_opt, opt_seq_scorer);
-    if(sols.empty()) {
+    if (sols.empty()) {
         LOG_DEBUG << "No viable solutions sequence solutions founds!";
         return nullptr;
     }
@@ -628,18 +710,19 @@ DesignRNAScaffold::_perform_sequence_opt(
 }
 
 motif_data_structure::MotifGraphOP
-DesignRNAScaffold::_perform_thermo_fluc_sim(
-    motif_data_structure::MotifGraph & mg,
-    GraphIndexes const & bp_step_indexes) {
+DesignRNAScaffold::_perform_thermo_fluc_sim (
+    motif_data_structure::MotifGraph &mg,
+    GraphIndexes const &bp_step_indexes) {
     LOG_DEBUG << "*** starting thermo fluc sim ***";
     auto index_hash = std::map<int, int>();
     auto mseg = motif_data_structure::MotifStateEnsembleGraph();
     _get_mseg(mg, mseg, index_hash);
     auto tf_indexes = GraphIndexes();
-    tf_indexes.start = data_structure::NodeIndexandEdge{index_hash[bp_step_indexes.start.node_index],
-                                                        bp_step_indexes.start.edge_index};
+    tf_indexes.start =
+        data_structure::NodeIndexandEdge{index_hash[bp_step_indexes.start.node_index],
+                                         bp_step_indexes.start.edge_index};
     tf_indexes.end = data_structure::NodeIndexandEdge{index_hash[bp_step_indexes.end.node_index],
-                                                       bp_step_indexes.end.edge_index};
+                                                      bp_step_indexes.end.edge_index};
     thermo_sim_->setup(mseg, tf_indexes.start, tf_indexes.end);
     thermo_sim_->next();
     auto count = 0;
@@ -648,10 +731,10 @@ DesignRNAScaffold::_perform_thermo_fluc_sim(
     auto under_cutoff = 0;
     for (int s = 0; s < parameters_.thermo_fluc.steps; s++) {
         under_cutoff = thermo_sim_->next();
-        if(under_cutoff) {
+        if (under_cutoff) {
             count += 1;
         }
-        if(thermo_sim_->get_score() < best) {
+        if (thermo_sim_->get_score() < best) {
             LOG_VERBOSE << "best dist score: " << best;
             best = thermo_sim_->get_score();
             best_mg = thermo_sim_->get_motif_graph();
@@ -665,15 +748,15 @@ DesignRNAScaffold::_perform_thermo_fluc_sim(
         best_mg->get_node(tf_indexes.end.node_index)->data()->ends()[tf_indexes.end.edge_index]->name());
 
     LOG_DEBUG << "best dist score: " << best;
-    LOG_DEBUG << "hits: " << count << ", %: = " << ((float)count / (float)1000000)*100.0f;
+    LOG_DEBUG << "hits: " << count << ", %: = " << ((float) count / (float) 1000000) * 100.0f;
     return best_mg;
 }
 
 void
-DesignRNAScaffold::_record_solution(
-        motif_data_structure::MotifGraph & mg) {
+DesignRNAScaffold::_record_solution (
+    motif_data_structure::MotifGraph &mg) {
 
-    if(parameters_.io.dump_pdbs) {
+    if (parameters_.io.dump_pdbs) {
         mg.to_pdb("design." + std::to_string(sol_info_.design_num) + ".pdb", 1, 1);
     }
     score_out_ << sol_info_ << std::endl;
@@ -681,46 +764,51 @@ DesignRNAScaffold::_record_solution(
 }
 
 void
-DesignRNAScaffold::_fix_flex_helices_mtype(
-        motif_data_structure::MotifGraphOP mg) {
+DesignRNAScaffold::_fix_flex_helices_mtype (
+    motif_data_structure::MotifGraphOP mg) {
     // Some versions of RNAMake have this issue, that flex helices arent set as "helices"
     // this can raise merger issues
-    for(auto & n : *mg) {
-        if(n->data()->name().substr(0, 5) == "HELIX") {
+    for (auto &n : *mg) {
+        if (n->data()->name().substr(0, 5) == "HELIX") {
             n->data()->mtype(util::MotifType::HELIX);
         }
     }
 }
 
 void
-DesignRNAScaffold::_get_motif_names(
-        motif_data_structure::MotifGraphOP mg) {
+DesignRNAScaffold::_get_motif_names (
+    motif_data_structure::MotifGraphOP mg) {
     sol_info_.motif_names = "";
-    for (auto const & n : *mg) {
+    for (auto const &n : *mg) {
         sol_info_.motif_names += n->data()->name() + ";";
     }
 }
 
 void
-DesignRNAScaffold::_build_new_ensembles(
-        String const & new_ensemble_path) {
+DesignRNAScaffold::_build_new_ensembles (
+    String const &new_ensemble_path) {
     auto lines = base::get_lines_from_file(new_ensemble_path);
     auto ensemble = motif::MotifStateEnsembleOP(nullptr);
     auto ms = motif::MotifStateOP(nullptr);
     auto all_ms = motif::MotifStateOPs();
     auto scores = Floats();
-    for(auto const & l : lines) {
+    for (auto const &l : lines) {
         auto spl = base::split_str_by_delimiter(l, " ");
-        if(spl.size() != 3) { continue;}
-        all_ms.resize(0); scores.resize(0);
-        for(auto const & m_name : base::split_str_by_delimiter(spl[2], ",")) {
+        if (spl.size() != 3) {
+            continue;
+        }
+        all_ms.resize(0);
+        scores.resize(0);
+        for (auto const &m_name : base::split_str_by_delimiter(spl[2], ",")) {
             ms = rm_.motif_state(m_name, "", "");
-            for(auto const & end_name : ms->end_names()) {
+            for (auto const &end_name : ms->end_names()) {
                 try {
                     all_ms.push_back(rm_.motif_state(m_name, "", end_name));
                     scores.push_back(0);
-                } catch (std::runtime_error const& error) {
-                    LOGW<<"Error: "<<error.what(); continue;
+                }
+                catch (std::runtime_error const &error) {
+                    LOGW << "Error: " << error.what();
+                    continue;
                 }
             }
         }
@@ -730,19 +818,20 @@ DesignRNAScaffold::_build_new_ensembles(
 }
 
 void
-DesignRNAScaffold::_get_mseg(
-        motif_data_structure::MotifGraph & mg,
-        motif_data_structure::MotifStateEnsembleGraph & mseg /* return */,
-        std::map<int, int> & index_hash) {
+DesignRNAScaffold::_get_mseg (
+    motif_data_structure::MotifGraph &mg,
+    motif_data_structure::MotifStateEnsembleGraph &mseg /* return */,
+    std::map<int, int> &index_hash) {
     int i = 0, j = 0;
-    for(auto const & n : mg) {
+    for (auto const &n : mg) {
         // build / get motif state ensemble
         auto mse = motif::MotifStateEnsembleOP(nullptr);
 
-        if(n->data()->mtype() == util::MotifType::HELIX) {
+        if (n->data()->mtype() == util::MotifType::HELIX) {
             // is not a basepair step
-            if(n->data()->residues().size() > 4) {
-                LOG_ERROR << "supplied a helix motif: "+n->data()->name() +" that is not a basepair "
+            if (n->data()->residues().size() > 4) {
+                LOG_ERROR << "supplied a helix motif: " + n->data()->name()
+                        + " that is not a basepair "
                           << "step, this is no supported";
                 exit(0);
             }
@@ -750,8 +839,9 @@ DesignRNAScaffold::_get_mseg(
             try {
                 mse = rm_.motif_state_ensemble(n->data()->end_ids()[0]);
             }
-            catch(resources::ResourceManagerException const & e) {
-                LOG_ERROR << "cannot find motif state ensemble for basepair with id: " + n->data()->end_ids()[0] <<
+            catch (resources::ResourceManagerException const &e) {
+                LOG_ERROR << "cannot find motif state ensemble for basepair with id: "
+                        + n->data()->end_ids()[0] <<
                           "check to make sure its a Watson-Crick basepair step";
                 exit(0);
             }
@@ -760,7 +850,7 @@ DesignRNAScaffold::_get_mseg(
             mse = std::make_shared<motif::MotifStateEnsemble>(n->data()->get_state());
         }
 
-        if(i == 0) {
+        if (i == 0) {
             j = mseg.add_ensemble(*mse);
         }
         else {
@@ -774,7 +864,6 @@ DesignRNAScaffold::_get_mseg(
 
     }
 
-
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -782,9 +871,9 @@ DesignRNAScaffold::_get_mseg(
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int
-main(
-        int argc,
-        const char ** argv) {
+main (
+    int argc,
+    const char **argv) {
     //must add this for all apps!
     std::set_terminate(base::save_backtrace);
 

@@ -84,8 +84,8 @@ public:
             float current_score) {
         pos_ = rng_.randrange((int)sol_top_.size() - 1);
         new_ms = sol_top_.get_motif_state(pos_);
-        last_ms_ = msg->get_node(pos_)->data()->cur_state;
-        msg->replace_state(pos_, new_ms);
+        last_ms_ = msg->get_node(pos_+1)->data()->cur_state;
+        msg->replace_state(pos_+1, new_ms);
         new_score_ = scorer_->score(*msg->last_node()->data()->cur_state->end_states()[1]);
         accept_ = mc_.accept(current_score, new_score_);
         if(accept_) {
@@ -105,7 +105,7 @@ public:
     void
     undo(
             motif_data_structure::MotifStateGraphOP msg) {
-        msg->replace_state(pos_, last_ms_);
+        msg->replace_state(pos_+1, last_ms_);
     }
 
 private:
@@ -163,22 +163,21 @@ public:
         }
         stages_ = 50;
         steps_ = 500000;
-
-
-        //state_ = std::make_shared<State>();
+        stage_ = 0;
     }
 
 
     virtual
     void
-    start() {
-
-
-    }
+    //TODO implement or change interface
+    start() { }
 
     virtual
     bool
-    finished() { return false; }
+    //TODO implement or change interface
+    finished() {
+        return false;
+    }
 
     virtual
     SolutionOP
@@ -188,7 +187,7 @@ public:
         auto best_score = cur_score;
         auto mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
         auto hot_mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
-        hot_mover->set_temperature(1000.0f);
+        hot_mover->set_temperature(10.0f);
         mover->set_temperature(4.5f);
 
         // TODO add temperature adjustment to get to 0.235 acceptance
@@ -208,6 +207,7 @@ public:
                     _get_solution_motif_names(msg_);
                     if(!filter_->accept(motif_names_)) { continue; }
                     auto sol_msg = _get_solution_msg();
+                    LOG_DEBUG << "found a solution: " << cur_score;
                     return std::make_shared<Solution>(sol_msg, cur_score);
                 }
                 if(cur_score < best_score) {
@@ -215,24 +215,23 @@ public:
                 }
 
             }
-
-            LOGI << "stage: " << stage_ << " best_score: " << best_score << " acceptance: " <<  (float)(accepted_steps / steps_);
-
+            LOG_DEBUG << "stage: " << stage_ << " best_score: " << best_score << " acceptance: " <<  (float)(accepted_steps / steps_);
             // heatup
-            /*int k = 0;
             for(int i = 0; i < 100; i++) {
                 accept = hot_mover->apply(msg_, cur_score);
                 if(accept) {
                     cur_score = hot_mover->score();
-                    k += 1;
                 }
-            }*/
+            }
+            // reset mover
+            mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
+            mover->set_temperature(4.5f);
 
             step_ = 0;
             stage_ += 1;
         }
 
-        std::cout << "exited" << std::endl;
+        LOG_DEBUG << "exiting monte carlo search";
 
         return SolutionOP(nullptr);
 

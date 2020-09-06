@@ -3,6 +3,8 @@ import subprocess
 import os
 import logging
 import colorlog
+import glob
+
 
 def init_logger(dunder_name) -> logging.Logger:
     log_format = (
@@ -10,7 +12,7 @@ def init_logger(dunder_name) -> logging.Logger:
     )
     bold_seq = "\033[1m"
     colorlog_format = f"{bold_seq}" "%(log_color)s" f"{log_format}"
-    logger = logging.getLogger(dunder_name)
+    cur_logger = logging.getLogger(dunder_name)
     # colorlog.basicConfig(format=colorlog_format, datefmt="%H:%M")
     handler = colorlog.StreamHandler()
     handler.setFormatter(
@@ -27,48 +29,83 @@ def init_logger(dunder_name) -> logging.Logger:
         )
     )
 
-    logger.addHandler(handler)
-    logger.setLevel(logging.INFO)
-    return logger
+    cur_logger.addHandler(handler)
+    cur_logger.setLevel(logging.INFO)
+    return cur_logger
+
+
+def get_cmd(fname):
+    f = open(fname)
+    lines = f.readlines()
+    f.close()
+    return lines[0]
+
 
 def get_required_log_lines(fname):
     f = open(fname)
-    required_log_lines = [l[9:].rstrip() for l in f.readlines()]
+    required_log_lines = [line[9:].rstrip() for line in f.readlines()]
     f.close()
     return required_log_lines
 
+
 def check_required_log_lines(name, required_log_lines, log_lines):
     seen = {}
-    for l in log_lines:
-        if l in required_log_lines:
-            seen[l] = 1
+    for line in log_lines:
+        if line in required_log_lines:
+            seen[line] = 1
     if len(seen) == len(required_log_lines):
         logger.info("test: {} PASSED!".format(name))
         return
     logger.warning("test: {} FAILED!".format(name))
     logger.warning("missing the following log statements:")
-    for l in required_log_lines:
-        if l not in seen:
-            logger.warning(l)
+    for line in required_log_lines:
+        if line not in seen:
+            logger.warning(line)
+
+
+def get_expected_file_dict(fname):
+    f = open(fname)
+    expected_file_dict = {line.rstrip(): 1 for line in f.readlines()}
+    f.close()
+    return expected_file_dict
+
+
+def get_produced_files():
+    files = glob.glob("*")
+    remove = [".", "..", "cmd", "inputs", "outputs", "org_outputs"]
+    for r in remove:
+        if r in files:
+            files.remove(r)
+    return files
+
+
+def get_log_lines(cmd_str):
+    try:
+        output = subprocess.check_output(cmd_str, shell=True).decode("utf8")
+    except subprocess.CalledProcessError:
+        logger.error("test: {} did not run properly!".format(row["name"]))
+        output = ""
+    log_lines = [line[9:].rstrip() for line in output.split("\n")]
+    return log_lines
+
 
 logger = init_logger("RUN_TESTS")
+
 
 def main():
     cur_path = os.path.abspath(os.path.curdir)
     df = pd.read_csv("tests.csv")
     for i, row in df.iterrows():
         os.chdir(row["name"])
-        f = open("COMMAND")
-        lines = f.readlines()
-        f.close()
-        required_log_lines = get_required_log_lines("EXPECTED")
-        try:
-            output = subprocess.check_output(lines[0], shell=True).decode("utf8")
-        except:
-            logger.error("test: {} did not run properly!".format(row['name']))
+        cmd_str = get_cmd("cmd/COMMAND")
+        log_lines = get_log_lines(cmd_str)
+        if len(log_lines) == 0:
             continue
-        log_lines = [l[9:].rstrip() for l in output.split("\n")]
+        required_log_lines = get_required_log_lines("cmd/EXPECTED")
         check_required_log_lines(row["name"], required_log_lines, log_lines)
+        files = get_produced_files()
+
+        os.chdir(cur_path)
         exit()
 
 
