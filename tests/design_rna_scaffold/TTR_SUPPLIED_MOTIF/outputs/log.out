@@ -1,0 +1,68 @@
+18:01:37 INFO  [DesignRNAScaffold::setup] #########
+18:01:37 INFO  [DesignRNAScaffold::setup] # setup #
+18:01:37 INFO  [DesignRNAScaffold::setup] #########
+18:01:38 INFO  [DesignRNAScaffold::_setup_from_pdb] loaded pdb from file: inputs/min_tetraloop_receptor.pdb
+18:01:38 INFO  [DesignRNAScaffold::_setup_from_pdb] available ends to build off: A144-A159 A220-A253 A232-A242 
+18:01:38 INFO  [DesignRNAScaffold::_setup_from_pdb] start basepair: A220-A253 is found!
+18:01:38 INFO  [DesignRNAScaffold::_setup_from_pdb] end basepair: A144-A159 is found!
+18:01:38 INFO  [DesignRNAScaffold::_setup_extra_pdbs]  loading pdbs from --extra_pdb flag: inputs/atp_aptamer.pdb
+18:01:38 INFO  [DesignRNAScaffold::_setup_extra_pdbs] loading inputs/atp_aptamer.pdb
+18:01:38 INFO  [DesignRNAScaffold::setup] out file that contains all build solutions -> default.out can be set with --out_file
+18:01:38 INFO  [DesignRNAScaffold::setup] score file that contains summary information about solutions -> default.scores can be set with --score_file
+18:01:38 INFO  [DesignRNAScaffold::_setup_search] search type -> mc
+18:01:38 INFO  [DesignRNAScaffold::_setup_search] search solution filter -> RemoveDuplicateHelices
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] building motif path from string: flex_helices,twoway,flex_helices,atp_aptamer,flex_helices,twoway,flex_helices,twoway,flex_helices
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] flex_helices is determined to be a motif library
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] twoway is determined to be a motif library
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] flex_helices is determined to be a motif library
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] flex_helices is determined to be a motif library
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] twoway is determined to be a motif library
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] flex_helices is determined to be a motif library
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] twoway is determined to be a motif library
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] flex_helices is determined to be a motif library
+18:01:38 INFO  [DesignRNAScaffold::_setup_search] search cutoff -> 5.000000
+18:01:38 INFO  [DesignRNAScaffold::_setup_search] search max size (how many residues) -> 999999
+18:01:38 INFO  [DesignRNAScaffold::_setup_problem] 78 steric beads were found to block residue overlap with supplied structure
+18:01:38 INFO  [DesignRNAScaffold::setup] sequence optimization cutoff -> 5
+18:01:38 INFO  [DesignRNAScaffold::setup] sequence optimization steps -> 10000
+18:01:38 INFO  [DesignRNAScaffold::run] ###################
+18:01:38 INFO  [DesignRNAScaffold::run] # starting search #
+18:01:38 INFO  [DesignRNAScaffold::run] ###################
+18:01:38 DEBUG [DesignRNAScaffold::run] *** starting motif search ***
+18:01:38 DEBUG [motif_search::monte_carlo::Search::next] stage: 0 best_score: 134.522 acceptance: 0 temp: 4.5
+18:01:38 DEBUG [motif_search::monte_carlo::Search::next] round best score: 100000
+18:01:41 DEBUG [motif_search::monte_carlo::Search::next] found a solution: 4.88034
+18:01:41 INFO  [DesignRNAScaffold::_get_motif_graph_solution] found a solution: HELIX.FLEX.10.8;TWOWAY.3UMY.1;HELIX.FLEX.7.5;atp_aptamer;HELIX.FLEX.6.11;TWOWAY.3UMY.1;HELIX.FLEX.10.5;TWOWAY.2VQE.56;HELIX.FLEX.5.3; with score: 4.88034
+18:01:41 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] potential solution: #0
+18:01:41 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] GUUGAUAUGGAUNNNNNNNNGGGAGNNNNNGGGAAGAAACUGCNNNNCUGUGAACNNNNNNNNCACNNNUCAGGGGAAACUUUGANNNGGNNNNNNNNGGGAGNNNNGGCNNNNNCUGUGAACNNNNNNNNGUCCUAAGUCAAC
+18:01:41 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] ((((((.((((((((((((((...(((((((...........((((((......((((((((((.((((((((((....))))))))))))))))))))...)))))).)))))))......)))))))))))))..)))))))
+18:01:41 DEBUG [DesignRNAScaffold::run] *** starting sequence optimization ***
+18:01:41 DEBUG [DesignRNAScaffold::run] starting sequence optimization attempt: 0
+18:01:43 DEBUG [sequence_optimization::SequenceOptimizer3D::get_optimized_sequences] found solution! score=4.8648
+18:01:43 DEBUG [sequence_optimization::SequenceOptimizer3D::get_optimized_sequences] GUUGAUAUGGAUACUCUUCAGGGAGUCCCAGGGAAGAAACUGCGUGGCUGUGAACUAUGAGCUCACGACUCAGGGGAAACUUUGAGUCGGAGCUCAUAGGGAGCCACGGCUGGGACUGUGAACUGAAGAGUGUCCUAAGUCAAC
+18:01:43 DEBUG [DesignRNAScaffold::run] *** finished design: 0 ***
+18:01:43 DEBUG [DesignRNAScaffold::run] *** starting motif search ***
+18:01:44 DEBUG [motif_search::monte_carlo::Search::next] found a solution: 4.23527
+18:01:45 INFO  [DesignRNAScaffold::_get_motif_graph_solution] found a solution: HELIX.FLEX.9.16;TWOWAY.1S72.59;HELIX.FLEX.7.3;atp_aptamer;HELIX.FLEX.4.0;TWOWAY.2VQE.6;HELIX.FLEX.10.8;TWOWAY.3R1C.5;HELIX.FLEX.5.3; with score: 4.23527
+18:01:45 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] potential solution: #1
+18:01:45 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] GUUGAUAUGGAUNNNNNNNUUAAGNNNNNGGGAAGAAACUGCNNCGACGACGNNNNNNNNCGGNNNUCAGGGGAAACUUUGANNNCGGNNNNNNNNCAUCAGNNGGCNNNNNUGUGCGNNNNNNNGUCCUAAGUCAAC
+18:01:45 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] ((((((.(((((((((((((...(((((((...........((((......((((((((((.((((((((((....)))))))))).))))))))))....)))).)))))))....))))))))))))..)))))))
+18:01:45 DEBUG [DesignRNAScaffold::run] *** starting sequence optimization ***
+18:01:45 DEBUG [DesignRNAScaffold::run] starting sequence optimization attempt: 0
+18:01:46 DEBUG [sequence_optimization::SequenceOptimizer3D::get_optimized_sequences] found solution! score=4.38889
+18:01:46 DEBUG [sequence_optimization::SequenceOptimizer3D::get_optimized_sequences] GUUGAUAUGGAUCUUCUCAUUAAGGGACCGGGAAGAAACUGCAUCGACGACGGGAGAUUCCGGGUAUCAGGGGAAACUUUGAUACCGGGAAUCUCCCAUCAGAUGGCGGUCCUGUGCGUGAGAAGGUCCUAAGUCAAC
+18:01:46 DEBUG [DesignRNAScaffold::run] *** finished design: 1 ***
+18:01:46 DEBUG [DesignRNAScaffold::run] *** starting motif search ***
+18:01:46 DEBUG [motif_search::monte_carlo::Search::next] found a solution: 4.6441
+18:01:47 INFO  [DesignRNAScaffold::_get_motif_graph_solution] found a solution: HELIX.FLEX.11.5;TWOWAY.2VPL.0;HELIX.FLEX.8.0;atp_aptamer;HELIX.FLEX.4.10;TWOWAY.2VPL.2;HELIX.FLEX.11.11;TWOWAY.2VQE.42;HELIX.FLEX.5.3; with score: 4.6441
+18:01:47 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] potential solution: #2
+18:01:47 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] GUUGAUAUGGAUNNNNNNNNNGGAGNNNNNNGGGAAGAAACUGCNNCGAGAAACNNNNNNNNNCGNNNUCAGGGGAAACUUUGANNNCGUGNNNNNNNNNGGAGNNGGCNNNNNNCGAGAAACNNNNNNNNNGUCCUAAGUCAAC
+18:01:47 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] ((((((.(((((((((((((((..((((((((...........((((......(((((((((((((((((((((....))))))))))..)))))))))))..)))).))))))))......))))))))))))))..)))))))
+18:01:47 DEBUG [DesignRNAScaffold::run] *** starting sequence optimization ***
+18:01:47 DEBUG [DesignRNAScaffold::run] starting sequence optimization attempt: 0
+18:01:48 DEBUG [sequence_optimization::SequenceOptimizer3D::get_optimized_sequences] found solution! score=4.36106
+18:01:48 DEBUG [sequence_optimization::SequenceOptimizer3D::get_optimized_sequences] GUUGAUAUGGAUAGAAAGCCUGGAGGAAAGCGGGAAGAAACUGCAACGAGAAACGACUAGGACCGUCCUCAGGGGAAACUUUGAGGACGUGGUCCUAGUCGGAGUUGGCGCUUUCCGAGAAACAGGCUUUCUGUCCUAAGUCAAC
+18:01:48 DEBUG [DesignRNAScaffold::run] *** finished design: 2 ***
+18:01:48 DEBUG [DesignRNAScaffold::run]  successfully finished main design loop!
+18:01:48 INFO  [DesignRNAScaffold::run] found 3 designs, if you want more please use --designs num_of_design
+18:01:48 DEBUG [DesignRNAScaffold::run] NON-ERROR EXIT

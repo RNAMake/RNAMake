@@ -10,7 +10,7 @@
 17:28:00 INFO  [DesignRNAScaffold::_setup_search] search max size (how many residues) -> 999999
 17:28:00 INFO  [DesignRNAScaffold::_setup_problem] 78 steric beads were found to block residue overlap with supplied structure
 17:28:00 INFO  [DesignRNAScaffold::setup] sequence optimization cutoff -> 5
-17:28:00 INFO  [DesignRNAScaffold::setup] sequence optimization steps -> 1000
+17:28:00 INFO  [DesignRNAScaffold::setup] sequence optimization steps -> 10000
 17:28:00 INFO  [DesignRNAScaffold::_get_motif_graph_solution] found a solution: HELIX.FLEX.6.13;TWOWAY.1S72.38;HELIX.FLEX.7.6; with score: 4.18335
 17:28:00 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] potential solution: #0
 17:28:00 DEBUG [DesignRNAScaffold::_get_motif_graph_solution] GUUGAUAUGGAUNNNNUGGAAGNNNNNUCAGGGGAAACUUUGANNNNNCAGGAAGNNNNGUCCUAAGUCAAC

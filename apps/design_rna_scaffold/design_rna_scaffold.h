@@ -78,6 +78,9 @@ private: // setup functions
         structure::RNAStructureOP const &,
         String const &) const;
 
+    void
+    _setup_extra_pdbs();
+
 
 private: // run functions
 
@@ -133,6 +136,7 @@ private:
             int designs = 1;
             String log_level = "info";
             String mg = "";
+            String extra_pdbs = "";
         };
         // options related to what will be outputted
         struct IO {
@@ -166,7 +170,7 @@ private:
         struct SequenceOpt {
             bool skip = false;
             int sequences_per_design = 1;
-            int steps = 1000;
+            int steps = 10000;
 
         };
 

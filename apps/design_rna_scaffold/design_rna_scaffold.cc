@@ -87,6 +87,9 @@ DesignRNAScaffold::setup_options () {
         ->default_val("info")
         ->group("Core Inputs");
 
+    app_.add_option("--extra_pdbs", parameters_.core.extra_pdbs, ", deliminted list of other pdbs used in building")
+        ->default_val("")
+        ->group("Core Inputs");
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // I/O Options
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -266,18 +269,6 @@ DesignRNAScaffold::run () {
             sol_info_.design_num += 1;
             continue;
         }
-        motif_data_structure::MotifStateTree{}.to_motif_tree();
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        if(parameters_.search.only_tether_opt)  {
-            // what is the original doing?
-            /* 1. build in a new motif graph
-             * 2. loop through the existing motif tree and
-             *
-             *
-             */
-        }
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
         // remap node indexes with new base pair step motifs
         auto bp_step_indexes = GraphIndexes();
         _get_graph_indexes_after_bp_steps(*mg_w_sol, starting_indexes_, bp_step_indexes);
@@ -295,11 +286,11 @@ DesignRNAScaffold::run () {
             if (sol_info_.sequence_opt_score > 7) {
                 attempts += 1;
                 if (attempts > 3) {
-                    LOG_DEBUG << "no viable sequence determined skipping this design " << attempts;
+                    LOG_DEBUG << "no viable sequence determined skipping this design ";
                     seq_opt_fail = true;
                     break;
                 }
-                LOG_DEBUG << "seq opt did not a good enough solution: " << sol_info_.sequence_opt_score << "redoing attempt " << attempts;
+                LOG_DEBUG << "seq opt did not a good enough solution: " << sol_info_.sequence_opt_score << " redoing attempt " << attempts;
                 i -= 1;
                 continue;
             }
@@ -351,6 +342,8 @@ DesignRNAScaffold::setup () {
     }
     // setups up start_, end_ and msg_;
     _setup_from_pdb();
+    // extra pdbs that might be included in build path
+    _setup_extra_pdbs();
 
     mg_ = msg_->to_motif_graph();
     mg_->set_option_value("sterics", false);
@@ -440,6 +433,22 @@ DesignRNAScaffold::_setup_from_pdb () {
         auto h = rm_.motif_state(parameters_.search.starting_helix);
         msg_->add_state(h, starting_indexes_.start.node_index, starting_indexes_.start.edge_index);
         starting_indexes_.start = data_structure::NodeIndexandEdge{1, 1};
+    }
+}
+
+void
+DesignRNAScaffold::_setup_extra_pdbs() {
+    auto pdb_files = base::split_str_by_delimiter(parameters_.core.extra_pdbs, ",");
+    if(!pdb_files.empty()) {
+        LOG_INFO << " loading pdbs from --extra_pdb flag: " << parameters_.core.extra_pdbs;
+    }
+    for(auto const & pdb_file : pdb_files) {
+        if(!base::file_exists(pdb_file)) {
+            LOG_ERROR << "invalid pdb path: " << pdb_file;
+            exit(0);
+        }
+        LOG_INFO << "loading " << pdb_file;
+        rm_.add_motif(pdb_file);
     }
 }
 
@@ -578,8 +587,10 @@ DesignRNAScaffold::_setup_sol_template_from_path (
     auto spl = base::split_str_by_delimiter(motif_path, ",");
     int i = 0;
     auto lib_names = resources::MotifStateSqliteLibrary::get_libnames();
+    LOG_DEBUG << "building motif path from string: " << motif_path;
     for (auto const &e : spl) {
         if (lib_names.find(e) != lib_names.end()) {  // is a library
+            LOG_DEBUG << e << " is determined to be a motif library";
             if (i == 0) {
                 sol_template->add_library(e);
             }
@@ -592,9 +603,9 @@ DesignRNAScaffold::_setup_sol_template_from_path (
             LOG_ERROR << "tc_hairpin_hairpin not supported";
             exit(0);
         }
-
-        else if (new_motif_ensembles_.find(e)
-            != new_motif_ensembles_.end()) { // found user specified ensemble
+        // found user specified ensemble
+        else if (new_motif_ensembles_.find(e) != new_motif_ensembles_.end()) {
+            LOG_DEBUG << e << " is determined to be a motif library";
             if (i == 0) {
                 sol_template->add_ensemble(new_motif_ensembles_[e]);
             }
@@ -605,7 +616,16 @@ DesignRNAScaffold::_setup_sol_template_from_path (
         }
         else {
             // TODO should try and get motif from every end!
-            auto ms = rm_.motif_state(e);
+            auto ms = motif::MotifStateOP(nullptr);
+            try {
+                ms = rm_.motif_state(e);
+            }
+            catch(resources::ResourceManagerException const & error) {
+                LOG_ERROR << "unclear what " << e << " is it is not recognized as a motif library," <<
+                        " ensemble or supplied motif";
+                exit(0);
+            }
+            LOG_DEBUG << e << " is determined to be a supplied motif";
             if (i == 0) {
                 sol_template->add_motif_state(ms);
             }
@@ -613,6 +633,7 @@ DesignRNAScaffold::_setup_sol_template_from_path (
                 sol_template->add_motif_state(ms, data_structure::NodeIndexandEdge{i - 1, 1});
             }
         }
+
         i++;
     }
 

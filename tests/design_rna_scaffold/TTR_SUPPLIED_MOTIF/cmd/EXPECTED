@@ -1,0 +1,24 @@
+18:01:38 INFO  [DesignRNAScaffold::_setup_from_pdb] loaded pdb from file: inputs/min_tetraloop_receptor.pdb
+18:01:38 INFO  [DesignRNAScaffold::_setup_from_pdb] available ends to build off: A144-A159 A220-A253 A232-A242 
+18:01:38 INFO  [DesignRNAScaffold::_setup_from_pdb] start basepair: A220-A253 is found!
+18:01:38 INFO  [DesignRNAScaffold::_setup_from_pdb] end basepair: A144-A159 is found!
+18:01:38 INFO  [DesignRNAScaffold::_setup_extra_pdbs]  loading pdbs from --extra_pdb flag: inputs/atp_aptamer.pdb
+18:01:38 INFO  [DesignRNAScaffold::_setup_extra_pdbs] loading inputs/atp_aptamer.pdb
+18:01:38 INFO  [DesignRNAScaffold::setup] out file that contains all build solutions -> default.out can be set with --out_file
+18:01:38 INFO  [DesignRNAScaffold::setup] score file that contains summary information about solutions -> default.scores can be set with --score_file
+18:01:38 INFO  [DesignRNAScaffold::_setup_search] search type -> mc
+18:01:38 INFO  [DesignRNAScaffold::_setup_search] search solution filter -> RemoveDuplicateHelices
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] building motif path from string: flex_helices,twoway,flex_helices,atp_aptamer,flex_helices,twoway,flex_helices,twoway,flex_helices
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] flex_helices is determined to be a motif library
+18:01:38 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] twoway is determined to be a motif library
+18:01:38 INFO  [DesignRNAScaffold::_setup_search] search cutoff -> 5.000000
+18:01:38 INFO  [DesignRNAScaffold::_setup_search] search max size (how many residues) -> 999999
+18:01:38 INFO  [DesignRNAScaffold::_setup_problem] 78 steric beads were found to block residue overlap with supplied structure
+18:01:38 INFO  [DesignRNAScaffold::setup] sequence optimization cutoff -> 5
+18:01:38 INFO  [DesignRNAScaffold::setup] sequence optimization steps -> 10000
+18:01:43 DEBUG [DesignRNAScaffold::run] *** finished design: 0 ***
+18:01:46 DEBUG [DesignRNAScaffold::run] *** finished design: 1 ***
+18:01:48 DEBUG [DesignRNAScaffold::run] *** finished design: 2 ***
+18:01:48 DEBUG [DesignRNAScaffold::run]  successfully finished main design loop!
+18:01:48 INFO  [DesignRNAScaffold::run] found 3 designs, if you want more please use --designs num_of_design
+18:01:48 DEBUG [DesignRNAScaffold::run] NON-ERROR EXIT
