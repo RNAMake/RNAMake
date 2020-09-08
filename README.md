@@ -135,8 +135,9 @@ examples are located: $RNAMAKE/examples/cpp/design_rna
 start.pdb:
 ![basepair_end_examples](readme_resources/ggaa_tetraloop.png "Basepair End Example")
 
+examples in $RNAMAKE/tests/design_ran_scaffold/
 
-Simplest use, generating one design
+each directory has a cmd/COMMAND which gives a functioning command to explore the different options available. 
 
 ```
 design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs
@@ -164,5 +165,5 @@ design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -search.ma
 
 ####Many more examples in $RNAMAKE/examples/cpp/design_rna/COMMANDS
 
-<a id="ribosome_tethering"></a>
+
 
