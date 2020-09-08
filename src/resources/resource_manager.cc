@@ -146,7 +146,7 @@ Manager::add_motif(
         String name,
         util::MotifType mtype) {
 
-    auto m = mf_.motif_from_file(path, 0, 1);
+    auto m = mf_.motif_from_file(path, false, true);
     m->mtype(mtype);
 
     if (name != "") { m->name(name); }

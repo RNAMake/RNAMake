@@ -124,13 +124,13 @@ MotifGraph::MotifGraph(
         MotifGraph const & mg):
 options_ (base::Options()),
 graph_(data_structure::graph::GraphStatic<motif::MotifOP>(mg.graph_)) {
+    options_ = base::Options(mg.options_);
 
     // dear god this is horrible but cant figure out a better way to do a copy
     for (auto const & n : mg.graph_.nodes()) {
         graph_.get_node(n->index())->data() = std::make_shared<motif::Motif>(*n->data());
     }
 
-    options_ = base::Options(mg.options_);
     aligned_ = mg.aligned_;
     update_merger_ = 1;
     update_align_list_ = 1;

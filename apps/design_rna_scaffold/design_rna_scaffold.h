@@ -234,7 +234,7 @@ private:
     motif_data_structure::MotifStateGraphOP msg_;
     motif_data_structure::MotifGraphOP mg_;
     SolutionInfo sol_info_ = SolutionInfo();
-    util::StericLookupNew lookup_;
+    util::StericLookupNewOP lookup_;
     // search vars
     motif_search::SearchOP search_;
     motif_search::ProblemOP problem_;
