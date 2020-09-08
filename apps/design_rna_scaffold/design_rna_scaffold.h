@@ -160,6 +160,7 @@ private:
             int max_helix_length = 99;
             int min_helix_length = 4;
             int max_size = 9999;
+            int max_motifs = 999;
             bool no_basepair_checks = false;
             bool no_sterics = false;
             String exhaustive_scorer, mc_scorer;
