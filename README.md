@@ -49,7 +49,7 @@ make sure they are in your `$PATH`. Then run:
 cd RNAMake/cmake/build_XXX
 # where XXX is your compiler of choice, for clang
 cd RNAMake/cmake/build_clang
-python ../make_project -target OS {mac|linux}
+python ../make_project.py -target OS {mac|linux}
 cmake -G Ninja
 ninja
 ```
