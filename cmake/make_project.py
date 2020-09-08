@@ -130,6 +130,7 @@ include_directories({BASE})
 include_directories({EXTERN})
 include_directories({UNITTESTS})
 include_directories({APPS})
+include({SQLITE})
  """.format(
         RNAMAKE=base_dir,
         SQLITE=base_dir + "/cmake/build/sqlite.cmake",

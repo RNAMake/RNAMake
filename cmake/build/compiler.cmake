@@ -50,28 +50,19 @@ if( ${COMPILER} STREQUAL clang  OR ${COMPILER} STREQUAL AppleClang  )
 	set(compile_flags 
 		-Wno-c++11-extensions;
         -std=gnu++1y;
-        #-g
         -pedantic;
         -O4 
-        #-Wall
 	)
 
-    if(BUILD_TYPE STREQUAL Release) 
-    
-    else()
-    
-        #list(APPEND compile_flags -fsanitize=address;-fno-omit-frame-pointer)
-    endif()
 
 endif()
 
 if( ${COMPILER} STREQUAL gcc )
 	set(compile_flags
 	-std=c++14;
-    -w;
-    -O3;
-    -pedantic;
-    #-Wall
+    	-w;
+    	-O3;
+    	-pedantic;
 	)
     
 
@@ -90,11 +81,10 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
     include(backtrace.cmake) 
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    message("HERE")	
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread " )
     set( COMPILE_FLAGS "${COMPILE_FLAGS} -pthread " )
     set( CMAKE_CXX_LINKER_FLAGS "${CMAKE_CXX_LINKER_FLAGS} -ldl " )
-    set( CMAKE_SHARED_LINKER_FLAGS " -Wl,--no-as-needed ")
+    set( CMAKE_SHARED_LINKER_FLAGS " -Wl,--no-as-needed -ldl")
     set( CMAKE_EXE_LINKER_FLAGS " -lstdc++ -Wl,--no-as-needed,--no-export-dynamic ")
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")

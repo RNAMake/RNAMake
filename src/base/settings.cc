@@ -20,11 +20,11 @@ get_os_name() {
 #if defined(_WIN32) || defined(_WIN64)
     return  String("Windows");
 #elif defined(__unix) || defined(__unix__)
-    return  String("unix");
+    return  String("linux");
 #elif defined(__APPLE__) || defined(__MACH__)
     return String("OSX");
 #elif defined(__linux__)
-    return String("Linux");
+    return String("linux");
 #else
 #   warning "Could not deduce operating system type. You WILL encounter a runtime error."
     
@@ -68,7 +68,7 @@ String
 x3dna_path() {
     auto os_name = get_os_name();
     if (os_name == "OSX") { return resources_path() + "x3dna/osx/"; }
-    if (os_name == "Linux" || os_name == "unix") { return resources_path() + "x3dna/linux/"; }
+    if (os_name == "linux" || os_name == "unix") { return resources_path() + "x3dna/linux/"; }
     throw std::runtime_error("unsupported operating system!");
 
 }
