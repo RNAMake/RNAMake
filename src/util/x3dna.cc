@@ -303,8 +303,7 @@ X3dna::_parse_dssr_res_str(
 X3dna::X3Basepairs
 X3dna::get_basepairs_json(
         String const &pdb_path) const {
-
-    auto dssr_json = base::execute_command_json(base::x3dna_path() + "/bin/x3dna-dssr -i=" + pdb_path + " --json --more 2> /dev/null"); 
+    auto dssr_json = base::execute_command_json(bin_path_ + "/x3dna-dssr -i=" + pdb_path + " --json --more 2>.error >.temp"); 
         
     //deleting the temp files that we don't want. 
     util::json_cleanup();
