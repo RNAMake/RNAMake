@@ -438,10 +438,11 @@ DesignRNAScaffold::_setup_from_pdb () {
     auto total_beads = 0;
     auto protein_beads = 0;
     if (!parameters_.search.no_sterics) {
-        total_beads += m->beads().size();
         protein_beads += m->protein_beads().size();
         for(auto const & b : m->beads()) {
+            if (b.btype() == structure::BeadType::PHOS) { continue; }
             lookup_->add_point(b.center());
+            total_beads += 1;
         }
         for(auto const & b : m->protein_beads()) {
             lookup_->add_point(b.center());
@@ -709,7 +710,7 @@ DesignRNAScaffold::_get_motif_graph_solution() {
     }
 
     //msg_->to_motif_graph()->to_pdb("scaffold.pdb", 1, 1);
-    //sol_mg->to_pdb("tether.pdb", 1, 1);
+    //sol_mg->to_pdb("tether.pdb", 1, 1x);
     //exit(0);
 
     auto mg_w_sol = motif_data_structure::MotifGraphOP(nullptr);
