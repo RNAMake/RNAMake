@@ -21,7 +21,7 @@ get_os_name() {
     return  String("Windows");
 #elif defined(__unix) || defined(__unix__)
     return  String("linux");
-#elif defined(__APPLE__) || defined(__MACH__)
+#elif defined(__APPLE__) 
     return String("OSX");
 #elif defined(__linux__)
     return String("linux");

@@ -28,17 +28,6 @@ X3dna::X3dna() :
     auto os_name = base::get_os_name();
     auto x3dna_path = base::resources_path() + "/x3dna/" + os_name + "/";
 
-//#ifndef JSON_BASEPAIRS
-//    char* value = getenv("X3DNA");
-//    if(value != NULL) {
-//        delete value;
-//
-//    } else { 
-//        auto env = "X3DNA=" + x3dna_path;
-//        s_ = strdup(env.c_str());
-//        putenv(s_);
-//    }
-//#endif
     bin_path_ = x3dna_path + "/bin/";
     // make sure have the correct x3dna programs for this operaing system
     if (!base::file_exists(bin_path_ + "find_pair")) {
@@ -303,7 +292,7 @@ X3dna::_parse_dssr_res_str(
 X3dna::X3Basepairs
 X3dna::get_basepairs_json(
         String const &pdb_path) const {
-    auto dssr_json = base::execute_command_json(bin_path_ + "/x3dna-dssr -i=" + pdb_path + " --json --more 2>.error >.temp"); 
+    auto dssr_json = base::execute_command_json(bin_path_ + "/x3dna-dssr -i=" + pdb_path + " --json --more 2>.error"); 
         
     //deleting the temp files that we don't want. 
     util::json_cleanup();

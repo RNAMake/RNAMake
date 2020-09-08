@@ -7,16 +7,7 @@ namespace base {
 String 
 execute_command( const char* cmd ) {
     std::array<char, 100> buffer;
-    String result{}, holder{}; 
-	auto infile = std::ifstream(".temp");
-while(std::getline(infile,holder)) {
-	result += holder;
-}
-    	if (result.empty()) {
-		return String{"{\"Warning\" : \"empty\"}"};
-	} else {
-		return result;
-	}	
+    String result{};
     std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd, "r"), pclose);
     if (!pipe) {
         throw std::runtime_error("popen() failed!");
@@ -25,6 +16,11 @@ while(std::getline(infile,holder)) {
     while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
         result += buffer.data();
     }
+	if (result.empty()) {
+		return String{"{\"Warning\" : \"empty\"}"};
+	} else {
+		return result;
+	}	
     
 }
 
