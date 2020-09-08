@@ -216,7 +216,8 @@ private:
         operator<<( std::ostream &output, SolutionInfo const & si) {
             output << si.design_num << "," << si.design_score << "," << si.designable_sequence << ",";
             output << si.dot_bracket << "," << si.motif_names << "," << si.seqeunce_opt_num << ",";
-            output << si.sequence << "," << si.sequence_opt_score << ",";
+            output << si.sequence << "," << si.sequence_opt_score << "," << si.thermo_fluc_best_score;
+            output << "," << si.thermo_fluc_hits;
             return output;
         }
     };

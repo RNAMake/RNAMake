@@ -5,6 +5,17 @@ import logging
 import colorlog
 import glob
 import shutil
+import argparse
+
+def parse_args():
+    parser = argparse.ArgumentParser(description="")
+    optional_named = parser.add_argument_group('optional args')
+    optional_named.add_argument('-t', '--test', help='perform specific test',
+                        required=False, type=str,)
+
+
+    args = parser.parse_args()
+    return args
 
 
 def init_logger(dunder_name) -> logging.Logger:
@@ -96,9 +107,19 @@ logger = init_logger("RUN_TESTS")
 
 
 def main():
+    args = parse_args()
     cur_path = os.path.abspath(os.path.curdir)
     df = pd.read_csv("tests.csv")
+    run_specific = False
+    test_name = ""
+    if args.test:
+        run_specific = True
+        test_name = args.test
+
     for i, row in df.iterrows():
+        if run_specific:
+            if test_name != row["name"]:
+                continue
         os.chdir(row["name"])
         cmd_str = get_cmd("cmd/COMMAND")
         log_lines = get_log_lines(cmd_str)
