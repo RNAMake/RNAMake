@@ -139,31 +139,3 @@ examples in $RNAMAKE/tests/design_ran_scaffold/
 
 each directory has a cmd/COMMAND which gives a functioning command to explore the different options available. 
 
-```
-design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs
-> DESIGN RNA: loaded pdb from file: start.pdb
-> DESIGN RNA: generated 1 design(s)! if you would like more please specify how many you would like with -designs #Num
-```
-saved solution in: design.0.pdb
-![basepair_end_examples](readme_resources/solution_1.png "RNAMake Solution")
-
-Getting more designs:
-
-```
-design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -designs 100
-> DESIGN RNA: loaded pdb from file: start.pdb
-> DESIGN RNA: generated 100 design(s)! if you would like more please specify how many you would like with -designs #Num
-```
-
-Controlling size of the solution:
-
-```
-design_rna -pdb start.pdb -start_bp A222-A251 -end_bp A149-A154 -pdbs -search.max_size 100
-```
-
-![basepair_end_examples](readme_resources/controlling_size.png "Controlling the size of solutions")
-
-####Many more examples in $RNAMAKE/examples/cpp/design_rna/COMMANDS
-
-
-
