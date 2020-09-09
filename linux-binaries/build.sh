@@ -1,6 +1,6 @@
 #!/bin/bash
 
-git clone --branch cjurich/linux-binaries https://chrisjurich:Ilikesoccer5\!@github.com/RNAMake/RNAMake.git && \
+git clone --branch devel https://chrisjurich:Ilikesoccer5\!@github.com/RNAMake/RNAMake.git && \
     export RNAMAKE=/RNAMake/ && \
     export X3DNA=$RNAMAKE/resources/x3dna/linux/ && \
     cd RNAMake/cmake/build/ && \
