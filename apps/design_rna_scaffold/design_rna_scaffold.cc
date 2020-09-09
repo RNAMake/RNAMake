@@ -208,11 +208,17 @@ DesignRNAScaffold::setup_options () {
 
     app_.add_flag("--no_sterics",
                   parameters_.search.no_sterics,
-                  "turns off sterics checks againsts supplied RNA structure");
+                  "turns off sterics checks againsts supplied RNA structure")
+        ->group("Search Parameters");
 
     app_.add_flag("--only_tether_opt",
                   parameters_.search.only_tether_opt,
-                  "ignore supplied structure other than sterics");
+                  "ignore supplied structure other than sterics")
+        ->group("Search Parameters");
+
+    app_.add_option("--search_max_motifs", parameters_.search.max_motifs, "TODO")
+        ->default_val(999)
+        ->group("Search Parameters");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Sequence Optimization Options
@@ -308,7 +314,9 @@ DesignRNAScaffold::run () {
                 _record_solution(*mg_seq_opt);
                 continue;
             }
-            _perform_thermo_fluc_sim(*mg_seq_opt, bp_step_indexes);
+            auto mg_thermo = _perform_thermo_fluc_sim(*mg_seq_opt, bp_step_indexes);
+            _record_solution(*mg_thermo);
+
         }
         if (seq_opt_fail) {
             continue;
@@ -534,6 +542,7 @@ DesignRNAScaffold::_setup_search () {
         auto scorer = std::make_shared<AstarScorer>();
         auto selector = default_selector();
         auto pf_search = std::make_shared<Search>(scorer, selector, filter);
+        pf_search->set_option_value("max_node_level", parameters_.search.max_motifs);
         search = motif_search::SearchOP(pf_search->clone());
     }
 
@@ -814,8 +823,11 @@ DesignRNAScaffold::_perform_thermo_fluc_sim (
         best_mg->get_node(tf_indexes.start.node_index)->data()->ends()[tf_indexes.start.edge_index]->name(),
         best_mg->get_node(tf_indexes.end.node_index)->data()->ends()[tf_indexes.end.edge_index]->name());
 
+    sol_info_.thermo_fluc_best_score = best;
+    sol_info_.thermo_fluc_hits = count;
     LOG_DEBUG << "best dist score: " << best;
     LOG_DEBUG << "hits: " << count << ", %: = " << ((float) count / (float) 1000000) * 100.0f;
+    LOG_DEBUG << "*** finished thermo fluc sim ***";
     return best_mg;
 }
 
