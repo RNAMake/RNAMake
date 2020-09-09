@@ -1,6 +1,7 @@
 #!/bin/bash
 
-git clone --branch devel https://chrisjurich:Ilikesoccer5\!@github.com/RNAMake/RNAMake.git && \
+ # note you will have to escape special characters if they are in your password.
+git clone --branch [BRANCH] https://[USERNAME]:[PASSWORD]@github.com/RNAMake/RNAMake.git && \
     export RNAMAKE=/RNAMake/ && \
     export X3DNA=$RNAMAKE/resources/x3dna/linux/ && \
     cd RNAMake/cmake/build/ && \
