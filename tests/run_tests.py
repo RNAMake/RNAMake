@@ -128,6 +128,8 @@ def main():
         required_log_lines = get_required_log_lines("cmd/EXPECTED")
         check_required_log_lines(row["name"], required_log_lines, log_lines)
         files = get_produced_files()
+        if not os.path.isdir("outputs"):
+            os.mkdir("outputs")
         for f in files:
             shutil.move(f, "outputs/" + f)
 
