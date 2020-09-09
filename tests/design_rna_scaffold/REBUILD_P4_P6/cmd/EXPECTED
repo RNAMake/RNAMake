@@ -14,7 +14,8 @@
 13:13:20 DEBUG [DesignRNAScaffold::_setup_sol_template_from_path] twoway is determined to be a motif library
 13:13:20 INFO  [DesignRNAScaffold::_setup_search] search cutoff -> 5.000000
 13:13:20 INFO  [DesignRNAScaffold::_setup_search] search max size (how many residues) -> 999999
-13:13:20 INFO  [DesignRNAScaffold::_setup_problem] 78 steric beads were found to block residue overlap with supplied structure
+13:58:21 INFO  [DesignRNAScaffold::_setup_from_pdb] 78 rna steric beads were found to block residue overlap with supplied structure
+13:58:21 INFO  [DesignRNAScaffold::_setup_from_pdb] 0 protein steric beads were found to block residue overlap with supplied structure
 13:13:20 INFO  [DesignRNAScaffold::setup] sequence optimization cutoff -> 5
 13:13:20 INFO  [DesignRNAScaffold::setup] sequence optimization steps -> 10000
 13:13:55 DEBUG [DesignRNAScaffold::run] *** finished design: 0 ***
