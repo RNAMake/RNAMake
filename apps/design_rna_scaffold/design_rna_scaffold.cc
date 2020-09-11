@@ -81,15 +81,17 @@ DesignRNAScaffold::setup_options () {
         ->check(CLI::PositiveNumber)
         ->group("Core Inputs");
 
+    app_.add_option("--extra_pdbs", parameters_.core.extra_pdbs, "delimited list of other pdbs used in building")
+            ->default_val("")
+            ->group("Core Inputs");
+
     app_.add_option("--log_level", parameters_.core.log_level, "level for global logging")
         ->check(CLI::IsMember(std::set<String>{"debug", "error", "fatal", "info", "verbose",
                                                "warn"}))
         ->default_val("info")
         ->group("Core Inputs");
 
-    app_.add_option("--extra_pdbs", parameters_.core.extra_pdbs, ", deliminted list of other pdbs used in building")
-        ->default_val("")
-        ->group("Core Inputs");
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // I/O Options
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

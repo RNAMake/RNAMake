@@ -9,7 +9,7 @@ build_sqlite_libraries ../../apps/build_sqlite_libraries/build_sqlite_libraries.
 #thermo_simulation ../../apps/thermo_simulation/thermo_simulation.cpp
 ##general_helix_sampler ../../apps/general_helix_sampler/general_helix_sampler.cpp
 ##opt_tecto_cutoff ../../apps/opt_tecto_cutoff/opt_tecto_cutoff.cc
-##apt_stablization ../../apps/apt_stablization/apt_stablization.cc
+##apt_stablizatin ../../apps/apt_stablization/apt_stablization.cc
 ##dock_motif ../../apps/dock_moti/dock_motif.cc
 ##apt_new_interface ../../apps/apt_new_interface/apt_new_interface.cc
 ##build_flex_helices ../../apps/build_flex_helices/build_flex_helices.cc
