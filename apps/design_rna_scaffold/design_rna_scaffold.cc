@@ -150,6 +150,7 @@ DesignRNAScaffold::setup_options () {
                     parameters_.search.max_helix_length,
                     "maximum number of basepairs in a solution helix")
         ->default_val(99)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--mc_scorer", parameters_.search.mc_scorer, "TODO")
@@ -161,6 +162,7 @@ DesignRNAScaffold::setup_options () {
                     parameters_.search.min_helix_length,
                     "minimum number of basepairs in a solution helix")
         ->default_val(4)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--motif_path", parameters_.search.motif_path, "TBD")
@@ -171,16 +173,34 @@ DesignRNAScaffold::setup_options () {
                   "flag to disable basepair checks")
         ->group("Search Parameters");
 
+    app_.add_flag("--no_sterics",
+                  parameters_.search.no_sterics,
+                  "turns off steric checks against supplied RNA structure")
+            ->group("Search Parameters");
+
+    app_.add_flag("--only_tether_opt",
+                  parameters_.search.only_tether_opt,
+                  "ignore supplied structure other than sterics")
+            ->group("Search Parameters");
+
     app_.add_option("--scaled_score_d", parameters_.search.scaled_score_d, "TODO")
         ->default_val(1.0f)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--scaled_score_r", parameters_.search.scaled_score_r, "TODO")
         ->default_val(2.0f)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--search_cutoff", parameters_.search.cutoff, "TODO")
         ->default_val(7.5f)
+        ->check(CLI::PositiveNumber)
+        ->group("Search Parameters");
+
+    app_.add_option("--search_max_motifs", parameters_.search.max_motifs, "TODO")
+        ->default_val(999)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--search_max_size",
@@ -208,20 +228,6 @@ DesignRNAScaffold::setup_options () {
         ->default_val("")
         ->group("Search Parameters");
 
-    app_.add_flag("--no_sterics",
-                  parameters_.search.no_sterics,
-                  "turns off sterics checks againsts supplied RNA structure")
-        ->group("Search Parameters");
-
-    app_.add_flag("--only_tether_opt",
-                  parameters_.search.only_tether_opt,
-                  "ignore supplied structure other than sterics")
-        ->group("Search Parameters");
-
-    app_.add_option("--search_max_motifs", parameters_.search.max_motifs, "TODO")
-        ->default_val(999)
-        ->group("Search Parameters");
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Sequence Optimization Options
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -234,6 +240,7 @@ DesignRNAScaffold::setup_options () {
                     parameters_.seq_opt.sequences_per_design,
                     "number of sequences to try per motif design")
         ->default_val(1)
+        ->check(CLI::PositiveNumber)
         ->group("Sequence Optimization Parameters");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
