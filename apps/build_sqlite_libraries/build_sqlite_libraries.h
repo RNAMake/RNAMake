@@ -6,7 +6,11 @@
 #include <set>
 #include <unordered_set>
 #include <map>
-#include <dirent.h>
+#if defined(_WIN32) || defined(_64)
+#   include <mingw/dirent.h>
+#else
+#   include <dirent.h>
+#endif
 #include <sstream>
 #include <functional>
 
@@ -132,8 +136,11 @@ public: // public helper methods
         for( const auto& dir : {"/motif_librariesV2/","motif_state_librariesV2/","/motif_ensemble_librariesV2/"}) {
             const auto& full_dir = base::resources_path() + dir ;
             if(!base::is_dir(full_dir)) {
-                const auto status = mkdir(full_dir.c_str(),0);
-
+#if defined(_WIN32) || defined(_win64)
+		    const auto status = mkdir(full_dir.c_str());
+#else 
+		    const auto status = mkdir(full_dir.c_str(),0);
+#endif
                 if(status) {
                     LOGF<<"Unable to create directory: "<<full_dir;
                     LOGF<<"Exiting";
