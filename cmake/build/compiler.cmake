@@ -78,7 +78,8 @@ endforeach()
 
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  
-    include(backtrace.cmake) 
+    
+    add_definitions(-DM_PI=3.14159265358979323846)
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread " )
