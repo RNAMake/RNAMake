@@ -22,6 +22,12 @@ if (CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_library(sqlite3 STATIC ${RNAMAKE}/src/external/sqlite/sqlite3.c )
     target_link_libraries(sqlite3 -static -ldl)
 
+
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+	
+    add_library(sqlite3 STATIC ${RNAMAKE}/src/external/sqlite/sqlite3.c )
+    target_link_libraries(sqlite3 -shared )
+
 else()
 
     add_library(sqlite3 ${RNAMAKE}/src/external/sqlite/sqlite3.c )
