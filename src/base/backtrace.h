@@ -15,15 +15,12 @@
 #include <base/file_io.h>
 
 #if defined(_WIN32) || defined(_WIN64)
-
-#include <windows.h>
-#include <dbghelp.h>
-
+#   warning RNAMake backtrace is not currently supported on windows platforms
 #else
-#include <execinfo.h>
+#   include <execinfo.h>
+#   include <cxxabi.h>
 #endif
 
-#include <cxxabi.h>
 
 
 namespace base {

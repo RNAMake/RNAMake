@@ -12,7 +12,9 @@
 inline
 std::string
 base::demangle( std::string trace ) {
-    
+#if defined(_WIN32) || defined(_WIN64)
+    return String{"base::demangle() is not supported on windows"};
+#else
     std::string::size_type begin, end;
     
     // find the beginning and the end of the useful part of the trace
@@ -43,6 +45,7 @@ base::demangle( std::string trace ) {
         free(demangledName);
     }
     return trace;
+#endif
 }
 
 ////////////////////////////////////////////////////////////////////
@@ -63,7 +66,7 @@ base::demangle( std::string trace ) {
 void
 base::print_backtrace() {
 #if defined(_WIN32) || defined(_WIN64)
-    LoadLibraryA("backtrace.dll"); 
+    LOGW << "base::print_backtrace() is not supported on Windows";
 #else
     static int tried_throw = -1;
     
@@ -99,6 +102,9 @@ base::print_backtrace() {
 
 void
 base::save_backtrace() {
+#if defined(_WIN32) || defined(_WIN64)
+    LOGW << "base::save_backtrace() is not supported on Windows";
+#else
     auto ii(0);
     auto outfile_name = String{"stack.0"};
     while(base::file_exists(outfile_name)){
@@ -136,4 +142,5 @@ base::save_backtrace() {
 
     LOGF<<"Fatal error encountered. Stack trace can be found in "<<outfile_name;
 
+#endif
 }
