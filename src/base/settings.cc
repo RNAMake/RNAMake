@@ -69,7 +69,7 @@ x3dna_path() {
     auto os_name = get_os_name();
     if (os_name == "OSX") { return resources_path() + "x3dna/osx/"; }
     if (os_name == "linux" || os_name == "unix") { return resources_path() + "x3dna/linux/"; }
-    if(os_name == "win") {return resources_path() + "x3dna/win/";}
+    if(os_name == "windows") {return resources_path() + "x3dna/win/";}
     throw std::runtime_error("unsupported operating system!");
 
 }

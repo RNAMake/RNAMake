@@ -94,12 +94,17 @@ TEST_CASE( "Test hashing of 6D coords", "[Hashing]" ) {
         std::ifstream in;
         in.open("test.bin", std::ios::binary);
         auto histo_3 = math::SixDHistogram(in);
-
+	if(in.is_open()) {
+		in.close();
+	}
         REQUIRE(histo_3.contains(pA));
-
+#if defined(_WIN64) || defined(_WIN32)
+        system("del test.csv");
+        system("del test.bin");
+#else
         system("rm test.csv");
         system("rm test.bin");
-
+#endif
         //double test;
         //in.read(reinterpret_cast<char *>(&test), sizeof(test));
         //std::cout << test << std::endl;

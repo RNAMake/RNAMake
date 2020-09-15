@@ -25,33 +25,33 @@ TEST_CASE("Testing basepair code converters ", "[get_x3dna_by_type,get_str_from_
     }
 }
  TEST_CASE( "Test X3dna parser ", "[X3dnaParser]" ) {
-    //init_unittest_safe_logging();
+ //init_unittest_safe_logging();
 
-    auto x = util::X3dna();
-    auto path = base::unittest_resource_dir() + "/util/p4p6.pdb";
-    auto x3dna_bps = x.get_basepairs(path);
-    auto nts = util::DssrNts{}; 
-    auto bps = util::DssrPairs{}; 
-    auto hps = util::DssrHairpins{}; 
-    auto hels = util::DssrHelices{}; 
-    auto stems = util::DssrStems{}; 
-    auto iloops = util::DssrILoops{}; 
-    get_elements(path,nts,bps,hps,hels,stems,iloops);
-    REQUIRE(x3dna_bps.size() == 63);
-    REQUIRE(!base::file_exists("ref_frames.dat"));
-    REQUIRE(!base::file_exists("p4p6_dssr.out"));
+   auto x = util::X3dna();
+   auto path = base::unittest_resource_dir() + "/util/p4p6.pdb";
+   auto x3dna_bps = x.get_basepairs(path);
+   auto nts = util::DssrNts{}; 
+   auto bps = util::DssrPairs{}; 
+   auto hps = util::DssrHairpins{}; 
+   auto hels = util::DssrHelices{}; 
+   auto stems = util::DssrStems{}; 
+   auto iloops = util::DssrILoops{}; 
+   get_elements(path,nts,bps,hps,hels,stems,iloops);
+   REQUIRE(x3dna_bps.size() == 63);
+   REQUIRE(!base::file_exists("ref_frames.dat"));
+   REQUIRE(!base::file_exists("p4p6_dssr.out"));
 
 }
 
 TEST_CASE( "Test X3dna parser JSON version", "[X3dnaParser]" ) {
-    //init_unittest_safe_logging();
-    auto x = util::X3dna();
-    auto path = base::unittest_resource_dir() + "/util/p4p6.pdb";
-    auto x3dna_bps = x.get_basepairs_json(path);
-    REQUIRE(x3dna_bps.size() == 76);
-    REQUIRE(!base::file_exists("ref_frames.dat"));
-    REQUIRE(!base::file_exists("p4p6_dssr.out"));
-    
+   //init_unittest_safe_logging();
+   auto x = util::X3dna();
+   auto path = base::unittest_resource_dir() + "/util/p4p6.pdb";
+   auto x3dna_bps = x.get_basepairs_json(path);
+   REQUIRE(x3dna_bps.size() == 76);
+   REQUIRE(!base::file_exists("ref_frames.dat"));
+   REQUIRE(!base::file_exists("p4p6_dssr.out"));
+   
 
 }
 

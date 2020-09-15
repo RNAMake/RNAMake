@@ -499,7 +499,6 @@ public:
             stored_values_[key] = count;
 
         }
-
     }
 
 private:
@@ -673,7 +672,6 @@ public:
             out.write((const char *) &kv.first, sizeof(kv.first));
             out.write((const char *) &kv.second, sizeof(kv.second));
         }
-
     }
 
 private:
