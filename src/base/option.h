@@ -326,7 +326,7 @@ public:
 
 
     inline
-    float
+    int
     get_int(String const & name) {
         auto opt = _find_option(name);
         return opt->get_int();

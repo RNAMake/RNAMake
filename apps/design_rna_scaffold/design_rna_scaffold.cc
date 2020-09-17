@@ -956,8 +956,8 @@ main (
     //must add this for all apps!
     std::set_terminate(base::print_backtrace);
 
-    String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
-    resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
+    //String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
+    //resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
