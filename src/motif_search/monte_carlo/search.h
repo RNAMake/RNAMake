@@ -126,7 +126,8 @@ class MoveSet {
 class Search : public motif_search::Search {
 public:
     struct Parameters {
-        float accept_score;
+        float accept_score = 10.0f;
+        int max_size = 100000;
     };
 
 public:
@@ -311,6 +312,7 @@ protected:
     void
     update_var_options() {
         parameters_.accept_score = options_.get_float("accept_score");
+        parameters_.max_size = options_.get_int("max_size")
 
     }
 
