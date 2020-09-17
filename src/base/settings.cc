@@ -39,7 +39,8 @@ base_dir() {
     char *base_path;
     base_path = std::getenv("RNAMAKE");
     if (base_path == NULL) {
-        LOG_ERROR << "cannot find environmental path RNAMAKE, please set it" << std::endl;
+        LOG_ERROR << "cannot find environmental path RNAMAKE, please set it";
+        LOG_ERROR << "should be set to $PATH/RNAMake where $PATH is where you installed RNAMake";
         exit(EXIT_FAILURE);
     }
     return String(base_path);

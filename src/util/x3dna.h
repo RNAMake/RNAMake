@@ -143,6 +143,19 @@ public:
     }
 
 public:
+    static
+    void
+    set_envs() {
+      // check x3dna path
+      auto os_name = base::get_os_name();
+      auto x3dna_path = base::resources_path() + "/x3dna/" + os_name + "/";
+
+      String env = "X3DNA="+x3dna_path;
+      auto s = strdup(env.c_str());
+      putenv(s);
+    }
+
+public:
     struct X3Residue {
         inline
         X3Residue(
