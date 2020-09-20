@@ -648,6 +648,9 @@ DesignRNAScaffold::_setup_sol_template_from_path (
             auto ms = motif::MotifStateOP(nullptr);
             try {
                 ms = rm_.motif_state(e);
+                // Need to do this in case I am using two copies of the same motif
+                ms->new_uuids();
+                //std::cout << ms->uuid() << std::endl;
             }
             catch(resources::ResourceManagerException const & error) {
                 LOG_ERROR << "unclear what " << e << " is it is not recognized as a motif library," <<
