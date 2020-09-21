@@ -387,7 +387,12 @@ public:
         this->index_ = g.index_;
     }
 
-    ~GraphStatic() {}
+    ~GraphStatic() {
+      for(auto const & n : this->nodes_) {
+        // TODO this seems to be required to stop memory leak -- JDY 2020_09_21
+        n->unset_connections();
+      }
+    }
 
 public:
 

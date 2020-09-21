@@ -50,7 +50,9 @@ public: //construction
     MotifGraph(
             MotifGraph const &);
 
-    ~MotifGraph() {}
+    ~MotifGraph() {
+
+    }
 
 public: //setup helpers
 

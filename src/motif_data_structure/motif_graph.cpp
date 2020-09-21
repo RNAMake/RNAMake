@@ -26,7 +26,9 @@ MotifGraph::MotifGraph() :
         update_merger_(1),
         update_align_list_(1),
         align_list_(data_structure::graph::GraphNodeOPs<motif::MotifOP>()),
-        aligned_(std::map<int, int>()) { setup_options(); }
+        aligned_(std::map<int, int>()) {
+  setup_options();
+}
 
 
 MotifGraph::MotifGraph(
