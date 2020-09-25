@@ -1,0 +1,21 @@
+Create a 'nemo' folder inside a ViennaRNA 2.1.x source code tree
+
+~/ViennaRNA-2.1.9$ mkdir nemo
+
+copy the 3 files into that folder, then compile with
+
+$ gcc -g -O2 -fopenmp -I../H -MD -MP -c -o nemo.o nemo.cpp
+$ gcc -g -O2 -fopenmp -L../lib -o nemo nemo.o -lstdc++ -lRNA -lm -ldl
+
+Run with
+
+$ ./nemo [-E] [-v] [-i <num_iter>] "<target_structure>" [<start_sequence>]
+
+Sequentially run full test on Eterna100:
+
+$ cat list.e100 | xargs -L 1 ./nemo -E -v
+
+Heuristics and strategies used in the application are described at
+https://docs.google.com/document/d/13_rwbrBc9H5ldeLISTPw9jPJ1anvTAnkR5DhAyBOdN4/edit
+
+

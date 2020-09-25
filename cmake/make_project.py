@@ -194,15 +194,17 @@ if __name__ == "__main__":
         "thermo_fluctuation": ["motif_data_structure"],
         "motif_search": ["motif_data_structure"],
         "sequence_optimization": ["motif_data_structure", "eternabot"],
+        "rnamake2d" : ["all"],
         "all": [
             "motif_tools",
             "thermo_fluctuation",
             "motif_search",
             "sequence_optimization",
+            "rnamake2d"
         ],
     }
 
-    libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimization".split()
+    libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimization rnamake2d".split()
     base_dir = get_base_dir()
     write_CML_file(
         [

@@ -49,4 +49,5 @@ design_rna_scaffold ../../apps/design_rna_scaffold/design_rna_scaffold.cc
 ##simulate_tectos ../../simulate_tectossimulate_tectos.cc
 ##simulate_tectos_devel ../../simulate_tectos_develmain.cpp simulate_tectos_devel.cc
 ##structure_info ../../structure_infostructure_info.cc
-##thermo_simulation ../../thermo_simulationthermo_simulation.cppf
+##thermo_simulation ../../thermo_simulationthermo_simulation.cpp
+RNAMake2D ../../apps/rnamake_2d/rnamake_2d.cpp

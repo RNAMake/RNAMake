@@ -26,6 +26,16 @@ public:
         dist_ = dist;
     }
 
+public:
+    RandomNumberGenerator(int seed) {
+        srand(seed);
+        std::random_device rd;
+        std::mt19937 mt(rd());
+        std::uniform_real_distribution<float> dist(0, 1);
+
+        mt_ = mt;
+        dist_ = dist;
+    }
 
     inline
     float
