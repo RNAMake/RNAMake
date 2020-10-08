@@ -15,7 +15,8 @@
 #include <util/dssr.h>
 
 TEST_CASE("get_TYPE methods for nlohman::json parsing","") {
-    SECTION("Primitive data types, DOES have key") {
+
+  SECTION("Primitive data types, DOES have key") {
         nlohmann::json json = {
             {"string","this is a string"},
             {"double", 1996.10},

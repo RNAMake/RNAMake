@@ -648,6 +648,9 @@ DesignRNAScaffold::_setup_sol_template_from_path (
             auto ms = motif::MotifStateOP(nullptr);
             try {
                 ms = rm_.motif_state(e);
+                // Need to do this in case I am using two copies of the same motif
+                ms->new_uuids();
+                //std::cout << ms->uuid() << std::endl;
             }
             catch(resources::ResourceManagerException const & error) {
                 LOG_ERROR << "unclear what " << e << " is it is not recognized as a motif library," <<
@@ -954,10 +957,10 @@ main (
     int argc,
     const char **argv) {
     //must add this for all apps!
-    std::set_terminate(base::save_backtrace);
+    std::set_terminate(base::print_backtrace);
 
-    String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
-    resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
+    //String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
+    //resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);

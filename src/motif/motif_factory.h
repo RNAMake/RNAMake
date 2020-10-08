@@ -10,11 +10,13 @@
 #define __RNAMake__motif_factory__
 
 #include <stdio.h>
+#include <util/x3dna.h>
 
 //RNAMake Headers
 #include "base/types.h"
 #include "base/settings.h"
 #include "base/file_io.h"
+#include "base/env_manager.h"
 #include "structure/pdb_parser.h"
 #include "motif/motif_to_secondary_structure.h"
 #include "motif/motif_scorer.h"
@@ -41,6 +43,8 @@ public:
     MotifFactory() :
             parser_(MotiftoSecondaryStructure()),
             pdb_parser_(structure::PDBParser()) {
+        // make sure x3dna is set
+        util::X3dna::set_envs();
         auto path = base::motif_dirs() + "ref.motif";
         ref_motif_ = file_to_motif(path);
         path = base::motif_dirs() + "base.motif";

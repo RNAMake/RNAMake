@@ -10,7 +10,19 @@
 
 TEST_CASE( "Test csv parsing", "[CSV]" ) {
 
-    SECTION("test reading a csv") {
+  SECTION("test reading a csv") {
+    auto path =  base::unittest_resource_dir() + "/base/test.csv";
+
+    auto csv_reader = io::CSVReader<3>(path);
+    String test1, test2, test3;
+    int count = 0;
+    while(csv_reader.read_row(test1, test2, test3)) {
+      count += 1;
+    }
+    REQUIRE(count == 3);
+  }
+
+    /*SECTION("test reading a csv") {
         auto csv_reader = util::csv::Reader();
         auto path =  base::unittest_resource_dir() + "/base/test.csv";
         auto csv_table = csv_reader.read_csv(path);
@@ -87,5 +99,6 @@ TEST_CASE( "Test csv parsing", "[CSV]" ) {
         REQUIRE_THROWS(row.get_float_val("test1"));
         REQUIRE_THROWS(row.get_int_val("test3"));
     }
+     */
 
 }
