@@ -10,6 +10,9 @@
 #include "base/application.hpp"
 #include "base/log.h"
 #include "resources/resource_manager.h"
+#include "motif_data_structure/motif_graph.h"
+#include <thermo_fluctuation/graph/simulation.h>
+
 
 class BuildMotifGraph : base::Application {
 public:
@@ -41,6 +44,8 @@ public:
     String log_level = "info";
     String pdbs = "";
     String build_file = "";
+    String connect = "";
+    String sequence = "";
   };
 
 public:
@@ -49,8 +54,8 @@ public:
 private:
   // must be initialized a runtime
   resources::Manager & _rm;
-
-  Parameters _parameters;
+  // default initiation
+  Parameters _parameters = Parameters();
 
 };
 
