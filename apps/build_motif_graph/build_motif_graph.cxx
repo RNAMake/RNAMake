@@ -113,7 +113,7 @@ BuildMotifGraph::run() {
     mg, _rm, mseg, index_hash);
   auto start = data_structure::NodeIndexandEdge { index_hash[ni], nie };
   auto end = data_structure::NodeIndexandEdge { index_hash[last_m->index()], 1 };
-  auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
+  auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::OldFrameScorer>();
   auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
   auto thermo_sim_ = std::make_shared<thermo_fluctuation::graph::Simulation>(thermo_scorer,
     sterics);

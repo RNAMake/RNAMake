@@ -5,6 +5,6 @@ build_motif_graph ../../apps/build_motif_graph/build_motif_graph.cxx
 ##simulate_tectos_devel ../../simulate_tectos_develmain.cpp simulate_tectos_devel.cc
 ##sequence_optimizer_app ../../sequence_optimizer_appsequence_optimizer_app.cpp
 ##simulate_tectos ../../simulate_tectossimulate_tectos.cc
-##simulate_tectos_devel ../../simulate_tectos_develmain.cpp simulate_tectos_devel.cc
+simulate_tectos_devel ../../apps/simulate_tectos_devel/main.cpp ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc
 ##structure_info ../../structure_infostructure_info.cc
 ##thermo_simulation ../../thermo_simulationthermo_simulation.cppf
