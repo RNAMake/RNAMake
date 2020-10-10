@@ -247,7 +247,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
     }
     
     SECTION("test get end for easy building ") {
-        auto base_path = base::base_dir() + "/apps/mini_ttr/resources/";
+        auto base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
 
