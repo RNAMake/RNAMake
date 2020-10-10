@@ -91,28 +91,28 @@ BuildMotifGraph::run() {
     exit(0);
   }
   auto spl = base::split_str_by_delimiter(_parameters.connect, ",");
+  auto ni = std::stoi(spl[0]);
+  auto end_name = spl[1];
+  auto nie =  mg.get_node(ni)->data()->get_end_index(end_name);
   mg.add_connection(mg.last_node()->index(), std::stoi(spl[0]),
     mg.last_node()->data()->end_name(1), spl[1]);
 
-  auto org_i = mg.last_node()->index();
   if(_parameters.sequence.empty()) {
     LOG_INFO << "compelted";
     exit(0);
   }
 
   mg.replace_ideal_helices();
+  auto last_m =
+    mg.get_node(ni)->connections()[nie]->partner(ni);
   mg.replace_helical_sequence(_parameters.sequence);
 
   auto index_hash = std::map<int, int>();
   auto mseg = motif_data_structure::MotifStateEnsembleGraph();
   motif_data_structure::motif_state_ensemble_graph_from_motif_graph(
     mg, _rm, mseg, index_hash);
-  auto start = data_structure::NodeIndexandEdge {
-    index_hash[0], mg.get_node(index_hash[0])->data()->get_end_index("A149-A154")
-  };
-  auto end = data_structure::NodeIndexandEdge {
-    index_hash[18], 1
-  };
+  auto start = data_structure::NodeIndexandEdge { index_hash[ni], nie };
+  auto end = data_structure::NodeIndexandEdge { index_hash[last_m->index()], 1 };
   auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
   auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
   auto thermo_sim_ = std::make_shared<thermo_fluctuation::graph::Simulation>(thermo_scorer,
