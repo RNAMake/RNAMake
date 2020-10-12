@@ -44,3 +44,5 @@ integration/motif/*.pdb
 integration/x3dna/*.a
 *.out
 *.a
+cmake/build/*
+*unittest

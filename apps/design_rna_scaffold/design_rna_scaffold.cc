@@ -81,15 +81,17 @@ DesignRNAScaffold::setup_options () {
         ->check(CLI::PositiveNumber)
         ->group("Core Inputs");
 
+    app_.add_option("--extra_pdbs", parameters_.core.extra_pdbs, "delimited list of other pdbs used in building")
+            ->default_val("")
+            ->group("Core Inputs");
+
     app_.add_option("--log_level", parameters_.core.log_level, "level for global logging")
         ->check(CLI::IsMember(std::set<String>{"debug", "error", "fatal", "info", "verbose",
                                                "warn"}))
         ->default_val("info")
         ->group("Core Inputs");
 
-    app_.add_option("--extra_pdbs", parameters_.core.extra_pdbs, ", deliminted list of other pdbs used in building")
-        ->default_val("")
-        ->group("Core Inputs");
+
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // I/O Options
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -148,6 +150,7 @@ DesignRNAScaffold::setup_options () {
                     parameters_.search.max_helix_length,
                     "maximum number of basepairs in a solution helix")
         ->default_val(99)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--mc_scorer", parameters_.search.mc_scorer, "TODO")
@@ -159,6 +162,7 @@ DesignRNAScaffold::setup_options () {
                     parameters_.search.min_helix_length,
                     "minimum number of basepairs in a solution helix")
         ->default_val(4)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--motif_path", parameters_.search.motif_path, "TBD")
@@ -169,16 +173,34 @@ DesignRNAScaffold::setup_options () {
                   "flag to disable basepair checks")
         ->group("Search Parameters");
 
+    app_.add_flag("--no_sterics",
+                  parameters_.search.no_sterics,
+                  "turns off steric checks against supplied RNA structure")
+            ->group("Search Parameters");
+
+    app_.add_flag("--only_tether_opt",
+                  parameters_.search.only_tether_opt,
+                  "ignore supplied structure other than sterics")
+            ->group("Search Parameters");
+
     app_.add_option("--scaled_score_d", parameters_.search.scaled_score_d, "TODO")
         ->default_val(1.0f)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--scaled_score_r", parameters_.search.scaled_score_r, "TODO")
         ->default_val(2.0f)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--search_cutoff", parameters_.search.cutoff, "TODO")
         ->default_val(7.5f)
+        ->check(CLI::PositiveNumber)
+        ->group("Search Parameters");
+
+    app_.add_option("--search_max_motifs", parameters_.search.max_motifs, "TODO")
+        ->default_val(999)
+        ->check(CLI::PositiveNumber)
         ->group("Search Parameters");
 
     app_.add_option("--search_max_size",
@@ -206,20 +228,6 @@ DesignRNAScaffold::setup_options () {
         ->default_val("")
         ->group("Search Parameters");
 
-    app_.add_flag("--no_sterics",
-                  parameters_.search.no_sterics,
-                  "turns off sterics checks againsts supplied RNA structure")
-        ->group("Search Parameters");
-
-    app_.add_flag("--only_tether_opt",
-                  parameters_.search.only_tether_opt,
-                  "ignore supplied structure other than sterics")
-        ->group("Search Parameters");
-
-    app_.add_option("--search_max_motifs", parameters_.search.max_motifs, "TODO")
-        ->default_val(999)
-        ->group("Search Parameters");
-
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // Sequence Optimization Options
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -232,6 +240,7 @@ DesignRNAScaffold::setup_options () {
                     parameters_.seq_opt.sequences_per_design,
                     "number of sequences to try per motif design")
         ->default_val(1)
+        ->check(CLI::PositiveNumber)
         ->group("Sequence Optimization Parameters");
 
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -648,9 +657,6 @@ DesignRNAScaffold::_setup_sol_template_from_path (
             auto ms = motif::MotifStateOP(nullptr);
             try {
                 ms = rm_.motif_state(e);
-                // Need to do this in case I am using two copies of the same motif
-                ms->new_uuids();
-                //std::cout << ms->uuid() << std::endl;
             }
             catch(resources::ResourceManagerException const & error) {
                 LOG_ERROR << "unclear what " << e << " is it is not recognized as a motif library," <<
@@ -957,10 +963,10 @@ main (
     int argc,
     const char **argv) {
     //must add this for all apps!
-    std::set_terminate(base::print_backtrace);
+    std::set_terminate(base::save_backtrace);
 
-    //String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
-    //resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
+    String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
+    resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);

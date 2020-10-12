@@ -59,7 +59,6 @@ Search::_get_graph_from_solution() {
                 LOG_ERROR << "something went horribly wrong, cannot build solution";
             }
         }
-        i++;
     }
     return msg;
 }
