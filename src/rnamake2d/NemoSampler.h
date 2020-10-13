@@ -2,7 +2,7 @@
 #define __RNAMAKE_NEMO_SAMPLER_H__
 
 #include <iostream>
-
+#include <vector>
 #include <cstdlib>
 #include <ctime>
 #include <cstring>
@@ -11,251 +11,155 @@
 #include <cstdio>
 #include <climits>
 #include <unistd.h>
+#include <limits>
+#include <filesystem>
+
 #include <rnamake2d/Design.h>
+#include <base/types.h>
 
 extern "C" {
-#include <RNAstruct.h>
-#include <fold_vars.h>
-#include <fold.h>
-#include <params.h>
-#include <part_func.h>
-#include <utils.h>
-#include <convert_epars.h>
-#include <read_epars.h>
-#include <MEA.h>
+    #include <RNAstruct.h>
+    #include <fold_vars.h>
+    #include <fold.h>
+    #include <params.h>
+    #include <part_func.h>
+    #include <utils.h>
+    #include <convert_epars.h>
+    #include <read_epars.h>
+    #include <MEA.h>
 }
 
 namespace rnamake2d {
+
     class NemoSampler {
-        int curr_design;
+        const double worst_score = -100000.0;
         int    verbosity = 0;
         bool   standard_nmcs = false;
         int    iter = 2500;
         char*  target = nullptr;
         char*  start = nullptr;
         char*  seed = nullptr;
-        short* pt = nullptr;       // Pair Table
-        short* mt = nullptr;       // Mismatch Table
-        int*   lt = nullptr;       // Loop Table
-        int*   jct = nullptr;      // Junction Table
-        int*   smap = nullptr;     // Strength Map
-        int    npairs;
-        int*   shuffle = nullptr;
+        char*  position = nullptr;
+        char*  closest_seq = nullptr;
+        std::vector<short> pt;
+        //short* pt = nullptr;       // Pair Table
+        std::vector<short> mt ;       // Mismatch Table
+        //short* mt = nullptr;       // Mismatch Table
+        std::vector<int> lt;       // Loop Table
+        //int*   lt = nullptr;       // Loop Table
+        std::vector<int> jct ;      // Junction Table
+        //int*   jct = nullptr;      // Junction Table
+        std::vector<int> smap;     // Strength Map
+        //int*   smap = nullptr;     // Strength Map
+        int    npairs = 0;
+        std::vector<int> shuffle ;
+        //int*   shuffle = nullptr;
         bool   found = false;
-
         bool   force_boost = false;
+        int    rng_seed = 1996;
+        int    len = 0;
+        int    bpd = std::numeric_limits<int>::max();
+        int    current_ = -1;
 
     public:
-        NemoSampler() : curr_design(-1) {
+        NemoSampler()   {
             init_rand();
-            time_t now = time( nullptr );
-            now = 1996;
-            srand48( now ^ 0x5A5A5A5A );
-
+            srand48( rng_seed ^ 0x5A5A5A5A );
         }
 
-        void
-        initialize_design(Design& design) {
-
-            if(target != nullptr) {
-                free(target);
-            }
-
-            if(start != nullptr) {
-                free(start);
-            }
-
-            target = (char*)malloc(sizeof(char)*(1+design.target.size()));
-            start = (char*)malloc(sizeof(char)*(1+design.target.size()));
-
-            memcpy(target,design.target.c_str(),design.target.size()+1 );
-            memset(start,'N',design.target.size());
-            start[design.target.size()] = '\0'; // gotta add that null terminator
-
-            curr_design  = design.id;
-            int len = strlen( start );
-            pt = make_pair_table( target );
-            mt = make_mismatch_table( pt );
-            lt = scan_loops( pt );
-            jct = scan_junctions( pt, lt );
-            smap = make_strength_map( pt, mt );
-
-            char* p;
-            for( npairs = 0, p = target; p[npairs]; p[npairs]=='('? (void)npairs++ : (void)p++ );
-
-            shuffle = (int*) calloc( len, sizeof(int) );
-            int k;
-            for( k = 0; k < len; k++ ) shuffle[k] = k;
-
-            // finally, assign it to the desgin
-            //int len = strlen( start );
-            char* copy = strdup( start );
-            char* position = strdup( start );
-            char* secstr = strdup( target );
-            secstr[0] = '\0';
-
-            int closest_bpd = 999999;
-            char* closest_seq = strdup( start );
-            char* closest_struct = strdup( target );
-            double closest_fe;
-
-            int stuck = 0;
-            char* last_copy = strdup( start );
-
-            double final, e;
-            int bpd;
-            int n_iter = iter;
-
-            if( seed ) strcpy( copy, seed );
-
-            design.sequence = String{start};
+    public:
+        ~NemoSampler() {
+            reset_(); return;
+            shuffle.clear();
+            //if( shuffle ) free( shuffle );
+            smap.clear();
+            //if( smap ) free( smap );
+            jct.clear();
+            //if( jct ) free( jct );
+            lt.clear();
+            //if( lt ) free( lt );
+            mt.clear();
+            //if( mt ) free( mt );
+            pt.clear();
+            //if( pt ) free( pt );
         }
 
+    public:
         void
-        mutate(Design& design) const  {
-            if(design.id != curr_design) {
-                std::cerr<<"incorrect design id... exiting";
-                exit(1);
-            }
+        initialize_design(Design& );
+
+    public:
+        void
+        mutate(Design& )  ;
+
+    public:
+        int
+        current() const {
+            return current_;
+        }
+
+    public:
+        void
+        current (int curr) {
+            current_ = curr;
         }
 
     private:
-        short* make_mismatch_table( short* pt )
-        {
-            short* mt = (short*)calloc( 1+pt[0], sizeof(short) );
-            int j;
+        bool
+        play_move(char *position, const char *bases,  int z ) ;    private:
 
-            for( j = 1; j <= pt[0]; j++ ) {
-                if( pt[j] ) {
-                    if( j < pt[0] && pt[j] > 1 && pt[j+1] && pt[pt[j]-1]
-                        && pt[j+1] != pt[j]-1 ) {
-                        mt[j+1] = pt[j] - 1;
-                        mt[pt[j] - 1] = j+1;
-                    }
-                    continue;
-                }
-                if( j < pt[0] && pt[j+1] && pt[j+1]+1 <= pt[0] ) {
-                    mt[j] = pt[j+1] + 1;
-                    mt[pt[j+1] + 1] = j;
-                } else if( j > 1 && pt[j-1] && pt[j-1]-1 >= 1 ) {
-                    mt[j] = pt[j-1] - 1;
-                    mt[pt[j-1] - 1] = j;
-                }
-            }
+    private:
+        int
+        nemo_main( Design& ) ;
 
-            return mt;
+    private:
+        void
+        reset_() {
+            // make sure that when I give over the information the copies are "owned" by the sampler
+            if( target ) free( target );
+            if( start ) free( start );
+            if( seed ) free( seed );
+            pt.clear();
+            //if( pt ) free( pt );       // Pair Table
+            mt.clear();
+            //if( mt ) free( mt );       // Mismatch Table
+            lt.clear();       // Loop Table
+            //if( lt ) free( lt );       // Loop Table
+            jct.clear();      // Junction Table
+            //if( jct ) free( jct );      // Junction Table
+            smap.clear();
+            //if( smap ) free( smap );     // Strength Map
+            shuffle.clear();
+            //if( shuffle  ) free( shuffle );
+            if( closest_seq )  free( closest_seq );
+            if( position ) free( position );
+
+            bpd = std::numeric_limits<int>::max();
+            current_ = -1;
         }
 
-        int* scan_loops( short* pt )
-        {
-            int len = pt[0];
-            int* map = (int*)calloc( 1+len, sizeof(int) );
-            int mark = 1;
-            int j;
+    private:
+        double
+        sample( char * )   ;
 
-            for( j = 1; j < len; j++ ) {
-                if( pt[j] <= 1 ) continue;
-                if( map[j] ) continue;
-                if( pt[pt[j]-1] != j+1 ) {
-                    map[j] = mark;
-                    int k = j;
-                    do {
-                        do {
-                            if( ++k > len ) k = 1;
-                        } while( pt[k]==0 );
-                        k = pt[k];
-                        map[k] = mark;
-                    } while( k != j );
-                    mark++;
-                }
+    private:
+        void
+        config_eterna(void) {
+            // convert_parameter_file("vrna185.par", "vrna185x2.par", VRNA_CONVERT_OUTPUT_ALL);
+            if(!std::filesystem::exists("vrna185x.par")) {
+                std::cout<<"Error: File \"vrna185x.par\" could not be found. Unable to update parameters. Continuing...\n";
+                return;
             }
-
-            map[0] = mark;
-            return map;
-        }
-        int* scan_junctions( short* pt, int* lt )
-        {
-            int len = pt[0];
-            int* map = (int*)calloc( 1+len, sizeof(int) );
-            memmove( map, lt, (1+len)*sizeof(int) );
-
-            int mark = lt[0];
-
-            while( --mark ) {
-                int j;
-                int count = 0;
-                for( j = 1; j <= len; j++ ) if( map[j] == mark ) count++;
-                if( count <= 2 ) {
-                    for( j = 1; j <= len; j++ ) if( map[j] == mark ) map[j] = 0;
-                }
-            }
-
-            return map;
+            read_parameter_file("vrna185x.par");
+            dangles = 1;
+            update_fold_params(); // useful ?
         }
 
+    private:
+        double
+        nested(char *position,  int ) ;
 
-
-// The "strength map" encodes a rough measure of the "fragility" of the
-// structure at the considered index. Long helices are "strong", isolated
-// base pairs, junctions, etc, are "weak".
-//
-// The map comes into play when deciding which side in a misfolded pair
-// should be mutated. The heuristic is that a "strong" domain should be
-// able to take a mutation more easily than a weaker one.
-//
-        int* make_strength_map( short* pt, short* mt )
-        {
-            int len = pt[0];
-            int* map = (int*)calloc( 1+len, sizeof(int) );
-            int j;
-
-            for( j = 1; j <= len; j++ ) {
-                int i, k;
-                if( pt[j] ) {
-                    for( i = 1; i < 3; i++ ) {
-                        k = j - i;
-                        if( k >= 1 ) map[k] += 3 - i;
-                        k = j + i;
-                        if( k <= len ) map[k] += 3 - i;
-                    }
-                } else if( mt[j] ) {
-                    int up = j;
-                    while( up <= len && pt[up]==0 ) up++;
-                    int down = j;
-                    while( down >= 1 && pt[down]==0 ) down--;
-
-                    int minus = 2;
-                    if( up > len || down < 1 ) { // dangling end
-                        minus = 4;
-                    } else if ( pt[down] > down && pt[up] < up ) { // hairpin
-                        minus = 3;
-                    } else if ( pt[down] < down && pt[up] > up ) { // multiloop
-                        minus = 4;
-                    } else { // internal loop I guess...
-                        if( pt[down]-pt[up] == 1 ) { // bulge
-                            minus = up-down==2 ? 5 : 4;
-                        } else {
-                            minus = up-down==2 ? 3 : 2;
-                        }
-                    }
-                    for( i = 1; i < minus; i++ ) {
-                        k = j - i;
-                        if( k >= 1 ) map[k] -= minus - i;
-                        k = j + i;
-                        if( k <= len ) map[k] -= minus - i;
-                    }
-                }
-            }
-
-            // normalize the array to make the minimum exactly 1
-            int m = 999;
-            for( j = 1; j <= len; j++ ) if( map[j] < m ) m = map[j];
-            for( j = 1; j <= len; j++ ) map[j] += 1 - m;
-
-            return map;
-        }
     };
 }
-
 
 #endif // __RNAMAKE_NEMO_SAMPLER_H__

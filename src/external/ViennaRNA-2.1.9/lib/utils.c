@@ -88,8 +88,12 @@ PUBLIC void warn_user(const char message[]){
 /*------------------------------------------------------------------------*/
 PUBLIC void init_rand(void)
 {
+#if 0
   time_t t;
   (void) time(&t);
+#else
+  long long t = 0x09101996;
+#endif
   xsubi[0] = xsubi[1] = xsubi[2] = (unsigned short) t;  /* lower 16 bit */
   xsubi[1] += (unsigned short) ((unsigned)t >> 6);
   xsubi[2] += (unsigned short) ((unsigned)t >> 12);

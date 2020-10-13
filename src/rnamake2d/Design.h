@@ -1,6 +1,7 @@
 #ifndef __RNAMAKE_DESIGN_H__
 #define __RNAMAKE_DESIGN_H__
 
+#include <iostream>
 #include <utility>
 #include <vector>
 
@@ -14,23 +15,27 @@ namespace rnamake2d {
        
        double score{0.};
        const String target;
-       String sequence;
+       String sequence; // the current sequence
+       String candiate; // the candidate
        const int id;
 
        explicit
-       Design(String  target) : id(design_ct++),target(std::move(target)) {
-
+       Design(String targ, String seq = "") : id(design_ct++),
+                                                target(targ),
+                                                sequence(seq){
+           while(target.size() - sequence.size()) {
+                sequence.push_back('N');
+            }
        }
 
        void
        accept() {
-
+            sequence = candiate;
        }
 
        void
        reject() {
-
-
+            candiate = sequence;
        }
 
 

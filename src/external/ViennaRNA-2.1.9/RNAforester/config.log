@@ -27,8 +27,9 @@ uname -v = #52-Ubuntu SMP Thu Sep 10 10:58:49 UTC 2020
 /usr/bin/oslevel       = unknown
 /bin/universe          = unknown
 
-PATH: /home/cjurich/projects/rec-checker/
 PATH: /home/cjurich/anaconda3/bin
+PATH: /home/cjurich/anaconda3/condabin
+PATH: /home/cjurich/projects/rec-checker
 PATH: /usr/local/sbin
 PATH: /usr/local/bin
 PATH: /usr/sbin

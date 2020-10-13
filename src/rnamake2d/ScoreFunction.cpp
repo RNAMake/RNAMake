@@ -33,7 +33,7 @@ namespace rnamake2d {
             }
         }
 
-        return double(ans)/double(prediction.size());
+        return 100.0*double(ans)/double(prediction.size());
     }
 } // namespace rnamake2d
 

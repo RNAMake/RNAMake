@@ -1,26 +1,26 @@
 // Copyright (C) 2018 Fernando Portela <nando8888@gmail.com>
 
 
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
+#include <cstdlib>
+#include <ctime>
+#include <cstring>
 #include <ctype.h>
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdio>
 #include <limits.h>
 #include <unistd.h>
 
 // ViennaRNA stuff
 extern "C" {
-#include "RNAstruct.h"
-#include "fold_vars.h"
-#include "fold.h"
-#include "params.h"
-#include "part_func.h"
-#include "utils.h"
-#include "convert_epars.h"
-#include "read_epars.h"
-#include "MEA.h"
+    #include <RNAstruct.h>
+    #include <fold_vars.h>
+    #include <fold.h>
+    #include <params.h>
+    #include <part_func.h>
+    #include <utils.h>
+    #include <convert_epars.h>
+    #include <read_epars.h>
+    #include <MEA.h>
 }
 
 // set to 0 to prevent use of base pair distances in the scoring function
@@ -809,8 +809,8 @@ bool parse_arguments( int argc, char** argv )
 void init_globals( void )
 {
     init_rand();
-    time_t now = time( NULL );
-    srand48( now ^ 0x5A5A5A5A );
+    //time_t now = time( NULL );
+    srand48( 1996 ^ 0x5A5A5A5A );
 
     int len = strlen( start );
     pt = make_pair_table( target );
@@ -840,7 +840,7 @@ void init_globals( void )
     }
 }
 
-/*
+
 int main( int argc, char** argv )
 {
     if( !parse_arguments( argc, argv ) ) return 1;
@@ -1077,4 +1077,4 @@ int main( int argc, char** argv )
 
     return 0;
 }
-*/
+
