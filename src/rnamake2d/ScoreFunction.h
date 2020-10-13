@@ -17,6 +17,9 @@ namespace rnamake2d {
             double
             score( Design const& ) const ;
 
+            double
+            score_mutation( Design const& ) const ;
+
         private:
             std::map<double,RuleOP> scoring_rules_;
     };
@@ -27,6 +30,9 @@ namespace rnamake2d {
         public:
             double
             score(Design const&);
+
+            double
+            score_mutation(Design const&);
     };
 
 }

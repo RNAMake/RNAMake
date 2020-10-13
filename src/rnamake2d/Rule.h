@@ -19,6 +19,11 @@ namespace rnamake2d {
         score(Design const& ) const  = 0;
 
    public:
+       virtual
+       double
+       score_mutation(Design const& ) const  = 0;
+
+   public:
        String
        name()  const {
            return name_;

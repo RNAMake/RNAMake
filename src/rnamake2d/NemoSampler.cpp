@@ -40,7 +40,6 @@ namespace rnamake2d {
     std::vector<short>
     make_mismatch_table(std::vector<short> const & pt) {
         //short *mt = (short *) calloc(1 + pt[0], sizeof(short));
-        std::cout<<pt[0]<<std::endl;
         auto mt = std::vector<short>( 1 + pt[0],0 );
         for (int j = 1; j <= pt[0]; j++) {
             if (pt[j]) {
@@ -183,7 +182,7 @@ namespace rnamake2d {
         if (pt[1 + pos]) seq[pt[1 + pos] - 1] = 'N';
     }
 
-    double normal_score(char *position, char *target, bool found, int verbosity, int npairs) {
+    double normal_score(const char *position, const char *target, bool found, int npairs) {
         char *secstr = strdup(position);
         secstr[0] = '\0';
         double e = fold(position, secstr);
@@ -194,7 +193,6 @@ namespace rnamake2d {
         if( secstr != nullptr) free(secstr);
         if (bpd == 0) {
             found = true;
-            if (verbosity > 1) printf("Found match:\n%s\n", position);
             return 1.0;
         }
         double score;
@@ -589,14 +587,14 @@ namespace rnamake2d {
         while (strspn(position, bases) != strlen(position)) {
             play_move(position, bases,  -1);
         }
-        return normal_score(position, target, found, verbosity, npairs);
+        return normal_score(position, target, found, npairs);
     }
 
 
     double
     NemoSampler::nested( char *position , int level ) {
         if (strspn(position, "AUGC") == strlen(position)) {
-            return normal_score(position, target, found, verbosity, npairs);
+            return normal_score(position, target, found, npairs);
         }
 
         double best = worst_score;
@@ -609,14 +607,12 @@ namespace rnamake2d {
             int z;
             int zm = pt[l + 1] == 0 ? 4 : 6;
             if (level == 1) {
-                if (verbosity > 3) printf("==== %s\n", position);
 #pragma omp parallel for schedule(dynamic)
                 for (z = 0; z < zm; z++) {
                     char *playout = strdup(position);
                     if (!play_move(playout, "AUGC",  z)) continue;
 
                     double v = sample( playout );
-                    if (verbosity > 3) printf("---- %s %f\n", playout, v);
 #pragma omp critical(max_update)
                     {
                         if (v > max) {
@@ -692,10 +688,6 @@ namespace rnamake2d {
             secstr[0] = 0;
             e = fold(position, secstr);
             bpd = bp_distance(target, secstr);
-            if (verbosity > 0) {
-                printf(" %f %.2f %d (%d)\n", final, e, bpd, iter);
-                fflush(stdout);
-            }
             if (bpd == 0) break;
 
             if (bpd < closest_bpd) {
@@ -761,15 +753,9 @@ namespace rnamake2d {
                     // choose random r, with r != k
                     int r = int_urn(0, len - 2);
                     if (r >= k) r++;
-                    // cool exercise for job interviews: ask the candidate what these 3 lines do.
                     shuffle[k] ^= shuffle[r];
                     shuffle[r] ^= shuffle[k];
                     shuffle[k] ^= shuffle[r];
-                    // full points for the correct answer
-                    // bonus point for finding the answer without writing anything down
-                    // bonus point if the candidate declares "this is evil / bad style"
-                    // bonus point if the candidate can cite a context where this trick
-                    //             might be justified or useful
                 }
 
                 for (k = 0, c = 0; k < len; k++) {
@@ -848,17 +834,7 @@ namespace rnamake2d {
 
             } while (strspn(copy, "AUGC") == strlen(copy));
 
-            if (verbosity > 2) {
-                printf("C: %s\n", position);
-                printf("S: ");
-                for (k = 1; k <= len; k++) printf("%c", retry[k] ? 'X' : '.');
-                printf("\n"); printf("N: %s\n", copy); fflush(stdout);
-            }
-
             if( retry != nullptr ) free(retry);
-            //if( la != nullptr ) free(la);
-            //if( ma != nullptr ) free(ma);
-            //if( pa != nullptr ) free(pa);
 
             // if we seem to be chasing our own tail, reset completely
             if (strcmp(last_copy, copy) == 0) {
@@ -873,11 +849,15 @@ namespace rnamake2d {
         }
 
         if (bpd == 0) {
-            design.sequence = position;
+            design.sequence.reserve(strlen(position));
+            strncpy(&(design.sequence[0]),position,strlen(position));
+
             //printf("NMC: %s %f\n", position, final);
             //printf("STR: %s %.2f %d %d\n", secstr, e, bpd, n_iter - iter);
         } else {
-            design.sequence = closest_seq;
+            design.sequence.reserve(strlen(closest_seq));
+            strncpy(&(design.sequence[0]),closest_seq,strlen(closest_seq));
+
             //printf("NMC: %s\n", closest_seq);
             //printf("STR: %s %.2f %d %d\n", closest_struct, closest_fe, closest_bpd, n_iter - iter);
             //printf("CPY: %s\n", copy);
@@ -887,30 +867,26 @@ namespace rnamake2d {
 
     void
     NemoSampler::initialize_design(Design& design) {
+
         if(current_) {
             reset_();
         }
-        // first need to set the object to the current Design object
-        // also need to copy over the data
+
         current_ = design.id;
         const int size = design.target.size();
         target = (char*)malloc(sizeof(char)*(size+1)); target[size] = '\0';
         start = (char*)malloc(sizeof(char)*(size+1)); start[size] = '\0';
         seed = (char*)malloc(sizeof(char)*(size+1)); seed[size] = '\0';
 
-        position = strdup( start );
-        closest_seq = strdup( start );
+        position = (char*)malloc(sizeof(char)*(size+1)); position[size] = '\0';
+        closest_seq = (char*)malloc(sizeof(char)*(size+1)); closest_seq[size] = '\0';
+
+        strncpy( closest_seq, start, strlen( start ) );
+        strncpy( position, start,  strlen( start ) );
 
         strncpy( target, design.target.c_str(), design.target.size() );
         strncpy( start, design.sequence.c_str(), design.sequence.size() );
         strncpy( seed, design.sequence.c_str(), design.sequence.size() );
-
-        //if( pt != nullptr) free( pt );       // Pair Table
-        //if( mt != nullptr) free( mt );       // Mismatch Table
-        ////if( lt != nullptr) free( lt );       // Loop Table
-        //if( jct != nullptr) free( jct );      // Junction Table
-        //if( smap != nullptr) free( smap );     // Strength Map
-        //if( shuffle != nullptr) free( shuffle );
 
         len = strlen( seed );
         pt = wrapped_make_pair_table( target );
@@ -923,8 +899,6 @@ namespace rnamake2d {
         for( npairs = 0, p = target; p[npairs]; p[npairs]=='('? (void)npairs++ : (void)p++ );
 
         shuffle.reserve(len);
-
-        //shuffle = (int*)malloc(sizeof(int)*len);
 
         for(int  k = 0; k < len; k++ ) shuffle[k] = k;
         nemo_main(design);
@@ -961,11 +935,9 @@ namespace rnamake2d {
        secstr[0] = 0;
        e = fold(position, secstr);
        bpd = bp_distance(target, secstr);
-       if (verbosity > 0) {
-           printf(" %f %.2f %d (%d)\n", final, e, bpd, iter);
-           fflush(stdout);
-       }
 
+       design.candiate = position;
+        return ;
        if (bpd < closest_bpd) {
            closest_bpd = bpd;
            strcpy(closest_seq, position);
@@ -1110,19 +1082,8 @@ namespace rnamake2d {
 
        } while (strspn(copy, "AUGC") == strlen(copy));
 
-       if (verbosity > 2) {
-           printf("C: %s\n", position);
-           printf("S: ");
-           for (k = 1; k <= len; k++) printf("%c", retry[k] ? 'X' : '.');
-           printf("\n");
-           printf("N: %s\n", copy);
-           fflush(stdout);
-       }
 
        if( retry != nullptr ) free(retry);
-       //if( la != nullptr ) free(la);
-       //if( ma != nullptr ) free(ma);
-       //if (pa != nullptr ) free(pa);
 
        // if we seem to be chasing our own tail, reset completely
        if (strcmp(last_copy, copy) == 0) {
@@ -1135,13 +1096,16 @@ namespace rnamake2d {
            stuck = 0;
        }
 
-        if (bpd == 0 && design.sequence != position) {
-            design.candiate = position;
+        if (bpd == 0 && !strcmp(design.sequence.c_str() ,position )) {
+            //design.candiate = position;
+            design.candiate.reserve( strlen(position) ) ;
+            strncpy( &(design.candiate[0]), position, strlen(position));
             //printf("NMC: %s %f\n", position, final);
             //printf("STR: %s %.2f %d %d\n", secstr, e, bpd, n_iter - iter);
-        } else if (design.sequence != closest_seq) {
-            design.candiate = closest_seq;
-            //printf("NMC: %s\n", closest_seq);
+        } else if (!strcmp(design.sequence.c_str(),closest_seq)) {
+            //design.candiate = closest_seq;
+            design.candiate.reserve( strlen(closest_seq) ) ;
+            strncpy( &(design.candiate[0]), closest_seq, strlen(closest_seq));            //printf("NMC: %s\n", closest_seq);
             //printf("STR: %s %.2f %d %d\n", closest_struct, closest_fe, closest_bpd, n_iter - iter);
             //printf("CPY: %s\n", copy);
         } else {

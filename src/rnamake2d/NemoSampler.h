@@ -32,34 +32,33 @@ extern "C" {
 namespace rnamake2d {
 
     class NemoSampler {
+    private:
+        // general variables
         const double worst_score = -100000.0;
-        int    verbosity = 0;
         bool   standard_nmcs = false;
         int    iter = 2500;
-        char*  target = nullptr;
-        char*  start = nullptr;
-        char*  seed = nullptr;
-        char*  position = nullptr;
-        char*  closest_seq = nullptr;
-        std::vector<short> pt;
-        //short* pt = nullptr;       // Pair Table
-        std::vector<short> mt ;       // Mismatch Table
-        //short* mt = nullptr;       // Mismatch Table
-        std::vector<int> lt;       // Loop Table
-        //int*   lt = nullptr;       // Loop Table
-        std::vector<int> jct ;      // Junction Table
-        //int*   jct = nullptr;      // Junction Table
-        std::vector<int> smap;     // Strength Map
-        //int*   smap = nullptr;     // Strength Map
         int    npairs = 0;
-        std::vector<int> shuffle ;
-        //int*   shuffle = nullptr;
         bool   found = false;
         bool   force_boost = false;
         int    rng_seed = 1996;
         int    len = 0;
         int    bpd = std::numeric_limits<int>::max();
         int    current_ = -1;
+    private:
+        // strings
+        char*  target = nullptr;
+        char*  start = nullptr;
+        char*  seed = nullptr;
+        char*  position = nullptr;
+        char*  closest_seq = nullptr;
+    private:
+        // vectors
+        std::vector <short> pt;
+        std::vector <short> mt ;
+        std::vector <int> lt;
+        std::vector <int> jct ;
+        std::vector <int> smap;
+        std::vector <int> shuffle ;
 
     public:
         NemoSampler()   {
@@ -69,19 +68,7 @@ namespace rnamake2d {
 
     public:
         ~NemoSampler() {
-            reset_(); return;
-            shuffle.clear();
-            //if( shuffle ) free( shuffle );
-            smap.clear();
-            //if( smap ) free( smap );
-            jct.clear();
-            //if( jct ) free( jct );
-            lt.clear();
-            //if( lt ) free( lt );
-            mt.clear();
-            //if( mt ) free( mt );
-            pt.clear();
-            //if( pt ) free( pt );
+            reset_();
         }
 
     public:
@@ -115,27 +102,22 @@ namespace rnamake2d {
     private:
         void
         reset_() {
-            // make sure that when I give over the information the copies are "owned" by the sampler
+            // reset variables
+            bpd = std::numeric_limits<int>::max();
+            current_ = -1;
+            // free dynamic Cstrings
             if( target ) free( target );
             if( start ) free( start );
             if( seed ) free( seed );
-            pt.clear();
-            //if( pt ) free( pt );       // Pair Table
-            mt.clear();
-            //if( mt ) free( mt );       // Mismatch Table
-            lt.clear();       // Loop Table
-            //if( lt ) free( lt );       // Loop Table
-            jct.clear();      // Junction Table
-            //if( jct ) free( jct );      // Junction Table
-            smap.clear();
-            //if( smap ) free( smap );     // Strength Map
-            shuffle.clear();
-            //if( shuffle  ) free( shuffle );
             if( closest_seq )  free( closest_seq );
             if( position ) free( position );
-
-            bpd = std::numeric_limits<int>::max();
-            current_ = -1;
+            // clear out the vectors
+            if( !pt.empty() ) pt.clear();
+            if( !mt.empty() ) mt.clear();
+            if( !lt.empty() ) lt.clear();
+            if( !jct.empty() ) jct.clear();
+            if( !smap.empty() ) smap.clear();
+            if( !shuffle.empty() ) shuffle.clear();
         }
 
     private:
@@ -144,7 +126,7 @@ namespace rnamake2d {
 
     private:
         void
-        config_eterna(void) {
+        config_eterna() {
             // convert_parameter_file("vrna185.par", "vrna185x2.par", VRNA_CONVERT_OUTPUT_ALL);
             if(!std::filesystem::exists("vrna185x.par")) {
                 std::cout<<"Error: File \"vrna185x.par\" could not be found. Unable to update parameters. Continuing...\n";
@@ -152,7 +134,7 @@ namespace rnamake2d {
             }
             read_parameter_file("vrna185x.par");
             dangles = 1;
-            update_fold_params(); // useful ?
+            update_fold_params();
         }
 
     private:
