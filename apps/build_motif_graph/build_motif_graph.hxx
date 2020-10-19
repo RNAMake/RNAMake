@@ -46,6 +46,7 @@ public:
     String build_file = "";
     String connect = "";
     String sequence = "";
+    bool output_pdb = false;
   };
 
 public:

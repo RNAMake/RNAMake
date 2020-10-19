@@ -39,6 +39,8 @@ BuildMotifGraph::setup_options() {
   _app.add_option(
       "--seq", _parameters.sequence, "file with instructions for how to build graph")
     ->group("Core Inputs");
+
+  _app.add_flag("--output_pdb", _parameters.output_pdb);
 }
 
 void
@@ -131,20 +133,22 @@ BuildMotifGraph::run() {
     if (under_cutoff) {
       count += 1;
     }
-    if (thermo_sim_->get_score() < best) {
-      LOG_INFO << "best dist score: " << best;
+    if (thermo_sim_->get_score() < best && _parameters.output_pdb) {
+      //LOG_INFO << "best dist score: " << best;
       best = thermo_sim_->get_score();
       best_mg = thermo_sim_->get_motif_graph();
     }
   }
   std::cout << count << std::endl;
   // connection is not perserved through simulation ... bring it back
-  best_mg->add_connection(
-    start.node_index,
-    end.node_index,
-    best_mg->get_node(start.node_index)->data()->ends()[start.edge_index]->name(),
-    best_mg->get_node(end.node_index)->data()->ends()[end.edge_index]->name());
-  best_mg->to_pdb("test.pdb", 1, 1);
+  if(_parameters.output_pdb) {
+    best_mg->add_connection(
+      start.node_index,
+      end.node_index,
+      best_mg->get_node(start.node_index)->data()->ends()[start.edge_index]->name(),
+      best_mg->get_node(end.node_index)->data()->ends()[end.edge_index]->name());
+    best_mg->to_pdb("test.pdb", 1, 1);
+  }
   //best_mg->write_pdbs();
   //mg.to_pdb("test.pdb", 1, 1);
 
