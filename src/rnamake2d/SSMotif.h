@@ -7,7 +7,9 @@
 #include <string_view>
 #include <regex>
 
+
 #include <base/types.h>
+#include <plog/Log.h>
 #include <secondary_structure/secondary_structure_parser.h>
 
 namespace rnamake2d {
@@ -26,8 +28,9 @@ namespace rnamake2d {
         int buffer_;
         util::MotifType mtype_;
 
+        private:
         void
-        build_sequence(bool mutant=false)  {
+        build_sequence_(bool mutant=false)  {
             if(!sequence.empty()) {
                 sequence.clear();
             }
@@ -44,6 +47,7 @@ namespace rnamake2d {
             sequence.pop_back();
         }
 
+    public:
         String
         token() const {
             return token_;
@@ -51,12 +55,14 @@ namespace rnamake2d {
 
         void
         update(bool mutant=false)  {
-            build_sequence(mutant);
+
         }
 
+        virtual
         void
-        full_sequence(String const& full_sequence ) {
+        full_sequence(String const& full_sequence )  {
             full_sequence_ = full_sequence;
+            build_sequence_();
         }
 
         virtual
@@ -122,6 +128,7 @@ namespace rnamake2d {
     struct Junction : Motif {
         int num_branches_ = 0;
         Ints gap_sizes;
+        int gc{0}, au{0}, gu{0}, unknown{0};
         explicit Junction(std::vector<Ints>& strands) {
             if(strands.size() < 2) {
                 std::cout<<"Junction must have at LEAST 2 strands\n";
@@ -136,6 +143,33 @@ namespace rnamake2d {
             }
             setup_nts_();
         }
+
+        void
+        full_sequence(String const & sequence)  override {
+            this->Motif::full_sequence(sequence);
+            auto pairs = std::vector<std::pair<int,int>>{{*strands.begin()->begin(),*strands.rbegin()->rbegin()}};
+
+            auto it = sequence.find('&');
+            while(it != String::npos)  {
+               pairs.emplace_back(it-1,it+1);
+               it = sequence.find('&',it+1);
+            }
+
+            for(const auto& pr : pairs) {
+                String base_pair;
+                base_pair += sequence[pr.first] + sequence[pr.second];
+                if(base_pair == "AU" || base_pair == "UA") {
+                    ++au;
+                } else if (base_pair == "GC" || base_pair == "CG") {
+                    ++gc;
+                } else if (base_pair == "GU" || base_pair == "UG") {
+                    ++gu;
+                } else {
+                    ++unknown;
+                }
+            }
+        }
+
     };
 
     struct Helix : Motif {

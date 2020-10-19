@@ -940,7 +940,7 @@ namespace rnamake2d {
        design.candiate = position;
        design.initialize_mutant();
        //design.update(true);
-        return ;
+       return ;
        if (bpd < closest_bpd) {
            closest_bpd = bpd;
            strcpy(closest_seq, position);

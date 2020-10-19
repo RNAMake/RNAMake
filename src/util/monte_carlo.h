@@ -32,21 +32,9 @@ public:
             temperature_(temperature),
             rng_(RandomNumberGenerator(seed)) {}
 
-    ~MonteCarlo() {}
+    ~MonteCarlo() = default;
 
-    //inline
-    //int
-    //accept(
-    //        float current,
-    //        float next) {
 
-    //    if (next < current) { return 1; }
-
-    //    score_ = exp((current - next) / temperature_);
-    //    if (rng_.rand() < score_) { return 1; }
-
-    //    return 0;
-    //}
     template<class T, class U, typename std::enable_if<std::is_floating_point<T>::value&std::is_floating_point<U>::value>::type* = nullptr>
     inline
     int
@@ -54,13 +42,15 @@ public:
             T current,
             U next) {
 
-        if (next < current) { return 1; }
+        if (next > current) {
+            return 1;
+        }
 
         score_ = exp((current - next) / temperature_);
-        if (rng_.rand() < score_) { return 1; }
+        return  rng_.rand() < score_;
 
-        return 0;
     }
+
 public:
     inline
     void

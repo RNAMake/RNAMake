@@ -4,6 +4,7 @@
 #include <iostream>
 #include <utility>
 #include <vector>
+#include <sstream>
 
 #include <base/types.h>
 #include <rnamake2d/SSMotif.h>
@@ -81,6 +82,13 @@ namespace rnamake2d {
 //            for(const auto& m : motifs) {
 //                m->show();
 //            }
+        }
+
+        String
+        to_str() const {
+            auto ss = std::stringstream{};
+            ss<<id<<","<<target<<","<<sequence<<","<<score<<","<<num_moves<<"\n";
+            return ss.str();
         }
    };
 
