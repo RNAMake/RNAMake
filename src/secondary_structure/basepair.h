@@ -94,8 +94,8 @@ typedef std::vector<BasepairOP>   BasepairOPs;
 inline
 bool
 is_gc_pair(BasepairOP const & bp) {
-    if     (bp->res1()->res_type() == ResType::GUA && bp->res2()->res_type() == ResType::CYT) { return true; }
-    else if(bp->res2()->res_type() == ResType::CYT && bp->res1()->res_type() == ResType::GUA) { return true; }
+    if     (bp->res1()->res_type() == ResType::G && bp->res2()->res_type() == ResType::C) { return true; }
+    else if(bp->res1()->res_type() == ResType::C && bp->res2()->res_type() == ResType::G) { return true; }
     else { return false; }
 }
     
@@ -103,19 +103,36 @@ is_gc_pair(BasepairOP const & bp) {
 inline
 bool
 is_au_pair(BasepairOP const & bp) {
-    if     (bp->res1()->res_type() == ResType::ADE && bp->res2()->res_type() == ResType::URA) { return true; }
-    else if(bp->res2()->res_type() == ResType::URA && bp->res1()->res_type() == ResType::ADE) { return true; }
+    if     (bp->res1()->res_type() == ResType::A && bp->res2()->res_type() == ResType::U) { return true; }
+    else if(bp->res1()->res_type() == ResType::U && bp->res2()->res_type() == ResType::A) { return true; }
     else { return false; }
 }
     
 inline
 bool
 is_gu_pair(BasepairOP const & bp) {
-    if     (bp->res1()->res_type() == ResType::GUA && bp->res2()->res_type() == ResType::URA) { return true; }
-    else if(bp->res2()->res_type() == ResType::URA && bp->res1()->res_type() == ResType::GUA) { return true; }
+    if     (bp->res1()->res_type() == ResType::G && bp->res2()->res_type() == ResType::U) { return true; }
+    else if(bp->res1()->res_type() == ResType::U && bp->res2()->res_type() == ResType::G) { return true; }
     else { return false; }
 }
-    
+
+enum class BPType {
+    AU, UA, CG, GC, GU, UG
+};
+
+inline
+BPType
+get_bp_type(
+        Basepair const & bp) {
+    if     (bp.res1()->res_type() == ResType::A && bp.res2()->res_type() == ResType::U) { return BPType::AU; }
+    else if(bp.res1()->res_type() == ResType::U && bp.res2()->res_type() == ResType::A) { return BPType::UA; }
+    else if(bp.res1()->res_type() == ResType::C && bp.res2()->res_type() == ResType::G) { return BPType::CG; }
+    else if(bp.res1()->res_type() == ResType::G && bp.res2()->res_type() == ResType::C) { return BPType::GC; }
+    else if(bp.res1()->res_type() == ResType::G && bp.res2()->res_type() == ResType::U) { return BPType::GU; }
+    else if(bp.res1()->res_type() == ResType::U && bp.res2()->res_type() == ResType::G) { return BPType::UG; }
+    else { throw secondary_structure::Exception("unknown basepair type: " + bp.res1()->name() + "-" + bp.res2()->name()); }
+}
+
     
 }
 

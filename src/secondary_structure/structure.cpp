@@ -31,7 +31,7 @@ Structure::_setup_chains(
     ResidueOPs res;
     int count = 1;
     String chain_ids = "ABCDEFGHIJKLMNOPQRSTUVWXZ";
-    auto valid_seq = String("AGUCTN&+-");
+    auto valid_seq = String("AGUCTNWSMKRYBDHV&+-");
     auto valid_ss = String("[{(.)}]");
     int i = -1, ci = 0;
     for(auto & s : sequence) {
@@ -41,7 +41,7 @@ Structure::_setup_chains(
             name += s; db += dot_bracket[i]; chain_id += chain_ids[ci];
             if(valid_seq.find(name) == std::string::npos) {
                 throw Exception(
-                    name + " is not a valid name for a residue valid names are: AGUCTN");
+                    name + " is not a valid name for a residue valid names are: AGUCTNWSMKRYBDHV");
             }
             
             if(valid_ss.find(db) == std::string::npos) {

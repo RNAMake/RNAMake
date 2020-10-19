@@ -83,7 +83,7 @@ public:
         }
         return seq;
     }
-    
+
     inline
     String
     dot_bracket() {

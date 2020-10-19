@@ -31,9 +31,22 @@ public:
     }
 
     virtual
+    bool
+    violates_constraint(
+            MotifOP m) {
+        if(violations(m) > 0) { return true; }
+        else                  { return false; }
+    }
+
+    virtual
     int
     violations(
             PoseOP) = 0;
+
+    virtual
+    int
+    violations(
+            MotifOP) = 0;
 };
 
 class DisallowedSequence : public SequenceConstraint {
@@ -51,6 +64,12 @@ public:
     violations(
             PoseOP p) {
         return find_res_types_in_pose(p, disallowed_res_type_array_);
+    }
+
+    int
+    violations(
+            MotifOP m) {
+        return find_res_types_in_motif(m, disallowed_res_type_array_);
     }
 
 
@@ -75,6 +94,16 @@ public:
         return find_gc_helix_stretches(p, length_);
     }
 
+    int
+    violations(
+            MotifOP m) {
+        if(find_longest_gc_helix_stretch_in_motif(m) > length_) {
+            return 1;
+        }
+        else {
+            return 0;
+        }
+    }
 
 private:
     int length_;
@@ -117,6 +146,16 @@ public:
             PoseOP p) {
         for(int i = 0; i < seq_constraints_.size(); i++) {
             violations_[i] = seq_constraints_[i]->violations(p);
+        }
+
+        return violations_;
+    }
+
+    Ints const &
+    violations(
+            MotifOP m) {
+        for(int i = 0; i < seq_constraints_.size(); i++) {
+            violations_[i] = seq_constraints_[i]->violations(m);
         }
 
         return violations_;

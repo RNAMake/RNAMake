@@ -22,7 +22,6 @@
 #include "secondary_structure/pose.h"
 
 namespace secondary_structure {
-    
 
 enum NodeType {
     UNPAIRED = 0,
@@ -196,10 +195,10 @@ private:
     int
     _start_of_chain(
         ResidueOP const & r) {
-        
         for(auto const & c : structure_->chains()) {
             if(c->first() == r) { return 1; }
         }
+
         return 0;
     }
     
@@ -227,14 +226,36 @@ private:
         throw Exception("cannot find pair in _get_bracket_pair");
         
     }
-    
+
     MotifOP
     _generate_motif(
         SSNodeOP const &);
-    
+
     SSNodeOP
     _walk_nodes(
         SSNodeOP const &);
+
+
+    // new
+
+    void
+    _get_basepair_res(
+            SSNodeOP,
+            ResidueOPs &);
+
+    bool
+    _is_a_bp(
+            SSNodeOP,
+            SSNodeOP);
+
+    util::MotifType
+    _walk_nodes_new(
+            SSNodeOP const &,
+            std::vector<SSNodeOP> &);
+
+    StructureOP
+    _generate_structure_from_nodes(
+            std::vector<SSNodeOP> const &);
 
     MotifOP
     _build_motif(

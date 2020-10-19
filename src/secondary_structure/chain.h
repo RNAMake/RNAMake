@@ -64,21 +64,17 @@ public:
     inline
     ResidueOP const &
     first() {
-        try {
-            return residues_.at(0);
+        if(residues_.empty()) {
+            throw std::runtime_error("called first() on a chain without any residues in it");
         }
-        catch(std::out_of_range e) {
-            throw Exception("called first() on a chain without any residues in it");
-        }
-        catch(...) {
-            throw std::runtime_error("unexpected error in chain.first()");
-        }
+
+        return residues_[0];
     }
     
     inline
     ResidueOP const &
     last() {
-        if(residues_.size() == 0) {
+        if(residues_.empty()) {
             throw Exception("called last() on a chain without any residues in it");
         }
      

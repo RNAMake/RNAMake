@@ -37,10 +37,15 @@ public:
     inline
     float
     stdev() const { return stdev_; }
-    
+
+    inline
+    String const &
+    name() { return name_; };
+
 protected:
     float mean_, stdev_;
     Floats params_;
+    String name_;
     
 };
 

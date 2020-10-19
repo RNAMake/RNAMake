@@ -3,26 +3,15 @@
 namespace rnamake2d {
 
     double
-    ScoreFunction::score(const Design & design) const {
-        auto ans(0.);
-
-        for(const auto& weight_rule : scoring_rules_) {
-            ans += weight_rule.first*weight_rule.second->score(design);
+    ScoreFunction::score( Feature2DOP const &  feature ) const {
+        auto score(0.);
+        for(auto ii = 0; ii < num_strats; ++ii) {
+            score += strategies_[ii]->score(feature)*weights_[ii];
         }
-
-        return ans;
-
+        return score;
     }
 
-    double
-    ScoreFunction::score_mutation(const Design & design) const {
-        auto ans(0.);
 
-        for(const auto& weight_rule : scoring_rules_) {
-            ans += weight_rule.first*weight_rule.second->score_mutation(design);
-        }
-        return ans;
-    }
 
     double
     ViennaScore::score(Design const& Design) {

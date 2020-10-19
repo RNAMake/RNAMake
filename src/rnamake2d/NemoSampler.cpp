@@ -902,6 +902,7 @@ namespace rnamake2d {
 
         for(int  k = 0; k < len; k++ ) shuffle[k] = k;
         nemo_main(design);
+        design.initialize_features();
     }
 
     void
@@ -937,6 +938,8 @@ namespace rnamake2d {
        bpd = bp_distance(target, secstr);
 
        design.candiate = position;
+       design.initialize_mutant();
+       //design.update(true);
         return ;
        if (bpd < closest_bpd) {
            closest_bpd = bpd;

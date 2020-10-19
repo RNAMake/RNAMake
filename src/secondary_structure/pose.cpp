@@ -16,10 +16,13 @@ Pose::_build_helices() {
     auto steps = MotifOPs();
     for (auto const & m : motifs_) {
         if (m->mtype() != util::MotifType::HELIX) { continue; }
+        // Should throw an error or a warning for this
+        if(m->ends().size() != 2) { continue; } // TODO why do I have to do this?
         steps.push_back(m);
     }
 
     auto seen = std::map<MotifOP, int>();
+    auto seen_bp = std::map<BasepairOP, int>();
     auto current = MotifOP(nullptr);
     auto helix_motifs = MotifOPs();
     int found = 0;
@@ -90,8 +93,23 @@ Pose::_build_helices() {
         auto struc = std::make_shared<Structure>(chains);
         auto h_m = std::make_shared<Motif>(struc, bps, ends);
 
+        for(auto const & bp : bps) {
+            seen_bp[bp] = 1;
+        }
+
         helices_.push_back(h_m);
 
+    }
+
+    // find all the singlet helices
+    for(auto const & bp : basepairs_) {
+        if(seen_bp.find(bp) == seen_bp.end()) {
+            auto chains = ChainOPs{std::make_shared<Chain>(ResidueOPs{bp->res1()}),
+                                   std::make_shared<Chain>(ResidueOPs{bp->res2()})};
+            auto struc = std::make_shared<Structure>(chains);
+            auto h_m = std::make_shared<Motif>(struc, BasepairOPs{bp}, BasepairOPs{bp});
+            helices_.push_back(h_m);
+        }
     }
 
 }

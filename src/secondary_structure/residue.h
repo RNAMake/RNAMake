@@ -28,8 +28,23 @@ public:
             std::runtime_error(message) {}
 };
 
+//https://en.wikipedia.org/wiki/Nucleic_acid_notation
 enum class ResType {
-    ADE, CYT, GUA, URA, NONE
+    A, // A
+    C, // C
+    G, // G
+    U, // U
+    W, // "Weak" A or U
+    S, // "Strong" C or G
+    M, // "aMino" A or C
+    K, // "Keto" G or U
+    R, // "puRine", A or G
+    Y, // "pYrimidine, C or U
+    B, // not A, C G or U
+    D, // not C, A G or U
+    H, // not G, A C or G
+    V, // not U, A C or G
+    N  // A, C, G or U
 };
 
 typedef std::vector<ResType> ResTypes;
@@ -38,6 +53,59 @@ typedef std::vector<ResType> ResTypes;
 ResType
 convert_res_name_to_type(
         char);
+
+String
+convert_res_type_to_str(
+        ResType);
+
+bool
+does_restype_satisfy_constraint(
+        ResType,
+        ResType);
+
+bool
+is_restype_a_weak(
+        ResType);
+
+bool
+is_restype_a_strong(
+        ResType);
+
+bool
+is_restype_a_amino(
+        ResType);
+
+bool
+is_restype_a_keto(
+        ResType);
+
+bool
+is_restype_a_purine(
+        ResType);
+
+bool
+is_restype_a_pyrimidine(
+        ResType);
+
+bool
+is_restype_not_A(
+        ResType);
+
+bool
+is_restype_not_C(
+        ResType);
+
+bool
+is_restype_not_G(
+        ResType);
+
+bool
+is_restype_not_U(
+        ResType);
+
+bool
+is_restype_a_ambiguous_code(
+        ResType);
 
 
 class Residue {
@@ -50,25 +118,23 @@ public:
         String const & chain_id,
         util::Uuid const & uuid,
         String const & i_code=""):
-    chain_id_(chain_id),
     dot_bracket_(dot_bracket),
-    i_code_(i_code),
-    name_(name),
     num_(num),
-    uuid_(uuid) {
-        res_type_ = convert_res_name_to_type(name_[0]);
-    }
+    chain_id_(chain_id),
+    uuid_(uuid),
+    i_code_(i_code),
+    res_type_(convert_res_name_to_type(name[0]))
+    {}
     
     inline
     Residue(
         Residue const & r):
-    chain_id_(r.chain_id_),
     dot_bracket_(r.dot_bracket_),
-    i_code_(r.i_code_),
-    name_(r.name_),
     num_(r.num_),
-    res_type_(r.res_type_),
-    uuid_(r.uuid_)
+    chain_id_(r.chain_id_),
+    uuid_(r.uuid_),
+    i_code_(r.i_code_),
+    res_type_(r.res_type_)
     {}
     
     Residue(
@@ -78,8 +144,7 @@ public:
         if(spl.size() < 4) {
             throw Exception("cannot build secondary_structure::Residue from str: " + s);
         }
-        
-        name_         = spl[0];
+
         dot_bracket_  = spl[1];
         num_          = std::stoi(spl[2]);
         chain_id_     = spl[3];
@@ -87,7 +152,7 @@ public:
         if(spl.size() == 5) {
             i_code_ = spl[4];
         }
-        res_type_ = convert_res_name_to_type(name_[0]);
+        res_type_ = convert_res_name_to_type(spl[0][0]);
     }
     
     ~Residue() {}
@@ -98,15 +163,15 @@ public:
     String
     to_str() {
         std::stringstream ss;
-        ss << name_ << "," << dot_bracket_ << "," << num_ << "," << chain_id_ << "," << i_code_;
+        ss << name() << "," << dot_bracket_ << "," << num_ << "," << chain_id_ << "," << i_code_;
         return ss.str();
     }
     
 public: //getters
     
     inline
-    String const &
-    name() { return name_; }
+    String
+    name() { return convert_res_type_to_str(res_type_); }
     
     inline
     String const &
@@ -141,15 +206,20 @@ public: //setters
     inline
     void
     name(String const & name) {
-        name_ = name;
-        res_type_ = convert_res_name_to_type(name_[0]);
+        res_type_ = convert_res_name_to_type(name[0]);
+    }
+
+    inline
+    void
+    res_type(ResType type) {
+        res_type_ = type;
     }
     
 
 private:
     int num_;
     ResType res_type_;
-    String name_, dot_bracket_, chain_id_, i_code_;
+    String dot_bracket_, chain_id_, i_code_;
     util::Uuid uuid_;
 
 };
