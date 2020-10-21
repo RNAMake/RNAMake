@@ -51,21 +51,32 @@ build_sqlite_library(String const& path, std::vector<Strings>const & data, Strin
         outfile.close();
 
     }
+
     try {
 
         auto db = sqlite::database(path);
-        db<<"drop table if exists data_table;";
-        db<<("create table if not exists data_table("+base::join_by_delimiter(keys," text,")+" primary key (" + primary_key +"));");
+        auto cmd = std::stringstream {};
+        db<<("drop table if exists data_table;\n");
+        db<<("create table if not exists data_table("+base::join_by_delimiter(keys," text,")+" primary key (" + primary_key +"));\n");
 
-        auto ii(0);
-        for(auto&& entry : data)  {
-
+        cmd<<("insert into data_table VALUES\n");
+        for(int ii = 0; ii< data.size(); ++ii)  {
+            const auto& entry = data[ii];
             auto line = base::join_by_delimiter(entry,"\',\'");
             line.pop_back();
             line.pop_back();
 
-            db<<("insert into data_table values(\'"+line+");");
+            cmd<<("(\'"+line+")");
+
+            if(ii < data.size() - 1) {
+                cmd<<",";
+            } else {
+                cmd<<";";
+            }
+            cmd<<"\n";
         }
+
+        db<<(cmd.str());
 
     } catch (std::runtime_error const& error ) {
         LOGE<<"Error: "<<error.what();
