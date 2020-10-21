@@ -9,6 +9,7 @@
 #include <dirent.h>
 #include <sstream>
 #include <functional>
+#include <filesystem>
 
 #include <base/file_io.h>
 #include <base/env_manager.h>
@@ -30,10 +31,19 @@
 #include <CLI/CLI.hpp>
 #include <sqlite_modern/sqlite_modern_cpp.h>
 
+enum DIRECTORIES {
+    MOTIF_LIBRARIES,
+    MOTIFS,
+    MOTIF_STATE_LIBRARIES,
+    MOTIF_ENSEMBLE_LIBRARIES
+};
+
+// this structure represents a build option
 struct BuildOpt {
     std::function<void()> handle;
     bool selected = false;
     std::vector<BuildOpt*> children = {nullptr};
+    std::vector<DIRECTORIES> output_dirs;
 
     void
     select() {
@@ -54,13 +64,13 @@ public:
     app_("BuildSqliteLibraries"),
     build_opts_({
             // working methods
-            {"ideal_helices",                  BuildOpt{[this] { _build_ideal_helices(); },false,{nullptr}}},
-            {"basic_libraries",                BuildOpt{[this] { _build_basic_libraries(); },false,{nullptr}}},
-            {"helix_ensembles",                BuildOpt{[this] { _build_helix_ensembles(); },false,{nullptr}}},
-            {"new_bp_steps",                   BuildOpt{[this] { _build_new_bp_steps(); },false,{nullptr}}},
-            {"motif_state_libraries",          BuildOpt{[this] { _build_motif_state_libraries(); },false,{nullptr}}},
-            {"unique_twoway_library",          BuildOpt{[this] { _build_unique_twoway_library(); },false,{nullptr}}},
-            {"ss_and_seq_libraries",           BuildOpt{[this] { _build_ss_and_seq_libraries(); },false,{nullptr}}},
+            {"ideal_helices",                  BuildOpt{[this] { _build_ideal_helices(); },false,{nullptr},{DIRECTORIES::MOTIFS,DIRECTORIES::MOTIF_LIBRARIES}}},
+            {"basic_libraries",                BuildOpt{[this] { _build_basic_libraries(); },false,{nullptr},{DIRECTORIES::MOTIF_LIBRARIES}}},
+            {"helix_ensembles",                BuildOpt{[this] { _build_helix_ensembles(); },false,{nullptr},{DIRECTORIES::MOTIF_LIBRARIES,DIRECTORIES::MOTIF_ENSEMBLE_LIBRARIES}}},
+            {"new_bp_steps",                   BuildOpt{[this] { _build_new_bp_steps(); },false,{nullptr},{DIRECTORIES::MOTIF_LIBRARIES}}},
+            {"motif_state_libraries",          BuildOpt{[this] { _build_motif_state_libraries(); },false,{nullptr},{DIRECTORIES::MOTIF_STATE_LIBRARIES}}},
+            {"unique_twoway_library",          BuildOpt{[this] { _build_unique_twoway_library(); },false,{nullptr},{DIRECTORIES::MOTIF_LIBRARIES}}},
+            {"ss_and_seq_libraries",           BuildOpt{[this] { _build_ss_and_seq_libraries(); },false,{nullptr},{DIRECTORIES::MOTIF_ENSEMBLE_LIBRARIES}}},
 
                 // methods that don't work or don't have working python versions
                 //{"trimmed_ideal_helix_library",    BuildOpt{[this] { _build_trimmed_ideal_helix_library();},false,{nullptr}}}
@@ -129,15 +139,39 @@ public: // librrary building methods
 public: // public helper methods
     void
     _directory_setup() {
-        for( const auto& dir : {"/motif_librariesV2/","motif_state_librariesV2/","/motif_ensemble_librariesV2/"}) {
-            const auto& full_dir = base::resources_path() + dir ;
-            if(!base::is_dir(full_dir)) {
-                const auto status = mkdir(full_dir.c_str(),0);
 
-                if(status) {
-                    LOGF<<"Unable to create directory: "<<full_dir;
-                    LOGF<<"Exiting";
+        if(!std::filesystem::exists(parameters_.output_dir)) {
+            std::filesystem::create_directory(parameters_.output_dir);
+        } else {
+            LOGW<<"WARNING: The directory "<<parameters_.output_dir<<
+            " already exists. The contained files WILL be overwritten.";
+        }
+
+        // should I just delete all files here?
+        for(auto& required : required_dirs_) {
+            String path = parameters_.output_dir;
+            switch (required) {
+                case MOTIF_LIBRARIES: {
+                    path += "/motif_libraries/";
+                    break;
                 }
+                case MOTIFS: {
+                    path += "/motifs/";
+                    break;
+                }
+                case MOTIF_STATE_LIBRARIES: {
+                    path += "/motif_state_libraries/";
+                    break;
+                }
+                case MOTIF_ENSEMBLE_LIBRARIES: {
+                    path += "/motif_ensemble_libraries/";
+                    break;
+                }
+            }
+            if(std::filesystem::exists(path)) {
+                LOGW<<"WARNING: The directory "<<path<<" is not empty. Files WILL be overwritten.";
+            } else {
+                std::filesystem::create_directory(path);
             }
         }
     }
@@ -177,6 +211,7 @@ private:
     struct Parameters {
         bool  all = false;
         String input_dir;
+        String output_dir;
         String log_level;
     };
 
@@ -184,10 +219,11 @@ private:
     std::map<String,motif::MotifOP> motif_map_;
     std::map<String,BuildOpt> build_opts_;
     Parameters parameters_;
-
+    std::set<DIRECTORIES> required_dirs_;
     const Strings motif_keys_{"data","name","end_name","end_id","id"};
     const Strings ensemble_keys_{"data","name","id"};
     const Strings method_order_{
+                "ss_and_seq_libraries",
                 "motif_state_libraries",
     //            "motif_ensemlble_state_libraries", // these are commented out for now... they will eventually be re-implemented CJ 09/20
                 "helix_ensembles",
