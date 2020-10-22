@@ -76,7 +76,7 @@ public:
                 //{"trimmed_ideal_helix_library",    BuildOpt{[this] { _build_trimmed_ideal_helix_library();},false,{nullptr}}}
                 //{"existing_motif_library",         BuildOpt{[this] { build_existing_motif_library(); },false}},
                 //{"flex_helix_library",             BuildOpt{[this] { build_flex_helix_library(); },false}},
-                //{"le_helix_lib",                   BuildOpt{[this] { build_le_helix_lib(); },false}},
+             {"le_helix_libraries",                   BuildOpt{[this] { _build_le_helix_lib(); },false,{nullptr},{DIRECTORIES::MOTIF_LIBRARIES}}},
                 //{"motif_ensemble_state_libraries", BuildOpt{[this] { _build_motif_ensemble_state_libraries(); },false}},
     })
     {
@@ -152,7 +152,7 @@ public: // public helper methods
             String path = parameters_.output_dir;
             switch (required) {
                 case MOTIF_LIBRARIES: {
-                    path += "/motif_libraries/";
+                    path += "/motif_libraries_new/";
                     break;
                 }
                 case MOTIFS: {
@@ -160,11 +160,11 @@ public: // public helper methods
                     break;
                 }
                 case MOTIF_STATE_LIBRARIES: {
-                    path += "/motif_state_libraries/";
+                    path += "/motif_state_libraries_new/";
                     break;
                 }
                 case MOTIF_ENSEMBLE_LIBRARIES: {
-                    path += "/motif_ensemble_libraries/";
+                    path += "/motif_ensemble_libraries_new/";
                     break;
                 }
             }
@@ -194,7 +194,8 @@ public: // public helper methods
                                                       &build_opts_.at("unique_twoway_library")};
         //build_opts_["flex_helix_library"].children = build_opts_["basic_libraries"].children;
         build_opts_.at("helix_ensembles").children = {&build_opts_.at("motif_state_libraries"),
-                //&build_opts_["motif_ensemble_state_libraries"]
+                                                      &build_opts_.at("le_helix_libraries")
+                                                      //&build_opts_["motif_ensemble_state_libraries"]
         };
         build_opts_.at("new_bp_steps").children = build_opts_.at("helix_ensembles").children;
         build_opts_.at("unique_twoway_library").children = build_opts_.at("helix_ensembles").children;
@@ -226,6 +227,7 @@ private:
                 "ss_and_seq_libraries",
                 "motif_state_libraries",
     //            "motif_ensemlble_state_libraries", // these are commented out for now... they will eventually be re-implemented CJ 09/20
+                "le_helix_libraries",
                 "helix_ensembles",
                 "new_bp_steps",
                 "unique_twoway_library",
