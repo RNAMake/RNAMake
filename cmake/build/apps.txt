@@ -1,6 +1,7 @@
 ddg_tecto ../../apps/ddg_tecto/ddg_tecto.cc
 build_sqlite_libraries ../../apps/build_sqlite_libraries/build_sqlite_libraries.cpp
 design_rna_scaffold ../../apps/design_rna_scaffold/design_rna_scaffold.cc
+compare_db_files ../../apps/compare_db_files/compare_db_files.cpp
 ##sequence_optimizer_app ../../sequence_optimizer_appsequence_optimizer_app.cpp
 ##simulate_tectos ../../simulate_tectossimulate_tectos.cc
 ##simulate_tectos_devel ../../simulate_tectos_develmain.cpp simulate_tectos_devel.cc

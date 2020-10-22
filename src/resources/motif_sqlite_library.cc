@@ -32,7 +32,6 @@ MotifSqliteLibrary::get_libnames() {
     return libnames;
 }
 
-
 motif::MotifOP
 MotifSqliteLibrary::get(
         String const & name,
