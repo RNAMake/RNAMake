@@ -29,15 +29,24 @@ CompareDBFiles::run() {
         std::cout<<pr.first<<std::endl;
         auto orig_lib = resources::MotifSqliteLibrary(pr.first);
         orig_lib.load_all();
-
         auto new_lib = resources::MotifSqliteLibrary(1,parameters_.dir_1.string() + pr.second);
         new_lib.load_all();
         auto match(0), miss(0);
         for(const auto& orig_motif : orig_lib)  {
-            match += new_lib.contains(
-                    orig_motif->to_str()//,orig_motif->name(),orig_motif->end_name(0),orig_motif->end_ids()[0],, std::to_string(motif_ct++)
-                    );
-            std::cout<<orig_motif->to_str()<<std::endl; return;
+            if(new_lib.contains(orig_motif->to_str()) ) {
+                auto new_motif = new_lib.get("","",orig_motif->end_name(0));
+                if((*orig_motif->basepairs().begin())->to_str() == (*new_motif->basepairs().begin())->to_str() &&
+                        (*orig_motif->basepairs().rbegin())->to_str() == (*new_motif->basepairs().rbegin())->to_str() )  {
+                    ++match;
+                } else {
+                    ++miss;
+                }
+            } else {
+                ++miss;
+            }
+                    //orig_motif->to_str()//,orig_motif->name(),orig_motif->end_name(0),orig_motif->end_ids()[0],, std::to_string(motif_ct++)
+                    //);
+            //std::cout<<orig_motif->to_str()<<std::endl; //return;
         }
         std::cout<<"match " <<match<<"\tmiss "<<miss<<std::endl;
     }
