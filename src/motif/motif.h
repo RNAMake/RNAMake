@@ -10,7 +10,7 @@
 #define __RNAMake__motif__
 
 #include <stdio.h>
-
+#include <algorithm>
 
 //RNAMake Headers
 #include "base/types.h"

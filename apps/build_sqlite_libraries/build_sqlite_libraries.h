@@ -136,6 +136,63 @@ public: // librrary building methods
     void
 	_build_trimmed_ideal_helix_library();
 
+    void
+    _build() {
+
+        _generate_method_dependency_tree();
+
+        for(auto& pairs : build_opts_) {
+            if(parameters_.all || pairs.second.selected) {
+                pairs.second.select();
+                for(auto& dir_option : pairs.second.output_dirs) {
+                    required_dirs_.insert(dir_option);
+                }
+            }
+        }
+
+        _directory_setup();
+
+        const auto total = std::count_if(build_opts_.cbegin(),build_opts_.cend(), [] (const auto& pair) {
+            return pair.second.selected;
+        });
+
+        if(total == 0)  {
+            LOGW<<"WARNING: No build options were selected, nothing will be done. Run ./build_sqlite_libraries -h to see options";
+            LOGI<<"Exiting...";
+            exit(1);
+        }
+
+        auto index(1);
+
+        for(const auto& method : method_order_)  {
+
+            auto& build = build_opts_.at(method);
+            if(build.selected) {
+                LOGI << "Beginning build " << index << " of " << total << ": " << method << " ...";
+                build.handle();
+                LOGI << "Finishing build " << index++ << " of " << total << ": " << method;
+            }
+        }
+
+    }
+
+    void
+    _validate();
+
+    std::vector<std::filesystem::path>
+    _get_paths(std::filesystem::path const& path ) const {
+        auto db_files = std::vector<std::filesystem::path>();
+
+        for(auto& file : std::filesystem::recursive_directory_iterator( path,
+                                                                        std::filesystem::directory_options::skip_permission_denied))  {
+            const auto& fp = file.path();
+            if(fp.extension() == ".db") {
+                db_files.emplace_back(fp.string().substr(path.string().size()));
+            }
+        }
+
+        return db_files;
+    }
 public: // public helper methods
     void
     _directory_setup() {
@@ -214,8 +271,10 @@ private:
         String input_dir;
         String output_dir;
         String log_level;
+        std::filesystem::path dir_1;
     };
 
+    std::vector<std::filesystem::path> dir_1_files_;
     StringStringMap lib_names_;
     std::map<String,motif::MotifOP> motif_map_;
     std::map<String,BuildOpt> build_opts_;

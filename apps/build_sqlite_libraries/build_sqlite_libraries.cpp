@@ -5,13 +5,13 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Helper structs brought over from python
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+#define FIX
 using MotifEnsembles = std::vector<motif::MotifEnsemble>;
 
 struct MotifandEnd{
     motif::MotifOP motif;
-    int index;
-    MotifandEnd(motif::MotifOP  motif, int index) : motif(std::move(motif)), index(index) {
+    int end_index;
+    MotifandEnd(motif::MotifOP m, int ei) : motif(std::move(m)), end_index(ei) {
 
     }
 };
@@ -20,27 +20,29 @@ using MotifandEnds = std::vector<MotifandEnd>;
 
 class SSandSeqCluster {
     public:
-        String id;
+        String end_id;
         MotifandEnds motif_and_ends;
     public:
-        SSandSeqCluster(String  id) :
-        id(std::move(id)), motif_and_ends(MotifandEnds{}) {}
+        SSandSeqCluster(String  end_id) :
+        end_id(std::move(end_id)), motif_and_ends(MotifandEnds{}) {}
 
     public:
         bool
-        motif_matches_end(motif::MotifOP const & motif, int end_index) {
-            if(id == motif->end_ids()[end_index]) {
-                motif_and_ends.emplace_back(motif,end_index); return true; } else {
+        motif_matches_end(motif::MotifOP const & m, int ei) {
+            if(end_id == m->end_ids()[ei]) {
+                motif_and_ends.emplace_back(m, ei);
+                return true;
+            } else {
                 return false;
             }
         }
 
     public:
         bool
-        motif_matches(motif::MotifOP const& motif) {
-            const auto end_id_len = motif->end_ids().size();
-            for(auto ii = 0; ii<end_id_len; ++ii) {
-                if(motif_matches_end(motif,ii)) {
+        motif_matches(motif::MotifOP const& m) {
+            for(auto i = 0; i<m->end_ids().size(); ++i) {
+                auto r = motif_matches_end(m,i) ;
+                if(r) {
                     return true;
                 }
             }
@@ -76,8 +78,8 @@ cluster_motifs(resources::MotifSqliteLibrary::iterator && start,
     }
     
     auto clusters = MotifClusters{};
-    clusters.emplace_back(*start, (*start)->ends()[0]->state());
-
+    clusters.emplace_back(*start, (*start)->ends()[1]->state());
+    ++start;
     for(; start != end; ++start) {
 
         auto found(0);
@@ -100,30 +102,29 @@ cluster_motifs(resources::MotifSqliteLibrary::iterator && start,
 
 MotifClusters
 cluster_motifs(motif::MotifOPs const & motifs, float max_distance=1.5f) {
-
+    auto clusters = MotifClusters{};
     if(motifs.empty()) {
         LOGW << "Empty list of motifs encountered";
-        return MotifClusters{};
+        return clusters;
     }
 
-    auto clusters = MotifClusters{};
-    clusters.emplace_back(motifs[0], motifs[0]->ends()[0]->state());
+    clusters.emplace_back(motifs[0], motifs[0]->ends()[1]->state());
 
     const auto num_motifs = motifs.size();
-    for(auto ii = 0; ii<num_motifs; ++ii) {
+    for(auto ii = 1; ii<num_motifs; ++ii) {
         auto found(0);
-        const auto& curr_motif = motifs[ii];
+        const auto& m = motifs[ii];
         for(auto& c : clusters) {
-            const auto dist = c.state->diff((curr_motif)->ends()[1]->state());
+            const auto dist = c.state->diff((m)->ends()[1]->state());
             if(dist < max_distance) {
                 ++found;
-                c.motifs.push_back((curr_motif));
+                c.motifs.push_back((m));
                 break;
             }
         }
 
         if(!found) {
-            clusters.emplace_back(MotifCluster{(curr_motif),(curr_motif)->ends()[1]->state()});
+            clusters.emplace_back(MotifCluster{(m),(m)->ends()[1]->state()});
         }
     }
 
@@ -182,38 +183,41 @@ void
 BuildSqliteLibraries::_build_ideal_helices() {
 
     auto paths = _get_valid_dirs(parameters_.input_dir + "/helices/");
+    auto mlib = motif::MotifOPs{};
+    auto mf = motif::MotifFactory();
+    for(int ii = 0 ; ii < 21; ++ii) {
+        auto motif = mf.motif_from_file(parameters_.input_dir + "/helices/HELIX.LE." + std::to_string(ii));
+        if(motif == nullptr)  {
+            std::cout<<"LE "<<ii<<" failed\n";
+        } else {
+            mlib.push_back(motif);
+        }
 
-    auto mf = motif::MotifFactory{};
+    }
     auto data = std::vector<Strings>{};
     auto reversed_data = std::vector<Strings>{};
     auto motif_ct(0); 
 
-    for(auto& [folder, path] : paths) {
-        auto tokens = base::split_str_by_delimiter(folder,".");
-
-        auto motif = mf.motif_from_file(path);
-        
-        const auto last_dot = folder.find_last_of('.') + 1;
-        const auto num = folder.substr(last_dot);
-        motif->name(
-            "HELIX.IDEAL" + (num == "0" ? "" : "." + num)
-                );
-
-        auto aligned_motif = mf.align_motif_to_common_frame(motif,0); 
+    for(auto& m : mlib) {
+        auto spl = base::split_str_by_delimiter(m->name(),".");
+        if(spl.back() == "0")  {
+            m->name("HELIX.IDEAL");
+        } else {
+            m->name("HELIX.IDEAL." + spl.back());
+        }
+        auto aligned_motif = mf.align_motif_to_common_frame(m,0);
         
         auto entry = Strings{
-                aligned_motif->to_str(), aligned_motif->name(), aligned_motif->end_name(0), aligned_motif->end_ids()[0],std::to_string(motif_ct)
+                aligned_motif->to_str(), aligned_motif->name(), aligned_motif->ends()[0]->name(), aligned_motif->end_ids()[0],std::to_string(motif_ct)
         };
-
         resources::sqlite3_escape(entry);
-
         data.push_back(entry);
 
-        auto reversed_motif = mf.can_align_motif_to_end(aligned_motif,1);
-        auto reversed_aligned_motif = mf.align_motif_to_common_frame(reversed_motif,0);
-        mf._setup_secondary_structure(reversed_aligned_motif);
+        aligned_motif = mf.can_align_motif_to_end(m,1);
+        aligned_motif = mf.align_motif_to_common_frame(aligned_motif,0);
+        mf._setup_secondary_structure(aligned_motif);
         auto reversed_entry = Strings{
-            reversed_aligned_motif->to_str(),reversed_aligned_motif->name(),reversed_aligned_motif->end_name(0),reversed_aligned_motif->end_ids()[0],std::to_string(motif_ct)
+            aligned_motif->to_str(),aligned_motif->name(),aligned_motif->ends()[0]->name(),aligned_motif->end_ids()[0],std::to_string(motif_ct)
         };
 
         resources::sqlite3_escape(reversed_entry);
@@ -422,7 +426,7 @@ BuildSqliteLibraries::_build_le_helix_lib() {
     resources::build_sqlite_library(path, data, motif_keys_, "id" );
 }
 
-    void
+void
 BuildSqliteLibraries::_build_motif_ensemble_state_libraries() {
 
     throw base::RNAMakeImplementationExcepetion("the method: \"BuildSqliteLibraries::_build_motif_ensemble_state_library()\" is not fully implemented. Do not call it ");
@@ -458,6 +462,7 @@ BuildSqliteLibraries::_build_existing_motif_library() {
     for(const auto& line : lines) {
     }
 }
+
 void
 BuildSqliteLibraries::_build_basic_libraries() {
     const auto motif_types = util::MotifTypes {
@@ -685,7 +690,7 @@ BuildSqliteLibraries::_build_ss_and_seq_libraries() {
 
             if (libname != "twoway") {
                 auto energies = std::vector<float>(all_motifs.size(), 1);
-                auto motif_ensemble = motif::MotifEnsemble{cluster.id,all_motifs, energies};
+                auto motif_ensemble = motif::MotifEnsemble{cluster.end_id,all_motifs, energies};
 
                 motif_ensembles.push_back(motif_ensemble);
                 motifs.push_back(motif_ensemble.members()[0]->motif);
@@ -713,7 +718,7 @@ BuildSqliteLibraries::_build_ss_and_seq_libraries() {
                 energies.push_back(-base::constants::kBT * std::log(pop));
             }
 
-            auto motif_ensemble = motif::MotifEnsemble{cluster.id, clustered_motifs, energies};
+            auto motif_ensemble = motif::MotifEnsemble{cluster.end_id, clustered_motifs, energies};
 
             auto data_entry = Strings{
                     motif_ensemble.to_str(), motif_ensemble.id(), std::to_string(ii)
@@ -767,37 +772,44 @@ BuildSqliteLibraries::_build_helix_ensembles() {
         LOGW<<"WARNING: directory "<<hel_dir.string()<<" does not exist. Cannot build helix ensembles. Exiting...";
     }
 
-    const auto helix_paths = _get_valid_dirs(hel_dir.string());
 
+
+    auto mf = motif::MotifFactory{};
     auto clusters = SSandSeqClusters{};
     constexpr auto kB = 1.3806488e-1;
     constexpr auto kBT = kB * 298.15;
+    auto motifs = motif::MotifOPs{};
+    for(const auto& pair : _get_valid_dirs(hel_dir.string())) {
+        auto m = mf.motif_from_file(pair.second);
+        if( m != nullptr ) {
+            motifs.push_back(std::move(m));
+        } else {
+            LOGW<<"WARNING: Unable to extract helix motif from "<<pair.second;
+        }
+    }
 
-    auto mf = motif::MotifFactory{};
+    LOGI<<"Beginning cluster construction. Found "<<motifs.size()<<" motifs to use...";
 
-    LOGI<<"Beginning cluster construction. Found "<<helix_paths.size()<<" files to use...";
-
-    for(const auto& [dir,path] : helix_paths ) {
-        const auto tokens = base::split_str_by_delimiter(dir,".");
+    for(const auto& motif : motifs ) {
+        const auto tokens = base::split_str_by_delimiter(motif->name(),".");
 
         if(tokens.size() > 1 && (tokens[1] == "IDEAL" || tokens[1] == "LE")) {
             continue;
         }
-        auto motif = mf.motif_from_file(path);
+
         const auto num_bps = motif->basepairs().size();
-        for(auto ii = 0; ii<num_bps - 1; ++ii) {
+        for(auto ii = 0; ii<(num_bps - 1); ++ii) {
             const auto& basepairs = motif->basepairs();
-            if(basepairs[ii]->bp_type() != "cW-W" || basepairs[ii+1]->bp_type() != "cW-W") {
+            if(motif->basepairs()[ii]->bp_type() != "cW-W" || motif->basepairs()[ii+1]->bp_type() != "cW-W") {
                 continue;
             }
             auto bps = structure::BasepairOPs{basepairs[ii],basepairs[ii+1]};
 
-            auto res = structure::ResidueOPs{};
-
+            auto res = std::vector<structure::Residue>();
             for(const auto& bp : bps)  {
                 for(const auto& r : bp->residues()) {
-                    if(std::find(res.begin(),res.end(),r) == res.end()) {
-                        res.push_back(r);
+                    if(std::find(res.begin(),res.end(),*r) == res.end()) {
+                        res.push_back(*r);
                     }
                 }
             }
@@ -808,12 +820,15 @@ BuildSqliteLibraries::_build_helix_ensembles() {
 
             auto m_bps = mf.motif_from_bps(bps);
 
-            if(m_bps->end_ids().size() != 2 || m_bps->end_ids()[0].size() != 11) {
+            if(m_bps->end_ids().size() != 2 )  {
+                continue;
+            }
+
+            if(m_bps->end_ids()[0].size() != 11) {
                 continue;
             }
 
             auto matched(false);
-
             for( auto& c : clusters) {
                 if(c.motif_matches(m_bps)) {
                    matched = true;
@@ -822,78 +837,79 @@ BuildSqliteLibraries::_build_helix_ensembles() {
 
             if( not matched) {
                 clusters.emplace_back(m_bps->end_ids()[0]);
-                clusters.back().motif_matches(m_bps);
-                if (m_bps->end_ids()[0] == m_bps->end_ids()[1]) {
+                clusters.rbegin()->motif_matches(m_bps);
+                if (m_bps->end_ids()[0] != m_bps->end_ids()[1]) {
                     clusters.emplace_back(m_bps->end_ids()[1]);
-                    clusters.back().motif_matches(m_bps);
+                    clusters.rbegin()->motif_matches(m_bps);
                 }
             }
 
         }
     }
 
-    LOGI<<"Finished cluster construction for "<<helix_paths.size()<<" files.";
+    LOGI<<"Finished cluster construction for "<<motifs.size()<<" files.";
 
     auto mes_data = std::vector<Strings>{};
     auto all_mes_data = std::vector<String>{};
-    auto all_count(0);
+    auto all_count(1);
     auto motif_data = std::vector<Strings>{};
     auto unique_data = std::vector<Strings>{};
     auto unique = std::unordered_set<String>{};
     auto bp_count(1);
 
     auto outfile = std::fstream("bp_step_info.csv");
-    outfile<<"name,bp_type,pop,d\n";
+    outfile<<"name,bp_type,pop,d,r\n";
 
     auto count(1);
 
-    const auto num_clusters = clusters.size();
+    LOGI<<"Beginning cluster calculations. There are "<<clusters.size()<<" clusters...";
 
-    LOGI<<"Beginning cluster calculations. There are "<<num_clusters<<" clusters ...";
+    for(auto c_i=0; c_i<clusters.size(); ++c_i) {
 
-    for(auto ii=0; ii<num_clusters; ++ii) {
+        const auto &c = clusters[c_i];
+        auto &m = c.motif_and_ends[0].motif;
 
-        const auto &cluster = clusters[ii];
-        auto &motif = cluster.motif_and_ends[0].motif;
-
-        if (unique.find(motif->end_ids()[0]) != unique.end()
-            || unique.find(motif->end_ids()[1]) != unique.end()) {
+        if (unique.find(m->end_ids()[0]) != unique.end()) {
+            continue;
+        }
+        if(unique.find(m->end_ids()[1]) != unique.end()) {
             continue;
         }
 
-        unique.insert(motif->end_ids()[0]);
-        unique.insert(motif->end_ids()[1]);
+        unique.insert(m->end_ids()[0]);
+        if (unique.find(m->end_ids()[1]) == unique.end())  {
+            unique.insert(m->end_ids()[1]);
+        }
 
         ++all_count;
 
-        auto tokens = base::split_str_by_delimiter(cluster.id, "_");
+        auto spl = base::split_str_by_delimiter(c.end_id, "_");
 
-        const auto num_motif_and_ends = cluster.motif_and_ends.size();
         auto aligned_motifs = motif::MotifOPs{};
 
-        for (auto jj = 0; jj < num_motif_and_ends; ++jj) {
+        for (auto i = 0; i < c.motif_and_ends.size(); ++i) {
 
-            const auto &motif_and_end = cluster.motif_and_ends[jj];
-            const auto &m_and_e_motif = motif_and_end.motif;
-            const auto &m_and_e_index = motif_and_end.index;
+            const auto &m_and_e = c.motif_and_ends[i];
+            const auto &m = m_and_e.motif;
+            const auto &ei = m_and_e.end_index;
 
-            auto motif_aligned = motif::MotifOP{};
+            auto m_a = motif::MotifOP{};
             try {
-                motif_aligned = mf.can_align_motif_to_end(m_and_e_motif, m_and_e_index);
+                m_a = mf.can_align_motif_to_end(m, ei);
             } catch (std::runtime_error &error) {
                 LOGW << "Error: " << error.what();
                 continue;
             }
 
-            if (motif_aligned == nullptr) {
+            if (m_a == nullptr) {
                 continue;
             }
 
-            motif_aligned = mf.align_motif_to_common_frame(motif_aligned, m_and_e_index);
+            m_a = mf.align_motif_to_common_frame(m_a, ei);
             auto fail(false);
 
-            for (const auto &bp : motif_aligned->basepairs()) {
-
+            for (const auto &bp : m_a->basepairs()) {
+                // possible area to check things out
                 const auto vec1 = bp->res1()->get_atom("C2'")->coords() - bp->res1()->get_atom("O4'")->coords();
                 const auto vec2 = bp->res2()->get_atom("C2'")->coords() - bp->res2()->get_atom("O4'")->coords();
 
@@ -906,130 +922,123 @@ BuildSqliteLibraries::_build_helix_ensembles() {
             if (fail) {
                 continue;
             }
-            aligned_motifs.push_back(motif_aligned);
+            aligned_motifs.push_back(m_a);
         }
 
-        auto motif_clusters = cluster_motifs(aligned_motifs, 0.65f);
+        auto m_clusters = cluster_motifs(aligned_motifs, 0.65f);
 
         auto clustered_motifs = motif::MotifOPs{};
         auto energies = std::vector<float>{};
         auto ss = std::stringstream{};
-        ss<<tokens[0][0]<<tokens[2][1]<<"="<<tokens[0][1]<<tokens[2][0];
+        ss<<spl[0][0]<<spl[2][1]<<"="<<spl[0][1]<<spl[2][0];
         String dir_name = ss.str();
 
-        const auto num_motif_clusters = motif_clusters.size();
-        for (auto jj = 0; jj < num_motif_clusters; ++jj) {
-            auto cluster_motifs = motif_clusters[jj].motifs;
-            auto curr_motif = cluster_motifs[0];
-            curr_motif->mtype(util::MotifType::HELIX);
-            curr_motif->name("BP." + std::to_string(ii) + "." + std::to_string(jj));
+        for (auto j = 0; j < m_clusters.size(); ++j) {
+            auto& c_motifs = m_clusters[j].motifs;
+            auto m = c_motifs[0];
+            m->mtype(util::MotifType::HELIX);
+            m->name("BP." + std::to_string(c_i) + "." + std::to_string(j));
 
             auto motif_entry = Strings{
-                    curr_motif->to_str(), curr_motif->name(), curr_motif->ends()[0]->name(), cluster.id,
-                    std::to_string(count++)
+                    m->to_str(), m->name(), m->ends()[0]->name(), c.end_id,
+                    std::to_string(count)
             };
+            ++count;
 
             resources::sqlite3_escape(motif_entry);
-
             motif_data.push_back(motif_entry);
 
-            clustered_motifs.push_back(curr_motif);
+            clustered_motifs.push_back(m);
 
-            const auto pop = float(cluster_motifs.size()) / float(aligned_motifs.size());
+            const float pop = float(c_motifs.size()) / float(aligned_motifs.size());
 
-            outfile << curr_motif->name() << "," << curr_motif->end_ids()[0] << "," << pop << ","
-                    << curr_motif->ends()[1]->d().to_str();
-            outfile << "," << curr_motif->ends()[1]->r() << "\n";
+            outfile << m->name() << "," << m->end_ids()[0] << "," << pop << ","
+                    << m->ends()[1]->d().to_str();
+            outfile << "," << m->ends()[1]->r() << "\n";
 
-            energies.push_back(-kBT * std::log(pop));
+            energies.push_back(-kBT * std::log(pop)); // is this the same log?
         }
-
-
-        //auto motif_ensemble = MotifEnsemble{};
 
         if(clustered_motifs.empty()) {
             continue;
         }
-        auto motif_ensemble = motif::MotifEnsemble{cluster.id, clustered_motifs, energies};
-        auto e_motif = motif_ensemble.members()[0]->motif;
-        auto pop = std::exp(motif_ensemble.members()[0]->energy / -kBT);
-        e_motif->name("BP." + std::to_string(ii));
-        e_motif->to_pdb("BP." + std::to_string(ii) + ".pdb");
 
-        outfile << e_motif->name() << "," << e_motif->end_ids()[0] << "," << std::to_string(pop) << ","
-                << e_motif->ends()[1]->d().to_str();
-        outfile << "," << e_motif->ends()[1]->r().to_str() << "\n";
+        auto me = motif::MotifEnsemble{c.end_id, clustered_motifs, energies};
+        auto motif(me.members()[0]->motif);
+        auto pop = std::exp(me.members()[0]->energy / -kBT);
+        motif->name("BP." + std::to_string(c_i));
+        motif->to_pdb("BP." + std::to_string(c_i) + ".pdb");
+
+        outfile << motif->name() << "," << motif->end_ids()[0] << "," << std::to_string(pop) << ","
+                << motif->ends()[1]->d().to_str();
+        outfile << "," << motif->ends()[1]->r().to_str() << "\n";
 
         auto mes_entry = Strings{
-                motif_ensemble.to_str(),motif_ensemble.id(),std::to_string(bp_count)
+                me.to_str(),me.id(),std::to_string(bp_count)
         };
-
         resources::sqlite3_escape(mes_entry);
 
         mes_data.push_back(mes_entry);
 
         auto unique_data_entry = Strings{
-                e_motif->to_str(),e_motif->name(),e_motif->ends()[0]->name(), motif_ensemble.id(), std::to_string(bp_count++)
+                motif->to_str(),motif->name(),motif->ends()[0]->name(), me.id(), std::to_string(bp_count)
         };
+        ++bp_count;
 
         resources::sqlite3_escape(unique_data_entry);
-
         unique_data.push_back(unique_data_entry);
 
         clustered_motifs.clear();
         energies.clear();
 
-        for (const auto &member : motif_ensemble.members()) {
+        for (const auto &mem : me.members()) {
 
-            auto motif_aligned = mf.can_align_motif_to_end(member->motif, 1);
-            motif_aligned = mf.can_align_motif_to_end(motif_aligned, 1);
-            clustered_motifs.push_back(motif_aligned);
-            energies.push_back(member->energy);
-            pop = std::exp(member->energy / -kBT);
+            auto m_a = mf.can_align_motif_to_end(mem->motif, 1);
+            m_a = mf.align_motif_to_common_frame(m_a, 1);
+            clustered_motifs.push_back(m_a);
+            energies.push_back(mem->energy);
+            pop = std::exp(mem->energy / -kBT);
 
-            if (e_motif->end_ids()[0] != e_motif->end_ids()[1]) {
-                outfile << motif_aligned->name() << "," << motif_aligned->end_ids()[0] << "," << pop << ",";
-                outfile << motif_aligned->ends()[1]->d().to_str() << "," << motif_aligned->ends()[1]->r().to_str()
+            if (motif->end_ids()[0] != motif->end_ids()[1]) {
+                outfile << m_a->name() << "," << m_a->end_ids()[0] << "," << pop << ",";
+                outfile << m_a->ends()[1]->d().to_str() << "," << m_a->ends()[1]->r().to_str()
                         << "\n";
             }
 
             auto motif_data_entry = Strings{
-                    motif_aligned->to_str(),motif_aligned->name(),motif_aligned->ends()[0]->name(),motif_aligned->end_ids()[0],std::to_string(count++)
+                    m_a->to_str(),m_a->name(),m_a->ends()[0]->name(),m_a->end_ids()[0],std::to_string(count)
             };
-
+            ++count;
             resources::sqlite3_escape(motif_data_entry);
-
             motif_data.push_back(motif_data_entry);
         }
 
-        motif_ensemble = motif::MotifEnsemble{clustered_motifs[0]->end_ids()[0],clustered_motifs,energies};
+        me = motif::MotifEnsemble{clustered_motifs[0]->end_ids()[0],clustered_motifs,energies};
 
         if(motif->end_ids()[0] != motif->end_ids()[1]) {
-            pop = std::exp((*motif_ensemble.members().rbegin())->energy/-kBT);
-            auto mes_data_entry = Strings{
-                motif_ensemble.to_str(),motif_ensemble.id(),std::to_string(bp_count)
-            };
+            pop = std::exp((*me.members().rbegin())->energy/-kBT);
+
+            auto mes_data_entry = Strings{me.to_str(),me.id(),std::to_string(bp_count)};
 
             resources::sqlite3_escape(mes_data_entry);
 
-            *motif = *motif_ensemble.members()[0]->motif; // not sure this is the right way to do it?? CJ 09/20
+            motif = me.members()[0]->motif; // not sure this is the right way to do it?? CJ 09/20
 
-            motif->name(String{"BP."} + std::to_string(clusters.size() - 1));
-            outfile<<motif->name()<<","<<motif->end_ids()[0]<<",";
+            motif->name(String{"BP."} + std::to_string(c_i));
+            outfile<<motif->name()<<","<<motif->end_ids()[0]<<","<<pop;
             outfile<<motif->ends()[1]->d().to_str()<<","<<motif->ends()[1]->r().to_str()<<std::endl;
         }
 
         auto unique_entry = Strings{
-            motif->to_str(),motif->name(),motif->ends()[0]->name(),motif_ensemble.id(),std::to_string(bp_count++)
+            motif->to_str(),motif->name(),motif->ends()[0]->name(),me.id(),std::to_string(bp_count)
         };
-
+        ++bp_count;
         resources::sqlite3_escape(unique_entry);
-
         unique_data.push_back(unique_entry);
 
     }
 
-    LOGI<<"Finished cluster calculations for "<<num_clusters;
+    LOGI<<"Finished cluster calculations for "<<clusters.size()<<" clusters ";
 
     String path = parameters_.output_dir + "/motif_ensemble_libraries_new/bp_steps.db";
     resources::build_sqlite_library(path, mes_data, ensemble_keys_, "id");
@@ -1044,67 +1053,100 @@ BuildSqliteLibraries::_build_helix_ensembles() {
 void
 BuildSqliteLibraries::setup_options()   {
 
-    app_.add_flag("--all",parameters_.all,"flag to build all available libraries")
+    auto build = app_.add_subcommand("BUILD");
+
+    build->add_flag("--all",parameters_.all,"flag to build all available libraries")
             ->group("Core Inputs");
 
-    app_.add_option("--in_dir",parameters_.input_dir,"directory that contains input data folders")
+    build->add_option("--in_dir",parameters_.input_dir,"directory that contains input data folders")
             ->default_val(base::resources_path())
             ->check(CLI::ExistingDirectory)
             ->group("Core Inputs");
 
-    app_.add_option("--out_dir",parameters_.output_dir,"directory where the files will be published to")
+    build->add_option("--out_dir",parameters_.output_dir,"directory where the files will be published to")
             ->required()
             ->group("Core Inputs");
 
-    app_.add_option("--log_level",parameters_.log_level,"level for global logging")
+    build->add_option("--log_level",parameters_.log_level,"level for global logging")
             ->check(CLI::IsMember(std::set<String>{"debug","error","fatal","info","verbose","warn"}))
             ->default_val("info")
             ->group("Core Inputs");
 
     for(auto& pair : build_opts_ )  {
-        app_.add_flag("--" + pair.first,pair.second.selected)
+        build->add_flag("--" + pair.first,pair.second.selected)
                 ->group("Build Options");
     }
 
+    auto validate = app_.add_subcommand("VALIDATE");
+    validate->add_option("--dir",parameters_.dir_1)
+            ->required()
+            ->check(CLI::ExistingDirectory);
+
 }
+
+void
+BuildSqliteLibraries::_validate() {
+    LOGI<<"Beginning sqlite database file comparision...";
+    dir_1_files_ = _get_paths(parameters_.dir_1);
+
+    auto mp = resources::MotifSqliteLibrary::get_libnames();
+
+    LOGI<<"Beginning phase I: Checking that files exist at all...";
+    auto bad(0);
+    for(auto it = mp.begin(); it != mp.end(); ) {
+        if(std::filesystem::exists(parameters_.dir_1.string() + it->second))  {
+            ++it;
+        } else {
+            LOGW<<"WARNING: The file "<<parameters_.dir_1.string() + it->second
+                <<" does not exist, so no further analysis will be done on "<<it->second;
+            ++bad;
+            it = mp.erase( it );
+        }
+    }
+    LOGI<<"Finished phase I! "<<mp.size()<<" files exist, "<<bad<<" don't exist";
+    LOGI<<"Beginning phase II: Making sure that the old motifs are a subset of the new ones...";
+
+    for(auto pr : mp) {
+        std::cout<<pr.first<<std::endl;
+        auto orig_lib = resources::MotifSqliteLibrary(pr.first);
+        orig_lib.load_all();
+        auto new_lib = resources::MotifSqliteLibrary(1,parameters_.dir_1.string() + pr.second);
+        new_lib.load_all();
+        auto match(0), miss(0);
+
+        for(const auto& orig_motif : orig_lib)  {
+            if(new_lib.contains("","",orig_motif->name()) ) {
+                std::cout<<"HERE" <<std::endl;
+                auto new_motif = new_lib.get("","",orig_motif->end_name(0));
+                if((*orig_motif->basepairs().begin())->to_str() == (*new_motif->basepairs().begin())->to_str() &&
+                   (*orig_motif->basepairs().rbegin())->to_str() == (*new_motif->basepairs().rbegin())->to_str() )  {
+                    ++match;
+                } else {
+                    ++miss;
+                }
+            } else {
+                ++miss;
+            }
+            //orig_motif->to_str()//,orig_motif->name(),orig_motif->end_name(0),orig_motif->end_ids()[0],, std::to_string(motif_ct++)
+            //);
+            //std::cout<<orig_motif->to_str()<<std::endl; //return;
+        }
+        std::cout<<"match " <<match<<"\tmiss "<<miss<<std::endl;
+    }
+}
+
 void
 BuildSqliteLibraries::run()   {
 
     base::init_logging(log_level());
 
-    _generate_method_dependency_tree();
-
-    for(auto& pairs : build_opts_) {
-        if(parameters_.all || pairs.second.selected) {
-            pairs.second.select();
-            for(auto& dir_option : pairs.second.output_dirs) {
-                required_dirs_.insert(dir_option);
-            }
-        }
-    }
-
-    _directory_setup();
-
-    const auto total = std::count_if(build_opts_.cbegin(),build_opts_.cend(), [] (const auto& pair) {
-        return pair.second.selected;
-    });
-
-    if(total == 0)  {
-       LOGW<<"WARNING: No build options were selected, nothing will be done. Run ./build_sqlite_libraries -h to see options";
-       LOGI<<"Exiting...";
-       exit(1);
-    }
-
-    auto index(1);
-
-    for(const auto& method : method_order_)  {
-
-        auto& build = build_opts_.at(method);
-        if(build.selected) {
-            LOGI << "Beginning build " << index << " of " << total << ": " << method << " ...";
-            build.handle();
-            LOGI << "Finishing build " << index++ << " of " << total << ": " << method;
-        }
+    if(app_.got_subcommand("BUILD")) {
+       _build();
+    } else if (app_.got_subcommand("VALIDATE")) {
+       _validate();
+    } else {
+        LOGF<<"You must enter a subcommand. Options are BUILD or VALIDATE. Exiting...";
+        exit(1);
     }
 
 }
@@ -1112,7 +1154,7 @@ BuildSqliteLibraries::run()   {
 int main(int argc, const char** argv) {
     /* NOTES: existing.motifs does not exist... did not ressurrect this. Should ? Therefore, this part does not match
      * */
-    std::set_terminate(base::save_backtrace);
+    std::set_terminate(base::print_backtrace);
 
     auto env_mgr = base::EnvManager(Strings{"RNAMAKE"});    
     env_mgr.set_envs();

@@ -131,8 +131,11 @@ Motif::Motif(
 String const
 Motif::to_str() {
     std::stringstream ss;
-    ss << path_ << "&" << name_ << "&" << score_ << "&" << block_end_add_ << "&" << (int) mtype_;
+    ss << path_ << "&" << name_ << "&" << int( score_ ) << "&" << block_end_add_ << "&" << (int) mtype_;
     ss << "&" << structure_->to_str() << "&";
+    std::sort(basepairs_.begin(), basepairs_.end(), []( auto&  a1,  auto & a2) {
+        return a1->res1()->chain_id() < a2->res1()->chain_id();
+    });
     for (auto const & bp : basepairs_) {
         ss << bp->to_str() << "@";
     }
