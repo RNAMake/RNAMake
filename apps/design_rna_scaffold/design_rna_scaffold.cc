@@ -397,7 +397,7 @@ DesignRNAScaffold::setup () {
     }
 
     //thermo sim setup
-    auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
+    auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::OldFrameScorer>();
     auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
     thermo_sim_ = std::make_shared<thermo_fluctuation::graph::Simulation>(thermo_scorer, sterics);
 
