@@ -2,6 +2,8 @@
 // Created by Joseph Yesselman on 3/9/19.
 //
 
+#include <CLI/CLI.hpp>
+
 #include "base/backtrace.h"
 #include "base/log.h"
 #include "design_rna_scaffold/design_rna_scaffold.h"
@@ -19,9 +21,7 @@ DesignRNAScaffold::DesignRNAScaffold () :
     app_("DesignRNAScaffold") {}
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// app functions
-////////////////////////////////////////////////////////////////////////////////////////////////////
+// app functions  //////////////////////////////////////////////////////////////////////////////////
 
 String
 valid_pdb (String &path) {
@@ -397,7 +397,7 @@ DesignRNAScaffold::setup () {
     }
 
     //thermo sim setup
-    auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
+    auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::OldFrameScorer>();
     auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
     thermo_sim_ = std::make_shared<thermo_fluctuation::graph::Simulation>(thermo_scorer, sterics);
 
