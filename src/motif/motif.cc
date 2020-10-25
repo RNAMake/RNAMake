@@ -26,7 +26,7 @@ Motif::Motif(
         id_(util::Uuid()) {
 
     if (s.length() < 10) {
-        throw "tried to construct Motif object from string, with a string too short";
+        throw base::RNAMakeException("tried to construct Motif object from string, with a string too short") ;
     }
 
     auto spl = base::split_str_by_delimiter(s, "&");
@@ -54,8 +54,8 @@ Motif::Motif(
         //Hack to stop memory out of bounds
         //TODO look into why this is happening!
         if (bp_spl.size() == 2) { bp_spl.push_back("c..."); }
-        structure::BasepairOP bp(new structure::Basepair(res1, res2, bpstate.r(), bp_spl[2]));
 
+        auto bp = std::make_shared<structure::Basepair>(res1, res2, bpstate.r(), bp_spl[2]);
         basepairs_.push_back(bp);
     }
 

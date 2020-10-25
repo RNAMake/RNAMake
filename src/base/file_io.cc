@@ -13,8 +13,7 @@ namespace base {
 Strings
 get_lines_from_file(String const fname) {
     if(!file_exists(fname)) {
-        std::cout << "File: " << fname << "does not exists" << std::endl;
-        throw "file Does not Exist";
+        throw base::RNAMakeIOException("ERROR: The file " + fname +" does not exist");
     }
     
     String line;
