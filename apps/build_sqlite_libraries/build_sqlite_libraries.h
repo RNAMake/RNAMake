@@ -21,11 +21,15 @@
 #include <base/backtrace.h>
 #include <base/exception.h>
 
+
+
+#include <structure/residue_type_set_manager.h>
 #include <resources/motif_sqlite_library.h>
 #include <resources/sqlite_library.h>
 #include <motif/motif_factory.h>
 #include <structure/basepair_state.h>
 #include <motif_data_structure/motif_tree.h>
+#include <resources/resource_manager.h>
 
 // external
 #include <CLI/CLI.hpp>
@@ -71,11 +75,11 @@ public:
             {"motif_state_libraries",          BuildOpt{[this] { _build_motif_state_libraries(); },false,{nullptr},{DIRECTORIES::MOTIF_STATE_LIBRARIES}}},
             {"unique_twoway_library",          BuildOpt{[this] { _build_unique_twoway_library(); },false,{nullptr},{DIRECTORIES::MOTIF_LIBRARIES}}},
             {"ss_and_seq_libraries",           BuildOpt{[this] { _build_ss_and_seq_libraries(); },false,{nullptr},{DIRECTORIES::MOTIF_ENSEMBLE_LIBRARIES}}},
-
+            {"average_helix_library",          BuildOpt{[this] { _build_avg_helix_library(); }, false, {nullptr}, {DIRECTORIES::MOTIF_LIBRARIES}}}          ,
                 // methods that don't work or don't have working python versions
                 //{"trimmed_ideal_helix_library",    BuildOpt{[this] { _build_trimmed_ideal_helix_library();},false,{nullptr}}}
-                //{"existing_motif_library",         BuildOpt{[this] { build_existing_motif_library(); },false}},
-                //{"flex_helix_library",             BuildOpt{[this] { build_flex_helix_library(); },false}},
+             {"existing_motif_library",         BuildOpt{[this] { _build_existing_motif_library(); },false, {nullptr}, {DIRECTORIES::MOTIF_LIBRARIES}}},
+             {"flex_helix_library",             BuildOpt{[this] { _build_flex_helix_library(); },false, {nullptr}, {DIRECTORIES::MOTIF_LIBRARIES}}},
              {"le_helix_libraries",                   BuildOpt{[this] { _build_le_helix_lib(); },false,{nullptr},{DIRECTORIES::MOTIF_LIBRARIES}}},
                 //{"motif_ensemble_state_libraries", BuildOpt{[this] { _build_motif_ensemble_state_libraries(); },false}},
     })
@@ -137,10 +141,19 @@ public: // librrary building methods
 	_build_trimmed_ideal_helix_library();
 
     void
+    _build_avg_helix_library();
+
+    bool
+    _db_contains_motif(resources::MotifSqliteLibrary& lib, motif::MotifOP const& motif) ;
+
+
+    bool
+    _db_contains_aligned_motif(resources::MotifSqliteLibrary& lib, motif::MotifOP const& motif) const ;
+    void
     _build() {
 
         _generate_method_dependency_tree();
-
+        _build_unique_twoway_library();
         for(auto& pairs : build_opts_) {
             if(parameters_.all || pairs.second.selected) {
                 pairs.second.select();
@@ -179,8 +192,12 @@ public: // librrary building methods
     void
     _validate();
 
+    static
     std::vector<std::filesystem::path>
-    _get_paths(std::filesystem::path const& path ) const {
+    _get_paths(std::filesystem::path const& path ) {
+        /* helper method that gets all .db files from a given input directory
+         * NOTE: it does so recursively
+         */
         auto db_files = std::vector<std::filesystem::path>();
 
         for(auto& file : std::filesystem::recursive_directory_iterator( path,
@@ -267,14 +284,18 @@ private:
 
 private:
     struct Parameters {
+        float motif_distance;
         bool  all = false;
         String input_dir;
         String output_dir;
         String log_level;
-        std::filesystem::path dir_1;
+        std::filesystem::path orig_dir;
+        std::filesystem::path remake_dir;
+        std::filesystem::path summary_file = "NONE";
     };
-
-    std::vector<std::filesystem::path> dir_1_files_;
+    std::fstream writer_;
+    std::vector<std::filesystem::path> orig_files_;
+    std::vector<std::filesystem::path> remake_files_;
     StringStringMap lib_names_;
     std::map<String,motif::MotifOP> motif_map_;
     std::map<String,BuildOpt> build_opts_;
@@ -283,16 +304,18 @@ private:
     const Strings motif_keys_{"data","name","end_name","end_id","id"};
     const Strings ensemble_keys_{"data","name","id"};
     const Strings method_order_{
-                "ss_and_seq_libraries",
-                "motif_state_libraries",
+            "flex_helix_library",
+            "existing_motif_library",
+            "average_helix_library",
+            "ideal_helices",
+            "basic_libraries",
+            "helix_ensembles",
+            "new_bp_steps",
+            "ss_and_seq_libraries",
+            "le_helix_libraries",
+            "unique_twoway_library",
+            "motif_state_libraries",
     //            "motif_ensemlble_state_libraries", // these are commented out for now... they will eventually be re-implemented CJ 09/20
-                "le_helix_libraries",
-                "helix_ensembles",
-                "new_bp_steps",
-                "unique_twoway_library",
-                "basic_libraries",
-     //           "flex_helix_library",     // these are commented out for now... they will eventually be re-implemented CJ 09/20
-                "ideal_helices"
     };
 
 };

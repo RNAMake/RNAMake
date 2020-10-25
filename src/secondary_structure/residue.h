@@ -123,7 +123,13 @@ public: //getters
     inline
     String const &
     i_code() { return i_code_; }
-    
+
+    inline  // added by CJ for build_sqlite_libraries
+    void
+    i_code(String const& code) {
+        i_code_= code;
+    }
+
     inline
     util::Uuid const &
     uuid() { return uuid_; }

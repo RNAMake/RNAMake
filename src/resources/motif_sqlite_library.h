@@ -119,7 +119,7 @@ public:
 
 private:
 
-    String
+    static String
     _generate_query(
             String const &,
             String const &,

@@ -25,6 +25,7 @@
 #include "structure/rna_structure.h"
 #include "util/motif_type.h"
 #include "motif/motif_state.h"
+#include <base/exception.h>
 
 namespace motif {
 
