@@ -818,7 +818,7 @@ BuildSqliteLibraries::_build_motif_state_libraries() {
             LOGW<<"WARNING: The file "<<parameters_.output_dir + pair.second<<" does not exist. Skipping "
             <<pair.first<<" motif state library...";
             continue;
-        }
+         n}
         auto motif_lib = resources::MotifSqliteLibrary{1,parameters_.output_dir + pair.second};
         motif_lib.load_all();
         auto ii(0);
