@@ -1,4 +1,6 @@
 dist: bionic
+env:
+  - RNAMAKE=$(pwd)/RNAMake/ X3DNA=$RNAMAKE/resources/x3dna/linux/
 languages:
   - cpp
   - python
