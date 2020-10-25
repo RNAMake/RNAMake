@@ -4,7 +4,7 @@
 #include <map>
 
 #include <base/types.h>
-#include <rnamake2d/Design.h>
+#include <rnamake2d/design.h>
 #include <rnamake2d/Rule.h>
 #include <eternabot/strategy.h>
 #include <vienna/vienna.h>

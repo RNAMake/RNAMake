@@ -10,31 +10,32 @@ def build_libraries(lib_list, dependencies, base_dir, static):
     """Method that builds out the libraries, taking a list of libraries and a dependency dictionary"""
     library_declarations = "#" * 100 + "\n# Library declarations \n" + "#" * 100 + "\n"
     for library in lib_list:
-        library_declarations += (
-            "#" * 75 + "\n# {NAME}\n".format(NAME=library) + "#" * 75 + "\n"
+        library_declarations += "{HASHES}\n# {LIB}\n{HASHES}\n".format(
+            HASHES='#'*75,
+            LIB=library
         )
-        library_declarations += "set({LIB}_files\n\t{FILES} \n)\n".format(
+
+        library_declarations += "set({LIB}_files\n\t{FILES}\n)\n".format(
             LIB=library,
-            FILES="\n\t".join(
-                Utils.make_file_list(
-                    [str(fp) for fp in Path(base_dir + "/" + library).rglob("*")]
-                )
-            ),
+            FILES=("\n\t".join(
+                Utils.make_file_list([str(fp) for fp in Path(base_dir + '/' + library).rglob('*')])
+                               ))
         )
-        # library_declarations += "add_library({LIB}_lib STATIC ${{{LIB}_files}})\n".format(LIB=library)
+
         library_declarations += "add_library({LIB}_lib {BUILD} ${{{LIB}_files}})\n".format(
             LIB=library, BUILD="STATIC" if static else ""
         )
-        # library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} -static)\n".format(
+
         library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} {BUILD})\n".format(
             LIB=library,
             DEPENDS=" ".join(
                 [lib + "_lib" for lib in dependencies[library]]
                 + ["sqlite3" if library == "util" else ""]
+                + ["${RNAMAKE}/lib/libRNA.a" if library == "rnamake2d" else ""]
             ),
             BUILD="-static" if static else "",
         )
-    # library_declarations += "add_library(all_lib STATIC {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} -static)\n".format(
+
     library_declarations += "add_library(all_lib {BUILD} {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} {LINK})\n".format(
         LIBS=" ".join([lib + "_lib" for lib in dependencies["all"]]),
         DIR=base_dir,
@@ -93,10 +94,9 @@ def build_apps(base_dir, static):
                 application_text += "\tadd_executable({NAME} {SRC})\n".format(
                     NAME=app_tokens[0], SRC="/".join([base_dir, source_file])
                 )
-                application_text += "\ttarget_link_libraries({NAME} all_lib {LINK}  )\n".format(
-                    NAME=app_tokens[0], LINK="-static" if static else ""
+                application_text += "\ttarget_link_libraries({NAME} all_lib {LINK} )\n".format(
+                    NAME=app_tokens[0], LINK="-static" if static else "",
                 )
-                # application_text += "\ttarget_link_libraries({NAME} all_lib -static)\n".format(NAME=app_tokens[0])
     application_text += "#" * 100 + "\n"
     return application_text
 
@@ -107,13 +107,6 @@ def build_header(base_dir, static, target):
     header_contents += "cmake_minimum_required(VERSION 3.0)\n"
     header_contents += "set(CMAKE_BUILD_TYPE Release)\n"
     header_contents += "project(RNAMake)\n\n"
-    # header_contents += "set(CMAKE_SYSTEM_NAME {SYS})\n".format(
-    #        SYS="MAC"
-    #        )
-    # header_contents += "set(CMAKE_C_COMPILER clang)\n"
-    # header_contents += "set(CMAKE_CXX_COMPILER clang++)\n"
-    # if target == "linux":
-    #    header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
     if static == True:
         # header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
         header_contents += 'set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-as-needed ")\n'
@@ -135,14 +128,17 @@ include_directories({EXTERN})
 include_directories({UNITTESTS})
 include_directories({APPS})
 include({SQLITE})
+include({VIENNA})
  """.format(
         RNAMAKE=base_dir,
         SQLITE=base_dir + "/cmake/build/sqlite.cmake",
         CMAKE=base_dir + "/cmake/build/compiler.cmake",
+        VIENNA=base_dir + "/cmake/build/vienna.cmake",
         EXTERN=base_dir + "/src/external/",
         BASE=base_dir + "/src/",
         UNITTESTS=base_dir + "/unittests/",
         APPS=base_dir + "/apps/",
+
     )
     header_contents += "#" * 100 + "\n"
     return header_contents
@@ -194,7 +190,7 @@ if __name__ == "__main__":
         "thermo_fluctuation": ["motif_data_structure"],
         "motif_search": ["motif_data_structure"],
         "sequence_optimization": ["motif_data_structure", "eternabot"],
-        "rnamake2d" : ["all"],
+        "rnamake2d" : ["all", "eternabot"],
         "all": [
             "motif_tools",
             "thermo_fluctuation",

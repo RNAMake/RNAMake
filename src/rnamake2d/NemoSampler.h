@@ -14,7 +14,7 @@
 #include <limits>
 #include <filesystem>
 
-#include <rnamake2d/Design.h>
+#include <rnamake2d/design.h>
 #include <base/types.h>
 
 extern "C" {

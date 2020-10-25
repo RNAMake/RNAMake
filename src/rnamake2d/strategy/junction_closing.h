@@ -27,7 +27,7 @@ namespace rnamake2d {
             float num_ua(0.f);
             float num_gc(0.f);
             float num_ug(0.f);
-            float unknown(ook0.f);
+            float unknown(0.f);
 
             for(const auto& motif : feature->motifs) {
                 if(motif->mtype() != util::MotifType::NWAY && motif->mtype() != util::MotifType::TWOWAY) {

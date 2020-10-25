@@ -4,7 +4,7 @@
 #include <memory>
 
 #include <base/types.h>
-#include <rnamake2d/Design.h>
+#include <rnamake2d/design.h>
 
 namespace rnamake2d {
 

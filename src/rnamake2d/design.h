@@ -1,5 +1,5 @@
-#ifndef __RNAMAKE_DESIGN_H__
-#define __RNAMAKE_DESIGN_H__
+#ifndef RNAMAKE_DESIGN_H
+#define RNAMAKE_DESIGN_H
 
 #include <iostream>
 #include <utility>
@@ -107,4 +107,4 @@ namespace rnamake2d {
     make_designs(String target, String  sequence="",int number=1);
 }
 
-#endif  // __RNAMAKE_DESIGN_H__
+#endif  // RNAMAKE_DESIGN_H
