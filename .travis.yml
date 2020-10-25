@@ -12,7 +12,7 @@ addons:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - g++-7
+      - g++-10
       - cmake
       - python
 before_script:
@@ -26,8 +26,8 @@ jobs:
     include:
         - stage: build
           script:
-            - export CC=gcc-7
-            - export CXX=g++-7
+            - export CC=gcc-10
+            - export CXX=g++-10
             - cd cmake/build/ && python3 ../make_project.py -target "mac"
             - cmake .  -DCMAKE_SYSTEM_NAME="Linux" -DBUILD_TYPE="Release" 
             - make 
