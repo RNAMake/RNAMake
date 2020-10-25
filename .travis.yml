@@ -22,15 +22,12 @@ before_script:
   - pip install pathlib
 
 
-jobs:
-    include:
-        - stage: build
-          script:
-            - export CC=gcc-9
-            - export CXX=g++-9
-            - cd cmake/build/ && python3 ../make_project.py -target "mac"
-            - cmake .  -DCMAKE_SYSTEM_NAME="Linux" -DBUILD_TYPE="Release" 
-            - make 
+script:
+  - export CC=gcc-9
+  - export CXX=g++-9
+  - cd cmake/build/ && python3 ../make_project.py -target "mac"
+  - cmake .  -DCMAKE_SYSTEM_NAME="Linux" -DBUILD_TYPE="Release" 
+  - make 
         
-        - stage: unittests
-          script: for TEST in $(ls *unittest); do ./$TEST; done; 
+after_success: 
+  - for TEST in $(ls *unittest); do ./$TEST; done; 
