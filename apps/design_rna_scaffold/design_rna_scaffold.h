@@ -18,7 +18,6 @@
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include <thermo_fluctuation/graph/simulation.h>
 
-#include <CLI/CLI.hpp>
 
 struct GraphIndexes {
     data_structure::NodeIndexandEdge start = data_structure::NodeIndexandEdge();
