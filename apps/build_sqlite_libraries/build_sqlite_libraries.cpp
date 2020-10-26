@@ -485,6 +485,7 @@ BuildSqliteLibraries::_build_existing_motif_library() {
 
     }
 }
+
 void
 BuildSqliteLibraries::_build_basic_libraries() {
     const auto motif_types = util::MotifTypes {
@@ -1085,6 +1086,7 @@ BuildSqliteLibraries::setup_options()   {
     }
 
 }
+
 void
 BuildSqliteLibraries::run()   {
 

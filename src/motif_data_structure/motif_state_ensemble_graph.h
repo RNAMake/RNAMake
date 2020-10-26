@@ -10,6 +10,7 @@
 #include "motif/motif_state_ensemble.h"
 #include "motif_data_structure/motif_graph.h"
 #include "motif_data_structure/motif_state_graph.hpp"
+#include "resources/resource_manager.h"
 
 
 namespace motif_data_structure {
@@ -242,6 +243,14 @@ private:
 
 typedef std::shared_ptr<MotifStateEnsembleGraph> MotifStateEnsembleGraphOP;
 typedef std::shared_ptr<MotifStateEnsembleOPGraph> MotifStateEnsembleOPGraphOP;
+
+void
+motif_state_ensemble_graph_from_motif_graph(
+  MotifGraph &,
+  resources::Manager &,
+  MotifStateEnsembleGraph & /* return */,
+  std::map<int, int> & /* return */);
+
 
 }
 #endif //TEST_MOTIF_STATE_ENSEMBLE_GRAPH_H

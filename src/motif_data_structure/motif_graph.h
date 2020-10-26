@@ -245,6 +245,12 @@ public: //designing functions
     replace_ideal_helices();
 
     void
+    replace_ideal_helices(
+      MotifGraph & /* return */,
+      std::map<int, int> & /* return */
+      );
+
+    void
     replace_helical_sequence(
             secondary_structure::PoseOP const &);
 

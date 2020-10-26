@@ -7,6 +7,7 @@
 //
 
 
+#include "base/backtrace.h"
 #include "base/cl_option.h"
 #include "base/settings.h"
 #include "math/hashing.h"
@@ -920,6 +921,24 @@ remove_Us(String const & seq) {
 
 // main ////////////////////////////////////////////////////////////////////////////////////////////
 
+
+int main(int argc, const char * argv[]) {
+  //must add this for all apps!
+  std::set_terminate(base::print_backtrace);
+
+  //load extra motifs being used
+  String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
+  resources::Manager::instance().add_motif(base_path+"GAAA_tetraloop");
+  resources::Manager::instance().add_motif(base_path+"GGAA_tetraloop");
+
+
+  auto app = SimulateTectosApp();
+  app.setup_options();
+  app.parse_command_line(argc, argv);
+  app.run();
+
+  return 0;
+}
 
 
 
