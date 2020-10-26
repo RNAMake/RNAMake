@@ -11,6 +11,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include <filesystem>
 
 #include "util/random_number_generator.h"
 #include "motif/motif.h"
@@ -36,7 +37,19 @@ public:
         max_size_ = connection_.count();
         //max_size_ = 1; // Does this matter? CJ
     }
+    // added by CJ for validation purposes
+    MotifSqliteLibrary(
+            int i, // something to change the overloading
+            std::filesystem::path const & path) {
 
+        libnames_ = get_libnames();
+        rng_ = util::RandomNumberGenerator();
+
+        MotifSqliteConnection conn(path);
+        connection_ = conn;
+        max_size_ = connection_.count();
+        //max_size_ = 1; // Does this matter? CJ
+    }
     ~MotifSqliteLibrary() {}
 
 public: //iterator stuff
@@ -106,7 +119,7 @@ public:
 
 private:
 
-    String
+    static String
     _generate_query(
             String const &,
             String const &,

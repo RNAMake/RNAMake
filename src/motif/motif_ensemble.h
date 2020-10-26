@@ -51,6 +51,7 @@ private:
     typedef std::shared_ptr<MotifEnsembleMember> MotifEnsembleMemberOP;
     typedef std::vector<MotifEnsembleMemberOP> MotifEnsembleMemberOPs;
 
+    using MotifEnsembleMembers = std::vector<MotifEnsembleMember>; // added by CJ
 
 public:
     MotifEnsemble() :
@@ -85,6 +86,14 @@ public:
         for (auto const & m : motifs) {
             members_.push_back(std::make_shared<MotifEnsembleMember>(m, energies[i]));
         }
+    }
+
+    MotifEnsemble( // extra ctor added by cj 10/20
+            String const& id,
+            MotifOPs const & motifs,
+            Floats const & energies
+            ) : MotifEnsemble(motifs, energies) {
+            id_ = id;
     }
 
     MotifEnsemble(
@@ -139,7 +148,15 @@ public:
     MotifEnsembleMemberOPs const &
     members() { return members_; }
 
+    void
+    id(String const & id) {
+        id_ = id;
+    }
 
+    String
+    id() const {
+        return id_;
+    }
 private:
     String id_;
     int block_end_add_;

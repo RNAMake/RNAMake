@@ -156,7 +156,12 @@ public: //getters
     inline
     BasepairOPs const &
     basepairs() const { return basepairs_; }
-
+    /////////////////////////////////////////
+    // added by CJ for removing excess bps //
+    inline
+    BasepairOPs &
+    UNSAFE_basepairs() { return basepairs_; }
+    /////////////////////////////////////////
     inline
     Beads const &
     beads() const { return beads_; }
