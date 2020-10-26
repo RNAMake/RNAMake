@@ -12,6 +12,9 @@
 #include <rnamake2d/strategy/g_repeats.h>
 #include <rnamake2d/strategy/good_hairpin4_singlet.h>
 #include <rnamake2d/strategy/helix4.h>
+#include <rnamake2d/strategy/bad_singlestrand5.h>
+#include <rnamake2d/strategy/helix3.h>
+#include <rnamake2d/strategy/bad_helix4.h>
 
 namespace rnamake2d {
 
@@ -45,6 +48,12 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::GoodHairpin4Singlet>();
         } else if (strat == "Helix4") {
             return std::make_shared<rnamake2d::Helix4>();
+        } else if (strat == "BadSingleStrand5") {
+            return std::make_shared<rnamake2d::BadSingleStrand5>();
+        } else if (strat == "Helix3") {
+            return std::make_shared<rnamake2d::Helix3>();
+        } else if (strat == "BadHelix4") {
+            return std::make_shared<rnamake2d::BadHelix4>();
         }
         else {
             throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");

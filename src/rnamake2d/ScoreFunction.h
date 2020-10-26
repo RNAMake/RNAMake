@@ -52,7 +52,10 @@ namespace rnamake2d {
                 get_strategy("BadHairpin4Triplet"),
                 get_strategy("GRepeats"),
                 get_strategy("GoodTetraloopSinglet"),
-                get_strategy("Helix4")
+                get_strategy("Helix4"),
+                get_strategy("BadSingleStrand5"),
+                get_strategy("Helix3"),
+                get_strategy("BadHelix4"),
             } ;
             // weights
             weights_ = {
@@ -74,7 +77,9 @@ namespace rnamake2d {
                     -0.05032464330299019,   // GRepeats
                     0.8372216739418228,     // GoodTetraloopSinglet
                     0.6596505460982536,     // Helix4
-
+                    0.14447503330605593,    // BadSingleStrand5
+                    0.29379550128941323,    // Helix3
+                    0.17028695543216954,    // BadHelix4
             };
 
             num_strats = strategies_.size();
@@ -149,8 +154,8 @@ namespace rnamake2d {
 // => GoodTetraloopSinglet,0.8372216739418228
 // => Helix4,0.6596505460982536
 //BadJunction2_1_1,0.24122961401641185
-//BadSingleStrand5,0.14447503330605593
-//Helix3,0.29379550128941323
+// => BadSingleStrand5,0.14447503330605593
+// => Helix3,0.29379550128941323
 //GoodTetraloopDoublet,1.393824377152868
 //GoodJunction2_1_1,-0.4598285526297501
 //goodjunction3_1_1_1,-9.462788548128273
@@ -168,5 +173,5 @@ namespace rnamake2d {
 //AldoMismatch,0.2430050990096834
 //RnastructureStructureComp,-0.23831987534823496
 //NonCanonical,-0.0853402523094039
-//BadHelix4,0.17028695543216954
+// => BadHelix4,0.17028695543216954
 //JunctionNonGCClosing,0.30753499424534314
