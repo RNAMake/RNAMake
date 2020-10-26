@@ -14,7 +14,6 @@ def build_libraries(lib_list, dependencies, base_dir, static):
             HASHES='#'*75,
             LIB=library
         )
-
         library_declarations += "set({LIB}_files\n\t{FILES}\n)\n".format(
             LIB=library,
             FILES=("\n\t".join(
@@ -116,10 +115,6 @@ def build_header(base_dir, static, target):
     # header_contents+= "set(CMAKE_HOST_SYSTEM_VERSION 2.5)\n"
     header_contents += """include({CMAKE})
 set(RNAMAKE {RNAMAKE})
-set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${{RNAMAKE}}/lib)
-set(CMAKE_BINARY_DIR ${{RNAMAKE}}/bin)
-set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${{RNAMAKE}}/lib)
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${{RNAMAKE}}/bin)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

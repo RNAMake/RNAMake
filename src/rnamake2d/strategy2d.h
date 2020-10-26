@@ -3,6 +3,7 @@
 
 #include <memory>
 
+#include <base/exception.h>
 #include <base/types.h>
 #include <eternabot/strategy.h>
 

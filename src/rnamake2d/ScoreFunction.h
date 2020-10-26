@@ -47,7 +47,12 @@ namespace rnamake2d {
                 get_strategy("PctGCPairs"),
                 get_strategy("BadHelix2"),
                 get_strategy("Helix1"),
-                get_strategy("JunctionClosing")
+                get_strategy("JunctionClosing"),
+                get_strategy("SingleStrandTripleA"),
+                get_strategy("BadHairpin4Triplet"),
+                get_strategy("GRepeats"),
+                get_strategy("GoodTetraloopSinglet"),
+                get_strategy("Helix4")
             } ;
             // weights
             weights_ = {
@@ -63,7 +68,13 @@ namespace rnamake2d {
                     0.6973340034106996,     // PctGCPairs
                     0.051953978499975795,   // BadHelix2
                     0.5804069633989485,     // Helix1
-                    -0.7514795405184205     // JunctionClosing
+                    -0.7514795405184205,    // JunctionClosing
+                    -0.2524611477466161f,   // SingleStrandTripleA
+                    0.14470067211618373f,   // BadHairpin4Triplet
+                    -0.05032464330299019,   // GRepeats
+                    0.8372216739418228,     // GoodTetraloopSinglet
+                    0.6596505460982536,     // Helix4
+
             };
 
             num_strats = strategies_.size();
@@ -123,20 +134,20 @@ namespace rnamake2d {
 //berex_basic_test,-0.2751340813578167
 //kkohli_test_by_kkohli,-0.06803891875360141
 // => BadHelix3,0.10845716043121478
-//SingleStrandTripleA,-0.2524611477466161
+// => SingleStrandTripleA,-0.2524611477466161
 // => BadHairpin4Doublet,0.11621958146693934
 // => BadHelix2,0.051953978499975795
 //ViennaStructureComp,1.5272406678598347
-//BadHairpin4Triplet,0.14470067211618373
+// => BadHairpin4Triplet,0.14470067211618373
 // => BadSingleStrand3,0.1902229692459677
 // => PctGCPairs,0.6973340034106996
 // => Helix1,0.5804069633989485
 // => JunctionClosing,-0.7514795405184205
-//SingleStrand3,0.08819793678377201
-//GRepeats,-0.05032464330299019
+// => SingleStrand3,0.08819793678377201
+// => GRepeats,-0.05032464330299019
 //ViennaMFENormalized,-0.49663024818195145
-//GoodTetraloopSinglet,0.8372216739418228
-//Helix4,0.6596505460982536
+// => GoodTetraloopSinglet,0.8372216739418228
+// => Helix4,0.6596505460982536
 //BadJunction2_1_1,0.24122961401641185
 //BadSingleStrand5,0.14447503330605593
 //Helix3,0.29379550128941323
