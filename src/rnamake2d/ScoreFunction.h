@@ -56,7 +56,23 @@ namespace rnamake2d {
                 get_strategy("BadSingleStrand5"),
                 get_strategy("Helix3"),
                 get_strategy("BadHelix4"),
-            } ;
+                get_strategy("Helix2"),
+                get_strategy("NonCanonical"),
+                get_strategy("JunctionNonGCClosing"),
+                get_strategy("BadJunction3_3_3_3"),
+                get_strategy("GoodJunction3_3_3_3"),
+                get_strategy("GoodTetraloopDoublet"),
+                get_strategy("BadJunction2_1_1"),
+                get_strategy("GoodJunction2_1_1"),
+                get_strategy("GoodHairpin4"),
+                get_strategy("BadSingleStrand4"),
+                get_strategy("SingleStrand5"),
+                get_strategy("GoodJunction3_1_1_1"),
+                get_strategy("GoodTetraloopTriplet"),
+                get_strategy("merryskies_only_as_in_the_loops"),
+
+
+                } ;
             // weights
             weights_ = {
                     0.1250677,
@@ -80,6 +96,21 @@ namespace rnamake2d {
                     0.14447503330605593,    // BadSingleStrand5
                     0.29379550128941323,    // Helix3
                     0.17028695543216954,    // BadHelix4
+                    0.331594773993627,      // Helix2
+                    -0.0853402523094039,    // NonCanonical
+                    0.30753499424534314,    // JunctionNonGCClosing
+                    -0.097400093245612,     // BadJunction3_3_3_3
+                    1.1734967921515913,     // GoodJunction3_3_3_3
+                    1.393824377152868,      // GoodTetraloopDoublet
+                    0.24122961401641185,    // BadJunction2_1_1
+                    -0.4598285526297501,    // GoodJunction2_1_1
+                    -1.0079078237755852,    // GoodHairpin4
+                    0.05046284982294122,    // BadSingleStrand4
+                    -0.11077156860161347,   // SingleStrand5
+                    -9.462788548128273,     // GoodJunction3_1_1_1
+                    1.916441326283273,      // GoodTetraloopTriplet
+                    -0.10825825690698382,   // merryskies_only_as_in_the_loops
+
             };
 
             num_strats = strategies_.size();
@@ -113,7 +144,7 @@ namespace rnamake2d {
 #endif // __RNAMAKE_SCORE_FUNCTION_H__src/eternabot/strategy/a_basic_test.h
 
 
-//merryskies_only_as_in_the_loops,-0.10825825690698382
+// => merryskies_only_as_in_the_loops,-0.10825825690698382
 //dejerpha_basic_test,2.8236531196192134
 //clollin_gs_in_place,0.2800622250719158
 //eli_no_blue_nucleotides_in_hook,0.1046622560893758
@@ -153,25 +184,25 @@ namespace rnamake2d {
 //ViennaMFENormalized,-0.49663024818195145
 // => GoodTetraloopSinglet,0.8372216739418228
 // => Helix4,0.6596505460982536
-//BadJunction2_1_1,0.24122961401641185
+// => BadJunction2_1_1,0.24122961401641185
 // => BadSingleStrand5,0.14447503330605593
 // => Helix3,0.29379550128941323
-//GoodTetraloopDoublet,1.393824377152868
-//GoodJunction2_1_1,-0.4598285526297501
-//goodjunction3_1_1_1,-9.462788548128273
-//GoodTetralooptriplet,1.916441326283273
-//SingleStrand5,-0.11077156860161347
+// => GoodTetraloopDoublet,1.393824377152868
+// => GoodJunction2_1_1,-0.4598285526297501
+// => GoodJunction3_1_1_1,-9.462788548128273
+// => GoodTetraloopTriplet,1.916441326283273
+// => SingleStrand5,-0.11077156860161347
 //NupackStructureComp,0.7965075352904527
 //EliGreenLine,-0.004643042781698109
-//GoodJunction3_3_3_3,1.1734967921515913
-//Badjunction3_3_3_3,-0.097400093245612
+// => GoodJunction3_3_3_3,1.1734967921515913
+// => Badjunction3_3_3_3,-0.097400093245612
 //SpotStructureComp,0.4615538691139922
-//BadSingleStrand4,0.05046284982294122
-//Helix2,0.331594773993627
-//GoodHairpin4,-1.0079078237755852
+// => BadSingleStrand4,0.05046284982294122
+// => Helix2,0.331594773993627
+// => GoodHairpin4,-1.0079078237755852
 //AldoRepetition,0.15268020542080335
 //AldoMismatch,0.2430050990096834
 //RnastructureStructureComp,-0.23831987534823496
-//NonCanonical,-0.0853402523094039
+// => NonCanonical,-0.0853402523094039
 // => BadHelix4,0.17028695543216954
-//JunctionNonGCClosing,0.30753499424534314
+// => JunctionNonGCClosing,0.30753499424534314

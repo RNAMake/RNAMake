@@ -1,0 +1,1 @@
+#include <rnamake2d/strategy/good_junction3_1_1_1.h>

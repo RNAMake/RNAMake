@@ -15,6 +15,21 @@
 #include <rnamake2d/strategy/bad_singlestrand5.h>
 #include <rnamake2d/strategy/helix3.h>
 #include <rnamake2d/strategy/bad_helix4.h>
+#include <rnamake2d/strategy/helix2.h>
+#include <rnamake2d/strategy/non_canonical.h>
+#include <rnamake2d/strategy/junction_non_gc_closing.h>
+#include <rnamake2d/strategy/bad_juction3_3_3_3.h>
+#include <rnamake2d/strategy/good_juction3_3_3_3.h>
+#include <rnamake2d/strategy/good_tetraloop_doublet.h>
+#include <rnamake2d/strategy/bad_junction2_1_1.h>
+#include <rnamake2d/strategy/good_junction2_1_1.h>
+#include <rnamake2d/strategy/bad_singlestrand4.h>
+#include <rnamake2d/strategy/singlestrand5.h>
+#include <rnamake2d/strategy/good_junction3_1_1_1.h>
+#include <rnamake2d/strategy/good_tetraloop_triplet.h>
+
+// eternabot ones
+#include <rnamake2d/strategy/merryskies_only_as_in_the_loops.h>
 
 namespace rnamake2d {
 
@@ -54,6 +69,32 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::Helix3>();
         } else if (strat == "BadHelix4") {
             return std::make_shared<rnamake2d::BadHelix4>();
+        } else if (strat == "Helix2") {
+            return std::make_shared<rnamake2d::Helix2>();
+        } else if (strat == "NonCanonical") {
+            return std::make_shared<rnamake2d::NonCanonical>();
+        } else if (strat == "JunctionNonGCClosing") {
+            return std::make_shared<rnamake2d::JunctionNonGCClosing>();
+        } else if (strat == "BadJunction3_3_3_3") {
+            return std::make_shared<rnamake2d::BadJunction3_3_3_3>();
+        } else if (strat == "GoodJunction3_3_3_3") {
+            return std::make_shared<rnamake2d::GoodJunction3_3_3_3>();
+        } else if (strat == "GoodTetraloopDoublet") {
+            return std::make_shared<rnamake2d::GoodTetraloopDoublet>();
+        } else if (strat == "BadJunction2_1_1") {
+            return std::make_shared<rnamake2d::BadJunction2_1_1>();
+        } else if (strat == "GoodJunction2_1_1") {
+            return std::make_shared<rnamake2d::GoodJunction2_1_1>();
+        } else if (strat == "BadSingleStrand4") {
+            return std::make_shared<rnamake2d::BadSingleStrand4>();
+        } else if (strat == "SingleStrand5") {
+            return std::make_shared<rnamake2d::SingleStrand5>();
+        } else if (strat == "GoodJunction3_1_1_1") {
+            return std::make_shared<rnamake2d::GoodJunction3_1_1_1>();
+        } else if (strat == "GoodTetraloopTriplet") {
+            return std::make_shared<rnamake2d::GoodTetraloopTriplet>();
+        } else if (strat == "merryskies_only_as_in_the_loops") {
+            return std::make_shared<rnamake2d::MerrySkiesOnlyAsInTheLoops>();
         }
         else {
             throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");
