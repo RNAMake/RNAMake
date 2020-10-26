@@ -30,6 +30,7 @@
 
 // eternabot ones
 #include <rnamake2d/strategy/merryskies_only_as_in_the_loops.h>
+#include <rnamake2d/strategy/clollin_gs_in_place.h>
 
 namespace rnamake2d {
 
@@ -95,6 +96,8 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::GoodTetraloopTriplet>();
         } else if (strat == "merryskies_only_as_in_the_loops") {
             return std::make_shared<rnamake2d::MerrySkiesOnlyAsInTheLoops>();
+        } else if (strat == "clollin_gs_in_place") {
+            return std::make_shared<rnamake2d::ClollinGsInPlace>();
         }
         else {
             throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");

@@ -70,7 +70,7 @@ namespace rnamake2d {
                 get_strategy("GoodJunction3_1_1_1"),
                 get_strategy("GoodTetraloopTriplet"),
                 get_strategy("merryskies_only_as_in_the_loops"),
-
+                get_strategy("clollin_gs_in_place"),
 
                 } ;
             // weights
@@ -110,7 +110,7 @@ namespace rnamake2d {
                     -9.462788548128273,     // GoodJunction3_1_1_1
                     1.916441326283273,      // GoodTetraloopTriplet
                     -0.10825825690698382,   // merryskies_only_as_in_the_loops
-
+                    0.2800622250719158,     // clollin_gs_in_place
             };
 
             num_strats = strategies_.size();
@@ -146,7 +146,7 @@ namespace rnamake2d {
 
 // => merryskies_only_as_in_the_loops,-0.10825825690698382
 //dejerpha_basic_test,2.8236531196192134
-//clollin_gs_in_place,0.2800622250719158
+// => clollin_gs_in_place,0.2800622250719158
 //eli_no_blue_nucleotides_in_hook,0.1046622560893758
 //merryskies_1_1_loop,0.16505853542440824
 //eli_double_AUPair_strategy,-0.19378279913278135

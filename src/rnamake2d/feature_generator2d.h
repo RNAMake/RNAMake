@@ -3,6 +3,7 @@
 
 #include <eternabot/feature_generator.h>
 #include <rnamake2d/SSMotif.h>
+#include <rnamake2d/rna_element.h>
 
 namespace rnamake2d {
 
@@ -10,6 +11,7 @@ namespace rnamake2d {
         Motif2DOPs motifs;
         String target;
         String sequence;
+        RNAElems elements;
         explicit Feature2D(eternabot::Features &features) {
             this->gu = features.gu;
             this->gc = features.gc;
