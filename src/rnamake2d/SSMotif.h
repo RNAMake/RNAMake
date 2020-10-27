@@ -7,7 +7,6 @@
 #include <string_view>
 #include <regex>
 
-
 #include <base/types.h>
 #include <plog/Log.h>
 #include <secondary_structure/secondary_structure_parser.h>

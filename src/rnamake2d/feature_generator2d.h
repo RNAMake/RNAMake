@@ -8,10 +8,12 @@
 namespace rnamake2d {
 
     struct Feature2D : eternabot::Features {
+
         Motif2DOPs motifs;
         String target;
         String sequence;
         RNAElems elements;
+        Ints pairmap;
         explicit Feature2D(eternabot::Features &features) {
             this->gu = features.gu;
             this->gc = features.gc;

@@ -32,11 +32,9 @@ namespace rnamake2d {
                     }
                 }
             }
-
             if(count < 1) {
                 return UNSCORABLE;
             }
-
             return result;
         }
     };

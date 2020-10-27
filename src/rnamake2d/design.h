@@ -10,6 +10,7 @@
 #include <rnamake2d/SSMotif.h>
 #include <rnamake2d/feature_generator2d.h>
 #include <eternabot/strategy/a_basic_test.h>
+#include <rnamake2d/rna_element.h>
 
 namespace rnamake2d {
     struct Design {

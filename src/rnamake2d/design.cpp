@@ -14,6 +14,8 @@ namespace rnamake2d {
         for(auto& motif : best->motifs) {
             motif->full_sequence( sequence );
         }
+        best->pairmap = get_pairmap_from_secstruct( target );
+        best->elements = get_rna_elemnts_from_secstruct( target );
         generator.update_features(best, best_pose);
     }
 
@@ -27,6 +29,8 @@ namespace rnamake2d {
         for(auto& motif : mutant->motifs) {
             motif->full_sequence( candiate );
         }
+        mutant->pairmap = get_pairmap_from_secstruct( target );
+        mutant->elements = get_rna_elemnts_from_secstruct(target);
         generator.update_features(mutant, mutant_pose);
     }
 

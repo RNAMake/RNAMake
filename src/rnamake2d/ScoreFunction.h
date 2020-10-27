@@ -71,8 +71,16 @@ namespace rnamake2d {
                 get_strategy("GoodTetraloopTriplet"),
                 get_strategy("merryskies_only_as_in_the_loops"),
                 get_strategy("clollin_gs_in_place"),
+                get_strategy("eli_no_blue_nucleotides_in_hook"),
+                get_strategy("merryskies_1_1_loop"),
+                get_strategy("eli_double_AUPair_strategy"),
+                get_strategy("penguian_clean_dotplot"),
+                get_strategy("aldo_mismatch"),
+                get_strategy("eli_red_line"),
+                get_strategy("aldo_loops_and_stacks"),
 
-                } ;
+
+            } ;
             // weights
             weights_ = {
                     0.1250677,
@@ -111,10 +119,17 @@ namespace rnamake2d {
                     1.916441326283273,      // GoodTetraloopTriplet
                     -0.10825825690698382,   // merryskies_only_as_in_the_loops
                     0.2800622250719158,     // clollin_gs_in_place
+                    0.1046622560893758,     // eli_no_blue_nucleotides_in_hook
+                    0.16505853542440824,    // merryskies_1_1_loop
+                    -0.19378279913278135,   // eli_double_AUPair_strategy
+                    -0.8106666177952848,    // penguian_clean_dotplot
+                    -0.19581776453734906,   // aldo_mismatch
+                    -0.0018275413712541821, // eli_red_line
+                    0.15067172153854896,    // aldo_loops_and_stacks,
+
             };
 
             num_strats = strategies_.size();
-
         }
 
         public:
@@ -147,22 +162,22 @@ namespace rnamake2d {
 // => merryskies_only_as_in_the_loops,-0.10825825690698382
 //dejerpha_basic_test,2.8236531196192134
 // => clollin_gs_in_place,0.2800622250719158
-//eli_no_blue_nucleotides_in_hook,0.1046622560893758
-//merryskies_1_1_loop,0.16505853542440824
-//eli_double_AUPair_strategy,-0.19378279913278135
+// => eli_no_blue_nucleotides_in_hook,0.1046622560893758
+// => merryskies_1_1_loop,0.16505853542440824
+// => eli_double_AUPair_strategy,-0.19378279913278135
 //eli_green_blue_strong_middle_half,-0.06418945089333378
 //example_gc60,-0.1489280364856781
-//penguian_clean_dotplot,-0.8106666177952848
+// => penguian_clean_dotplot,-0.8106666177952848
 //eli_twisted_basepairs,0.21601775412216717
-//aldo_loops_and_stacks,0.15067172153854896
+// => aldo_loops_and_stacks,0.15067172153854896
 //eli_direction_of_gc_pairs_in_multiloops_neckarea,0.09865127259968665
 //eli_multiloop_similarity,0.00978877166914174
 //eli_green_line,0.007680977135075769
 //ding_quad_energy,0.00978877166906401
 //berex_berex_loop_basic,0.019145505229272428
 //eli_legal_placement_of_GUpairs,0.05120674277182907
-//aldo_mismatch,-0.19581776453734906
-//eli_red_line,-0.0018275413712541821
+// => aldo_mismatch,-0.19581776453734906
+// => eli_red_line,-0.0018275413712541821
 //eli_wrong_direction_of_gc_pairs_in_multiloops,-0.19731059143533014
 //deivad_deivad_strategy,0.08548851359538262
 //eli_direction_of_gc_pairs_in_multiloops,0.09865127290814124

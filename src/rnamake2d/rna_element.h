@@ -5,9 +5,12 @@
 #include <vector>
 
 #include <base/types.h>
+#include <plog/Log.h>
 
 namespace rnamake2d {
     constexpr auto UNSCORABLE = -99999;
+    constexpr auto SHIFT_LIMIT = 3;
+    constexpr auto PAIR_TYPES = 3;
 
     enum RNAELEMENT {
         LOOP,
@@ -18,12 +21,12 @@ namespace rnamake2d {
         int type_ = -1;
         int branching_stacks_ = 0;
         float score_ = 0.f;
-        std::shared_ptr<RNAElement> parent_ = nullptr;
-        std::vector<std::shared_ptr<RNAElement>> children_ = {};
+        RNAElement* parent_ = nullptr;
+        std::vector<RNAElement*> children_ = {};
         Ints quad_scores_ = {};
 
         std::vector<Ints>
-        get_loop_groups() {
+        get_loop_groups() const {
             auto groups = std::vector<Ints>{} ;
             if (type_ != RNAELEMENT::LOOP) {
                 return groups;
@@ -46,7 +49,7 @@ namespace rnamake2d {
             return groups;
         }
         int
-        get_stack_length() {
+        get_stack_length() const  {
             if (type_ != RNAELEMENT::STACK) {
                 return 0;
             }
@@ -54,7 +57,7 @@ namespace rnamake2d {
         }
 
         String
-        get_pair_from_stack(int  pair_index,String const& sequence) {
+        get_pair_from_stack(int  pair_index,String const& sequence) const {
             auto pair = String{sequence[indices_[int(pair_index) * 2]]};
             pair += sequence[indices_[int(pair_index) * 2 + 1]];
             std::transform(pair.begin(), pair.end(), pair.begin(), toupper);
@@ -62,7 +65,7 @@ namespace rnamake2d {
         }
 
         Strings
-        get_loop_closing_pairs(String const&  sequence, std::map<int,int>const & pairmap) {
+        get_loop_closing_pairs(String const&  sequence, Ints const & pairmap) {
             auto pairs =  Strings{};
             if( type_ != RNAELEMENT::LOOP) {
                 return pairs;
@@ -92,6 +95,16 @@ namespace rnamake2d {
     }; // class RNAElement
 
     using RNAElems = std::vector<RNAElement>;
+
+    Ints
+    get_pairmap_from_secstruct(String const& );
+
+    RNAElems
+    get_rna_elemnts_from_secstruct(String const& );
+
+    void
+    get_rna_elements_from_secstruct_recursive(Ints const&, int, int, RNAElems&, int, int, RNAElement*);
+
 } // namespace rnamake2d
 
 #endif // RNAMAKE_RNA_ELEMENT_H

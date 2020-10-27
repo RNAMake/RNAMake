@@ -30,7 +30,14 @@
 
 // eternabot ones
 #include <rnamake2d/strategy/merryskies_only_as_in_the_loops.h>
+#include <rnamake2d/strategy/merryskies_1_1_loop.h>
 #include <rnamake2d/strategy/clollin_gs_in_place.h>
+#include <rnamake2d/strategy/eli_no_blue_nucleotides_in_hook.h>
+#include <rnamake2d/strategy/eli_double_AUPair_strategy.h>
+#include <rnamake2d/strategy/penguian_clean_dotplot.h>
+#include <rnamake2d/strategy/aldo_mismatch.h>
+#include <rnamake2d/strategy/eli_red_line.h>
+#include <rnamake2d/strategy/aldo_loops_and_stacks.h>
 
 namespace rnamake2d {
 
@@ -98,6 +105,20 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::MerrySkiesOnlyAsInTheLoops>();
         } else if (strat == "clollin_gs_in_place") {
             return std::make_shared<rnamake2d::ClollinGsInPlace>();
+        } else if (strat == "eli_no_blue_nucleotides_in_hook") {
+            return std::make_shared<rnamake2d::EliNoBlueNucleotidesInHook>();
+        } else if (strat == "merryskies_1_1_loop") {
+            return std::make_shared<rnamake2d::MerrySkies_1_1_Loop>();
+        } else if (strat == "eli_double_AUPair_strategy") {
+            return std::make_shared<rnamake2d::EliDoubleAUPair>();
+        } else if (strat == "penguian_clean_dotplot") {
+            return std::make_shared<rnamake2d::PenguianCleanDotplot>();
+        } else if (strat == "aldo_mismatch") {
+            return std::make_shared<rnamake2d::AldoMismatch>();
+        } else if (strat == "eli_red_line") {
+            return std::make_shared<rnamake2d::EliRedLine>();
+        } else if (strat == "aldo_loops_and_stacks") {
+            return std::make_shared<rnamake2d::AldoLoopsAndStacks>();
         }
         else {
             throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");
