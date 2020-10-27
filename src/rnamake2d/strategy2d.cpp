@@ -38,6 +38,16 @@
 #include <rnamake2d/strategy/aldo_mismatch.h>
 #include <rnamake2d/strategy/eli_red_line.h>
 #include <rnamake2d/strategy/aldo_loops_and_stacks.h>
+#include <rnamake2d/strategy/eli_green_blue_strong_middle_half.h>
+#include <rnamake2d/strategy/deviad_deviad_strategy.h>
+#include <rnamake2d/strategy/djerpha_basic_test.h>
+#include <rnamake2d/strategy/eli_twisted_basepairs.h>
+#include <rnamake2d/strategy/eli_green_line.h>
+#include <rnamake2d/strategy/example_gc60.h>
+#include <rnamake2d/strategy/eli_direction_of_gc_pairs_in_multiloops_neckarea.h>
+#include <rnamake2d/strategy/eli_multiloop_similarity.h>
+#include <rnamake2d/strategy/ding_quad_energy.h>
+#include <rnamake2d/strategy/berex_berex_loop_basic.h>
 
 namespace rnamake2d {
 
@@ -119,6 +129,26 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::EliRedLine>();
         } else if (strat == "aldo_loops_and_stacks") {
             return std::make_shared<rnamake2d::AldoLoopsAndStacks>();
+        } else if(strat == "eli_green_blue_strong_middle_half") {
+            return std::make_shared<rnamake2d::EliGreenBlueStrongMiddleHalf>();
+        } else if (strat == "deviad_deviad_strategy") {
+            return std::make_shared<rnamake2d::DeviadDeviadStrategy>();
+        } else if (strat == "djerpha_basic_test") {
+            return std::make_shared<rnamake2d::DjerphaBasicTest>();
+        } else if (strat == "eli_twisted_basepairs") {
+            return std::make_shared<rnamake2d::EliTwistedBasepairs>();
+        } else if (strat == "eli_green_line") {
+            return std::make_shared<rnamake2d::EliGreenLine>();
+        } else if (strat == "example_gc60") {
+            return std::make_shared<rnamake2d::ExampleGC60>();
+        } else if (strat == "eli_direction_of_gc_pairs_in_multiloops_neckarea") {
+            return std::make_shared<rnamake2d::EliDirectionOfGCPairsInMultiloopsNeckarea>();
+        } else if (strat == "eli_multiloop_similarity") {
+            return std::make_shared<rnamake2d::EliMultiloopSimilarity>();
+        } else if (strat == "ding_quad_energy") {
+            return std::make_shared<rnamake2d::DingQuadEnergy>();
+        } else if (strat == "berex_berex_loop_basic") {
+            return std::make_shared<rnamake2d::BerexBerexLoopBasic>();
         }
         else {
             throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");

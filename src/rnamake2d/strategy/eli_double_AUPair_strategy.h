@@ -67,33 +67,7 @@ namespace rnamake2d {
             return pairs;
     }
 
-    private:
-        Strings
-        findall(String const& source, std::regex const& pattern)  {
-            auto sm = std::smatch();
-            std::regex_match(source, sm, pattern);
-            auto matches = Strings{};
-            for(auto ii = 0; ii < sm.size(); ++ii) {
-                matches.push_back(sm[ii].str());
-            }
-            return matches;
-        }
 
-    private:
-        template<typename T>
-        bool
-        comp_vectors(std::vector<T> const& v1, std::vector<T> const& v2 ) {
-            if(v1.size() != v2.size())  {
-                return false;
-            } else {
-                for(auto ii = 0; ii < v1.size(); ++ii) {
-                    if(v1[ii] != v2[ii]) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
 
     public:
         float

@@ -1,6 +1,7 @@
 #ifndef RNAMAKE_RNA_ELEMENT_H
 #define RNAMAKE_RNA_ELEMENT_H
 
+#include <regex>
 #include <algorithm>
 #include <vector>
 
@@ -11,6 +12,7 @@ namespace rnamake2d {
     constexpr auto UNSCORABLE = -99999;
     constexpr auto SHIFT_LIMIT = 3;
     constexpr auto PAIR_TYPES = 3;
+    constexpr auto TOLERANCE = 1e-3f;
 
     enum RNAELEMENT {
         LOOP,
@@ -65,7 +67,7 @@ namespace rnamake2d {
         }
 
         Strings
-        get_loop_closing_pairs(String const&  sequence, Ints const & pairmap) {
+        get_loop_closing_pairs(String const&  sequence, Ints const & pairmap) const {
             auto pairs =  Strings{};
             if( type_ != RNAELEMENT::LOOP) {
                 return pairs;
@@ -105,6 +107,24 @@ namespace rnamake2d {
     void
     get_rna_elements_from_secstruct_recursive(Ints const&, int, int, RNAElems&, int, int, RNAElement*);
 
+
+    Strings
+    findall(String const& , std::regex const&) ;
+
+    template<typename T>
+    bool
+    comp_vectors(std::vector<T> const& v1, std::vector<T> const& v2 ) {
+        if(v1.size() != v2.size())  {
+            return false;
+        } else {
+            for(auto ii = 0; ii < v1.size(); ++ii) {
+                if(v1[ii] != v2[ii]) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
 } // namespace rnamake2d
 
 #endif // RNAMAKE_RNA_ELEMENT_H

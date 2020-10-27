@@ -1,0 +1,1 @@
+#include <rnamake2d/strategy/ding_quad_energy.h>

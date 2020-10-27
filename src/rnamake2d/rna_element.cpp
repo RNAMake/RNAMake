@@ -132,4 +132,18 @@ namespace rnamake2d {
        return elements;
     }
 
+    Strings
+    findall(String const& source, std::regex const& pattern)  {
+        auto sm = std::smatch();
+        std::regex_match(source, sm, pattern);
+        auto matches = Strings{};
+        for(auto ii = 0; ii < sm.size(); ++ii) {
+            matches.push_back(sm[ii].str());
+        }
+        return matches;
+    }
+
+
+
+
 } // namespace rnamake2d

@@ -1,0 +1,1 @@
+#include <rnamake2d/strategy/example_gc60.h>
