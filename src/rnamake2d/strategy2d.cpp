@@ -54,6 +54,10 @@
 #include <rnamake2d/strategy/eli_no_blue_nucleotides_strategy.h>
 #include <rnamake2d/strategy/berex_basic_test.h>
 #include <rnamake2d/strategy/kkohli_test_by_kkohli.h>
+#include <rnamake2d/strategy/cj_green_line.h>
+#include <rnamake2d/strategy/cj_mismatch.h>
+#include <rnamake2d/strategy/eli_direction_of_gc_pairs_in_multiloops.h>
+#include <rnamake2d/strategy/aldo_repetition.h>
 
 namespace rnamake2d {
 
@@ -167,6 +171,14 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::BerexBasicTest>();
         } else if (strat == "kkohli_test_by_kkohli") {
             return std::make_shared<rnamake2d::KkohliTestByKkohli>();
+        } else if (strat == "CJGreenLine") {
+            return std::make_shared<rnamake2d::CJGreenLine>();
+        } else if (strat == "CJMismatch") {
+            return std::make_shared<rnamake2d::CJMismatch>();
+        } else if (strat == "eli_direction_of_gc_pairs_in_multiloops") {
+            return std::make_shared<rnamake2d::EliDirectionOfGCPairsInMultiloops>();
+        } else if (strat == "AldoRepetition") {
+            return std::make_shared<rnamake2d::AldoRepetition>();
         }
         else {
             throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");

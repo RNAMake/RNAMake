@@ -1,8 +1,8 @@
 #ifndef RNAMAKE_ELIGREENLINE_H
 #define RNAMAKE_ELIGREENLINE_H
 
-#include <regex>
 #include <unordered_set>
+#include <regex>
 
 #include <base/types.h>
 #include <rnamake2d/strategy2d.h>
@@ -21,14 +21,15 @@ namespace rnamake2d {
         float
         score(Feature2DOP const & feature) override {
             auto result(100.f);
+
             for(auto ii = 0; ii < feature->elements.size(); ++ii) {
                 const auto& elem = feature->elements[ii];
 
                 if(elem.type_ == RNAELEMENT::STACK) {
-                    String first_string;
-                    String second_string;
+                    String first_string("");
+                    String second_string("");
 
-                    for(auto jj = 0 ; jj < elem.indices_.size(); jj += 2) {
+                    for(auto jj = 0; jj < elem.indices_.size(); jj += 2) {
                         first_string += feature->sequence[elem.indices_[jj]];
                         second_string += feature->sequence[elem.indices_[jj + 1]];
                     }

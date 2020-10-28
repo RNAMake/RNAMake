@@ -1,4 +1,5 @@
 #include <rnamake2d/rna_element.h>
+#include <iostream>
 
 namespace rnamake2d {
 
@@ -8,17 +9,14 @@ namespace rnamake2d {
        auto pairs_array = Ints(secstruct.size(),-1);
 
        for(auto ii = 0; ii < secstruct.size(); ++ii) {
-           switch(secstruct[ii]) {
-               case '(' : {
-                   pair_stack.push_back(ii);
-               }
-               case ')' : {
-                   const auto index = *pair_stack.rbegin();
-                   pair_stack.pop_back();
-                   pairs_array[index] = ii;
-                   pairs_array[ii] = index;
-               }
-           }
+            if(secstruct[ii] == '(') {
+                pair_stack.push_back(ii);
+            } else if (secstruct[ii] == ')') {
+                const auto index = *pair_stack.rbegin();
+                pair_stack.pop_back();
+                pairs_array[index] = ii;
+                pairs_array[ii] = index;
+            }
        }
        return pairs_array;
     }
@@ -52,7 +50,6 @@ namespace rnamake2d {
                         stack_element.indices_.push_back(jj);
                         stack_element.indices_.push_back(pairs_array[jj]);
                     }
-
 
                     elements.push_back(stack_element);
                     last_pair_start = -999;

@@ -76,7 +76,8 @@ namespace rnamake2d {
                 get_strategy("berex_basic_test"),
                 get_strategy("kkohli_test_by_kkohli"),
                 get_strategy("AldoRepetition"),
-
+                get_strategy("CJGreenLine"),
+                get_strategy("CJMismatch"),
 
             } ;
             // weights
@@ -136,8 +137,8 @@ namespace rnamake2d {
                     -0.2751340813578167,    // berex_basic_test
                     -0.06803891875360141,   // kkohli_test_by_kkohli
                     0.15268020542080335,    // AldoRepetition
-
-
+                    -0.004643042781698109,  // EliGreenLine
+                    0.2430050990096834,     // CJMismatch
             };
 
 
@@ -168,14 +169,16 @@ namespace rnamake2d {
 
 
 #endif // __RNAMAKE_SCORE_FUNCTION_H__
-
-// => AldoRepetition,0.15268020542080335
-//EliGreenLine,-0.004643042781698109
-//ViennaStructureComp,1.5272406678598347
-//ViennaMFENormalized,-0.49663024818195145
+// will hold off on these for now...
 //NupackStructureComp,0.7965075352904527
 //SpotStructureComp,0.4615538691139922
-//AldoMismatch,0.2430050990096834
+
+// => AldoRepetition,0.15268020542080335
+// => EliGreenLine,-0.004643042781698109
+//ViennaStructureComp,1.5272406678598347
+//ViennaMFENormalized,-0.49663024818195145
+
+// => CJMismatch,0.2430050990096834
 //RnastructureStructureComp,-0.23831987534823496
 // => merryskies_only_as_in_the_loops,-0.10825825690698382
 // => dejerpha_basic_test,2.8236531196192134
