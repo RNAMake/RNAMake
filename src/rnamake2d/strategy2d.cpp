@@ -28,6 +28,8 @@
 #include <rnamake2d/strategy/good_junction3_1_1_1.h>
 #include <rnamake2d/strategy/good_tetraloop_triplet.h>
 #include <rnamake2d/strategy/good_hairpin4.h>
+#include <rnamake2d/strategy/vienna_mfe_normalized.h>
+#include <rnamake2d/strategy/vienna_structure_comp.h>
 
 // eternabot ones
 #include <rnamake2d/strategy/merryskies_only_as_in_the_loops.h>
@@ -179,9 +181,48 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::EliDirectionOfGCPairsInMultiloops>();
         } else if (strat == "AldoRepetition") {
             return std::make_shared<rnamake2d::AldoRepetition>();
+        } else if (strat == "ViennaMFENormalized") {
+            return std::make_shared<rnamake2d::ViennaMFENormalized>();
+        } else if (strat == "ViennaStructureComp") {
+            return std::make_shared<rnamake2d::ViennaStructureComp>();
         }
         else {
             throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");
         }
     }
+
+
+    void
+    Strategy2D::load_params(std::filesystem::path const& param_dir ) {
+        const auto param_path = param_dir.string() + "/" + name_ + ".params";
+        if(!std::filesystem::exists(param_path))  {
+            LOGE<<"ERROR: The file "<<param_path<<" does not exist. Exiting...";
+            exit(1);
+        }
+
+        const auto line = base::get_lines_from_file(param_path)[0];
+
+        const auto tokens = base::split_str_by_delimiter(line, "|");
+
+        auto params = std::vector<float>{};
+
+        for(const auto& tk : tokens) {
+            params.push_back(std::stof(tk));
+        }
+
+        if(params.size() != params_.size()) {
+            LOGE<<"ERROR: Number of params in "<<param_path<<" does not match number of params needed by "<<name_<<" strategy. Exiting...";
+            exit(1);
+        } else {
+            if(!params_.empty()) {
+                params_.clear();
+            }
+        }
+
+        for(const auto& p : params) {
+            params_.push_back(p);
+        }
+
+    }
+
 }

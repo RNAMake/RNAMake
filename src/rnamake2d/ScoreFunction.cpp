@@ -11,6 +11,35 @@ namespace rnamake2d {
         return score;
     }
 
+    void
+    ScoreFunction::load_weights( std::filesystem::path const& weights_file)   {
+        LOGI<<"Updating score function weights... Clearing out existing weights...";
+        if(!strategies_.empty())  {
+            strategies_.clear();
+        }
+
+        if(!weights_.empty())  {
+            weights_.clear();
+        }
+
+        if(!std::filesystem::exists(weights_file)) {
+            LOGE<<"ERROR: The score function parameters file "<<weights_file.string()<<" does not exist or is inaccesible. Exiting...";
+            exit(1);
+        }
+
+        for( const auto& line : base::get_lines_from_file(weights_file)) {
+            const auto tokens = base::split_str_by_delimiter(line, ",");
+            if(tokens.size() != 2) {
+                LOGE<<"ERROR: Invalid weights file format. Exiting...";
+                exit(1);
+            }
+            weights_.push_back(std::stof(tokens[1]));
+            strategies_.emplace_back(get_strategy(tokens[0]));
+        }
+
+        LOGI<<"Loaded new parameters. Found "<<weights_.size()<<" rules.";
+
+    }
 
 
     double

@@ -1,11 +1,15 @@
 #ifndef __STRATEGY2D_H__
 #define __STRATEGY2D_H__
 
+#include <filesystem>
 #include <memory>
 
+#include <base/file_io.h>
+#include <base/string.h>
 #include <base/exception.h>
 #include <base/types.h>
 #include <eternabot/strategy.h>
+#include <plog/Log.h>
 
 #include <rnamake2d/feature_generator2d.h>
 
@@ -30,6 +34,10 @@ namespace rnamake2d {
             name() const {
                 return name_;
             }
+
+    public:
+        void
+        load_params(std::filesystem::path const& );
     };
 
 

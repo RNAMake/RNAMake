@@ -2,6 +2,7 @@
 #define __RNAMAKE_SCORE_FUNCTION_H__
 
 #include <map>
+#include <filesystem>
 
 #include <base/types.h>
 #include <rnamake2d/design.h>
@@ -9,6 +10,9 @@
 #include <eternabot/strategy.h>
 #include <vienna/vienna.h>
 
+#include <base/file_io.h>
+#include <base/string.h>
+#include <plog/Log.h>
 #include <rnamake2d/strategy2d.h>
 
 namespace rnamake2d {
@@ -78,6 +82,9 @@ namespace rnamake2d {
                 get_strategy("AldoRepetition"),
                 get_strategy("CJGreenLine"),
                 get_strategy("CJMismatch"),
+                get_strategy("ViennaMFENormalized"),
+                get_strategy("ViennaStructureComp"),
+
 
             } ;
             // weights
@@ -139,6 +146,9 @@ namespace rnamake2d {
                     0.15268020542080335,    // AldoRepetition
                     -0.004643042781698109,  // EliGreenLine
                     0.2430050990096834,     // CJMismatch
+                    -0.49663024818195145,   // ViennaMFENormalized
+                    1.5272406678598347,     // ViennaStructureComp
+
             };
 
 
@@ -148,6 +158,10 @@ namespace rnamake2d {
         public:
             double
             score( Feature2DOP const & ) const ;
+
+    public:
+        void
+        load_weights( std::filesystem::path const& ) ;
 
 
         private:
@@ -172,14 +186,14 @@ namespace rnamake2d {
 // will hold off on these for now...
 //NupackStructureComp,0.7965075352904527
 //SpotStructureComp,0.4615538691139922
+//RnastructureStructureComp,-0.23831987534823496
 
 // => AldoRepetition,0.15268020542080335
 // => EliGreenLine,-0.004643042781698109
-//ViennaStructureComp,1.5272406678598347
-//ViennaMFENormalized,-0.49663024818195145
+// => ViennaStructureComp,1.5272406678598347
+// => ViennaMFENormalized,-0.49663024818195145
 
 // => CJMismatch,0.2430050990096834
-//RnastructureStructureComp,-0.23831987534823496
 // => merryskies_only_as_in_the_loops,-0.10825825690698382
 // => dejerpha_basic_test,2.8236531196192134
 // => clollin_gs_in_place,0.2800622250719158

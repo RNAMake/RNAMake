@@ -30,7 +30,7 @@ def build_libraries(lib_list, dependencies, base_dir, static):
             DEPENDS=" ".join(
                 [lib + "_lib" for lib in dependencies[library]]
                 + ["sqlite3" if library == "util" else ""]
-                + ["${RNAMAKE}/lib/libRNA.a" if library == "rnamake2d" else ""]
+                + ["vienna_RNA" if library == "rnamake2d" else ""]
             ),
             BUILD="-static" if static else "",
         )
