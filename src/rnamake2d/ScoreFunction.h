@@ -69,6 +69,14 @@ namespace rnamake2d {
                 get_strategy("eli_multiloop_similarity"),
                 get_strategy("ding_quad_energy"),
                 get_strategy("berex_berex_loop_basic"),
+                get_strategy("eli_legal_placement_of_GUpairs"),
+                get_strategy("eli_wrong_direction_of_gc_pairs_in_multiloops"),
+                get_strategy("eli_direction_of_gc_pairs_in_multiloops"),
+                get_strategy("eli_no_blue_nucleotides_strategy"),
+                get_strategy("berex_basic_test"),
+                get_strategy("kkohli_test_by_kkohli"),
+                get_strategy("AldoRepetition"),
+
 
             } ;
             // weights
@@ -121,6 +129,13 @@ namespace rnamake2d {
                     0.00978877166914174,    // eli_multiloop_similarity
                     0.00978877166906401,    // ding_quad_energy
                     0.019145505229272428,   // berex_berex_loop_basic
+                    0.05120674277182907,    // eli_legal_placement_of_GUpairs
+                    -0.19731059143533014,   // eli_wrong_direction_of_gc_pairs_in_multiloops
+                    0.09865127290814124,    // eli_direction_of_gc_pairs_in_multiloops
+                    -0.8253549680053338,    // eli_no_blue_nucleotides_strategy
+                    -0.2751340813578167,    // berex_basic_test
+                    -0.06803891875360141,   // kkohli_test_by_kkohli
+                    0.15268020542080335,    // AldoRepetition
 
 
             };
@@ -154,6 +169,14 @@ namespace rnamake2d {
 
 #endif // __RNAMAKE_SCORE_FUNCTION_H__
 
+// => AldoRepetition,0.15268020542080335
+//EliGreenLine,-0.004643042781698109
+//ViennaStructureComp,1.5272406678598347
+//ViennaMFENormalized,-0.49663024818195145
+//NupackStructureComp,0.7965075352904527
+//SpotStructureComp,0.4615538691139922
+//AldoMismatch,0.2430050990096834
+//RnastructureStructureComp,-0.23831987534823496
 // => merryskies_only_as_in_the_loops,-0.10825825690698382
 // => dejerpha_basic_test,2.8236531196192134
 // => clollin_gs_in_place,0.2800622250719158
@@ -170,20 +193,19 @@ namespace rnamake2d {
 // => eli_green_line,0.007680977135075769
 // => ding_quad_energy,0.00978877166906401
 // => berex_berex_loop_basic,0.019145505229272428
-//eli_legal_placement_of_GUpairs,0.05120674277182907
+// => eli_legal_placement_of_GUpairs,0.05120674277182907
 // => aldo_mismatch,-0.19581776453734906
 // => eli_red_line,-0.0018275413712541821
-//eli_wrong_direction_of_gc_pairs_in_multiloops,-0.19731059143533014
+// => eli_wrong_direction_of_gc_pairs_in_multiloops,-0.19731059143533014
 // => deivad_deivad_strategy,0.08548851359538262
-//eli_direction_of_gc_pairs_in_multiloops,0.09865127290814124
-//eli_no_blue_nucleotides_strategy,-0.8253549680053338
-//berex_basic_test,-0.2751340813578167
-//kkohli_test_by_kkohli,-0.06803891875360141
+// => eli_direction_of_gc_pairs_in_multiloops,0.09865127290814124
+// => eli_no_blue_nucleotides_strategy,-0.8253549680053338
+// => berex_basic_test,-0.2751340813578167
+// => kkohli_test_by_kkohli,-0.06803891875360141
 // => BadHelix3,0.10845716043121478
 // => SingleStrandTripleA,-0.2524611477466161
 // => BadHairpin4Doublet,0.11621958146693934
 // => BadHelix2,0.051953978499975795
-//ViennaStructureComp,1.5272406678598347
 // => BadHairpin4Triplet,0.14470067211618373
 // => BadSingleStrand3,0.1902229692459677
 // => PctGCPairs,0.6973340034106996
@@ -191,7 +213,6 @@ namespace rnamake2d {
 // => JunctionClosing,-0.7514795405184205
 // => SingleStrand3,0.08819793678377201
 // => GRepeats,-0.05032464330299019
-//ViennaMFENormalized,-0.49663024818195145
 // => GoodTetraloopSinglet,0.8372216739418228
 // => Helix4,0.6596505460982536
 // => BadJunction2_1_1,0.24122961401641185
@@ -202,17 +223,11 @@ namespace rnamake2d {
 // => GoodJunction3_1_1_1,-9.462788548128273
 // => GoodTetraloopTriplet,1.916441326283273
 // => SingleStrand5,-0.11077156860161347
-//NupackStructureComp,0.7965075352904527
-//EliGreenLine,-0.004643042781698109
 // => GoodJunction3_3_3_3,1.1734967921515913
 // => Badjunction3_3_3_3,-0.097400093245612
-//SpotStructureComp,0.4615538691139922
 // => BadSingleStrand4,0.05046284982294122
 // => Helix2,0.331594773993627
 // => GoodHairpin4,-1.0079078237755852
-//AldoRepetition,0.15268020542080335
-//AldoMismatch,0.2430050990096834
-//RnastructureStructureComp,-0.23831987534823496
 // => NonCanonical,-0.0853402523094039
 // => BadHelix4,0.17028695543216954
 // => JunctionNonGCClosing,0.30753499424534314

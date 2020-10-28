@@ -18,7 +18,7 @@ namespace rnamake2d {
     private:
         bool
         isExist(std::vector<Ints> const & array , Ints const& element) {
-            for(auto ii = 0; ii < array.size(); ++array) {
+            for(auto ii = 0; ii < array.size(); ++ii) {
                 if(comp_vectors(array[ii], element)) {
                     return true;
                 }
@@ -92,7 +92,7 @@ namespace rnamake2d {
                 }
                 if( std::abs(e1 - e2) > TOLERANCE) {
                     auto e = std::abs(e1 - e2);
-                    penalty = int(penalty) + int((e - float(int(e*1000) % int(params_[0]*1000))))/1000.f / params_[0]);
+                    penalty = int(penalty) + int((e - float(int(e*1000) % int(params_[0]*1000))))/1000.f / params_[0];
                 }
             }
             score = score + penalty + params_[1];

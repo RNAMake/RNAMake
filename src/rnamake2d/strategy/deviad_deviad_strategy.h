@@ -45,7 +45,7 @@ namespace rnamake2d {
                        score += params_[3];
                    } else if (feature->elements[ii].score_ > params_[6]) {
                        auto closing_pairs = feature->elements[ii].get_loop_closing_pairs(
-                                    feature->sequence, feature->pairmap
+                                    feature->sequence, feature->e_pairmap
                                );
                        auto is_there_gu(false);
 

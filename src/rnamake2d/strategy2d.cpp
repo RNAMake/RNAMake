@@ -27,6 +27,7 @@
 #include <rnamake2d/strategy/singlestrand5.h>
 #include <rnamake2d/strategy/good_junction3_1_1_1.h>
 #include <rnamake2d/strategy/good_tetraloop_triplet.h>
+#include <rnamake2d/strategy/good_hairpin4.h>
 
 // eternabot ones
 #include <rnamake2d/strategy/merryskies_only_as_in_the_loops.h>
@@ -48,6 +49,11 @@
 #include <rnamake2d/strategy/eli_multiloop_similarity.h>
 #include <rnamake2d/strategy/ding_quad_energy.h>
 #include <rnamake2d/strategy/berex_berex_loop_basic.h>
+#include <rnamake2d/strategy/eli_legal_placement_of_GUpairs.h>
+#include <rnamake2d/strategy/eli_wrong_direction_of_gc_pairs_in_multiloops.h>
+#include <rnamake2d/strategy/eli_no_blue_nucleotides_strategy.h>
+#include <rnamake2d/strategy/berex_basic_test.h>
+#include <rnamake2d/strategy/kkohli_test_by_kkohli.h>
 
 namespace rnamake2d {
 
@@ -131,9 +137,7 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::AldoLoopsAndStacks>();
         } else if(strat == "eli_green_blue_strong_middle_half") {
             return std::make_shared<rnamake2d::EliGreenBlueStrongMiddleHalf>();
-        } else if (strat == "deviad_deviad_strategy") {
-            return std::make_shared<rnamake2d::DeviadDeviadStrategy>();
-        } else if (strat == "djerpha_basic_test") {
+        } else if (strat == "dejerpha_basic_test") {
             return std::make_shared<rnamake2d::DjerphaBasicTest>();
         } else if (strat == "eli_twisted_basepairs") {
             return std::make_shared<rnamake2d::EliTwistedBasepairs>();
@@ -149,6 +153,20 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::DingQuadEnergy>();
         } else if (strat == "berex_berex_loop_basic") {
             return std::make_shared<rnamake2d::BerexBerexLoopBasic>();
+        } else if (strat == "eli_legal_placement_of_GUpairs") {
+            return std::make_shared<rnamake2d::EliLegalPlacementOfGUPairs>();
+        } else if (strat == "GoodHairpin4") {
+            return std::make_shared<rnamake2d::GoodHairpin4>();
+        } else if (strat == "deivad_deivad_strategy") {
+            return std::make_shared<rnamake2d::DeviadDeviadStrategy>();
+        } else if (strat == "eli_wrong_direction_of_gc_pairs_in_multiloops") {
+            return std::make_shared<rnamake2d::EliWrongDirectionOfGCPairsInMultiloops>();
+        } else if (strat == "eli_no_blue_nucleotides_strategy") {
+            return std::make_shared<rnamake2d::EliNoBlueNucleotidesStrategy>();
+        } else if (strat == "berex_basic_test") {
+            return std::make_shared<rnamake2d::BerexBasicTest>();
+        } else if (strat == "kkohli_test_by_kkohli") {
+            return std::make_shared<rnamake2d::KkohliTestByKkohli>();
         }
         else {
             throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");

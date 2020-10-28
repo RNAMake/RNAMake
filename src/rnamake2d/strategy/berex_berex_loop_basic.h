@@ -37,7 +37,7 @@ namespace rnamake2d {
                 }
 
                 const auto loop_groups = elem.get_loop_groups();
-                const auto closing_pairs = elem.get_loop_closing_pairs(feature->sequence, feature->pairmap);
+                const auto closing_pairs = elem.get_loop_closing_pairs(feature->sequence, feature->e_pairmap);
 
                 const auto indices = elem.indices_;
 

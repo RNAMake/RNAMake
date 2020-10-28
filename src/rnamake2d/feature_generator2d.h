@@ -13,7 +13,8 @@ namespace rnamake2d {
         String target;
         String sequence;
         RNAElems elements;
-        Ints pairmap;
+        Ints e_pairmap;
+
         explicit Feature2D(eternabot::Features &features) {
             this->gu = features.gu;
             this->gc = features.gc;

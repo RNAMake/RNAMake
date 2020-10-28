@@ -29,7 +29,7 @@ namespace rnamake2d {
                     continue;
                 }
                 const auto closing_pairs = element.get_loop_closing_pairs(
-                        feature->sequence, feature->pairmap);
+                        feature->sequence, feature->e_pairmap);
                 if(closing_pairs.size() < 3) {
                     continue;
                 }

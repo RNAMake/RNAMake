@@ -31,7 +31,7 @@ namespace rnamake2d {
     public:
         float
         score(Feature2DOP const & feature) override {
-            auto first_pair_index = find_nonnegative_value(feature->pairmap);
+            auto first_pair_index = find_nonnegative_value(feature->e_pairmap);
             auto result(100.f);
             const auto last_pair_index = feature->pairmap[first_pair_index];
 

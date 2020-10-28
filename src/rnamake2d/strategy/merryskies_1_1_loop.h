@@ -28,7 +28,7 @@ namespace rnamake2d {
                 }
 
                 auto loop_groups = elem.get_loop_groups();
-                auto closing_pairs = elem.get_loop_closing_pairs(feature->sequence, feature->pairmap);
+                auto closing_pairs = elem.get_loop_closing_pairs(feature->sequence, feature->e_pairmap);
 
                 const auto& sequence = feature->sequence;
                 if( loop_groups.size() == 2 and closing_pairs.size() == 2 ) { // case 2,3, 4

@@ -80,7 +80,7 @@ namespace rnamake2d {
                 auto elem = feature->elements[ii];
                 if( elem.type_ == RNAELEMENT::LOOP) {
                     auto loop_groups = elem.get_loop_groups();
-                    auto tmp = get_neck_pairs(loop_groups, feature->sequence, feature->pairmap);
+                    auto tmp = get_neck_pairs(loop_groups, feature->sequence, feature->e_pairmap);
                     for(auto jj = 0; jj < tmp.size(); ++jj ){
                         neckArea.push_back(tmp[jj]);
                     }
