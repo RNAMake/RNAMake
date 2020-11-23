@@ -11,65 +11,97 @@
 #include <rnamake2d/feature_generator2d.h>
 #include <eternabot/strategy/a_basic_test.h>
 #include <rnamake2d/rna_element.h>
+#include <rnamake2d/rnamake2d.fwd.hh>
 
 namespace rnamake2d {
-    struct Design {
+
+
+    class Design {
+        // what do we want to be doing here??
         FeatureGenerator2d generator;
         Feature2DOP best;
-        Feature2DOP mutant;
+    public:
+        Feature2DOP mutant_;
+    private:
         secondary_structure::PoseOP best_pose;
         secondary_structure::PoseOP mutant_pose;
         secondary_structure::Parser parser;
         Reals scores;
         static int design_ct;
         int num_moves{0};
-
-        double score{0.};
-        const String target;
-        String sequence; // the current sequence
-        String candiate; // the candidate
+        float bp_score_{0.f};
+        double score_{0.};
+        const String target_;
+        String sequence_; // the current sequence
+        String candiate_; // the candidate
+        String constraint_;
+        const Ints pairmap;
         const int id;
-
+        friend NemoSampler;
+    public:
         explicit
         Design(String targ, String seq = "") : id(design_ct++),
-                                                 target(targ),
-                                                 sequence(seq),
+                                                 target_(targ),
+                                                 sequence_(seq),
                                                  best(nullptr),
-                                                 mutant(nullptr),
-                                                 generator()
+                                                 mutant_(nullptr),
+                                                 generator(),
+                                                 pairmap(get_pairmap_from_secstruct(targ))
                                                  {
-            while(target.size() - sequence.size()) {
-                 sequence.push_back('N');
+            while(target_.size() - sequence_.size()) {
+                 sequence_.push_back('N');
             }
+            constraint_ = sequence_;
         }
 
+    public:
         void
         initialize_features() ;
 
+    public:
         void
-        initialize_mutant() ;
+        initialize_mutant(String& ) ;
 
+    public:
         void
-        accept(double mutant_score) {
-            score = mutant_score;
-            scores.push_back(mutant_score);
-            ++num_moves;
-            sequence = candiate;
-            best = mutant;
-            mutant = nullptr;
-            best_pose = mutant_pose;
-            mutant_pose = nullptr;
+        accept(double mutant_score);
+
+    public:
+        void
+        accept_bp(double mutant_score) ;
+
+    public:
+        float
+        score() const {
+            return score_;
+        }
+    public:
+        auto
+        bp_score() const {
+            return bp_score_;
         }
 
+    public:
+        void
+        bp_score(float score) {
+            bp_score_ = score;
+        }
+
+    public:
         void
         reject() {
-
-            scores.push_back(score);
+            scores.push_back(score_);
             ++num_moves;
-            candiate = sequence;
-
+            candiate_ = sequence_;
         }
 
+    public:
+        const Feature2DOP
+        mutant() const {
+            return mutant_;
+        }
+
+    public:
         void
         update(bool mutate=false) {
 //            for(auto& m : motifs) {
@@ -85,19 +117,28 @@ namespace rnamake2d {
 //            }
         }
 
+    public:
+        String
+        target() const {
+            return target_;
+        }
+        String
+        candidate() const {
+            return candiate_;
+        }
+
+        String
+        sequence() const {
+            return sequence_;
+        }
         String
         to_str() const {
             auto ss = std::stringstream{};
-            ss<<id<<","<<target<<","<<sequence<<","<<score<<","<<num_moves<<"\n";
+            ss<<id<<","<<target_<<","<<sequence_<<","<<score_<<","<<num_moves<<"\n";
             return ss.str();
         }
    };
 
-    struct Stats {
-        int gc;
-        int gu;
-        int au;
-    };
 
 }
 

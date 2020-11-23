@@ -1,0 +1,1 @@
+#include <rnamake2d/strategy/single_strand2.h>

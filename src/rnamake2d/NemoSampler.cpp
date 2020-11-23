@@ -34,7 +34,7 @@ namespace rnamake2d {
            table[ii] = data[ii];
        }
        free( data );
-        return table;
+       return table;
     }
 
     std::vector<short>
@@ -221,15 +221,18 @@ namespace rnamake2d {
         return true;
     }
 
-    bool undecided(char x) {
+    bool
+    undecided(char x) {
         return (strchr("AUGC", x) == nullptr);
     }
 
-    bool locked(char *start, int pos) {
+    bool
+    locked(char *start, int pos) {
         return !undecided(start[pos - 1]);
     }
 
-    bool test_move(char *position, int o, char base) {
+    bool
+    test_move(char *position, int o, char base) {
         bool ok = true;
         char save = position[o];
         position[o] = base;
@@ -849,18 +852,14 @@ namespace rnamake2d {
         }
 
         if (bpd == 0) {
-            design.sequence.reserve(strlen(position));
-            strncpy(&(design.sequence[0]),position,strlen(position));
+            design.sequence_.reserve(strlen(position));
+            strncpy(&(design.sequence_[0]),position,strlen(position));
 
             //printf("NMC: %s %f\n", position, final);
             //printf("STR: %s %.2f %d %d\n", secstr, e, bpd, n_iter - iter);
         } else {
-            design.sequence.reserve(strlen(closest_seq));
-            strncpy(&(design.sequence[0]),closest_seq,strlen(closest_seq));
-
-            //printf("NMC: %s\n", closest_seq);
-            //printf("STR: %s %.2f %d %d\n", closest_struct, closest_fe, closest_bpd, n_iter - iter);
-            //printf("CPY: %s\n", copy);
+            design.sequence_.reserve(strlen(closest_seq));
+            strncpy(&(design.sequence_[0]),closest_seq,strlen(closest_seq));
         }
         return 0;
     }
@@ -873,7 +872,7 @@ namespace rnamake2d {
         }
 
         current_ = design.id;
-        const int size = design.target.size();
+        const int size = design.target().size();
         target = (char*)malloc(sizeof(char)*(size+1)); target[size] = '\0';
         start = (char*)malloc(sizeof(char)*(size+1)); start[size] = '\0';
         seed = (char*)malloc(sizeof(char)*(size+1)); seed[size] = '\0';
@@ -884,9 +883,9 @@ namespace rnamake2d {
         strncpy( closest_seq, start, strlen( start ) );
         strncpy( position, start,  strlen( start ) );
 
-        strncpy( target, design.target.c_str(), design.target.size() );
-        strncpy( start, design.sequence.c_str(), design.sequence.size() );
-        strncpy( seed, design.sequence.c_str(), design.sequence.size() );
+        strncpy( target, design.target_.c_str(), design.target_.size() );
+        strncpy( start, design.sequence_.c_str(), design.sequence_.size() );
+        strncpy( seed, design.sequence_.c_str(), design.sequence_.size() );
 
         len = strlen( seed );
         pt = wrapped_make_pair_table( target );
@@ -903,14 +902,67 @@ namespace rnamake2d {
         for(int  k = 0; k < len; k++ ) shuffle[k] = k;
         nemo_main(design);
         design.initialize_features();
+        design.initialize_mutant(design.sequence_);
     }
-
+    int
+    NemoSampler::get_mutate_pos_(Design const & design) {
+        // constraints are added here to make sure that desired sequences are preserved
+        const auto position = rand() % design.sequence_.size();
+        if(design.pairmap[position] < 0) {
+           return design.constraint_[position] == 'N' ? position : get_mutate_pos_(design);
+        } else {
+           if(design.constraint_[position] == 'N' && design.constraint_[design.pairmap[position]] == 'N') {
+               return position;
+           } else {
+               return get_mutate_pos_(design);
+           }
+        }
+    }
     void
     NemoSampler::mutate(Design & design)  {
+        // right now we are basically making a new copy everty time... to fix this, make it
+        // so that the existing sequence is taken in and then only changed once TODO
         if( current_ != design.id ) {
-            std::cerr<<"Design id is NOT equal to the current Sampler id Number. Exiting...\n";
+            LOGE<<"ERROR: Design id is NOT equal to the current Sampler id Number. Exiting...\n";
             exit(0);
         }
+
+
+        const auto position = get_mutate_pos_(design);
+
+        const auto& pairmap = design.pairmap;
+        if(pairmap[position] < 0) {
+            //unpaired branch
+            auto options = String();
+            for(char ch : "ACGU") {
+                if(ch != design.sequence_[position]) {
+                    options += ch;
+                }
+            }
+
+            const auto mutation = options[rand()%3];
+            design.sequence_[position] = mutation;
+        } else {
+            // paired branch
+            //TODO make it so that being a cap has a lower change for GU
+            auto options = Strings{};
+            const auto left = position > pairmap[position] ? pairmap[position] : position;
+            const auto right = position < pairmap[position] ? pairmap[position] : position;
+            auto pair = String(); pair += design.sequence_[left]; pair += design.sequence_[right];
+
+            for(const auto& possible : {"AU", "UA", "GC", "CG", "UG", "GU"}) {
+                if(possible != pair) {
+                    options.push_back(possible);
+                }
+            }
+
+            const auto mutation = options[rand()%options.size()];
+            design.sequence_[left] = mutation[0];
+            design.sequence_[right] = mutation[1];
+        }
+        design.initialize_mutant(design.sequence_);
+        /*
+        strncpy(start, design.sequence_.c_str(), design.sequence_.size() ) ;
         char *copy = strdup(start);
         char *secstr = strdup(target);
         secstr[0] = '\0';
@@ -931,16 +983,13 @@ namespace rnamake2d {
        // half the time, use the best boosts we know of during playouts
        force_boost = int_urn(0, 1) == 0;
        // (try to) solve
-       final = nested( position,  1 );
+       final = nested( position,  1 );  // we can skip this... don't want to make a brand new design, just start from an existing one
        // score the search result
        secstr[0] = 0;
        e = fold(position, secstr);
        bpd = bp_distance(target, secstr);
-
-       design.candiate = position;
-       design.initialize_mutant();
        //design.update(true);
-       return ;
+
        if (bpd < closest_bpd) {
            closest_bpd = bpd;
            strcpy(closest_seq, position);
@@ -1079,15 +1128,16 @@ namespace rnamake2d {
            }
 
            // make sure we haven't messed with the locked bases from the program input
-           for (i = 0; i < len; i++) {
-               if (start[i] != 'N') copy[i] = start[i];
-           }
+           //for (i = 0; i < len; i++) {
+           //    if (start[i] != 'N') copy[i] = start[i];
+           //}
 
        } while (strspn(copy, "AUGC") == strlen(copy));
 
-
+       auto changed = String{position};
+       design.initialize_mutant( changed );
        if( retry != nullptr ) free(retry);
-
+       return;
        // if we seem to be chasing our own tail, reset completely
        if (strcmp(last_copy, copy) == 0) {
            if (++stuck > 10) {
@@ -1099,20 +1149,21 @@ namespace rnamake2d {
            stuck = 0;
        }
 
-        if (bpd == 0 && !strcmp(design.sequence.c_str() ,position )) {
+        if (bpd == 0 && !strcmp(design.sequence_.c_str() ,position )) {
             //design.candiate = position;
-            design.candiate.reserve( strlen(position) ) ;
-            strncpy( &(design.candiate[0]), position, strlen(position));
+            design.candiate_.reserve( strlen(position) ) ;
+            strncpy( &(design.candiate_[0]), position, strlen(position));
             //printf("NMC: %s %f\n", position, final);
             //printf("STR: %s %.2f %d %d\n", secstr, e, bpd, n_iter - iter);
-        } else if (!strcmp(design.sequence.c_str(),closest_seq)) {
+        } else if (!strcmp(design.sequence_.c_str(),closest_seq)) {
             //design.candiate = closest_seq;
-            design.candiate.reserve( strlen(closest_seq) ) ;
-            strncpy( &(design.candiate[0]), closest_seq, strlen(closest_seq));            //printf("NMC: %s\n", closest_seq);
+            design.candiate_.reserve( strlen(closest_seq) ) ;
+            strncpy( &(design.candiate_[0]), closest_seq, strlen(closest_seq));            //printf("NMC: %s\n", closest_seq);
             //printf("STR: %s %.2f %d %d\n", closest_struct, closest_fe, closest_bpd, n_iter - iter);
             //printf("CPY: %s\n", copy);
         } else {
             std::cout<<"Warning: no mutation occurred for desin: "<<current_<<"\n";
         }
+    */
     }
 }

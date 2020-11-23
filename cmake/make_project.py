@@ -152,22 +152,22 @@ if __name__ == "__main__":
         "-target",
         help='enter the target system you are compiling for. Valid choices are: "mac", "windows", or "linux"',
         type=str,
-        required=True,
+        #required=True,
     )
 
     args = parser.parse_args()
-
-    if args.target == "mac":
-        static = False
-    elif args.target == "windows":
-        static = True
-    elif args.target == "linux":
-        static = True
-        # static=True #TODO this needs to change
-    else:
-        raise Exception(
-            'Invalid value for "-target" flag. Acceptable values are "mac","windows" and "linux"'
-        )
+    static = False
+   # if args.target == "mac":
+   #     static = False
+   # elif args.target == "windows":
+   #     static = True
+   # elif args.target == "linux":
+   #     static = True
+   #     # static=True #TODO this needs to change
+   # else:
+   #     raise Exception(
+   #         'Invalid value for "-target" flag. Acceptable values are "mac","windows" and "linux"'
+   #     )
 
     depends = {
         "base": [],

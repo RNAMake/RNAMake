@@ -64,7 +64,7 @@ if( ${COMPILER} STREQUAL gcc )
     	-w;
     	-O3;
     	-pedantic;
-        -fsanitize=address
+        #-fsanitize=address
 	)
     
 

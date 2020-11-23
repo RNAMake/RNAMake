@@ -46,12 +46,12 @@ namespace rnamake2d {
             auto infoGrp = std::vector<Strings>{};
             auto energyGrp = std::vector<Strings>{};
             for(auto ii = 0; ii < root.children_.size(); ++ii) {
-                const auto parent = root.children_[ii]->children_[0];
+                auto parent = root.children_[ii]->children_[0];
                 const auto loop_groups = parent->get_loop_groups();
                 for(auto jj = 0; jj < parent->children_.size(); ++jj) {
                     auto info = Strings{};
                     auto energy = Strings{};
-                    getChildInfo(parent->children_[jj], info, energy);
+                    getChildInfo(parent->children_[jj] , info, energy);
                     infoGrp.push_back(info);
                     energyGrp.push_back(energy);
                 }

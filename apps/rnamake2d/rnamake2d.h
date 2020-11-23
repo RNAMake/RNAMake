@@ -1,8 +1,14 @@
 #ifndef __RNAMAKE_2D_H__
 #define __RNAMAKE_2D_H__
 
+#include <chrono>
+
+using Hours = std::chrono::hours;
+using Clock = std::chrono::system_clock;
+
 #include <base/types.h>
 #include <base/application.hpp>
+#include <base/settings.h>
 #include <rnamake2d/design.h>
 #include <rnamake2d/ScoreFunction.h>
 #include <rnamake2d/NemoSampler.h>
@@ -41,7 +47,10 @@ private:
         int seed{1996};
         int steps{200};
         double sfxn_cutoff{80.f};
-        double score_cutoff{95.f};
+        double bp_cutoff{90.f};
+        Hours max_time;
+        std::filesystem::path sfxn_weights;
+        std::filesystem::path params_dir;
     };
 
 private:

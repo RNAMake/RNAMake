@@ -4,21 +4,27 @@
 #include <regex>
 #include <algorithm>
 #include <vector>
+#include <memory>
 
 #include <base/types.h>
 #include <plog/Log.h>
 
 namespace rnamake2d {
-    constexpr auto UNSCORABLE = -99999;
+    constexpr auto UNSCORABLE = 100.f;
     constexpr auto SHIFT_LIMIT = 3;
     constexpr auto PAIR_TYPES = 3;
     constexpr auto TOLERANCE = 1e-3f;
 
     enum RNAELEMENT {
-        LOOP,
-        STACK
+        LOOP = 0,
+        STACK  = 1
     };
+
     struct RNAElement {
+        static int num;
+        int id, parent_id = -1;
+        Ints child_ids;
+
         Ints indices_ = {};
         int type_ = -1;
         int branching_stacks_ = 0;
@@ -26,6 +32,47 @@ namespace rnamake2d {
         RNAElement* parent_ = nullptr;
         std::vector<RNAElement*> children_ = {};
         Ints quad_scores_ = {};
+
+        RNAElement() : id(num++) {
+            indices_ = {};
+            type_ = RNAELEMENT::STACK;
+            branching_stacks_ = 0;
+            score_ = 0.f;
+            //parent_ = nullptr;
+            children_ = {};
+            quad_scores_ = {};
+        }
+
+        RNAElement(RNAElement const& other ) :
+            indices_(other.indices_),
+            type_(other.type_),
+            branching_stacks_(other.branching_stacks_),
+            score_(other.score_),
+            parent_(other.parent_),
+            children_(other.children_),
+            quad_scores_(other.quad_scores_)
+        {
+
+        }
+
+        void
+        update_family(const std::map<RNAElement*,RNAElement*> & convert );
+
+
+        std::pair<String, String>
+        get_sides(const String& sequence) const {
+            assert( indices_.size() % 2 == 0 );
+            String lhs, rhs;
+            for(auto ii = 0; ii < indices_.size(); ++ii) {
+                if( ii < indices_.size()/2 ) {
+                   lhs += sequence[indices_[ii]];
+                } else {
+                    rhs += sequence[indices_[ii]];
+                }
+            }
+
+            return {lhs, rhs};
+        }
 
         std::vector<Ints>
         get_loop_groups() const {
@@ -50,6 +97,7 @@ namespace rnamake2d {
 
             return groups;
         }
+
         int
         get_stack_length() const  {
             if (type_ != RNAELEMENT::STACK) {
@@ -59,7 +107,7 @@ namespace rnamake2d {
         }
 
         String
-        get_pair_from_stack(int  pair_index,String const& sequence) const {
+        get_pair_from_stack(int  pair_index, String const& sequence) const {
             auto pair = String{sequence[indices_[int(pair_index) * 2]]};
             pair += sequence[indices_[int(pair_index) * 2 + 1]];
             std::transform(pair.begin(), pair.end(), pair.begin(), toupper);
@@ -76,7 +124,7 @@ namespace rnamake2d {
             if (parent_ != nullptr) {
                 const auto& parent = parent_;
                 if (parent->type_ != RNAELEMENT::STACK) {
-                    //print("ERROR Loop's parent is not a stack")
+                    LOGI<<"ERROR: Loop's parent is not a stack";
                     exit(1);
                 }
                 const auto npi = parent->indices_.size();
@@ -87,7 +135,8 @@ namespace rnamake2d {
                 const auto& child = children_[ii];
                 if(child->type_ != RNAELEMENT::STACK) {
                     //print("ERROR Loop's child is not a stack")
-                    exit(0);
+                    LOGI<<"ERROR: Loop's child is not a stack";
+                    exit(1);
                 }
                 const auto nci = child->indices_.size();
                 pairs.emplace_back(String{sequence[child->indices_[0]]} + String{sequence[child->indices_[1]]});
@@ -107,6 +156,8 @@ namespace rnamake2d {
     void
     get_rna_elements_from_secstruct_recursive(Ints const&, int, int, RNAElems&, int, int, RNAElement*);
 
+    void
+    get_rna_elements_from_secstruct_recursive(Ints const&, int, int, RNAElems&, int, int, std::shared_ptr<RNAElement>);
 
     Strings
     findall(String const& , std::regex const&) ;

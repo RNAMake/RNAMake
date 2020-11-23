@@ -13,7 +13,7 @@ namespace rnamake2d {
     public:
         ClollinGsInPlace() : Strategy2D() {
             params_ = {};
-            name_ = "";
+            name_ = "clollin_gs_in_place";
         }
 
     public:

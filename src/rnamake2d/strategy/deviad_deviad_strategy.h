@@ -26,7 +26,7 @@ namespace rnamake2d {
                        -1.3614060249420725,
                        9.876280826765};
 
-            name_ = "deviad_deviad_strategy";
+            name_ = "deivad_deivad_strategy";
         }
 
     public:

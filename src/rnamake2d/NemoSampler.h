@@ -14,8 +14,9 @@
 #include <limits>
 #include <filesystem>
 
-#include <rnamake2d/design.h>
 #include <base/types.h>
+#include <rnamake2d/rna_element.h>
+#include <rnamake2d/rnamake2d.fwd.hh>
 
 extern "C" {
     #include <RNAstruct.h>
@@ -90,6 +91,11 @@ namespace rnamake2d {
         current (int curr) {
             current_ = curr;
         }
+
+    private:
+        static
+        int
+        get_mutate_pos_(Design const & );
 
     private:
         bool

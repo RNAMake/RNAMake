@@ -22,7 +22,6 @@ namespace rnamake2d {
         float
         score(Feature2DOP const & feature) override {
             auto score(100.f);
-
             for(auto ii = 0; ii < feature->elements.size(); ++ii) {
                 const auto& elem = feature->elements[ii];
 
@@ -40,9 +39,9 @@ namespace rnamake2d {
 
                     auto banned = std::regex();
                     if(elem.indices_.size() < 12) {
-                        banned = "^[U|C][U|C][U|C][U|C]";
+                        banned = std::regex("^[U|C][U|C][U|C][U|C]");
                     } else {
-                        banned = "^[U|C][U|C][U|C][U|C][U|C]";
+                        banned = std::regex("^[U|C][U|C][U|C][U|C][U|C]");
                     }
 
                     for(auto jj = 0; jj < first_string.size(); ++jj) {

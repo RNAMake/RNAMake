@@ -1,0 +1,1 @@
+#include <rnamake2d/strategy/bad_hairpin4.h>

@@ -19,15 +19,15 @@ namespace rnamake2d {
     public:
         float
         score(Feature2DOP const & feature) override {
-            auto result(100.f);
-            const auto& seq = feature->sequence;
-            const auto& target = feature->target;
+            float result(100.f);
+            //const auto seq = feature->sequence;
+            //const auto target = feature->target;
 
-            for(auto ii = 0 ; ii<seq.size(); ++ii){
-                if( target[ii] == '.' && seq[ii] != 'A') {
-                    result -= 1.f;
-                }
-            }
+            //for(auto ii = 0 ; ii<seq.size(); ++ii){
+            //    if( target[ii] == '.' && seq[ii] != 'A') {
+            //        result -= 1.f;
+            //    }
+            //}
 
             return result;
         }

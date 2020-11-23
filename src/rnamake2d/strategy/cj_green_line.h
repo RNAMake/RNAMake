@@ -20,7 +20,6 @@ namespace rnamake2d {
         float
         score(Feature2DOP const & feature) override {
             auto result(100.f);
-
             for(auto start = 0; start < feature->sequence.size() - 3 ; ++start) {
                 const auto structure = feature->structure.substr( start, 3);
                 if(structure.find('.') != String::npos) {

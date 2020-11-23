@@ -130,7 +130,10 @@ namespace rnamake2d {
             auto result = Ints{};
             auto pairs_sep_filted = get_filted_pairs(elem, sequence);
 
-            for(auto ii = 0; ii < pairs_sep_filted.size() - 1; ++ii) {
+            if(pairs_sep_filted.empty()) {
+                return result;
+            }
+            for(int ii = 0; ii < pairs_sep_filted.size() - 1; ++ii) {
                 const auto pair = pairs_sep_filted[ii];
                 for(auto jj = ii + 1; jj < pairs_sep_filted.size(); ++jj) {
                     const auto compare_pair = pairs_sep_filted[jj];
@@ -213,7 +216,6 @@ namespace rnamake2d {
         score(Feature2DOP const & feature) override {
             auto result(80.f);
             auto noGU(true);
-
             for(auto ii = 0; ii < feature->elements.size(); ++ii) {
                 const auto& elem = feature->elements[ii];
                 if(elem.type_ == RNAELEMENT::STACK ){
@@ -224,6 +226,7 @@ namespace rnamake2d {
                 }
             }
 
+
             if(noGU) {
                 result += params_[0];
             }
@@ -232,6 +235,9 @@ namespace rnamake2d {
                 const auto& elem = feature->elements[ii];
                 if(elem.type_ == RNAELEMENT::STACK) {
                     const auto numBetween = two_GC(elem, feature->sequence);
+                    if(numBetween.empty()) {
+                        continue;
+                    }
                     result += numBetween[0]*params_[1];
                     result += numBetween[1]*params_[2];
                     const auto numBeside = besideGC(elem, feature->sequence);
@@ -242,6 +248,7 @@ namespace rnamake2d {
                     }
                 }
             }
+
 
             auto besidingGU(0);
 
@@ -298,8 +305,11 @@ namespace rnamake2d {
             }
 
             const auto numBetween = two_GC(neckArea, feature->sequence);
-            result += numBetween[0] * params_[8];
-            result += numBetween[1] * params_[9];
+            if(!numBetween.empty())  {
+                result += numBetween[0] * params_[8];
+                result += numBetween[1] * params_[9];
+            }
+
             const auto numBeside = besideGC(neckArea, feature->sequence);
             if(numBeside != 0) {
                 result += numBeside*params_[10];
@@ -315,16 +325,14 @@ namespace rnamake2d {
                 const auto pair = neckArea.get_pair_from_stack(i, feature->sequence);
                 pairs.push_back(pair);
             }
-
-            for(auto i = 0; i < pairs.size() - 1; ++i) {
-                if(
-                   (pairs[i] == "GU" || pairs[i] == "UG")
-                   and (pairs[i+1] == "GU" || pairs[i +1] == "UG")
-                   )
-                {
-                    ++tmp;
-                    if(pairs[i] != pairs[i + 1]) {
-                        isSameTuning = false;
+            if(!pairs.empty()) {
+                for (int i = 0; i < pairs.size() - 1; ++i) {
+                    if ((pairs[i] == "GU" || pairs[i] == "UG")
+                            and (pairs[i + 1] == "GU" || pairs[i + 1] == "UG") ) {
+                        ++tmp;
+                        if (pairs[i] != pairs[i + 1]) {
+                            isSameTuning = false;
+                        }
                     }
                 }
             }
@@ -333,12 +341,14 @@ namespace rnamake2d {
                 result += params_[12];
             }
 
-            if(pairs[0] == "GU"
-                || pairs[0] == "UG"
-                || *pairs.rbegin() == "GU"
-                || *pairs.rbegin() == "UG"
-            ) {
-                result += params_[13];
+            if(!pairs.empty()) {
+                if (pairs[0] == "GU"
+                    || pairs[0] == "UG"
+                    || *pairs.rbegin() == "GU"
+                    || *pairs.rbegin() == "UG"
+                        ) {
+                    result += params_[13];
+                }
             }
 
             return result;

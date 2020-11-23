@@ -7,13 +7,12 @@
 namespace rnamake2d {
 
     class Helix1 : public Strategy2D {
-        float base_ = 92.02556323;
-        Floats params_;
     public:
         Helix1() : Strategy2D() {
             name_ = "Helix1";
             params_ = {
-                -1.96421263, // au/ua mult
+               0,
+               -1.96421263, // au/ua mult
                 -0.92136502, // gc/cg mult
                 -3.86915512  // ug/gu mult
             };
@@ -40,7 +39,7 @@ namespace rnamake2d {
                 }
             }
 
-            return base_ + num_au*params_[0] + num_gc*params_[1] + num_ug*params_[2];
+            return params_[0] + num_au*params_[1] + num_gc*params_[2] + num_ug*params_[3];
         }
     };
 }

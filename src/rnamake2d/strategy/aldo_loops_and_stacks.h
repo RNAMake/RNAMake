@@ -28,7 +28,6 @@ namespace rnamake2d {
         float
         score(Feature2DOP const & feature) override {
             auto result(0.f);
-
             for(auto ii = 0; ii < feature->elements.size(); ++ii) {
                 const auto& elem = feature->elements[ii];
                 if(elem.type_ == RNAELEMENT::STACK) {

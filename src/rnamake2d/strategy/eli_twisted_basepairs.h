@@ -26,7 +26,7 @@ namespace rnamake2d {
                     const auto indices = feature->elements[ii].indices_;
                     auto last_pair = feature->sequence[indices[0]] + feature->sequence[indices[1]];
 
-                    for(auto jj = 2; jj < indices.size(); ii += 2) {
+                    for(auto jj = 2; jj < indices.size(); jj += 2) {
                         const auto current_pair = feature->sequence[indices[jj]] + feature->sequence[indices[jj+1]];
 
                         if(last_pair == current_pair) {

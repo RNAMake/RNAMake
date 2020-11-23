@@ -35,11 +35,10 @@ namespace rnamake2d {
                 return name_;
             }
 
-    public:
-        void
-        load_params(std::filesystem::path const& );
+        public:
+            void
+            load_params(std::filesystem::path const& );
     };
-
 
 }
 

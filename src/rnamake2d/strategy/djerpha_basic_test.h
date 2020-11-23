@@ -19,7 +19,7 @@ namespace rnamake2d {
                        5.356389162410184,
                        47.140830683223825,
                        200.69890875030296 };
-            name_ = "djerpha_basic_test";
+            name_ = "dejerpha_basic_test";
         }
 
     public:

@@ -30,6 +30,17 @@
 #include <rnamake2d/strategy/good_hairpin4.h>
 #include <rnamake2d/strategy/vienna_mfe_normalized.h>
 #include <rnamake2d/strategy/vienna_structure_comp.h>
+#include <rnamake2d/strategy/helix_repeats.h>
+#include <rnamake2d/strategy/single_strand3.h>
+#include <rnamake2d/strategy/single_strand2.h>
+#include <rnamake2d/strategy/bad_helix5.h>
+#include <rnamake2d/strategy/bad_hairpin4.h>
+#include <rnamake2d/strategy/unsure_hairpin4.h>
+#include <rnamake2d/strategy/u_repeats.h>
+#include <rnamake2d/strategy/a_repeats.h>
+#include <rnamake2d/strategy/good_bulge_0_1.h>
+#include <rnamake2d/strategy/rnamake_aldo_mismatch.h>
+#include <rnamake2d/strategy/rnamake_aldo_loops_and_stacks.h>
 
 // eternabot ones
 #include <rnamake2d/strategy/merryskies_only_as_in_the_loops.h>
@@ -60,6 +71,16 @@
 #include <rnamake2d/strategy/cj_mismatch.h>
 #include <rnamake2d/strategy/eli_direction_of_gc_pairs_in_multiloops.h>
 #include <rnamake2d/strategy/aldo_repetition.h>
+#include <rnamake2d/strategy/eli_blue_line.h>
+#include <rnamake2d/strategy/quasispecies_test_by_region_boundaries.h>
+#include <rnamake2d/strategy/eli_gc_pairs_in_junction.h>
+#include <rnamake2d/strategy/ebot_aldo_repetition.h>
+#include <rnamake2d/strategy/mat747_31_loops.h>
+#include <rnamake2d/strategy/eli_energy_limit_in_tetraloops.h>
+#include <rnamake2d/strategy/eli_loop_pattern_for_small_multiloops.h>
+#include <rnamake2d/strategy/eli_tetraloop_similarity.h>
+#include <rnamake2d/strategy/merryskies_1_1_loop_energy.h>
+#include <rnamake2d/strategy/ding_tetraloop_pattern.h>
 
 namespace rnamake2d {
 
@@ -84,7 +105,8 @@ namespace rnamake2d {
 //        } else if (strat == "BadSingleStrand3") {
 //            return std::make_shared<rnamake2d::BadSingleStrand3>();
         } else if (strat == "SingleStrandTripleA") {
-            return std::make_shared<rnamake2d::BadSingleStrand3>();
+            return std::make_shared<rnamake2d::SingleStrand3>();
+            //return std::make_shared<rnamake2d::BadSingleStrand3>();
         } else if( strat == "BadHairpin4Triplet") {
             return std::make_shared<rnamake2d::BadHaripin4Triplet>();
         } else if (strat == "GRepeats") {
@@ -185,9 +207,53 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::ViennaMFENormalized>();
         } else if (strat == "ViennaStructureComp") {
             return std::make_shared<rnamake2d::ViennaStructureComp>();
+        } else if (strat == "eli_blue_line") {
+            return std::make_shared<rnamake2d::EliBlueLine>();
+        } else if (strat == "quasispecies_test_by_region_boundaries") {
+            return std::make_shared<rnamake2d::QuasispeciesTestByRegionBoundaries>();
+        } else if (strat == "eli_gc_pairs_in_junction") {
+            return std::make_shared<rnamake2d::EliGCPairsInJunction>();
+        } else if (strat == "HelixRepeats") {
+            return std::make_shared<rnamake2d::HelixRepeats>();
+        } else if (strat == "SingleStrand3") {
+            return std::make_shared<rnamake2d::SingleStrand3>();
+        } else if (strat == "SingleStrand2") {
+            return std::make_shared<rnamake2d::SingleStrand2>();
+        } else if (strat == "BadHelix5") {
+            return std::make_shared<rnamake2d::BadHelix5>();
+        } else if (strat == "BadHairpin4") {
+            return std::make_shared<rnamake2d::BadHairpin4>();
+        } else if (strat == "aldo_repetition") {
+            return std::make_shared<rnamake2d::EbotAldoRepetition>();
+        } else if (strat == "mat747_31_loops") {
+            return std::make_shared<rnamake2d::Mat747_31_Loops>();
+        } else if (strat == "eli_energy_limit_in_tetraloops") {
+            return std::make_shared<rnamake2d::EliEnergyLimitInTetraloops>();
+        } else if (strat == "eli_loop_pattern_for_small_multiloops") {
+            return std::make_shared<rnamake2d::EliLoopPatternForSmallMultiloops>();
+        } else if (strat == "eli_tetraloop_similarity") {
+            return std::make_shared<rnamake2d::EliTetraloopSimilarity>();
+        } else if (strat == "merryskies_1_1_loop_energy") {
+            return std::make_shared<rnamake2d::MerrySkies_1_1_LoopEnergy>();
+        } else if (strat == "UnsureHairpin4") {
+            return std::make_shared<rnamake2d::UnsureHairpin4>();
+        } else if (strat == "ding_tetraloop_pattern") {
+            return std::make_shared<rnamake2d::DingTetraloopPattern>();
+        } else if (strat == "URepeats") {
+            return std::make_shared<rnamake2d::URepeats>();
+        } else if (strat == "ARepeats") {
+            return std::make_shared<rnamake2d::ARepeats>();
+        } else if (strat == "GoodBulge_0_1") {
+            return std::make_shared<rnamake2d::GoodBulge_0_1>();
+        } else if (strat == "AldoMismatch") {
+            return std::make_shared<rnamake2d::RNAMakeAldoMismatch>();
+        } else if (strat == "AldoLoopAndStacks") {
+            return std::make_shared<rnamake2d::RNAMakeAldoLoopsAndStacks>();
         }
         else {
-            throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");
+            std::cout<<"ERROR: the strategy " + strat + " is not implemented yet."<<std::endl;
+            return std::make_shared<rnamake2d::EliGCPairsInJunction>();
+            //throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");
         }
     }
 

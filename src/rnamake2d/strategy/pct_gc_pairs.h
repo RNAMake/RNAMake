@@ -11,11 +11,11 @@
 
 namespace rnamake2d {
     class PctGCPairs : public Strategy2D {
-        float base_score = 88.50605747;
-        float multiplier = 6.09781405;
+
 
     public:
         PctGCPairs() : Strategy2D() {
+            params_ = {88.50605747, 6.09781405};
             name_ = "PctGCPairs";
         }
 
@@ -25,7 +25,7 @@ namespace rnamake2d {
 
             const auto pct_gc = feature->gc / (feature->gu + feature->gc + feature->ua);
 
-            return base_score + pct_gc*multiplier;
+            return params_[0] + pct_gc*params_[1];
 
         }
     };
