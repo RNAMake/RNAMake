@@ -62,11 +62,8 @@ private:
 private:
     bool
     exit_conditions_(const decltype(timer()) & time_start) const {
-        if( std::chrono::duration_cast<Hours>(timer() - time_start) < parameters_.max_time) {
-            return false;
-        } else {
-            return designs_.size() >= parameters_.num_designs ;
-        }
+        return std::chrono::duration_cast<Hours>(timer() - time_start) < parameters_.max_time &&
+            designs_.size() >= parameters_.num_designs ;
     }
 
 private:
@@ -89,11 +86,12 @@ private:
         int num_designs = 1;
         int seed{1996};
         int steps{2000};
-        double sfxn_cutoff{90.f};
+        double sfxn_cutoff{80.f};
         double bp_cutoff{95.f};
         Hours max_time;
         std::filesystem::path sfxn_weights;
         std::filesystem::path params_dir;
+        bool cluster_mode = false;
     };
 
 private:

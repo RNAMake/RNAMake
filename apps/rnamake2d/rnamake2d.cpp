@@ -29,6 +29,8 @@ RNAMake2D::setup_options() {
             ->check(CLI::ExistingDirectory)
             ->default_val(base::base_dir() + "/apps/rnamake2d/settings/params/")
             ;
+    app_.add_flag("--cluster_output", parameters_.cluster_mode);
+
     //TODO add the score function cutoffs
 }
 
@@ -86,9 +88,14 @@ void
 RNAMake2D::log_results_(const rnamake2d::Design & design) {
     if( design_above_threshold_(design) ) {
         // save the design information to f file
-        auto outfile = std::fstream(parameters_.outfile, std::ios::app);
-        outfile<<design.to_str();
-        outfile.close();
+        if( parameters_.cluster_mode)  {
+            std::cout<<"Target: "<<design.target()<<"\n";
+            std::cout<<"Design: "<<design.sequence()<<"\n";
+        } else {
+            auto outfile = std::fstream(parameters_.outfile, std::ios::app);
+            outfile<<design.to_str();
+            outfile.close();
+        }
         designs_.push_back(design);
     } else {
         LOGE<<"UNABLE TO GENERATE SUITABLE DESIGN. Continuing...";
@@ -100,7 +107,11 @@ void
 RNAMake2D::run()  {
 
     static plog::ConsoleAppender< plog::TxtFormatter > console;
-    plog::init(plog::info, &console);
+    if(!parameters_.cluster_mode)   {
+        plog::init(plog::info, &console);
+    } else {
+        plog::init(plog::warning, &console);
+    }
 
     // checking that the start params are ok
     check_start_params_();
