@@ -33,11 +33,44 @@ RNAMake2D::setup_options() {
 }
 
 void
-RNAMake2D::run()  {
+RNAMake2D::bp_iteration_(rnamake2d::Design& design) {
+    sampler_.mutate(design);
+    // before doing calcs, check if this solution has been calculated already
+    const auto seq = design.sequence();
+    const auto is_calculated = bp_memo_.find(seq) != bp_memo_.end();
+    const auto mutation_bp = is_calculated ? bp_memo_[seq] : vienna_fxn_.score_mutation(design);
 
-    static plog::ConsoleAppender< plog::TxtFormatter > console;
-    plog::init(plog::info, &console);
+    if(!is_calculated) {
+        bp_memo_[seq] = mutation_bp;
+    }
 
+    if(mc_.accept(design.bp_score(), mutation_bp)) {
+        design.accept_bp(mutation_bp);
+    } else {
+        design.reject();
+    }
+}
+
+void
+RNAMake2D::sfxn_iteration_(rnamake2d::Design & design) {
+    sampler_.mutate(design);
+    const auto seq = design.sequence();
+    const auto is_calculated = memo_.find(seq) != memo_.end();
+    const auto mutation_score = is_calculated ? memo_[seq] : sfxn_.score(design.mutant_);
+
+    if(!is_calculated) {
+        memo_[seq] = mutation_score;
+    }
+
+    if(mc_.accept(design.score(), mutation_score)) {
+        design.accept(mutation_score);
+    } else {
+        design.reject();
+    }
+}
+
+void
+RNAMake2D::check_start_params_() const {
     if(!parameters_.start_sequence.empty()) {
         if( parameters_.start_sequence.size() != parameters_.dot_bracket.size()) {
             LOGE << "ERROR: The supplied start sequence MUST be the same length as the supplied dot bracket structure. Exiting...";
@@ -47,19 +80,39 @@ RNAMake2D::run()  {
             exit(1);
         }
     }
+}
 
+void
+RNAMake2D::log_results_(const rnamake2d::Design & design) {
+    if( design_above_threshold_(design) ) {
+        // save the design information to f file
+        auto outfile = std::fstream(parameters_.outfile, std::ios::app);
+        outfile<<design.to_str();
+        outfile.close();
+        designs_.push_back(design);
+    } else {
+        LOGE<<"UNABLE TO GENERATE SUITABLE DESIGN. Continuing...";
+        // something close to an error message
+    }
+}
+
+void
+RNAMake2D::run()  {
+
+    static plog::ConsoleAppender< plog::TxtFormatter > console;
+    plog::init(plog::info, &console);
+
+    // checking that the start params are ok
+    check_start_params_();
+    // loading in the parameters
     sfxn_.load_weights(parameters_.sfxn_weights);
     sfxn_.load_params(parameters_.params_dir);
-    // TODO sometimes when NemoSampler::intialize_design() is given a difficult target it will take a long time to
-    // get through it. Figure out what is going on here
-    // initialize the designs
-    // find the solution for each design
-    const auto time_start = Clock::now();
-    while( designs_.size() < parameters_.num_designs
-            && std::chrono::duration_cast<Hours>(Clock::now() - time_start) < parameters_.max_time
-    ) {
-        auto design = rnamake2d::Design(parameters_.dot_bracket, parameters_.start_sequence);
+
+    const auto time_start = timer();
+
+    while( !exit_conditions_(time_start) ) {
         // initialize the design and get initial score
+        auto design = rnamake2d::Design(parameters_.dot_bracket, parameters_.start_sequence);
         // TODO add flag for going to score fxn
         sampler_.initialize_design(design);
         design.bp_score(vienna_fxn_.score(design));
@@ -67,47 +120,19 @@ RNAMake2D::run()  {
             // to break out of the loop, the design needs to surppass the bp_cutoff and the score_fxn cutoff
             if(design.bp_score() < parameters_.bp_cutoff) {
                 // bp_cutoff not met yet
-                sampler_.mutate(design);
-                const auto mutation_bp = vienna_fxn_.score_mutation(design);
-                if(mc_.accept(design.bp_score(), mutation_bp)) {
-                    design.accept_bp(mutation_bp);
-                } else {
-                    design.reject();
-                }
+                bp_iteration_(design);
             } else {
                 // the case when the bp_cutoff is already high enough
-                sampler_.mutate(design);
-                const auto mutation_score = sfxn_.score(design.mutant_);
-                if(mc_.accept(design.score(), mutation_score)) {
-                    design.accept(mutation_score);
-                } else {
-                    design.reject();
-                }
+                sfxn_iteration_(design);
             }
-            if( design.score() >= parameters_.sfxn_cutoff && design.bp_score() >= parameters_.bp_cutoff) {
-                break;
-            }
+
+            if( design_above_threshold_(design) )  { break; }
         }
         // probably should check if the design is above the score cutoff
-        if( design.score() >= parameters_.sfxn_cutoff
-            && design.bp_score() >= parameters_.bp_cutoff) {
-            // save the design information to f file
-            auto outfile = std::fstream(parameters_.outfile, std::ios::app);
-            outfile<<design.to_str();
-            outfile.close();
-            designs_.push_back(design);
-        } else {
-            LOGE<<"UNABLE TO GENERATE SUITABLE DESIGN. Continuing...";
-            // something close to an error message
-        }
+        log_results_(design);
     }
 
-    if(std::chrono::duration_cast<Hours>(Clock::now() - time_start) > parameters_.max_time &&
-            designs_.size() < parameters_.num_designs) {
-        LOGE<<"ERROR: Had to terminate due to time constraints. Only "<<designs_.size()
-                <<" designs created, not "<<parameters_.num_designs;
-    }
-    LOGI<<"RESULT: "<<designs_.rbegin()->to_str();
+    exit_message_();
 }
 
 

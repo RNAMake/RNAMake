@@ -5,13 +5,14 @@
 
 using Hours = std::chrono::hours;
 using Clock = std::chrono::system_clock;
+constexpr auto timer = Clock::now;
 
 #include <base/types.h>
 #include <base/application.hpp>
 #include <base/settings.h>
 #include <rnamake2d/design.h>
-#include <rnamake2d/ScoreFunction.h>
-#include <rnamake2d/NemoSampler.h>
+#include <rnamake2d/score_function.h>
+#include <rnamake2d/nemo_sampler.h>
 #include <rnamake2d/ss_motif.h>
 
 #include <vienna/vienna.h>
@@ -39,6 +40,48 @@ public:
     setup_options() override;
 
 private:
+    bool
+    design_above_threshold_(const rnamake2d::Design& design ) const {
+        return design.score() >= parameters_.sfxn_cutoff && design.bp_score() >= parameters_.bp_cutoff;
+    }
+private:
+    void
+    log_results_(const rnamake2d::Design &);
+
+private:
+    void
+    exit_message_() const  {
+        if(std::chrono::duration_cast<Hours>(Clock::now() - timer()) > parameters_.max_time &&
+           designs_.size() < parameters_.num_designs) {
+            LOGE<<"ERROR: Had to terminate due to time constraints. Only "<<designs_.size()
+                <<" designs created, not "<<parameters_.num_designs;
+        }
+        LOGI<<"RESULT: "<<designs_.rbegin()->to_str();
+    }
+
+private:
+    bool
+    exit_conditions_(const decltype(timer()) & time_start) const {
+        if( std::chrono::duration_cast<Hours>(timer() - time_start) < parameters_.max_time) {
+            return false;
+        } else {
+            return designs_.size() >= parameters_.num_designs ;
+        }
+    }
+
+private:
+    void
+    check_start_params_() const ;
+
+private:
+    void
+    bp_iteration_(rnamake2d::Design&);
+
+private:
+    void
+    sfxn_iteration_(rnamake2d::Design&);
+
+private:
     struct Parameters {
         String outfile;
         String dot_bracket;
@@ -60,6 +103,8 @@ private:
     rnamake2d::ViennaScore vienna_fxn_;
     rnamake2d::NemoSampler sampler_;
     util::MonteCarlo mc_;  // don't forget to seed this
+    std::unordered_map<String, float> bp_memo_;
+    std::unordered_map<String, float> memo_;
 
 public:
     CLI::App app_;

@@ -6,7 +6,7 @@
 
 #include <base/types.h>
 #include <rnamake2d/design.h>
-#include <rnamake2d/Rule.h>
+#include <rnamake2d/rule.h>
 #include <eternabot/strategy.h>
 #include <vienna/vienna.h>
 

@@ -1,5 +1,5 @@
 // Copyright (C) 2018 Fernando Portela <nando8888@gmail.com>
-#include <rnamake2d/NemoSampler.h>
+#include <rnamake2d/nemo_sampler.h>
 
 // set to 0 to prevent use of base pair distances in the scoring function
 #define USE_BPD 1

@@ -18,6 +18,7 @@
 #include <base/types.h>
 #include <rnamake2d/rna_element.h>
 #include <rnamake2d/rnamake2d.fwd.hh>
+#include <rnamake2d/design.h>
 
 extern "C" {
     #include <RNAstruct.h>

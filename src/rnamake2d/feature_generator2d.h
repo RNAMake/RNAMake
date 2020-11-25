@@ -2,7 +2,7 @@
 #define __FEATURE_GENERATOR2D_H__
 
 #include <eternabot/feature_generator.h>
-#include <rnamake2d/SSMotif.h>
+#include <rnamake2d/ss_motif.h>
 #include <rnamake2d/rna_element.h>
 
 namespace rnamake2d {

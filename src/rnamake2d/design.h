@@ -7,10 +7,11 @@
 #include <sstream>
 
 #include <base/types.h>
-#include <rnamake2d/SSMotif.h>
+#include <rnamake2d/ss_motif.h>
 #include <rnamake2d/feature_generator2d.h>
 #include <rnamake2d/rna_element.h>
 #include <rnamake2d/rnamake2d.fwd.hh>
+
 
 namespace rnamake2d {
 

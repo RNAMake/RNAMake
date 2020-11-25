@@ -4,7 +4,6 @@
 namespace rnamake2d {
     int Design::design_ct = 1;
 
-
     void
     Design::initialize_features() {
         best_pose = parser.parse_to_pose(sequence_, target_);

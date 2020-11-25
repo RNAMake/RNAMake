@@ -10,7 +10,7 @@ namespace rnamake2d {
 
 } // namespace rnamake2d
 
-#include <rnamake2d/design.h>
-#include <rnamake2d/NemoSampler.h>
+//#include <rnamake2d/design.h>
+//#include <rnamake2d/NemoSampler.h>
 
 #endif //RNAMAKE2D_FWD_DECLARE_H

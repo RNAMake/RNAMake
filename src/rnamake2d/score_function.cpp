@@ -1,9 +1,10 @@
-#include <rnamake2d/ScoreFunction.h>
+#include <rnamake2d/score_function.h>
 
 namespace rnamake2d {
 
     double
     ScoreFunction::score( Feature2DOP const &  feature ) const {
+
         auto score(0.);
         for(auto ii = 0; ii < num_strats; ++ii) {
             score += strategies_[ii]->score(feature)*weights_[ii];
