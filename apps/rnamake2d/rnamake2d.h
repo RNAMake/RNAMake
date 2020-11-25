@@ -56,7 +56,7 @@ private:
             LOGE<<"ERROR: Had to terminate due to time constraints. Only "<<designs_.size()
                 <<" designs created, not "<<parameters_.num_designs;
         }
-        LOGI<<"RESULT: "<<designs_.rbegin()->to_str();
+        //TODO maybe put a success message?
     }
 
 private:

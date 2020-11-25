@@ -25,6 +25,10 @@ RNAMake2D::setup_options() {
         ->check(CLI::ExistingFile)
         ->default_val(base::base_dir() + "/apps/rnamake2d/settings/orig_rnamake.weights")
         ;
+    app_.add_option("--sfxn_cutoff", parameters_.sfxn_cutoff)
+            ->check(CLI::PositiveNumber)
+            ->default_val(90.f);
+
     app_.add_option("--params", parameters_.params_dir)
             ->check(CLI::ExistingDirectory)
             ->default_val(base::base_dir() + "/apps/rnamake2d/settings/params/")
