@@ -96,6 +96,8 @@ def build_apps(base_dir, static):
                 application_text += "\ttarget_link_libraries({NAME} all_lib {LINK} )\n".format(
                     NAME=app_tokens[0], LINK="-static" if static else "",
                 )
+    application_text += f"\tadd_executable(NEMO {'/'.join(os.path.realpath(__file__).split('/')[:-2]) + '/src/external/nemo/nemo.cpp'})\n"
+    application_text += "\ttarget_link_libraries( NEMO vienna_RNA)\n"
     application_text += "#" * 100 + "\n"
     return application_text
 

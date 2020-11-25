@@ -63,7 +63,6 @@ RNAMake2D::run()  {
         // TODO add flag for going to score fxn
         sampler_.initialize_design(design);
         design.bp_score(vienna_fxn_.score(design));
-
         for(auto ii = 0; ii < parameters_.steps; ++ii) {
             // to break out of the loop, the design needs to surppass the bp_cutoff and the score_fxn cutoff
             if(design.bp_score() < parameters_.bp_cutoff) {
@@ -97,7 +96,6 @@ RNAMake2D::run()  {
             outfile<<design.to_str();
             outfile.close();
             designs_.push_back(design);
-            std::cout<<"HERERERE"<<std::endl;
         } else {
             LOGE<<"UNABLE TO GENERATE SUITABLE DESIGN. Continuing...";
             // something close to an error message
@@ -109,7 +107,7 @@ RNAMake2D::run()  {
         LOGE<<"ERROR: Had to terminate due to time constraints. Only "<<designs_.size()
                 <<" designs created, not "<<parameters_.num_designs;
     }
-
+    LOGI<<"RESULT: "<<designs_.rbegin()->to_str();
 }
 
 

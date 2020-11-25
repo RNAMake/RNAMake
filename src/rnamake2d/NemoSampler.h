@@ -13,6 +13,7 @@
 #include <unistd.h>
 #include <limits>
 #include <filesystem>
+#include <random>
 
 #include <base/types.h>
 #include <rnamake2d/rna_element.h>
@@ -34,7 +35,9 @@ namespace rnamake2d {
 
     class NemoSampler {
     private:
+        std::mt19937 rng_;
         // general variables
+        String constraint_;
         const double worst_score = -100000.0;
         bool   standard_nmcs = false;
         int    iter = 2500;
@@ -63,6 +66,7 @@ namespace rnamake2d {
 
     public:
         NemoSampler()   {
+            rng_.seed(0x09101996);
             init_rand();
             srand48( rng_seed ^ 0x5A5A5A5A );
         }
@@ -93,7 +97,6 @@ namespace rnamake2d {
         }
 
     private:
-        static
         int
         get_mutate_pos_(Design const & );
 
@@ -112,6 +115,7 @@ namespace rnamake2d {
             bpd = std::numeric_limits<int>::max();
             current_ = -1;
             // free dynamic Cstrings
+            if(!constraint_.empty())  constraint_.clear();
             if( target ) free( target );
             if( start ) free( start );
             if( seed ) free( seed );

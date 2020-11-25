@@ -9,6 +9,7 @@ set(vienna_files
     ${RNAMAKE}/src/external/ViennaRNA-2.1.9/lib/fold.c
     ${RNAMAKE}/src/external/ViennaRNA-2.1.9/lib/fold_vars.c
     ${RNAMAKE}/src/external/ViennaRNA-2.1.9/lib/gquad.c
+    ${RNAMAKE}/src/external/ViennaRNA-2.1.9/lib/read_epars.c
     ${RNAMAKE}/src/external/ViennaRNA-2.1.9/lib/params.c
     ${RNAMAKE}/src/external/ViennaRNA-2.1.9/lib/utils.c
 )

@@ -43,11 +43,11 @@ private:
         String outfile;
         String dot_bracket;
         String start_sequence;
-        int num_designs = 5;
+        int num_designs = 1;
         int seed{1996};
-        int steps{200};
-        double sfxn_cutoff{80.f};
-        double bp_cutoff{90.f};
+        int steps{2000};
+        double sfxn_cutoff{90.f};
+        double bp_cutoff{95.f};
         Hours max_time;
         std::filesystem::path sfxn_weights;
         std::filesystem::path params_dir;

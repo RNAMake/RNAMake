@@ -26,12 +26,11 @@ namespace rnamake2d {
                     continue;
                 }
                 auto [rhs, lhs] = stack.get_sides(feature->sequence);
-                auto forbidden = std::regex("^UUU");
                 for(auto start = 0; start < stack.get_stack_length(); ++start) {
-                    if (!findall(lhs.substr(start), forbidden).empty()) {
+                    if (lhs.substr(start).size() > 2 && lhs.substr(start,3) == "UUU") {
                         result -= params_[0];
                     }
-                    if (!findall(rhs.substr(start), forbidden).empty()) {
+                    if (rhs.substr(start).size() > 2 && rhs.substr(start,3) == "UUU") {
                         result -= params_[0];
                     }
                 }

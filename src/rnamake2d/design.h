@@ -9,7 +9,6 @@
 #include <base/types.h>
 #include <rnamake2d/SSMotif.h>
 #include <rnamake2d/feature_generator2d.h>
-#include <eternabot/strategy/a_basic_test.h>
 #include <rnamake2d/rna_element.h>
 #include <rnamake2d/rnamake2d.fwd.hh>
 
@@ -29,13 +28,13 @@ namespace rnamake2d {
         Reals scores;
         static int design_ct;
         int num_moves{0};
-        float bp_score_{0.f};
-        double score_{0.};
+        float bp_score_{-1.f};
+        double score_{-1.};
         const String target_;
         String sequence_; // the current sequence
         String candiate_; // the candidate
         String constraint_;
-        const Ints pairmap;
+        Ints pairmap;
         const int id;
         friend NemoSampler;
     public:
@@ -45,13 +44,13 @@ namespace rnamake2d {
                                                  sequence_(seq),
                                                  best(nullptr),
                                                  mutant_(nullptr),
-                                                 generator(),
-                                                 pairmap(get_pairmap_from_secstruct(targ))
+                                                 generator()
                                                  {
             while(target_.size() - sequence_.size()) {
                  sequence_.push_back('N');
             }
             constraint_ = sequence_;
+            pairmap = get_pairmap_from_secstruct(target_);
         }
 
     public:

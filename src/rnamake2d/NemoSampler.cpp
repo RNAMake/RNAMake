@@ -12,6 +12,15 @@
 
 namespace rnamake2d {
 
+    bool
+    constraints_satisfied(const char* required, const char* actual, int len) {
+        for(auto ii = 0; ii < len; ++ii) {
+            if(required[ii] != 'N' && required[ii] != actual[ii]) {
+                return false;
+            }
+        }
+        return true;
+    }
     int
     my_urn(int from, int to) {
         return (((int) (drand48() * (to - from + 1))) + from);
@@ -188,7 +197,7 @@ namespace rnamake2d {
         double e = fold(position, secstr);
         int bpd = bp_distance(target, secstr);
 #if USE_DDG
-        double es = energy_of_structure(position, target, 0);
+        double es = energy_of_structure(position, target, -1);
 #endif
         if( secstr != nullptr) free(secstr);
         if (bpd == 0) {
@@ -603,7 +612,6 @@ namespace rnamake2d {
         double best = worst_score;
         char *best_playout = strdup(position);
         char *best_local = strdup(position);
-
         while (strspn(position, "AUGC") != strlen(position)) {
             int l = strspn(position, "AUGC");
             double max = worst_score;
@@ -650,7 +658,7 @@ namespace rnamake2d {
             }
 
             position[l] = best_playout[l];
-            if (pt[l + 1]) {
+            if (pt[l + 1] ) {
                 position[pt[l + 1] - 1] = best_playout[pt[l + 1] - 1];
             } else if (mt[l + 1] && position[mt[l + 1] - 1] == 'N' && pt[mt[l + 1] - 1] == 0) {
                 position[mt[l + 1] - 1] = best_playout[mt[l + 1] - 1];
@@ -664,11 +672,12 @@ namespace rnamake2d {
 
     int
     NemoSampler::nemo_main(Design& design) {
-
+        // TODO keep track of the iterations down here
+        // TODO break up these functions... there is so much crap going on in here its abusrd
+        constraint_ = design.constraint_;
         char *copy = strdup(start);
         char *secstr = strdup(target);
         secstr[0] = '\0';
-
         int closest_bpd = 999999;
         char *closest_struct = strdup(target);
         double closest_fe;
@@ -691,7 +700,7 @@ namespace rnamake2d {
             secstr[0] = 0;
             e = fold(position, secstr);
             bpd = bp_distance(target, secstr);
-            if (bpd == 0) break;
+            if (bpd == 0 && constraints_satisfied(constraint_.c_str(), position, constraint_.size())) break;
 
             if (bpd < closest_bpd) {
                 closest_bpd = bpd;
@@ -699,11 +708,9 @@ namespace rnamake2d {
                 strcpy(closest_struct, secstr);
                 closest_fe = e;
             }
-
             // Our previous attempt failed. Rather than simply increase depth, or just
             // try again with the original starting point, we build a new starting point based
             // on what seems to have worked and what didn't (misfolds)
-
             int i, j, k, c;
 
             // let's get a pair map of the misfolded structure
@@ -747,7 +754,6 @@ namespace rnamake2d {
             }
 
             // we're ready
-
             do {
 
                 strcpy(copy, position);
@@ -850,13 +856,9 @@ namespace rnamake2d {
                 stuck = 0;
             }
         }
-
         if (bpd == 0) {
             design.sequence_.reserve(strlen(position));
             strncpy(&(design.sequence_[0]),position,strlen(position));
-
-            //printf("NMC: %s %f\n", position, final);
-            //printf("STR: %s %.2f %d %d\n", secstr, e, bpd, n_iter - iter);
         } else {
             design.sequence_.reserve(strlen(closest_seq));
             strncpy(&(design.sequence_[0]),closest_seq,strlen(closest_seq));
@@ -881,11 +883,11 @@ namespace rnamake2d {
         closest_seq = (char*)malloc(sizeof(char)*(size+1)); closest_seq[size] = '\0';
 
         strncpy( closest_seq, start, strlen( start ) );
-        strncpy( position, start,  strlen( start ) );
 
         strncpy( target, design.target_.c_str(), design.target_.size() );
         strncpy( start, design.sequence_.c_str(), design.sequence_.size() );
         strncpy( seed, design.sequence_.c_str(), design.sequence_.size() );
+        strncpy( position, start,  strlen( start ) );
 
         len = strlen( seed );
         pt = wrapped_make_pair_table( target );
@@ -904,10 +906,11 @@ namespace rnamake2d {
         design.initialize_features();
         design.initialize_mutant(design.sequence_);
     }
+
     int
     NemoSampler::get_mutate_pos_(Design const & design) {
         // constraints are added here to make sure that desired sequences are preserved
-        const auto position = rand() % design.sequence_.size();
+        const auto position = rng_() % design.sequence_.size();
         if(design.pairmap[position] < 0) {
            return design.constraint_[position] == 'N' ? position : get_mutate_pos_(design);
         } else {
@@ -940,7 +943,7 @@ namespace rnamake2d {
                 }
             }
 
-            const auto mutation = options[rand()%3];
+            const auto mutation = options[rng_()%3];
             design.sequence_[position] = mutation;
         } else {
             // paired branch
@@ -949,14 +952,13 @@ namespace rnamake2d {
             const auto left = position > pairmap[position] ? pairmap[position] : position;
             const auto right = position < pairmap[position] ? pairmap[position] : position;
             auto pair = String(); pair += design.sequence_[left]; pair += design.sequence_[right];
-
             for(const auto& possible : {"AU", "UA", "GC", "CG", "UG", "GU"}) {
                 if(possible != pair) {
                     options.push_back(possible);
                 }
             }
 
-            const auto mutation = options[rand()%options.size()];
+            const auto mutation = options[rng_()%options.size()];
             design.sequence_[left] = mutation[0];
             design.sequence_[right] = mutation[1];
         }

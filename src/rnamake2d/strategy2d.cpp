@@ -81,6 +81,8 @@
 #include <rnamake2d/strategy/eli_tetraloop_similarity.h>
 #include <rnamake2d/strategy/merryskies_1_1_loop_energy.h>
 #include <rnamake2d/strategy/ding_tetraloop_pattern.h>
+#include <rnamake2d/strategy/xmbrst_clear_plot_stack_caps_and_safe_gc.h>
+#include <rnamake2d/strategy/eli_tetraloop_blues.h>
 
 namespace rnamake2d {
 
@@ -249,11 +251,12 @@ namespace rnamake2d {
             return std::make_shared<rnamake2d::RNAMakeAldoMismatch>();
         } else if (strat == "AldoLoopAndStacks") {
             return std::make_shared<rnamake2d::RNAMakeAldoLoopsAndStacks>();
-        }
-        else {
-            std::cout<<"ERROR: the strategy " + strat + " is not implemented yet."<<std::endl;
-            return std::make_shared<rnamake2d::EliGCPairsInJunction>();
-            //throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");
+        } else if (strat == "xmbrst_clear_plot_stack_caps_and_safe_gc") {
+            return std::make_shared<rnamake2d::XmbrstClearPlotStackCapsAndSafeGC>();
+        } else if (strat == "eli_tetraloop_blues") {
+            return std::make_shared<rnamake2d::EliTetraloopBlues>();
+        } else {
+            throw base::RNAMakeException("ERROR: the strategy " + strat + " is not implemented yet.");
         }
     }
 

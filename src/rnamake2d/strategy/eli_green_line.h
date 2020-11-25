@@ -37,13 +37,11 @@ namespace rnamake2d {
                     std::transform(first_string.begin(), first_string.end(), first_string.begin(), toupper);
                     std::transform(second_string.begin(), second_string.end(), second_string.begin(), toupper);
 
-                    const auto banned = std::regex("^CCC");
-
                     for(auto jj = 0; jj < first_string.size(); ++jj) {
-                        if(!findall(first_string.substr(jj),banned).empty()) {
+                        if(first_string.substr(jj).size() > 2 && first_string.substr(jj, 3) == "CCC") {
                             result += params_[0];
                         }
-                        if(!findall(second_string.substr(jj),banned).empty()) {
+                        if(second_string.substr(jj).size() > 2 && second_string.substr(jj, 3) == "CCC") {
                             result += params_[0];
                         }
                     }
