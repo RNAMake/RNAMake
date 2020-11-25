@@ -184,7 +184,6 @@ PoseOP
 Parser::parse_to_pose(
     String const & sequence,
     String const & dot_bracket) {
-    
     auto motifs = parse_to_motifs(sequence, dot_bracket);
     auto m = _build_motif(structure_);
 

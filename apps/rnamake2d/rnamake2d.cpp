@@ -111,11 +111,11 @@ void
 RNAMake2D::run()  {
 
     static plog::ConsoleAppender< plog::TxtFormatter > console;
-    if(!parameters_.cluster_mode)   {
+    //if(!parameters_.cluster_mode)   {
         plog::init(plog::info, &console);
-    } else {
-        plog::init(plog::warning, &console);
-    }
+    //} else {
+    //    plog::init(plog::warning, &console);
+    //}
 
     // checking that the start params are ok
     check_start_params_();
@@ -140,7 +140,6 @@ RNAMake2D::run()  {
                 // the case when the bp_cutoff is already high enough
                 sfxn_iteration_(design);
             }
-
             if( design_above_threshold_(design) )  { break; }
         }
         // probably should check if the design is above the score cutoff
