@@ -6,6 +6,7 @@
 #include <vector>
 #include <string_view>
 #include <regex>
+#include <tuple>
 
 #include <base/types.h>
 #include <plog/Log.h>
@@ -27,23 +28,36 @@ namespace rnamake2d {
         int buffer_;
         util::MotifType mtype_;
 
-        private:
+    private:
         void
-        build_sequence_(bool mutant=false)  {
-            if(!sequence.empty()) {
-                sequence.clear();
-            }
-            for(const auto& span : strands) {
-                for(const auto index : span)  {
-                    if(mutant)  {
-                        sequence += full_mutated_sequence_[index];
-                    } else {
-                        sequence += full_sequence_[index];
-                    }
-                }
-                sequence += '&';
-            }
-            sequence.pop_back();
+        build_sequence_(bool mutant=false);
+
+    public:
+        virtual
+        bool
+        is_helix() const {
+            return false;
+        }
+
+    public:
+        virtual
+        bool
+        is_hairpin() const {
+            return false;
+        }
+
+    public:
+        virtual
+        bool
+        is_junction() const {
+            return false;
+        }
+
+    public:
+        virtual
+        bool
+        is_singlestrand() const {
+            return false;
         }
 
     public:
@@ -99,28 +113,18 @@ namespace rnamake2d {
 
     protected:
         void
-        setup_nts_() {
-            for(const auto& strand : strands) {
-                for(const auto& pos : strand) {
-                    nts_.insert(pos);
-                }
-            }
-        }
+        setup_nts_();
+
     };
 
     struct Hairpin : Motif {
         int size_ = -1;
-        explicit Hairpin(std::vector<Ints>& strands) {
-            if(strands.size() != 1) {
-                std::cout<<"Hairpin must be 1 strand\n";
-                exit(1);
-            }
-            this->strands = std::move(strands);
-            size_ = this->strands[0].size() - 2;
-            token_ = "Hairpin" + std::to_string(size_);
-            buffer_ = 1;
-            mtype_ = util::MotifType::HAIRPIN;
-            setup_nts_();
+        explicit Hairpin(std::vector<Ints>& strands);
+
+    public:
+        bool
+        is_hairpin() const final {
+            return true;
         }
     };
 
@@ -128,77 +132,38 @@ namespace rnamake2d {
         int num_branches_ = 0;
         Ints gap_sizes;
         int gc{0}, au{0}, gu{0}, unknown{0};
-        explicit Junction(std::vector<Ints>& strands) {
-            if(strands.size() < 2) {
-                std::cout<<"Junction must have at LEAST 2 strands\n";
-                exit(1);
-            }
-            this->strands = std::move(strands);
-            token_ = "Junction" + std::to_string(this->strands.size());
-            mtype_ = util::MotifType::NWAY;
-            for(const auto& strand : this->strands) {
-                token_ += '_';
-                token_ += std::to_string(*strand.crbegin() - *strand.cbegin());
-            }
-            setup_nts_();
-        }
+        explicit Junction(std::vector<Ints>& strands);
 
         void
-        full_sequence(String const & sequence)  override {
-            this->Motif::full_sequence(sequence);
-            auto pairs = std::vector<std::pair<int,int>>{{*strands.begin()->begin(),*strands.rbegin()->rbegin()}};
+        full_sequence(String const & sequence)  override;
 
-            auto it = sequence.find('&');
-            while(it != String::npos)  {
-               pairs.emplace_back(it-1,it+1);
-               it = sequence.find('&',it+1);
-            }
-
-            for(const auto& pr : pairs) {
-                String base_pair;
-                base_pair += sequence[pr.first] + sequence[pr.second];
-                if(base_pair == "AU" || base_pair == "UA") {
-                    ++au;
-                } else if (base_pair == "GC" || base_pair == "CG") {
-                    ++gc;
-                } else if (base_pair == "GU" || base_pair == "UG") {
-                    ++gu;
-                } else {
-                    ++unknown;
-                }
-            }
+    public:
+        bool
+        is_junction() const final {
+            return true;
         }
-
     };
 
     struct Helix : Motif {
-        explicit Helix(std::vector<Ints>& strands) {
-            if(strands.size() != 2) {
-                std::cout<<"Helix must be 2 strand\n";
-                exit(1);
+        explicit Helix(std::vector<Ints>& strands);
 
-            }
-            mtype_ = util::MotifType::HELIX;
-            this->strands = std::move(strands);
-            buffer_ = this->strands[0].size();
-            size_ = this->strands[0].size();
-            token_ = "Helix" + std::to_string(size_);
-            setup_nts_();
+    public:
+        bool
+        is_helix() const final {
+            return true;
         }
+
     };
 
     struct SingleStrand : Motif {
+        explicit SingleStrand(std::vector<Ints>& strands);
 
-        explicit SingleStrand(std::vector<Ints>& strands) {
-            if(strands.size() != 1) {
-                std::cout<<"SingleStrand must be 1 strand\n";
-                exit(1);
+        public:
+            bool
+            is_singlestrand() const final {
+                return true;
             }
-            this->strands = std::move(strands);
-            size_ = this->strands.size();
-            token_ = "SingleStrand" + std::to_string(size_);
-            setup_nts_();
-        }
+
     };
 }
 
@@ -208,13 +173,18 @@ using Motif2Ds = std::vector<Motif2D>;
 using Motif2DOP = std::shared_ptr<Motif2D>;
 using Motif2DOPs = std::vector<Motif2DOP>;
 
+using HairpinOPs = std::vector<std::shared_ptr<rnamake2d::Hairpin>>;
+using JunctionOPs = std::vector<std::shared_ptr<rnamake2d::Junction>>;
+using HelixOPs = std::vector<std::shared_ptr<rnamake2d::Helix>>;
+using SingleStrandOPs = std::vector<std::shared_ptr<rnamake2d::SingleStrand>>;
+
 namespace  rnamake2d {
 
-    Motif2DOPs
+    std::tuple< HairpinOPs , HelixOPs, JunctionOPs, SingleStrandOPs>
     parse_to_motif2ds( secondary_structure::PoseOP const&, String const& );
 
     void
-    find_buffers( Motif2DOPs&, int );
+    find_buffers(HelixOPs& helices, JunctionOPs& junctions, SingleStrandOPs& singlestrands, HairpinOPs& hairpins, int size);
 }
 
 #endif // __SSMOTIF_H__

@@ -14,7 +14,12 @@ namespace rnamake2d {
         String sequence;
         RNAElems elements;
         Ints e_pairmap;
-
+    private:
+        JunctionOPs junctions_;
+        HairpinOPs hairpins_;
+        SingleStrandOPs singlestrands_;
+        HelixOPs helices_;
+    public:
         explicit Feature2D(eternabot::Features &features) {
             this->gu = features.gu;
             this->gc = features.gc;
@@ -47,9 +52,89 @@ namespace rnamake2d {
             return *this;
         }
 
+    public:
+        JunctionOPs const &
+        junctions() const {
+            return junctions_;
+        }
 
-        };
+    public:
+        void
+        reset_motifs() {
+            if(!motifs.empty() ){
+                motifs.clear();
+            }
+
+            if(!helices_.empty()) {
+                helices_.clear();
+            }
+
+            if(!junctions_.empty()) {
+                junctions_.clear();
+            }
+
+            if(!hairpins_.empty()) {
+                hairpins_.clear();
+            }
+
+            if(!singlestrands_.empty()) {
+                singlestrands_.clear();
+            }
+        }
+
+        void
+        junctions(JunctionOPs& junctions) {
+            for(auto& junc : junctions) {
+                junctions_.push_back(junc);
+                motifs.push_back(junc);
+            }
+        }
+
+
+    public:
+        HairpinOPs const &
+        hairpins() const {
+            return hairpins_;
+        }
+
+        void
+        hairpins(HairpinOPs& hairpins) {
+            for(auto& hp : hairpins) {
+                hairpins_.push_back(hp);
+                motifs.push_back(hp);
+            }
+        }
+
+    public:
+        SingleStrandOPs const &
+        singlestrands() const {
+            return singlestrands_;
+        }
+
+        void
+        singlestrands(SingleStrandOPs& singlestrands) {
+            for(auto& ss : singlestrands) {
+                singlestrands_.push_back(ss);
+                motifs.push_back(ss);
+            }
+        }
+
+    public:
+        HelixOPs const &
+        helices() const {
+            return helices_;
+        }
+
+        void
+        helices(HelixOPs& helices) {
+            for(auto& hel : helices) {
+                helices_.push_back(hel);
+                motifs.push_back(hel);
+            }
+        }
+    };
 } // namespace rnamake2d
+
 using Feature2DOP = std::shared_ptr<rnamake2d::Feature2D>;
 using Feature2DOPs = std::vector<Feature2DOP>;
 

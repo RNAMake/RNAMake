@@ -23,6 +23,7 @@ namespace rnamake2d {
     public:
         Feature2DOP mutant_;
     private:
+
         secondary_structure::PoseOP best_pose;
         secondary_structure::PoseOP mutant_pose;
         secondary_structure::Parser parser;

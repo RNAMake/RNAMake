@@ -133,6 +133,7 @@ RNAMake2D::run()  {
         design.bp_score(vienna_fxn_.score(design));
         for(auto ii = 0; ii < parameters_.steps; ++ii) {
             // to break out of the loop, the design needs to surppass the bp_cutoff and the score_fxn cutoff
+            std::cout<<design.bp_score()<<"\t"<<design.score()<<std::endl;
             if(design.bp_score() < parameters_.bp_cutoff) {
                 // bp_cutoff not met yet
                 bp_iteration_(design);

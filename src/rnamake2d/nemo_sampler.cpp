@@ -670,32 +670,26 @@ namespace rnamake2d {
         return best;
     }
 
-    int
-    NemoSampler::nemo_main(Design& design) {
-        // TODO keep track of the iterations down here
-        // TODO break up these functions... there is so much crap going on in here its abusrd
-        constraint_ = design.constraint_;
-        char *copy = strdup(start);
-        char *secstr = strdup(target);
-        secstr[0] = '\0';
-        int closest_bpd = 999999;
-        char *closest_struct = strdup(target);
-        double closest_fe;
+    void
+    NemoSampler::transfer_results_(Design& design) const {
+        if (bpd == 0) {
+            design.sequence_.reserve(strlen(position));
+            strncpy(&(design.sequence_[0]),position,strlen(position));
+        } else {
+            design.sequence_.reserve(strlen(closest_seq));
+            strncpy(&(design.sequence_[0]),closest_seq,strlen(closest_seq));
+        }
+    }
 
-        int stuck = 0;
-        char *last_copy = strdup(start);
-
-        double final, e;
-        int n_iter = iter;
-
-        if (seed) strcpy(copy, seed);
+    void
+    NemoSampler::main_loop_(char* copy, char* secstr, char* position, char* closest_struct, char* last_copy,  double& final, double& e,  double& closest_fe, int& stuck , int& closest_bpd) {
 
         for (; iter; iter--) {
             strcpy(position, copy);
             // half the time, use the best boosts we know of during playouts
             force_boost = int_urn(0, 1) == 0;
             // (try to) solve
-            final = nested( position,  1 );
+            final = nested(position, 1);
             // score the search result
             secstr[0] = 0;
             e = fold(position, secstr);
@@ -843,7 +837,7 @@ namespace rnamake2d {
 
             } while (strspn(copy, "AUGC") == strlen(copy));
 
-            if( retry != nullptr ) free(retry);
+            if (retry != nullptr) free(retry);
 
             // if we seem to be chasing our own tail, reset completely
             if (strcmp(last_copy, copy) == 0) {
@@ -856,13 +850,31 @@ namespace rnamake2d {
                 stuck = 0;
             }
         }
-        if (bpd == 0) {
-            design.sequence_.reserve(strlen(position));
-            strncpy(&(design.sequence_[0]),position,strlen(position));
-        } else {
-            design.sequence_.reserve(strlen(closest_seq));
-            strncpy(&(design.sequence_[0]),closest_seq,strlen(closest_seq));
-        }
+    }
+
+    int
+    NemoSampler::nemo_main(Design& design) {
+        // TODO keep track of the iterations down here
+        // TODO break up these functions... there is so much crap going on in here its abusrd
+        constraint_ = design.constraint_;
+        char *copy = strdup(start);
+        char *secstr = strdup(target);
+        secstr[0] = '\0';
+        int closest_bpd = 999999;
+        char *closest_struct = strdup(target);
+        double closest_fe;
+
+        int stuck = 0;
+        char *last_copy = strdup(start);
+
+        double final, e;
+        int n_iter = iter;
+
+        if (seed) strcpy(copy, seed);
+
+        main_loop_(copy,secstr, position, closest_struct, last_copy, final, e, closest_fe, stuck, closest_bpd);
+
+        transfer_results_(design);
         return 0;
     }
 
@@ -921,6 +933,7 @@ namespace rnamake2d {
            }
         }
     }
+
     void
     NemoSampler::mutate(Design & design)  {
         // right now we are basically making a new copy everty time... to fix this, make it

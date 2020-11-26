@@ -21,7 +21,7 @@ type_to_str(MotifType const mtype) {
     else if (mtype == MotifType::HELIX) { return "HELIX"; }
     else if (mtype == MotifType::UNKNOWN) { return "UNKNOWN"; }
     else if (mtype == MotifType::TCONTACT) { return "TCONTACT"; } // Added by CJ 08/20
-    else { throw "cannot indentify type "; }
+    else { throw std::runtime_error("cannot indentify type"); }
 }
 
 MotifType const

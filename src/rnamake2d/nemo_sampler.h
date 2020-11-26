@@ -111,6 +111,14 @@ namespace rnamake2d {
 
     private:
         void
+        transfer_results_(Design&) const ;
+
+    private:
+        void
+        main_loop_(char* copy, char* secstr, char* position, char* closest_struct, char* last_copy,  double& final, double& e,  double& closest_fe, int& stuck , int& closest_bpd);
+
+    private:
+        void
         reset_() {
             // reset variables
             bpd = std::numeric_limits<int>::max();

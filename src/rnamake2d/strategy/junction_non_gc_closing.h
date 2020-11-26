@@ -17,12 +17,7 @@ namespace rnamake2d {
         score(Feature2DOP const& feature) override {
             auto result(100.f);
 
-            for(const auto& motif : feature->motifs) {
-                if(motif->mtype() != util::MotifType::NWAY && motif->mtype() != util::MotifType::TWOWAY) {
-                    continue;
-                }
-                //const auto& jnc = std::dynamic_pointer_cast<rnamake2d::Junction>(motif);
-                const auto jnc = (rnamake2d::Junction*)motif.get();
+            for(const auto& jnc : feature->junctions()) {
                 result -= params_[0]*(jnc->au + jnc->gu + jnc->unknown);
             }
 
