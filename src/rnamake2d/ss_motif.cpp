@@ -3,24 +3,35 @@
 
 namespace rnamake2d {
     void
-    Motif2D::build_sequence_(bool mutant)  {
+    Motif2D::build_sequence_()  {
         if(!sequence.empty()) {
             sequence.clear();
         }
 
         for(const auto& span : strands) {
             for(const auto index : span)  {
-                if(mutant)  {
-                    sequence += full_mutated_sequence_[index];
-                } else {
-                    sequence += full_sequence_[index];
-                }
+                sequence += full_sequence_[index];
             }
             sequence += '&';
         }
 
         sequence.pop_back();
     }
+
+    bool
+    Motif2D::operator==(const Motif& other) const {
+
+        return mtype_ == other.mtype_               &&
+               size_ == other.size_                 &&
+               buffer_ == other.buffer_             &&
+               sequence == other.sequence           &&
+               dot_bracket == other.dot_bracket     &&
+               comp_vectors(strands, other.strands) &&
+               comp_usets(nts_, other.nts_)         &&
+               token_ == other.token_;
+
+    }
+
     void
     Motif2D::setup_nts_() {
         for(const auto& strand : strands) {
@@ -29,20 +40,26 @@ namespace rnamake2d {
             }
         }
     }
-    Hairpin::Hairpin(std::vector<Ints> &strands) {
+
+    Hairpin::Hairpin(std::vector<Ints>& strands, String const& sequence) {
         if(strands.size() != 1) {
             std::cout<<"Hairpin must be 1 strand\n";
             exit(1);
         }
         this->strands = std::move(strands);
+
         size_ = this->strands[0].size() - 2;
         token_ = "Hairpin" + std::to_string(size_);
         buffer_ = 1;
         mtype_ = util::MotifType::HAIRPIN;
         setup_nts_();
+
+        if(!sequence.empty()) {
+            full_sequence(sequence);
+        }
     }
 
-    Junction::Junction(std::vector<Ints> &strands) {
+    Junction::Junction(std::vector<Ints> &strands, String const& sequence) {
         if(strands.size() < 2) {
             std::cout<<"Junction must have at LEAST 2 strands\n";
             exit(1);
@@ -56,6 +73,9 @@ namespace rnamake2d {
         }
         setup_nts_();
         //std::cout<<sequence<<std::endl; exit(1);
+        if(!sequence.empty()) {
+            full_sequence(sequence);
+        }
     }
 
     void
@@ -84,21 +104,27 @@ namespace rnamake2d {
         }
     }
 
-    Helix::Helix(std::vector<Ints> &strands) {
+    Helix::Helix(std::vector<Ints> &strands, String const& sequence) {
         if(strands.size() != 2) {
-            std::cout<<"Helix must be 2 strand\n";
+            LOGE<<"Helix must be 2 strand\n";
             exit(1);
 
         }
         mtype_ = util::MotifType::HELIX;
         this->strands = std::move(strands);
         buffer_ = this->strands[0].size();
-        size_ = this->strands[0].size();
+        size_ = buffer_;
         token_ = "Helix" + std::to_string(size_);
         setup_nts_();
+
+        if(!sequence.empty()) {
+            full_sequence(sequence);
+        }
     }
 
-    SingleStrand::SingleStrand(std::vector<Ints> &strands) {
+    SingleStrand::SingleStrand(std::vector<Ints> &strands, String const& sequence) {
+        mtype_ = util::MotifType::SSTRAND;
+        buffer_ = 0;
         if(strands.size() != 1) {
             std::cout<<"SingleStrand must be 1 strand\n";
             exit(1);
@@ -107,6 +133,9 @@ namespace rnamake2d {
         size_ = this->strands.size();
         token_ = "SingleStrand" + std::to_string(size_);
         setup_nts_();
+        if(!sequence.empty()) {
+            full_sequence(sequence);
+        }
     }
 
     void
@@ -235,7 +264,7 @@ namespace rnamake2d {
     }
 
     std::tuple<HairpinOPs ,HelixOPs,  JunctionOPs, SingleStrandOPs>
-    parse_to_motif2ds(secondary_structure::PoseOP const & pose , String const& dot_bracket ) {
+    parse_to_motif2ds(secondary_structure::PoseOP const & pose , String const& dot_bracket, String const& sequence ) {
         //auto motif2ds = Motif2DOPs{};
 
         auto helices = HelixOPs{};
@@ -249,6 +278,11 @@ namespace rnamake2d {
         setup_edge_case_singlestrands(pose, hairpins, helices, junctions, singlestrands, dot_bracket);
 
         find_buffers(helices, junctions, singlestrands, hairpins, dot_bracket.size());
+
+        for(auto& hel : helices) {hel->full_sequence(sequence);}
+        for(auto& hps : hairpins) {hps->full_sequence(sequence);}
+        for(auto& junc : junctions) {junc->full_sequence(sequence);}
+        for(auto& ss : singlestrands) {ss->full_sequence(sequence);}
 
         return std::make_tuple(std::move(hairpins), std::move(helices), std::move(junctions), std::move(singlestrands));
     }

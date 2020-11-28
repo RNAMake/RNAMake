@@ -7,9 +7,11 @@ namespace rnamake2d {
 
         auto score(0.);
         for(auto ii = 0; ii < num_strats; ++ii) {
-            score += strategies_[ii]->score(feature)*weights_[ii];
-            //std::cout<<score<<"\t"<<strategies_[ii]->name()<<std::endl;
+            const auto tmp = strategies_[ii]->score(feature)*weights_[ii];
+            score += tmp;
+            std::cout<<strategies_[ii]->name()<<'\t'<<strategies_[ii]->score(feature)<<std::endl;
         }
+        exit(1);
         return score;
     }
 

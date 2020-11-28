@@ -11,6 +11,7 @@
 #include <base/types.h>
 #include <plog/Log.h>
 #include <secondary_structure/secondary_structure_parser.h>
+#include <rnamake2d/rna_element.h>
 
 namespace rnamake2d {
     struct Motif {
@@ -30,7 +31,7 @@ namespace rnamake2d {
 
     private:
         void
-        build_sequence_(bool mutant=false);
+        build_sequence_();
 
     public:
         virtual
@@ -101,6 +102,11 @@ namespace rnamake2d {
             return buffer_;
         }
 
+        void
+        buffer(int buffer) {
+            buffer_ = buffer;
+        }
+
         bool
         contains(int num) {
             return nts_.find(num) != nts_.end();
@@ -111,6 +117,11 @@ namespace rnamake2d {
             return mtype_;
         }
 
+        public:
+        virtual
+        bool
+        operator==(const Motif& other) const ;
+
     protected:
         void
         setup_nts_();
@@ -118,8 +129,7 @@ namespace rnamake2d {
     };
 
     struct Hairpin : Motif {
-        int size_ = -1;
-        explicit Hairpin(std::vector<Ints>& strands);
+        explicit Hairpin(std::vector<Ints>& strands, String const& sequence="");
 
     public:
         bool
@@ -132,7 +142,7 @@ namespace rnamake2d {
         int num_branches_ = 0;
         Ints gap_sizes;
         int gc{0}, au{0}, gu{0}, unknown{0};
-        explicit Junction(std::vector<Ints>& strands);
+        explicit Junction(std::vector<Ints>& strands, String const& sequence="");
 
         void
         full_sequence(String const & sequence)  override;
@@ -145,7 +155,7 @@ namespace rnamake2d {
     };
 
     struct Helix : Motif {
-        explicit Helix(std::vector<Ints>& strands);
+        explicit Helix(std::vector<Ints>& strands, String const& sequence="");
 
     public:
         bool
@@ -156,7 +166,7 @@ namespace rnamake2d {
     };
 
     struct SingleStrand : Motif {
-        explicit SingleStrand(std::vector<Ints>& strands);
+        explicit SingleStrand(std::vector<Ints>& strands, String const& sequence="");
 
         public:
             bool
@@ -181,7 +191,7 @@ using SingleStrandOPs = std::vector<std::shared_ptr<rnamake2d::SingleStrand>>;
 namespace  rnamake2d {
 
     std::tuple< HairpinOPs , HelixOPs, JunctionOPs, SingleStrandOPs>
-    parse_to_motif2ds( secondary_structure::PoseOP const&, String const& );
+    parse_to_motif2ds( secondary_structure::PoseOP const& pose, String const& dot_bracket, String const& sequence);
 
     void
     find_buffers(HelixOPs& helices, JunctionOPs& junctions, SingleStrandOPs& singlestrands, HairpinOPs& hairpins, int size);

@@ -176,6 +176,44 @@ namespace rnamake2d {
             return true;
         }
     }
+
+    template<typename T>
+    bool
+    comp_vectors(std::vector<std::vector<T>> const& v1, std::vector<std::vector<T>> const& v2) {
+         if(v1.size() != v2.size()) {
+             return false;
+         } else {
+             for(auto ii = 0; ii < v1.size(); ++ii) {
+                 if(!comp_vectors(v1[ii], v2[ii])) {
+                     return false;
+                 }
+             }
+             return true;
+         }
+    }
+
+    template<typename T>
+    bool
+    comp_usets(std::unordered_set<T> const& s1, std::unordered_set<T> const& s2) {
+        if(s1.size() != s2.size()) {
+            return false;
+        } else {
+
+            for(const auto elem : s1)  {
+                if(s2.find(elem) == s2.end()) {
+                    return false;
+                }
+            }
+
+            for(const auto elem : s2) {
+                if(s1.find(elem) == s1.end()) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }
 } // namespace rnamake2d
 
 #endif // RNAMAKE_RNA_ELEMENT_H

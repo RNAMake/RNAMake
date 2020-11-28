@@ -10,16 +10,16 @@ namespace rnamake2d {
         best = std::make_shared<rnamake2d::Feature2D>(*generator.eternabot::FeatureGenerator::get_features(best_pose));
         // also setup the motifs here
         best->reset_motifs();
-        auto [hairpins, helices, junctions, singlestrands] =  parse_to_motif2ds(best_pose, target_);
+        auto [hairpins, helices, junctions, singlestrands] =  parse_to_motif2ds(best_pose, target_, sequence_);
 
         best->hairpins(hairpins);
         best->helices(helices);
         best->junctions(junctions);
         best->singlestrands(singlestrands);
 
-        for(auto& motif : best->motifs) {
-            motif->full_sequence( sequence_ );
-        }
+        //for(auto& motif : best->motifs) {
+        //    motif->full_sequence( sequence_ );
+        //}
 
 
         best->e_pairmap = get_pairmap_from_secstruct( target_ );
@@ -62,7 +62,7 @@ namespace rnamake2d {
         //mutant_->motifs = parse_to_motif2ds(best_pose, target_);
         //for(auto& m : mutant->motifs)  m->show();
         mutant_->reset_motifs();
-        auto [hairpins, helices, junctions, singlestrands] =  parse_to_motif2ds(best_pose, target_);
+        auto [hairpins, helices, junctions, singlestrands] =  parse_to_motif2ds(best_pose, target_, candiate_);
         //best->motifs = ;
         mutant_->hairpins(hairpins);
         mutant_->helices(helices);
@@ -70,9 +70,9 @@ namespace rnamake2d {
         mutant_->singlestrands(singlestrands);
 
 
-        for(auto& motif : mutant_->motifs) {
-            motif->full_sequence( candiate_ );
-        }
+        //for(auto& motif : mutant_->motifs) {
+        //    motif->full_sequence( candiate_ );
+        //}
 
         mutant_->e_pairmap = get_pairmap_from_secstruct( target_ );
         mutant_->sequence = mutated;

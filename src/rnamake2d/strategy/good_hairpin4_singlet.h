@@ -27,14 +27,12 @@ namespace rnamake2d {
         score( Feature2DOP const & feature ) override  {
             auto result(params_[0]);
 
-            for(const auto& motif : feature->motifs) {
-                if( motif->mtype() == util::MotifType::HAIRPIN
-                        && motif->buffer_ == 1
-                        && good_.find(motif->sequence) != good_.end()
-                        ) {
+            for(const auto& hairpin : feature->hairpins()) {
+                if(hairpin->buffer() == 1 && good_.find(hairpin->sequence) != good_.end()) {
                     result += params_[1];
                 }
             }
+
 
             return result;
         }

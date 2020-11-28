@@ -31,12 +31,10 @@ namespace rnamake2d {
         float
         score(Feature2DOP const &feature) override {
             auto result(100.f);
-
-            for(const auto& motif : feature->motifs) {
-               if(motif->mtype() == util::MotifType::NWAY &&
-                    bad_.find(motif->sequence) != bad_.end()) {
+            for(const auto& junc : feature->junctions()) {
+                if(bad_.find(junc->sequence) != bad_.end()) {
                     result -= params_[0];
-               }
+                }
             }
 
             return result;
