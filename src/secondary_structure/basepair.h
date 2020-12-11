@@ -8,7 +8,6 @@
 
 #ifndef __RNAMake__ss_basepair__
 #define __RNAMake__ss_basepair__
-
 #include <stdio.h>
 #include <sstream>
 
@@ -28,8 +27,8 @@ public:
     res2_(res2),
     uuid_(uuid)
     {}
-    
-    ~Basepair() {}
+
+        ~Basepair() {}
     
 public:
     

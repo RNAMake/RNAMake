@@ -19,13 +19,11 @@ def build_libraries(lib_list, dependencies, base_dir, static):
                 Utils.make_file_list(
                     [str(fp) for fp in Path(base_dir + "/" + library).rglob("*")]
                 )
-            ),
+            )
         )
-        # library_declarations += "add_library({LIB}_lib STATIC ${{{LIB}_files}})\n".format(LIB=library)
         library_declarations += "add_library({LIB}_lib {BUILD} ${{{LIB}_files}})\n".format(
             LIB=library, BUILD="STATIC" if static else ""
-        )
-        # library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} -static)\n".format(
+        ) 
         library_declarations += "target_link_libraries({LIB}_lib {DEPENDS} {BUILD})\n".format(
             LIB=library,
             DEPENDS=" ".join(
@@ -34,7 +32,6 @@ def build_libraries(lib_list, dependencies, base_dir, static):
             ),
             BUILD="-static" if static else "",
         )
-    # library_declarations += "add_library(all_lib STATIC {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} -static)\n".format(
     library_declarations += "add_library(all_lib {BUILD} {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} {LINK})\n".format(
         LIBS=" ".join([lib + "_lib" for lib in dependencies["all"]]),
         DIR=base_dir,
@@ -77,27 +74,33 @@ def write_CML_file(content_list):
 
 def build_apps(base_dir, static):
     """Method that creates declarations for the applications"""
-    application_text = "#" * 100 + "\n" + "# App declarations\n" + "#" * 100
+    hundred_dashes = "#"*100
+    seventyfive_dashes = "#"*75
+    
+    application_text = f"{hundred_dashes}\n# App declarations\n{hundred_dashes}\n"
+    
     with open(base_dir + "/cmake/build/apps.txt", "r") as infile:
+        
         for app_declaration in infile.readlines():
-            if app_declaration.find("#") == -1:
-                app_tokens = app_declaration.split()
-                source_file = re.sub("\.\./", "", app_tokens[-1])
-                application_text += (
-                    "#" * 75
-                    + "\n# {NAME}".format(NAME=app_tokens[0])
-                    + "\n"
-                    + "#" * 75
-                    + "\n"
-                )
-                application_text += "\tadd_executable({NAME} {SRC})\n".format(
-                    NAME=app_tokens[0], SRC="/".join([base_dir, source_file])
-                )
+            
+            if len(re.findall("^ #",app_declaration)) > 0:
+                continue
+            
+            app_tokens = app_declaration.split()
+            for full_path in  Utils.make_file_list(
+                [str(fp) for fp in Path(f"{base_dir}/apps/{app_tokens[0]}/").rglob("*")]
+                                                    ):
+                source_file = re.sub("\.\./", "", full_path)
+                app_name = source_file.split('/')[-1].split('.')[0]
+                 
+                application_text += f"{seventyfive_dashes}\n# {app_name}\n{seventyfive_dashes}\n"
+                application_text += f"\tadd_executable( {app_name} {full_path})\n"
                 application_text += "\ttarget_link_libraries({NAME} all_lib {LINK}  )\n".format(
-                    NAME=app_tokens[0], LINK="-static" if static else ""
+                    NAME=app_name, LINK="-static" if static else ""
                 )
-                # application_text += "\ttarget_link_libraries({NAME} all_lib -static)\n".format(NAME=app_tokens[0])
-    application_text += "#" * 100 + "\n"
+    
+    application_text += f"{hundred_dashes}\n"
+    
     return application_text
 
 
@@ -107,13 +110,7 @@ def build_header(base_dir, static, target):
     header_contents += "cmake_minimum_required(VERSION 3.0)\n"
     header_contents += "set(CMAKE_BUILD_TYPE Release)\n"
     header_contents += "project(RNAMake)\n\n"
-    # header_contents += "set(CMAKE_SYSTEM_NAME {SYS})\n".format(
-    #        SYS="MAC"
-    #        )
-    # header_contents += "set(CMAKE_C_COMPILER clang)\n"
-    # header_contents += "set(CMAKE_CXX_COMPILER clang++)\n"
-    # if target == "linux":
-    #    header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
+
     if static == True:
         # header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
         header_contents += 'set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-as-needed ")\n'
@@ -200,6 +197,7 @@ if __name__ == "__main__":
 
     libs = "base math data_structure util vienna secondary_structure eternabot structure motif motif_tools resources motif_data_structure thermo_fluctuation motif_search sequence_optimization".split()
     base_dir = get_base_dir()
+    
     write_CML_file(
         [
             build_header(

@@ -73,9 +73,11 @@ X3dna::_generate_ref_frame(
 
     auto find_pair_path = bin_path_ + "find_pair ";
     auto analyze_path = bin_path_ + "analyze ";
+    //auto command = find_pair_path + pdb_path + " stdout | " + analyze_path + "stdin ";
     auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin >& /dev/null";
     auto s = strdup(command.c_str());
-    auto result = std::system(s);
+    auto result = std::system(  s);
+
     if (result != 0) {
         generated_ref_frames_ = true;
         no_ref_frames_ = true;

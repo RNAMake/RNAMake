@@ -2,8 +2,8 @@
 // Created by Joseph Yesselman on 2019-04-19.
 //
 
-#include "ddg_tecto/tecto_graph_setup.h"
-#include <base/log.h>
+//#include "ddg_tecto/tecto_graph_setup.h"
+//#include <base/log.h>
 
 //motif::MotifOPs
 //get_motifs_from_secondary_structure(

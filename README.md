@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/jyesselm/RNAMake.svg?token=Kxiycasibo9yqZt7eayf&branch=devel)](https://travis-ci.com/jyesselm/RNAMake)
+[![Build Status](https://travis-ci.com/RNAMake/RNAMake.svg?token=Kxiycasibo9yqZt7eayf&branch=devel)](https://travis-ci.com/RNAMake/RNAMake)
 
 RNAMake
 =======

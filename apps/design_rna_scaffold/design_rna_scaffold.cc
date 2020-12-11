@@ -2,6 +2,8 @@
 // Created by Joseph Yesselman on 3/9/19.
 //
 
+#include <CLI/CLI.hpp>
+
 #include "base/backtrace.h"
 #include "base/log.h"
 #include "design_rna_scaffold/design_rna_scaffold.h"
@@ -19,9 +21,7 @@ DesignRNAScaffold::DesignRNAScaffold () :
     app_("DesignRNAScaffold") {}
 
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-// app functions
-////////////////////////////////////////////////////////////////////////////////////////////////////
+// app functions  //////////////////////////////////////////////////////////////////////////////////
 
 String
 valid_pdb (String &path) {
@@ -397,7 +397,7 @@ DesignRNAScaffold::setup () {
     }
 
     //thermo sim setup
-    auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
+    auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::OldFrameScorer>();
     auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
     thermo_sim_ = std::make_shared<thermo_fluctuation::graph::Simulation>(thermo_scorer, sterics);
 
@@ -648,6 +648,9 @@ DesignRNAScaffold::_setup_sol_template_from_path (
             auto ms = motif::MotifStateOP(nullptr);
             try {
                 ms = rm_.motif_state(e);
+                // Need to do this in case I am using two copies of the same motif
+                ms->new_uuids();
+                //std::cout << ms->uuid() << std::endl;
             }
             catch(resources::ResourceManagerException const & error) {
                 LOG_ERROR << "unclear what " << e << " is it is not recognized as a motif library," <<
@@ -956,8 +959,8 @@ main (
     //must add this for all apps!
     std::set_terminate(base::print_backtrace);
 
-    String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
-    resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
+    //String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
+    //resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);

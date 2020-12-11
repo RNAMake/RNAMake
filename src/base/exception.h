@@ -8,31 +8,31 @@
 namespace base {
 //base project exception
 struct RNAMakeException : public std::runtime_error {
-    RNAMakeException(String const& msg) : std::runtime_error(msg) {
+    explicit RNAMakeException(String const& msg) : std::runtime_error(msg) {
 
     }
-    RNAMakeException(const char* msg) : std::runtime_error(msg) {
+    explicit RNAMakeException(const char* msg) : std::runtime_error(msg) {
 
     }
 };
 //IO excpetion
 struct RNAMakeIOException : public RNAMakeException {
-    RNAMakeIOException(String const& msg) : RNAMakeException(msg) {
+    explicit RNAMakeIOException(String const& msg) : RNAMakeException(msg) {
 
     }
 
-    RNAMakeIOException(const char* msg) : RNAMakeException(msg) {
+    explicit RNAMakeIOException(const char* msg) : RNAMakeException(msg) {
 
     }
 };
 
 //Implementation Exception
 struct RNAMakeImplementationExcepetion : public RNAMakeException {
-    RNAMakeImplementationExcepetion(String const& msg) : RNAMakeException(msg) {
+    explicit RNAMakeImplementationExcepetion(String const& msg) : RNAMakeException(msg) {
 
     }
 
-    RNAMakeImplementationExcepetion(const char* msg) : RNAMakeException(msg) {
+    explicit RNAMakeImplementationExcepetion(const char* msg) : RNAMakeException(msg) {
 
     }
 };
