@@ -1,4 +1,3 @@
-
 //headers for testing
 #include "../common.hpp"
 #include "../tools/motif_graph_builder.hpp"
@@ -14,21 +13,21 @@
 
 
 
-TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::MotifGraph]" ) {
+TEST_CASE( "Test Assembling Motifs together in Graph " ) {
 
-    SECTION("test adding motifs") {
+    SUBCASE("test adding motifs") {
         auto mg = motif_data_structure::MotifGraph();
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL");
         auto m3 = resources::Manager::instance().motif("HELIX.IDEAL");
         
-        SECTION("cannot find end if there is not parent") {
+        SUBCASE("cannot find end if there is not parent") {
             REQUIRE_THROWS_AS(mg.add_motif(m1, -1, "A1-A8"), motif_data_structure::MotifGraphException);
         }
         
         mg.add_motif(m1);
 
-        REQUIRE(mg.size() == 1);
+        CHECK(mg.size() == 1);
         
         // can never use parent_end_index=0 for a graph as that is where that node
         // is already connected to another node
@@ -47,7 +46,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         REQUIRE_THROWS_AS(mg.add_motif(m2, -1, "FAKE"), motif_data_structure::MotifGraphException);
     }
     
-    SECTION("test removing motifs") {
+    SUBCASE("test removing motifs") {
         auto mg = motif_data_structure::MotifGraph();
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
@@ -57,16 +56,16 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         mg.add_motif(m2);
         
         mg.remove_motif(1);
-        REQUIRE(mg.size() == 1);
+        CHECK(mg.size() == 1);
         
         mg.add_motif(m2);
         mg.add_motif(m3);
         mg.remove_level(0);
-        REQUIRE(mg.size() == 0);
+        CHECK(mg.size() == 0);
         
     }
     
-    SECTION("test getting nodes") {
+    SUBCASE("test getting nodes") {
         auto mg = motif_data_structure::MotifGraph();
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
@@ -78,26 +77,26 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         
     }
     
-    SECTION("test stringifying the motif graph yeilds indentical motifs when reloaded") {
+    SUBCASE("test stringifying the motif graph yeilds indentical motifs when reloaded") {
         auto builder = MotifGraphBuilder();
         auto mg = builder.build(5);
         auto s = mg->to_str();
         
         auto mg2 = std::make_shared<motif_data_structure::MotifGraph>(s, motif_data_structure::MotifGraphStringType::MG);
-        REQUIRE(mg->size() == mg2->size());
+        CHECK(mg->size() == mg2->size());
 
         for(int i = 0; i < mg->size(); i++) {
             auto atoms1 = mg->get_node(i)->data()->atoms();
             auto atoms2 = mg2->get_node(i)->data()->atoms();
-            REQUIRE(are_atom_vectors_equal(atoms1, atoms2));
+            CHECK(are_atom_vectors_equal(atoms1, atoms2));
             
         }
         
         auto struc = mg2->get_structure();
-        REQUIRE(struc->chains().size() == 2);
+        CHECK(struc->chains().size() == 2);
     }
     
-    SECTION("test compatibility with python stringification and topology serialization") {
+    SUBCASE("test compatibility with python stringification and topology serialization") {
         auto path = base::base_dir() + "/unittests/unittest_resources/motif_graph/";
         auto lines =base::get_lines_from_file(path + "test.mg");
         auto mg = motif_data_structure::MotifGraph(lines[0], motif_data_structure::MotifGraphStringType::MG);
@@ -109,17 +108,17 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         
     }
 
-    SECTION("test copying motif graph") {
+    SUBCASE("test copying motif graph") {
         auto builder = MotifGraphBuilder();
         auto mg = builder.build(5);
         
         auto mg_copy = std::make_shared<motif_data_structure::MotifGraph>(*mg);
-        REQUIRE(mg->size() == mg_copy->size());
+        CHECK(mg->size() == mg_copy->size());
         
         for(int i = 0; i < mg->size(); i++) {
             auto atoms1 = mg->get_node(i)->data()->atoms();
             auto atoms2 = mg_copy->get_node(i)->data()->atoms();
-            REQUIRE(are_atom_vectors_equal(atoms1, atoms2));
+            CHECK(are_atom_vectors_equal(atoms1, atoms2));
             
         }
         for(auto const & n : *mg_copy) {
@@ -127,11 +126,11 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
             for(auto const & c : n->connections()) {
                 if(c != nullptr) { count++; }
             }
-            REQUIRE(count != 0);
+            CHECK(count != 0);
         }
         
         auto rna_struct = mg_copy->get_structure();
-        REQUIRE(rna_struct->chains().size() == 2);
+        CHECK(rna_struct->chains().size() == 2);
         
         mg->replace_ideal_helices();
         auto mg_copy_2 = std::make_shared<motif_data_structure::MotifGraph>(*mg);
@@ -143,18 +142,18 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         
     }
  
-    SECTION("test replacing idealized helices") {
+    SUBCASE("test replacing idealized helices") {
         auto mg = motif_data_structure::MotifGraph();
         auto m = resources::Manager::instance().motif("HELIX.IDEAL.6");
         mg.add_motif(m);
         mg.replace_ideal_helices();
         
-        REQUIRE(mg.size() == 7);
+        CHECK(mg.size() == 7);
     
         auto builder = MotifGraphBuilder();
         auto mg2 = builder.build(2);
         
-        SECTION("make sure complex build is producing the right number of motifs") {
+        SUBCASE("make sure complex build is producing the right number of motifs") {
         
             auto expected_total = 0;
             for(auto const & n : *mg2) {
@@ -167,15 +166,15 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
             }
         
             mg2->replace_ideal_helices();
-            REQUIRE(mg2->size() == expected_total);
+            CHECK(mg2->size() == expected_total);
         }
         
         auto s = mg2->get_structure();
         
-        REQUIRE(s->chains().size() == 2);
+        CHECK(s->chains().size() == 2);
     }
   
-    SECTION("test replacing idealized helices 2") {
+    SUBCASE("test replacing idealized helices 2") {
         auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         auto m = resources::Manager::instance().motif("HELIX.IDEAL.6");
         m->move(math::Point(40, 0, 0));
@@ -194,10 +193,10 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         auto dist_2 = d1.distance(ds_2[1]);
         auto min = dist_1 < dist_2 ? dist_1 : dist_2;
         
-        REQUIRE(min < 0.1);
+        CHECK(min < 0.1);
     }
     
-    SECTION("test replacing helices with new sequence") {
+    SUBCASE("test replacing helices with new sequence") {
         auto mg = motif_data_structure::MotifGraph();
         auto m = resources::Manager::instance().motif("HELIX.IDEAL.6");
         mg.add_motif(m);
@@ -217,11 +216,11 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         secondary_structure::fill_basepairs_in_ss(dss);
 
         REQUIRE_NOTHROW(mg2->replace_helical_sequence(dss));
-        REQUIRE(mg2->sequence() == dss->sequence());
+        CHECK(mg2->sequence() == dss->sequence());
         
     }
     
-    SECTION("test replacing helices with new sequence 2") {
+    SUBCASE("test replacing helices with new sequence 2") {
         auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         auto m = resources::Manager::instance().motif("HELIX.IDEAL.6");
         m->move(math::Point(40, 0, 0));
@@ -243,10 +242,10 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         auto dist_2 = d1.distance(ds_2[1]);
         auto min = dist_1 < dist_2 ? dist_1 : dist_2;
         
-        REQUIRE(min < 10);
+        CHECK(min < 10);
     }
     
-    SECTION("test get end for easy building ") {
+    SUBCASE("test get end for easy building ") {
         auto base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
@@ -259,14 +258,14 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         mg.add_motif(ttr_m);
         mg.add_motif(m2);
         
-        REQUIRE(mg.size() == 3);
+        CHECK(mg.size() == 3);
         
         REQUIRE_NOTHROW(mg.get_available_end(1, "A222-A251"));
 
         REQUIRE_THROWS_AS(mg.get_available_end(0), motif_data_structure::MotifGraphException);
         REQUIRE_THROWS_AS(mg.get_available_end(2, "A4-A5"), motif_data_structure::MotifGraphException);
 
-        SECTION("try getting end by the name of the motif and end name") {
+        SUBCASE("try getting end by the name of the motif and end name") {
         
             REQUIRE_NOTHROW(mg.get_available_end("ttr", "A222-A251"));
             REQUIRE_THROWS_AS(mg.get_available_end("ttr", "FAKE_END"), motif_data_structure::MotifGraphException);
@@ -278,7 +277,7 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         
     }
     
-    SECTION("test connecting motifs") {
+    SUBCASE("test connecting motifs") {
         auto mg = motif_data_structure::MotifGraph();
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
@@ -296,17 +295,17 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         
         mg.add_connection(1, 2, "", "");
         auto s = mg.get_structure();
-        REQUIRE(s->chains().size() == 1);
+        CHECK(s->chains().size() == 1);
 
         REQUIRE_THROWS_AS(mg.add_motif(m3, -1, 1), motif_data_structure::MotifGraphException);
-        REQUIRE(mg.add_motif(m3) == -1);
+        CHECK(mg.add_motif(m3) == -1);
         
         REQUIRE_THROWS_AS(mg.add_connection(1, 2, "", ""), motif_data_structure::MotifGraphException);
         REQUIRE_THROWS_AS(mg.add_connection(1, 2, "", m1->ends()[0]->name()), motif_data_structure::MotifGraphException);
         
     }
     
-    SECTION("test adding motif tree to motif graph") {
+    SUBCASE("test adding motif tree to motif graph") {
         
         auto g = std::make_shared<BuilderGraph>();
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
@@ -321,13 +320,13 @@ TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::
         auto mg = motif_data_structure::MotifGraph();
         mg.add_motif(m1);
         REQUIRE_NOTHROW(mg.add_motif_tree(mt));
-        REQUIRE(mg.size() == 5);
-        REQUIRE(mg.get_node(2)->data()->mtype() == util::MotifType::NWAY);
+        CHECK(mg.size() == 5);
+        CHECK(mg.get_node(2)->data()->mtype() == util::MotifType::NWAY);
         
         auto mg2 = motif_data_structure::MotifGraph();
         mg2.add_motif(m1);
         REQUIRE_NOTHROW(mg2.add_motif_tree(mt, 0, "A1-A8"));
-        REQUIRE(mg2.size() == 5);
+        CHECK(mg2.size() == 5);
 
         
     }

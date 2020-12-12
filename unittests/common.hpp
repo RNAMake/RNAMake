@@ -3,10 +3,10 @@
 
 #pragma once
 
-#ifndef CATCH_CONFIG_MAIN
-#define CATCH_CONFIG_MAIN
+#ifndef DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
+#define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #endif
 
-#include "catch.hpp"
+#include "doctest.h"
 
 #endif

@@ -1,4 +1,5 @@
 
+
 #include "../../common.hpp"
 
 #include "base/file_io.h"
@@ -8,10 +9,10 @@
 #include "structure/is_equal.hpp"
 
 
-TEST_CASE( "Load all PDBs", "[structure::PDBParser]" ) {
+TEST_CASE( "Load all PDBs" ) {
     auto parser = structure::PDBParser();
     
-    SECTION("compare all parsed structures to python counterpart") {
+    SUBCASE("compare all parsed structures to python counterpart") {
         
         auto path = base::unittest_resource_dir() + "/structure/seqs_in_structures.dat";
         auto lines =base::get_lines_from_file(path);
@@ -40,7 +41,7 @@ TEST_CASE( "Load all PDBs", "[structure::PDBParser]" ) {
             }
         }
         
-        REQUIRE(fail == 0);
+        CHECK(fail == 0);
         
     }
 }

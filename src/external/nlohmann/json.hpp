@@ -1922,7 +1922,7 @@ JSON_HEDLEY_DIAGNOSTIC_POP
 #endif
 #if JSON_HEDLEY_HAS_ATTRIBUTE(diagnose_if)
 #  if JSON_HEDLEY_HAS_WARNING("-Wgcc-compat")
-#    define JSON_HEDLEY_REQUIRE(expr) \
+#    define JSON_HEDLEY_CHECK(expr) \
     JSON_HEDLEY_DIAGNOSTIC_PUSH \
     _Pragma("clang diagnostic ignored \"-Wgcc-compat\"") \
     __attribute__((diagnose_if(!(expr), #expr, "error"))) \
@@ -1933,11 +1933,11 @@ JSON_HEDLEY_DIAGNOSTIC_POP
     __attribute__((diagnose_if(!(expr), msg, "error"))) \
     JSON_HEDLEY_DIAGNOSTIC_POP
 #  else
-#    define JSON_HEDLEY_REQUIRE(expr) __attribute__((diagnose_if(!(expr), #expr, "error")))
+#    define JSON_HEDLEY_CHECK(expr) __attribute__((diagnose_if(!(expr), #expr, "error")))
 #    define JSON_HEDLEY_REQUIRE_MSG(expr,msg) __attribute__((diagnose_if(!(expr), msg, "error")))
 #  endif
 #else
-#  define JSON_HEDLEY_REQUIRE(expr)
+#  define JSON_HEDLEY_CHECK(expr)
 #  define JSON_HEDLEY_REQUIRE_MSG(expr,msg)
 #endif
 

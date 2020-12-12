@@ -1,4 +1,5 @@
 
+
 #include "../common.hpp"
 
 #include "util/steric_lookup.hpp"
@@ -36,11 +37,11 @@ private:
 };
 
 
-TEST_CASE( "Test Steric Lookup for quick Sterics ", "[util::StericLookup]" ) {
+TEST_CASE( "Test Steric Lookup for quick Sterics " ) {
     
     auto p_generator = PointGenerator();
 
-    SECTION("Test adding points to lookup") {
+    SUBCASE("Test adding points to lookup") {
         auto sl = util::StericLookupNew();
         auto p = math::Point();
         sl.add_point(p);
@@ -64,10 +65,10 @@ TEST_CASE( "Test Steric Lookup for quick Sterics ", "[util::StericLookup]" ) {
             
         }
 
-        REQUIRE(count < 100);
+        CHECK(count < 100);
     }
     
-    SECTION("Test adding a set of points to lookup") {
+    SUBCASE("Test adding a set of points to lookup") {
         auto points = math::Points();
         for(int i = 0; i < 1000; i++) {
             points.push_back(p_generator.rand_point(100));
@@ -97,7 +98,7 @@ TEST_CASE( "Test Steric Lookup for quick Sterics ", "[util::StericLookup]" ) {
             if(sl_clash != clash) { miss_count += 1; }
         }
 
-        REQUIRE(miss_count < 200);
+        CHECK(miss_count < 200);
     }
     
 }

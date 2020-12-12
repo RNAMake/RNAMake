@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include "../common.hpp"
 
@@ -6,7 +7,7 @@
 #include "base/settings.h"
 #include "motif/motif_scorer.h"
 
-TEST_CASE( "Test Secondary Structure scoring of motifs", "[MotifScorer]" ) {
+TEST_CASE( "Test Secondary Structure scoring of motifs" ) {
     
     auto path = base::motif_dirs() + "base.motif";
     auto m = motif::file_to_motif(path);
@@ -14,7 +15,7 @@ TEST_CASE( "Test Secondary Structure scoring of motifs", "[MotifScorer]" ) {
     auto ref_m = motif::file_to_motif(path);;
 
     auto scorer = motif::MotifScorer();
-    REQUIRE(scorer.score(ref_m) == -1.9f);
-    REQUIRE(scorer.score(m) == -9.5f);
+    CHECK(scorer.score(ref_m) == -1.9f);
+    CHECK(scorer.score(m) == -9.5f);
 
 }

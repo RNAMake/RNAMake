@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include "../common.hpp"
 
@@ -6,35 +7,35 @@
 #include "base/settings.h"
 #include "resources/motif_state_sqlite_library.h"
 
-TEST_CASE( "Test Motif State Sqlite3 Library", "[MotifStateSqliteLibrary]" ) {
+TEST_CASE( "Test Motif State Sqlite3 Library" ) {
     
-    SECTION("can load all the librarys listed in get_libnames") {
+    SUBCASE("can load all the librarys listed in get_libnames") {
         for(auto const & kv : resources::MotifStateSqliteLibrary::get_libnames()) {
             REQUIRE_NOTHROW(resources::MotifStateSqliteLibrary(kv.first));
         }
     }
     
-    SECTION("should return an error if not a valid library name") {
+    SUBCASE("should return an error if not a valid library name") {
         REQUIRE_THROWS_AS(resources::MotifStateSqliteLibrary("fake"), resources::SqliteLibraryException);
         
     }
     
-    SECTION("test ability to load all motifs states from libaries") {
+    SUBCASE("test ability to load all motifs states from libaries") {
         for(auto const & kv : resources::MotifStateSqliteLibrary::get_libnames()) {
             auto mlib = resources::MotifStateSqliteLibrary(kv.first);
             REQUIRE_NOTHROW(mlib.load_all(10));
         }
     }
     
-    SECTION("test individual queries") {
+    SUBCASE("test individual queries") {
         auto mlib = resources::MotifStateSqliteLibrary("ideal_helices");
-        REQUIRE(mlib.get("HELIX.IDEAL") != nullptr);
-        REQUIRE(mlib.get("", "CC_LL_GG_RR") != nullptr);
-        REQUIRE(mlib.get("", "", "A5-B7") != nullptr);
-        REQUIRE(mlib.get("HELIX.IDEAL", "CC_LL_GG_RR") != nullptr);
-        REQUIRE(mlib.get("HELIX.IDEAL", "", "A5-B7") != nullptr);
-        REQUIRE(mlib.get("HELIX.IDEAL", "CC_LL_GG_RR", "A5-B7") != nullptr);
-        REQUIRE(mlib.get("", "", "", "1") != nullptr);
+        CHECK(mlib.get("HELIX.IDEAL") != nullptr);
+        CHECK(mlib.get("", "CC_LL_GG_RR") != nullptr);
+        CHECK(mlib.get("", "", "A5-B7") != nullptr);
+        CHECK(mlib.get("HELIX.IDEAL", "CC_LL_GG_RR") != nullptr);
+        CHECK(mlib.get("HELIX.IDEAL", "", "A5-B7") != nullptr);
+        CHECK(mlib.get("HELIX.IDEAL", "CC_LL_GG_RR", "A5-B7") != nullptr);
+        CHECK(mlib.get("", "", "", "1") != nullptr);
         
         REQUIRE_THROWS_AS(mlib.get("TEST"), resources::SqliteLibraryException);
         REQUIRE_THROWS_AS(mlib.get("", "TEST"), resources::SqliteLibraryException);
@@ -42,15 +43,15 @@ TEST_CASE( "Test Motif State Sqlite3 Library", "[MotifStateSqliteLibrary]" ) {
     }
     
     
-    SECTION("test finding if a motif state is contained in library") {
+    SUBCASE("test finding if a motif state is contained in library") {
         auto mlib = resources::MotifStateSqliteLibrary("ideal_helices");
         
-        REQUIRE(mlib.contains("HELIX.IDEAL") == 1);
-        REQUIRE(mlib.contains("TEST") == 0);
+        CHECK(mlib.contains("HELIX.IDEAL") == 1);
+        CHECK(mlib.contains("TEST") == 0);
         
     }
 
-    SECTION("test other libraries") {
+    SUBCASE("test other libraries") {
         auto mlib = resources::MotifStateSqliteLibrary("nway");
         mlib.load_all(10);
         auto ct(0);  
@@ -59,7 +60,7 @@ TEST_CASE( "Test Motif State Sqlite3 Library", "[MotifStateSqliteLibrary]" ) {
             //std::cout << m->name() << std::endl;
             ++ct; 
         }
-        //REQUIRE(ct == 10);
+        //CHECK(ct == 10);
     }
 
 

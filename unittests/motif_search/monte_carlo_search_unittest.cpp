@@ -3,6 +3,7 @@
 //
 
 
+
 //headers for testing
 #include "../common.hpp"
 #include "../tools/motif_tree_builder.hpp"
@@ -13,24 +14,24 @@
 #include <base/log.h>
 #include <motif_search/monte_carlo/search.h>
 
-TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
+TEST_CASE( "Test Searching Motif States" ) {
     auto & rm = resources::Manager::instance();
 
-    SECTION("test scorer") {
+    SUBCASE("test scorer") {
         using namespace motif_search::monte_carlo;
         auto ms = rm.motif_state("HELIX.IDEAL.3");
 
         auto scorer = std::make_shared<DefaultScorer>();
         scorer->set_target(ms->end_states()[1], true);
-        REQUIRE(scorer->score(*ms->end_states()[1]) == 0);
+        CHECK(scorer->score(*ms->end_states()[1]) == 0);
 
         scorer->set_target(ms->end_states()[1], false);
-        REQUIRE(scorer->score(*ms->end_states()[1]) != 0);
+        CHECK(scorer->score(*ms->end_states()[1]) != 0);
 
     }
 
-    SECTION("test solution topology") {
-        SECTION("test solution topology template") {
+    SUBCASE("test solution topology") {
+        SUBCASE("test solution topology template") {
             auto sol_template = motif_search::SolutionTopologyTemplate();
             sol_template.add_library("flex_helices");
             sol_template.add_library("twoway", data_structure::NodeIndexandEdge{0, 1});
@@ -40,10 +41,10 @@ TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
             for (auto const & n : sol_template) {
                 count += 1;
             }
-            REQUIRE(count == 3);
+            CHECK(count == 3);
         }
 
-        SECTION("test solution topoloy template ensembles") {
+        SUBCASE("test solution topoloy template ensembles") {
             auto sol_template = motif_search::SolutionTopologyTemplate();
             auto motif_states =  motif::MotifStateOPs{
                 rm.motif_state("HELIX.IDEAL.3"),
@@ -55,11 +56,11 @@ TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
             auto factory = motif_search::SolutionToplogyFactory();
             auto sol_toplogy = factory.generate_toplogy(sol_template);
 
-            REQUIRE(sol_toplogy->get_ensemble_size(0) == 2);
+            CHECK(sol_toplogy->get_ensemble_size(0) == 2);
 
         }
 
-        SECTION("test solution toplogy factory") {
+        SUBCASE("test solution toplogy factory") {
             auto sol_template = motif_search::SolutionTopologyTemplate();
             sol_template.add_library("flex_helices");
             sol_template.add_library("twoway", data_structure::NodeIndexandEdge{0, 1});
@@ -72,7 +73,7 @@ TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
             auto msg = sol_toplogy->initialize_solution(ms->end_states()[1]);
 
             auto diff = ms->end_states()[1]->diff(msg->get_node(1)->data()->get_end_state(0));
-            REQUIRE(diff < 1);
+            CHECK(diff < 1);
 
             /*rm.get_motif_from_state(ms)->to_pdb("start.pdb");
             for(int i = 1; i < msg->size(); i++) {
@@ -81,7 +82,7 @@ TEST_CASE( "Test Searching Motif States", "[MonteCarloSearch]" ) {
         }
     }
 
-    SECTION("test state") {
+    SUBCASE("test state") {
         /*using namespace motif_search::monte_carlo;
         auto mt = motif_data_structure::MotifTree();
         mt.add_motif(rm.motif("HELIX.IDEAL.3"));

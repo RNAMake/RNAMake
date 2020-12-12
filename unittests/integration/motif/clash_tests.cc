@@ -2,6 +2,8 @@
 // Created by Joseph Yesselman on 3/10/19.
 //
 
+
+
 #include "../../common.hpp"
 
 #include "base/file_io.h"
@@ -11,7 +13,7 @@
 #include "structure/is_equal.hpp"
 
 
-TEST_CASE( "Test clashes with and without steric lookups", "[StericLookupIntergrations]" ) {
+TEST_CASE( "Test clashes with and without steric lookups") {
 
 
 }

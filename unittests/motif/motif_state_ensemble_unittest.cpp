@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include "../common.hpp"
 
@@ -8,30 +9,30 @@
 #include "motif/motif.h"
 #include "motif/motif_state_ensemble.h"
 
-TEST_CASE( "Test Motif State Ensembles", "[MotifStateEnsemble]" ) {
+TEST_CASE( "Test Motif State Ensembles" ) {
     auto path = base::motif_dirs() + "base.motif";
     auto m = motif::file_to_motif(path);
     
     auto mse = motif::MotifStateEnsemble(m->get_state());
     
-    REQUIRE(mse.size() == 1);
+    CHECK(mse.size() == 1);
     REQUIRE_THROWS_AS(mse.get_member(10), motif::MotifStateEnsembleException);
     REQUIRE_THROWS_AS(motif::MotifStateEnsemble(motif::MotifStateOPs(), Floats()), motif::MotifStateEnsembleException);
     REQUIRE_THROWS_AS(motif::MotifStateEnsemble(motif::MotifStateOPs{m->get_state()}, Floats()),
                       motif::MotifStateEnsembleException);
 
     
-    SECTION("test copy constructor") {
+    SUBCASE("test copy constructor") {
         auto mse_copy = motif::MotifStateEnsemble(mse);
         
-        REQUIRE(mse_copy.size() == 1);
+        CHECK(mse_copy.size() == 1);
     }
 
-    SECTION("test stringifying motif state ensemble") {
+    SUBCASE("test stringifying motif state ensemble") {
         auto s = mse.to_str();
         auto mse_copy = motif::MotifStateEnsemble(s);
         
-        REQUIRE(mse_copy.size() == 1);
+        CHECK(mse_copy.size() == 1);
     }
     
     
