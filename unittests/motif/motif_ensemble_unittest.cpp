@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include "../common.hpp"
 
@@ -8,28 +9,28 @@
 #include "motif/motif.h"
 #include "motif/motif_ensemble.h"
 
-#include <util/find_pair.h>
+#include <util/find_pair.h> // Is this import necessary?
 
-TEST_CASE( "Test Motif Ensembles", "[MotifEnsemble]" ) {
+TEST_CASE( "Test Motif Ensembles" ) {
     auto path = base::motif_dirs() + "base.motif";
     auto m = motif::file_to_motif(path);
 
     auto me = motif::MotifEnsemble(motif::MotifOPs{m}, Floats{1});
-    REQUIRE(me.size() == 1);
+    CHECK(me.size() == 1);
     
-    SECTION("test copy constructor") {
+    SUBCASE("test copy constructor") {
         auto me_copy = motif::MotifEnsemble(me);
 
-        REQUIRE(me_copy.size() == 1);
+        CHECK(me_copy.size() == 1);
         
     }
     
-    SECTION("test stringifying motif ensemble") {
+    SUBCASE("test stringifying motif ensemble") {
         auto s = me.to_str();
         auto rts = structure::ResidueTypeSet();
         auto me_copy = motif::MotifEnsemble(s, rts);
         
-        REQUIRE(me_copy.size() == 1);
+        CHECK(me_copy.size() == 1);
 
         
     }

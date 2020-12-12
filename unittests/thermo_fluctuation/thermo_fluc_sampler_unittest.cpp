@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include <thermo_fluctuation/graph/sampler.h>
 #include "../common.hpp"
@@ -72,11 +73,11 @@ rmsd_between_basepairs(
 }
 
 
-TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctuationSampler]" ) {
+TEST_CASE( "Test Thermo Flucuation Sampler " ) {
 
     auto & rm = resources::Manager::instance();
 
-    SECTION("test moving one frame") {
+    SUBCASE("test moving one frame") {
         auto sampler = thermo_fluctuation::ThermoFlucSampler();
         auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>();
         mset->add_ensemble(resources::Manager::instance().motif_state_ensemble("GG_LL_CC_RR"));
@@ -99,13 +100,13 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctu
         }
         
         //check to make sure is actually a different motif state present
-        REQUIRE(diff == 1);
+        CHECK(diff == 1);
         
     }
 
-    SECTION("test graph sampler") {
+    SUBCASE("test graph sampler") {
 
-        SECTION("test random number generator") {
+        SUBCASE("test random number generator") {
             auto rng = util::RandomNumberGenerator();
             int max = 1;
             int fail = 0;
@@ -114,7 +115,7 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctu
                     fail = 1;
                 }
             }
-            REQUIRE(fail == 0);
+            CHECK(fail == 0);
         }
 
         auto mseg = std::make_shared<motif_data_structure::MotifStateEnsembleGraph>();
@@ -125,7 +126,7 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctu
         auto sampler = thermo_fluctuation::graph::Sampler(*mseg);
         auto msg = sampler.get_initial_state();
 
-        REQUIRE(msg->size() == mseg->size());
+        CHECK(msg->size() == mseg->size());
 
         auto names = Strings();
         for(auto const & n : *msg) { names.push_back(n->data()->name()); }
@@ -140,11 +141,11 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctu
         }
 
         //check to make sure is actually a different motif state present
-        REQUIRE(diff == 1);
+        CHECK(diff == 1);
 
     }
 
-    SECTION("test rotation invariance") {
+    SUBCASE("test rotation invariance") {
         auto m = rm.motif("HELIX.IDEAL.1");
         auto ms = m->get_state();
         auto t = math::Point(0, 0, 0);
@@ -171,7 +172,7 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctu
         ms->end_states()[0]->get_transformed_state(*ms->end_states()[1], dummy);
         auto new_dist = ms->end_states()[0]->d().distance(ms->end_states()[1]->d());
 
-        REQUIRE(abs(org_dist - new_dist) < 0.1);
+        CHECK(abs(org_dist - new_dist) < 0.1);
 
         auto new_m = rm.get_motif_from_state(ms);
         auto new_ms = new_m->get_state();
@@ -179,7 +180,7 @@ TEST_CASE( "Test Thermo Flucuation Sampler ", "[thermo_fluctuation::ThermoFluctu
 
     }
 
-    SECTION("test axis angle scoring") {
+    SUBCASE("test axis angle scoring") {
         auto m = rm.motif("HELIX.IDEAL.1");
         auto m1 = rm.motif("HELIX.IDEAL.1");
 

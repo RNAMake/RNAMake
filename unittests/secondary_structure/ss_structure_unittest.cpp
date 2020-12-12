@@ -1,6 +1,5 @@
 
 
-
 //headers for testing
 #include "../common.hpp"
 
@@ -8,39 +7,39 @@
 #include "util/uuid.h"
 #include "secondary_structure/structure.h"
 
-TEST_CASE( "Test Structure for Secondary Structure", "[SSStructure]" ) {
+TEST_CASE( "Test Structure for Secondary Structure" ) {
     
-    SECTION("test creation of structure from sequence and structure") {
+    SUBCASE("test creation of structure from sequence and structure") {
         auto s = secondary_structure::Structure("GGACC", "((.))");
         
-        REQUIRE(s.sequence() == "GGACC");
-        REQUIRE(s.dot_bracket() == "((.))");
+        CHECK(s.sequence() == "GGACC");
+        CHECK(s.dot_bracket() == "((.))");
         
-        SECTION("sequence and structure not the same length") {
+        SUBCASE("sequence and structure not the same length") {
             REQUIRE_THROWS_AS(secondary_structure::Structure("GGACCC", "((.))"),
                               secondary_structure::Exception);
         }
         
-        SECTION("invalid structure start character") {
+        SUBCASE("invalid structure start character") {
             REQUIRE_THROWS_AS(secondary_structure::Structure("GGACC", ")(.))"),
                               secondary_structure::Exception);
 
         }
         
-        SECTION("invalid residue name in sequence") {
+        SUBCASE("invalid residue name in sequence") {
             REQUIRE_THROWS_AS(secondary_structure::Structure("GGKCC", "((.))"),
                               secondary_structure::Exception);
             
         }
         
-        SECTION("invalid residue structure element in structure") {
+        SUBCASE("invalid residue structure element in structure") {
             REQUIRE_THROWS_AS(secondary_structure::Structure("GGACC", "((*))"),
                               secondary_structure::Exception);
             
         }
         
 
-        SECTION("has to recycle chain ids since there are more than 26 chains") {
+        SUBCASE("has to recycle chain ids since there are more than 26 chains") {
             auto seq = String(), ss = String();
             for(int i = 0; i < 100; i++) {
                 seq += "A&";
@@ -48,42 +47,42 @@ TEST_CASE( "Test Structure for Secondary Structure", "[SSStructure]" ) {
             }
         
             auto s1 = secondary_structure::Structure(seq, ss);
-            REQUIRE(s1.chains().size() == 100);
-            REQUIRE(s1.chains()[99]->residues()[0]->chain_id() == "D");
+            CHECK(s1.chains().size() == 100);
+            CHECK(s1.chains()[99]->residues()[0]->chain_id() == "D");
         }
         
     }
     
-    SECTION("test copy constructor") {
+    SUBCASE("test copy constructor") {
         auto s = secondary_structure::Structure("GGACC", "((.))");
         auto s_copy = secondary_structure::Structure(s);
         
-        REQUIRE(s_copy.sequence() == "GGACC");
-        REQUIRE(s_copy.dot_bracket() == "((.))");
+        CHECK(s_copy.sequence() == "GGACC");
+        CHECK(s_copy.dot_bracket() == "((.))");
 
     }
     
-    SECTION("test stringify of structure") {
+    SUBCASE("test stringify of structure") {
         auto s = secondary_structure::Structure("GGACC", "((.))");
         auto str = s.to_str();
         auto s_copy = secondary_structure::Structure(str);
         
-        REQUIRE(s_copy.sequence() == "GGACC");
-        REQUIRE(s_copy.dot_bracket() == "((.))");
+        CHECK(s_copy.sequence() == "GGACC");
+        CHECK(s_copy.dot_bracket() == "((.))");
 
     }
     
-    SECTION("test ability to find residue") {
+    SUBCASE("test ability to find residue") {
         auto s = secondary_structure::Structure("GGACC", "((.))");
         auto r = s.get_residue(1, "A", "");
-        REQUIRE(r != nullptr);
+        CHECK(r != nullptr);
         
         auto r2 = s.get_residue(r->uuid());
-        REQUIRE(r != nullptr);
+        CHECK(r != nullptr);
         
-        REQUIRE(s.get_residue(99, "A", "") == nullptr);
-        REQUIRE(s.get_residue(1, "B", "") == nullptr);
-        REQUIRE(s.get_residue(util::Uuid()) == nullptr);
+        CHECK(s.get_residue(99, "A", "") == nullptr);
+        CHECK(s.get_residue(1, "B", "") == nullptr);
+        CHECK(s.get_residue(util::Uuid()) == nullptr);
         
         
         

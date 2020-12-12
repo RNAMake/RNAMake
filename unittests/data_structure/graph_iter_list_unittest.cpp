@@ -9,9 +9,9 @@
 #include <data_structure/graph_iter_list.h>
 
 
-TEST_CASE( "Test Graph Data Structure ", "[Graph]" ) {
+TEST_CASE( "Test Graph Data Structure ") {
 
-    SECTION("test editing nodes") {
+    SUBCASE("test editing nodes") {
         auto adj_list = data_structure::FixedEdged_AL<int>();
         adj_list.add_node(10, 5); // used to be adj_list.add_node(1, 5);
         adj_list.add_node(10, 5); // used to be adj_list.add_node(2, 5);
@@ -25,11 +25,11 @@ TEST_CASE( "Test Graph Data Structure ", "[Graph]" ) {
         }*/
 
         for(auto & n : iter_list) {
-            REQUIRE(n->data() == 10);
+            CHECK(n->data() == 10);
         }
     }
 
-    SECTION("test with undirected adjacency list") {
+    SUBCASE("test with undirected adjacency list") {
         auto adj_list = data_structure::FixedEdged_AL<int>();
         adj_list.add_node(0, 5);
         adj_list.add_node(1, 5);
@@ -59,7 +59,7 @@ TEST_CASE( "Test Graph Data Structure ", "[Graph]" ) {
         auto count = 0;
 
         for (auto const & n : iter_list) { count += 1; }
-        REQUIRE(count == adj_list.get_num_nodes());
+        CHECK(count == adj_list.get_num_nodes());
 
         iter_list.path_transversal(adj_list, 0, 2);
         auto path = std::vector<Index>();
@@ -67,7 +67,7 @@ TEST_CASE( "Test Graph Data Structure ", "[Graph]" ) {
         for (auto const & n : iter_list) {
             path.push_back(n->index());
         }
-        REQUIRE(path == target);
+        CHECK(path == target);
 
         // no viable path
         REQUIRE_THROWS_AS(iter_list.path_transversal(adj_list, 0, 5), data_structure::GraphException);
@@ -78,10 +78,10 @@ TEST_CASE( "Test Graph Data Structure ", "[Graph]" ) {
         for (auto const & n : iter_list) {
             path.push_back(n->index());
         }
-        REQUIRE(path == target);
+        CHECK(path == target);
     }
 
-    SECTION("test with directed adjacency list") {
+    SUBCASE("test with directed adjacency list") {
         auto adj_list = data_structure::DirectedAdjacencyList<int, data_structure::FixedEdges>();
         adj_list.add_node(0, 5);
         adj_list.add_node(1, 5, 0, data_structure::NodeIndexandEdge{0, 0});
@@ -108,25 +108,25 @@ TEST_CASE( "Test Graph Data Structure ", "[Graph]" ) {
         auto path = std::vector<Index>();
         auto target = std::vector<Index>{0, 1, 2, 3, 4, 5};
         for(auto const & n : iter_list) { path.push_back(n->index()); }
-        REQUIRE(path == target);
+        CHECK(path == target);
 
         iter_list.path_transversal(adj_list, 0, 4);
         path = std::vector<Index>();
         target = std::vector<Index>{0, 2, 3, 4};
         for(auto const & n : iter_list) { path.push_back(n->index()); }
-        REQUIRE(path == target);
+        CHECK(path == target);
 
         iter_list.path_transversal(adj_list, 0, 5);
         path = std::vector<Index>();
         target = std::vector<Index>{0, 2, 3, 5};
         for(auto const & n : iter_list) { path.push_back(n->index()); }
-        REQUIRE(path == target);
+        CHECK(path == target);
 
         path = std::vector<Index>();
         target = std::vector<Index>{2, 3, 5, 4};
         iter_list.sub_graph_transversal(adj_list, 2, 5);
         for(auto const & n : iter_list) { path.push_back(n->index()); }
-        REQUIRE(path == target);
+        CHECK(path == target);
 
 
 

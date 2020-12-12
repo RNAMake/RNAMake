@@ -1,6 +1,7 @@
 
-#include "../common.hpp"
+
 #include "../command_line_args.hpp"
+#include "../common.hpp"
 
 #include "base/cl_option.h"
 #include "base/string.h"
@@ -60,19 +61,19 @@ public:
 };
 
 
-TEST_CASE( "Test Application, a class to inherit for excutables", "[Application]" ) {
+TEST_CASE( "Test Application, a class to inherit for excutables") {
 
-    SECTION("Test parsing options") {
+    SUBCASE("Test parsing options") {
         
         auto cla = CommandLineArgs("-test test2 -search.accept_score 5");
         
         auto app = TestApplication();
         app.parse_command_line(cla.argc, cla.argv());
         
-        REQUIRE(app.get_string_option("test") == "test2");
+        CHECK(app.get_string_option("test") == "test2");
         
-        SECTION("test parsing options into classes inside application") {
-            REQUIRE(app.search_.options().get_float("accept_score") == 5);
+        SUBCASE("test parsing options into classes inside application") {
+            CHECK(app.search_.options().get_float("accept_score") == 5);
         }
         
     }

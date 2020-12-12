@@ -1,35 +1,36 @@
 
+
 //headers for testing
 #include "../common.hpp"
 
 //RNAMake Headers
 #include "motif/motif_factory.h"
 
-#include <util/find_pair.h>
+#include <util/find_pair.h> // Is this import necessary?
 
-TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
+TEST_CASE( "Test Motif creation with Motif Factory" ) {
     
     auto mf = motif::MotifFactory();
     
     auto path = base::motif_dirs() + "ref.motif";
     auto ref_m = motif::file_to_motif(path);;
     
-    SECTION("test loading motif from pdb file") {
+    SUBCASE("test loading motif from pdb file") {
         auto path = base::base_dir() + "/unittests/unittest_resources/motifs/p4p6/p4p6.pdb";
         auto m = mf.motif_from_file(path);
         
-        REQUIRE(m->residues().size() == 157);
+        CHECK(m->residues().size() == 157);
     }
     
-    SECTION("load motif from directory") {
+    SUBCASE("load motif from directory") {
         auto path = base::base_dir() + "/unittests/unittest_resources/motifs/p4p6";
         auto m = mf.motif_from_file(path);
         
-        REQUIRE(m->residues().size() == 157);
+        CHECK(m->residues().size() == 157);
 
     }
 
-    SECTION("returns errors if file does not exist") {
+    SUBCASE("returns errors if file does not exist") {
         REQUIRE_THROWS_AS(mf.motif_from_file("fake.pdb"), motif::MotifFactoryException);
         REQUIRE_THROWS_AS(mf.motif_from_file("fake"), motif::MotifFactoryException);
         
@@ -37,7 +38,7 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         REQUIRE_THROWS_AS(mf.motif_from_file(path), motif::MotifFactoryException);
     }
  
-    SECTION("test standardizing motifs, i.e. making sure they all behave the same") {
+    SUBCASE("test standardizing motifs, i.e. making sure they all behave the same") {
         /*auto path = base::motif_dirs() + "helices/HELIX.IDEAL";
         auto m = mf.motif_from_file(path);
         
@@ -47,31 +48,31 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         auto dist = aligned_m->ends()[0]->d().magnitude();
         auto r_dist = aligned_m->ends()[0]->r().difference(ref_m->ends()[0]->r());
         
-        REQUIRE(dist < 1.0);
-        REQUIRE(r_dist < 0.001);
-        REQUIRE(m->ends()[1]->uuid() == aligned_m->ends()[0]->uuid());
-        REQUIRE(m->sequence() == aligned_m->sequence());
+        CHECK(dist < 1.0);
+        CHECK(r_dist < 0.001);
+        CHECK(m->ends()[1]->uuid() == aligned_m->ends()[0]->uuid());
+        CHECK(m->sequence() == aligned_m->sequence());
         
         aligned_m = mf.align_motif_to_common_frame(m, 0);
         mf.standardize_motif(aligned_m);
         
-        REQUIRE(m->sequence() != aligned_m->sequence());*/
+        CHECK(m->sequence() != aligned_m->sequence());*/
     }
     
-    SECTION("test generating motifs from basepairs") {
+    SUBCASE("test generating motifs from basepairs") {
         auto path = base::base_dir() + "/unittests/unittest_resources/motifs/HELIX.IDEAL";
         auto m = mf.motif_from_file(path);
         auto bps = m->basepairs();
         
         auto m_bps = mf.motif_from_bps(bps);
         
-        REQUIRE(m_bps->ends().size() == 2);
-        REQUIRE(m_bps->sequence() == "GG&CC");
-        REQUIRE(m_bps->dot_bracket() == "((&))");
-        REQUIRE(m_bps->chains().size() == 2);
-        REQUIRE(m_bps->end_ids().size() == 2);
+        CHECK(m_bps->ends().size() == 2);
+        CHECK(m_bps->sequence() == "GG&CC");
+        CHECK(m_bps->dot_bracket() == "((&))");
+        CHECK(m_bps->chains().size() == 2);
+        CHECK(m_bps->end_ids().size() == 2);
         
-        SECTION("will not have two basepair ends should throw error as user is not expecting this") {
+        SUBCASE("will not have two basepair ends should throw error as user is not expecting this") {
         
             bps[1]->bp_type("c...");
             REQUIRE_THROWS_AS(m_bps = mf.motif_from_bps(bps), motif::MotifFactoryException);
@@ -79,17 +80,17 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
         }
         
         m_bps = mf.motif_from_bps(structure::BasepairOPs{bps[0]});
-        REQUIRE(m_bps->ends().size() == 1);
+        CHECK(m_bps->ends().size() == 1);
         
     }
     
-    SECTION("Loading in proteins with RNA") {
+    SUBCASE("Loading in proteins with RNA") {
         auto path = base::base_dir() + "/unittests/unittest_resources/pdbs/5g2x.pdb";
         auto m = mf.motif_from_file(path, false, true);
-        REQUIRE(m->protein_beads().size() != 0);
+        CHECK(m->protein_beads().size() != 0);
     }
 
-    SECTION("test alignment setup") {
+    SUBCASE("test alignment setup") {
         auto path = base::base_dir() + "/unittests/unittest_resources/motifs/HELIX.IDEAL";//.2";
         auto m = mf.motif_from_file(path);
 
@@ -106,11 +107,11 @@ TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
 
     }
 
-    SECTION("test forcing set number of chains") {
+    SUBCASE("test forcing set number of chains") {
         auto path = base::base_dir() + "/unittests/unittest_resources/motif/construct_3.pdb";
         auto m = mf.motif_from_file(path, false, true, 1);
 
-        REQUIRE(m->chains().size() == 1);
+        CHECK(m->chains().size() == 1);
 
     }
 

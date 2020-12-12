@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include "../common.hpp"
 
@@ -6,9 +7,9 @@
 #include "base/settings.h"
 #include "motif/motif_to_secondary_structure.h"
 
-#include <util/find_pair.h>
+#include <util/find_pair.h> // Is this import necessary?
 
-TEST_CASE( "Test converting 3D motifs into secondary structure objects", "[MotiftoSS]" ) {
+TEST_CASE( "Test converting 3D motifs into secondary structure objects" ) {
     
     auto path = base::motif_dirs() + "base.motif";
     auto m = motif::file_to_motif(path);
@@ -18,25 +19,25 @@ TEST_CASE( "Test converting 3D motifs into secondary structure objects", "[Motif
     auto converter = motif::MotiftoSecondaryStructure();
     auto ss = converter.to_secondary_structure(m);
     
-    REQUIRE(ss->basepairs().size() == m->basepairs().size());
-    REQUIRE(ss->residues().size() == m->residues().size());
+    CHECK(ss->basepairs().size() == m->basepairs().size());
+    CHECK(ss->residues().size() == m->residues().size());
     
-    SECTION("should be able to find all the residues in their secondary structure form ") {
+    SUBCASE("should be able to find all the residues in their secondary structure form ") {
     
         for(auto const & r : m->residues()) {
-            REQUIRE(ss->get_residue(r->uuid()) != nullptr);
+            CHECK(ss->get_residue(r->uuid()) != nullptr);
         }
     
     }
     
-    SECTION("should be all to find all the basepairs in their secondary structure form") {
+    SUBCASE("should be all to find all the basepairs in their secondary structure form") {
         for(auto const & bp : m->basepairs()) {
-            REQUIRE(ss->get_basepair(bp->uuid()).size() == 1);
+            CHECK(ss->get_basepair(bp->uuid()).size() == 1);
         }
     }
 
     ss = converter.to_secondary_structure(ref_m);
-    REQUIRE(ss->residues().size() == 2);
+    CHECK(ss->residues().size() == 2);
     
 
     

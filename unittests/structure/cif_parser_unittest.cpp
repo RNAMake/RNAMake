@@ -1,3 +1,5 @@
+
+
 #include "../common.hpp"
 
 #include "base/file_io.h"
@@ -8,18 +10,18 @@
 #include "structure/is_equal.h"
 
 
-TEST_CASE( "Test CIF Parser", "[CIFParser]" ) {
+TEST_CASE( "Test CIF Parser" ) {
     
     const auto cif_path = base::unittest_resource_dir() + "/cifs/";
     const auto pdb_path = base::unittest_resource_dir() + "/pdbs/";
-    SECTION("Simple comparison with PDBParser") {
+    SUBCASE("Simple comparison with PDBParser") {
         auto cifparser = structure::CIFParser();   
         auto pdbparser = structure::PDBParser();
         
         auto pdb_residues = pdbparser.parse(pdb_path +"/255D.pdb");
         auto cif_residues = cifparser.parse(cif_path + "/255D.cif");
         
-        REQUIRE(pdb_residues.size() == cif_residues.size());
+        CHECK(pdb_residues.size() == cif_residues.size());
         
         auto pdb_chains = structure::ChainOPs{};
         auto cif_chains = structure::ChainOPs{};
@@ -27,19 +29,19 @@ TEST_CASE( "Test CIF Parser", "[CIFParser]" ) {
         connect_residues_into_chains(pdb_residues,pdb_chains);
         connect_residues_into_chains(cif_residues,cif_chains);
         
-        REQUIRE(pdb_chains.size() == cif_chains.size());
+        CHECK(pdb_chains.size() == cif_chains.size());
         
-        REQUIRE(are_chains_equal(pdb_chains[0],cif_chains[0],0));
+        CHECK(are_chains_equal(pdb_chains[0],cif_chains[0],0));
     }
 
-    SECTION("Medium difficulty comparison with PDBParser") {
+    SUBCASE("Medium difficulty comparison with PDBParser") {
         auto cifparser = structure::CIFParser();   
         auto pdbparser = structure::PDBParser();
         
         auto pdb_residues = pdbparser.parse(pdb_path + "/4OJI.pdb");
         auto cif_residues = cifparser.parse(cif_path+"/4OJI.cif");
         
-        REQUIRE(pdb_residues.size() == cif_residues.size());
+        CHECK(pdb_residues.size() == cif_residues.size());
         
         auto pdb_chains = structure::ChainOPs{};
         auto cif_chains = structure::ChainOPs{};
@@ -47,7 +49,7 @@ TEST_CASE( "Test CIF Parser", "[CIFParser]" ) {
         connect_residues_into_chains(pdb_residues,pdb_chains);
         connect_residues_into_chains(cif_residues,cif_chains);
         
-        REQUIRE(pdb_chains.size() == cif_chains.size());
+        CHECK(pdb_chains.size() == cif_chains.size());
         
         auto pdb_it = pdb_chains.cbegin();
         auto cif_it = cif_chains.cbegin();
@@ -55,19 +57,19 @@ TEST_CASE( "Test CIF Parser", "[CIFParser]" ) {
         const auto cif_last = cif_chains.cend();
 
         for( ; cif_it != cif_last; ++cif_it,++pdb_it) {
-            REQUIRE(are_chains_equal(*pdb_it,*cif_it,0)); 
+            CHECK(are_chains_equal(*pdb_it,*cif_it,0)); 
         }
  
     }
 
-    SECTION("Mixed RNA/non-rna") {
+    SUBCASE("Mixed RNA/non-rna") {
         auto cifparser = structure::CIFParser();   
         auto pdbparser = structure::PDBParser();
         
         auto pdb_residues = pdbparser.parse(pdb_path+"/4K4W.pdb");
         auto cif_residues = cifparser.parse(cif_path+"/4K4W.cif");
         
-        REQUIRE(pdb_residues.size() == cif_residues.size());
+        CHECK(pdb_residues.size() == cif_residues.size());
         
         auto pdb_chains = structure::ChainOPs{};
         auto cif_chains = structure::ChainOPs{};
@@ -75,7 +77,7 @@ TEST_CASE( "Test CIF Parser", "[CIFParser]" ) {
         connect_residues_into_chains(pdb_residues,pdb_chains);
         connect_residues_into_chains(cif_residues,cif_chains);
         
-        REQUIRE(pdb_chains.size() == cif_chains.size());
+        CHECK(pdb_chains.size() == cif_chains.size());
         
         auto pdb_it = pdb_chains.cbegin();
         auto cif_it = cif_chains.cbegin();
@@ -83,12 +85,12 @@ TEST_CASE( "Test CIF Parser", "[CIFParser]" ) {
         const auto cif_last = cif_chains.cend();
 
         for( ; cif_it != cif_last; ++cif_it,++pdb_it) {
-            REQUIRE(are_chains_equal(*pdb_it,*cif_it,0)); 
+            CHECK(are_chains_equal(*pdb_it,*cif_it,0)); 
         }
 
     }
 
-    SECTION("Testing for Parsing errors") {
+    SUBCASE("Testing for Parsing errors") {
         auto cifparser = structure::CIFParser{};
         // incomplete file
         REQUIRE_THROWS(cifparser.parse(cif_path + "/incomplete.cif"));

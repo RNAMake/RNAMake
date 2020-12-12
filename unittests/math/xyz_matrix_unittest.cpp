@@ -1,4 +1,5 @@
 
+
 #include "../common.hpp"
 
 #include "base/settings.h"
@@ -7,18 +8,18 @@
 #include "math/numerical.h"
 
 
-TEST_CASE( "Test Matrix math ", "[XYZMatrix]" ) {
+TEST_CASE( "Test Matrix math " ) {
     
-    SECTION("Test Stringify Matrices") {
+    SUBCASE("Test Stringify Matrices") {
         auto m = math::Matrix(5.0);
         auto s = m.to_str();
         auto m2 = math::Matrix(s);
         
-        REQUIRE(math::are_xyzMatrix_equal(m, m2));
+        CHECK(math::are_xyzMatrix_equal(m, m2));
     }
     
 
-    SECTION("Single known test of unitarize compared to python") {
+    SUBCASE("Single known test of unitarize compared to python") {
     
         auto path =  base::unittest_resource_dir() + "/math/test_unitarize.dat";
         auto lines = base::get_lines_from_file(path);
@@ -30,11 +31,11 @@ TEST_CASE( "Test Matrix math ", "[XYZMatrix]" ) {
     
         auto unit = m.get_unitarize();
     
-        REQUIRE(math::are_xyzMatrix_equal(org_m, unit));
+        CHECK(math::are_xyzMatrix_equal(org_m, unit));
         
     }
     
-    SECTION("Test unitarize in batch with 1000 matrices") {
+    SUBCASE("Test unitarize in batch with 1000 matrices") {
         auto path = base::unittest_resource_dir() + "/math/test_unitarize_multi.dat";
         auto lines =base::get_lines_from_file(path);
         
@@ -62,7 +63,7 @@ TEST_CASE( "Test Matrix math ", "[XYZMatrix]" ) {
             
         }
         
-        REQUIRE(fail == 0);
+        CHECK(fail == 0);
         
     }
     
