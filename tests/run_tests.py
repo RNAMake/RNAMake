@@ -93,7 +93,7 @@ def get_produced_files():
     return files
 
 
-def get_log_lines(cmd_str):
+def get_log_lines(cmd_str, row):
     try:
         output = subprocess.check_output(cmd_str, shell=True).decode("utf8")
     except subprocess.CalledProcessError:
@@ -122,7 +122,7 @@ def main():
                 continue
         os.chdir(row["name"])
         cmd_str = get_cmd("cmd/COMMAND")
-        log_lines = get_log_lines(cmd_str)
+        log_lines = get_log_lines(cmd_str, row)
         if len(log_lines) == 0:
             continue
         required_log_lines = get_required_log_lines("cmd/EXPECTED")
