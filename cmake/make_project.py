@@ -61,6 +61,9 @@ def build_unittests(lib_list, base_dir, static):
             unittest_declarations += "\ttarget_link_libraries({TEST} {LIB}_lib {BUILD} )\n".format(
                 TEST=unittest_name, LIB=library, BUILD="-static" if static else ""
             )
+            unittest_declarations += "\tadd_test({TEST} {TEST})\n".format(
+                TEST=unittest_name
+            )
     unittest_declarations += "#" * 100 + "\n"
     return unittest_declarations
 
@@ -109,7 +112,8 @@ def build_header(base_dir, static, target):
     header_contents = "#" * 100 + "\n# Project Level Info\n" + "#" * 100 + "\n"
     header_contents += "cmake_minimum_required(VERSION 3.0)\n"
     header_contents += "set(CMAKE_BUILD_TYPE Release)\n"
-    header_contents += "project(RNAMake)\n\n"
+    header_contents += "project(RNAMake)\n"
+    header_contents += "enable_testing()\n\n"
 
     if static == True:
         # header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
