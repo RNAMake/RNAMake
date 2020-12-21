@@ -39,7 +39,7 @@ public:
 //- = U
 //+ = P
 //. = D
-enum class X3dnaBPType {
+enum X3dnaBPType {
     cmU = 0,  //cm-
     cMUM = 1,  //cM-M
     tWPW = 2,  //tW+W
@@ -256,10 +256,17 @@ public:
     get_basepairs_json(
             String const &) const;
     
-
+#ifndef PYRNAMAKE_BINDINGS
     X3Motifs
     get_motifs(
             String const &) const;
+#else
+    X3Motifs
+    get_motifs(
+            String const & str) const {
+        return X3Motifs{};
+    }
+#endif
 
 public:
     void

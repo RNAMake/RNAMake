@@ -114,7 +114,9 @@ public: // adding functions
 
     String
     get_helix_name(
-            String const &);
+            String const & str) {
+        return String();
+    }
 
 public: // new functions that I would like in new code
 

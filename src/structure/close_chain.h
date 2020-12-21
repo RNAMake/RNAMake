@@ -18,6 +18,11 @@ float
 to_radians(
         float);
 
+math::Vector
+m_dot_v(
+        math::Matrix const & m,
+        math::Vector const & v);
+
 AtomOP
 virtual_atom(
         String const &,

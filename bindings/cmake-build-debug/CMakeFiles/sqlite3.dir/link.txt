@@ -1,0 +1,2 @@
+/usr/bin/ar qc libsqlite3.a  CMakeFiles/sqlite3.dir/home/cjurich/projects/RNAMake/src/external/sqlite/sqlite3.c.o
+/usr/bin/ranlib libsqlite3.a

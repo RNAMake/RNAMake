@@ -16,7 +16,8 @@
 
 namespace util {
 
-enum class MotifType {
+
+    enum MotifType{
     TWOWAY = 0,
     NWAY = 1,
     HAIRPIN = 2,

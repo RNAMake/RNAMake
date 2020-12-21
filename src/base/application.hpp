@@ -26,7 +26,7 @@ public:
 
 class Application {
 public:
-    inline
+    //inline
     Application() :
             options_(Options()),
             cl_options_(CommandLineOptions()),
