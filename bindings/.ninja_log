@@ -992,3 +992,4 @@
 17563	37397	1608584975955200187	CMakeFiles/_motif_tools.dir/src/_motif_tools.cpp.o	193f53415d98db0e
 12168	20587	1608585529458643522	CMakeFiles/_sequence_optimization.dir/home/cjurich/projects/RNAMake/src/motif/pose_factory.cc.o	ebeabe4d0b4812e2
 28922	32946	1608585397130984219	CMakeFiles/_motif_search.dir/home/cjurich/projects/RNAMake/src/motif/motif_ensemble.cpp.o	4307d07f7ccea3f8
+0	11	0	clean	a31eedcededa8236

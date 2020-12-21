@@ -1,6 +1,0 @@
-/home/cjurich/projects/RNAMake/bindings/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/home/cjurich/projects/RNAMake/bindings/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/cjurich/projects/RNAMake/bindings/cmake-build-debug/CMakeFiles/pyRNAMake.dir
-/home/cjurich/projects/RNAMake/bindings/cmake-build-debug/CMakeFiles/sqlite3.dir
-/home/cjurich/projects/RNAMake/bindings/cmake-build-debug/pybind11/CMakeFiles/rebuild_cache.dir
-/home/cjurich/projects/RNAMake/bindings/cmake-build-debug/pybind11/CMakeFiles/edit_cache.dir
