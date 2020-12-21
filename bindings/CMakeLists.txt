@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(RNAMake-Bindings)
 set(CMAKE_CXX_STANDARD 17)
-set(RNAMAKE /home/cjurich/projects/RNAMake/)
+set(RNAMAKE /work/yesselmanlab/cjurich/RNAMake/)
 
 if(NOT DEFINED RNAMAKE)
     message(FATAL_ERROR "Variable RNAMAKE is not set. Please set it in CMakeLists.txt. Exiting...")
