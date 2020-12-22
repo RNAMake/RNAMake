@@ -304,7 +304,7 @@ public:
 
     ~GraphDynamic() {
         for (int i = 0; i < this->nodes_.size(); i++) {
-            this->nodes_[i]->unset_connections();
+            //this->nodes_[i]->unset_connections();
         }
     }
 
