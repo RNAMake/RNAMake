@@ -9,6 +9,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS -O3)
 
+include_directories(src/)
 include_directories(${RNAMAKE}/src/external/sqlite/)
 add_compile_definitions(PYRNAMAKE_BINDINGS)
 
@@ -60,7 +61,12 @@ add_subdirectory(pybind11/)
 # need to set the pybind11 directory
 set(pybind11_DIR pybind11/)
 
+file(GLOB_RECURSE module_includes src/*.hpp)
+
+list(APPEND all_files ${module_includes})
+
 add_library(all_lib ${all_files})
 target_link_libraries( all_lib )
+
 pybind11_add_module(RNAMake ${all_files} src/RNAMake.cpp)
 target_link_libraries(RNAMake PUBLIC  all_lib sqlite3)

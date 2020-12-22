@@ -1,24 +1,12 @@
+#ifndef PYBIND11_DATA_STRUCTURE_HPP
+#define PYBIND11_DATA_STRUCTURE_HPP
+
 // pybind11 includes
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
 #include <pybind11/cast.h>
 #include <pybind11/operators.h>
 #include <memory>
-
-// base includes
-#include <base/application.hpp>
-#include <base/backtrace.h>
-#include <base/cl_option.h>
-#include <base/command_line_parser.hpp>
-#include <base/env_manager.h>
-#include <base/exception.h>
-#include <base/file_io.h>
-#include <base/log.h>
-#include <base/option.h>
-#include <base/settings.h>
-#include <base/string.h>
-#include <base/sys_interface.h>
-#include <base/vector_container.h>
 
 // data_structure includes
 #include <data_structure/graph.h>
@@ -35,47 +23,36 @@
 #include <data_structure/tree/tree.h>
 #include <data_structure/tree/tree_node.h>
 
-// eternabot includes
-#include <eternabot/feature_generator.h>
-#include <eternabot/scorer.h>
-#include <eternabot/sequence_designer.h>
-#include <eternabot/strategy.h>
-#include <eternabot/strategy/a_basic_test.h>
-#include <eternabot/strategy/berex_test.h>
-#include <eternabot/strategy/clear_plot.h>
-#include <eternabot/strategy/direction_of_gc.h>
-#include <eternabot/strategy/num_of_yellow.h>
+namespace data_structure {
+    namespace  py = pybind11 ;
+    void
+    add_bindings(py::module_&);
+}
 
-// io includes
-#include <util/csv.h>
+namespace data_structure::graph {
+    namespace  py = pybind11 ;
+    void
+    add_bindings(py::module_&);
+}
 
-// io::detail includes
-#include <util/csv.h>
+namespace data_structure::tree {
+    namespace  py = pybind11 ;
+    void
+    add_bindings(py::module_&);
+}
 
-// io::error includes
-#include <util/csv.h>
+namespace data_structure{
+    namespace py = pybind11;
 
-// math includes
-#include <math/euler.h>
-#include <math/hashing.h>
-#include <math/numerical.h>
-#include <math/quaternion.h>
-#include <math/stats.h>
-#include <math/transform.h>
-#include <math/xyz_matrix.h>
-#include <math/xyz_vector.h>
-
-using namespace data_structure;
-
-// Bindings start
-
-namespace py = pybind11;
-
-PYBIND11_MODULE(_data_structure,m) {
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// data_structure
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-	// classes
+    void
+    add_bindings(py::module_ & m) {
+        auto graph = m.def_submodule("graph");
+        graph::add_bindings(graph);
+        auto tree = m.def_submodule("tree");
+        tree::add_bindings(tree);
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// data_structure
+        //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
         py::class_<AdjacencyList, std::shared_ptr<AdjacencyList>>(m, "AdjacencyList")
 		// ctors
@@ -171,29 +148,29 @@ PYBIND11_MODULE(_data_structure,m) {
 		;
 */
         py::class_<DynamicEdges, std::shared_ptr<DynamicEdges>>(m, "DynamicEdges")
-		;
+                ;
 
         py::class_<Edge, std::shared_ptr<Edge>>(m, "Edge")
-		// ctors
-		.def(py::init<Index,Index,Index,Index>())
-		// methods
-		.def("partner",[] (Edge const & ptr, Index index) -> Index {
-		 return ptr.partner(index); } )
-		.def("end_index",[] (Edge const & ptr, Index index) -> Index {
-		 return ptr.end_index(index); } )
-		.def("to_str",[] (Edge const & ptr) -> String {
-		 return ptr.to_str(); } )
-		// operators
-		.def(py::self == py::self)
-		// public attributes
-		.def_readwrite("node_i", &Edge::node_i)
-		.def_readwrite("node_j", &Edge::node_j)
-		.def_readwrite("edge_i", &Edge::edge_i)
-		.def_readwrite("edge_j", &Edge::edge_j)
-		;
+                // ctors
+                .def(py::init<Index,Index,Index,Index>())
+                        // methods
+                .def("partner",[] (Edge const & ptr, Index index) -> Index {
+                    return ptr.partner(index); } )
+                .def("end_index",[] (Edge const & ptr, Index index) -> Index {
+                    return ptr.end_index(index); } )
+                .def("to_str",[] (Edge const & ptr) -> String {
+                    return ptr.to_str(); } )
+                        // operators
+                .def(py::self == py::self)
+                        // public attributes
+                .def_readwrite("node_i", &Edge::node_i)
+                .def_readwrite("node_j", &Edge::node_j)
+                .def_readwrite("edge_i", &Edge::edge_i)
+                .def_readwrite("edge_j", &Edge::edge_j)
+                ;
 
         py::class_<FixedEdges, std::shared_ptr<FixedEdges>>(m, "FixedEdges")
-		;
+                ;
 /*
         py::class_<IterList, std::shared_ptr<IterList>>(m, "IterList")
 		// ctors
@@ -226,15 +203,15 @@ PYBIND11_MODULE(_data_structure,m) {
 		;
 */
         py::class_<NodeIndexandEdge, std::shared_ptr<NodeIndexandEdge>>(m, "NodeIndexandEdge")
-		// methods
-		.def("to_str",[] (NodeIndexandEdge const & ptr) -> String {
-		 return ptr.to_str(); } )
-		// operators
-		.def(py::self == py::self)
-		// public attributes
-		.def_readwrite("node_index", &NodeIndexandEdge::node_index)
-		.def_readwrite("edge_index", &NodeIndexandEdge::edge_index)
-		;
+                // methods
+                .def("to_str",[] (NodeIndexandEdge const & ptr) -> String {
+                    return ptr.to_str(); } )
+                        // operators
+                .def(py::self == py::self)
+                        // public attributes
+                .def_readwrite("node_index", &NodeIndexandEdge::node_index)
+                .def_readwrite("edge_index", &NodeIndexandEdge::edge_index)
+                ;
 /*
         py::class_<NodeIndexandEdgeCompare, std::shared_ptr<NodeIndexandEdgeCompare>>(m, "NodeIndexandEdgeCompare")
 		// operators
@@ -302,12 +279,20 @@ PYBIND11_MODULE(_data_structure,m) {
 		 return ptr.edge_index_empty(ni, ei); } )
 		;
 */
+    }
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// data_structure::graph
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // classes
+}
+
+namespace data_structure::graph {
+    namespace py = pybind11;
+    void
+    add_bindings(py::module_& m) {
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// data_structure::graph
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // classes
 /*
         py::class_<Graph, std::shared_ptr<Graph>>(m, "Graph")
 		// ctors
@@ -473,12 +458,18 @@ PYBIND11_MODULE(_data_structure,m) {
 
 
 */
+    }
+}
 
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
-    /// data_structure::tree
-    ////////////////////////////////////////////////////////////////////////////////////////////////////
+namespace data_structure::tree {
+    namespace py = pybind11;
+    void
+    add_bindings(py::module_ & m) {
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
+        /// data_structure::tree
+        ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    // classes
+        // classes
 /*
         py::class_<Tree, std::shared_ptr<Tree>>(m, "Tree")
 		// ctors
@@ -597,4 +588,7 @@ PYBIND11_MODULE(_data_structure,m) {
 
 */
 
+    }
 }
+
+#endif // PYBIND11_DATA_STRUCTURE_HPP
