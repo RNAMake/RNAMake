@@ -62,5 +62,5 @@ set(pybind11_DIR pybind11/)
 
 add_library(all_lib ${all_files})
 target_link_libraries( all_lib )
-pybind11_add_module(_rnamake ${all_files} src/_rnamake.cpp)
-target_link_libraries(_rnamake PUBLIC  all_lib sqlite3)
+pybind11_add_module(RNAMake ${all_files} src/RNAMake.cpp)
+target_link_libraries(RNAMake PUBLIC  all_lib sqlite3)
