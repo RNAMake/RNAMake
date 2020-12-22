@@ -24,6 +24,18 @@ Please follow the below steps
 `PYBIND(RNAMake,m)` in /RNAMake.cpp **will work**,
 but `PYBIND(RNAMake,m)` in /rnamake.cpp or `PYBIND(_RNAMake,m)` in /RNAMake.cpp **will NOT**
 + An `m.def()` directive **cannot** return a smart pointer. If it does, you must derference it in the lamda. See the below example:
-    + `m.def("foo", []() -> FooOp { return get_FooOP() ; } )`, **will not work**, but `m.def("foo", [] () { return *get_FooOP() ; } )` **will**
+    + `m.def("foo", []() -> FooOp { return get_FooOP() ; } )`, **will not work**, 
+    + `m.def("foo", [] () { return *get_FooOP() ; } )` **will work**
     
 ## TODO
++ Most of the templated types in `data_structure` need to be templated still.
++ Using sub files to deal with the namespaces instead of the CamelCase approach I have used.
+
+## Notes
++ If you are using a Singleton design pattern, you have to use the below code for a ctor:
+    ```
+    py::class_<SomeType,std::unique_ptr<SomeType,py::nodelete>>(m, "SomeType")
+        .def(py::init([] () { return std::make_unique<SomeType,py::nodelete>>(&SomeType::getInstance()); } ) )
+    
+    ```
+    
