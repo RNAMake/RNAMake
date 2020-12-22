@@ -96,7 +96,8 @@ def get_produced_files():
 def get_log_lines(cmd_str, row):
     try:
         output = subprocess.check_output(cmd_str, shell=True).decode("utf8")
-    except subprocess.CalledProcessError:
+    except subprocess.CalledProcessError as err:
+        print(err.output)
         logger.error("test: {} did not run properly!".format(row["name"]))
         output = ""
     log_lines = [line[9:].rstrip() for line in output.split("\n")]
