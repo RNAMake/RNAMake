@@ -23,5 +23,7 @@ Please follow the below steps
 + For pybind11 to work, the name of the file must match what the `PYBIND11` macro is given. For instance, 
 `PYBIND(RNAMake,m)` in /RNAMake.cpp **will work**,
 but `PYBIND(RNAMake,m)` in /rnamake.cpp or `PYBIND(_RNAMake,m)` in /RNAMake.cpp **will NOT**
-+ An `m.def()` directive **cannot** return a smart pointer. If it does, you must derference it in the lamda. 
++ An `m.def()` directive **cannot** return a smart pointer. If it does, you must derference it in the lamda. See the below example:
+    + `m.def("foo", []() -> FooOp { return get_FooOP() ; } )`, **will not work**, but `m.def("foo", [] () { return *get_FooOP() ; } )` **will**
+    
 ## TODO
