@@ -453,7 +453,7 @@ PYBIND11_MODULE(_motif_search,m) {
 
     // classes
 
-    py::class_<motif_search::exhaustive::DefaultScorer, std::shared_ptr<motif_search::exhaustive::DefaultScorer>>(m, "DefaultScorer")
+    py::class_<motif_search::exhaustive::DefaultScorer, std::shared_ptr<motif_search::exhaustive::DefaultScorer>>(m, "ExhaustiveDefaultScorer")
             // ctors
             .def(py::init<>())
                     // methods
@@ -501,7 +501,7 @@ PYBIND11_MODULE(_motif_search,m) {
 		 return ptr.score(bps); } )
 		;
 */
-    py::class_<motif_search::exhaustive::ScorerFactory, std::shared_ptr<motif_search::exhaustive::ScorerFactory>>(m, "ScorerFactory")
+    py::class_<motif_search::exhaustive::ScorerFactory, std::shared_ptr<motif_search::exhaustive::ScorerFactory>>(m, "ExhaustiveScorerFactory")
             // ctors
             .def(py::init<>())
                     // methods
@@ -509,7 +509,7 @@ PYBIND11_MODULE(_motif_search,m) {
                 return ptr.get_scorer(scorer_name); } )
             ;
 
-    py::class_<motif_search::exhaustive::Search, std::shared_ptr<motif_search::exhaustive::Search>>(m, "Search")
+    py::class_<motif_search::exhaustive::Search, std::shared_ptr<motif_search::exhaustive::Search>>(m, "ExhaustiveSearch")
             // ctors
             .def(py::init<motif_search::exhaustive::ScorerOP, motif_search::SolutionToplogy const & , motif_search::SolutionFilterOP>())
                     // methods
@@ -530,7 +530,7 @@ PYBIND11_MODULE(_motif_search,m) {
     ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     // classes
 
-    py::class_<motif_search::monte_carlo::DefaultScorer, std::shared_ptr<motif_search::monte_carlo::DefaultScorer>>(m, "DefaultScorer")
+    py::class_<motif_search::monte_carlo::DefaultScorer, std::shared_ptr<motif_search::monte_carlo::DefaultScorer>>(m, "MonteCarloDefaultScorer")
             // ctors
             .def(py::init<>())
                     // methods
@@ -624,7 +624,7 @@ PYBIND11_MODULE(_motif_search,m) {
 		 return ptr.score(bps); } )
 		;
 */
-    py::class_<motif_search::monte_carlo::ScorerFactory, std::shared_ptr<motif_search::monte_carlo::ScorerFactory>>(m, "ScorerFactory")
+    py::class_<motif_search::monte_carlo::ScorerFactory, std::shared_ptr<motif_search::monte_carlo::ScorerFactory>>(m, "MonteCarloScorerFactory")
             // ctors
             .def(py::init<>())
                     // methods
@@ -632,7 +632,7 @@ PYBIND11_MODULE(_motif_search,m) {
                 return ptr.get_scorer(scorer_name); } )
             ;
 
-    py::class_<motif_search::monte_carlo::Search, std::shared_ptr<motif_search::monte_carlo::Search>>(m, "Search")
+    py::class_<motif_search::monte_carlo::Search, std::shared_ptr<motif_search::monte_carlo::Search>>(m, "MonteCarloSearch")
             // ctors
             .def(py::init<motif_search::monte_carlo::ScorerOP, motif_search::SolutionToplogy const &,motif_search::SolutionFilterOP>())
                     // methods
@@ -788,7 +788,7 @@ PYBIND11_MODULE(_motif_search,m) {
 		ptr.set_dummy(dummy); } )
 		;
 */
-    py::class_<motif_search::path_finding::Search, std::shared_ptr<motif_search::path_finding::Search>>(m, "Search")
+    py::class_<motif_search::path_finding::Search, std::shared_ptr<motif_search::path_finding::Search>>(m, "PathFindingSearch")
             // ctors
             .def(py::init<motif_search::path_finding::ScorerOP,SelectorOP,motif_search::SolutionFilterOP>())
                     // methods

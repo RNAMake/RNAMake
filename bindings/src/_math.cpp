@@ -411,8 +411,8 @@ PYBIND11_MODULE(_math,m) {
 		.def(py::init<Point const &, Point const &>())
 		.def(py::init<_BoundingBox<Point> const &>())
 		// methods
-		.def("add",[] (_BoundingBox<Point>  & ptr, Point const & pp) {
-		ptr.add(pp); } )
+//		.def("add",[] (_BoundingBox<Point>  & ptr, Point const & pp) {
+//		ptr.add(pp); } )
 		.def("reset",[] (_BoundingBox<Point>  & ptr, Point const & p) {
 		ptr.reset(p); } )
 		.def("expand",[] (_BoundingBox<Point>  & ptr, double const & scalar) {

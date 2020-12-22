@@ -323,7 +323,7 @@ PYBIND11_MODULE(_thermo_fluctuation,m) {
 
     // classes
 
-    py::class_<thermo_fluctuation::graph::FrameScorer, std::shared_ptr<thermo_fluctuation::graph::FrameScorer>>(m, "FrameScorer")
+    py::class_<thermo_fluctuation::graph::FrameScorer, std::shared_ptr<thermo_fluctuation::graph::FrameScorer>>(m, "GraphFrameScorer")
             // ctors
             .def(py::init<>())
                     // methods

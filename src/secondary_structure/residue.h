@@ -28,7 +28,7 @@ public:
             std::runtime_error(message) {}
 };
 
-enum class ResType {
+enum ResType {
     ADE, CYT, GUA, URA, NONE
 };
 

@@ -67,12 +67,9 @@ public: // box management
     void
     add(
             PointPosition const & pp) {
-#if 0
 
         lower_.min(pp);
         upper_.max(pp);
-#endif
-#warning "_BoundingBox::add is NOT implemented, but is callable"
     }
 
 
