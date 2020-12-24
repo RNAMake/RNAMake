@@ -28,17 +28,44 @@ namespace base {
 
     class PyApplication : public Application {
     public:
+        PyApplication() : Application() {
+        }
+    public:
         virtual
         void
         setup_options() override {
-
+            throw ApplicationException("RNAMake.base.setup_options() must be overridden");
         }
 
     public:
         virtual
         void
         run() override {
+            throw ApplicationException("RNAMake.base.run() must be overridden");
+        }
 
+    public:
+        CommandLineOptions const&
+        cl_options() const {
+            return cl_options_;
+        }
+
+    public:
+        void
+        cl_options(CommandLineOptions & cl_opts) {
+            cl_options_ = cl_opts;
+        }
+
+    public:
+        CommandLineParser const&
+        cl_parser() const {
+            return cl_parser_;
+        }
+
+    public:
+        void
+        cl_parser(CommandLineParser & cl_parser ) {
+            cl_parser_ = cl_parser;
         }
     };
 
@@ -53,6 +80,8 @@ namespace base {
         py::register_exception<RNAMakeIOException>(m, "RNAMakeIOException");
         py::register_exception<RNAMakeImplementationExcepetion>(m, "RNAMakeImplementationExcepetion");
         py::register_exception<CommandLineOptionException>(m, "CommandLineOptionException");
+        py::register_exception<ApplicationException>(m, "ApplicationException");
+        py::register_exception<OptionException>(m, "OptionException");
 
         // free functions
         m.def("base_dir", [](String const &path) -> String {
@@ -260,8 +289,12 @@ namespace base {
 		        .def("get_int_option",[] (PyApplication  & ptr, String const & name) ->  int { return ptr.get_int_option(name); }, py::arg("name") )
 		        .def("get_float_option",[] (PyApplication  & ptr, String const & name) ->  float { return ptr.get_float_option(name); } , py::arg("name"))
 		        .def("get_string_option",[] (PyApplication  & ptr, String const & name) ->  String { return ptr.get_string_option(name); } , py::arg("name"))
-		        .def("get_bool_option",[] (PyApplication  & ptr, String const & name) ->  bool { return ptr.get_bool_option(name); } ), py::arg("name")
-		;
+		        .def("get_bool_option",[] (PyApplication  & ptr, String const & name) ->  bool { return ptr.get_bool_option(name); } , py::arg("name"))
+	            .def("cl_options", [] (PyApplication & ptr) { return ptr.cl_options(); })
+                .def("cl_options", [] (PyApplication & ptr, CommandLineOptions & clopts) { ptr.cl_options(clopts); }, py::arg("clopts"))
+                .def("cl_parser",  [] (PyApplication & ptr) { return ptr.cl_parser(); })
+                .def("cl_parser",  [] (PyApplication & ptr, CommandLineParser & clparser) { ptr.cl_parser(clparser); }, py::arg("clparser"))
+		        ;
 
         py::class_<CommandLineOption, std::shared_ptr<CommandLineOption>>(m, "CommandLineOption")
                 // ctors
@@ -376,13 +409,19 @@ namespace base {
         py::class_<Option, std::shared_ptr<Option>>(m, "Option")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<Option const &>())
-                .def(py::init<String const &, float const &, OptionType const &>())
-                .def(py::init<String const &, String const &, OptionType const &>())
-                .def(py::init<String const &, char const *, OptionType const &>())
-                .def(py::init<char const *, char const *, OptionType const &>())
-                .def(py::init<String const &, bool const &, OptionType const &>())
-                .def(py::init<String const &, int const &, OptionType const &>())
+                .def(py::init<Option const &>(), py::arg("opt"))
+                .def(py::init<String const &, float const &, OptionType const &>(),
+                        py::arg("name"), py::arg("value"), py::arg("type"))
+                .def(py::init<String const &, String const &, OptionType const &>(),
+                     py::arg("name"), py::arg("value"), py::arg("type"))
+                .def(py::init<String const &, char const *, OptionType const &>(),
+                     py::arg("name"), py::arg("value"), py::arg("type"))
+                .def(py::init<char const *, char const *, OptionType const &>(),
+                     py::arg("name"), py::arg("value"), py::arg("type"))
+                .def(py::init<String const &, bool const &, OptionType const &>(),
+                py::arg("name"), py::arg("value"), py::arg("type"))
+                .def(py::init<String const &, int const &, OptionType const &>(),
+                py::arg("name"), py::arg("value"), py::arg("type"))
                         // methods
                 .def("get_float", [](Option &ptr) -> float {
                     return ptr.get_float();
@@ -398,19 +437,19 @@ namespace base {
                 })
                 .def("value", [](Option &ptr, int const &i) {
                     ptr.value(i);
-                })
+                }, py::arg("i"))
                 .def("value", [](Option &ptr, char const *c_str) {
                     ptr.value(c_str);
-                })
+                }, py::arg("c_str"))
                 .def("value", [](Option &ptr, int const &i) {
                     ptr.value(i);
-                })
+                }, py::arg("i"))
                 .def("value", [](Option &ptr, int const &i) {
                     ptr.value(i);
-                })
+                }, py::arg("i"))
                 .def("value", [](Option &ptr, int const &i) {
                     ptr.value(i);
-                })
+                }, py::arg("i"))
                 .def("name", [](Option const &ptr) -> String const & {
                     return ptr.name();
                 })
@@ -433,8 +472,8 @@ namespace base {
         py::class_<Options, std::shared_ptr<Options>>(m, "Options")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<String const &>())
-                .def(py::init<Options const &>())
+                .def(py::init<String const &>(), py::arg("name"))
+                .def(py::init<Options const &>(), py::arg("opts"))
                         // methods
                 .def("begin", [](Options &ptr) -> std::vector<OptionOP>::iterator {
                     return ptr.begin();
