@@ -24,10 +24,36 @@
 
 
 namespace base {
+    // trampoline class
+
+    class PyApplication : public Application {
+    public:
+        virtual
+        void
+        setup_options() override {
+
+        }
+
+    public:
+        virtual
+        void
+        run() override {
+
+        }
+    };
+
+
+
     namespace py = pybind11;
 
     void
     add_bindings(pybind11::module_ &m) {
+        // Exceptions
+        py::register_exception<RNAMakeException>(m, "RNAMakeException");
+        py::register_exception<RNAMakeIOException>(m, "RNAMakeIOException");
+        py::register_exception<RNAMakeImplementationExcepetion>(m, "RNAMakeImplementationExcepetion");
+        py::register_exception<CommandLineOptionException>(m, "CommandLineOptionException");
+
         // free functions
         m.def("base_dir", [](String const &path) -> String {
                   return base_dir(path);
@@ -74,7 +100,7 @@ namespace base {
         m.def("get_lines_from_file", [](String const &name) -> Strings {
                   return get_lines_from_file(name);
               },
-              py::arg("noexcept(false")
+              py::arg("name")
         );
 
         m.def("get_os_name", []() -> String {
@@ -166,7 +192,7 @@ namespace base {
               }
         );
 
-        m.def("split_str_by_delimiter", [](String s, String delimiter) -> Strings {
+        m.def("split_str_by_delimiter", [](String& s, String& delimiter) -> Strings {
                   return split_str_by_delimiter(s, delimiter);
               },
               py::arg("s"),
@@ -195,87 +221,72 @@ namespace base {
               }
         );
         // classes
-/*
-        py::class_<Application, std::shared_ptr<Application>>(m, "Application")
-		// ctors
-		.def(py::init<>())
-		// methods
-		.def("setup_options",[] (Application  & ptr) {
-		ptr.setup_options(); } )
-		.def("parse_command_line",[] (Application  & ptr, int argc, const char * * argv) {
-		ptr.parse_command_line(argc, argv); } )
-		.def("run",[] (Application  & ptr) {
-		ptr.run(); } )
-		.def("add_option_int",[] (Application  & ptr, String const & name, int const & val, OptionType const & type, bool required) { ptr.add_option(name, val, type, required); } )
-		.def("add_option_float",[] (Application  & ptr, String const & name, float const & val, OptionType const & type, bool required) { ptr.add_option(name, val, type, required); } )
-		.def("add_option_bool",[] (Application  & ptr, String const & name, bool const & val, OptionType const & type, bool required) { ptr.add_option(name, val, type, required); } )
-		.def("add_option_string",[] (Application  & ptr, String const & name, String const & val, OptionType const & type, bool required) { ptr.add_option(name, val, type, required); } )
-		.def("add_cl_options",[] (Application  & ptr, Options const & opts, String prefix) {
-		ptr.add_cl_options(opts, prefix); } )
-		.def("get_int_option",[] (Application  & ptr, String const & name) ->  float {
-		 return ptr.get_int_option(name); } )
-		.def("get_float_option",[] (Application  & ptr, String const & name) ->  float {
-		 return ptr.get_float_option(name); } )
-		.def("get_string_option",[] (Application  & ptr, String const & name) ->  String {
-		 return ptr.get_string_option(name); } )
-		.def("get_bool_option",[] (Application  & ptr, String const & name) ->  bool {
-		 return ptr.get_bool_option(name); } )
+        py::class_<PyApplication, std::shared_ptr<PyApplication>>(m, "Application")
+		        // ctors
+		        .def(py::init<>())
+		        // methods
+		        .def("setup_options",[] (PyApplication  & ptr) { ptr.setup_options(); } )
+		        .def("parse_command_line",[] (PyApplication  & ptr, int argc, Strings const& vec) {
+                    std::vector<char *> ptrs; ptrs.reserve(vec.size()); for (auto &v : vec) { ptrs.push_back(const_cast<char *>(v.c_str())); };
+                    ptr.parse_command_line(argc, (const char **) (&ptrs[0])); },
+                    py::arg("argc"),
+                    py::arg("argv")
+                )
+		        .def("run",[] (PyApplication  & ptr) { ptr.run(); } )
+		        .def("add_option",[] (PyApplication  & ptr, String const & name, int const & val, OptionType const & type, bool required) { ptr.add_option(name, val, type, required); },
+                    py::arg("name"),
+                    py::arg("val"),
+                    py::arg("type"),
+                    py::arg("required") = false
+                )
+                .def("add_option",[] (PyApplication  & ptr, String const & name, float const & val, OptionType const & type, bool required) { ptr.add_option(name, val, type, required); },
+                    py::arg("name"),
+                    py::arg("val"),
+                    py::arg("type"),
+                    py::arg("required") = false
+                )
+                .def("add_option",[] (PyApplication  & ptr, String const & name, bool const & val, OptionType const & type, bool required) { ptr.add_option(name, val, type, required); },
+                    py::arg("name"),
+                    py::arg("val"),
+                    py::arg("type"),
+                    py::arg("required") = false
+                )
+                .def("add_option",[] (PyApplication  & ptr, String const & name, String const & val, OptionType const & type, bool required) { ptr.add_option(name, val, type, required); },
+                    py::arg("name"),
+                    py::arg("val"),
+                    py::arg("type"),
+                    py::arg("required") = false)
+		        .def("add_cl_options",[] (PyApplication  & ptr, Options const & opts, String prefix) { ptr.add_cl_options(opts, prefix); }, py::arg("opts"), py::arg("prefix") )
+		        .def("get_int_option",[] (PyApplication  & ptr, String const & name) ->  int { return ptr.get_int_option(name); }, py::arg("name") )
+		        .def("get_float_option",[] (PyApplication  & ptr, String const & name) ->  float { return ptr.get_float_option(name); } , py::arg("name"))
+		        .def("get_string_option",[] (PyApplication  & ptr, String const & name) ->  String { return ptr.get_string_option(name); } , py::arg("name"))
+		        .def("get_bool_option",[] (PyApplication  & ptr, String const & name) ->  bool { return ptr.get_bool_option(name); } ), py::arg("name")
 		;
-*/
+
         py::class_<CommandLineOption, std::shared_ptr<CommandLineOption>>(m, "CommandLineOption")
                 // ctors
-                .def(py::init<String const &, int const &, OptionType const &, bool>())
-                .def(py::init<String const &, float const &, OptionType const &, bool>())
-                .def(py::init<String const &, bool const &, OptionType const &, bool>())
-                .def(py::init<String const &, String const &, OptionType const &, bool>())
-                .def(py::init<Option const &>())
-                        // methods
-                .def("filled", [](CommandLineOption &ptr) -> bool {
-                    return ptr.filled();
-                })
-                .def("required", [](CommandLineOption &ptr) -> bool {
-                    return ptr.required();
-                })
-                .def("filled", [](CommandLineOption &ptr, bool const &filled) {
-                    ptr.filled(filled);
-                })
-                        // inherited methods
-                .def("get_float", [](Option &ptr) -> float {
-                    return ptr.get_float();
-                })
-                .def("get_int", [](Option &ptr) -> int {
-                    return ptr.get_int();
-                })
-                .def("get_string", [](Option &ptr) -> String const & {
-                    return ptr.get_string();
-                })
-                .def("get_bool", [](Option &ptr) -> bool const & {
-                    return ptr.get_bool();
-                })
-                .def("value", [](Option &ptr, int const &i) {
-                    ptr.value(i);
-                })
-                .def("value", [](Option &ptr, char const *c_str) {
-                    ptr.value(c_str);
-                })
-                .def("value", [](Option &ptr, int const &i) {
-                    ptr.value(i);
-                })
-                .def("value", [](Option &ptr, int const &i) {
-                    ptr.value(i);
-                })
-                .def("value", [](Option &ptr, int const &i) {
-                    ptr.value(i);
-                })
-                .def("name", [](Option const &ptr) -> String const & {
-                    return ptr.name();
-                })
-                .def("type", [](Option const &ptr) -> OptionType const & {
-                    return ptr.type();
-                })
-                .def("type_name", [](Option &ptr) -> String {
-                    return ptr.type_name();
-                });
+                .def(py::init<String const &, int const &, OptionType const &, bool>(), py::arg("name"), py::arg("value"), py::arg("type"), py::arg("required"))
+                .def(py::init<String const &, float const &, OptionType const &, bool>(), py::arg("name"), py::arg("value"), py::arg("type"), py::arg("required"))
+                .def(py::init<String const &, bool const &, OptionType const &, bool>(), py::arg("name"), py::arg("value"), py::arg("type"), py::arg("required"))
+                .def(py::init<String const &, String const &, OptionType const &, bool>(), py::arg("name"), py::arg("value"), py::arg("type"), py::arg("required"))
+                .def(py::init<Option const &>(), py::arg("option"))
+                // methods
+                .def("filled", [](CommandLineOption &ptr) -> bool { return ptr.filled(); })
+                .def("required", [](CommandLineOption &ptr) -> bool { return ptr.required(); })
+                .def("filled", [](CommandLineOption &ptr, bool const &filled) { ptr.filled(filled); })
+                // inherited methods
+                .def("get_float", [](Option &ptr) -> float { return ptr.get_float(); })
+                .def("get_int", [](Option &ptr) -> int { return ptr.get_int(); })
+                .def("get_string", [](Option &ptr) -> String const & { return ptr.get_string(); })
+                .def("get_bool", [](Option &ptr) -> bool const & { return ptr.get_bool(); })
+                .def("value", [](Option &ptr, int const &i) { ptr.value(i); }, py::arg("i"))
+                .def("value", [](Option &ptr, char const *c_str) { ptr.value(c_str); }, py::arg("c_str"))
+                .def("value", [](Option &ptr, bool const &boolean) { ptr.value(boolean); }, py::arg("boolean"))
+                .def("value", [](Option &ptr, float const &real) { ptr.value(real); }, py::arg("real"))
+                .def("value", [](Option &ptr, String const &str) { ptr.value(str); }, py::arg("str"))
+                .def("name", [](Option const &ptr) -> String const & { return ptr.name(); })
+                .def("type", [](Option const &ptr) -> OptionType const & { return ptr.type(); })
+                .def("type_name", [](Option &ptr) -> String { return ptr.type_name(); });
 
         py::class_<CommandLineOptions, std::shared_ptr<CommandLineOptions>>(m, "CommandLineOptions")
                 // ctors
@@ -295,68 +306,68 @@ namespace base {
                 })
                 .def("add_option",
                      [](CommandLineOptions &ptr, String const &name, String const &value, OptionType const &type,
-                        bool required) { ptr.add_option(name, value, type, required); })
+                        bool required) { ptr.add_option(name, value, type, required); },
+                        py::arg("name"),
+                        py::arg("value"),
+                        py::arg("type"),
+                        py::arg("required") = false)
                 .def("add_option",
                      [](CommandLineOptions &ptr, String const &name, int const &value, OptionType const &type,
-                        bool required) { ptr.add_option(name, value, type, required); })
+                        bool required) { ptr.add_option(name, value, type, required); },
+                        py::arg("name"),
+                        py::arg("value"),
+                        py::arg("type"),
+                        py::arg("required") = false)
                 .def("add_option",
                      [](CommandLineOptions &ptr, String const &name, bool const &value, OptionType const &type,
-                        bool required) { ptr.add_option(name, value, type, required); })
+                        bool required) { ptr.add_option(name, value, type, required); },
+                        py::arg("name"),
+                        py::arg("value"),
+                        py::arg("type"),
+                        py::arg("required") = false)
                 .def("add_option",
                      [](CommandLineOptions &ptr, String const &name, float const &value, OptionType const &type,
-                        bool required) { ptr.add_option(name, value, type, required); })
+                        bool required) { ptr.add_option(name, value, type, required); },
+                        py::arg("name"),
+                        py::arg("value"),
+                        py::arg("type"),
+                        py::arg("required") = false)
                 .def("add_options", [](CommandLineOptions &ptr, Options const &opts) {
                     ptr.add_options(opts);
-                })
+                }, py::arg("opts"))
                 .def("parse_command_line", [](CommandLineOptions &ptr, const int argc, Strings &vec) {
                     std::vector<char *> ptrs;
                     ptrs.reserve(vec.size());
                     for (auto &v : vec) { ptrs.push_back(const_cast<char *>(v.c_str())); };
                     ptr.parse_command_line(argc, (const char **) (&ptrs[0]));
-                })
-                .def("get_int", [](CommandLineOptions const &ptr, String const &name) -> float {
-                    return ptr.get_int(name);
-                })
-                .def("get_float", [](CommandLineOptions const &ptr, String const &name) -> float {
-                    return ptr.get_float(name);
-                })
-                .def("get_string", [](CommandLineOptions const &ptr, String const &name) -> String {
-                    return ptr.get_string(name);
-                })
-                .def("get_bool", [](CommandLineOptions const &ptr, String const &name) -> bool {
-                    return ptr.get_bool(name);
-                })
-                .def("has_option", [](CommandLineOptions const &ptr, String const &name) -> bool {
-                    return ptr.has_option(name);
-                })
-                .def("set_value",
-                     [](CommandLineOptions &ptr, String const &name, String const &val) { ptr.set_value(name, val); })
-                .def("set_value",
-                     [](CommandLineOptions &ptr, String const &name, int const &val) { ptr.set_value(name, val); })
-                .def("set_value",
-                     [](CommandLineOptions &ptr, String const &name, bool const &val) { ptr.set_value(name, val); })
-                .def("set_value",
-                     [](CommandLineOptions &ptr, String const &name, float const &val) { ptr.set_value(name, val); })
-                .def("is_filled", [](CommandLineOptions const &ptr, String const &name) -> bool {
-                    return ptr.is_filled(name);
-                });
+                },py::arg("argc"), py::arg("argv"))
+                .def("get_int", [](CommandLineOptions const &ptr, String const &name) -> float { return ptr.get_int(name); })
+                .def("get_float", [](CommandLineOptions const &ptr, String const &name) -> float { return ptr.get_float(name); })
+                .def("get_string", [](CommandLineOptions const &ptr, String const &name) -> String { return ptr.get_string(name); })
+                .def("get_bool", [](CommandLineOptions const &ptr, String const &name) -> bool {return ptr.get_bool(name); })
+                .def("has_option", [](CommandLineOptions const &ptr, String const &name) -> bool { return ptr.has_option(name); })
+                .def("set_value",[](CommandLineOptions &ptr, String const &name, String const &val) { ptr.set_value(name, val); }, py::arg("name"), py::arg("value"))
+                .def("set_value", [](CommandLineOptions &ptr, String const &name, int const &val) { ptr.set_value(name, val); }, py::arg("name"), py::arg("value"))
+                .def("set_value", [](CommandLineOptions &ptr, String const &name, bool const &val) { ptr.set_value(name, val); }, py::arg("name"), py::arg("value"))
+                .def("set_value", [](CommandLineOptions &ptr, String const &name, float const &val) { ptr.set_value(name, val); }, py::arg("name"), py::arg("value"))
+                .def("is_filled", [](CommandLineOptions const &ptr, String const &name) -> bool {return ptr.is_filled(name);}, py::arg("name"));
 
         py::class_<CommandLineParser, std::shared_ptr<CommandLineParser>>(m, "CommandLineParser")
                 // ctors
                 .def(py::init<>())
                         // methods
                 .def("assign_options",
-                     [](CommandLineParser &ptr, CommandLineOptions const &cl_options, Options &options, String prefix) {
+                     [](CommandLineParser &ptr, CommandLineOptions const &cl_options, Options &options, String& prefix) {
                          ptr.assign_options(cl_options, options, prefix);
-                     });
+                     },py::arg("cl_options"), py::arg("options"), py::arg("prefix") = "");
 
         py::class_<EnvManager, std::shared_ptr<EnvManager>>(m, "EnvManager")
                 // ctors
-                .def(py::init<Strings const &>())
+                .def(py::init<Strings const &>(), py::arg("env_vars"))
                         // methods
                 .def("add_env", [](EnvManager &ptr, String const &env) {
                     ptr.add_env(env);
-                })
+                },py::arg("env"))
                 .def("set_envs", [](EnvManager &ptr) {
                     ptr.set_envs();
                 });
@@ -412,7 +423,12 @@ namespace base {
 
         py::class_<OptionClass, std::shared_ptr<OptionClass>>(m, "OptionClass");
 
-        py::class_<OptionType, std::shared_ptr<OptionType>>(m, "OptionType");
+        py::enum_<OptionType>(m, "OptionType")
+            .value("BOOL", OptionType::BOOL)
+            .value("INT", OptionType::INT)
+            .value("STRING", OptionType::STRING)
+            .value("FLOAT",OptionType::FLOAT)
+            ;
 
         py::class_<Options, std::shared_ptr<Options>>(m, "Options")
                 // ctors
@@ -471,16 +487,7 @@ namespace base {
                 .def("set_value",
                      [](Options &ptr, String const &name, String const &val) { ptr.set_value(name, val); });
 
-        py::class_<RNAMakeIOException, std::shared_ptr<RNAMakeIOException>>(m, "RNAMakeIOException")
-                // ctors
-                .def(py::init<String const &>())
-                .def(py::init<const char *>());
 
-        py::class_<RNAMakeImplementationExcepetion, std::shared_ptr<RNAMakeImplementationExcepetion>>(m,
-                                                                                                      "RNAMakeImplementationExcepetion")
-                // ctors
-                .def(py::init<String const &>())
-                .def(py::init<const char *>());
 /*
         py::class_<VectorContainer, std::shared_ptr<VectorContainer>>(m, "VectorContainer")
 		// ctors

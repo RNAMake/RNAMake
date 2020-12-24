@@ -29,6 +29,8 @@ namespace secondary_structure {
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// secondary_structure
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        // Exceptions
+        py::register_exception<Exception>(m, "Exception");
 
         // free functions
         m.def("assign_end_id", [] (secondary_structure::RNAStructureOP const & ss, secondary_structure::BasepairOP const & end) -> String {
@@ -93,70 +95,49 @@ namespace secondary_structure {
 
         py::class_<secondary_structure::Basepair, std::shared_ptr<secondary_structure::Basepair>>(m, "Basepair")
                 // ctors
-                .def(py::init<secondary_structure::ResidueOP const &,secondary_structure::ResidueOP const &,util::Uuid const &>())
+                .def(py::init<secondary_structure::ResidueOP const &,secondary_structure::ResidueOP const &,util::Uuid const &>(),
+                        py::arg("res1"), py::arg("res2"), py::arg("uuid"))
                         // methods
-                .def("name",[] (secondary_structure::Basepair  & ptr) ->  String {
-                    return ptr.name(); } )
+                .def("name",[] (secondary_structure::Basepair  & ptr) ->  String { return ptr.name(); } )
                 .def("partner",[] (secondary_structure::Basepair  & ptr, secondary_structure::ResidueOP const & r) ->  secondary_structure::ResidueOP {
-                    return ptr.partner(r); } )
-                .def("res1",[] (secondary_structure::Basepair  & ptr) ->  secondary_structure::ResidueOP & {
-                    return ptr.res1(); } )
-                .def("res2",[] (secondary_structure::Basepair  & ptr) ->  secondary_structure::ResidueOP & {
-                    return ptr.res2(); } )
-                .def("res1",[] (secondary_structure::Basepair const & ptr) ->  secondary_structure::ResidueOP const & {
-                    return ptr.res1(); } )
-                .def("res2",[] (secondary_structure::Basepair const & ptr) ->  secondary_structure::ResidueOP const & {
-                    return ptr.res2(); } )
-                .def("uuid",[] (secondary_structure::Basepair  & ptr) ->  util::Uuid const & {
-                    return ptr.uuid(); } )
+                    return ptr.partner(r); }, py::arg("4") )
+                .def("res1",[] (secondary_structure::Basepair  & ptr) ->  secondary_structure::ResidueOP & { return ptr.res1(); } )
+                .def("res2",[] (secondary_structure::Basepair  & ptr) ->  secondary_structure::ResidueOP & { return ptr.res2(); } )
+                .def("res1",[] (secondary_structure::Basepair const & ptr) ->  secondary_structure::ResidueOP const & { return ptr.res1(); } )
+                .def("res2",[] (secondary_structure::Basepair const & ptr) ->  secondary_structure::ResidueOP const & { return ptr.res2(); } )
+                .def("uuid",[] (secondary_structure::Basepair  & ptr) ->  util::Uuid const & { return ptr.uuid(); } )
                 ;
 
-        py::class_<secondary_structure::Chain, std::shared_ptr<secondary_structure::Chain>>(m, "Chain")
+        py::class_<Chain, ChainOP>(m, "Chain")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<secondary_structure::ResidueOPs const &>())
-                .def(py::init<secondary_structure::Chain const &>())
-                .def(py::init<String const &>())
+                .def(py::init<ResidueOPs const &>(), py::arg("residues"))
+                .def(py::init<Chain const &>(), py::arg("c"))
+                .def(py::init<String const &>(), py::arg("c"))
                         // methods
-                .def("begin",[] (secondary_structure::Chain  & ptr) -> secondary_structure::ResidueOPs::iterator {
-                    return ptr.begin(); } )
-                .def("end",[] (secondary_structure::Chain  & ptr) -> secondary_structure::ResidueOPs::iterator {
-                    return ptr.end(); } )
-                .def("begin",[] (secondary_structure::Chain const & ptr) -> secondary_structure::ResidueOPs::const_iterator {
-                    return ptr.begin(); } )
-                .def("end",[] (secondary_structure::Chain const & ptr) -> secondary_structure::ResidueOPs::const_iterator {
-                    return ptr.end(); } )
-                .def("first",[] (secondary_structure::Chain  & ptr) ->  secondary_structure::ResidueOP const & {
-                    return ptr.first(); } )
-                .def("last",[] (secondary_structure::Chain  & ptr) ->  secondary_structure::ResidueOP const & {
-                    return ptr.last(); } )
-                .def("sequence",[] (secondary_structure::Chain  & ptr) ->  String {
-                    return ptr.sequence(); } )
-                .def("dot_bracket",[] (secondary_structure::Chain  & ptr) ->  String {
-                    return ptr.dot_bracket(); } )
-                .def("to_str",[] (secondary_structure::Chain  & ptr) ->  String {
-                    return ptr.to_str(); } )
-                .def("length",[] (secondary_structure::Chain  & ptr) ->  int {
-                    return ptr.length(); } )
-                .def("residues",[] (secondary_structure::Chain  & ptr) ->  secondary_structure::ResidueOPs const & {
-                    return ptr.residues(); } )
+                .def("begin",[] (Chain  & ptr) -> ResidueOPs::iterator { return ptr.begin(); } )
+                .def("end",[] (Chain  & ptr) -> ResidueOPs::iterator { return ptr.end(); } )
+                .def("begin",[] (Chain const & ptr) -> ResidueOPs::const_iterator { return ptr.begin(); } )
+                .def("end",[] (Chain const & ptr) -> ResidueOPs::const_iterator { return ptr.end(); } )
+                .def("first",[] (Chain  & ptr) ->  ResidueOP const & { return ptr.first(); } )
+                .def("last",[] (Chain  & ptr) ->  ResidueOP const & { return ptr.last(); } )
+                .def("sequence",[] (Chain  & ptr) ->  String { return ptr.sequence(); } )
+                .def("dot_bracket",[] (Chain  & ptr) ->  String { return ptr.dot_bracket(); } )
+                .def("to_str",[] (Chain  & ptr) ->  String { return ptr.to_str(); } )
+                .def("length",[] (Chain  & ptr) ->  int { return ptr.length(); } )
+                .def("residues",[] (Chain  & ptr) ->  ResidueOPs const & { return ptr.residues(); } )
                 ;
 
         py::class_<DisallowedSequence, std::shared_ptr<DisallowedSequence>>(m, "DisallowedSequence")
                 // ctors
-                .def(py::init<String const &>())
+                .def(py::init<String const &>(), py::arg("disallowed_sequence"))
                         // methods
-                .def("clone",[] (DisallowedSequence const & ptr) -> SequenceConstraint * {
-                    return ptr.clone(); } )
-                .def("violations",[] (DisallowedSequence  & ptr, secondary_structure::PoseOP p) -> int {
-                    return ptr.violations(p); } )
+                .def("clone",[] (DisallowedSequence const & ptr) -> SequenceConstraint * { return ptr.clone(); } )
+                .def("violations",[] (DisallowedSequence  & ptr, PoseOP & p) -> int { return ptr.violations(p); }, py::arg("p") )
                         // inherited methods
-                .def("clone",[] (SequenceConstraint const & ptr) -> SequenceConstraint * {
-                    return ptr.clone(); } )
-                .def("violates_constraint",[] (SequenceConstraint  & ptr, secondary_structure::PoseOP p) -> bool {
-                    return ptr.violates_constraint(p); } )
-                .def("violations",[] (SequenceConstraint  & ptr, secondary_structure::PoseOP p) -> int {
-                    return ptr.violations(p); } )
+                .def("clone",[] (SequenceConstraint const & ptr) -> SequenceConstraint * { return ptr.clone(); } )
+                .def("violates_constraint",[] (SequenceConstraint  & ptr, PoseOP & p) -> bool { return ptr.violates_constraint(p); }, py::arg("p") )
+                .def("violations",[] (SequenceConstraint  & ptr, PoseOP & p) -> int { return ptr.violations(p); } , py::arg("p"))
                 ;
 
         py::class_<GCHelixStretchLimit, std::shared_ptr<GCHelixStretchLimit>>(m, "GCHelixStretchLimit")
@@ -165,82 +146,71 @@ namespace secondary_structure {
                         // methods
                 .def("clone",[] (GCHelixStretchLimit const & ptr) -> SequenceConstraint * {
                     return ptr.clone(); } )
-                .def("violations",[] (GCHelixStretchLimit  & ptr, secondary_structure::PoseOP p) -> int {
-                    return ptr.violations(p); } )
+                .def("violations",[] (GCHelixStretchLimit  & ptr, PoseOP  & p) -> int {
+                    return ptr.violations(p); }, py::arg("p") )
                         // inherited methods
                 .def("clone",[] (SequenceConstraint const & ptr) -> SequenceConstraint * {
                     return ptr.clone(); } )
-                .def("violates_constraint",[] (SequenceConstraint  & ptr, secondary_structure::PoseOP p) -> bool {
-                    return ptr.violates_constraint(p); } )
-                .def("violations",[] (SequenceConstraint  & ptr, secondary_structure::PoseOP p) -> int {
-                    return ptr.violations(p); } )
+                .def("violates_constraint",[] (SequenceConstraint  & ptr, PoseOP & p) -> bool {
+                    return ptr.violates_constraint(p); }, py::arg("p") )
+                .def("violations",[] (SequenceConstraint  & ptr, PoseOP & p) -> int {
+                    return ptr.violations(p); }, py::arg("p") )
                 ;
 
-        py::class_<secondary_structure::Motif, std::shared_ptr<secondary_structure::Motif>>(m, "Motif")
+        py::class_<Motif, MotifOP>(m, "Motif")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<secondary_structure::StructureOP const &,secondary_structure:: BasepairOPs const &,secondary_structure::BasepairOPs const &>())
-                .def(py::init<secondary_structure::StructureOP const &,secondary_structure:: BasepairOPs const &,secondary_structure::BasepairOPs const &,Strings const &,String const &,String const &,float>())
-                .def(py::init<secondary_structure::Motif const &>())
-                .def(py::init<String const &>())
+                .def(py::init<StructureOP const &, BasepairOPs const &,BasepairOPs const &>(),
+                        py::arg("structure"), py::arg("basepairs"), py::arg("ends"))
+                .def(py::init<StructureOP const &, BasepairOPs const &,BasepairOPs const &,Strings const &,String const &,String const &,float>(),
+                        py::arg("structure"), py::arg("basepairs"), py::arg("ends"), py::arg("end_ids"), py::arg("name"),py::arg("path"), py::arg("score"))
+                .def(py::init<Motif const &>(), py::arg("m"))
+                .def(py::init<String const &>(), py::arg("s"))
                         // methods
-                .def("to_str",[] (secondary_structure::Motif  & ptr) -> String {
-                    return ptr.to_str(); } )
-                .def("mtype",[] (secondary_structure::Motif  & ptr) ->  util::MotifType const & {
-                    return ptr.mtype(); } )
-                .def("id",[] (secondary_structure::Motif  & ptr) ->  util::Uuid const & {
-                    return ptr.id(); } )
-                .def("mtype",[] (secondary_structure::Motif  & ptr, util::MotifType const & mtype) {
-                    ptr.mtype(mtype); } )
-                .def("id",[] (secondary_structure::Motif  & ptr, util::Uuid const & uuid) {
-                    ptr.id(uuid); } )
+                .def("to_str",[] (Motif  & ptr) -> String { return ptr.to_str(); } )
+                .def("mtype",[] (Motif  & ptr) ->  util::MotifType const & {return ptr.mtype(); } )
+                .def("id",[] (Motif  & ptr) ->  util::Uuid const & { return ptr.id(); } )
+                .def("mtype",[] (Motif  & ptr, util::MotifType const & mtype) {ptr.mtype(mtype); }, py::arg("mtype") )
+                .def("id",[] (Motif  & ptr, util::Uuid const & uuid) { ptr.id(uuid); }, py::arg("uuid") )
                         // inherited methods
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) ->secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) ->secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) ->secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) ->secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_end",[] (secondary_structure::RNAStructure  & ptr, String const & name) -> secondary_structure::BasepairOP {
-                    return ptr.get_end(name); } )
-                .def("replace_sequence",[] (secondary_structure::RNAStructure  & ptr, String const & seq) {
-                    ptr.replace_sequence(seq); } )
-                .def("get_residue",[] (secondary_structure::RNAStructure  & ptr, int num, String const & chain_id, String const & i_code) ->  secondary_structure::ResidueOP {
-                    return ptr.get_residue(num, chain_id, i_code); } )
-                .def("get_residue",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & uuid) ->  secondary_structure::ResidueOP {
-                    return ptr.get_residue(uuid); } )
-                .def("sequence",[] (secondary_structure::RNAStructure  & ptr) ->  String {
-                    return ptr.sequence(); } )
-                .def("dot_bracket",[] (secondary_structure::RNAStructure  & ptr) ->  String {
-                    return ptr.dot_bracket(); } )
-                .def("chains",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::ChainOPs const & {
-                    return ptr.chains(); } )
-                .def("residues",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::ResidueOPs {
-                    return ptr.residues(); } )
-                .def("structure",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::StructureOP {
-                    return ptr.structure(); } )
-                .def("basepairs",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::BasepairOPs const & {
-                    return ptr.basepairs(); } )
-                .def("ends",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::BasepairOPs const & {
-                    return ptr.ends(); } )
-                .def("name",[] (secondary_structure::RNAStructure  & ptr) ->  String const & {
-                    return ptr.name(); } )
-                .def("end_ids",[] (secondary_structure::RNAStructure  & ptr) ->  Strings const & {
-                    return ptr.end_ids(); } )
-                .def("name",[] (secondary_structure::RNAStructure  & ptr, String const & name) {
-                    ptr.name(name); } )
-                .def("path",[] (secondary_structure::RNAStructure  & ptr, String const & path) {
-                    ptr.path(path); } )
-                .def("end_ids",[] (secondary_structure::RNAStructure  & ptr, Strings const & end_ids) {
-                    ptr.end_ids(end_ids); } )
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) ->BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); }, py::arg("bp_uuid") )
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) ->BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); } , py::arg("bp_uuid"))
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) ->BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); } , py::arg("bp_uuid"))
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) ->BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); } , py::arg("bp_uuid"))
+                .def("get_end",[] (RNAStructure  & ptr, String const & name) -> BasepairOP {
+                    return ptr.get_end(name); } , py::arg("name"))
+                .def("replace_sequence",[] (RNAStructure  & ptr, String const & seq) {
+                    ptr.replace_sequence(seq); } , py::arg("seq"))
+                .def("get_residue",[] (RNAStructure  & ptr, int num, String const & chain_id, String const & i_code) ->  ResidueOP {
+                    return ptr.get_residue(num, chain_id, i_code); }, py::arg("num") , py::arg("chain_id"), py::arg("i_code") )
+                .def("get_residue",[] (RNAStructure  & ptr, util::Uuid const & uuid) ->  ResidueOP {
+                    return ptr.get_residue(uuid); }, py::arg("uuid") )
+                .def("sequence",[] (RNAStructure  & ptr) ->  String { return ptr.sequence(); } )
+                .def("dot_bracket",[] (RNAStructure  & ptr) ->  String { return ptr.dot_bracket(); } )
+                .def("chains",[] (RNAStructure  & ptr) ->  ChainOPs const & { return ptr.chains(); } )
+                .def("residues",[] (RNAStructure  & ptr) ->  ResidueOPs { return ptr.residues(); } )
+                .def("structure",[] (RNAStructure  & ptr) ->  StructureOP { return ptr.structure(); } )
+                .def("basepairs",[] (RNAStructure  & ptr) ->  BasepairOPs const & { return ptr.basepairs(); } )
+                .def("ends",[] (RNAStructure  & ptr) ->  BasepairOPs const & { return ptr.ends(); } )
+                .def("name",[] (RNAStructure  & ptr) ->  String const & { return ptr.name(); } )
+                .def("end_ids",[] (RNAStructure  & ptr) ->  Strings const & { return ptr.end_ids(); } )
+                .def("name",[] (RNAStructure  & ptr, String const & name) {
+                    ptr.name(name); }, py::arg("name") )
+                .def("path",[] (RNAStructure  & ptr, String const & path) {
+                    ptr.path(path); }, py::arg("path") )
+                .def("end_ids",[] (RNAStructure  & ptr, Strings const & end_ids) {
+                    ptr.end_ids(end_ids); }, py::arg("end_ids") )
                 ;
 
         py::class_<NodeData, std::shared_ptr<NodeData>>(m, "NodeData")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<secondary_structure::ResidueOPs const &,NodeType const &>())
+                .def(py::init<secondary_structure::ResidueOPs const &,NodeType const &>(),
+                        py::arg("nresidues"), py::arg("ntype"))
                         // public attributes
                 .def_readwrite("residues", &NodeData::residues)
                 .def_readwrite("type", &NodeData::type)
@@ -251,124 +221,110 @@ namespace secondary_structure {
                 .def(py::init<>())
                         // methods
                 .def("parse",[] (Parser  & ptr, String const & sequence, String const & dot_bracket) -> SecondaryStructureChainGraphOP {
-                    return ptr.parse(sequence, dot_bracket); } )
+                    return ptr.parse(sequence, dot_bracket); } , py::arg("sequence"), py::arg("dot_bracket"))
                 .def("parse_to_motifs",[] (Parser  & ptr, String const & sequence, String const & dot_bracket)   {
-                    return ptr.parse_to_motifs(sequence, dot_bracket); } )
+                    return ptr.parse_to_motifs(sequence, dot_bracket); } , py::arg("sequence"), py::arg("dot_bracket"))
                 .def("parse_to_motif",[] (Parser  & ptr, String const & sequence, String const & dot_bracket) -> secondary_structure::MotifOP  {
-                    return ptr.parse_to_motif(sequence, dot_bracket); } )
+                    return ptr.parse_to_motif(sequence, dot_bracket); } , py::arg("sequence"), py::arg("dot_bracket"))
                 .def("parse_to_pose",[] (Parser  & ptr, String const & sequence, String const & dot_bracket) ->secondary_structure:: PoseOP {
-                    return ptr.parse_to_pose(sequence, dot_bracket); } )
-                .def("reset",[] (Parser  & ptr) {
-                    ptr.reset(); } )
+                    return ptr.parse_to_pose(sequence, dot_bracket); } , py::arg("sequence"), py::arg("dot_bracket"))
+                .def("reset",[] (Parser  & ptr) { ptr.reset(); } )
                 ;
 
-        py::class_<secondary_structure::Pose, std::shared_ptr<secondary_structure::Pose>>(m, "Pose")
+        py::class_<Pose, PoseOP>(m, "Pose")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<secondary_structure::StructureOP const &,secondary_structure::BasepairOPs const &,secondary_structure::BasepairOPs const &>())
-                .def(py::init<secondary_structure::StructureOP const &,secondary_structure::BasepairOPs const &,secondary_structure::BasepairOPs const &,secondary_structure::MotifOPs const &>())
-                .def(py::init<secondary_structure::RNAStructureOP const &,secondary_structure::MotifOPs const &>())
+                .def(py::init<StructureOP const &,BasepairOPs const &,BasepairOPs const &>(),
+                        py::arg("structure"), py::arg("basepairs"), py::arg("ends"))
+                .def(py::init<StructureOP const &,BasepairOPs const &,BasepairOPs const &,MotifOPs const &>(),
+                        py::arg("structure"), py::arg("basepairs"), py::arg("ends"), py::arg("motifs"))
+                .def(py::init<RNAStructureOP const &,MotifOPs const &>(),
+                        py::arg("rs"), py::arg("motifs"))
                         // methods
-                .def("helices",[] (secondary_structure::Pose  & ptr) -> secondary_structure::MotifOPs const & {
-                    return ptr.helices(); } )
-                .def("motifs",[] (secondary_structure::Pose const & ptr) -> secondary_structure::MotifOPs const & {
-                    return ptr.motifs(); } )
-                .def("motif",[] (secondary_structure::Pose  & ptr, util::Uuid const & uuid) -> secondary_structure::MotifOP {
-                    return ptr.motif(uuid); } )
-                .def("replace_sequence",[] (secondary_structure::Pose  & ptr, String const & seq) {
-                    ptr.replace_sequence(seq); } )
-                .def("update_motif",[] (secondary_structure::Pose  & ptr, util::Uuid const & uuid) {
-                    ptr.update_motif(uuid); } )
+                .def("helices",[] (Pose  & ptr) -> MotifOPs const & { return ptr.helices(); } )
+                .def("motifs",[] (Pose const & ptr) -> MotifOPs const & { return ptr.motifs(); } )
+                .def("motif",[] (Pose  & ptr, util::Uuid const & uuid) -> MotifOP { return ptr.motif(uuid); }, py::arg("uuid") )
+                .def("replace_sequence",[] (Pose  & ptr, String const & seq) {
+                    ptr.replace_sequence(seq); }, py::arg("seq") )
+                .def("update_motif",[] (Pose  & ptr, util::Uuid const & uuid) {
+                    ptr.update_motif(uuid); }, py::arg("uuid") )
                         // inherited methods
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) -> secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) -> secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) -> secondary_structure::BasepairOPs  {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) -> secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_end",[] (secondary_structure::RNAStructure  & ptr, String const & name) -> secondary_structure::BasepairOP {
-                    return ptr.get_end(name); } )
-                .def("replace_sequence",[] (secondary_structure::RNAStructure  & ptr, String const & seq) {
-                    ptr.replace_sequence(seq); } )
-                .def("get_residue",[] (secondary_structure::RNAStructure  & ptr, int num, String const & chain_id, String const & i_code) ->  secondary_structure::ResidueOP {
-                    return ptr.get_residue(num, chain_id, i_code); } )
-                .def("get_residue",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & uuid) ->  secondary_structure::ResidueOP {
-                    return ptr.get_residue(uuid); } )
-                .def("sequence",[] (secondary_structure::RNAStructure  & ptr) ->  String {
-                    return ptr.sequence(); } )
-                .def("dot_bracket",[] (secondary_structure::RNAStructure  & ptr) ->  String {
-                    return ptr.dot_bracket(); } )
-                .def("chains",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::ChainOPs const & {
-                    return ptr.chains(); } )
-                .def("residues",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::ResidueOPs {
-                    return ptr.residues(); } )
-                .def("structure",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::StructureOP {
-                    return ptr.structure(); } )
-                .def("basepairs",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::BasepairOPs const & {
-                    return ptr.basepairs(); } )
-                .def("ends",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::BasepairOPs const & {
-                    return ptr.ends(); } )
-                .def("name",[] (secondary_structure::RNAStructure  & ptr) ->  String const & {
-                    return ptr.name(); } )
-                .def("end_ids",[] (secondary_structure::RNAStructure  & ptr) ->  Strings const & {
-                    return ptr.end_ids(); } )
-                .def("name",[] (secondary_structure::RNAStructure  & ptr, String const & name) {
-                    ptr.name(name); } )
-                .def("path",[] (secondary_structure::RNAStructure  & ptr, String const & path) {
-                    ptr.path(path); } )
-                .def("end_ids",[] (secondary_structure::RNAStructure  & ptr, Strings const & end_ids) {
-                    ptr.end_ids(end_ids); } )
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) -> BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); }, py::arg("bp_uuid") )
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) -> BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); } , py::arg("bp_uuid"))
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) -> BasepairOPs  {
+                    return ptr.get_basepair(bp_uuid); } , py::arg("bp_uuid"))
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) -> BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); } , py::arg("bp_uuid"))
+                .def("get_end",[] (RNAStructure  & ptr, String const & name) -> BasepairOP {
+                    return ptr.get_end(name); } , py::arg("name"))
+                .def("replace_sequence",[] (RNAStructure  & ptr, String const & seq) {
+                    ptr.replace_sequence(seq); }, py::arg("seq") )
+                .def("get_residue",[] (RNAStructure  & ptr, int num, String const & chain_id, String const & i_code) ->  ResidueOP {
+                    return ptr.get_residue(num, chain_id, i_code); },
+                     py::arg("num"), py::arg("chain_id"), py::arg("i_code"))
+                .def("get_residue",[] (RNAStructure  & ptr, util::Uuid const & uuid) ->  ResidueOP {
+                    return ptr.get_residue(uuid); }, py::arg("uuid") )
+                .def("sequence",[] (RNAStructure  & ptr) ->  String { return ptr.sequence(); } )
+                .def("dot_bracket",[] (RNAStructure  & ptr) ->  String { return ptr.dot_bracket(); } )
+                .def("chains",[] (RNAStructure  & ptr) ->  ChainOPs const & { return ptr.chains(); } )
+                .def("residues",[] (RNAStructure  & ptr) ->  ResidueOPs { return ptr.residues(); } )
+                .def("structure",[] (RNAStructure  & ptr) ->  StructureOP { return ptr.structure(); } )
+                .def("basepairs",[] (RNAStructure  & ptr) ->  BasepairOPs const & { return ptr.basepairs(); } )
+                .def("ends",[] (RNAStructure  & ptr) ->  BasepairOPs const & { return ptr.ends(); } )
+                .def("name",[] (RNAStructure  & ptr) ->  String const & { return ptr.name(); } )
+                .def("end_ids",[] (RNAStructure  & ptr) ->  Strings const & { return ptr.end_ids(); } )
+                .def("name",[] (RNAStructure  & ptr, String const & name) {
+                    ptr.name(name); }, py::arg("name") )
+                .def("path",[] (RNAStructure  & ptr, String const & path) {
+                    ptr.path(path); }, py::arg("path") )
+                .def("end_ids",[] (RNAStructure  & ptr, Strings const & end_ids) {
+                    ptr.end_ids(end_ids); }, py::arg("end_ids") )
                 ;
 
-        py::class_<secondary_structure::RNAStructure, std::shared_ptr<secondary_structure::RNAStructure>>(m, "RNAStructure")
+        py::class_<RNAStructure, RNAStructureOP>(m, "RNAStructure")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<secondary_structure::StructureOP const &,secondary_structure::BasepairOPs const &,secondary_structure:: BasepairOPs const &>())
-                .def(py::init<secondary_structure::StructureOP const &,secondary_structure::BasepairOPs const &,secondary_structure:: BasepairOPs const &,Strings const &,String const &,String const &,float>())
-                .def(py::init<secondary_structure::RNAStructure const &>())
+                .def(py::init<StructureOP const &,BasepairOPs const &, BasepairOPs const &>(),
+                        py::arg("structure"), py::arg("basepairs"), py::arg("ends"))
+                .def(py::init<StructureOP const &,BasepairOPs const &, BasepairOPs const &,Strings const &,String const &,String const &,float>(),
+                        py::arg("structure"), py::arg("basepairs"),py::arg("ends"),
+                        py::arg("end_ids"), py::arg("name"), py::arg("path"), py::arg("score"))
+                .def(py::init<RNAStructure const &>(), py::arg("rs"))
                         // methods
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) -> secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) -> secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) -> secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_basepair",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & bp_uuid) -> secondary_structure::BasepairOPs {
-                    return ptr.get_basepair(bp_uuid); } )
-                .def("get_end",[] (secondary_structure::RNAStructure  & ptr, String const & name) -> secondary_structure::BasepairOP  {
-                    return ptr.get_end(name); } )
-                .def("replace_sequence",[] (secondary_structure::RNAStructure  & ptr, String const & seq) {
-                    ptr.replace_sequence(seq); } )
-                .def("get_residue",[] (secondary_structure::RNAStructure  & ptr, int num, String const & chain_id, String const & i_code) ->  secondary_structure::ResidueOP {
-                    return ptr.get_residue(num, chain_id, i_code); } )
-                .def("get_residue",[] (secondary_structure::RNAStructure  & ptr, util::Uuid const & uuid) ->  secondary_structure::ResidueOP {
-                    return ptr.get_residue(uuid); } )
-                .def("sequence",[] (secondary_structure::RNAStructure  & ptr) ->  String {
-                    return ptr.sequence(); } )
-                .def("dot_bracket",[] (secondary_structure::RNAStructure  & ptr) ->  String {
-                    return ptr.dot_bracket(); } )
-                .def("chains",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::ChainOPs const & {
-                    return ptr.chains(); } )
-                .def("residues",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::ResidueOPs {
-                    return ptr.residues(); } )
-                .def("structure",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::StructureOP {
-                    return ptr.structure(); } )
-                .def("basepairs",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::BasepairOPs const & {
-                    return ptr.basepairs(); } )
-                .def("ends",[] (secondary_structure::RNAStructure  & ptr) ->  secondary_structure::BasepairOPs const & {
-                    return ptr.ends(); } )
-                .def("name",[] (secondary_structure::RNAStructure  & ptr) ->  String const & {
-                    return ptr.name(); } )
-                .def("end_ids",[] (secondary_structure::RNAStructure  & ptr) ->  Strings const & {
-                    return ptr.end_ids(); } )
-                .def("name",[] (secondary_structure::RNAStructure  & ptr, String const & name) {
-                    ptr.name(name); } )
-                .def("path",[] (secondary_structure::RNAStructure  & ptr, String const & path) {
-                    ptr.path(path); } )
-                .def("end_ids",[] (secondary_structure::RNAStructure  & ptr, Strings const & end_ids) {
-                    ptr.end_ids(end_ids); } )
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) -> BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); }, py::arg("bp_uuid") )
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) -> BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); } , py::arg("bp_uuid"))
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) -> BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); } , py::arg("bp_uuid"))
+                .def("get_basepair",[] (RNAStructure  & ptr, util::Uuid const & bp_uuid) -> BasepairOPs {
+                    return ptr.get_basepair(bp_uuid); } , py::arg("bp_uuid"))
+                .def("get_end",[] (RNAStructure  & ptr, String const & name) -> BasepairOP  {
+                    return ptr.get_end(name); } , py::arg("name"))
+                .def("replace_sequence",[] (RNAStructure  & ptr, String const & seq) {
+                    ptr.replace_sequence(seq); }, py::arg("seq") )
+                .def("get_residue",[] (RNAStructure  & ptr, int num, String const & chain_id, String const & i_code) ->  ResidueOP {
+                    return ptr.get_residue(num, chain_id, i_code); },
+                     py::arg("num"), py::arg("chain_id"), py::arg("i_code"))
+                .def("get_residue",[] (RNAStructure  & ptr, util::Uuid const & uuid) ->  ResidueOP {
+                    return ptr.get_residue(uuid); }, py::arg("uuid") )
+                .def("sequence",[] (RNAStructure  & ptr) ->  String { return ptr.sequence(); } )
+                .def("dot_bracket",[] (RNAStructure  & ptr) ->  String { return ptr.dot_bracket(); } )
+                .def("chains",[] (RNAStructure  & ptr) ->  ChainOPs const & { return ptr.chains(); } )
+                .def("residues",[] (RNAStructure  & ptr) ->  ResidueOPs { return ptr.residues(); } )
+                .def("structure",[] (RNAStructure  & ptr) ->  StructureOP { return ptr.structure(); } )
+                .def("basepairs",[] (RNAStructure  & ptr) ->  BasepairOPs const & { return ptr.basepairs(); } )
+                .def("ends",[] (RNAStructure  & ptr) ->  BasepairOPs const & { return ptr.ends(); } )
+                .def("name",[] (RNAStructure  & ptr) ->  String const & { return ptr.name(); } )
+                .def("end_ids",[] (RNAStructure  & ptr) ->  Strings const & { return ptr.end_ids(); } )
+                .def("name",[] (RNAStructure  & ptr, String const & name) {
+                    ptr.name(name); }, py::arg("name") )
+                .def("path",[] (RNAStructure  & ptr, String const & path) {
+                    ptr.path(path); } , py::arg("path"))
+                .def("end_ids",[] (RNAStructure  & ptr, Strings const & end_ids) {
+                    ptr.end_ids(end_ids); }, py::arg("end_ids") )
                 ;
 
         py::enum_<ResType>(m, "ResType")
@@ -380,34 +336,29 @@ namespace secondary_structure {
 
                 ;
 
-        py::class_<secondary_structure::Residue, std::shared_ptr<secondary_structure::Residue>>(m, "Residue")
+        py::class_<Residue, ResidueOP>(m, "Residue")
                 // ctors
-                .def(py::init<String const &,String const &,int const &,String const &,util::Uuid const &,String const &>())
-                .def(py::init<secondary_structure::Residue const &>())
-                .def(py::init<String const &>())
+                .def(py::init<String const &,String const &,int const &,String const &,util::Uuid const &,String const &>(),
+                        py::arg("name"), py::arg("dot_bracket"), py::arg("num"), py::arg("chain_id"),
+                        py::arg("uuid"), py::arg("i_code") = "")
+                .def(py::init<Residue const &>(), py::arg("r"))
+                .def(py::init<String const &>(), py::arg("s"))
                         // methods
-                .def("to_str",[] (secondary_structure::Residue  & ptr) ->  String {
-                    return ptr.to_str(); } )
-                .def("name",[] (secondary_structure::Residue  & ptr) ->  String const & {
-                    return ptr.name(); } )
-                .def("dot_bracket",[] (secondary_structure::Residue  & ptr) ->  String const & {
-                    return ptr.dot_bracket(); } )
-                .def("num",[] (secondary_structure::Residue  & ptr) ->  int const & {
-                    return ptr.num(); } )
-                .def("chain_id",[] (secondary_structure::Residue  & ptr) ->  String const & {
-                    return ptr.chain_id(); } )
-                .def("i_code",[] (secondary_structure::Residue  & ptr) ->  String const & {
-                    return ptr.i_code(); } )
-                .def("i_code",[] (secondary_structure::Residue  & ptr, String const & code) {
-                    ptr.i_code(code); } )
-                .def("uuid",[] (secondary_structure::Residue  & ptr) ->  util::Uuid const & {
+                .def("to_str",[] (Residue  & ptr) ->  String { return ptr.to_str(); } )
+                .def("name",[] (Residue  & ptr) ->  String const & { return ptr.name(); } )
+                .def("dot_bracket",[] (Residue  & ptr) ->  String const & { return ptr.dot_bracket(); } )
+                .def("num",[] (Residue  & ptr) ->  int const & { return ptr.num(); } )
+                .def("chain_id",[] (Residue  & ptr) ->  String const & { return ptr.chain_id(); } )
+                .def("i_code",[] (Residue  & ptr) ->  String const & { return ptr.i_code(); } )
+                .def("i_code",[] (Residue  & ptr, String const & code) { ptr.i_code(code); } , py::arg("code"))
+                .def("uuid",[] (Residue  & ptr) ->  util::Uuid const & {
                     return ptr.uuid(); } )
-                .def("res_type",[] (secondary_structure::Residue  & ptr) ->  secondary_structure::ResType {
+                .def("res_type",[] (Residue  & ptr) ->  ResType {
                     return ptr.res_type(); } )
-                .def("uuid",[] (secondary_structure::Residue  & ptr, util::Uuid const & nuuid) {
-                    ptr.uuid(nuuid); } )
-                .def("name",[] (secondary_structure::Residue  & ptr, String const & name) {
-                    ptr.name(name); } )
+                .def("uuid",[] (Residue  & ptr, util::Uuid const & uuid) {
+                    ptr.uuid(uuid); }, py::arg("uuid") )
+                .def("name",[] (Residue  & ptr, String const & name) {
+                    ptr.name(name); }, py::arg("name") )
                 ;
 
         py::class_<SecondaryStructureChainGraph, std::shared_ptr<SecondaryStructureChainGraph>>(m, "SecondaryStructureChainGraph")
@@ -427,11 +378,12 @@ namespace secondary_structure {
                 .def("nodes",[] (SecondaryStructureChainGraph  & ptr) -> data_structure::graph::GraphNodeOPs<NodeData> const & {
                     return ptr.nodes(); } )
                 .def("add_chain",[] (SecondaryStructureChainGraph  & ptr, NodeData const & data, int parent_index, int orphan) -> int {
-                    return ptr.add_chain(data, parent_index, orphan); } )
+                    return ptr.add_chain(data, parent_index, orphan); },
+                     py::arg("data"), py::arg("parent_index") = -1, py::arg("orphan") = 0)
                 .def("get_node_by_res",[] (SecondaryStructureChainGraph  & ptr, secondary_structure::ResidueOP const & res) -> int {
-                    return ptr.get_node_by_res(res); } )
+                    return ptr.get_node_by_res(res); }, py::arg("res") )
                 .def("pair_res",[] (SecondaryStructureChainGraph  & ptr, int n_i, int n_j) {
-                    ptr.pair_res(n_i, n_j); } )
+                    ptr.pair_res(n_i, n_j); }, py::arg("n_i"), py::arg("n_j") )
                 ;
 
         py::class_<SecondaryStructureTree, std::shared_ptr<SecondaryStructureTree>>(m, "SecondaryStructureTree")
@@ -449,7 +401,8 @@ namespace secondary_structure {
                 .def("size",[] (SecondaryStructureTree  & ptr) -> size_t {
                     return ptr.size(); } )
                 .def("add_motif",[] (SecondaryStructureTree  & ptr, secondary_structure::MotifOP const & m, int parent_index, int parent_end_index) -> int {
-                    return ptr.add_motif(m, parent_index, parent_end_index); } )
+                    return ptr.add_motif(m, parent_index, parent_end_index); },
+                     py::arg("m"), py::arg("parent_index") = -1, py::arg("parent_end_index") = -1)
                 ;
 /*
         py::class_<SequenceConstraint, std::shared_ptr<SequenceConstraint>>(m, "SequenceConstraint")
@@ -469,37 +422,37 @@ namespace secondary_structure {
                 .def(py::init<>())
                         // methods
                 .def("add_sequence_constraint",[] (SequenceConstraints  & ptr, secondary_structure::SequenceConstraintOP seq_constraint) {
-                    ptr.add_sequence_constraint(seq_constraint); } )
+                    ptr.add_sequence_constraint(seq_constraint); },
+                     py::arg("seq_constraint"))
                 .def("add_disallowed_sequence",[] (SequenceConstraints  & ptr, String const & seq) {
-                    ptr.add_disallowed_sequence(seq); } )
+                    ptr.add_disallowed_sequence(seq); }, py::arg("seq") )
                 .def("add_gc_helix_stretch_limit",[] (SequenceConstraints  & ptr, int length) {
-                    ptr.add_gc_helix_stretch_limit(length); } )
-                .def("violations",[] (SequenceConstraints  & ptr, secondary_structure::PoseOP p) -> Ints const & {
-                    return ptr.violations(p); } )
+                    ptr.add_gc_helix_stretch_limit(length); }, py::arg("length") )
+                .def("violations",[] (SequenceConstraints  & ptr, secondary_structure::PoseOP & p) -> Ints const & {
+                    return ptr.violations(p); }, py::arg("p") )
                 .def("num_constraints",[] (SequenceConstraints  & ptr) -> size_t {
                     return ptr.num_constraints(); } )
                 ;
 
-        py::class_<secondary_structure::Structure, std::shared_ptr<secondary_structure::Structure>>(m, "SecondaryStructureStructure")
+        py::class_<Structure, std::shared_ptr<Structure>>(m, "SecondaryStructureStructure")
                 // ctors
-                .def(py::init<secondary_structure::ChainOPs const &>())
-                .def(py::init<String const &,String const &>())
-                .def(py::init<secondary_structure::Structure const &>())
-                .def(py::init<String const &>())
+                .def(py::init<ChainOPs const &>(), py::arg("chains"))
+                .def(py::init<String const &,String const &>(), py::arg("sequence"), py::arg("dot_bracket"))
+                .def(py::init<Structure const &>(), py::arg("structure"))
+                .def(py::init<String const &>(), py::arg("s"))
                         // methods
-                .def("residues",[] (secondary_structure::Structure  & ptr) ->  secondary_structure::ResidueOPs {
-                    return ptr.residues(); } )
-                .def("sequence",[] (secondary_structure::Structure  & ptr) ->  String {
-                    return ptr.sequence(); } )
-                .def("dot_bracket",[] (secondary_structure::Structure  & ptr) ->  String {
-                    return ptr.dot_bracket(); } )
-                .def("get_residue",[] (secondary_structure::Structure  & ptr, int const & num, String const & chain_id, String const & i_code) -> secondary_structure::ResidueOP  {
-                    return ptr.get_residue(num, chain_id, i_code); } )
-                .def("get_residue",[] (secondary_structure::Structure  & ptr, int const & num, String const & chain_id, String const & i_code) ->secondary_structure:: ResidueOP  {
-                    return ptr.get_residue(num, chain_id, i_code); } )
-                .def("to_str",[] (secondary_structure::Structure  & ptr) -> String {
+                .def("residues",[] (Structure  & ptr) ->  ResidueOPs { return ptr.residues(); } )
+                .def("sequence",[] (Structure  & ptr) ->  String { return ptr.sequence(); } )
+                .def("dot_bracket",[] (Structure  & ptr) ->  String { return ptr.dot_bracket(); } )
+                .def("get_residue",[] (Structure  & ptr, int const & num, String const & chain_id, String const & i_code) -> ResidueOP  {
+                    return ptr.get_residue(num, chain_id, i_code); },
+                     py::arg("num"), py::arg("chain_id"), py::arg("i_code"))
+                .def("get_residue",[] (Structure  & ptr, int const & num, String const & chain_id, String const & i_code) -> ResidueOP  {
+                    return ptr.get_residue(num, chain_id, i_code); },
+                     py::arg("num"), py::arg("chain_id"), py::arg("i_code"))
+                .def("to_str",[] (Structure  & ptr) -> String {
                     return ptr.to_str(); } )
-                .def("chains",[] (secondary_structure::Structure  & ptr) ->  secondary_structure::ChainOPs const & {
+                .def("chains",[] (Structure  & ptr) ->  ChainOPs const & {
                     return ptr.chains(); } )
                 ;
 

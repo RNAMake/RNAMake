@@ -23,9 +23,15 @@ namespace util {
     namespace py = pybind11;
     void
     add_bindings(py::module_ & m) {
+
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
         /// util
         //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+        // Exceptions
+        py::register_exception<Sqlite3ConnectionException>(m, "Sqlite3ConnectionException");
+        py::register_exception<X3dnaException>(m, "X3dnaException");
+
 
         // free functions
 
@@ -72,13 +78,13 @@ namespace util {
         // classes
 #define Value double
 #define Values std::vector<Value>
-        py::class_<CartesianProduct<Value>, std::shared_ptr<CartesianProduct<Value>>>(m, "CartesianProduct<Value>")
+        py::class_<CartesianProduct<Value>, std::shared_ptr<CartesianProduct<Value>>>(m, "CartesianProductFloat")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<std::vector<Values> const &>())
+                .def(py::init<std::vector<Values> const &>(), py::arg("values"))
                         // methods
                 .def("setup",[] (CartesianProduct<Value>  & ptr, std::vector<Values> const & values) {
-                    ptr.setup(values); } )
+                    ptr.setup(values); }, py::arg("values") )
                 .def("end",[] (CartesianProduct<Value>  & ptr) ->  int const {
                     return ptr.end(); } )
                 .def("next",[] (CartesianProduct<Value>  & ptr) -> Values const & {
@@ -88,16 +94,16 @@ namespace util {
 #undef Value
         py::class_<MonteCarlo, std::shared_ptr<MonteCarlo>>(m, "MonteCarlo")
                 // ctors
-                .def(py::init<float>())
+                .def(py::init<float>(), py::arg("temperature") = 1.0f)
                         // methods
                 .def("accept",[] (MonteCarlo  & ptr, float current, float next) ->  int {
-                    return ptr.accept(current, next); } )
+                    return ptr.accept(current, next); }, py::arg("current"), py::arg("next") )
                 .def("set_temperature",[] (MonteCarlo  & ptr, float new_temp) {
-                    ptr.set_temperature(new_temp); } )
+                    ptr.set_temperature(new_temp); }, py::arg("new_temp") )
                 .def("get_temperature",[] (MonteCarlo  & ptr) ->  float {
                     return ptr.get_temperature(); } )
                 .def("scale_temperature",[] (MonteCarlo  & ptr, float scale) {
-                    ptr.scale_temperature(scale); } )
+                    ptr.scale_temperature(scale); }, py::arg("scale") )
                 ;
 
         py::class_<RandomNumberGenerator, std::shared_ptr<RandomNumberGenerator>>(m, "RandomNumberGenerator")
@@ -107,41 +113,41 @@ namespace util {
                 .def("rand",[] (RandomNumberGenerator  & ptr) ->  float {
                     return ptr.rand(); } )
                 .def("randrange",[] (RandomNumberGenerator  & ptr, int i) ->  int {
-                    return ptr.randrange(i); } )
+                    return ptr.randrange(i); }, py::arg("i") )
                 ;
 
         py::class_<Sqlite3Connection, std::shared_ptr<Sqlite3Connection>>(m, "Sqlite3Connection")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<String const>())
+                .def(py::init<String const>(), py::arg("name"))
                         // methods
                 .def("query",[] (Sqlite3Connection  & ptr, String const & query_statement) {
-                    ptr.query(query_statement); } )
+                    ptr.query(query_statement); }, py::arg("query_statement") )
                 .def("count",[] (Sqlite3Connection  & ptr) -> int {
                     return ptr.count(); } )
                 .def("fetch_one",[] (Sqlite3Connection  & ptr, String const & query_statement) -> Strings {
-                    return ptr.fetch_one(query_statement); } )
+                    return ptr.fetch_one(query_statement); }, py::arg("query_statement") )
                 ;
 
         py::class_<StericLookup, std::shared_ptr<StericLookup>>(m, "StericLookup")
                 // ctors
                 .def(py::init<>())
-                .def(py::init<float,float,int>())
+                .def(py::init<float,float,int>(), py::arg("grid_size"), py::arg("cutoff"), py::arg("radius"))
                         // methods
                 .def("add_point",[] (StericLookup  & ptr, math::Point const & p) {
-                    ptr.add_point(p); } )
+                    ptr.add_point(p); }, py::arg("p") )
                 .def("add_points",[] (StericLookup  & ptr, math::Points const & points) {
-                    ptr.add_points(points); } )
+                    ptr.add_points(points); }, py::arg("points") )
                 .def("clash",[] (StericLookup  & ptr, math::Point const & p) -> int {
-                    return ptr.clash(p); } )
+                    return ptr.clash(p); }, py::arg("p") )
                 .def("clash",[] (StericLookup  & ptr, math::Point const & p) -> int {
-                    return ptr.clash(p); } )
+                    return ptr.clash(p); } , py::arg("p"))
                 .def("better_clash",[] (StericLookup  & ptr, math::Point const & p) -> int {
-                    return ptr.better_clash(p); } )
+                    return ptr.better_clash(p); } , py::arg("p"))
                 .def("total_clash",[] (StericLookup  & ptr, math::Point const & p) -> int {
-                    return ptr.total_clash(p); } )
+                    return ptr.total_clash(p); } , py::arg("p"))
                 .def("total_clash",[] (StericLookup  & ptr, math::Point const & p) -> int {
-                    return ptr.total_clash(p); } )
+                    return ptr.total_clash(p); } , py::arg("p"))
                 ;
 
         py::class_<StericLookupNew, std::shared_ptr<StericLookupNew>>(m, "StericLookupNew")
@@ -149,15 +155,15 @@ namespace util {
                 .def(py::init<>())
                         // methods
                 .def("add_point",[] (StericLookupNew  & ptr, math::Point const & p) {
-                    ptr.add_point(p); } )
+                    ptr.add_point(p); } , py::arg("p"))
                 .def("add_points",[] (StericLookupNew  & ptr, math::Points const & points) {
-                    ptr.add_points(points); } )
+                    ptr.add_points(points); } , py::arg("points"))
                 .def("clash",[] (StericLookupNew  & ptr, math::Point const & p) -> bool {
-                    return ptr.clash(p); } )
+                    return ptr.clash(p); } , py::arg("p"))
                 .def("clash",[] (StericLookupNew  & ptr, math::Point const & p) -> bool {
-                    return ptr.clash(p); } )
+                    return ptr.clash(p); } , py::arg("p"))
                 .def("to_pdb",[] (StericLookupNew  & ptr, String const & pdb_name) {
-                    ptr.to_pdb(pdb_name); } )
+                    ptr.to_pdb(pdb_name); } , py::arg("pdb_name"))
                 .def("size",[] (StericLookupNew  & ptr) -> int {
                     return ptr.size(); } )
                 ;
@@ -175,12 +181,14 @@ namespace util {
                 .def(py::self != py::self)
                 .def(py::self < py::self)
                 ;
-/*
+
         py::class_<UuidCompare, std::shared_ptr<UuidCompare>>(m, "UuidCompare")
-		// operators
-		.def(py::self () Uuid const &)
+	        .def(py::init<>())
+            .def("compare", [] (UuidCompare & comp,  Uuid const & uuid1 , Uuid const & uuid2 ) {
+                return comp(uuid1, uuid2); }, py::arg("uuid1"), py::arg("uuid2"))
+        // operators
+//		.def(py::self () Uuid const &)
 		;
-*/
         py::class_<X3dna::X3BPInfo, std::shared_ptr<X3dna::X3BPInfo>>(m, "X3BPInfo")
                 // public attributes
                 .def_readwrite("res1_type_name", &X3dna::X3BPInfo::res1_type_name)
@@ -194,6 +202,7 @@ namespace util {
                 ;
 
         py::class_<X3dna::X3Basepair, std::shared_ptr<X3dna::X3Basepair>>(m, "X3Basepair")
+                .def(py::init<>())
                 // methods
                 .def("valid",[] (X3dna::X3Basepair const & ptr) -> bool {
                     return ptr.valid(); } )
@@ -211,12 +220,15 @@ namespace util {
 
         py::class_<X3dna::X3Motif, std::shared_ptr<X3dna::X3Motif>>(m, "X3Motif")
                 // public attributes
+                .def(py::init<>())
                 .def_readwrite("residues", &X3dna::X3Motif::residues)
                 .def_readwrite("mtype", &X3dna::X3Motif::mtype)
                 ;
 
         py::class_<X3dna::X3Residue, std::shared_ptr<X3dna::X3Residue>>(m, "X3Residue")
                 // methods
+                .def(py::init<>())
+                .def(py::init<int, char, char>(), py::arg("nnum") = -1, py::arg("nchain_id") = ' ', py::arg("ni_code") = ' ')
                 .def("valid",[] (X3dna::X3Residue const & ptr) -> bool {
                     return ptr.valid(); } )
                         // operators
@@ -234,15 +246,15 @@ namespace util {
                 .def("set_envs",[] (X3dna  & ptr) {
                     ptr.set_envs(); } )
                 .def("get_basepairs",[] (X3dna const & ptr, String const & pdb_path) -> X3dna::X3Basepairs {
-                    return ptr.get_basepairs(pdb_path); } )
+                    return ptr.get_basepairs(pdb_path); }, py::arg("pdb_path") )
                 .def("get_basepairs_json",[] (X3dna const & ptr, String const & pdb_path) -> X3dna::X3Basepairs  {
-                    return ptr.get_basepairs_json(pdb_path); } )
+                    return ptr.get_basepairs_json(pdb_path); }, py::arg("pdb_path") )
                 .def("get_motifs",[] (X3dna const & ptr, String const & strings) -> X3dna::X3Motifs {
-                    return ptr.get_motifs(strings); } )
+                    return ptr.get_motifs(strings); }, py::arg("strings") )
                 .def("get_motifs",[] (X3dna const & ptr, String const & str) -> X3dna::X3Motifs {
-                    return ptr.get_motifs(str); } )
+                    return ptr.get_motifs(str); }, py::arg("str") )
                 .def("set_rebuild_files",[] (X3dna const & ptr, bool rebuild_files) {
-                    ptr.set_rebuild_files(rebuild_files); } )
+                    ptr.set_rebuild_files(rebuild_files); }, py::arg("rebuild_files")  )
                 ;
 
         // enums

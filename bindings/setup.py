@@ -62,8 +62,8 @@ class CMakeBuild(build_ext):
         subprocess.check_call(['cmake', '--build', '.'] + build_args, cwd=self.build_temp)
 
 setup(
-    name='pyRNAMake',
-    version='0.0.1',
+    name='RNAMake',
+    version='1.0.0',
     author='Chris Jurich',
     author_email='cjurich2@huskers.unl.edu',
     description='Bindings for the gas packer',

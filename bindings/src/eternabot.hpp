@@ -34,7 +34,7 @@ namespace eternabot {
                 .def(py::init<>())
                         // methods
                 .def("score",[] (ABasicTest  & ptr, FeaturesOP const & features) ->  float {
-                    return ptr.score(features); } )
+                    return ptr.score(features); }, py::arg("features") )
                         // inherited methods
 
                 .def("mean",[] (Strategy const & ptr) ->  float {
@@ -48,7 +48,7 @@ namespace eternabot {
                 .def(py::init<>())
                         // methods
                 .def("score",[] (BerexTest  & ptr, FeaturesOP const & features) -> float {
-                    return ptr.score(features); } )
+                    return ptr.score(features); }, py::arg("features") )
                         // inherited methods
                 .def("mean",[] (Strategy const & ptr) ->  float {
                     return ptr.mean(); } )
@@ -74,7 +74,7 @@ namespace eternabot {
                 .def(py::init<>())
                         // methods
                 .def("score",[] (DirectionofGCPairsinMultiLoops  & ptr, FeaturesOP const & features) -> float {
-                    return ptr.score(features); } )
+                    return ptr.score(features); }, py::arg("features") )
                         // inherited methods
                 .def("mean",[] (Strategy const & ptr) ->  float {
                     return ptr.mean(); } )
@@ -87,9 +87,9 @@ namespace eternabot {
                 .def(py::init<>())
                         // methods
                 .def("get_features",[] (FeatureGenerator  & ptr, secondary_structure::PoseOP const & p) -> FeaturesOP {
-                    return ptr.get_features(p); } )
+                    return ptr.get_features(p); }, py::arg("p") )
                 .def("update_features",[] (FeatureGenerator  & ptr, FeaturesOP & features, secondary_structure::PoseOP const & p) {
-                    ptr.update_features(features, p); } )
+                    ptr.update_features(features, p); }, py::arg("features"), py::arg("p") )
                 ;
 
         py::class_<Features, std::shared_ptr<Features>>(m, "Features")
@@ -116,7 +116,7 @@ namespace eternabot {
                 .def(py::init<>())
                         // methods
                 .def("score",[] (NumofYellowNucleotidesperLengthofString  & ptr, FeaturesOP const & features) -> float {
-                    return ptr.score(features); } )
+                    return ptr.score(features); }, py::arg("features") )
                         // inherited methods
                 .def("mean",[] (Strategy const & ptr) ->  float {
                     return ptr.mean(); } )
@@ -134,7 +134,7 @@ namespace eternabot {
                 .def("setup",[] (eternabot::Scorer  & ptr, secondary_structure::PoseOP const & p) {
                     ptr.setup(p); } )
                 .def("score_secondary_structure",[] (eternabot::Scorer  & ptr, secondary_structure::PoseOP const & p) -> float {
-                    return ptr.score_secondary_structure(p); } )
+                    return ptr.score_secondary_structure(p); }, py::arg("p") )
                 .def("scores",[] (eternabot::Scorer  & ptr) -> Floats const & {
                     return ptr.scores(); } )
                 ;
@@ -146,28 +146,32 @@ namespace eternabot {
                 .def("setup",[] (SequenceDesigner  & ptr) {
                     ptr.setup(); } )
                 .def("design",[] (SequenceDesigner  & ptr, secondary_structure::PoseOP const & p) -> SequenceDesignerResultOPs const &  {
-                    return ptr.design(p); } )
+                    return ptr.design(p); }, py::arg("p") )
                 .def("get_int_option",[] (SequenceDesigner  & ptr, String const & name) ->  float {
-                    return ptr.get_int_option(name); } )
+                    return ptr.get_int_option(name); }, py::arg("name") )
                 .def("get_float_option",[] (SequenceDesigner  & ptr, String const & name) ->  float {
-                    return ptr.get_float_option(name); } )
+                    return ptr.get_float_option(name); }, py::arg("name") )
                 .def("get_string_option",[] (SequenceDesigner  & ptr, String const & name) ->  String {
-                    return ptr.get_string_option(name); } )
+                    return ptr.get_string_option(name); } , py::arg("name"))
                 .def("get_bool_option",[] (SequenceDesigner  & ptr, String const & name) ->  bool {
-                    return ptr.get_bool_option(name); } )
+                    return ptr.get_bool_option(name); } , py::arg("name"))
                 .def("has_option",[] (SequenceDesigner  & ptr, String const & name) ->  bool {
-                    return ptr.has_option(name); } )
-                .def("set_option_value",[] (SequenceDesigner  & ptr, String const & name, int const & val) { ptr.set_option_value(name, val); } )
-                .def("set_option_value",[] (SequenceDesigner  & ptr, String const & name, bool const & val) { ptr.set_option_value(name, val); } )
-                .def("set_option_value",[] (SequenceDesigner  & ptr, String const & name, float const & val) { ptr.set_option_value(name, val); } )
-                .def("set_option_value",[] (SequenceDesigner  & ptr, String const & name, String const & val) { ptr.set_option_value(name, val); } )
+                    return ptr.has_option(name); } , py::arg("name"))
+                .def("set_option_value",[] (SequenceDesigner  & ptr, String const & name, int const & val) { ptr.set_option_value(name, val); },
+                     py::arg("name"), py::arg("val"))
+                .def("set_option_value",[] (SequenceDesigner  & ptr, String const & name, bool const & val) { ptr.set_option_value(name, val); } ,
+                     py::arg("name"), py::arg("val"))
+                .def("set_option_value",[] (SequenceDesigner  & ptr, String const & name, float const & val) { ptr.set_option_value(name, val); } ,
+                     py::arg("name"), py::arg("val"))
+                .def("set_option_value",[] (SequenceDesigner  & ptr, String const & name, String const & val) { ptr.set_option_value(name, val); } ,
+                     py::arg("name"), py::arg("val"))
                 ;
 
         py::class_<SequenceDesignerResult, std::shared_ptr<SequenceDesignerResult>>(m, "SequenceDesignerResult")
                 // ctors
-                .def(py::init<String const &,float>())
+                .def(py::init<String const &,float>(), py::arg("n_sequence"), py::arg("n_arg"))
         // public attributes
-        .def_readwrite("sequence", &SequenceDesignerResult::sequence)
+                .def_readwrite("sequence", &SequenceDesignerResult::sequence)
                 .def_readwrite("score", &SequenceDesignerResult::score)
                 ;
 /*
