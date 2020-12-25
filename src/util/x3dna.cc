@@ -74,9 +74,9 @@ X3dna::_generate_ref_frame(
     auto find_pair_path = bin_path_ + "find_pair ";
     auto analyze_path = bin_path_ + "analyze ";
     //auto command = find_pair_path + pdb_path + " stdout | " + analyze_path + "stdin ";
-    auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin >& /dev/null";
+    auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin";
     auto s = strdup(command.c_str());
-    auto result = std::system(  s);
+    auto result = std::system(s);
 
     if (result != 0) {
         generated_ref_frames_ = true;
@@ -185,7 +185,7 @@ X3dna::generate_dssr_file(
     fname = fname.substr(0, fname.length() - 4);
 
     auto dssr_path = bin_path_ + "x3dna-dssr ";
-    auto command = dssr_path + "-i=" + pdb_path + " -o=" + fname + "_dssr.out --non-pair >& /dev/null";
+    auto command = dssr_path + "-i=" + pdb_path + " -o=" + fname + "_dssr.out --non-pair";
     auto s = strdup(command.c_str());
     auto result = std::system(s);
 
@@ -210,6 +210,7 @@ X3dna::_parse_dssr_file_into_sections(
     if (rebuild_files_) { generate_dssr_file(pdb_path); }
     else {
         // current directory: always rebuild file
+        LOGW << base_path;
         if (base_path == "./") { generate_dssr_file(pdb_path); }
         else {
             // dssr file exists in correct spot
