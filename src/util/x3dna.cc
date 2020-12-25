@@ -75,10 +75,11 @@ X3dna::_generate_ref_frame(
 
     auto find_pair_path = bin_path_ + "find_pair ";
     auto analyze_path = bin_path_ + "analyze ";
+    //auto command = find_pair_path + pdb_path + " stdout | " + analyze_path + "stdin ";
     auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin";
     auto s = strdup(command.c_str());
-    std::cout << command << "\n";
     auto result = std::system(s);
+
     if (result != 0) {
         generated_ref_frames_ = true;
         no_ref_frames_ = true;
@@ -131,8 +132,52 @@ X3dna::_parse_ref_frame_file(
     }
     if (no_ref_frames_) { return; }
     auto lines = base::get_lines_from_file(ref_frames_path);
-    auto finder = PairFinder(pdb_path);
-    finder.find_pair(basepairs);
+    auto r = std::regex(
+            "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
+    auto start_bp = 0;
+    auto rs = math::Points();
+    auto d = math::Point();
+    X3BPInfo *bp_info;
+    for (auto const &l : lines) {
+        // too short to be data
+        if (l.length() < 3) { continue; }
+        // basepair declare line
+        if (l.substr(0, 3) == "...") {
+            auto m = std::smatch();
+            std::regex_search(l, m, r);
+            try {
+                bp_info = new X3BPInfo(m);
+            }
+            catch (X3dnaException const &e) {
+                throw e;
+            }
+            rs = math::Points();
+            start_bp = 1;
+            continue;
+        }
+        if (start_bp == 0) { continue; }
+        else if (start_bp == 1) {
+            d = _convert_string_to_point(l);
+        } else if (start_bp < 5) {
+            rs.push_back(_convert_string_to_point(l));
+        }
+
+        if (start_bp == 4) {
+            auto r = math::Matrix(rs[0].x(), rs[0].y(), rs[0].z(),
+                                  rs[1].x(), rs[1].y(), rs[1].z(),
+                                  rs[2].x(), rs[2].y(), rs[2].z());
+            auto res1 = X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
+            auto res2 = X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
+            auto bp = X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
+            basepairs.push_back(bp);
+            start_bp = 0;
+            continue;
+
+        }
+        if (start_bp != 0) { start_bp += 1; }
+    }
+
+    if (bp_info != nullptr) { delete bp_info; }
 }
 
 void
@@ -168,6 +213,7 @@ X3dna::_parse_dssr_file_into_sections(
     if (rebuild_files_) { generate_dssr_file(pdb_path); }
     else {
         // current directory: always rebuild file
+        LOGW << base_path;
         if (base_path == "./") { generate_dssr_file(pdb_path); }
         else {
             // dssr file exists in correct spot
