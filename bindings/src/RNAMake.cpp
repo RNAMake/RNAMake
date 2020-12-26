@@ -62,4 +62,5 @@ PYBIND11_MODULE(RNAMake, m) {
 
     auto motif_search = m.def_submodule("motif_search");
     motif_search::add_bindings(motif_search);
-}
+
+ }

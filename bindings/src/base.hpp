@@ -495,36 +495,44 @@ namespace base {
                 })
                 .def("add_option", [](Options &ptr, String const &name, int const &val, OptionType const &type) {
                     ptr.add_option(name, val, type);
-                })
+                },py::arg("name"), py::arg("val"), py::arg("type"))
                 .def("add_option", [](Options &ptr, String const &name, bool const &val, OptionType const &type) {
                     ptr.add_option(name, val, type);
-                })
+                },py::arg("name"), py::arg("val"), py::arg("type"))
                 .def("add_option", [](Options &ptr, String const &name, String const &val, OptionType const &type) {
                     ptr.add_option(name, val, type);
-                })
+                },py::arg("name"), py::arg("val"), py::arg("type"))
                 .def("add_option", [](Options &ptr, String const &name, float const &val, OptionType const &type) {
                     ptr.add_option(name, val, type);
-                })
+                },py::arg("name"), py::arg("val"), py::arg("type"))
                 .def("get_int", [](Options &ptr, String const &name) -> int {
                     return ptr.get_int(name);
-                })
+                }, py::arg("name"))
                 .def("get_float", [](Options &ptr, String const &name) -> float {
                     return ptr.get_float(name);
-                })
+                }, py::arg("name"))
                 .def("get_string", [](Options &ptr, String const &name) -> String const & {
                     return ptr.get_string(name);
-                })
+                }, py::arg("name"))
                 .def("get_bool", [](Options &ptr, String const &name) -> bool {
                     return ptr.get_bool(name);
-                })
+                }, py::arg("name"))
                 .def("has_option", [](Options &ptr, String const &name) -> bool {
                     return ptr.has_option(name);
-                })
-                .def("set_value", [](Options &ptr, String const &name, bool const &val) { ptr.set_value(name, val); })
-                .def("set_value", [](Options &ptr, String const &name, float const &val) { ptr.set_value(name, val); })
-                .def("set_value", [](Options &ptr, String const &name, int const &val) { ptr.set_value(name, val); })
+                }, py::arg("name"))
+
                 .def("set_value",
-                     [](Options &ptr, String const &name, String const &val) { ptr.set_value(name, val); });
+                     [](Options &ptr, String const &name, bool const &val) { ptr.set_value(name, val); },
+                     py::arg("name"), py::arg("val"))
+                .def("set_value",
+                     [](Options &ptr, String const &name, float const &val) { ptr.set_value(name, val); },
+                     py::arg("name"), py::arg("val"))
+                .def("set_value",
+                     [](Options &ptr, String const &name, int const &val) { ptr.set_value(name, val); },
+                     py::arg("name"), py::arg("val"))
+                .def("set_value",
+                     [](Options &ptr, String const &name, String const &val) { ptr.set_value(name, val); },
+                     py::arg("name"), py::arg("val"));
 
 
 /*
