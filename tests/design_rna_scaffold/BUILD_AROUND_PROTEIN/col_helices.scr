@@ -1,0 +1,31 @@
+zap
+load nmrpdb hel_regions.pdb
+# load /home/hassan/RNAMake/apps/simulate_tectos/resources/GAAA_tetraloop/GAAA_tetraloop.pdb
+# restrict not (protein or water)
+
+
+#------Helix #1, color: red------
+select 149:A, 154:A
+color red
+select 150:A, 153:A
+color red
+
+#------Helix #2, color: green------
+select 222:A, 251:A
+color green
+select 223:A, 250:A
+color green
+select 224:A, 152:A
+color green
+select 248:A, 151:A
+color green
+select 249:A, 226:A
+color green
+select 227:A, 247:A
+color green
+select 228:A, 246:A
+color green
+select 229:A, 245:A
+color green
+
+select all
