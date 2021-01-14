@@ -7,6 +7,8 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_state_tree.h"
 
+#include <util/find_pair.h>
+
 motif_data_structure::MotifStateTreeOP
 _get_sub_tree() {
     auto mst = std::make_shared<motif_data_structure::MotifStateTree>();

@@ -12,7 +12,7 @@
 #include "structure/is_equal.h"
 #include "motif_data_structure/motif_graph.h"
 
-
+#include <util/find_pair.h>
 
 TEST_CASE( "Test Assembling Motifs together in Graph ", "[motif_data_structure::MotifGraph]" ) {
 

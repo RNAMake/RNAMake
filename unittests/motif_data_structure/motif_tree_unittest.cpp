@@ -8,6 +8,8 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_tree.h"
 
+#include <util/find_pair.h>
+
 TEST_CASE( "Test Assembling Motifs together in Tree ", "[motif_data_structure::MotifTree]" ) {
     
     SECTION("test setting options") {
