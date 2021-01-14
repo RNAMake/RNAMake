@@ -17,6 +17,8 @@
 #include <base/settings.h>
 #include <base/log.h>
 #include <util/x3dna.h>
+#include <util/x3dna_src.h>
+#include <util/find_pair.h>
 
 namespace util { 
 X3dna::X3dna() :
@@ -73,8 +75,7 @@ X3dna::_generate_ref_frame(
 
     auto find_pair_path = bin_path_ + "find_pair ";
     auto analyze_path = bin_path_ + "analyze ";
-    //auto command = find_pair_path + pdb_path + " stdout | " + analyze_path + "stdin ";
-    auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin >& /dev/null";
+    auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin &> /dev/null";
     auto s = strdup(command.c_str());
     auto result = std::system(  s);
 
@@ -129,6 +130,10 @@ X3dna::_parse_ref_frame_file(
     }
     if (no_ref_frames_) { return; }
     auto lines = base::get_lines_from_file(ref_frames_path);
+    auto points = find_pair(pdb_path);
+    for (auto i = points.begin(); i != points.end(); ++i){
+        std::cout << *i << ' ';
+    }
     auto r = std::regex(
             "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
     auto start_bp = 0;

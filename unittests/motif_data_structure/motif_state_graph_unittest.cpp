@@ -16,6 +16,8 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_state_graph.hpp"
 
+#include <util/find_pair.h>
+
 TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_structure::MotifStateGraph]" ) {
     
     SECTION("test adding states") {

@@ -11,6 +11,7 @@
 #include <util/dssr.h>
 #include "base/env_manager.h"
 #include <base/sys_interface.h>
+#include <util/find_pair.h>
 
 /* so what are the things we want to test? 
  *
