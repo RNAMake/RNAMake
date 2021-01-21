@@ -1,6 +1,9 @@
 #include <util/x3dna_src.h>
 #include <bits/stdc++.h> 
 #include <math/numerical.h>
+#include <memory>
+#include <string>
+#include <stdexcept>
 
 using namespace std;
 
@@ -19,7 +22,10 @@ typedef struct {
     long hjb;
 } struct_args;
 
+String bp_info;
+
 vector<math::Point> vect;
+vector<String> info_vect;
 
 static char **nt_info;
 
@@ -37,6 +43,16 @@ static void clean_files(void)
     remove_file(COLHLX_FILE);
     remove_file(MULBP_FILE);
     remove_file(TMP_FILE);
+}
+
+template<typename ... Args>
+std::string string_format( const std::string& format, Args ... args )
+{
+    size_t size = snprintf( nullptr, 0, format.c_str(), args ... ) + 1; // Extra space for '\0'
+    if( size <= 0 ){ throw std::runtime_error( "Error during formatting." ); }
+    std::unique_ptr<char[]> buf( new char[ size ] ); 
+    snprintf( buf.get(), size, format.c_str(), args ... );
+    return std::string( buf.get(), buf.get() + size - 1 ); // We don't want the '\0' inside
 }
 
 static void fp_usage(void)
@@ -167,7 +183,7 @@ static void write_fpmst(double *morg, double *morien, FILE * rframe)
         j = (i - 1) * 3;
         fprintf(rframe, "%10.4f %10.4f %10.4f  # %c-axis\n", morien[j + 1],
                 morien[j + 2], morien[j + 3], (i == 1) ? 'x' : (i == 2) ? 'y' : 'z');
-        auto p = math::Point(morg[1], morg[2], morg[3]);
+        auto p = math::Point(morien[j + 1], morien[j + 2], morien[j + 3]);
         vect.push_back(p);
     }
 }
@@ -209,6 +225,7 @@ static void find_all_base_combinations(char *outfile, long num_residue, char **A
             continue;
         ia++;
         fprintf(fp, "... %5ld %c   # %s\n", ia, bseq[i], nt_info[i]);
+        info_vect.push_back(string_format("... %5ld %c   # %s\n", ia, bseq[i], nt_info[i]));
         write_fpmst(org[i], orien[i], fp);
     }
     close_file(fp);
@@ -2376,14 +2393,15 @@ static void handle_str(struct_args * args)
     nt_info = cmatrix(1, num_residue, 0, BUF32);
     populate_nt_info(num_residue, seidx, ResName, ChainID, ResSeq, Miscs, bseq, nt_info);
 
-    if (!is_empty_string(args->map))
+    if (false)
         cvt_pdb(num_residue, seidx, AtomName, ResName, ChainID, ResSeq, Miscs, xyz,
                 args->map, args->outfile);
 
-    else if (args->hjb)
+    else if (args->hjb) {
+        cout << "\n In the hjb conditional " << args->hjb;
         find_all_base_combinations(args->outfile, num_residue, AtomName, ResName, ChainID,
                                    ResSeq, xyz, Miscs, seidx, bseq, RY);
-
+    }
     else {
         if (args->ds == 1)
             print_shelix_ntlist(args->pdbfile, args->outfile, parfile, num_residue,
@@ -2404,25 +2422,38 @@ static void handle_str(struct_args * args)
     free_cmatrix(nt_info, 1, num_residue, 0, BUF32);
 }
 
-std::vector<math::Point> find_pair(String pdb)
-{
+bp_vectors find_pair(String pdb)
+{   
+
+    vect = vector<math::Point>();
+    info_vect = vector<String>();
+
+    cout << "Start of the function \n \n";
+
+
     struct_args args;
     time_t time0;
 
     time(&time0);
 
+    set_my_globals("find_pair");
+
     char *c = &pdb[0];
 
-    set_defaults(&args);
     strcpy(args.pdbfile, c);
+    args.hjb = TRUE;
 
+    fprintf(stderr, "\nhandling file <%s> \n \n", args.pdbfile);
+    cout << "The arguments are " << args.pdbfile;
 
-    fprintf(stderr, "\nhandling file <%s>\n", args.pdbfile);
     handle_str(&args);
 
+    clear_my_globals();
     print_used_time(time0);
+    cout << "\n Vect is " << vect.size() << "\n";
 
-    return vect;
+    bp_vectors vectors = {vect, info_vect};
+    return vectors;
 }
 
 // int main(int argc, char *argv[])

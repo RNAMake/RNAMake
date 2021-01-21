@@ -11,6 +11,7 @@
 #include <math.h>
 #include <time.h>
 #include <limits.h>
+#include <math/numerical.h>
 
 #define NR_END 1  /* for NRC related functions */
 #define FREE_ARG char*
@@ -61,6 +62,11 @@ typedef struct {
 
     double o3p_dist;
 } miscPars;
+
+typedef struct {
+    std::vector<math::Point> vect;
+    std::vector<String> info_vect;
+} bp_vectors;
 
 typedef struct {
     double origin[3];
