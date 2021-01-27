@@ -183,7 +183,11 @@ static void write_fpmst(double *morg, double *morien, FILE * rframe)
         j = (i - 1) * 3;
         fprintf(rframe, "%10.4f %10.4f %10.4f  # %c-axis\n", morien[j + 1],
                 morien[j + 2], morien[j + 3], (i == 1) ? 'x' : (i == 2) ? 'y' : 'z');
-        auto p = math::Point(morien[j + 1], morien[j + 2], morien[j + 3]);
+        string num_1 = string_format("%10.4f", morien[j + 1]);
+        string num_2 = string_format("%10.4f", morien[j + 2]);
+        string num_3 = string_format("%10.4f", morien[j + 3]);
+        // auto p = math::Point(morien[j + 1], morien[j + 2], morien[j + 3]);
+        auto p = math::Point(stod(num_1), stod(num_2), stod(num_3));
         vect.push_back(p);
     }
 }
@@ -225,7 +229,7 @@ static void find_all_base_combinations(char *outfile, long num_residue, char **A
             continue;
         ia++;
         fprintf(fp, "... %5ld %c   # %s\n", ia, bseq[i], nt_info[i]);
-        info_vect.push_back(string_format("... %5ld %c   # %s\n", ia, bseq[i], nt_info[i]));
+        // info_vect.push_back(string_format("... %5ld %c   # %s\n", ia, bseq[i], nt_info[i]));
         write_fpmst(org[i], orien[i], fp);
     }
     close_file(fp);
@@ -1760,6 +1764,11 @@ static void write_bestpairs(long num_bp, long **base_pairs, long *bp_idx, char *
 
         fprintf(rframe, "... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib],
                 nt_info[ia], nt_info[ib]);
+        // std::cout << string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib],
+        //         nt_info[ia], nt_info[ib]);
+        // exit(1);
+        info_vect.push_back(string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib],
+                nt_info[ia], nt_info[ib]));
         write_fpmst(morg, morien, rframe);
     }
     close_file(mfp);
@@ -2122,6 +2131,9 @@ static void duplex(long num, long num_residue, char *bseq, long **seidx, long *R
     long *idx, *bp_idx, *helix_marker, **htm_water;
     long **base_pairs, **helix_idx, **ring_atom;
 
+
+    std::cout << "I'm in duplex";
+
     orien = dmatrix(1, num_residue, 1, 9);
     org = dmatrix(1, num_residue, 1, 3);
     NC1xyz = dmatrix(1, num_residue, 1, 7);  /* RN9/YN1 & C1' atomic coordinates */
@@ -2364,13 +2376,12 @@ static void cvt_pdb(long num_residue, long **seidx, char **AtomName, char **ResN
 }
 
 static void handle_str(struct_args * args)
-{
+{   
     char parfile[BUF512], *ChainID, *bseq, **AtomName, **ResName, **Miscs;
     double **xyz;
     long num, num_residue, *ResSeq, *RY, **seidx;
 
     del_extension(args->pdbfile, parfile);
-
     /* read in the PDB file */
     num = number_of_atoms(args->pdbfile, args->hetatm, Gvars.misc_pars.alt_list);
     AtomName = cmatrix(1, num, 0, 4);
@@ -2393,15 +2404,13 @@ static void handle_str(struct_args * args)
     nt_info = cmatrix(1, num_residue, 0, BUF32);
     populate_nt_info(num_residue, seidx, ResName, ChainID, ResSeq, Miscs, bseq, nt_info);
 
-    if (false)
+    if (!is_empty_string(args->map))
         cvt_pdb(num_residue, seidx, AtomName, ResName, ChainID, ResSeq, Miscs, xyz,
                 args->map, args->outfile);
 
-    else if (args->hjb) {
-        cout << "\n In the hjb conditional " << args->hjb;
+    else if (args->hjb)
         find_all_base_combinations(args->outfile, num_residue, AtomName, ResName, ChainID,
                                    ResSeq, xyz, Miscs, seidx, bseq, RY);
-    }
     else {
         if (args->ds == 1)
             print_shelix_ntlist(args->pdbfile, args->outfile, parfile, num_residue,
@@ -2428,11 +2437,10 @@ bp_vectors find_pair(String pdb)
     vect = vector<math::Point>();
     info_vect = vector<String>();
 
-    cout << "Start of the function \n \n";
-
-
     struct_args args;
     time_t time0;
+
+    set_defaults(&args);
 
     time(&time0);
 
@@ -2441,10 +2449,8 @@ bp_vectors find_pair(String pdb)
     char *c = &pdb[0];
 
     strcpy(args.pdbfile, c);
-    args.hjb = TRUE;
 
     fprintf(stderr, "\nhandling file <%s> \n \n", args.pdbfile);
-    cout << "The arguments are " << args.pdbfile;
 
     handle_str(&args);
 
@@ -2460,6 +2466,8 @@ bp_vectors find_pair(String pdb)
 // {
 //     struct_args args;
 //     time_t time0;
+
+//     std::cout << args.hjb << "\n";
 
 //     time(&time0);
 
