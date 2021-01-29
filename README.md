@@ -14,7 +14,7 @@ rate of forming the predicted structure _in vitro_.
 Install
 -------
 ```shell
-git clone https://github.com/jyesselm/RNAMake.git
+git clone https://github.com/RNAMake/RNAMake.git
 cd RNAMake
 ```
 
