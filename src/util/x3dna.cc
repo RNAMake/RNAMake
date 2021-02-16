@@ -131,7 +131,8 @@ X3dna::_parse_ref_frame_file(
     }
     if (no_ref_frames_) { return; }
     auto lines = base::get_lines_from_file(ref_frames_path);
-    auto vectors = find_pair(pdb_path);
+    auto find_pair = FindPair(pdb_path);
+    auto vectors = find_pair.find_pair();
     auto points = vectors.vect;
     auto info = vectors.info_vect;
     // std::cout << points;
