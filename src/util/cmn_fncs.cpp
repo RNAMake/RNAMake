@@ -1,4 +1,7 @@
 #include <util/x3dna_src.h>
+#include <string>
+
+using namespace std;
 
 long set_3letter_base_pdb(char *res_name, char *spdb)
 {
@@ -691,6 +694,7 @@ void del_extension(char *fullname, char *okname)
     size_t i;
 
     bname = basename(fullname);
+    // bname = fullname.substr(fullname.find("/") + 1); 
 
     pchar = strrchr(bname, '.');
     if (pchar == NULL)

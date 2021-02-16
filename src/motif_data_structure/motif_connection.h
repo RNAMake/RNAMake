@@ -12,6 +12,7 @@
 #include <stdio.h>
 
 #include "base/types.h"
+#include <stdexcept>
 
 namespace motif_data_structure {
 
