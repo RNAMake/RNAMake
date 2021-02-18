@@ -18,7 +18,7 @@ git clone https://github.com/RNAMake/RNAMake.git
 cd RNAMake
 ```
 
-Make sure to have a valid c++ compiler either g++ (> 4.6) or clang as well as python 3.0+. In your .bashrc (.bash_profile if mac OSX) add:
+Make sure to have a valid c++ compiler that supports C++17 features. either g++ (> 4.6) or clang as well as python 3.0+. In your .bashrc (.bash_profile if mac OSX) add:
 
 ```shell
 # location to RNAMake directory used by RNAMake
@@ -28,9 +28,7 @@ export RNAMAKE=<RNAMake Path>
 
 ```shell
 # location of RNAMake c++ executables 
-export PATH=$PATH:$RNAMAKE/rnamake/lib/RNAMake/cmake/build/ 
-# location of python executable scripts  
-export PATH=$PATH:$RNAMAKE/rnamake/bin/                                                                     
+export PATH=$PATH:$RNAMAKE/cmake/build/ 
 ```
 
 note if you are using c shell or another non bash shell you will need to use the equivalent commands
@@ -38,18 +36,19 @@ note if you are using c shell or another non bash shell you will need to use the
 
 Compile
 ------- 
-requires `cmake` and `ninja`
+**Note: RNAMake has been successfully tested and compiled on modern Linux and Intel Mac machines. The project is not yet compatible with Apple M1 or Windows machines.**
+Requires `cmake` . `ninja` is highly recommended as a build system, though others will also work.
 
-cmake: https://github.com/Kitware/CMake <br>
-ninja: https://github.com/ninja-build/ninja
+[cmake](https://github.com/Kitware/CMake)
+[ninja](https://github.com/ninja-build/ninja)
 
 make sure they are in your `$PATH`. Then run:
 
 ```shell
 cd RNAMake/cmake/build_XXX
 # where XXX is your compiler of choice, for clang
-cd RNAMake/cmake/build_clang
-python ../make_project.py -target OS {mac|linux}
+cd $RNAMAKE/cmake/build_clang
+python ../make_project.py -target {mac|linux}
 cmake -G Ninja
 ninja
 ```
@@ -127,12 +126,8 @@ Argument  | Description
 
 ![basepair_end_examples](readme_resources/ggaa_tetraloop.png "Basepair End Example")
 
-##Examples
+## Examples
 
-examples are located: $RNAMAKE/examples/cpp/design_rna
-
-
-start.pdb:
 ![basepair_end_examples](readme_resources/ggaa_tetraloop.png "Basepair End Example")
 
 examples in $RNAMAKE/tests/design_ran_scaffold/
