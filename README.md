@@ -18,7 +18,7 @@ git clone https://github.com/RNAMake/RNAMake.git
 cd RNAMake
 ```
 
-Make sure to have a valid c++ compiler that supports C++17 features. either g++ (> 4.6) or clang as well as python 3.0+. In your .bashrc (.bash_profile if mac OSX) add:
+Make sure to have a valid c++ compiler that supports C++17 features:
 
 ```shell
 # location to RNAMake directory used by RNAMake
