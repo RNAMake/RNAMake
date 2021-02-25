@@ -506,8 +506,11 @@ FILE *open_file(char *filename, char *filemode)
         fp = stderr;
     else {
         fp = fopen(filename, filemode);
-        if (fp == NULL)
+        if (fp == NULL) {
+            cout << "\n \n \n Filename is: " << filename << " \n \n \n";
+            cout << "\n \n \n Filename is: " << filename << " \n \n \n";
             fatal("open_file <%s> failed: %s\n", filename, strerror(errno));
+        }
     }
     return fp;
 }
