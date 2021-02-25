@@ -11,12 +11,19 @@ using namespace std;
 
 namespace util
 {
-    PairFinder::PairFinder()
+    PairFinder::PairFinder(string pdb)
     {
+
+        char *c = &pdb[0];
+
+        strcpy(args.pdbfile, c);
+        strcpy(args.outfile, "stdout");
+
+
+        X3dna::X3BPInfo *bp_info;
 
         bps = X3dna::X3Basepairs();
 
-        static char **nt_info;
     }
 
     /* clean up files with fixed name */
@@ -51,12 +58,16 @@ namespace util
     /* a user reported confusion regarding the directionality of the reference
             * frame x-, y- and z-axis: row-wise or column-wise? Here adding more info to
             * make this point clear: it is ROW-wise. Keven (U. Penn); Oct 9, 2007 */
-    static void write_fpmst(double *morg, double *morien, FILE *rframe)
+    void 
+    PairFinder::write_fpmst(double *morg, double *morien, FILE *rframe, X3dna::X3BPInfo *bp_info)
     {
+
+        std::cout << "Frame file name is : " << rframe << "\n";
+
         long i, j;
         fprintf(rframe, "%10.4f %10.4f %10.4f  # origin\n", morg[1], morg[2], morg[3]);
-        auto origin = math::Point(morg[1], morg[2], morg[3]);
-        auto rs = math::Points()
+        auto d = math::Point(morg[1], morg[2], morg[3]);
+        auto rs = math::Points();
         for (i = 1; i <= 3; i++)
         {
             j = (i - 1) * 3;
@@ -70,6 +81,15 @@ namespace util
             auto p = math::Point(stod(num_1), stod(num_2), stod(num_3));
             rs.push_back(p);
         }
+        auto reg = std::regex(
+            "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
+        auto r = math::Matrix(rs[0].x(), rs[0].y(), rs[0].z(),
+                                  rs[1].x(), rs[1].y(), rs[1].z(),
+                                  rs[2].x(), rs[2].y(), rs[2].z());
+        auto res1 = X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
+        auto res2 = X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
+        auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
+        bps.push_back(bp);
     }
 
     /* print out selected list for checking: temporary */
@@ -1037,11 +1057,14 @@ namespace util
     }
 
     /* write out a PDB file containing all best pairs oriented with mean base-pair normal */
-    static void write_bestpairs(long num_bp, long **base_pairs, long *bp_idx, char *bseq,
+    void
+    PairFinder::write_bestpairs(long num_bp, long **base_pairs, long *bp_idx, char *bseq,
                                 long **seidx, char **AtomName, char **ResName, char *ChainID,
                                 long *ResSeq, char **Miscs, double **xyz, double **orien,
                                 double **org, long **htm_water, miscPars *misc_pars)
     {
+        std::cout << "I'm in write_bestpairs";
+
         char b1[BUF512], b2[BUF512], idmsg[BUF512], wc[4];
         double morg[4], morien[10];
         long i, ia, ib, j, k;
@@ -1050,7 +1073,9 @@ namespace util
 
         mfp = open_file(BESTP_FILE, "w");
         rframe = open_file(REF_FILE, "w");
+
         fprintf(rframe, "%5ld base-pairs\n", num_bp);
+
         for (i = 1; i <= num_bp; i++)
         {
             k = bp_idx[i];
@@ -1071,17 +1096,22 @@ namespace util
                      orien, org, seidx, morien, morg, htm_water, misc_pars, mfp);
             fprintf(mfp, "ENDMDL\n");
 
-            fprintf(rframe, "... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib],
-                    nt_info[ia], nt_info[ib]);
+            fprintf(rframe, "... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib], nt_info[ia], nt_info[ib]);
             // std::cout << string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib],
             //         nt_info[ia], nt_info[ib]);
             // exit(1);
-            info_vect.push_back(string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib],
-                                              nt_info[ia], nt_info[ib]));
-            write_fpmst(morg, morien, rframe);
+            // info_vect.push_back(string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib], nt_info[ia], nt_info[ib]));
+            auto r = std::regex(
+            "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
+            auto s = string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib], nt_info[ia], nt_info[ib]);
+            auto m = std::smatch();
+            std::regex_search(s, m, r);
+            auto bp_info = new X3dna::X3BPInfo(m);
+            PairFinder::write_fpmst(morg, morien, rframe, bp_info);
         }
-        close_file(mfp);
-        close_file(rframe);
+        // close_file(mfp);
+        // close_file(rframe);
+        cout << "out of the loop";
     }
 
     /* write out helical regions in a multiple structure PDB file */
@@ -1098,7 +1128,7 @@ namespace util
         ivec = lvector(1, num_residue);
         ivect = lvector(1, num_residue);
         mfp = open_file(HLXREG_FILE, "w");
-
+        cout << "In helix after open";
         for (i = 1; i <= num_helix; i++)
         {
             inum = 0;
@@ -1132,13 +1162,14 @@ namespace util
         close_file(mfp);
         free_lvector(ivec, 1, num_residue);
         free_lvector(ivect, 1, num_residue);
+        cout << "In helix end";
     }
 
     /* for non-base-pairs found in structure "pdbfile" */
     static void no_basepairs(char *pdbfile, char *outfile, char *parfile)
     {
         FILE *fp;
-
+        cout << "in no";
         fprintf(stderr, "no base-pairs found for this structure\n");
         fp = open_file(outfile, "w");
         fprintf(fp, "%s\n", pdbfile);
@@ -1202,11 +1233,20 @@ namespace util
         long i, ia, ib, ic, j, k;
         FILE *fpc, *fph;
 
+
+
+        cout << "\n COLCHN: " << COLCHN_FILE;
+
+
         fpc = open_file(COLCHN_FILE, "w");
+
         fprintf(fpc, "zap\nload nmrpdb hel_regions.pdb\n");
         fprintf(fpc, "# load %s\n", pdbfile);
         fprintf(fpc, "# restrict not (protein or water)\n");
         fprintf(fpc, "\n");
+
+        cout << "\n COLHLX: " << COLHLX_FILE;
+
 
         fph = open_file(COLHLX_FILE, "w");
         fprintf(fph, "zap\nload nmrpdb hel_regions.pdb\n");
@@ -1214,8 +1254,11 @@ namespace util
         fprintf(fph, "# restrict not (protein or water)\n");
         fprintf(fph, "\n");
 
+        cout << "\n after COL";
+
         for (i = 1; i <= num_helix; i++)
         {
+            cout << "\n In the loop";
             ic = i % 9; /* color code */
             fprintf(fph, "\n#------Helix #%ld, color: %s------\n", i, col_code[ic]);
             for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++)
@@ -1290,7 +1333,14 @@ namespace util
             strcpy(parfile_new, parfile);
         }
 
+        cout << "\n Before open file xyz: " << outfile;
+        cout << "\n Before open file: xyz:" << outfile_new;
+
         fp = open_file(outfile_new, "w");
+
+        cout << "\n After open file: " << outfile;
+        cout << "\n After open file: " << outfile_new;
+
         fprintf(fp, "%s\n", pdbfile);
         fprintf(fp, "%s.out\n", parfile_new);
         fprintf(fp, "    2         # duplex\n");
@@ -1387,8 +1437,9 @@ namespace util
             strcpy(outfile_new, outfile);
             strcpy(parfile_new, parfile);
         }
-
+        cout << "In Curves input before";
         fp = open_file(outfile_new, "w");
+        cout << "In Curves input before";
         fprintf(fp, "&inp file=%s, comb=.t., fit=.t., grv=.t., %s\n"
                     "     lis=%s, pdb=%s_grp, &end\n",
                 pdbfile,
@@ -1462,9 +1513,10 @@ namespace util
         close_file(fp);
     }
 
-    static void duplex(long num, long num_residue, char *bseq, long **seidx, long *RY,
+    void
+    PairFinder::duplex(long num, long num_residue, char *bseq, long **seidx, long *RY,
                        char **AtomName, char **ResName, char *ChainID, long *ResSeq,
-                       char **Miscs, double **xyz, struct_args *args, char *parfile,
+                       char **Miscs, double **xyz, char *parfile,
                        miscPars *misc_pars)
     {
         double **orien, **org, **NC1xyz, **o3_p;
@@ -1484,7 +1536,7 @@ namespace util
         atom_idx(num, AtomName, NULL, idx);
 
         htm_water = lmatrix(1, 4, 0, num); /* HETATM and water index */
-        init_htm_water(args->waters, num, num_residue, idx, htm_water);
+        init_htm_water(args.waters, num, num_residue, idx, htm_water);
         identify_htw(num_residue, seidx, RY, AtomName, ResName, ChainID, ResSeq,
                      Miscs, xyz, htm_water);
 
@@ -1508,7 +1560,7 @@ namespace util
                                xyz, idx, orien, org, NC1xyz, ring_atom, misc_pars);
         if (!num_bp)
         {
-            no_basepairs(args->pdbfile, args->outfile, parfile);
+            no_basepairs(args.pdbfile, args.outfile, parfile);
             goto NO_BASE_PAIR; /* to clean up */
         }
 
@@ -1517,47 +1569,68 @@ namespace util
         helix_idx = lmatrix(1, num_bp, 1, 7);
         re_ordering(num_bp, base_pairs, bp_idx, helix_marker, helix_idx, misc_pars,
                     &num_helix, o3_p, bseq, seidx, ResName, ChainID, ResSeq, Miscs);
-        write_bestpairs(num_bp, base_pairs, bp_idx, bseq, seidx, AtomName, ResName, ChainID,
+        PairFinder::write_bestpairs(num_bp, base_pairs, bp_idx, bseq, seidx, AtomName, ResName, ChainID,
                         ResSeq, Miscs, xyz, orien, org, htm_water, misc_pars);
         write_helix(num_helix, helix_idx, bp_idx, seidx, AtomName, ResName, ChainID, ResSeq,
                     Miscs, xyz, base_pairs, htm_water, misc_pars);
 
-        if (args->curves)
+        if (args.curves)
         { /* generate Curves input file */
-            if (args->divide && num_helix > 1)
+            cout << "\n Curves";
+            if (args.divide && num_helix > 1)
                 for (i = 1; i <= num_helix; i++)
                     curves_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
-                                 args->pdbfile, args->outfile, parfile, bp_idx, base_pairs,
+                                 args.pdbfile, args.outfile, parfile, bp_idx, base_pairs,
                                  helix_idx[i][4], helix_idx[i][6]);
             else
-                curves_input(0, 1, num_bp, num_bp, args->pdbfile, args->outfile, parfile,
+                curves_input(0, 1, num_bp, num_bp, args.pdbfile, args.outfile, parfile,
                              bp_idx, base_pairs, helix_idx[1][4], helix_idx[1][6]);
         }
-        else if (args->curves_plus)
+        else if (args.curves_plus)
         {
-            if (args->divide && num_helix > 1)
+            cout << "\n curves plus";
+
+            if (args.divide && num_helix > 1)
                 for (i = 1; i <= num_helix; i++)
                     curves_plus_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
-                                      args->pdbfile, args->outfile, parfile, bp_idx,
+                                      args.pdbfile, args.outfile, parfile, bp_idx,
                                       base_pairs, helix_idx[i][4], helix_idx[i][6]);
             else
-                curves_plus_input(0, 1, num_bp, num_bp, args->pdbfile, args->outfile, parfile,
+                curves_plus_input(0, 1, num_bp, num_bp, args.pdbfile, args.outfile, parfile,
                                   bp_idx, base_pairs, helix_idx[1][4], helix_idx[1][6]);
         }
         else
         { /* 3DNA/CEHS input file */
-            col_helices(num_helix, helix_idx, bp_idx, base_pairs, seidx, args->pdbfile,
+            cout << "\n else plus";
+
+            col_helices(num_helix, helix_idx, bp_idx, base_pairs, seidx, args.pdbfile,
                         ChainID, ResSeq);
-            if (args->divide && num_helix > 1)
-                for (i = 1; i <= num_helix; i++)
+            cout << "\n After col_helics func";
+
+            if (args.divide && num_helix > 1)
+                for (i = 1; i <= num_helix; i++) {
+                    cout << "args: " << args.outfile;
+                    cout << "args: " << args.pdbfile;
+
                     x3dna_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
-                                args->pdbfile, args->outfile, parfile, args->hetatm, bp_idx,
+                                args.pdbfile, args.outfile, parfile, args.hetatm, bp_idx,
                                 helix_marker, helix_idx, base_pairs, seidx, ResName, ChainID,
-                                ResSeq, Miscs, bseq, misc_pars, args->detailed);
+                                ResSeq, Miscs, bseq, misc_pars, args.detailed);
+
+                    cout << "\n After x3dna input";
+                }
+
             else /* overall */
-                x3dna_input(0, 1, num_bp, num_bp, args->pdbfile, args->outfile, parfile,
-                            args->hetatm, bp_idx, helix_marker, helix_idx, base_pairs, seidx,
-                            ResName, ChainID, ResSeq, Miscs, bseq, misc_pars, args->detailed);
+                cout << "args: " << args.outfile;
+                cout << "args: " << args.pdbfile;
+                cout << "\n Before x3dna 2 input";
+
+                x3dna_input(0, 1, num_bp, num_bp, args.pdbfile, args.outfile, parfile,
+                            args.hetatm, bp_idx, helix_marker, helix_idx, base_pairs, seidx,
+                            ResName, ChainID, ResSeq, Miscs, bseq, misc_pars, args.detailed);
+
+                cout << "\n after x3dna 2 input";
+
         }
         free_lvector(bp_idx, 1, num_bp);
         free_lvector(helix_marker, 1, num_bp);
@@ -1641,23 +1714,25 @@ namespace util
         return 'X';
     }
 
-    static void handle_str(struct_args *args)
+    void
+    PairFinder::handle_str()
     {
         char parfile[BUF512], *ChainID, *bseq, **AtomName, **ResName, **Miscs;
         double **xyz;
         long num, num_residue, *ResSeq, *RY, **seidx;
 
-        del_extension(args->pdbfile, parfile);
+        del_extension(args.pdbfile, parfile);
         /* read in the PDB file */
-        num = number_of_atoms(args->pdbfile, args->hetatm, Gvars.misc_pars.alt_list);
+        num = number_of_atoms(args.pdbfile, args.hetatm, Gvars.misc_pars.alt_list);
         AtomName = cmatrix(1, num, 0, 4);
         ResName = cmatrix(1, num, 0, 3);
         ChainID = cvector(1, num);
         ResSeq = lvector(1, num);
         xyz = dmatrix(1, num, 1, 3);
         Miscs = cmatrix(1, num, 0, NMISC);
-        read_pdb(args->pdbfile, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs,
-                 args->hetatm, Gvars.misc_pars.alt_list);
+        std::cout << "The pdbfile is: " << args.pdbfile;
+        read_pdb(args.pdbfile, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs,
+                 args.hetatm, Gvars.misc_pars.alt_list);
 
         /* get the numbering information of each residue */
         seidx = residue_idx(num, ResSeq, Miscs, ChainID, ResName, &num_residue);
@@ -1670,9 +1745,9 @@ namespace util
         nt_info = cmatrix(1, num_residue, 0, BUF32);
         populate_nt_info(num_residue, seidx, ResName, ChainID, ResSeq, Miscs, bseq, nt_info);
 
-        duplex(num, num_residue, bseq, seidx, RY, AtomName, ResName, ChainID,
-               ResSeq, Miscs, xyz, args, parfile, &Gvars.misc_pars);
-
+        PairFinder::duplex(num, num_residue, bseq, seidx, RY, AtomName, ResName, ChainID,
+               ResSeq, Miscs, xyz, parfile, &Gvars.misc_pars);
+        cout << " After duplex";
         free_pdb(num, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs);
         free_lmatrix(seidx, 1, num_residue, 1, 2);
         free_cvector(bseq, 1, num_residue);
@@ -1681,25 +1756,24 @@ namespace util
     }
 
     std::vector<X3dna::X3Basepair>
-    FindPair::find_pair(String pdb)
+    PairFinder::find_pair()
     {
-
         time_t time0;
 
         time(&time0);
 
         set_my_globals("find_pair");
 
-        char *c = &pdb[0];
-
-        strcpy(args.pdbfile, c);
-
         fprintf(stderr, "\nhandling file <%s> \n \n", args.pdbfile);
 
-        handle_str(&args);
+        PairFinder::handle_str();
+
+        std::cout << "After handle";
+
 
         clear_my_globals();
         print_used_time(time0);
 
         return this->bps;
     }
+}

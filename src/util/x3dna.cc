@@ -131,72 +131,78 @@ X3dna::_parse_ref_frame_file(
     }
     if (no_ref_frames_) { return; }
     auto lines = base::get_lines_from_file(ref_frames_path);
-    auto find_pair = FindPair(pdb_path);
-    auto vectors = find_pair.find_pair();
-    auto points = vectors.vect;
-    auto info = vectors.info_vect;
+    auto finder = PairFinder(pdb_path);
+    auto bps = finder.find_pair();
+    std::cout << "Done Running the new class";
+    std::cout << "\nBasepairs: " << bps.size() << "\n";
+    basepairs = bps;
+
+    // auto points = vectors.vect;
+    // auto info = vectors.info_vect;
     // std::cout << points;
-    auto r = std::regex(
-            "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
-    auto start_bp = 0;
-    auto rs = math::Points();
-    auto d = math::Point();
-    X3BPInfo *bp_info;
+    // auto r = std::regex(
+    //         "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
+    // auto start_bp = 0;
+    // auto rs = math::Points();
+    // auto d = math::Point();
+    // // X3BPInfo *bp_info;
 
-    int i = -1;
-    int k = -1;
-    for (auto const &l : lines) {
-        // too short to be data
-        if (l.length() < 3) { continue; }
-        // basepair declare line
-        if (l.substr(0, 3) == "...") {
-            k++;
-            // std::cout << "l is: " << l << "\n";
-            // std::cout << "Info is: " << info[k] << "\n";
-            auto t = info[k];
-            auto m = std::smatch();
-            std::regex_search(t, m, r);
-            try {
-                bp_info = new X3BPInfo(m);
-            }
-            catch (X3dnaException const &e) {
-                throw e;
-            }
-            rs = math::Points();
-            start_bp = 1;
-            continue;
-        }
-        if (start_bp == 0) { continue; }
-        else if (start_bp == 1) {
-            i++;
-            // d = _convert_string_to_point(l);
-            // std::cout << "Original is: " << d << "\n";
-            // std::cout << "New is: " << points[i] << "\n";
-            d = points[i];
-        } else if (start_bp < 5) {
-            i++;
-            // std::cout << "Original is: " << _convert_string_to_point(l) << "\n";
-            // std::cout << "New is: " << points[i] << "\n";
-            // rs.push_back(_convert_string_to_point(l));
-            rs.push_back(points[i]);
-        }
+    // int i = -1;
+    // int k = -1;
+    // for (auto const &l : lines) {
+    //     // too short to be data
+    //     if (l.length() < 3) { continue; }
+    //     // basepair declare line
+    //     if (l.substr(0, 3) == "...") {
+    //         k++;
+    //         // std::cout << "l is: " << l << "\n";
+    //         // std::cout << "Info is: " << info[k] << "\n";
+    //         // auto t = info[k];
+    //         // auto m = std::smatch();
+    //         // std::regex_search(t, m, r);
+    //         try {
+    //             bp_info = new X3BPInfo(m);
+    //         }
+    //         catch (X3dnaException const &e) {
+    //             throw e;
+    //         }
+    //         rs = math::Points();
+    //         start_bp = 1;
+    //         continue;
+    //     }
+    //     if (start_bp == 0) { continue; }
+    //     else if (start_bp == 1) {
+    //         i++;
+    //         d = _convert_string_to_point(l);
+    //         // std::cout << "Original is: " << d << "\n";
+    //         // std::cout << "New is: " << points[i] << "\n";
+    //         // d = points[i];
+    //     } else if (start_bp < 5) {
+    //         i++;
+    //         // std::cout << "Original is: " << _convert_string_to_point(l) << "\n";
+    //         // std::cout << "New is: " << points[i] << "\n";
+    //         rs.push_back(_convert_string_to_point(l));
+    //         // rs.push_back(points[i]);
+    //     }
 
-        if (start_bp == 4) {
-            auto r = math::Matrix(rs[0].x(), rs[0].y(), rs[0].z(),
-                                  rs[1].x(), rs[1].y(), rs[1].z(),
-                                  rs[2].x(), rs[2].y(), rs[2].z());
-            auto res1 = X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
-            auto res2 = X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
-            auto bp = X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
-            basepairs.push_back(bp);
-            start_bp = 0;
-            continue;
+    //     if (start_bp == 4) {
+    //         auto r = math::Matrix(rs[0].x(), rs[0].y(), rs[0].z(),
+    //                               rs[1].x(), rs[1].y(), rs[1].z(),
+    //                               rs[2].x(), rs[2].y(), rs[2].z());
+    //         auto res1 = X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
+    //         auto res2 = X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
+    //         auto bp = X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
+    //         basepairs.push_back(bp);
+    //         start_bp = 0;
+    //         continue;
 
-        }
-        if (start_bp != 0) { start_bp += 1; }
-    }
+    //     }
+    //     if (start_bp != 0) { start_bp += 1; }
+    // }
 
-    if (bp_info != nullptr) { delete bp_info; }
+
+
+    // if (bp_info != nullptr) { delete bp_info; }
 }
 
 void

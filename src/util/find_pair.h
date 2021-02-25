@@ -12,13 +12,13 @@ namespace util
     class PairFinder
     {
     public:
-        PairFinder();
+        PairFinder(std::string pdb);
 
         std::vector<X3dna::X3Basepair>
-        find_pair(String pdb);
+        find_pair();
         
     private:
-        typedef struct
+        struct Args
         {
             char pdbfile[BUF512];
             char outfile[BUF512];
@@ -31,9 +31,31 @@ namespace util
             long detailed = FALSE;
             long waters = FALSE;
             long hjb = FALSE;
-        } args;
+        };
 
-        String bp_info;
+        Args args = Args();
+
+        // X3dna::X3BPInfo *bp_info;
+
+        void
+        handle_str();
+
+        void
+        write_fpmst(double *morg, double *morien, FILE *rframe, X3dna::X3BPInfo *bp_info);
+
+        void
+        write_bestpairs(long num_bp, long **base_pairs, long *bp_idx, char *bseq,
+                                long **seidx, char **AtomName, char **ResName, char *ChainID,
+                                long *ResSeq, char **Miscs, double **xyz, double **orien,
+                                double **org, long **htm_water, miscPars *misc_par);
+
+        void
+        duplex(long num, long num_residue, char *bseq, long **seidx, long *RY,
+                       char **AtomName, char **ResName, char *ChainID, long *ResSeq,
+                       char **Miscs, double **xyz, char *parfile,
+                       miscPars *misc_pars);
+
+        char **nt_info;
 
         std::vector<X3dna::X3Basepair> bps;
     };
