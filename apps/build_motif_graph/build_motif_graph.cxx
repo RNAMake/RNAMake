@@ -90,6 +90,7 @@ BuildMotifGraph::run() {
   if(_parameters.connect.empty()) {
     LOG_INFO << "completed";
     mg.write_pdbs();
+    mg.to_pdb("test.pdb", 1, 1);
     exit(0);
   }
   auto spl = base::split_str_by_delimiter(_parameters.connect, ",");
