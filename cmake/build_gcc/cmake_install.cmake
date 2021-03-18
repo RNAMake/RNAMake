@@ -1,4 +1,4 @@
-# Install script for directory: /Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/cmake/build_gcc
+# Install script for directory: /Users/josephyesselman/projects/RNAMake/cmake/build_gcc
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/Users/jyesselm/projects/RNAMake/rnamake/lib/RNAMake/cmake/build_gcc/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/Users/josephyesselman/projects/RNAMake/cmake/build_gcc/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")
