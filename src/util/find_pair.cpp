@@ -9,26 +9,18 @@
 
 using namespace std;
 
-namespace util
-{
-    PairFinder::PairFinder(string pdb)
-    {
-
+namespace util {
+    PairFinder::PairFinder(string pdb) {
         char *c = &pdb[0];
 
-        strcpy(args.pdbfile, c);
-        strcpy(args.outfile, "stdout");
-
-
+        sprintf(args.pdbfile, c);
+        sprintf(args.outfile, "stdout");
+        
         X3dna::X3BPInfo *bp_info;
-
-        bps = X3dna::X3Basepairs();
-
     }
 
     /* clean up files with fixed name */
-    static void clean_files(void)
-    {
+    static void clean_files(void) {
         remove_file(MUL_FILE);
         remove_file(ALLP_FILE);
         remove_file(BPORDER_FILE);
@@ -43,11 +35,10 @@ namespace util
     }
 
     template <typename... Args>
-    std::string string_format(const std::string &format, Args... args)
-    {
-        size_t size = snprintf(nullptr, 0, format.c_str(), args...) + 1; // Extra space for '\0'
-        if (size <= 0)
-        {
+    std::string string_format(const std::string &format, Args... args) {
+        // Extra space for '\0'
+        size_t size = snprintf(nullptr, 0, format.c_str(), args...) + 1;
+        if (size <= 0) {
             throw std::runtime_error("Error during formatting.");
         }
         std::unique_ptr<char[]> buf(new char[size]);
@@ -59,25 +50,22 @@ namespace util
             * frame x-, y- and z-axis: row-wise or column-wise? Here adding more info to
             * make this point clear: it is ROW-wise. Keven (U. Penn); Oct 9, 2007 */
     void 
-    PairFinder::write_fpmst(double *morg, double *morien, FILE *rframe, X3dna::X3BPInfo *bp_info)
-    {
+    PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe, X3dna::X3BPInfo *bp_info) {
 
-        std::cout << "Frame file name is : " << rframe << "\n";
+        int i, j;
+        fprintf(rframe, "%10.4f %10.4f %10.4f  # origin\n",
+                morg[1], morg[2], morg[3]);
 
-        long i, j;
-        fprintf(rframe, "%10.4f %10.4f %10.4f  # origin\n", morg[1], morg[2], morg[3]);
         auto d = math::Point(morg[1], morg[2], morg[3]);
         auto rs = math::Points();
-        for (i = 1; i <= 3; i++)
-        {
+        for (i = 1; i <= 3; i++) {
             j = (i - 1) * 3;
             fprintf(rframe, "%10.4f %10.4f %10.4f  # %c-axis\n", morien[j + 1],
-                    morien[j + 2], morien[j + 3], (i == 1) ? 'x' : (i == 2) ? 'y'
-                                                                            : 'z');
+                    morien[j + 2], morien[j + 3],
+                    (i == 1) ? 'x' : (i == 2) ? 'y': 'z');
             string num_1 = string_format("%10.4f", morien[j + 1]);
             string num_2 = string_format("%10.4f", morien[j + 2]);
             string num_3 = string_format("%10.4f", morien[j + 3]);
-            // auto p = math::Point(morien[j + 1], morien[j + 2], morien[j + 3]);
             auto p = math::Point(stod(num_1), stod(num_2), stod(num_3));
             rs.push_back(p);
         }
@@ -98,8 +86,7 @@ namespace util
         long i, j, numb;
 
         fprintf(fp, "====================== %s ======================\n", my_str);
-        for (i = 1; i <= num_residue; i++)
-        {
+        for (i = 1; i <= num_residue; i++) {
             numb = mylist[i][0];
             if (!numb)
                 continue;
@@ -112,12 +99,10 @@ namespace util
     }
 
     /* check if two lists are identical: same # & residue order */
-    static long isequal_list(long *listA, long *listB)
-    {
-        long i, is_equal = 0;
+    static int isequal_list(int *listA, int *listB) {
+        int i, is_equal = 0;
 
-        if (listA[0] == listB[0])
-        {
+        if (listA[0] == listB[0]) {
             for (i = 1; i <= listA[0]; i++)
                 if (listA[i] != listB[i])
                     break;
@@ -135,21 +120,18 @@ namespace util
     static void best_pair(long i, long num_residue, long *RY, long **seidx, double **xyz,
                           long *idx, double **NC1xyz, long *matched_idx, double **orien,
                           double **org, long **ring_atom, char **AtomName, char *bseq,
-                          miscPars *misc_pars, long *pair_stat)
-    {
+                          miscPars *misc_pars, long *pair_stat) {
         double ddmin = XBIG, rtn_val[RTNNUM];
         long bpid, j, k, nout = PSTNUM - 1;
 
         init_lvector(pair_stat, 1, nout, 0);
 
-        for (j = 1; j <= num_residue; j++)
-        {
+        for (j = 1; j <= num_residue; j++) {
             if (j == i || RY[j] < 0 || matched_idx[j])
                 continue;
             check_pair(i, j, bseq, seidx, xyz, NC1xyz, orien, org, idx, AtomName, misc_pars,
                        rtn_val, &bpid, ring_atom, 0);
-            if (bpid && rtn_val[5] < ddmin)
-            {
+            if (bpid && rtn_val[5] < ddmin) {
                 ddmin = rtn_val[5];
                 pair_stat[1] = j;
                 pair_stat[2] = bpid;
@@ -161,18 +143,15 @@ namespace util
 
     /* check if 2 bps co-planar based on simple geometry criterion */
     static long bp_coplanar(long i, double d, double d2, double *txyz, double *txyz2, long n,
-                            long *ddidx, double **bp_xyz)
-    {
+                            long *ddidx, double **bp_xyz) {
         double *dp = NULL; /* use pointer for efficiency */
         long j = 0, co_planar = 0;
 
-        if (fabs(d) < OLCRT)
-        {
+        if (fabs(d) < OLCRT) {
             j = ddidx[1];
             dp = txyz;
         }
-        else if (fabs(d2) < OLCRT)
-        {
+        else if (fabs(d2) < OLCRT) {
             j = ddidx[n];
             dp = txyz2;
         }
@@ -183,8 +162,7 @@ namespace util
         return co_planar;
     }
 
-    static long is_circular(long num_bp, long **bp_order)
-    {
+    static long is_circular(long num_bp, long **bp_order) {
         long i;
 
         if (num_bp <= 2)
@@ -199,33 +177,28 @@ namespace util
 
     /* find base-pair neighbors using simple geometric criterion for re_ordering */
     static void bp_context(long num_bp, miscPars *misc_pars, double **bp_xyz,
-                           long **bp_order, long **end_list, long *num_ends, FILE *tfp)
-    {
+                           long **bp_order, long **end_list, long *num_ends, FILE *tfp) {
         double helix_break = misc_pars->helix_break;
         double d = EMPTY_NUMBER, d2, d3, ddmin[9], txyz[4], txyz2[4], txyz3[4], zave[4];
         long i, j, k, m, n, overlap = 0, quadruple = 0, cnum = 8, ddidx[9];
 
         fprintf(tfp, "\nBase-pair context information\n");
 
-        for (i = 1; i <= num_bp; i++)
-        {
+        for (i = 1; i <= num_bp; i++) {
             init_dvector(ddmin, 1, cnum, XBIG);
             init_lvector(ddidx, 1, cnum, 0);
             d = dot(&bp_xyz[i][9], &bp_xyz[i][18]); /* between base normals */
             (d <= 0.0) ? ddxyz(bp_xyz[i] + 18, bp_xyz[i] + 9, zave) : sumxyz(bp_xyz[i] + 18, bp_xyz[i] + 9, zave);
             vec_norm(zave);
-            for (j = 1; j <= num_bp; j++)
-            {
+            for (j = 1; j <= num_bp; j++) {
                 if (j == i)
                     continue;
                 ddxyz(bp_xyz[j], bp_xyz[i], txyz);
                 d = veclen(txyz);
                 for (k = 1; k <= cnum; k++)
-                    if (d < ddmin[k])
-                    {
+                    if (d < ddmin[k]) {
                         for (m = cnum; m > k; m--)
-                            if (ddidx[n = m - 1])
-                            {
+                            if (ddidx[n = m - 1]) {
                                 ddmin[m] = ddmin[n];
                                 ddidx[m] = ddidx[n];
                             }
@@ -234,29 +207,25 @@ namespace util
                         break;
                     }
             }
-            if (ddidx[1] && ddidx[2])
-            { /* at least 2 nearest neighbors */
-                if (ddmin[1] > helix_break)
-                {                                 /* isolated bp */
+            if (ddidx[1] && ddidx[2]) {
+            /* at least 2 nearest neighbors */
+                if (ddmin[1] > helix_break) {
+                    /* isolated bp */
                     end_list[++*num_ends][1] = i; /* [i 0 0] */
                     n = 2;
-                }
-                else
-                {
+                } else {
                     if (!overlap && ddmin[1] < OLCRT)
                         overlap = 1;
                     ddxyz(bp_xyz[ddidx[1]], bp_xyz[i], txyz); /* i's nearest neighbor */
                     d = dot(zave, txyz);
 
                     /* check for swapped bps in deformed pdr026/ur0009 */
-                    if (ddidx[3] && ddmin[2] <= helix_break && ddmin[3] <= helix_break)
-                    {
+                    if (ddidx[3] && ddmin[2] <= helix_break && ddmin[3] <= helix_break) {
                         ddxyz(bp_xyz[ddidx[2]], bp_xyz[i], txyz2);
                         ddxyz(bp_xyz[ddidx[3]], bp_xyz[i], txyz3);
                         d2 = dot(zave, txyz2);
                         d3 = dot(zave, txyz3);
-                        if (d * d2 < 0.0 && d * d3 < 0.0 && fabs(d2) > fabs(d3))
-                        {
+                        if (d * d2 < 0.0 && d * d3 < 0.0 && fabs(d2) > fabs(d3)) {
                             lval_swap(&ddidx[2], &ddidx[3]);
                             dval_swap(&ddmin[2], &ddmin[3]);
                             fprintf(stderr, "[swapping 2nd & 3rd] %4ld %8.2f %8.2f "
@@ -265,14 +234,13 @@ namespace util
                         }
                     }
                     n = 0;
-                    for (j = 2; j <= cnum && ddidx[j]; j++)
-                    {
+                    for (j = 2; j <= cnum && ddidx[j]; j++) {
                         if (ddmin[j] > helix_break)
                             break;
                         ddxyz(bp_xyz[ddidx[j]], bp_xyz[i], txyz2);
                         d2 = dot(zave, txyz2);
-                        if (d * d2 < 0.0)
-                        { /* vertical direction */
+                        if (d * d2 < 0.0) {
+                            /* vertical direction */
                             n = j;
                             bp_order[i][1] = -1; /* middle base-pair */
                             bp_order[i][2] = ddidx[1];
@@ -280,16 +248,15 @@ namespace util
                             break;
                         }
                     }
-                    if (!n)
-                    { /* terminal bp */
+                    if (!n) { 
+                        /* terminal bp */
                         n = 2;
                         end_list[++*num_ends][1] = i;
                         end_list[*num_ends][2] = ddidx[1];
                         bp_order[i][2] = ddidx[1];
                         ddxyz(bp_xyz[ddidx[1]], bp_xyz[ddidx[n]], txyz2);
                         d2 = dot(zave, txyz2); /* check for normal terminal */
-                        if (d * d2 < 0.0 && veclen(txyz2) <= helix_break)
-                        {
+                        if (d * d2 < 0.0 && veclen(txyz2) <= helix_break) {
                             end_list[*num_ends][3] = ddidx[n];
                             bp_order[i][3] = ddidx[n];
                         }
@@ -298,10 +265,9 @@ namespace util
                 fprintf(tfp, "%4ld: %4ld %4ld %4ld %8.2f %8.2f%c", i, bp_order[i][1],
                         bp_order[i][2], bp_order[i][3], ddmin[1], ddmin[n],
                         (ddmin[n] > helix_break) ? '*' : ' ');
-                if (!bp_order[i][2])
+                if (!bp_order[i][2]) {
                     fprintf(tfp, "  isolated base-pairs\n");
-                else
-                {
+                } else {
                     (!bp_order[i][3]) ? fprintf(tfp, " (%4ld)", ddidx[n]) : fprintf(tfp, "       ");
                     ddxyz(bp_xyz[ddidx[n]], bp_xyz[i], txyz2);
                     d2 = dot(zave, txyz2);
@@ -314,26 +280,23 @@ namespace util
             }
         }
 
-        if (!*num_ends)
-        { /* circular (as in 4nnu), or num_bp == 1 || 2 */
+        if (!*num_ends) {
+            /* circular (as in 4nnu), or num_bp == 1 || 2 */
             end_list[++*num_ends][1] = 1;
-            if (is_circular(num_bp, bp_order))
-            {                                                 /* normally m=2, n=3 */
+            if (is_circular(num_bp, bp_order)) {
+                /* normally m=2, n=3 */
                 m = lval_min(bp_order[1][2], bp_order[1][3]); /* [1]: -1 2 44 */
                 end_list[*num_ends][2] = m;                   /* [2]: -1 3 1 */
                 n = (bp_order[m][2] == 1) ? bp_order[m][3] : bp_order[m][2];
                 end_list[*num_ends][3] = n;
-            }
-            else if (num_bp == 2)
-            {
-                if (d <= helix_break)
-                {
+            } else if (num_bp == 2) {
+                if (d <= helix_break) {
                     end_list[*num_ends][2] = 2; /* 1 2 0 && 2 1 0 */
                     end_list[++*num_ends][1] = 2;
                     end_list[*num_ends][2] = 1;
-                }
-                else
+                } else {
                     end_list[++*num_ends][1] = 2; /* 1 0 0 && 2 0 0 */
+                }
             }
         }
         fprintf(tfp, "\nEnd base-pair list\n");
@@ -356,36 +319,31 @@ namespace util
 
         matched_idx = lvector(1, num_bp); /* indicator for used bps */
 
-        for (i = 1; i <= num_ends && ip < num_bp; i++)
-        {
+        for (i = 1; i <= num_ends && ip < num_bp; i++) {
             k = 0;
             k0 = 0;
             for (j = 1; j <= 3; j++)
-                if (end_list[i][j])
-                {
+                if (end_list[i][j]) {
                     k += matched_idx[end_list[i][j]];
                     k0++;
                 }
             if (k == k0)
                 continue; /* end point of a processed helix */
-            for (j = 1; j <= 3 && ip < num_bp; j++)
-            {
+            for (j = 1; j <= 3 && ip < num_bp; j++) {
                 k = end_list[i][j];
-                if (k && !matched_idx[k])
-                {
+                if (k && !matched_idx[k]) {
                     bp_idx[++ip] = k;
                     matched_idx[k] = 1;
                 }
             }
-            for (j = 1; j <= num_bp; j++)
-            {
+            for (j = 1; j <= num_bp; j++) {
                 k = bp_idx[ip];
                 k2 = bp_order[k][2];
                 k3 = bp_order[k][3];
-                if (!bp_order[k][1])
-                { /* end-point */
-                    if (k2 && !matched_idx[k2] && !k3)
-                    { /* e.g. 0 10 0 */
+                if (!bp_order[k][1]) {
+                    /* end-point */
+                    if (k2 && !matched_idx[k2] && !k3) { 
+                        /* e.g. 0 10 0 */
                         bp_idx[++ip] = k2;
                         matched_idx[k2] = 1;
                     }
@@ -394,18 +352,15 @@ namespace util
                 m = matched_idx[k2] + matched_idx[k3];
                 if (m == 2 || m == 0)
                     break; /* chain terminates */
-                if (k2 == bp_idx[ip - 1])
-                {
+                if (k2 == bp_idx[ip - 1]) {
                     bp_idx[++ip] = k3;
                     matched_idx[k3] = 1;
-                }
-                else if (k3 == bp_idx[ip - 1])
-                {
+                } else if (k3 == bp_idx[ip - 1]) {
                     bp_idx[++ip] = k2;
                     matched_idx[k2] = 1;
-                }
-                else
+                } else {
                     break; /* no direct connection */
+                }
             }
             helix_idx[*num_helix][2] = ip;
             helix_marker[ip] = 1; /* helix_marker & helix_idx are parallel */
@@ -413,8 +368,8 @@ namespace util
                 helix_idx[++*num_helix][1] = ip + 1;
         }
 
-        if (ip < num_bp)
-        { /* all un-classified bps */
+        if (ip < num_bp) { 
+            /* all un-classified bps */
             fprintf(stderr, "[%ld %ld]: complicated structure, left over"
                             " base-pairs put into the last region [%ld]\n",
                     ip, num_bp, *num_helix);
@@ -428,15 +383,11 @@ namespace util
     }
 
     /* get the two base indices [*n1 and *n2] of base-pair m */
-    static void get_ij(long m, long *swapped, long **base_pairs, long *n1, long *n2)
-    {
-        if (swapped[m])
-        {
+    static void get_ij(long m, long *swapped, long **base_pairs, long *n1, long *n2) {
+        if (swapped[m]) {
             *n1 = base_pairs[m][2];
             *n2 = base_pairs[m][1];
-        }
-        else
-        {
+        } else {
             *n1 = base_pairs[m][1];
             *n2 = base_pairs[m][2];
         }
@@ -444,8 +395,7 @@ namespace util
 
     /* make strand I of the first step in 5'--->3' direction */
     static void first_step(long i, long **helix_idx, long *bp_idx, long *swapped,
-                           long **base_pairs, double **o3_p)
-    {
+                           long **base_pairs, double **o3_p) {
         long i1, i2, j, j1_osx, j2, k, m, n;
 
         if (helix_idx[i][3] == 1)
@@ -458,8 +408,8 @@ namespace util
         k = is_linked(i1, i2, o3_p);
         if (k == -1)
             swapped[m] = !swapped[m];
-        else if (!k)
-        { /* no linkage: reverse the strand direction */
+        else if (!k) { 
+            /* no linkage: reverse the strand direction */
             lreverse(helix_idx[i][1], helix_idx[i][3], bp_idx);
             j = helix_idx[i][1];
             m = bp_idx[j];
@@ -475,8 +425,7 @@ namespace util
     }
 
     /* make sure strand I is in the 5'--->3' direction */
-    static long chain1dir(long m, long n, long *swapped, long **base_pairs, double **o3_p)
-    {
+    static long chain1dir(long m, long n, long *swapped, long **base_pairs, double **o3_p) {
         long i1, i2, j1_osx, j2, k, irev0 = 0, irev1 = 1;
 
         get_ij(m, swapped, base_pairs, &i1, &j1_osx);
@@ -486,15 +435,11 @@ namespace util
     }
 
     /* get base normal position index in bp_xyz */
-    static void get_bidx(long m, long *swapped, long *idx1, long *idx2)
-    {
-        if (swapped[m])
-        {
+    static void get_bidx(long m, long *swapped, long *idx1, long *idx2) {
+        if (swapped[m]) {
             *idx1 = 18;
             *idx2 = 9;
-        }
-        else
-        {
+        } else {
             *idx1 = 9;
             *idx2 = 18;
         }
@@ -502,8 +447,7 @@ namespace util
 
     /* get the dot product between base-pair m & n normals in WC geometry */
     static double wcbp_zdir(long m, long n, long idxm1, long idxm2, long idxn1, long idxn2,
-                            double **bp_xyz)
-    {
+                            double **bp_xyz) {
         double dm[4], dn[4];
 
         ddxyz(bp_xyz[m] + idxm2, bp_xyz[m] + idxm1, dm); /* opposite direction */
@@ -515,8 +459,7 @@ namespace util
     }
 
     /* get the dot product between base-pair m & n x-axes in WC geometry */
-    static double wcbp_xang(long m, long n, double **bp_xyz)
-    {
+    static double wcbp_xang(long m, long n, double **bp_xyz) {
         double dm[4], dn[4];
 
         sumxyz(bp_xyz[m] + 3, bp_xyz[m] + 12, dm); /* same direction */
@@ -527,12 +470,11 @@ namespace util
 
     /* get the relative base-pair orientations of WC-geometry step */
     static long wc_bporien(long m, long n, long *swapped, long **base_pairs, double **bp_xyz,
-                           double **o3_p)
-    {
+                           double **o3_p) {
         long i1, i2, j1_osx, j2, idxm1, idxm2, idxn1, idxn2, irev = 0;
 
-        if (base_pairs[m][3] > 0 && base_pairs[n][3] > 0)
-        { /* WC geometry */
+        if (base_pairs[m][3] > 0 && base_pairs[n][3] > 0) { 
+            /* WC geometry */
             get_ij(m, swapped, base_pairs, &i1, &j1_osx);
             get_ij(n, swapped, base_pairs, &i2, &j2);
             if (wcbp_xang(m, n, bp_xyz) > END_STACK_XANG || /* bdl070: 105 degrees */
@@ -552,8 +494,7 @@ namespace util
  *    i2 ---- j2
  *    |       |
  *    i1 ---- j1 */
-    static long check_o3dist(long m, long n, long *swapped, long **base_pairs, double **o3_p)
-    {
+    static long check_o3dist(long m, long n, long *swapped, long **base_pairs, double **o3_p) {
         double di1_i2, di1_j2, dj1_i2, dj1_j2;
         long i1, i2, j1_osx, j2, irev = 0;
 
@@ -570,8 +511,7 @@ namespace util
     }
 
     /* use continuous single chain (if any) to control if to flip the top bp */
-    static long check_schain(long m, long n, long *swapped, long **base_pairs, double **o3_p)
-    {
+    static long check_schain(long m, long n, long *swapped, long **base_pairs, double **o3_p) {
         long i1, i2, j1_osx, j2, irev = 0;
 
         get_ij(m, swapped, base_pairs, &i1, &j1_osx);
@@ -584,8 +524,7 @@ namespace util
 
     /* check for situations where wc_bporien, check_o3dist & check_schain do not apply */
     static long check_others(long m, long n, long *swapped, long **base_pairs, double **o3_p,
-                             double **bp_xyz)
-    {
+                             double **bp_xyz) {
         double d[5], a1[4], a2[4], r1[4], r2[4];
         long i, j, i1, i2, j1_osx, j2, idxm1, idxm2, idxn1, idxn2;
         long irev0 = 0, irev1 = 1;
@@ -601,8 +540,7 @@ namespace util
         get_bidx(n, swapped, &idxn1, &idxn2);
 
         /* original orientation */
-        for (i = 1; i <= 3; i++)
-        {
+        for (i = 1; i <= 3; i++) {
             j = (3 - i) * 3;
             a1[i] = dot(&bp_xyz[m][idxm1 - j], &bp_xyz[n][idxn1 - j]);
             a2[i] = dot(&bp_xyz[m][idxm2 - j], &bp_xyz[n][idxn2 - j]);
@@ -613,16 +551,14 @@ namespace util
             return irev0;
 
         /* swap the two bases in the top base-pair */
-        for (i = 1; i <= 3; i++)
-        {
+        for (i = 1; i <= 3; i++) {
             j = (3 - i) * 3;
             r1[i] = dot(&bp_xyz[m][idxm1 - j], &bp_xyz[n][idxn2 - j]);
             r2[i] = dot(&bp_xyz[m][idxm2 - j], &bp_xyz[n][idxn1 - j]);
         }
         j1_osx = (r1[1] > 0.0 && r1[2] > 0.0 && r1[3] > 0.0);
         j2 = (r2[1] > 0.0 && r2[2] > 0.0 && r2[3] > 0.0);
-        if (!i1 && !i2)
-        {
+        if (!i1 && !i2) {
             if (j1_osx || j2) /* reverse */
                 return irev1;
             else if (!j1_osx && !j2) /* keep as is */
@@ -647,14 +583,12 @@ namespace util
 
     /* check directions of two chains, mark and reverse as necessary a */
     static void check_direction(long i, long **helix_idx, long *bp_idx, long *swapped,
-                                long **base_pairs, double **o3_p, long *direction)
-    {
+                                long **base_pairs, double **o3_p, long *direction) {
         long i1, i2, j, j1_osx, j2, k, m, n;
 
         /* check if strand I is in 5'-->3' direction */
         init_lvector(direction, 1, 6, 0);
-        for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++)
-        {
+        for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++) {
             m = bp_idx[j];
             n = bp_idx[j + 1];
             get_ij(m, swapped, base_pairs, &i1, &j1_osx);
@@ -666,8 +600,7 @@ namespace util
             (k == 1) ? ++direction[4] : (k == -1) ? ++direction[5]
                                                   : ++direction[6];
         }
-        if ((direction[1] && direction[2]) || (direction[4] && direction[5]))
-        {
+        if ((direction[1] && direction[2]) || (direction[4] && direction[5])) {
             helix_idx[i][7] = 1;
             return;
         }
@@ -680,23 +613,24 @@ namespace util
         get_ij(n, swapped, base_pairs, &i2, &j2);
         if (direction[3] || direction[6])
             helix_idx[i][5] = 1; /* broken O3'[i] to P[i+1] linkage */
-        if (direction[1] && !direction[2])
-        { /* 5'--->3' direction */
-            if (!direction[4] && direction[5])
-            { /* anti-parallel */
-                if (i1 > j2)
-                { /* swap and reverse the two strands */
+        if (direction[1] && !direction[2]) {
+            /* 5'--->3' direction */
+            if (!direction[4] && direction[5]) {
+                /* anti-parallel */
+                if (i1 > j2) {
+                    /* swap and reverse the two strands */
                     for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++)
                         swapped[bp_idx[j]] = !swapped[bp_idx[j]];
                     lreverse(helix_idx[i][1], helix_idx[i][3], bp_idx);
                 }
             }
-            else if (direction[4] && !direction[5])
-            { /* parallel */
+            else if (direction[4] && !direction[5]) { 
+                /* parallel */
                 helix_idx[i][6] = 1;
-                if (i1 > j1_osx) /* swapped the two strands */
+                if (i1 > j1_osx) { /* swapped the two strands */
                     for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++)
                         swapped[bp_idx[j]] = !swapped[bp_idx[j]];
+                }
             }
         }
     }
@@ -704,17 +638,14 @@ namespace util
     /* direction of strand II: either anti-parallel or parallel to strand I */
     static void check_strand2(long i, long **helix_idx, long *bp_idx, double **bp_xyz,
                               long *swapped, long **base_pairs, double **o3_p,
-                              long *direction, FILE *tfp)
-    {
+                              long *direction, FILE *tfp) {
         long i1, i2, j, j1_osx, j2, k, m, n, anti_p, parallel;
 
-        if (!helix_idx[i][7])
-        {
+        if (!helix_idx[i][7]) {
             if (direction[1] + direction[2] + direction[4] + direction[5] == 0)
                 return;
             init_lvector(helix_idx[i], 5, 7, 0);
-            for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++)
-            {
+            for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++) {
                 m = bp_idx[j];
                 n = bp_idx[j + 1];
                 if (wc_bporien(m, n, swapped, base_pairs, bp_xyz, o3_p))
@@ -723,45 +654,37 @@ namespace util
                 get_ij(n, swapped, base_pairs, &i2, &j2);
                 if (!is_linked(i1, i2, o3_p) && !is_linked(j1_osx, j2, o3_p) &&
                     ((is_linked(i1, j2, o3_p) == 1) ||
-                     (is_linked(i1, j2, o3_p) && is_linked(j1_osx, i2, o3_p))))
-                {
+                     (is_linked(i1, j2, o3_p) && is_linked(j1_osx, i2, o3_p)))) {
                     swapped[n] = !swapped[n]; /* pr0004, ptr012, trna12 */
                     fprintf(tfp, "                  000    [%ld-%ld]\n", m, n);
                     fprintf(stderr, "000:    [%ld-%ld]\n", m, n);
                 }
             }
-        }
-        else
-        {
+        } else {
             helix_idx[i][7] = 0;
             anti_p = (direction[1] > direction[2]) && (direction[4] < direction[5]);
             parallel = (direction[1] > direction[2]) && (direction[4] > direction[5]);
-            for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++)
-            {
+            for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++) {
                 m = bp_idx[j];
                 n = bp_idx[j + 1];
                 get_ij(m, swapped, base_pairs, &i1, &j1_osx);
                 get_ij(n, swapped, base_pairs, &i2, &j2);
                 k = is_linked(j1_osx, j2, o3_p);
                 if (!is_linked(i1, i2, o3_p) && /* strand I not linked */
-                    ((anti_p && k == 1) || (parallel && k == -1)))
-                {
+                    ((anti_p && k == 1) || (parallel && k == -1))) {
                     swapped[n] = !swapped[n];
                     fprintf(tfp, "                  2nd %2ld [%ld-%ld]\n", k, m, n);
                 }
                 /* another round of post-processing */
                 get_ij(n, swapped, base_pairs, &i2, &j2);
-                if (!is_linked(i1, i2, o3_p) && !is_linked(j1_osx, j2, o3_p))
-                {
+                if (!is_linked(i1, i2, o3_p) && !is_linked(j1_osx, j2, o3_p)) {
                     if ((anti_p && is_linked(j1_osx, i2, o3_p) == 1) ||
-                        (parallel && is_linked(i1, j2, o3_p) == -1))
-                    {
+                        (parallel && is_linked(i1, j2, o3_p) == -1)) {
                         fprintf(tfp, "                  3rdL   [%ld-%ld]\n", m, n);
                         swapped[m] = !swapped[m]; /* lower bp */
                     }
                     else if ((anti_p && is_linked(i1, j2, o3_p) == 1) ||
-                             (parallel && is_linked(j1_osx, i2, o3_p) == -1))
-                    {
+                             (parallel && is_linked(j1_osx, i2, o3_p) == -1)) {
                         swapped[n] = !swapped[n]; /* upper bp */
                         fprintf(tfp, "                  3rdU    [%ld-%ld]\n", m, n);
                     }
@@ -773,17 +696,15 @@ namespace util
 
     /* check WC-geometry step with negative rise */
     static void check_rise(long i, long **helix_idx, long *bp_idx, long *swapped,
-                           long **base_pairs, double **bp_xyz, double **o3_p)
-    {
+                           long **base_pairs, double **bp_xyz, double **o3_p) {
         double d1, d2, rise, dorg[4], mn[4];
         long i1, j1_osx, i2, j2, idxm1, idxm2, idxn1, idxn2, j, k, m, n, num = 0;
 
-        for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++)
-        {
+        for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++) {
             m = bp_idx[j];
             n = bp_idx[j + 1];
-            if (base_pairs[m][3] > 0 && base_pairs[n][3] > 0)
-            { /* WC geometry */
+            if (base_pairs[m][3] > 0 && base_pairs[n][3] > 0) { 
+                /* WC geometry */
                 get_bidx(m, swapped, &idxm1, &idxm2);
                 get_bidx(n, swapped, &idxn1, &idxn2);
                 if (wcbp_zdir(m, n, idxm1, idxm2, idxn1, idxn2, bp_xyz) < 0.0 &&
@@ -792,19 +713,18 @@ namespace util
                                     " %ld(%ld)-%ld(%ld)\n",
                             i, helix_idx[i][3], m, j, n, j + 1);
                 ddxyz(bp_xyz[m], bp_xyz[n], dorg);
-                for (k = 1; k <= 3; k++)
+                for (k = 1; k <= 3; k++){
                     mn[k] = bp_xyz[m][k + idxm1] - bp_xyz[m][k + idxm2] + /* bp m */
                             bp_xyz[n][k + idxn1] - bp_xyz[n][k + idxn2];  /* bp n */
+                }
                 vec_norm(mn);
                 rise = dot(dorg, mn);
-                if (rise < 0.0)
-                {
+                if (rise < 0.0) {
                     get_ij(m, swapped, base_pairs, &i1, &j1_osx);
                     get_ij(n, swapped, base_pairs, &i2, &j2);
                     d1 = distance_ab(o3_p, i2, i1, 4, 8);
                     d2 = distance_ab(o3_p, j1_osx, j2, 4, 8);
-                    if (dval_in_range(d1, 0.0, O3P_UPPER) && dval_in_range(d2, 0.0, O3P_UPPER))
-                    {
+                    if (dval_in_range(d1, 0.0, O3P_UPPER) && dval_in_range(d2, 0.0, O3P_UPPER)) {
                         num++;
                         fprintf(stderr, "===> %ld(%ld) %ld-%ld [%ld-%ld (%ld)]:"
                                         " %8.2f%8.2f%8.2f\n",
@@ -824,8 +744,7 @@ namespace util
  *           col#     1       2       3       4      5       6        7
  */
     static void five2three(long num_bp, long *num_helix, long **helix_idx, long *bp_idx,
-                           double **bp_xyz, long **base_pairs, double **o3_p, FILE *tfp)
-    {
+                           double **bp_xyz, long **base_pairs, double **o3_p, FILE *tfp) {
         double do3_p;
         long i, j, k, m, n, rev_wc, rev_o3d, rev_csc, rev_oth, rev_s1;
         long direction[7], *swapped;
@@ -845,8 +764,7 @@ namespace util
 
         fprintf(tfp, "\nHelix region information\n");
         swapped = lvector(1, num_bp);
-        for (i = 1; i <= *num_helix; i++)
-        {
+        for (i = 1; i <= *num_helix; i++) {
             helix_idx[i][3] = helix_idx[i][2] - helix_idx[i][1] + 1;
             print_sep(tfp, '-', 84);
             fprintf(tfp, "Helix #%4.4ld\n", i);
@@ -854,8 +772,7 @@ namespace util
             first_step(i, helix_idx, bp_idx, swapped, base_pairs, o3_p);
 
             /* The first base-pair is used as the global reference */
-            for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++)
-            {
+            for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++) {
                 m = bp_idx[j];
                 n = bp_idx[j + 1];
                 rev_wc = wc_bporien(m, n, swapped, base_pairs, bp_xyz, o3_p);
@@ -878,13 +795,11 @@ namespace util
             /* one more round checking for WC geometry steps: 09-23-2002
          * works for Luger pol_end1.pdb & pol_end2.pdb, and bdl070.pdb */
             fprintf(tfp, "\n              ===> 2nd around checking or WC geometry steps\n");
-            for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++)
-            {
+            for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++) {
                 m = bp_idx[j];
                 n = bp_idx[j + 1];
                 rev_wc = wc_bporien(m, n, swapped, base_pairs, bp_xyz, o3_p);
-                if (rev_wc)
-                {
+                if (rev_wc) {
                     swapped[m] = !swapped[m]; /* m here */
                     fprintf(tfp, "          %4ld: [%ld-%ld]\n", j, m, n);
                 }
@@ -895,14 +810,12 @@ namespace util
             check_strand2(i, helix_idx, bp_idx, bp_xyz, swapped, base_pairs, o3_p, direction, tfp);
             check_rise(i, helix_idx, bp_idx, swapped, base_pairs, bp_xyz, o3_p);
 
-            for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++)
-            {
+            for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
                 m = bp_idx[j];
-                if (swapped[m])
-                {
+                if (swapped[m]) {
                     lval_swap(&base_pairs[m][1], &base_pairs[m][2]);
-                    for (k = 1; k <= 9; k++)
-                    { /* swap base I and II xyz-axes */
+                    for (k = 1; k <= 9; k++) { 
+                        /* swap base I and II xyz-axes */
                         dval_swap(&bp_xyz[m][k + 3], &bp_xyz[m][k + 12]);
                         lval_swap(&base_pairs[m][k + 11], &base_pairs[m][k + 20]);
                     }
@@ -915,8 +828,7 @@ namespace util
                 fprintf(tfp, "%6ld", direction[j]);
             fprintf(tfp, "\n           ");
             k = 0;
-            for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++)
-            {
+            for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
                 m = bp_idx[j];
                 fprintf(tfp, "%6ld", swapped[m] ? -m : m);
                 if (++k % 10 == 0 && k != helix_idx[i][3])
@@ -930,27 +842,22 @@ namespace util
 
     /* check if a helical region is in left-handed Z-form */
     static void check_zdna(long *num_helix, long **helix_idx, long *bp_idx, double **bp_xyz,
-                           long **base_pairs, FILE *tfp)
-    {
+                           long **base_pairs, FILE *tfp) {
         double txyz[4];
         long i, j, m, n, nweird = 0, nrev, mixed_rl = 0;
 
         fprintf(tfp, "\nZ-DNA helical region if any\n");
-        for (i = 1; i <= *num_helix; i++)
-        {
-            if (helix_idx[i][5] || helix_idx[i][6] || helix_idx[i][7] || helix_idx[i][3] <= 1)
-            {
+        for (i = 1; i <= *num_helix; i++) {
+            if (helix_idx[i][5] || helix_idx[i][6] || helix_idx[i][7] || helix_idx[i][3] <= 1) {
                 nweird++;
                 continue; /* break/parallel/weird/only one pair */
             }
             nrev = 0;
-            for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++)
-            {
+            for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
                 m = bp_idx[j];
                 if (helix_idx[i][3] == 1)
                     continue;
-                if (j < helix_idx[i][2])
-                {
+                if (j < helix_idx[i][2]) {
                     n = bp_idx[j + 1];
                     ddxyz(bp_xyz[m], bp_xyz[n], txyz);
                 }
@@ -960,8 +867,7 @@ namespace util
                 else
                     break;
             }
-            if (nrev == helix_idx[i][3])
-            {
+            if (nrev == helix_idx[i][3]) {
                 helix_idx[i][4] = 1;
                 mixed_rl++;
                 fprintf(tfp, "Helix #%4.4ld (%4ld) is a Z-DNA\n", i, helix_idx[i][3]);
@@ -973,14 +879,12 @@ namespace util
     }
 
     /* Kth base-pair classification: WC, WC-geometry, Anti-parallel */
-    static void set_wc3(long *pair_k, char *wc)
-    {
+    static void set_wc3(long *pair_k, char *wc) {
         char zdir;
         double z1[4], z2[4];
         long i, j;
 
-        for (i = 18; i <= 20; i++)
-        {
+        for (i = 18; i <= 20; i++) {
             j = i - 17;
             z1[j] = pair_k[i] / MFACTOR;
             z2[j] = pair_k[i + 9] / MFACTOR;
@@ -993,8 +897,7 @@ namespace util
     static void re_ordering(long num_bp, long **base_pairs, long *bp_idx, long *helix_marker,
                             long **helix_idx, miscPars *misc_pars, long *num_helix,
                             double **o3_p, char *bseq, long **seidx, char **ResName,
-                            char *ChainID, long *ResSeq, char **Miscs)
-    {
+                            char *ChainID, long *ResSeq, char **Miscs) {
         char b1[BUF512], b2[BUF512], wc[4];
         double **bp_xyz;
         long i, i_order, j, j_order, num_ends = 0;
@@ -1004,8 +907,7 @@ namespace util
         tfp = open_file(BPORDER_FILE, "w");
         print_bp_crit(misc_pars, tfp);
         fprintf(tfp, "Base-pair information BEFORE re-ordering\n");
-        for (i = 1; i <= num_bp; i++)
-        {
+        for (i = 1; i <= num_bp; i++) {
             set_wc3(base_pairs[i], wc);
             i_order = base_pairs[i][1];
             j_order = base_pairs[i][2];
@@ -1047,8 +949,7 @@ namespace util
     }
 
     /* print out a summary of helix information: Z-DNA, break, parallel, weird? */
-    static void helix_info(long **helix_idx, long idx, FILE *fp)
-    {
+    static void helix_info(long **helix_idx, long idx, FILE *fp) {
         fprintf(fp, "%s%s%s%s\n", (helix_idx[idx][4]) ? "  ***Z-DNA***" : "",
                 (helix_idx[idx][5]) ? "  ***broken O3'[i] to P[i+1] linkage***"
                                     : "",
@@ -1058,12 +959,10 @@ namespace util
 
     /* write out a PDB file containing all best pairs oriented with mean base-pair normal */
     void
-    PairFinder::write_bestpairs(long num_bp, long **base_pairs, long *bp_idx, char *bseq,
+    PairFinder::_write_bestpairs(long num_bp, long **base_pairs, long *bp_idx, char *bseq,
                                 long **seidx, char **AtomName, char **ResName, char *ChainID,
                                 long *ResSeq, char **Miscs, double **xyz, double **orien,
-                                double **org, long **htm_water, miscPars *misc_pars)
-    {
-        std::cout << "I'm in write_bestpairs";
+                                double **org, long **htm_water, miscPars *misc_pars) {
 
         char b1[BUF512], b2[BUF512], idmsg[BUF512], wc[4];
         double morg[4], morien[10];
@@ -1076,8 +975,7 @@ namespace util
 
         fprintf(rframe, "%5ld base-pairs\n", num_bp);
 
-        for (i = 1; i <= num_bp; i++)
-        {
+        for (i = 1; i <= num_bp; i++) {
             k = bp_idx[i];
             ia = base_pairs[k][1];
             ib = base_pairs[k][2];
@@ -1097,29 +995,21 @@ namespace util
             fprintf(mfp, "ENDMDL\n");
 
             fprintf(rframe, "... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib], nt_info[ia], nt_info[ib]);
-            // std::cout << string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib],
-            //         nt_info[ia], nt_info[ib]);
-            // exit(1);
-            // info_vect.push_back(string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib], nt_info[ia], nt_info[ib]));
             auto r = std::regex(
             "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
             auto s = string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib], nt_info[ia], nt_info[ib]);
             auto m = std::smatch();
             std::regex_search(s, m, r);
             auto bp_info = new X3dna::X3BPInfo(m);
-            PairFinder::write_fpmst(morg, morien, rframe, bp_info);
+            PairFinder::_write_fpmst(morg, morien, rframe, bp_info);
         }
-        // close_file(mfp);
-        // close_file(rframe);
-        cout << "out of the loop";
     }
 
     /* write out helical regions in a multiple structure PDB file */
     static void write_helix(long num_helix, long **helix_idx, long *bp_idx, long **seidx,
                             char **AtomName, char **ResName, char *ChainID, long *ResSeq,
                             char **Miscs, double **xyz, long **base_pairs, long **htm_water,
-                            miscPars *misc_pars)
-    {
+                            miscPars *misc_pars) {
         long i, inum, j, k, m, n, tnum_res, num_residue;
         long *ivec, *ivect;
         FILE *mfp;
@@ -1129,18 +1019,16 @@ namespace util
         ivect = lvector(1, num_residue);
         mfp = open_file(HLXREG_FILE, "w");
         cout << "In helix after open";
-        for (i = 1; i <= num_helix; i++)
-        {
+        for (i = 1; i <= num_helix; i++) {
             inum = 0;
             fprintf(mfp, "%6s    %4ld\n", "MODEL ", i);
             fprintf(mfp, "REMARK    Section #%4.4ld %ld base-pairs", i, helix_idx[i][3]);
             helix_info(helix_idx, i, mfp);
             fprintf(mfp, "REMARK    %s\n", Gvars.X3DNA_VER);
             k = 0; /* residue index in the helical region */
-            for (n = 1; n <= 2; n++)
-            { /* two strands */
-                for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++)
-                {
+            for (n = 1; n <= 2; n++) { 
+                /* two strands */
+                for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
                     if (n == 2 && !helix_idx[i][6]) /* anti-parallel */
                         m = base_pairs[bp_idx[helix_idx[i][2] - j + helix_idx[i][1]]][n];
                     else
@@ -1150,8 +1038,7 @@ namespace util
                 }
             }
             tnum_res = attached_residues(k, ivec, ivect, seidx, xyz, htm_water, misc_pars);
-            for (j = 1; j <= tnum_res; j++)
-            {
+            for (j = 1; j <= tnum_res; j++) {
                 m = ivect[j];
                 pdb_record(seidx[m][1], seidx[m][2], &inum, 0, AtomName, ResName,
                            ChainID, ResSeq, xyz, Miscs, mfp);
@@ -1166,8 +1053,7 @@ namespace util
     }
 
     /* for non-base-pairs found in structure "pdbfile" */
-    static void no_basepairs(char *pdbfile, char *outfile, char *parfile)
-    {
+    static void no_basepairs(char *pdbfile, char *outfile, char *parfile) {
         FILE *fp;
         cout << "in no";
         fprintf(stderr, "no base-pairs found for this structure\n");
@@ -1183,29 +1069,26 @@ namespace util
     static long find_bestpair(long nout, long **base_pairs, long num_residue, char *bseq,
                               long **seidx, long *RY, char **AtomName, double **xyz,
                               long *idx, double **orien, double **org, double **NC1xyz,
-                              long **ring_atom, miscPars *misc_pars)
-    {
+                              long **ring_atom, miscPars *misc_pars) {
         long i, j, num1 = 0, num2 = 1, num_bp = 0;
         long pair_istat[PSTNUM], pair_jstat[PSTNUM];
         long *matched_idx;
 
         matched_idx = lvector(1, num_residue);
-        while (num1 < num2)
-        {
+        while (num1 < num2) {
             num1 = num2;
-            for (i = 1; i <= num_residue; i++)
-            {
+            for (i = 1; i <= num_residue; i++) {
                 if (RY[i] < 0 || matched_idx[i])
                     continue; /* non-base or paired base */
                 best_pair(i, num_residue, RY, seidx, xyz, idx, NC1xyz, matched_idx,
                           orien, org, ring_atom, AtomName, bseq, misc_pars, pair_istat);
-                if (pair_istat[1])
-                { /* with paired base */
+                if (pair_istat[1]) { 
+                    /* with paired base */
                     best_pair(pair_istat[1], num_residue, RY, seidx, xyz, idx, NC1xyz,
                               matched_idx, orien, org, ring_atom, AtomName, bseq,
                               misc_pars, pair_jstat);
-                    if (i == pair_jstat[1])
-                    { /* best match between i && pair_istat[1] */
+                    if (i == pair_jstat[1]) { 
+                        /* best match between i && pair_istat[1] */
                         matched_idx[i] = 1;
                         matched_idx[pair_istat[1]] = 1;
                         base_pairs[++num_bp][1] = i;
@@ -1226,8 +1109,7 @@ namespace util
 
     /* RasMol script for coloring the structure by chains or helical regions */
     static void col_helices(long num_helix, long **helix_idx, long *bp_idx, long **base_pairs,
-                            long **seidx, char *pdbfile, char *ChainID, long *ResSeq)
-    {
+                            long **seidx, char *pdbfile, char *ChainID, long *ResSeq) {
         static char *col_code[9] = {"violet", "red", "green", "blue", "yellow",
                                     "cyan", "magenta", "orange", "purple"};
         long i, ia, ib, ic, j, k;
@@ -1256,13 +1138,11 @@ namespace util
 
         cout << "\n after COL";
 
-        for (i = 1; i <= num_helix; i++)
-        {
+        for (i = 1; i <= num_helix; i++) {
             cout << "\n In the loop";
             ic = i % 9; /* color code */
             fprintf(fph, "\n#------Helix #%ld, color: %s------\n", i, col_code[ic]);
-            for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++)
-            {
+            for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
                 k = bp_idx[j];
                 ia = seidx[base_pairs[k][1]][1];
                 ib = seidx[base_pairs[k][2]][1];
@@ -1283,22 +1163,19 @@ namespace util
     }
 
     static void set_nmarkers(long idx, long ib, long ie, long *helix_marker, long **helix_idx,
-                             long *num_helix, long *num_1bp, long *nmarkers)
-    {
+                             long *num_helix, long *num_1bp, long *nmarkers) {
         long i, k;
 
         *num_helix = 0;
         *num_1bp = 0;
 
-        for (i = ib; i <= ie; i++)
-        {
+        for (i = ib; i <= ie; i++) {
             k = i - ib + 1; /* 1-index */
 
-            if (helix_marker[i])
-            { /* change of helix regions */
+            if (helix_marker[i]) { 
+                /* change of helix regions */
                 (*num_helix)++;
-                if ((!idx && helix_idx[*num_helix][3] == 1) || (idx && helix_idx[idx][3] == 1))
-                {
+                if ((!idx && helix_idx[*num_helix][3] == 1) || (idx && helix_idx[idx][3] == 1)) {
                     (*num_1bp)++;
                     nmarkers[k] = 1;
                 }
@@ -1313,8 +1190,7 @@ namespace util
                             char *outfile, char *parfile, long hetatm, long *bp_idx,
                             long *helix_marker, long **helix_idx, long **base_pairs,
                             long **seidx, char **ResName, char *ChainID, long *ResSeq,
-                            char **Miscs, char *bseq, miscPars *misc_pars, long detailed)
-    {
+                            char **Miscs, char *bseq, miscPars *misc_pars, long detailed) {
         char b1[BUF512], b2[BUF512], wc[4], *cmarkers;
         char outfile_new[BUF512], parfile_new[BUF512];
         double x[4];
@@ -1322,24 +1198,18 @@ namespace util
         long num_bp, num_helix, num_1bp, num_nwc = 0;
         FILE *fp;
 
-        if (idx)
-        { /* structure taken as helical regions */
+        if (idx) { 
+            /* structure taken as helical regions */
             sprintf(outfile_new, "%s_%4.4ld", outfile, idx);
             sprintf(parfile_new, "%s_%4.4ld", parfile, idx);
         }
-        else
-        { /* structure taken as a whole */
-            strcpy(outfile_new, outfile);
-            strcpy(parfile_new, parfile);
+        else { 
+            /* structure taken as a whole */
+            sprintf(outfile_new, outfile);
+            sprintf(parfile_new, parfile);
         }
 
-        cout << "\n Before open file xyz: " << outfile;
-        cout << "\n Before open file: xyz:" << outfile_new;
-
         fp = open_file(outfile_new, "w");
-
-        cout << "\n After open file: " << outfile;
-        cout << "\n After open file: " << outfile_new;
 
         fprintf(fp, "%s\n", pdbfile);
         fprintf(fp, "%s.out\n", parfile_new);
@@ -1353,8 +1223,7 @@ namespace util
         set_nmarkers(idx, start_num, end_num, helix_marker, helix_idx, &num_helix, &num_1bp, nmarkers);
         set_chain_nmarkers019_to_symbols(num_bp, nmarkers, cmarkers);
 
-        for (i = start_num; i <= end_num; i++)
-        {
+        for (i = start_num; i <= end_num; i++) {
             k = bp_idx[i];
             i_order = base_pairs[k][1];
             j_order = base_pairs[k][2];
@@ -1372,8 +1241,8 @@ namespace util
 
             for (j = 4; j <= 8; j++)
                 fprintf(fp, " %6.2f", base_pairs[k][j] / MFACTOR);
-            if (detailed)
-            { /* print out origin + x-axis */
+            if (detailed) { 
+                /* print out origin + x-axis */
                 for (j = 9; j <= 11; j++)
                     fprintf(fp, " %8.2f", base_pairs[k][j] / MFACTOR);
                 for (j = 1; j <= 3; j++)
@@ -1392,10 +1261,9 @@ namespace util
         fprintf(fp, ", and %ld heli%s", num_helix, b1);
         fprintf(fp, " (%ld isolated bp%s)\n", num_1bp, (num_1bp == 1) ? "" : "s");
 
-        if (!idx)
-        { /* structure taken as a whole */
-            for (i = 1; i <= num_helix; i++)
-            {
+        if (!idx) { 
+            /* structure taken as a whole */
+            for (i = 1; i <= num_helix; i++) {
                 if (helix_idx[i][3] == 1)
                     fprintf(fp, "##### Helix #%ld (%ld): %ld", i, helix_idx[i][3], helix_idx[i][1]);
                 else
@@ -1404,8 +1272,8 @@ namespace util
                 helix_info(helix_idx, i, fp);
             }
         }
-        else
-        { /* for each helical region */
+        else { 
+            /* for each helical region */
             if (nbp == 1)
                 fprintf(fp, "##### Helix #1 (%ld): %ld", nbp, nbp);
             else
@@ -1421,19 +1289,18 @@ namespace util
     /* print out base-pairing information in a format suitable for Curves */
     static void curves_input(long idx, long start_num, long end_num, long nbp, char *pdbfile,
                              char *outfile, char *parfile, long *bp_idx, long **base_pairs,
-                             long zdna, long parallel)
-    {
+                             long zdna, long parallel) {
         char outfile_new[BUF512], parfile_new[BUF512];
         long i, j;
         FILE *fp;
 
-        if (idx)
-        { /* structure taken as helical regions */
+        if (idx) { 
+            /* structure taken as helical regions */
             sprintf(outfile_new, "%s_%4.4ld", outfile, idx);
             sprintf(parfile_new, "%s_%4.4ld", parfile, idx);
         }
-        else
-        { /* structure taken as a whole */
+        else { 
+            /* structure taken as a whole */
             strcpy(outfile_new, outfile);
             strcpy(parfile_new, parfile);
         }
@@ -1445,8 +1312,7 @@ namespace util
                 pdbfile,
                 zdna ? "dinu=.t.," : "", parfile_new, parfile_new);
         fprintf(fp, "2 %ld %ld 0 0\n", nbp, (parallel) ? nbp : -nbp);
-        for (i = 1; i <= 2; i++)
-        {
+        for (i = 1; i <= 2; i++) {
             for (j = start_num; j <= end_num; j++)
                 fprintf(fp, " %ld", base_pairs[bp_idx[j]][i]);
             fprintf(fp, "\n");
@@ -1458,8 +1324,7 @@ namespace util
     /* print out base-pairing information in a format suitable for Curves+ */
     static void curves_plus_input(long idx, long start_num, long end_num, long nbp,
                                   char *pdbfile, char *outfile, char *parfile, long *bp_idx,
-                                  long **base_pairs, long zdna, long parallel)
-    {
+                                  long **base_pairs, long zdna, long parallel) {
         char outfile_new[BUF512], parfile_new[BUF512];
         char *p, str[BUF512];
         char *cmnfiles[] = {".cda", ".lis", "_X.pdb", "_b.pdb"};
@@ -1469,26 +1334,24 @@ namespace util
 
         UNUSED_PARAMETER(nbp); /* not used, but kept here for consistency */
 
-        if (idx)
-        { /* structure taken as helical regions */
+        if (idx) { 
+            /* structure taken as helical regions */
             sprintf(outfile_new, "%s_%4.4ld", outfile, idx);
             sprintf(parfile_new, "%s_%4.4ld", parfile, idx);
         }
-        else
-        { /* structure taken as a whole */
+        else { 
+            /* structure taken as a whole */
             strcpy(outfile_new, outfile);
             strcpy(parfile_new, parfile);
         }
 
-        for (i = 0; i < num; i++)
-        {
+        for (i = 0; i < num; i++) {
             sprintf(str, "%s%s", parfile_new, cmnfiles[i]);
             remove_file(str);
         }
 
         p = getenv("CURVES_PLUS_STDLIB");
-        if (p)
-        {
+        if (p) {
             strcpy(str, p);
             check_slash(str); /* add slash at the end */
         }
@@ -1504,8 +1367,7 @@ namespace util
         fprintf(fp, "&end\n");
 
         fprintf(fp, "2 %d %d 0 0\n", 1, (parallel) ? 1 : -1);
-        for (i = 1; i <= 2; i++)
-        {
+        for (i = 1; i <= 2; i++) {
             for (j = start_num; j <= end_num; j++)
                 fprintf(fp, " %ld", base_pairs[bp_idx[j]][i]);
             fprintf(fp, "\n");
@@ -1514,18 +1376,15 @@ namespace util
     }
 
     void
-    PairFinder::duplex(long num, long num_residue, char *bseq, long **seidx, long *RY,
+    PairFinder::_duplex(long num, long num_residue, char *bseq, long **seidx, long *RY,
                        char **AtomName, char **ResName, char *ChainID, long *ResSeq,
                        char **Miscs, double **xyz, char *parfile,
-                       miscPars *misc_pars)
-    {
+                       miscPars *misc_pars) {
         double **orien, **org, **NC1xyz, **o3_p;
         long i, num_bp, num_helix = 1;
         long nout = PSTNUM - 1, nout_p1 = PSTNUM;
         long *idx, *bp_idx, *helix_marker, **htm_water;
         long **base_pairs, **helix_idx, **ring_atom;
-
-        std::cout << "I'm in duplex";
 
         orien = dmatrix(1, num_residue, 1, 9);
         org = dmatrix(1, num_residue, 1, 3);
@@ -1558,8 +1417,7 @@ namespace util
      */
         num_bp = find_bestpair(nout, base_pairs, num_residue, bseq, seidx, RY, AtomName,
                                xyz, idx, orien, org, NC1xyz, ring_atom, misc_pars);
-        if (!num_bp)
-        {
+        if (!num_bp) {
             no_basepairs(args.pdbfile, args.outfile, parfile);
             goto NO_BASE_PAIR; /* to clean up */
         }
@@ -1569,7 +1427,7 @@ namespace util
         helix_idx = lmatrix(1, num_bp, 1, 7);
         re_ordering(num_bp, base_pairs, bp_idx, helix_marker, helix_idx, misc_pars,
                     &num_helix, o3_p, bseq, seidx, ResName, ChainID, ResSeq, Miscs);
-        PairFinder::write_bestpairs(num_bp, base_pairs, bp_idx, bseq, seidx, AtomName, ResName, ChainID,
+        PairFinder::_write_bestpairs(num_bp, base_pairs, bp_idx, bseq, seidx, AtomName, ResName, ChainID,
                         ResSeq, Miscs, xyz, orien, org, htm_water, misc_pars);
         write_helix(num_helix, helix_idx, bp_idx, seidx, AtomName, ResName, ChainID, ResSeq,
                     Miscs, xyz, base_pairs, htm_water, misc_pars);
@@ -1599,8 +1457,8 @@ namespace util
                 curves_plus_input(0, 1, num_bp, num_bp, args.pdbfile, args.outfile, parfile,
                                   bp_idx, base_pairs, helix_idx[1][4], helix_idx[1][6]);
         }
-        else
-        { /* 3DNA/CEHS input file */
+        else { 
+            /* 3DNA/CEHS input file */
             cout << "\n else plus";
 
             col_helices(num_helix, helix_idx, bp_idx, base_pairs, seidx, args.pdbfile,
@@ -1616,14 +1474,11 @@ namespace util
                                 args.pdbfile, args.outfile, parfile, args.hetatm, bp_idx,
                                 helix_marker, helix_idx, base_pairs, seidx, ResName, ChainID,
                                 ResSeq, Miscs, bseq, misc_pars, args.detailed);
-
-                    cout << "\n After x3dna input";
                 }
 
             else /* overall */
                 cout << "args: " << args.outfile;
                 cout << "args: " << args.pdbfile;
-                cout << "\n Before x3dna 2 input";
 
                 x3dna_input(0, 1, num_bp, num_bp, args.pdbfile, args.outfile, parfile,
                             args.hetatm, bp_idx, helix_marker, helix_idx, base_pairs, seidx,
@@ -1715,7 +1570,7 @@ namespace util
     }
 
     void
-    PairFinder::handle_str()
+    PairFinder::_handle_str()
     {
         char parfile[BUF512], *ChainID, *bseq, **AtomName, **ResName, **Miscs;
         double **xyz;
@@ -1730,7 +1585,6 @@ namespace util
         ResSeq = lvector(1, num);
         xyz = dmatrix(1, num, 1, 3);
         Miscs = cmatrix(1, num, 0, NMISC);
-        std::cout << "The pdbfile is: " << args.pdbfile;
         read_pdb(args.pdbfile, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs,
                  args.hetatm, Gvars.misc_pars.alt_list);
 
@@ -1745,7 +1599,7 @@ namespace util
         nt_info = cmatrix(1, num_residue, 0, BUF32);
         populate_nt_info(num_residue, seidx, ResName, ChainID, ResSeq, Miscs, bseq, nt_info);
 
-        PairFinder::duplex(num, num_residue, bseq, seidx, RY, AtomName, ResName, ChainID,
+        PairFinder::_duplex(num, num_residue, bseq, seidx, RY, AtomName, ResName, ChainID,
                ResSeq, Miscs, xyz, parfile, &Gvars.misc_pars);
         cout << " After duplex";
         free_pdb(num, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs);
@@ -1755,8 +1609,8 @@ namespace util
         free_cmatrix(nt_info, 1, num_residue, 0, BUF32);
     }
 
-    std::vector<X3dna::X3Basepair>
-    PairFinder::find_pair()
+    void
+    PairFinder::find_pair(X3dna::X3Basepairs &basepairs)
     {
         time_t time0;
 
@@ -1766,14 +1620,12 @@ namespace util
 
         fprintf(stderr, "\nhandling file <%s> \n \n", args.pdbfile);
 
-        PairFinder::handle_str();
-
-        std::cout << "After handle";
-
+        PairFinder::_handle_str();
 
         clear_my_globals();
         print_used_time(time0);
 
-        return this->bps;
+        basepairs = bps;
+
     }
 }
