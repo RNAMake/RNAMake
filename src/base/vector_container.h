@@ -10,6 +10,7 @@
 
 #include <base/assertions.h>
 #include <base/types.h>
+#include <stdexcept>
 
 #include <stdexcept>
 

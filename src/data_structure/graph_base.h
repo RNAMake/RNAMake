@@ -12,8 +12,6 @@
 #include <stdexcept>
 
 
-
-
 namespace data_structure {
 
 /*
