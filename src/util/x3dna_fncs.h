@@ -301,7 +301,6 @@ char *my_strdup(const char *src);
 void print_sep(FILE * fp, char x, long n);
 void check_slash(char *BDIR);
 void delete_end_slash(char *str);
-char *basename(char *str);
 long lround(double d);
 void del_extension(char *fullname, char *okname);
 void bname_noext(char *src, char *dst);
