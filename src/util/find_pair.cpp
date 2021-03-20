@@ -1,5 +1,4 @@
 #include <util/x3dna_src.h>
-#include <bits/stdc++.h>
 #include <util/find_pair.h>
 #include <util/x3dna.h>
 #include <math/numerical.h>

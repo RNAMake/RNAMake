@@ -674,7 +674,7 @@ void delete_end_slash(char *str)
 }
 
 /* return a pointer 1-char following the last slash or to str w/o '/' */
-char *basename(char *str)
+char *original_name(char *str)
 {
     char *p_lslash;
 
@@ -696,8 +696,8 @@ void del_extension(char *fullname, char *okname)
     char *pchar, *bname;
     size_t i;
 
-    bname = basename(fullname);
-    // bname = fullname.substr(fullname.find("/") + 1); 
+    bname = original_name(fullname);
+    // bname = fullname.substr(fullname.find("/") + 1);
 
     pchar = strrchr(bname, '.');
     if (pchar == NULL)
@@ -714,7 +714,7 @@ void bname_noext(char *src, char *dst)
 {
     char str[BUF512];
 
-    strcpy(str, basename(src));
+    strcpy(str, original_name(src));
     del_extension(str, dst);
 }
 

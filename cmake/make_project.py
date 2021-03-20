@@ -110,7 +110,13 @@ def build_header(base_dir, static, target):
     header_contents += "cmake_minimum_required(VERSION 3.0)\n"
     header_contents += "set(CMAKE_BUILD_TYPE Release)\n"
     header_contents += "project(RNAMake)\n\n"
-
+    # header_contents += "set(CMAKE_SYSTEM_NAME {SYS})\n".format(
+    #        SYS="MAC"
+    #        )
+    header_contents += "set(CMAKE_C_COMPILER clang)\n"
+    header_contents += "set(CMAKE_CXX_COMPILER clang++)\n"
+    if target == "linux":
+       header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
     if static == True:
         # header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
         header_contents += 'set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-as-needed ")\n'
