@@ -52,16 +52,16 @@ namespace util {
     PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe, X3dna::X3BPInfo *bp_info) {
 
         int i, j;
-        fprintf(rframe, "%10.4f %10.4f %10.4f  # origin\n",
-                morg[1], morg[2], morg[3]);
+        // frprintf(rframe, "%10.4f %10.4f %10.4f  # origin\n",
+        //         morg[1], morg[2], morg[3]);
 
         auto d = math::Point(morg[1], morg[2], morg[3]);
         auto rs = math::Points();
         for (i = 1; i <= 3; i++) {
             j = (i - 1) * 3;
-            fprintf(rframe, "%10.4f %10.4f %10.4f  # %c-axis\n", morien[j + 1],
-                    morien[j + 2], morien[j + 3],
-                    (i == 1) ? 'x' : (i == 2) ? 'y': 'z');
+            // frprintf(rframe, "%10.4f %10.4f %10.4f  # %c-axis\n", morien[j + 1],
+            //         morien[j + 2], morien[j + 3],
+            //         (i == 1) ? 'x' : (i == 2) ? 'y': 'z');
             string num_1 = string_format("%10.4f", morien[j + 1]);
             string num_2 = string_format("%10.4f", morien[j + 2]);
             string num_3 = string_format("%10.4f", morien[j + 3]);
@@ -84,17 +84,17 @@ namespace util {
     {
         long i, j, numb;
 
-        fprintf(fp, "====================== %s ======================\n", my_str);
+        // frprintf(fp, "====================== %s ======================\n", my_str);
         for (i = 1; i <= num_residue; i++) {
             numb = mylist[i][0];
             if (!numb)
                 continue;
-            fprintf(fp, "%4ld[%+2ld]:", i, numb);
-            for (j = 1; j <= labs(numb); j++)
-                fprintf(fp, " %5ld", mylist[i][j]);
-            fprintf(fp, "\n");
+            // frprintf(fp, "%4ld[%+2ld]:", i, numb);
+            // for (j = 1; j <= labs(numb); j++)
+            //     // frprintf(fp, " %5ld", mylist[i][j]);
+            // frprintf(fp, "\n");
         }
-        fprintf(fp, "\n");
+        // frprintf(fp, "\n");
     }
 
     /* check if two lists are identical: same # & residue order */
@@ -181,7 +181,7 @@ namespace util {
         double d = EMPTY_NUMBER, d2, d3, ddmin[9], txyz[4], txyz2[4], txyz3[4], zave[4];
         long i, j, k, m, n, overlap = 0, quadruple = 0, cnum = 8, ddidx[9];
 
-        fprintf(tfp, "\nBase-pair context information\n");
+        // frprintf(tfp, "\nBase-pair context information\n");
 
         for (i = 1; i <= num_bp; i++) {
             init_dvector(ddmin, 1, cnum, XBIG);
@@ -227,9 +227,9 @@ namespace util {
                         if (d * d2 < 0.0 && d * d3 < 0.0 && fabs(d2) > fabs(d3)) {
                             lval_swap(&ddidx[2], &ddidx[3]);
                             dval_swap(&ddmin[2], &ddmin[3]);
-                            fprintf(stderr, "[swapping 2nd & 3rd] %4ld %8.2f %8.2f "
-                                            "%8.2f %8.2f\n",
-                                    i, ddmin[2], ddmin[3], d2, d3);
+                            // // frprintf(stderr, "[swapping 2nd & 3rd] %4ld %8.2f %8.2f "
+                            //                 "%8.2f %8.2f\n",
+                            //         i, ddmin[2], ddmin[3], d2, d3);
                         }
                     }
                     n = 0;
@@ -261,20 +261,20 @@ namespace util {
                         }
                     }
                 }
-                fprintf(tfp, "%4ld: %4ld %4ld %4ld %8.2f %8.2f%c", i, bp_order[i][1],
-                        bp_order[i][2], bp_order[i][3], ddmin[1], ddmin[n],
-                        (ddmin[n] > helix_break) ? '*' : ' ');
+                // frprintf(tfp, "%4ld: %4ld %4ld %4ld %8.2f %8.2f%c", i, bp_order[i][1],
+                //         bp_order[i][2], bp_order[i][3], ddmin[1], ddmin[n],
+                //         (ddmin[n] > helix_break) ? '*' : ' ');
                 if (!bp_order[i][2]) {
-                    fprintf(tfp, "  isolated base-pairs\n");
+                    // frprintf(tfp, "  isolated base-pairs\n");
                 } else {
-                    (!bp_order[i][3]) ? fprintf(tfp, " (%4ld)", ddidx[n]) : fprintf(tfp, "       ");
+                    // (!bp_order[i][3]) ? fprintf(tfp, " (%4ld)", ddidx[n]) : fprintf(tfp, "       ");
                     ddxyz(bp_xyz[ddidx[n]], bp_xyz[i], txyz2);
                     d2 = dot(zave, txyz2);
                     if (!overlap && !quadruple)
                         quadruple = bp_coplanar(i, d, d2, txyz, txyz2, n, ddidx, bp_xyz);
-                    fprintf(tfp, " ==> %8.2f %8.2f %c", d, d2, (d * d2 > 0.0) ? '*' : ' ');
+                    // fprintf(tfp, " ==> %8.2f %8.2f %c", d, d2, (d * d2 > 0.0) ? '*' : ' ');
                     d = magang(txyz, txyz2); /* magang normalize txyz & txyz2 */
-                    fprintf(tfp, " (%8.2f%c)\n", d, (d <= 90.0) ? '*' : ' ');
+                    // fprintf(tfp, " (%8.2f%c)\n", d, (d <= 90.0) ? '*' : ' ');
                 }
             }
         }
@@ -298,13 +298,9 @@ namespace util {
                 }
             }
         }
-        fprintf(tfp, "\nEnd base-pair list\n");
-        for (i = 1; i <= *num_ends; i++)
-            fprintf(tfp, "%4ld: %4ld %4ld %4ld\n", i, end_list[i][1], end_list[i][2], end_list[i][3]);
-        if (overlap)
-            fprintf(stderr, "***Warning: structure with overlapped base-pairs***\n");
-        else if (quadruple)
-            fprintf(stderr, "***Warning: structure with 2 neighbor bps co-planar ***\n");
+        // frprintf(tfp, "\nEnd base-pair list\n");
+        // for (i = 1; i <= *num_ends; i++)
+        //     frprintf(tfp, "%4ld: %4ld %4ld %4ld\n", i, end_list[i][1], end_list[i][2], end_list[i][3]);
     }
 
     /* locate all possible helical regions, including isolated base-pairs */
@@ -369,9 +365,9 @@ namespace util {
 
         if (ip < num_bp) { 
             /* all un-classified bps */
-            fprintf(stderr, "[%ld %ld]: complicated structure, left over"
-                            " base-pairs put into the last region [%ld]\n",
-                    ip, num_bp, *num_helix);
+            // // frprintf(stderr, "[%ld %ld]: complicated structure, left over"
+            //                 " base-pairs put into the last region [%ld]\n",
+            //         ip, num_bp, *num_helix);
             helix_idx[*num_helix][2] = num_bp;
             helix_marker[num_bp] = 1;
             for (j = 1; j <= num_bp; j++)
@@ -655,8 +651,8 @@ namespace util {
                     ((is_linked(i1, j2, o3_p) == 1) ||
                      (is_linked(i1, j2, o3_p) && is_linked(j1_osx, i2, o3_p)))) {
                     swapped[n] = !swapped[n]; /* pr0004, ptr012, trna12 */
-                    fprintf(tfp, "                  000    [%ld-%ld]\n", m, n);
-                    fprintf(stderr, "000:    [%ld-%ld]\n", m, n);
+                    // frprintf(tfp, "                  000    [%ld-%ld]\n", m, n);
+                    // fprintf(stderr, "000:    [%ld-%ld]\n", m, n);
                 }
             }
         } else {
@@ -672,20 +668,20 @@ namespace util {
                 if (!is_linked(i1, i2, o3_p) && /* strand I not linked */
                     ((anti_p && k == 1) || (parallel && k == -1))) {
                     swapped[n] = !swapped[n];
-                    fprintf(tfp, "                  2nd %2ld [%ld-%ld]\n", k, m, n);
+                    // frprintf(tfp, "                  2nd %2ld [%ld-%ld]\n", k, m, n);
                 }
                 /* another round of post-processing */
                 get_ij(n, swapped, base_pairs, &i2, &j2);
                 if (!is_linked(i1, i2, o3_p) && !is_linked(j1_osx, j2, o3_p)) {
                     if ((anti_p && is_linked(j1_osx, i2, o3_p) == 1) ||
                         (parallel && is_linked(i1, j2, o3_p) == -1)) {
-                        fprintf(tfp, "                  3rdL   [%ld-%ld]\n", m, n);
+                        // frprintf(tfp, "                  3rdL   [%ld-%ld]\n", m, n);
                         swapped[m] = !swapped[m]; /* lower bp */
                     }
                     else if ((anti_p && is_linked(i1, j2, o3_p) == 1) ||
                              (parallel && is_linked(j1_osx, i2, o3_p) == -1)) {
                         swapped[n] = !swapped[n]; /* upper bp */
-                        fprintf(tfp, "                  3rdU    [%ld-%ld]\n", m, n);
+                        // frprintf(tfp, "                  3rdU    [%ld-%ld]\n", m, n);
                     }
                 }
             }
@@ -708,9 +704,9 @@ namespace util {
                 get_bidx(n, swapped, &idxn1, &idxn2);
                 if (wcbp_zdir(m, n, idxm1, idxm2, idxn1, idxn2, bp_xyz) < 0.0 &&
                     wcbp_xang(m, n, bp_xyz) > END_STACK_XANG)
-                    fprintf(stderr, "^^vv opposite bp direction: %ld(%ld)"
-                                    " %ld(%ld)-%ld(%ld)\n",
-                            i, helix_idx[i][3], m, j, n, j + 1);
+                    // fprintf(stderr, "^^vv opposite bp direction: %ld(%ld)"
+                    //                 " %ld(%ld)-%ld(%ld)\n",
+                    //         i, helix_idx[i][3], m, j, n, j + 1);
                 ddxyz(bp_xyz[m], bp_xyz[n], dorg);
                 for (k = 1; k <= 3; k++){
                     mn[k] = bp_xyz[m][k + idxm1] - bp_xyz[m][k + idxm2] + /* bp m */
@@ -725,17 +721,15 @@ namespace util {
                     d2 = distance_ab(o3_p, j1_osx, j2, 4, 8);
                     if (dval_in_range(d1, 0.0, O3P_UPPER) && dval_in_range(d2, 0.0, O3P_UPPER)) {
                         num++;
-                        fprintf(stderr, "===> %ld(%ld) %ld-%ld [%ld-%ld (%ld)]:"
-                                        " %8.2f%8.2f%8.2f\n",
-                                i, helix_idx[i][3], m, n,
-                                j, j + 1, helix_idx[i][2], rise, d1, d2);
+                        // fprintf(stderr, "===> %ld(%ld) %ld-%ld [%ld-%ld (%ld)]:"
+                        //                 " %8.2f%8.2f%8.2f\n",
+                        //         i, helix_idx[i][3], m, n,
+                        //         j, j + 1, helix_idx[i][2], rise, d1, d2);
                     }
                 }
             }
         }
 
-        if (num)
-            fprintf(stderr, "****** Please check base-pair ordering ******\n\n");
     }
 
     /* make sure the leading strand is in the 5' to 3' direction
@@ -756,17 +750,17 @@ namespace util {
                 do3_p = distance_ab(o3_p, k, k, 4, 8);
                 if (dval_in_range(do3_p, 0.0, O3P_UPPER))
                 {
-                    fprintf(stderr, "Wrong: O3'[i] connected to P[i] (%ld/%ld/%g)\n", j, k, do3_p);
+                    // fprintf(stderr, "Wrong: O3'[i] connected to P[i] (%ld/%ld/%g)\n", j, k, do3_p);
                     return; /* ignore 5'-->3' re-arrangement */
                 }
             }
 
-        fprintf(tfp, "\nHelix region information\n");
+        // frprintf(tfp, "\nHelix region information\n");
         swapped = lvector(1, num_bp);
         for (i = 1; i <= *num_helix; i++) {
             helix_idx[i][3] = helix_idx[i][2] - helix_idx[i][1] + 1;
             print_sep(tfp, '-', 84);
-            fprintf(tfp, "Helix #%4.4ld\n", i);
+            // frprintf(tfp, "Helix #%4.4ld\n", i);
 
             first_step(i, helix_idx, bp_idx, swapped, base_pairs, o3_p);
 
@@ -778,8 +772,8 @@ namespace util {
                 rev_o3d = check_o3dist(m, n, swapped, base_pairs, o3_p);
                 rev_csc = check_schain(m, n, swapped, base_pairs, o3_p);
                 rev_oth = check_others(m, n, swapped, base_pairs, o3_p, bp_xyz);
-                fprintf(tfp, "          %4ld: %2ld %2ld %2ld %2ld", j, rev_wc, rev_o3d,
-                        rev_oth, rev_csc);
+                // frprintf(tfp, "          %4ld: %2ld %2ld %2ld %2ld", j, rev_wc, rev_o3d,
+                //         rev_oth, rev_csc);
                 if (rev_wc)
                     swapped[n] = !swapped[n];
                 else if (rev_o3d || rev_csc || rev_oth) /* rev_o3d: udf027 */
@@ -788,22 +782,22 @@ namespace util {
                 rev_s1 = chain1dir(m, n, swapped, base_pairs, o3_p);
                 if (rev_s1)
                     swapped[n] = !swapped[n];
-                fprintf(tfp, " %2ld [%ld-%ld]\n", rev_s1, m, n);
+                // frprintf(tfp, " %2ld [%ld-%ld]\n", rev_s1, m, n);
             }
 
             /* one more round checking for WC geometry steps: 09-23-2002
          * works for Luger pol_end1.pdb & pol_end2.pdb, and bdl070.pdb */
-            fprintf(tfp, "\n              ===> 2nd around checking or WC geometry steps\n");
+            // frprintf(tfp, "\n              ===> 2nd around checking or WC geometry steps\n");
             for (j = helix_idx[i][1]; j < helix_idx[i][2]; j++) {
                 m = bp_idx[j];
                 n = bp_idx[j + 1];
                 rev_wc = wc_bporien(m, n, swapped, base_pairs, bp_xyz, o3_p);
                 if (rev_wc) {
                     swapped[m] = !swapped[m]; /* m here */
-                    fprintf(tfp, "          %4ld: [%ld-%ld]\n", j, m, n);
+                    // frprintf(tfp, "          %4ld: [%ld-%ld]\n", j, m, n);
                 }
             }
-            fprintf(tfp, "\n");
+            // frprintf(tfp, "\n");
 
             check_direction(i, helix_idx, bp_idx, swapped, base_pairs, o3_p, direction);
             check_strand2(i, helix_idx, bp_idx, bp_xyz, swapped, base_pairs, o3_p, direction, tfp);
@@ -821,19 +815,19 @@ namespace util {
                 }
             }
 
-            fprintf(tfp, "\n%4ld [%c%c%c]:", helix_idx[i][3], helix_idx[i][5] ? 'b' : '-',
-                    helix_idx[i][6] ? 'p' : '-', helix_idx[i][7] ? '?' : '-');
-            for (j = 1; j <= 6; j++)
-                fprintf(tfp, "%6ld", direction[j]);
-            fprintf(tfp, "\n           ");
+            // frprintf(tfp, "\n%4ld [%c%c%c]:", helix_idx[i][3], helix_idx[i][5] ? 'b' : '-',
+                    // helix_idx[i][6] ? 'p' : '-', helix_idx[i][7] ? '?' : '-');
+            // for (j = 1; j <= 6; j++)
+            //     frprintf(tfp, "%6ld", direction[j]);
+            // frprintf(tfp, "\n           ");
             k = 0;
             for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
                 m = bp_idx[j];
-                fprintf(tfp, "%6ld", swapped[m] ? -m : m);
-                if (++k % 10 == 0 && k != helix_idx[i][3])
-                    fprintf(tfp, "\n           ");
+                // frprintf(tfp, "%6ld", swapped[m] ? -m : m);
+                // if (++k % 10 == 0 && k != helix_idx[i][3])
+                //     frprintf(tfp, "\n           ");
             }
-            fprintf(tfp, "\n");
+            // frprintf(tfp, "\n");
         }
 
         free_lvector(swapped, 1, num_bp);
@@ -845,7 +839,7 @@ namespace util {
         double txyz[4];
         long i, j, m, n, nweird = 0, nrev, mixed_rl = 0;
 
-        fprintf(tfp, "\nZ-DNA helical region if any\n");
+        // frprintf(tfp, "\nZ-DNA helical region if any\n");
         for (i = 1; i <= *num_helix; i++) {
             if (helix_idx[i][5] || helix_idx[i][6] || helix_idx[i][7] || helix_idx[i][3] <= 1) {
                 nweird++;
@@ -869,12 +863,12 @@ namespace util {
             if (nrev == helix_idx[i][3]) {
                 helix_idx[i][4] = 1;
                 mixed_rl++;
-                fprintf(tfp, "Helix #%4.4ld (%4ld) is a Z-DNA\n", i, helix_idx[i][3]);
+                // frprintf(tfp, "Helix #%4.4ld (%4ld) is a Z-DNA\n", i, helix_idx[i][3]);
             }
         }
 
-        if (!nweird && mixed_rl && mixed_rl != *num_helix)
-            fprintf(stderr, "This structure has right-/left-handed helical regions\n");
+        // if (!nweird && mixed_rl && mixed_rl != *num_helix)
+        //     frprintf(stderr, "This structure has right-/left-handed helical regions\n");
     }
 
     /* Kth base-pair classification: WC, WC-geometry, Anti-parallel */
@@ -905,7 +899,7 @@ namespace util {
 
         tfp = open_file(BPORDER_FILE, "w");
         print_bp_crit(misc_pars, tfp);
-        fprintf(tfp, "Base-pair information BEFORE re-ordering\n");
+        // frprintf(tfp, "Base-pair information BEFORE re-ordering\n");
         for (i = 1; i <= num_bp; i++) {
             set_wc3(base_pairs[i], wc);
             i_order = base_pairs[i][1];
@@ -914,12 +908,12 @@ namespace util {
             base_str(ChainID[j], ResSeq[j], Miscs[j], ResName[j], bseq[i_order], 1, b1);
             j = seidx[j_order][1];
             base_str(ChainID[j], ResSeq[j], Miscs[j], ResName[j], bseq[j_order], 2, b2);
-            fprintf(tfp, "%5ld: %5ld %5ld %s-%s-%s", i, i_order, j_order, b1, wc, b2);
-            for (j = 4; j <= 8; j++) /* d, dv, angle, dNN */
-                fprintf(tfp, " %6.2f", base_pairs[i][j] / MFACTOR);
-            for (j = 9; j <= 11; j++) /* bp origin */
-                fprintf(tfp, " %8.2f", base_pairs[i][j] / MFACTOR);
-            fprintf(tfp, "\n");
+            // frprintf(tfp, "%5ld: %5ld %5ld %s-%s-%s", i, i_order, j_order, b1, wc, b2);
+            // for (j = 4; j <= 8; j++) /* d, dv, angle, dNN */
+            //     // frprintf(tfp, " %6.2f", base_pairs[i][j] / MFACTOR);
+            // for (j = 9; j <= 11; j++) /* bp origin */
+            //     frprintf(tfp, " %8.2f", base_pairs[i][j] / MFACTOR);
+            // frprintf(tfp, "\n");
         }
 
         /* bp origin, base I/II xyz-axes copied from columns 9-29 of base_pairs
@@ -949,11 +943,11 @@ namespace util {
 
     /* print out a summary of helix information: Z-DNA, break, parallel, weird? */
     static void helix_info(long **helix_idx, long idx, FILE *fp) {
-        fprintf(fp, "%s%s%s%s\n", (helix_idx[idx][4]) ? "  ***Z-DNA***" : "",
-                (helix_idx[idx][5]) ? "  ***broken O3'[i] to P[i+1] linkage***"
-                                    : "",
-                (helix_idx[idx][6]) ? "  ***parallel***" : "",
-                (helix_idx[idx][7]) ? "  ***intra-chain direction reverse***" : "");
+        // frprintf(fp, "%s%s%s%s\n", (helix_idx[idx][4]) ? "  ***Z-DNA***" : "",
+        //         (helix_idx[idx][5]) ? "  ***broken O3'[i] to P[i+1] linkage***"
+        //                             : "",
+        //         (helix_idx[idx][6]) ? "  ***parallel***" : "",
+        //         (helix_idx[idx][7]) ? "  ***intra-chain direction reverse***" : "");
     }
 
     /* write out a PDB file containing all best pairs oriented with mean base-pair normal */
@@ -972,7 +966,7 @@ namespace util {
         mfp = open_file(BESTP_FILE, "w");
         rframe = open_file(REF_FILE, "w");
 
-        fprintf(rframe, "%5ld base-pairs\n", num_bp);
+        // frprintf(rframe, "%5ld base-pairs\n", num_bp);
 
         for (i = 1; i <= num_bp; i++) {
             k = bp_idx[i];
@@ -984,16 +978,16 @@ namespace util {
             base_str(ChainID[j], ResSeq[j], Miscs[j], ResName[j], bseq[ib], 2, b2);
             set_wc3(base_pairs[k], wc);
             sprintf(idmsg, "%s-%s-%s", b1, wc, b2);
-            fprintf(mfp, "%6s    %4ld\n", "MODEL ", i);
-            fprintf(mfp, "REMARK    Section #%4.4ld %s\n", i, idmsg);
-            fprintf(mfp, "REMARK    %s\n", Gvars.X3DNA_VER);
+            // frprintf(mfp, "%6s    %4ld\n", "MODEL ", i);
+            // frprintf(mfp, "REMARK    Section #%4.4ld %s\n", i, idmsg);
+            // frprintf(mfp, "REMARK    %s\n", Gvars.X3DNA_VER);
             ivec[1] = ia;
             ivec[2] = ib;
             pair2mst(inum_base, ivec, AtomName, ResName, ChainID, ResSeq, Miscs, xyz,
                      orien, org, seidx, morien, morg, htm_water, misc_pars, mfp);
-            fprintf(mfp, "ENDMDL\n");
+            // frprintf(mfp, "ENDMDL\n");
 
-            fprintf(rframe, "... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib], nt_info[ia], nt_info[ib]);
+            // frprintf(rframe, "... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib], nt_info[ia], nt_info[ib]);
             auto r = std::regex(
             "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
             auto s = string_format("... %5ld %c%c%c   # %s - %s\n", i, bseq[ia], wc[2], bseq[ib], nt_info[ia], nt_info[ib]);
@@ -1017,13 +1011,12 @@ namespace util {
         ivec = lvector(1, num_residue);
         ivect = lvector(1, num_residue);
         mfp = open_file(HLXREG_FILE, "w");
-        cout << "In helix after open";
         for (i = 1; i <= num_helix; i++) {
             inum = 0;
-            fprintf(mfp, "%6s    %4ld\n", "MODEL ", i);
-            fprintf(mfp, "REMARK    Section #%4.4ld %ld base-pairs", i, helix_idx[i][3]);
+            // frprintf(mfp, "%6s    %4ld\n", "MODEL ", i);
+            // frprintf(mfp, "REMARK    Section #%4.4ld %ld base-pairs", i, helix_idx[i][3]);
             helix_info(helix_idx, i, mfp);
-            fprintf(mfp, "REMARK    %s\n", Gvars.X3DNA_VER);
+            // frprintf(mfp, "REMARK    %s\n", Gvars.X3DNA_VER);
             k = 0; /* residue index in the helical region */
             for (n = 1; n <= 2; n++) { 
                 /* two strands */
@@ -1042,25 +1035,23 @@ namespace util {
                 pdb_record(seidx[m][1], seidx[m][2], &inum, 0, AtomName, ResName,
                            ChainID, ResSeq, xyz, Miscs, mfp);
             }
-            fprintf(mfp, "ENDMDL\n");
+            // frprintf(mfp, "ENDMDL\n");
         }
 
         close_file(mfp);
         free_lvector(ivec, 1, num_residue);
         free_lvector(ivect, 1, num_residue);
-        cout << "In helix end";
     }
 
     /* for non-base-pairs found in structure "pdbfile" */
     static void no_basepairs(char *pdbfile, char *outfile, char *parfile) {
         FILE *fp;
-        cout << "in no";
-        fprintf(stderr, "no base-pairs found for this structure\n");
+        // // frprintf(stderr, "no base-pairs found for this structure\n");
         fp = open_file(outfile, "w");
-        fprintf(fp, "%s\n", pdbfile);
-        fprintf(fp, "%s.out\n", parfile);
-        fprintf(fp, "    2         # duplex\n");
-        fprintf(fp, "    0         # number of base-pairs\n");
+        // frprintf(fp, "%s\n", pdbfile);
+        // frprintf(fp, "%s.out\n", parfile);
+        // frprintf(fp, "    2         # duplex\n");
+        // frprintf(fp, "    0         # number of base-pairs\n");
         close_file(fp);
     }
 
@@ -1115,49 +1106,40 @@ namespace util {
         FILE *fpc, *fph;
 
 
-
-        cout << "\n COLCHN: " << COLCHN_FILE;
-
-
         fpc = open_file(COLCHN_FILE, "w");
 
-        fprintf(fpc, "zap\nload nmrpdb hel_regions.pdb\n");
-        fprintf(fpc, "# load %s\n", pdbfile);
-        fprintf(fpc, "# restrict not (protein or water)\n");
-        fprintf(fpc, "\n");
-
-        cout << "\n COLHLX: " << COLHLX_FILE;
+        // frprintf(fpc, "zap\nload nmrpdb hel_regions.pdb\n");
+        // frprintf(fpc, "# load %s\n", pdbfile);
+        // frprintf(fpc, "# restrict not (protein or water)\n");
+        // frprintf(fpc, "\n");
 
 
         fph = open_file(COLHLX_FILE, "w");
-        fprintf(fph, "zap\nload nmrpdb hel_regions.pdb\n");
-        fprintf(fph, "# load %s\n", pdbfile);
-        fprintf(fph, "# restrict not (protein or water)\n");
-        fprintf(fph, "\n");
-
-        cout << "\n after COL";
+        // frprintf(fph, "zap\nload nmrpdb hel_regions.pdb\n");
+        // frprintf(fph, "# load %s\n", pdbfile);
+        // frprintf(fph, "# restrict not (protein or water)\n");
+        // frprintf(fph, "\n");
 
         for (i = 1; i <= num_helix; i++) {
-            cout << "\n In the loop";
             ic = i % 9; /* color code */
-            fprintf(fph, "\n#------Helix #%ld, color: %s------\n", i, col_code[ic]);
+            // frprintf(fph, "\n#------Helix #%ld, color: %s------\n", i, col_code[ic]);
             for (j = helix_idx[i][1]; j <= helix_idx[i][2]; j++) {
                 k = bp_idx[j];
                 ia = seidx[base_pairs[k][1]][1];
                 ib = seidx[base_pairs[k][2]][1];
-                fprintf(fpc, "select %ld:%c\n", ResSeq[ia], ChainID[ia]);
-                fprintf(fpc, "color %s\n", col_code[1]); /* strand I */
-                fprintf(fpc, "select %ld:%c\n", ResSeq[ib], ChainID[ib]);
-                fprintf(fpc, "color %s\n", col_code[2]); /* strand II */
-                fprintf(fph, "select %ld:%c, %ld:%c\n", ResSeq[ia], ChainID[ia],
-                        ResSeq[ib], ChainID[ib]);
-                fprintf(fph, "color %s\n", col_code[ic]);
+                // frprintf(fpc, "select %ld:%c\n", ResSeq[ia], ChainID[ia]);
+                // frprintf(fpc, "color %s\n", col_code[1]); /* strand I */
+                // frprintf(fpc, "select %ld:%c\n", ResSeq[ib], ChainID[ib]);
+                // frprintf(fpc, "color %s\n", col_code[2]); /* strand II */
+                // frprintf(fph, "select %ld:%c, %ld:%c\n", ResSeq[ia], ChainID[ia],
+                //         ResSeq[ib], ChainID[ib]);
+                // frprintf(fph, "color %s\n", col_code[ic]);
             }
         }
 
-        fprintf(fpc, "\nselect all\n");
+        // frprintf(fpc, "\nselect all\n");
         close_file(fpc);
-        fprintf(fph, "\nselect all\n");
+        // frprintf(fph, "\nselect all\n");
         close_file(fph);
     }
 
@@ -1210,11 +1192,11 @@ namespace util {
 
         fp = open_file(outfile_new, "w");
 
-        fprintf(fp, "%s\n", pdbfile);
-        fprintf(fp, "%s.out\n", parfile_new);
-        fprintf(fp, "    2         # duplex\n");
-        fprintf(fp, "%5ld         # number of base-pairs\n", nbp);
-        fprintf(fp, "    1 %5ld    # explicit bp numbering/hetero atoms\n", hetatm);
+        // frprintf(fp, "%s\n", pdbfile);
+        // frprintf(fp, "%s.out\n", parfile_new);
+        // frprintf(fp, "    2         # duplex\n");
+        // frprintf(fp, "%5ld         # number of base-pairs\n", nbp);
+        // frprintf(fp, "    1 %5ld    # explicit bp numbering/hetero atoms\n", hetatm);
 
         num_bp = end_num - start_num + 1;
         cmarkers = cvector(1, num_bp);
@@ -1235,48 +1217,48 @@ namespace util {
             base_str(ChainID[j], ResSeq[j], Miscs[j], ResName[j], bseq[j_order], 2, b2);
 
             m = i - start_num + 1;
-            fprintf(fp, "%5ld %5ld %3ld #%5ld %c %s-%s-%s", i_order, j_order, nmarkers[m], m,
-                    cmarkers[m], b1, wc, b2);
+            // frprintf(fp, "%5ld %5ld %3ld #%5ld %c %s-%s-%s", i_order, j_order, nmarkers[m], m,
+            //         cmarkers[m], b1, wc, b2);
 
             for (j = 4; j <= 8; j++)
-                fprintf(fp, " %6.2f", base_pairs[k][j] / MFACTOR);
+                // frprintf(fp, " %6.2f", base_pairs[k][j] / MFACTOR);
             if (detailed) { 
                 /* print out origin + x-axis */
                 for (j = 9; j <= 11; j++)
-                    fprintf(fp, " %8.2f", base_pairs[k][j] / MFACTOR);
+                    // frprintf(fp, " %8.2f", base_pairs[k][j] / MFACTOR);
                 for (j = 1; j <= 3; j++)
                     x[j] = (base_pairs[k][j + 11] + (base_pairs[k][j + 20])) / MFACTOR;
                 vec_norm(x);
-                for (j = 1; j <= 3; j++)
-                    fprintf(fp, " %8.2f", x[j]);
+                // for (j = 1; j <= 3; j++)
+                //     frprintf(fp, " %8.2f", x[j]);
             }
-            fprintf(fp, "\n");
+            // frprintf(fp, "\n");
         }
 
-        fprintf(fp, "##### ");
+        // frprintf(fp, "##### ");
         print_bp_crit(misc_pars, fp);
-        fprintf(fp, "##### %ld non-Watson-Crick base-pair%s", num_nwc, (num_nwc == 1) ? "" : "s");
+        // frprintf(fp, "##### %ld non-Watson-Crick base-pair%s", num_nwc, (num_nwc == 1) ? "" : "s");
         (num_helix == 1) ? strcpy(b1, "x") : strcpy(b1, "ces");
-        fprintf(fp, ", and %ld heli%s", num_helix, b1);
-        fprintf(fp, " (%ld isolated bp%s)\n", num_1bp, (num_1bp == 1) ? "" : "s");
+        // frprintf(fp, ", and %ld heli%s", num_helix, b1);
+        // frprintf(fp, " (%ld isolated bp%s)\n", num_1bp, (num_1bp == 1) ? "" : "s");
 
         if (!idx) { 
             /* structure taken as a whole */
             for (i = 1; i <= num_helix; i++) {
-                if (helix_idx[i][3] == 1)
-                    fprintf(fp, "##### Helix #%ld (%ld): %ld", i, helix_idx[i][3], helix_idx[i][1]);
-                else
-                    fprintf(fp, "##### Helix #%ld (%ld): %ld - %ld", i,
-                            helix_idx[i][3], helix_idx[i][1], helix_idx[i][2]);
+                // if (helix_idx[i][3] == 1)
+                //     // frprintf(fp, "##### Helix #%ld (%ld): %ld", i, helix_idx[i][3], helix_idx[i][1]);
+                // else
+                //     // frprintf(fp, "##### Helix #%ld (%ld): %ld - %ld", i,
+                //             helix_idx[i][3], helix_idx[i][1], helix_idx[i][2]);
                 helix_info(helix_idx, i, fp);
             }
         }
         else { 
             /* for each helical region */
-            if (nbp == 1)
-                fprintf(fp, "##### Helix #1 (%ld): %ld", nbp, nbp);
-            else
-                fprintf(fp, "##### Helix #1 (%ld): 1 - %ld", nbp, nbp);
+            // if (nbp == 1)
+            //     // frprintf(fp, "##### Helix #1 (%ld): %ld", nbp, nbp);
+            // else
+            //     // frprintf(fp, "##### Helix #1 (%ld): 1 - %ld", nbp, nbp);
             helix_info(helix_idx, idx, fp);
         }
 
@@ -1303,20 +1285,18 @@ namespace util {
             strcpy(outfile_new, outfile);
             strcpy(parfile_new, parfile);
         }
-        cout << "In Curves input before";
         fp = open_file(outfile_new, "w");
-        cout << "In Curves input before";
-        fprintf(fp, "&inp file=%s, comb=.t., fit=.t., grv=.t., %s\n"
-                    "     lis=%s, pdb=%s_grp, &end\n",
-                pdbfile,
-                zdna ? "dinu=.t.," : "", parfile_new, parfile_new);
-        fprintf(fp, "2 %ld %ld 0 0\n", nbp, (parallel) ? nbp : -nbp);
-        for (i = 1; i <= 2; i++) {
-            for (j = start_num; j <= end_num; j++)
-                fprintf(fp, " %ld", base_pairs[bp_idx[j]][i]);
-            fprintf(fp, "\n");
-        }
-        fprintf(fp, "0.0 0.0 0.0 %.1f\n", zdna ? 180.0 : 0.0);
+        // frprintf(fp, "&inp file=%s, comb=.t., fit=.t., grv=.t., %s\n"
+        //             "     lis=%s, pdb=%s_grp, &end\n",
+        //         pdbfile,
+        //         zdna ? "dinu=.t.," : "", parfile_new, parfile_new);
+        // frprintf(fp, "2 %ld %ld 0 0\n", nbp, (parallel) ? nbp : -nbp);
+        // for (i = 1; i <= 2; i++) {
+        //     for (j = start_num; j <= end_num; j++)
+        //         frprintf(fp, " %ld", base_pairs[bp_idx[j]][i]);
+        //     frprintf(fp, "\n");
+        // }
+        // frprintf(fp, "0.0 0.0 0.0 %.1f\n", zdna ? 180.0 : 0.0);
         close_file(fp);
     }
 
@@ -1358,19 +1338,19 @@ namespace util {
             strcpy(str, "./");
 
         fp = open_file(outfile_new, "w");
-        fprintf(fp, "&inp file=%s,\n", pdbfile);
-        fprintf(fp, "     lis=%s,\n", parfile_new);
-        fprintf(fp, "     fit=.t.,\n");
-        fprintf(fp, "     lib=%sstandard,\n", str);
-        fprintf(fp, "     isym=%d,\n", zdna ? 2 : 1);
-        fprintf(fp, "&end\n");
+        // frprintf(fp, "&inp file=%s,\n", pdbfile);
+        // frprintf(fp, "     lis=%s,\n", parfile_new);
+        // frprintf(fp, "     fit=.t.,\n");
+        // frprintf(fp, "     lib=%sstandard,\n", str);
+        // frprintf(fp, "     isym=%d,\n", zdna ? 2 : 1);
+        // frprintf(fp, "&end\n");
 
-        fprintf(fp, "2 %d %d 0 0\n", 1, (parallel) ? 1 : -1);
-        for (i = 1; i <= 2; i++) {
-            for (j = start_num; j <= end_num; j++)
-                fprintf(fp, " %ld", base_pairs[bp_idx[j]][i]);
-            fprintf(fp, "\n");
-        }
+        // frprintf(fp, "2 %d %d 0 0\n", 1, (parallel) ? 1 : -1);
+        // for (i = 1; i <= 2; i++) {
+        //     for (j = start_num; j <= end_num; j++)
+        //         frprintf(fp, " %ld", base_pairs[bp_idx[j]][i]);
+        //     frprintf(fp, "\n");
+        // }
         close_file(fp);
     }
 
@@ -1433,7 +1413,6 @@ namespace util {
 
         if (args.curves)
         { /* generate Curves input file */
-            cout << "\n Curves";
             if (args.divide && num_helix > 1)
                 for (i = 1; i <= num_helix; i++)
                     curves_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
@@ -1445,8 +1424,6 @@ namespace util {
         }
         else if (args.curves_plus)
         {
-            cout << "\n curves plus";
-
             if (args.divide && num_helix > 1)
                 for (i = 1; i <= num_helix; i++)
                     curves_plus_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
@@ -1458,16 +1435,12 @@ namespace util {
         }
         else { 
             /* 3DNA/CEHS input file */
-            cout << "\n else plus";
 
             col_helices(num_helix, helix_idx, bp_idx, base_pairs, seidx, args.pdbfile,
                         ChainID, ResSeq);
-            cout << "\n After col_helics func";
 
             if (args.divide && num_helix > 1)
                 for (i = 1; i <= num_helix; i++) {
-                    cout << "args: " << args.outfile;
-                    cout << "args: " << args.pdbfile;
 
                     x3dna_input(i, helix_idx[i][1], helix_idx[i][2], helix_idx[i][3],
                                 args.pdbfile, args.outfile, parfile, args.hetatm, bp_idx,
@@ -1476,14 +1449,10 @@ namespace util {
                 }
 
             else /* overall */
-                cout << "args: " << args.outfile;
-                cout << "args: " << args.pdbfile;
 
                 x3dna_input(0, 1, num_bp, num_bp, args.pdbfile, args.outfile, parfile,
                             args.hetatm, bp_idx, helix_marker, helix_idx, base_pairs, seidx,
                             ResName, ChainID, ResSeq, Miscs, bseq, misc_pars, args.detailed);
-
-                cout << "\n after x3dna 2 input";
 
         }
         free_lvector(bp_idx, 1, num_bp);
@@ -1514,7 +1483,7 @@ namespace util {
             upperstr(line);
             if (sscanf(line, "%s %s", t1, t2) != 2 || strlen(t1) != 4 || strlen(t2) != 4)
             {
-                fprintf(stderr, "invalid line: <%s>\n", p0);
+                // frprintf(stderr, "invalid line: <%s>\n", p0);
                 free(p0);
                 continue;
             }
@@ -1541,10 +1510,10 @@ namespace util {
 
         (*serial)++;
         deduce_misc(Miscs, AtomName, idx, str);
-        fprintf(fp, "%s%5ld %4s%c%3s %c%4ld%c   %8.3f%8.3f%8.3f%s\n",
-                (str[0] == 'A') ? "ATOM  " : "HETATM", *serial, AtomName[idx],
-                str[1], ResName[idx], ChainID[idx], ResSeq[idx], str[2], xyz[idx][1],
-                xyz[idx][2], xyz[idx][3], str + 3);
+        // frprintf(fp, "%s%5ld %4s%c%3s %c%4ld%c   %8.3f%8.3f%8.3f%s\n",
+        //         (str[0] == 'A') ? "ATOM  " : "HETATM", *serial, AtomName[idx],
+        //         str[1], ResName[idx], ChainID[idx], ResSeq[idx], str[2], xyz[idx][1],
+        //         xyz[idx][2], xyz[idx][3], str + 3);
     }
 
     static char get_standard_one_letter_nt(char *rname)
@@ -1600,7 +1569,6 @@ namespace util {
 
         PairFinder::_duplex(num, num_residue, bseq, seidx, RY, AtomName, ResName, ChainID,
                ResSeq, Miscs, xyz, parfile, &Gvars.misc_pars);
-        cout << " After duplex";
         free_pdb(num, NULL, AtomName, ResName, ChainID, ResSeq, xyz, Miscs);
         free_lmatrix(seidx, 1, num_residue, 1, 2);
         free_cvector(bseq, 1, num_residue);
@@ -1617,12 +1585,11 @@ namespace util {
 
         set_my_globals("find_pair");
 
-        fprintf(stderr, "\nhandling file <%s> \n \n", args.pdbfile);
+        // frprintf(stderr, "\nhandling file <%s> \n \n", args.pdbfile);
 
         PairFinder::_handle_str();
 
         clear_my_globals();
-        print_used_time(time0);
 
         basepairs = bps;
 

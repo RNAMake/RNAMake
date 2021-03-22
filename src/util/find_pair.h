@@ -1,7 +1,6 @@
 #ifndef __FIND_PAIR_H__
 #define __FIND_PAIR_H__
 
-#include <bits/stdc++.h>
 #include <math/numerical.h>
 #include <util/x3dna_src.h>
 #include <util/x3dna.h>
@@ -39,6 +38,8 @@ private:
                     char **Miscs, double **xyz, char *parfile,
                     miscPars *misc_pars);
 
+
+// Private variables
 private:
 
     char **nt_info;
