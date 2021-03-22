@@ -110,8 +110,8 @@ def build_header(base_dir, static, target):
     # header_contents += "set(CMAKE_SYSTEM_NAME {SYS})\n".format(
     #        SYS="MAC"
     #        )
-    header_contents += "set(CMAKE_C_COMPILER clang)\n"
-    header_contents += "set(CMAKE_CXX_COMPILER clang++)\n"
+    # header_contents += "set(CMAKE_C_COMPILER clang)\n"
+    # header_contents += "set(CMAKE_CXX_COMPILER clang++)\n"
     if target == "linux":
        header_contents+= "set( CMAKE_CXX_FLAGS \" -pthread -L/opt/local/lib \" )\n"
     if static == True:
