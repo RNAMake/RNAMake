@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwritable-strings"
+
 #include <util/x3dna_src.h>
 #include <string>
 
@@ -13,7 +16,7 @@ long set_3letter_base_pdb(char *res_name, char *spdb)
 
     sprintf(spdb, "Atomic_%s.pdb", str);
     if (exist_file(spdb))
-        return TRUE;
+        return true;
 
     sprintf(spdb, "%sconfig/Atomic_%s.pdb", Gvars.X3DNA_HOMEDIR, str);
 
@@ -752,7 +755,7 @@ void print_pdb_title(char *pdbfile, char *chain_list, FILE * fp)
         nlen = upperstr(str);
         if (!strncmp(str, "ATOM  ", 6) || !strncmp(str, "HETATM", 6) || !strncmp(str, "END", 3))
             break;
-        if (Gvars.HEADER > TRUE) {
+        if (Gvars.HEADER > true) {
             fprintf(fp, "%s", str);
             continue;
         }
@@ -777,11 +780,11 @@ static long is_end_of_structure_to_process(char *str)
 {
     if (str_pmatch(str, "END")) {
         if (Gvars.ALL_MODEL)
-            return str_pmatch(str, "ENDMDL") ? FALSE : TRUE;
+            return str_pmatch(str, "ENDMDL") ? false : true;
         else  /* also matches ENDMDL */
-            return TRUE;
+            return true;
     } else
-        return FALSE;
+        return false;
 }
 
 static double get_occupancy(long nlen, char *str, char *pdbfile)
@@ -847,7 +850,7 @@ long read_pdb(char *pdbfile, long *AtomSNum, char **AtomName, char **ResName,
     char *p0, *pn;
     char rname[4], str[BUF512], str0[BUF512], temp[BUF512];
     double occupancy;
-    long i, n = 0, nlen, k, occ_chk = FALSE, modelNum = 0;
+    long i, n = 0, nlen, k, occ_chk = false, modelNum = 0;
     FILE *fp;
 
     fp = open_file(pdbfile, "r");
@@ -872,7 +875,7 @@ long read_pdb(char *pdbfile, long *AtomSNum, char **AtomName, char **ResName,
             occupancy = get_occupancy(nlen, str, pdbfile);
             if (occupancy <= 0) {  /* ignore 0-occupancy atom */
                 if (!occ_chk) {
-                    occ_chk = TRUE;
+                    occ_chk = true;
                     fprintf(stderr, "[i] File '%s' with atom occupancy <= 0 [%s]\n", pdbfile, str);
                 }
                 continue;
@@ -1054,13 +1057,13 @@ static void cvt_3letter_nts(char *rname)
 
 long is_dna_with_backbone(long ib, long ie, char **AtomName)
 {
-    long i, P = FALSE;
+    long i, P = false;
 
     for (i = ib; i <= ie; i++) {
         if (is_equal_string(AtomName[i], " O2'"))
-            return FALSE;  /* taken as RNA */
+            return false;  /* taken as RNA */
         if (!P && is_equal_string(AtomName[i], " P  "))
-            P = TRUE;
+            P = true;
     }
 
     return P;
@@ -1297,9 +1300,9 @@ long frag_contain_metal(long ib, long ie, long *is_metal)
 
     for (i = ib; i <= ie; i++)
         if (is_metal[i])
-            return TRUE;
+            return true;
 
-    return FALSE;
+    return false;
 }
 
 void atom_metal(long num_atoms, char **AtomName, long *is_metal)
@@ -1338,7 +1341,7 @@ void atom_metal(long num_atoms, char **AtomName, long *is_metal)
 
     for (i = 1; i <= num_atoms; i++) {
         aname2asym(AtomName[i], atom_sym, Gvars.NUM_SATOM, Gvars.ATOMLIST);
-        is_metal[i] = (num_strmatch(atom_sym, metals, 0, num_metal)) ? TRUE : FALSE;
+        is_metal[i] = (num_strmatch(atom_sym, metals, 0, num_metal)) ? true : false;
     }
 }
 
@@ -3813,14 +3816,14 @@ char **single2double(long nbp, char *bseq, char *Wbase, char *Cbase)
 long is_valid_base(char c, char *valid_bases)
 {
     if (isspace((int) c))  /* skip white space */
-        return FALSE;
+        return false;
 
     if (strchr(valid_bases, c) == NULL) {
         fprintf(stderr, "skip %c: acceptable bases [%s]\n", c, valid_bases);
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 long repeat_num(void)
@@ -4380,14 +4383,14 @@ long good_hbatoms(miscPars * misc_pars, char *atom1, char *atom2, long idx1, lon
     long natom = misc_pars->hb_idx[0];
 
     if (num_strmatch(atom1, PO, 0, numPO) && num_strmatch(atom2, PO, 0, numPO))
-        return FALSE;  /* no H-bond within PO4 group, O4' & N7 */
+        return false;  /* no H-bond within PO4 group, O4' & N7 */
 
     if ((idx1 == 2 || idx1 == 4 || idx2 == 2 || idx2 == 4) &&  /* at least one O/N atom */
         (lval_in_set(idx1, 1, natom, misc_pars->hb_idx) &&
          lval_in_set(idx2, 1, natom, misc_pars->hb_idx)))
-        return TRUE;
+        return true;
     else
-        return FALSE;
+        return false;
 }
 
 /* read in bond linkage information from "lkgfile": r3d_atom & stack2img generate
@@ -4809,13 +4812,13 @@ void aname2asym(const char *aname0, char *my_asym, long num_sa, char **atomlist)
 void atom_idx(long num, char **AtomName, char **Miscs, long *idx)
 {
     char pdb_asym[3], my_asym[3], atoms_list[NELE][3];
-    long i, k, bad_pdb_asym = FALSE;
+    long i, k, bad_pdb_asym = false;
 
     atom_info(1, atoms_list, NULL, NULL);
 
     for (i = 1; i <= num; i++) {
         strcpy(pdb_asym, UNKATM);  /* atomic symbol from PDB data file */
-        k = FALSE;  /* default to no atomic symbol */
+        k = false;  /* default to no atomic symbol */
 
         if (Miscs && strlen(Miscs[i]) >= 27 && !str_pmatch(Miscs[i] + 25, "  ")) {
             strncpy(pdb_asym, Miscs[i] + 25, 2);  /* with this info. */
@@ -4825,9 +4828,9 @@ void atom_idx(long num, char **AtomName, char **Miscs, long *idx)
                 strcpy(pdb_asym, " H");
 
             if (num_strmatch(pdb_asym, Gvars.ATOM_NAMES, 0, Gvars.NUM_ELE))
-                k = TRUE;
+                k = true;
             else
-                bad_pdb_asym = TRUE;  /* for overall checking */
+                bad_pdb_asym = true;  /* for overall checking */
         }
 
         if (k && !bad_pdb_asym)
@@ -5054,7 +5057,7 @@ long attached_residues(long inum_base, long *ivec, long *ivec2, long **seidx,
     for (i = 1; i <= inum_base; i++) {
         ivec2[i] = ivec[i];
 
-        if (Gvars.ATTACH_RESIDUE == FALSE)  /* Per Pascal's request: no metal, or HETATM */
+        if (Gvars.ATTACH_RESIDUE == false)  /* Per Pascal's request: no metal, or HETATM */
             continue;
 
         for (j = 1; j <= num_residue; j++) {
@@ -5328,13 +5331,13 @@ void o3_p_xyz(long ib, long ie, char *aname, char **AtomName, double **xyz,
 long is_baseatom(char *atomname)
 {
     if (is_equal_string(atomname, " C5M"))  /* C5M of T */
-        return TRUE;
+        return true;
 
     if (atomname[0] == ' ' && strchr("HP", atomname[1]) == NULL  /* like " N1 " */
         && isdigit((int) atomname[2]) && atomname[3] == ' ')
-        return TRUE;
+        return true;
 
-    return FALSE;
+    return false;
 }
 
 static long glyco_N(long isR, long ib, long ie, char b, char **AtomName, char **ResName,
@@ -5365,7 +5368,7 @@ static long glyco_N(long isR, long ib, long ie, char b, char **AtomName, char **
 
     if (C1prime) {  /* find the shorest distance */
         c1xyz = xyz[C1prime];
-        km = FALSE;
+        km = false;
         for (k = ib; k <= ie; k++) {
             a = AtomName[k];
             if (!is_baseatom(a))
@@ -5384,7 +5387,7 @@ static long glyco_N(long isR, long ib, long ie, char b, char **AtomName, char **
     }
 
     /* last try! */
-    km = FALSE;
+    km = false;
     for (k = ib; k <= ie; k++) {
         a = AtomName[k];
         if ((isR && strchr(a, '9')) || (!isR && strchr(a, '1'))) {
@@ -5560,9 +5563,9 @@ static long isEMPTY_or_isNAN_or_isINF(char *str)
 
     /* empty field/missing value etc: \t\t; NaN; Inf/-Inf */
     if (*str == '\0' || strstr(str, "nan") || strstr(str, "inf"))
-        return TRUE;
+        return true;
     else
-        return FALSE;
+        return false;
 }
 
 /* check if string "str" contains only valid numerical values */

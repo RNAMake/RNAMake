@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwritable-strings"
+
 #include "x3dna_src.h"
 #include <iostream> 
 #include <vector> 
@@ -72,7 +75,7 @@ static void get_ring_center_normal(long ds, long num_bp, long **pair_num, char *
             get_idmsg(ResName[ib], ChainID[ib], ResSeq[ib], Miscs[ib][2], idmsg);
 
             RingAtom_num = (RY[rnum] == 1) ? RA_NUM : RA_NUM - 3;
-            set_std_base_pdb(BDIR, FALSE, bp_seq[i][j], spdb);
+            set_std_base_pdb(BDIR, false, bp_seq[i][j], spdb);
             snum = read_pdb(spdb, NULL, sAtomName, sResName, sChainID, sResSeq, sxyz,
                             sMiscs, 1, "*");
             sprintf(sidmsg, "in standard base: %s", spdb);
@@ -222,7 +225,7 @@ static long C1C1_based_frame(long idx, long **chi, double **xyz, double **rotmat
     c1b = chi[2][k + 2];
 
     if (!c1a || !c1b)
-        return FALSE;
+        return false;
 
     /* with the C1'--C1' vector, for y-axis */
     ddxyz(xyz[c1b], xyz[c1a], y_axis);  /* 2-->1 */
@@ -239,7 +242,7 @@ static long C1C1_based_frame(long idx, long **chi, double **xyz, double **rotmat
         rotmat[k][2] = y_axis[k];
     }
 
-    return TRUE;
+    return true;
 }
 
 static void simple_step_heli_pars(double **orien, double **org, long **chi, long num_bp,
@@ -353,9 +356,9 @@ static void check_simple_parameters(long simple, double **orien, double **org,
     NNy = simple & SIMPLE_BP_LONG_AXIS_RN9_YN1;  /* RN9--YN1 as (long) y-axis */
     simple_bp_pars(orien, org, NNy, c6_c8, chi, num_bp, bp_seq, WC_info, xyz, fp);
 
-    simple_step_heli_pars(orien, org, chi, num_bp, bp_seq, WC_info, bphlx, xyz, FALSE, fp);
+    simple_step_heli_pars(orien, org, chi, num_bp, bp_seq, WC_info, bphlx, xyz, false, fp);
     if (simple & SIMPLE_STEP_HELICAL_PARS)  /* also derive/output helical parameters */
-        simple_step_heli_pars(orien, org, chi, num_bp, bp_seq, WC_info, bphlx, xyz, TRUE, fp);
+        simple_step_heli_pars(orien, org, chi, num_bp, bp_seq, WC_info, bphlx, xyz, true, fp);
 }
 
 static void process_str(char *inpfile, struct_args * args)
@@ -529,7 +532,7 @@ static void calculate_torsions(char *outfile, char *pdbfile)
     char BDIR[BUF512], **nt_info;
     char *ChainID, *bseq, **AtomName, **ResName, **Miscs;
     double **org, **orien, **xyz, **nt_torsion, **ss_Zp_Dp;
-    long num, num_residue, hetatm = TRUE;
+    long num, num_residue, hetatm = true;
     long *ResSeq, *RY, **seidx, **nt_list;
     FILE *fp;
 
@@ -596,23 +599,23 @@ static void set_defaults(struct_args * args)
     strcpy(args->torsion, "");
     args->istart = 1;
     args->istep = 1;
-    args->icnt = FALSE;
-    args->waters = FALSE;
-    args->bz = TRUE;  /* check for B-Z junction */
-    args->ring = FALSE;
-    args->simple_pars = TRUE;
-    args->abi = FALSE;
-    args->circular = FALSE;
+    args->icnt = false;
+    args->waters = false;
+    args->bz = true;  /* check for B-Z junction */
+    args->ring = false;
+    args->simple_pars = true;
+    args->abi = false;
+    args->circular = false;
 }
 
 static long derive_simple_pars_settings(char *option)
 {
-    long k = FALSE;
+    long k = false;
 
     if (lux_ncmatch(option, "no|false|off"))
         return k;
 
-    k = TRUE;  /* default: RC8--YC6, no helical pars */
+    k = true;  /* default: RC8--YC6, no helical pars */
 
     if (lux_ncmatch(option, "n1|n9"))
         k |= SIMPLE_BP_LONG_AXIS_RN9_YN1;
@@ -638,7 +641,7 @@ static void analyze_cmdline(int argc, char *argv[], struct_args * args)
             continue;
 
         if (lux_ncmatch(argv[i], "^--?t")) {
-            get_strvalue(argv[i], args->torsion, FALSE);
+            get_strvalue(argv[i], args->torsion, false);
             continue;
         }
 
@@ -670,9 +673,9 @@ static void analyze_cmdline(int argc, char *argv[], struct_args * args)
         upperstr(argv[i]);
         for (j = 1; j < (long) strlen(argv[i]); j++)  /* skip - */
             if (argv[i][j] == 'C')
-                args->icnt = TRUE;
+                args->icnt = true;
             else if (argv[i][j] == 'W')
-                args->waters = TRUE;
+                args->waters = true;
             else if (argv[i][j] == 'S') {
                 k = sscanf(argv[i], "-S=%ld,%ld", &args->istep, &args->istart);
                 if (k == 2) {

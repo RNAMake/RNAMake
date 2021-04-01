@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwritable-strings"
+
 #include <util/x3dna_src.h>
 
 /* standard error handler */
@@ -339,9 +342,9 @@ long lval_in_set(long lval, long ib, long ie, long *s)
 
     for (i = ib; i <= ie; i++)
         if (lval == s[i])
-            return TRUE;
+            return true;
 
-    return FALSE;
+    return false;
 }
 
 /* check if "dval" in within "dlow" and "dhigh" */
@@ -847,3 +850,5 @@ void identity_matrix(double **d, long n)
         d[i][i] = 1.0;
     }
 }
+
+#pragma GCC diagnostic pop

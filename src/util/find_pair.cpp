@@ -1,3 +1,8 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwritable-strings"
+#pragma GCC diagnostic ignored "-Wformat-security"
+
+
 #include <util/x3dna_src.h>
 #include <util/find_pair.h>
 #include <util/x3dna.h>
@@ -165,13 +170,13 @@ namespace util {
         long i;
 
         if (num_bp <= 2)
-            return FALSE;
+            return false;
 
         for (i = 1; i <= num_bp; i++)
             if (bp_order[i][1] != -1)
-                return FALSE;
+                return false;
 
-        return TRUE;
+        return true;
     }
 
     /* find base-pair neighbors using simple geometric criterion for re_ordering */

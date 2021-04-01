@@ -18,8 +18,6 @@
 
 #define NO_MATCH -1L
 #define DUMMY -1L
-#define TRUE 1L
-#define FALSE 0L
 
 #define BUF32 32
 #define BUF512 512

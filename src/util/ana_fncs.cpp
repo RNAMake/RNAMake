@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwritable-strings"
+
 #include <util/x3dna_src.h>
 
 enum { TOR_XXX = 0, TOR_ALPHA, TOR_BETA, TOR_GAMMA, TOR_DELTA, TOR_EPSILON, TOR_ZETA, TOR_CHI,
@@ -230,7 +233,7 @@ void populate_nt_list(long num_residue, long **seidx, long *RY, char *bseq,
         ib = nt_list[i][NT_O3];
         ie = nt_list[i + 1][NT_P];
         if (ib && ie && within_limits(xyz[ib], xyz[ie], 0.8, O3P_UPPER))
-            nt_list[i][O3P_LKG] = TRUE;
+            nt_list[i][O3P_LKG] = true;
     }
 }
 
@@ -442,42 +445,42 @@ static void get_mc_6_torsions(long num_residue, long *RY, long **bb, double **xy
         idx[2] = bb[i][1];
         idx[3] = bb[i][2];
         idx[4] = bb[i][3];
-        nt_bb_torsion[i][1] = idx2torsion(idx, xyz, TRUE);
+        nt_bb_torsion[i][1] = idx2torsion(idx, xyz, true);
 
         /* beta: P(i) - O5'(i) - C5'(i) - C4'(i) */
         idx[1] = bb[i][1];
         idx[2] = bb[i][2];
         idx[3] = bb[i][3];
         idx[4] = bb[i][4];
-        nt_bb_torsion[i][2] = idx2torsion(idx, xyz, TRUE);
+        nt_bb_torsion[i][2] = idx2torsion(idx, xyz, true);
 
         /* gamma: O5'(i) - C5'(i) - C4'(i) - C3'(i) */
         idx[1] = bb[i][2];
         idx[2] = bb[i][3];
         idx[3] = bb[i][4];
         idx[4] = bb[i][5];
-        nt_bb_torsion[i][3] = idx2torsion(idx, xyz, TRUE);
+        nt_bb_torsion[i][3] = idx2torsion(idx, xyz, true);
 
         /* delta: C5'(i) - C4'(i) - C3'(i) - O3'(i) */
         idx[1] = bb[i][3];
         idx[2] = bb[i][4];
         idx[3] = bb[i][5];
         idx[4] = bb[i][6];
-        nt_bb_torsion[i][4] = idx2torsion(idx, xyz, TRUE);
+        nt_bb_torsion[i][4] = idx2torsion(idx, xyz, true);
 
         /* epsilon: C4'(i) - C3'(i) - O3'(i) - P(i + 1) */
         idx[1] = bb[i][4];
         idx[2] = bb[i][5];
         idx[3] = bb[i][6];
         idx[4] = (i < num_residue) ? bb[i + 1][1] : 0;
-        nt_bb_torsion[i][5] = idx2torsion(idx, xyz, TRUE);
+        nt_bb_torsion[i][5] = idx2torsion(idx, xyz, true);
 
         /* zeta: C3'(i) - O3'(i) - P(i + 1) - O5'(i + 1) */
         idx[1] = bb[i][5];
         idx[2] = bb[i][6];
         idx[3] = (i < num_residue) ? bb[i + 1][1] : 0;
         idx[4] = (i < num_residue) ? bb[i + 1][2] : 0;
-        nt_bb_torsion[i][6] = idx2torsion(idx, xyz, TRUE);
+        nt_bb_torsion[i][6] = idx2torsion(idx, xyz, true);
     }
 }
 
@@ -508,20 +511,20 @@ void get_nt_torsion(long num_residue, double **org, double **xyz, long **nt_list
         idx[8] = (i < num_residue) ? nt_list[ip1][NT_P] : 0;  /* epsilon: C4'(i) - C3'(i) - O3'(i) - P(i+1) */
         idx[9] = (i < num_residue) ? nt_list[ip1][NT_O5] : 0;  /* zeta: C3'(i) - O3'(i) - P(i+1) - O5'(i+1) */
 
-        /* no need to check for O3P_LKG: implicit with TRUE option below */
-        nt_torsion[i][TOR_ALPHA] = idx2torsion(idx, xyz, TRUE);
-        nt_torsion[i][TOR_BETA] = idx2torsion(idx + 1, xyz, TRUE);
-        nt_torsion[i][TOR_GAMMA] = idx2torsion(idx + 2, xyz, TRUE);
-        nt_torsion[i][TOR_DELTA] = idx2torsion(idx + 3, xyz, TRUE);
-        nt_torsion[i][TOR_EPSILON] = idx2torsion(idx + 4, xyz, TRUE);
-        nt_torsion[i][TOR_ZETA] = idx2torsion(idx + 5, xyz, TRUE);
+        /* no need to check for O3P_LKG: implicit with true option below */
+        nt_torsion[i][TOR_ALPHA] = idx2torsion(idx, xyz, true);
+        nt_torsion[i][TOR_BETA] = idx2torsion(idx + 1, xyz, true);
+        nt_torsion[i][TOR_GAMMA] = idx2torsion(idx + 2, xyz, true);
+        nt_torsion[i][TOR_DELTA] = idx2torsion(idx + 3, xyz, true);
+        nt_torsion[i][TOR_EPSILON] = idx2torsion(idx + 4, xyz, true);
+        nt_torsion[i][TOR_ZETA] = idx2torsion(idx + 5, xyz, true);
 
         /* chi: O4'-C1'-N9-C4 (R); O4'-C1'-N1-C2 (Y) */
         idx[1] = nt_list[i][NT_O4];
         idx[2] = nt_list[i][NT_C1];
         idx[3] = nt_list[i][NT_N];
         idx[4] = nt_list[i][NT_C];
-        nt_torsion[i][TOR_CHI] = idx2torsion(idx, xyz, TRUE);
+        nt_torsion[i][TOR_CHI] = idx2torsion(idx, xyz, true);
 
         /* eta:    C4'(i-1)-P(i)-C4'(i)-P(i+1)    --- C4'
            theta:  P(i)-C4'(i)-P(i+1)-C4'(i+1)
@@ -535,15 +538,15 @@ void get_nt_torsion(long num_residue, double **org, double **xyz, long **nt_list
             idx[3] = nt_list[i][NT_C4];
             idx[4] = nt_list[ip1][NT_P];
             idx[5] = nt_list[ip1][NT_C4];
-            nt_torsion[i][TOR_ETA] = idx2torsion(idx, xyz, FALSE);
-            nt_torsion[i][TOR_THETA] = idx2torsion(idx + 1, xyz, FALSE);
+            nt_torsion[i][TOR_ETA] = idx2torsion(idx, xyz, false);
+            nt_torsion[i][TOR_THETA] = idx2torsion(idx + 1, xyz, false);
 
             /* using C1' instead of C4' */
             idx[1] = (i > 1 && nt_list[im1][O3P_LKG]) ? nt_list[im1][NT_C1] : 0;
             idx[3] = nt_list[i][NT_C1];
             idx[5] = nt_list[ip1][NT_C1];
-            nt_torsion[i][TOR_ETA1] = idx2torsion(idx, xyz, FALSE);
-            nt_torsion[i][TOR_THETA1] = idx2torsion(idx + 1, xyz, FALSE);
+            nt_torsion[i][TOR_ETA1] = idx2torsion(idx, xyz, false);
+            nt_torsion[i][TOR_THETA1] = idx2torsion(idx + 1, xyz, false);
 
             /* using origin of base reference frame */
             if (idx[2] && idx[4]) {
@@ -570,7 +573,7 @@ void get_nt_torsion(long num_residue, double **org, double **xyz, long **nt_list
         idx[8] = nt_list[i][NT_C1];
         k = 0;
         for (j = 0; j <= 4; j++) {
-            nt_torsion[i][TOR_V0 + j] = idx2torsion(idx + j, xyz, TRUE);
+            nt_torsion[i][TOR_V0 + j] = idx2torsion(idx + j, xyz, true);
             if (idx[j + 1])
                 k++;
         }
@@ -624,10 +627,10 @@ static long has_model_number(long num_residue, char **nt_info, long **nt_list)
         if (nt_list[i][NT_NUM] < 3)
             continue;
         if (nt_info[i][4] == '>')
-            return TRUE;
+            return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 void output_nt_torsion(long num_residue, char **nt_info, long **nt_list,
@@ -1392,7 +1395,7 @@ void set_chain_nmarkers019_to_symbols(long num, long *nmarkers, char *cmarkers)
     long i, j, k, n, lastc;
     long *tcp, *temp, **seidx;
 
-    lastc = strchr("0nofNOF", Gvars.CHAIN_MARKERS[4]) ? FALSE : TRUE;
+    lastc = strchr("0nofNOF", Gvars.CHAIN_MARKERS[4]) ? false : true;
 
     tcp = lvector(1, num);
     j = -1;  /* index for isolated bps */

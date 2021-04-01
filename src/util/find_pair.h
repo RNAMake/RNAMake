@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwritable-strings"
+
 #ifndef __FIND_PAIR_H__
 #define __FIND_PAIR_H__
 
@@ -50,14 +53,14 @@ private:
         char pdbfile[BUF512];
         char outfile[BUF512];
         long ds = 2;
-        long curves = FALSE;
-        long curves_plus = FALSE;
-        long divide = FALSE;
-        long hetatm = TRUE;
-        long pairs = FALSE;
-        long detailed = FALSE;
-        long waters = FALSE;
-        long hjb = FALSE;
+        long curves = false;
+        long curves_plus = false;
+        long divide = false;
+        long hetatm = true;
+        long pairs = false;
+        long detailed = false;
+        long waters = false;
+        long hjb = false;
     };
 
     Args args = Args();
