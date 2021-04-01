@@ -1,3 +1,6 @@
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wwritable-strings"
+
 #include <util/x3dna_src.h>
 
 /* global variables definition */
@@ -58,7 +61,7 @@ static void get_3dna_version(char *homedir, char *version)
 
 long string_contains_only_those_characters(char *str, char *chars_set)
 {
-    return (strspn(str, chars_set) == strlen(str)) ? TRUE : FALSE;
+    return (strspn(str, chars_set) == strlen(str)) ? true : false;
 }
 
 /* bpid: +2 means a Watson-Crick base-pair;
@@ -197,9 +200,9 @@ long is_comment_line(char *line)
     char *p = ltrim(line);
 
     if (*p == '#')
-        return TRUE;
+        return true;
     else
-        return FALSE;
+        return false;
 }
 
 long is_empty_line(char *line)
@@ -207,18 +210,18 @@ long is_empty_line(char *line)
     char *p = trim(line);
 
     if (*p == '\0')
-        return TRUE;
+        return true;
     else
-        return FALSE;
+        return false;
 }
 
 /* no processing of line[] here */
 long is_skip_line(char *line)
 {
     if (strchr(SKIPS, *line))  /* line starting with # or empty */
-        return TRUE;
+        return true;
     else
-        return FALSE;
+        return false;
 }
 
 /* get a new name with base name from 'src' and extension 'ext' */
@@ -256,7 +259,7 @@ void get_tag_string_pair(char *prefix, char *tag, char *btag, char *etag)
 void get_xml_tag(FILE * fpxml, char *prefix, char *line, char *connector, char *tag, char *tag_str)
 {
     char *p0, *p1, *ep, btag[BUF512], etag[BUF512], temp[BUFBIG];
-    long isok = FALSE;
+    long isok = false;
 
     get_tag_string_pair(prefix, tag, btag, etag);
 
@@ -267,7 +270,7 @@ void get_xml_tag(FILE * fpxml, char *prefix, char *line, char *connector, char *
     ep = strstr(line, etag);
 
     if (ep) {  /* tag contained in one line */
-        isok = TRUE;
+        isok = true;
         *ep = '\0';
         strcpy(temp, strchr(line, '>') + 1);
         strcpy(tag_str, trim(temp));
@@ -278,7 +281,7 @@ void get_xml_tag(FILE * fpxml, char *prefix, char *line, char *connector, char *
             p1 = trim(p0);
             ep = strstr(p1, etag);
             if (ep) {  /* tag contained in one line */
-                isok = TRUE;
+                isok = true;
                 *ep = '\0';
                 strcat(tag_str, connector);
                 strcat(tag_str, p1);
@@ -374,17 +377,17 @@ void print_ptable()
 long set_switch_default_true(char *option)
 {
     char str[BUF512];
-    long switch_set = TRUE;
+    long switch_set = true;
 
     if (!strchr(option, '='))  /* just a switch */
         return switch_set;
 
-    get_strvalue(option, str, FALSE);
+    get_strvalue(option, str, false);
     lowerstr(str);
 
     if (str_pmatch(str, "of") || str_pmatch(str, "0") ||  /* off | 0 | no | false */
         str_pmatch(str, "n") || str_pmatch(str, "f"))
-        switch_set = FALSE;
+        switch_set = false;
 
     return switch_set;
 }
@@ -484,7 +487,7 @@ void base_frame(long num_residue, char *bseq, long **seidx, long *res_type,
         get_idmsg(ResName[ib], ChainID[ib], ResSeq[ib], Miscs[ib][2], idmsg);
 
         RingAtom_num = (res_type[i] == 1) ? 9 : 6;
-        set_std_base_pdb(BDIR, FALSE, bseq[i], spdb);
+        set_std_base_pdb(BDIR, false, bseq[i], spdb);
         snum = read_pdb(spdb, NULL, sAtomName, sResName, sChainID, sResSeq, sxyz, sMiscs, 1, "*");
         sprintf(sidmsg, "in standard base: %s", spdb);
 
@@ -946,89 +949,89 @@ static long overwrite_misc_pars(char *option)
 
     if (case_str_pmatch(option, "-min_base_hb")) {
         misc_pars->min_base_hb = get_lvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-hb_lower")) {
         misc_pars->hb_lower = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-hb_dist1")) {
         misc_pars->hb_dist1 = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-hb_dist2")) {
         misc_pars->hb_dist2 = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-hb_atoms")) {
-        get_strvalue(option, misc_pars->hb_atoms, FALSE);
+        get_strvalue(option, misc_pars->hb_atoms, false);
         reset_alist_symbol_idx(misc_pars->hb_atoms, misc_pars->hb_idx);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-alt_list")) {
-        get_strvalue(option, misc_pars->alt_list, FALSE);
+        get_strvalue(option, misc_pars->alt_list, false);
         check_space_in_altlist(misc_pars->alt_list);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-max_dorg")) {
         misc_pars->max_dorg = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-min_dorg")) {
         misc_pars->min_dorg = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-max_dv")) {
         misc_pars->max_dv = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-min_dv")) {
         misc_pars->min_dv = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-max_plane_angle")) {
         misc_pars->max_plane_angle = get_dvalue(option, 0, 90);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-min_plane_angle")) {
         misc_pars->min_plane_angle = get_dvalue(option, 0, 90);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-max_dNN")) {
         misc_pars->max_dNN = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-min_dNN")) {
         misc_pars->min_dNN = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-helix_break")) {
         misc_pars->helix_break = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-std_curved")) {
         misc_pars->std_curved = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-water_dist")) {
         misc_pars->water_dist = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-water_dlow")) {
         misc_pars->water_dlow = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-water_atoms")) {
-        get_strvalue(option, misc_pars->water_atoms, FALSE);
+        get_strvalue(option, misc_pars->water_atoms, false);
         reset_alist_symbol_idx(misc_pars->water_atoms, misc_pars->water_idx);
-        return TRUE;
+        return true;
 
     } else if (case_str_pmatch(option, "-o3p_dist")) {
         misc_pars->o3p_dist = get_dvalue(option, 0, 999);
-        return TRUE;
+        return true;
     }
 
-    return FALSE;
+    return false;
 }
 
 void lsplane_xyz(double **xyz, long num_plane, long *atom_plane, double **nxyz, double *z)
@@ -1330,19 +1333,19 @@ void peptide_blks(long num_residue, char *BDIR, long *cidx, double **orien, doub
 void set_my_globals(char *pgname)
 {
 
-    Gvars.VERBOSE = FALSE;
-    Gvars.CHAIN_CASE = TRUE;  /* case-sensitive */
-    Gvars.ALL_MODEL = FALSE;  /* just one model: ENDMDL/END */
-    Gvars.DEBUG = FALSE;  /* for general distribution */
+    Gvars.VERBOSE = false;
+    Gvars.CHAIN_CASE = true;  /* case-sensitive */
+    Gvars.ALL_MODEL = false;  /* just one model: ENDMDL/END */
+    Gvars.DEBUG = false;  /* for general distribution */
     Gvars.PROGNAME = pgname;
-    Gvars.ATTACH_RESIDUE = TRUE;  /* add connected HETATM metals or residues */
-    Gvars.THREE_LETTER_NTS = FALSE;  /* ADE/CYT/GUA/THY/URA */
-    Gvars.PDBV3 = TRUE;
-    Gvars.ORIGINAL_COORDINATE = FALSE;
-    Gvars.OCCUPANCY = FALSE;
-    Gvars.HEADER = TRUE;
+    Gvars.ATTACH_RESIDUE = true;  /* add connected HETATM metals or residues */
+    Gvars.THREE_LETTER_NTS = false;  /* ADE/CYT/GUA/THY/URA */
+    Gvars.PDBV3 = true;
+    Gvars.ORIGINAL_COORDINATE = false;
+    Gvars.OCCUPANCY = false;
+    Gvars.HEADER = true;
 
-    Gvars.mmcif = FALSE;
+    Gvars.mmcif = false;
     Gvars.NT_CUTOFF = 0.2618;  /* 2o8b C30 on F has 0.24 */
 
     get_3dna_homedir(Gvars.X3DNA_HOMEDIR);
@@ -1361,9 +1364,9 @@ void set_my_globals(char *pgname)
 
     Gvars.AtomName0 = NULL;
     Gvars.ResName0 = NULL;
-    Gvars.Name0 = FALSE;
+    Gvars.Name0 = false;
 
-    Gvars.label_RC8_YC6 = FALSE;
+    Gvars.label_RC8_YC6 = false;
 
     get_3dna_pars(&Gvars.misc_pars);
 }
@@ -1378,7 +1381,7 @@ static void set_chain_markers(char *option)
 {
     long k;
 
-    get_strvalue(option, Gvars.CHAIN_MARKERS, FALSE);
+    get_strvalue(option, Gvars.CHAIN_MARKERS, false);
     k = strlen(Gvars.CHAIN_MARKERS);
     if (k < 4) {
         fprintf(stderr, "too short [< 4-char] input for option: %s\n", option);
@@ -1398,7 +1401,7 @@ static void set_rebuild_cids(char *option)
     long k;
 
     strcpy(cids, "");
-    get_strvalue(option, cids, FALSE);
+    get_strvalue(option, cids, false);
     k = strlen(cids);
 
     if (k == 0)
@@ -1416,71 +1419,71 @@ long check_global_options(char *option)
 {
     if (lux_ncmatch(option, "^--?debug")) {
         Gvars.DEBUG = get_lvalue(option, 0, BUF512);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?chain_case")) {
         Gvars.CHAIN_CASE = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?chain_markers")) {
         set_chain_markers(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?rebuild-cids")) {
         set_rebuild_cids(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?(all_model|models|symm)")) {
         Gvars.ALL_MODEL = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?verbose")) {
         Gvars.VERBOSE = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?attach")) {
         Gvars.ATTACH_RESIDUE = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?three")) {
         Gvars.THREE_LETTER_NTS = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?pdbv3")) {
         Gvars.PDBV3 = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?(ori|raw)")) {
         Gvars.ORIGINAL_COORDINATE = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?occ")) {
         Gvars.OCCUPANCY = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?hea")) {
         Gvars.HEADER = set_switch_default_true(option);
         if (Gvars.HEADER && lux_ncmatch(option, "^--?(whole|all"))
             Gvars.HEADER = BUF32;
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?(mm)?cif")) {
         Gvars.mmcif = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?ntc")) {
         Gvars.NT_CUTOFF = get_dvalue(option, 0.05, 1.0);
-        return TRUE;
+        return true;
 
     } else if (lux_ncmatch(option, "^--?label[-_]?C")) {
         Gvars.label_RC8_YC6 = set_switch_default_true(option);
-        return TRUE;
+        return true;
 
     } else if (overwrite_misc_pars(option))
-        return TRUE;
+        return true;
 
     else
-        return FALSE;
+        return false;
 }
 
 /* ++++++++++++++++++++++++++++++++++++ SNAP-related functions ++++++++++++++++++++++++++++++++++++ */
