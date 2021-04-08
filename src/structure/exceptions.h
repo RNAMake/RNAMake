@@ -6,6 +6,7 @@
 #define RNAMAKE_NEW_STRUCTURE_EXCEPTIONS_H
 
 #include "base/types.h"
+#include <stdexcept>
 
 namespace structure {
 

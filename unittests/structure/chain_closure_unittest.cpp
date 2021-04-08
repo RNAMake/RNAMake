@@ -11,9 +11,9 @@
 #include "structure/close_chain.h"
 
 
-TEST_CASE( "Test chain closure", "[ChainClosure]" ) {
+TEST_CASE( "Test chain closure" ) {
 
-    SECTION("test most basic fix") {
+    SUBCASE("test most basic fix") {
         auto m_path = base::unittest_resource_dir() + "/motifs/HELIX.IDEAL/HELIX.IDEAL.pdb";
         auto parser = structure::PDBParser();
         auto residues = parser.parse(m_path);
@@ -23,7 +23,7 @@ TEST_CASE( "Test chain closure", "[ChainClosure]" ) {
         close_chain(chains[0]);
     }
 
-    SECTION("test fixing missing phosphates") {
+    SUBCASE("test fixing missing phosphates") {
          
         auto m_path = base::base_dir() + "//unittests/unittest_resources/motifs/BP.0.22.pdb";
         auto parser = structure::PDBParser();

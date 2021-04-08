@@ -9,6 +9,8 @@
 #ifndef __RNAMake__motif_factory__
 #define __RNAMake__motif_factory__
 
+#include <filesystem>
+
 #include <stdio.h>
 #include <util/x3dna.h>
 

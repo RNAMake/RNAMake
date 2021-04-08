@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include "../../common.hpp"
 
@@ -8,12 +9,12 @@
 #include "resources/motif_sqlite_library.h"
 #include "motif_data_structure/motif_merger.h"
 
-TEST_CASE( "Test Mergering Motifs into single structure ", "[motif_data_structure::MotifMerger]" ) {
+TEST_CASE( "Test Mergering Motifs into single structure " ) {
     auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.3");
     auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.3");
     m2->new_res_uuids();
     
-    SECTION("test merging all two way junctions with flanking helices") {
+    SUBCASE("test merging all two way junctions with flanking helices") {
         
         auto mlib = resources::resources::MotifSqliteLibrary("twoway");
         mlib.load_all();
@@ -43,8 +44,8 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[motif_data_structur
             
             //std::cout << m2->sequence() << " " << m2->residues().size() << std::endl;
             
-            REQUIRE(s->chains().size() == 2);
-            REQUIRE(s->residues().size() == res_count);
+            CHECK(s->chains().size() == 2);
+            CHECK(s->residues().size() == res_count);
             
             mm.remove_motif(m);
             mm.remove_motif(m2);
@@ -52,7 +53,7 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[motif_data_structur
         }
     }
     
-    SECTION("test merging all hairpins with a helix") {
+    SUBCASE("test merging all hairpins with a helix") {
         auto mlib = resources::resources::MotifSqliteLibrary("hairpin");
         mlib.load_all();
         
@@ -65,14 +66,14 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[motif_data_structur
             mm.add_motif(m, m->ends()[0], m1, m1->ends()[1]);
             auto s = mm.get_structure();
 
-            REQUIRE(s->chains().size() == 1);
+            CHECK(s->chains().size() == 1);
 
             mm.remove_motif(m);
         }
         
     }
     
-    SECTION("test merging all nway junctions") {
+    SUBCASE("test merging all nway junctions") {
         auto mlib = resources::resources::MotifSqliteLibrary("nway");
         mlib.load_all();
         
@@ -87,7 +88,7 @@ TEST_CASE( "Test Mergering Motifs into single structure ", "[motif_data_structur
             auto s = mm.get_structure();
             
             //std::cout << m->name() <<  " " << m->ends()[0]->name() <<  std::endl;
-            REQUIRE(s->chains().size() == m->chains().size());
+            CHECK(s->chains().size() == m->chains().size());
             
             mm.remove_motif(m);
             mm.remove_motif(m2);

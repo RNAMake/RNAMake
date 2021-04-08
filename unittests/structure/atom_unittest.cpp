@@ -1,44 +1,45 @@
 
+
 #include "../common.hpp"
 
 #include "structure/atom.h"
 #include "structure/is_equal.h"
 
 
-TEST_CASE( "Test Atoms for Structure", "[Atom]" ) {
+TEST_CASE( "Test Atoms for Structure") {
     auto a = std::make_shared<structure::Atom>("P", math::Point(0, 1, 2));
     auto p = math::Point(0, 1, 2);
     
-    REQUIRE(a->coords() == p);
-    REQUIRE(a->name() == "P");
+    CHECK(a->coords() == p);
+    CHECK(a->name() == "P");
     
-    SECTION("do atoms have correct pdb output") {
+    SUBCASE("do atoms have correct pdb output") {
         auto s = a->to_pdb_str(1);
         auto ref = "ATOM      1  P   C   A   1       0.000   1.000   2.000  1.00 62.18           P\n";
         
-        REQUIRE(s == ref);
+        CHECK(s == ref);
         
         auto s1 = a->to_pdb_str(10);
         auto ref1 = "ATOM     10  P   C   A   1       0.000   1.000   2.000  1.00 62.18           P\n";
         
-        REQUIRE(s1 == ref1);
+        CHECK(s1 == ref1);
     }
     
     
-    SECTION("do atoms stringify properly") {
+    SUBCASE("do atoms stringify properly") {
         auto s = a->to_str();
         auto a2 = std::make_shared<structure::Atom>(s);
         
-        REQUIRE(s == "P 0 1 2");
-        REQUIRE(are_atoms_equal(a, a2));
+        CHECK(s == "P 0 1 2");
+        CHECK(are_atoms_equal(a, a2));
         
     }
     
-    SECTION("do atoms copy properly") {
+    SUBCASE("do atoms copy properly") {
         auto a = std::make_shared<structure::Atom>("P", math::Point(0, 1, 2));
         auto a2 = std::make_shared<structure::Atom>(*a);
 
-        REQUIRE(are_atoms_equal(a, a2));
+        CHECK(are_atoms_equal(a, a2));
     }
     
 }

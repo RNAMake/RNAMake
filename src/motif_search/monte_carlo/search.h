@@ -126,7 +126,8 @@ class MoveSet {
 class Search : public motif_search::Search {
 public:
     struct Parameters {
-        float accept_score;
+        float accept_score = 10.0f;
+        int max_size = 100000;
     };
 
 public:
@@ -236,8 +237,8 @@ public:
             // reset mover
             mover = std::make_shared<MotifSwapMove>(scorer_, sol_top_);
             auto diff = (accept_ratio - 0.235)*10;
-            temp = temp - diff;
-            mover->set_temperature(temp);
+            //temp = temp - diff;
+            //mover->set_temperature(temp);
 
             step_ = 0;
             stage_ += 1;
@@ -311,6 +312,7 @@ protected:
     void
     update_var_options() {
         parameters_.accept_score = options_.get_float("accept_score");
+        parameters_.max_size = options_.get_int("max_size");
 
     }
 

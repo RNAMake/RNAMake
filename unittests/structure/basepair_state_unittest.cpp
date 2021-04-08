@@ -1,4 +1,5 @@
 
+
 #include "../common.hpp"
 
 #include <base/file_io.h>
@@ -7,9 +8,9 @@
 #include <structure/basepair_state.h>
 #include <structure/is_equal.h>
 
-TEST_CASE( "Test structure::Basepair State for Structure", "[structure::BasepairState]" ) {
+TEST_CASE( "Test structure::Basepair State for Structure" ) {
 
-    SECTION("test loading basepair from string") {
+    SUBCASE("test loading basepair from string") {
         auto path = base::unittest_resource_dir() + "/structure/test_str_to_basepairstate.dat";
         auto lines =base::get_lines_from_file(path);
         auto bp_state = structure::BasepairStateOP(nullptr);
@@ -22,11 +23,11 @@ TEST_CASE( "Test structure::Basepair State for Structure", "[structure::Basepair
         auto s = bp_state->to_str();
         auto bp_state_2 = std::make_shared<structure::BasepairState>(s);
     
-        REQUIRE(structure::are_basepair_states_equal(*bp_state, *bp_state_2));
+        CHECK(structure::are_basepair_states_equal(*bp_state, *bp_state_2));
         
     }
     
-    SECTION("test generating rotation and translation between basepairs") {
+    SUBCASE("test generating rotation and translation between basepairs") {
         auto path = base::unittest_resource_dir() + "/structure/get_transforming_r_and_t_test.dat";
         auto lines =base::get_lines_from_file(path);
 
@@ -55,11 +56,11 @@ TEST_CASE( "Test structure::Basepair State for Structure", "[structure::Basepair
             
         }
         
-        REQUIRE(fail == 0);
+        CHECK(fail == 0);
         
     }
     
-    SECTION("test random tranformation between basepairs") {
+    SUBCASE("test random tranformation between basepairs") {
         auto path = base::unittest_resource_dir() + "/structure/test_get_transformed_state.dat";
         auto lines =base::get_lines_from_file(path);
         auto dummy = structure::BasepairState();
@@ -85,11 +86,11 @@ TEST_CASE( "Test structure::Basepair State for Structure", "[structure::Basepair
             }
         }
         
-        REQUIRE(fail == 0);
+        CHECK(fail == 0);
 
     }
     
-    SECTION("test repeated alignment") {
+    SUBCASE("test repeated alignment") {
         auto path = base::unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
         auto lines =base::get_lines_from_file(path);
         
@@ -119,7 +120,7 @@ TEST_CASE( "Test structure::Basepair State for Structure", "[structure::Basepair
             
         }
         
-        REQUIRE(fail == 0);
+        CHECK(fail == 0);
         fail = 0;
         
         bp_state_1 = structure::BasepairState(spl[1]);
@@ -141,12 +142,12 @@ TEST_CASE( "Test structure::Basepair State for Structure", "[structure::Basepair
             
         }
 
-        REQUIRE(fail == 0);
+        CHECK(fail == 0);
 
         
     }
     
-    SECTION("test transform() instead of get_transformed_state()") {
+    SUBCASE("test transform() instead of get_transformed_state()") {
         auto path = base::unittest_resource_dir() + "/structure/test_bp_state_align_1.dat";
         auto lines =base::get_lines_from_file(path);
 
@@ -177,7 +178,7 @@ TEST_CASE( "Test structure::Basepair State for Structure", "[structure::Basepair
             if(dist > 0.001) { fail =1; }
             if(rdist > 0.001) { fail = 1; }
 
-            REQUIRE(!fail);
+            CHECK(!fail);
 
             //std::cout << dist << " " << rdist << std::endl;
 

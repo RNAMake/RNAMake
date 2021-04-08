@@ -3,6 +3,7 @@
 
 #include "base/string.h"
 #include <iostream>
+#include <cstring>
 
 struct CommandLineArgs {
     char ** argv_;

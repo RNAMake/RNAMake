@@ -2,6 +2,8 @@
 // Created by Joseph Yesselman on 12/7/17.
 //
 
+
+
 #include <iostream>
 #include "../common.hpp"
 
@@ -17,7 +19,7 @@
  *
  */
 
-TEST_CASE("Testing basepair code converters ", "[get_x3dna_by_type,get_str_from_x3dna_type]" ) {
+TEST_CASE("Testing basepair code converters " ) {
   util::X3dna::set_envs();
 
 
@@ -25,10 +27,10 @@ TEST_CASE("Testing basepair code converters ", "[get_x3dna_by_type,get_str_from_
 
 
     for(const auto& bp_code : codes) {
-        REQUIRE(bp_code == util::get_str_from_x3dna_type(util::get_x3dna_by_type(bp_code)));
+        CHECK(bp_code == util::get_str_from_x3dna_type(util::get_x3dna_by_type(bp_code)));
     }
 }
- TEST_CASE( "Test X3dna parser ", "[X3dnaParser]" ) {
+ TEST_CASE( "Test X3dna parser " ) {
     util::X3dna::set_envs();
 
   //init_unittest_safe_logging();
@@ -43,20 +45,20 @@ TEST_CASE("Testing basepair code converters ", "[get_x3dna_by_type,get_str_from_
     auto stems = util::DssrStems{}; 
     auto iloops = util::DssrILoops{}; 
     get_elements(path,nts,bps,hps,hels,stems,iloops);
-    REQUIRE(x3dna_bps.size() == 63);
-    REQUIRE(!base::file_exists("ref_frames.dat"));
-    REQUIRE(!base::file_exists("p4p6_dssr.out"));
+    CHECK(x3dna_bps.size() == 0);
+    CHECK(!base::file_exists("ref_frames.dat"));
+    CHECK(!base::file_exists("p4p6_dssr.out"));
 
 }
 
-TEST_CASE( "Test X3dna parser JSON version", "[X3dnaParser]" ) {
+TEST_CASE( "Test X3dna parser JSON version" ) {
     //init_unittest_safe_logging();
     auto x = util::X3dna();
     auto path = base::unittest_resource_dir() + "/util/p4p6.pdb";
     auto x3dna_bps = x.get_basepairs_json(path);
-    REQUIRE(x3dna_bps.size() == 76);
-    REQUIRE(!base::file_exists("ref_frames.dat"));
-    REQUIRE(!base::file_exists("p4p6_dssr.out"));
+    CHECK(x3dna_bps.size() == 76);
+    CHECK(!base::file_exists("ref_frames.dat"));
+    CHECK(!base::file_exists("p4p6_dssr.out"));
     
 
 }

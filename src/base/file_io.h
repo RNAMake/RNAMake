@@ -19,6 +19,7 @@
 
 //RNAMake Headers
 #include "base/types.h"
+#include <base/exception.h>
 
 namespace base {
 
@@ -64,7 +65,7 @@ is_dir(String const & path) {
 
 
 Strings
-get_lines_from_file(String);
+get_lines_from_file(String) noexcept(false) ;
 
 }
 

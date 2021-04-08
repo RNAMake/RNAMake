@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include "../common.hpp"
 
@@ -39,11 +40,11 @@ private:
     math::Matrix flipped_;
 };
 
-TEST_CASE( "Test Thermo Flucuation Simulation ", "[thermo_fluctuation::ThermoFluctuationSimulation" ) {
+TEST_CASE( "Test Thermo Flucuation Simulation " ) {
 
     auto & rm = resources::Manager::instance();
 
-    SECTION("test running simulation") {
+    SUBCASE("test running simulation") {
         auto tfs = thermo_fluctuation::ThermoFlucSimulation();
         tfs.set_option_value("cutoff", 20);
         auto mset = std::make_shared<motif_data_structure::MotifStateEnsembleTree>();
@@ -53,10 +54,10 @@ TEST_CASE( "Test Thermo Flucuation Simulation ", "[thermo_fluctuation::ThermoFlu
         mset->add_ensemble(rm.motif_state_ensemble("GG_LL_CC_RR"));
         tfs.setup(mset, 0, 3, 0, 1);
         auto count = tfs.run();
-        REQUIRE(count > 0);
+        CHECK(count > 0);
     }
     
-    SECTION("catch common error in setting up simulation") {
+    SUBCASE("catch common error in setting up simulation") {
         auto tfs = thermo_fluctuation::ThermoFlucSimulation();
         // cant execute run until setup has been called
         REQUIRE_THROWS_AS(tfs.run(), thermo_fluctuation::ThermoFlucSimulationException);
@@ -75,17 +76,17 @@ TEST_CASE( "Test Thermo Flucuation Simulation ", "[thermo_fluctuation::ThermoFlu
 
     }
 
-    SECTION("Test graph simulation") {
+    SUBCASE("Test graph simulation") {
 
-        SECTION("Test scorer") {
+        SUBCASE("Test scorer") {
             auto scorer = thermo_fluctuation::graph::FrameScorer();
             auto ms = rm.motif_state("HELIX.IDEAL.2");
 
             auto score = scorer.score(*ms->end_states()[0], *ms->end_states()[0]);
-            REQUIRE(score == 0.0);
+            CHECK(score == 0.0);
         }
 
-        SECTION("Test simulation") {
+        SUBCASE("Test simulation") {
             auto scorer = std::make_shared<thermo_fluctuation::graph::FrameScorer>();
             auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
             auto sim = thermo_fluctuation::graph::Simulation(scorer, sterics);
@@ -96,10 +97,10 @@ TEST_CASE( "Test Thermo Flucuation Simulation ", "[thermo_fluctuation::ThermoFlu
 
             sim.setup(*mseg, data_structure::NodeIndexandEdge{1, 1}, data_structure::NodeIndexandEdge{0, 0});
             sim.set_option_value("cutoff", 100);
-            REQUIRE(sim.next() == true);
+            CHECK(sim.next() == true);
         }
 
-        /*SECTION("compare to old code") {
+        /*SUBCASE("compare to old code") {
             auto scorer = std::make_shared<OldFrameScorer>();
             auto sim = thermo_fluctuation::graph::Simulation(scorer);
 

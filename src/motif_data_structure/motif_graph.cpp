@@ -647,6 +647,13 @@ MotifGraph::replace_ideal_helices() {
 }
 
 void
+MotifGraph::replace_ideal_helices(
+  MotifGraph & new_mg /* return */,
+  std::map<int, int> & index_hash /* return */) {
+
+}
+
+void
 MotifGraph::replace_helical_sequence(secondary_structure::PoseOP const & ss) {
     for (auto & n : graph_.nodes()) {
         if (n->data()->mtype() != util::MotifType::HELIX) { continue; }
