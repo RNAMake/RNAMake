@@ -8,14 +8,11 @@
 #include "base/log.h"
 #include <CLI/CLI.hpp>
 
-#include <CLI/CLI.hpp>
-
 #include <vector>
 #include <filesystem>
 
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
-motif::MotifOPs motifs_;
 
 ComputeEnsemble::ComputeEnsemble() :
         base::Application(),
@@ -29,11 +26,11 @@ valid_pdb(String &path) {
 }
 
 void
-ComputeEnsemble::compute_motif(String const &path, std::vector<float> list) {
+ComputeEnsemble::compute_motif(String const &path, std::vector<float> const &list) {
     // Add a for loop
     for (const auto &file_path_entry : recursive_directory_iterator(path)) {
-        String path_string = file_path_entry.path().string();
-        motif::MotifFactory factory = motif::MotifFactory();
+        auto path_string = file_path_entry.path().string();
+        auto factory = motif::MotifFactory();
         auto motif = factory.motif_from_file(path_string);
         motif = factory.align_motif_to_common_frame(motif, 0);
         motifs_.push_back(motif);
@@ -41,8 +38,8 @@ ComputeEnsemble::compute_motif(String const &path, std::vector<float> list) {
 
     // generate ensemble with with a list of energies
     // use to_str for list
-    auto motifEnsemble = motif::MotifEnsemble(motifs_, list);
-    String s = motifEnsemble.to_str();
+    auto motif_ensemble = motif::MotifEnsemble(motifs_, list);
+    auto s = motif_ensemble.to_str();
     std::fstream file;
     file.open("test.txt");
     file << s;

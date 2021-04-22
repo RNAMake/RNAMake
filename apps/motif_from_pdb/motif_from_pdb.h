@@ -37,6 +37,8 @@ public:
     CLI::App app_;
 
 private:
+
+
     struct Parameters {
         String pdb = "";
     };
@@ -44,5 +46,7 @@ private:
 private:
     Parameters parameters_ = Parameters();
     resources::Manager &rm_;
+    motif::MotifOPs motifs_;
+
 
 };
