@@ -13,12 +13,34 @@
 #include <thermo_fluctuation/graph/simulation.h>
 
 class ComputeEnsemble : public base::Application {
+
+public: // application functions
+
+    void
+    setup_options() override;
+
+    void
+    parse_command_line(
+            int,
+            const char **) override;
+
+    void
+    run() override;
+
 public:
 
     ComputeEnsemble();
+
     CLI::App app_;
 
 private:
-    resources::Manager & rm_;
+    struct Parameters {
+        String pdb = "";
+    };
+
+private:
+    Parameters parameters_ = Parameters();
+    resources::Manager &rm_;
 
 };
+
