@@ -1,6 +1,6 @@
 #include <CLI/CLI.hpp>
 
-#include "motif/motif_from_pdb.h"
+#include "motif_from_pdb.h"
 #include "motif/motif_factory.h"
 #include "motif/motif_ensemble.h"
 #include "motif/motif.h"
@@ -29,7 +29,7 @@ valid_pdb(String &path) {
 }
 
 void
-compute_motif(String const &path, std::vector<float> list) {
+ComputeEnsemble::compute_motif(String const &path, std::vector<float> list) {
     // Add a for loop
     for (const auto &file_path_entry : recursive_directory_iterator(path)) {
         String path_string = file_path_entry.path().string();
@@ -42,6 +42,20 @@ compute_motif(String const &path, std::vector<float> list) {
     // generate ensemble with with a list of energies
     // use to_str for list
     auto motifEnsemble = motif::MotifEnsemble(motifs_, list);
+    String s = motifEnsemble.to_str();
+    std::fstream file;
+    file.open("test.txt");
+    file << s;
+    file.close();
+    std::cout << s << std::endl;
+}
+
+void
+ComputeEnsemble::run() {
+    std::vector<float> vec;
+    vec.push_back(10.0);
+    vec.push_back(15.0);
+    ComputeEnsemble::compute_motif(parameters_.pdb, vec);
 }
 
 void
@@ -52,17 +66,18 @@ ComputeEnsemble::parse_command_line (
 
 void
 ComputeEnsemble::setup_options () {
-    app_.add_option("--pdb", parameters_.pdb, "path to a PDB file with input RNA structure")
-            ->check(CLI::ExistingFile & CLI::Validator(valid_pdb, "ends in .pdb", "valid_pdb"));
+    app_.add_option("--pdb", parameters_.pdb, "path to a PDB file with input RNA structure");
 }
 
 
 int
 main(int argc, const char **argv) {
+
     std::set_terminate(base::print_backtrace);
     auto app = ComputeEnsemble();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
+    std::cout << "Hello from main" << std::endl;;
     app.run();
     return 0;
 

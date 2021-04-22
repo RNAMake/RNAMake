@@ -27,6 +27,9 @@ public: // application functions
     void
     run() override;
 
+    void
+    compute_motif(String const &path, std::vector<float> list);
+
 public:
 
     ComputeEnsemble();
@@ -43,4 +46,3 @@ private:
     resources::Manager &rm_;
 
 };
-
