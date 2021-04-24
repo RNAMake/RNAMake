@@ -6,6 +6,8 @@
 #include "base/settings.h"
 #include "motif/motif_to_secondary_structure.h"
 
+#include <util/find_pair.h>
+
 TEST_CASE( "Test converting 3D motifs into secondary structure objects", "[MotiftoSS]" ) {
     
     auto path = base::motif_dirs() + "base.motif";

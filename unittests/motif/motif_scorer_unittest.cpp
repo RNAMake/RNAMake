@@ -6,6 +6,8 @@
 #include "base/settings.h"
 #include "motif/motif_scorer.h"
 
+#include <util/find_pair.h>
+
 TEST_CASE( "Test Secondary Structure scoring of motifs", "[MotifScorer]" ) {
     
     auto path = base::motif_dirs() + "base.motif";

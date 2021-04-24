@@ -5,6 +5,8 @@
 //RNAMake Headers
 #include "motif/motif_factory.h"
 
+#include <util/find_pair.h>
+
 TEST_CASE( "Test Motif creation with Motif Factory", "[MotifFactory]" ) {
     
     auto mf = motif::MotifFactory();

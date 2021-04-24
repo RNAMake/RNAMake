@@ -110,7 +110,6 @@ def build_header(base_dir, static, target):
     header_contents += "cmake_minimum_required(VERSION 3.0)\n"
     header_contents += "set(CMAKE_BUILD_TYPE Release)\n"
     header_contents += "project(RNAMake)\n\n"
-
     if static == True:
         # header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
         header_contents += 'set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-as-needed ")\n'

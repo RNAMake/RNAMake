@@ -8,6 +8,8 @@
 #include "motif/motif.h"
 #include "motif/motif_ensemble.h"
 
+#include <util/find_pair.h>
+
 TEST_CASE( "Test Motif Ensembles", "[MotifEnsemble]" ) {
     auto path = base::motif_dirs() + "base.motif";
     auto m = motif::file_to_motif(path);

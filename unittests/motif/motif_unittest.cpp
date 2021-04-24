@@ -10,6 +10,8 @@
 #include "motif/motif.h"
 #include "motif/motif_factory.h"
 
+#include <util/find_pair.h>
+
 TEST_CASE( "Test Motifs the core of everything!", "[Motif]" ) {
     
     auto path = base::motif_dirs() + "base.motif";

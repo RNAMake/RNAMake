@@ -10,6 +10,8 @@
 #include "resources/motif_sqlite_library.h"
 #include "motif_data_structure/motif_merger.h"
 
+#include <util/find_pair.h>
+
 TEST_CASE( "Test Mergering Motifs into single structure ", "[motif_data_structure::MotifMerger]" ) {
     auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.3");
     auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.3");

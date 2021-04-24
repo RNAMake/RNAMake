@@ -30,5 +30,5 @@ script:
   - cd cmake/build/ && python3 ../make_project.py -target "mac"
   - cmake .  -DCMAKE_SYSTEM_NAME="Linux" -DBUILD_TYPE="Release" 
   - make
-  - for TEST in $(ls *unittest); do ./$TEST; done;
+  - ctest
    

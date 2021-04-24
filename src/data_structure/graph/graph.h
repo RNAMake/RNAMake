@@ -388,8 +388,9 @@ public:
     }
 
     ~GraphStatic() {
-      for (int i = 0; i < this->nodes_.size(); i++) {
-        this->nodes_[i]->unset_connections();
+      for(auto const & n : this->nodes_) {
+        // TODO this seems to be required to stop memory leak -- JDY 2020_09_21
+        n->unset_connections();
       }
     }
 
