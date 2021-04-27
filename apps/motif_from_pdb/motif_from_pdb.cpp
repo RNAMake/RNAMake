@@ -69,12 +69,10 @@ ComputeEnsemble::setup_options () {
 
 int
 main(int argc, const char **argv) {
-
     std::set_terminate(base::print_backtrace);
     auto app = ComputeEnsemble();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
-    std::cout << "Hello from main" << std::endl;;
     app.run();
     return 0;
 

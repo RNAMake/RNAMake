@@ -28,7 +28,7 @@ public: // application functions
     run() override;
 
     void
-    compute_motif(String const &path, std::vector<float> list);
+    compute_motif(String const &path, std::vector<float> const &list);
 
 public:
 
