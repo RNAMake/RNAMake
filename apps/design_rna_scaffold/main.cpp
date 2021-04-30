@@ -9,10 +9,6 @@
 #include "design_rna_scaffold/design_rna_scaffold.h"
 #include "design_rna_scaffold/design_rna_scaffold.cc"
 
-#include <motif_search/solution_topology.h>
-#include <motif_search/path_finding/search.h>
-#include <motif_search/exhaustive/search.h>
-#include <motif_search/monte_carlo/search.h>
 
 #include <sequence_optimization/sequence_optimizer.h>
 
@@ -23,8 +19,8 @@ main (
     //must add this for all apps!
     std::set_terminate(base::print_backtrace);
 
-    //String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
-    //resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
+    String base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
+    resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
     auto app = DesignRNAScaffold();
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
