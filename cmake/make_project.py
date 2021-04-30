@@ -67,6 +67,26 @@ def build_unittests(lib_list, base_dir, static):
     unittest_declarations += "#" * 100 + "\n"
     return unittest_declarations
 
+def build_integration_tests(base_dir, static):
+    """Method that builds out the declarations for the integration_tests"""
+    integration_tests_declarations = (
+            "#" * 100 + "\n# Integration tests Declarations \n" + "#" * 100 + "\n"
+    )
+
+    for source_file in Utils.make_file_list(glob.glob(base_dir + '/*')):
+            unittest_name = source_file.split("/")[-1].split(".")[0]
+            integration_tests_declarations += "\tadd_executable({TEST} {SRC})\n".format(
+                TEST=unittest_name, SRC=source_file
+            )
+            integration_tests_declarations += "\ttarget_link_libraries({TEST} all_lib {BUILD} )\n".format(
+                TEST=unittest_name, BUILD="-static" if static else ""
+            )
+            integration_tests_declarations += "\tadd_test({TEST} {TEST})\n".format(
+                TEST=unittest_name
+            )
+            integration_tests_declarations += "#" * 100 + "\n"
+    return integration_tests_declarations
+
 
 def write_CML_file(content_list):
     """Method that exports the contents to the CMakeLists.txt file"""
@@ -130,6 +150,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories({BASE})
 include_directories({EXTERN})
 include_directories({UNITTESTS})
+include_directories({INTEGRATION})
 include_directories({APPS})
 include({SQLITE})
  """.format(
@@ -139,6 +160,7 @@ include({SQLITE})
         EXTERN=base_dir + "/src/external/",
         BASE=base_dir + "/src/",
         UNITTESTS=base_dir + "/unittests/",
+        INTEGRATION=base_dir + "/integration_tests",
         APPS=base_dir + "/apps/",
     )
     header_contents += "#" * 100 + "\n"
@@ -209,6 +231,7 @@ if __name__ == "__main__":
             ),
             build_libraries(libs, depends, base_dir + "/src", static),
             build_unittests(libs, base_dir + "/unittests", static),
+            build_integration_tests(base_dir + "/integration_tests", static),
             build_apps(base_dir, static),
         ]
     )
