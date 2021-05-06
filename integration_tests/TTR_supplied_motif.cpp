@@ -2,41 +2,17 @@
 // Created by Hassan Abdelsamad on 4/18/21.
 //
 
+#include <CLI/CLI.hpp>
+
 #include "base/backtrace.h"
 #include "base/log.h"
 #include "design_rna_scaffold/design_rna_scaffold.h"
 #include "design_rna_scaffold/design_rna_scaffold.cc"
 #include <data_structure/graph_base.h>
+#include "tools.h"
 
 
 #include "common.hpp"
-
-int compareFile(FILE *fPtr1, FILE *fPtr2) {
-    char ch1, ch2;
-    auto line = 1;
-    auto col = 0;
-
-    do {
-        ch1 = fgetc(fPtr1);
-        ch2 = fgetc(fPtr2);
-
-        if (ch1 == '\n') {
-            line += 1;
-            col = 0;
-        }
-
-        if (ch1 != ch2)
-            return -1;
-        col += 1;
-
-    } while (ch1 != EOF && ch2 != EOF);
-
-    if (ch1 == EOF && ch2 == EOF)
-        return 1;
-    else
-        return -1;
-}
-
 
 TEST_CASE ("Test TTR_supplied_motif") {
     auto base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
@@ -54,7 +30,8 @@ TEST_CASE ("Test TTR_supplied_motif") {
         SUBCASE ("Compare default.scores") {
             auto *fp1 = fopen("orig_default.scores", "r");
             auto *fp2 = fopen("default.scores", "r");
-            CHECK(compareFile(fp1, fp2));
+                    CHECK(compareFile(fp1, fp2));
+        }
 
         SUBCASE ("Compare default.out") {
             auto *fp1 = fopen("orig_default.out", "r");

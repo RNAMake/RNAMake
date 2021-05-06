@@ -55,6 +55,14 @@ void
 init_logging(
         LogLevel log_level = LogLevel::INFO);
 
+void
+init_logging_with_file(
+        LogLevel log_level = LogLevel::INFO);
+
+
 }
+
+
+
 
 #endif //RNAMAKE_NEW_LOG_H
