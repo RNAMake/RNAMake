@@ -28,9 +28,7 @@ TEST_CASE ("build around protein") {
     app.run();
 
     SUBCASE ("Comparing default") {
-        auto *fp1 = fopen("orig_default.scores", "r");
-        auto *fp2 = fopen("default.scores", "r");
-        CHECK(compareFile(fp1, fp2));
+
     }
 
 }
