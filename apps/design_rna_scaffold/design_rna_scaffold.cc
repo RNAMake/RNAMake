@@ -332,11 +332,11 @@ DesignRNAScaffold::run () {
 
     if (parameters_.core.designs <= sol_info_.design_num) {
         LOG_INFO << "found " << sol_info_.design_num
-                 << " designs, if you want more please use --designs num_of_design";
+                 << " designs; if you want more please use --designs num_of_design";
 
     }
     else {
-        LOG_INFO << "found " << sol_info_.design_num << " designs, did not reach desired num of "
+        LOG_INFO << "found " << sol_info_.design_num << " designs; did not reach desired num of "
                  << parameters_.core.designs;
 
     }
