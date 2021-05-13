@@ -11,6 +11,8 @@
 #include "motif/motif.h"
 #include <motif/motif_state_aligner.h>
 
+#include <util/find_pair.h>
+
 math::Matrix
 rotation_about_x_axis(
         float degrees) {

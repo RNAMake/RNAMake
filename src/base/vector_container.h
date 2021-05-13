@@ -12,6 +12,8 @@
 #include <base/types.h>
 #include <stdexcept>
 
+#include <stdexcept>
+
 namespace base {
 
 // wrapper to avoid doing std::shared_ptr<std::vector<T>> since pybind11 wont allow this

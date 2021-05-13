@@ -7,6 +7,7 @@
 #include "motif_data_structure/motif_state_ensemble_tree.h"
 #include "motif_data_structure/motif_state_ensemble_graph.h"
 
+#include <util/find_pair.h>
 
 
 TEST_CASE( "Test Assembling MotifEnsembleStates together" ) {

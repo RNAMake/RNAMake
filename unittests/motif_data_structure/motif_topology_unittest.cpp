@@ -9,7 +9,7 @@
 #include "motif_data_structure/motif_topology.h"
 #include "resources/resource_manager.h"
 
-
+#include <util/find_pair.h>
 
 TEST_CASE( "Test Changes in Motif Topology" ) {
     auto builder = MotifGraphBuilder();

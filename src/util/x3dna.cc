@@ -17,6 +17,8 @@
 #include <base/settings.h>
 #include <base/log.h>
 #include <util/x3dna.h>
+#include <util/x3dna_src.h>
+#include <util/find_pair.h>
 
 namespace util { 
 X3dna::X3dna() :
@@ -73,9 +75,9 @@ X3dna::_generate_ref_frame(
 
     auto find_pair_path = bin_path_ + "find_pair ";
     auto analyze_path = bin_path_ + "analyze ";
-    //auto command = find_pair_path + pdb_path + " stdout | " + analyze_path + "stdin ";
     auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin";
     auto s = strdup(command.c_str());
+    std::cout << command << "\n";
     auto result = std::system(s);
 
     if (result != 0) {
@@ -114,6 +116,7 @@ X3dna::_parse_ref_frame_file(
 
     //always rebuild
     auto base_path = base::base_dir(pdb_path);
+    std::cout << "The pdb path is: " << pdb_path << "\n";
     auto ref_frames_path = String("ref_frames.dat");
     if (rebuild_files_) { _generate_ref_frame(pdb_path); }
     else {
@@ -129,52 +132,8 @@ X3dna::_parse_ref_frame_file(
     }
     if (no_ref_frames_) { return; }
     auto lines = base::get_lines_from_file(ref_frames_path);
-    auto r = std::regex(
-            "#\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)\\s+\\-\\s+(?:\\.+\\d+\\>)*(\\w+):\\.*(-*\\d+)\\S:\\[\\.*(\\S+)\\](\\w+)");
-    auto start_bp = 0;
-    auto rs = math::Points();
-    auto d = math::Point();
-    X3BPInfo *bp_info;
-    for (auto const &l : lines) {
-        // too short to be data
-        if (l.length() < 3) { continue; }
-        // basepair declare line
-        if (l.substr(0, 3) == "...") {
-            auto m = std::smatch();
-            std::regex_search(l, m, r);
-            try {
-                bp_info = new X3BPInfo(m);
-            }
-            catch (X3dnaException const &e) {
-                throw e;
-            }
-            rs = math::Points();
-            start_bp = 1;
-            continue;
-        }
-        if (start_bp == 0) { continue; }
-        else if (start_bp == 1) {
-            d = _convert_string_to_point(l);
-        } else if (start_bp < 5) {
-            rs.push_back(_convert_string_to_point(l));
-        }
-
-        if (start_bp == 4) {
-            auto r = math::Matrix(rs[0].x(), rs[0].y(), rs[0].z(),
-                                  rs[1].x(), rs[1].y(), rs[1].z(),
-                                  rs[2].x(), rs[2].y(), rs[2].z());
-            auto res1 = X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
-            auto res2 = X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
-            auto bp = X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
-            basepairs.push_back(bp);
-            start_bp = 0;
-            continue;
-
-        }
-        if (start_bp != 0) { start_bp += 1; }
-    }
-
-    if (bp_info != nullptr) { delete bp_info; }
+    auto finder = PairFinder(pdb_path);
+    finder.find_pair(basepairs);
 }
 
 void
@@ -737,7 +696,7 @@ X3dna::X3Basepair::to_string() const {
 void
 json_cleanup() {
 
-    auto cleanup_cmd = String{base::x3dna_path()} +  String{"/bin/x3dna-dssr --clean 2> /dev/null"};
+    auto cleanup_cmd = String{base::x3dna_path()} +  String{"/bin/x3dna-dssr --clean 2>"};
     std::system(cleanup_cmd.c_str());
 
 }
