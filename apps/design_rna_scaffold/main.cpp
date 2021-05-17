@@ -7,15 +7,9 @@
 #include "base/backtrace.h"
 #include "base/log.h"
 #include "design_rna_scaffold/design_rna_scaffold.h"
-#include "design_rna_scaffold/design_rna_scaffold.cc"
-
-
-#include <sequence_optimization/sequence_optimizer.h>
 
 int
-main (
-        int argc,
-        const char **argv) {
+main (int argc, const char **argv) {
     //must add this for all apps!
     std::set_terminate(base::print_backtrace);
 

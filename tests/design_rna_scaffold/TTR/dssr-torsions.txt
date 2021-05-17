@@ -1,5 +1,5 @@
          Output of DNA/RNA backbone conformational parameters
-             DSSR v1.9.10-2020apr23 by xiangjun@x3dna.org
+             DSSR v1.9.9-2020feb06 by xiangjun@x3dna.org
 ******************************************************************************************
 Main chain conformational parameters:
 
