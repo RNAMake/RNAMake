@@ -73,7 +73,7 @@ def build_integration_tests(base_dir, static):
             "#" * 100 + "\n# Integration tests Declarations \n" + "#" * 100 + "\n"
     )
 
-    for source_file in Utils.make_file_list(glob.glob(base_dir + '/*')):
+    for source_file in Utils.make_file_list(glob.glob(base_dir + '/**', recursive=True)):
             unittest_name = source_file.split("/")[-1].split(".")[0]
             integration_tests_declarations += "\tadd_executable({TEST} {SRC})\n".format(
                 TEST=unittest_name, SRC=source_file
