@@ -78,6 +78,13 @@ private:
         int steps, n;
     };
 
+    std::map<std::string, std::string> parameters_map = {{"fseq", std::string() },
+                             {"fss", std::string()},
+                             {"cseq", std::string()},
+                             {"css", std::string()},
+                             {"log_level", std::string()},
+                             {"setup", std::string()}};
+
 private:
     resources::Manager & _rm;
     Parameters _parameters;

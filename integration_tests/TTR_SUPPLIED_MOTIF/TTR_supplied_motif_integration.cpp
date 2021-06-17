@@ -15,11 +15,9 @@
  #include "common.hpp"
 
  TEST_CASE ("Test TTR_supplied_motif") {
-//     auto base_path = base::base_dir() + "/apps/simulate_tectos/resources/";
-//     resources::Manager::instance().add_motif(base_path + "GAAA_tetraloop");
 
-     // Get the args
      auto base = std::getenv("RNAMAKE");
+
      std::string base_str(base);
      std::string args_path = base_str + "/integration_tests/TTR_SUPPLIED_MOTIF/ARGS.txt";
      std::ifstream args_file(args_path);
@@ -40,13 +38,18 @@
      std::set_terminate(base::print_backtrace);
      auto app = DesignRNAScaffold();
 
+     remove("logs.csv");
+
+
+     base::init_logging_with_file(base::LogLevel::DEBUG);
+
      app.setup_options();
-     base::init_logging(app.log_level());
+
      app.app_.parse(args);
      app.run();
 
      SUBCASE ("Compare logs") {
-         CHECK(check_logs(expected_path, "Logs.txt"));
+         CHECK(check_logs(expected_path, "logs.csv"));
      }
 }
 

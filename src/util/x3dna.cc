@@ -26,26 +26,26 @@ X3dna::X3dna() :
         generated_dssr_(false),
         generated_ref_frames_(false),
         no_ref_frames_(false) {
-    
+
     auto os_name = base::get_os_name();
     auto x3dna_path = base::resources_path() + "/x3dna/" + os_name + "/";
-
+//
     bin_path_ = x3dna_path + "/bin/";
     // make sure have the correct x3dna programs for this operaing system
-    if (!base::file_exists(bin_path_ + "find_pair")) {
-        throw X3dnaException("x3dna's find_pair program is not available for your operating system");
-    }
-    if (!base::file_exists(bin_path_ + "analyze")) {
-        throw X3dnaException("x3dna's analyze program is not available for your operating system");
-    }
+//    if (!base::file_exists(bin_path_ + "find_pair")) {
+//        throw X3dnaException("x3dna's find_pair program is not available for your operating system");
+//    }
+//    if (!base::file_exists(bin_path_ + "analyze")) {
+//        throw X3dnaException("x3dna's analyze program is not available for your operating system");
+//    }
     if (!base::file_exists(bin_path_ + "x3dna-dssr")) {
         throw X3dnaException("x3dna's x3dna-dssr program is not available for your operating system");
     }
 
-    auto ref_frame_files = String(
-            "auxiliary.par,bestpairs.pdb,bp_helical.par,bp_order.dat,bp_step.par,cf_7methods.par,col_chains.scr,col_helices.scr,hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb");
-
-    ref_frame_files_to_delete_ = base::split_str_by_delimiter(ref_frame_files, ",");
+//    auto ref_frame_files = String(
+//            "auxiliary.par,bestpairs.pdb,bp_helical.par,bp_order.dat,bp_step.par,cf_7methods.par,col_chains.scr,col_helices.scr,hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb");
+//
+//    ref_frame_files_to_delete_ = base::split_str_by_delimiter(ref_frame_files, ",");
 
     auto dssr_filename_str = "dssr-2ndstrs.ct,dssr-2ndstrs.dbn,dssr-helices.pdb,dssr-pairs.pdb,dssr-stems.pdb,hel_regions.pdb,hstacking.pdb,poc_haxis.r3d,stacking.pdb,dssr-torsions.dat,dssr-Kturns.pdb,dssr-multiplets.pdb,dssr-hairpins.pdb,dssr-Aminors.pdb";
     dssr_files_to_delete_ = base::split_str_by_delimiter(dssr_filename_str, ",");
@@ -69,28 +69,27 @@ void
 X3dna::_generate_ref_frame(
         String const &pdb_path) const {
 
-    auto fname = base::filename(pdb_path).substr(0, -4);
-    fname = fname.substr(0, fname.length() - 4);
-    if (!base::file_exists(pdb_path)) { throw X3dnaException("cannot find pdb for ref_frames.dat\n"); }
-
-    auto find_pair_path = bin_path_ + "find_pair ";
-    auto analyze_path = bin_path_ + "analyze ";
-    auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin";
-    auto s = strdup(command.c_str());
-    std::cout << command << "\n";
-    auto result = std::system(s);
-
-    if (result != 0) {
-        generated_ref_frames_ = true;
-        no_ref_frames_ = true;
-        LOGW << "no ref_frames.dat generated from X3dna this is likely due to there being no basepairs in this pdb";
-        return;
-    }
-
-    _delete_files(ref_frame_files_to_delete_);
-    _delete_file(fname + ".out");
-
-    delete s;
+//    auto fname = base::filename(pdb_path).substr(0, -4);
+//    fname = fname.substr(0, fname.length() - 4);
+//    if (!base::file_exists(pdb_path)) { throw X3dnaException("cannot find pdb for ref_frames.dat\n"); }
+//
+//    auto find_pair_path = bin_path_ + "find_pair ";
+//    auto analyze_path = bin_path_ + "analyze ";
+//    auto command = find_pair_path + pdb_path + " 2> /dev/null stdout | " + analyze_path + "stdin";
+//    auto s = strdup(command.c_str());
+//    auto result = std::system(s);
+//
+//    if (result != 0) {
+//        generated_ref_frames_ = true;
+//        no_ref_frames_ = true;
+//        LOGW << "no ref_frames.dat generated from X3dna this is likely due to there being no basepairs in this pdb";
+//        return;
+//    }
+//
+//    _delete_files(ref_frame_files_to_delete_);
+//    _delete_file(fname + ".out");
+//
+//    delete s;
     generated_ref_frames_ = true;
 
 }
@@ -114,24 +113,23 @@ X3dna::_parse_ref_frame_file(
         String const &pdb_path,
         X3Basepairs &basepairs) const {
 
-    //always rebuild
-    auto base_path = base::base_dir(pdb_path);
-    std::cout << "The pdb path is: " << pdb_path << "\n";
-    auto ref_frames_path = String("ref_frames.dat");
-    if (rebuild_files_) { _generate_ref_frame(pdb_path); }
-    else {
-        // current directory: always rebuild file
-        if (base_path == "./") { _generate_ref_frame(pdb_path); }
-        else {
-            // ref_frames file exists in correct spot
-            if (!base::file_exists(base_path + "/ref_frames.dat")) { _generate_ref_frame(pdb_path); }
-            else {
-                ref_frames_path = base_path + "/ref_frames.dat";
-            }
-        }
-    }
-    if (no_ref_frames_) { return; }
-    auto lines = base::get_lines_from_file(ref_frames_path);
+//    //always rebuild
+//    auto base_path = base::base_dir(pdb_path);
+//    auto ref_frames_path = String("ref_frames.dat");
+//    if (rebuild_files_) { _generate_ref_frame(pdb_path); }
+//    else {
+//        // current directory: always rebuild file
+//        if (base_path == "./") { _generate_ref_frame(pdb_path); }
+//        else {
+//            // ref_frames file exists in correct spot
+//            if (!base::file_exists(base_path + "/ref_frames.dat")) { _generate_ref_frame(pdb_path); }
+//            else {
+//                ref_frames_path = base_path + "/ref_frames.dat";
+//            }
+//        }
+//    }
+//    if (no_ref_frames_) { return; }
+//    auto lines = base::get_lines_from_file(ref_frames_path);
     auto finder = PairFinder(pdb_path);
     finder.find_pair(basepairs);
 }
@@ -140,20 +138,20 @@ void
 X3dna::generate_dssr_file(
         String const &pdb_path) const {
 
-    auto fname = base::filename(pdb_path);
-    fname = fname.substr(0, fname.length() - 4);
-
-    auto dssr_path = bin_path_ + "x3dna-dssr ";
-    auto command = dssr_path + "-i=" + pdb_path + " -o=" + fname + "_dssr.out --non-pair";
-    auto s = strdup(command.c_str());
-    auto result = std::system(s);
-
-    if (result != 0) {
-        throw X3dnaException("could not call x3dna-dssr properly, please make sure you have it set up properly\n");
-    }
-
-    _delete_files(dssr_files_to_delete_);
-    generated_dssr_ = true;
+//    auto fname = base::filename(pdb_path);
+//    fname = fname.substr(0, fname.length() - 4);
+//
+//    auto dssr_path = bin_path_ + "x3dna-dssr ";
+//    auto command = dssr_path + "-i=" + pdb_path + " -o=" + fname + "_dssr.out --non-pair";
+//    auto s = strdup(command.c_str());
+//    auto result = std::system(s);
+//
+//    if (result != 0) {
+//        throw X3dnaException("could not call x3dna-dssr properly, please make sure you have it set up properly\n");
+//    }
+//
+//    _delete_files(dssr_files_to_delete_);
+//    generated_dssr_ = true;
 
 }
 
@@ -334,60 +332,62 @@ X3dna::get_basepairs(
 
     _parse_ref_frame_file(pdb_path, basepairs);
 
-    if (no_ref_frames_) { return basepairs; }
-
-    auto dssr_file_sections = _parse_dssr_file_into_sections(pdb_path);
-    if (dssr_file_sections.find("base") == dssr_file_sections.end()) { return basepairs; }
-    auto dssr_bp_section = dssr_file_sections["base"];
-    
-    for (auto const &l : dssr_bp_section) {
-        // line to short to have base pair declartion on it
-        if (l.length() < 3) {
-            continue; }
-        auto spl = _split_over_white_space(l);
-
-        // first element should be a digit for a valid line
-        try { std::stoi(spl[0]); }
-        catch (std::invalid_argument) { continue; }
-
-        auto bp_type_str = spl.back();
-        auto bp_type = X3dnaBPType::cDDD;
-
-        try {
-            bp_type = get_x3dna_by_type(bp_type_str);
-        }
-        catch (X3dnaException) {
-            LOGW << "invalid 3dna basepair type: " + bp_type_str + " skipping basepair!";
-            continue;
-        }
-
-        auto res1 = _parse_dssr_res_str(spl[1]);
-        auto res2 = _parse_dssr_res_str(spl[2]);
-        if (res1 == nullptr || res2 == nullptr) { continue; }
-
-        // find existing base pair and add base pair type
-        for (auto &bp : basepairs) {
-            if ((bp.res1 == *res1 && bp.res2 == *res2) ||
-                (bp.res2 == *res1 && bp.res1 == *res2)) {
-                bp.bp_type = bp_type;
-                break;
-            }
-        }
-        delete res1;
-        delete res2;
-    }
-
-    // clean up generated x3dna files
-    if (generated_ref_frames_) { _delete_file("ref_frames.dat"); }
-    if (generated_dssr_) {
-        auto fname = base::filename(pdb_path);
-        fname = fname.substr(0, fname.length() - 4);
-        _delete_file(fname + "_dssr.out");
-    }
-
-    json_cleanup();
-
     return basepairs;
+
+//    if (no_ref_frames_) { return basepairs; }
+
+//    auto dssr_file_sections = _parse_dssr_file_into_sections(pdb_path);
+//    if (dssr_file_sections.find("base") == dssr_file_sections.end()) { return basepairs; }
+//    auto dssr_bp_section = dssr_file_sections["base"];
+//
+//    for (auto const &l : dssr_bp_section) {
+//        // line to short to have base pair declartion on it
+//        if (l.length() < 3) {
+//            continue; }
+//        auto spl = _split_over_white_space(l);
+//
+//        // first element should be a digit for a valid line
+//        try { std::stoi(spl[0]); }
+//        catch (std::invalid_argument) { continue; }
+//
+//        auto bp_type_str = spl.back();
+//        auto bp_type = X3dnaBPType::cDDD;
+//
+//        try {
+//            bp_type = get_x3dna_by_type(bp_type_str);
+//        }
+//        catch (X3dnaException) {
+//            LOGW << "invalid 3dna basepair type: " + bp_type_str + " skipping basepair!";
+//            continue;
+//        }
+//
+//        auto res1 = _parse_dssr_res_str(spl[1]);
+//        auto res2 = _parse_dssr_res_str(spl[2]);
+//        if (res1 == nullptr || res2 == nullptr) { continue; }
+//
+//        // find existing base pair and add base pair type
+//        for (auto &bp : basepairs) {
+//            if ((bp.res1 == *res1 && bp.res2 == *res2) ||
+//                (bp.res2 == *res1 && bp.res1 == *res2)) {
+//                bp.bp_type = bp_type;
+//                break;
+//            }
+//        }
+//        delete res1;
+//        delete res2;
+//    }
+//
+//    // clean up generated x3dna files
+//    if (generated_ref_frames_) { _delete_file("ref_frames.dat"); }
+//    if (generated_dssr_) {
+//        auto fname = base::filename(pdb_path);
+//        fname = fname.substr(0, fname.length() - 4);
+//        _delete_file(fname + "_dssr.out");
+//    }
+//
+//    json_cleanup();
+//
+//    return basepairs;
 
 }
 

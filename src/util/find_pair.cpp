@@ -80,7 +80,7 @@ namespace util {
                                   rs[2].x(), rs[2].y(), rs[2].z());
         auto res1 = X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
         auto res2 = X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
-        auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
+        auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
         bps.push_back(bp);
     }
 
