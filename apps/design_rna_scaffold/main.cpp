@@ -8,6 +8,7 @@
 #include "base/log.h"
 #include "design_rna_scaffold/design_rna_scaffold.h"
 
+
 int
 main (int argc, const char **argv) {
     //must add this for all apps!
@@ -19,7 +20,7 @@ main (int argc, const char **argv) {
     app.setup_options();
     CLI11_PARSE(app.app_, argc, argv);
     //start logging
-    base::init_logging(app.log_level());
+    base::init_logging(base::LogLevel::DEBUG);
 
     // hacky way of doing it but wtv, the app is guaranteed to have an input CJ 09/20
     //if(app.app_["--mg"]->empty() && app.app_["--pdb"]->empty()) {

@@ -19,7 +19,7 @@ init_logging(LogLevel log_level) {
 
 void
 init_logging_with_file(LogLevel log_level) {
-    static plog::RollingFileAppender<plog::CsvFormatter> fileAppender("Logs.csv", 8000, 3);
+    static plog::RollingFileAppender<plog::CsvFormatter> fileAppender("logs.csv", 0, 1);
     static plog::ColorConsoleAppender<plog::CustomFormatter> consoleAppender;
     plog::init((plog::Severity)log_level, &fileAppender).addAppender(&consoleAppender);
 }

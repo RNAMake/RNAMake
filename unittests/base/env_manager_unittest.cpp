@@ -12,7 +12,6 @@ TEST_CASE( "Test environment variable setting") {
     
     base::init_logging(base::LogLevel::FATAL);
     CHECK(std::getenv("RNAMAKE") != nullptr);
-    CHECK(std::getenv("X3DNA") != nullptr);
     auto unset_vars(0);
     const auto rnamake_orig = std::getenv("RNAMAKE");
    /*

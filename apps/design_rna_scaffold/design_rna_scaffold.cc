@@ -6,6 +6,9 @@
 
 #include "base/backtrace.h"
 #include "base/log.h"
+#include "util/string_util.h"
+
+#include "design_rna_scaffold/design_rna_scaffold_options.h"
 #include "design_rna_scaffold/design_rna_scaffold.h"
 
 #include <motif_search/solution_topology.h>
@@ -23,237 +26,10 @@ DesignRNAScaffold::DesignRNAScaffold () :
 
 // app functions  //////////////////////////////////////////////////////////////////////////////////
 
-String
-valid_pdb (String &path) {
-    auto ending = path.substr(path.size() - 4);
-    return ending == ".pdb" ? String{""} : String{"the file specified by --pdb must end in .pdb"};
-}
-
-String
-valid_bp (String &bp) {
-    const auto bp_pattern = std::regex("\\b[A-Z][0-9]*-[A-Z][0-9]*\\b");
-    auto sm = std::smatch{};
-    std::regex_match(bp, sm, bp_pattern);
-
-    return sm.size() == 1 ? String{""} : String{bp + " is an invalid bp format"};
-}
-
 void
-DesignRNAScaffold::setup_options () {
-
-    app_.add_option_group("Core Inputs");
-    app_.add_option_group("I/O Options");
-    app_.add_option_group("Search Parameters");
-    app_.add_option_group("Scoring Paramters");
-    app_.add_option_group("Sequence Optimization Parameters");
-    app_.add_option_group("Thermo Fluc Parameters");
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Core Inputs
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    app_.add_option("--pdb", parameters_.core.pdb, "path to a PDB file with input RNA structure")
-        ->check(CLI::ExistingFile & CLI::Validator(valid_pdb, "ends in .pdb", "valid_pdb"))
-        ->group("Core Inputs");
-
-    app_.add_option("--start_bp",
-                    parameters_.core.start_bp,
-                    "starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-        ->check(CLI::Validator(valid_bp,
-                               "format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]",
-                               "valid_bp"))
-        ->group("Core Inputs");
-
-    app_.add_option("--end_bp",
-                    parameters_.core.end_bp,
-                    "ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]")
-        ->check(CLI::Validator(valid_bp,
-                               "format [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM]",
-                               "valid_bp"))
-        ->group("Core Inputs");
-
-    //app_.add_option("--mg",parameters_.core.mg,"path to a motif graph file")
-    //                ->check(CLI::ExistingFile)
-    //                ->group("Core Inputs");
-
-    app_.add_option("--designs",
-                    parameters_.core.designs,
-                    "number of designs to create. Default is 1")
-        ->default_val(1)
-        ->check(CLI::PositiveNumber)
-        ->group("Core Inputs");
-
-    app_.add_option("--log_level", parameters_.core.log_level, "level for global logging")
-        ->check(CLI::IsMember(std::set<String>{"debug", "error", "fatal", "info", "verbose",
-                                               "warn"}))
-        ->default_val("info")
-        ->group("Core Inputs");
-
-    app_.add_option("--extra_pdbs", parameters_.core.extra_pdbs, ", deliminted list of other pdbs used in building")
-        ->default_val("")
-        ->group("Core Inputs");
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // I/O Options
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    app_.add_flag("--dump_intermediate_pdbs",
-                  parameters_.io.dump_intermediate_pdbs,
-                  "flag to dump intermediate pdbs")
-        ->group("I/O Options");
-
-    app_.add_flag("--dump_pdbs", parameters_.io.dump_pdbs, "TODO")
-        ->group("I/O Options");
-
-    app_.add_flag("--dump_scaffold_pdbs",
-                  parameters_.io.dump_scaffold_pdbs,
-                  "flag to output pdbs of just the design scaffold WITHOUT initial RNA structure useful for really big structures")
-        ->group("I/O Options");
-
-    app_.add_option("--new_ensembles",
-                    parameters_.io.new_ensembles_file,
-                    "flag to include new structural ensembles")
-        ->default_val("")
-        ->group("I/O Options");
-
-    app_.add_flag("--no_out_file",
-                  parameters_.io.no_out_file,
-                  "if you only want the summary and not the actual structures")
-        ->default_val(false)
-        ->group("I/O Options");
-
-    app_.add_option("--out_file",
-                    parameters_.io.out_file,
-                    "output file that contains all information to rebuild solutions")
-        ->default_val("default.out")
-        ->group("I/O Options");
-
-    app_.add_option("--score_file",
-                    parameters_.io.score_file,
-                    "name of output file containining scoring information for design")
-        ->default_val("default.scores")
-        ->group("I/O Options");
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Search Parameters
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    app_.add_option("--ending_helix",
-                    parameters_.search.ending_helix,
-                    "ending helix for design solution. Format = [TODO]")
-        ->default_val("")
-        ->group("Search Parameters");
-
-    app_.add_option("--exhaustive_scorer", parameters_.search.exhaustive_scorer, "TODO")
-        ->default_val("default")
-        ->group("Search Parameters");
-
-    app_.add_option("--max_helix_length",
-                    parameters_.search.max_helix_length,
-                    "maximum number of basepairs in a solution helix")
-        ->default_val(99)
-        ->group("Search Parameters");
-
-    app_.add_option("--mc_scorer", parameters_.search.mc_scorer, "TODO")
-        ->default_val("default")
-        ->check(CLI::IsMember(std::set<String>{"default", "scaled_scorer"}))
-        ->group("Search Parameters");
-
-    app_.add_option("--min_helix_length",
-                    parameters_.search.min_helix_length,
-                    "minimum number of basepairs in a solution helix")
-        ->default_val(4)
-        ->group("Search Parameters");
-
-    app_.add_option("--motif_path", parameters_.search.motif_path, "TBD")
-        ->group("Search Parameters");
-
-    app_.add_flag("--no_basepair_checks",
-                  parameters_.search.no_basepair_checks,
-                  "flag to disable basepair checks")
-        ->group("Search Parameters");
-
-    app_.add_option("--scaled_score_d", parameters_.search.scaled_score_d, "TODO")
-        ->default_val(1.0f)
-        ->group("Search Parameters");
-
-    app_.add_option("--scaled_score_r", parameters_.search.scaled_score_r, "TODO")
-        ->default_val(2.0f)
-        ->group("Search Parameters");
-
-    app_.add_option("--search_cutoff", parameters_.search.cutoff, "TODO")
-        ->default_val(7.5f)
-        ->group("Search Parameters");
-
-    app_.add_option("--search_max_size",
-                    parameters_.search.max_size,
-                    "maximum number of steps for a design search")
-        ->default_val(999999)
-        ->check(CLI::PositiveNumber) //TODO put a limit to this?? CJ 08/20
-        ->group("Search Parameters");
-
-    app_.add_option("--search_type",
-                    parameters_.search.type,
-                    "search type for traversing motif space")
-        ->default_val("path_finding")
-        ->check(CLI::IsMember(std::set<String>{"path_finding", "exhaustive", "mc"}))
-        ->group("Search Parameters");
-
-    app_.add_option("--solution_filter", parameters_.search.solution_filter, "TODO")
-        ->default_val("RemoveDuplicateHelices")
-        ->check(CLI::IsMember(std::set<String>{"NoFilter", "RemoveDuplicateHelices"}))
-        ->group("Search Parameters");
-
-    app_.add_option("--starting_helix",
-                    parameters_.search.starting_helix,
-                    "starting helix for design solution. Format = [TODO]")
-        ->default_val("")
-        ->group("Search Parameters");
-
-    app_.add_flag("--no_sterics",
-                  parameters_.search.no_sterics,
-                  "turns off sterics checks againsts supplied RNA structure")
-        ->group("Search Parameters");
-
-    app_.add_flag("--only_tether_opt",
-                  parameters_.search.only_tether_opt,
-                  "ignore supplied structure other than sterics")
-        ->group("Search Parameters");
-
-    app_.add_option("--search_max_motifs", parameters_.search.max_motifs, "TODO")
-        ->default_val(999)
-        ->group("Search Parameters");
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Sequence Optimization Options
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    app_.add_flag("--skip_sequence_optimization",
-                  parameters_.seq_opt.skip,
-                  "flag to skip sequence optimization of the design")
-        ->group("Sequence Optimization Parameters");
-
-    app_.add_option("--sequences_per_design",
-                    parameters_.seq_opt.sequences_per_design,
-                    "number of sequences to try per motif design")
-        ->default_val(1)
-        ->group("Sequence Optimization Parameters");
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Thermo fluc Options
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    app_.add_flag("--thermo_fluc",
-                  parameters_.thermo_fluc.perform,
-                  "run thermo fluc procedure to estimate thermo fluc of helices")
-        ->group("Thermo Fluc Parameters");
-
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // Setting some global parameters/variables for the parser
-    ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    //app_.get_option("--pdb");//->needs("--start_bp")->needs("--end_bp");
-    app_.get_formatter()->column_width(80);
-
-}
-
-void
-DesignRNAScaffold::parse_command_line (
-    int argc,
+DesignRNAScaffold::parse_command_line (int argc,
     const char **argv) {
+
 }
 
 void
@@ -353,6 +129,10 @@ DesignRNAScaffold::setup () {
     LOG_INFO << "#########";
     LOG_INFO << "# setup #";
     LOG_INFO << "#########";
+    auto test = app_.get_option("--pdb");
+    LOG_INFO << "loaded pdb from file: " << test;
+    LOG_INFO << "loaded pdb from file: " << parameters_.core.pdb;
+
 
     if (!parameters_.io.new_ensembles_file.empty()) {
         _build_new_ensembles(parameters_.io.new_ensembles_file);
@@ -616,7 +396,7 @@ DesignRNAScaffold::_setup_sol_template_from_path (
     auto spl = base::split_str_by_delimiter(motif_path, ",");
     int i = 0;
     auto lib_names = resources::MotifStateSqliteLibrary::get_libnames();
-    LOG_DEBUG << "building motif path from string: " << motif_path;
+    LOG_DEBUG << "building motif path from string: " << replace_char(motif_path, ',', ';');
     for (auto const &e : spl) {
         if (lib_names.find(e) != lib_names.end()) {  // is a library
             LOG_DEBUG << e << " is determined to be a motif library";
@@ -829,7 +609,7 @@ DesignRNAScaffold::_perform_thermo_fluc_sim (
     sol_info_.thermo_fluc_best_score = best;
     sol_info_.thermo_fluc_hits = count;
     LOG_DEBUG << "best dist score: " << best;
-    LOG_DEBUG << "hits: " << count << ", %: = " << ((float) count / (float) 1000000) * 100.0f;
+    LOG_DEBUG << "hits: " << count << "; %: = " << ((float) count / (float) 1000000) * 100.0f;
     LOG_DEBUG << "*** finished thermo fluc sim ***";
     return best_mg;
 }
