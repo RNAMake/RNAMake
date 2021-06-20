@@ -3,6 +3,7 @@
 //
 
 
+
 #include "../common.hpp"
 
 #include "base/settings.h"
@@ -26,36 +27,36 @@ quaternion_from_str(
     return math::Quaternion(values[0], values[1], values[2], values[3]);
 }
 
-TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
+TEST_CASE( "Test Quaternion calculations" ) {
 
-    SECTION("test power iteration method for getting eigen values") {
+    SUBCASE("test power iteration method for getting eigen values") {
         //auto m = std::vector<std::vector<
         auto m = Vector2D{std::vector<double>{0.5, 0.5},
                           std::vector<double>{0.2, 0.8}};
 
-        SECTION("test dotting with Vector2D") {
+        SUBCASE("test dotting with Vector2D") {
             auto v = std::vector<double>{0.5, 0.5};
             auto vr = std::vector<double>(2);
             math::dot_vector(m, v, vr);
-            REQUIRE(math::are_floats_equal(vr[0], 0.5));
-            REQUIRE(math::are_floats_equal(vr[1], 0.5));
+            CHECK(math::are_floats_equal(vr[0], 0.5));
+            CHECK(math::are_floats_equal(vr[1], 0.5));
         }
 
-        SECTION("test calculating norm") {
+        SUBCASE("test calculating norm") {
             auto v = std::vector<double>{0.5, 0.5};
-            REQUIRE(math::are_floats_equal(math::norm(v), 0.707107));
+            CHECK(math::are_floats_equal(math::norm(v), 0.707107));
         }
 
-        SECTION("test full method") {
+        SUBCASE("test full method") {
             auto eigen_values = std::vector<double>(2);
             math::power_iteration(m, eigen_values, 100);
-            REQUIRE(math::are_floats_equal(eigen_values[0], 0.707107));
-            REQUIRE(math::are_floats_equal(eigen_values[1], 0.707107));
+            CHECK(math::are_floats_equal(eigen_values[0], 0.707107));
+            CHECK(math::are_floats_equal(eigen_values[1], 0.707107));
         }
     }
 
-    SECTION("test quaternion averaging") {
-        SECTION("test reproducing same quaternion") {
+    SUBCASE("test quaternion averaging") {
+        SUBCASE("test reproducing same quaternion") {
             auto path = base::unittest_resource_dir() + "/math/test_quaternions.dat";
             auto lines = base::get_lines_from_file(path);
 
@@ -66,7 +67,7 @@ TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
             auto q_avg = averager.get_average();
 
             for (int i = 0; i < 4; i++) {
-                REQUIRE(math::are_floats_equal(q_init[i], q_avg[i]));
+                CHECK(math::are_floats_equal(q_init[i], q_avg[i]));
             }
 
             // add 9 more
@@ -76,11 +77,11 @@ TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
 
             q_avg = averager.get_average();
             for (int i = 0; i < 4; i++) {
-                REQUIRE(math::are_floats_equal(q_init[i], q_avg[i]));
+                CHECK(math::are_floats_equal(q_init[i], q_avg[i]));
             }
         }
 
-        SECTION("reproduce matlab values") {
+        SUBCASE("reproduce matlab values") {
             auto path = base::unittest_resource_dir() + "/math/test_quaternions.dat";
             auto lines = base::get_lines_from_file(path);
 
@@ -97,12 +98,12 @@ TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
             auto q_avg = averager.get_average();
 
             for (int i = 0; i < 4; i++) {
-                REQUIRE(math::are_floats_equal(std::abs(matlab_result_q[i]), abs(q_avg[i])));
+                CHECK(math::are_floats_equal(std::abs(matlab_result_q[i]), abs(q_avg[i])));
             }
 
         }
 
-        SECTION("covert to a rotation matrix and back") {
+        SUBCASE("covert to a rotation matrix and back") {
             //auto q = math::get_random_quaternion();
             //std::cout << q << std::endl;
             auto q = math::Quaternion(0.656091, 0.545157, 0.0359373, 0.520632);
@@ -111,7 +112,7 @@ TEST_CASE( "Test Quaternion calculations", "[Quaternion]" ) {
             auto q1 = get_quaternion_from_matrix(r);
 
             for (int i = 0; i < 4; i++) {
-                REQUIRE(math::are_floats_equal(std::abs(q[i]), abs(q1[i])));
+                CHECK(math::are_floats_equal(std::abs(q[i]), abs(q1[i])));
             }
         }
     }

@@ -11,9 +11,6 @@
 #include <base/assertions.h>
 #include <stdexcept>
 
-
-
-
 namespace data_structure {
 
 /*

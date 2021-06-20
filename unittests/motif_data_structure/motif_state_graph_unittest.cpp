@@ -6,6 +6,7 @@
 //  Copyright © 2016 Joseph Yesselman. All rights reserved.
 //
 
+
 #include <stdio.h>
 
 //headers for testing
@@ -16,23 +17,21 @@
 #include "resources/resource_manager.h"
 #include "motif_data_structure/motif_state_graph.hpp"
 
-#include <util/find_pair.h>
-
-TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_structure::MotifStateGraph]" ) {
+TEST_CASE( "Test Assembling MotifStates together in a graph " ) {
     
-    SECTION("test adding states") {
+    SUBCASE("test adding states") {
         auto msg = std::make_shared<motif_data_structure::MotifStateGraph>();
         auto ms1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto ms2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto ms3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         
-        SECTION("cannot find end if there is not parent") {
+        SUBCASE("cannot find end if there is not parent") {
             REQUIRE_THROWS_AS(msg->add_state(ms1, -1, "A1-A8"), motif_data_structure::MotifStateGraphException);
         }
         
         msg->add_state(ms1);
         
-        REQUIRE(msg->size() == 1);
+        CHECK(msg->size() == 1);
         
         // can never use parent_end_index=0 for a graph as that is where that node
         // is already connected to another node
@@ -52,7 +51,7 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_stru
 
     }
  
-    SECTION("test setup from mg") {
+    SUBCASE("test setup from mg") {
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto tc = resources::Manager::instance().motif("TC.1S72.0");
@@ -63,11 +62,11 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_stru
         mg->add_connection(0, 2, "", "");
         
         auto msg = std::make_shared<motif_data_structure::MotifStateGraph>(mg);
-        REQUIRE(mg->size() == msg->size());
+        CHECK(mg->size() == msg->size());
         
     }
     
-    SECTION("test to motif graph") {
+    SUBCASE("test to motif graph") {
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto tc = resources::Manager::instance().motif("TC.1S72.0");
@@ -79,26 +78,26 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_stru
         auto msg = std::make_shared<motif_data_structure::MotifStateGraph>(mg);
         auto mg2 = msg->to_motif_graph();
         
-        REQUIRE(mg->size() == mg2->size());
+        CHECK(mg->size() == mg2->size());
         
         auto atoms1 = mg->get_structure()->atoms();
         auto atoms2 = mg2->get_structure()->atoms();
         
         for(int i = 0; i < atoms1.size(); i++) {
             auto diff = atoms1[i]->coords().distance(atoms2[i]->coords());
-            REQUIRE(diff < 0.1);
+            CHECK(diff < 0.1);
         }
         
         mg->add_connection(0, 2, "", "");
         msg = std::make_shared<motif_data_structure::MotifStateGraph>(mg);
         mg2 = msg->to_motif_graph();
         
-        REQUIRE(mg->get_structure()->residues().size() == mg2->get_structure()->residues().size());
+        CHECK(mg->get_structure()->residues().size() == mg2->get_structure()->residues().size());
         
         
     }
     
-    SECTION("test to motif graph 2") {
+    SUBCASE("test to motif graph 2") {
         auto m1 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif("HELIX.IDEAL.2");
         m2->move(math::Point{40, 0, 0});
@@ -115,16 +114,16 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_stru
         
         auto msg = std::make_shared<motif_data_structure::MotifStateGraph>(mg);
         auto mg2 = msg->to_motif_graph();
-        REQUIRE(mg->size() == mg2->size());
+        CHECK(mg->size() == mg2->size());
         
         mg->add_connection(4, 7, "", "");
         msg = std::make_shared<motif_data_structure::MotifStateGraph>(mg);
         mg2 = msg->to_motif_graph();
         
-        REQUIRE(mg2->get_structure()->chains().size() == 2);
+        CHECK(mg2->get_structure()->chains().size() == 2);
     }
     
-    SECTION("test adding connections") {
+    SUBCASE("test adding connections") {
         auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto tc = resources::Manager::instance().motif("TC.1S72.0")->get_state();
@@ -133,16 +132,16 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_stru
         msg->add_state(m1);
         msg->add_state(m2, 0);
         
-        REQUIRE(msg->size() == 3);
+        CHECK(msg->size() == 3);
         
         msg->add_connection(0, 2, "", "");
         auto mg = msg->to_motif_graph();
         
-        REQUIRE(mg->get_structure()->chains().size() == 1);
+        CHECK(mg->get_structure()->chains().size() == 1);
 
     }
     
-    SECTION("test remove state") {
+    SUBCASE("test remove state") {
         auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto m3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
@@ -152,17 +151,17 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_stru
         msg->add_state(m3);
         
         msg->remove_state(2);
-        REQUIRE(msg->size() == 2);
+        CHECK(msg->size() == 2);
         
         msg->add_state(m3);
         
         auto mg = msg->to_motif_graph();
-        REQUIRE(mg->get_structure()->chains().size() == 2);
+        CHECK(mg->get_structure()->chains().size() == 2);
         
 
     }
     
-    SECTION("test remove node level") {
+    SUBCASE("test remove node level") {
         auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto m3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
@@ -172,10 +171,10 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_stru
         msg->add_state(m2);
         msg->add_state(m3);
         msg->remove_level(1);
-        REQUIRE(msg->size() == 1);
+        CHECK(msg->size() == 1);
     }
     
-    SECTION("test replace state") {
+    SUBCASE("test replace state") {
         auto m1 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
         auto m2 = resources::Manager::instance().motif_state("TWOWAY.2PN4.4");
         auto m3 = resources::Manager::instance().motif_state("HELIX.IDEAL.2");
@@ -187,7 +186,7 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_stru
         
         msg->replace_state(1, resources::Manager::instance().motif_state("HELIX.IDEAL.2"));
         
-        REQUIRE(msg->get_node(1)->data()->name() == "HELIX.IDEAL.2");
+        CHECK(msg->get_node(1)->data()->name() == "HELIX.IDEAL.2");
         
         auto msg2 = std::make_shared<motif_data_structure::MotifStateGraph>();
         msg2->add_state(m1);
@@ -196,18 +195,18 @@ TEST_CASE( "Test Assembling MotifStates together in a graph ", "[motif_data_stru
         
         auto d1 = msg->get_node(2)->data()->get_end_state(1)->d();
         auto d2 = msg2->get_node(2)->data()->get_end_state(1)->d();
-        REQUIRE(d1.distance(d2) < 0.001);
+        CHECK(d1.distance(d2) < 0.001);
         
     }
     
-    /*SECTION("test multiple alignments") {
+    /*SUBCASE("test multiple alignments") {
         auto path = base::base_dir() + "/rnamake/unittests/resources/motif_graph/";
         auto lines =base::get_lines_from_file(path+"tecto_chip_only.mg");
         auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0], motif_data_structure::MotifGraphStringType::MG);
         auto msg = std::make_shared<motif_data_structure::MotifStateGraph>(mg);
         auto mg2 = msg->to_motif_graph();
         
-        //REQUIRE(mg->sequence() == mg2->sequence());
+        //CHECK(mg->sequence() == mg2->sequence());
         //std::cout << mg2->sequence() << std::endl;
 
     }*/

@@ -11,6 +11,8 @@
 #include <data_structure/graph_base.h>
 #include "base/application.hpp"
 #include "util/steric_lookup.hpp"
+#include "util/visit_struct.h"
+#include "util/visit_struct_intrusive.h"
 #include "motif_search/search.h"
 #include "motif_search/solution_topology.h"
 #include <motif_search/solution_filter.h>
@@ -18,6 +20,7 @@
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 #include <thermo_fluctuation/graph/simulation.h>
 
+#include <CLI/CLI.hpp>
 
 struct GraphIndexes {
     data_structure::NodeIndexandEdge start = data_structure::NodeIndexandEdge();
@@ -44,10 +47,12 @@ public: // application functions
 
 public: // getters
 
-    base::LogLevel
-    log_level() const { //added by CJ
-        return base::log_level_from_str(parameters_.core.log_level);
-    }
+//TODO: Figure out a way to include this back
+
+//    base::LogLevel
+//    log_level() const { //added by CJ
+//        return base::log_level_from_str(parameters_.core.log_level);
+//    }
 
 private: // setup functions
 
@@ -65,17 +70,17 @@ private: // setup functions
 
     motif_search::SolutionTopologyTemplateOP
     _setup_sol_template_from_path(
-        String const &);
+            String const &);
 
     motif_search::SolutionFilterOP
     _setup_sol_filter(
-        String const &);
+            String const &);
 
     void
     _check_bp(
-        String const &,
-        structure::RNAStructureOP const &,
-        String const &) const;
+            String const &,
+            structure::RNAStructureOP const &,
+            String const &) const;
 
     void
     _setup_extra_pdbs();
@@ -88,19 +93,19 @@ private: // run functions
 
     void
     _get_graph_indexes_after_bp_steps(
-        motif_data_structure::MotifGraph const &,
-        GraphIndexes const &,
-        GraphIndexes & /* return */);
+            motif_data_structure::MotifGraph const &,
+            GraphIndexes const &,
+            GraphIndexes & /* return */);
 
     motif_data_structure::MotifGraphOP
     _perform_sequence_opt(
-        motif_data_structure::MotifGraph const &,
-        GraphIndexes const &);
+            motif_data_structure::MotifGraph const &,
+            GraphIndexes const &);
 
     motif_data_structure::MotifGraphOP
     _perform_thermo_fluc_sim(
-        motif_data_structure::MotifGraph &,
-        GraphIndexes const &);
+            motif_data_structure::MotifGraph &,
+            GraphIndexes const &);
 
     void
     _record_solution(
@@ -125,66 +130,6 @@ private: // run functions
             std::map<int, int> & /* return */);
 
 private:
-
-    struct Parameters {
-        // required options will exit if not supplied
-        struct Core {
-            String pdb = "";
-            String start_bp = "";
-            String end_bp = "";
-            int designs = 1;
-            String log_level = "info";
-            String mg = "";
-            String extra_pdbs = "";
-        };
-        // options related to what will be outputted
-        struct IO {
-            String out_file = "default.out";
-            String score_file = "default.scores";
-            String new_ensembles_file = "";
-            bool dump_pdbs = false;
-            bool dump_scaffold_pdbs = false;
-            bool dump_intermediate_pdbs = false;
-            bool no_out_file = false;
-
-        };
-        // options related to how the initial motif search is performed
-        struct Search {
-            String type = "path_finding";
-            String motif_path = "";
-            String starting_helix = "";
-            String ending_helix = "";
-            String solution_filter = "RemoveDuplicateHelices";
-            float cutoff = 7.5f;
-            int max_helix_length = 99;
-            int min_helix_length = 4;
-            int max_size = 9999;
-            int max_motifs = 999;
-            bool no_basepair_checks = false;
-            bool no_sterics = false;
-            String exhaustive_scorer, mc_scorer;
-            float scaled_score_d, scaled_score_r;
-            bool only_tether_opt = false;
-        };
-
-        struct SequenceOpt {
-            bool skip = false;
-            int sequences_per_design = 1;
-            int steps = 10000;
-
-        };
-
-        struct ThermoFluc {
-            bool perform = false;
-            int steps = 1000000;
-        };
-
-        Core core = Core();
-        IO io = IO();
-        Search search = Search();
-        SequenceOpt seq_opt = SequenceOpt();
-        ThermoFluc thermo_fluc = ThermoFluc();
-    };
 
     struct SolutionInfo {
         // from motif search
@@ -227,10 +172,10 @@ public:
     CLI::App app_; // added by CJ 08/20. has to be public to get the --help to work
 
 private:
+
     // must be initialized a runtime
     resources::Manager & rm_;
     // general vars
-    Parameters parameters_ = Parameters();
     GraphIndexes starting_indexes_ = GraphIndexes();
     motif_data_structure::MotifStateGraphOP msg_;
     motif_data_structure::MotifGraphOP mg_;

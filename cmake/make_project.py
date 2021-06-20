@@ -61,8 +61,31 @@ def build_unittests(lib_list, base_dir, static):
             unittest_declarations += "\ttarget_link_libraries({TEST} {LIB}_lib {BUILD} )\n".format(
                 TEST=unittest_name, LIB=library, BUILD="-static" if static else ""
             )
+            unittest_declarations += "\tadd_test({TEST} {TEST})\n".format(
+                TEST=unittest_name
+            )
     unittest_declarations += "#" * 100 + "\n"
     return unittest_declarations
+
+def build_integration_tests(base_dir, static):
+    """Method that builds out the declarations for the integration_tests"""
+    integration_tests_declarations = (
+            "#" * 100 + "\n# Integration tests Declarations \n" + "#" * 100 + "\n"
+    )
+
+    for source_file in Utils.make_file_list(glob.glob(base_dir + '/**', recursive=True)):
+            unittest_name = source_file.split("/")[-1].split(".")[0]
+            integration_tests_declarations += "\tadd_executable({TEST} {SRC})\n".format(
+                TEST=unittest_name, SRC=source_file
+            )
+            integration_tests_declarations += "\ttarget_link_libraries({TEST} all_lib {BUILD} )\n".format(
+                TEST=unittest_name, BUILD="-static" if static else ""
+            )
+            integration_tests_declarations += "\tadd_test({TEST} {TEST})\n".format(
+                TEST=unittest_name
+            )
+            integration_tests_declarations += "#" * 100 + "\n"
+    return integration_tests_declarations
 
 
 def write_CML_file(content_list):
@@ -88,13 +111,18 @@ def build_apps(base_dir, static):
             
             app_tokens = app_declaration.split()
             for full_path in  Utils.make_file_list(
-                [str(fp) for fp in Path(f"{base_dir}/apps/{app_tokens[0]}/").rglob("*")]
+                [str(fp) for fp in Path(f"{base_dir}/apps/{app_tokens[0]}/").rglob(app_tokens[0] + '.*')]
                                                     ):
                 source_file = re.sub("\.\./", "", full_path)
                 app_name = source_file.split('/')[-1].split('.')[0]
-                 
+
+
                 application_text += f"{seventyfive_dashes}\n# {app_name}\n{seventyfive_dashes}\n"
-                application_text += f"\tadd_executable( {app_name} {full_path})\n"
+                if len(app_tokens) == 3:
+                    secondary_path = re.sub("\.\./", "", app_tokens[2])
+                    application_text += f"\tadd_executable( {app_name} {full_path} {base_dir}/{secondary_path})\n"
+                else:
+                    application_text += f"\tadd_executable( {app_name} {full_path})\n"
                 application_text += "\ttarget_link_libraries({NAME} all_lib {LINK}  )\n".format(
                     NAME=app_name, LINK="-static" if static else ""
                 )
@@ -109,7 +137,9 @@ def build_header(base_dir, static, target):
     header_contents = "#" * 100 + "\n# Project Level Info\n" + "#" * 100 + "\n"
     header_contents += "cmake_minimum_required(VERSION 3.0)\n"
     header_contents += "set(CMAKE_BUILD_TYPE Release)\n"
-    header_contents += "project(RNAMake)\n\n"
+    header_contents += "project(RNAMake)\n"
+    header_contents += "enable_testing()\n\n"
+
     if static == True:
         # header_contents+= "set(CMAKE_SHARED_LINKER_FLAGS \"-Wl,--no-as-needed -ldl\")\n"
         header_contents += 'set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-as-needed ")\n'
@@ -125,6 +155,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 include_directories({BASE})
 include_directories({EXTERN})
 include_directories({UNITTESTS})
+include_directories({INTEGRATION})
 include_directories({APPS})
 include({SQLITE})
  """.format(
@@ -134,6 +165,7 @@ include({SQLITE})
         EXTERN=base_dir + "/src/external/",
         BASE=base_dir + "/src/",
         UNITTESTS=base_dir + "/unittests/",
+        INTEGRATION=base_dir + "/integration_tests",
         APPS=base_dir + "/apps/",
     )
     header_contents += "#" * 100 + "\n"
@@ -204,6 +236,7 @@ if __name__ == "__main__":
             ),
             build_libraries(libs, depends, base_dir + "/src", static),
             build_unittests(libs, base_dir + "/unittests", static),
+            build_integration_tests(base_dir + "/integration_tests", static),
             build_apps(base_dir, static),
         ]
     )

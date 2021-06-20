@@ -1,0 +1,40 @@
+name,group,struct,parameter,help,default,required,flag,type
+pdb,core,Core,pdb,path to a PDB file with input RNA structure,"",true,false,String
+start_bp,core,Core,start_bp,starting basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM],"",true,false,String
+end_bp,core,Core,end_bp,ending basepair to be used in structure format: [CHAIN ID][NT1 NUM]-[CHAIN ID][NT2 NUM],"",true,false,String
+designs,core,Core,designs,number of designs to create. Default is 1,1,true,false,int
+log_level,core,Core,log_level,level for global logging,"info",true,false,String
+extra_pdbs,core,Core,extra_pdbs,deliminted list of other pdbs used in building,"",true,false,String
+dump_intermediate_pdbs,io,IO,dump_intermediate_pdbs,flag to dump intermediate pdbs,"",false,false,bool
+dump_pdbs,io,IO,dump_pdbs,TODO,false,false,true,bool
+dump_scaffold_pdbs,io,IO,dump_scaffold_pdbs,flag to output pdbs of just the design scaffold WITHOUT initial RNA structure useful for really big structures,false,false,true,bool
+new_ensembles,io,IO,new_ensembles_file,flag to include new structural ensembles,"",false,false,String
+no_out_file,io,IO,no_out_file,if you only want the summary and not the actual structures,false,false,true,bool
+out_file,io,IO,out_file,output file that contains all information to rebuild solutions,"default.out",false,false,String
+score_file,io,IO,score_file,name of output file containining scoring information for design,"default.scores",false,false,String
+ending_helix,search,Search,ending_helix,ending helix for design solution. Format = [TODO],"",false,false,String
+exhaustive_scorer,search,Search,exhaustive_scorer,TODO,"default",false,false,String
+max_helix_length,search,Search,max_helix_length,maximum number of basepairs in a solution helix,99,false,false,int
+mc_scorer,search,Search,mc_scorer,TODO,"default",false,false,String
+min_helix_length,search,Search,min_helix_length,minimum number of basepairs in a solution helix,4,false,false,int
+motif_path,search,Search,motif_path,TBD,"",false,false,String
+no_basepair_checks,search,Search,no_basepair_checks,flag to disable basepair checks,false,false,true,bool
+scaled_score_d,search,Search,scaled_score_d,TODO,1.0f,false,false,float
+scaled_score_r,search,Search,scaled_score_r,TODO,2.0f,false,false,float
+search_cutoff,search,Search,cutoff,TODO,7.5f,false,false,float
+search_max_size,search,Search,max_size,maximum number of steps for a design search,999999,false,false,int
+search_type,search,Search,type,search type for traversing motif space,"path_finding",false,false,String
+solution_filter,search,Search,solution_filter,TODO,"RemoveDuplicateHelices",false,false,String
+starting_helix,search,Search,starting_helix,starting helix for design solution. Format = [TODO],"",false,false,String
+no_sterics,search,Search,no_sterics,turns off sterics checks againsts supplied RNA structure,false,false,true,bool
+only_tether_opt,search,Search,only_tether_opt,gnore supplied structure other than sterics,false,false,true,bool
+search_max_motifs,search,Search,max_motifs,TODO,999,false,false,int
+skip_sequence_optimization,seq_opt,SequenceOpt,skip,flag to skip sequence optimization of the design,false,false,true,bool
+sequences_per_design,seq_opt,SequenceOpt,sequences_per_design,number of sequences to try per motif design,1,false,false,int
+seq_opt_steps,seq_opt,SequenceOpt,steps,TODO,10000,false,false,int
+thermo_fluc,thermo_fluc,ThermoFluc,perform,run thermo fluc procedure to estimate thermo fluc of helices,false,false,true,bool
+thermo_fluc_steps,thermo_fluc,ThermoFluc,steps,TODO,1000000,false,false,int
+
+
+
+

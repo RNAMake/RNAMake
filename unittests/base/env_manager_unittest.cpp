@@ -1,3 +1,5 @@
+
+
 #include "../common.hpp"
 
 #include <cstdlib>
@@ -6,11 +8,10 @@
 #include <base/log.h>
 #include <base/env_manager.h>
 
-TEST_CASE( "Test environment variable setting", "[EnvManager]" ) {
+TEST_CASE( "Test environment variable setting") {
     
     base::init_logging(base::LogLevel::FATAL);
-    REQUIRE(std::getenv("RNAMAKE") != nullptr);
-    REQUIRE(std::getenv("X3DNA") != nullptr);
+    CHECK(std::getenv("RNAMAKE") != nullptr);
     auto unset_vars(0);
     const auto rnamake_orig = std::getenv("RNAMAKE");
    /*
@@ -23,7 +24,7 @@ TEST_CASE( "Test environment variable setting", "[EnvManager]" ) {
 
         LOGW<<"NOTE: Environment variable \"RNAMAKE\" has been restored";
         
-        REQUIRE(String{rnamake_orig} == String{rnamake_updated});
+        CHECK(String{rnamake_orig} == String{rnamake_updated});
 
     } else {
         ++unset_vars;
@@ -41,7 +42,7 @@ TEST_CASE( "Test environment variable setting", "[EnvManager]" ) {
         
         LOGW<<"NOTE: Environment variable \"X3DNA\" has been restored";
         
-        REQUIRE(String{x3dna_orig} == String{x3dna_updated});
+        CHECK(String{x3dna_orig} == String{x3dna_updated});
     } else {
         ++unset_vars;
     }
@@ -56,6 +57,6 @@ TEST_CASE( "Test environment variable setting", "[EnvManager]" ) {
         LOGW<<"======================================================================="; 
     }
     
-    REQUIRE(unset_vars == 0);    
+    CHECK(unset_vars == 0);    
 */
     }

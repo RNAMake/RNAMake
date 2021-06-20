@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include "../common.hpp"
 #include "../tools/motif_graph_builder.hpp"
@@ -12,9 +13,9 @@
 #include "motif_data_structure/motif_topology.h"
 #include "sequence_optimization/sequence_optimizer_3d.hpp"
 
-TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
+TEST_CASE( "Test Sequence Optimizer" ) {
     
-    SECTION("test simple hairpin") {
+    SUBCASE("test simple hairpin") {
         auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         for(int i = 0; i < 10; i++) {
             mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL"));
@@ -28,13 +29,13 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         mg->replace_helical_sequence(sols[0]->sequence);
         auto end2 = mg->get_node(8)->data()->ends()[1];
         
-        REQUIRE(mg->sequence() == sols[0]->sequence);
+        CHECK(mg->sequence() == sols[0]->sequence);
         auto diff = fabsf(sols[0]->dist_score - end1->diff(*end2));
-        REQUIRE(diff < 0.1);
+        CHECK(diff < 0.1);
         
     }
     
-    SECTION("test simple hairpin 2") {
+    SUBCASE("test simple hairpin 2") {
         auto mg = std::make_shared<motif_data_structure::MotifGraph>();
         for(int i = 0; i < 10; i++) {
             mg->add_motif(resources::Manager::instance().motif("HELIX.IDEAL"));
@@ -47,10 +48,10 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         auto mg_opt = so.get_optimized_mg(mg, scorer);
         
         mg->replace_helical_sequence(mg_opt->sequence());
-        REQUIRE(mg->sequence() == mg_opt->sequence());
+        CHECK(mg->sequence() == mg_opt->sequence());
         
         for(auto const & n : *mg) {
-            REQUIRE(n->data()->name() == mg_opt->get_node(n->index())->data()->name());
+            CHECK(n->data()->name() == mg_opt->get_node(n->index())->data()->name());
         }
         
         auto atoms1 = mg->get_structure()->atoms();
@@ -58,12 +59,12 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         
         for(int i = 0; i < atoms1.size(); i++) {
             auto diff = atoms1[i]->coords().distance(atoms2[i]->coords());
-            REQUIRE(diff < 0.01);
+            CHECK(diff < 0.01);
         }
         
     }
     
-    SECTION("test optimizing miniTTR sequence") {
+    SUBCASE("test optimizing miniTTR sequence") {
         auto path = base::base_dir() + "//unittests/test_problems/mini_ttr/sol.mg";
         auto lines =base::get_lines_from_file(path);
         auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0],
@@ -77,7 +78,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         mg->replace_helical_sequence(mg_opt->sequence());
         
         for(auto const & n : *mg) {
-            REQUIRE(n->data()->name() == mg_opt->get_node(n->index())->data()->name());
+            CHECK(n->data()->name() == mg_opt->get_node(n->index())->data()->name());
         }
         
         auto atoms1 = mg->get_structure()->atoms();
@@ -85,14 +86,14 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         
         for(int i = 0; i < atoms1.size(); i++) {
             auto diff = atoms1[i]->coords().distance(atoms2[i]->coords());
-            REQUIRE(diff < 0.01);
+            CHECK(diff < 0.01);
         }
         
     }
 
 
     // messed up backward compadility
-    /*SECTION("test optimizing chip sequence") {
+    /*SUBCASE("test optimizing chip sequence") {
         auto base_path = base::base_dir() + "//unittests/resources/motif_graph";
         auto lines =base::get_lines_from_file(base_path+"/tecto_chip_only.mg");
         auto mg = std::make_shared<motif_data_structure::MotifGraph>(lines[0], motif_data_structure::MotifGraphStringType::MG);
@@ -106,7 +107,7 @@ TEST_CASE( "Test Sequence Optimizer", "[SequenceOptimizer]" ) {
         mg->replace_helical_sequence(mg_opt->sequence());
         
         for(auto const & n : *mg) {
-            REQUIRE(n->data()->name() == mg_opt->get_node(n->index())->data()->name());
+            CHECK(n->data()->name() == mg_opt->get_node(n->index())->data()->name());
         }
         
         std::cout << mg_opt->sequence() << std::endl;

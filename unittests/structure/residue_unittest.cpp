@@ -1,6 +1,5 @@
 
 
-
 //headers for testing
 #include "../common.hpp"
 
@@ -12,7 +11,7 @@
 #include "structure/is_equal.h"
 
 
-TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
+TEST_CASE( "Test Residues for Structure" ) {
     auto rts  = structure::ResidueTypeSet();
     auto path = base::unittest_resource_dir() + "residue/test_str_to_residue.dat";
     auto lines= base::get_lines_from_file(path);
@@ -23,54 +22,54 @@ TEST_CASE( "Test Residues for Structure", "[Residue]" ) {
         residues.push_back(r);
     }
     
-    SECTION("test getting atoms by name") {
+    SUBCASE("test getting atoms by name") {
         auto r = residues[0];
         auto name = String("C1'");
         auto a = r->get_atom(name);
 
-        REQUIRE(a != nullptr);
-        REQUIRE(a->name() == "C1'");
+        CHECK(a != nullptr);
+        CHECK(a->name() == "C1'");
         
         REQUIRE_THROWS_AS(r->get_atom("fake"), structure::ResidueException);
     }
     
-    SECTION("are residues detecting connections properly") {
+    SUBCASE("are residues detecting connections properly") {
         auto r1 = residues[0];
         auto r2 = residues[1];
         auto r3 = residues[2];
         
-        SECTION("connecting from 5' to 3'") { REQUIRE(r1->connected_to(*r2) == 1);  }
-        SECTION("should not be connected")  { REQUIRE(r1->connected_to(*r3) == 0);  }
-        SECTION("connecting from 3' to 5'") { REQUIRE(r3->connected_to(*r2) == -1); }
+        SUBCASE("connecting from 5' to 3'") { CHECK(r1->connected_to(*r2) == 1);  }
+        SUBCASE("should not be connected")  { CHECK(r1->connected_to(*r3) == 0);  }
+        SUBCASE("connecting from 3' to 5'") { CHECK(r3->connected_to(*r2) == -1); }
         
     }
     
-    SECTION("are residues generating steric beads properly") {
+    SUBCASE("are residues generating steric beads properly") {
         auto r = residues[1];
         auto beads = r->get_beads();
         
-        SECTION("produced the right number of beads") { REQUIRE(beads.size() == 3); }
+        SUBCASE("produced the right number of beads") { CHECK(beads.size() == 3); }
         
-        REQUIRE(beads[0].btype() == structure::BeadType::PHOS);
-        REQUIRE(beads[1].btype() == structure::BeadType::SUGAR);
-        REQUIRE(beads[2].btype() == structure::BeadType::BASE);
+        CHECK(beads[0].btype() == structure::BeadType::PHOS);
+        CHECK(beads[1].btype() == structure::BeadType::SUGAR);
+        CHECK(beads[2].btype() == structure::BeadType::BASE);
 
     }
     
-    SECTION("are residues copying correctly") {
+    SUBCASE("are residues copying correctly") {
         auto r = residues[0];
         auto r2 = std::make_shared<structure::Residue>(*r);
         
-        REQUIRE(are_residues_equal(r, r2));
+        CHECK(are_residues_equal(r, r2));
     }
     
-    SECTION("are residues stringifing correctly") {
+    SUBCASE("are residues stringifing correctly") {
         auto r = residues[0];
         auto s = r->to_str();
         auto r2 = std::make_shared<structure::Residue>(s, rts);
         
-        SECTION("residues should be the same but not have the same id") {
-            REQUIRE(structure::are_residues_equal(r, r2, 0));
+        SUBCASE("residues should be the same but not have the same id") {
+            CHECK(structure::are_residues_equal(r, r2, 0));
         }
     }
     

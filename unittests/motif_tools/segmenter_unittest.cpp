@@ -1,4 +1,5 @@
 
+
 //headers for testing
 #include "../common.hpp"
 
@@ -9,7 +10,7 @@
 #include "motif/motif_factory.h"
 #include "motif_tools/segmenter.h"
 
-TEST_CASE( "Test Segmenting RNA Structures", "[motif_tools::Segmenter]" ) {
+TEST_CASE( "Test Segmenting RNA Structures" ) {
     /*auto mf = motif::MotifFactory();
     auto path = base::base_dir() + "/rnamake/unittests/resources/motifs/p4p6/";
     auto m = mf.motif_from_file(path);
@@ -20,8 +21,8 @@ TEST_CASE( "Test Segmenting RNA Structures", "[motif_tools::Segmenter]" ) {
     auto segmenter = motif_tools::Segmenter();
     auto segments = segmenter.apply(m, bps);
     
-    REQUIRE(segments->removed->ends().size() == 2);
-    REQUIRE(segments->remaining->ends().size() == 2);
+    CHECK(segments->removed->ends().size() == 2);
+    CHECK(segments->remaining->ends().size() == 2);
 
     auto m_copy = std::make_shared<motif::Motif>(*segments->remaining);*/
     
