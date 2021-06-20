@@ -2,50 +2,20 @@
 // Created by Hassan Abdelsamad on 4/30/21.
 //
 
-#include <CLI/CLI.hpp>
 
-#include "base/backtrace.h"
-#include "base/log.h"
-#include "design_rna_scaffold/design_rna_scaffold.h"
-#include "design_rna_scaffold/design_rna_scaffold.cc"
-#include <data_structure/graph_base.h>
+#include "design_rna_scaffold/design_rna_scaffold.cpp"
 #include "tools.h"
-
 
 #include "common.hpp"
 
 
 TEST_CASE ("Test rebuild_p4_p6") {
 
-    //TODO Check if RNAMAKE variable exists
-    auto base = std::getenv("RNAMAKE");
+    auto args = get_arguments("REBUILD_P4_P6");
+    auto expected_path = get_expected_path("REBUILD_P4_P6");
+    mock_main(args);
 
-    std::string base_str(base);
-    std::string args_path = base_str + "/integration_tests/REBUILD_P4_P6/ARGS.txt";
-    std::ifstream args_file(args_path);
-    if (!args_file){
-                FAIL("File does not exist, Make sure the ARGS.txt file exists in the test folder");
-    }
-    std::string args((std::istreambuf_iterator<char>(args_file)),
-                     std::istreambuf_iterator<char>());
-
-    //Get expected logs
-    std::string expected_path = base_str + "/integration_tests/REBUILD_P4_P6/EXPECTED.csv";
-    std::ifstream expected_file(expected_path);
-    if (!expected_file){
-                FAIL("File does not exist, Make sure the EXPECTED.csv file exists in the test folder");
-    }
-
-    std::set_terminate(base::print_backtrace);
-    auto app = DesignRNAScaffold();
-
-    app.setup_options();
-    remove("logs.csv");
-    base::init_logging_with_file(base::LogLevel::DEBUG);
-
-    app.app_.parse(args);
-    app.run();
-        SUBCASE("Compare logs") {
-            CHECK(check_logs(expected_path, "logs.csv"));
+    SUBCASE("Compare logs") {
+        CHECK(check_logs(expected_path, "logs.csv"));
     }
 }

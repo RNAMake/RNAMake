@@ -1,1 +1,1 @@
---pdb /Users/hassanabdelsamad/RNAMake/integration_tests/TTR/inputs/min_tetraloop_receptor.pdb --start_bp A220-A253 --end_bp A144-A159 --log_level debug --sequences_per_design 1 --designs 10 --search_cutoff 5.0
+--pdb {RNAMAKE}/integration_tests/TTR/inputs/min_tetraloop_receptor.pdb --start_bp A220-A253 --end_bp A144-A159 --log_level debug --sequences_per_design 1 --designs 10 --search_cutoff 5.0
