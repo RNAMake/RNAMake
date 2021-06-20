@@ -27,7 +27,9 @@ type|string|The type of the parameter
 
 * Run the following script
 
-``python generate_options.py --app <APP_NAME>``
+``python generate_options.py --app <APP_NAME> --folder <FOLDER_NAME>``
 
-The script will create an options header file called ```<APP_NAME>_options.h```, make sure to include this file in the app ```.cpp\.cc``` file.
+The script will create an options header file called ```<FOLDER_NAME>_options.h```, make sure to include this file in the app ```.cpp\.cc``` file.
+
+<APP_NAME> should be the app name in the code, for example `DesignRNAScaffold`
 

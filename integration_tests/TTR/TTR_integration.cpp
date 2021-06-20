@@ -2,14 +2,8 @@
 // Created by Hassan Abdelsamad on 4/18/21.
 //
 
-#include <CLI/CLI.hpp>
-#include "base/backtrace.h"
-#include "base/log.h"
-#include "design_rna_scaffold/design_rna_scaffold.h"
-#include "design_rna_scaffold/design_rna_scaffold.cc"
-#include <data_structure/graph_base.h>
+#include "design_rna_scaffold/design_rna_scaffold.cpp"
 #include "tools.h"
-#include <base/log.h>
 
 
 #include "common.hpp"

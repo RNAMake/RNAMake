@@ -111,13 +111,18 @@ def build_apps(base_dir, static):
             
             app_tokens = app_declaration.split()
             for full_path in  Utils.make_file_list(
-                [str(fp) for fp in Path(f"{base_dir}/apps/{app_tokens[0]}/").rglob("*")]
+                [str(fp) for fp in Path(f"{base_dir}/apps/{app_tokens[0]}/").rglob(app_tokens[0] + '.*')]
                                                     ):
                 source_file = re.sub("\.\./", "", full_path)
                 app_name = source_file.split('/')[-1].split('.')[0]
-                 
+
+
                 application_text += f"{seventyfive_dashes}\n# {app_name}\n{seventyfive_dashes}\n"
-                application_text += f"\tadd_executable( {app_name} {full_path})\n"
+                if len(app_tokens) == 3:
+                    secondary_path = re.sub("\.\./", "", app_tokens[2])
+                    application_text += f"\tadd_executable( {app_name} {full_path} {base_dir}/{secondary_path})\n"
+                else:
+                    application_text += f"\tadd_executable( {app_name} {full_path})\n"
                 application_text += "\ttarget_link_libraries({NAME} all_lib {LINK}  )\n".format(
                     NAME=app_name, LINK="-static" if static else ""
                 )

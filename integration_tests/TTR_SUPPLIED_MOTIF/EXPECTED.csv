@@ -1,12 +1,9 @@
 Message
-"loaded pdb from file: /Users/hassanabdelsamad/RNAMake/integration_tests/TTR_SUPPLIED_MOTIF/inputs/min_tetraloop_receptor.pdb"
 "available ends to build off: A144-A159 A220-A253 A232-A242 "
 "start basepair: A220-A253 is found!"
 "end basepair: A144-A159 is found!"
 "78 rna steric beads were found to block residue overlap with supplied structure"
 "0 protein steric beads were found to block residue overlap with supplied structure"
-" loading pdbs from --extra_pdb flag: /Users/hassanabdelsamad/RNAMake/integration_tests/TTR_SUPPLIED_MOTIF/inputs/atp_aptamer.pdb"
-"loading /Users/hassanabdelsamad/RNAMake/integration_tests/TTR_SUPPLIED_MOTIF/inputs/atp_aptamer.pdb"
 "out file that contains all build solutions -> default.out can be set with --out_file"
 "score file that contains summary information about solutions -> default.scores can be set with --score_file"
 "search type -> mc"

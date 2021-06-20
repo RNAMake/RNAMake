@@ -7,6 +7,7 @@
 
 #include "util/csv.h"
 #include "common.hpp"
+#include <regex>
 
 std::string get_arguments(std::string folder_name){
     //TODO Check if RNAMAKE variable exists
@@ -20,6 +21,8 @@ std::string get_arguments(std::string folder_name){
     }
     std::string args((std::istreambuf_iterator<char>(args_file)),
                      std::istreambuf_iterator<char>());
+
+    args = std::regex_replace(args, std::regex("\\{RNAMAKE\\}"), base);
 
     return args;
 }

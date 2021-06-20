@@ -4,44 +4,51 @@ import argparse
 import os
 
 parser = argparse.ArgumentParser()
+parser.add_argument('--folder', type=str, help='name of the folder')
 parser.add_argument('--app', type=str, help='name of the app')
+
 
 
 args = parser.parse_args()
 
+folder_name = args.folder
 app_name = args.app
 
-if not (os.path.isdir(app_name) and os.path.isfile(app_name + '/options.csv')):
+if folder_name[-1] == '/':
+    folder_name = folder_name[:-1]
+    print(folder_name)
+
+if not (os.path.isdir(folder_name) and os.path.isfile(folder_name + '/options.csv')):
         quit('No file')
 
-file = open(args.app + '/' + args.app + '_options.h', 'w+')
+file = open(folder_name + '/' + folder_name + '_options.h', 'w+')
 
-s = '''
-#include "design_rna_scaffold/design_rna_scaffold.h"
+s = f'''
+#include "{folder_name}/{folder_name}.h"
 
 #ifndef ARGS_H
 #define ARGS_H
 
 String
-valid_pdb (String &path) {
+valid_pdb (String &path) {{
     auto ending = path.substr(path.size() - 4);
-    return ending == ".pdb" ? String{""} : String{"the file specified by --pdb must end in .pdb"};
-}
+    return ending == ".pdb" ? String{{""}} : String{{"the file specified by --pdb must end in .pdb"}};
+}}
 
 String
-valid_bp (String &bp) {
+valid_bp (String &bp) {{
     const auto bp_pattern = std::regex("\\b[A-Z][0-9]*-[A-Z][0-9]*\\b");
-    auto sm = std::smatch{};
+    auto sm = std::smatch{{}};
     std::regex_match(bp, sm, bp_pattern);
 
-    return sm.size() == 1 ? String{""} : String{bp + " is an invalid bp format"};
-}
+    return sm.size() == 1 ? String{{""}} : String{{bp + " is an invalid bp format"}};
+}}
 
-struct Parameters {
+struct Parameters {{
 
 '''
 
-csv_file = app_name + '/options.csv'
+csv_file = folder_name + '/options.csv'
 df = pd.read_csv(csv_file, quoting=csv.QUOTE_NONE)
 
 group_list = {}
@@ -63,14 +70,15 @@ for group in group_list:
 for group in group_list:
     s += f"\n\t{struct_list[group]} {group} = {struct_list[group]}();"
 
-s += '''
+s += f'''
 
-};
+}};
+private:
 
-Parameters parameters_ = Parameters();
+    Parameters parameters_ = Parameters();
 
 void
-DesignRNAScaffold::setup_options () {
+{args.app}::setup_options () {{
 
 '''
 

@@ -1,1 +1,1 @@
---pdb /Users/hassanabdelsamad/RNAMake/integration_tests/TTR_MC/inputs/min_tetraloop_receptor.pdb --start_bp A220-A253 --end_bp A144-A159 --log_level debug --sequences_per_design 1 --designs 3 --search_type mc --motif_path flex_helices,twoway,flex_helices,twoway,flex_helices  --dump_pdbs --thermo_fluc
+--pdb {RNAMAKE}/integration_tests/TTR_MC/inputs/min_tetraloop_receptor.pdb --start_bp A220-A253 --end_bp A144-A159 --log_level debug --sequences_per_design 1 --designs 3 --search_type mc --motif_path flex_helices,twoway,flex_helices,twoway,flex_helices  --dump_pdbs --thermo_fluc

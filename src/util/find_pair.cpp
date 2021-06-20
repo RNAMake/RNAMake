@@ -10,6 +10,8 @@
 #include <memory>
 #include <string>
 #include <stdexcept>
+#include <base/log.h>
+
 
 using namespace std;
 
@@ -80,8 +82,24 @@ namespace util {
                                   rs[2].x(), rs[2].y(), rs[2].z());
         auto res1 = X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
         auto res2 = X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
-        auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
-        bps.push_back(bp);
+
+        if ((bp_info->res1_name == 'C' && bp_info->res2_name == 'G') ||
+            (bp_info->res1_name == 'G' && bp_info->res2_name == 'C') ||
+            (bp_info->res1_name == 'A' && bp_info->res2_name == 'U') ||
+            (bp_info->res1_name == 'U' && bp_info->res2_name == 'A') ||
+            (bp_info->res1_name == 'G' && bp_info->res2_name == 'U') ||
+            (bp_info->res1_name == 'U' && bp_info->res2_name == 'G')) {
+
+            auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
+            bps.push_back(bp);
+
+        } else {
+
+            auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
+            bps.push_back(bp);
+
+        }
+        
     }
 
     /* print out selected list for checking: temporary */
@@ -903,7 +921,7 @@ namespace util {
         FILE *tfp;
 
         tfp = open_file(BPORDER_FILE, "w");
-        print_bp_crit(misc_pars, tfp);
+        // print_bp_crit(misc_pars, tfp);
         // frprintf(tfp, "Base-pair information BEFORE re-ordering\n");
         for (i = 1; i <= num_bp; i++) {
             set_wc3(base_pairs[i], wc);
@@ -1241,7 +1259,7 @@ namespace util {
         }
 
         // frprintf(fp, "##### ");
-        print_bp_crit(misc_pars, fp);
+        // print_bp_crit(misc_pars, fp);
         // frprintf(fp, "##### %ld non-Watson-Crick base-pair%s", num_nwc, (num_nwc == 1) ? "" : "s");
         (num_helix == 1) ? strcpy(b1, "x") : strcpy(b1, "ces");
         // frprintf(fp, ", and %ld heli%s", num_helix, b1);
