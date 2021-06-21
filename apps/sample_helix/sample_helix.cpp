@@ -130,7 +130,7 @@ SampleHelixApp::get_motifs_from_seq_and_ss(
 
 int main(int argc, const char * argv[]) {
     //must add this for all apps!
-    std::set_terminate(print_backtrace);
+    std::set_terminate(base::print_backtrace);
 
     auto app = SampleHelixApp();
     app.setup_options();

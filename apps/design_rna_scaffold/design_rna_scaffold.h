@@ -130,6 +130,65 @@ private: // run functions
             std::map<int, int> & /* return */);
 
 private:
+    struct Parameters { // It looks like this whole struct is new, we want this here right?
+        // required options will exit if not supplied
+        struct Core {
+            String pdb = "";
+            String start_bp = "";
+            String end_bp = "";
+            int designs = 1;
+            String log_level = "info";
+            String mg = "";
+            String extra_pdbs = "";
+        };
+        // options related to what will be outputted
+        struct IO {
+            String out_file = "default.out";
+            String score_file = "default.scores";
+            String new_ensembles_file = "";
+            bool dump_pdbs = false;
+            bool dump_scaffold_pdbs = false;
+            bool dump_intermediate_pdbs = false;
+            bool no_out_file = false;
+
+        };
+        // options related to how the initial motif search is performed
+        struct Search {
+            String type = "path_finding";
+            String motif_path = "";
+            String starting_helix = "";
+            String ending_helix = "";
+            String solution_filter = "RemoveDuplicateHelices";
+            float cutoff = 7.5f;
+            int max_helix_length = 99;
+            int min_helix_length = 4;
+            int max_size = 9999;
+            int max_motifs = 999;
+            bool no_basepair_checks = false;
+            bool no_sterics = false;
+            String exhaustive_scorer, mc_scorer;
+            float scaled_score_d, scaled_score_r;
+            bool only_tether_opt = false;
+        };
+
+        struct SequenceOpt {
+            bool skip = false;
+            int sequences_per_design = 1;
+            int steps = 10000;
+
+        };
+
+        struct ThermoFluc {
+            bool perform = false;
+            int steps = 1000000;
+        };
+
+        Core core = Core();
+        IO io = IO();
+        Search search = Search();
+        SequenceOpt seq_opt = SequenceOpt();
+        ThermoFluc thermo_fluc = ThermoFluc();
+    };
 
     struct SolutionInfo {
         // from motif search
@@ -194,6 +253,9 @@ private:
     // other vars
     std::ofstream out_, score_out_;
     std::map<String, motif::MotifStateEnsembleOP> new_motif_ensembles_;
+private:
+
+  struct Parameters;
 };
 
 #endif //TEST_DESIGN_RNA_SCAFFOLD_H
