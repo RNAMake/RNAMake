@@ -7,4 +7,5 @@ compare_db_files ../../apps/compare_db_files/compare_db_files.cpp
 ##simulate_tectos ../../simulate_tectossimulate_tectos.cc
 #simulate_tectos_devel ../../apps/simulate_tectos_devel/main.cpp ../../apps/simulate_tectos_devel/simulate_tectos_devel.cc
 ##structure_info ../../structure_infostructure_info.cc
-##thermo_simulation ../../thermo_simulationthermo_simulation.cppf
+##thermo_simulation ../../thermo_simulationthermo_simulation.cpp
+sample_helix ../../apps/sample_helix/sample_helix.cpp

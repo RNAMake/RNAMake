@@ -125,7 +125,6 @@ private: // run functions
             std::map<int, int> & /* return */);
 
 private:
-
     struct Parameters {
         // required options will exit if not supplied
         struct Core {
@@ -249,6 +248,9 @@ private:
     // other vars
     std::ofstream out_, score_out_;
     std::map<String, motif::MotifStateEnsembleOP> new_motif_ensembles_;
+private:
+
+  struct Parameters;
 };
 
 #endif //TEST_DESIGN_RNA_SCAFFOLD_H
