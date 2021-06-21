@@ -5,7 +5,6 @@
 
 #include "design_rna_scaffold/design_rna_scaffold.cpp"
 #include "tools.h"
-
 #include "common.hpp"
 
 

@@ -28,12 +28,6 @@ X3dna::X3dna() :
 }
 
 void
-X3dna::_delete_files(
-        Strings const &file_names) const {
-    for (auto const &fn : file_names) { _delete_file(fn); }
-}
-
-void
 X3dna::_delete_file(
         String const &file_name) const {
     try { std::remove(file_name.c_str()); }
