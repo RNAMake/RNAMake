@@ -2,8 +2,6 @@
  // Created by Hassan Abdelsamad on 4/18/21.
  //
 
- #include <CLI/CLI.hpp>
-
  #include "design_rna_scaffold/design_rna_scaffold.cpp"
  #include "tools.h"
 

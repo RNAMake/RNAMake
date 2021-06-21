@@ -1,8 +1,8 @@
 
 #include "design_rna_scaffold/design_rna_scaffold.h"
 
-#ifndef ARGS_H
-#define ARGS_H
+#ifndef DESIGNRNASCAFFOLD_OPTIONS_H
+#define DESIGNRNASCAFFOLD_OPTIONS_H
 
 String
 valid_pdb (String &path) {
@@ -80,7 +80,7 @@ struct Parameters {
 
 };
 
-Parameters parameters_ = Parameters();
+    Parameters parameters_ = Parameters();
 
 void
 DesignRNAScaffold::setup_options () {
@@ -233,4 +233,4 @@ DesignRNAScaffold::setup_options () {
 
 }
 
-#endif //ARGS_H
+#endif //DESIGNRNASCAFFOLD_OPTIONS_H

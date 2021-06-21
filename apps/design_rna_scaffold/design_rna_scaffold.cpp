@@ -129,8 +129,6 @@ DesignRNAScaffold::setup () {
     LOG_INFO << "#########";
     LOG_INFO << "# setup #";
     LOG_INFO << "#########";
-    auto test = app_.get_option("--pdb");
-    LOG_INFO << "loaded pdb from file: " << test;
     LOG_INFO << "loaded pdb from file: " << parameters_.core.pdb;
 
 

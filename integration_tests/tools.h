@@ -4,6 +4,8 @@
 
 
 #ifndef RNAMAKE_TOOLS_H
+#define RNAMAKE_TOOLS_H
+
 
 #include "util/csv.h"
 #include "common.hpp"
@@ -57,6 +59,9 @@ void mock_main(std::string args) {
 
 bool check_logs(const std::string &f1, const std::string &f2) {
 
+    //TODO Check if RNAMAKE variable exists
+    auto base = std::getenv("RNAMAKE");
+
     io::CSVReader<1> in1(f1.c_str());
     io::CSVReader<1> in2(f2.c_str());
     in1.read_header(io::ignore_extra_column, "Message");
@@ -64,9 +69,15 @@ bool check_logs(const std::string &f1, const std::string &f2) {
     bool found = false;
     std::string message1; std::string message2;
 
+
+
+
     while (in1.read_row(message1)) {
         found = false;
         while(!found && in2.read_row(message2) ) {
+
+            message1 = std::regex_replace(message1, std::regex("\\{RNAMAKE\\}"), base);
+            message2 = std::regex_replace(message2, std::regex("\\{RNAMAKE\\}"), base);
 
             if(message1 == message2){
                 found = true;
@@ -81,6 +92,5 @@ bool check_logs(const std::string &f1, const std::string &f2) {
     return true;
 }
 
-#define RNAMAKE_TOOLS_H
 
 #endif //RNAMAKE_TOOLS_H

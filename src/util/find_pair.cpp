@@ -1129,7 +1129,7 @@ namespace util {
         FILE *fpc, *fph;
 
 
-        fpc = open_file(COLCHN_FILE, "w");
+//        fpc = open_file(COLCHN_FILE, "w");
 
         // frprintf(fpc, "zap\nload nmrpdb hel_regions.pdb\n");
         // frprintf(fpc, "# load %s\n", pdbfile);
@@ -1137,7 +1137,7 @@ namespace util {
         // frprintf(fpc, "\n");
 
 
-        fph = open_file(COLHLX_FILE, "w");
+//        fph = open_file(COLHLX_FILE, "w");
         // frprintf(fph, "zap\nload nmrpdb hel_regions.pdb\n");
         // frprintf(fph, "# load %s\n", pdbfile);
         // frprintf(fph, "# restrict not (protein or water)\n");
@@ -1161,9 +1161,9 @@ namespace util {
         }
 
         // frprintf(fpc, "\nselect all\n");
-        close_file(fpc);
+//        close_file(fpc);
         // frprintf(fph, "\nselect all\n");
-        close_file(fph);
+//        close_file(fph);
     }
 
     static void set_nmarkers(long idx, long ib, long ie, long *helix_marker, long **helix_idx,
@@ -1614,6 +1614,7 @@ namespace util {
 
         clear_my_globals();
 
+        clean_files();
         basepairs = bps;
 
     }

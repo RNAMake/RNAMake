@@ -26,8 +26,8 @@ file = open(folder_name + '/' + folder_name + '_options.h', 'w+')
 s = f'''
 #include "{folder_name}/{folder_name}.h"
 
-#ifndef ARGS_H
-#define ARGS_H
+#ifndef {app_name.upper()}_OPTIONS_H
+#define {app_name.upper()}_OPTIONS_H
 
 String
 valid_pdb (String &path) {{
@@ -73,7 +73,6 @@ for group in group_list:
 s += f'''
 
 }};
-private:
 
     Parameters parameters_ = Parameters();
 
@@ -98,10 +97,10 @@ for index, row in df.iterrows():
 
     s += ';\n\n'
 
-s += '''
-}
+s += f'''
+}}
 
-#endif //ARGS_H
+#endif //{app_name.upper()}_OPTIONS_H
 '''
 
 file.write(s)
