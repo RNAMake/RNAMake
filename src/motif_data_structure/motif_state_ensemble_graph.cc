@@ -36,7 +36,19 @@ motif_data_structure::motif_state_ensemble_graph_from_motif_graph(
       }
     }
     else {
-      mse = std::make_shared<motif::MotifStateEnsemble>(n->data()->get_state());
+      auto found = false;
+      try {
+        auto supplied_me = rm.get_supplied_motif_ensemble(n->data()->name(), n->data()->end_name
+        (0));
+        mse = supplied_me->get_state();
+        found = true;
+        LOG_INFO << "while building motif_state_ensemble found supplied ensemble: " << n->data()
+        ->name() << " " << n->data()->end_name(0);
+      }
+      catch(resources::ResourceManagerException const & e) {}
+      if(!found) {
+        mse = std::make_shared<motif::MotifStateEnsemble>(n->data()->get_state());
+      }
     }
 
     if(i == 0) {

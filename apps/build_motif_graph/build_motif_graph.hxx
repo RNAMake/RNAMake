@@ -39,6 +39,18 @@ public: // getters
     return base::log_level_from_str(_parameters.log_level);
   }
 
+private:
+  void
+  _parse_pdb_files();
+
+  void
+  _parse_ensemble_files();
+
+  void
+  build_motif_graph_from_csv(
+    motif_data_structure::MotifGraph & /* return */);
+
+
 public:
   struct Parameters {
     String log_level = "info";
@@ -46,6 +58,7 @@ public:
     String build_file = "";
     String connect = "";
     String sequence = "";
+    String ensemble_dirs = "";
     bool output_pdb = false;
   };
 

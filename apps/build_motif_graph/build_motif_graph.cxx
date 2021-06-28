@@ -2,6 +2,8 @@
 // Created by Joseph Yesselman on 9/12/20.
 //
 
+#include <cstdlib>
+
 // app header
 #include "build_motif_graph/build_motif_graph.hxx"
 #include <thermo_fluctuation/graph/simulation.h>
@@ -32,6 +34,10 @@ BuildMotifGraph::setup_options() {
     ->default_val("")
     ->group("Core Inputs");
 
+  _app.add_option("--ensembles", _parameters.ensemble_dirs, "path to ensemble ")
+    ->default_val("")
+    ->group("Core Inputs");
+
   _app.add_option(
       "--connect", _parameters.connect, "file with instructions for how to build graph")
     ->group("Core Inputs");
@@ -47,48 +53,22 @@ void
 BuildMotifGraph::parse_command_line(
   int argc,
   const char**argv) {
+  base::init_logging();
+  // handle additional pdb files supplied
+  _parse_pdb_files();
+
+  // handle additional ensembles supplied
+  _parse_ensemble_files();
 }
 
 void
 BuildMotifGraph::run() {
-  auto pdb_files = base::split_str_by_delimiter(_parameters.pdbs, ",");
-  if(!pdb_files.empty()) {
-    LOG_INFO << " loading pdbs from --extra_pdb flag: " << _parameters.pdbs;
-  }
-  for(auto const & pdb_file : pdb_files) {
-    if(!base::file_exists(pdb_file)) {
-      LOG_ERROR << "invalid pdb path: " << pdb_file;
-      exit(0);
-    }
-    LOG_INFO << "loading " << pdb_file;
-    _rm.add_motif(pdb_file, "", util::MotifType::TCONTACT);
-  }
 
-  auto in = io::CSVReader<5>(_parameters.build_file);
   auto mg = motif_data_structure::MotifGraph();
-  mg.set_option_value("sterics", false);
-  String motif,align_end,parent_end_name;
-  int parent,parent_end_index;
-  in.read_header(io::ignore_missing_column, "motif", "align_end", "parent",
-    "parent_end_index", "parent_end_name");
-  while(in.read_row(motif, align_end, parent, parent_end_index, parent_end_name)) {
-    auto m = motif::MotifOP(nullptr);
-    if(align_end.empty()) {
-      m = _rm.motif(motif);
-    }
-    else {
-      m = _rm.motif(motif, "", align_end);
-    }
+  build_motif_graph_from_csv(mg);
 
-    if(!parent_end_name.empty()) {
-      mg.add_motif(m, parent, parent_end_name);
-    }
-    else {
-      mg.add_motif(m);
-    }
-  }
   if(_parameters.connect.empty()) {
-    LOG_INFO << "completed";
+    LOG_INFO << "completed, writing pdb to \"test.pdb\"";
     mg.write_pdbs();
     mg.to_pdb("test.pdb", 1, 1);
     exit(0);
@@ -101,8 +81,8 @@ BuildMotifGraph::run() {
     mg.last_node()->data()->end_name(1), spl[1]);
 
   if(_parameters.sequence.empty()) {
-    LOG_INFO << "compelted";
-    exit(0);
+    LOG_INFO << "completed, writing pdb to \"test.pdb\"";
+    mg.to_pdb("test.pdb", 1, 1);
   }
 
   mg.replace_ideal_helices();
@@ -158,7 +138,71 @@ BuildMotifGraph::run() {
 }
 
 
+// app private functions ///////////////////////////////////////////////////////////////////////////
 
+void
+BuildMotifGraph::_parse_pdb_files() {
+  auto pdb_files = base::split_str_by_delimiter(_parameters.pdbs, ",");
+  if(!pdb_files.empty()) {
+    LOG_INFO << "loading pdbs from --extra_pdb flag: " << _parameters.pdbs;
+  }
+  for(auto const & pdb_file : pdb_files) {
+    if(!base::file_exists(pdb_file)) {
+      LOG_ERROR << "invalid pdb path: " << pdb_file;
+      std::exit(EXIT_FAILURE);
+    }
+    LOG_INFO << "loading " << pdb_file;
+    _rm.add_motif(pdb_file, "", util::MotifType::TCONTACT);
+  }
+}
+
+void
+BuildMotifGraph::_parse_ensemble_files() {
+  auto ensemble_files = base::split_str_by_delimiter(_parameters.ensemble_dirs, ",");
+  if(!ensemble_files.empty()) {
+    LOG_INFO << "loading ensemble files from --ensembles " << _parameters.ensemble_dirs;
+  }
+  for(auto const & ensemble_file : ensemble_files) {
+    if(!base::file_exists(ensemble_file)) {
+      LOG_ERROR << "invalid ensemble path: " << ensemble_file;
+      std::exit(EXIT_FAILURE);
+    }
+    auto mes = std::vector<motif::MotifEnsembleOP>();
+    motif::motif_ensemble_from_csv_file(ensemble_file, mes);
+    for(auto const & me : mes) {
+      auto name = me->members()[0]->motif->name();
+      auto end_name = me->members()[0]->motif->end_name(0);
+      _rm.register_motif_ensemble(name, end_name, me);
+    }
+  }
+}
+
+void
+BuildMotifGraph::build_motif_graph_from_csv(
+  motif_data_structure::MotifGraph & mg) {
+  auto in = io::CSVReader<5>(_parameters.build_file);
+  mg.set_option_value("sterics", false);
+  String motif,align_end,parent_end_name;
+  int parent,parent_end_index;
+  in.read_header(io::ignore_missing_column, "motif", "align_end", "parent",
+    "parent_end_index", "parent_end_name");
+  while(in.read_row(motif, align_end, parent, parent_end_index, parent_end_name)) {
+    auto m = motif::MotifOP(nullptr);
+    if(align_end.empty()) {
+      m = _rm.motif(motif);
+    }
+    else {
+      m = _rm.motif(motif, "", align_end);
+    }
+
+    if(!parent_end_name.empty()) {
+      mg.add_motif(m, parent, parent_end_name);
+    }
+    else {
+      mg.add_motif(m);
+    }
+  }
+}
 
 int
 main(
@@ -170,8 +214,7 @@ main(
   auto app = BuildMotifGraph();
   app.setup_options();
   CLI11_PARSE(app._app, argc, argv);
-  //start logging
-  base::init_logging(app.log_level());
+  app.parse_command_line(argc, argv);
   app.run();
   return 0;
 }

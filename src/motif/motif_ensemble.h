@@ -166,6 +166,12 @@ private:
 
 typedef std::shared_ptr<MotifEnsemble> MotifEnsembleOP;
 
+void
+motif_ensemble_from_csv_file(
+  String const &,
+  std::vector<MotifEnsembleOP> &);
+
+
 }
 
 #endif /* defined(__RNAMake__motif_ensemble__) */

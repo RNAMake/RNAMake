@@ -13,7 +13,7 @@
 #include "secondary_structure/util.h"
 #include "base/file_io.h"
 #include "util/x3dna.h"
-
+#include "motif_ensemble.h"
 
 namespace motif {
 
@@ -536,6 +536,34 @@ MotifFactory::_get_reduced_chain_num_structure(
     }
 
     return std::make_shared<structure::Structure>(chains);
+}
+
+MotifOPs
+get_standardize_motifs(
+  MotifFactory & mf,
+  String const & path) {
+  auto m = mf.motif_from_file(path, false, true);
+  motif::MotifOPs motifs;
+  std::map<util::Uuid, String, util::UuidCompare> end_ids;
+  for (int i = 0; i < m->ends().size(); i++) {
+    auto m_added = mf.get_oriented_motif(m, i);
+
+    motifs.push_back(m_added);
+    end_ids[m_added->ends()[0]->uuid()] = m_added->end_ids()[0];
+  }
+  if (motifs.size() == 0) {
+    throw MotifFactoryException(
+      "attempted to add motif from path " + path + " unforunately it has no viable "
+                                                   "basepair ends to be build from ");
+  }
+  for (auto & m : motifs) {
+    Strings final_end_ids;
+    for (auto const & end : m->ends()) {
+      final_end_ids.push_back(end_ids[end->uuid()]);
+    }
+    m->end_ids(final_end_ids);
+  }
+  return motifs;
 }
 
 }

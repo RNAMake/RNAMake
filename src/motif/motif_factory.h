@@ -167,6 +167,11 @@ private:
 
 };
 
+MotifOPs
+get_standardize_motifs(
+  MotifFactory &,
+  String const &);
+
 }
 
 #endif /* defined(__RNAMake__motif_factory__) */
