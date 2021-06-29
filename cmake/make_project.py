@@ -30,13 +30,13 @@ def build_libraries(lib_list, dependencies, base_dir, static):
                 [lib + "_lib" for lib in dependencies[library]]
                 + ["sqlite3" if library == "util" else ""]
             ),
-            BUILD="-static" if static else "",
+            BUILD="" if static else "",
         )
     library_declarations += "add_library(all_lib {BUILD} {DIR}/main.cpp)\ntarget_link_libraries(all_lib {LIBS} {LINK})\n".format(
         LIBS=" ".join([lib + "_lib" for lib in dependencies["all"]]),
         DIR=base_dir,
         BUILD="STATIC" if static else "",
-        LINK="-static" if static else "",
+        LINK="" if static else "",
     )
     library_declarations += "#" * 100 + "\n"
     return library_declarations
@@ -59,7 +59,7 @@ def build_unittests(lib_list, base_dir, static):
                 TEST=unittest_name, SRC=source_file
             )
             unittest_declarations += "\ttarget_link_libraries({TEST} {LIB}_lib {BUILD} )\n".format(
-                TEST=unittest_name, LIB=library, BUILD="-static" if static else ""
+                TEST=unittest_name, LIB=library, BUILD="" if static else ""
             )
             unittest_declarations += "\tadd_test({TEST} {TEST})\n".format(
                 TEST=unittest_name
@@ -79,7 +79,7 @@ def build_integration_tests(base_dir, static):
                 TEST=unittest_name, SRC=source_file
             )
             integration_tests_declarations += "\ttarget_link_libraries({TEST} all_lib {BUILD} )\n".format(
-                TEST=unittest_name, BUILD="-static" if static else ""
+                TEST=unittest_name, BUILD="" if static else ""
             )
             integration_tests_declarations += "\tadd_test({TEST} {TEST})\n".format(
                 TEST=unittest_name
@@ -124,7 +124,7 @@ def build_apps(base_dir, static):
                 else:
                     application_text += f"\tadd_executable( {app_name} {full_path})\n"
                 application_text += "\ttarget_link_libraries({NAME} all_lib {LINK}  )\n".format(
-                    NAME=app_name, LINK="-static" if static else ""
+                    NAME=app_name, LINK="" if static else ""
                 )
     
     application_text += f"{hundred_dashes}\n"
