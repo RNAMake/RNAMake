@@ -35,11 +35,14 @@ motif_ensemble_from_csv_file(
   auto mf = motif::MotifFactory();
   auto in = io::CSVReader<4>(csv_file);
   String path, end_0, end_1, end_2;
+  auto fname = base::filename(csv_file);
+  fname = base::split_str_by_delimiter(fname, ".")[0];
   in.read_header(io::ignore_missing_column, "path", "end_0", "end_1", "end_2");
   auto end_0_motifs = MotifOPs();
   auto end_1_motifs = MotifOPs();
   auto end_2_motifs = MotifOPs();
   auto weights = Floats();
+  auto i = 0;
   LOG_INFO << "in ensemble file: " << csv_file;
   while(in.read_row(path, end_0, end_1, end_2)) {
     if(!base::file_exists(path)) {
@@ -50,6 +53,12 @@ motif_ensemble_from_csv_file(
     auto motifs = motif::get_standardize_motifs(mf, path);
     auto found_0 = false, found_1 = false, found_2 = false;
     for(auto const & m : motifs) {
+      if(i == 0) {
+        m->name(fname);
+      }
+      else {
+        m->name(fname + "_" + std::to_string(i));
+      }
       if(m->end_name(0) == end_0) {
         end_0_motifs.push_back(m);
         found_0 = true;
@@ -76,6 +85,7 @@ motif_ensemble_from_csv_file(
       exit(1);
     }
     weights.push_back(1);
+    i += 1;
   }
   mes.push_back(std::make_shared<motif::MotifEnsemble>(end_0_motifs, weights));
   mes.push_back(std::make_shared<motif::MotifEnsemble>(end_1_motifs, weights));

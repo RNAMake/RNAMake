@@ -157,7 +157,6 @@ BuildMotifGraph::run() {
   //mg.to_pdb("test.pdb", 1, 1);
 
 
-
 }
 
 
