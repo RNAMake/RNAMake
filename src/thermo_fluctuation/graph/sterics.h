@@ -7,16 +7,14 @@
 
 #include <motif_data_structure/motif_state_graph.hpp>
 
-namespace thermo_fluctuation {
-namespace graph {
-namespace sterics {
+namespace thermo_fluctuation::graph::sterics {
 
 class Sterics {
 public:
-    Sterics() {}
+    Sterics() = default;
 
     virtual
-    ~Sterics() {}
+    ~Sterics() = default;
 
     virtual
     Sterics *
@@ -51,8 +49,8 @@ public:
 class SelectiveSterics : public Sterics {
 public:
     SelectiveSterics(
-            Ints const node_indices_1,
-            Ints const node_indices_2,
+            Ints const & node_indices_1,
+            Ints const & node_indices_2,
             float steric_radius):
             node_indices_1_(node_indices_1),
             node_indices_2_(node_indices_2),
@@ -88,8 +86,6 @@ private:
 };
 
 
-}
-}
 }
 
 #endif //RNAMAKE_NEW_THERMO_FLUC_STERICS_H

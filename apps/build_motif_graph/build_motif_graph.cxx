@@ -43,10 +43,13 @@ BuildMotifGraph::setup_options() {
     ->group("Core Inputs");
 
   _app.add_option(
-      "--seq", _parameters.sequence, "file with instructions for how to build graph")
+      "--seq", _parameters.sequence, "")
     ->group("Core Inputs");
+  _app.add_option(
+      "--scorer", _parameters.scorer, "");
 
   _app.add_flag("--output_pdb", _parameters.output_pdb);
+  _app.add_flag("--sterics", _parameters.sterics);
 }
 
 void
@@ -63,6 +66,8 @@ BuildMotifGraph::parse_command_line(
 
 void
 BuildMotifGraph::run() {
+  // save some characters with namespace
+  namespace tfg = thermo_fluctuation::graph;
 
   auto mg = motif_data_structure::MotifGraph();
   build_motif_graph_from_csv(mg);
@@ -86,8 +91,7 @@ BuildMotifGraph::run() {
   }
 
   mg.replace_ideal_helices();
-  auto last_m =
-    mg.get_node(ni)->connections()[nie]->partner(ni);
+  auto last_m = mg.get_node(ni)->connections()[nie]->partner(ni);
   mg.replace_helical_sequence(_parameters.sequence);
 
   auto index_hash = std::map<int, int>();
@@ -96,11 +100,30 @@ BuildMotifGraph::run() {
     mg, _rm, mseg, index_hash);
   auto start = data_structure::NodeIndexandEdge { index_hash[ni], nie };
   auto end = data_structure::NodeIndexandEdge { index_hash[last_m->index()], 1 };
-  auto thermo_scorer = std::make_shared<thermo_fluctuation::graph::OldFrameScorer>();
-  auto sterics = std::make_shared<thermo_fluctuation::graph::sterics::NoSterics>();
-  auto thermo_sim_ = std::make_shared<thermo_fluctuation::graph::Simulation>(thermo_scorer,
-    sterics);
 
+  auto thermo_scorer = tfg::ScorerOP();
+  auto sterics = tfg::sterics::StericsOP();
+  if(_parameters.scorer == "OldFrameScorer") {
+    thermo_scorer = tfg::ScorerOP(std::make_shared<tfg::OldFrameScorer>());
+  }
+  else if(_parameters.scorer == "FrameScorer") {
+    thermo_scorer = tfg::ScorerOP(std::make_shared<tfg::FrameScorer>());
+  }
+  else {
+    LOG_ERROR << "invalid scorer: " << _parameters.scorer;
+    exit(1);
+  }
+
+  if(_parameters.sterics) {
+    sterics = tfg::sterics::StericsOP
+      (std::make_shared<tfg::sterics::SelectiveSterics>(Ints{0}, Ints{index_hash[last_m->index()
+      ]}, 2.2f));
+  }
+  else {
+    sterics = tfg::sterics::StericsOP(std::make_shared<tfg::sterics::NoSterics>());
+  }
+  auto thermo_sim_ = std::make_shared<tfg::Simulation>(thermo_scorer, sterics);
+  thermo_sim_->set_option_value("cutoff", _parameters.cutoff);
   thermo_sim_->setup(mseg, start, end);
   thermo_sim_->next();
   auto count = 0;
@@ -149,7 +172,7 @@ BuildMotifGraph::_parse_pdb_files() {
   for(auto const & pdb_file : pdb_files) {
     if(!base::file_exists(pdb_file)) {
       LOG_ERROR << "invalid pdb path: " << pdb_file;
-      std::exit(EXIT_FAILURE);
+      exit(1);
     }
     LOG_INFO << "loading " << pdb_file;
     _rm.add_motif(pdb_file, "", util::MotifType::TCONTACT);
@@ -165,7 +188,7 @@ BuildMotifGraph::_parse_ensemble_files() {
   for(auto const & ensemble_file : ensemble_files) {
     if(!base::file_exists(ensemble_file)) {
       LOG_ERROR << "invalid ensemble path: " << ensemble_file;
-      std::exit(EXIT_FAILURE);
+      exit(1);
     }
     auto mes = std::vector<motif::MotifEnsembleOP>();
     motif::motif_ensemble_from_csv_file(ensemble_file, mes);

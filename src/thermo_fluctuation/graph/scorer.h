@@ -68,7 +68,9 @@ public:
             flipped_ = state_2.r().get_flip_orientation();
             r_diff_ = state_1.r().difference(flipped_);
         }
-        return score_ + 2*r_diff_;
+        //return score_ + 2*r_diff_;
+        return score_ + 1*r_diff_;
+
     }
 
 private:

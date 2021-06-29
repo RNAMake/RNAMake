@@ -133,6 +133,7 @@ private:
     float weight_d_ = 0, weight_r_ = 0;
 };
 
+
 class SixDScorer : public ThermoFlucScorer {
 public:
     SixDScorer(

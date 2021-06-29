@@ -59,7 +59,10 @@ public:
     String connect = "";
     String sequence = "";
     String ensemble_dirs = "";
+    String scorer = "OldFrameScorer";
     bool output_pdb = false;
+    bool sterics = false;
+    float cutoff = 4.5f;
   };
 
 public:

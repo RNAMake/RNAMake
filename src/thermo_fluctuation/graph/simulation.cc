@@ -5,8 +5,7 @@
 #include <thermo_fluctuation/graph/simulation.h>
 
 
-namespace thermo_fluctuation {
-namespace graph {
+namespace thermo_fluctuation::graph {
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // option functions
@@ -46,14 +45,15 @@ Simulation::setup(
     sampler_ = std::make_shared<Sampler>(mseg);
     sampler_->set_temperature(parameters_.temperature);
     msg_ = sampler_->get_initial_state();
-
-    start_ = start; end_ = end;
+    start_ = start;
+    end_ = end;
 
     bool target_an_aligned_end = false;
     if(msg_->get_node(end_.node_index)->data()->block_end_add() == end_.edge_index) {
         target_an_aligned_end = true;
     }
     scorer_->setup(target_an_aligned_end);
+    next();
 }
 
 bool
@@ -85,7 +85,6 @@ Simulation::next() {
 
 }
 
-}
 }
 
 
