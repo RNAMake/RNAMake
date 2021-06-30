@@ -24,7 +24,7 @@ set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR}/exe )
 ###########################################################################
 # design_rna_scaffold
 ###########################################################################
-	add_executable( design_rna_scaffold ${RNAMAKE_APP_DIR}/design_rna_scaffold/design_rna_scaffold.cpp /home/cjurich/projects/RNAMake/apps/design_rna_scaffold/main.cpp)
+add_executable( design_rna_scaffold ${RNAMAKE_APP_DIR}/design_rna_scaffold/design_rna_scaffold.cpp ${RNAMAKE_APP_DIR}/design_rna_scaffold/main.cpp)
 	target_link_libraries(design_rna_scaffold RNAMake   )
 ###########################################################################
 # build_motif_graph

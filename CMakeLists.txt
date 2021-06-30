@@ -1,5 +1,5 @@
 ###################################################################################################
-# Project Level Info
+# roject Level Info
 ####################################################################################################
 cmake_minimum_required(VERSION 3.0)
 set(CMAKE_BUILD_TYPE Release) #TODO make this something you select
@@ -109,7 +109,6 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 #    SET(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
 #
 endif()
-
 
 set(RNAMAKE ${CMAKE_CURRENT_SOURCE_DIR})
 set(BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
