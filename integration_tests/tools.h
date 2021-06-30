@@ -6,7 +6,9 @@
 #ifndef RNAMAKE_TOOLS_H
 #define RNAMAKE_TOOLS_H
 
+#include "design_rna_scaffold/design_rna_scaffold.h"
 
+#include "base/backtrace.h"
 #include "util/csv.h"
 #include "common.hpp"
 #include <regex>
@@ -44,6 +46,9 @@ std::string get_expected_path(std::string folder_name){
 }
 
 void mock_main(std::string args) {
+#pragma WARNING("mock_main(std::string args) is disabled in integration_tests/tools.h")
+
+#if 0 
     std::set_terminate(base::print_backtrace);
     auto app = DesignRNAScaffold();
 
@@ -55,6 +60,7 @@ void mock_main(std::string args) {
 
     app.app_.parse(args);
     app.run();
+#endif
 }
 
 bool check_logs(const std::string &f1, const std::string &f2) {

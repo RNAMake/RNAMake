@@ -1,3 +1,19 @@
+###################################################################################################
+# Project Level Info
+####################################################################################################
+cmake_minimum_required(VERSION 3.0)
+set(CMAKE_BUILD_TYPE Release) #TODO make this something you select
+project(RNAMake)
+enable_testing()
+
+
+#set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-as-needed ")
+#set(CMAKE_EXE_LINKER_FLAGS " -lstdc++ -Wl,--no-as-needed,--no-export-dynamic ")
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+
 if(NOT WIN32)
   string(ASCII 27 Esc)
   set(ColourReset "${Esc}[m")
@@ -5,7 +21,7 @@ if(NOT WIN32)
   set(Red         "${Esc}[31m")
   set(Green       "${Esc}[32m")
   set(Yellow      "${Esc}[33m")
-  set(Blue        "${Esc}[34m")
+  set(Blue        "${Esc}[34m") 
   set(Magenta     "${Esc}[35m")
   set(Cyan        "${Esc}[36m")
   set(White       "${Esc}[37m")
@@ -59,12 +75,11 @@ endif()
 
 if( ${COMPILER} STREQUAL gcc )
 	set(compile_flags
-	-std=c++14;
+	    -std=c++17;
     	-w;
     	-O3;
     	-pedantic;
 	)
-    
 
 endif()
 
@@ -78,7 +93,6 @@ endforeach()
 
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Windows")  
-    include(backtrace.cmake) 
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -pthread " )
@@ -88,11 +102,23 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set( CMAKE_EXE_LINKER_FLAGS " -lstdc++ -Wl,--no-as-needed,--no-export-dynamic ")
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-
-    SET(CMAKE_C_ARCHIVE_CREATE   "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
-    SET(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
-    SET(CMAKE_C_ARCHIVE_FINISH   "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
-    SET(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
-
+#
+#    SET(CMAKE_C_ARCHIVE_CREATE   "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+#    SET(CMAKE_CXX_ARCHIVE_CREATE "<CMAKE_AR> Scr <TARGET> <LINK_FLAGS> <OBJECTS>")
+#    SET(CMAKE_C_ARCHIVE_FINISH   "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+#    SET(CMAKE_CXX_ARCHIVE_FINISH "<CMAKE_RANLIB> -no_warning_for_no_symbols -c <TARGET>")
+#
 endif()
 
+
+set(RNAMAKE ${CMAKE_CURRENT_SOURCE_DIR})
+set(BUILD_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+# building the library
+include(${RNAMAKE}/src/CMakeLists.txt)
+# unittests
+include(${RNAMAKE}/unittests/CMakeLists.txt)
+# applications
+include(${RNAMAKE}/apps/CMakeLists.txt)
+# integration tests
+include(${RNAMAKE}/integration_tests/CMakeLists.txt)
