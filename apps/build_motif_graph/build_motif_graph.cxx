@@ -15,9 +15,9 @@
 
 // init  ///////////////////////////////////////////////////////////////////////////////////////////
 
-BuildMotifGraph::BuildMotifGraph():
+BuildMotifGraph::BuildMotifGraph() :
   base::Application(),
-  _rm(resources::Manager::instance()){
+  _rm(resources::Manager::instance()) {
 }
 
 // app functions  //////////////////////////////////////////////////////////////////////////////////
@@ -45,8 +45,9 @@ BuildMotifGraph::setup_options() {
   _app.add_option(
       "--seq", _parameters.sequence, "")
     ->group("Core Inputs");
-  _app.add_option(
-      "--scorer", _parameters.scorer, "");
+  _app.add_option("--scorer", _parameters.scorer, "");
+  _app.add_option("--steps", _parameters.steps, "");
+  _app.add_option("--runs", _parameters.runs, "");
 
   _app.add_flag("--output_pdb", _parameters.output_pdb);
   _app.add_flag("--sterics", _parameters.sterics);
@@ -81,8 +82,9 @@ BuildMotifGraph::run() {
   auto spl = base::split_str_by_delimiter(_parameters.connect, ",");
   auto ni = std::stoi(spl[0]);
   auto end_name = spl[1];
-  auto nie =  mg.get_node(ni)->data()->get_end_index(end_name);
-  mg.add_connection(mg.last_node()->index(), std::stoi(spl[0]),
+  auto nie = mg.get_node(ni)->data()->get_end_index(end_name);
+  mg.add_connection(
+    mg.last_node()->index(), std::stoi(spl[0]),
     mg.last_node()->data()->end_name(1), spl[1]);
 
   if(_parameters.sequence.empty()) {
@@ -98,8 +100,8 @@ BuildMotifGraph::run() {
   auto mseg = motif_data_structure::MotifStateEnsembleGraph();
   motif_data_structure::motif_state_ensemble_graph_from_motif_graph(
     mg, _rm, mseg, index_hash);
-  auto start = data_structure::NodeIndexandEdge { index_hash[ni], nie };
-  auto end = data_structure::NodeIndexandEdge { index_hash[last_m->index()], 1 };
+  auto start = data_structure::NodeIndexandEdge{index_hash[ni], nie};
+  auto end = data_structure::NodeIndexandEdge{index_hash[last_m->index()], 1};
 
   auto thermo_scorer = tfg::ScorerOP();
   auto sterics = tfg::sterics::StericsOP();
@@ -116,34 +118,45 @@ BuildMotifGraph::run() {
 
   if(_parameters.sterics) {
     sterics = tfg::sterics::StericsOP
-      (std::make_shared<tfg::sterics::SelectiveSterics>(Ints{0}, Ints{index_hash[last_m->index()
-      ]}, 2.2f));
+      (
+        std::make_shared<tfg::sterics::SelectiveSterics>(
+          Ints{0}, Ints{index_hash[last_m->index()
+          ]}, 2.2f));
   }
   else {
     sterics = tfg::sterics::StericsOP(std::make_shared<tfg::sterics::NoSterics>());
   }
-  auto thermo_sim_ = std::make_shared<tfg::Simulation>(thermo_scorer, sterics);
-  thermo_sim_->set_option_value("cutoff", _parameters.cutoff);
-  thermo_sim_->setup(mseg, start, end);
-  thermo_sim_->next();
-  auto count = 0;
-  auto best = thermo_sim_->get_score();
-  std::cout << best << std::endl;
-  auto best_mg = thermo_sim_->get_motif_graph();
-  auto under_cutoff = 0;
-
-  for (int s = 0; s < 1000000; s++) {
-    under_cutoff = thermo_sim_->next();
-    if (under_cutoff) {
-      count += 1;
-    }
-    if (thermo_sim_->get_score() < best && _parameters.output_pdb) {
-      //LOG_INFO << "best dist score: " << best;
-      best = thermo_sim_->get_score();
+  auto avg = 0;
+  auto best_mg = motif_data_structure::MotifGraphOP();
+  for(int i = 0; i < _parameters.runs; i++) {
+    auto thermo_sim_ = std::make_shared<tfg::Simulation>(thermo_scorer, sterics);
+    thermo_sim_->set_option_value("cutoff", _parameters.cutoff);
+    thermo_sim_->setup(mseg, start, end);
+    thermo_sim_->next();
+    if(i == 0) {
       best_mg = thermo_sim_->get_motif_graph();
     }
+    auto count = 0;
+    auto best = thermo_sim_->get_score();
+    std::cout << best << std::endl;
+    auto under_cutoff = 0;
+
+    for(int s = 0; s < _parameters.steps; s++) {
+      under_cutoff = thermo_sim_->next();
+      if(under_cutoff) {
+        count += 1;
+      }
+      if(thermo_sim_->get_score() < best && _parameters.output_pdb) {
+        //LOG_INFO << "best dist score: " << best;
+        best = thermo_sim_->get_score();
+        if(_parameters.output_pdb) {
+          best_mg = thermo_sim_->get_motif_graph();
+        }
+      }
+    }
+    avg += count;
   }
-  std::cout << count << std::endl;
+  std::cout << avg / _parameters.runs << std::endl;
   // connection is not perserved through simulation ... bring it back
   if(_parameters.output_pdb) {
     best_mg->add_connection(
@@ -204,9 +217,10 @@ BuildMotifGraph::build_motif_graph_from_csv(
   motif_data_structure::MotifGraph & mg) {
   auto in = io::CSVReader<5>(_parameters.build_file);
   mg.set_option_value("sterics", false);
-  String motif,align_end,parent_end_name;
-  int parent,parent_end_index;
-  in.read_header(io::ignore_missing_column, "motif", "align_end", "parent",
+  String motif, align_end, parent_end_name;
+  int parent, parent_end_index;
+  in.read_header(
+    io::ignore_missing_column, "motif", "align_end", "parent",
     "parent_end_index", "parent_end_name");
   while(in.read_row(motif, align_end, parent, parent_end_index, parent_end_name)) {
     auto m = motif::MotifOP(nullptr);
