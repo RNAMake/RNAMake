@@ -1,8 +1,8 @@
 
 #include "design_rna_scaffold/design_rna_scaffold.h"
 
-#ifndef DESIGNRNASCAFFOLD_OPTIONS_H
-#define DESIGNRNASCAFFOLD_OPTIONS_H
+#ifndef DESIGNRNASCAFFOLDAPP_OPTIONS_H
+#define DESIGNRNASCAFFOLDAPP_OPTIONS_H
 
 String
 valid_pdb (String &path) {
@@ -28,6 +28,7 @@ struct Parameters {
 		int designs = 1;
 		String log_level = "info";
 		String extra_pdbs = "";
+		String ensembles = "";
 	};
 
 	struct IO{
@@ -83,7 +84,7 @@ struct Parameters {
     Parameters parameters_ = Parameters();
 
 void
-DesignRNAScaffold::setup_options () {
+DesignRNAScaffoldApp::setup_options () {
 
 	app_.add_option_group("core");
 	app_.add_option_group("io");
@@ -111,6 +112,10 @@ DesignRNAScaffold::setup_options () {
 		->group("core");
 
 	app_.add_option("--extra_pdbs", parameters_.core.extra_pdbs, "deliminted list of other pdbs used in building")
+		->default_val("")
+		->group("core");
+
+	app_.add_option("--ensembles", parameters_.core.ensembles, "deliminted list of other ensembles")
 		->default_val("")
 		->group("core");
 
@@ -233,4 +238,4 @@ DesignRNAScaffold::setup_options () {
 
 }
 
-#endif //DESIGNRNASCAFFOLD_OPTIONS_H
+#endif //DESIGNRNASCAFFOLDAPP_OPTIONS_H

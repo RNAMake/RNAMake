@@ -5,6 +5,7 @@ end_bp,core,Core,end_bp,ending basepair to be used in structure format: [CHAIN I
 designs,core,Core,designs,number of designs to create. Default is 1,1,true,false,int
 log_level,core,Core,log_level,level for global logging,"info",true,false,String
 extra_pdbs,core,Core,extra_pdbs,deliminted list of other pdbs used in building,"",true,false,String
+ensembles,core,Core,ensembles,deliminted list of other ensembles,"",true,false,String
 dump_intermediate_pdbs,io,IO,dump_intermediate_pdbs,flag to dump intermediate pdbs,"",false,false,bool
 dump_pdbs,io,IO,dump_pdbs,TODO,false,false,true,bool
 dump_scaffold_pdbs,io,IO,dump_scaffold_pdbs,flag to output pdbs of just the design scaffold WITHOUT initial RNA structure useful for really big structures,false,false,true,bool
