@@ -5,7 +5,7 @@
 #include <optional>
 #include <variant>
 
-namespace sqlite::utility {
+namespace sqliteutility {
 	template<typename ...Options>
 	struct VariantFirstNullable {
 		using type = void;

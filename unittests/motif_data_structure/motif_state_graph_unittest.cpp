@@ -86,7 +86,7 @@ TEST_CASE( "Test Assembling MotifStates together in a graph " ) {
         auto atoms2 = mg2->get_structure()->atoms();
         
         for(int i = 0; i < atoms1.size(); i++) {
-            auto diff = atoms1[i]->coords().distance(atoms2[i]->coords());
+            auto diff = atoms1[i]->get_coords().distance(atoms2[i]->get_coords());
             CHECK(diff < 0.1);
         }
         

@@ -67,16 +67,16 @@ void
 StericLookup::add_point(
         math::Point const & p) {
 
-    rounded_.x(round(p.x() / grid_size_) * grid_size_);
-    rounded_.y(round(p.y() / grid_size_) * grid_size_);
-    rounded_.z(round(p.z() / grid_size_) * grid_size_);
+    rounded_.set_x(round(p.get_x() / grid_size_) * grid_size_);
+    rounded_.set_y(round(p.get_y() / grid_size_) * grid_size_);
+    rounded_.set_z(round(p.get_z() / grid_size_) * grid_size_);
 
     auto gp = math::Point();
     double k;
 
     for (auto const & add : additions_) {
         gp = rounded_ + add;
-        k = double(gp.x() * 0.001) + (double) (gp.y()) * 0.000000001 + double(gp.z() * 100000);
+        k = double(gp.get_x() * 0.001) + (double) (gp.get_y()) * 0.000000001 + double(gp.get_z() * 100000);
 
         if (bhash_.find(k) != bhash_.end()) { bhash_[k] += 1; }
         else { bhash_[k] = 1; }
@@ -100,11 +100,11 @@ int
 StericLookup::clash(
         math::Point const & p) {
 
-    rounded_.x(round(p.x() / grid_size_) * grid_size_);
-    rounded_.y(round(p.y() / grid_size_) * grid_size_);
-    rounded_.z(round(p.z() / grid_size_) * grid_size_);
+    rounded_.set_x(round(p.get_x() / grid_size_) * grid_size_);
+    rounded_.set_y(round(p.get_y() / grid_size_) * grid_size_);
+    rounded_.set_z(round(p.get_z() / grid_size_) * grid_size_);
 
-    double k = double(rounded_.x() * 0.001) + (double) (rounded_.y()) * 0.000000001 + double(rounded_.z() * 100000);
+    double k = double(rounded_.get_x() * 0.001) + (double) (rounded_.get_y()) * 0.000000001 + double(rounded_.get_z() * 100000);
 
 
     if (bhash_.find(k) != bhash_.end()) { return 1; }
@@ -131,11 +131,11 @@ int
 StericLookup::better_clash(
         math::Point const & p) {
 
-    rounded_.x(round(p.x() / grid_size_) * grid_size_);
-    rounded_.y(round(p.y() / grid_size_) * grid_size_);
-    rounded_.z(round(p.z() / grid_size_) * grid_size_);
+    rounded_.set_x(round(p.get_x() / grid_size_) * grid_size_);
+    rounded_.set_y(round(p.get_y() / grid_size_) * grid_size_);
+    rounded_.set_z(round(p.get_z() / grid_size_) * grid_size_);
 
-    k_ = rounded_.x() * 18397 + rounded_.y() * 20483 + rounded_.z() * 29303;
+    k_ = rounded_.get_x() * 18397 + rounded_.get_y() * 20483 + rounded_.get_z() * 29303;
 
     if (bhash_.find(k_) == bhash_.end()) { return 0; }
 
@@ -143,7 +143,7 @@ StericLookup::better_clash(
 
     for (auto const & c_p : check_additions_) {
         p_ = rounded_ + c_p;
-        k_ = p_.x() * 18397 + p_.y() * 20483 + p_.z() * 29303;
+        k_ = p_.get_x() * 18397 + p_.get_y() * 20483 + p_.get_z() * 29303;
         if (bhash_.find(k_) != bhash_.end()) { i++; }
     }
 
@@ -157,11 +157,11 @@ StericLookup::better_clash(
 int
 StericLookup::total_clash(
         math::Point const & p) {
-    rounded_.x(round(p.x() / grid_size_) * grid_size_);
-    rounded_.y(round(p.y() / grid_size_) * grid_size_);
-    rounded_.z(round(p.z() / grid_size_) * grid_size_);
+    rounded_.set_x(round(p.get_x() / grid_size_) * grid_size_);
+    rounded_.set_y(round(p.get_y() / grid_size_) * grid_size_);
+    rounded_.set_z(round(p.get_z() / grid_size_) * grid_size_);
 
-    double k = double(rounded_.x() * 0.001) + (double) (rounded_.y()) * 0.000000001 + double(rounded_.z() * 100000);
+    double k = double(rounded_.get_x() * 0.001) + (double) (rounded_.get_y()) * 0.000000001 + double(rounded_.get_z() * 100000);
 
 
     if (bhash_.find(k) != bhash_.end()) { return bhash_[k]; }

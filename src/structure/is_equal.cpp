@@ -17,8 +17,8 @@ are_atoms_equal(
         AtomOP const & a2,
         float tol) {
 
-    return math::are_xyzVector_equal(a1->coords(), a2->coords(), tol) &&
-           a1->name() == a2->name();
+    return math::are_xyzVector_equal(a1->get_coords(), a2->get_coords(), tol) &&
+           a1->get_name() == a2->get_name();
 }
 
 

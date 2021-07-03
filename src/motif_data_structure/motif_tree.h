@@ -360,7 +360,7 @@ public: //getters
     MotifConnections const &
     connections() { return connections_; }
 
-    structure::Beads
+    util:Beads
     beads();
 
 

@@ -22,8 +22,8 @@ Structure::renumber() {
     auto chain_ids = base::split_str_by_delimiter("A B C D E F G H I J K L M", " ");
     for (auto & c : chains_) {
         for (auto & r : c->residues()) {
-            r->num(i);
-            r->chain_id(chain_ids[j]);
+            r->set_num(i);
+            r->set_chain_id(chain_ids[j]);
             i++;
         }
         j++;
@@ -50,7 +50,7 @@ Structure::get_residue(
     for (auto & c : chains_) {
         for (auto & r : c->residues()) {
             if(r == nullptr) continue; 
-            if (num == r->num() && chain_id.compare(r->chain_id()) == 0 && i_code.compare(r->i_code()) == 0) {
+            if (num == r->get_num() && chain_id.compare(r->get_chain_id()) == 0 && i_code.compare(r->get_i_code()) == 0) {
                 return r;
             }
         }
@@ -63,7 +63,7 @@ Structure::get_residue(
         util::Uuid const & uuid) {
     for (auto & c : chains_) {
         for (auto & r : c->residues()) {
-            if (r->uuid() == uuid) { return r; }
+            if (r->get_uuid() == uuid) { return r; }
         }
     }
 
@@ -99,14 +99,14 @@ Structure::to_pdb_str(
         int p_pos = 1;
         for (auto const & c : chains_) {
             for (int i = 0; i < c->residues().size() - 1; i++) {
-                int r_size = c->residues()[i]->atoms().size();
+                int r_size = c->residues()[i]->get_num_atoms();
                 if (!c->residues()[i]->connected_to(*c->residues()[i + 1], 1.8)) {
                     s += "CONECT " + std::to_string(a_count + o3_pos) + " " + std::to_string(a_count + r_size + p_pos) +
                          "\n";
                 }
                 a_count += r_size;
             }
-            a_count += c->last()->atoms().size();
+            a_count += c->last()->get_atoms().size();
         }
 
     }

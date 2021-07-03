@@ -288,7 +288,7 @@ PoseFactory::_steric_clash(
     float dist;
     for (auto const & c1 : m1->beads()) {
         for (auto const & c2 : m2->beads()) {
-            if (c1.btype() == structure::BeadType::PHOS || c2.btype() == structure::BeadType::PHOS) { continue; }
+            if (c1.btype() == util:BeadType::PHOS || c2.btype() == util:BeadType::PHOS) { continue; }
             dist = c1.center().distance(c2.center());
             if (dist < clash_radius_) { return 1; }
         }

@@ -35,15 +35,15 @@ public:
 			Matrix const & b,
 			Transform & c) {
 
-		c.xx_ = a.xx() * b.xx() + a.xy() * b.yx() + a.xz() * b.zx();
-		c.xy_ = a.xx() * b.xy() + a.xy() * b.yy() + a.xz() * b.zy();
-		c.xz_ = a.xx() * b.xz() + a.xy() * b.yz() + a.xz() * b.zz();
-		c.yx_ = a.yx() * b.xx() + a.yy() * b.yx() + a.yz() * b.zx();
-		c.yy_ = a.yx() * b.xy() + a.yy() * b.yy() + a.yz() * b.zy();
-		c.yz_ = a.yx() * b.xz() + a.yy() * b.yz() + a.yz() * b.zz();
-		c.zx_ = a.zx() * b.xx() + a.zy() * b.yx() + a.zz() * b.zx();
-		c.zy_ = a.zx() * b.xy() + a.zy() * b.yy() + a.zz() * b.zy();
-		c.zz_ = a.zx() * b.xz() + a.zy() * b.yz() + a.zz() * b.zz();
+		c.xx_ = a.get_xx() * b.get_xx() + a.get_xy() * b.get_yx() + a.get_xz() * b.get_zx();
+		c.xy_ = a.get_xx() * b.get_xy() + a.get_xy() * b.get_yy() + a.get_xz() * b.get_zy();
+		c.xz_ = a.get_xx() * b.get_xz() + a.get_xy() * b.get_yz() + a.get_xz() * b.get_zz();
+		c.yx_ = a.get_yx() * b.get_xx() + a.get_yy() * b.get_yx() + a.get_yz() * b.get_zx();
+		c.yy_ = a.get_yx() * b.get_xy() + a.get_yy() * b.get_yy() + a.get_yz() * b.get_zy();
+		c.yz_ = a.get_yx() * b.get_xz() + a.get_yy() * b.get_yz() + a.get_yz() * b.get_zz();
+		c.zx_ = a.get_zx() * b.get_xx() + a.get_zy() * b.get_yx() + a.get_zz() * b.get_zx();
+		c.zy_ = a.get_zx() * b.get_xy() + a.get_zy() * b.get_yy() + a.get_zz() * b.get_zy();
+		c.zz_ = a.get_zx() * b.get_xz() + a.get_zy() * b.get_yz() + a.get_zz() * b.get_zz();
 	}
 
 
@@ -74,7 +74,7 @@ public: //creation
 public:
 	//Accessors
 
-	float xx() const { return xx_; }
+	float get_xx() const { return xx_; }
 
 	float xy() const { return xy_; }
 
@@ -98,7 +98,7 @@ public:
 
 	float pz() const { return pz_; }
 
-	float xx() { return xx_; }
+	float get_xx() { return xx_; }
 
 	float xy() { return xy_; }
 
@@ -157,24 +157,24 @@ public:
 	void
 	rotation(
 			Matrix const & m) {
-		xx_ = m.xx();
-		xy_ = m.xy();
-		xz_ = m.xz();
-		yx_ = m.yx();
-		yy_ = m.yy();
-		yz_ = m.yz();
-		zx_ = m.zx();
-		zy_ = m.zy();
-		zz_ = m.zz();
+		xx_ = m.get_xx();
+		xy_ = m.get_xy();
+		xz_ = m.get_xz();
+		yx_ = m.get_yx();
+		yy_ = m.get_yy();
+		yz_ = m.get_yz();
+		zx_ = m.get_zx();
+		zy_ = m.get_zy();
+		zz_ = m.get_zz();
 	}
 
 	inline
 	void
 	translation(
 			Vector const & v) {
-		px_ = v.x();
-		py_ = v.y();
-		pz_ = v.z();
+		px_ = v.get_x();
+		py_ = v.get_y();
+		pz_ = v.get_z();
 	}
 
 

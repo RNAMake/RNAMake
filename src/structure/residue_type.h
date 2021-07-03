@@ -13,14 +13,13 @@
 #include <vector>
 
 //RNAMake Headers
-#include "base/types.h"
-#include "structure/atom.h"
-
-namespace structure {
+#include <base/types.h>
+#include <base/assertions.h>
+#include <structure/atom.h>
 
 /*
- * Exception for residue type
- */
+* Exception for residue type
+*/
 class ResidueTypeException : public std::runtime_error {
 public:
     /**
@@ -37,73 +36,68 @@ enum class SetType {
 
 class ResidueType {
 public:
-    ResidueType() {}
-
     ResidueType(
             String const &,
             StringIntMap const &,
-            SetType const & set_type);
+            SetType,
+            Strings const &);
 
     ~ResidueType() {}
 
 public:
-    String
-    get_correct_atom_name(
-            Atom const &) const;
-
-    int
-    match_name(
+    bool
+    is_valid_atom_name(
             String const &) const;
 
-    inline
+    Index
+    get_atom_index(
+            String const &) const;
+
     String
-    short_name() const { return name_.substr(0, 1); }
+    get_atom_name_at_pos(
+            Index) const;
 
-    inline
-    int
-    atom_pos_by_name(
-            String const & aname) const {
-
-        StringIntMap::const_iterator iter(atom_map_.find(aname));
-        if (iter != atom_map_.end()) {
-            return iter->second;
-        } else {
-            return -1;
-        }
-    }
-
-    inline
-    int
-    size() { return (int) atom_map_.size(); }
+    bool
+    is_valid_residue_name(
+            String const &) const;
 
 public: //getters
 
     inline
     String
     const &
-    name() const { return name_; }
+    get_name() const { return name_; }
+
+    inline
+    char
+    get_short_name() const { return name_[0]; }
 
     inline
     SetType
-    set_type() const { return set_type_; }
+    get_set_type() const { return set_type_; }
 
-
+    inline
+    size_t
+    get_num_atoms() const { return atom_name_map_.size(); }
 private:
 
-    void
-    extend_res_specific_altnames();
 
 private:
     String name_;
-    StringIntMap atom_map_;
+    StringIntMap atom_name_map_;
     Strings alt_names_;
-    StringStringMap atom_alt_names_;
     SetType set_type_;
 
 };
 
-typedef std::vector<ResidueType> ResidueTypes;
+typedef std::shared_ptr<ResidueType>       ResidueTypeOP;
+typedef std::shared_ptr<ResidueType const> ResidueTypeCOP;
+typedef std::vector<ResidueTypeOP>         ResidueTypeOPs;
 
-}
+ResidueTypeCOP
+get_new_residue_type(
+        String const & res_name,
+        Strings const & atom_names);
+
 
 #endif /* defined(__RNAMake__residue_type__) */

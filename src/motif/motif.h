@@ -16,6 +16,7 @@
 #include "base/types.h"
 #include "math/xyz_matrix.h"
 #include "math/transform.h"
+#include "math/xyz_vector.h"
 #include "util/uuid.h"
 #include "secondary_structure/motif.h"
 #include "structure/residue_type_set.h"
@@ -80,8 +81,8 @@ public:
         math::Matrix transformed;
         r_T.transpose();
         for (auto & bp : basepairs_) {
-            dot(bp->r(), r_T, transformed);
-            bp->r(transformed);
+            dot(bp->get_ref_frame(), r_T, transformed);
+            bp->set_ref_frame(transformed);
         }
         structure_->transform(t);
     }
@@ -134,7 +135,7 @@ public: //getters
 
     inline
     String
-    end_name(int i) { return ends_[i]->name(); }
+    end_name(int i) { return ends_[i]->get_name_str(); }
 
 
 public: // setters
@@ -223,9 +224,9 @@ clash_between_motifs(
         double clash_radius = 2.7) {
 
     for (auto const & b1 : m1->beads()) {
-        if (b1.btype() == structure::BeadType::PHOS) { continue; }
+        if (b1.get_type() == util::BeadType::PHOS) { continue; }
         for (auto const & b2 : m2->beads()) {
-            if (b2.btype() == structure::BeadType::PHOS) { continue; }
+            if (b2.get_type() == util::BeadType::PHOS) { continue; }
             if (b1.distance(b2) < clash_radius) { return 1; }
         }
     }

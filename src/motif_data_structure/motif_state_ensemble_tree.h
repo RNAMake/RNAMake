@@ -41,15 +41,15 @@ math::calc_euler2(
     math::Matrix & M,
     math::Vector & euler) {
     
-    double cy = sqrt(M.xx()*M.xx() + M.yx()*M.yx());
+    double cy = sqrt(M.get_xx()*M.get_xx() + M.get_yx()*M.get_yx());
     if(cy > _EPS) {
-        euler[0] = atan2( M.zy(), M.zz());
-        euler[1] = atan2(-M.zx(), cy);
-        euler[2] = atan2( M.yx(), M.xx());
+        euler[0] = atan2( M.get_zy(), M.get_zz());
+        euler[1] = atan2(-M.get_zx(), cy);
+        euler[2] = atan2( M.get_yx(), M.get_xx());
     }
     else {
-        euler[0] = atan2( M.yz(), M.yy());
-        euler[1] = atan2(-M.zx(), cy);
+        euler[0] = atan2( M.get_yz(), M.get_yy());
+        euler[1] = atan2(-M.get_zx(), cy);
         euler[2] = 0.0;
     }
     for(int i = 0; i < 3; i++){

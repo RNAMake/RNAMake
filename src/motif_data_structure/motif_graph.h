@@ -313,9 +313,9 @@ public: // misc functions
 public: // getters
 
     inline
-    structure::Beads
+    util:Beads
     beads() {
-        structure::Beads beads;
+        util:Beads beads;
         for (auto const & n : graph_.nodes()) {
             std::copy(n->data()->beads().begin(),
                       n->data()->beads().end(),

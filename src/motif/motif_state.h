@@ -280,7 +280,7 @@ align_motif_state(
     }
 
     math::Points t_beads(org_state->beads().size());
-    math::dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
+    dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
     for (int i = 0; i < t_beads.size(); i++) { t_beads[i] += bp_state.d(); }
     org_state->beads(t_beads);
 
@@ -302,7 +302,7 @@ get_aligned_motif_state(
     }
 
     math::Points t_beads(org_state->beads().size());
-    math::dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
+    dot_vectors(bp_state.r_T(), org_state->beads(), t_beads);
     for (int i = 0; i < t_beads.size(); i++) { t_beads[i] += bp_state.d(); }
     cur_state->beads(t_beads);
 

@@ -60,30 +60,30 @@ get_quaternion_from_matrix(
         Matrix const & m) {
 
     double qx, qy, qz, qw;
-    double tr = m.xx() + m.yy() + m.zz();
+    double tr = m.get_xx() + m.get_yy() + m.get_zz();
     if (tr > 0) {
         double s = sqrt(tr + 1.0) * 2;
         qw = 0.25 * s;
-        qx = (m.zy() - m.yz()) / s;
-        qy = (m.xz() - m.zx()) / s;
-        qz = (m.yx() - m.xy()) / s;
-    } else if ((m.xx() > m.yy()) && (m.xx() > m.zz())) {
-        double s = sqrt(1.0 + m.xx() - m.yy() - m.zz()) * 2;
-        qw = (m.zy() - m.yz()) / s;
+        qx = (m.get_zy() - m.get_yz()) / s;
+        qy = (m.get_xz() - m.get_zx()) / s;
+        qz = (m.get_yx() - m.get_xy()) / s;
+    } else if ((m.get_xx() > m.get_yy()) && (m.get_xx() > m.get_zz())) {
+        double s = sqrt(1.0 + m.get_xx() - m.get_yy() - m.get_zz()) * 2;
+        qw = (m.get_zy() - m.get_yz()) / s;
         qx = 0.25 * s;
-        qy = (m.xy() + m.yx()) / s;
-        qz = (m.xz() + m.zx()) / s;
-    } else if (m.yy() > m.zz()) {
-        double s = sqrt(1.0 + m.yy() - m.xx() - m.zz()) * 2;
-        qw = (m.xz() - m.zx()) / s;
-        qx = (m.xy() + m.yx()) / s;
+        qy = (m.get_xy() + m.get_yx()) / s;
+        qz = (m.get_xz() + m.get_zx()) / s;
+    } else if (m.get_yy() > m.get_zz()) {
+        double s = sqrt(1.0 + m.get_yy() - m.get_xx() - m.get_zz()) * 2;
+        qw = (m.get_xz() - m.get_zx()) / s;
+        qx = (m.get_xy() + m.get_yx()) / s;
         qy = 0.25 * s;
-        qz = (m.zy() + m.yz()) / s;
+        qz = (m.get_zy() + m.get_yz()) / s;
     } else {
-        double s = sqrt(1.0 + m.zz() - m.xx() - m.yy()) * 2;
-        qw = (m.xy() - m.yx()) / s;
-        qx = (m.xz() + m.zx()) / s;
-        qy = (m.yz() + m.zy()) / s;
+        double s = sqrt(1.0 + m.get_zz() - m.get_xx() - m.get_yy()) * 2;
+        qw = (m.get_xy() - m.get_yx()) / s;
+        qx = (m.get_xz() + m.get_zx()) / s;
+        qy = (m.get_yz() + m.get_zy()) / s;
         qz = 0.25 * s;
     }
 

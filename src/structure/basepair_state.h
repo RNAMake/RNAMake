@@ -27,11 +27,11 @@ public:
 
     inline
     BasepairState() :
-            d_(math::Point(0.0)),
-            r_(math::Matrix(0.0)),
-            r_T_(math::Matrix(0.0)),
+            d_(math::Point()),
+            r_(math::Matrix()),
+            r_T_(math::Matrix()),
             sugars_(math::Points(2)),
-            diff_(math::Vector(0.0)),
+            diff_(math::Vector()),
             diff_sugars_(math::Vectors(2)) {}
 
     inline
@@ -43,7 +43,7 @@ public:
             r_(r),
             r_T_(math::Matrix(0)),
             sugars_(sugars),
-            diff_(math::Vector(0.0)),
+            diff_(math::Vector()),
             diff_sugars_(math::Vectors(2)) { transpose(r_, r_T_); }
 
     inline
@@ -52,13 +52,13 @@ public:
             r_(b.r_),
             r_T_(math::Matrix(0)),
             sugars_(b.sugars_),
-            diff_(math::Vector(0.0)),
+            diff_(math::Vector()),
             diff_sugars_(math::Vectors(2)) { transpose(r_, r_T_); }
 
     inline
     BasepairState(String const & s) :
             r_T_(math::Matrix(0)),
-            diff_(math::Vector(0.0)),
+            diff_(math::Vector()),
             diff_sugars_(math::Vectors(2)) {
         auto spl = base::split_str_by_delimiter(s, ";");
         if (spl.size() < 3) {
@@ -146,7 +146,7 @@ public:
         r_state.calculate_r_T();
 
         //rotate sugars to new position and store them in r_state
-        math::dot_vectors(r_state.r_T_, o_state.sugars_, r_state.sugars_);
+        dot_vectors(r_state.r_T_, o_state.sugars_, r_state.sugars_);
 
         diff_ = -o_state.d() + d_;
         int i;
@@ -173,7 +173,7 @@ public:
         dot(r_, o_state.r_T_, r_state.r_);
         r_state.r_.unitarize();
         math::dot_vector(o_state.r_T_, d_, r_state.d_);
-        math::dot_vectors(o_state.r_T_, sugars_, r_state.sugars_);
+        dot_vectors(o_state.r_T_, sugars_, r_state.sugars_);
 
         int i;
         for (i = 0; i < 2; i++) {
@@ -226,8 +226,8 @@ public:
     inline
     String const
     to_str() const {
-        return d_.to_str() + ";" + r_.to_str() + ";" + sugars_[0].to_str() + " " + \
-               sugars_[1].to_str();
+        return d_.get_str() + ";" + r_.get_str() + ";" + sugars_[0].get_str() + " " + \
+               sugars_[1].get_str();
     }
 
 

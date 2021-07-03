@@ -1,264 +1,206 @@
 //
-//  basepair.h
-//  RNAMake
-//
-//  Created by Joseph Yesselman on 1/28/15.
-//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+// Created by Joseph Yesselman on 12/15/17.
 //
 
-#ifndef __RNAMake__basepair__
-#define __RNAMake__basepair__
+#ifndef RNAMAKE_NEW_ALL_ATOM_BASEPAIR_H
+#define RNAMAKE_NEW_ALL_ATOM_BASEPAIR_H
 
-#include <stdio.h>
-
-//RNAMake Headers
-#include "base/types.h"
-#include "util/uuid.h"
-#include "math/xyz_matrix.h"
-#include "structure/atom.h"
-#include "structure/residue.h"
-#include "structure/basepair_state.h"
+#include <base/json.h>
+#include <base/vector_container.h>
+#include <math/xyz_matrix.h>
+#include <math/xyz_vector.h>
+#include <util/x3dna.h>
+#include <primitives/basepair.h>
+#include <structure/residue.h>
 
 namespace structure {
 
-class Basepair {
-public:
-    Basepair() {}
+  class Basepair : public primitives::Basepair {
+  public:
+      inline
+      Basepair(
+              util::Uuid const &res1_uuid,
+              util::Uuid const &res2_uuid,
+              util::Uuid const &uuid,
+              primitives::BasepairType bp_type,
+              base::SimpleStringCOP name,
+              util::X3dnaBPType x3dna_type,
+              math::Matrix const &ref_frame,
+              math::Point const &center,
+              math::Points const &c1_prime_coords) :
+              primitives::Basepair(res1_uuid, res2_uuid, uuid, bp_type, name),
+              ref_frame_(ref_frame),
+              center_(center),
+              c1_prime_coords_(c1_prime_coords),
+              x3dna_type_(x3dna_type) {}
 
-    Basepair(
-            ResidueOP & res1,
-            ResidueOP & res2,
-            math::Matrix const & r,
-            String const & bp_type) :
-            bp_type_(bp_type),
-            uuid_(util::Uuid()),
-            res1_(res1),
-            res2_(res2),
-            flipped_(0) {
-
-        atoms_ = AtomOPs();
-        for (auto const & a : res1->atoms()) {
-            if (a != nullptr) { atoms_.push_back(a); }
-        }
-        for (auto const & a : res2->atoms()) {
-            if (a != nullptr) { atoms_.push_back(a); }
-        }
-
-        math::Point d = structure::center(atoms_);
-        math::Points sugars(2);
-        sugars[0] = res1_->get_atom("C1'")->coords();
-        sugars[1] = res2_->get_atom("C1'")->coords();
-        bp_state_ = std::make_shared<BasepairState>(d, r, sugars);
-
-    }
-
-    ~Basepair() {
-        res1_.reset();
-        res2_.reset();
-    }
-
-    Basepair
-    copy();
-
-    inline
-    bool
-    operator==(Basepair const & bp) const { return uuid_ == bp.uuid_; }
-
-public: // non const methods
-    inline
-    void
-    move(
-            math::Point const & p) {
-        bp_state_->move(p);
-        for (auto & a : atoms_) {
-            a->coords(a->coords() + p);
-        }
-    }
-
-    inline
-    void
-    transform(
-            math::Matrix const & r,
-            math::Vector const & t,
-            math::Point & dummy) {
-        bp_state_->transform(r, t, dummy);
-        for (auto & a : atoms()) {
-            math::dot_vector(r, a->coords(), dummy);
-            dummy += t;
-            a->coords(dummy);
-        }
-    }
-
-    inline
-    void
-    transform(
-            math::Matrix const & r,
-            math::Vector const & t) {
-        auto dummy = math::Point();
-        transform(r, t, dummy);
-    }
+      inline
+      Basepair(
+              json::JSON &j,
+              util::Uuid const &res1_uuid,
+              util::Uuid const &res2_uuid,
+              util::Uuid const &uuid) :
+              primitives::Basepair() {
+          uuid_ = uuid;
+          res1_uuid_ = res1_uuid;
+          res2_uuid_ = res2_uuid;
+          center_ = math::Point(j[0]);
+          ref_frame_ = math::Matrix(j[1]);
+          c1_prime_coords_ = math::Points(2);
+          c1_prime_coords_[0] = math::Point(j[2]);
+          c1_prime_coords_[1] = math::Point(j[3]);
+          bp_type_ = static_cast<primitives::BasepairType>(j[4].ToInt());
+          x3dna_type_ = static_cast<util::X3dnaBPType>(j[5].ToInt());
+          name_ = std::make_shared<base::SimpleString>(j[6].ToString());
+      }
 
 
-public: // getters
+  public:
+      bool
+      is_equal(
+              Basepair const &bp,
+              bool check_uuid = true) const {
+          if (check_uuid) {
+              if (uuid_ != bp.uuid_) { return false; };
+              if (res1_uuid_ != bp.res1_uuid_) { return false; }
+              if (res2_uuid_ != bp.res2_uuid_) { return false; }
+          }
 
-    inline
-    BasepairStateOP const &
-    state() {
-        bp_state_->d(structure::center(atoms_));
-        bp_state_->sugars(math::Points{res1_->get_atom("C1'")->coords(), res2_->get_atom("C1'")->coords()});
-        return bp_state_;
-    }
+          if (!math::are_points_equal(center_, bp.center_)) { return false; }
+          if (!math::are_matrices_equal(ref_frame_, bp.ref_frame_)) { return false; }
+          if (!math::are_points_equal(c1_prime_coords_[0], bp.c1_prime_coords_[0])) { return false; }
+          if (!math::are_points_equal(c1_prime_coords_[1], bp.c1_prime_coords_[1])) { return false; }
+          return true;
 
-    inline
-    float
-    diff(Basepair & bp) {
-        auto diff = d().distance(bp.d());
-        diff += _rot_diff(bp) * 2;
-        return diff;
-
-    }
-
-    inline
-    ResidueOPs const
-    residues() const {
-        ResidueOPs res(2);
-        res[0] = res1_;
-        res[1] = res2_;
-        return res;
-    }
-
-    inline
-    ResidueOP const &
-    partner(ResidueOP const & res) {
-        if (res->uuid() == res1_->uuid()) { return res2_; }
-        else if (res->uuid() == res2_->uuid()) { return res1_; }
-        else { throw "called partner with resiude not in this basepair"; }
-    }
-
-    inline
-    String const
-    name() const {
-        auto res1_name = res1_->chain_id() + std::to_string(res1_->num()) + res1_->i_code();
-        auto res2_name = res2_->chain_id() + std::to_string(res2_->num()) + res2_->i_code();
-
-        if (res1_->chain_id() < res2_->chain_id()) { return res1_name + "-" + res2_name; }
-        if (res1_->chain_id() > res2_->chain_id()) { return res2_name + "-" + res1_name; }
-
-        if (res1_->num() < res2_->num()) { return res1_name + "-" + res2_name; }
-        else { return res2_name + "-" + res1_name; }
-
-        return res1_name + "-" + res2_name;
-    }
-
-    inline
-    void
-    flip() { bp_state_->flip(); }
-
-    inline
-    math::Matrix const &
-    r() const { return bp_state_->r(); }
-
-    inline
-    math::Point const
-    d() const { return structure::center(atoms_); }
-
-    inline
-    util::Uuid const &
-    uuid() const { return uuid_; }
-
-    inline
-    ResidueOP
-    res1() const { return res1_; }
-
-    inline
-    ResidueOP
-    res2() const { return res2_; }
-
-    inline
-    String const &
-    bp_type() const { return bp_type_; }
-
-    inline
-    int const
-    flipped() const { return flipped_; }
-
-    inline
-    AtomOPs const &
-    atoms() const { return atoms_; }
-
-public: // setters
-
-    inline
-    void
-    r(math::Matrix const & nr) { bp_state_->r(nr); }
-
-    inline
-    void
-    uuid(util::Uuid const & nuuid) { uuid_ = nuuid; }
-
-    inline
-    void
-    flipped(int const & nflipped) { flipped_ = nflipped; }
-
-    inline
-    void
-    res1(ResidueOP const & nres1) { res1_ = nres1; }
-
-    inline
-    void
-    res2(ResidueOP const & nres2) { res2_ = nres2; }
+      }
 
 
-    inline
-    void
-    bp_type(String const & nbp_type) { bp_type_ = nbp_type; }
+  public: // non const methods
 
-public:
+      inline
+      void
+      move(
+              math::Point const &p) {
+          center_ = center_ + p;
+          c1_prime_coords_[0] = c1_prime_coords_[0] + p;
+          c1_prime_coords_[1] = c1_prime_coords_[1] + p;
+      }
 
-    String const
-    to_str() const;
+      inline
+      void
+      transform(
+              math::Matrix const &r,
+              math::Vector const &t,
+              math::Point &dummy) {
+          math::dot_vector(r, center_, dummy);
+          center_ = dummy + t;
 
-    String const
-    to_pdb_str() const;
+          math::dot_vector(r, c1_prime_coords_[0], dummy);
+          c1_prime_coords_[0] = dummy + t;
 
-    void
-    to_pdb(String const) const;
+          math::dot_vector(r, c1_prime_coords_[1], dummy);
+          c1_prime_coords_[1] = dummy + t;
 
-private:
-    inline
-    float
-    _rot_diff(
-            Basepair & bp) {
-        auto r_diff = r().difference(bp.r());
-        bp.flip();
-        float r_diff_2 = r().difference(bp.r());
-        bp.flip();
+          ref_frame_ = math::dot(ref_frame_, r);
+          ref_frame_.unitarize();
+      }
 
-        if (r_diff > r_diff_2) { r_diff = r_diff_2; }
+      inline
+      void
+      transform(
+              math::Matrix const &r,
+              math::Vector const &t) {
+          auto dummy = math::Point();
+          transform(r, t, dummy);
+      }
 
-        return r_diff;
-    }
+      inline
+      void
+      swap_residue_positions() {
+          std::swap(res1_uuid_, res2_uuid_);
+          std::swap(c1_prime_coords_[0], c1_prime_coords_[1]);
+      }
+
+      inline
+      void
+      invert_reference_frame() {
+          ref_frame_ = ref_frame_.get_flip_orientation();
+      }
+
+      inline
+      void
+      new_uuids(
+              util::Uuid const &r1_uuid,
+              util::Uuid const &r2_uuid) {
+          res1_uuid_ = r1_uuid;
+          res2_uuid_ = r2_uuid;
+          uuid_ = util::Uuid();
+      }
+
+  public:
+      json::JSON
+      get_json() const {
+          return json::Array(
+                  center_.get_json(), ref_frame_.get_json(), c1_prime_coords_[0].get_json(),
+                  c1_prime_coords_[1].get_json(), (int) bp_type_, (int) x3dna_type_, name_->get_str());
+      }
 
 
-private:
-    ResidueOP res1_, res2_;
-    AtomOPs atoms_;
-    BasepairStateOP bp_state_;
-    String bp_type_;
-    int flipped_;
-    util::Uuid uuid_;
+  public: // getters
+      inline
+      math::Matrix const &
+      get_ref_frame() const { return ref_frame_; }
 
-};
+      inline
+      math::Point const &
+      get_center() const { return center_; }
 
-typedef std::shared_ptr<Basepair> BasepairOP;
-typedef std::vector<BasepairOP> BasepairOPs;
+      inline
+      math::Points const &
+      get_c1_prime_coords() const { return c1_prime_coords_; }
 
-bool
-wc_bp(BasepairOP const &);
+      inline
+      math::Point const &
+      get_res1_c1_prime_coord() const { return c1_prime_coords_[0]; }
 
-bool
-gu_bp(BasepairOP const &);
+      inline
+      math::Point const &
+      get_res2_c1_prime_coord() const { return c1_prime_coords_[1]; }
+
+  //TODO Remove setters
+  public: //setters
+      inline
+      void
+      set_ref_frame(math::Matrix r) {
+          ref_frame_ = r;
+      }
+
+  private:
+      math::Point center_;
+      math::Points c1_prime_coords_;
+      math::Matrix ref_frame_;
+      util::X3dnaBPType x3dna_type_;
+
+  };
+
+  typedef std::shared_ptr<Basepair> BasepairOP;
+  typedef std::vector<Basepair> Basepairs;
+  typedef std::vector<BasepairOP> BasepairOPs;
+
+  inline
+  String
+  generate_bp_name(
+          Residue const &res1,
+          Residue const &res2) {
+      return primitives::generate_bp_name<Residue>(res1, res2);
+  }
+
+  primitives::BasepairType
+  generate_bp_type(
+          Residue const &,
+          Residue const &,
+          util::X3dnaBPType);
 
 }
 
-#endif /* defined(__RNAMake__basepair__) */
+#endif //RNAMAKE_NEW_ALL_ATOM_BASEPAIR_H

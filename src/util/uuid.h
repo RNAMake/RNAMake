@@ -13,67 +13,62 @@
 #include <iostream>
 
 //RNAMake Headers
-#include "base/types.h"
+#include <base/types.h>
 
 namespace util {
 
-class Uuid {
-public:
-    Uuid();
+  class Uuid {
+  public:
+      Uuid();
 
-    ~Uuid() {}
+      Uuid(Uuid const &uuid) :
+              id_(uuid.id_) {}
 
-public:
-    inline
-    String const &
-    s_uuid() const { return s_uuid_; }
+      ~Uuid() {}
 
-    inline
-    bool
-    operator==(Uuid const & uuid) const {
-        return s_uuid_.compare(uuid.s_uuid_) == 0;
-    }
-
-    inline
-    bool
-    operator==(Uuid & uuid) {
-        return s_uuid_.compare(uuid.s_uuid_) == 0;
-    }
-
-    inline
-    bool
-    operator!=(Uuid const & uuid) const {
-        return s_uuid_.compare(uuid.s_uuid_) != 0;
-    }
+  public:
 
 
-    inline
-    bool
-    operator!=(Uuid & uuid) {
-        return s_uuid_.compare(uuid.s_uuid_) != 0;
-    }
+      inline
+      bool
+      operator==(Uuid const &uuid) const {
+          return id_ == uuid.id_;
+      }
 
-    inline
-    bool
-    operator<(Uuid const & uuid) const {
-        return s_uuid_.compare(uuid.s_uuid());
-    }
+      inline
+      bool
+      operator!=(Uuid const &uuid) const {
+          return id_ != uuid.id_;
+      }
 
-private:
-    String s_uuid_;
+      inline
+      bool
+      operator<(Uuid const &uuid) const {
+          return id_ < uuid.id_;
+      }
 
-};
+      inline
+      bool
+      operator>(Uuid const &uuid) const {
+          return id_ > uuid.id_;
+      }
 
-std::ostream &
-operator<<(std::ostream &, Uuid const &);
+      friend
+      std::ostream &
+      operator<<(
+              std::ostream &stream,
+              Uuid const &uuid) {
+          stream << uuid.id_;
+          return stream;
+      }
 
-struct UuidCompare {
-    bool operator()(
-            Uuid const & u1,
-            Uuid const & u2) const {
-        return u1.s_uuid() < u2.s_uuid();
-    }
-};
+
+  private:
+      uint64_t id_;
+
+  };
+
+  typedef std::shared_ptr<Uuid> UuidOP;
 
 }
 

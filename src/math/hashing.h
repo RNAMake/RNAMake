@@ -9,7 +9,7 @@
 #include <map>
 #include <array>
 #include <stdint.h>
-#include "math/xyz_vector.h"
+#include "xyz_vector.h"
 
 namespace math {
 
@@ -119,9 +119,9 @@ public: // box query
     bool
     intersects(
             _BoundingBox const & bb) const {
-        return !(lower_.x() > bb.upper_.x() || bb.lower_.x() > upper_.x() ||
-                 lower_.y() > bb.upper_.y() || bb.lower_.y() > upper_.y() ||
-                 lower_.z() > bb.upper_.z() || bb.lower_.z() > upper_.z());
+        return !(lower_.get_x() > bb.upper_.get_x() || bb.lower_.get_x() > upper_.get_x() ||
+                 lower_.get_y() > bb.upper_.get_y() || bb.lower_.get_y() > upper_.get_y() ||
+                 lower_.get_z() > bb.upper_.get_z() || bb.lower_.get_z() > upper_.get_z());
     }
 
     /// @brief is point contained within this bounding box?
@@ -132,8 +132,8 @@ public: // box query
             U const & x,
             U const & y,
             U const & z) const {
-        return lower_.x() <= x && lower_.y() <= y && lower_.z() <= z &&
-               x <= upper_.x() && y <= upper_.y() && z <= upper_.z();
+        return lower_.get_x() <= x && lower_.get_y() <= y && lower_.get_z() <= z &&
+               x <= upper_.get_x() && y <= upper_.get_y() && z <= upper_.get_z();
     }
 
     /// @brief is point contained within this bounding box?
@@ -141,7 +141,7 @@ public: // box query
     bool
     contains(
             PointPosition const & p) const {
-        return contains(p.x(), p.y(), p.z());
+        return contains(p.get_x(), p.get_y(), p.get_z());
     }
 
 
@@ -238,13 +238,13 @@ public:
         auto from_corner = xyzcoord - bounding_box_.lower();
         Bin6D bins;
 
-        bins[0] = static_cast< size_t > ( from_corner.x() / bin_widths_[0] );
+        bins[0] = static_cast< size_t > ( from_corner.get_x() / bin_widths_[0] );
         if (bins[0] == dimsizes_[0]) { bins[0] -= 1; }
 
-        bins[1] = static_cast< size_t > ( from_corner.y() / bin_widths_[1] );
+        bins[1] = static_cast< size_t > ( from_corner.get_y() / bin_widths_[1] );
         if (bins[1] == dimsizes_[1]) { bins[1] -= 1; }
 
-        bins[2] = static_cast< size_t > ( from_corner.z() / bin_widths_[2] );
+        bins[2] = static_cast< size_t > ( from_corner.get_z() / bin_widths_[2] );
         if (bins[2] == dimsizes_[2]) { bins[2] -= 1; }
 
         auto euler = _wrap_euler_angles(values);
@@ -380,13 +380,13 @@ public:
         auto from_corner = values - bounding_box_.lower();
         Real3 bins;
 
-        bins[0] = static_cast< size_t > ( from_corner.x() / bin_widths_[0] );
+        bins[0] = static_cast< size_t > ( from_corner.get_x() / bin_widths_[0] );
         if (bins[0] == dimsizes_[0]) { bins[0] -= 1; }
 
-        bins[1] = static_cast< size_t > ( from_corner.y() / bin_widths_[1] );
+        bins[1] = static_cast< size_t > ( from_corner.get_y() / bin_widths_[1] );
         if (bins[1] == dimsizes_[1]) { bins[1] -= 1; }
 
-        bins[2] = static_cast< size_t > ( from_corner.z() / bin_widths_[2] );
+        bins[2] = static_cast< size_t > ( from_corner.get_z() / bin_widths_[2] );
         if (bins[2] == dimsizes_[2]) { bins[2] -= 1; }
 
         return bins;
@@ -615,8 +615,8 @@ public:
         std::ofstream out;
         out.open(fname);
         auto & bb = binner_.get_bounding_box();
-        out << bb.lower().to_str() << std::endl;
-        out << bb.upper().to_str() << std::endl;
+        out << bb.lower().get_str() << std::endl;
+        out << bb.upper().get_str() << std::endl;
         for (auto const & bin_width : binner_.get_bin_widths()) {
             out << bin_width << " ";
         }
@@ -653,12 +653,12 @@ public:
             uint64_t cuttoff) {
         auto lower = binner_.get_bounding_box().lower();
         auto upper = binner_.get_bounding_box().upper();
-        out.write((const char *) &lower.x(), sizeof(lower.x()));
-        out.write((const char *) &lower.y(), sizeof(lower.y()));
-        out.write((const char *) &lower.z(), sizeof(lower.z()));
-        out.write((const char *) &upper.x(), sizeof(upper.x()));
-        out.write((const char *) &upper.y(), sizeof(upper.y()));
-        out.write((const char *) &upper.z(), sizeof(upper.z()));
+        out.write((const char *) &lower.get_x(), sizeof(lower.get_x()));
+        out.write((const char *) &lower.get_y(), sizeof(lower.get_y()));
+        out.write((const char *) &lower.get_z(), sizeof(lower.get_z()));
+        out.write((const char *) &upper.get_x(), sizeof(upper.get_x()));
+        out.write((const char *) &upper.get_y(), sizeof(upper.get_y()));
+        out.write((const char *) &upper.get_z(), sizeof(upper.get_z()));
         for (int i = 0; i < 6; i++) {
             out.write((const char *) &binner_.get_bin_widths()[i], sizeof(binner_.get_bin_widths()[i]));
         }

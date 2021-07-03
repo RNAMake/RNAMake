@@ -17,6 +17,7 @@
 #include "structure/chain.fwd.h"
 #include "structure/residue.h"
 #include "structure/residue_type_set.h"
+#include "structure/exceptions.h"
 
 namespace structure {
 
@@ -114,7 +115,7 @@ public:
     first() {
 
         if (residues_.size() == 0) {
-            throw ChainException("cannot call first there are no "
+            throw structure::ChainException("cannot call first there are no "
                                          "residues in chain");
         }
 
