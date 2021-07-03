@@ -6,12 +6,14 @@
 #include "base/settings.h"
 #include "structure/structure.h"
 #include "structure/is_equal.h"
+#include "structure/residue_type_set.h"
+#include "util/util.h"
 
 
 TEST_CASE( "Test Structure" ) {
     auto path = base::unittest_resource_dir() + "/structure/test_str_to_structure.dat";
     auto lines = base::get_lines_from_file(path);
-    auto rts = structure::ResidueTypeSet();
+    auto rts = structure::structure::ResidueTypeSet();
     auto s = std::make_shared<structure::Structure>(lines[0], rts);
     
     SUBCASE("Test ability to get specific residues from structure") {
@@ -81,7 +83,7 @@ TEST_CASE( "Test Structure" ) {
         int flag = 0;
         for(int i = 0; i < org_atoms.size(); i++) {
             if(org_atoms[i].get() == NULL) { continue; }
-            dist = 10 - org_atoms[i]->coords().distance(new_atoms[i]->coords());
+            dist = 10 - org_atoms[i]->get_coords().distance(new_atoms[i]->get_coords());
             if(dist > 0.001) { flag = 1; }
         }
         
@@ -108,7 +110,7 @@ TEST_CASE( "Test Structure" ) {
         int flag = 0;
         for(int i = 0; i < org_atoms.size(); i++) {
             if(org_atoms[i].get() == NULL) { continue; }
-            dist = 10 - org_atoms[i]->coords().distance(new_atoms[i]->coords());
+            dist = 10 - org_atoms[i]->get_coords().distance(new_atoms[i]->get_coords());
             if(dist > 0.001) { flag = 1; }
         }
         

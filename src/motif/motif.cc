@@ -77,7 +77,7 @@ Motif::Motif(
         auto bead_spl = base::split_str_by_delimiter(spl[10], ";");
         for (auto const & b_spl : bead_spl) {
             if (b_spl.length() < 5) { continue; }
-            protein_beads_.push_back(structure::Bead(b_spl));
+            protein_beads_.push_back(util:Bead(b_spl));
         }
     }
 }
@@ -91,23 +91,23 @@ Motif::Motif(
     //if (m.structure_ != nullptr){ 
         structure_ = std::make_shared<structure::Structure>(*(m.structure_));
     //}
-    beads_ = structure::Beads(m.beads_.size());
+    beads_ = util:Beads(m.beads_.size());
     basepairs_ = structure::BasepairOPs(m.basepairs_.size());
     ends_ = structure::BasepairOPs(m.ends().size());
     end_ids_ = m.end_ids_;
     id_ = m.id_;
     block_end_add_ = m.block_end_add_;
     secondary_structure_ = std::make_shared<secondary_structure::Motif>(*m.secondary_structure_);
-    protein_beads_ = structure::Beads(m.protein_beads_.size());
+    protein_beads_ = util:Beads(m.protein_beads_.size());
 
     int i = 0;
     for (auto const & b : m.beads_) {
-        beads_[i] = structure::Bead(b);
+        beads_[i] = util:Bead(b);
         i++;
     }
     i = 0;
     for (auto const & b : m.protein_beads_) {
-        protein_beads_[i] = structure::Bead(b);
+        protein_beads_[i] = util:Bead(b);
         i++;
     }
     i = 0;
@@ -193,7 +193,7 @@ Motif::get_state() {
     auto beads = get_beads(ends_[0]);
     auto bead_centers = math::Points();
     for (auto const & b : beads) {
-        if (b.btype() == structure::BeadType::PHOS) { continue; }
+        if (b.btype() == util:BeadType::PHOS) { continue; }
         bead_centers.push_back(b.center());
     }
     auto end_states = structure::BasepairStateOPs();
@@ -225,19 +225,19 @@ align_motif(
     motif->move(bp_pos_diff);
 
     //align sugars for better overlap
-    auto dist1 = motif_end->res1()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
-    auto dist2 = motif_end->res2()->get_atom("C1'")->coords().distance(ref_bp_state->sugars()[0]);
+    auto dist1 = motif_end->res1()->get_atom("C1'")->get_coords().distance(ref_bp_state->sugars()[0]);
+    auto dist2 = motif_end->res2()->get_atom("C1'")->get_coords().distance(ref_bp_state->sugars()[0]);
 
     motif->get_beads(motif_end);
     if (dist1 > 5 && dist2 > 5) { return; }
 
     math::Point sugar_diff_1, sugar_diff_2;
     if (dist1 < dist2) {
-        sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res1()->get_atom("C1'")->coords();
-        sugar_diff_2 = ref_bp_state->sugars()[1] - motif_end->res2()->get_atom("C1'")->coords();
+        sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res1()->get_atom("C1'")->get_coords();
+        sugar_diff_2 = ref_bp_state->sugars()[1] - motif_end->res2()->get_atom("C1'")->get_coords();
     } else {
-        sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res2()->get_atom("C1'")->coords();
-        sugar_diff_2 = ref_bp_state->sugars()[1] - motif_end->res1()->get_atom("C1'")->coords();
+        sugar_diff_1 = ref_bp_state->sugars()[0] - motif_end->res2()->get_atom("C1'")->get_coords();
+        sugar_diff_2 = ref_bp_state->sugars()[1] - motif_end->res1()->get_atom("C1'")->get_coords();
     }
 
     motif->move((sugar_diff_1 + sugar_diff_2) / 2);

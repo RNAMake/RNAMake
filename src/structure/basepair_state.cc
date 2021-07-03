@@ -23,8 +23,8 @@ str_to_basepairstate(
         throw "cannot load BasepairState from String, not the right number of elements\n";
     }
 
-    math::Vector d = math::vector_from_str(strs[0]);
-    math::Matrix r = math::matrix_from_str(strs[1]);
+    math::xyzVector d = math::xyzVector(strs[0]);
+    math::xyzMatrix r = math::matrix_from_str(strs[1]);
     math::Vectors sug = math::vectors_from_str(strs[2]);
 
     BasepairState bp(d, r, sug);

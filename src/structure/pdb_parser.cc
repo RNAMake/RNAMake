@@ -86,7 +86,7 @@ PDBParser::parse(
         }
         already_has = 0;
         for (auto const & a : residue_atoms[key]) {
-            if (a->name().compare(atomnames[i]) == 0) {
+            if (a->get_name().compare(atomnames[i]) == 0) {
                 //already_has = 1;
                 //break;
             }
@@ -106,7 +106,7 @@ PDBParser::parse(
             rtype = rts_.get_rtype_by_resname(spl[0]);
         } else {
             auto atom_names = Strings();
-            for (auto const & a : kv.second) { atom_names.push_back(a->name()); }
+            for (auto const & a : kv.second) { atom_names.push_back(a->get_name()); }
             rtype = _get_new_residue_type(spl[0], atom_names);
         }
 

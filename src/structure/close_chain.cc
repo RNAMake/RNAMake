@@ -2,52 +2,54 @@
 // Created by Joseph Yesselman on 4/4/18.
 //
 
-#include <math.h>
 #include "structure/close_chain.h"
+#include "math/xyz_vector.h"
+#include "math/xyz_matrix.h"
+
 
 namespace structure {
 
 math::Matrix
 create_coord_system(
-        AtomOPs const & atoms) {
-    auto e1 = (atoms[0]->coords() - atoms[1]->coords()).normalize();
-    auto e3 = cross(e1, atoms[2]->coords() - atoms[1]->coords()).normalize();
+        structure::AtomOPs const & atoms) {
+    auto e1 = (atoms[0]->get_coords() - atoms[1]->get_coords()).normalize();
+    auto e3 = cross(e1, atoms[2]->get_coords() - atoms[1]->get_coords()).normalize();
     auto e2 = cross(e3, e1);
-    auto m = math::Matrix(
-            e1.x(), e1.y(), e1.z(),
-            e2.x(), e2.y(), e2.z(),
-            e3.x(), e3.y(), e3.z());
+    auto m = ::math::Matrix(
+            e1.get_x(), e1.get_y(), e1.get_z(),
+            e2.get_x(), e2.get_y(), e2.get_z(),
+            e3.get_x(), e3.get_y(), e3.get_z());
     m = m.transpose();
     return m;
 }
 
-math::Vector
+::math::Vector
 m_dot_v(
-        math::Matrix const & m,
-        math::Vector const & v) {
-    return math::Vector(
-            m.xx() * v.x() + m.xy() * v.y() + m.xz() * v.z(),
-            m.yx() * v.x() + m.yy() * v.y() + m.yz() * v.z(),
-            m.zx() * v.x() + m.zy() * v.y() + m.zz() * v.z());
+        ::math::Matrix const & m,
+        ::math::Vector const & v) {
+    return ::math::Vector(
+            m.get_xx() * v.get_x() + m.get_xy() * v.get_y() + m.get_xz() * v.get_z(),
+            m.get_yx() * v.get_x() + m.get_yy() * v.get_y() + m.get_yz() * v.get_z(),
+            m.get_zx() * v.get_x() + m.get_zy() * v.get_y() + m.get_zz() * v.get_z());
 }
 
-AtomOP
+structure::AtomOP
 virtual_atom(
         String const & name,
         float l,
         float theta,
         float phi,
-        AtomOPs const & parent_atoms) {
+        structure::AtomOPs const & parent_atoms) {
     theta = to_radians(theta);
     phi = to_radians(phi);
     auto m = create_coord_system(parent_atoms);
-    auto v = math::Vector(
+    auto v = ::math::Vector(
             l * cos(theta),
             l * sin(theta) * cos(phi),
             l * sin(theta) * sin(phi));
     auto coords = m_dot_v(m, v);
-    coords += parent_atoms[0]->coords();
-    return std::make_shared<Atom>(name, coords);
+    coords += parent_atoms[0]->get_coords();
+    return std::make_shared<structure::Atom>(name, coords);
 }
 
 float
@@ -56,43 +58,43 @@ to_radians(
     return (degrees * M_PI) / 180;
 }
 
-math::Vector
+::math::Vector
 get_projection(
-        math::Point const & coord,
-        math::Point const & current_pos,
-        math::Vector const & projection_axis) {
+        ::math::Point const & coord,
+        ::math::Point const & current_pos,
+        ::math::Vector const & projection_axis) {
     auto r = coord - current_pos;
     return r - r.dot(projection_axis) * projection_axis;
 }
 
-math::Matrix
+::math::Matrix
 axis_angle_to_rot_matrix(
         float angle,
-        math::Vector const & al) {
+        ::math::Vector const & al) {
 
     auto c = cos(angle);
     auto s = sin(angle);
     auto t = 1.0 - c;
     auto al_norm = al;
     al_norm = al_norm.normalize();
-    auto m00 = c + al_norm.x() * al_norm.x() * t;
-    auto m11 = c + al_norm.y() * al_norm.y() * t;
-    auto m22 = c + al_norm.z() * al_norm.z() * t;
+    auto m00 = c + al_norm.get_x() * al_norm.get_x() * t;
+    auto m11 = c + al_norm.get_y() * al_norm.get_y() * t;
+    auto m22 = c + al_norm.get_z() * al_norm.get_z() * t;
 
-    auto tmp1 = al_norm.x() * al_norm.y() * t;
-    auto tmp2 = al_norm.z() * s;
+    auto tmp1 = al_norm.get_x() * al_norm.get_y() * t;
+    auto tmp2 = al_norm.get_z() * s;
     auto m10 = tmp1 + tmp2;
     auto m01 = tmp1 - tmp2;
-    tmp1 = al_norm.x() * al_norm.z() * t;
-    tmp2 = al_norm.y() * s;
+    tmp1 = al_norm.get_x() * al_norm.get_z() * t;
+    tmp2 = al_norm.get_y() * s;
     auto m20 = tmp1 - tmp2;
     auto m02 = tmp1 + tmp2;
-    tmp1 = al_norm.y() * al_norm.z() * t;
-    tmp2 = al_norm.x() * s;
+    tmp1 = al_norm.get_y() * al_norm.get_z() * t;
+    tmp2 = al_norm.get_x() * s;
     auto m21 = tmp1 + tmp2;
     auto m12 = tmp1 - tmp2;
 
-    return math::Matrix(m00, m01, m02,
+    return ::math::Matrix(m00, m01, m02,
                         m10, m11, m12,
                         m20, m21, m22);
 
@@ -101,19 +103,19 @@ axis_angle_to_rot_matrix(
 void
 close_torsion(
         int which_dir,
-        AtomOPs const & parent_atoms,
-        AtomOPs daughter_atoms,
-        AtomOPs const & match_atoms_1,
-        AtomOPs const & match_atoms_2) {
+        structure::AtomOPs const & parent_atoms,
+        structure::AtomOPs daughter_atoms,
+        structure::AtomOPs const & match_atoms_1,
+        structure::AtomOPs const & match_atoms_2) {
     auto matrix = create_coord_system(parent_atoms);
     matrix = matrix.transpose();
-    auto x = math::Vector(matrix.xx(), matrix.xy(), matrix.xz());
-    auto current_atom_xyz = parent_atoms[0]->coords();
+    auto x = ::math::Vector(matrix.get_xx(), matrix.get_xy(), matrix.get_xz());
+    auto current_atom_xyz = parent_atoms[0]->get_coords();
     auto weighted_sine = 0.0;
     auto weighted_cosine = 0.0;
     for (int i = 0; i < match_atoms_1.size(); i++) {
-        auto rho1 = get_projection(match_atoms_1[i]->coords(), current_atom_xyz, x);
-        auto rho2 = get_projection(match_atoms_2[i]->coords(), current_atom_xyz, x);
+        auto rho1 = get_projection(match_atoms_1[i]->get_coords(), current_atom_xyz, x);
+        auto rho2 = get_projection(match_atoms_2[i]->get_coords(), current_atom_xyz, x);
         auto current_sine = which_dir * dot_product(x, cross(rho1, rho2));
         auto current_cosine = dot_product(rho1, rho2);
         weighted_sine += current_sine;
@@ -123,38 +125,39 @@ close_torsion(
     auto twist_torsion = atan2(weighted_sine, weighted_cosine);
     auto m = axis_angle_to_rot_matrix(twist_torsion, x);
     for (auto & daughter_atom : daughter_atoms) {
-        auto new_coords = m_dot_v(m, daughter_atom->coords() - current_atom_xyz) + current_atom_xyz;
-        daughter_atom->coords(new_coords);
+        auto new_coords = m_dot_v(m, daughter_atom->get_coords() - current_atom_xyz) + current_atom_xyz;
+        //TODO Remove the direct set
+        daughter_atom->set_coords(new_coords);
     }
 
 }
 
-math::Matrix
+::math::Matrix
 get_res_ref_frame(
         ResidueOP r) {
-    auto vec1 = math::Point();
-    auto vec2 = math::Point();
+    auto vec1 = ::math::Point();
+    auto vec2 = ::math::Point();
     auto beads = r->get_beads();
     auto b = beads[0];
     for (auto const & bead : beads) {
-        if (bead.btype() == structure::BeadType::BASE) {
+        if (bead.btype() == util::BeadType::BASE) {
             b = bead;
             break;
         }
     }
 
-    if (r->name() == "A" || r->name() == "G") {
-        vec1 = (r->get_atom("N9")->coords() - r->get_atom("C1'")->coords()).normalize();
-        vec2 = (r->get_atom("N9")->coords() - b.center()).normalize();
+    if (r->get_name() == "A" || r->get_name() == "G") {
+        vec1 = (r->get_atom("N9")->get_coords() - r->get_atom("C1'")->get_coords()).normalize();
+        vec2 = (r->get_atom("N9")->get_coords() - b.center()).normalize();
     } else {
-        vec1 = (r->get_atom("N1")->coords() - r->get_atom("C1'")->coords()).normalize();
-        vec2 = (r->get_atom("N1")->coords() - b.center()).normalize();
+        vec1 = (r->get_atom("N1")->get_coords() - r->get_atom("C1'")->get_coords()).normalize();
+        vec2 = (r->get_atom("N1")->get_coords() - b.center()).normalize();
     }
     auto cross = vec1.cross(vec2);
-    auto m = math::Matrix(
-            vec1.x(), vec1.y(), vec1.z(),
-            vec2.x(), vec2.y(), vec2.z(),
-            cross.x(), cross.y(), cross.z());
+    auto m = ::math::Matrix(
+            vec1.get_x(), vec1.get_y(), vec1.get_z(),
+            vec2.get_x(), vec2.get_y(), vec2.get_z(),
+            cross.get_x(), cross.get_y(), cross.get_z());
     m.unitarize();
     return m;
 
@@ -169,26 +172,26 @@ replace_missing_phosphate_backbone(
     auto ref_frame_1 = get_res_ref_frame(r);
     auto ref_frame_2 = get_res_ref_frame(r_template);
 
-    auto rot = math::Matrix();
+    auto rot = ::math::Matrix();
     dot(ref_frame_1.transpose(), ref_frame_2, rot);
     auto trans = -r_template->center();
     auto c4p_atom = r->get_atom("C4'");
 
-    auto t = math::Transform(rot, trans);
+    auto t = ::math::Transform(rot, trans);
 
     r_template->transform(t);
-    r_template->move(c4p_atom->coords() - r_template->get_atom("C4'")->coords());
+    r_template->move(c4p_atom->get_coords() - r_template->get_atom("C4'")->get_coords());
 
     auto atom_names = Strings{"C5'", "O5'", "P", "OP1", "OP2"};
     auto atoms = AtomOPs();
     for (auto const & name : atom_names) {
         auto a = r_template->get_atom(name);
-        atoms.push_back(std::make_shared<Atom>(a->name(), a->coords()));
+        atoms.push_back(std::make_shared<Atom>(a->get_name(), a->get_coords()));
     }
 
     for (auto const & a : r->atoms()) {
         if (a == nullptr) { continue; }
-        if (std::find(atom_names.begin(), atom_names.end(), a->name()) != atom_names.end()) { continue; }
+        if (std::find(atom_names.begin(), atom_names.end(), a->get_name()) != atom_names.end()) { continue; }
         atoms.push_back(a);
     }
 

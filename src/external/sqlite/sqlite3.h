@@ -9200,7 +9200,7 @@ SQLITE_API int sqlite3_vtab_on_conflict(sqlite3 *);
 ** If the [xColumn] method calls sqlite3_vtab_nochange() and finds that
 ** the column is not changed by the UPDATE statement, then the xColumn
 ** method can optionally return without setting a result, without calling
-** any of the [sqlite3_result_int|sqlite3_result_xxxxx() interfaces].
+** any of the [sqlite3_result_int|sqlite3_result_xxxget_xx() interfaces].
 ** In that case, [sqlite3_value_nochange(X)] will return true for the
 ** same column in the [xUpdate] method.
 */
@@ -10656,7 +10656,7 @@ SQLITE_API int sqlite3changeset_fk_conflicts(
 ** [sqlite3changeset_apply()], [SQLITE_MISUSE] is immediately returned and the
 ** call has no effect.
 **
-** If an error was encountered within a call to an sqlite3changeset_xxx()
+** If an error was encountered within a call to an sqlite3changeset_xget_xx()
 ** function (for example an [SQLITE_CORRUPT] in [sqlite3changeset_next()] or an 
 ** [SQLITE_NOMEM] in [sqlite3changeset_new()]) then an error code corresponding
 ** to that error is returned by this function. Otherwise, SQLITE_OK is

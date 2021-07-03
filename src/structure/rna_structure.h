@@ -17,6 +17,7 @@
 #include "structure/structure.h"
 #include "structure/basepair.h"
 #include "structure/residue.h"
+#include "util/uuid.h"
 
 namespace structure {
 
@@ -67,16 +68,16 @@ public: // get specific basepairs
 
 
 public: // get steric beads
-    Beads const &
+    util::Beads const &
     get_beads(
             BasepairOPs const &);
 
-    Beads const &
+    util::Beads const &
     get_beads(
             BasepairOP const &);
 
     inline
-    Beads const &
+    util::Beads const &
     get_beads() {
         ResidueOPs res;
         beads_ = structure_->get_beads(res);
@@ -163,7 +164,7 @@ public: //getters
     UNSAFE_basepairs() { return basepairs_; }
     /////////////////////////////////////////
     inline
-    Beads const &
+    util::Beads const &
     beads() const { return beads_; }
 
     inline
@@ -171,7 +172,7 @@ public: //getters
     score() const { return score_; }
 
     inline
-    Beads const &
+    util::Beads const &
     protein_beads() { return protein_beads_; }
 
 
@@ -207,7 +208,7 @@ public: //setters
     inline
     void
     protein_beads(
-            Beads const & beads) { protein_beads_ = beads; }
+            util::Beads const & beads) { protein_beads_ = beads; }
 
 
 protected:
@@ -215,7 +216,7 @@ protected:
     BasepairOPs basepairs_, ends_;
     String name_, path_;
     Strings end_ids_;
-    Beads beads_, protein_beads_;
+    util::Beads beads_, protein_beads_;
     float score_;
 
 };

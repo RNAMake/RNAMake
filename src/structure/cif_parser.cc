@@ -225,7 +225,7 @@ CIFParser::parse(
             rtype = rts_.get_rtype_by_resname(res_tokens[0]);
         } else {
             auto atom_names = Strings();
-            for (auto const & a : kv.second) { atom_names.push_back(a->name()); }
+            for (auto const & a : kv.second) { atom_names.push_back(a->get_name()); }
             rtype = _get_new_residue_type(res_tokens[0], atom_names);
         }
 

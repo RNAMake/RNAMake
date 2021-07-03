@@ -226,7 +226,7 @@ DesignRNAScaffold::_setup_from_pdb () {
     if (!parameters_.search.no_sterics) {
         protein_beads += m->protein_beads().size();
         for(auto const & b : m->beads()) {
-            if (b.btype() == structure::BeadType::PHOS) { continue; }
+            if (b.btype() == util:BeadType::PHOS) { continue; }
             lookup_->add_point(b.center());
             total_beads += 1;
         }

@@ -471,16 +471,16 @@ compare_bps(X3dna::X3Basepairs& lhs, X3dna::X3Basepairs& rhs) {
     
     for(auto& bp :lhs) {
         auto key = triplet<int,int,int>(); 
-        key.first = round(100.*bp.d.x());
-        key.second = round(100.*bp.d.y());
-        key.third = round(100.*bp.d.z());
+        key.first = round(100.*bp.d.get_x());
+        key.second = round(100.*bp.d.get_y());
+        key.third = round(100.*bp.d.get_z());
         left_map[key] = bp;
     }
     for(auto& bp : rhs) {
         auto key = triplet<int,int,int>(); 
-        key.first = round(100.*bp.d.x());
-        key.second = round(100.*bp.d.y());
-        key.third = round(100.*bp.d.z());
+        key.first = round(100.*bp.d.get_x());
+        key.second = round(100.*bp.d.get_y());
+        key.third = round(100.*bp.d.get_z());
         right_map[key] = bp;
     }
     // quick check that there are no basepair repeats 

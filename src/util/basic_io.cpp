@@ -20,7 +20,7 @@ points_to_pdb_str(
     for (auto const & p : points) {
         char buffer[200];
         std::sprintf(buffer, "ATOM %6d  P   C   A   1 %11.3f%8.3f%8.3f  1.00 62.18           P\n", i,
-                     p.x(), p.y(), p.z());
+                     p.get_x(), p.get_y(), p.get_z());
         s += String(buffer);
         i++;
     }

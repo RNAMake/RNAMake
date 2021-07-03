@@ -4,11 +4,13 @@
 #include "../common.hpp"
 
 //RNAMake Headers
+#include "structure/residue_type_set.h"
+#include "util/bead.h"
 #include "base/file_io.h"
 #include "base/settings.h"
 #include "structure/residue.h"
-#include "structure/residue_type_set.h"
 #include "structure/is_equal.h"
+#include "util/uuid.h"
 
 
 TEST_CASE( "Test Residues for Structure" ) {
@@ -28,7 +30,7 @@ TEST_CASE( "Test Residues for Structure" ) {
         auto a = r->get_atom(name);
 
         CHECK(a != nullptr);
-        CHECK(a->name() == "C1'");
+        CHECK(a.get_name() == "C1'");
         
         REQUIRE_THROWS_AS(r->get_atom("fake"), structure::ResidueException);
     }
@@ -46,13 +48,13 @@ TEST_CASE( "Test Residues for Structure" ) {
     
     SUBCASE("are residues generating steric beads properly") {
         auto r = residues[1];
-        auto beads = r->get_beads();
+        auto beads = r->beads_;
         
         SUBCASE("produced the right number of beads") { CHECK(beads.size() == 3); }
         
-        CHECK(beads[0].btype() == structure::BeadType::PHOS);
-        CHECK(beads[1].btype() == structure::BeadType::SUGAR);
-        CHECK(beads[2].btype() == structure::BeadType::BASE);
+        CHECK(beads[0].get_type() == util::BeadType::PHOS);
+        CHECK(beads[1].get_type() == util::BeadType::SUGAR);
+        CHECK(beads[2].get_type() == util::BeadType::BASE);
 
     }
     
@@ -65,7 +67,7 @@ TEST_CASE( "Test Residues for Structure" ) {
     
     SUBCASE("are residues stringifing correctly") {
         auto r = residues[0];
-        auto s = r->to_str();
+        auto s = r->get_str();
         auto r2 = std::make_shared<structure::Residue>(s, rts);
         
         SUBCASE("residues should be the same but not have the same id") {

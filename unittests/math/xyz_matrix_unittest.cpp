@@ -12,10 +12,10 @@ TEST_CASE( "Test Matrix math " ) {
     
     SUBCASE("Test Stringify Matrices") {
         auto m = math::Matrix(5.0);
-        auto s = m.to_str();
+        auto s = m.get_str();
         auto m2 = math::Matrix(s);
         
-        CHECK(math::are_xyzMatrix_equal(m, m2));
+        CHECK(math::are_matrices_equal(m, m2));
     }
     
 
@@ -31,7 +31,7 @@ TEST_CASE( "Test Matrix math " ) {
     
         auto unit = m.get_unitarize();
     
-        CHECK(math::are_xyzMatrix_equal(org_m, unit));
+        CHECK(math::are_matrices_equal(org_m, unit));
         
     }
     
@@ -48,14 +48,14 @@ TEST_CASE( "Test Matrix math " ) {
             
             auto unit = org_m.get_unitarize();
             
-            if(! math::are_xyzMatrix_equal(final_m, unit)) {
+            if(! math::are_matrices_equal(final_m, unit)) {
                 fail = 1;
                 break;
             }
             
             org_m.unitarize();
             
-            if(! math::are_xyzMatrix_equal(final_m, org_m)) {
+            if(! math::are_matrices_equal(final_m, org_m)) {
                 fail = 1;
                 break;
             }

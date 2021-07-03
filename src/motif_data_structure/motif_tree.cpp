@@ -218,9 +218,9 @@ MotifTree::_steric_clash(motif::MotifOP const & m) {
     float dist = 0;
     for (auto const & n : tree_) {
         for (auto const & c1 : n->data()->beads()) {
-            if (c1.btype() == structure::BeadType::PHOS) { continue; }
+            if (c1.btype() == util:BeadType::PHOS) { continue; }
             for (auto const & c2 : m->beads()) {
-                if (c2.btype() == structure::BeadType::PHOS) { continue; }
+                if (c2.btype() == util:BeadType::PHOS) { continue; }
                 dist = c1.center().distance(c2.center());
                 if (dist < clash_radius_) { return 1; }
             }
@@ -497,9 +497,9 @@ MotifTree::_update_merger() {
 //getters //////////////////////////////////////////////////////////////////////////////////////////
 
 
-structure::Beads
+util:Beads
 MotifTree::beads() {
-    auto beads = structure::Beads();
+    auto beads = util:Beads();
     for (auto const & n : tree_) {
         for (auto b : n->data()->beads()) {
             beads.push_back(b);

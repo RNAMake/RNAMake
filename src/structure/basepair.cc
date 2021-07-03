@@ -1,67 +1,32 @@
 //
-//  basepair.cc
-//  RNAMake
-//
-//  Created by Joseph Yesselman on 1/28/15.
-//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+// Created by Joseph Yesselman on 12/15/17.
 //
 
-#include "structure/basepair.h"
+#include <structure/basepair.h>
 
 namespace structure {
 
-Basepair
-Basepair::copy() {
-    Basepair cbp(res1_, res2_, bp_state_->r(), bp_type_);
-    cbp.flipped_ = flipped_;
-    cbp.uuid_ = uuid_;
-    return cbp;
-}
+  primitives::BasepairType
+  generate_bp_type(
+          Residue const &res1,
+          Residue const &res2,
+          util::X3dnaBPType x3dna_bp_type) {
 
-String const
-Basepair::to_str() const {
-    std::stringstream ss;
-    ss << res1_->chain_id() << res1_->num() << res1_->i_code() << "-";
-    ss << res2_->chain_id() << res2_->num() << res2_->i_code();
-    ss << "," << bp_state_->to_str() << "," << bp_type_ << ",0," << flipped_;
-    return ss.str();
-}
+      if (x3dna_bp_type != util::X3dnaBPType::cWUW) { return primitives::BasepairType::NC; }
 
-String const
-Basepair::to_pdb_str() const {
-    String s;
-    int acount = 1;
-    for (auto const & r : residues()) {
-        s += r->to_pdb_str(acount);
-    }
-    return s;
-}
+      auto bp_str = String();
+      bp_str += res1.get_name();
+      bp_str += res2.get_name();
 
-void
-Basepair::to_pdb(String const fname) const {
-    std::ofstream out;
-    out.open(fname.c_str());
-    String s = to_pdb_str();
-    out << s << std::endl;
-    out.close();
-}
+      auto wc_names = Strings{"GC", "CG", "AU", "UA"};
+      if (std::find(wc_names.begin(), wc_names.end(), bp_str) != wc_names.end()) {
+          return primitives::BasepairType::WC;
+      } else if (bp_str == "GU" || bp_str == "UG") {
+          return primitives::BasepairType::GU;
+      } else {
+          return primitives::BasepairType::NC;
+      };
 
-bool
-wc_bp(BasepairOP const & bp) {
-    String bp_str = bp->res1()->short_name() + bp->res2()->short_name();
-    if (bp_str.compare("GC") == 0) { return true; }
-    if (bp_str.compare("CG") == 0) { return true; }
-    if (bp_str.compare("AU") == 0) { return true; }
-    if (bp_str.compare("UA") == 0) { return true; }
-    return false;
-}
-
-bool
-gu_bp(BasepairOP const & bp) {
-    String bp_str = bp->res1()->short_name() + bp->res2()->short_name();
-    if (bp_str.compare("GU") == 0) { return true; }
-    if (bp_str.compare("UG") == 0) { return true; }
-    return false;
-}
+  }
 
 }

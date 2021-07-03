@@ -23,9 +23,9 @@ public:
         test_p_.y (rng_.rand() * rng_.randrange(scale));
         test_p_.z (rng_.rand() * rng_.randrange(scale));
 
-        if(rng_.randrange(1000) < 500) { test_p_.x(-test_p_.x()); }
-        if(rng_.randrange(1000) < 500) { test_p_.y(-test_p_.y()); }
-        if(rng_.randrange(1000) < 500) { test_p_.z(-test_p_.z()); }
+        if(rng_.randrange(1000) < 500) { test_p_.x(-test_p_.get_x()); }
+        if(rng_.randrange(1000) < 500) { test_p_.y(-test_p_.get_y()); }
+        if(rng_.randrange(1000) < 500) { test_p_.z(-test_p_.get_z()); }
 
         return test_p_;
     }

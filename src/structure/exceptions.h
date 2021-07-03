@@ -10,18 +10,18 @@
 
 namespace structure {
 
-/**
- * Exception for Residues
- */
-class ResidueException : public std::runtime_error {
-public:
-    /**
-     * Standard constructor for ResidueException
-     * @param   message   Error message for residue
-     */
-    ResidueException(String const & message) :
-            std::runtime_error(message) {}
-};
+///**
+// * Exception for Residues
+// */
+//class ResidueException : public std::runtime_error {
+//public:
+//    /**
+//     * Standard constructor for ResidueException
+//     * @param   message   Error message for residue
+//     */
+//    ResidueException(String const & message) :
+//            std::runtime_error(message) {}
+//};
 
 /**
  * Exception for Chains

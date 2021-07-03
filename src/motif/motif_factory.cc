@@ -72,10 +72,10 @@ MotifFactory::motif_from_file(
 
     if (include_protein) {
         auto res = pdb_parser_.parse(pdb_path, true, false);
-        auto beads = structure::Beads();
+        auto beads = util:Beads();
         for (auto const & r : res) {
             try {
-                auto bead = structure::Bead(r->get_atom("CA")->coords(), structure::BeadType::BASE);
+                auto bead = util:Bead(r->get_atom("CA")->get_coords(), util:BeadType::BASE);
                 beads.push_back(bead);
             } catch (...) { continue; }
         }
@@ -446,7 +446,7 @@ MotifFactory::_steric_clash(
 
     for (auto const & c1 : m1->beads()) {
         for (auto const & c2 : m2->beads()) {
-            if (c1.btype() == structure::BeadType::PHOS || c2.btype() == structure::BeadType::PHOS) { continue; }
+            if (c1.btype() == util:BeadType::PHOS || c2.btype() == util:BeadType::PHOS) { continue; }
             float dist = c1.center().distance(c2.center());
             if (dist < clash_radius_) { return 1; }
         }
@@ -464,7 +464,7 @@ MotifFactory::_steric_clash_count(
     auto count = 0;
     for (auto const & c1 : m1->beads()) {
         for (auto const & c2 : m2->beads()) {
-            if (c1.btype() == structure::BeadType::PHOS || c2.btype() == structure::BeadType::PHOS) { continue; }
+            if (c1.btype() == util:BeadType::PHOS || c2.btype() == util:BeadType::PHOS) { continue; }
             float dist = c1.center().distance(c2.center());
             if (dist < clash_radius_) { count += 1; }
         }
@@ -508,7 +508,7 @@ MotifFactory::_get_reduced_chain_num_structure(
                 if (i == j) { continue; }
                 auto o3_atom = chains[i]->last()->get_atom("O3'");
                 auto p_atom = chains[j]->first()->get_atom("P");
-                dist = o3_atom->coords().distance(p_atom->coords());
+                dist = o3_atom->get_coords().distance(p_atom->get_coords());
                 if (dist < best_score) {
                     best_i = i;
                     best_j = j;

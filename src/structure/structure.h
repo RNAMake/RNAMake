@@ -53,7 +53,7 @@ public:
 
     Structure(
             String const & s,
-            ResidueTypeSet const & rts) {
+            structure::ResidueTypeSet const & rts) {
         chains_ = ChainOPs();
         Strings spl = base::split_str_by_delimiter(s, ":");
         for (auto const & c_str : spl) {
@@ -69,21 +69,22 @@ public:
     renumber();
 
     inline
-    Beads
+    util::Beads
     get_beads(
             ResidueOPs const & excluded_res) {
-        auto beads = Beads();
+        auto beads = util::Beads();
         int found = 0;
         for (auto const & r : residues()) {
             found = 0;
             for (auto const & er : excluded_res) {
-                if (r->uuid() == er->uuid()) {
+                if (r->get_uuid() == er->get_uuid()) {
                     found = 1;
                     break;
                 }
             }
             if (found) { continue; }
-            for (auto const & b : r->get_beads()) {
+            //TODO Fix this
+            for (auto const & b : r->beads_) {
                 beads.push_back(b);
             }
         }
@@ -91,7 +92,7 @@ public:
     }
 
     inline
-    Beads
+    util::Beads
     get_beads() {
         auto res = ResidueOPs();
         return get_beads(res);
@@ -115,7 +116,8 @@ public:
     atoms() {
         AtomOPs atoms;
         for (auto const & r : residues()) {
-            for (auto const & a : r->atoms()) {
+            // TODO Ask Joe about get atoms
+            for (auto const & a : r->get_atoms()) {
                 if (a.get() != NULL) {
                     atoms.push_back(a);
                 }
@@ -129,7 +131,8 @@ public:
     move(
             math::Point const & p) {
         for (auto & a : atoms()) {
-            a->coords(a->coords() + p);
+            a->move(p);
+//            a->coords(a->coords() + p);
         }
     }
 
@@ -140,9 +143,11 @@ public:
         auto r = t.rotation().transpose();
         auto trans = t.translation();
         for (auto & a : atoms()) {
-            math::dot_vector(r, a->coords(), dummy_);
-            dummy_ += trans;
-            a->coords(dummy_);
+            //TODO Need to fix
+            a->transform(r, a->get_coords(),dummy_);
+//            math::dot_vector(r, a->coords(), dummy_);
+//            dummy_ += trans;
+//            a->coords(dummy_);
         }
     }
 
