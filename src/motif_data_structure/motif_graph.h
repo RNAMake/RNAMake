@@ -275,7 +275,7 @@ public: //designing functions
             if (n->data()->name() != "HELIX.IDEAL") { continue; }
 
             for (auto const & r : n->data()->residues()) {
-                ss_r = ss->get_residue(r->uuid());
+                ss_r = ss->get_residue(r->get_uuid());
                 if (ss_r != nullptr) {
                     ss_r->name("N");
                 }
@@ -313,9 +313,9 @@ public: // misc functions
 public: // getters
 
     inline
-    util:Beads
+    util::Beads
     beads() {
-        util:Beads beads;
+        util::Beads beads;
         for (auto const & n : graph_.nodes()) {
             std::copy(n->data()->beads().begin(),
                       n->data()->beads().end(),

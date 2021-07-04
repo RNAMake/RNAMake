@@ -276,6 +276,12 @@ namespace structure {
           num_ = num;
       }
 
+      inline
+      void
+      set_uuid(util::Uuid const & id) {
+          uuid_ = id;
+      }
+
     //        inline
     //        AtomOPs const &
     //        get_atoms() const {

@@ -36,7 +36,7 @@ public:
         }
 
         t_beads_ = math::Points(org_state->beads().size());
-        math::dot_vectors(bp_state_.r_T(), org_state->beads(), t_beads_);
+//        math::dot_vectors(bp_state_.r_T(), org_state->beads(), t_beads_);
         for (int i = 0; i < t_beads_.size(); i++) { t_beads_[i] += bp_state_.d(); }
         cur_state->beads(t_beads_);
     }
@@ -48,7 +48,7 @@ public:
             MotifStateOP state) {
 
         ref_bp_state->get_transforming_r_and_t(*state->end_states()[0], bp_state_);
-        state->transform(bp_state_.r().transposed(), bp_state_.d());
+        state->transform(bp_state_.r().get_transposed(), bp_state_.d());
     }
 
 

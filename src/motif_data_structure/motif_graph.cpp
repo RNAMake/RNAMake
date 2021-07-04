@@ -269,10 +269,10 @@ MotifGraph::_steric_clash(motif::MotifOP const & m) {
     float dist = 0;
     for (auto const & n : graph_) {
         for (auto const & c1 : n->data()->beads()) {
-            if (c1.btype() == util:BeadType::PHOS) { continue; }
+            if (c1.get_type() == util::BeadType::PHOS) { continue; }
             for (auto const & c2 : m->beads()) {
-                if (c2.btype() == util:BeadType::PHOS) { continue; }
-                dist = c1.center().distance(c2.center());
+                if (c2.get_type() == util::BeadType::PHOS) { continue; }
+                dist = c1.get_center().distance(c2.get_center());
                 if (dist < clash_radius_) { return 1; }
             }
         }
@@ -673,11 +673,11 @@ MotifGraph::replace_helical_sequence(secondary_structure::PoseOP const & ss) {
         auto new_res = m->residues();
         auto new_bps = m->basepairs();
         for (int i = 0; i < org_res.size(); i++) {
-            new_res[i]->uuid(org_res[i]->uuid());
+            new_res[i]->set_uuid(org_res[i]->get_uuid());
         }
 
         for (int i = 0; i < n->data()->basepairs().size(); i++) {
-            new_bps[i]->uuid(n->data()->basepairs()[i]->uuid());
+            new_bps[i]->set_uuid(n->data()->basepairs()[i]->get_uuid());
         }
 
         if (aligned_[n->index()] == 0) {
@@ -712,7 +712,7 @@ MotifGraph::topology_to_str() {
     String key1 = "", key2 = "";
     std::map<String, int> seen_connections;
     for (auto const & n : graph_.nodes()) {
-        s += n->data()->name() + "," + n->data()->ends()[0]->name() + ",";
+        s += n->data()->name() + "," + n->data()->ends()[0]->get_name_str() + ",";
         s += std::to_string(n->index()) + "," + std::to_string(aligned_[n->index()]) + "|";
         for (auto const & c : n->connections()) {
             if (c == nullptr) { continue; }
@@ -922,7 +922,7 @@ MotifGraph::get_available_end(
 
     auto end = structure::BasepairOP(nullptr);
     for (auto const & e : node->data()->ends()) {
-        if (e->name() == end_name) {
+        if (e->get_name_str() == end_name) {
             if (end != nullptr) {
                 throw MotifGraphException(
                         "attempting to get end with m_name: " + m_name + " and end name " + end_name +

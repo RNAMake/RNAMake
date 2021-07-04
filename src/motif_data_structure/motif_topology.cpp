@@ -264,7 +264,7 @@ GraphtoTree::_get_new_parent_end_index(
         int i = -1;
         for (auto const & end : tree_parent->data()->ends()) {
             i++;
-            if (end->name() == parent_end_name) {
+            if (end->get_name_str() == parent_end_name) {
                 return i;
             }
         }
@@ -339,7 +339,7 @@ graph_to_tree(
 
                 m = resources::Manager::instance().motif(name);
             } else {
-                m = resources::Manager::instance().motif(name, "", current->data()->ends()[0]->name());
+                m = resources::Manager::instance().motif(name, "", current->data()->ends()[0]->get_name_str());
             }
             mt->add_motif(m);
             mt->get_node(0)->data()->id(current->data()->id());
@@ -361,14 +361,14 @@ graph_to_tree(
                 highest = p_index;
                 p = p_new;
                 p_end_index = c->end_index(p->index());
-                p_end_name = p->data()->ends()[p_end_index]->name();
+                p_end_name = p->data()->ends()[p_end_index]->get_name_str();
                 c_end_index = c->end_index(current->index());
-                c_end_name = current->data()->ends()[c_end_index]->name();
+                c_end_name = current->data()->ends()[c_end_index]->get_name_str();
 
             }
 
             if (last_end != nullptr) {
-                if (last_end->name() == p_end_name &&
+                if (last_end->get_name_str() == p_end_name &&
                     seen_nodes.size() != mg->size() - 1) {
                     open.push(current);
                     continue;
@@ -381,7 +381,7 @@ graph_to_tree(
             if (p->data()->name()[2] == '=') {
                 p_end_index = 1;
                 auto act_parent = mt->get_node(seen_nodes[p]);
-                p_end_name = act_parent->data()->ends()[1]->name();
+                p_end_name = act_parent->data()->ends()[1]->get_name_str();
             }
 
             if (current->data()->name()[2] == '=' && c_end_index == 1) {

@@ -62,6 +62,9 @@ namespace util {
           return stream;
       }
 
+      uint64_t
+      get_id() const { return id_; }
+
 
   private:
       uint64_t id_;
@@ -69,6 +72,14 @@ namespace util {
   };
 
   typedef std::shared_ptr<Uuid> UuidOP;
+
+  struct UuidCompare {
+      bool operator()(
+              Uuid const & u1,
+              Uuid const & u2) const {
+          return u1.get_id() < u2.get_id();
+      }
+  };
 
 }
 
