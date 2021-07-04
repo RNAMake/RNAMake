@@ -42,7 +42,7 @@ void
 Chain::to_pdb(
         String const fname,
         int rnum,
-        String const & chain_id) const {
+        char const & chain_id) const {
     std::ofstream out;
     out.open(fname.c_str());
     int i = 1;

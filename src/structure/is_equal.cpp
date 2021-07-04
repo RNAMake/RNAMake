@@ -11,15 +11,24 @@
 
 namespace structure {
 
-bool
-are_atoms_equal(
-        AtomOP const & a1,
-        AtomOP const & a2,
-        float tol) {
+//bool
+//are_atoms_equal(
+//        AtomOP const & a1,
+//        AtomOP const & a2,
+//        float tol) {
+//
+//    return math::are_xyzVector_equal(a1->get_coords(), a2->get_coords(), tol) &&
+//           a1->get_name() == a2->get_name();
+//}
 
-    return math::are_xyzVector_equal(a1->get_coords(), a2->get_coords(), tol) &&
-           a1->get_name() == a2->get_name();
-}
+  bool
+  are_atoms_equal(
+          AtomOP const & a1,
+          AtomOP const & a2,
+          float tol) {
+
+      return a1->get_coords() == a2->get_coords();
+  }
 
 
 bool
@@ -45,13 +54,13 @@ are_residues_equal(
         ResidueOP const & r2,
         int check_uuids) {
     
-    if (r1->name() != r2->name()) { return false; }
-    if (check_uuids && r1->uuid() != r2->uuid()) { return false; }
+    if (r1->get_name() != r2->get_name()) { return false; }
+    if (check_uuids && r1->get_uuid() != r2->get_uuid()) { return false; }
 
     int i = -1;
-    auto r2_atoms = r2->atoms();
+    auto r2_atoms = r2->get_atoms();
     bool result;
-    for (auto const & a : r1->atoms()) {
+    for (auto const & a : r1->get_atoms()) {
         i++;
         if (a == nullptr && r2_atoms[i] != nullptr) { return false; }
         else if (a != nullptr && r2_atoms[i] == nullptr) { return false; }

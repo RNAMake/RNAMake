@@ -193,6 +193,29 @@ namespace structure {
           return stream;
       }
 
+      inline
+      int
+      connected_to(
+              Residue const &res,
+              float cutoff = 5.0) const {
+          String o3 = "O3'", p = "P";
+
+          // 5' to 3'
+          Atom o3_atom = get_atom(o3), p_atom = res.get_atom(p);
+          if (o3_atom.get_coords().distance(p_atom.get_coords()) < cutoff) {
+              return 1;
+          }
+
+          // 3' to 5'
+          o3_atom = res.get_atom(o3);
+          p_atom = get_atom(p);
+          if (o3_atom.get_coords().distance(p_atom.get_coords()) < cutoff) {
+              return -1;
+          }
+
+          return 0;
+      }
+
 
   public:
       inline
@@ -266,27 +289,27 @@ namespace structure {
       template<typename T>
       inline
       void
-      set_chain_id(T & id) {
+      set_chain_id(T &id) {
           chain_id_ = id;
       }
 
       inline
       void
-      set_num(int & num) {
+      set_num(int &num) {
           num_ = num;
       }
 
       inline
       void
-      set_uuid(util::Uuid const & id) {
+      set_uuid(util::Uuid const &id) {
           uuid_ = id;
       }
 
-    //        inline
-    //        AtomOPs const &
-    //        get_atoms() const {
-    //            return atoms_;
-    //        }
+      //        inline
+      //        AtomOPs const &
+      //        get_atoms() const {
+      //            return atoms_;
+      //        }
 
       inline
       AtomOPs

@@ -185,19 +185,19 @@ public:
     inline
     String
     to_pdb_str(int & acount) const {
-        return to_pdb_str(acount, -1, "");
+        return to_pdb_str(acount, -1, '\0');
     }
 
     void
     to_pdb(
             String const,
             int,
-            String const &) const;
+            char const &) const;
 
     inline
     void
     to_pdb(String const & fname) {
-        return to_pdb(fname, -1, "");
+        return to_pdb(fname, -1, '\0');
     }
 
 public: //getters
