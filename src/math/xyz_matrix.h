@@ -709,20 +709,6 @@ namespace math {
               m.get_zx() * v.x() + m.get_zy() * v.y() + m.get_zz() * v.get_z());
   }
 
-
-  template<typename T>
-  inline
-  xyzMatrix<T>
-  transform_1(xyzMatrix<T> const &m) {
-
-      return xyzMatrix<T>(
-              m.get_xx(), m.get_xy(), m.get_xz(),
-              -m.get_yx(), -m.get_yy(), -m.get_yz(),
-              -m.get_zx(), -m.get_zy(), -m.get_zz());
-
-
-  }
-
   inline
   void
   dot_vector(
@@ -749,6 +735,33 @@ namespace math {
       return vr;
   }
 
+  inline
+  void
+  dot_vectors(
+          Matrix const & m,
+          Vectors const & v,
+          Vectors & vr) {
+
+      int i;
+      for(i = 0; i < v.size(); i++) {
+          dot_vector(m,v[i],vr[i]);
+      }
+
+  }
+
+
+  template<typename T>
+  inline
+  xyzMatrix<T>
+  transform_1(xyzMatrix<T> const &m) {
+
+      return xyzMatrix<T>(
+              m.get_xx(), m.get_xy(), m.get_xz(),
+              -m.get_yx(), -m.get_yy(), -m.get_yz(),
+              -m.get_zx(), -m.get_zy(), -m.get_zz());
+
+
+  }
 
   inline
   void

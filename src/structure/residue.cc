@@ -112,7 +112,7 @@ namespace structure {
         for (auto const &a : atoms_) {
             char buffer[200];
             std::sprintf(buffer, "%-6s%5d %-4s%1s%-4c%1c%4d%1s   %8.3f%8.3f%8.3f%6.2f%6.2f      %4s%2s\n", "ATOM",
-                         acount, a.get_str_name().c_str(), "", name_, chain_id, rnum, "", a.get_x(), a.get_y(),
+                         acount, a.get_str().c_str(), "", name_, chain_id, rnum, "", a.get_x(), a.get_y(),
                          a.get_z(), 1.00, 0.00, "", "");
             s += String(buffer);
             acount++;

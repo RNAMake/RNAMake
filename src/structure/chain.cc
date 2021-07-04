@@ -14,7 +14,7 @@ String
 Chain::to_str() const {
     String s;
     for (auto const & r : residues_) {
-        s += r->to_str() + ";";
+        s += r->get_str() + ";";
     }
     return s;
 }
@@ -24,15 +24,15 @@ String
 Chain::to_pdb_str(
         int & acount,
         int rnum,
-        String const & chain_id) const {
+        char const & chain_id) const {
 
     if (rnum == -1) {
-        rnum = residues_[0]->num();
+        rnum = residues_[0]->get_num();
     }
 
     String s;
     for (auto const & r : residues_) {
-        s += r->to_pdb_str(acount, rnum, chain_id);
+        s += r->get_pdb_str(acount, rnum, chain_id);
         rnum += 1;
     }
     return s;

@@ -101,7 +101,7 @@ namespace sqliteutility {
 	template<typename Callback, typename ...Options>
 	inline auto variant_select_float(Callback&&callback) {
 		if constexpr(std::is_same_v<typename VariantFirstFloatable<Options...>::type, void>) {
-			throw errors::mismatch("Real is unsupported by this variant.", "", SQLITE_MISMATCH);
+			throw ty::mismatch("Real is unsupported by this variant.", "", SQLITE_MISMATCH);
 		} else {
 			std::forward<Callback>(callback)(typename VariantFirstFloatable<Options...>::type());
 		}
