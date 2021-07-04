@@ -30,7 +30,7 @@ MotifMerger::add_motif(
     }
 
     for (auto const & bp : m->basepairs()) {
-        all_bps_[bp->uuid()] = bp;
+        all_bps_[bp->get_uuid()] = bp;
     }
 
     motifs_[m->id()] = m;
@@ -50,7 +50,7 @@ MotifMerger::add_motif(
     }
     catch (data_structure::graph::GraphException const & e) {
         throw MotifMergerException(
-                "cannot add motif: " + m->name() + " with basepair " + m_end->name() + " with parent: " +
+                "cannot add motif: " + m->name() + " with basepair " + m_end->get_name_str() + " with parent: " +
                 parent->name() + " and parent basepair " + parent_end->name());
 
     }
@@ -72,10 +72,10 @@ MotifMerger::_link_motifs(
     if (mm_type_2 == MotifMergerType::NON_SPECIFIC_SEQUENCE &&
         mm_type_1 == MotifMergerType::SPECIFIC_SEQUENCE) {
         _link_chains(m1_end_nodes, m2_end_nodes, mm_type_1, mm_type_2);
-        bp_overrides_[m2_end->uuid()] = m1_end->uuid();
+        bp_overrides_[m2_end->get_uuid()] = m1_end->get_uuid();
     } else {
         _link_chains(m2_end_nodes, m1_end_nodes, mm_type_2, mm_type_1);
-        bp_overrides_[m1_end->uuid()] = m2_end->uuid();
+        bp_overrides_[m1_end->get_uuid()] = m2_end->get_uuid();
     }
 
 }
@@ -88,10 +88,10 @@ MotifMerger::_get_end_nodes(
     auto end_nodes = ChainNodes(2);
     for (auto const & n : nodes) {
         for (auto const & r : end->residues()) {
-            if (n->data().c->first()->uuid() == r->uuid() && end_nodes[0] == nullptr) {
+            if (n->data().c->first()->get_uuid() == r->uuid() && end_nodes[0] == nullptr) {
                 end_nodes[0] = n;
                 continue;
-            } else if (n->data().c->first()->uuid() == r->uuid()) {
+            } else if (n->data().c->first()->get_uuid() == r->uuid()) {
                 if (end_nodes[0]->data().c->length() == 1 && end_nodes[1] == nullptr) {
                     end_nodes[1] = end_nodes[0];
                     end_nodes[0] = n;
@@ -103,9 +103,9 @@ MotifMerger::_get_end_nodes(
                 }
             }
 
-            if (n->data().c->last()->uuid() == r->uuid() && end_nodes[1] == nullptr) {
+            if (n->data().c->last()->get_uuid() == r->uuid() && end_nodes[1] == nullptr) {
                 end_nodes[1] = n;
-            } else if (n->data().c->last()->uuid() == r->uuid()) {
+            } else if (n->data().c->last()->get_uuid() == r->uuid()) {
                 if (end_nodes[1]->data().c->length() == 1 && end_nodes[0] == nullptr) {
                     end_nodes[0] = end_nodes[1];
                     end_nodes[1] = n;
@@ -156,21 +156,21 @@ MotifMerger::_connect_chains(
         a_node->data().prime5_override = 1;
         if (mm_type_1 == MotifMergerType::SPECIFIC_SEQUENCE &&
             mm_type_2 == MotifMergerType::SPECIFIC_SEQUENCE &&
-            a_node->data().c->first()->name() != d_node->data().c->last()->name()) {
+            a_node->data().c->first()->get_name() != d_node->data().c->last()->get_name()) {
             //std::cout << "MotifMerger::_connect_chains: overriding residues of two different types, ";
             //std::cout << "this is likely to produce a merged structure that is wrong!!" << std::endl;
         }
 
-        res_overrides_[a_node->data().c->first()->uuid()] = d_node->data().c->last()->uuid();
+        res_overrides_[a_node->data().c->first()->get_uuid()] = d_node->data().c->last()->get_uuid();
     } else {
         a_node->data().prime3_override = 1;
         if (mm_type_1 == MotifMergerType::SPECIFIC_SEQUENCE &&
             mm_type_2 == MotifMergerType::SPECIFIC_SEQUENCE &&
-            a_node->data().c->last()->name() != d_node->data().c->first()->name()) {
+            a_node->data().c->last()->get_name() != d_node->data().c->first()->get_name()) {
             //std::cout << "MotifMerger::_connect_chains: overriding residues of two different types, ";
             //std::cout << "this is likely to produce a merged structure that is wrong!!" << std::endl;
         }
-        res_overrides_[a_node->data().c->last()->uuid()] = d_node->data().c->first()->uuid();
+        res_overrides_[a_node->data().c->last()->get_uuid()] = d_node->data().c->first()->get_uuid();
     }
     graph_.connect(d_node->index(), a_node->index(), d_i, a_i);
 
@@ -248,12 +248,12 @@ MotifMerger::get_structure() {
 void
 MotifMerger::remove_motif(motif::MotifOP const & m) {
     for (auto const & end : m->ends()) {
-        if (bp_overrides_.find(end->uuid()) != bp_overrides_.end()) {
-            bp_overrides_.erase(end->uuid());
+        if (bp_overrides_.find(end->get_uuid()) != bp_overrides_.end()) {
+            bp_overrides_.erase(end->get_uuid());
         }
         auto remove = std::vector<util::Uuid>();
         for (auto const & kv : bp_overrides_) {
-            if (kv.second == end->uuid()) { remove.push_back(kv.first); }
+            if (kv.second == end->get_uuid()) { remove.push_back(kv.first); }
         }
         for (auto const & u : remove) {
             bp_overrides_.erase(u);
@@ -262,7 +262,7 @@ MotifMerger::remove_motif(motif::MotifOP const & m) {
     }
 
     for (auto const & bp : m->basepairs()) {
-        all_bps_.erase(bp->uuid());
+        all_bps_.erase(bp->get_uuid());
     }
 
     auto remove = ChainNodes();
@@ -279,17 +279,17 @@ MotifMerger::remove_motif(motif::MotifOP const & m) {
             auto p_i = c->end_index(p->index());
 
             if (p_i == 0 && p->data().prime5_override == 1) {
-                res_overrides_.erase(p->data().c->first()->uuid());
+                res_overrides_.erase(p->data().c->first()->get_uuid());
                 p->data().prime5_override = 0;
             } else if (p_i == 1 && p->data().prime3_override == 1) {
-                res_overrides_.erase(p->data().c->last()->uuid());
+                res_overrides_.erase(p->data().c->last()->get_uuid());
                 p->data().prime3_override = 0;
             }
         }
 
         for (auto const & res: r->data().c->residues()) {
-            if (res_overrides_.find(res->uuid()) != res_overrides_.end()) {
-                res_overrides_.erase(res->uuid());
+            if (res_overrides_.find(res->get_uuid()) != res_overrides_.end()) {
+                res_overrides_.erase(res->get_uuid());
             }
 
         }
@@ -314,7 +314,7 @@ MotifMerger::update_motif(motif::MotifOP const & m) {
         auto res = n->data().c->residues();
         auto new_res = structure::ResidueOPs();
         for (auto const & r : res) {
-            auto new_r = m->get_residue(r->uuid());
+            auto new_r = m->get_residue(r->get_uuid());
             if (new_r == nullptr) {
                 throw MotifMergerException("could not find res by uuid during update_motif");
             }
@@ -329,7 +329,7 @@ MotifMerger::update_motif(motif::MotifOP const & m) {
     }
 
     for (auto const & bp : m->basepairs()) {
-        all_bps_[bp->uuid()] = bp;
+        all_bps_[bp->get_uuid()] = bp;
     }
 
     motifs_[m->id()] = m;
@@ -352,13 +352,13 @@ MotifMerger::secondary_structure() {
             auto ss_res = secondary_structure::ResidueOPs();
             for (auto const & r : c->residues()) {
                 r_cur = r;
-                if (res_overrides_.find(r->uuid()) != res_overrides_.end()) {
-                    r_cur = get_residue(res_overrides_[r->uuid()]);
+                if (res_overrides_.find(r->get_uuid()) != res_overrides_.end()) {
+                    r_cur = get_residue(res_overrides_[r->get_uuid()]);
                 }
-                auto ss_r = ss->get_residue(r_cur->uuid());
+                auto ss_r = ss->get_residue(r_cur->get_uuid());
                 if (ss_r == nullptr) {
                     throw MotifMergerException(
-                            "could not find residue during ss build: " + std::to_string(r->num()) +
+                            "could not find residue during ss build: " + std::to_string(r->get_num()) +
                             " in motif: " + m->name());
                 }
                 ss_res.push_back(ss_r);
@@ -373,10 +373,10 @@ MotifMerger::secondary_structure() {
             if (bp->bp_type() != "cW-W") { continue; }
             if (!wc_bp(bp) && !gu_bp(bp)) { continue; }
             current_bp = bp;
-            if (bp_overrides_.find(current_bp->uuid()) != bp_overrides_.end()) {
-                current_bp = get_basepair(bp_overrides_[current_bp->uuid()]);
+            if (bp_overrides_.find(current_bp->get_uuid()) != bp_overrides_.end()) {
+                current_bp = get_basepair(bp_overrides_[current_bp->get_uuid()]);
             }
-            ss_bp = ss->get_basepair(current_bp->uuid());
+            ss_bp = ss->get_basepair(current_bp->get_uuid());
             if (ss_bp.size() == 0) {
                 throw MotifMergerException("could not find basepair during ss build");
             }
@@ -386,10 +386,10 @@ MotifMerger::secondary_structure() {
         auto ss_ends = secondary_structure::BasepairOPs();
         for (auto const & end : kv.second->ends()) {
             current_bp = end;
-            if (bp_overrides_.find(current_bp->uuid()) != bp_overrides_.end()) {
-                current_bp = get_basepair(bp_overrides_[current_bp->uuid()]);
+            if (bp_overrides_.find(current_bp->get_uuid()) != bp_overrides_.end()) {
+                current_bp = get_basepair(bp_overrides_[current_bp->get_uuid()]);
             }
-            ss_bp = ss->get_basepair(current_bp->uuid());
+            ss_bp = ss->get_basepair(current_bp->get_uuid());
             if (ss_bp.size() == 0) {
                 throw MotifMergerException("could not find basepair during ss build");
             }

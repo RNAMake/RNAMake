@@ -32,7 +32,7 @@ MotifStateTree::MotifStateTree(
 
         auto ms = resources::Manager::instance().motif_state(n->data()->name(),
                                                              n->data()->end_ids()[0],
-                                                             n->data()->ends()[0]->name());
+                                                             n->data()->ends()[0]->get_name_str());
 
         ms->uuid(n->data()->id());
         if (i == 0) {

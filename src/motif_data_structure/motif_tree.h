@@ -13,6 +13,7 @@
 #include <iomanip>      // std::setw
 #include "base/option.h"
 #include "data_structure/tree/tree.h"
+#include "util/bead.h"
 #include "motif/motif.h"
 #include "motif_data_structure/motif_merger.h"
 #include "motif_data_structure/motif_connection.h"
@@ -98,14 +99,14 @@ private:
                 auto strs = Strings();
                 if (n->parent() != nullptr) {
                     auto parent_end_index = n->parent_end_index();
-                    auto parent_end_name = n->parent()->data()->ends()[parent_end_index]->name();
+                    auto parent_end_name = n->parent()->data()->ends()[parent_end_index]->get_name_str();
                     strs.push_back("|");
                     strs.push_back("E" + std::to_string(parent_end_index) + " - " + parent_end_name);
                     strs.push_back("|");
                 }
 
                 strs.push_back("N" + std::to_string(n->index()) + " - " + n->data()->name());
-                strs.push_back("|  - " + n->data()->ends()[0]->name());
+                strs.push_back("|  - " + n->data()->ends()[0]->get_name_str());
                 strings.push_back(strs);
             }
 
@@ -360,7 +361,7 @@ public: //getters
     MotifConnections const &
     connections() { return connections_; }
 
-    util:Beads
+    util::Beads
     beads();
 
 
@@ -471,7 +472,7 @@ public: //merger wrappers
         for (auto const & n : tree_) {
             if (n->data()->name() != "HELIX.IDEAL") { continue; }
             for (auto const & r : n->data()->residues()) {
-                ss_r = ss->get_residue(r->uuid());
+                ss_r = ss->get_residue(r->get_uuid());
                 if (ss_r != nullptr) {
                     ss_r->name("N");
                 }

@@ -175,6 +175,12 @@ namespace structure {
           ref_frame_ = r;
       }
 
+      inline
+      void
+      set_uuid(util::Uuid const & id) {
+          uuid_ = id;
+      }
+
   private:
       math::Point center_;
       math::Points c1_prime_coords_;
