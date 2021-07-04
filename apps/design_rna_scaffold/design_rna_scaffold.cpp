@@ -641,7 +641,7 @@ DesignRNAScaffold::_get_motif_names (
     motif_data_structure::MotifGraphOP mg) {
     sol_info_.motif_names = "";
     for (auto const &n : *mg) {
-        sol_info_.motif_names += n->data()->name() + "-" + n->data()->end_name(0) + ";";
+        sol_info_.motif_names += n->data()->name() + "/" + n->data()->end_name(0) + ";";
     }
 }
 
