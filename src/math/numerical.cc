@@ -13,14 +13,30 @@
 
 namespace math {
 
-    int
-    are_floats_equal(
-            double const a,
-            double const b,
-            double tol) {
-        if (fabs(a - b) < tol) { return 1; }
-        else { return 0; }
-    }
+
+  int
+  are_floats_equal(
+          double const a,
+          double const b,
+          double tol) {
+      if (std::abs(a - b) < tol) { return 1; }
+      else { return 0; }
+  }
+
+  int
+  are_xyzVector_equal(
+          Vector const & vec,
+          Vector const & correct_vec,
+          float tol) {
+
+      if (are_floats_equal(vec.get_x(), correct_vec.get_x(), tol) &&
+          are_floats_equal(vec.get_y(), correct_vec.get_y(), tol) &&
+          are_floats_equal(vec.get_z(), correct_vec.get_z(), tol)) {
+          return 1;
+      } else {
+          return 0;
+      }
+  }
 
     int
     are_points_equal(
@@ -85,5 +101,7 @@ namespace math {
                roughly_equal(v1.get_y(),v2.get_y(),tolerance) &&
                roughly_equal(v1.get_z(),v2.get_z(),tolerance);
     }
+
+
 
 }

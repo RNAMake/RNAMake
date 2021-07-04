@@ -19,6 +19,7 @@
 #include <structure/atom.h>
 #include <structure/residue_type.h>
 #include <structure/residue_type_set.h>
+#include <doctest.h>
 
 namespace structure {
 
@@ -116,12 +117,19 @@ namespace structure {
               primitives::Residue() {
 
           auto spl = base::split_str_by_delimiter(s, ",");
+          DOCTEST_CAPTURE(s);
           res_type_ = rts.get_residue_type(spl[0]);
+          DOCTEST_CAPTURE(res_type_);
           name_ = spl[1][0];
+          DOCTEST_CAPTURE(name_);
           num_ = std::stoi(spl[2]);
+          DOCTEST_CAPTURE(num_);
           chain_id_ = spl[3][0];
+          DOCTEST_CAPTURE(chain_id_);
           i_code_ = spl[4][0];
+          DOCTEST_CAPTURE(i_code_);
           uuid_ = util::Uuid();
+          DOCTEST_CAPTURE(uuid_);
           atoms_ = Atoms();
           int i = 5;
           while (i < spl.size()) {
@@ -357,8 +365,8 @@ namespace structure {
       String
       get_str() const;
 
-      json::JSON
-      get_json() const;
+//      json::JSON
+//      get_json() const;
 
       /**
        * wrapper for to_pdb_str(int &, int, String const &) when one does not care about
