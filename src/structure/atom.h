@@ -191,17 +191,17 @@ namespace structure {
       get_coords() const { return coords_; }
 
 
-//        inline
-//        double
-//        get_x() const { return coords_.get_x(); }
-//
-//        inline
-//        double
-//        get_y() const { return coords_.get_y(); }
-//
-//        inline
-//        double
-//        get_z() const { return coords_.get_z(); }
+        inline
+        double
+        get_x() const { return coords_.get_x(); }
+
+        inline
+        double
+        get_y() const { return coords_.get_y(); }
+
+        inline
+        double
+        get_z() const { return coords_.get_z(); }
 
   private:
       /**

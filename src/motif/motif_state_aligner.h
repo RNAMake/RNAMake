@@ -36,7 +36,7 @@ public:
         }
 
         t_beads_ = math::Points(org_state->beads().size());
-//        math::dot_vectors(bp_state_.r_T(), org_state->beads(), t_beads_);
+        math::dot_vectors(bp_state_.r_T(), org_state->beads(), t_beads_);
         for (int i = 0; i < t_beads_.size(); i++) { t_beads_[i] += bp_state_.d(); }
         cur_state->beads(t_beads_);
     }

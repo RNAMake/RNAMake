@@ -180,7 +180,7 @@ public:
     to_pdb_str(
             int &,
             int,
-            String const &) const;
+            char const &) const;
 
     inline
     String
