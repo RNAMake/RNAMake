@@ -192,7 +192,7 @@ public:
     int
     connected_to(
             Residue const & res,
-            float cutoff = 5.0) const {
+            float cutoff = 4.0) const {
         String o3 = "O3'", p = "P";
 
         // 5' to 3'

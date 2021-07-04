@@ -74,7 +74,7 @@ DesignRNAScaffold::run () {
                 LOG_DEBUG << "did not find a valid solution for sequence opt";
                 continue;
             }
-            if (sol_info_.sequence_opt_score > 7) {
+            if (sol_info_.sequence_opt_score > parameters_.seq_opt.cutoff) {
                 attempts += 1;
                 if (attempts > 3) {
                     LOG_DEBUG << "no viable sequence determined skipping this design ";
@@ -163,6 +163,7 @@ DesignRNAScaffold::setup () {
     //sequence optimziation setup
     seq_optimizer_ = std::make_shared<sequence_optimization::SequenceOptimizer3D>();
     seq_optimizer_->set_option_value("steps", parameters_.seq_opt.steps);
+    seq_optimizer_->set_option_value("cutoff", parameters_.seq_opt.cutoff);
 
     if (!parameters_.seq_opt.skip) {
         LOG_INFO
@@ -640,7 +641,7 @@ DesignRNAScaffold::_get_motif_names (
     motif_data_structure::MotifGraphOP mg) {
     sol_info_.motif_names = "";
     for (auto const &n : *mg) {
-        sol_info_.motif_names += n->data()->name() + ";";
+        sol_info_.motif_names += n->data()->name() + "-" + n->data()->end_name(0) + ";";
     }
 }
 

@@ -1,8 +1,8 @@
 
 #include "design_rna_scaffold/design_rna_scaffold.h"
 
-#ifndef DESIGNRNASCAFFOLDAPP_OPTIONS_H
-#define DESIGNRNASCAFFOLDAPP_OPTIONS_H
+#ifndef DESIGNRNASCAFFOLD_OPTIONS_H
+#define DESIGNRNASCAFFOLD_OPTIONS_H
 
 String
 valid_pdb (String &path) {
@@ -64,6 +64,7 @@ struct Parameters {
 	struct SequenceOpt{
 		bool skip = false;
 		int sequences_per_design = 1;
+		float cutoff = 7;
 		int steps = 10000;
 	};
 
@@ -84,7 +85,7 @@ struct Parameters {
     Parameters parameters_ = Parameters();
 
 void
-DesignRNAScaffoldApp::setup_options () {
+DesignRNAScaffold::setup_options () {
 
 	app_.add_option_group("core");
 	app_.add_option_group("io");
@@ -223,6 +224,10 @@ DesignRNAScaffoldApp::setup_options () {
 		->default_val(1)
 		->group("seq_opt");
 
+	app_.add_option("--seq_opt_cutoff", parameters_.seq_opt.cutoff, "TODO")
+		->default_val(7)
+		->group("seq_opt");
+
 	app_.add_option("--seq_opt_steps", parameters_.seq_opt.steps, "TODO")
 		->default_val(10000)
 		->group("seq_opt");
@@ -238,4 +243,4 @@ DesignRNAScaffoldApp::setup_options () {
 
 }
 
-#endif //DESIGNRNASCAFFOLDAPP_OPTIONS_H
+#endif //DESIGNRNASCAFFOLD_OPTIONS_H

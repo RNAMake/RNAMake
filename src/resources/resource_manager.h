@@ -115,6 +115,10 @@ public: // adding functions
     String const &,
     String const &);
 
+  std::vector<motif::MotifEnsembleOP>
+  get_supplied_motif_ensembles(
+    String const &);
+
   motif::MotifEnsembleOP const &
   get_supplied_motif_ensemble(
     String const &,
@@ -134,7 +138,7 @@ private:
   std::map<String, MotifSqliteLibraryOP> mlibs_;
   std::map<String, MotifStateSqliteLibraryOP> ms_libs_;
   std::map<String, MotifStateEnsembleSqliteLibraryOP> mse_libs_;
-  std::map<String, motif::MotifEnsembleOP> extra_me_, extra_me_names_;
+  std::map<String, motif::MotifEnsembleOP> extra_me_;
   motif::MotifFactory mf_;
   AddedMotifLibrary added_motifs_;
 

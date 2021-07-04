@@ -32,6 +32,7 @@ only_tether_opt,search,Search,only_tether_opt,gnore supplied structure other tha
 search_max_motifs,search,Search,max_motifs,TODO,999,false,false,int
 skip_sequence_optimization,seq_opt,SequenceOpt,skip,flag to skip sequence optimization of the design,false,false,true,bool
 sequences_per_design,seq_opt,SequenceOpt,sequences_per_design,number of sequences to try per motif design,1,false,false,int
+seq_opt_cutoff,seq_opt,SequenceOpt,cutoff,TODO,7,false,false,float
 seq_opt_steps,seq_opt,SequenceOpt,steps,TODO,10000,false,false,int
 thermo_fluc,thermo_fluc,ThermoFluc,perform,run thermo fluc procedure to estimate thermo fluc of helices,false,false,true,bool
 thermo_fluc_steps,thermo_fluc,ThermoFluc,steps,TODO,1000000,false,false,int

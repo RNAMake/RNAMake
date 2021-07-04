@@ -18,7 +18,6 @@ Manager::Manager() {
   ms_libs_ = std::map<String, MotifStateSqliteLibraryOP>();
   mse_libs_ = std::map<String, MotifStateEnsembleSqliteLibraryOP>();
   extra_me_ = std::map<String, motif::MotifEnsembleOP>();
-  extra_me_names_ = std::map<String, motif::MotifEnsembleOP>();
 
   for(auto const & kv : MotifSqliteLibrary::get_libnames()) {
     //if(kv.first == "bp_steps") { continue; }
@@ -156,6 +155,8 @@ Manager::add_motif(
   if(!name.empty()) {
     m->name(name);
   }
+
+  std::cout << m->dot_bracket() << std::endl;
 
   motif::MotifOPs motifs;
   std::map<util::Uuid, String, util::UuidCompare> end_ids;
@@ -304,6 +305,20 @@ Manager::get_supplied_motif_ensemble(
         "do so");
   }
   return extra_me_[key];
+}
+
+std::vector<motif::MotifEnsembleOP>
+Manager::get_supplied_motif_ensembles(
+  String const & m_name) {
+  auto mes = std::vector<motif::MotifEnsembleOP>();
+  for(auto const & kv : extra_me_) {
+    auto key = kv.first;
+    auto spl = base::split_str_by_delimiter(key, "-");
+    if(spl[0] == m_name) {
+      mes.push_back(kv.second);
+    }
+  }
+  return mes;
 }
 
 }
