@@ -14,17 +14,17 @@ TEST_CASE( "Test Atoms for Structure") {
     CHECK(a->get_coords() == p);
     CHECK(a->get_name() == "P");
 
-//    SUBCASE("do atoms have correct pdb output") {
-//        auto s = a->get_pdb_str(1);
-//        auto ref = "ATOM      1  P   C   A   1       0.000   1.000   2.000  1.00 62.18           P\n";
-//
-//        CHECK(s == ref);
-//
-//        auto s1 = a->get_pdb_str(10);
-//        auto ref1 = "ATOM     10  P   C   A   1       0.000   1.000   2.000  1.00 62.18           P\n";
-//
-//        CHECK(s1 == ref1);
-//    }
+    SUBCASE("do atoms have correct pdb output") {
+        auto s = a->to_pdb_str(1);
+        auto ref = "ATOM      1  P   C   A   1       0.000   1.000   2.000  1.00 62.18           P\n";
+
+        CHECK(s == ref);
+
+        auto s1 = a->to_pdb_str(10);
+        auto ref1 = "ATOM     10  P   C   A   1       0.000   1.000   2.000  1.00 62.18           P\n";
+
+        CHECK(s1 == ref1);
+    }
     
     
     SUBCASE("do atoms stringify properly") {
