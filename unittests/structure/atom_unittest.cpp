@@ -7,14 +7,13 @@
 
 
 TEST_CASE( "Test Atoms for Structure") {
-//TODO Uncomment these after fixing xyz_vector and xyz_matrix
 
     auto a = std::make_shared<structure::Atom>("P", math::Point(0, 1, 2));
     auto p = math::Point(0, 1, 2);
 
     CHECK(a->get_coords() == p);
     CHECK(a->get_name() == "P");
-//
+
 //    SUBCASE("do atoms have correct pdb output") {
 //        auto s = a->get_pdb_str(1);
 //        auto ref = "ATOM      1  P   C   A   1       0.000   1.000   2.000  1.00 62.18           P\n";

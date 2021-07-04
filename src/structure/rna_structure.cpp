@@ -71,7 +71,7 @@ structure::RNAStructure::get_basepair(
 // get beads functions /////////////////////////////////////////////////////////////////////////////
 
 
-Beads const &
+util::Beads const &
 structure::RNAStructure::get_beads(
         BasepairOPs const & excluded_ends) {
 
@@ -84,7 +84,7 @@ structure::RNAStructure::get_beads(
     return beads_;
 }
 
-Beads const &
+util::Beads const &
 structure::RNAStructure::get_beads(
         BasepairOP const & excluded_end) {
 
@@ -102,7 +102,7 @@ structure::RNAStructure::get_beads(
 int
 structure::RNAStructure::get_end_index(BasepairOP const & end) {
     if (std::find(ends_.begin(), ends_.end(), end) == ends_.end()) {
-        throw structure::RNAStructureException("cannot find end: " + end->name() + " in ends ");
+        throw structure::RNAStructureException("cannot find end: " + end->get_name_str() + " in ends ");
     }
 
     int pos = (int) (std::find(ends_.begin(), ends_.end(), end) - ends_.begin());
@@ -112,7 +112,7 @@ structure::RNAStructure::get_end_index(BasepairOP const & end) {
 int
 structure::RNAStructure::get_end_index(String const & end_name) {
     for (int i = 0; i < ends_.size(); i++) {
-        if (ends_[i]->name() == end_name) { return i; }
+        if (ends_[i]->get_name_str() == end_name) { return i; }
     }
 
     throw structure::RNAStructureException("could not find a end basepair with name: " + end_name);
@@ -165,11 +165,11 @@ end_from_basepairs(
     }
 
     auto res_map = std::map<util::Uuid, ResidueOP, util::UuidCompare>();
-    for (auto const & r : chain_ends) { res_map[r->uuid()] = r; }
+    for (auto const & r : chain_ends) { res_map[r->get_uuid()] = r; }
 
     auto ends = std::make_shared<BasepairOPs>();
     for (auto const & bp : bps) {
-        if (bp->bp_type() != "cW-W") { continue; }
+        if (bp->get_bp_type() != "cW-W") { continue; }
         if (res_map.find(bp->res1()->uuid()) != res_map.end() &&
             res_map.find(bp->res2()->uuid()) != res_map.end()) {
             ends->push_back(bp);
