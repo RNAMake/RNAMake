@@ -22,8 +22,8 @@ TEST_CASE( "Test Basepairs for Structure" ) {
 
         auto bp = std::make_shared<structure::Basepair>(res1, res2, r, "c...");
         
-        CHECK(bp->res1() == res1);
-        CHECK(bp->res2() == res2);
+        CHECK(bp->get_res1_uuid() == res1->get_uuid());
+        CHECK(bp->get_res2_uuid() == res2->get_uuid());
     }
 
 }

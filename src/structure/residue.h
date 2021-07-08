@@ -117,22 +117,19 @@ namespace structure {
               primitives::Residue() {
 
           auto spl = base::split_str_by_delimiter(s, ",");
-          DOCTEST_CAPTURE(s);
           res_type_ = rts.get_residue_type(spl[0]);
-          DOCTEST_CAPTURE(res_type_);
           name_ = spl[1][0];
-          DOCTEST_CAPTURE(name_);
           num_ = std::stoi(spl[2]);
-          DOCTEST_CAPTURE(num_);
           chain_id_ = spl[3][0];
-          DOCTEST_CAPTURE(chain_id_);
           i_code_ = spl[4][0];
-          DOCTEST_CAPTURE(i_code_);
           uuid_ = util::Uuid();
-          DOCTEST_CAPTURE(uuid_);
           atoms_ = Atoms();
           int i = 5;
           while (i < spl.size()) {
+              if(spl[i].size() <= 1){
+                  i++;
+                  continue;
+              }
               atoms_.push_back(Atom(spl[i]));
               i++;
           }
@@ -203,8 +200,7 @@ namespace structure {
 
       inline
       int
-      connected_to(
-              Residue const &res,
+      connected_to(Residue const &res,
               float cutoff = 5.0) const {
           String o3 = "O3'", p = "P";
 
@@ -260,7 +256,8 @@ namespace structure {
       Atom const &
       get_atom(
               String const &name) const {
-          int index = res_type_->get_atom_index(name);
+          //TODO Figure out why it shifts by 3
+          int index = res_type_->get_atom_index(name) - 3;
           if (index == -1) {
               throw ResidueException("atom name: " + name + " does not exist in this residue");
           }
