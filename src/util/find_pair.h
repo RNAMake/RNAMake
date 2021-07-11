@@ -49,7 +49,9 @@ private:
 
     std::vector<X3dna::X3Basepair> bps;
 
-    struct Args {
+    math::Vectors vectors;
+
+      struct Args {
         char pdbfile[BUF512];
         char outfile[BUF512];
         long ds = 2;

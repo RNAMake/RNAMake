@@ -7,9 +7,11 @@
 #include <util/find_pair.h>
 #include <util/x3dna.h>
 #include <math/numerical.h>
+#include <math/xyz_vector.h>
 #include <memory>
 #include <string>
 #include <stdexcept>
+#include <structure/atom.h>
 #include <base/log.h>
 
 
@@ -69,10 +71,10 @@ namespace util {
             // frprintf(rframe, "%10.4f %10.4f %10.4f  # %c-axis\n", morien[j + 1],
             //         morien[j + 2], morien[j + 3],
             //         (i == 1) ? 'x' : (i == 2) ? 'y': 'z');
-            string num_1 = string_format("%10.4f", morien[j + 1]);
-            string num_2 = string_format("%10.4f", morien[j + 2]);
-            string num_3 = string_format("%10.4f", morien[j + 3]);
-            auto p = math::Point(stod(num_1), stod(num_2), stod(num_3));
+            string x = string_format("%10.4f", morien[j + 1]);
+            string y = string_format("%10.4f", morien[j + 2]);
+            string z = string_format("%10.4f", morien[j + 3]);
+            auto p = math::Point(stod(x), stod(y), stod(z));
             rs.push_back(p);
         }
         auto reg = std::regex(
@@ -83,23 +85,28 @@ namespace util {
         auto res1 = X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
         auto res2 = X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
 
-        if ((bp_info->res1_name == 'C' && bp_info->res2_name == 'G') ||
-            (bp_info->res1_name == 'G' && bp_info->res2_name == 'C') ||
-            (bp_info->res1_name == 'A' && bp_info->res2_name == 'U') ||
-            (bp_info->res1_name == 'U' && bp_info->res2_name == 'A') ||
-            (bp_info->res1_name == 'G' && bp_info->res2_name == 'U') ||
-            (bp_info->res1_name == 'U' && bp_info->res2_name == 'G')) {
+//        if (vectors[res1.num - 1].distance(vectors[res2.num - 1]) >= 3) {
+        if (true) {
+            cout << vectors[res1.num - 1].distance(vectors[res2.num - 1]) << endl;
+            if ((bp_info->res1_name == 'C' && bp_info->res2_name == 'G') ||
+                (bp_info->res1_name == 'G' && bp_info->res2_name == 'C') ||
+                (bp_info->res1_name == 'A' && bp_info->res2_name == 'U') ||
+                (bp_info->res1_name == 'U' && bp_info->res2_name == 'A') ||
+                (bp_info->res1_name == 'G' && bp_info->res2_name == 'U') ||
+                (bp_info->res1_name == 'U' && bp_info->res2_name == 'G')) {
 
-            auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
-            bps.push_back(bp);
 
-        } else {
+                auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
+                bps.push_back(bp);
 
-            auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
-            bps.push_back(bp);
 
+            } else {
+
+                auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
+                bps.push_back(bp);
+
+            }
         }
-        
     }
 
     /* print out selected list for checking: temporary */
@@ -1608,7 +1615,32 @@ namespace util {
 
         set_my_globals("find_pair");
 
-        // frprintf(stderr, "\nhandling file <%s> \n \n", args.pdbfile);
+        std::ifstream infile(args.pdbfile);
+        std::string line;
+
+        double x,y,z;
+        int i;
+        while (std::getline(infile, line))
+        {
+            regex exp("\\S+");
+            i = 0;
+            smatch res;
+            string::const_iterator searchStart( line.cbegin() );
+            while ( regex_search( searchStart, line.cend(), res, exp ) )
+            {
+                if (i == 6) {
+                    x = stod(res[0]);
+                } else if(i == 7) {
+                    y = stod(res[0]);
+                } else if(i == 8) {
+                    z = stod(res[0]);
+                }
+                searchStart = res.suffix().first;
+                i++;
+            }
+            math::Vector v = math::xyzVector<double>(x, y, z);
+            vectors.push_back(v);
+        }
 
         PairFinder::_handle_str();
 
