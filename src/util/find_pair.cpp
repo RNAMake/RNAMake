@@ -59,7 +59,6 @@ namespace util {
           * make this point clear: it is ROW-wise. Keven (U. Penn); Oct 9, 2007 */
   void
   PairFinder::_write_fpmst(double *morg, double *morien, FILE *rframe, X3dna::X3BPInfo *bp_info) {
-
       int i, j;
       // frprintf(rframe, "%10.4f %10.4f %10.4f  # origin\n",
       //         morg[1], morg[2], morg[3]);
@@ -85,19 +84,20 @@ namespace util {
       auto res1 = X3dna::X3Residue{bp_info->res1_num, bp_info->res1_chain_id, ' '};
       auto res2 = X3dna::X3Residue{bp_info->res2_num, bp_info->res2_chain_id, ' '};
 
-      //TODO Need to refactor this code.
+      const double max_distance = 3.5;
+
       if (bp_info->res1_name == 'A' && bp_info->res2_name == 'U') {
 
           math::xyzVector vector1 = atoms[pair(res1.num, "N3")];
           math::xyzVector vector2 = atoms[pair(res2.num, "N1")];
           math::xyzVector vector3 = atoms[pair(res1.num, "O4")];
           math::xyzVector vector4 = atoms[pair(res2.num, "N6")];
-          cout << vector1.distance(vector2) << endl;
-          cout << vector3.distance(vector4) << endl;
 
-          if (vector1.distance(vector2) <= 3.5 && vector3.distance(vector4) <= 3.5) {
+          if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance) {
               auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
               bps.push_back(bp);
+          } else {
+              LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num << ", because the bond exceeded the max length of: " << max_distance;
           }
 
       } else if (bp_info->res1_name == 'U' && bp_info->res2_name == 'A') {
@@ -106,13 +106,13 @@ namespace util {
           math::xyzVector vector2 = atoms[pair(res2.num, "N3")];
           math::xyzVector vector3 = atoms[pair(res1.num, "N6")];
           math::xyzVector vector4 = atoms[pair(res2.num, "O4")];
-          cout << vector1.distance(vector2) << endl;
-          cout << vector3.distance(vector4) << endl;
 
 
-          if (vector1.distance(vector2) <= 3.5 && vector3.distance(vector4) <= 3.5) {
+          if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance) {
               auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
               bps.push_back(bp);
+          } else {
+              LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num << ", because the bond exceeded the max length of: " << max_distance;
           }
 
       } else if (bp_info->res1_name == 'G' && bp_info->res2_name == 'C') {
@@ -123,15 +123,15 @@ namespace util {
           math::xyzVector vector4 = atoms[pair(res2.num, "N3")];
           math::xyzVector vector5 = atoms[pair(res1.num, "N2")];
           math::xyzVector vector6 = atoms[pair(res2.num, "O2")];
-          cout << vector1.distance(vector2) << endl;
-          cout << vector3.distance(vector4) << endl;
-          cout << vector5.distance(vector6) << endl;
 
 
-          if (vector1.distance(vector2) <= 3.5 && vector3.distance(vector4) <= 3.5 && vector5.distance(vector6) <= 3.5) {
+          if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance && vector5.distance(vector6) <= max_distance) {
               auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
               bps.push_back(bp);
+          } else {
+              LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num << ", because the bond exceeded the max length of: " << max_distance;
           }
+
       } else if (bp_info->res1_name == 'C' && bp_info->res2_name == 'G') {
 
           math::xyzVector vector1 = atoms[pair(res1.num, "N4")];
@@ -140,14 +140,12 @@ namespace util {
           math::xyzVector vector4 = atoms[pair(res2.num, "N1")];
           math::xyzVector vector5 = atoms[pair(res1.num, "O2")];
           math::xyzVector vector6 = atoms[pair(res2.num, "N2")];
-          cout << vector1.distance(vector2) << endl;
-          cout << vector3.distance(vector4) << endl;
-          cout << vector5.distance(vector6) << endl;
 
-
-          if (vector1.distance(vector2) <= 3.5 && vector3.distance(vector4) <= 3.5 && vector5.distance(vector6) <= 3.5) {
+          if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance && vector5.distance(vector6) <= max_distance) {
               auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
               bps.push_back(bp);
+          } else {
+              LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num << ", because the bond exceeded the max length of: " << max_distance;
           }
       } else if (bp_info->res1_name == 'G' && bp_info->res2_name == 'U') {
 
@@ -155,50 +153,34 @@ namespace util {
           math::xyzVector vector2 = atoms[pair(res2.num, "N3")];
           math::xyzVector vector3 = atoms[pair(res1.num, "N1")];
           math::xyzVector vector4 = atoms[pair(res2.num, "O2")];
-          cout << vector1.distance(vector2) << endl;
-          cout << vector3.distance(vector4) << endl;
 
 
-          if (vector1.distance(vector2) <= 3.5 && vector3.distance(vector4) <= 3.5) {
+          if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance) {
               auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
               bps.push_back(bp);
+          }else {
+              LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num << ", because the bond exceeded the max length of: " << max_distance;
           }
+
       } else if (bp_info->res1_name == 'U' && bp_info->res2_name == 'G') {
 
           math::xyzVector vector1 = atoms[pair(res1.num, "N3")];
           math::xyzVector vector2 = atoms[pair(res2.num, "O6")];
           math::xyzVector vector3 = atoms[pair(res1.num, "O2")];
           math::xyzVector vector4 = atoms[pair(res2.num, "N1")];
-          cout << vector1.distance(vector2) << endl;
-          cout << vector3.distance(vector4) << endl;
 
 
-          if (vector1.distance(vector2) <= 3.5 && vector3.distance(vector4) <= 3.5) {
+          if (vector1.distance(vector2) <= max_distance && vector3.distance(vector4) <= max_distance) {
               auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
               bps.push_back(bp);
+          } else {
+              LOG_INFO << "Removed baspair: " << res1.num << "|" << res2.num << ", because the bond exceeded the max length of: " << max_distance;
           }
+
       } else {
           auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
           bps.push_back(bp);
       }
-//      if ((bp_info->res1_name == 'C' && bp_info->res2_name == 'G') ||
-//          (bp_info->res1_name == 'G' && bp_info->res2_name == 'C') ||
-//          (bp_info->res1_name == 'A' && bp_info->res2_name == 'U') ||
-//          (bp_info->res1_name == 'U' && bp_info->res2_name == 'A') ||
-//          (bp_info->res1_name == 'G' && bp_info->res2_name == 'U') ||
-//          (bp_info->res1_name == 'U' && bp_info->res2_name == 'G')) {
-//
-//
-//          auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cWUW};
-//          bps.push_back(bp);
-//
-//
-//      } else {
-//
-//          auto bp = X3dna::X3Basepair{res1, res2, d, r, X3dnaBPType::cDDD};
-//          bps.push_back(bp);
-//
-//      }
   }
 
   /* print out selected list for checking: temporary */
@@ -1688,13 +1670,22 @@ namespace util {
 
       double x, y, z;
       int i, res_num;
+      bool cnt = false;
       string atom;
+
+      // Parsing the pdbfile to record the atoms' vectors
       while (std::getline(infile, line)) {
+          cnt = false;
           regex exp("\\S+");
           i = 0;
           smatch res;
           string::const_iterator searchStart(line.cbegin());
-          while (regex_search(searchStart, line.cend(), res, exp)) {
+          while (regex_search(searchStart, line.cend(), res, exp) && cnt != true) {
+              if (i == 0) {
+                  if (res[0] != "ATOM") {
+                    cnt = true;
+                  }
+              }
               if (i == 2) {
                   atom = res[0];
               } else if (i == 5) {
