@@ -54,11 +54,6 @@ X3dna::_parse_ref_frame_file(
         X3Basepairs &basepairs) const {
     auto finder = PairFinder(pdb_path);
     finder.find_pair(basepairs);
-    for (auto const & b : basepairs) {
-        std::cout << b.to_string() << std::endl;
-        std::cout  << "Res1: " << b.res1.num << std::endl;
-        std::cout << "Res2: " << b.res2.num << std::endl;
-    }
 }
 
 Strings
