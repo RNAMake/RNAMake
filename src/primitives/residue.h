@@ -6,6 +6,7 @@
 #define PRIMITIVES_RESIDUE_H
 
 #include <base/types.h>
+#include <util/uuid.h>
 
 /*
  * Exception for residues

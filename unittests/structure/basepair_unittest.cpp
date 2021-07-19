@@ -14,16 +14,18 @@ TEST_CASE( "Test Basepairs for Structure" ) {
     auto lines =base::get_lines_from_file(path);
     auto rts = structure::ResidueTypeSet();
     auto s = std::make_shared<structure::Structure>(lines[0], rts);
-    
+
     SUBCASE("Test creation from resiudes") {
         auto res1 = s->get_residue(103, "A", "");
         auto res2 = s->get_residue(104, "A", "");
         auto r = math::Matrix(0.0);
 
         auto bp = std::make_shared<structure::Basepair>(res1, res2, r, "c...");
-        
+
         CHECK(bp->get_res1_uuid() == res1->get_uuid());
         CHECK(bp->get_res2_uuid() == res2->get_uuid());
     }
 
 }
+
+

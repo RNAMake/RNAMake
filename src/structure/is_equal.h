@@ -11,7 +11,10 @@
 
 #include <stdio.h>
 
-#include "structure/structure.h"
+//#include "structure/structure.h"
+#include "structure/atom.h"
+#include "structure/residue.h"
+#include "math/xyz_vector.h"
 
 namespace structure {
 
@@ -33,17 +36,17 @@ are_residues_equal(
         ResidueOP const & r2,
         int check_uuids = 1);
 
-bool
-are_chains_equal(
-        ChainOP const & c1,
-        ChainOP const & c2,
-        int check_uuids = 1);
+//bool
+//are_chains_equal(
+//        ChainOP const & c1,
+//        ChainOP const & c2,
+//        int check_uuids = 1);
 
-bool
-are_structures_equal(
-        StructureOP const & s1,
-        StructureOP const & s2,
-        int check_uuids = 1);
+//bool
+//are_structures_equal(
+//        StructureOP const & s1,
+//        StructureOP const & s2,
+//        int check_uuids = 1);
 
 }
 

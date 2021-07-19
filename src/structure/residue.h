@@ -126,7 +126,7 @@ namespace structure {
           atoms_ = Atoms();
           int i = 5;
           while (i < spl.size()) {
-              if(spl[i].size() <= 1){
+              if (spl[i].size() <= 1) {
                   i++;
                   continue;
               }
@@ -201,7 +201,7 @@ namespace structure {
       inline
       int
       connected_to(Residue const &res,
-              float cutoff = 5.0) const {
+                   float cutoff = 5.0) const {
           String o3 = "O3'", p = "P";
 
           // 5' to 3'
@@ -548,6 +548,76 @@ namespace structure {
 
       return false;
   }
+  //TODO Need to remove this function later
+
+//  bool
+//  _replace_missing_phosphate_backbone(
+//          std::vector<Atom const *> & atoms,
+//          ResidueTypeCOP res_type) const {
+//
+//      auto ref_res = ref_residues_.at(res_type->get_name());
+//
+//      // if these atoms do not exist cannot build res ref frame
+//      if(atoms[ res_type->get_atom_index("C1'")] == nullptr) { return false; }
+//      if (res_type->get_short_name() == 'A' || res_type->get_short_name() == 'G') {
+//          if(atoms[ res_type->get_atom_index("N9")] == nullptr) { return false; }
+//      }
+//      else {
+//          if(atoms[ res_type->get_atom_index("N1")] == nullptr) { return false; }
+//      }
+//
+//      auto ref_frame_1 = _get_res_ref_frame_from_atoms(atoms, res_type);
+//      auto ref_frame_2 = _get_res_ref_frame(ref_res);
+//      auto rot = dot(ref_frame_1.transpose(), ref_frame_2);
+//      auto r_t = rot.transpose();
+//      auto t = -ref_res->get_center();
+//      auto c4p_atom =  atoms[ res_type->get_atom_index("C4'") ];
+//      if(c4p_atom == nullptr) { return false; }
+//
+//      ref_res->transform(r_t, t);
+//      ref_res->move(c4p_atom->get_coords() - ref_res->get_coords("C4'"));
+//
+//      for(int i = 0; i < 5; i++) {
+//          atoms[i] = new Atom(ref_res->get_atom(i).get_name(),
+//                              ref_res->get_atom(i).get_coords());
+//      }
+//      return true;
+//  }
+
+//  ResidueOP
+//  _setup_residue(
+//          String const & key,
+//          Atoms const & atoms,
+//          ResidueTypeCOP res_type)  {
+//
+//
+//      auto spl = base::split_str_by_delimiter(key, "|");
+//      auto atom_ptrs = std::vector<Atom const *>(res_type->get_num_atoms());
+//
+//      for(auto const & a : atoms) {
+//          // not a valid atom for this residue
+//          if(! res_type->is_valid_atom_name(a.get_name())) {
+////                  LOGW <<  a.get_name() + " does not belong to residue " + res_type->get_name() + ": IGNORING!";
+//              continue;
+//          }
+//          auto index = res_type->get_atom_index(a.get_name());
+//          atom_ptrs[index] = &a;
+//      }
+//
+//      if(res_type->get_set_type() == SetType::RNA) {
+//          auto i = 1;
+//          auto missing_phosphate = false;
+//          for (auto const & a : atom_ptrs) {
+//              i++;
+//              if (i < 5 && a == nullptr) { missing_phosphate = 1; }
+//          }
+//
+//          if (missing_phosphate) {
+//              if (!_replace_missing_phosphate_backbone(atom_ptrs, res_type)) {
+////                      LOGW << "tried to fill in missing phosphate backbone for residue " + spl[0] + " " + spl[1];
+//              }
+//          }
+//      }
 }
 
 #endif /* defined(__RNAMake__all_atom_residue__) */

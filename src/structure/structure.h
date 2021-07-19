@@ -1,187 +1,225 @@
 //
-//  structure.h
-//  RNAMake
-//
-//  Created by Joseph Yesselman on 1/25/15.
-//  Copyright (c) 2015 Joseph Yesselman. All rights reserved.
+// Created by Joseph Yesselman on 11/28/17.
 //
 
-#ifndef __RNAMake__structure__
-#define __RNAMake__structure__
+#ifndef RNAMAKE_NEW_STRUCTURE_H
+#define RNAMAKE_NEW_STRUCTURE_H
 
-#include <stdio.h>
-
-//RNAMake Headers
-#include "base/types.h"
-#include "math/transform.h"
-#include "math/xyz_matrix.h"
-#include "structure/chain.fwd.h"
-#include "structure/chain.h"
-#include "structure/residue.h"
-#include "structure/pdb_parser.h"
+#include <base/vector_container.h>
+#include <util/x3dna.h>
+#include <primitives/structure.h>
+#include <structure/residue.h>
+#include <structure/chain.h>
+#include <structure/basepair.h>
 
 namespace structure {
 
-class Structure {
-public:
-    inline
-    Structure() :
-            chains_(ChainOPs()) {}
+  class Structure : public primitives::Structure<Residue> {
+  public:
+      typedef primitives::Structure<Residue> ParentClass;
 
-    inline
-    Structure(
-            ChainOPs const & chains) :
-            chains_(chains) {}
+  public:
+      inline
+      Structure(
+              Residues const & residues,
+              Cutpoints const & cut_points): ParentClass(residues, cut_points) {}
+      inline
+      Structure(
+              Structure const & structure): ParentClass(structure.residues_, structure.cut_points_) {}
+      inline
+      Structure(
+              String const & s,
+              ResidueTypeSet const & rts) : ParentClass() {
 
-    Structure(
-            String const & path) {
-        PDBParser pdb_parser;
-        auto residues = pdb_parser.parse(path);
-        chains_ = ChainOPs();
-        connect_residues_into_chains(residues, chains_);
-    }
-
-    Structure(
-            Structure const & s) {
-        chains_ = ChainOPs(s.chains_.size());
-        int i = 0;
-        for (auto const & c : s.chains_) {
-            chains_[i] = std::make_shared<Chain>(*c);
-            i++;
-        }
-    }
-
-    Structure(
-            String const & s,
-            structure::ResidueTypeSet const & rts) {
-        chains_ = ChainOPs();
-        Strings spl = base::split_str_by_delimiter(s, ":");
-        for (auto const & c_str : spl) {
-            chains_.push_back(std::make_shared<Chain>(c_str, rts));
-        }
-    }
-
-    ~Structure() {}
-
-public:
-
-    void
-    renumber();
-
-    inline
-    util::Beads
-    get_beads(
-            ResidueOPs const & excluded_res) {
-        auto beads = util::Beads();
-        int found = 0;
-        for (auto const & r : residues()) {
-            found = 0;
-            for (auto const & er : excluded_res) {
-                if (r->get_uuid() == er->get_uuid()) {
-                    found = 1;
-                    break;
-                }
-            }
-            if (found) { continue; }
-            //TODO Fix this
-            for (auto const & b : r->beads_) {
-                beads.push_back(b);
-            }
-        }
-        return beads;
-    }
-
-    inline
-    util::Beads
-    get_beads() {
-        auto res = ResidueOPs();
-        return get_beads(res);
-    }
-
-    ResidueOP const
-    get_residue(
-            int const &,
-            String const &,
-            String const &);
-
-    ResidueOP const
-    get_residue(
-            util::Uuid const &);
-
-    ResidueOPs const
-    residues() const;
-
-    inline
-    AtomOPs const
-    atoms() {
-        AtomOPs atoms;
-        for (auto const & r : residues()) {
-            // TODO Ask Joe about get atoms
-            for (auto const & a : r->get_atoms()) {
-                if (a.get() != NULL) {
-                    atoms.push_back(a);
-                }
-            }
-        }
-        return atoms;
-    }
-
-    inline
-    void
-    move(
-            math::Point const & p) {
-        for (auto & a : atoms()) {
-            a->move(p);
-//            a->coords(a->coords() + p);
-        }
-    }
-
-    inline
-    void
-    transform(
-            math::Transform const & t) {
-        auto r = t.rotation().transpose();
-        auto trans = t.translation();
-        for (auto & a : atoms()) {
-            //TODO Need to fix
-            a->transform(r, a->get_coords(),dummy_);
-//            math::dot_vector(r, a->coords(), dummy_);
-//            dummy_ += trans;
-//            a->coords(dummy_);
-        }
-    }
-
-    String
-    to_pdb_str(
-            int renumber = -1,
-            int conect_statements = 0);
-
-    String
-    to_str();
-
-    void
-    to_pdb(
-            String const,
-            int renumber = -1,
-            int conect_statements = 0);
-
-public: // getters
-
-    inline
-    ChainOPs const &
-    chains() const { return chains_; }
+          auto spl = base::split_str_by_delimiter(s, ";");
+          for(Index i = 0; i < spl.size()-1; i++) {
+              residues_.push_back(Residue(spl[i], rts));
+          }
+          auto cut_point_spl = base::split_str_by_delimiter(spl.back(), " ");
+          for(auto const & cut_point_s : cut_point_spl) {
+              cut_points_.push_back(std::stoi(cut_point_s));
+          }
+      }
 
 
-private:
-    ChainOPs chains_;
-    math::Point dummy_; // resuable place in memory
-    math::Points coords_;
-    math::Points org_coords_;
+      ~Structure() {}
 
-};
+  public: //operators
+      inline
+      bool
+      operator == (
+              Structure const & s) const {
+          return is_equal(s);
+      }
 
-typedef std::shared_ptr<Structure> StructureOP;
+      inline
+      bool
+      operator !=(
+              Structure const & s) const {
+          return !(is_equal(s));
+      }
+
+  public:
+      bool
+      is_equal(
+              Structure const & s,
+              bool check_uuid = true) const {
+
+          if(residues_.size() != s.residues_.size() ) { return false; }
+          if(cut_points_.size() != s.cut_points_.size() ) { return false; }
+
+          for(int i = 0; i < residues_.size(); i++) {
+              if(!(residues_[i].is_equal(s.residues_[i], check_uuid))) { return false; }
+          }
+
+          for(int i = 0; i < cut_points_.size(); i++) {
+              if(cut_points_[i] != s.cut_points_[i]) { return false; }
+          }
+          return true;
+
+      }
+
+  public: // non const
+      void
+      move(
+              math::Point const & p) {
+          for(auto & r : residues_) { r.move(p); }
+      }
+
+      void
+      transform(
+              math::Matrix const & r,
+              math::Vector const & t,
+              math::Point & dummy) {
+
+          for(auto & res : residues_) { res.transform(r, t, dummy); }
+      }
+
+      inline
+      void
+      transform(
+              math::Matrix const & r,
+              math::Vector const & t) {
+          auto dummy = math::Point();
+          transform(r, t, dummy);
+      }
+
+
+      inline
+      void
+      remove_residue_beads(
+              util::Uuid const & r_uuid) {
+
+          auto & r = get_residue(r_uuid);
+          auto i =  get_res_index(r);
+          residues_[i].remove_beads();
+      }
+
+      void
+      new_uuids() {
+          for(auto & r : residues_) { r.new_uuid(); }
+      }
+
+  public: //getters
+
+      String
+      get_str() {
+          auto s = String();
+          for(auto const & r : residues_) {
+              s += r.get_str() + ";";
+          }
+          int i = 0;
+          for(auto const & c : cut_points_) {
+              s += std::to_string(c);
+              if(i != cut_points_.size()) { s += " "; }
+          }
+          s += ";";
+          return s;
+      }
+
+//      json::JSON
+//      get_json() const {
+//          auto j_res = json::Array();
+//          auto j_cuts = json::Array();
+//          for(auto const & r : residues_) { j_res.append(r.get_json()); }
+//          for(auto const & i : cut_points_) { j_cuts.append(i); }
+//          auto j = json::Object();
+//          return json::JSON{
+//                  "residues", j_res,
+//                  "cutpoints", j_cuts};
+//
+//      }
+
+      String
+      get_pdb_str(
+              int &,
+              int &,
+              char &) const;
+
+      inline
+      String
+      get_pdb_str(
+              int acount = 0) const {
+          auto num = residues_[0].get_num();
+          auto chain_id = residues_[0].get_chain_id();
+          return get_pdb_str(acount, num, chain_id);
+      }
+
+      void
+      write_pdb(
+              String const &) const;
+
+      void
+      write_steric_beads_to_pdb(
+              String const &);
+
+
+  };
+
+  typedef std::shared_ptr<Structure> StructureOP;
+
+  int
+  are_residues_connected_RNA(
+          Residue const &,
+          Residue const &);
+
+  int
+  are_residues_connected_protein(
+          Residue const &,
+          Residue const &);
+
+  int
+  are_residues_connected(
+          Residue const &,
+          Residue const &);
+
+  ResidueOP
+  _get_first_residues_in_chain(
+          ResidueOPs const &,
+          std::map<ResidueOP, int> const &);
+
+  ResidueOP
+  _get_next_residue(
+          ResidueOPs const &,
+          std::map<ResidueOP, int> const &);
+
+  StructureOP
+  get_structure_from_residues(
+          ResidueOPs const &);
+
+  StructureOP
+  get_structure_from_pdb(
+          String const &,
+          ResidueTypeSet const &,
+          SetType);
+
+  base::VectorContainerOP<Basepair>
+  get_basepairs_from_x3dna(
+          util::X3dna::X3Basepairs const &,
+          Structure const &);
+
 
 }
 
-#endif /* defined(__RNAMake__structure__) */
+
+#endif //RNAMAKE_NEW_STRUCTURE_H
