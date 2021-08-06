@@ -28,8 +28,10 @@ MotifStateSqliteLibrary::get_libnames() {
     libnames["existing"] = "/motif_state_libraries/existing.db";
     //libnames["le_helices"]     = "/motif_state_libraries/le_helices.db";
     libnames["avg_helices"] = "/motif_state_libraries/avg_helices.db";
+    libnames["new_twoways"] = "/motif_state_libraries/new_twoways.db";
 
-    return libnames;
+
+  return libnames;
 }
 
 

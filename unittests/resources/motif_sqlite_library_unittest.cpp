@@ -53,6 +53,20 @@ TEST_CASE( "Test Motif Sqlite3 Library" ) {
 
     // throws and error soemtimes but does not come up in the debugger?
     SUBCASE("test grabing more then one motif in the same query") {
+      auto mlib = resources::MotifSqliteLibrary("twoway");
+      mlib.load_all();
+      auto seen = std::map<String, int>();
+      auto f = std::ofstream();
+      f.open("motifs.csv");
+      f << "name,sequence,structure" << std::endl;
+      for(auto const & m : mlib) {
+        if(seen.find(m->name()) != seen.end()) {
+          continue;
+        }
+        f << m->name() << "," << m->sequence() << "," << m->dot_bracket() << std::endl;
+        seen[m->name()] = 1;
+      }
+      f.close();
         /*auto mlib = resources::MotifSqliteLibrary("twoway");
         auto m = mlib.get_random();
         auto motifs = mlib.get_multi(m->name());

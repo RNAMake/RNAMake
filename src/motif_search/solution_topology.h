@@ -86,6 +86,7 @@ public:
         motif_type_ends_["flex_helices"] = 2;
         motif_type_ends_["twoway"]  = 2;
         motif_type_ends_["unique_twoway"] = 2;
+        motif_type_ends_["new_twoways"] = 2;
     }
 
     ~SolutionTopologyTemplate() {}
